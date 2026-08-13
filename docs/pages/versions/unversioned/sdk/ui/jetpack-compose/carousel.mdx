@@ -46,7 +46,7 @@ export default function CenteredHeroExample() {
           <Box
             key={index}
             contentAlignment="center"
-            modifiers={[size(300, 200), background(color), maskClip(Shapes.RoundedCorner(28))]}>
+            modifiers={[size(300, 200), maskClip(Shapes.RoundedCorner(28)), background(color)]}>
             <Text color="#FFFFFF">Slide {index + 1}</Text>
           </Box>
         ))}

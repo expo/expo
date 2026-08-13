@@ -34,8 +34,8 @@ export default function CarouselScreen() {
               <Box
                 modifiers={[
                   size(300, 200),
-                  background('#6200EE'),
                   maskClip(Shapes.RoundedCorner(28)),
+                  background('#6200EE'),
                 ]}
                 contentAlignment="center">
                 <ComposeText color="#FFFFFF">1</ComposeText>
@@ -43,8 +43,8 @@ export default function CarouselScreen() {
               <Box
                 modifiers={[
                   size(300, 200),
-                  background('#03DAC5'),
                   maskClip(Shapes.RoundedCorner(28)),
+                  background('#03DAC5'),
                 ]}
                 contentAlignment="center">
                 <ComposeText color="#FFFFFF">2</ComposeText>
@@ -52,8 +52,8 @@ export default function CarouselScreen() {
               <Box
                 modifiers={[
                   size(300, 200),
-                  background('#FF5722'),
                   maskClip(Shapes.RoundedCorner(28)),
+                  background('#FF5722'),
                 ]}
                 contentAlignment="center">
                 <ComposeText color="#FFFFFF">3</ComposeText>
@@ -61,8 +61,8 @@ export default function CarouselScreen() {
               <Box
                 modifiers={[
                   size(300, 200),
-                  background('#4CAF50'),
                   maskClip(Shapes.RoundedCorner(28)),
+                  background('#4CAF50'),
                 ]}
                 contentAlignment="center">
                 <ComposeText color="#FFFFFF">4</ComposeText>
@@ -70,8 +70,8 @@ export default function CarouselScreen() {
               <Box
                 modifiers={[
                   size(300, 200),
-                  background('#2196F3'),
                   maskClip(Shapes.RoundedCorner(28)),
+                  background('#2196F3'),
                 ]}
                 contentAlignment="center">
                 <ComposeText color="#FFFFFF">5</ComposeText>
