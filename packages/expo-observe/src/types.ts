@@ -167,7 +167,13 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * this method to flush events manually, for example, during testing or to ensure events
    * are sent before a specific point.
    *
-   * @returns A promise that resolves when the pending events have been dispatched.
+   * > Note: On iOS, a call made while another dispatch is already running (an automatic
+   * > resign-active flush, or an earlier call) returns without dispatching, so resolution does
+   * > not guarantee the queue was drained. Android serializes such calls instead, and dispatches
+   * > once the one ahead of it finishes.
+   *
+   * @returns A promise that resolves once this call has finished, which is immediately when a
+   * dispatch was already in progress on iOS.
    *
    * @example
    * ```ts

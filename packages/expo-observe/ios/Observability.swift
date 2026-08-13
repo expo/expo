@@ -7,7 +7,12 @@ internal struct ObservabilityManager {
   private static let easClientId = EASClientID.uuid().uuidString
   private static var metricsEndpointUrl: URL? = nil
   private static var logsEndpointUrl: URL? = nil
+  private static var tracesEndpointUrl: URL? = nil
   private static var projectId: String? = nil
+
+  /// Maximum spans per request accepted by the ingestion endpoint; it rejects everything past
+  /// this count within one POST, so larger backlogs are sent as sequential chunks.
+  internal static let maxSpansPerRequest = 512
 
   /// In-memory retry-gate state, kept independently per OTLP endpoint. The `/v1/metrics` and
   /// `/v1/logs` endpoints fail independently in practice (e.g., one schema validation
@@ -22,14 +27,36 @@ internal struct ObservabilityManager {
   /// mean a UserDefaults write per retryable response.
   private static var metricsRetryGate: DispatchUtils.RetryGateState = .initial
   private static var logsRetryGate: DispatchUtils.RetryGateState = .initial
+  private static var tracesRetryGate: DispatchUtils.RetryGateState = .initial
+
+  /// Whether a dispatch pass is currently running. The actor is reentrant at every network
+  /// `await`, so overlapping `dispatch()` calls (a JS `dispatchEvents` racing the resign-active
+  /// app delegate hook) would otherwise read (and send) the same pending rows twice before
+  /// either pass advances its cursor or deletes its batch.
+  ///
+  /// Skipping rather than awaiting is deliberate: the caller is a fire-and-forget lifecycle hook
+  /// or a manual flush, and the in-flight pass is already draining the same rows. It does mean a
+  /// JS `dispatchEvents()` can resolve without having sent anything, which the JSDoc for that
+  /// method states. Android serializes instead, through its per-signal mutexes.
+  private static var isDispatching = false
 
   internal static func dispatch() async {
-    // Per-signal gates are checked inside `dispatchMetrics` / `dispatchLogs` rather than
-    // here, so a backoff on one endpoint doesn't suppress the other's traffic.
+    if isDispatching {
+      observeLogger.debug("[EAS Observe] Dispatch already in progress; skipping")
+      return
+    }
+    isDispatching = true
+    defer {
+      isDispatching = false
+    }
+
+    // Per-signal gates are checked inside `dispatchMetrics` / `dispatchLogs` / `dispatchTraces`
+    // rather than here, so a backoff on one endpoint doesn't suppress the others' traffic.
     let shouldDispatch = Self.shouldDispatch()
 
     await dispatchMetrics(shouldDispatch: shouldDispatch)
     await dispatchLogs(shouldDispatch: shouldDispatch)
+    await dispatchTraces(shouldDispatch: shouldDispatch)
   }
 
   /// Whether a per-signal retry gate currently blocks dispatch on that signal. Logs a debug
@@ -206,29 +233,127 @@ internal struct ObservabilityManager {
     )
   }
 
-  /// Groups `metrics` by `sessionId`, hydrates the matching session rows, and emits one `Event` per
-  /// session in the same shape Android dispatches: each event carries the session's metadata and only
-  /// the metrics that belong to it.
-  private static func buildEvents(forMetrics metrics: [MetricRow]) throws -> [Event] {
-    let metricsBySession = Dictionary(grouping: metrics, by: \.sessionId)
-    let sessionIds = Array(metricsBySession.keys)
-    let sessions = try AppMetrics.getSessions(ids: sessionIds)
+  /// Dispatches persisted spans to `/v1/traces`.
+  ///
+  /// Unlike metrics and logs there is no persisted cursor: nothing else reads the `spans` rows
+  /// back, so a consumed (or deliberately dropped) batch is deleted outright and the table
+  /// itself acts as the queue. Rows survive on a retryable failure and go out on the next
+  /// dispatch.
+  private static func dispatchTraces(shouldDispatch: Bool) async {
+    guard let endpointUrl = tracesEndpointUrl else {
+      // Without a project id there is nowhere to send spans, so skip even the table read:
+      // this path runs on every resign-active in apps without EAS config, and the pending
+      // rows are already bounded by the insert-time cap.
+      return
+    }
+    if retryGateBlocks(tracesRetryGate, signal: "traces") {
+      return
+    }
+    if !shouldDispatch {
+      // Drop the backlog without materializing it; one SELECT MAX is enough to know how far
+      // to delete. Mirrors metrics/logs advancing their cursor past rows they won't send.
+      do {
+        if let maxId = try AppMetrics.getMaxSpanId() {
+          try AppMetrics.deleteSpans(upToId: maxId)
+        }
+      } catch {
+        observeLogger.warn("[EAS Observe] Failed to drop undispatched spans: \(error.localizedDescription)")
+      }
+      return
+    }
+
+    // The endpoint rejects spans past `maxSpansPerRequest` per POST, so a larger backlog goes
+    // out as sequential chunks, read one chunk at a time. `SpanDispatchLoop` owns the reading,
+    // the chunking, the halving of an oversized chunk, and which outcomes delete their rows;
+    // these closures only fetch and send.
+    await SpanDispatchLoop.drain(
+      chunkSize: maxSpansPerRequest,
+      fetchChunk: { afterId, limit in
+        return try AppMetrics.getSpans(afterId: afterId, limit: limit)
+      },
+      send: { chunk in
+        let resourceSpans = try buildResourceSpans(forSpans: chunk)
+        if resourceSpans.isEmpty {
+          return nil
+        }
+        let body = OTTracesRequestBody(resourceSpans: resourceSpans)
+        let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+        applyRetryOutcome(result, to: &tracesRetryGate)
+        switch result {
+        case .success:
+          ObserveUserDefaults.lastDispatchDate = Date.now
+        case .partialSuccess(let partial):
+          ObserveUserDefaults.lastDispatchDate = Date.now
+          observeLogger.warn(
+            "[EAS Observe] Partial success on batch of \(chunk.count) span(s): "
+              + "server rejected \(partial.rejectedCount) "
+              + "(\(partial.errorMessage ?? "no error message"))"
+          )
+        case .nonRetryableFailure(let reason):
+          observeLogger.warn(
+            "[EAS Observe] Dropping batch of \(chunk.count) span(s): \(reason)"
+          )
+        case .payloadTooLarge where chunk.count == 1:
+          observeLogger.warn("[EAS Observe] Dropping a span that exceeds the server payload limit")
+        case .retryableFailure, .payloadTooLarge:
+          break
+        }
+        return result
+      },
+      deleteUpTo: { deleteDispatchedSpans(upToId: $0) }
+    )
+  }
+
+  private static func deleteDispatchedSpans(upToId: Int64?) {
+    guard let upToId else {
+      return
+    }
+    do {
+      try AppMetrics.deleteSpans(upToId: upToId)
+    } catch {
+      observeLogger.warn("[EAS Observe] Failed to delete dispatched spans: \(error.localizedDescription)")
+    }
+  }
+
+  /// Groups `rows` by session id, hydrates the matching session rows, and emits one value per
+  /// session via `transform`. Shared by the metrics, logs, and traces builders so session
+  /// hydration behaves identically across the three signals. Rows whose session no longer
+  /// exists are skipped.
+  private static func buildPerSession<Row, T>(
+    _ rows: [Row],
+    sessionId: (Row) -> String,
+    transform: (SessionRow, [Row]) -> T?
+  ) throws -> [T] {
+    let rowsBySession = Dictionary(grouping: rows, by: sessionId)
+    let sessions = try AppMetrics.getSessions(ids: Array(rowsBySession.keys))
     return sessions.compactMap { session in
-      guard let sessionMetrics = metricsBySession[session.id] else {
+      guard let sessionRows = rowsBySession[session.id] else {
         return nil
       }
+      return transform(session, sessionRows)
+    }
+  }
+
+  /// Emits one `OTResourceSpans` per session, mirroring how metrics and logs attach their
+  /// session's resource metadata. Spans whose session row no longer exists are skipped: their
+  /// rows are about to be deleted by the caller anyway.
+  private static func buildResourceSpans(forSpans spans: [SpanRow]) throws -> [OTResourceSpans] {
+    return try buildPerSession(spans, sessionId: \.sessionId) { session, sessionSpans in
+      let event = Event.from(session: session, metrics: [], logs: [])
+      return event.toOTResourceSpans(easClientId, spans: sessionSpans.map { $0.toOTSpan() })
+    }
+  }
+
+  /// Emits one `Event` per session in the same shape Android dispatches: each event carries the
+  /// session's metadata and only the metrics that belong to it.
+  private static func buildEvents(forMetrics metrics: [MetricRow]) throws -> [Event] {
+    return try buildPerSession(metrics, sessionId: \.sessionId) { session, sessionMetrics in
       return Event.from(session: session, metrics: sessionMetrics, logs: [])
     }
   }
 
   private static func buildEvents(forLogs logs: [LogRow]) throws -> [Event] {
-    let logsBySession = Dictionary(grouping: logs, by: \.sessionId)
-    let sessionIds = Array(logsBySession.keys)
-    let sessions = try AppMetrics.getSessions(ids: sessionIds)
-    return sessions.compactMap { session in
-      guard let sessionLogs = logsBySession[session.id] else {
-        return nil
-      }
+    return try buildPerSession(logs, sessionId: \.sessionId) { session, sessionLogs in
       return Event.from(session: session, metrics: [], logs: sessionLogs)
     }
   }
@@ -244,6 +369,7 @@ internal struct ObservabilityManager {
     AppMetricsActor.isolated {
       self.metricsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/metrics")
       self.logsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/logs")
+      self.tracesEndpointUrl = url.appendingPathComponent("\(projectId)/v1/traces")
     }
   }
 
