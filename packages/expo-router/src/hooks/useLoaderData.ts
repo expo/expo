@@ -4,13 +4,12 @@ import type { LoaderFunction } from 'expo-server';
 import { use, useEffect, useMemo, useState } from 'react';
 
 import { useContextKey } from '../Route';
-import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import { LoaderContext } from '../loaders/LoaderContext';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { readLoaderData } from '../loaders/readLoaderData';
+import { resolveLoaderPath } from '../loaders/resolveLoaderPath';
 import { fetchLoader } from '../loaders/utils';
 import { useStateForPath } from '../react-navigation/native';
-import { getSingularId } from '../useScreens';
 
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
   T extends LoaderFunction<infer R> ? R : unknown;
@@ -42,14 +41,10 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   const stateForPath = useStateForPath();
   const contextKey = useContextKey();
 
-  const resolvedPath = useMemo(() => {
-    const routeInfo = getRouteInfoFromState(stateForPath);
-    const contextPath = contextKey.startsWith('/') ? contextKey.slice(1) : contextKey;
-    const resolvedPathname = `/${getSingularId(contextPath, { params: routeInfo.params })}`;
-    const searchString = routeInfo.searchParams?.toString() || '';
-
-    return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
-  }, [contextKey, stateForPath]);
+  const resolvedPath = useMemo(
+    () => resolveLoaderPath(contextKey, stateForPath),
+    [contextKey, stateForPath]
+  );
 
   // Loader data stays in the shared Suspense store; local state only invalidates this reader.
   const [, setVersion] = useState(0);

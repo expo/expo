@@ -21,7 +21,7 @@ import {
 } from '../react-navigation/native';
 import type { NativeStackNavigatorProps } from '../react-navigation/native-stack';
 import type { SingularOptions } from '../useScreens';
-import { getSingularId } from '../useScreens';
+import { getSingularId } from '../utils/getSingularId';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
