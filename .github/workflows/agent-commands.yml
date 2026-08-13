@@ -696,7 +696,24 @@ jobs:
               exit 1
             fi
             fork_default=$(gh api "repos/$fork" --jq .default_branch)
-            if ! gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
+            # The dedicated sync-expo-bot-fork workflow (EXPO_BOT_FORK_SYNC_TOKEN)
+            # is what is allowed to move workflow files. This token is not.
+            # Retry a few times: a verify that starts on the same push as a
+            # workflow change can land before that job finishes. Keep the API
+            # body — 422 is workflow scope, 404 is "cannot write this repo".
+            synced=
+            for attempt in 1 2 3 4; do
+              if sync_out=$(gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" 2>&1); then
+                synced=1
+                printf '%s\n' "$sync_out"
+                break
+              fi
+              echo "merge-upstream attempt $attempt failed:"
+              printf '%s\n' "$sync_out"
+              [ "$attempt" -eq 4 ] && break
+              sleep 20
+            done
+            if [ -z "$synced" ]; then
               echo "::error::Could not synchronize $fork with upstream; refusing a push that may include stale workflow commits."
               exit 1
             fi
@@ -1421,9 +1438,10 @@ jobs:
           # Note this gets WORSE the staler the fork is, so it is not optional.
           if [ -n "$fork" ]; then
             fork_default=$(gh api "repos/$fork" --jq .default_branch 2>/dev/null || echo main)
-            if ! gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
+            if ! sync_out=$(gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" 2>&1); then
               gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not synchronize the bot fork. It refused to push a branch that might include stale workflow commits, and refused the secret-bearing same-repository fallback. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
               echo "::error::could not sync $fork with upstream; refusing to push."
+              printf '%s\n' "$sync_out"
               exit 1
             fi
             echo "synced $fork ($fork_default) with upstream before pushing"
