@@ -1,14 +1,14 @@
-import { useRoute } from '@react-navigation/native';
 import { useTheme } from 'ThemeProvider';
+import { useRoute } from 'expo-router';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { AppIntentExitButton } from './AppIntentExitButton';
-import { clearLatestOrder, getLatestOrder, type AppIntentOrder } from './AppIntentsStore';
-import { useAppIntentState } from './useAppIntentState';
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import { ScrollPage, Section } from '../../components/Page';
+import { AppIntentExitButton } from './AppIntentExitButton';
+import { clearLatestOrder, getLatestOrder, type AppIntentOrder } from './AppIntentsStore';
+import { useAppIntentState } from './useAppIntentState';
 
 function formatDate(timestamp?: number): string {
   return timestamp ? new Date(timestamp).toLocaleString() : 'Never';

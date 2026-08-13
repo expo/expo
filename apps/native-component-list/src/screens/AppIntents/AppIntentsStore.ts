@@ -97,10 +97,10 @@ const maxRememberedInvocationIds = 100;
 const listeners = new Set<() => void>();
 
 /**
- * Handler runs can overlap: `useAppIntents` calls the handler again for every live invocation,
- * without waiting for the previous call to settle. Every store update below is a
- * read-modify-write over AsyncStorage, so two overlapping runs would read the same value and
- * one write would lose the other's increment. This queue runs them one after another.
+ * `useAppIntents` delivers invocations serially, but these updates also run from the example
+ * screens. A reset or clear can therefore be requested while the intent handler is still updating
+ * state. Every store update below is a read-modify-write over AsyncStorage, so overlapping updates
+ * could read the same value and lose a write. This queue runs them one after another.
  *
  * > **Warning**
  * > The wrapped functions are not re-entrant. Calling one of them - `processAppIntentInvocations`,
@@ -236,9 +236,13 @@ export async function getCounterState(): Promise<AppIntentCounterState> {
 }
 
 export async function resetCounterState(): Promise<void> {
-  await withSerializedStateUpdate(() =>
-    writeJson<AppIntentCounterState>(counterStateKey, { count: 0, countedInvocationIds: [] })
-  );
+  await withSerializedStateUpdate(async () => {
+    const { countedInvocationIds } = await getCounterState();
+    await writeJson<AppIntentCounterState>(counterStateKey, {
+      count: 0,
+      countedInvocationIds,
+    });
+  });
 }
 
 async function recordCounterInvocations(invocations: AppIntentInvocationLike[]): Promise<void> {
@@ -436,10 +440,10 @@ async function applyAppIntentInvocations(
   );
 
   if (unrecognizedInvocations.length > 0) {
-    // The pending queue is UserDefaults-backed and has no cap, so an invocation this build has
-    // no handler for - one queued by an older build whose intent was renamed or removed, for
-    // example - must still be dequeued. Leaving it in place would re-read it on every launch
-    // forever.
+    // The pending queue is UserDefaults-backed and holds at most 100 entries, so an invocation this
+    // build has no handler for - one queued by an older build whose intent was renamed or removed,
+    // for example - must still be dequeued. Leaving it in place would re-read it on every launch
+    // and occupy a queue slot until newer invocations eventually displace it.
     //
     // > **Warning**
     // > Dropping it is only safe because this example registers a single `useAppIntents` handler,
@@ -467,11 +471,20 @@ async function applyAppIntentInvocations(
     (invocation) => invocation.name === 'deleteMailDrafts'
   );
 
-  await Promise.all([
+  const stateUpdates = await Promise.allSettled([
     recordCounterInvocations(counterInvocations),
     recordLatestOrder(orderInvocations),
     recordMailDrafts(mailInvocations),
   ]);
+  // `Promise.all` would release `withSerializedStateUpdate` as soon as one update rejects while
+  // its sibling AsyncStorage operations keep running. Wait for every operation to settle before
+  // advancing the queue, then surface the first failure so the invocations stay pending for retry.
+  const failedUpdate = stateUpdates.find(
+    (update): update is PromiseRejectedResult => update.status === 'rejected'
+  );
+  if (failedUpdate) {
+    throw failedUpdate.reason;
+  }
   // Deletions run after the creations so that a create and a delete queued together while
   // JavaScript was cold still resolve to the same end state.
   await removeMailDrafts(mailDeleteInvocations);

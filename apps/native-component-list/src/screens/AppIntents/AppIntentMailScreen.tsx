@@ -1,5 +1,5 @@
-import { useRoute } from '@react-navigation/native';
 import { useTheme } from 'ThemeProvider';
+import { useRoute } from 'expo-router';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -72,7 +72,14 @@ export default function AppIntentMailScreen() {
               // that no longer exist: Siri resolves one, `DeleteDraftIntent` reports success, and
               // nothing changes.
               clearMailDrafts()
-                .then(() => syncMailDraftCatalogAsync([]))
+                .then(() => {
+                  syncMailDraftCatalogAsync([]).catch((error: unknown) => {
+                    console.warn(
+                      'The mail drafts were cleared, but their App Intents catalog could not be emptied. Siri may continue offering stale drafts until the catalog is published again.',
+                      error
+                    );
+                  });
+                })
                 .catch((error: unknown) => {
                   console.warn(
                     'Could not clear the stored mail drafts. They stay on screen; check that AsyncStorage is writable.',

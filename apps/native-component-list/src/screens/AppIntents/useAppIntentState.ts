@@ -1,4 +1,4 @@
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router';
 import * as React from 'react';
 
 import { subscribeToAppIntentState } from './AppIntentsStore';

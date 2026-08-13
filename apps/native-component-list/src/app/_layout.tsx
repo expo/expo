@@ -5,6 +5,7 @@ import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { AppIntentsNavigationHandler } from '../screens/AppIntents/AppIntentsNavigationHandler';
 import { getSearchScreenOptions } from '../screens/SearchScreen';
 import loadAssetsAsync from '../utilities/loadAssetsAsync';
 
@@ -58,6 +59,7 @@ function RootLayout() {
         <Stack.Screen name="redirect" />
         <Stack.Screen name="search" options={getSearchScreenOptions(theme)} />
       </Stack>
+      <AppIntentsNavigationHandler />
     </GestureHandlerRootView>
   );
 }
