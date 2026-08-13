@@ -20,17 +20,36 @@ permissions:
 
 jobs:
   help:
+    # `startsWith('@expo-bot help')` (no trailing space) so a newline or tab
+    # after `help` still matches — expression literals cannot name those
+    # characters. The two-space form is a separate prefix because
+    # `startsWith('@expo-bot help')` is false for `@expo-bot  help`.
     if: >-
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event.comment.user.login != 'expo-bot' &&
       (github.event.comment.body == '@expo-bot' ||
-      github.event.comment.body == '@expo-bot help' ||
-      startsWith(github.event.comment.body, '@expo-bot help')) &&
+      startsWith(github.event.comment.body, '@expo-bot help') ||
+      startsWith(github.event.comment.body, '@expo-bot  help')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Require write access
+        if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ACTOR: ${{ github.event.comment.user.login }}
+        run: |
+          # `|| echo none` on purpose: a non-collaborator gets a 404, and under
+          # `bash -e` a bare assignment would kill the step before the error
+          # below could name the reason. Same pattern as agent-commands.yml.
+          permission=$(gh api "repos/${{ github.repository }}/collaborators/$ACTOR/permission" --jq .permission 2>/dev/null || echo none)
+          case "$permission" in
+            admin|maintain|write) ;;
+            *) echo "::error::$ACTOR has '$permission' permission; write access is required."; exit 1 ;;
+          esac
+
       # Default branch only — the manpage on main is what we publish, never
       # a PR-head edit of .github/expo-bot.md.
       - name: Checkout (default branch)

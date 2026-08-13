@@ -16,8 +16,12 @@ b64decode() {
 }
 
 if [ "${1:-}" = --self-test ]; then
-  sample=$'hello\nworld\n'
-  [ "$(printf '%s' "$sample" | b64encode | b64decode)" = "$sample" ]
+  source_file=$(mktemp)
+  decoded_file=$(mktemp)
+  trap 'rm -f "$source_file" "$decoded_file"' EXIT
+  printf 'hello\nworld\n' >"$source_file"
+  b64encode <"$source_file" | b64decode >"$decoded_file"
+  cmp -s "$source_file" "$decoded_file"
   echo "sync-expo-bot-manpage self-test ok"
   exit 0
 fi

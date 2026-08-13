@@ -19,10 +19,6 @@ permissions:
   pull-requests: write
   issues: write
 
-concurrency:
-  group: ai-code-review-cmd-${{ github.event.issue.number }}
-  cancel-in-progress: true
-
 jobs:
   command:
     # Only PR comments starting with /review, /expo-review, or @expo-bot review.
@@ -30,11 +26,19 @@ jobs:
     if: >-
       github.event.issue.pull_request != null &&
       github.event.comment.user.login != 'expo-bot' &&
-      (startsWith(github.event.comment.body, '/review') ||
-      startsWith(github.event.comment.body, '/expo-review') ||
-      startsWith(github.event.comment.body, '@expo-bot review')) &&
+      (github.event.comment.body == '/review' ||
+      startsWith(github.event.comment.body, '/review ') ||
+      github.event.comment.body == '/expo-review' ||
+      startsWith(github.event.comment.body, '/expo-review ') ||
+      github.event.comment.body == '@expo-bot review' ||
+      startsWith(github.event.comment.body, '@expo-bot review ')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
+    # Job-level so a prose comment that the gate rejects cannot claim this
+    # group at workflow creation and cancel a real review already in flight.
+    concurrency:
+      group: ai-code-review-cmd-${{ github.event.issue.number }}
+      cancel-in-progress: true
     # Bound the run so a slow/stalled review fails fast rather than hanging. Keep it
     # above the passes budget (budget.totalPassesMinutes, 55m) + coordinator (10m) +
     # verification + setup, like the auto-review workflow's cap.
@@ -164,7 +168,19 @@ jobs:
           PR: ${{ github.event.issue.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          gh pr comment "$PR" --repo "${{ github.repository }}" --body "⚠️ The AI reviewer did not start: every configured model credential (\`ECR_1\`…\`ECR_5\` and \`CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN\`) failed authentication. This is not a fork limitation — the command path has secrets. Check the [run log]($RUN_URL) for each slot's shape/len (not the secret) and re-set any slot that is not a \`claude setup-token\` value (\`sk-ant-oat…\`, 108 chars)."
+          # See the matching step in expo-code-review.yml: pick.sh writes this
+          # file only after it has probed a credential, so its absence means the
+          # step failed before any probe and the secrets are not the cause.
+          reason=$(cat "$RUNNER_TEMP/model-env-reason" 2>/dev/null || echo unprobed)
+          slots="\`ECR_1\`…\`ECR_5\` and \`CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN\`"
+          forks="This is not a fork limitation — the command path has secrets."
+          case "$reason" in
+            auth)  body="⚠️ The AI reviewer did not start: every configured model credential ($slots) was rejected as invalid. $forks Check the [run log]($RUN_URL) for each slot's shape/len (never the secret), then rotate or correct the failed setup token or API key." ;;
+            usage) body="⚠️ The AI reviewer did not start: every configured model credential ($slots) is over its usage or rate limit. $forks The credentials are valid — nothing to rotate. Re-run later, or configure a spare slot. [Run log]($RUN_URL)" ;;
+            other) body="⚠️ The AI reviewer did not start: every configured model credential ($slots) failed for a reason that is neither authentication nor usage — a network fault, a timeout, or a model outage. $forks [Run log]($RUN_URL) has each slot's error." ;;
+            *)     body="⚠️ The AI reviewer did not start: the model-env step failed **before it tested any credential**, so this is not a credential problem and there is nothing to rotate. $forks [Run log]($RUN_URL) has the error." ;;
+          esac
+          gh pr comment "$PR" --repo "${{ github.repository }}" --body "$body"
 
       - name: Run AI review
         if: steps.cmd.outputs.run == 'true'

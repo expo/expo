@@ -49,19 +49,27 @@ jobs:
     # A reviewer failure must never fail the PR's checks.
     continue-on-error: true
     steps:
-      # SECURITY: check out the PR's immutable BASE commit, never the PR head or
+      # SECURITY: check out the PR's trusted base branch tip, never the PR head or
       # merge ref. Everything security-sensitive on this runner (`ecr verify-config`'s
-      # sweep, and any ambient files) therefore comes from a commit that already
-      # merged. `ecr ci` additionally enforces this itself: it materializes the base
-      # commit via the GitHub API for configuration and the head commit (scrubbed of
-      # runtime config) for source reads, so this checkout is defense in depth, not
-      # the only line. persist-credentials off — the CLI's own git fetches
-      # authenticate through `gh` from GH_TOKEN, so the token never lands in
-      # .git/config.
-      # @ref LLP 0009#workflow-security-posture [implements] — immutable base commit, never PR head/merge ref
+      # sweep, and any ambient files) therefore comes from a branch only maintainers
+      # can land on. `ecr ci` additionally enforces this itself: it materializes the
+      # PR's immutable base commit via the GitHub API for configuration and the head
+      # commit (scrubbed of runtime config) for source reads, so this checkout is
+      # defense in depth, not the only line. persist-credentials off — the CLI's own
+      # git fetches authenticate through `gh` from GH_TOKEN, so the token never lands
+      # in .git/config.
+      # @ref LLP 0009#workflow-security-posture [implements] — trusted base branch, never PR head/merge ref
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ github.event.pull_request.base.sha }}
+          # base.REF, not base.SHA. The security property is "never the PR head
+          # or the merge ref", and the base branch tip satisfies it — only
+          # maintainers land there. base.sha additionally FROZE the tree at
+          # whenever the PR was last synchronized, which broke this job outright:
+          # a PR based before .github/actions/prepare-model-env existed checked
+          # out a tree without it, so `uses: ./…` could not resolve and the run
+          # died before reviewing anything. base.sha does not advance on its own,
+          # so every such PR stayed broken until someone pushed to it.
+          ref: ${{ github.event.pull_request.base.ref }}
           # Shallow is enough — the reviewer gets the diff from the API (`gh`).
           fetch-depth: 1
           persist-credentials: false
@@ -124,7 +132,20 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          gh pr comment "$PR" --repo "${{ github.repository }}" --body "⚠️ The AI reviewer did not start: every configured model credential (\`ECR_1\`…\`ECR_5\` and \`CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN\`) failed authentication. Check the [run log]($RUN_URL) for each slot's shape/len and re-set any slot that is not a \`claude setup-token\` value (\`sk-ant-oat…\`, 108 chars)."
+          # pick.sh writes this file only once it has actually probed a
+          # credential, so its absence means the step died BEFORE any probe.
+          # Do not blame the secrets in that case: this comment used to assert
+          # an authentication failure unconditionally, and told maintainers to
+          # rotate five perfectly good tokens after a missing-action failure.
+          reason=$(cat "$RUNNER_TEMP/model-env-reason" 2>/dev/null || echo unprobed)
+          slots="\`ECR_1\`…\`ECR_5\` and \`CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN\`"
+          case "$reason" in
+            auth)  body="⚠️ The AI reviewer did not start: every configured model credential ($slots) was rejected as invalid. Check the [run log]($RUN_URL) for each slot's shape/len (never the secret), then rotate or correct the failed setup token or API key." ;;
+            usage) body="⚠️ The AI reviewer did not start: every configured model credential ($slots) is over its usage or rate limit. The credentials are valid — nothing to rotate. Re-run later, or configure a spare slot. [Run log]($RUN_URL)" ;;
+            other) body="⚠️ The AI reviewer did not start: every configured model credential ($slots) failed for a reason that is neither authentication nor usage — a network fault, a timeout, or a model outage. [Run log]($RUN_URL) has each slot's error." ;;
+            *)     body="⚠️ The AI reviewer did not start: the model-env step failed **before it tested any credential**, so this is not a credential problem and there is nothing to rotate. [Run log]($RUN_URL) has the error." ;;
+          esac
+          gh pr comment "$PR" --repo "${{ github.repository }}" --body "$body"
 
       - name: Run AI review
         # The launcher selects the SAME checked-in package version the guard cleared.
