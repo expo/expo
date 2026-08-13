@@ -27,7 +27,7 @@ struct DeviceLoginStateMachine {
   private var hasSentMatch = false
 
   init(interval: Int, expiresIn: Int, now: Date) {
-    self.delay = TimeInterval(interval)
+    self.delay = TimeInterval(max(interval, 1))
     self.deadline = now.addingTimeInterval(TimeInterval(expiresIn))
   }
 
@@ -37,13 +37,17 @@ struct DeviceLoginStateMachine {
   }
 
   mutating func advance(with outcome: TokenOutcome, now: Date) -> Step {
+    if case .session(let secret, let expiresAt) = outcome {
+      return .signedIn(secret: secret, expiresAt: expiresAt)
+    }
+
     if now >= deadline {
       return .failed(.expired)
     }
 
     switch outcome {
-    case .session(let secret, let expiresAt):
-      return .signedIn(secret: secret, expiresAt: expiresAt)
+    case .session:
+      return .failed(.expired)
     case .pending:
       return .poll(after: delay, matchValue: matchValue)
     case .slowDown:
