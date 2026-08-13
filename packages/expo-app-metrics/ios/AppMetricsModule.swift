@@ -192,7 +192,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
         attributes: options?.attributes,
         startTimestampMs: resolvedTimestamp(options?.startTime, field: "startTime")
       )
-      return SpanHandle(recorder: recorder, onEnd: insertSpanRow)
+      return SpanHandle(recorder: recorder, onEnd: AppMetrics.spanWriter.schedule)
     }
 
     Function("recordSpan") { (name: String, options: RecordSpanOptions) in
@@ -212,7 +212,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
         attributeSource: "recordSpan"
       )
       if let row = recorder.end(statusCode: nil, statusMessage: nil, endTimestampMs: end) {
-        insertSpanRow(row)
+        AppMetrics.spanWriter.schedule(row)
       }
     }
 
@@ -335,21 +335,6 @@ internal func spanStatusCode(from status: String?) throws -> Int? {
   }
 }
 
-/// Inserts a completed span row, hopping to the metrics actor. Failures are logged and
-/// swallowed — recording telemetry must never break the caller.
-private func insertSpanRow(_ row: SpanRow) {
-  Task { @AppMetricsActor in
-    guard let database = AppMetrics.database else {
-      return
-    }
-    do {
-      try database.insert(span: row)
-    } catch {
-      logger.warn("[AppMetrics] Failed to persist span \"\(row.name)\": \(error.localizedDescription)")
-    }
-  }
-}
-
 private func currentUnixMilliseconds() -> Int64 {
   return Int64((Date().timeIntervalSince1970 * 1_000).rounded())
 }
@@ -379,10 +364,9 @@ internal func resolvedTimestamp(_ value: Double?, field: String) -> Int64 {
 }
 
 internal func unixMilliseconds(from value: Double) -> Int64? {
-  guard value.isFinite, value >= Double(Int64.min), value <= Double(Int64.max) else {
-    return nil
-  }
-  return Int64(value)
+  // `Int64(exactly:)` rather than a range comparison: `Double(Int64.max)` rounds up to 2^63, so
+  // `value <= Double(Int64.max)` would admit the one value the conversion traps on.
+  return Int64(exactly: value.rounded(.towardZero))
 }
 
 internal final class EmptySpanNameException: Exception {

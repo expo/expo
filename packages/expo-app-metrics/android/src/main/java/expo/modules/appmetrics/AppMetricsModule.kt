@@ -20,6 +20,7 @@ import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
 import expo.modules.appmetrics.spans.SpanHandle
 import expo.modules.appmetrics.spans.SpanRecorder
+import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.Span
 import expo.modules.appmetrics.logevents.MAX_EVENT_NAME_LENGTH
 import expo.modules.appmetrics.logevents.RESERVED_EVENT_NAME_PREFIX
@@ -83,21 +84,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private var networkRequestPersistence: NetworkRequestPersistence? = null
 
   // Lazy-initialized metadata - created once when first needed
-  /**
-   * Inserts a completed span row on the module scope. Awaiting the session row first keeps the
-   * FK satisfied even for a span ended before the eager session persist finished. Failures are
-   * logged and swallowed — recording telemetry must never break the caller.
-   */
-  private fun insertSpanRow(row: Span) {
-    scope.launch {
-      try {
-        mainSession.awaitSessionPersisted()
-        MetricsDatabase.getDatabase(context).spanDao().insertCapped(row)
-      } catch (e: Exception) {
-        Log.w("ExpoAppMetrics", "Failed to persist span \"${row.name}\"", e)
-      }
-    }
-  }
+  /** The shared sink every span producer writes completed rows through. Set in `OnCreate`. */
+  private lateinit var spanWriter: SpanWriter
 
   private val metadata: AppMetadata? by lazy {
     AppMetadataProvider.getAppMetadata(appContext.service<ConstantsInterface>(), context)
@@ -169,7 +157,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           attributes = options?.attributes,
           startTimestampMs = resolvedTimestamp(options?.startTime, "startTime")
         )
-        SpanHandle(recorder = recorder, onEnd = ::insertSpanRow)
+        SpanHandle(recorder = recorder, onEnd = spanWriter::write)
       }
 
       Function("recordSpan") { name: String, options: RecordSpanOptions ->
@@ -185,16 +173,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           attributeSource = "recordSpan"
         )
         recorder.end(statusCode = null, statusMessage = null, endTimestampMs = endTime)?.let {
-          insertSpanRow(it)
+          spanWriter.write(it)
         }
       }
 
       Class("Span", SpanHandle::class) {
         Constructor { ->
-          throw CodedException(
-            "Span objects can't be constructed directly because a span's identity and session " +
-              "attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
-          )
+          throw SpanConstructorUnavailableException()
         }
 
         Property("traceId") { span: SpanHandle -> span.recorder.traceId }
@@ -257,6 +242,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         JvmCrashHandler.currentSessionId = mainSession.sessionId
 
+        spanWriter = SpanWriter(
+          database = MetricsDatabase.getDatabase(context),
+          scope = scope
+        ) {
+          mainSession.awaitSessionPersisted()
+        }
+
         // Persist the session row eagerly so it's visible to readers
         // (`getMainSession`, …) as soon as possible. Idempotent:
         // a racing write triggers (and joins) the same single start job.
@@ -266,8 +258,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // the main session. The await above keeps the FK satisfied for every span insert;
           // installation also drains requests buffered since process start.
           val persistence = NetworkRequestPersistence(
-            database = MetricsDatabase.getDatabase(context),
-            scope = scope,
+            writer = spanWriter,
+            // Read here rather than left to the constructor default: recording is opt-in, so
+            // without the persisted policy every span before the first `configure` is dropped.
             initialConfiguration = AppMetricsPreferences.getNetworkTracesConfiguration(context),
             sessionId = mainSession.sessionId
           )
@@ -582,24 +575,13 @@ private fun unixMilliseconds(value: Double): Long? {
 private fun validatedSpanName(name: String): String {
   val trimmed = name.trim()
   if (trimmed.isEmpty()) {
-    throw CodedException(
-      "A span needs a non-empty name because the server rejects nameless spans. " +
-        "Pass a short, stable identifier for the operation being measured, like 'checkout' or 'image-decode'."
-    )
+    throw EmptySpanNameException()
   }
   if (trimmed.startsWith(RESERVED_EVENT_NAME_PREFIX)) {
-    throw CodedException(
-      "A span name can't start with `expo.` (got `$trimmed`) because that prefix is reserved for " +
-        "spans the SDK itself records, like network requests. Pick a name from your own namespace, " +
-        "like 'checkout' or 'image-decode'."
-    )
+    throw ReservedSpanNameException(trimmed)
   }
   if (trimmed.length > MAX_EVENT_NAME_LENGTH) {
-    throw CodedException(
-      "A span name can't exceed $MAX_EVENT_NAME_LENGTH characters (got ${trimmed.length}) because " +
-        "the server rejects longer ones. Use a short, stable identifier and move the variable " +
-        "details into attributes."
-    )
+    throw SpanNameTooLongException(trimmed.length)
   }
   return trimmed
 }
@@ -609,11 +591,35 @@ private fun spanStatusCode(status: String?): Int? = when (status) {
   null -> null
   "ok" -> Span.STATUS_OK
   "error" -> Span.STATUS_ERROR
-  else -> throw CodedException(
-    "'$status' is not a valid span status. Pass 'error' for a failed operation, 'ok' to " +
-      "explicitly mark success, or omit the status to leave it unset (the usual choice for successful spans)."
-  )
+  else -> throw InvalidSpanStatusException(status)
 }
+
+private class SpanConstructorUnavailableException : CodedException(
+  "Span objects can't be constructed directly because a span's identity and session " +
+    "attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
+)
+
+private class EmptySpanNameException : CodedException(
+  "A span needs a non-empty name because the server rejects nameless spans. " +
+    "Pass a short, stable identifier for the operation being measured, like 'checkout' or 'image-decode'."
+)
+
+private class ReservedSpanNameException(name: String) : CodedException(
+  "A span name can't start with `expo.` (got `$name`) because that prefix is reserved for " +
+    "spans the SDK itself records, like network requests. Pick a name from your own namespace, " +
+    "like 'checkout' or 'image-decode'."
+)
+
+private class SpanNameTooLongException(length: Int) : CodedException(
+  "A span name can't exceed $MAX_EVENT_NAME_LENGTH characters (got $length) because " +
+    "the server rejects longer ones. Use a short, stable identifier and move the variable " +
+    "details into attributes."
+)
+
+private class InvalidSpanStatusException(status: String) : CodedException(
+  "'$status' is not a valid span status. Pass 'error' for a failed operation, 'ok' to " +
+    "explicitly mark success, or omit the status to leave it unset (the usual choice for successful spans)."
+)
 
 private class MissingSpanWindowException : CodedException(
   "recordSpan needs both startTime and endTime (unix-epoch milliseconds) because it records " +
