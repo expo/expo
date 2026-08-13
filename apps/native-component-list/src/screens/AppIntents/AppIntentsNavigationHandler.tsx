@@ -1,4 +1,5 @@
 import * as AppIntents from 'expo-app-intents';
+import { type ImperativeRouter, useRouter } from 'expo-router';
 import * as React from 'react';
 
 import {
@@ -13,113 +14,34 @@ export type AppIntentNavigationTarget = {
   invocationId?: string;
 };
 
-export type AppIntentNavigationRef = {
-  isReady(): boolean;
-  navigate(name: string, params?: object): void;
-  resetRoot(state: { index: number; routes: { name: string; params?: object }[] }): void;
-};
-
-type AppIntentsNavigationHandlerProps = {
-  isNavigationReady: boolean;
-  navigateToAppIntent: (target: AppIntentNavigationTarget) => boolean | void;
-};
-
-type AppIntentsNavigationContextValue = {
-  navigateToInitialAppScreen: () => boolean | void;
-};
-
-const AppIntentsNavigationContext = React.createContext<AppIntentsNavigationContextValue | null>(
-  null
-);
-
-const screenNames: Record<AppIntentRoute, string> = {
-  counter: 'AppIntentCounter',
-  order: 'AppIntentOrderScreen',
-  mail: 'AppIntentMailScreen',
-};
-
-export function AppIntentsNavigationProvider({
-  children,
-  navigateToInitialAppScreen,
-}: React.PropsWithChildren<AppIntentsNavigationContextValue>) {
-  const value = React.useMemo(() => ({ navigateToInitialAppScreen }), [navigateToInitialAppScreen]);
-
-  return (
-    <AppIntentsNavigationContext.Provider value={value}>
-      {children}
-    </AppIntentsNavigationContext.Provider>
-  );
-}
-
-export function useAppIntentsNavigationContext() {
-  return React.useContext(AppIntentsNavigationContext);
-}
-
 export function navigateToAppIntentScreen(
-  navigation: AppIntentNavigationRef | null | undefined,
+  router: Pick<ImperativeRouter, 'navigate'>,
   target: AppIntentNavigationTarget
-): boolean {
-  if (!navigation?.isReady()) {
-    return false;
-  }
-
-  const params = {
-    source: 'siri',
-    ...(target.invocationId ? { intentId: target.invocationId } : {}),
-  };
-
-  navigation.navigate('main', {
-    screen: 'apis',
+): void {
+  router.navigate({
+    pathname: `/apis/app-intents/${target.route}`,
     params: {
-      screen: screenNames[target.route],
-      params,
+      source: 'siri',
+      ...(target.invocationId ? { intentId: target.invocationId } : {}),
     },
   });
-  return true;
 }
 
-export function navigateToInitialAppScreen(
-  navigation: AppIntentNavigationRef | null | undefined
-): boolean {
-  if (!navigation?.isReady()) {
-    return false;
-  }
-
-  navigation.resetRoot({
-    index: 0,
-    routes: [{ name: 'main' }],
-  });
-  return true;
-}
-
-export function AppIntentsNavigationHandler({
-  isNavigationReady,
-  navigateToAppIntent,
-}: AppIntentsNavigationHandlerProps) {
-  const navigateToAppIntentRef = React.useRef(navigateToAppIntent);
-  const [pendingNavigationTarget, setPendingNavigationTarget] =
-    React.useState<AppIntentNavigationTarget | null>(null);
-  const [didProcessInitialIntents, setDidProcessInitialIntents] = React.useState(false);
-
-  React.useEffect(() => {
-    navigateToAppIntentRef.current = navigateToAppIntent;
-  }, [navigateToAppIntent]);
+export function AppIntentsNavigationHandler() {
+  const router = useRouter();
 
   React.useEffect(() => {
     if (!AppIntents.isAvailable()) {
       return;
     }
 
-    // `setEntityCatalogAsync` re-trains the parameterized phrases itself, so no separate
-    // `refreshShortcutsAsync` call is needed. Calling it here would also race the catalog write
-    // and could re-train against the previous catalog.
-    //
-    // It also means the rejection can come from either half: the catalog was rejected, or it was
-    // stored and only the phrase refresh failed. The warning covers both, because the two need
-    // different fixes and the error says which one happened.
+    // `setEntityCatalogAsync` asks the system to re-train the parameterized phrases after storing
+    // the catalog, so no separate `refreshShortcutsAsync` call is needed. Calling it here would
+    // also race the catalog write and could re-train against the previous catalog. Phrase refresh
+    // is best-effort, so this promise only rejects when validating or storing the catalog fails.
     AppIntents.setEntityCatalogAsync('dish', appIntentDishCatalog).catch((error: unknown) => {
       console.warn(
-        "Could not store the App Intents 'dish' entity catalog, or could not re-train the Siri phrases against it. Ordering a dish by voice may resolve against the previous catalog, or fail. The rest of the app is unaffected.",
+        "Could not store the App Intents 'dish' entity catalog. Ordering a dish by voice may resolve against the previous catalog, or fail. The rest of the app is unaffected.",
         error
       );
     });
@@ -166,7 +88,7 @@ export function AppIntentsNavigationHandler({
       }
 
       if (result.route) {
-        setPendingNavigationTarget({
+        navigateToAppIntentScreen(router, {
           route: result.route,
           invocationId: result.routeInvocationId,
         });
@@ -176,25 +98,8 @@ export function AppIntentsNavigationHandler({
         'Could not process the pending App Intent invocations. The App Intents example screens may show stale state; the rest of the app is unaffected.',
         error
       );
-    } finally {
-      // Always mark the initial snapshot as processed, even after a failure, so a live
-      // invocation that arrives later can still navigate.
-      if (newIntent == null) {
-        setDidProcessInitialIntents(true);
-      }
     }
   });
-
-  React.useEffect(() => {
-    if (!isNavigationReady || !didProcessInitialIntents || !pendingNavigationTarget) {
-      return;
-    }
-
-    const didNavigate = navigateToAppIntentRef.current(pendingNavigationTarget);
-    if (didNavigate !== false) {
-      setPendingNavigationTarget(null);
-    }
-  }, [didProcessInitialIntents, isNavigationReady, pendingNavigationTarget]);
 
   return null;
 }
