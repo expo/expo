@@ -9,7 +9,7 @@ Comment `@expo-bot help` on an expo/expo thread for a short list. That command a
 | Mention | Slash | Where | What it does |
 | --- | --- | --- | --- |
 | `@expo-bot help` | — | issue or PR | Post a short command list and a link here |
-| `@expo-bot verify` | `/verify` | issue or PR | Investigate and post attested findings |
+| `@expo-bot verify` | `/verify` | issue or PR | Investigate and post attested findings. On an issue, also opens a fix PR when it can. On a PR, report only unless `--fix`. |
 | `@expo-bot verify --fix` | `/verify --fix` | PR (on an issue, fix is already the default) | Also attempt a fix pull request |
 | `@expo-bot verify --no-fix` | `/verify --no-fix` | issue or PR | Report only; never open a PR |
 | `@expo-bot review` | `/review`, `/expo-review` | PR | One-shot AI review; router picks agents |
