@@ -114,6 +114,10 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
         $0.commonKey == .commonKeyArtist
       })
 
+      let album = assetMetadata?.first(where: {
+        $0.commonKey == .commonKeyAlbumName
+      })
+
       let artwork = assetMetadata?.first(where: {
         $0.commonKey == .commonKeyArtwork
       })
@@ -122,6 +126,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 
       nowPlayingInfo[MPMediaItemPropertyTitle] = userMetadata?.title ?? title
       nowPlayingInfo[MPMediaItemPropertyArtist] = userMetadata?.artist ?? artist
+      nowPlayingInfo[MPMediaItemPropertyAlbumTitle] = userMetadata?.album ?? album
       nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = currentItem.duration.seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = currentItem.currentTime().seconds
       nowPlayingInfo[MPNowPlayingInfoPropertyIsLiveStream] = currentItem.duration.isIndefinite
