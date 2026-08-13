@@ -47,7 +47,10 @@ export function dismiss(count: number = 1) {
     return;
   }
 
-  routingQueue.add({ type: 'POP', payload: { count } });
+  routingQueue.add({
+    type: 'ACTION',
+    payload: { action: { type: 'POP', payload: { count } } },
+  });
 }
 
 export function dismissTo(href: Href, options?: NavigationOptions) {
@@ -62,15 +65,15 @@ export function dismissAll() {
   if (emitDomDismissAll()) {
     return;
   }
-  routingQueue.add({ type: 'POP_TO_TOP' });
+  routingQueue.add({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
 }
 
+// `GO_BACK` follows focused back handling; `POP` (used by `dismiss`) explicitly removes stack routes.
 export function goBack() {
   if (emitDomGoBack()) {
     return;
   }
-  assertIsReady();
-  routingQueue.add({ type: 'GO_BACK' });
+  routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
 }
 
 export function canGoBack(): boolean {
@@ -141,25 +144,11 @@ export function linkTo(originalHref: Href | string, options: LinkToOptions = {})
   }
 
   if (href === '..' || href === '../') {
-    assertIsReady();
-    const navigationRef = store.navigationRef.current;
-
-    if (navigationRef == null) {
-      throw new Error(
-        "Couldn't find a navigation object. Is your component inside NavigationContainer?"
-      );
-    }
-
-    if (!store.linking) {
-      throw new Error('Attempted to link to route when no routes are present');
-    }
-
-    navigationRef.goBack();
-    return;
+    return goBack();
   }
 
   const linkAction = {
-    type: 'ROUTER_LINK' as const,
+    type: 'NAVIGATE_TO_HREF' as const,
     payload: {
       href,
       options,
