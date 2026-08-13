@@ -66,11 +66,12 @@ export class HermesV1VersionCheck implements DoctorCheck {
     const hermesVersion = getHermesVersion(projectRoot);
     const isSdk55 = semver.satisfies(exp.sdkVersion!, '>=55.0.0 <56.0.0');
     const usesHermesV1 = isSdk55 ? isHermesV1Enabled(exp) : true;
+    const expoVersionMajor = expoVersion ? semver.major(expoVersion) : null;
     const isExpoVersionAffected =
       !!expoVersion &&
-      (isSdk55
-        ? usesHermesV1 && semver.lt(expoVersion, '56.0.0')
-        : semver.satisfies(expoVersion, `>=56.0.0 <${FIXED_EXPO_VERSION}`));
+      ((expoVersionMajor === 55 && usesHermesV1) ||
+        expoVersionMajor === 56 ||
+        (expoVersionMajor === 57 && semver.lt(expoVersion, FIXED_EXPO_VERSION)));
     const isHermesVersionAffected =
       usesHermesV1 &&
       !!hermesVersion &&

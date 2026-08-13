@@ -101,6 +101,32 @@ describe('runAsync', () => {
     expect(result.isSuccessful).toBe(true);
   });
 
+  it('does not treat an installed Expo 54 package as affected when config reports SDK 55', async () => {
+    installExpo('54.0.0');
+    const result = await new HermesV1VersionCheck().runAsync({
+      ...baseParams,
+      exp: {
+        name: 'name',
+        slug: 'slug',
+        sdkVersion: '55.0.0',
+        plugins: [['expo-build-properties', { useHermesV1: true }]],
+      },
+    });
+
+    expect(result.isSuccessful).toBe(true);
+  });
+
+  it('warns for an SDK 56 prerelease', async () => {
+    installExpo('56.0.0-beta.3');
+    const result = await new HermesV1VersionCheck().runAsync({
+      ...baseParams,
+      exp: { name: 'name', slug: 'slug', sdkVersion: '56.0.0' },
+    });
+
+    expect(result.isSuccessful).toBe(false);
+    expect(result.issues[0]).toContain('expo@56.0.0-beta.3');
+  });
+
   it.each(['56.0.0', '56.0.18', '57.0.0', '57.0.8'])(
     'warns for affected expo@%s installs',
     async (version) => {
