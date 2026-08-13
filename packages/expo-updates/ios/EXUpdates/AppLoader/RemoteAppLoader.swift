@@ -99,6 +99,13 @@ public final class RemoteAppLoader: AppLoader {
   }
 
   override public func downloadAsset(_ asset: UpdateAsset, extraHeaders: [String: Any]) {
+    guard UpdatesUtils.isSafeFilename(asset.filename) else {
+      self.handleAssetDownload(
+        withError: UpdatesError.remoteAppLoaderUnsafeAssetFilename(filename: asset.filename),
+        asset: asset
+      )
+      return
+    }
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
 
     let progressBlock = { [weak self] fractionCompleted in
