@@ -4,7 +4,6 @@ import React, { use, useEffect } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import {
-  findRouteNodeByName,
   getValidInitialRouteName,
   SuspenseFallbackContext,
   Route,
@@ -108,7 +107,9 @@ function getSortedChildren<
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
       }
-      const match = findRouteNodeByName(entries, name);
+      const match = entries.find(
+        (route) => route.route === name || route.route === `${name}/index`
+      );
       if (!match) {
         console.warn(
           `[Layout children]: No route named "${name}" exists in nested children:`,
