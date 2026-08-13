@@ -96,3 +96,42 @@ export async function tryTransformJSWithNoxcturnal<
   });
   return { status: 'fallback' };
 }
+
+export function getNoxcturnalCacheKeyFiles(): readonly string[] {
+  return [
+    require.resolve('noxcturnal/package.json'),
+    require.resolve('./metro-transform-worker'),
+    require.resolve('./noxcturnal-transformer'),
+    require.resolve('./plugins/cjs-detection'),
+    require.resolve('./plugins/client-server-directive-boundary'),
+    require.resolve('./plugins/client-server-reference-proxy'),
+    require.resolve('./plugins/deep-react-native-import-warnings'),
+    require.resolve('./plugins/define'),
+    require.resolve('./plugins/development-public-env'),
+    require.resolve('./plugins/environment-restricted-imports'),
+    require.resolve('./plugins/environment-restricted-react-apis'),
+    require.resolve('./plugins/expo-dom-component'),
+    require.resolve('./plugins/expo-inline-manifest'),
+    require.resolve('./plugins/expo-router-server-exports'),
+    require.resolve('./plugins/expo-ui'),
+    require.resolve('./plugins/expo-widgets'),
+    require.resolve('./plugins/fix-hermes-v1-async-arrow-non-simple-params'),
+    require.resolve('./plugins/fix-hermes-v1-class-in-finally'),
+    require.resolve('./plugins/fix-hermes-v1-super-in-object-accessor'),
+    require.resolve('./plugins/import-meta'),
+    require.resolve('./plugins/inline-requires'),
+    require.resolve('./plugins/metro-dependency'),
+    require.resolve('./plugins/metro-esm-globals'),
+    require.resolve('./plugins/metro-live-bindings'),
+    require.resolve('./plugins/module-eligibility'),
+    require.resolve('./plugins/native-esm-eligibility'),
+    require.resolve('./plugins/platform-select'),
+    require.resolve('./plugins/process-env'),
+    require.resolve('./plugins/react-display-name'),
+    require.resolve('./plugins/react-native-codegen'),
+    require.resolve('./plugins/react-native-web'),
+    require.resolve('./plugins/react-server-client-proxy'),
+    require.resolve('./plugins/react-server-directive-boundary'),
+    require.resolve('./plugins/react-server-module-actions'),
+  ];
+}

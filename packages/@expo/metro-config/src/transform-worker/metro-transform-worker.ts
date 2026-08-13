@@ -28,9 +28,7 @@ import {
   importLocationsPlugin,
   locToKey,
 } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
-import fs from 'fs';
 import assert from 'node:assert';
-import path from 'path';
 
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import {
@@ -61,6 +59,7 @@ import collectDependencies, {
 } from './collect-dependencies';
 import { debugEvent } from './events';
 import {
+  getNoxcturnalCacheKeyFiles,
   isNoxcturnalTransformWorkerEnabled,
   tryTransformJSWithNoxcturnal,
 } from './noxcturnal/metro-transform-worker';
@@ -1066,17 +1065,6 @@ export async function transform(
 // 1. Added new packed source map format
 const CACHE_VERSION = '2';
 
-function getNoxcturnalPluginCacheKeyFiles(): string[] {
-  const directory = path.join(__dirname, 'noxcturnal/plugins');
-  return fs
-    .readdirSync(directory, { withFileTypes: true })
-    .filter(
-      (entry) =>
-        entry.isFile() && /\.(?:[cm]?js|ts)$/.test(entry.name) && !entry.name.endsWith('.d.ts')
-    )
-    .map((entry) => path.join(directory, entry.name));
-}
-
 export function getCacheKey(
   config: JsTransformerConfig,
   opts?: Readonly<{ projectRoot: string }>
@@ -1095,15 +1083,12 @@ export function getCacheKey(
     resolveMinifier(minifierPath),
     require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
     require.resolve('./collect-dependencies'),
-    require.resolve('./noxcturnal/metro-transform-worker'),
-    require.resolve('./noxcturnal/noxcturnal-transformer'),
-    ...getNoxcturnalPluginCacheKeyFiles(),
-    require.resolve('noxcturnal'),
     require.resolve('./asset-transformer'),
     require.resolve('./resolveOptions'),
     require.resolve('@expo/metro/metro/ModuleGraph/worker/generateImportNames'),
     require.resolve('@expo/metro/metro/ModuleGraph/worker/JsFileWrapping'),
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
+    ...getNoxcturnalCacheKeyFiles(),
   ]);
 
   let babelTransformer: BabelTransformer = require(babelTransformerPath);
