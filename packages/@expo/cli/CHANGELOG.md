@@ -32,6 +32,7 @@
 - Resolve the signed-in username for partner provisioned actors so Expo Go can verify the account match ([#48354](https://github.com/expo/expo/pull/48354) by [@davidko604](https://github.com/davidko604))
 - Switch `ManifestMiddleware` to `expo-server`'s response helpers to avoid cancellations being surfaced as exceptions ([#48700](https://github.com/expo/expo/pull/48700) by [@kitten](https://github.com/kitten))
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
+- Fix wirelessly connected iOS 16 and older devices being omitted from `expo run:ios --device` selection. ([#48127](https://github.com/expo/expo/pull/48127) by [@davellanedam](https://github.com/davellanedam))
 
 ### 💡 Others
 
@@ -85,7 +86,6 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Fix wirelessly connected iOS 16 and older devices being omitted from `expo run:ios --device` selection. ([#48127](https://github.com/expo/expo/pull/48127) by [@davellanedam](https://github.com/davellanedam))
 - Avoid writing a 500 response when a DevTools plugin server request has already started or aborted. ([#47192](https://github.com/expo/expo/pull/47192) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Pass a fetch API `Request` to DevTools plugin WebSocket handlers instead of `IncomingMessage`. ([#47410](https://github.com/expo/expo/pull/47410) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Use `loadModule` for MCP and DevTools plugin server module loading. ([#47139](https://github.com/expo/expo/pull/47139) by [@krystofwoldrich](https://github.com/krystofwoldrich))
