@@ -63,7 +63,16 @@ function appendASCII(output: string, bytes: Uint8Array, start: number, end: numb
   return output;
 }
 
-function decodeUTF8Fast(bytes: Uint8Array, start: number, state: TextDecoderState): string {
+interface DecodeFallback {
+  output: string;
+  index: number;
+}
+
+function fallback(output: string, index: number): DecodeFallback {
+  return { output, index };
+}
+
+function decodeUTF8Fast(bytes: Uint8Array, start: number): string | DecodeFallback {
   let output = '';
   let i = start;
   const length = bytes.length;
@@ -84,13 +93,13 @@ function decodeUTF8Fast(bytes: Uint8Array, start: number, state: TextDecoderStat
         output = appendASCII(output, bytes, asciiStart, i);
       }
     } else if (b0 >= 0xc2 && b0 <= 0xdf) {
-      if (i + 1 >= length) break;
+      if (i + 1 >= length) return fallback(output, i);
       const b1 = bytes[i + 1]!;
-      if ((b1 & 0xc0) !== 0x80) break;
+      if ((b1 & 0xc0) !== 0x80) return fallback(output, i);
       output += String.fromCharCode(((b0 & 0x1f) << 6) | (b1 & 0x3f));
       i += 2;
     } else if (b0 >= 0xe0 && b0 <= 0xef) {
-      if (i + 2 >= length) break;
+      if (i + 2 >= length) return fallback(output, i);
       const b1 = bytes[i + 1]!;
       const b2 = bytes[i + 2]!;
       if (
@@ -98,12 +107,12 @@ function decodeUTF8Fast(bytes: Uint8Array, start: number, state: TextDecoderStat
         b1 > (b0 === 0xed ? 0x9f : 0xbf) ||
         (b2 & 0xc0) !== 0x80
       ) {
-        break;
+        return fallback(output, i);
       }
       output += String.fromCharCode(((b0 & 0x0f) << 12) | ((b1 & 0x3f) << 6) | (b2 & 0x3f));
       i += 3;
     } else if (b0 >= 0xf0 && b0 <= 0xf4) {
-      if (i + 3 >= length) break;
+      if (i + 3 >= length) return fallback(output, i);
       const b1 = bytes[i + 1]!;
       const b2 = bytes[i + 2]!;
       const b3 = bytes[i + 3]!;
@@ -113,22 +122,17 @@ function decodeUTF8Fast(bytes: Uint8Array, start: number, state: TextDecoderStat
         (b2 & 0xc0) !== 0x80 ||
         (b3 & 0xc0) !== 0x80
       ) {
-        break;
+        return fallback(output, i);
       }
       const codePoint =
         (((b0 & 0x07) << 18) | ((b1 & 0x3f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f)) - 0x10000;
       output += String.fromCharCode((codePoint >> 10) + 0xd800, (codePoint & 0x3ff) + 0xdc00);
       i += 4;
     } else {
-      break;
+      return fallback(output, i);
     }
   }
 
-  if (i < length) {
-    state.bomSeen = start > 0 || i > start;
-    return decodeUTF8General(bytes, state, false, output, i);
-  }
-  state.bomSeen = length > 0;
   return output;
 }
 
@@ -350,7 +354,13 @@ function decodeUTF8(bytes: Uint8Array, state: TextDecoderState, stream: boolean)
     if (!stream && !state.bomSeen) {
       const skipBOM =
         !state.ignoreBOM && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf ? 3 : 0;
-      return decodeUTF8Fast(bytes, skipBOM, state);
+      const result = decodeUTF8Fast(bytes, skipBOM);
+      if (typeof result === 'string') {
+        state.bomSeen = bytes.length > 0;
+        return result;
+      }
+      state.bomSeen = skipBOM > 0 || result.index > skipBOM;
+      return decodeUTF8General(bytes, state, false, result.output, result.index);
     }
   }
 
