@@ -1,4 +1,4 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import React from 'react';
@@ -19,19 +19,19 @@ export default function MediaLibraryCell({
     switch (asset.mediaType) {
       case MediaLibrary.MediaType.photo:
         return {
-          icon: 'photo',
+          icon: 'image',
           description: `${asset.width}x${asset.height}`,
           preview: <Image style={styles.preview} source={{ uri: asset.uri }} resizeMode="cover" />,
         };
       case MediaLibrary.MediaType.video:
         return {
-          icon: 'video-camera',
+          icon: 'videocam',
           description: `${Math.round(asset.duration)}s`,
           preview: <Image style={styles.preview} source={{ uri: asset.uri }} resizeMode="cover" />,
         };
       case MediaLibrary.MediaType.audio:
         return {
-          icon: 'music',
+          icon: 'musical-notes',
           description: `${Math.round(asset.duration)}s`,
           preview: (
             <View style={[styles.preview, styles.audioPreview]}>
@@ -49,7 +49,7 @@ export default function MediaLibraryCell({
       {data && data.preview}
       {data && (
         <View style={styles.cellFooter}>
-          <FontAwesome name={data.icon as any} size={12} color="white" />
+          <Ionicons name={data.icon as any} size={12} color="white" />
           <BodyText style={styles.description}>{data.description}</BodyText>
         </View>
       )}
