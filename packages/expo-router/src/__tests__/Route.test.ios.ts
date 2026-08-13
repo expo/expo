@@ -1,6 +1,7 @@
 import type { RouteNode } from '../Route';
 import {
   findRouteNodeByName,
+  findRouteNodeForState,
   getValidInitialRouteName,
   sortRoutes,
   sortRoutesWithInitial,
@@ -139,17 +140,40 @@ describe(getValidInitialRouteName, () => {
   });
 });
 
-describe(findRouteNodeByName, () => {
-  it.each([
-    ['settings', 'settings'],
-    ['settings/index', 'settings'],
-  ])('matches the registered route %s by the name %s', (route, name) => {
-    expect(findRouteNodeByName([asRouteNode('index'), asRouteNode(route)], name)?.route).toBe(
-      route
-    );
+describe(findRouteNodeForState, () => {
+  it('walks the focused state path with exact route names', () => {
+    const root = asRouteNode('_layout');
+    const settings = asRouteNode('settings');
+    settings.children = [asRouteNode('index'), asRouteNode('details')];
+    root.children = [asRouteNode('settings/index'), settings];
+
+    const route = {
+      name: 'settings',
+      state: { index: 1, routes: [{ name: 'index' }, { name: 'details' }] },
+    };
+
+    expect(findRouteNodeByName(root, route.name)).toBe(settings);
+    expect(findRouteNodeForState(root, route)?.route).toBe('details');
   });
 
-  it('does not match a nested route with the same prefix', () => {
-    expect(findRouteNodeByName([asRouteNode('settings/profile')], 'settings')).toBeUndefined();
+  it('does not use the directory index fallback for state routes', () => {
+    const root = asRouteNode('_layout');
+    root.children = [asRouteNode('settings/index')];
+
+    expect(findRouteNodeByName(root, 'settings')).toBeUndefined();
+  });
+
+  it('returns undefined when a nested route is missing', () => {
+    const root = asRouteNode('_layout');
+    const settings = asRouteNode('settings');
+    settings.children = [asRouteNode('index')];
+    root.children = [settings];
+
+    expect(
+      findRouteNodeForState(root, {
+        name: 'settings',
+        state: { routes: [{ name: 'missing' }] },
+      })
+    ).toBeUndefined();
   });
 });

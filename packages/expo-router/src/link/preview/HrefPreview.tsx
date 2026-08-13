@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
-import type { RouteNode } from '../../Route';
+import { findRouteNodeForState, type RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
@@ -121,6 +121,18 @@ function getHrefState(href: Href) {
   return hrefState;
 }
 
+function collectParamsFromState(state: ResultState | undefined): UnknownOutputParams {
+  const params: UnknownOutputParams = {};
+
+  while (state) {
+    const route = state.routes[state.index ?? state.routes.length - 1]!;
+    Object.assign(params, route.params);
+    state = route.state;
+  }
+
+  return params;
+}
+
 function getParamsAndNodeFromHref(hrefState: ResultState) {
   const index = hrefState?.index ?? 0;
   if (hrefState?.routes[index] && hrefState.routes[index].name !== INTERNAL_SLOT_NAME) {
@@ -137,18 +149,9 @@ function getParamsAndNodeFromHref(hrefState: ResultState) {
     }
   }
   const initialState = hrefState?.routes[index]?.state;
-  let state = initialState;
-  let routeNode: RouteNode | undefined | null = store.routeNode;
-
-  const params: UnknownOutputParams = {};
-
-  while (state && routeNode) {
-    // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
-    const route = state.routes[state.index ?? state.routes.length - 1]!;
-    Object.assign(params, route.params);
-    state = route.state;
-    routeNode = routeNode.children.find((child) => child.route === route.name);
-  }
+  const initialRoute = initialState?.routes[initialState.index ?? initialState.routes.length - 1];
+  const routeNode: RouteNode | undefined = findRouteNodeForState(store.routeNode, initialRoute);
+  const params = collectParamsFromState(initialState);
 
   return { params, routeNode, state: initialState };
 }
