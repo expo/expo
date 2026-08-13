@@ -40,6 +40,7 @@
 - Fix resolution of ESLint failing in `expo lint` after prerequisites check installs it ([#46223](https://github.com/expo/expo/pull/46223) by [@claritystorm](https://github.com/claritystorm))
 - Serve one virtual Metro asset registry to every consumer on React Native 0.87 — Metro's generated asset modules, `react-native/asset-registry` and legacy `@react-native/assets-registry` imports, and React Native core's internal registry imports — so Metro-registered assets and React Native's `<Image>` share one registry instance. ([#49444](https://github.com/expo/expo/pull/49444) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Depend on `@react-native/js-polyfills` directly for the web polyfills instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Serve `index.html` for client-side routes with `expo serve` on `web.output: 'single'` exports, instead of returning 404 for every route except `/` ([#48879](https://github.com/expo/expo/pull/48879) by [@giaBaoJS](https://github.com/giaBaoJS))
 
 ### 💡 Others
 
