@@ -1,6 +1,7 @@
 import type { SharedObject } from 'expo';
 
 import type { Session } from './Session';
+import type { Span } from './Span';
 
 export type AppStartupTimes = {
   /**
@@ -511,6 +512,75 @@ export type NetworkSpansConfig = {
   filter?: NetworkRequestFilter | null;
 };
 
+/**
+ * Status of a completed span. Omitting the status leaves it unset, which is the usual choice
+ * for successful operations, per the OpenTelemetry conventions.
+ */
+export type SpanStatus = 'ok' | 'error';
+
+export type StartSpanOptions = {
+  /**
+   * Attributes attached to the span at start. Values go through the same validation as
+   * `logEvent` attributes.
+   */
+  attributes?: Record<string, LogAttributeValue> | null;
+  /**
+   * The span this one nests under. The child continues the parent's trace and references its
+   * span id. Omit for a root span starting its own trace. There is no implicit parenting.
+   */
+  parent?: Span | null;
+  /**
+   * Unix-epoch milliseconds overriding "now" as the span start, for operations whose start was
+   * measured before the call.
+   */
+  startTime?: number | null;
+};
+
+export type SpanEventOptions = {
+  /**
+   * Attributes attached to the event. Values go through the same validation as `logEvent`
+   * attributes.
+   */
+  attributes?: Record<string, LogAttributeValue> | null;
+  /**
+   * Unix-epoch milliseconds overriding "now" as the event time. Events without a time anchor
+   * to the span start on export.
+   */
+  time?: number | null;
+};
+
+export type SpanEndOptions = {
+  /**
+   * `'error'` marks the operation as failed; `'ok'` explicitly marks success. Omit to leave
+   * the status unset, the usual choice for successful spans.
+   */
+  status?: SpanStatus | null;
+  /**
+   * Free-text detail stored with the status. Only meaningful together with `status`.
+   */
+  message?: string | null;
+  /**
+   * Unix-epoch milliseconds overriding "now" as the span end.
+   */
+  endTime?: number | null;
+};
+
+export type RecordSpanOptions = {
+  /**
+   * Unix-epoch milliseconds when the measured operation started.
+   */
+  startTime: number;
+  /**
+   * Unix-epoch milliseconds when the measured operation ended.
+   */
+  endTime: number;
+  /**
+   * Attributes attached to the span. Values go through the same validation as `logEvent`
+   * attributes.
+   */
+  attributes?: Record<string, LogAttributeValue> | null;
+};
+
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
@@ -531,6 +601,16 @@ export interface ExpoAppMetricsModuleType {
    * @hidden
    */
   setNetworkSpansConfig(config: NetworkSpansConfig): void;
+  /**
+   * Native shape behind the `startSpan` wrapper, which folds `parent` into the options.
+   * @hidden
+   */
+  startSpan(name: string, options?: Omit<StartSpanOptions, 'parent'> | null, parent?: Span): Span;
+  /**
+   * Native shape behind the `recordSpan` wrapper.
+   * @hidden
+   */
+  recordSpan(name: string, options: RecordSpanOptions): void;
   /**
    * Sets attributes merged into every subsequent metric and log event.
    * Per-record keys win on collision. Pass `null`, `undefined`, or an empty

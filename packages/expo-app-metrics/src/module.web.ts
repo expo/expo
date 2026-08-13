@@ -55,6 +55,16 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
   logEvent(name: string, options?: LogEventOptions) {}
   setGlobalAttributes(attributes?: Record<string, LogAttributeValue> | null) {}
   setNetworkSpansConfig() {}
+  startSpan(): any {
+    return {
+      traceId: '',
+      spanId: '',
+      setAttributes() {},
+      addEvent() {},
+      end() {},
+    };
+  }
+  recordSpan() {}
   async clearStoredEntries() {}
   async getInactiveSessions() {
     return [];

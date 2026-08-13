@@ -86,6 +86,7 @@ data class Span(
     const val CLIENT_KIND = 3
 
     /** `Status.code` values from the OTLP proto. UNSET is expressed by a null `statusCode`. */
+    const val STATUS_OK = 1
     const val STATUS_ERROR = 2
 
     /**

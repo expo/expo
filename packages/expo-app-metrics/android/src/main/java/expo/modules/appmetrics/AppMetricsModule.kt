@@ -1,6 +1,7 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import android.util.Log
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.jserrors.ErrorReport
 import expo.modules.appmetrics.jserrors.PendingErrorStore
@@ -17,6 +18,9 @@ import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
 import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
 import expo.modules.appmetrics.networkrequests.NetworkSpansConfiguration
+import expo.modules.appmetrics.spans.SpanHandle
+import expo.modules.appmetrics.spans.SpanRecorder
+import expo.modules.appmetrics.storage.Span
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateDisplayName
@@ -77,6 +81,22 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private var networkRequestPersistence: NetworkRequestPersistence? = null
 
   // Lazy-initialized metadata - created once when first needed
+  /**
+   * Inserts a completed span row on the module scope. Awaiting the session row first keeps the
+   * FK satisfied even for a span ended before the eager session persist finished. Failures are
+   * logged and swallowed — recording telemetry must never break the caller.
+   */
+  private fun insertSpanRow(row: Span) {
+    scope.launch {
+      try {
+        mainSession.awaitSessionPersisted()
+        MetricsDatabase.getDatabase(context).spanDao().insertCapped(row)
+      } catch (e: Exception) {
+        Log.w("ExpoAppMetrics", "Failed to persist span \"${row.name}\"", e)
+      }
+    }
+  }
+
   private val metadata: AppMetadata? by lazy {
     AppMetadataProvider.getAppMetadata(appContext.service<ConstantsInterface>(), context)
   }
@@ -136,6 +156,66 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       Function("setGlobalAttributes") { attributes: Map<String, Any?>? ->
         GlobalAttributes.set(attributes)
+      }
+
+      Function("startSpan") { name: String, options: StartSpanOptions?, parent: SpanHandle? ->
+        val recorder = SpanRecorder(
+          name = validatedSpanName(name),
+          sessionId = mainSession.sessionId,
+          parentTraceId = parent?.recorder?.traceId,
+          parentSpanId = parent?.recorder?.spanId,
+          attributes = options?.attributes,
+          startTimestampMs = options?.startTime?.toLong() ?: TimeUtils.getWallClockMillis()
+        )
+        SpanHandle(recorder = recorder, onEnd = ::insertSpanRow)
+      }
+
+      Function("recordSpan") { name: String, options: RecordSpanOptions ->
+        val startTime = options.startTime ?: throw MissingSpanWindowException()
+        val endTime = options.endTime ?: throw MissingSpanWindowException()
+        // One code path with `startSpan`: an ephemeral recorder validates the attributes and
+        // produces the same write-once row shape.
+        val recorder = SpanRecorder(
+          name = validatedSpanName(name),
+          sessionId = mainSession.sessionId,
+          attributes = options.attributes,
+          startTimestampMs = startTime.toLong()
+        )
+        recorder.end(statusCode = null, statusMessage = null, endTimestampMs = endTime.toLong())?.let {
+          insertSpanRow(it)
+        }
+      }
+
+      Class("Span", SpanHandle::class) {
+        Constructor { ->
+          throw CodedException(
+            "Span objects can't be constructed directly because a span's identity and session " +
+              "attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
+          )
+        }
+
+        Property("traceId") { span: SpanHandle -> span.recorder.traceId }
+        Property("spanId") { span: SpanHandle -> span.recorder.spanId }
+
+        Function("setAttributes") { span: SpanHandle, attributes: Map<String, Any?> ->
+          span.recorder.setAttributes(attributes)
+        }
+
+        Function("addEvent") { span: SpanHandle, name: String, options: SpanEventOptions? ->
+          span.recorder.addEvent(
+            name = name,
+            attributes = options?.attributes,
+            timeMs = options?.time?.toLong() ?: TimeUtils.getWallClockMillis()
+          )
+        }
+
+        Function("end") { span: SpanHandle, options: SpanEndOptions? ->
+          span.end(
+            statusCode = spanStatusCode(options?.status),
+            statusMessage = options?.message,
+            endTimestampMs = options?.endTime?.toLong() ?: TimeUtils.getWallClockMillis()
+          )
+        }
       }
 
       Function("setNetworkSpansConfig") { config: NetworkSpansConfigParam ->
@@ -422,3 +502,64 @@ data class NetworkSpansConfigParam(
   @Field val enabled: Boolean = true,
   @Field val filter: NetworkRequestFilter? = null
 ) : Record
+
+@OptimizedRecord
+data class StartSpanOptions(
+  @Field val attributes: Map<String, Any?>? = null,
+  /** Unix-epoch milliseconds overriding "now" as the span start. */
+  @Field val startTime: Double? = null
+) : Record
+
+@OptimizedRecord
+data class SpanEventOptions(
+  @Field val attributes: Map<String, Any?>? = null,
+  /** Unix-epoch milliseconds overriding "now" as the event time. */
+  @Field val time: Double? = null
+) : Record
+
+@OptimizedRecord
+data class SpanEndOptions(
+  /** `"ok"` or `"error"`; anything else throws. Omitted means UNSET, per the conventions. */
+  @Field val status: String? = null,
+  @Field val message: String? = null,
+  /** Unix-epoch milliseconds overriding "now" as the span end. */
+  @Field val endTime: Double? = null
+) : Record
+
+@OptimizedRecord
+data class RecordSpanOptions(
+  @Field val startTime: Double? = null,
+  @Field val endTime: Double? = null,
+  @Field val attributes: Map<String, Any?>? = null
+) : Record
+
+/**
+ * Validates a caller-provided span name. The ingestion endpoint rejects spans whose name is
+ * empty, so failing loudly at the call site beats silently recording a span the server drops.
+ */
+private fun validatedSpanName(name: String): String {
+  val trimmed = name.trim()
+  if (trimmed.isEmpty()) {
+    throw CodedException(
+      "A span needs a non-empty name because the server rejects nameless spans. " +
+        "Pass a short, stable identifier for the operation being measured, like 'checkout' or 'image-decode'."
+    )
+  }
+  return trimmed
+}
+
+/** Maps the JS `status` option to the OTLP status code. `null` stays UNSET. */
+private fun spanStatusCode(status: String?): Int? = when (status) {
+  null -> null
+  "ok" -> Span.STATUS_OK
+  "error" -> Span.STATUS_ERROR
+  else -> throw CodedException(
+    "'$status' is not a valid span status. Pass 'error' for a failed operation, 'ok' to " +
+      "explicitly mark success, or omit the status to leave it unset (the usual choice for successful spans)."
+  )
+}
+
+private class MissingSpanWindowException : CodedException(
+  "recordSpan needs both startTime and endTime (unix-epoch milliseconds) because it records " +
+    "an already-measured operation. To time an operation as it runs, use startSpan() and end() instead."
+)

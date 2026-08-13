@@ -230,6 +230,7 @@ public struct SpanRow: Sendable {
   public static let clientKind = 3
 
   /// `Status.code` values from the OTLP proto. UNSET is expressed by a `nil` `statusCode`.
+  public static let statusOk = 1
   public static let statusError = 2
 
   public let id: Int64?
