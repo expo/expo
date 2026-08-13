@@ -1,6 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
 import {
   type DefaultRouterOptions,
   type NavigationState,
@@ -913,7 +914,8 @@ test('warns for duplicate route names nested inside each other', () => {
         </Screen>
         <Screen name="bar" component={TestScreen} />
       </TestNavigator>
-    </BaseNavigationContainer>
+    </BaseNavigationContainer>,
+    { wrapper: RouterRegistryProvider }
   );
 
   expect(spy.mock.calls[0]![0]).toMatch(
@@ -939,7 +941,8 @@ test('warns for duplicate route names nested inside each other', () => {
           )}
         </Screen>
       </TestNavigator>
-    </BaseNavigationContainer>
+    </BaseNavigationContainer>,
+    { wrapper: RouterRegistryProvider }
   );
 
   expect(spy.mock.calls[1]![0]).toMatch(
@@ -959,7 +962,8 @@ test('warns for duplicate route names nested inside each other', () => {
           )}
         </Screen>
       </TestNavigator>
-    </BaseNavigationContainer>
+    </BaseNavigationContainer>,
+    { wrapper: RouterRegistryProvider }
   );
 
   expect(spy).toHaveBeenCalledTimes(2);

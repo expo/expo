@@ -4,6 +4,7 @@ import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
+import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
@@ -40,7 +41,6 @@ import {
 } from './types';
 import { useChildListeners } from './useChildListeners';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
-import { useComponent } from './useComponent';
 import { useCurrentRender } from './useCurrentRender';
 import { type ScreenConfigWithParent, useDescriptors } from './useDescriptors';
 import { useEventEmitter } from './useEventEmitter';

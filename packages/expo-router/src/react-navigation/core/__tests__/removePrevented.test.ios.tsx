@@ -1,6 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
 import { type ParamListBase, StackActions, StackRouter } from '../../routers';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
@@ -101,7 +102,8 @@ test('blocks synchronous redispatch from removePrevented without re-emitting', (
           <Screen name="foo">{() => null}</Screen>
           <Screen name="bar" component={TestScreen} />
         </TestNavigator>
-      </BaseNavigationContainer>
+      </BaseNavigationContainer>,
+      { wrapper: RouterRegistryProvider }
     );
 
     act(() => ref.current?.navigate('bar'));

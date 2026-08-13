@@ -1,10 +1,16 @@
 import { expect, jest, test } from '@jest/globals';
 import { render, type RenderAPI } from '@testing-library/react-native';
 
-import { useLinking } from '../../../fork/useLinking';
-import { createNavigationContainerRef, type ParamListBase } from '../../core';
+import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
+import { useLinking } from '../useLinking';
 
-test.skip('throws if multiple instances of useLinking are used', () => {
+let errorSpy: jest.SpiedFunction<typeof console.error>;
+
+afterEach(() => {
+  errorSpy.mockRestore();
+});
+
+test('throws if multiple instances of useLinking are used', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const options = { prefixes: [] };
@@ -15,14 +21,14 @@ test.skip('throws if multiple instances of useLinking are used', () => {
     return null;
   }
 
-  const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
   let element: RenderAPI | undefined;
 
   element = render(<Sample />);
 
-  expect(spy).toHaveBeenCalledTimes(1);
-  expect(spy.mock.calls[0]![0]).toMatch(
+  expect(errorSpy).toHaveBeenCalledTimes(1);
+  expect(errorSpy.mock.calls[0]![0]).toMatch(
     'Looks like you have configured linking in multiple places.'
   );
 
@@ -45,8 +51,8 @@ test.skip('throws if multiple instances of useLinking are used', () => {
     </>
   );
 
-  expect(spy).toHaveBeenCalledTimes(2);
-  expect(spy.mock.calls[1]![0]).toMatch(
+  expect(errorSpy).toHaveBeenCalledTimes(2);
+  expect(errorSpy.mock.calls[1]![0]).toMatch(
     'Looks like you have configured linking in multiple places.'
   );
 
@@ -61,9 +67,9 @@ test.skip('throws if multiple instances of useLinking are used', () => {
 
   render(wrapper2).unmount();
 
-  render(wrapper2);
+  element = render(wrapper2);
 
-  expect(spy).toHaveBeenCalledTimes(2);
+  expect(errorSpy).toHaveBeenCalledTimes(2);
 
   element?.unmount();
 });

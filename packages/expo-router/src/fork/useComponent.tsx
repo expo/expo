@@ -1,9 +1,7 @@
+'use client';
 import type { JSX } from 'react';
-import { useRef, forwardRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 
-/**
- * Copied from @react-navigation/core
- */
 type Render = (children: React.ReactNode) => JSX.Element;
 
 type Props = {
@@ -27,17 +25,15 @@ export function useComponent(render: Render) {
     renderRef.current = null;
   });
 
-  return useRef(
-    forwardRef(({ children }: { children: React.ReactNode }, _ref) => {
-      const render = renderRef.current;
+  return useRef(({ children }: { children: React.ReactNode }) => {
+    const render = renderRef.current;
 
-      if (render === null) {
-        throw new Error(
-          'The returned component must be rendered in the same render phase as the hook.'
-        );
-      }
+    if (render === null) {
+      throw new Error(
+        'The returned component must be rendered in the same render phase as the hook.'
+      );
+    }
 
-      return <NavigationContent render={render}>{children}</NavigationContent>;
-    })
-  ).current;
+    return <NavigationContent render={render}>{children}</NavigationContent>;
+  }).current;
 }
