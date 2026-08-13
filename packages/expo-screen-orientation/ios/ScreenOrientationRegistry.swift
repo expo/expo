@@ -151,7 +151,13 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     let currentDeviceOrientation = UIDevice.current.orientation.toInterfaceOrientation()
     let currentOrientationMask = self.rootViewController?.supportedInterfaceOrientations ?? []
 
-    var newScreenOrientation = UIInterfaceOrientation.unknown
+    // Callers pass the window's actual interface orientation, so start from it. The deduction below
+    // only refines it, and when it can't - the mask allows both orientations of the axis and the
+    // device is flat, so `UIDevice.current.orientation` is face up/down - the measured orientation
+    // is still correct. Latching `.unknown` here instead would make `getOrientationAsync` and the
+    // dimensions event report a stale orientation, and would make `enforceDesiredDeviceOrientation`
+    // rotate to the mask's default orientation rather than leaving the screen where it is.
+    var newScreenOrientation = orientation
 
     // We need to deduce what is the new screen orientation based on currentOrientationMask and new dimensions of the view
     if orientation.isPortrait {
