@@ -17,6 +17,31 @@ classify_failure() {
   fi
 }
 
+token_shape() {
+  case "$1" in
+    sk-ant-oat*) echo oat ;;
+    sk-ant-api*) echo api ;;
+    *) echo other ;;
+  esac
+}
+
+# GitHub's secret editor is write-only; a paste that includes the assignment
+# or wrapping quotes is a common 401. Strip one layer. Never log the value.
+normalize_token() {
+  local v="$1"
+  v="${v#"${v%%[![:space:]]*}"}"
+  v="${v%"${v##*[![:space:]]}"}"
+  case "$v" in
+    \"*\"|\'*\') v="${v:1:${#v}-2}" ;;
+  esac
+  v="${v#CLAUDE_CODE_OAUTH_TOKEN=}"
+  v="${v#ANTHROPIC_API_KEY=}"
+  v="${v#ANTHROPIC_AUTH_TOKEN=}"
+  v="${v#"${v%%[![:space:]]*}"}"
+  v="${v%"${v##*[![:space:]]}"}"
+  printf '%s' "$v"
+}
+
 if [ "${1:-}" = --self-test ]; then
   tmp=$(mktemp)
   printf '%s\n' 'HTTP 429 rate_limit_error: rate limit exceeded' >"$tmp"
@@ -30,6 +55,12 @@ if [ "${1:-}" = --self-test ]; then
   printf '%s\n' 'ECONNRESET connection reset by peer' >"$tmp"
   [ "$(classify_failure "$tmp")" = other ]
   rm -f "$tmp"
+  [ "$(token_shape "sk-ant-oat01-aaaa")" = oat ]
+  [ "$(token_shape "sk-ant-api03-aaaa")" = api ]
+  [ "$(token_shape "not-a-token")" = other ]
+  [ "$(normalize_token "  sk-ant-oat01-x  ")" = "sk-ant-oat01-x" ]
+  [ "$(normalize_token "'sk-ant-oat01-x'")" = "sk-ant-oat01-x" ]
+  [ "$(normalize_token 'CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-x')" = "sk-ant-oat01-x" ]
   echo "prepare-model-env self-test ok"
   exit 0
 fi
@@ -72,7 +103,7 @@ SLOT_TOKENS=()
 
 for i in $(seq 1 5); do
   var="C$i"
-  val="$(trim "${!var:-}")"
+  val="$(normalize_token "${!var:-}")"
   if [ -n "$val" ]; then
     mask_token "$val"
     SLOT_INDEXES+=("$i")
@@ -80,7 +111,7 @@ for i in $(seq 1 5); do
   fi
 done
 
-val="$(trim "${C_FALLBACK:-}")"
+val="$(normalize_token "${C_FALLBACK:-}")"
 if [ -n "$val" ]; then
   already=false
   for existing in "${SLOT_TOKENS[@]+"${SLOT_TOKENS[@]}"}"; do
@@ -108,31 +139,45 @@ winner=""
 winner_slot=""
 log_dir="${RUNNER_TEMP:-/tmp}"
 log=""
+# Fresh config so a runner-image login cannot mask a bad secret, and so CI
+# matches a laptop canary that set CLAUDE_CONFIG_DIR.
+probe_cfg=$(mktemp -d)
+trap 'rm -rf "$probe_cfg"' EXIT
 
-for offset in $(seq 0 $((count - 1))); do
-  idx=$(((start + offset) % count))
-  slot="${SLOT_INDEXES[$idx]}"
-  token="FAKESECRET_k1l2m3n4o5p6q7r8s9t0"
-  log="$log_dir/model-env-$slot.log"
-
-  export CLAUDE_CODE_OAUTH_TOKEN="$token"
-
+probe_with_env() {
+  local env_name="$1"
+  local token="$2"
+  local out="$3"
+  unset ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN
+  export CLAUDE_CONFIG_DIR="$probe_cfg"
+  export "$env_name=$token"
   set +e
   if command -v timeout >/dev/null 2>&1; then
     timeout 90 claude -p "Reply with the single word ok. Say nothing else." \
       --model "$model" \
       --disallowedTools Bash \
-      >"$log" 2>&1
+      >"$out" 2>&1
   else
     claude -p "Reply with the single word ok. Say nothing else." \
       --model "$model" \
       --disallowedTools Bash \
-      >"$log" 2>&1
+      >"$out" 2>&1
   fi
-  rc=$?
+  local rc=$?
   set -e
+  return "$rc"
+}
 
-  if [ "$rc" -eq 0 ]; then
+for offset in $(seq 0 $((count - 1))); do
+  idx=$(((start + offset) % count))
+  slot="${SLOT_INDEXES[$idx]}"
+  token="${SLOT_TOKENS[$idx]}"
+  log="$log_dir/model-env-$slot.log"
+  echo "credential $slot: shape=$(token_shape "$token") len=${#token}"
+
+  if probe_with_env CLAUDE_CODE_OAUTH_TOKEN "$token" "$log" \
+    || probe_with_env ANTHROPIC_AUTH_TOKEN "$token" "$log" \
+    || probe_with_env ANTHROPIC_API_KEY "$token" "$log"; then
     winner="$token"
     winner_slot="$slot"
     break
@@ -141,7 +186,7 @@ for offset in $(seq 0 $((count - 1))); do
   if [ "$offset" -lt $((count - 1)) ]; then
     next_idx=$(((start + offset + 1) % count))
     next_slot="${SLOT_INDEXES[$next_idx]}"
-    echo "credential $slot failed, trying $next_slot"
+    echo "credential $slot failed ($(classify_failure "$log")), trying $next_slot"
   fi
 done
 

@@ -79,7 +79,7 @@ jobs:
       # would silently drift on every CI run; bump it deliberately. Remove this
       # step if you switch every model to an OpenCode-served provider.
       - name: Install Claude Code CLI
-        run: npm install -g @anthropic-ai/claude-code@2.1.212
+        run: npm install -g @anthropic-ai/claude-code@2.1.229
 
       # SECURITY: the TRUSTED BASE checkout above includes every
       # .expo-code-review/config.jsonc + routing.jsonc, whose auth.tokenEnv names the
@@ -106,6 +106,7 @@ jobs:
       # ecr ci inherits CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN from GITHUB_ENV —
       # do not re-bind it from secrets.* or this step is overwritten.
       - name: Prepare model env
+        id: model-env
         uses: ./.github/actions/prepare-model-env
         with:
           c1: ${{ secrets.ECR_1 }}
@@ -115,6 +116,15 @@ jobs:
           c5: ${{ secrets.ECR_5 }}
           fallback: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
           model: ${{ vars.REVIEWER_MODEL || 'claude-sonnet-5' }}
+
+      - name: Explain that the review did not start
+        if: always() && steps.model-env.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh pr comment "$PR" --repo "${{ github.repository }}" --body "⚠️ The AI reviewer did not start: every configured model credential (\`ECR_1\`…\`ECR_5\` and \`CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN\`) failed authentication. Check the [run log]($RUN_URL) for each slot's shape/len and re-set any slot that is not a \`claude setup-token\` value (\`sk-ant-oat…\`, 108 chars)."
 
       - name: Run AI review
         # The launcher selects the SAME checked-in package version the guard cleared.
