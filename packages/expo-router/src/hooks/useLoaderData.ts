@@ -70,12 +70,16 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   useEffect(() => {
     // Seeded routes do not reach a read miss, so register their fetcher explicitly for HMR.
     client.registerFetcher(resolvedPath, fetchLoader);
-    const unsubscribe = client.subscribeLoader(resolvedPath, (result, isCurrentSource) => {
-      if (isCurrentSource) {
-        store.set(resolvedPath, result);
-        setVersion((version) => version + 1);
-      }
-    });
+    const unsubscribe = client.subscribeLoader(
+      resolvedPath,
+      (result, isCurrentSource) => {
+        if (isCurrentSource) {
+          store.set(resolvedPath, result);
+          setVersion((version) => version + 1);
+        }
+      },
+      { committed: true }
+    );
     if (store.get(resolvedPath) !== entryAtRender) {
       setVersion((version) => version + 1);
     }

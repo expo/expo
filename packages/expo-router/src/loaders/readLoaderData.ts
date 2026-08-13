@@ -1,6 +1,6 @@
 import type { LoaderContextValue } from './LoaderContext';
 
-type LoaderFetcher<T> = (path: string) => Promise<T>;
+type LoaderFetcher<T> = (path: string, requestInit: RequestInit) => Promise<T>;
 
 export function readLoaderData<T>(
   { client, store }: LoaderContextValue,
@@ -23,6 +23,8 @@ export function readLoaderData<T>(
     return suspended.data;
   }
 
+  // Like urql's Suspense integration, this render-time subscription waits only for request
+  // completion. It is not a committed reader and therefore does not prevent route abandonment.
   const promise = new Promise<T>((resolve, reject) => {
     const unsubscribe = client.subscribeLoader(resolvedPath, (result, isCurrentSource) => {
       if (isCurrentSource && store.get(resolvedPath) === promise) {

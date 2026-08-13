@@ -37,11 +37,29 @@ describe(fetchLoader, () => {
     return (global.fetch as jest.Mock).mock.calls[0][0];
   }
 
+  function fetchedInit(): RequestInit {
+    return (global.fetch as jest.Mock).mock.calls[0][1];
+  }
+
   // These tests run in order: the revision is module state that only ever increments.
   it('fetches the plain loader URL before any dev invalidation', async () => {
     await fetchLoader('/about');
 
     expect(fetchedUrl()).toBe('/_expo/loaders/about');
+  });
+
+  it('forwards request options while enforcing the JSON Accept header', async () => {
+    const controller = new AbortController();
+
+    await fetchLoader('/about', {
+      signal: controller.signal,
+      headers: { Accept: 'text/plain', 'X-Test': 'yes' },
+    });
+
+    expect(fetchedInit().signal).toBe(controller.signal);
+    const headers = fetchedInit().headers as Headers;
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('X-Test')).toBe('yes');
   });
 
   it('appends a cache-busting revision to loader URLs after a dev invalidation', async () => {
