@@ -1,5 +1,5 @@
 import { store, type ReactNavigationState } from '../../global-state/router-store';
-import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
+import { findDivergentState } from '../../global-state/routing';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
 import type {
   ParamListBase,
@@ -69,7 +69,7 @@ export function getPreloadedRouteFromRootStateByHref(
 
   if (navigationState.type === 'stack') {
     const stackState = navigationState as StackNavigationState<ParamListBase>;
-    const payload = getPayloadFromStateRoute(actionStateRoute);
+    const targetParams = actionStateRoute.params;
     const activeRoutes = stackState.routes.slice(0, stackState.index + 1);
     const preloadedRoutes = stackState.routes.slice(stackState.index + 1);
 
@@ -78,7 +78,7 @@ export function getPreloadedRouteFromRootStateByHref(
         route.name === actionStateRoute.name &&
         deepEqual(
           removeInternalExpoRouterParams(route.params),
-          removeInternalExpoRouterParams(payload.params)
+          removeInternalExpoRouterParams(targetParams)
         )
     );
 
@@ -90,7 +90,7 @@ export function getPreloadedRouteFromRootStateByHref(
       deepEqual(
         // using ?? {}, because from our perspective undefined === {}, as both mean no params
         removeInternalExpoRouterParams(activeRoute.params ?? {}),
-        removeInternalExpoRouterParams(payload.params ?? {})
+        removeInternalExpoRouterParams(targetParams ?? {})
       )
     ) {
       return undefined;

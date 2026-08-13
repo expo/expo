@@ -26,7 +26,10 @@ describe('getPayloadFromStateRoute', () => {
       params: { id: '123', color: 'blue' },
     });
 
-    expect(result).toEqual({ screen: 'profile', params: { id: '123', color: 'blue' } });
+    expect(result).toEqual({
+      screen: 'profile',
+      params: { id: '123', color: 'blue' },
+    });
   });
 
   it('traverses nested routes and nests params correctly', () => {
@@ -478,7 +481,7 @@ describe('findDivergentState', () => {
         stale: false,
       };
 
-      const result = findDivergentState(actionState, navState, false);
+      const result = findDivergentState(actionState, navState);
 
       // Should use index 0 ('home'), so it diverges because 'settings' !== 'home'
       expect(result.actionStateRoute?.name).toBe('settings');
@@ -514,5 +517,59 @@ describe('findDivergentState', () => {
       expect(result.navigationRoutes).toHaveLength(1);
       expect(result.navigationRoutes[0]!.name).toBe('settings');
     });
+  });
+
+  it('stops at an unmounted child navigator', () => {
+    const childState: NavigationState = {
+      routes: [{ key: 'leaf-key', name: 'leaf' }],
+      index: 0,
+      key: 'child-nav',
+      type: 'stack',
+      routeNames: ['leaf'],
+      stale: false,
+    };
+    const actionState: ResultState = {
+      routes: [{ name: 'root', state: { routes: [{ name: 'leaf' }] } }],
+    };
+    const navState: NavigationState = {
+      routes: [{ key: 'root-key', name: 'root', state: childState }],
+      index: 0,
+      key: 'root-nav',
+      type: 'stack',
+      routeNames: ['root'],
+      stale: false,
+    };
+
+    const result = findDivergentState(actionState, navState, false, (key) => key !== 'child-nav');
+
+    expect(result.navigationState.key).toBe('root-nav');
+    expect(result.actionStateRoute?.name).toBe('root');
+  });
+
+  it('never returns a keyless child state', () => {
+    const actionState: ResultState = {
+      routes: [{ name: 'root', state: { routes: [{ name: 'leaf' }] } }],
+    };
+    const navState: NavigationState = {
+      routes: [
+        {
+          key: 'root-key',
+          name: 'root',
+          state: {
+            routes: [{ key: 'leaf-key', name: 'leaf' }],
+            index: 0,
+            type: 'stack',
+            routeNames: ['leaf'],
+          },
+        },
+      ],
+      index: 0,
+      key: 'root-nav',
+      type: 'stack',
+      routeNames: ['root'],
+      stale: false,
+    };
+
+    expect(findDivergentState(actionState, navState).navigationState.key).toBe('root-nav');
   });
 });
