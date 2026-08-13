@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Use development mode when loading Expo config and `.env` files. ([#48882](https://github.com/expo/expo/pull/48882) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
 
 ## 57.0.9 - 2026-07-29
