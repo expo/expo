@@ -7,10 +7,11 @@ struct DeviceLoginSheet: View {
 
   @StateObject private var viewModel: DeviceLoginViewModel
   @Environment(\.dismiss) private var dismiss
+  @State private var browserURL: URL?
 
-  init(verificationURI: URL?, onFinished: @escaping (Bool) -> Void) {
+  init(authService: AuthenticationService, verificationURI: URL?, onFinished: @escaping (Bool) -> Void) {
     self.onFinished = onFinished
-    _viewModel = StateObject(wrappedValue: DeviceLoginViewModel(verificationURI: verificationURI))
+    _viewModel = StateObject(wrappedValue: DeviceLoginViewModel(authService: authService, verificationURI: verificationURI))
   }
 
   var body: some View {
@@ -39,6 +40,24 @@ struct DeviceLoginSheet: View {
         }
       }
     }
+    .sheet(item: $browserURL) { url in
+      SafariView(url: url)
+        .ignoresSafeArea()
+    }
+    .onChange(of: viewModel.phase) { newPhase in
+      switch newPhase {
+      case .awaitingBrowser:
+        break
+      case .matching:
+        // The number the user has to pick is on the page behind this, so leave it readable.
+        Task {
+          try? await Task.sleep(nanoseconds: 3_000_000_000)
+          browserURL = nil
+        }
+      default:
+        browserURL = nil
+      }
+    }
     .task {
       viewModel.onSignedIn = {
         onFinished(true)
@@ -58,7 +77,8 @@ struct DeviceLoginSheet: View {
     case .awaitingBrowser:
       DeviceLoginCodeView(
         userCode: viewModel.userCode ?? "",
-        origin: viewModel.displayOrigin
+        origin: viewModel.displayOrigin,
+        onOpenBrowser: { browserURL = viewModel.displayURI }
       )
     case .matching(let options):
       DeviceLoginMatchView(options: options) { value in

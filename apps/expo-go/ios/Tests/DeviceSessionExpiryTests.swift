@@ -17,46 +17,29 @@ final class DeviceSessionExpiryTests: XCTestCase {
   }
 
   func testNoStoredExpiryIsNotExpired() {
-    XCTAssertFalse(AuthenticationService.isSessionExpired())
+    XCTAssertFalse(AuthenticationService.isPartnerSessionExpired())
   }
 
-  func testFutureExpiryIsNotExpired() async {
-    await AuthenticationService.storeDeviceAuthSession(
-      sessionSecret: "secret",
-      username: "test-user",
-      expiresAt: Date().addingTimeInterval(60)
-    )
-    XCTAssertFalse(AuthenticationService.isSessionExpired())
-    XCTAssertEqual(defaults.string(forKey: AuthenticationService.sessionKey), "secret")
-    XCTAssertEqual(defaults.string(forKey: AuthenticationService.usernameKey), "test-user")
+  func testFutureExpiryIsNotExpired() {
+    defaults.set(Date().addingTimeInterval(60).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
+    XCTAssertFalse(AuthenticationService.isPartnerSessionExpired())
   }
 
-  func testPastExpiryIsExpired() async {
-    await AuthenticationService.storeDeviceAuthSession(
-      sessionSecret: "secret",
-      username: "test-user",
-      expiresAt: Date().addingTimeInterval(-1)
-    )
-    XCTAssertTrue(AuthenticationService.isSessionExpired())
+  func testPastExpiryIsExpired() {
+    defaults.set(Date().addingTimeInterval(-1).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
+    XCTAssertTrue(AuthenticationService.isPartnerSessionExpired())
   }
 
-  func testNilExpiryIsNeverExpired() async {
-    await AuthenticationService.storeDeviceAuthSession(
-      sessionSecret: "secret",
-      username: "test-user",
-      expiresAt: nil
-    )
-    XCTAssertFalse(AuthenticationService.isSessionExpired())
-    XCTAssertNil(defaults.object(forKey: AuthenticationService.sessionExpiresAtKey))
+  func testNilExpiryIsNeverExpired() {
+    defaults.removeObject(forKey: AuthenticationService.sessionExpiresAtKey)
+    XCTAssertFalse(AuthenticationService.isPartnerSessionExpired())
   }
 
-  func testClearSessionRemovesEveryKey() async {
-    await AuthenticationService.storeDeviceAuthSession(
-      sessionSecret: "secret",
-      username: "test-user",
-      expiresAt: Date().addingTimeInterval(60)
-    )
+  func testClearSessionRemovesEveryKey() {
+    defaults.set("secret", forKey: AuthenticationService.sessionKey)
+    defaults.set("partner-private-test", forKey: AuthenticationService.usernameKey)
     defaults.set("acc1", forKey: AuthenticationService.selectedAccountKey)
+    defaults.set(Date().addingTimeInterval(60).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
 
     AuthenticationService.clearSession()
 
@@ -66,13 +49,9 @@ final class DeviceSessionExpiryTests: XCTestCase {
     XCTAssertNil(defaults.object(forKey: AuthenticationService.sessionExpiresAtKey))
   }
 
-  func testStoringPostsSessionDidChange() async {
+  func testClearSessionPostsSessionDidChange() {
     let expectation = expectation(forNotification: .expoSessionDidChange, object: nil)
-    await AuthenticationService.storeDeviceAuthSession(
-      sessionSecret: "secret",
-      username: "test-user",
-      expiresAt: Date().addingTimeInterval(60)
-    )
-    await fulfillment(of: [expectation], timeout: 1)
+    AuthenticationService.clearSession()
+    wait(for: [expectation], timeout: 1)
   }
 }

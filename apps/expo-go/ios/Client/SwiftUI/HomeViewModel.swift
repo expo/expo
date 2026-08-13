@@ -37,10 +37,6 @@ class HomeViewModel: ObservableObject {
   var selectedAccount: Account? { authService.selectedAccount }
   var isLoggedIn: Bool { authService.isLoggedIn }
 
-  var displayUsername: String? {
-    user?.username ?? UserDefaults.standard.string(forKey: AuthenticationService.usernameKey)
-  }
-
   var shakeToShowDevMenu: Bool { settingsManager.shakeToShowDevMenu }
   var threeFingerLongPressEnabled: Bool { settingsManager.threeFingerLongPressEnabled }
   var selectedTheme: Int { settingsManager.selectedTheme }
@@ -226,9 +222,13 @@ class HomeViewModel: ObservableObject {
   /// Presents the device login sheet and resolves once the user signs in or backs out.
   func presentDeviceLogin(verificationURI: URL?) async -> Bool {
     await withCheckedContinuation { continuation in
-      deviceLoginRequest = DeviceLoginRequest(verificationURI: verificationURI) { signedIn in
-        continuation.resume(returning: signedIn)
-      }
+      deviceLoginRequest?.completion.resolve(false)
+      deviceLoginRequest = DeviceLoginRequest(
+        verificationURI: verificationURI,
+        completion: DeviceLoginCompletion { signedIn in
+          continuation.resume(returning: signedIn)
+        }
+      )
     }
   }
 
@@ -343,5 +343,21 @@ enum ExpoGoError: Error {
 struct DeviceLoginRequest: Identifiable {
   let id = UUID()
   let verificationURI: URL?
-  let completion: (Bool) -> Void
+  let completion: DeviceLoginCompletion
+}
+
+/// Wraps a device login result so success, cancel, and dismiss paths can each call it without a double resume.
+@MainActor
+final class DeviceLoginCompletion {
+  private var handler: ((Bool) -> Void)?
+
+  init(_ handler: @escaping (Bool) -> Void) {
+    self.handler = handler
+  }
+
+  func resolve(_ signedIn: Bool) {
+    guard let handler else { return }
+    self.handler = nil
+    handler(signedIn)
+  }
 }
