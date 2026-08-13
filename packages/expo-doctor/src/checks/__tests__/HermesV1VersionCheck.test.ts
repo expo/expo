@@ -1,11 +1,13 @@
 import { vol } from 'memfs';
 
 import { loadBabelConfigPlugins } from '../../utils/babelConfigLoader';
+import { getHermesVersion } from '../../utils/hermesVersion';
 import { HermesV1VersionCheck } from '../HermesV1VersionCheck';
 
 jest.mock('fs');
 jest.mock('resolve-from');
 jest.mock('../../utils/babelConfigLoader');
+jest.mock('../../utils/hermesVersion');
 
 const projectRoot = '/tmp/project';
 const baseParams = {
@@ -28,6 +30,7 @@ describe('runAsync', () => {
   afterEach(() => {
     vol.reset();
     jest.mocked(loadBabelConfigPlugins).mockReturnValue(null);
+    jest.mocked(getHermesVersion).mockReturnValue(null);
   });
 
   it('warns for SDK 55 when Hermes V1 is enabled at the top level', async () => {
@@ -160,6 +163,87 @@ describe('runAsync', () => {
 
     expect(result.isSuccessful).toBe(false);
     expect(result.advice).toHaveLength(1);
+  });
+
+  it.each(['250829098.0.14', '250829098.0.15'])(
+    'adds a secondary issue for affected Hermes %s from React Native',
+    async (version) => {
+      installExpo('57.0.8');
+      jest.mocked(getHermesVersion).mockReturnValue({
+        source: 'react-native',
+        version,
+      });
+      const result = await new HermesV1VersionCheck().runAsync({
+        ...baseParams,
+        exp: { name: 'name', slug: 'slug', sdkVersion: '57.0.0' },
+      });
+
+      expect(result.issues).toHaveLength(2);
+      expect(result.issues[1]).toContain(`Detected Hermes V1 ${version} from React Native`);
+      expect(result.issues[1]).toContain('250829098.0.16 is the first version');
+      expect(result.advice).toHaveLength(2);
+    }
+  );
+
+  it('does not add a secondary issue for a fixed Hermes version', async () => {
+    installExpo('57.0.8');
+    jest.mocked(getHermesVersion).mockReturnValue({
+      source: 'react-native',
+      version: '250829098.0.16',
+    });
+    const result = await new HermesV1VersionCheck().runAsync({
+      ...baseParams,
+      exp: { name: 'name', slug: 'slug', sdkVersion: '57.0.0' },
+    });
+
+    expect(result.issues).toHaveLength(1);
+  });
+
+  it('does not compare Hermes versions outside the affected version prefix', async () => {
+    installExpo('57.0.9');
+    jest.mocked(getHermesVersion).mockReturnValue({
+      source: 'react-native',
+      version: '0.17.0',
+    });
+    const result = await new HermesV1VersionCheck().runAsync({
+      ...baseParams,
+      exp: { name: 'name', slug: 'slug', sdkVersion: '57.0.0' },
+    });
+
+    expect(result.isSuccessful).toBe(true);
+    expect(result.issues).toEqual([]);
+  });
+
+  it('warns for an affected Hermes version independently of a fixed Expo version', async () => {
+    installExpo('57.0.9');
+    jest.mocked(getHermesVersion).mockReturnValue({
+      source: 'react-native',
+      version: '250829098.0.15',
+    });
+    const result = await new HermesV1VersionCheck().runAsync({
+      ...baseParams,
+      exp: { name: 'name', slug: 'slug', sdkVersion: '57.0.0' },
+    });
+
+    expect(result.isSuccessful).toBe(false);
+    expect(result.issues).toHaveLength(1);
+    expect(result.issues[0]).toContain('Detected Hermes V1 250829098.0.15');
+    expect(result.advice[0]).toContain('React Native 0.86.2 or later');
+  });
+
+  it('warns for an affected Hermes version when the Expo version cannot be resolved', async () => {
+    jest.mocked(getHermesVersion).mockReturnValue({
+      source: 'hermes-compiler',
+      version: '250829098.0.14',
+    });
+    const result = await new HermesV1VersionCheck().runAsync({
+      ...baseParams,
+      exp: { name: 'name', slug: 'slug', sdkVersion: '56.0.0' },
+    });
+
+    expect(result.isSuccessful).toBe(false);
+    expect(result.issues).toHaveLength(1);
+    expect(result.issues[0]).toContain('from hermes-compiler');
   });
 
   it('passes when the installed Expo version cannot be resolved', async () => {

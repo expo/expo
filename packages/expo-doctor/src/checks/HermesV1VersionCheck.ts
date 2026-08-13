@@ -3,9 +3,13 @@ import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 import { loadBabelConfigPlugins } from '../utils/babelConfigLoader';
+import { getHermesVersion } from '../utils/hermesVersion';
 import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 const FIXED_EXPO_VERSION = '57.0.9';
+const AFFECTED_HERMES_VERSION_PREFIX = '250829098.';
+const LAST_AFFECTED_HERMES_VERSION = '250829098.0.15';
+const FIRST_FIXED_HERMES_VERSION = '250829098.0.16';
 
 function getInstalledExpoVersion(projectRoot: string): string | null {
   const packageJsonPath = resolveFrom.silent(projectRoot, 'expo/package.json');
@@ -59,22 +63,45 @@ export class HermesV1VersionCheck implements DoctorCheck {
 
   async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const expoVersion = getInstalledExpoVersion(projectRoot);
-    if (!expoVersion || semver.gte(expoVersion, FIXED_EXPO_VERSION)) {
+    const hermesVersion = getHermesVersion(projectRoot);
+    const isSdk55 = semver.satisfies(exp.sdkVersion!, '>=55.0.0 <56.0.0');
+    const usesHermesV1 = isSdk55 ? isHermesV1Enabled(exp) : true;
+    const isExpoVersionAffected =
+      !!expoVersion &&
+      (isSdk55
+        ? usesHermesV1 && semver.lt(expoVersion, '56.0.0')
+        : semver.satisfies(expoVersion, `>=56.0.0 <${FIXED_EXPO_VERSION}`));
+    const isHermesVersionAffected =
+      usesHermesV1 &&
+      !!hermesVersion &&
+      hermesVersion.version.startsWith(AFFECTED_HERMES_VERSION_PREFIX) &&
+      semver.lte(hermesVersion.version, LAST_AFFECTED_HERMES_VERSION);
+
+    const issues: string[] = [];
+    const advice: string[] = [];
+
+    if (isExpoVersionAffected) {
+      issues.push(
+        `This project uses Hermes V1 with expo@${expoVersion}, which is affected by a known memory regression.`
+      );
+      advice.push(
+        'Upgrade to Expo SDK 57 and expo@57.0.9 or later by running `npx expo install expo@^57.0.9 --fix`. See https://expo.dev/changelog/sdk-57#known-regressions for the latest details.'
+      );
+    }
+
+    if (isHermesVersionAffected) {
+      issues.push(
+        `Detected Hermes V1 ${hermesVersion.version} from ${hermesVersion.source === 'react-native' ? 'React Native' : 'hermes-compiler'}. Hermes V1 ${LAST_AFFECTED_HERMES_VERSION} and earlier are affected by this regression; ${FIRST_FIXED_HERMES_VERSION} is the first version that contains the fix.`
+      );
+      advice.push(
+        'Upgrade to React Native 0.86.2 or later, which includes the fixed Hermes version. For Expo projects, install Expo SDK 57 with expo@57.0.9 or later and run `npx expo install --fix` to align React Native and other dependencies.'
+      );
+    }
+
+    if (issues.length === 0) {
       return { isSuccessful: true, issues: [], advice: [] };
     }
 
-    const isSdk55 = semver.satisfies(expoVersion, '>=55.0.0 <56.0.0');
-    const isAffected = isSdk55
-      ? isHermesV1Enabled(exp)
-      : semver.satisfies(expoVersion, '>=56.0.0 <57.0.9');
-
-    if (!isAffected) {
-      return { isSuccessful: true, issues: [], advice: [] };
-    }
-
-    const advice = [
-      'Upgrade to Expo SDK 57 and expo@57.0.9 or later by running `npx expo install expo@^57.0.9 --fix`. See https://expo.dev/changelog/sdk-57#known-regressions for the latest details.',
-    ];
     if (isWorkletsBundleModeEnabled(projectRoot)) {
       advice.push(
         'Worklets Bundle Mode is enabled in your Babel config. It is unsupported and experimental, may not work as expected in many cases, and is not recommended for production use until it is officially supported. If you enabled it only as a workaround for this memory regression, review and remove the Bundle Mode Babel and Metro configuration after upgrading.'
@@ -83,9 +110,7 @@ export class HermesV1VersionCheck implements DoctorCheck {
 
     return {
       isSuccessful: false,
-      issues: [
-        `This project uses Hermes V1 with expo@${expoVersion}, which is affected by a known memory regression.`,
-      ],
+      issues,
       advice,
     };
   }
