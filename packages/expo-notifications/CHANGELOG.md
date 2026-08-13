@@ -18,6 +18,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [iOS] Avoid warning when an aborted push token registration request rejects with a native fetch cancellation error. ([#48547](https://github.com/expo/expo/pull/48547) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
 - [Android] Prevent a crash on notification tap when `getLaunchIntentForPackage` throws on some OEM ROMs. ([#47889](https://github.com/expo/expo/pull/47889) by [@nunocaseiro](https://github.com/nunocaseiro))
 - [web] Fixed crash when browser storage is blocked (e.g. Safari's "Block All Cookies"), where reading `localStorage` throws a `SecurityError` instead of returning `null`. ([#48033](https://github.com/expo/expo/pull/48033) by [@Ignigena](https://github.com/Ignigena))
 

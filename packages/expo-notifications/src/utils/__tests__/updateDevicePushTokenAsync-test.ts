@@ -103,6 +103,21 @@ describe('given valid registration info', () => {
     warnSpy.mockRestore();
     debugSpy.mockRestore();
   });
+
+  it('does not warn if fetch rejects after the signal has been aborted', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    const abortController = new AbortController();
+    global.fetch.mockImplementationOnce(() => {
+      abortController.abort();
+      return Promise.reject(new Error('FetchRequestCanceledException'));
+    });
+
+    await updateDevicePushTokenAsync(abortController.signal, TOKEN);
+
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
+  });
 });
 
 describe('hasDeviceTokenChangedAsync', () => {
