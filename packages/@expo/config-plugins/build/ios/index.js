@@ -1,7 +1,7 @@
 "use strict";
 
 exports.__esModule = true;
-exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = exports.Google = exports.Entitlements = exports.DeviceFamily = exports.DevelopmentTeam = exports.DeploymentTarget = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
+exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = exports.Google = exports.Entitlements = exports.DeviceFamily = exports.DevelopmentTeam = exports.DevServer = exports.DeploymentTarget = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
 function _Bitcode() {
   const data = _interopRequireWildcard(require("./Bitcode"));
   _Bitcode = function () {
@@ -78,6 +78,19 @@ Object.defineProperty(exports, "DevelopmentTeam", {
   enumerable: true,
   get: function () {
     return _DevelopmentTeam();
+  }
+});
+function _DevServer() {
+  const data = _interopRequireWildcard(require("./DevServer"));
+  _DevServer = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "DevServer", {
+  enumerable: true,
+  get: function () {
+    return _DevServer();
   }
 });
 function _DeviceFamily() {
