@@ -171,11 +171,8 @@ const AssetScreen = () => {
     }
     try {
       const freshAsset = new Asset(asset.id);
-      const startedCurrent = Date.now();
       const current = await freshAsset.getUri({ version: AssetUriVersion.CURRENT });
-      const startedOriginal = Date.now();
       const original = await freshAsset.getUri({ version: AssetUriVersion.ORIGINAL });
-      const finished = Date.now();
 
       setUriVersions({ [AssetUriVersion.CURRENT]: current, [AssetUriVersion.ORIGINAL]: original });
     } catch (e) {
