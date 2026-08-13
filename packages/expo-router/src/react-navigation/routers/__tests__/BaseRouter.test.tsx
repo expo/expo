@@ -22,7 +22,7 @@ const STATE = {
 test('sets params for the focused screen with SET_PARAMS', () => {
   const result = BaseRouter.getStateForAction(STATE, CommonActions.setParams({ answer: 42 }));
 
-  expect(result).toEqual({
+  expect(result?.state).toEqual({
     stale: false,
     type: 'test',
     key: 'root',
@@ -42,7 +42,7 @@ test('merges params for the source screen with SET_PARAMS', () => {
     source: 'baz',
   });
 
-  expect(result).toEqual({
+  expect(result?.state).toEqual({
     stale: false,
     type: 'test',
     key: 'root',
@@ -54,6 +54,7 @@ test('merges params for the source screen with SET_PARAMS', () => {
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
+  expect(result?.affectedRouteKey).toBe('baz');
 });
 
 test('sets params for the source screen with SET_PARAMS', () => {
@@ -62,7 +63,7 @@ test('sets params for the source screen with SET_PARAMS', () => {
     source: 'foo',
   });
 
-  expect(result).toEqual({
+  expect(result?.state).toEqual({
     stale: false,
     type: 'test',
     key: 'root',
@@ -74,6 +75,7 @@ test('sets params for the source screen with SET_PARAMS', () => {
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
+  expect(result?.affectedRouteKey).toBe('foo');
 });
 
 test("doesn't handle SET_PARAMS if source key isn't present", () => {
@@ -88,7 +90,7 @@ test("doesn't handle SET_PARAMS if source key isn't present", () => {
 test('replaces params for the focused screen with REPLACE_PARAMS', () => {
   const result = BaseRouter.getStateForAction(STATE, CommonActions.replaceParams({ answer: 42 }));
 
-  expect(result).toEqual({
+  expect(result?.state).toEqual({
     stale: false,
     type: 'test',
     key: 'root',
@@ -108,7 +110,7 @@ test('adds params for the source screen with REPLACE_PARAMS', () => {
     source: 'foo',
   });
 
-  expect(result).toEqual({
+  expect(result?.state).toEqual({
     stale: false,
     type: 'test',
     key: 'root',
@@ -120,6 +122,7 @@ test('adds params for the source screen with REPLACE_PARAMS', () => {
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
+  expect(result?.affectedRouteKey).toBe('foo');
 });
 
 test('replaces params for the source screen with REPLACE_PARAMS', () => {
@@ -128,7 +131,7 @@ test('replaces params for the source screen with REPLACE_PARAMS', () => {
     source: 'baz',
   });
 
-  expect(result).toEqual({
+  expect(result?.state).toEqual({
     stale: false,
     type: 'test',
     key: 'root',
@@ -140,6 +143,7 @@ test('replaces params for the source screen with REPLACE_PARAMS', () => {
     ],
     routeNames: ['foo', 'bar', 'baz', 'qux'],
   });
+  expect(result?.affectedRouteKey).toBe('baz');
 });
 
 test("doesn't handle REPLACE_PARAMS if source key isn't present", () => {
@@ -167,7 +171,17 @@ test('resets state to new state with RESET', () => {
     })
   );
 
-  expect(result).toEqual({ index: 0, routes });
+  expect(result?.state).toEqual({ index: 0, routes });
+  expect(result?.affectedRouteKey).toBe('foo');
+});
+
+test('returns no route key when a partial RESET has no index', () => {
+  const result = BaseRouter.getStateForAction(
+    STATE,
+    CommonActions.reset({ routes: [{ name: 'foo' }] })
+  );
+
+  expect(result?.affectedRouteKey).toBeUndefined();
 });
 
 test('adds keys to routes missing keys during RESET', () => {
@@ -179,10 +193,11 @@ test('adds keys to routes missing keys during RESET', () => {
     })
   );
 
-  expect(result).toEqual({
+  expect(result?.state).toEqual({
     ...STATE,
     routes: [...STATE.routes, { key: 'qux-test', name: 'qux' }],
   });
+  expect(result?.affectedRouteKey).toBe('bar');
 });
 
 test("doesn't handle RESET if routes don't match routeNames", () => {

@@ -947,9 +947,12 @@ test('navigates to nested child in a navigator with initial: false', () => {
             ];
 
             return {
-              ...state,
-              index: routes.length - 1,
-              routes,
+              state: {
+                ...state,
+                index: routes.length - 1,
+                routes,
+              },
+              affectedRouteKey: routes[routes.length - 1]!.key,
             };
           }
 
@@ -1744,9 +1747,10 @@ test('overrides router with UNSTABLE_router', () => {
           return {
             getStateForAction(state, action, options) {
               if (action.type === 'REVERSE') {
+                const routes = [...state.routes].reverse();
                 return {
-                  ...state,
-                  routes: [...state.routes].reverse(),
+                  state: { ...state, routes },
+                  affectedRouteKey: routes[state.index]?.key,
                 };
               }
 

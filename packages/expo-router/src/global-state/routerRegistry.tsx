@@ -3,13 +3,17 @@
 import { createContext, use, useMemo, useState, type PropsWithChildren } from 'react';
 
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
-import type { NavigationAction, NavigationState, PartialState } from '../react-navigation/routers';
+import type {
+  NavigationAction,
+  NavigationState,
+  RouterActionResult,
+} from '../react-navigation/routers';
 
 export type RouterRegistryEntry = {
   reduce: (
     state: NavigationState,
     action: NavigationAction
-  ) => NavigationState | PartialState<NavigationState> | null;
+  ) => RouterActionResult<NavigationState> | null;
   routerType: string | undefined;
   contextKey?: string;
 };

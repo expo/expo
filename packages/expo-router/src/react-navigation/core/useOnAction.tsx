@@ -84,16 +84,20 @@ export function useOnAction<State extends NavigationState>({
       visitedNavigators.add(state.key);
 
       if (typeof action.target !== 'string' || action.target === state.key) {
-        let result = router.getStateForAction(state, action, routerConfigOptionsRef.current);
+        let actionResult = router.getStateForAction(state, action, routerConfigOptionsRef.current);
 
         // If a target is specified and set to current navigator, the action shouldn't bubble
         // So instead of `null`, we use the state object for such cases to signal that action was handled
-        result = result === null && action.target === state.key ? state : result;
+        actionResult =
+          actionResult === null && action.target === state.key
+            ? { state, affectedRouteKey: state.routes[state.index]?.key }
+            : actionResult;
 
-        if (result !== null) {
-          onDispatchAction(action, state === result);
+        if (actionResult !== null) {
+          const resultState = actionResult.state;
+          onDispatchAction(action, state === resultState);
 
-          if (state !== result) {
+          if (state !== resultState) {
             const isPrevented =
               action.type !== 'ROUTE_NAMES_CHANGED' &&
               shouldPreventRemove(
@@ -101,7 +105,7 @@ export function useOnAction<State extends NavigationState>({
                 preventRemoveListeners,
                 isRoutePrevented,
                 getPreventableRoutes(state),
-                getPreventableRoutes(result, state.type),
+                getPreventableRoutes(resultState, state.type),
                 action
               );
 
@@ -113,10 +117,10 @@ export function useOnAction<State extends NavigationState>({
               emitter,
               beforeRemoveListeners,
               getPreventableRoutes(state),
-              getPreventableRoutes(result, state.type),
+              getPreventableRoutes(resultState, state.type),
               action
             );
-            setState(result);
+            setState(resultState);
           }
 
           if (onRouteFocusParent !== undefined) {

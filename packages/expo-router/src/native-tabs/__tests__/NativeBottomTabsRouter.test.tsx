@@ -28,7 +28,7 @@ test('post-processes a first navigation to an unvisited tab', () => {
   };
   const state = createInitialState<TabNavigationState<ParamListBase>>(options);
 
-  const result = router.getStateForAction(
+  const { state: result, affectedRouteKey } = router.getStateForAction(
     state,
     CommonActions.navigate('second', {
       screen: 'nested',
@@ -41,6 +41,7 @@ test('post-processes a first navigation to an unvisited tab', () => {
   const params = route.params as Record<string, unknown>;
 
   expect(route.name).toBe('second');
+  expect(affectedRouteKey).toBe(route.key);
   expect(params[INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]).toBe(true);
   expect(params).not.toHaveProperty(INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME);
   expect(params).not.toHaveProperty(INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME);
