@@ -1,427 +1,397 @@
-// A fork of text-encoding but with only UTF-8 decoder.
-// `TextEncoder` is in Hermes and we only need utf-8 decoder for React Server Components.
-//
-// https://github.com/inexorabletash/text-encoding/blob/3f330964c0e97e1ed344c2a3e963f4598610a7ad/lib/encoding.js#L1
+// UTF-8-only TextDecoder fallback for runtimes that do not provide one.
 
-/**
- * Checks if a number is within a specified range.
- * @param a The number to test.
- * @param min The minimum value in the range, inclusive.
- * @param max The maximum value in the range, inclusive.
- * @returns `true` if a passed number is within the specified range.
- */
-function inRange(a: number, min: number, max: number): boolean {
-  return min <= a && a <= max;
+const UTF8_LABELS = new Set([
+  'unicode-1-1-utf-8',
+  'unicode11utf8',
+  'unicode20utf8',
+  'utf-8',
+  'utf8',
+  'x-unicode20utf8',
+]);
+
+const EMPTY_BYTES = new Uint8Array(0);
+
+interface DecodeResult {
+  output: string;
+  pending: Uint8Array;
+  BOMseen: boolean;
 }
 
-/**
- * Converts an array of code points to a string.
- * @param codePoints Array of code points.
- * @returns The string representation of given array.
- */
-function codePointsToString(codePoints: number[]): string {
-  let s = '';
-  for (let i = 0; i < codePoints.length; ++i) {
-    let cp = codePoints[i];
-
-    if (cp != null) {
-      if (cp <= 0xffff) {
-        s += String.fromCharCode(cp);
-      } else {
-        cp -= 0x10000;
-        s += String.fromCharCode((cp >> 10) + 0xd800, (cp & 0x3ff) + 0xdc00);
-      }
-    }
-  }
-  return s;
-}
-
-function normalizeBytes(input?: ArrayBuffer | DataView): Uint8Array {
-  if (typeof input === 'object' && input instanceof ArrayBuffer) {
+function normalizeBytes(input: ArrayBuffer | ArrayBufferView | undefined): Uint8Array {
+  if (input === undefined) {
+    return EMPTY_BYTES;
+  } else if (input instanceof Uint8Array) {
+    return input;
+  } else if (input instanceof ArrayBuffer) {
     return new Uint8Array(input);
-  } else if (
-    typeof input === 'object' &&
-    'buffer' in input &&
-    input.buffer instanceof ArrayBuffer
-  ) {
+  } else if (ArrayBuffer.isView(input)) {
     return new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
+  } else {
+    throw new TypeError('The input must be an ArrayBuffer or ArrayBufferView');
   }
-  return new Uint8Array(0);
 }
 
-/**
- * End-of-stream is a special token that signifies no more tokens
- * are in the stream.
- */
-const END_OF_STREAM = -1;
-
-const FINISHED = -1;
-
-/**
- * A stream represents an ordered sequence of tokens.
- *
- * @constructor
- * @param {!(number[]|Uint8Array)} tokens Array of tokens that provide the stream.
- */
-class Stream {
-  private tokens: number[];
-
-  constructor(tokens: number[] | Uint8Array) {
-    this.tokens = Array.prototype.slice.call(tokens);
-    // Reversed as push/pop is more efficient than shift/unshift.
-    this.tokens.reverse();
+function decoderError(fatal: boolean): number {
+  if (fatal) {
+    throw new TypeError('Decoder error');
+  } else {
+    return 0xfffd;
   }
+}
 
-  /**
-   * @return {boolean} True if end-of-stream has been hit.
-   */
-  endOfStream(): boolean {
-    return !this.tokens.length;
+function appendASCII(output: string, bytes: Uint8Array, start: number, end: number): string {
+  // NOTE(@kitten): For longer strings, direct `apply` + `subarray` conversion w/o byte-for-byte copy or spreads is
+  // the most efficient by far (3x), leaning on native conversion below the variadic limit
+  const HERMES_VARIADIC_ARGUMENT_LIMIT = 4096;
+  while (start < end) {
+    output += String.fromCharCode.apply(
+      null,
+      bytes.subarray(
+        start,
+        Math.min(start + HERMES_VARIADIC_ARGUMENT_LIMIT, end)
+      ) as unknown as number[]
+    );
+    start += HERMES_VARIADIC_ARGUMENT_LIMIT;
   }
+  return output;
+}
 
-  /**
-   * When a token is read from a stream, the first token in the
-   * stream must be returned and subsequently removed, and
-   * end-of-stream must be returned otherwise.
-   *
-   * @return {number} Get the next token from the stream, or
-   * end_of_stream.
-   */
-  read(): number {
-    if (!this.tokens.length) return END_OF_STREAM;
-    return this.tokens.pop()!;
-  }
-
-  /**
-   * When one or more tokens are prepended to a stream, those tokens
-   * must be inserted, in given order, before the first token in the
-   * stream.
-   *
-   * @param token The token(s) to prepend to the stream.
-   */
-  prepend(token: number | number[]): void {
-    if (Array.isArray(token)) {
-      while (token.length) this.tokens.push(token.pop()!);
+function decodeUTF8Fast(bytes: Uint8Array, start: number): string | null {
+  let output = '';
+  let i = start;
+  const length = bytes.length;
+  while (i < length) {
+    const b0 = bytes[i]!;
+    if (b0 < 0x80) {
+      // NOTE(@kitten): For ASCII text, it's fastest to process the first 32 chars directly
+      // After, `appendASCII`'s variadic apply wins out
+      const directEnd = Math.min(i + 32, length);
+      do {
+        output += String.fromCharCode(bytes[i++]!);
+      } while (i < directEnd && bytes[i]! < 0x80);
+      if (i === directEnd && i < length && bytes[i]! < 0x80) {
+        const start = i;
+        do {
+          i++;
+        } while (i < length && bytes[i]! < 0x80);
+        output = appendASCII(output, bytes, start, i);
+      }
+    } else if (b0 >= 0xc2 && b0 <= 0xdf) {
+      if (i + 1 >= length) return null;
+      const b1 = bytes[i + 1]!;
+      if ((b1 & 0xc0) !== 0x80) return null;
+      output += String.fromCharCode(((b0 & 0x1f) << 6) | (b1 & 0x3f));
+      i += 2;
+    } else if (b0 >= 0xe0 && b0 <= 0xef) {
+      if (i + 2 >= length) return null;
+      const b1 = bytes[i + 1]!;
+      const b2 = bytes[i + 2]!;
+      if (
+        b1 < (b0 === 0xe0 ? 0xa0 : 0x80) ||
+        b1 > (b0 === 0xed ? 0x9f : 0xbf) ||
+        (b2 & 0xc0) !== 0x80
+      ) {
+        return null;
+      }
+      output += String.fromCharCode(((b0 & 0x0f) << 12) | ((b1 & 0x3f) << 6) | (b2 & 0x3f));
+      i += 3;
+    } else if (b0 >= 0xf0 && b0 <= 0xf4) {
+      if (i + 3 >= length) return null;
+      const b1 = bytes[i + 1]!;
+      const b2 = bytes[i + 2]!;
+      const b3 = bytes[i + 3]!;
+      if (
+        b1 < (b0 === 0xf0 ? 0x90 : 0x80) ||
+        b1 > (b0 === 0xf4 ? 0x8f : 0xbf) ||
+        (b2 & 0xc0) !== 0x80 ||
+        (b3 & 0xc0) !== 0x80
+      ) {
+        return null;
+      }
+      const codePoint =
+        (((b0 & 0x07) << 18) | ((b1 & 0x3f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f)) - 0x10000;
+      output += String.fromCharCode((codePoint >> 10) + 0xd800, (codePoint & 0x3ff) + 0xdc00);
+      i += 4;
     } else {
-      this.tokens.push(token);
-    }
-  }
-
-  /**
-   * When one or more tokens are pushed to a stream, those tokens
-   * must be inserted, in given order, after the last token in the
-   * stream.
-   *
-   * @param token The tokens(s) to push to the stream.
-   */
-  push(token: number | number[]): void {
-    if (Array.isArray(token)) {
-      while (token.length) this.tokens.unshift(token.shift()!);
-    } else {
-      this.tokens.unshift(token);
-    }
-  }
-}
-
-function decoderError(fatal: boolean, opt_code_point?: number) {
-  if (fatal) throw TypeError('Decoder error');
-  return opt_code_point || 0xfffd;
-}
-
-interface Encoding {
-  name: string;
-  labels: string[];
-}
-
-const LABEL_ENCODING_MAP: { [key: string]: Encoding } = {};
-
-function getEncoding(label: string): Encoding | null {
-  label = label.trim().toLowerCase();
-  return LABEL_ENCODING_MAP[label] ?? null;
-}
-
-/** [Encodings table](https://encoding.spec.whatwg.org/encodings.json) (Incomplete as we only need TextDecoder utf8 in Expo RSC. A more complete implementation should be added to Hermes as native code.) */
-const ENCODING_MAP: { heading: string; encodings: Encoding[] }[] = [
-  {
-    encodings: [
-      {
-        labels: [
-          'unicode-1-1-utf-8',
-          'unicode11utf8',
-          'unicode20utf8',
-          'utf-8',
-          'utf8',
-          'x-unicode20utf8',
-        ],
-        name: 'UTF-8',
-      },
-    ],
-    heading: 'The Encoding',
-  },
-];
-
-ENCODING_MAP.forEach((category) => {
-  category.encodings.forEach((encoding) => {
-    encoding.labels.forEach((label) => {
-      LABEL_ENCODING_MAP[label] = encoding;
-    });
-  });
-});
-
-// Registry of encoder/decoder factories, by encoding name.
-const DECODERS: { [key: string]: (options: { fatal: boolean }) => UTF8Decoder } = {
-  'UTF-8': (options) => new UTF8Decoder(options),
-};
-
-// 9.1.1 utf-8 decoder
-
-interface Decoder {
-  handler: (stream: Stream, bite: number) => number | number[] | null | -1;
-}
-
-class UTF8Decoder implements Decoder {
-  // utf-8's decoder's has an associated utf-8 code point, utf-8
-  // bytes seen, and utf-8 bytes needed (all initially 0), a utf-8
-  // lower boundary (initially 0x80), and a utf-8 upper boundary
-  // (initially 0xBF).
-  private utf8CodePoint = 0;
-  private utf8BytesSeen = 0;
-  private utf8BytesNeeded = 0;
-  private utf8LowerBoundary = 0x80;
-  private utf8UpperBoundary = 0xbf;
-  constructor(private options: { fatal: boolean }) {}
-  /**
-   * @param {Stream} stream The stream of bytes being decoded.
-   * @param {number} bite The next byte read from the stream.
-   * @return {?(number|!Array.<number>)} The next code point(s)
-   *     decoded, or null if not enough data exists in the input
-   *     stream to decode a complete code point.
-   */
-  handler(stream: Stream, bite: number): number | null | -1 {
-    // 1. If byte is end-of-stream and utf-8 bytes needed is not 0,
-    // set utf-8 bytes needed to 0 and return error.
-    if (bite === END_OF_STREAM && this.utf8BytesNeeded !== 0) {
-      this.utf8BytesNeeded = 0;
-      return decoderError(this.options.fatal);
-    }
-
-    // 2. If byte is end-of-stream, return finished.
-    if (bite === END_OF_STREAM) return FINISHED;
-
-    // 3. If utf-8 bytes needed is 0, based on byte:
-    if (this.utf8BytesNeeded === 0) {
-      // 0x00 to 0x7F
-      if (inRange(bite, 0x00, 0x7f)) {
-        // Return a code point whose value is byte.
-        return bite;
-      }
-
-      // 0xC2 to 0xDF
-      else if (inRange(bite, 0xc2, 0xdf)) {
-        // 1. Set utf-8 bytes needed to 1.
-        this.utf8BytesNeeded = 1;
-
-        // 2. Set UTF-8 code point to byte & 0x1F.
-        this.utf8CodePoint = bite & 0x1f;
-      }
-
-      // 0xE0 to 0xEF
-      else if (inRange(bite, 0xe0, 0xef)) {
-        // 1. If byte is 0xE0, set utf-8 lower boundary to 0xA0.
-        if (bite === 0xe0) this.utf8LowerBoundary = 0xa0;
-        // 2. If byte is 0xED, set utf-8 upper boundary to 0x9F.
-        if (bite === 0xed) this.utf8UpperBoundary = 0x9f;
-        // 3. Set utf-8 bytes needed to 2.
-        this.utf8BytesNeeded = 2;
-        // 4. Set UTF-8 code point to byte & 0xF.
-        this.utf8CodePoint = bite & 0xf;
-      }
-
-      // 0xF0 to 0xF4
-      else if (inRange(bite, 0xf0, 0xf4)) {
-        // 1. If byte is 0xF0, set utf-8 lower boundary to 0x90.
-        if (bite === 0xf0) this.utf8LowerBoundary = 0x90;
-        // 2. If byte is 0xF4, set utf-8 upper boundary to 0x8F.
-        if (bite === 0xf4) this.utf8UpperBoundary = 0x8f;
-        // 3. Set utf-8 bytes needed to 3.
-        this.utf8BytesNeeded = 3;
-        // 4. Set UTF-8 code point to byte & 0x7.
-        this.utf8CodePoint = bite & 0x7;
-      }
-
-      // Otherwise
-      else {
-        // Return error.
-        return decoderError(this.options.fatal);
-      }
-
-      // Return continue.
       return null;
     }
-
-    // 4. If byte is not in the range utf-8 lower boundary to utf-8
-    // upper boundary, inclusive, run these substeps:
-    if (!inRange(bite, this.utf8LowerBoundary, this.utf8UpperBoundary)) {
-      // 1. Set utf-8 code point, utf-8 bytes needed, and utf-8
-      // bytes seen to 0, set utf-8 lower boundary to 0x80, and set
-      // utf-8 upper boundary to 0xBF.
-      this.utf8CodePoint = 0;
-      this.utf8BytesNeeded = 0;
-      this.utf8BytesSeen = 0;
-      this.utf8LowerBoundary = 0x80;
-      this.utf8UpperBoundary = 0xbf;
-
-      // 2. Prepend byte to stream.
-      stream.prepend(bite);
-
-      // 3. Return error.
-      return decoderError(this.options.fatal);
-    }
-
-    // 5. Set utf-8 lower boundary to 0x80 and utf-8 upper boundary
-    // to 0xBF.
-    this.utf8LowerBoundary = 0x80;
-    this.utf8UpperBoundary = 0xbf;
-
-    // 6. Set UTF-8 code point to (UTF-8 code point << 6) | (byte &
-    // 0x3F)
-    this.utf8CodePoint = (this.utf8CodePoint << 6) | (bite & 0x3f);
-
-    // 7. Increase utf-8 bytes seen by one.
-    this.utf8BytesSeen += 1;
-
-    // 8. If utf-8 bytes seen is not equal to utf-8 bytes needed,
-    // continue.
-    if (this.utf8BytesSeen !== this.utf8BytesNeeded) return null;
-
-    // 9. Let code point be utf-8 code point.
-    const code_point = this.utf8CodePoint;
-
-    // 10. Set utf-8 code point, utf-8 bytes needed, and utf-8 bytes
-    // seen to 0.
-    this.utf8CodePoint = 0;
-    this.utf8BytesNeeded = 0;
-    this.utf8BytesSeen = 0;
-
-    // 11. Return a code point whose value is code point.
-    return code_point;
   }
+  return output;
 }
 
-// 8.1 Interface TextDecoder
+function decodeUTF8General(
+  bytes: Uint8Array,
+  pending: Uint8Array,
+  stream: boolean,
+  fatal: boolean,
+  ignoreBOM: boolean,
+  BOMseen: boolean
+): DecodeResult {
+  let output = '';
+  let i = 0;
+
+  if (pending.length > 0) {
+    const b0 = pending[0]!;
+    const bytesNeeded = b0 <= 0xdf ? 1 : b0 <= 0xef ? 2 : 3;
+    let codePoint = b0 & (bytesNeeded === 1 ? 0x1f : bytesNeeded === 2 ? 0x0f : 0x07);
+    let bytesSeen = 0;
+
+    for (let p = 1; p < pending.length; p++) {
+      codePoint = (codePoint << 6) | (pending[p]! & 0x3f);
+      bytesSeen++;
+    }
+
+    while (bytesSeen < bytesNeeded && i < bytes.length) {
+      const byte = bytes[i]!;
+      if (
+        (byte & 0xc0) !== 0x80 ||
+        (bytesSeen === 0 &&
+          ((b0 === 0xe0 && byte < 0xa0) ||
+            (b0 === 0xed && byte > 0x9f) ||
+            (b0 === 0xf0 && byte < 0x90) ||
+            (b0 === 0xf4 && byte > 0x8f)))
+      ) {
+        pending = EMPTY_BYTES;
+        output += String.fromCharCode(decoderError(fatal));
+        BOMseen = true;
+        break;
+      }
+      codePoint = (codePoint << 6) | (byte & 0x3f);
+      bytesSeen++;
+      i++;
+    }
+
+    if (bytesSeen === bytesNeeded) {
+      pending = EMPTY_BYTES;
+      if (BOMseen || ignoreBOM || codePoint !== 0xfeff) {
+        if (codePoint <= 0xffff) output += String.fromCharCode(codePoint);
+        else {
+          codePoint -= 0x10000;
+          output += String.fromCharCode((codePoint >> 10) + 0xd800, (codePoint & 0x3ff) + 0xdc00);
+        }
+      }
+      BOMseen = true;
+    } else if (i === bytes.length) {
+      if (stream && i > 0) {
+        const nextPending = new Uint8Array(pending.length + i);
+        nextPending.set(pending);
+        nextPending.set(bytes.subarray(0, i), pending.length);
+        pending = nextPending;
+      } else if (!stream) {
+        pending = EMPTY_BYTES;
+        output += String.fromCharCode(decoderError(fatal));
+        BOMseen = true;
+      }
+    }
+
+    if (pending.length > 0) {
+      return { output, pending, BOMseen };
+    }
+  }
+
+  while (i < bytes.length) {
+    const b0 = bytes[i]!;
+    if (b0 < 0x80) {
+      BOMseen = true;
+      const directEnd = Math.min(i + 32, bytes.length);
+      do {
+        output += String.fromCharCode(bytes[i++]!);
+      } while (i < directEnd && bytes[i]! < 0x80);
+      if (i === directEnd && i < bytes.length && bytes[i]! < 0x80) {
+        const start = i;
+        do {
+          i++;
+        } while (i < bytes.length && bytes[i]! < 0x80);
+        output = appendASCII(output, bytes, start, i);
+      }
+      continue;
+    }
+
+    let codePoint: number;
+    if (b0 >= 0xc2 && b0 <= 0xdf) {
+      if (i + 1 >= bytes.length) {
+        if (stream) pending = bytes.slice(i);
+        else output += String.fromCharCode(decoderError(fatal));
+        break;
+      }
+      const b1 = bytes[i + 1]!;
+      if ((b1 & 0xc0) !== 0x80) {
+        output += String.fromCharCode(decoderError(fatal));
+        BOMseen = true;
+        i++;
+        continue;
+      }
+      codePoint = ((b0 & 0x1f) << 6) | (b1 & 0x3f);
+      i += 2;
+    } else if (b0 >= 0xe0 && b0 <= 0xef) {
+      if (i + 1 >= bytes.length) {
+        if (stream) pending = bytes.slice(i);
+        else output += String.fromCharCode(decoderError(fatal));
+        break;
+      }
+      const b1 = bytes[i + 1]!;
+      if ((b1 & 0xc0) !== 0x80 || (b0 === 0xe0 && b1 < 0xa0) || (b0 === 0xed && b1 > 0x9f)) {
+        output += String.fromCharCode(decoderError(fatal));
+        BOMseen = true;
+        i++;
+        continue;
+      }
+      if (i + 2 >= bytes.length) {
+        if (stream) pending = bytes.slice(i);
+        else output += String.fromCharCode(decoderError(fatal));
+        break;
+      }
+      const b2 = bytes[i + 2]!;
+      if ((b2 & 0xc0) !== 0x80) {
+        output += String.fromCharCode(decoderError(fatal));
+        BOMseen = true;
+        i += 2;
+        continue;
+      }
+      codePoint = ((b0 & 0x0f) << 12) | ((b1 & 0x3f) << 6) | (b2 & 0x3f);
+      i += 3;
+    } else if (b0 >= 0xf0 && b0 <= 0xf4) {
+      if (i + 1 >= bytes.length) {
+        if (stream) pending = bytes.slice(i);
+        else output += String.fromCharCode(decoderError(fatal));
+        break;
+      }
+      const b1 = bytes[i + 1]!;
+      if ((b1 & 0xc0) !== 0x80 || (b0 === 0xf0 && b1 < 0x90) || (b0 === 0xf4 && b1 > 0x8f)) {
+        output += String.fromCharCode(decoderError(fatal));
+        BOMseen = true;
+        i++;
+        continue;
+      }
+      if (i + 2 >= bytes.length) {
+        if (stream) pending = bytes.slice(i);
+        else output += String.fromCharCode(decoderError(fatal));
+        break;
+      }
+      const b2 = bytes[i + 2]!;
+      if ((b2 & 0xc0) !== 0x80) {
+        output += String.fromCharCode(decoderError(fatal));
+        BOMseen = true;
+        i += 2;
+        continue;
+      }
+      if (i + 3 >= bytes.length) {
+        if (stream) pending = bytes.slice(i);
+        else output += String.fromCharCode(decoderError(fatal));
+        break;
+      }
+      const b3 = bytes[i + 3]!;
+      if ((b3 & 0xc0) !== 0x80) {
+        output += String.fromCharCode(decoderError(fatal));
+        BOMseen = true;
+        i += 3;
+        continue;
+      }
+      codePoint = ((b0 & 0x07) << 18) | ((b1 & 0x3f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f);
+      i += 4;
+    } else {
+      output += String.fromCharCode(decoderError(fatal));
+      BOMseen = true;
+      i++;
+      continue;
+    }
+
+    if (BOMseen || ignoreBOM || codePoint !== 0xfeff) {
+      if (codePoint <= 0xffff) {
+        output += String.fromCharCode(codePoint);
+      } else {
+        codePoint -= 0x10000;
+        output += String.fromCharCode((codePoint >> 10) + 0xd800, (codePoint & 0x3ff) + 0xdc00);
+      }
+    }
+    BOMseen = true;
+  }
+
+  return { output, pending, BOMseen };
+}
+
+function decodeUTF8(
+  bytes: Uint8Array,
+  pending: Uint8Array,
+  stream: boolean,
+  fatal: boolean,
+  ignoreBOM: boolean,
+  BOMseen: boolean
+): DecodeResult {
+  if (pending.length === 0) {
+    if (!stream && !BOMseen) {
+      const skipBOM =
+        !ignoreBOM && bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf ? 3 : 0;
+      const fast = decodeUTF8Fast(bytes, skipBOM);
+      if (fast !== null) return { output: fast, pending, BOMseen: bytes.length > 0 };
+    }
+  }
+
+  return decodeUTF8General(bytes, pending, stream, fatal, ignoreBOM, BOMseen);
+}
+
 // @docsMissing
 export class TextDecoder {
-  private _encoding: Encoding | null;
-  private _ignoreBOM: boolean;
-  private _errorMode: string;
-  private _BOMseen: boolean = false;
-  private _doNotFlush: boolean = false;
-  private _decoder: UTF8Decoder | null = null;
+  private readonly _ignoreBOM: boolean;
+  private readonly _fatal: boolean;
+  private _BOMseen = false;
+  private _pending: Uint8Array = EMPTY_BYTES;
+  private _streaming = false;
 
-  constructor(
-    label: string = 'utf-8',
-    options: {
-      fatal?: boolean;
-      ignoreBOM?: boolean;
-    } = {}
-  ) {
-    if (options != null && typeof options !== 'object') {
+  constructor(label: string = 'utf-8', options: { fatal?: boolean; ignoreBOM?: boolean } = {}) {
+    if (options == null || typeof options !== 'object') {
       throw new TypeError(
         'Second argument of TextDecoder must be undefined or an object, e.g. { fatal: true }'
       );
     }
-
     const normalizedLabel = String(label).trim().toLowerCase();
-    const encoding = getEncoding(normalizedLabel);
-    if (encoding === null || encoding.name === 'replacement') {
+    if (!UTF8_LABELS.has(normalizedLabel)) {
       throw new RangeError(`Unknown encoding: ${label} (normalized: ${normalizedLabel})`);
     }
-
-    if (!DECODERS[encoding.name]) {
-      throw new Error(`Decoder not present: ${encoding.name}`);
-    }
-
-    this._encoding = encoding;
-    this._ignoreBOM = !!options.ignoreBOM;
-    this._errorMode = options.fatal ? 'fatal' : 'replacement';
+    this._fatal = Boolean(options.fatal);
+    this._ignoreBOM = Boolean(options.ignoreBOM);
   }
 
-  // Getter methods for encoding, fatal, and ignoreBOM
   get encoding(): string {
-    return this._encoding?.name.toLowerCase() ?? '';
+    return 'utf-8';
   }
 
   get fatal(): boolean {
-    return this._errorMode === 'fatal';
+    return this._fatal;
   }
 
   get ignoreBOM(): boolean {
     return this._ignoreBOM;
   }
 
-  decode(input?: ArrayBuffer | DataView, options: { stream?: boolean } = {}): string {
+  decode(input?: ArrayBuffer | ArrayBufferView, options: { stream?: boolean } = {}): string {
+    if (options == null || typeof options !== 'object') {
+      throw new TypeError('The options argument must be undefined or an object');
+    }
     const bytes = normalizeBytes(input);
-
-    // 1. If the do not flush flag is unset, set decoder to a new
-    // encoding's decoder, set stream to a new stream, and unset the
-    // BOM seen flag.
-    if (!this._doNotFlush) {
-      this._decoder = DECODERS[this._encoding!.name]?.({ fatal: this.fatal }) ?? null;
+    const stream = Boolean(options.stream);
+    if (!this._streaming) {
       this._BOMseen = false;
+      this._pending = EMPTY_BYTES;
     }
 
-    // 2. If options's stream is true, set the do not flush flag, and
-    // unset the do not flush flag otherwise.
-    this._doNotFlush = Boolean(options['stream']);
-
-    // 3. If input is given, push a copy of input to stream.
-    // TODO: Align with spec algorithm - maintain stream on instance.
-    const input_stream = new Stream(bytes);
-
-    // 4. Let output be a new stream.
-    const output: number[] = [];
-
-    while (true) {
-      const token = input_stream.read();
-
-      if (token === END_OF_STREAM) break;
-
-      const result = this._decoder!.handler(input_stream, token);
-
-      if (result === FINISHED) break;
-
-      if (result !== null) {
-        output.push(result);
-      }
+    try {
+      const result = decodeUTF8(
+        bytes,
+        this._pending,
+        stream,
+        this._fatal,
+        this._ignoreBOM,
+        this._BOMseen
+      );
+      this._pending = result.pending;
+      this._BOMseen = result.BOMseen;
+      this._streaming = stream;
+      return result.output;
+    } catch (error) {
+      this._pending = EMPTY_BYTES;
+      this._streaming = false;
+      throw error;
     }
-
-    if (!this._doNotFlush) {
-      do {
-        const result = this._decoder!.handler(input_stream, input_stream.read());
-        if (result === FINISHED) break;
-        if (result === null) continue;
-        if (Array.isArray(result)) output.push(...result);
-        else output.push(result);
-      } while (!input_stream.endOfStream());
-      this._decoder = null;
-    }
-
-    return this.serializeStream(output);
-  }
-
-  // serializeStream method for converting code points to a string
-  private serializeStream(stream: number[]): string {
-    if (this._encoding!.name === 'UTF-8') {
-      if (!this._ignoreBOM && !this._BOMseen && stream[0] === 0xfeff) {
-        // If BOM is detected at the start of the stream and we're not ignoring it
-        this._BOMseen = true;
-        stream.shift(); // Remove the BOM
-      } else if (stream.length > 0) {
-        this._BOMseen = true;
-      }
-    }
-
-    // Convert the stream of code points to a string
-    return codePointsToString(stream);
   }
 }
