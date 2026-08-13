@@ -87,7 +87,7 @@ const HEADER_PROD = '__d(function (g, r, i, a, m, e, d) {';
 // let fs: typeof import('fs');
 let Transformer: typeof import('../metro-transform-worker');
 
-const baseConfig: JsTransformerConfig = {
+const baseConfig = {
   allowOptionalDependencies: false,
   assetPlugins: [],
   assetRegistryPath: '',
@@ -107,7 +107,8 @@ const baseConfig: JsTransformerConfig = {
   unstable_disableModuleWrapping: false,
   unstable_disableNormalizePseudoGlobals: false,
   unstable_allowRequireContext: false,
-};
+  unstable_noxcturnalTransformWorker: true,
+} as JsTransformerConfig & { unstable_noxcturnalTransformWorker: boolean };
 
 const baseTransformOptions: JsTransformOptions = {
   dev: true,
@@ -139,6 +140,97 @@ beforeEach(() => {
   fs.writeFileSync(babelTransformerPath, transformerContents);
 });
 
+it('keeps the Noxcturnal transform worker disabled by default', async () => {
+  const noxcturnal = require('noxcturnal') as typeof import('noxcturnal');
+  const transform = jest.spyOn(noxcturnal, 'transform');
+  const config = { ...baseConfig, unstable_noxcturnalTransformWorker: undefined };
+
+  try {
+    await Transformer.transform(
+      config,
+      '/root',
+      'local/file.js',
+      Buffer.from('module.exports = 1;', 'utf8'),
+      baseTransformOptions
+    );
+    expect(transform).not.toHaveBeenCalled();
+  } finally {
+    transform.mockRestore();
+  }
+});
+
+it('runs native React Compiler and Refresh through the full Metro path', async () => {
+  const contents = `type Props = { value: number };
+export function Component(props: Props) {
+  return <View>{props.value}</View>;
+}`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    'local/Component.tsx',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      experimentalImportSupport: false,
+      customTransformOptions: {
+        __proto__: null,
+        engine: 'hermes',
+        reactCompiler: 'true',
+      },
+    }
+  );
+  const output = result.output[0]!;
+
+  expect(output.data.code).toContain('react/compiler-runtime');
+  expect(output.data.code).toMatch(/reactcompilerruntime\.c\)\(2\)/i);
+  expect(output.data.code).toContain('$RefreshReg$');
+  expect(output.data.code).not.toContain('type Props');
+  expect(output.data.code).not.toContain('<View>');
+
+  const generatedOffset = output.data.code.indexOf('function Component');
+  const generatedPrefix = output.data.code.slice(0, generatedOffset);
+  const generatedLines = generatedPrefix.split('\n');
+  const original = originalPositionFor(toTraceMap(output, contents), {
+    line: generatedLines.length,
+    column: generatedLines.at(-1)!.length,
+  });
+  expect(original.line).toBe(2);
+});
+
+it('maps errors inside JSX callbacks to the throwing expression', async () => {
+  const contents = `export default function App() {
+  return <BigButton
+    title="throw new Error()"
+    onPress={() => {
+      throw new Error('unhandled-throw');
+    }}
+  />;
+}`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    'local/App.tsx',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      platform: 'web',
+      customTransformOptions: { __proto__: null, engine: 'hermes' },
+    }
+  );
+  const output = result.output[0]!;
+  const messageOffset = output.data.code.indexOf('unhandled-throw');
+  const generatedOffset = output.data.code.lastIndexOf('new Error', messageOffset);
+  expect(generatedOffset).not.toBe(-1);
+  const generatedPrefix = output.data.code.slice(0, generatedOffset);
+  const generatedLines = generatedPrefix.split('\n');
+  expect(
+    originalPositionFor(toTraceMap(output, contents), {
+      line: generatedLines.length,
+      column: generatedLines.at(-1)!.length,
+    })
+  ).toMatchObject({ line: 5, column: 12 });
+});
+
 it('transforms a simple script', async () => {
   const contents = 'someReallyArbitrary(code)';
 
@@ -154,7 +246,7 @@ it('transforms a simple script', async () => {
   expect(result.output[0]!.data.code).toBe(
     [
       '(function (global) {',
-      '  someReallyArbitrary(code);',
+      'someReallyArbitrary(code);',
       "})(typeof globalThis !== 'undefined' ? globalThis : typeof global !== 'undefined' ? global : typeof window !== 'undefined' ? window : this);",
     ].join('\n')
   );
@@ -163,31 +255,19 @@ it('transforms a simple script', async () => {
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 0 })).toMatchObject({
     line: 2,
-    column: 2,
+    column: 0,
   });
 
   expect(originalPositionFor(trace, { line: 2, column: 2 })).toMatchObject({
     line: 1,
     column: 0,
-    name: 'someReallyArbitrary',
+    name: null,
   });
 
-  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
-  expect(originalPositionFor(trace, { line: 3, column: 10 })).toMatchObject({
-    line: 1,
-    column: 25,
-    name: 'globalThis',
-  });
-  expect(originalPositionFor(trace, { line: 3, column: 59 })).toMatchObject({
-    line: 1,
-    column: 25,
-    name: 'global',
-  });
-  expect(originalPositionFor(trace, { line: 3, column: 100 })).toMatchObject({
-    line: 1,
-    column: 25,
-    name: 'window',
-  });
+  // The generated polyfill wrapper is deliberately sourceless.
+  expect(originalPositionFor(trace, { line: 3, column: 10 }).line).toBeNull();
+  expect(originalPositionFor(trace, { line: 3, column: 59 }).line).toBeNull();
+  expect(originalPositionFor(trace, { line: 3, column: 100 }).line).toBeNull();
 
   expect(result.output[0]!.data.functionMap).toMatchSnapshot();
   expect(result.dependencies).toEqual([]);
@@ -208,28 +288,682 @@ it('transforms a simple module', async () => {
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 0 })).toMatchObject({
     line: 2,
-    column: 2,
+    column: 0,
   });
-  expect(generatedPositionFor(trace, { source: '', line: 1, column: 10 })).toMatchObject({
-    line: 2,
-    column: 12,
-  });
-
-  expect(originalPositionFor(trace, { line: 2, column: 2 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 2, column: 0 })).toMatchObject({
     line: 1,
     column: 0,
-    name: 'arbitrary',
+    name: null,
   });
-  expect(originalPositionFor(trace, { line: 2, column: 12 })).toMatchObject({
-    line: 1,
-    column: 10,
-    name: 'code',
-  });
-
   expect(result.output[0]!.type).toBe('js/module');
-  expect(result.output[0]!.data.code).toBe([HEADER_DEV, '  arbitrary(code);', '});'].join('\n'));
+  expect(result.output[0]!.data.code).toBe([HEADER_DEV, 'arbitrary(code);', '', '});'].join('\n'));
   expect(result.output[0]!.data.functionMap).toMatchSnapshot();
   expect(result.dependencies).toEqual([]);
+});
+
+it('uses Noxcturnal instead of the Babel preset for eligible node_modules', async () => {
+  const contents = `module.exports = [process.env.EXPO_OS, process.env.NODE_ENV, __DEV__, require('dep')];`;
+
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/node_modules/example/index.js',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: true,
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+
+  expect(result.output[0]!.data.code).toMatch(
+    /module\.exports = \[\s*"ios",\s*"production",\s*false,\s*_\$\$_REQUIRE\(_dependencyMap\[0\]\)\s*\]/
+  );
+  expect(result.output[0]!.data.hasCjsExports).toBe(true);
+  expect(result.output[0]!.data.functionMap).toEqual({
+    mappings: 'AAA',
+    names: ['<global>'],
+  });
+  expect(result.dependencies.map((dependency) => dependency.name)).toEqual(['dep']);
+
+  const trace = toTraceMap(result.output[0]!, contents);
+  expect(originalPositionFor(trace, { line: 6, column: 2 })).toMatchObject({
+    line: 1,
+    column: 70,
+  });
+});
+
+it.each([
+  '\0polyfill:environment-variables',
+  '/root/router-e2e?ctx=1122149ada429c11a789cd9dfdcaefb64b6dd8f5',
+])('uses the full native path for extensionless virtual module %s', async (filename) => {
+  const contents = `module.exports= require('dep');`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    filename,
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      experimentalImportSupport: true,
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+
+  expect(result.output[0]!.data.code).toMatch(
+    /module\.exports\s*=\s*_\$\$_REQUIRE\(_dependencyMap\[0\], "dep"\);/
+  );
+  expect(result.dependencies.map((dependency) => dependency.name)).toEqual(['dep']);
+});
+
+it.each(['/repo/packages/expo/virtual/streams.js', '\0polyfill:environment-variables'])(
+  'uses the full native path to wrap script polyfill %s',
+  async (filename) => {
+    const contents = `globalThis.ReadableStream ||= require('stream/web').ReadableStream;`;
+    const result = await Transformer.transform(
+      baseConfig,
+      '/root',
+      filename,
+      Buffer.from(contents, 'utf8'),
+      {
+        ...baseTransformOptions,
+        type: 'script',
+        experimentalImportSupport: true,
+        customTransformOptions: { engine: 'hermes' },
+      }
+    );
+
+    expect(result.output[0]!.type).toBe('js/script');
+    expect(result.output[0]!.data.code).toMatch(/^\(function \(global\) \{/);
+    expect(result.output[0]!.data.code).toContain('globalThis.ReadableStream');
+    expect(result.output[0]!.data.code).not.toContain('__d(function');
+    expect(result.dependencies).toEqual([]);
+  }
+);
+
+it('uses the full native path and configured minifier for production application TSX', async () => {
+  const contents = `type Props = { code: unknown };
+export function App({ code }: Props) {
+  return <View testID="value">{arbitrary(code)}</View>;
+}`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/local/App.tsx',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      minify: true,
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+
+  expect(result.output[0]!.data.code).not.toMatch(/\btype Props\b|<View/);
+  expect(result.output[0]!.data.code).toContain('minified(code)');
+  expect(result.dependencies.map((dependency) => dependency.name)).toContain('react/jsx-runtime');
+  const trace = toTraceMap(result.output[0]!, contents);
+  const marker = result.output[0]!.data.code.indexOf('function App');
+  const prefix = result.output[0]!.data.code.slice(0, marker).split('\n');
+  expect(
+    originalPositionFor(trace, {
+      line: prefix.length,
+      column: prefix.at(-1)!.length,
+    }).line
+  ).toBe(2);
+});
+
+it('uses the full native path for plain production application JavaScript', async () => {
+  const contents = `export { value } from './value';`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/src/config.js',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+
+  expect(result.output[0]!.data.code).toContain('__d(function');
+  expect(result.dependencies.map((dependency) => dependency.name)).toEqual(['./value']);
+});
+
+it('uses the full native path for production Node application TSX', async () => {
+  const contents = `import value from './value';
+export default function Route(): JSX.Element {
+  return <main>{typeof window}:{value}</main>;
+}`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/routes/render.tsx',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes', environment: 'node' },
+    }
+  );
+
+  expect(result.output[0]!.data.code).not.toMatch(/JSX\.Element|<main>|typeof window/);
+  expect(result.output[0]!.data.code).toContain('"undefined"');
+  expect(result.dependencies.map((dependency) => dependency.name)).toEqual(
+    expect.arrayContaining(['./value', 'react/jsx-runtime'])
+  );
+});
+
+it('uses the full native path for ordinary production web TSX', async () => {
+  const contents = `import value from './value';
+export default function Route(): JSX.Element {
+  return <main>{value}</main>;
+}`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/web/route.tsx',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      platform: 'web',
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'default',
+      customTransformOptions: {},
+    }
+  );
+
+  expect(result.output[0]!.data.code).not.toMatch(/JSX\.Element|<main>/);
+  expect(result.dependencies.map((dependency) => dependency.name)).toEqual(
+    expect.arrayContaining(['./value', 'react/jsx-runtime'])
+  );
+});
+
+it('rewrites React Native imports through the complete native web path', async () => {
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/web/route.tsx',
+    Buffer.from(
+      `import { View, Text as Label } from 'react-native';
+export default function Route() {
+  return <View><Label>native web</Label></View>;
+}`,
+      'utf8'
+    ),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      platform: 'web',
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'default',
+      customTransformOptions: {},
+    }
+  );
+
+  expect(result.output[0]!.data.code).not.toMatch(/<View>|from ['"]react-native['"]/);
+  expect(result.dependencies.map(({ name }) => name)).toEqual(
+    expect.arrayContaining([
+      'react-native-web/dist/exports/View',
+      'react-native-web/dist/exports/Text',
+      'react/jsx-runtime',
+    ])
+  );
+});
+
+it('inlines APP_MANIFEST through the complete native web path', async () => {
+  const previousManifest = process.env.APP_MANIFEST;
+  process.env.APP_MANIFEST = '{"name":"worker-native"}';
+  try {
+    const result = await Transformer.transform(
+      baseConfig,
+      '/root',
+      '/root/web/constants.js',
+      Buffer.from('const manifest = process.env.APP_MANIFEST; module.exports = manifest;', 'utf8'),
+      {
+        ...baseTransformOptions,
+        dev: false,
+        platform: 'web',
+        experimentalImportSupport: true,
+        unstable_transformProfile: 'default',
+        customTransformOptions: {},
+      }
+    );
+
+    expect(result.output[0]!.data.code).toContain(String.raw`{\"name\":\"worker-native\"}`);
+    expect(result.output[0]!.data.code).not.toContain('process.env.APP_MANIFEST');
+  } finally {
+    if (previousManifest === undefined) delete process.env.APP_MANIFEST;
+    else process.env.APP_MANIFEST = previousManifest;
+  }
+});
+
+it('tree-shakes @expo/ui Icon.select through the complete native path', async () => {
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/app/icon.js',
+    Buffer.from(
+      `import { Icon } from '@expo/ui';
+export const icon = Icon.select({ ios: 'heart.fill', android: import('./heart.xml') });`,
+      'utf8'
+    ),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      platform: 'ios',
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+
+  expect(result.output[0]!.data.code).toContain('heart.fill');
+  expect(result.output[0]!.data.code).not.toMatch(/Icon\.select|heart\.xml/);
+  expect(result.dependencies.map(({ name }) => name)).toEqual(['@expo/ui']);
+});
+
+it('serializes widget functions through the complete native path', async () => {
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/app/widget.tsx',
+    Buffer.from(
+      `export function Greeting({ name }: { name: string }) {
+  'widget';
+  return <Text>{name}</Text>;
+}`,
+      'utf8'
+    ),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      platform: 'ios',
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+
+  expect(result.output[0]!.data.code).not.toContain("'widget'");
+  expect(result.output[0]!.data.code).toContain('var Greeting = `function');
+  expect(result.output[0]!.data.code).toContain('jsx');
+});
+
+it('preserves Babel diagnostics for precise restricted imports', async () => {
+  await expect(
+    Transformer.transform(
+      baseConfig,
+      '/root',
+      '/root/app/client.js',
+      Buffer.from(`import value from 'server-only';`, 'utf8'),
+      {
+        ...baseTransformOptions,
+        dev: false,
+        platform: 'ios',
+        experimentalImportSupport: true,
+        unstable_transformProfile: 'hermes-stable',
+        customTransformOptions: { engine: 'hermes' },
+      }
+    )
+  ).rejects.toThrow("Importing 'server-only' module is not allowed in a client component.");
+});
+
+it('creates and propagates native React Server client references', async () => {
+  const filename = '/root/app/client.tsx';
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    filename,
+    Buffer.from(
+      `"use client";
+export const value: number = 1;
+export default function Component() { return <View />; }`,
+      'utf8'
+    ),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: false,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: {
+        engine: 'hermes',
+        environment: 'react-server',
+      },
+    }
+  );
+  const output = result.output[0]!;
+
+  expect(output.data.code).toContain('createClientModuleProxy');
+  expect(output.data.code).toContain('registerClientReference');
+  expect(output.data.code).not.toContain('<View');
+  expect(output.data.reactClientReference).toBe('file:///root/app/client.tsx');
+  expect(result.dependencies.map((dependency) => dependency.name)).toEqual([
+    'react-server-dom-webpack/server',
+  ]);
+});
+
+it('creates and propagates native DOM component references', async () => {
+  const filename = '/root/app/Card.tsx';
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    filename,
+    Buffer.from(
+      `"use dom";
+export default function Card({ title }: { title: string }) {
+  return <main>{title}</main>;
+}`,
+      'utf8'
+    ),
+    {
+      ...baseTransformOptions,
+      dev: true,
+      experimentalImportSupport: false,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+  const output = result.output[0]!;
+
+  expect(output.data.code).toContain('expo/dom/internal');
+  expect(output.data.code).toContain('DOM(Card)');
+  expect(output.data.code).not.toContain('<main');
+  expect(output.data.expoDomComponentReference).toBe('file:///root/app/Card.tsx');
+  expect(result.dependencies.map((dependency) => dependency.name)).toEqual([
+    'react',
+    'expo/dom/internal',
+  ]);
+});
+
+it('creates and propagates native client-side server references', async () => {
+  const filename = '/root/app/actions.ts';
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    filename,
+    Buffer.from(
+      `"use server";
+export async function save() { return 1; }
+export default async function reset() { return 2; }`,
+      'utf8'
+    ),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: false,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+  const output = result.output[0]!;
+
+  expect(output.data.code).toContain('createServerReference');
+  expect(output.data.code).toContain('./app/actions.ts#save');
+  expect(output.data.code).not.toContain('return 1');
+  expect(output.data.reactServerReference).toBe('file:///root/app/actions.ts');
+  expect(result.dependencies.map((dependency) => dependency.name)).toEqual([
+    'react-server-dom-webpack/client',
+    'expo-router/rsc/internal',
+  ]);
+});
+
+it('registers and propagates native module-level React Server actions', async () => {
+  const filename = '/root/app/server-actions.ts';
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    filename,
+    Buffer.from(
+      `"use server";
+export async function save() { return 1; }
+export const remove = async () => 2;`,
+      'utf8'
+    ),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: false,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: {
+        engine: 'hermes',
+        environment: 'react-server',
+      },
+    }
+  );
+  const output = result.output[0]!;
+
+  expect(output.data.code).toContain('registerServerReference');
+  expect(output.data.code).toContain('./app/server-actions.ts');
+  expect(output.data.code).not.toContain('"use server"');
+  expect(output.data.reactServerReference).toBe('file:///root/app/server-actions.ts');
+  expect(result.dependencies.map((dependency) => dependency.name)).toEqual([
+    'react-server-dom-webpack/server',
+  ]);
+});
+
+it('uses native source transforms and preserves graph-optimization reconciliation metadata', async () => {
+  const contents = `import primary, { alpha } from 'pkg';
+export { beta } from 'reexport';
+export const output = [primary, alpha];`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/node_modules/example/index.js',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes', optimize: true },
+    }
+  );
+
+  expect(result.output[0]!.data.code).not.toContain('__d(function');
+  expect(result.output[0]!.data.code).toMatch(/from ["']pkg["']/);
+  expect(result.output[0]!.data.ast).toBeDefined();
+  expect(result.output[0]!.data.reconcile).toBeDefined();
+  expect(() => JSON.stringify(result.output[0]!.data.ast)).not.toThrow();
+  expect(
+    result.dependencies.map((dependency) => [dependency.name, dependency.data.exportNames])
+  ).toEqual([
+    ['pkg', ['default', 'alpha']],
+    ['reexport', ['beta']],
+  ]);
+});
+
+it('finalizes native dependency export metadata without exposing its mutable sets', async () => {
+  const contents = `import 'side-effect';
+import primary from 'default-import';
+import * as namespace from 'namespace-import';
+import { alpha as a, duplicate as d1 } from 'pkg';
+import { beta as b, duplicate as d2 } from 'pkg';
+import { gamma as g, alpha as a2 } from 'pkg';
+export { first as publicFirst } from 'reexports';
+export { second as publicSecond, first as alternateFirst } from 'reexports';
+const commonOne = require('commonjs');
+const commonTwo = require('commonjs');
+export default [primary, namespace, a, d1, b, d2, g, a2, commonOne, commonTwo];`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/node_modules/example/index.js',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes', optimize: true },
+    }
+  );
+
+  const dependencies = new Map(
+    result.dependencies.map((dependency) => [dependency.name, dependency] as const)
+  );
+  expect([...dependencies.keys()]).toEqual([
+    'side-effect',
+    'default-import',
+    'namespace-import',
+    'pkg',
+    'reexports',
+    'commonjs',
+  ]);
+  expect(dependencies.get('commonjs')).toMatchObject({
+    data: { exportNames: ['*'], imports: 2, isESMImport: false },
+  });
+  expect(dependencies.get('side-effect')).toMatchObject({
+    data: { exportNames: [], imports: 1, isESMImport: true },
+  });
+  expect(dependencies.get('default-import')).toMatchObject({
+    data: { exportNames: ['default'], imports: 1, isESMImport: true },
+  });
+  expect(dependencies.get('namespace-import')).toMatchObject({
+    data: { exportNames: ['*'], imports: 1, isESMImport: true },
+  });
+  expect(dependencies.get('pkg')).toMatchObject({
+    data: {
+      exportNames: ['alpha', 'duplicate', 'beta', 'gamma'],
+      imports: 3,
+      isESMImport: true,
+    },
+  });
+  expect(dependencies.get('reexports')).toMatchObject({
+    data: { exportNames: ['first', 'second'], imports: 2, isESMImport: true },
+  });
+  for (const dependency of result.dependencies) {
+    expect(Object.keys(dependency)).not.toContain('exportNameSet');
+  }
+  expect(JSON.stringify(result.dependencies)).not.toContain('exportNameSet');
+});
+
+it('uses Noxcturnal for the complete Metro transform of eligible dependencies', async () => {
+  const contents = `var oddly_spaced= require('dep');\nmodule.exports=oddly_spaced;`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/node_modules/example/index.js',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      experimentalImportSupport: true,
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+
+  expect(result.output[0]!.data.code).toBe(
+    [
+      HEADER_DEV,
+      `var oddly_spaced= _$$_REQUIRE(_dependencyMap[0], "dep");`,
+      'module.exports=oddly_spaced;',
+      '});',
+    ].join('\n')
+  );
+  expect(result.output[0]!.data.hasCjsExports).toBe(true);
+  expect(result.dependencies).toEqual([
+    {
+      name: 'dep',
+      data: expect.objectContaining({
+        asyncType: null,
+        imports: 1,
+        isESMImport: false,
+      }),
+    },
+  ]);
+
+  const trace = toTraceMap(result.output[0]!, contents);
+  expect(generatedPositionFor(trace, { source: '', line: 1, column: 0 })).toMatchObject({
+    line: 2,
+    column: 0,
+  });
+});
+
+it('propagates native Expo Router loader metadata through the worker result', async () => {
+  const filename = '/root/app/route.js';
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    filename,
+    Buffer.from('export async function loader() { return null; } export const value = 1;', 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: true,
+      unstable_transformProfile: 'hermes-stable',
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+
+  expect(result.output[0]!.data.code).not.toContain('loader');
+  expect(result.output[0]!.data.code).toContain('value');
+  expect(result.output[0]!.data.loaderReference).toBe(filename);
+});
+
+it('propagates native Expo Router loader metadata for optimized non-Hermes web bundles', async () => {
+  const filename = '/root/routes/route.js';
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    filename,
+    Buffer.from('export async function loader() { return null; } export const value = 1;', 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      platform: 'web',
+      experimentalImportSupport: true,
+      customTransformOptions: { routerRoot: 'routes', optimize: true },
+    }
+  );
+
+  expect(result.output[0]!.data.code).not.toContain('loader');
+  expect(result.output[0]!.data.code).toContain('value');
+  expect(result.output[0]!.data.loaderReference).toBe(filename);
+});
+
+it('runs the configured minifier after a complete native dependency transform', async () => {
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    '/root/node_modules/example/index.js',
+    Buffer.from('module.exports = arbitrary(code);', 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      minify: true,
+      experimentalImportSupport: true,
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+  expect(result.output[0]!.data.code).toContain('minified(code)');
+});
+
+it('collects optional dependencies through the complete native path', async () => {
+  const result = await Transformer.transform(
+    { ...baseConfig, allowOptionalDependencies: true },
+    '/root',
+    '/root/node_modules/example/index.js',
+    Buffer.from(`try { module.exports = require('optional-package'); } catch {}`, 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      experimentalImportSupport: true,
+      customTransformOptions: { engine: 'hermes' },
+    }
+  );
+  expect(result.dependencies).toHaveLength(1);
+  expect(result.dependencies[0]!.name).toBe('optional-package');
+  expect(result.dependencies[0]!.data.isOptional).toBe(true);
+  expect(result.output[0]!.data.code).toContain('"optional-package"');
 });
 
 it('transforms a module with dependencies', async () => {
@@ -253,13 +987,13 @@ it('transforms a module with dependencies', async () => {
   expect(result.output[0]!.data.code).toBe(
     [
       HEADER_DEV,
-      '  "use strict";',
+      '"use strict";',
+      '_$$_REQUIRE(_dependencyMap[2], "./c");',
+      '_$$_REQUIRE(_dependencyMap[0], "./a");',
+      'arbitrary(code);',
+      'var b = _$$_REQUIRE(_dependencyMap[1], "b");',
       '',
-      '  var _interopRequireDefault = _$$_REQUIRE(_dependencyMap[0], "@babel/runtime/helpers/interopRequireDefault").default;',
-      '  var _c = _interopRequireDefault(_$$_REQUIRE(_dependencyMap[1], "./c"));',
-      '  _$$_REQUIRE(_dependencyMap[2], "./a");',
-      '  arbitrary(code);',
-      '  var b = _$$_REQUIRE(_dependencyMap[3], "b");',
+      '',
       '});',
     ].join('\n')
   );
@@ -268,56 +1002,25 @@ it('transforms a module with dependencies', async () => {
 
   expect(
     generatedPositionFor(trace, { source: '', line: 2, column: 0 } /* require("./a") */)
-  ).toMatchObject({ line: 6, column: 2 });
+  ).toMatchObject({ line: 4, column: 0 });
 
-  expect(originalPositionFor(trace, { line: 7, column: 2 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 5, column: 0 })).toMatchObject({
     line: 3,
     column: 0,
-    name: 'arbitrary',
+    name: null,
   });
-  expect(originalPositionFor(trace, { line: 8, column: 6 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 6, column: 6 })).toMatchObject({
     line: 4,
     column: 6,
-    name: 'b',
-  });
-  expect(originalPositionFor(trace, { line: 8, column: 6 })).toMatchObject({
-    line: 4,
-    column: 6,
-    name: 'b',
-  });
-
-  // NOTE: If downgraded below @babel/generator@7.21.0, names will be missing here
-  expect(originalPositionFor(trace, { line: 5, column: 6 })).toMatchObject({
-    line: 5,
-    column: 0,
-    name: '_c',
-  });
-  expect(originalPositionFor(trace, { line: 4, column: 6 })).toMatchObject({
-    line: 1,
-    column: 13,
-    name: '_interopRequireDefault',
-  });
-  expect(originalPositionFor(trace, { line: 4, column: 31 })).toMatchObject({
-    line: 1,
-    column: 13,
-    name: '_$$_REQUIRE',
-  });
-  expect(originalPositionFor(trace, { line: 4, column: 43 })).toMatchObject({
-    line: 1,
-    column: 13,
-    name: '_dependencyMap',
+    name: null,
   });
 
   expect(result.output[0]!.data.functionMap).toMatchSnapshot();
 
   expect(result.dependencies).toEqual([
-    {
-      data: expect.objectContaining({ asyncType: null }),
-      name: '@babel/runtime/helpers/interopRequireDefault',
-    },
-    { data: expect.objectContaining({ asyncType: null }), name: './c' },
     { data: expect.objectContaining({ asyncType: null }), name: './a' },
     { data: expect.objectContaining({ asyncType: null }), name: 'b' },
+    { data: expect.objectContaining({ asyncType: null }), name: './c' },
   ]);
 });
 
@@ -338,23 +1041,19 @@ it('transforms an es module with asyncToGenerator', async () => {
   const trace = toTraceMap(result.output[0]!, contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 12 })).toMatchObject({
-    line: 12,
-    column: 44,
+    line: 10,
+    column: 0,
   });
 
-  expect(originalPositionFor(trace, { line: 8, column: 11 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 10, column: 9 })).toMatchObject({
     line: 1,
     column: 22,
-    name: 'test',
+    name: null,
   });
 
   expect(result.output[0]!.data.functionMap).toMatchSnapshot();
 
   expect(result.dependencies).toEqual([
-    {
-      data: expect.objectContaining({ asyncType: null }),
-      name: '@babel/runtime/helpers/interopRequireDefault',
-    },
     {
       data: expect.objectContaining({ asyncType: null }),
       name: '@babel/runtime/helpers/asyncToGenerator',
@@ -373,14 +1072,6 @@ it('transforms async generators', async () => {
 
   expect(result.output[0]!.data.code).toMatchSnapshot();
   expect(result.dependencies).toEqual([
-    {
-      data: expect.objectContaining({ asyncType: null }),
-      name: '@babel/runtime/helpers/interopRequireDefault',
-    },
-    {
-      data: expect.objectContaining({ asyncType: null }),
-      name: '@babel/runtime/helpers/awaitAsyncGenerator',
-    },
     {
       data: expect.objectContaining({ asyncType: null }),
       name: '@babel/runtime/helpers/wrapAsyncGenerator',
@@ -404,37 +1095,24 @@ it('transforms import/export syntax when experimental flag is on', async () => {
   expect(result.output[0]!.data.code).toBe(
     [
       HEADER_DEV,
-      '  "use strict";',
+      'function _interopDefault(e) {',
+      '  return e && e.__esModule ? e : { default: e };',
+      '}',
+      'var _c = _$$_REQUIRE(_dependencyMap[0], "./c");',
+      'var c = _interopDefault(_c);',
       '',
-      '  function _interopDefault(e) {',
-      '    return e && e.__esModule ? e : {',
-      '      default: e',
-      '    };',
-      '  }',
-      '  var _c = _$$_REQUIRE(_dependencyMap[0], "./c");',
-      '  var c = _interopDefault(_c);',
-      '  test(c.default);',
+      'test(c.default);',
+      '',
       '});',
     ].join('\n')
   );
 
   const trace = toTraceMap(result.output[0]!, contents);
 
-  expect(generatedPositionFor(trace, { source: '', line: 1, column: 7 })).toMatchObject({
-    line: 10,
-    column: 28,
-  });
-
-  expect(originalPositionFor(trace, { line: 11, column: 7 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 8, column: 5 })).toMatchObject({
     line: 1,
     column: 26,
-    name: 'c',
-  });
-
-  expect(originalPositionFor(trace, { line: 9, column: 30 })).toMatchObject({
-    line: 1,
-    column: 0,
-    name: '_dependencyMap',
+    name: null,
   });
 
   expect(result.output[0]!.data.functionMap).toMatchSnapshot();
@@ -459,9 +1137,7 @@ it('does not add "use strict" on non-modules', async () => {
   );
 
   expect(result.output[0]!.type).toBe('js/module');
-  expect(result.output[0]!.data.code).toBe(
-    [HEADER_DEV, '  module.exports = {};', '});'].join('\n')
-  );
+  expect(result.output[0]!.data.code).toBe([HEADER_DEV, 'module.exports = {};', '});'].join('\n'));
 });
 
 it('preserves require() calls when module wrapping is disabled', async () => {
@@ -479,7 +1155,7 @@ it('preserves require() calls when module wrapping is disabled', async () => {
   );
 
   expect(result.output[0]!.type).toBe('js/module');
-  expect(result.output[0]!.data.code).toBe('require("./c");');
+  expect(result.output[0]!.data.code).toBe('require("./c");\n');
 });
 
 it('reports filename when encountering unsupported dynamic dependency', async () => {
@@ -537,7 +1213,7 @@ it('minifies the code correctly', async () => {
         { ...baseTransformOptions, minify: true }
       )
     ).output[0]!.data.code
-  ).toBe([HEADER_PROD, '  minified(code);', '});'].join('\n'));
+  ).toBe([HEADER_PROD, 'minified(code);', '', '});'].join('\n'));
 });
 
 it('minifies a JSON file', async () => {
@@ -587,7 +1263,8 @@ it('uses a reserved dependency map name and prevents it from being minified', as
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, THE_DEP_MAP) {
-      minified(code);
+    minified(code);
+
     });"
   `);
 });
@@ -619,7 +1296,8 @@ it('allows disabling the normalizePseudoGlobals pass when minifying', async () =
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-      minified(code);
+    minified(code);
+
     });"
   `);
 });
@@ -633,7 +1311,7 @@ it('allows emitting compact code when not minifying', async () => {
     { ...baseTransformOptions, dev: false, minify: false }
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(
-    `"__d(function(global,_$$_REQUIRE,_$$_IMPORT_DEFAULT,_$$_IMPORT_ALL,module,exports,_dependencyMap){arbitrary(code);});"`
+    `"__d(function(global,_$$_REQUIRE,_$$_IMPORT_DEFAULT,_$$_IMPORT_ALL,module,exports,_dependencyMap){arbitrary(code)});"`
   );
 });
 
@@ -653,7 +1331,8 @@ it('skips minification in Hermes stable transform profile', async () => {
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-      arbitrary(code);
+    arbitrary(code);
+
     });"
   `);
 });
@@ -674,7 +1353,8 @@ it('skips minification in Hermes canary transform profile', async () => {
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-      arbitrary(code);
+    arbitrary(code);
+
     });"
   `);
 });
@@ -694,7 +1374,8 @@ it('minifies with Hermes transform profile if bytecode is disabled', async () =>
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, d) {
-      minified(code);
+    minified(code);
+
     });"
   `);
 });
@@ -726,7 +1407,7 @@ it('outputs comments when `minify: false`', async () => {
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-      /*#__PURE__*/arbitrary(code);
+    /*#__PURE__*/arbitrary(code);
     });"
   `);
 });
@@ -741,7 +1422,8 @@ it('omits comments when `minify: true`', async () => {
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, d) {
-      minified(code);
+     minified(code);
+
     });"
   `);
 });
@@ -756,7 +1438,7 @@ it('allows outputting comments when `minify: true`', async () => {
   );
   expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, d) {
-      /*#__PURE__*/minified(code);
+    /*#__PURE__*/minified(code);
     });"
   `);
 });
