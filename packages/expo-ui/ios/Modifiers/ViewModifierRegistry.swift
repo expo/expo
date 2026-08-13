@@ -1594,6 +1594,16 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   }
 }
 
+internal struct GeometryGroupModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+      content.geometryGroup()
+    } else {
+      content
+    }
+  }
+}
+
 internal enum ButtonStyle: String, Enumerable {
   case automatic
   case bordered
@@ -1918,6 +1928,10 @@ extension ViewModifierRegistry {
 
     register("matchedGeometryEffect") { params, appContext, _ in
       return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
+    }
+
+    register("geometryGroup") { params, appContext, _ in
+      return try GeometryGroupModifier(from: params, appContext: appContext)
     }
 
     register("fixedSize") { params, appContext, _ in

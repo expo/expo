@@ -14,6 +14,7 @@
 - [iOS] Added an optional `kind` argument to the `contentShape` modifier, so a shape can be applied to drag previews, context menu previews, hover effects, or accessibility instead of only hit-testing. ([#48540](https://github.com/expo/expo/issues/48540) by [@sinhong2011](https://github.com/sinhong2011)) ([#48564](https://github.com/expo/expo/pull/48564) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Added the `properties`, `anchor` and `isSource` parameters to the `matchedGeometryEffect` modifier, matching SwiftUI's signature. ([#48671](https://github.com/expo/expo/pull/48671) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `listRowSeparatorTint` modifier, so a list row separator can be recolored and not only shown or hidden. ([#48804](https://github.com/expo/expo/issues/48804) by [@marco242424](https://github.com/marco242424)) ([#48810](https://github.com/expo/expo/pull/48810) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Added the `geometryGroup` modifier, so a view's subviews can resolve their geometry against it instead of an animating ancestor. Without it, a `Button` inside a container with an `animation` modifier can draw its label away from its own background while the animation runs. ([#48838](https://github.com/expo/expo/pull/48838) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 

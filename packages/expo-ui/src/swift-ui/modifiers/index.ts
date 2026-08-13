@@ -89,6 +89,23 @@ export const matchedGeometryEffect = (
 ) => createModifier('matchedGeometryEffect', { id, namespaceId, ...options });
 
 /**
+ * Isolates the geometry (e.g. position and size) of the view from its parent view.
+ *
+ * @example
+ * ```tsx
+ * <VStack modifiers={[animation(Animation.spring(), isBusy)]}>
+ *   {isBusy ? <Text>Working…</Text> : null}
+ *   <Button label="Check now" modifiers={[geometryGroup()]} />
+ * </VStack>
+ * ```
+ *
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/geometrygroup()).
+ */
+export const geometryGroup = () => createModifier('geometryGroup', {});
+
+/**
  * Sets the frame properties of a view.
  * @param params - The frame parameters. Width, height, minWidth, maxWidth, minHeight, maxHeight, idealWidth, idealHeight and alignment.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/frame(width:height:alignment:)).
@@ -1695,6 +1712,7 @@ export type BuiltInModifier =
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
+  | ReturnType<typeof geometryGroup>
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
   | ReturnType<typeof contentShape>
