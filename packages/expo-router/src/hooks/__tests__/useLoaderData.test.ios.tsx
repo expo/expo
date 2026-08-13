@@ -54,6 +54,11 @@ describe(useLoaderData, () => {
       initialUrl: '/users/123',
       expectedPath: '/users/123',
     },
+    {
+      route: 'docs/[...rest]',
+      initialUrl: '/docs/guides/loaders/',
+      expectedPath: '/docs/guides/loaders',
+    },
   ])('resolves $route to $expectedPath', async ({ route, initialUrl, expectedPath }) => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       [expectedPath]: { correct: true },
@@ -126,7 +131,10 @@ describe(useLoaderData, () => {
       wrapper: LoaderWrapper,
     });
     expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
-    expect(fetchLoaderMock).toHaveBeenCalledWith('/index');
+    expect(fetchLoaderMock).toHaveBeenCalledWith(
+      '/index',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
   });
 
   it('retrieves fresh data from `fetchLoaderModule()`', async () => {
@@ -145,7 +153,10 @@ describe(useLoaderData, () => {
       wrapper: LoaderWrapper,
     });
 
-    expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123');
+    expect(fetchLoaderMock).toHaveBeenCalledWith(
+      '/users/123',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
 
     await act(async () => {
       await fetchLoaderMock.mock.results[0]!.value;
