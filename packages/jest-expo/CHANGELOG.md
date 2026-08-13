@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Added `fingerprint` to the `ExponentConstants` module mock. ([#48922](https://github.com/expo/expo/pull/48922) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
