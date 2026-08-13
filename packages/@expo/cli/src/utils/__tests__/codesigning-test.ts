@@ -213,6 +213,24 @@ describe(getCodeSigningInfoAsync, () => {
   });
 
   describe('non expo-root certificate keyid requested', () => {
+    it('returns null when codeSigningCertificate and private key path are not specified', async () => {
+      await expect(
+        getCodeSigningInfoAsync({} as any, 'keyid="test", alg="rsa-v1_5-sha256"', undefined)
+      ).resolves.toBeNull();
+    });
+
+    it('throws when private key path is specified without codeSigningCertificate', async () => {
+      await expect(
+        getCodeSigningInfoAsync(
+          {} as any,
+          'keyid="test", alg="rsa-v1_5-sha256"',
+          'keys/private-key.pem'
+        )
+      ).rejects.toThrow(
+        '--private-key-path was specified, but updates.codeSigningCertificate is not set in the resolved app config'
+      );
+    });
+
     it('normal case gets the configured certificate', async () => {
       vol.fromJSON({
         'certs/cert.pem': mockSelfSigned.certificate,
