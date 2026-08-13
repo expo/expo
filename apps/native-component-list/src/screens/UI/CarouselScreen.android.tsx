@@ -12,6 +12,7 @@ import {
 import {
   background,
   fillMaxWidth,
+  maskClip,
   padding,
   Shapes,
   size,
@@ -27,25 +28,52 @@ export default function CarouselScreen() {
             <ComposeText style={{ typography: 'titleMedium' }}>Centered Hero</ComposeText>
             <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
               One large centered item with small peek items on each side. Items are masked to a
-              rounded shape with maskShape.
+              rounded shape with the maskClip modifier.
             </ComposeText>
-            <HorizontalCenteredHeroCarousel
-              itemSpacing={8}
-              maskShape={Shapes.RoundedCorner(28)}
-              modifiers={[fillMaxWidth()]}>
-              <Box modifiers={[size(300, 200), background('#6200EE')]} contentAlignment="center">
+            <HorizontalCenteredHeroCarousel itemSpacing={8} modifiers={[fillMaxWidth()]}>
+              <Box
+                modifiers={[
+                  size(300, 200),
+                  background('#6200EE'),
+                  maskClip(Shapes.RoundedCorner(28)),
+                ]}
+                contentAlignment="center">
                 <ComposeText color="#FFFFFF">1</ComposeText>
               </Box>
-              <Box modifiers={[size(300, 200), background('#03DAC5')]} contentAlignment="center">
+              <Box
+                modifiers={[
+                  size(300, 200),
+                  background('#03DAC5'),
+                  maskClip(Shapes.RoundedCorner(28)),
+                ]}
+                contentAlignment="center">
                 <ComposeText color="#FFFFFF">2</ComposeText>
               </Box>
-              <Box modifiers={[size(300, 200), background('#FF5722')]} contentAlignment="center">
+              <Box
+                modifiers={[
+                  size(300, 200),
+                  background('#FF5722'),
+                  maskClip(Shapes.RoundedCorner(28)),
+                ]}
+                contentAlignment="center">
                 <ComposeText color="#FFFFFF">3</ComposeText>
               </Box>
-              <Box modifiers={[size(300, 200), background('#4CAF50')]} contentAlignment="center">
+              <Box
+                modifiers={[
+                  size(300, 200),
+                  background('#4CAF50'),
+                  maskClip(Shapes.RoundedCorner(28)),
+                ]}
+                contentAlignment="center">
                 <ComposeText color="#FFFFFF">4</ComposeText>
               </Box>
-              <Box modifiers={[size(300, 200), background('#2196F3')]} contentAlignment="center">
+              <Box
+                modifiers={[
+                  size(300, 200),
+                  background('#2196F3'),
+                  maskClip(Shapes.RoundedCorner(28)),
+                ]}
+                contentAlignment="center">
                 <ComposeText color="#FFFFFF">5</ComposeText>
               </Box>
             </HorizontalCenteredHeroCarousel>

@@ -1,16 +1,13 @@
 package expo.modules.ui
 
 import androidx.compose.foundation.gestures.TargetedFlingBehavior
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.carousel.CarouselDefaults
-import androidx.compose.material3.carousel.CarouselItemScope
 import androidx.compose.material3.carousel.HorizontalCenteredHeroCarousel
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.HorizontalUncontainedCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.size
@@ -25,26 +22,6 @@ enum class FlingBehaviorType(val value: String) : Enumerable {
   NO_SNAP("noSnap")
 }
 
-/**
- * Renders a carousel item, optionally clipping the item's mask to the given shape
- * (`CarouselItemScope.maskClip`) so items keep their shape while the carousel masks them.
- */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun CarouselItemScope.CarouselItemContent(
-  maskShape: BuiltinShapeRecord?,
-  content: @Composable () -> Unit
-) {
-  val shape = maskShape?.let { ModifierRegistry.resolveShape(it) }
-  if (shape != null) {
-    Box(Modifier.maskClip(shape)) {
-      content()
-    }
-  } else {
-    content()
-  }
-}
-
 @OptimizedComposeProps
 data class HorizontalCenteredHeroCarouselProps(
   val maxItemWidth: Float? = null,
@@ -54,7 +31,6 @@ data class HorizontalCenteredHeroCarouselProps(
   val maxSmallItemWidth: Float? = null,
   val flingBehavior: FlingBehaviorType? = null,
   val userScrollEnabled: Boolean? = null,
-  val maskShape: BuiltinShapeRecord? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -82,9 +58,7 @@ fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: Horiz
     maxSmallItemWidth = maxSmallItemWidth,
     contentPadding = contentPadding
   ) { itemIndex ->
-    CarouselItemContent(props.maskShape) {
-      Child(UIComposableScope(), itemIndex)
-    }
+    Child(CarouselItemComposableScope(this), itemIndex)
   }
 }
 
@@ -97,7 +71,6 @@ data class HorizontalMultiBrowseCarouselProps(
   val maxSmallItemWidth: Float? = null,
   val flingBehavior: FlingBehaviorType? = null,
   val userScrollEnabled: Boolean? = null,
-  val maskShape: BuiltinShapeRecord? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -125,9 +98,7 @@ fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: Horizo
     maxSmallItemWidth = maxSmallItemWidth,
     contentPadding = contentPadding
   ) { itemIndex ->
-    CarouselItemContent(props.maskShape) {
-      Child(UIComposableScope(), itemIndex)
-    }
+    Child(CarouselItemComposableScope(this), itemIndex)
   }
 }
 
@@ -138,7 +109,6 @@ data class HorizontalUncontainedCarouselProps(
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
   val flingBehavior: FlingBehaviorType? = null,
   val userScrollEnabled: Boolean? = null,
-  val maskShape: BuiltinShapeRecord? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -162,8 +132,6 @@ fun FunctionalComposableScope.HorizontalUncontainedCarouselContent(props: Horizo
     userScrollEnabled = props.userScrollEnabled ?: true,
     contentPadding = contentPadding
   ) { itemIndex ->
-    CarouselItemContent(props.maskShape) {
-      Child(UIComposableScope(), itemIndex)
-    }
+    Child(CarouselItemComposableScope(this), itemIndex)
   }
 }

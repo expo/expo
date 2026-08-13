@@ -571,6 +571,22 @@ export const Shapes = {
  */
 export const clip = (shape: BuiltinShape) => createModifier('clip', { shape });
 
+/**
+ * Clips a carousel item's mask to the given shape, so the item keeps its shape while the
+ * carousel masks it. Wraps Compose's `CarouselItemScope.maskClip`.
+ *
+ * A carousel reveals each item through a mask, so a plain `clip` on the item loses its
+ * corners as the item squeezes into a peek. Clipping the mask itself keeps them.
+ *
+ * Only works on a child of a Carousel component.
+ *
+ * @example
+ * ```tsx
+ * maskClip(Shapes.RoundedCorner(28))
+ * ```
+ */
+export const maskClip = (shape: BuiltinShape) => createModifier('maskClip', { shape });
+
 // =============================================================================
 // Scroll Modifiers
 // =============================================================================

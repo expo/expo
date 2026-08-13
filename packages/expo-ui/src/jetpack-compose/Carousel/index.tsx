@@ -1,7 +1,6 @@
 import { requireNativeView } from 'expo';
 
 import { type ModifierConfig } from '../../types';
-import { type BuiltinShape } from '../modifiers';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
@@ -42,13 +41,6 @@ export type CarouselCommonConfig = {
    * @default true
    */
   userScrollEnabled?: boolean;
-  /**
-   * Shape used to clip each item's mask, matching Compose's `CarouselItemScope.maskClip`.
-   * The carousel reveals items through a mask, so a `clip` modifier on the item itself
-   * loses its corners as the item squeezes. Clipping the mask keeps the shape intact.
-   * Accepts the same shapes as the `clip` modifier, for example `Shapes.RoundedCorner(28)`.
-   */
-  maskShape?: BuiltinShape;
   /**
    * Modifiers for the component.
    */

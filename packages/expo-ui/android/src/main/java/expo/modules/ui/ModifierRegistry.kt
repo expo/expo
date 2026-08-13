@@ -247,7 +247,7 @@ data class TestIDParams(
   @Field val testID: String? = null
 ) : Record
 
-enum class BuiltinShapeType(val value: String) : Enumerable {
+internal enum class BuiltinShapeType(val value: String) : Enumerable {
   RECTANGLE("rectangle"),
   CIRCLE("circle"),
   ROUNDED_CORNER("roundedCorner"),
@@ -256,7 +256,7 @@ enum class BuiltinShapeType(val value: String) : Enumerable {
 }
 
 @OptimizedRecord
-data class BuiltinShapeRecord(
+internal data class BuiltinShapeRecord(
   @Field val type: BuiltinShapeType = BuiltinShapeType.RECTANGLE,
   @Field val radius: Float? = null,
   @Field val topStart: Float? = null,
@@ -330,7 +330,7 @@ object ModifierRegistry {
   private val modifierFactories: MutableMap<String, ModifierFactory> = mutableMapOf()
 
   @Composable
-  internal fun resolveShape(shape: BuiltinShapeRecord): Shape? {
+  private fun resolveShape(shape: BuiltinShapeRecord): Shape? {
     return when (shape.type) {
       BuiltinShapeType.RECTANGLE -> RectangleShape
       BuiltinShapeType.CIRCLE -> CircleShape
@@ -804,6 +804,21 @@ object ModifierRegistry {
           },
           enabled = params.enabled
         )
+      }
+    }
+
+    // Carousel item scope-dependent modifier
+    register("maskClip") { map, scope, appContext, _ ->
+      val itemScope = scope?.carouselItemScope
+        ?: error("maskClip modifier can only be used inside a Carousel item")
+      val params = recordFromMap<ClipParams>(map, appContext)
+      val shape = params.shape?.let { resolveShape(it) }
+      if (shape != null) {
+        with(itemScope) {
+          Modifier.maskClip(shape)
+        }
+      } else {
+        Modifier
       }
     }
 
