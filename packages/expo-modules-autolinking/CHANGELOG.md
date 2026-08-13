@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Resolve symlinks in the Gradle plugin `sourceDir` before it reaches `includeBuild`. Android Studio failed to sync with `Missing ExternalProject for :` in pnpm workspaces with a patched dependency. ([#48495](https://github.com/expo/expo/pull/48495) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 3.0.26 — 2026-05-28

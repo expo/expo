@@ -3,7 +3,7 @@ import path from 'path';
 
 import { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
-import { scanFilesRecursively } from '../../utils';
+import { maybeRealpath, scanFilesRecursively } from '../../utils';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
@@ -52,13 +52,21 @@ export async function resolveModuleAsync(
     return null;
   }
 
-  const plugins = (revision.config?.androidGradlePlugins() ?? []).map(
-    ({ id, group, sourceDir, applyToRootProject }) => ({
-      id,
-      group,
-      sourceDir: path.join(revision.path, sourceDir),
-      applyToRootProject: applyToRootProject ?? true,
-    })
+  const plugins = await Promise.all(
+    (revision.config?.androidGradlePlugins() ?? []).map(
+      async ({ id, group, sourceDir, applyToRootProject }) => {
+        const pluginPath = path.join(revision.path, sourceDir);
+        return {
+          id,
+          group,
+          // The plugin source dir ends up in Gradle's `includeBuild`, which must not receive a
+          // symlink - Android Studio's Tooling API fails to import symlinked included builds.
+          // See: https://youtrack.jetbrains.com/issue/IDEA-329756.
+          sourceDir: (await maybeRealpath(pluginPath)) ?? pluginPath,
+          applyToRootProject: applyToRootProject ?? true,
+        };
+      }
+    )
   );
 
   const defaultProjectName = convertPackageToProjectName(packageName);
