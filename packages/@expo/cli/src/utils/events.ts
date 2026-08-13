@@ -30,6 +30,14 @@ declare module '2g' {
     'utils:package_name_no_network': { packageName: string };
     'utils:package_name_checking': { packageName: string; url: string };
     'utils:package_name_check_error': { packageName: string; error: SerializedError };
+    'utils:fingerprint_module_unresolved': {
+      moduleId: string;
+      projectRoot: string;
+      error: SerializedError;
+    };
+    'utils:fingerprint_marker_skipped': Record<string, never>;
+    'utils:fingerprint_marker_failed': { error: SerializedError };
+    'utils:fingerprint_import_failed': { error: SerializedError };
     'utils:variadic_extras': { extras: string[] };
     'utils:variadic_parsed': {
       variadic: string[];
