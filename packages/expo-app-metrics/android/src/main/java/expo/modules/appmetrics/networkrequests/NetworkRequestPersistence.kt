@@ -23,14 +23,33 @@ private const val TAG = "ExpoAppMetrics"
 class NetworkRequestPersistence(
   private val database: MetricsDatabase,
   private val scope: CoroutineScope,
+  initialConfiguration: NetworkTracesConfiguration = NetworkTracesConfiguration(),
   // A plain value rather than a provider: the id is constant for an instance, and resolving it
   // eagerly keeps the monitor's record path off module state a teardown could have invalidated.
   private val sessionId: String
 ) {
   /**
+   * Capture-time recording policy. Volatile because the monitor reads it from OkHttp dispatcher
+   * threads while reconfigures land on the modules queue.
+   */
+  @Volatile
+  private var configuration: NetworkTracesConfiguration = initialConfiguration
+
+  /**
+   * Applies a new recording policy. Affects future requests only; rows already written stay.
+   */
+  fun setConfiguration(configuration: NetworkTracesConfiguration) {
+    this.configuration = configuration
+  }
+
+  /**
    * Records one completed request as a span.
    */
   fun persist(request: NetworkRequest) {
+    // Checked before dispatching: a request the policy excludes costs nothing beyond this.
+    if (!configuration.allows(request.url, request.method)) {
+      return
+    }
     // Converts and inserts on `scope`, so OkHttp dispatcher threads pay neither the URL parsing
     // and JSON building nor the database write. Matches `persistBuffered`.
     scope.launch {
@@ -60,7 +79,14 @@ class NetworkRequestPersistence(
     // with the session INSERT and crash-report processing, so converting up to 200 requests
     // there would be the most expensive place to do it.
     scope.launch {
+      // Snapshotted once so the whole batch is judged by one policy. Re-reading per request would
+      // let a reconfigure landing mid-drain split the batch, writing the requests it reached
+      // first and dropping the rest.
+      val policy = configuration
       for (request in requests) {
+        if (!policy.allows(request.url, request.method)) {
+          continue
+        }
         val span = request.toSpan(sessionId) ?: continue
         try {
           database.spanDao().insert(span)

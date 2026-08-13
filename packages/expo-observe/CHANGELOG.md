@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add a `networkTraces` option to `configure` to control whether network requests are recorded as trace spans, with an optional capture filter. ([#48891](https://github.com/expo/expo/pull/48891) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
