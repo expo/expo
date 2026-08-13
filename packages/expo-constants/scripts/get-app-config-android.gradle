@@ -37,13 +37,48 @@ afterEvaluate {
     // Switch to project root and generate the app config
     workingDir projectRoot
 
+    // The last argument disables the fingerprint embed here — debuggable variants embed it
+    // through the createExpoFingerprint task below, so release builds never compute it.
     if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-      commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir, "android", "false")
     } else {
-      commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir)
+      commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/getAppConfig.js", projectRoot, assetsDir, "android", "false")
     }
   }
 
   // Generate app.config at preBuild
   tasks.getByName('preBuild').dependsOn(currentCreateConfigTask)
+
+  def fingerprintAssetsDir = file("$buildDir/generated/assets/expo-constants-fingerprint")
+
+  def createFingerprintTask = tasks.register('createExpoFingerprint', Exec) {
+    description = 'expo-constants: Embed the project fingerprint (app.fingerprint) in debug builds.'
+
+    doFirst {
+      fingerprintAssetsDir.deleteDir()
+      fingerprintAssetsDir.mkdirs()
+    }
+
+    // The fingerprint hashes sources across the whole project, so always regenerate it
+    outputs.upToDateWhen { false }
+    outputs.dir fingerprintAssetsDir
+
+    workingDir projectRoot
+
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+      commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoConstantsDir/scripts/createFingerprintFile.js", projectRoot, fingerprintAssetsDir, "android")
+    } else {
+      commandLine(*nodeExecutableAndArgs, "$expoConstantsDir/scripts/createFingerprintFile.js", projectRoot, fingerprintAssetsDir, "android")
+    }
+  }
+
+  // Embed the fingerprint in debuggable variants only. Release builds skip the computation
+  // and never ship the file — `npx expo needs-rebuild` targets the development loop.
+  project.android.applicationVariants.all { variant ->
+    if (!variant.buildType.debuggable) {
+      return
+    }
+    variant.preBuildProvider.configure { it.dependsOn(createFingerprintTask) }
+    project.android.sourceSets.maybeCreate(variant.buildType.name).assets.srcDirs += fingerprintAssetsDir
+  }
 }
