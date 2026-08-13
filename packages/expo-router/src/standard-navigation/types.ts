@@ -63,6 +63,7 @@ export type StandardUseNavigationBuilderOptions<
 export interface StandardNavigatorCreatePropsFactoryDeps<State extends NavigationState> {
   state: State;
   dispatch: (action: NavigationAction) => void;
+  dispatchSync: (action: NavigationAction) => void;
   navigation: NavigationHelpers<ParamListBase>;
 }
 
