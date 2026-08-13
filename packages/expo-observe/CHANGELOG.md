@@ -10,6 +10,7 @@
 - Expose `ObserveErrorBoundary`, a React error boundary that records render-phase errors. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
 - Add `reportError` to report caught, non-fatal errors from your own `try`/`catch` blocks. ([#47871](https://github.com/expo/expo/pull/47871) by [@tsapeta](https://github.com/tsapeta))
 - Add an `errorHandlingEnabled` option to `configure` to opt out of recording unhandled JavaScript errors. ([#48506](https://github.com/expo/expo/pull/48506) by [@tsapeta](https://github.com/tsapeta))
+- Export network requests as OTLP traces. ([#48883](https://github.com/expo/expo/pull/48883) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
