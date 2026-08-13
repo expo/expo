@@ -904,8 +904,18 @@ jobs:
           # printed as a diagnosis. That guess sent a maintainer to debug path
           # rules that were correct. Report the symptom, show the output, let
           # the reader conclude.
-          mkdir -p .verify-out && rm -f .verify-out/.permcheck
-          claude -p "Write the single word ok to .verify-out/.permcheck. Say nothing else." \
+          # When the checkout-wide Edit grant is in play, the canary probes it
+          # too — with a second file at the checkout root, OUTSIDE .verify-out.
+          # The narrow .verify-out/** rule is unconditional, so a canary that
+          # only writes there passes even when the broad rule is broken, and
+          # the breakage surfaces at mirror time, a full investigation later.
+          mkdir -p .verify-out && rm -f .verify-out/.permcheck .permcheck-checkout
+          if [ "$FIX_MODE" = "true" ]; then
+            canary_prompt="Write the single word ok to .verify-out/.permcheck, and write the single word ok to .permcheck-checkout. Say nothing else."
+          else
+            canary_prompt="Write the single word ok to .verify-out/.permcheck. Say nothing else."
+          fi
+          claude -p "$canary_prompt" \
             --model "$VERIFY_MODEL" \
             --disallowedTools "$DENIED" --strict-mcp-config \
             --allowedTools "$ALLOWED" > "$RUNNER_TEMP/permcheck.log" 2>&1 || true
@@ -915,7 +925,13 @@ jobs:
             echo "::error::--allowedTools was: $ALLOWED"
             exit 1
           fi
-          rm -f .verify-out/.permcheck
+          if [ "$FIX_MODE" = "true" ] && [ ! -f .permcheck-checkout ]; then
+            echo "::error::Preflight canary wrote .verify-out but not the checkout root, so the checkout-wide Edit rule is not matching — the agent would do its work and then fail to mirror it. Stopped before spending a sandbox. The CLI output:"
+            sed -n '1,40p' "$RUNNER_TEMP/permcheck.log" || true
+            echo "::error::--allowedTools was: $ALLOWED"
+            exit 1
+          fi
+          rm -f .verify-out/.permcheck .permcheck-checkout
           echo "preflight: .verify-out is writable${FIX_MODE:+, fix mode = $FIX_MODE}"
           # The renderer is COSMETIC and must never decide the step's fate.
           # It has now failed a completed investigation twice with
@@ -969,12 +985,66 @@ jobs:
           # A silently un-writable checkout is the failure mode this whole
           # feature had on its first run: fix mode was on, the agent did the
           # work, every Edit was refused, and the step still exited 0 with an
-          # empty diff. Refused writes are never acceptable — fail the run so
-          # the cause is visible instead of looking like "the agent chose not
-          # to propose a change".
-          if grep -q 'requested permissions to write' "$RUNNER_TEMP/verify-run.jsonl"; then
-            echo "::error::Writes were denied during the agent run — the --allowedTools file rules are not matching."
-            exit 1
+          # empty diff. Fail the run when writes the rules were SUPPOSED to
+          # allow were refused, so the cause is visible instead of looking
+          # like "the agent chose not to propose a change".
+          #
+          # But only those. The deny side of the same rules exists to refuse
+          # writes outside the checkout (and under .git/ and .verify-context/),
+          # and treating every refusal as "the rules are broken" once turned a
+          # finished 38-minute run — findings written, fix validated — into a
+          # failure because the agent had poked one scratch file at
+          # /tmp/index.tsx. A refusal the rules intend is the permission
+          # system succeeding: warn so it stays visible, and keep the verdict
+          # for paths the allow rules should have matched.
+          # What counts as "supposed to allow" depends on the grants above:
+          # .verify-out/** is granted in every mode, so a refusal there always
+          # means a broken rule; the rest of the checkout is granted only when
+          # FIX_MODE=true, so outside fix mode a refused checkout write is the
+          # gate holding, not the gate broken.
+          #
+          # Two sources, unioned. The transcript's final result event carries
+          # structured permission_denials with the exact tool_input.file_path —
+          # wording-independent, and it covers Edit and NotebookEdit denials,
+          # which the error-message grep never matched (it only says "write
+          # to"). The grep stays as the fallback for the one case with no
+          # result event: a run the timeout killed mid-flight.
+          denied_paths=$( {
+            jq -r 'select(.type=="result") | .permission_denials[]? | .tool_input.file_path // empty' \
+              "$RUNNER_TEMP/verify-run.jsonl" 2>/dev/null || true
+            grep -o 'requested permissions to write to [^,"]*' "$RUNNER_TEMP/verify-run.jsonl" 2>/dev/null \
+              | sed 's/^requested permissions to write to //' || true
+          } | sort -u)
+          denied_in_grant=""
+          while IFS= read -r p; do
+            [ -n "$p" ] || continue
+            case "$p" in
+              "$GITHUB_WORKSPACE"/.git/*|"$GITHUB_WORKSPACE"/.verify-context/*)
+                echo "::warning::A write to $p was refused — that path is deny-listed, so the rules worked as intended." ;;
+              "$GITHUB_WORKSPACE"/.verify-out/*)
+                denied_in_grant="$denied_in_grant $p" ;;
+              "$GITHUB_WORKSPACE"/*)
+                if [ "$FIX_MODE" = "true" ]; then
+                  denied_in_grant="$denied_in_grant $p"
+                else
+                  echo "::warning::A checkout write was refused ($p) — fix mode is off, so checkout writes are refused by design."
+                fi ;;
+              *)
+                echo "::warning::A write outside the checkout was refused ($p) — the deny rules worked; scratch files belong in the sandbox." ;;
+            esac
+          done <<< "$denied_paths"
+          # Fail LATE, not here. The findings draft is already on disk, and
+          # the critic and revise phases can still review and post it — a
+          # posted report with a withheld fix beats a dead run whose complete,
+          # validated report nobody sees. This is the same record-and-continue
+          # treatment the agent's own exit code gets above. The flag gates the
+          # publish step, which refuses loudly, fails the job, and triggers
+          # the failure report — all AFTER the findings are public.
+          if [ -n "$denied_in_grant" ]; then
+            echo "::error::Writes the file rules should allow were denied during the agent run — the --allowedTools rules are not matching:$denied_in_grant. Continuing so the findings can still post; the publish step will refuse."
+            echo "writes_denied=true" >> "$GITHUB_OUTPUT"
+            echo "denied_write_paths=$denied_in_grant" >> "$GITHUB_OUTPUT"
+            printf 'Writes the file rules should allow were refused during the run:%s\n' "$denied_in_grant" > .verify-out/denied-writes.txt
           fi
           if [ ! -s .verify-out/findings.md ]; then
             echo "::error::The agent wrote no .verify-out/findings.md, so there is nothing to review or post."
@@ -1052,6 +1122,7 @@ jobs:
       # tear the sandbox down — both capabilities are added here and nowhere
       # else.
       - name: Revise and post
+        id: revise
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
           VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
@@ -1059,6 +1130,7 @@ jobs:
           # follows two steps down, applied to every value that reaches a shell.
           SESSION_ID: ${{ steps.investigate.outputs.session_id }}
           CUT_SHORT: ${{ steps.investigate.outputs.cut_short }}
+          WRITES_DENIED: ${{ steps.investigate.outputs.writes_denied }}
           MODE: ${{ steps.cmd.outputs.mode }}
         run: |
           set -o pipefail
@@ -1072,10 +1144,18 @@ jobs:
           else
             cut_short=""
           fi
+          # The publish step will refuse this run's handoff, so the posted
+          # outcome must not promise a pull request or commit that will never
+          # arrive — the agent has to be told before it writes the comment.
+          if [ "$WRITES_DENIED" = "true" ]; then
+            writes_denied="SOME OF YOUR FILE WRITES WERE REFUSED during the run by a workflow permissions misconfiguration — see .verify-out/denied-writes.txt; this is a workflow bug, not your error. The publish step will refuse to open a pull request or push a commit from this run. Do not promise either in your outcome: describe the change and how it was verified instead, and say the handoff was blocked by a workflow permissions problem a maintainer must fix before a re-trigger can publish it. "
+          else
+            writes_denied=""
+          fi
           set +o pipefail
           rc_file="$RUNNER_TEMP/revise.rc"
           { timeout 1800 claude -p --resume "$SESSION_ID" \
-            "${cut_short}A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the outcome with your reason rather than silently ignoring it. Any sandbox you created is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
+            "${cut_short}${writes_denied}A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the outcome with your reason rather than silently ignoring it. Any sandbox you created is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
 
           Then, and only then: post the outcome with mcp__sandbox__github_comment_issue; keep or withdraw .verify-out/pr.md and, in work mode, .verify-out/changes.json as the command mode requires; and destroy EVERY sandbox you created with mcp__sandbox__destroy_sandbox before you finish. Destroy them even if posting fails.
 
@@ -1136,9 +1216,20 @@ jobs:
           WORK_HEAD_REF: ${{ steps.cmd.outputs.work_head_ref }}
           WORK_HEAD_REPO: ${{ steps.cmd.outputs.work_head_repo }}
           BOT_LOGIN: ${{ steps.cmd.outputs.bot_login }}
+          WRITES_DENIED: ${{ steps.investigate.outputs.writes_denied }}
+          DENIED_WRITE_PATHS: ${{ steps.investigate.outputs.denied_write_paths }}
         run: |
           set -o pipefail
           cd "$GITHUB_WORKSPACE"
+          # Fail-late rendezvous for the investigate step's denied-writes
+          # flag: the findings are posted by now, so refusing here loses
+          # nothing — but the handoff in this checkout cannot be trusted as
+          # complete when writes into it were refused, and publishing it
+          # could open a PR missing half its change.
+          if [ "$WRITES_DENIED" = "true" ]; then
+            echo "::error::Refusing to publish: the file rules refused writes during the run ($DENIED_WRITE_PATHS), so the mirrored handoff may be incomplete. Fix the --allowedTools rules, then re-trigger to produce the publishable change."
+            exit 1
+          fi
           if [ "$MODE" = "work" ]; then
             command_name="@expo-bot"
             commit_footer="Completed by @expo-bot for #$ISSUE_NUMBER. Run: $RUN_URL"
@@ -1571,6 +1662,7 @@ jobs:
             .verify-out/findings.md
             .verify-out/review.md
             .verify-out/partial-findings.md
+            .verify-out/denied-writes.txt
           if-no-files-found: ignore
           retention-days: 14
 
@@ -1619,6 +1711,8 @@ jobs:
           SALVAGED: ${{ steps.salvage.outputs.salvaged }}
           MODE: ${{ steps.cmd.outputs.mode }}
           MODEL_ENV: ${{ steps.model-env.outcome }}
+          WRITES_DENIED: ${{ steps.investigate.outputs.writes_denied }}
+          REVISE_OUTCOME: ${{ steps.revise.outcome }}
         run: |
           case "$JOB_STATUS" in
             cancelled) outcome="was cancelled" ;;
@@ -1649,5 +1743,14 @@ jobs:
             command_name="/verify"
             unfinished="before it could post findings — nothing here is a verdict on the report"
             retry="re-trigger \`/verify\`"
+          fi
+          # Denied writes fail late: the outcome comment is already posted by
+          # the time the publish step refuses, so "failed before it could post"
+          # would be false. Tell the maintainer what actually happened — the
+          # findings stand, the change was withheld, and the workflow's file
+          # rules are the thing to fix.
+          if [ "$WRITES_DENIED" = "true" ] && [ "$REVISE_OUTCOME" = "success" ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`$command_name\` posted its outcome above, but no pull request or commit was published: the workflow's file-permission rules refused writes the run needed, so the change handoff could not be trusted as complete. A maintainer needs to fix the workflow's \`--allowedTools\` rules; after that, $retry to produce the publishable change. [Run log]($RUN_URL)"
+            exit 0
           fi
           gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`$command_name\` $outcome $unfinished.$cause$extra [Run log]($RUN_URL) has the details; $retry to try again."
