@@ -47,7 +47,7 @@ class AuthenticationService: ObservableObject {
   }
 
   func checkAuthenticationStatus() {
-    if Self.isPartnerSessionExpired() {
+    if Self.isSessionExpired() {
       // The bridge reads this expiry to explain the failure, then clears it.
       Self.deleteNativeSession()
       user = nil
@@ -188,8 +188,8 @@ class AuthenticationService: ObservableObject {
     }
   }
 
-  /// The stored expiry is the only local signal that a partner session died, avoiding a round trip on every project open.
-  nonisolated static func isPartnerSessionExpired() -> Bool {
+  /// The stored expiry is the only local signal that the session died, avoiding a round trip on every project open.
+  nonisolated static func isSessionExpired() -> Bool {
     guard let expiresAt = UserDefaults.standard.object(forKey: sessionExpiresAtKey) as? Double else {
       return false
     }
@@ -199,13 +199,13 @@ class AuthenticationService: ObservableObject {
   /// The signed-in username, or nil if there is no live, unexpired session.
   nonisolated static var currentUsername: String? {
     guard UserDefaults.standard.string(forKey: sessionKey) != nil,
-          !isPartnerSessionExpired() else {
+          !isSessionExpired() else {
       return nil
     }
     return UserDefaults.standard.string(forKey: usernameKey)
   }
 
-  /// Remembers which account a device login granted for a partner host, so rescanning a project behind that
+  /// Remembers which account a device login granted for a verification host, so rescanning a project behind that
   /// host does not ask again when the user is already signed in as that account.
   nonisolated static func recordDeviceLoginGrant(username: String, forVerificationHost host: String) {
     var grants = UserDefaults.standard.dictionary(forKey: deviceLoginGrantsKey) as? [String: String] ?? [:]

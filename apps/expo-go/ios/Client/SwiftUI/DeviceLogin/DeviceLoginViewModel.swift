@@ -32,7 +32,7 @@ final class DeviceLoginViewModel: ObservableObject {
     self.verificationURI = verificationURI
   }
 
-  /// The partner's own page when the QR supplied one, otherwise whatever the server told us to use.
+  /// The override page when the QR supplied one, otherwise whatever the server told us to use.
   var displayURI: URL? {
     verificationURI ?? serverVerificationURI
   }

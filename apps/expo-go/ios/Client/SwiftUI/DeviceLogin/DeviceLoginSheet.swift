@@ -49,7 +49,7 @@ struct DeviceLoginSheet: View {
       case .awaitingBrowser:
         break
       case .matching:
-        // The number the user has to pick is on the page behind this, so leave it readable.
+        // The number to pick is on the browser page, so leave it readable a moment before dismissing.
         Task {
           try? await Task.sleep(nanoseconds: 3_000_000_000)
           browserURL = nil
