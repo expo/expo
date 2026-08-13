@@ -69,7 +69,7 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
   // swiftlint:enable implicitly_unwrapped_optional
 
   public func launchAssetUrl() -> URL? {
-    return startupProcedure.launchAssetUrl()
+    return startupProcedure?.launchAssetUrl()
   }
 
   required init(config: UpdatesConfig, database: UpdatesDatabase, updatesDirectory: URL) {
@@ -181,20 +181,34 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
 
   // MARK: - UpdatesInterface
 
-  internal var stateChangeListeners: [String: any UpdatesStateChangeListener] = [:]
+  // Native subscribers (e.g. expo-app-metrics) subscribe from the module-registry thread while the
+  // state machine iterates this dictionary on its own queue, so every access is locked. Listeners
+  // are invoked outside the lock, off a snapshot: re-entrant subscribe/unsubscribe from inside
+  // `updatesStateDidChange` cannot deadlock, but `remove()` does not cancel a notification already
+  // in flight, so a listener must stay safe to call after it unsubscribes.
+  private var stateChangeListeners: [String: any UpdatesStateChangeListener] = [:]
+  private let stateChangeListenersLock = NSLock()
 
   public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> UpdatesStateChangeSubscription {
     let subscriptionId = UUID().uuidString
     let subscription = EnabledUpdatesStateChangeSubscription(subscriptionId)
 
+    stateChangeListenersLock.lock()
+    defer { stateChangeListenersLock.unlock() }
     stateChangeListeners[subscriptionId] = listener
     return subscription
   }
 
   internal func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String) {
-    if stateChangeListeners[subscriptionId] != nil {
-      stateChangeListeners.removeValue(forKey: subscriptionId)
-    }
+    stateChangeListenersLock.lock()
+    defer { stateChangeListenersLock.unlock() }
+    stateChangeListeners.removeValue(forKey: subscriptionId)
+  }
+
+  internal func stateChangeListenersSnapshot() -> [any UpdatesStateChangeListener] {
+    stateChangeListenersLock.lock()
+    defer { stateChangeListenersLock.unlock() }
+    return Array(stateChangeListeners.values)
   }
 
   internal func getNativeInterfaceContext() -> UpdatesNativeInterfaceStateContext {
@@ -213,8 +227,11 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     return config.requestHeaders
   }
 
+  // `startupProcedure` is only assigned in `start()`, but the controller is published to
+  // `UpdatesControllerRegistry` by `initializeWithoutStarting()`, so a native consumer can read
+  // this first. `isStarted` is not a usable guard — it is set before the assignment.
   public var launchedUpdateId: UUID? {
-    return startupProcedure.launchedUpdate()?.updateId
+    return startupProcedure?.launchedUpdate()?.updateId
   }
 
   public var embeddedUpdateId: UUID? {
@@ -222,7 +239,7 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
   }
 
   public var launchAssetPath: String? {
-    return startupProcedure.launchAssetUrl()?.relativePath
+    return startupProcedure?.launchAssetUrl()?.relativePath
   }
 
   public var isEnabled: Bool = true
