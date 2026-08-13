@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `copyAsync` on iOS copying the unedited original when a `ph://` asset has edits applied in Photos. ([#48248](https://github.com/expo/expo/pull/48248) by [@CoffeeFlux](https://github.com/CoffeeFlux))
+
 ### 💡 Others
 
 ## 56.0.9 — 2026-08-06
