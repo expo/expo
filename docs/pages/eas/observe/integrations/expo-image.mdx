@@ -1,0 +1,95 @@
+---
+title: Expo Image integration
+sidebar_title: Expo Image
+description: Detect oversized images in your production app by enabling the Expo Image integration for EAS Observe.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+[`expo-image`](/versions/latest/sdk/image/) ships an opt-in integration for EAS Observe that reports images decoded at a much larger size than the device's screen can display. Oversized images waste bandwidth and memory without improving visual quality. The integration logs an `expo-image.oversized` event for each one, so you can find them in production instead of auditing every screen by hand.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="Expo SDK 57 or later">
+    The integration is available in `expo-image` version 57.0.2 and later.
+  </Requirement>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build. If `expo-observe` is not installed, the integration is a silent no-op.
+  </Requirement>
+  <Requirement title="Expo Image installed in the app">
+    The integration observes images loaded through [`expo-image`](/versions/latest/sdk/image/).
+    Images loaded with other libraries are not reported.
+  </Requirement>
+</Prerequisites>
+
+## Enable the integration
+
+Call `Observe.configure()` with the `expo-image` integration flag at module scope:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: { 'expo-image': true },
+});
+```
+
+No other setup is needed. Once enabled, the integration observes every image load automatically.
+
+## How it works
+
+On every image load, the integration compares the image's decoded pixel size with the number of physical pixels on the device's screen (the screen's point size multiplied by the square of the device pixel ratio). When the decoded area exceeds the screen's pixel count by more than the configured threshold, the integration logs an `expo-image.oversized` event with `warn` severity.
+
+Each image URL is reported at most once per app session. Calling `Observe.configure()` again resets this deduplication and applies the new configuration.
+
+**Event attributes:**
+
+| Attribute      | Type     | Description                                                          |
+| -------------- | -------- | -------------------------------------------------------------------- |
+| `url`          | `string` | URL of the oversized image.                                          |
+| `imageWidth`   | `number` | Decoded image width in pixels.                                       |
+| `imageHeight`  | `number` | Decoded image height in pixels.                                      |
+| `screenWidth`  | `number` | Screen width in points.                                              |
+| `screenHeight` | `number` | Screen height in points.                                             |
+| `pixelRatio`   | `number` | Device pixel ratio used to compute the screen's physical pixel count. |
+
+## Configuration
+
+Pass a configuration object instead of `true` to tune when an image is reported:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: {
+    'expo-image': {
+      oversizeThreshold: 2,
+    },
+  },
+});
+```
+
+- `oversizeThreshold`: An image is reported when its decoded pixel area exceeds the screen's physical pixel count by more than this factor. The default is `1.5`, which flags images decoded at more than 1.5 times the pixels the screen physically has: a full-screen image plus 50% headroom.
+
+## Fix oversized images
+
+- Serve images at a size close to their display size, for example by requesting resized variants from your image CDN.
+- When loading images with the [`useImage`](/versions/latest/sdk/image/) hook, set the `maxWidth` and `maxHeight` load options to downscale the image at decode time while preserving its aspect ratio.
+
+## View events
+
+In the dashboard: open your project, navigate to [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe/events), and select the `expo-image.oversized` event to see individual reports with their attributes and sessions.
+
+From the CLI:
+
+<Terminal
+  cmd={[
+    '# Show oversized image events',
+    '$ eas observe:events expo-image.oversized',
+  ]}
+/>
+
+For naming, severity, and attribute details shared by all events, see [User-defined events](/eas/observe/events/).
