@@ -28,6 +28,7 @@ import { NavigatorTypeContext } from './NavigatorTypeContext';
 import { PreventRemoveContext } from './PreventRemoveContext';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
+import { createInitialState } from './createInitialState';
 import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
 import {
@@ -242,24 +243,6 @@ const getRouteConfigsFromChildren = <
   return configs;
 };
 
-const getStateFromParams = (params: NavigatorRoute['params']) => {
-  if (params?.state != null) {
-    return params.state;
-  } else if (typeof params?.screen === 'string' && params?.initial !== false) {
-    return {
-      routes: [
-        {
-          name: params.screen,
-          params: params.params,
-          path: params.path,
-        },
-      ],
-    };
-  }
-
-  return undefined;
-};
-
 /**
  * Hook for building navigators.
  *
@@ -406,31 +389,13 @@ export function useNavigationBuilder<
           ? lastStateRef.current
           : router.getRehydratedState(lastStateRef.current, {
               routeNames,
-              // Existing state should not receive nested initial params again.
-              routeParamList: {},
               routeGetIdList,
             });
 
         return [state, false, undefined];
       }
 
-      const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
-        (acc, curr) => {
-          const initialParamsFromParams =
-            route?.params?.state == null &&
-            route?.params?.initial !== false &&
-            route?.params?.screen === curr
-              ? route.params.params
-              : undefined;
-
-          // Copy the params so the child's route params don't alias the parent's nested params.
-          acc[curr] =
-            initialParamsFromParams !== undefined ? { ...initialParamsFromParams } : undefined;
-
-          return acc;
-        },
-        {}
-      );
+      const routeParamsForInitialization = isNestedParamsConsumed ? undefined : route?.params;
 
       // If the current state isn't initialized on first render, we initialize it
       // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
@@ -438,41 +403,30 @@ export function useNavigationBuilder<
       // So we need to rehydrate it to make it usable
       if (
         (currentState === undefined || !isStateValid(currentState)) &&
-        route?.params?.state == null &&
-        !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
-        !isNestedParamsConsumed
+        routeParamsForInitialization?.state == null
       ) {
         return [
-          router.getInitialState({
+          createInitialState<State>({
             routeNames,
-            routeParamList: initialRouteParamList,
-            routeGetIdList,
+            initialRouteName: rest.initialRouteName,
+            routeParams: routeParamsForInitialization,
           }),
           true,
-          undefined,
+          typeof routeParamsForInitialization?.screen === 'string'
+            ? routeParamsForInitialization
+            : undefined,
         ];
       } else {
-        const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
-        const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
-
-        const stateBeforeInitialization = (stateFromParams ?? currentState) as
+        // The branch above handles the only case where both sources can be absent.
+        const stateBeforeInitialization = (routeParamsForInitialization?.state ?? currentState) as
           | PartialState<State>
-          | undefined;
+          | State;
+        const hydratedState = router.getRehydratedState(stateBeforeInitialization, {
+          routeNames,
+          routeGetIdList,
+        });
 
-        const hydratedState =
-          stateBeforeInitialization == null
-            ? router.getInitialState({
-                routeNames,
-                routeParamList: initialRouteParamList,
-                routeGetIdList,
-              })
-            : router.getRehydratedState(stateBeforeInitialization, {
-                routeNames,
-                routeParamList: initialRouteParamList,
-                routeGetIdList,
-              });
-
-        return [hydratedState, false, paramsForState];
+        return [hydratedState, false, routeParamsForInitialization];
       }
       // We explicitly don't include routeNames, route.params etc. in the dep list
       // below. We want to avoid forcing a new state to be calculated in those cases
@@ -531,8 +485,6 @@ export function useNavigationBuilder<
       updatedState !== null
         ? router.getRehydratedState(updatedState, {
             routeNames,
-            // Action-produced state should only contain explicit action params.
-            routeParamList: {},
             routeGetIdList,
           })
         : nextState;

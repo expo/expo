@@ -138,7 +138,9 @@ test('passes theme to screenOptions prop', () => {
   };
 
   render(
-    <BaseNavigationContainer theme={theme}>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'foo' }, { name: 'bar' }] }}
+      theme={theme}>
       <TestNavigator screenOptions={({ theme }: any) => ({ title: theme.colors.primary })}>
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />

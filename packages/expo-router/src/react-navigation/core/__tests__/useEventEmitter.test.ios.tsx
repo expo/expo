@@ -204,7 +204,17 @@ test('fires focus and blur events in nested navigator', () => {
   const child = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        routes: [
+          { name: 'first' },
+          { name: 'second' },
+          {
+            name: 'nested',
+            state: { routes: [{ name: 'third' }, { name: 'fourth' }] },
+          },
+        ],
+      }}>
       <TestNavigator ref={parent}>
         <Screen name="first" component={createComponent(firstFocusCallback, firstBlurCallback)} />
         <Screen
@@ -298,26 +308,6 @@ test('fires blur event when a route is removed with a delay', async () => {
 
     return {
       ...router,
-
-      getInitialState({ routeNames, routeParamList }) {
-        const initialRouteName =
-          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0];
-
-        return {
-          stale: false,
-          type: 'test',
-          key: 'stack',
-          index: 0,
-          routeNames,
-          routes: [
-            {
-              key: initialRouteName,
-              name: initialRouteName,
-              params: routeParamList[initialRouteName],
-            },
-          ],
-        };
-      },
 
       getStateForAction(state, action, options) {
         switch (action.type) {
@@ -453,7 +443,8 @@ test('fires custom events added with addListener', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={createComponent(firstCallback)} />
         <Screen name="second" component={createComponent(secondCallback)} />
@@ -529,7 +520,8 @@ test("doesn't call same listener multiple times with addListener", () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={Test} />
         <Screen name="second" component={Test} />
@@ -567,7 +559,8 @@ test('fires custom events added with listeners prop', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -640,7 +633,8 @@ test("doesn't call same listener multiple times with listeners", () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -690,7 +684,8 @@ test('fires listeners when callback is provided for listeners prop', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }] }}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"

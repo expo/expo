@@ -34,7 +34,12 @@ test('renders correct focus state', () => {
   const navigation = React.createRef<any>();
 
   const root = render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        index: 0,
+        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />

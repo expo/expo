@@ -136,20 +136,11 @@ export type RouterFactory<
 
 export type RouterConfigOptions = {
   routeNames: string[];
-  /**
-   * Params used when initializing or rehydrating routes.
-   */
-  routeParamList: ParamListBase;
   routeGetIdList: Record<
     string,
     ((options: { params?: Record<string, any> }) => string | undefined) | undefined
   >;
 };
-
-/**
- * Configuration used when applying navigation actions.
- */
-export type RouterActionOptions = Omit<RouterConfigOptions, 'routeParamList'>;
 
 /**
  * Type of the router. Should match the `type` property in state.
@@ -166,19 +157,10 @@ export type Router<
   Action extends NavigationAction,
 > = RouterType<State> & {
   /**
-   * Initialize the navigation state.
-   *
-   * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamList Object containing params for each route.
-   */
-  getInitialState(options: RouterConfigOptions): State;
-
-  /**
    * Rehydrate the full navigation state from a given partial state.
    *
    * @param partialState Navigation state to rehydrate from.
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamList Object containing params for each route.
    */
   getRehydratedState(
     partialState: PartialState<State> | State,
@@ -219,7 +201,7 @@ export type Router<
   getStateForAction(
     state: State,
     action: Action,
-    options: RouterActionOptions
+    options: RouterConfigOptions
   ): State | PartialState<State> | null;
 
   /**

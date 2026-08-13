@@ -144,7 +144,11 @@ test('returns correct value for isFocused', () => {
   };
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        index: 0,
+        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />
@@ -218,7 +222,11 @@ test('returns correct value for isFocused after changing screens', () => {
   };
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        index: 0,
+        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />

@@ -318,6 +318,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           // END FORK
         }
         case 'PRELOAD': {
+          // TODO(@ubax): Combine this with the base StackRouter PRELOAD implementation.
           // START FORK
           // This will be the case for example for protected route
           if (!state.routeNames.includes(action.payload.name)) {
@@ -343,6 +344,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           if (route) {
             return {
               ...state,
+              type: 'stack',
               routes: state.routes.map((r) => {
                 if (r.key !== route?.key) {
                   return r;
@@ -374,6 +376,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
             // END FORK
             return {
               ...state,
+              type: 'stack',
               // START FORK
               // Adding the current preloaded route to the beginning of the preloadedRoutes array
               // This ensures that the preloaded route will be the next one after the visible route

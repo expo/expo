@@ -31,6 +31,14 @@ const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof Scre
  * This file is for testing Stack specific functionality
  */
 describe('canDismiss', () => {
+  it('works with fresh stack state', () => {
+    renderRouter({ index: () => null, b: () => null });
+
+    expect(router.canDismiss()).toBe(false);
+    act(() => router.push('/b'));
+    expect(router.canDismiss()).toBe(true);
+  });
+
   it('should work within the default Stack', () => {
     renderRouter(
       {
@@ -166,7 +174,6 @@ test('dismissAll nested', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           history: [
             {
@@ -185,7 +192,6 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'a',
-              params: undefined,
               path: '/a',
             },
             {
@@ -209,7 +215,6 @@ test('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -240,7 +245,6 @@ test('dismissAll nested', () => {
                           key: expect.any(String),
                           name: 'index',
                           params: {},
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
@@ -256,12 +260,10 @@ test('dismissAll nested', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
@@ -285,7 +287,6 @@ test('dismissAll nested', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           history: [
             {
@@ -304,7 +305,6 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'a',
-              params: undefined,
               path: '/a',
             },
             {
@@ -328,7 +328,6 @@ test('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -359,16 +358,13 @@ test('dismissAll nested', () => {
                           key: expect.any(String),
                           name: 'index',
                           params: {},
-                          path: undefined,
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
@@ -392,7 +388,6 @@ test('dismissAll nested', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           history: [
             {
@@ -411,7 +406,6 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'a',
-              params: undefined,
               path: '/a',
             },
             {
@@ -435,11 +429,9 @@ test('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
-                    path: undefined,
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
