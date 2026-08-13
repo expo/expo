@@ -23,6 +23,10 @@ const mockAppMetrics = {
   setNetworkTracesConfig: jest.fn(),
 };
 
+const mockStartSpan = jest.fn();
+const mockWithSpan = jest.fn();
+const mockRecordSpan = jest.fn();
+
 const mockSetErrorHandlerEnabled = jest.fn();
 
 jest.mock('expo', () => ({
@@ -33,6 +37,9 @@ jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
   setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+  startSpan: mockStartSpan,
+  withSpan: mockWithSpan,
+  recordSpan: mockRecordSpan,
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -74,6 +81,9 @@ beforeEach(() => {
     __esModule: true,
     default: mockAppMetrics,
     setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+    startSpan: mockStartSpan,
+    withSpan: mockWithSpan,
+    recordSpan: mockRecordSpan,
   }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
@@ -215,6 +225,15 @@ describe('module Proxy', () => {
     const { disableReanimatedIntegration } = loadReanimatedInit();
     Observe.configure({ environment: 'test' });
     expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
+  });
+
+  it('forwards the span wrappers instead of the raw native functions', () => {
+    // The wrappers fold `parent` into the options and implement withSpan's auto-end; reaching
+    // the native members with the same names would silently lose that behavior.
+    const Observe = loadModule();
+    expect(Observe.startSpan).toBe(mockStartSpan);
+    expect(Observe.withSpan).toBe(mockWithSpan);
+    expect(Observe.recordSpan).toBe(mockRecordSpan);
   });
 
   it('records no network traces when configure omits networkTraces', () => {
