@@ -120,7 +120,7 @@ jobs:
       # engine). Pinned exactly — see workflow.yml (expo-code-review.yml).
       - name: Install Claude Code CLI
         if: steps.cmd.outputs.run == 'true'
-        run: npm install -g @anthropic-ai/claude-code@2.1.212
+        run: npm install -g @anthropic-ai/claude-code@2.1.229
 
       # SECURITY: the base-ref checkout above includes every .expo-code-review/
       # config.jsonc + routing.jsonc, whose auth.tokenEnv names the env var the CLI
@@ -143,6 +143,7 @@ jobs:
       # ecr ci inherits CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN from GITHUB_ENV —
       # do not re-bind it from secrets.* or this step is overwritten.
       - name: Prepare model env
+        id: model-env
         if: steps.cmd.outputs.run == 'true'
         uses: ./.github/actions/prepare-model-env
         with:
@@ -153,6 +154,17 @@ jobs:
           c5: ${{ secrets.ECR_5 }}
           fallback: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
           model: ${{ vars.REVIEWER_MODEL || 'claude-sonnet-5' }}
+
+      # pick.sh used to fail the job before `ecr ci` could post its terminal
+      # "not reviewed" comment. Restore that notice here.
+      - name: Explain that the review did not start
+        if: always() && steps.cmd.outputs.run == 'true' && steps.model-env.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          PR: ${{ github.event.issue.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh pr comment "$PR" --repo "${{ github.repository }}" --body "⚠️ The AI reviewer did not start: every configured model credential (\`ECR_1\`…\`ECR_5\` and \`CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN\`) failed authentication. This is not a fork limitation — the command path has secrets. Check the [run log]($RUN_URL) for each slot's shape/len (not the secret) and re-set any slot that is not a \`claude setup-token\` value (\`sk-ant-oat…\`, 108 chars)."
 
       - name: Run AI review
         if: steps.cmd.outputs.run == 'true'
