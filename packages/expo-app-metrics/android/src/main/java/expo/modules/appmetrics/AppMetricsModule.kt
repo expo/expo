@@ -1,7 +1,6 @@
 package expo.modules.appmetrics
 
 import android.content.Context
-import android.util.Log
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.jserrors.ErrorReport
 import expo.modules.appmetrics.jserrors.PendingErrorStore
@@ -20,6 +19,7 @@ import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
 import expo.modules.appmetrics.spans.SpanHandle
 import expo.modules.appmetrics.spans.SpanRecorder
+import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.Span
 import expo.modules.appmetrics.logevents.MAX_EVENT_NAME_LENGTH
 import expo.modules.appmetrics.logevents.RESERVED_EVENT_NAME_PREFIX
@@ -83,21 +83,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private var networkRequestPersistence: NetworkRequestPersistence? = null
 
   // Lazy-initialized metadata - created once when first needed
-  /**
-   * Inserts a completed span row on the module scope. Awaiting the session row first keeps the
-   * FK satisfied even for a span ended before the eager session persist finished. Failures are
-   * logged and swallowed — recording telemetry must never break the caller.
-   */
-  private fun insertSpanRow(row: Span) {
-    scope.launch {
-      try {
-        mainSession.awaitSessionPersisted()
-        MetricsDatabase.getDatabase(context).spanDao().insertCapped(row)
-      } catch (e: Exception) {
-        Log.w("ExpoAppMetrics", "Failed to persist span \"${row.name}\"", e)
-      }
-    }
-  }
+  /** The shared sink every span producer writes completed rows through. Set in `OnCreate`. */
+  private lateinit var spanWriter: SpanWriter
 
   private val metadata: AppMetadata? by lazy {
     AppMetadataProvider.getAppMetadata(appContext.service<ConstantsInterface>(), context)
@@ -169,7 +156,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           attributes = options?.attributes,
           startTimestampMs = options?.startTime?.let(::unixMilliseconds) ?: TimeUtils.getWallClockMillis()
         )
-        SpanHandle(recorder = recorder, onEnd = ::insertSpanRow)
+        SpanHandle(recorder = recorder, onEnd = spanWriter::write)
       }
 
       Function("recordSpan") { name: String, options: RecordSpanOptions ->
@@ -184,7 +171,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           startTimestampMs = startTime
         )
         recorder.end(statusCode = null, statusMessage = null, endTimestampMs = endTime)?.let {
-          insertSpanRow(it)
+          spanWriter.write(it)
         }
       }
 
@@ -256,6 +243,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         JvmCrashHandler.currentSessionId = mainSession.sessionId
 
+        spanWriter = SpanWriter(
+          database = MetricsDatabase.getDatabase(context),
+          scope = scope
+        ) {
+          mainSession.awaitSessionPersisted()
+        }
+
         // Persist the session row eagerly so it's visible to readers
         // (`getMainSession`, …) as soon as possible. Idempotent:
         // a racing write triggers (and joins) the same single start job.
@@ -265,9 +259,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // the main session. The await above keeps the FK satisfied for every span insert;
           // installation also drains requests buffered since process start.
           val persistence = NetworkRequestPersistence(
-            database = MetricsDatabase.getDatabase(context),
-            scope = scope,
-            initialConfiguration = AppMetricsPreferences.getNetworkTracesConfiguration(context),
+            writer = spanWriter,
             sessionId = mainSession.sessionId
           )
           networkRequestPersistence = persistence
