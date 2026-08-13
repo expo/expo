@@ -36,7 +36,9 @@ describe('state without router type', () => {
     CommonActions.preload('baz', { id: 'new' }),
     { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: options.routeNames } } as const,
   ])('$type returns stack state', (action) => {
-    expect(StackRouter({}).getStateForAction(createState(), action, options)?.type).toBe('stack');
+    expect(StackRouter({}).getStateForAction(createState(), action, options)?.state.type).toBe(
+      'stack'
+    );
   });
 
   test('stamps stack state on route focus', () => {
@@ -51,7 +53,7 @@ describe('state without router type', () => {
       options
     );
 
-    expect(result?.type).toBe('stack');
+    expect(result?.state.type).toBe('stack');
   });
 
   test('preserves the type from complete RESET state', () => {
@@ -62,7 +64,7 @@ describe('state without router type', () => {
       options
     );
 
-    expect(result?.type).toBe('stack');
+    expect(result?.state.type).toBe('stack');
   });
 
   test('passes partial RESET state through unchanged', () => {
@@ -73,7 +75,7 @@ describe('state without router type', () => {
       options
     );
 
-    expect(result).toBe(partialState);
+    expect(result?.state).toBe(partialState);
   });
 });
 
@@ -256,7 +258,7 @@ test('gets state on route names change', () => {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
         routeGetIdList: {},
       }
-    )
+    )?.state
   ).toEqual({
     index: 1,
     key: 'stack-test',
@@ -287,7 +289,7 @@ test('gets state on route names change', () => {
         routeNames: ['baz', 'qux'],
         routeGetIdList: {},
       }
-    )
+    )?.state
   ).toEqual({
     index: 0,
     key: 'stack-test',
@@ -319,7 +321,7 @@ test('gets state on route names change with initialRouteName', () => {
         routeNames: ['baz', 'qux'],
         routeGetIdList: {},
       }
-    )
+    )?.state
   ).toEqual({
     index: 0,
     key: 'stack-test',
@@ -344,7 +346,7 @@ test('returns the same complete stack state when route names already match', () 
       state,
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
       { routeNames: ['bar', 'baz'], routeGetIdList: {} }
-    )
+    )?.state
   ).toBe(state);
 });
 
@@ -368,7 +370,7 @@ test('promotes a surviving preloaded route when every active route is removed', 
       state,
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['preloaded', 'new'] } },
       { routeNames: ['preloaded', 'new'], routeGetIdList: {} }
-    )
+    )?.state
   ).toEqual({
     ...state,
     index: 0,
@@ -398,7 +400,7 @@ test('handles navigate action', () => {
       },
       CommonActions.navigate('qux', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -431,7 +433,7 @@ test('handles navigate action', () => {
       },
       CommonActions.navigate('baz', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -468,7 +470,7 @@ test('updates params on navigate if already on the screen', () => {
       },
       CommonActions.navigate('bar', { answer: 96 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -504,7 +506,7 @@ test('merges params on navigate when specified', () => {
       },
       CommonActions.navigate('bar', { answer: 96 }, { merge: true }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -566,7 +568,7 @@ test('ensures unique ID for navigate', () => {
       },
       CommonActions.navigate('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -594,7 +596,7 @@ test('ensures unique ID for navigate', () => {
       },
       CommonActions.navigate('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -622,7 +624,7 @@ test('ensures unique ID for navigate', () => {
       },
       CommonActions.navigate('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -650,7 +652,7 @@ test('ensures unique ID for navigate', () => {
       },
       CommonActions.navigate('bar', { foo: 'b' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -691,7 +693,7 @@ test('ensure unique ID is only per route name for navigate', () => {
       },
       CommonActions.navigate('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -732,7 +734,7 @@ test('goes back to matching screen for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -769,7 +771,7 @@ test('goes back to matching screen for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -798,7 +800,7 @@ test('goes back to matching screen for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -841,7 +843,7 @@ test('goes back to matching ID for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -875,7 +877,7 @@ test('goes back to matching ID for navigate if pop: true', () => {
         pop: true,
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -912,7 +914,7 @@ test('handles go back action', () => {
       },
       CommonActions.goBack(),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -961,7 +963,7 @@ test('handles pop action', () => {
       },
       StackActions.pop(),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -990,7 +992,7 @@ test('handles pop action', () => {
       },
       StackActions.pop(2),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1016,7 +1018,7 @@ test('handles pop action', () => {
       },
       StackActions.pop(4),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1046,7 +1048,7 @@ test('handles pop action', () => {
         source: 'bar-0',
       },
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1081,7 +1083,7 @@ test('handles pop action', () => {
         source: 'qux-0',
       },
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1134,7 +1136,7 @@ test('handles pop to top action', () => {
       },
       StackActions.popToTop(),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1168,7 +1170,7 @@ test('replaces focused screen with replace', () => {
       },
       StackActions.replace('qux', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1209,7 +1211,7 @@ test('replaces active screen with replace', () => {
         source: 'baz',
       },
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1250,7 +1252,7 @@ test("handles replace if source key isn't present but target is not specified", 
         source: 'magic',
       },
       options
-    )
+    )?.state
   ).toEqual({
     index: 1,
     key: 'root',
@@ -1345,7 +1347,7 @@ test('handles push action', () => {
       },
       StackActions.push('baz'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1370,7 +1372,7 @@ test('handles push action', () => {
       },
       StackActions.push('baz', { bar: 29 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1447,7 +1449,7 @@ test('ensures unique ID for push', () => {
       },
       StackActions.push('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1475,7 +1477,7 @@ test('ensures unique ID for push', () => {
       },
       StackActions.push('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1503,7 +1505,7 @@ test('ensures unique ID for push', () => {
       },
       StackActions.push('bar', { foo: 'b' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1544,7 +1546,7 @@ test('ensure unique ID is only per route name for push', () => {
       },
       StackActions.push('bar', { foo: 'a' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1585,7 +1587,7 @@ test('adds path on navigate if provided', () => {
         path: '/foo/bar',
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1617,7 +1619,7 @@ test('adds path on navigate if provided', () => {
         path: '/foo/baz',
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1650,7 +1652,7 @@ test('adds path on navigate if provided', () => {
         path: '/foo/bar',
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1694,7 +1696,7 @@ test("doesn't remove existing path on navigate if not provided", () => {
         params: { answer: 42 },
       }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1730,7 +1732,7 @@ test('handles popTo action', () => {
       },
       StackActions.popTo('qux', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1762,7 +1764,7 @@ test('handles popTo action', () => {
       },
       StackActions.popTo('baz', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1787,7 +1789,7 @@ test('handles popTo action', () => {
       },
       StackActions.popTo('bar', { answer: 96 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1850,7 +1852,7 @@ test("doesn't merge params on popTo to an existing screen", () => {
       },
       StackActions.popTo('bar'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1878,7 +1880,7 @@ test("doesn't merge params on popTo to an existing screen", () => {
       },
       StackActions.popTo('bar', { fruit: 'orange' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1916,7 +1918,7 @@ test('merges params on popTo to an existing screen if merge: true', () => {
 
       StackActions.popTo('bar', {}, { merge: true }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1944,7 +1946,7 @@ test('merges params on popTo to an existing screen if merge: true', () => {
       },
       StackActions.popTo('bar', { fruit: 'orange' }, { merge: true }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -1976,7 +1978,7 @@ test('merges params on popTo to an existing screen if merge: true', () => {
       },
       StackActions.popTo('baz', { color: 'black' }, { merge: true }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2019,7 +2021,7 @@ test("handles popTo if source key isn't present but target is not specified", ()
         source: 'magic',
       },
       options
-    )
+    )?.state
   ).toEqual({
     index: 1,
     key: 'root',
@@ -2061,7 +2063,7 @@ test('handles popTo when source and target match a route', () => {
         target: 'root',
       },
       options
-    )
+    )?.state
   ).toEqual({
     index: 1,
     key: 'root',
@@ -2131,7 +2133,7 @@ test('adds route to preloaded list with preload', () => {
 
       CommonActions.preload('bar'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2166,7 +2168,7 @@ test('adds route to preloaded list with preload', () => {
 
       CommonActions.preload('bar', { answer: 42, something: 'else' }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2203,7 +2205,7 @@ test('adds route to preloaded list with preload', () => {
 
       CommonActions.preload('bar', { answer: 43 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2252,7 +2254,7 @@ test('uses preloaded route when pushing a route with the same name', () => {
 
       StackActions.push('qux'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2296,7 +2298,7 @@ test('uses preloaded route when pushing a route with the same name', () => {
 
       StackActions.push('qux'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2355,7 +2357,7 @@ test('uses preloaded route when pushing a route with the same ID', () => {
 
       StackActions.push('bar', { answer: 41 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2395,27 +2397,27 @@ test('partitions active history from multiple preloaded routes', () => {
     ],
   };
 
-  expect(router.getStateForAction(state, StackActions.push('p2', { preload: 2 }), options)).toEqual(
-    {
-      ...state,
-      index: 2,
-      routes: [state.routes[0], state.routes[1], state.routes[3], state.routes[2]],
-    }
-  );
-
   expect(
-    router.getStateForAction(
-      state,
-      CommonActions.navigate({ name: 'p2', params: { preload: 2 }, pop: true }),
-      options
-    )
+    router.getStateForAction(state, StackActions.push('p2', { preload: 2 }), options)?.state
   ).toEqual({
     ...state,
     index: 2,
     routes: [state.routes[0], state.routes[1], state.routes[3], state.routes[2]],
   });
 
-  expect(router.getStateForAction(state, StackActions.push('c'), options)).toEqual({
+  expect(
+    router.getStateForAction(
+      state,
+      CommonActions.navigate({ name: 'p2', params: { preload: 2 }, pop: true }),
+      options
+    )?.state
+  ).toEqual({
+    ...state,
+    index: 2,
+    routes: [state.routes[0], state.routes[1], state.routes[3], state.routes[2]],
+  });
+
+  expect(router.getStateForAction(state, StackActions.push('c'), options)?.state).toEqual({
     ...state,
     index: 2,
     routes: [
@@ -2427,7 +2429,7 @@ test('partitions active history from multiple preloaded routes', () => {
     ],
   });
 
-  expect(router.getStateForAction(state, StackActions.pop(), options)).toEqual({
+  expect(router.getStateForAction(state, StackActions.pop(), options)?.state).toEqual({
     ...state,
     index: 0,
     routes: [state.routes[0], state.routes[2], state.routes[3]],
@@ -2469,7 +2471,7 @@ test('does not use preloaded route when pushing a route with different ID', () =
 
       StackActions.push('bar', { answer: 41 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2524,7 +2526,7 @@ test('uses preloaded route when replacing current route', () => {
       },
       StackActions.replace('bar'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2571,7 +2573,7 @@ test('uses preloaded route with the same ID when replacing current route', () =>
       },
       StackActions.replace('bar', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2618,7 +2620,7 @@ test('does not use preloaded route with different ID when replacing current rout
       },
       StackActions.popTo('bar', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2668,7 +2670,7 @@ test('uses preloaded route with the same name when popTo replaces current route'
       },
       StackActions.popTo('bar'),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2715,7 +2717,7 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
       },
       StackActions.popTo('bar', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2762,7 +2764,7 @@ test('does not use preloaded route with different ID when popTo replaces current
       },
       StackActions.popTo('bar', { answer: 42 }),
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2783,6 +2785,109 @@ test('does not use preloaded route with different ID when popTo replaces current
       },
     ],
   });
+});
+
+test('returns the created route key for push', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      type: 'stack',
+      key: 'root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'bar', name: 'bar' }],
+    },
+    StackActions.push('baz'),
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.affectedRouteKey).toBe('baz-test');
+});
+
+test('returns the exact duplicate-name route key for navigate', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      type: 'stack',
+      key: 'root',
+      index: 2,
+      routeNames: ['bar', 'baz'],
+      routes: [
+        { key: 'bar-a', name: 'bar', params: { id: 'a' } },
+        { key: 'bar-b', name: 'bar', params: { id: 'b' } },
+        { key: 'baz', name: 'baz' },
+      ],
+    },
+    CommonActions.navigate('bar', { id: 'a' }),
+    {
+      routeNames: ['bar', 'baz'],
+      routeGetIdList: { bar: ({ params }) => params?.id },
+    }
+  );
+
+  expect(result?.affectedRouteKey).toBe('bar-a');
+});
+
+test('returns the replacement key when replacing a non-focused route', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      type: 'stack',
+      key: 'root',
+      index: 1,
+      routeNames: ['foo', 'bar', 'qux'],
+      routes: [
+        { key: 'foo', name: 'foo' },
+        { key: 'bar', name: 'bar' },
+      ],
+    },
+    { ...StackActions.replace('qux'), source: 'foo', target: 'root' },
+    { routeNames: ['foo', 'bar', 'qux'], routeGetIdList: {} }
+  );
+
+  expect(result?.affectedRouteKey).toBe('qux-test');
+});
+
+test('returns the exact route key for popTo', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      type: 'stack',
+      key: 'root',
+      index: 2,
+      routeNames: ['bar', 'baz'],
+      routes: [
+        { key: 'bar-a', name: 'bar', params: { id: 'a' } },
+        { key: 'bar-b', name: 'bar', params: { id: 'b' } },
+        { key: 'baz', name: 'baz' },
+      ],
+    },
+    StackActions.popTo('bar', { id: 'a' }),
+    {
+      routeNames: ['bar', 'baz'],
+      routeGetIdList: { bar: ({ params }) => params?.id },
+    }
+  );
+
+  expect(result?.affectedRouteKey).toBe('bar-a');
+});
+
+test('returns the preloaded route key while focus remains elsewhere', () => {
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      type: 'stack',
+      key: 'root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'baz', name: 'baz' }],
+    },
+    CommonActions.preload('bar'),
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.state.routes[result.state.index ?? -1]?.key).toBe('baz');
+  expect(result?.affectedRouteKey).toBe('bar-test');
 });
 
 test('removes routes by name while preserving the focused route instance', () => {
@@ -2809,7 +2914,7 @@ test('removes routes by name while preserving the focused route instance', () =>
       },
       { type: 'REMOVE_ROUTES', payload: { routeNames: ['secret', 'other'] } },
       options
-    )
+    )?.state
   ).toEqual({
     stale: false,
     type: 'stack',
@@ -2847,7 +2952,7 @@ test.each(['secret', 'nonExisting'])(
           routeNames: state.routeNames,
           routeGetIdList: {},
         }
-      )
+      )?.state
     ).toBe(state);
   }
 );

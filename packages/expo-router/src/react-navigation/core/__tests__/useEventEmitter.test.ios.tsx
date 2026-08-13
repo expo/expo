@@ -313,17 +313,23 @@ test('fires blur event when a route is removed with a delay', async () => {
         switch (action.type) {
           case 'PUSH':
             return {
-              ...state,
-              index: state.index + 1,
-              routes: [...state.routes, action.payload],
+              state: {
+                ...state,
+                index: state.index + 1,
+                routes: [...state.routes, action.payload],
+              },
+              affectedRouteKey: action.payload.key,
             };
           case 'POP': {
             const routes = state.routes.slice(0, -1);
 
             return {
-              ...state,
-              index: routes.length - 1,
-              routes,
+              state: {
+                ...state,
+                index: routes.length - 1,
+                routes,
+              },
+              affectedRouteKey: routes[routes.length - 1]?.key,
             };
           }
           default:

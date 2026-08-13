@@ -27,12 +27,12 @@ const state: NavigationState = {
 };
 
 const firstEntry: RouterRegistryEntry = {
-  reduce: () => state,
+  reduce: () => ({ state, affectedRouteKey: state.routes[state.index]?.key }),
   routerType: 'stack',
 };
 
 const secondEntry: RouterRegistryEntry = {
-  reduce: () => state,
+  reduce: () => ({ state, affectedRouteKey: state.routes[state.index]?.key }),
   routerType: 'stack',
 };
 
@@ -228,9 +228,10 @@ describe('navigation builder registration', () => {
     const layoutState = getLayoutState();
     const entry = registry.get(layoutState.key)!;
 
-    const nextState = entry.reduce(layoutState, StackActions.push('second'));
+    const result = entry.reduce(layoutState, StackActions.push('second'));
 
-    expect(nextState?.routes.map((route) => route.name)).toEqual(['index', 'second']);
+    expect(result?.state.routes.map((route) => route.name)).toEqual(['index', 'second']);
+    expect(result?.affectedRouteKey).toBe(result?.state.routes[1]!.key);
   });
 
   it('preserves registry identity when screens do not change', () => {
@@ -274,9 +275,9 @@ describe('navigation builder registration', () => {
 
       const updatedEntry = [...registry.values()].find((entry) => entry.contextKey === '')!;
       expect(updatedEntry).not.toBe(initialEntry);
-      expect(updatedEntry.reduce(getLayoutState(), StackActions.push('second'))?.routes).toEqual(
-        expect.arrayContaining([expect.objectContaining({ name: 'second' })])
-      );
+      expect(
+        updatedEntry.reduce(getLayoutState(), StackActions.push('second'))?.state.routes
+      ).toEqual(expect.arrayContaining([expect.objectContaining({ name: 'second' })]));
     } finally {
       if (previousImportMode === undefined) {
         delete process.env.EXPO_ROUTER_IMPORT_MODE;

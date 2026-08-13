@@ -94,7 +94,10 @@ const TypelessRouter: RouterFactory<
   },
   getStateForDeclaredRoutes: (state) => state,
   getStateForRouteFocus: (state) => state,
-  getStateForAction: (state) => state,
+  getStateForAction: (state) => ({
+    state,
+    affectedRouteKey: state.routes[state.index]?.key,
+  }),
   shouldActionChangeFocus: () => false,
 });
 

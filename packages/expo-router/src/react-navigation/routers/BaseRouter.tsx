@@ -5,6 +5,7 @@ import type {
   NavigationAction,
   NavigationState,
   PartialState,
+  RouterActionResult,
 } from './types';
 
 /**
@@ -39,7 +40,7 @@ export const BaseRouter = {
   getStateForAction<State extends NavigationState>(
     state: State,
     action: CommonNavigationAction
-  ): State | PartialState<State> | null {
+  ): RouterActionResult<State> | null {
     switch (action.type) {
       case 'SET_PARAMS':
       case 'REPLACE_PARAMS': {
@@ -52,18 +53,21 @@ export const BaseRouter = {
         }
 
         return {
-          ...state,
-          routes: state.routes.map((r, i) =>
-            i === index
-              ? {
-                  ...r,
-                  params:
-                    action.type === 'REPLACE_PARAMS'
-                      ? action.payload.params
-                      : { ...r.params, ...action.payload.params },
-                }
-              : r
-          ),
+          state: {
+            ...state,
+            routes: state.routes.map((r, i) =>
+              i === index
+                ? {
+                    ...r,
+                    params:
+                      action.type === 'REPLACE_PARAMS'
+                        ? action.payload.params
+                        : { ...r.params, ...action.payload.params },
+                  }
+                : r
+            ),
+          },
+          affectedRouteKey: state.routes[index]!.key,
         };
       }
 
@@ -85,15 +89,24 @@ export const BaseRouter = {
             return null;
           }
 
-          return {
+          const result = {
             ...nextState,
             routes: nextState.routes.map((route) =>
               route.key ? route : { ...route, key: `${route.name}-${nanoid()}` }
             ),
           };
+
+          return {
+            state: result,
+            affectedRouteKey: result.routes[result.index]?.key,
+          };
         }
 
-        return nextState;
+        return {
+          state: nextState,
+          affectedRouteKey:
+            nextState.index === undefined ? undefined : nextState.routes[nextState.index]?.key,
+        };
       }
 
       default:

@@ -30,16 +30,17 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
       switch (action.type) {
         case 'PUSH':
         case 'NAVIGATE': {
-          const newStateFromNavigation = tabRouter.getStateForAction(state, action, options);
+          const actionResult = tabRouter.getStateForAction(state, action, options);
+          const newStateFromNavigation = actionResult?.state;
 
           if (!newStateFromNavigation) {
-            return newStateFromNavigation;
+            return actionResult;
           }
           const index = newStateFromNavigation.routes.findIndex(
             (route) => route.name === action.payload.name
           );
           if (index === -1) {
-            return newStateFromNavigation;
+            return actionResult;
           }
 
           const newState = {
@@ -81,7 +82,7 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
               };
             }),
           };
-          return newState;
+          return { ...actionResult, state: newState };
         }
       }
       return tabRouter.getStateForAction(state, action, options);
