@@ -14,6 +14,8 @@ Check a workflow file for YAML syntax and schema errors before running it:
 
 <Terminal cmd={['$ eas workflow:validate .eas/workflows/my-workflow.yml']} />
 
+The command also validates any [custom functions](/eas/workflows/custom-functions/) that the workflow calls from its steps or hooks.
+
 The [Expo Tools VS Code extension](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) also provides descriptions and autocompletion for workflow files as you edit them.
 
 ## Workflow doesn't start on GitHub events

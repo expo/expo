@@ -128,13 +128,13 @@ test('sets options with options prop as a fuction', () => {
   const TestScreen = (): any => 'Test screen';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{ routes: [{ name: 'foo', params: { author: 'Jane' } }] }}>
       <TestNavigator>
         <Screen
           name="foo"
           component={TestScreen}
           options={({ route }: any) => ({ title: route.params.author })}
-          initialParams={{ author: 'Jane' }}
         />
         <Screen name="bar" component={React.Fragment} />
       </TestNavigator>
@@ -245,13 +245,19 @@ test('sets options with screenOptions prop as a fuction', () => {
   const TestScreenB = (): any => 'Test screen B';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        routes: [
+          { name: 'foo', params: { author: 'Jane' } },
+          { name: 'bar', params: { fruit: 'Apple' } },
+        ],
+      }}>
       <TestNavigator
         screenOptions={({ route }: any) => ({
           title: `${route.name}: ${route.params.author || route.params.fruit}`,
         })}>
-        <Screen name="foo" component={TestScreenA} initialParams={{ author: 'Jane' }} />
-        <Screen name="bar" component={TestScreenB} initialParams={{ fruit: 'Apple' }} />
+        <Screen name="foo" component={TestScreenA} />
+        <Screen name="bar" component={TestScreenB} />
       </TestNavigator>
     </BaseNavigationContainer>
   );

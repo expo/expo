@@ -26,14 +26,8 @@ export type _PublicPropsMatchTabs = Expect<Equal<JSTabsProps, TabsProps>>;
 export type _RouteNamesIsNotPublic = Expect<
   Equal<'routeNames' extends keyof TabsProps ? true : false, false>
 >;
-export type _PreloadedRouteKeysIsNotPublic = Expect<
-  Equal<'preloadedRouteKeys' extends keyof TabsProps ? true : false, false>
->;
 export type _PopNestedStackToTopIsNotPublic = Expect<
   Equal<'popNestedStackToTop' extends keyof TabsProps ? true : false, false>
->;
-export type _ContentRequiresPreloadedRouteKeys = Expect<
-  Equal<BottomTabNavigatorContentProps['preloadedRouteKeys'], string[]>
 >;
 export type _ContentRequiresRouteNames = Expect<
   Equal<BottomTabNavigatorContentProps['routeNames'], string[]>

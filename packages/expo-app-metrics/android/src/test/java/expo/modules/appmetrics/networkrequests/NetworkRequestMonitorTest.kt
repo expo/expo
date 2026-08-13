@@ -114,6 +114,7 @@ class NetworkRequestMonitorTest {
       requestEnd = null,
       responseStart = null,
       responseEnd = null,
+      measuredResponseEnd = null,
       totalDuration = 0.1
     ),
     errorDescription = null,

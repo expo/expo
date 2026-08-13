@@ -11,7 +11,7 @@ import type WebpackDevServer from 'webpack-dev-server';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { setNodeEnv, loadEnvFiles } from '../../../utils/nodeEnv';
+import { type EnvironmentMode, loadEnvFiles } from '../../../utils/nodeEnv';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -239,8 +239,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       https: options.https,
     };
 
-    setNodeEnv(env.mode ?? 'development');
-    loadEnvFiles(env.projectRoot);
+    loadEnvFiles(env.projectRoot, { mode: env.mode ?? 'development' });
 
     // Check if the project has a webpack.config.js in the root.
     const projectWebpackConfig = this.getProjectConfigFilePath();
@@ -266,7 +265,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
   protected async clearWebProjectCacheAsync(
     projectRoot: string,
-    mode: string = 'development'
+    mode: EnvironmentMode = 'development'
   ): Promise<void> {
     Log.log(chalk.dim(`Clearing Webpack ${mode} cache directory...`));
 

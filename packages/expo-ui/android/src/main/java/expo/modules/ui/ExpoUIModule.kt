@@ -79,6 +79,13 @@ class ExpoUIModule : Module() {
         callback
       }
 
+      Function("setWorklet") { callback: WorkletCallback, worklet: Worklet ->
+        // Dispatch on main thread as callback is read on the main thread
+        appContext.mainQueue.launch {
+          callback.worklet = worklet
+        }
+      }
+
       Property("__expo_ui_shared_object__") { _: WorkletCallback ->
         true
       }

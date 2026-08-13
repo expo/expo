@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Use the Expo command mode to set `NODE_ENV` and load **.env** files. ([#48741](https://github.com/expo/expo/pull/48741) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Make browser-based login the default for `expo login`. Use `--no-browser` (or pass `--username`/`--password`) for username/password login. Non-interactive environments such as CI continue to use username/password login. ([#46832](https://github.com/expo/expo/pull/46832) by [@byronkarlen](https://github.com/byronkarlen))
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
 
@@ -29,9 +30,12 @@
 - Fix opening web from the Terminal UI when the dev server was started without `--web` ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Ignore an invalid `--port` or an out-of-range `RCT_METRO_PORT` and start on the preferred port instead of prompting to use port `null` ([#48300](https://github.com/expo/expo/pull/48300) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Resolve the signed-in username for partner provisioned actors so Expo Go can verify the account match ([#48354](https://github.com/expo/expo/pull/48354) by [@davidko604](https://github.com/davidko604))
+- Switch `ManifestMiddleware` to `expo-server`'s response helpers to avoid cancellations being surfaced as exceptions ([#48700](https://github.com/expo/expo/pull/48700) by [@kitten](https://github.com/kitten))
+- Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
+- Add sandbox detection to telemetry context ([#47928](https://github.com/expo/expo/pull/47928) by [@davidmokos](https://github.com/davidmokos))
 - [Internal] Remove the unreachable port fallbacks and increase consistency in port selection logic ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
 - Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 - [Internal] Update logbox imports ([#46640](https://github.com/expo/expo/pull/46640) by [@kitten](https://github.com/kitten))
@@ -41,6 +45,8 @@
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
 - [Internal] Resolve the dev server port once instead of re-deriving it, and read the URL environment variables outside the `UrlCreator` ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Update `expo start --private-key-path` help text ([#47795](https://github.com/expo/expo/pull/47795) by [@kitten](https://github.com/kitten))
+- Re-enable sextant QR code for Zed ([#48382](https://github.com/expo/expo/pull/48382) by [@mchisolm0](https://github.com/mchisolm0))
+- Bump to `multitars@1.0.2` to address symlink and unicode bugs ([#48833](https://github.com/expo/expo/pull/48833) by [@kitten](https://github.com/kitten))
 
 ## 57.0.11 - 2026-07-29
 

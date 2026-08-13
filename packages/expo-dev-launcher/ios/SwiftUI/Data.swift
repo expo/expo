@@ -1,7 +1,7 @@
 import Network
 
 struct DiscoveryResult {
-  let name: String?
+  let metadata: DevServerMetadata
   let endpoint: NWEndpoint
 }
 
@@ -16,6 +16,9 @@ struct DevServer: Hashable {
   let url: String
   let description: String
   let source: String
+  let slug: String?
+  let bundleIdentifier: String?
+  let username: String?
 
   static func == (lhs: Self, rhs: Self) -> Bool {
     return lhs.url == rhs.url

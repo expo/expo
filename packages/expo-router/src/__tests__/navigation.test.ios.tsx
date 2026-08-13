@@ -323,8 +323,9 @@ it('pushes auto-encoded params and fully qualified URLs', () => {
   });
 });
 
-it('does not loop infinitely when pushing a screen with empty options to an invalid initial route name', () => {
+it('throws when pushing to a layout with an invalid initial route name', () => {
   /** https://github.com/expo/router/issues/452 */
+  // Throwing before the invalid layout mounts makes the reported render loop unreachable.
 
   renderRouter({
     _layout: () => <Stack />,
@@ -345,8 +346,9 @@ it('does not loop infinitely when pushing a screen with empty options to an inva
   });
 
   expect(screen).toHavePathname('/');
-  act(() => router.push('/main/welcome'));
-  expect(screen).toHavePathname('/main/welcome');
+  expect(() => act(() => router.push('/main/welcome'))).toThrow(
+    'The initial route name "index" was not found in the layout at "./main/_layout.js". Available routes are: "welcome". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+  );
 });
 
 it('can push nested initial route name', () => {

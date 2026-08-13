@@ -12,6 +12,9 @@ private let sessionKey = "expo-session-secret"
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
 private let BONJOUR_TYPE = "_expo._tcp"
 private let networkPermissionGrantedKey = "expo.devlauncher.hasGrantedNetworkPermission"
+private let filterByBundleIdentifierKey = "expo.devlauncher.nsd.filterByBundleIdentifier"
+private let filterByUsernameKey = "expo.devlauncher.nsd.filterByUsername"
+private let filterBySlugKey = "expo.devlauncher.nsd.filterBySlug"
 
 enum LocalNetworkPermissionStatus: Equatable, Sendable {
   case unknown
@@ -58,13 +61,40 @@ class DevLauncherViewModel: ObservableObject {
   }
   @Published var isAuthenticated = false
   @Published var isAuthenticating = false
-  @Published var user: User?
+  @Published var user: User? {
+    didSet {
+      applyDevServerFilters()
+    }
+  }
   @Published var selectedAccountId: String?
   @Published var isLoadingServer: Bool = false
   @Published var isLoadingLocalBundle: Bool = false
   @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
 
   @Published var devServers: [DevServer] = []
+
+  private var allDevServers: [DevServer] = []
+
+  @Published var hiddenDevServerCount = 0
+
+  @Published var filterByBundleIdentifier = true {
+    didSet {
+      UserDefaults.standard.set(filterByBundleIdentifier, forKey: filterByBundleIdentifierKey)
+      applyDevServerFilters()
+    }
+  }
+  @Published var filterByUsername = false {
+    didSet {
+      UserDefaults.standard.set(filterByUsername, forKey: filterByUsernameKey)
+      applyDevServerFilters()
+    }
+  }
+  @Published var filterBySlug = "" {
+    didSet {
+      UserDefaults.standard.set(filterBySlug, forKey: filterBySlugKey)
+      applyDevServerFilters()
+    }
+  }
 
   private var browser: NWBrowser?
   private var pingTask: Task<Void, Never>?
@@ -106,7 +136,9 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   private func updateDevServers(_ servers: [DevServer]) {
-    if servers.isEmpty && !devServers.isEmpty && !pendingEmptyVerification {
+    // Compare against the unfiltered list. Reading `devServers` here would restart discovery
+    // every time a filter emptied the visible list, in a loop.
+    if servers.isEmpty && !allDevServers.isEmpty && !pendingEmptyVerification {
       pendingEmptyVerification = true
       stopServerDiscovery()
       startServerDiscovery()
@@ -116,7 +148,26 @@ class DevLauncherViewModel: ObservableObject {
     if !servers.isEmpty {
       markNetworkPermissionGranted()
     }
-    devServers = servers.sorted(by: <)
+    allDevServers = servers
+    applyDevServerFilters()
+  }
+
+  private func applyDevServerFilters() {
+    let settings = DevServerFilterSettings(
+      filterByBundleIdentifier: filterByBundleIdentifier,
+      filterByUsername: filterByUsername,
+      slug: filterBySlug
+    )
+
+    let filtered = DevServerFilter.apply(
+      allDevServers,
+      settings: settings,
+      bundleIdentifier: Bundle.main.bundleIdentifier,
+      username: user?.username
+    )
+
+    devServers = filtered.sorted(by: <)
+    hiddenDevServerCount = allDevServers.count - filtered.count
   }
 
   private func extractPort(from url: String) -> String? {
@@ -134,6 +185,7 @@ class DevLauncherViewModel: ObservableObject {
 
     loadRecentlyOpenedApps()
     loadMenuPreferences()
+    loadFilterPreferences()
   }
 
   func loadRecentlyOpenedApps() {
@@ -246,7 +298,7 @@ class DevLauncherViewModel: ObservableObject {
     }
     await pingDiscoveryResults(browser.browseResults.map { result in
       DiscoveryResult(
-        name: NetworkUtilities.getNWBrowserResultName(result),
+        metadata: DevServerMetadata(result: result),
         endpoint: result.endpoint
       )
     })
@@ -269,7 +321,7 @@ class DevLauncherViewModel: ObservableObject {
     guard let browser else {
       return
     }
-    if devServers.isEmpty {
+    if allDevServers.isEmpty {
       await restartBrowser()
     } else if browser.browseResults.isEmpty {
       updateDevServers([])
@@ -433,7 +485,7 @@ class DevLauncherViewModel: ObservableObject {
           defer { self.pingTask = nil }
           await self.pingDiscoveryResults(results.map { result in
             DiscoveryResult(
-              name: NetworkUtilities.getNWBrowserResultName(result),
+              metadata: DevServerMetadata(result: result),
               endpoint: result.endpoint
             )
           })
@@ -481,8 +533,11 @@ class DevLauncherViewModel: ObservableObject {
       ) {
         return DevServer(
           url: host,
-          description: result.name ?? host,
-          source: "local"
+          description: result.metadata.name ?? host,
+          source: "local",
+          slug: result.metadata.slug,
+          bundleIdentifier: result.metadata.bundleIdentifier,
+          username: result.metadata.username
         )
       }
     } catch {
@@ -528,6 +583,17 @@ class DevLauncherViewModel: ObservableObject {
     threeFingerLongPress = defaults.bool(forKey: "EXDevMenuTouchGestureEnabled")
     showOnLaunch = defaults.bool(forKey: "EXDevMenuShowsAtLaunch")
     autoLaunchMostRecent = defaults.bool(forKey: "EXDevLauncherTryToLaunchLastBundle")
+  }
+
+  private func loadFilterPreferences() {
+    let defaults = UserDefaults.standard
+    // `bool(forKey:)` reports false for a key that was never written, so the on-by-default
+    // filter needs a registered default rather than a bare read.
+    defaults.register(defaults: [filterByBundleIdentifierKey: true])
+
+    filterByBundleIdentifier = defaults.bool(forKey: filterByBundleIdentifierKey)
+    filterByUsername = defaults.bool(forKey: filterByUsernameKey)
+    filterBySlug = defaults.string(forKey: filterBySlugKey) ?? ""
   }
 
   private func checkAuthenticationStatus() {

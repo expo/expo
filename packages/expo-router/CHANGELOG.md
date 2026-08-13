@@ -4,6 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `preloadedRouteKeys` field from `TabNavigationState`. ([#48718](https://github.com/expo/expo/pull/48718) by [@Ubax](https://github.com/Ubax))
+- Make `history` optional in `TabNavigationState` and `DrawerNavigationState` ([#48709](https://github.com/expo/expo/pull/48709) by [@Ubax](https://github.com/Ubax))
+- Make navigation state `type` optional for custom routers. ([#48757](https://github.com/expo/expo/pull/48757) by [@Ubax](https://github.com/Ubax))
+- Handle `PUSH` in tab and drawer routers instead of coercing it to `NAVIGATE`. Custom routers must now handle the `PUSH` action in `getStateForAction`. ([#48752](https://github.com/expo/expo/pull/48752) by [@Ubax](https://github.com/Ubax))
+- Remove the `initialParams` prop from Expo Router screens and `routeParamList` from custom router action options. ([#48756](https://github.com/expo/expo/pull/48756) by [@Ubax](https://github.com/Ubax))
+- Remove the `initialRouteName` prop from Expo Router navigators. Configure the initial route with `unstable_settings.initialRouteName` in the route layout instead. ([#48708](https://github.com/expo/expo/pull/48708) by [@Ubax](https://github.com/Ubax))
 - Remove `NavigationContainerRefContext` fallback in `useNavigation`. The hook now throws when called outside a navigator, including components rendered via `ExpoRoot`'s `wrapper` prop. ([#48638](https://github.com/expo/expo/pull/48638) by [@Ubax](https://github.com/Ubax))
 - Allow `key` to be `undefined` in the `Descriptor` type and in routes passed to screen `options`, navigator `screenOptions`, and `RouteGroupConfig.screenOptions` callbacks. ([#48596](https://github.com/expo/expo/pull/48596) by [@Ubax](https://github.com/Ubax))
 - Unify JS Tabs, TopTabs, Drawer, and headless tabs with NativeTabs - only screens declared in the layout become visible. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
@@ -28,9 +34,12 @@
 - Upgrade react-native-screens to 4.26.0 ([#47770](https://github.com/expo/expo/pull/47770) by [@Ubax](https://github.com/Ubax))
 - Improve standard-navigation types for `createProps`. ([#47825](https://github.com/expo/expo/pull/47825) by [@Ubax](https://github.com/Ubax))
 - Add a `processScreens` option to the `standard-navigation` integration. ([#48290](https://github.com/expo/expo/pull/48290) by [@Ubax](https://github.com/Ubax))
+- Hide the splash screen when the built-in `+not-found` screen renders ([#48721](https://github.com/expo/expo/pull/48721) by [@Ubax](https://github.com/Ubax))
+- Honor loader `Cache-Control` headers via the platform HTTP cache instead of caching loader data in memory ([#48087](https://github.com/expo/expo/pull/48087) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
+- Make layouts with explicitly declared screens honor `unstable_settings.initialRouteName` instead of declaration order, which can change deep-link back stacks. ([#48708](https://github.com/expo/expo/pull/48708) by [@Ubax](https://github.com/Ubax))
 - Prevent unfocused nested native tab navigators from redirecting global router state. ([#48257](https://github.com/expo/expo/pull/48257) by [@Ubax](https://github.com/Ubax))
 - Fixed `Tabs` and `TopTabs` (`expo-router/js-tabs`, `expo-router/js-top-tabs`) not being usable from RSC ([#48330](https://github.com/expo/expo/pull/48330) by [@Ubax](https://github.com/Ubax))
 - Redirect fully guarded navigators to parent ([#47984](https://github.com/expo/expo/pull/47984) by [@Ubax](https://github.com/Ubax))
@@ -41,6 +50,7 @@
 - [android][ios] Fix `expo-router/head` and `expo-router/stack` resolution on native platforms. ([#47870](https://github.com/expo/expo/pull/47870) by [@hassankhan](https://github.com/hassankhan))
 - Fix missing subpath warning from Metro when importing from `expo-router/server` ([#48045](https://github.com/expo/expo/pull/48045) by [@hassankhan](https://github.com/hassankhan))
 - Fix `replace` navigation in tabs leaving the replaced route in history. ([#48256](https://github.com/expo/expo/pull/48256) by [@Ubax](https://github.com/Ubax))
+- Prevent `useLoaderData()` from re-rendering readers of unrelated loader paths ([#48523](https://github.com/expo/expo/pull/48523) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
@@ -55,6 +65,7 @@
 - Rewrite native tabs using standard-navigation ([#46457](https://github.com/expo/expo/pull/46457) by [@Ubax](https://github.com/Ubax))
 - [Internal] Split `useLoaderData()` into a document cache and a per-mount Suspense store ([#47365](https://github.com/expo/expo/pull/47365) by [@hassankhan](https://github.com/hassankhan))
 - [Internal] Read the development server URL from `expo/internal/bundle-origin` instead of duplicating its accessor ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
+- [Internal] Isolate the loader's Suspense store from `LoaderClient` ([#48563](https://github.com/expo/expo/pull/48563) by [@hassankhan](https://github.com/hassankhan))
 
 ## 57.0.9 - 2026-07-29
 

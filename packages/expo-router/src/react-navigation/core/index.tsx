@@ -46,6 +46,7 @@ export { NavigationIndependentTree } from './NavigationIndependentTree';
  * @deprecated Will be removed in a future SDK.
  */
 export { NavigationMetaContext } from './NavigationMetaContext';
+export { NavigatorTypeContext } from './NavigatorTypeContext';
 export { NavigationProvider } from './NavigationProvider';
 /**
  * @deprecated Will be removed in a future SDK.
