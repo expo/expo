@@ -15,13 +15,28 @@ final class NetworkRequestPersistence: Sendable {
   /// the app delegate finished wiring it.
   private let sessionId: @Sendable () -> String
 
-  init(database: MetricsDatabase?, sessionId: @escaping @Sendable () -> String) {
+  private var configuration: NetworkSpansConfiguration
+
+  init(
+    database: MetricsDatabase?,
+    configuration: NetworkSpansConfiguration = NetworkSpansConfiguration(),
+    sessionId: @escaping @Sendable () -> String
+  ) {
     self.database = database
+    self.configuration = configuration
     self.sessionId = sessionId
+  }
+
+  /// Applies a new recording policy. Affects future requests only; rows already written stay.
+  func setConfiguration(_ configuration: NetworkSpansConfiguration) {
+    self.configuration = configuration
   }
 
   /// Records one completed request as a span.
   func persist(_ request: NetworkRequest) {
+    guard configuration.allows(url: request.url, method: request.method) else {
+      return
+    }
     guard let database, let row = SpanRow.from(request: request, sessionId: sessionId()) else {
       return
     }
