@@ -7,6 +7,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.utils.AndroidResourceAssetUtils
 import java.io.File
 
 /**
@@ -48,9 +49,13 @@ object Reaper {
         )
         continue
       }
-      // A row written before asset filenames were validated may point outside the updates directory.
       val relativePath = asset.relativePath
-      if (relativePath == null || !UpdatesUtils.isSafeFilename(relativePath)) {
+      // Embedded assets are served from the APK, so there is no file here to delete.
+      if (relativePath == null || AndroidResourceAssetUtils.isAndroidResourceAsset(relativePath)) {
+        continue
+      }
+      // A row written before asset filenames were validated may point outside the updates directory.
+      if (!UpdatesUtils.isSafeFilename(relativePath)) {
         Log.e(
           TAG,
           "Refusing to delete asset with URL " + asset.url + " at unsafe path " + relativePath

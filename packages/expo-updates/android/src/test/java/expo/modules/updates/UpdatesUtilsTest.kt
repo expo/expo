@@ -45,7 +45,10 @@ class UpdatesUtilsTest : TestCase() {
       "nested/asset.png",
       "nested\\asset.png",
       "/etc/passwd",
-      "asset\u0000.png"
+      "asset\u0000.png",
+      // A separator followed by a combining mark. Kotlin compares UTF-16 code units so this is
+      // caught here, unlike Swift, where the two form one Character that does not equal "/".
+      "..\u002F\u0338pwned.png"
     )
     unsafe.forEach {
       Assert.assertFalse("expected \"$it\" to be rejected", UpdatesUtils.isSafeFilename(it))
@@ -62,7 +65,7 @@ class UpdatesUtilsTest : TestCase() {
     }
   }
 
-  fun testIsSafeFilename_everySafeNameStaysInsideItsDirectory() {
+  fun testIsSafeFilename_rejectedNameEscapesItsDirectory() {
     val updatesDirectory = File("/data/data/com.example/files/.expo-internal")
     val filename = UpdatesUtils.createFilenameForAsset(AssetEntity("../../shared_prefs/pwned", "xml"))
 
