@@ -1,4 +1,4 @@
-package expo.modules.ui.icon
+package expo.modules.ui.graphics
 
 import android.annotation.SuppressLint
 import android.content.Context

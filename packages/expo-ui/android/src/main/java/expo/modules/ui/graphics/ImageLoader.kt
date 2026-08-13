@@ -1,135 +1,154 @@
-package expo.modules.ui.icon
+package expo.modules.ui.graphics
 
 import android.content.Context
 import android.content.res.XmlResourceParser
+import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
+import android.util.LruCache
 import android.util.Xml
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
+import androidx.core.net.toUri
+import expo.modules.kotlin.okhttp.await
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.xmlpull.v1.XmlPullParser
 import java.io.File
-import java.io.InputStream
+import java.io.IOException
 
 /**
- * Loads and parses vector icons from various sources (HTTP, file, content provider).
+ * Loads and parses images from various sources (HTTP, file, content provider).
  * Supports XML vector drawables (Android format) and bitmap images.
  *
  * All loading operations are suspend functions and run on appropriate dispatchers.
  */
-class VectorIconLoader(
+class ImageLoader(
   private val context: Context,
   private val okHttpClient: OkHttpClient
 ) {
+  private val imageCache = object : LruCache<String, ImageResult>(memoryCacheSizeKilobytes()) {
+    override fun sizeOf(key: String, value: ImageResult): Int {
+      val bitmap = (value.drawable as? BitmapDrawable)?.bitmap ?: return 1
+
+      return (bitmap.allocationByteCount / 1024)
+        .coerceAtLeast(1)
+    }
+  }
 
   /**
-   * Result of icon loading operation.
+   * Result of an image loading operation.
    */
-  data class IconResult(
+  data class ImageResult(
     val imageVector: ImageVector? = null,
-    val drawable: Drawable? = null
-  )
+    val drawable: Drawable? = null,
+    val error: String? = null
+  ) {
+    val isSuccess: Boolean
+      get() = imageVector != null || drawable != null
+  }
 
   /**
-   * Load an icon from a URI string.
-   * Returns an IconResult containing either an ImageVector (for XML) or Drawable (for bitmaps).
+   * Load an image from a URI string.
+   * Returns an ImageResult containing either an ImageVector (for XML) or Drawable (for bitmaps).
    *
    * This is a suspend function that performs I/O operations on the IO dispatcher.
    */
-  suspend fun loadFromUri(uriString: String?): IconResult = withContext(Dispatchers.IO) {
-    if (uriString.isNullOrEmpty()) return@withContext IconResult()
+  suspend fun loadFromUri(uriString: String?): ImageResult = withContext(Dispatchers.IO) {
+    if (uriString.isNullOrEmpty()) {
+      return@withContext ImageResult(error = "Image URI is empty")
+    }
 
     val uri = try {
-      Uri.parse(uriString)
+      uriString.toUri()
     } catch (e: Exception) {
       Log.e(TAG, "Failed to parse URI: $uriString", e)
-      return@withContext IconResult()
+      return@withContext ImageResult(error = "Failed to parse image URI: $uriString")
     }
 
-    try {
-      // For resource URIs, use Android's XmlResourceParser which handles compiled binary XML
-      if (uri.scheme == "res") {
-        return@withContext loadFromResourceId(uri)
-      }
-
-      val inputStream = getInputStreamForUri(uri) ?: return@withContext IconResult()
-      inputStream.use { stream ->
-        parseIconFromStream(stream)
-      }
-    } catch (e: Exception) {
-      Log.e(TAG, "Failed to load icon from URI: $uri", e)
-      IconResult()
-    }
-  }
-
-  /**
-   * Get input stream for different URI schemes.
-   */
-  private fun getInputStreamForUri(uri: Uri): InputStream? {
-    return when (uri.scheme) {
-      "file" -> {
-        val path = uri.path ?: return null
-        File(path).inputStream()
-      }
-      "content" -> {
-        context.contentResolver.openInputStream(uri)
-      }
-      "http", "https" -> {
-        downloadFromHttp(uri.toString())
-      }
-      "android.resource" -> {
-        context.contentResolver.openInputStream(uri)
-      }
-      else -> {
-        context.contentResolver.openInputStream(uri)
+    imageCache.get(uriString)?.let { return@withContext it }
+    loadUncached(uri).also { result ->
+      if (result.isSuccess) {
+        imageCache.put(uriString, result)
       }
     }
   }
 
   /**
-   * Download icon from HTTP/HTTPS URL using OkHttp.
-   * Uses OkHttp's blocking call which is safe on IO dispatcher.
+   * Clears pending work and releases decoded images held by this loader.
    */
-  private fun downloadFromHttp(url: String): InputStream? {
+  fun close() {
+    imageCache.evictAll()
+  }
+
+  private suspend fun loadUncached(uri: Uri): ImageResult {
     return try {
-      val request = Request.Builder()
-        .url(url)
-        .build()
+      // For resource URIs, use Android's XmlResourceParser which handles compiled binary XML.
+      if (uri.scheme == "res") {
+        loadFromResourceId(uri)
+      } else {
+        val bytes = when (uri.scheme) {
+          "file" -> {
+            val path = uri.path ?: throw IOException("Image file URI has no path: $uri")
+            File(path).readBytes()
+          }
 
-      // OkHttp's execute() is blocking, which is fine on IO dispatcher
-      val response = okHttpClient.newCall(request).execute()
-      if (!response.isSuccessful) {
-        Log.e(TAG, "Failed to download icon from $url: ${response.code}")
-        response.close()
-        return null
+          "content", "android.resource" -> {
+            context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+              ?: throw IOException("Unable to open image URI: $uri")
+          }
+
+          "http", "https" -> downloadFromHttp(uri.toString())
+          else -> throw IOException("Unsupported image URI scheme: ${uri.scheme ?: "none"}")
+        }
+        parseImageFromBytes(bytes)
       }
-
-      response.body?.byteStream()
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
-      Log.e(TAG, "HTTP download failed: $url", e)
-      null
+      val message = e.message ?: "Failed to load image from URI: $uri"
+      Log.e(TAG, message, e)
+      ImageResult(error = message)
     }
   }
 
   /**
-   * Load icon from an Android resource ID extracted from a `res:/` URI.
+   * Download an image from HTTP/HTTPS URL using OkHttp.
+   * The OkHttp call is cancelled when the enclosing coroutine is cancelled.
+   */
+  private suspend fun downloadFromHttp(url: String): ByteArray {
+    val request = Request.Builder()
+      .url(url)
+      .build()
+    return okHttpClient.newCall(request).await().use { response ->
+      if (!response.isSuccessful) {
+        throw IOException("Failed to download image from $url: HTTP ${response.code}")
+      }
+      response.body?.bytes()
+        ?: throw IOException("Image response from $url has no body")
+    }
+  }
+
+  /**
+   * Load an image from an Android resource ID extracted from a `res:/` URI.
    * Uses [XmlResourceParser] which handles compiled (binary) XML in release builds.
    */
-  private fun loadFromResourceId(uri: Uri): IconResult {
+  private fun loadFromResourceId(uri: Uri): ImageResult {
     val resourceId = uri.lastPathSegment?.toIntOrNull()
       ?: uri.path?.trimStart('/')?.toIntOrNull()
     if (resourceId == null || resourceId <= 0) {
       Log.w(TAG, "Invalid resource ID in URI: $uri")
-      return IconResult()
+      return ImageResult(error = "Invalid image resource ID: $uri")
     }
 
     // Try parsing as XML (handles both text and compiled binary XML)
@@ -138,38 +157,40 @@ class VectorIconLoader(
       xmlParser.use { parser ->
         val imageVector = parseXmlToImageVector(parser)
         if (imageVector != null) {
-          return IconResult(imageVector = imageVector)
+          return ImageResult(imageVector = imageVector)
         }
       }
     } catch (e: Exception) {
       Log.d(TAG, "Resource $resourceId is not XML, trying as raw resource", e)
     }
 
-    // Fall back to raw resource stream (bitmap images, etc.)
+    // Fall back to bitmap resource decoding.
     try {
-      context.resources.openRawResource(resourceId).use { stream ->
-        val drawable = Drawable.createFromStream(stream, null)
-        return IconResult(drawable = drawable)
-      }
+      val bitmap = BitmapFactory.decodeResource(context.resources, resourceId)
+        ?: return ImageResult(error = "Failed to decode image resource $resourceId")
+      return ImageResult(drawable = bitmap.toDrawable(context.resources))
     } catch (e: Exception) {
       Log.e(TAG, "Failed to load resource $resourceId", e)
-      return IconResult()
+      return ImageResult(error = e.message ?: "Failed to load image resource $resourceId")
     }
   }
 
   /**
-   * Parse icon from input stream.
+   * Parse an image from encoded bytes.
    * Detects format (XML or bitmap) and returns appropriate result.
    */
-  private fun parseIconFromStream(inputStream: InputStream): IconResult {
-    val bytes = inputStream.readBytes()
-
+  private fun parseImageFromBytes(bytes: ByteArray): ImageResult {
     return if (isXmlContent(bytes)) {
       val imageVector = parseXmlToImageVector(bytes)
-      IconResult(imageVector = imageVector)
+      if (imageVector != null) {
+        ImageResult(imageVector = imageVector)
+      } else {
+        ImageResult(error = "Failed to decode XML image")
+      }
     } else {
-      val drawable = Drawable.createFromStream(bytes.inputStream(), null)
-      IconResult(drawable = drawable)
+      val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        ?: return ImageResult(error = "Failed to decode bitmap image")
+      ImageResult(drawable = bitmap.toDrawable(context.resources))
     }
   }
 
@@ -181,10 +202,7 @@ class VectorIconLoader(
 
     // Check for UTF-8 BOM
     var offset = 0
-    if (bytes.size >= 3 &&
-      bytes[0] == 0xEF.toByte() &&
-      bytes[1] == 0xBB.toByte() &&
-      bytes[2] == 0xBF.toByte()
+    if (bytes[0] == 0xEF.toByte() && bytes[1] == 0xBB.toByte() && bytes[2] == 0xBF.toByte()
     ) {
       offset = 3
     }
@@ -275,6 +293,7 @@ class VectorIconLoader(
               // Note: groups, clips, gradients not yet supported
             }
           }
+
           XmlPullParser.END_TAG -> {
             if (parser.name == "vector") {
               return builder.build()
@@ -332,7 +351,7 @@ class VectorIconLoader(
         .replace("px", "")
         .toFloat()
       numericValue.dp
-    } catch (e: Exception) {
+    } catch (_: Exception) {
       Log.w(TAG, "Failed to parse dimension: $value, using default 24dp")
       24.dp
     }
@@ -347,11 +366,13 @@ class VectorIconLoader(
         colorValue.startsWith("#") -> {
           androidx.compose.ui.graphics.Color(colorValue.toColorInt())
         }
+
         colorValue.startsWith("@android:color/") || colorValue.startsWith("?attr/") -> {
           // Theme attributes default to black (could be enhanced to resolve theme colors)
           Log.d(TAG, "Theme color attribute not resolved: $colorValue, using black")
           androidx.compose.ui.graphics.Color.Black
         }
+
         else -> {
           Log.w(TAG, "Unknown color format: $colorValue, using black")
           androidx.compose.ui.graphics.Color.Black
@@ -364,6 +385,11 @@ class VectorIconLoader(
   }
 
   companion object {
-    private const val TAG = "VectorIconLoader"
+    private const val TAG = "ImageLoader"
+
+    private fun memoryCacheSizeKilobytes(): Int {
+      val maxMemoryKilobytes = Runtime.getRuntime().maxMemory() / 1024
+      return (maxMemoryKilobytes / 8).coerceIn(1, Int.MAX_VALUE.toLong()).toInt()
+    }
   }
 }

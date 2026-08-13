@@ -1,4 +1,4 @@
-package expo.modules.ui.icon
+package expo.modules.ui.graphics
 
 import android.content.Context
 import android.util.Xml
@@ -17,18 +17,18 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [28])
-class VectorIconLoaderTest {
+class ImageLoaderTest {
 
   private lateinit var context: Context
   private lateinit var okHttpClient: OkHttpClient
-  private lateinit var loader: VectorIconLoader
+  private lateinit var loader: ImageLoader
   private lateinit var mockWebServer: MockWebServer
 
   @Before
   fun setup() {
     context = ApplicationProvider.getApplicationContext()
     okHttpClient = OkHttpClient.Builder().build()
-    loader = VectorIconLoader(context, okHttpClient)
+    loader = ImageLoader(context, okHttpClient)
     mockWebServer = MockWebServer()
     mockWebServer.start()
   }
@@ -208,10 +208,10 @@ class VectorIconLoaderTest {
   @Test
   fun `should detect xml content`() {
     val xmlBytes = "<?xml version=\"1.0\"?><vector></vector>".toByteArray()
-    val loader = VectorIconLoader(context, okHttpClient)
+    val loader = ImageLoader(context, okHttpClient)
 
     // Use reflection to access private method for testing
-    val method = VectorIconLoader::class.java.getDeclaredMethod("isXmlContent", ByteArray::class.java)
+    val method = ImageLoader::class.java.getDeclaredMethod("isXmlContent", ByteArray::class.java)
     method.isAccessible = true
 
     val result = method.invoke(loader, xmlBytes) as Boolean
@@ -225,7 +225,7 @@ class VectorIconLoaderTest {
     val xmlContent = "<vector></vector>".toByteArray()
     val xmlBytes = bom + xmlContent
 
-    val method = VectorIconLoader::class.java.getDeclaredMethod("isXmlContent", ByteArray::class.java)
+    val method = ImageLoader::class.java.getDeclaredMethod("isXmlContent", ByteArray::class.java)
     method.isAccessible = true
 
     val result = method.invoke(loader, xmlBytes) as Boolean
@@ -237,7 +237,7 @@ class VectorIconLoaderTest {
   fun `should not detect non-xml content`() {
     val pngHeader = byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)
 
-    val method = VectorIconLoader::class.java.getDeclaredMethod("isXmlContent", ByteArray::class.java)
+    val method = ImageLoader::class.java.getDeclaredMethod("isXmlContent", ByteArray::class.java)
     method.isAccessible = true
 
     val result = method.invoke(loader, pngHeader) as Boolean
@@ -249,7 +249,7 @@ class VectorIconLoaderTest {
   fun `should handle very small byte arrays`() {
     val tinyBytes = byteArrayOf(0x01, 0x02)
 
-    val method = VectorIconLoader::class.java.getDeclaredMethod("isXmlContent", ByteArray::class.java)
+    val method = ImageLoader::class.java.getDeclaredMethod("isXmlContent", ByteArray::class.java)
     method.isAccessible = true
 
     val result = method.invoke(loader, tinyBytes) as Boolean
