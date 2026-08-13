@@ -33,6 +33,7 @@
 - Resolve the signed-in username for partner provisioned actors so Expo Go can verify the account match ([#48354](https://github.com/expo/expo/pull/48354) by [@davidko604](https://github.com/davidko604))
 - Switch `ManifestMiddleware` to `expo-server`'s response helpers to avoid cancellations being surfaced as exceptions ([#48700](https://github.com/expo/expo/pull/48700) by [@kitten](https://github.com/kitten))
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
+- Cache the manifest runtime version per platform for the dev server session, instead of recomputing the `@expo/fingerprint` on every manifest request ([#48892](https://github.com/expo/expo/pull/48892) by [@giaBaoJS](https://github.com/giaBaoJS))
 
 ### 💡 Others
 
