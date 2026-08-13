@@ -37,7 +37,6 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.Promise
@@ -71,7 +70,7 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.math.abs
 
-class LocationModule : Module(), LifecycleEventListener, SensorEventListener, ActivityEventListener {
+class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private var mGeofield: GeomagneticField? = null
   private val mLocationCallbacks = HashMap<Int, LocationCallback>()
   private val mLocationRequests = HashMap<Int, LocationRequest>()
@@ -373,10 +372,23 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
     OnActivityEntersForeground {
       AppForegroundedSingleton.isForegrounded = true
+      resumeGeocoder()
+      resumeLocationUpdates()
+      resumeHeadingWatch()
+      resumeMotionActivityWatch()
     }
 
     OnActivityEntersBackground {
       AppForegroundedSingleton.isForegrounded = false
+      stopWatching()
+      stopHeadingWatch()
+      pauseMotionActivityWatch()
+    }
+
+    OnDestroy {
+      stopWatching()
+      stopHeadingWatch()
+      stopMotionActivityWatch()
     }
   }
 
@@ -689,14 +701,18 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     mAccuracy = 0
   }
 
-  private fun startWatching() {
+  private fun resumeGeocoder() {
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog disappears
     if (!isMissingForegroundPermissions()) {
       mGeocoderPaused = false
     }
+  }
 
-    // Resume paused location updates
-    resumeLocationUpdates()
+  private fun resumeHeadingWatch() {
+    if (mHeadingId == 0) {
+      return
+    }
+    startHeadingUpdate()
   }
 
   private fun stopWatching() {
@@ -1052,24 +1068,6 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
     const val DEGREE_DELTA = 0.0355 // in radians, about 2 degrees
     const val TIME_DELTA = 50f // in milliseconds
-  }
-
-  override fun onHostResume() {
-    startWatching()
-    startHeadingUpdate()
-    resumeMotionActivityWatch()
-  }
-
-  override fun onHostPause() {
-    stopWatching()
-    stopHeadingWatch()
-    pauseMotionActivityWatch()
-  }
-
-  override fun onHostDestroy() {
-    stopWatching()
-    stopHeadingWatch()
-    stopMotionActivityWatch()
   }
 
   override fun onSensorChanged(event: SensorEvent?) {

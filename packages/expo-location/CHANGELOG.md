@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix leaking watches ([#48294](https://github.com/expo/expo/pull/48294) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 ## 56.0.23 — 2026-08-06
