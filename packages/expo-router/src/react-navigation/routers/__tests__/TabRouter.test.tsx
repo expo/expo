@@ -331,6 +331,34 @@ test('returns the selected route key when selecting an existing route', () => {
   expect(result?.affectedRouteKey).toBe('baz-key');
 });
 
+test('attaches trusted state when selecting an existing route', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: {},
+  };
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+  const state = {
+    ...createTabState(options),
+    routes: [
+      { key: 'bar-key', name: 'bar' },
+      { key: 'baz-key', name: 'baz' },
+    ],
+    history: [{ type: 'route' as const, key: 'bar-key' }],
+  };
+
+  const result = router.getStateForAction(
+    state,
+    {
+      type: 'JUMP_TO',
+      payload: { name: 'baz', state: childState },
+    },
+    options
+  );
+
+  expect(result?.state.routes[1]?.state).toBe(childState);
+});
+
 test('returns the regenerated route key when the route ID changes', () => {
   const router = TabRouter({});
   const options: RouterConfigOptions = {
@@ -374,6 +402,56 @@ test('returns the preloaded route key while focus differs', () => {
 
   expect(result?.state.index).toBe(0);
   expect(result?.affectedRouteKey).toBe('baz-key');
+});
+
+test('attaches trusted state when preloading an unfocused route', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: {},
+  };
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+  const state = {
+    ...createTabState(options),
+    routes: [
+      { key: 'bar-key', name: 'bar' },
+      { key: 'baz-key', name: 'baz' },
+    ],
+    history: [{ type: 'route' as const, key: 'bar-key' }],
+  };
+
+  const result = router.getStateForAction(
+    state,
+    {
+      type: 'PRELOAD',
+      payload: { name: 'baz', state: childState },
+    },
+    options
+  );
+
+  expect(result?.state.index).toBe(0);
+  expect(result?.state.routes[1]?.state).toBe(childState);
+});
+
+test('attaches trusted state when preloading an absent route', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: {},
+  };
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+
+  const result = router.getStateForAction(
+    createTabState(options),
+    {
+      type: 'PRELOAD',
+      payload: { name: 'baz', state: childState },
+    },
+    options
+  );
+
+  expect(result?.state.index).toBe(0);
+  expect(result?.state.routes.find((route) => route.name === 'baz')?.state).toBe(childState);
 });
 
 test('returns the history destination key on go back', () => {

@@ -50,3 +50,41 @@ test('post-processes a first navigation to an unvisited tab', () => {
     'Zoom transition is not supported when navigating between tabs. Falling back to standard navigation transition.'
   );
 });
+
+test('preserves trusted carried state while post-processing navigation', () => {
+  const router = NativeBottomTabsRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['index', 'second'],
+    routeGetIdList: {},
+  };
+  const childState = { routes: [{ name: 'nested' }], __internal__routerActionState: true as const };
+  const state = createInitialState<TabNavigationState<ParamListBase>>(options);
+
+  const result = router.getStateForAction(
+    state,
+    {
+      type: 'NAVIGATE',
+      payload: { name: 'second', state: childState },
+    },
+    options
+  );
+
+  expect(result?.state.routes[result.state.index ?? -1]?.state).toBe(childState);
+});
+
+test('warns once when navigation carries untrusted state', () => {
+  const router = NativeBottomTabsRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['index', 'second'],
+    routeGetIdList: {},
+  };
+  const state = createInitialState<TabNavigationState<ParamListBase>>(options);
+
+  router.getStateForAction(
+    state,
+    { type: 'NAVIGATE', payload: { name: 'second', state: { routes: [{ name: 'nested' }] } } },
+    options
+  );
+
+  expect(warn).toHaveBeenCalledTimes(1);
+});

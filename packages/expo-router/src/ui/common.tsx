@@ -1,5 +1,5 @@
 import type { UrlObject } from '../LocationProvider';
-import type { RouteNode } from '../Route';
+import { findRouteNodeByName, type RouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type {
@@ -122,7 +122,7 @@ export function useTriggersToScreens(
     routeState =
       state!.state?.routes[state!.state.index ?? state!.state.routes.length - 1] || state;
 
-    const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
+    const routeNode = findRouteNodeByName(layoutRouteNode, routeState?.name);
 
     if (!isWithinLayout) {
       throw new Error(

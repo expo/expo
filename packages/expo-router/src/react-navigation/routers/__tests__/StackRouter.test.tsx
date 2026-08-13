@@ -2804,6 +2804,51 @@ test('returns the created route key for push', () => {
   expect(result?.affectedRouteKey).toBe('baz-test');
 });
 
+test('attaches trusted state to a pushed route', () => {
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      type: 'stack',
+      key: 'root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'bar', name: 'bar' }],
+    },
+    {
+      type: 'PUSH',
+      payload: { name: 'baz', state: childState },
+    },
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.state.routes[result.state.index ?? -1]?.state).toBe(childState);
+});
+
+test('attaches trusted state when popping to an existing route without params', () => {
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      type: 'stack',
+      key: 'root',
+      index: 1,
+      routeNames: ['bar', 'baz'],
+      routes: [
+        { key: 'bar', name: 'bar' },
+        { key: 'baz', name: 'baz' },
+      ],
+    },
+    {
+      type: 'POP_TO',
+      payload: { name: 'bar', state: childState },
+    },
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.state.routes[0]?.state).toBe(childState);
+});
+
 test('returns the exact duplicate-name route key for navigate', () => {
   const result = StackRouter({}).getStateForAction(
     {
@@ -2888,6 +2933,28 @@ test('returns the preloaded route key while focus remains elsewhere', () => {
 
   expect(result?.state.routes[result.state.index ?? -1]?.key).toBe('baz');
   expect(result?.affectedRouteKey).toBe('bar-test');
+});
+
+test('attaches trusted state to a preloaded route without changing focus', () => {
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+  const result = StackRouter({}).getStateForAction(
+    {
+      stale: false,
+      type: 'stack',
+      key: 'root',
+      index: 0,
+      routeNames: ['bar', 'baz'],
+      routes: [{ key: 'baz', name: 'baz' }],
+    },
+    {
+      type: 'PRELOAD',
+      payload: { name: 'bar', state: childState },
+    },
+    { routeNames: ['bar', 'baz'], routeGetIdList: {} }
+  );
+
+  expect(result?.state.routes[result.state.index ?? -1]?.key).toBe('baz');
+  expect(result?.state.routes.find((route) => route.name === 'bar')?.state).toBe(childState);
 });
 
 test('removes routes by name while preserving the focused route instance', () => {
