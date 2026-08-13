@@ -1,9 +1,11 @@
 import { vol } from 'memfs';
 
+import { loadBabelConfigPlugins } from '../../utils/babelConfigLoader';
 import { HermesV1VersionCheck } from '../HermesV1VersionCheck';
 
 jest.mock('fs');
 jest.mock('resolve-from');
+jest.mock('../../utils/babelConfigLoader');
 
 const projectRoot = '/tmp/project';
 const baseParams = {
@@ -25,6 +27,7 @@ function installExpo(version: string) {
 describe('runAsync', () => {
   afterEach(() => {
     vol.reset();
+    jest.mocked(loadBabelConfigPlugins).mockReturnValue(null);
   });
 
   it('warns for SDK 55 when Hermes V1 is enabled at the top level', async () => {
@@ -121,6 +124,42 @@ describe('runAsync', () => {
     });
 
     expect(result.isSuccessful).toBe(true);
+  });
+
+  it('adds advice when Worklets Bundle Mode is enabled in Babel config', async () => {
+    installExpo('56.0.18');
+    jest.mocked(loadBabelConfigPlugins).mockReturnValue([
+      {
+        file: { request: 'react-native-worklets/plugin' },
+        options: { bundleMode: true },
+      },
+    ]);
+    const result = await new HermesV1VersionCheck().runAsync({
+      ...baseParams,
+      exp: { name: 'name', slug: 'slug', sdkVersion: '56.0.0' },
+    });
+
+    expect(result.isSuccessful).toBe(false);
+    expect(result.advice).toHaveLength(2);
+    expect(result.advice[1]).toContain('Worklets Bundle Mode is enabled');
+    expect(result.advice[1]).toContain('not recommended for production use');
+  });
+
+  it('does not add Bundle Mode advice when it is disabled', async () => {
+    installExpo('56.0.18');
+    jest.mocked(loadBabelConfigPlugins).mockReturnValue([
+      {
+        file: { request: 'react-native-worklets/plugin' },
+        options: { bundleMode: false },
+      },
+    ]);
+    const result = await new HermesV1VersionCheck().runAsync({
+      ...baseParams,
+      exp: { name: 'name', slug: 'slug', sdkVersion: '56.0.0' },
+    });
+
+    expect(result.isSuccessful).toBe(false);
+    expect(result.advice).toHaveLength(1);
   });
 
   it('passes when the installed Expo version cannot be resolved', async () => {

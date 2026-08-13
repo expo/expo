@@ -2,6 +2,7 @@ import JsonFile from '@expo/json-file';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
+import { loadBabelConfigPlugins } from '../utils/babelConfigLoader';
 import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 const FIXED_EXPO_VERSION = '57.0.9';
@@ -31,6 +32,26 @@ function isHermesV1Enabled(exp: DoctorCheckParams['exp']): boolean {
   return androidValue === true || iosValue === true;
 }
 
+function isWorkletsBundleModeEnabled(projectRoot: string): boolean {
+  const plugins = loadBabelConfigPlugins(projectRoot);
+  return !!plugins?.some((plugin) => {
+    const request = plugin.file?.request;
+    const resolved = plugin.file?.resolved;
+    const isWorkletsPlugin =
+      request === 'react-native-worklets/plugin' ||
+      (typeof resolved === 'string' &&
+        /react-native-worklets[\\/]plugin(?:[\\/]|$)/.test(resolved));
+    const options = plugin.options;
+    return (
+      isWorkletsPlugin &&
+      typeof options === 'object' &&
+      options !== null &&
+      'bundleMode' in options &&
+      options.bundleMode === true
+    );
+  });
+}
+
 export class HermesV1VersionCheck implements DoctorCheck {
   description = 'Check for Expo SDK versions affected by Hermes V1 regressions';
 
@@ -51,14 +72,21 @@ export class HermesV1VersionCheck implements DoctorCheck {
       return { isSuccessful: true, issues: [], advice: [] };
     }
 
+    const advice = [
+      'Upgrade to Expo SDK 57 and expo@57.0.9 or later by running `npx expo install expo@^57.0.9 --fix`. See https://expo.dev/changelog/sdk-57#known-regressions for the latest details.',
+    ];
+    if (isWorkletsBundleModeEnabled(projectRoot)) {
+      advice.push(
+        'Worklets Bundle Mode is enabled in your Babel config. It is unsupported and experimental, may not work as expected in many cases, and is not recommended for production use until it is officially supported. If you enabled it only as a workaround for this memory regression, review and remove the Bundle Mode Babel and Metro configuration after upgrading.'
+      );
+    }
+
     return {
       isSuccessful: false,
       issues: [
         `This project uses Hermes V1 with expo@${expoVersion}, which is affected by a known memory regression.`,
       ],
-      advice: [
-        'Upgrade to Expo SDK 57 and expo@57.0.9 or later by running `npx expo install expo@^57.0.9 --fix`. See https://expo.dev/changelog/sdk-57#known-regressions for the latest details.',
-      ],
+      advice,
     };
   }
 }
