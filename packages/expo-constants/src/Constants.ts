@@ -87,6 +87,8 @@ const constants: Constants = {
   ...nativeConstants,
   // Ensure this is null in bare workflow
   appOwnership: appOwnership ?? null,
+  // The native key is absent in Expo Go and in builds created before fingerprint embedding
+  fingerprint: nativeConstants.fingerprint ?? null,
 };
 
 Object.defineProperties(constants, {
