@@ -24,6 +24,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   'run:android': () => import('../src/run/android/index.js').then((i) => i.expoRunAndroid),
   start: () => import('../src/start/index.js').then((i) => i.expoStart),
   prebuild: () => import('../src/prebuild/index.js').then((i) => i.expoPrebuild),
+  'needs-rebuild': () => import('../src/needsRebuild/index.js').then((i) => i.expoNeedsRebuild),
   config: () => import('../src/config/index.js').then((i) => i.expoConfig),
   export: () => import('../src/export/index.js').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web/index.js').then((i) => i.expoExportWeb),
@@ -117,6 +118,7 @@ if (!isSubcommand && args['--help']) {
     config,
     customize,
     prebuild,
+    'needs-rebuild': needsRebuild,
     'run:ios': runIos,
     'run:android': runAndroid,
     // NOTE(EvanBacon): Don't document this command as it's a temporary
@@ -140,7 +142,7 @@ if (!isSubcommand && args['--help']) {
 
   {bold Commands}
     ${Object.keys({ start, export: _export, ...others }).join(', ')}
-    ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
+    ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild, 'needs-rebuild': needsRebuild }).join(', ')}
     ${Object.keys({ install, customize, config, serve }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 

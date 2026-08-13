@@ -36,7 +36,7 @@ it('runs `npx expo --help`', async () => {
 
       Commands
         start, export
-        run:ios, run:android, prebuild
+        run:ios, run:android, prebuild, needs-rebuild
         install, customize, config, serve
         login, logout, whoami, register
 

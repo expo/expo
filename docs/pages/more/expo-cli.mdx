@@ -34,7 +34,7 @@ Usage
 
 Commands
   start, export
-  run:ios, run:android, prebuild
+  run:ios, run:android, prebuild, needs-rebuild
   install, customize, config
   login, logout, whoami, register
 
@@ -369,6 +369,27 @@ If you want to see how your app will run on your device, all you have to do is c
 Expo CLI will automatically sign the device for development, install the app, and launch it.
 
 If you don't have any developer profiles setup on your computer then you'll need to set them up manually outside of Expo CLI by following this guide: [Setup Xcode signing](https://expo.fyi/setup-xcode-signing).
+
+### Detecting stale builds
+
+<Terminal cmd={['$ npx expo needs-rebuild']} />
+
+`npx expo needs-rebuild` checks whether the app installed on your simulator or device still matches your project. It compares the [fingerprint](/versions/latest/sdk/fingerprint/) embedded in the app at build time against the current project fingerprint, and reports the result through its exit code, so scripts and agents can act on it:
+
+| Exit code | Meaning                                                                               |
+| --------- | ------------------------------------------------------------------------------------ |
+| `0`       | Up to date — a JS reload is enough.                                                   |
+| `1`       | Rebuild required — run `npx expo run:<platform>`.                                     |
+| `2`       | Prebuild required — run `npx expo prebuild`, then rebuild.                    |
+| `3`       | Cannot determine — no device, app not installed, no embedded fingerprint, or the check failed. |
+
+By default, the command checks every platform with a reachable device. Use `--platform <all|android|ios>` to check specific platforms, `--device <name|udid|serial>` to check one specific simulator or device, `--app-id <id>` to look for a specific application ID (for example, with build flavors; requires a single `--platform`), and `--json` for machine-readable output that includes the recommended commands, the reason for the verdict, and the sources that changed.
+
+The check requires a baseline: the app must be a debug build created with a version of `expo-constants` that embeds the fingerprint (an **app.fingerprint** file next to the embedded app config). Release builds, older builds, and builds created with `EXPO_SKIP_FINGERPRINT_EMBED=1` do not carry the fingerprint and report exit code `3`. Reading the fingerprint from physical iOS devices is not supported; iOS checks use the booted simulator.
+
+The app config is evaluated in development mode, matching local development builds. To check a build whose config depends on production environment variables, run `EXPO_CONFIG_MODE=production npx expo needs-rebuild`.
+
+`npx expo prebuild` additionally records what the native directories were generated from. When the app config or a config plugin changes afterwards, `needs-rebuild` exits with code `2` — a plain rebuild would compile the stale directories, so regenerate them first.
 
 ### Exporting
 
