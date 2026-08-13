@@ -8,11 +8,11 @@ import type {
   NavigationState,
   ParamListBase,
 } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { NavigatorTypeContext } from '../NavigatorTypeContext';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {

@@ -10,11 +10,11 @@ import {
   StackActions,
   StackRouter,
 } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { usePreventRemove } from '../usePreventRemove';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 jest.mock('nanoid/non-secure', () => {

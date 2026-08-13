@@ -1,13 +1,13 @@
 import { act, render, screen } from '@testing-library/react-native';
 
 import type { ParamListBase } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { getPathFromState } from '../getPathFromState';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
 import { useStateForPath } from '../useStateForPath';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter } from './__fixtures__/MockRouter';
 
 test('gets focused route state at root', () => {
