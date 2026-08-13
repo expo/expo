@@ -122,6 +122,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/icon': ['jetpack-compose/Icon/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/iconbutton': ['jetpack-compose/IconButton/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/image': ['jetpack-compose/Image/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/box': ['jetpack-compose/Box/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/row': ['jetpack-compose/Row/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
