@@ -25,6 +25,14 @@ token_shape() {
   esac
 }
 
+probe_order() {
+  case "$(token_shape "$1")" in
+    oat) echo "CLAUDE_CODE_OAUTH_TOKEN ANTHROPIC_AUTH_TOKEN ANTHROPIC_API_KEY" ;;
+    api) echo "ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN" ;;
+    *) echo "CLAUDE_CODE_OAUTH_TOKEN ANTHROPIC_AUTH_TOKEN ANTHROPIC_API_KEY" ;;
+  esac
+}
+
 # GitHub's secret editor is write-only; a paste that includes the assignment
 # or wrapping quotes is a common 401. Strip one layer. Never log the value.
 normalize_token() {
@@ -58,6 +66,8 @@ if [ "${1:-}" = --self-test ]; then
   [ "$(token_shape "sk-ant-oat01-aaaa")" = oat ]
   [ "$(token_shape "sk-ant-api03-aaaa")" = api ]
   [ "$(token_shape "not-a-token")" = other ]
+  [ "$(probe_order "sk-ant-oat01-aaaa")" = "CLAUDE_CODE_OAUTH_TOKEN ANTHROPIC_AUTH_TOKEN ANTHROPIC_API_KEY" ]
+  [ "$(probe_order "sk-ant-api03-aaaa")" = "ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN CLAUDE_CODE_OAUTH_TOKEN" ]
   [ "$(normalize_token "  sk-ant-oat01-x  ")" = "sk-ant-oat01-x" ]
   [ "$(normalize_token "'sk-ant-oat01-x'")" = "sk-ant-oat01-x" ]
   [ "$(normalize_token 'CLAUDE_CODE_OAUTH_TOKEN=sk-ant-oat01-x')" = "sk-ant-oat01-x" ]
@@ -137,6 +147,7 @@ start=$((run_id % count))
 
 winner=""
 winner_slot=""
+winner_env=""
 log_dir="${RUNNER_TEMP:-/tmp}"
 log=""
 # Fresh config so a runner-image login cannot mask a bad secret, and so CI
@@ -175,13 +186,14 @@ for offset in $(seq 0 $((count - 1))); do
   log="$log_dir/model-env-$slot.log"
   echo "credential $slot: shape=$(token_shape "$token") len=${#token}"
 
-  if probe_with_env CLAUDE_CODE_OAUTH_TOKEN "$token" "$log" \
-    || probe_with_env ANTHROPIC_AUTH_TOKEN "$token" "$log" \
-    || probe_with_env ANTHROPIC_API_KEY "$token" "$log"; then
-    winner="$token"
-    winner_slot="$slot"
-    break
-  fi
+  for env_name in $(probe_order "$token"); do
+    if probe_with_env "$env_name" "$token" "$log"; then
+      winner="$token"
+      winner_slot="$slot"
+      winner_env="$env_name"
+      break 2
+    fi
+  done
 
   if [ "$offset" -lt $((count - 1)) ]; then
     next_idx=$(((start + offset + 1) % count))
@@ -204,7 +216,7 @@ if [ -z "${GITHUB_ENV:-}" ]; then
 fi
 
 {
-  echo "CLAUDE_CODE_OAUTH_TOKEN=$winner"
+  echo "$winner_env=$winner"
   echo "CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN=$winner"
 } >>"$GITHUB_ENV"
 

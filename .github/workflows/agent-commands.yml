@@ -134,13 +134,18 @@ jobs:
     name: Assign queue slot
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      ((startsWith(github.event.comment.body, '/verify') ||
-      startsWith(github.event.comment.body, '@expo-bot verify') ||
+      ((github.event.comment.body == '/verify' ||
+      startsWith(github.event.comment.body, '/verify ') ||
+      github.event.comment.body == '@expo-bot verify' ||
+      startsWith(github.event.comment.body, '@expo-bot verify ') ||
       (startsWith(github.event.comment.body, '@expo-bot ') &&
-      !startsWith(github.event.comment.body, '@expo-bot review') &&
-      !startsWith(github.event.comment.body, '@expo-bot dismiss') &&
-      !startsWith(github.event.comment.body, '@expo-bot undismiss') &&
-      !startsWith(github.event.comment.body, '@expo-bot help'))) &&
+      github.event.comment.body != '@expo-bot review' &&
+      !startsWith(github.event.comment.body, '@expo-bot review ') &&
+      github.event.comment.body != '@expo-bot dismiss' &&
+      !startsWith(github.event.comment.body, '@expo-bot dismiss ') &&
+      github.event.comment.body != '@expo-bot undismiss' &&
+      !startsWith(github.event.comment.body, '@expo-bot undismiss ') &&
+      github.event.comment.body != '@expo-bot help')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     outputs:
@@ -207,14 +212,19 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.comment.user.login != 'expo-bot' &&
-      (startsWith(github.event.comment.body, '/verify') ||
-      startsWith(github.event.comment.body, '@expo-bot verify') ||
+      (github.event.comment.body == '/verify' ||
+      startsWith(github.event.comment.body, '/verify ') ||
+      github.event.comment.body == '@expo-bot verify' ||
+      startsWith(github.event.comment.body, '@expo-bot verify ') ||
       (github.event.issue.pull_request != null &&
       startsWith(github.event.comment.body, '@expo-bot ') &&
-      !startsWith(github.event.comment.body, '@expo-bot review') &&
-      !startsWith(github.event.comment.body, '@expo-bot dismiss') &&
-      !startsWith(github.event.comment.body, '@expo-bot undismiss') &&
-      !startsWith(github.event.comment.body, '@expo-bot help'))) &&
+      github.event.comment.body != '@expo-bot review' &&
+      !startsWith(github.event.comment.body, '@expo-bot review ') &&
+      github.event.comment.body != '@expo-bot dismiss' &&
+      !startsWith(github.event.comment.body, '@expo-bot dismiss ') &&
+      github.event.comment.body != '@expo-bot undismiss' &&
+      !startsWith(github.event.comment.body, '@expo-bot undismiss ') &&
+      github.event.comment.body != '@expo-bot help')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     # ONE budget, in one place, and the ordering is the point:
@@ -648,21 +658,42 @@ jobs:
             fi
             echo "preflight: bot token can update $WORK_HEAD_REPO"
           else
+            fork_owner=$(gh api user --jq .login)
+            fork="$fork_owner/${GITHUB_REPOSITORY#*/}"
+            if ! gh repo view "$fork" >/dev/null 2>&1; then
+              gh repo fork "$GITHUB_REPOSITORY" --clone=false --default-branch-only >/dev/null 2>&1 || true
+              for _ in $(seq 1 30); do
+                gh repo view "$fork" >/dev/null 2>&1 && break
+                sleep 2
+              done
+            fi
+            if ! gh repo view "$fork" >/dev/null 2>&1; then
+              echo "::error::Could not resolve or create the bot fork $fork; fix mode refuses to use a secret-bearing same-repository branch."
+              exit 1
+            fi
+            fork_default=$(gh api "repos/$fork" --jq .default_branch)
+            if ! gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
+              echo "::error::Could not synchronize $fork with upstream; refusing a push that may include stale workflow commits."
+              exit 1
+            fi
             gh auth setup-git
             # No pipe here: `git ... | tail` would report tail's exit status and
             # the check would pass no matter what git did.
-            if ! git push --dry-run origin "HEAD:refs/heads/agent-preflight-$GITHUB_RUN_ID"; then
-              echo "::error::EXPO_BOT_GITHUB_TOKEN cannot push to this repository, so fix mode could not open a pull request. Fix the credential before re-running."
+            if ! git push --dry-run "https://github.com/$fork.git" "HEAD:refs/heads/agent-preflight-$GITHUB_RUN_ID"; then
+              echo "::error::EXPO_BOT_GITHUB_TOKEN cannot push to the bot fork $fork, so fix mode could not open a pull request."
               exit 1
             fi
-            echo "preflight: push credentials work; fix mode can open a pull request"
+            echo "BOT_FORK_OWNER=$fork_owner" >> "$GITHUB_ENV"
+            echo "BOT_FORK=$fork" >> "$GITHUB_ENV"
+            echo "preflight: push credentials work for $fork; fix mode can open a fork pull request"
           fi
 
       - name: Run agent command
         id: investigate
         if: steps.gate.outputs.ok == 'true'
         env:
-          # CLAUDE_CODE_OAUTH_TOKEN is inherited from Prepare model env.
+          # The canonical Claude credential variable selected by Prepare
+          # model env is inherited through GITHUB_ENV.
           # NO GitHub token in this step at all: the agent has no shell and no
           # gh verb, so it needs none. The findings comment is posted by the
           # MCP server from its own stored PAT, whose arguments are literal
@@ -755,6 +786,9 @@ jobs:
               "mcp__sandbox__simulator_ui"
               "mcp__sandbox__simulator_tap"
               "mcp__sandbox__simulator_type"
+              "mcp__sandbox__simulator_wait"
+              "mcp__sandbox__simulator_scroll"
+              "mcp__sandbox__simulator_query"
               "mcp__sandbox__simulator_open"
               "mcp__sandbox__simulator_boot_app"
               "mcp__sandbox__simulator_install_build"
@@ -1341,27 +1375,12 @@ jobs:
           # is exactly the posture this repository already grants every
           # drive-by contributor.
           #
-          # Falling back to a same-repo branch is deliberate and VISIBLE.
-          # Losing a verified fix over fork plumbing would be the worse
-          # failure, so the push still happens — but the pull request itself
-          # carries a note saying so, because a silent downgrade of a security
-          # property is how it stays downgraded, and a ::warning:: buried in a
-          # run log is not something a reviewer of that PR will ever see.
-          fork_owner=$(gh api user --jq .login 2>/dev/null || true)
-          fork=""
-          if [ -n "$fork_owner" ]; then
-            fork="$fork_owner/${GITHUB_REPOSITORY#*/}"
-            if ! gh repo view "$fork" >/dev/null 2>&1; then
-              # --default-branch-only keeps the fork small. Forking is async,
-              # so wait for it to become addressable before pushing into it.
-              gh repo fork "$GITHUB_REPOSITORY" --clone=false --default-branch-only >/dev/null 2>&1 || true
-              for _ in $(seq 1 30); do
-                gh repo view "$fork" >/dev/null 2>&1 && break
-                sleep 2
-              done
-            fi
-            gh repo view "$fork" >/dev/null 2>&1 || fork=""
-          fi
+          # Fork isolation is a hard boundary, not a best-effort preference.
+          # If fork creation, synchronization, or push fails, do not fall back
+          # to a same-repository branch: pull_request CI would execute the
+          # agent-authored change with repository secrets available.
+          fork_owner=${BOT_FORK_OWNER:-}
+          fork=${BOT_FORK:-}
           # SYNC THE FORK FIRST. A branch pushed to a stale fork introduces
           # every upstream commit between the fork's tip and this checkout —
           # including any that touch .github/workflows/** — and a classic PAT
@@ -1378,28 +1397,24 @@ jobs:
           # Note this gets WORSE the staler the fork is, so it is not optional.
           if [ -n "$fork" ]; then
             fork_default=$(gh api "repos/$fork" --jq .default_branch 2>/dev/null || echo main)
-            if gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
-              echo "synced $fork ($fork_default) with upstream before pushing"
-            else
-              echo "::warning::could not sync $fork with upstream; the push may be rejected for workflow scope"
-            fi
-          fi
-          if [ -n "$fork" ] && git push -q "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
-            head_ref="$fork_owner:$branch"
-          else
-            if [ -n "$fork" ]; then
-              echo "::warning::push to fork $fork failed; falling back to a same-repo branch"
-            else
-              echo "::warning::could not resolve or create the bot fork; falling back to a same-repo branch"
-            fi
-            fork=""
-            if ! git push -q origin "HEAD:refs/heads/$branch"; then
-              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not push the branch, so no pull request was opened. The outcome comment still stands and the change is described there. [Run log]($RUN_URL)"
-              echo "::error::git push failed; no pull request was opened."
+            if ! gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
+              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not synchronize the bot fork. It refused to push a branch that might include stale workflow commits, and refused the secret-bearing same-repository fallback. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
+              echo "::error::could not sync $fork with upstream; refusing to push."
               exit 1
             fi
-            head_ref="$branch"
+            echo "synced $fork ($fork_default) with upstream before pushing"
           fi
+          if [ -z "$fork" ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not resolve or create the bot fork. It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
+            echo "::error::could not resolve or create the bot fork; refusing unsafe same-repository fallback."
+            exit 1
+          fi
+          if ! git push -q "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
+            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not push it to the bot fork. It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
+            echo "::error::push to fork $fork failed; refusing unsafe same-repository fallback."
+            exit 1
+          fi
+          head_ref="$fork_owner:$branch"
           {
             # ONE LINE PER PARAGRAPH, however long. GitHub renders a newline
             # inside a comment or pull-request body as a hard <br>, unlike a
@@ -1412,11 +1427,6 @@ jobs:
             echo "> **Agent-authored and NOT human-reviewed.** An automated \`$command_name\` run for #$ISSUE_NUMBER wrote this change and checked it in a sandbox; the reasoning and evidence are in the outcome comment on that issue. Review it as you would any external contribution."
             echo ""
             echo "Requested by @$TRIGGER_ACTOR · [$run_name]($RUN_URL) · refs #$ISSUE_NUMBER"
-            if [ -z "$fork" ]; then
-              echo ""
-              echo "> [!NOTE]"
-              echo "> This branch lives on \`$GITHUB_REPOSITORY\` rather than the bot's fork, because the fork push failed. A fork pull request runs CI without secrets; this one runs with them, over agent-authored code. Treat it accordingly, and see the run log for why the fork was unavailable."
-            fi
             echo ""
             tail -n +2 .verify-out/pr.md 2>/dev/null || echo "_No description was provided by the run._"
           } > "$RUNNER_TEMP/pr-body.md"
@@ -1432,6 +1442,14 @@ jobs:
             exit 1
           }
           gh issue comment "$ISSUE_NUMBER" --body "🔧 Opened $url with the $change_name — agent-authored, unreviewed, and queued for AI review. [$run_name]($RUN_URL)"
+
+      # The resumed agent is asked to destroy its sandboxes, but cancellation,
+      # timeout, or a failed model call can prevent that turn from running.
+      # This fixed backstop uses the scoped child token, whose list_sandboxes
+      # view contains only sessions created by this job.
+      - name: Destroy leftover sandboxes
+        if: always() && steps.gate.outputs.ok == 'true'
+        run: bash .github/scripts/cleanup-agent-sandboxes.sh "$RUNNER_TEMP/mcp.json"
 
       # Last line of defence against a total loss. `if: always()` genuinely
       # runs on step failure AND on cancellation — verified on real runs

@@ -28,10 +28,14 @@ jobs:
     if: >-
       github.event.issue.pull_request != null &&
       github.event.comment.user.login != 'expo-bot' &&
-      (startsWith(github.event.comment.body, '/dismiss') ||
-      startsWith(github.event.comment.body, '/undismiss') ||
-      startsWith(github.event.comment.body, '@expo-bot dismiss') ||
-      startsWith(github.event.comment.body, '@expo-bot undismiss')) &&
+      (github.event.comment.body == '/dismiss' ||
+      startsWith(github.event.comment.body, '/dismiss ') ||
+      github.event.comment.body == '/undismiss' ||
+      startsWith(github.event.comment.body, '/undismiss ') ||
+      github.event.comment.body == '@expo-bot dismiss' ||
+      startsWith(github.event.comment.body, '@expo-bot dismiss ') ||
+      github.event.comment.body == '@expo-bot undismiss' ||
+      startsWith(github.event.comment.body, '@expo-bot undismiss ')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     # @ref LLP 0009#guard-step-ordering-and-job-budgets [constrained-by] — no review budget to cover; capped low regardless

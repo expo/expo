@@ -124,7 +124,7 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          gh pr comment "$PR" --repo "${{ github.repository }}" --body "⚠️ The AI reviewer did not start: every configured model credential (\`ECR_1\`…\`ECR_5\` and \`CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN\`) failed authentication. Check the [run log]($RUN_URL) for each slot's shape/len and re-set any slot that is not a \`claude setup-token\` value (\`sk-ant-oat…\`, 108 chars)."
+          gh pr comment "$PR" --repo "${{ github.repository }}" --body "⚠️ The AI reviewer did not start: every configured model credential (\`ECR_1\`…\`ECR_5\` and \`CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN\`) failed authentication. Check the [run log]($RUN_URL) for each slot's shape/len (not the secret), then rotate or correct the failed setup token or API key."
 
       - name: Run AI review
         # The launcher selects the SAME checked-in package version the guard cleared.
