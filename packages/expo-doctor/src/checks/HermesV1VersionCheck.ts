@@ -21,18 +21,18 @@ function getInstalledExpoVersion(projectRoot: string): string | null {
   return typeof version === 'string' && semver.valid(version) ? version : null;
 }
 
-function isHermesV1Enabled(exp: DoctorCheckParams['exp']): boolean {
+function isHermesV1Enabled(exp: DoctorCheckParams['exp'], defaultValue: boolean = false): boolean {
   const plugin = exp.plugins?.find(
     (plugin): plugin is [string, Record<string, any>] =>
       Array.isArray(plugin) && plugin[0] === 'expo-build-properties'
   );
   const props = plugin?.[1];
   if (!props) {
-    return false;
+    return defaultValue;
   }
 
-  const androidValue = props.android?.useHermesV1 ?? props.useHermesV1 ?? false;
-  const iosValue = props.ios?.useHermesV1 ?? props.useHermesV1 ?? false;
+  const androidValue = props.android?.useHermesV1 ?? props.useHermesV1 ?? defaultValue;
+  const iosValue = props.ios?.useHermesV1 ?? props.useHermesV1 ?? defaultValue;
   return androidValue === true || iosValue === true;
 }
 
@@ -65,11 +65,12 @@ export class HermesV1VersionCheck implements DoctorCheck {
     const expoVersion = getInstalledExpoVersion(projectRoot);
     const hermesVersion = getHermesVersion(projectRoot);
     const isSdk55 = semver.satisfies(exp.sdkVersion!, '>=55.0.0 <56.0.0');
-    const usesHermesV1 = isSdk55 ? isHermesV1Enabled(exp) : true;
+    const usesHermesV1 = isHermesV1Enabled(exp, !isSdk55);
     const expoVersionMajor = expoVersion ? semver.major(expoVersion) : null;
     const isExpoVersionAffected =
+      usesHermesV1 &&
       !!expoVersion &&
-      ((expoVersionMajor === 55 && usesHermesV1) ||
+      (expoVersionMajor === 55 ||
         expoVersionMajor === 56 ||
         (expoVersionMajor === 57 && semver.lt(expoVersion, FIXED_EXPO_VERSION)));
     const isHermesVersionAffected =

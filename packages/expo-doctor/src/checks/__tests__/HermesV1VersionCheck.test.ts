@@ -145,6 +145,29 @@ describe('runAsync', () => {
     }
   );
 
+  it.each(['56.0.18', '57.0.8'])(
+    'passes for affected expo@%s when Hermes V1 is explicitly disabled',
+    async (version) => {
+      installExpo(version);
+      jest.mocked(getHermesVersion).mockReturnValue({
+        source: 'react-native',
+        version: '250829098.0.15',
+      });
+      const result = await new HermesV1VersionCheck().runAsync({
+        ...baseParams,
+        exp: {
+          name: 'name',
+          slug: 'slug',
+          sdkVersion: `${version.split('.')[0]}.0.0`,
+          plugins: [['expo-build-properties', { useHermesV1: false }]],
+        },
+      });
+
+      expect(result.isSuccessful).toBe(true);
+      expect(result.issues).toEqual([]);
+    }
+  );
+
   it.each(['57.0.9', '57.0.10'])('passes for fixed expo@%s installs', async (version) => {
     installExpo(version);
     const result = await new HermesV1VersionCheck().runAsync({
