@@ -2,9 +2,9 @@ import * as ExpoLinking from 'expo-linking';
 import { type RefObject, useEffect, useCallback, useRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
+import { routingQueue } from '../global-state/routingQueue';
 import {
   type LinkingOptions,
-  getActionFromState as getActionFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
   type ParamListBase,
@@ -50,7 +50,6 @@ export function useLinking(
       };
     });
   const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
-  const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       return undefined;
@@ -92,7 +91,6 @@ export function useLinking(
   const configRef = useRef(config);
   const getInitialURLRef = useRef(getInitialURL);
   const getStateFromPathRef = useRef(getStateFromPath);
-  const getActionFromStateRef = useRef(getActionFromState);
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -101,7 +99,6 @@ export function useLinking(
     configRef.current = config;
     getInitialURLRef.current = getInitialURL;
     getStateFromPathRef.current = getStateFromPath;
-    getActionFromStateRef.current = getActionFromState;
   });
 
   const getStateFromURL = useCallback(
@@ -163,33 +160,25 @@ export function useLinking(
       }
 
       const navigation = ref.current;
-      const state = navigation ? getStateFromURL(url) : undefined;
+      const path = extractExpoPathFromURL(prefixes, url);
+      const state = navigation && path !== undefined ? getStateFromURL(url) : undefined;
 
       if (navigation && state) {
         // If the link were handled, it gets cleared in NavigationContainer
-        onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
+        onUnhandledLinking(path);
         const rootState = navigation.getRootState();
         if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
           return;
         }
 
-        const action = getActionFromStateRef.current(state, configRef.current);
-
-        if (action !== undefined) {
-          try {
-            navigation.dispatch(action);
-          } catch (e) {
-            // Ignore any errors from deep linking.
-            // This could happen in case of malformed links, navigation object not being initialized etc.
-            console.warn(
-              `An error occurred when trying to handle the link '${url}': ${
-                typeof e === 'object' && e != null && 'message' in e ? e.message : e
-              }`
-            );
-          }
-        } else {
-          navigation.resetRoot(state);
-        }
+        routingQueue.add({
+          type: 'NAVIGATE_TO_HREF',
+          payload: {
+            href: path.startsWith('/') ? path : `/${path}`,
+            originalHref: url,
+            options: { event: 'NAVIGATE' },
+          },
+        });
       }
     };
 

@@ -14,12 +14,27 @@ interface NavigateToHrefIntent {
   payload: {
     options: LinkToOptions;
     href: string;
+    originalHref?: string;
+  };
+  metadata?: RoutingIntentMetadata;
+  onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
+}
+
+interface RoutingIntentMetadata {
+  history?: {
+    id: number;
+    path: string;
   };
 }
 
 export type RoutingIntent =
   | NavigateToHrefIntent
-  | { type: 'ACTION'; payload: { action: NavigationAction } };
+  | {
+      type: 'ACTION';
+      payload: { action: NavigationAction };
+      metadata?: RoutingIntentMetadata;
+      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
+    };
 
 export const routingQueue = {
   queue: [] as RoutingIntent[],
@@ -74,9 +89,8 @@ export const routingQueue = {
             !!options.__internal__PreviewKey
           );
           if (resolution.status === 'invalid') {
-            console.warn(
-              `Could not generate a valid navigation state for the given path: ${resolution.href}`
-            );
+            const href = intent.payload.originalHref ?? resolution.href;
+            console.warn(`Could not generate a valid navigation state for the given path: ${href}`);
             continue;
           }
           dispatchAction = resolution.action;
@@ -95,12 +109,13 @@ export const routingQueue = {
           stateTargets.add(target);
         }
 
+        intent.onDispatch?.(intent.metadata);
         ref.current.dispatch(dispatchAction);
       } catch (error) {
+        const message =
+          typeof error === 'object' && error != null && 'message' in error ? error.message : error;
         console.warn(
-          `An error occurred when trying to handle a navigation action: ${
-            typeof error === 'object' && error != null && 'message' in error ? error.message : error
-          }`
+          `An error occurred when trying to handle navigation action ${JSON.stringify(intent)}: ${message}`
         );
       }
     }
