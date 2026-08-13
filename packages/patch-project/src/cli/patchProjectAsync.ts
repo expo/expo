@@ -44,6 +44,7 @@ export async function patchProjectAsync(
     const envInfo = loadProjectEnv(projectRoot, { mode: 'development' });
     logLoadedEnv(envInfo);
   } finally {
+    // Prevents an inherited mode from reaching the app config.
     delete process.env.EXPO_CONFIG_MODE;
   }
 
