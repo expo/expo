@@ -1,6 +1,6 @@
-import { act } from '@testing-library/react-native';
+import { act, render, renderAsync } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
-import { type ReactNode, useLayoutEffect } from 'react';
+import { type ReactNode, StrictMode, Suspense, use, useLayoutEffect } from 'react';
 import { Text } from 'react-native';
 
 import { router, Slot } from '../../exports';
@@ -11,9 +11,11 @@ import {
   defaultLoaderContextValue,
   LoaderContext,
 } from '../../loaders/LoaderContext';
+import { LoaderRouteLifecycle } from '../../loaders/LoaderRouteLifecycle';
 import { ServerDataLoaderContext } from '../../loaders/ServerDataLoaderContext';
+import { readLoaderData } from '../../loaders/readLoaderData';
 import { fetchLoader } from '../../loaders/utils';
-import { renderRouter } from '../../testing-library';
+import { renderRouter, screen } from '../../testing-library';
 import { useLoaderData } from '../useLoaderData';
 import { renderHook } from './renderHook';
 
@@ -438,7 +440,9 @@ describe(useLoaderData, () => {
 
     ctx.client.execute('/index', () => oldFetch.promise);
     ctx.client.clear();
-    const replacementUnsubscribe = ctx.client.subscribeLoader('/index');
+    const replacementUnsubscribe = ctx.client.subscribeLoader('/index', undefined, {
+      committed: true,
+    });
     ctx.store.set('/index', { data: { version: 2 } });
     hook.rerender(undefined);
     const rendersBeforeOldSettle = renders;
@@ -493,6 +497,224 @@ describe(useLoaderData, () => {
 
     expect(latestData).toEqual({ id: 2 });
     expect(renders).toBe(rendersBeforeOldSettle);
+  });
+
+  it('aborts a suspended dynamic route through the real route shell and refetches on revisit', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    const signals: AbortSignal[] = [];
+    const resolvers: ((value: unknown) => void)[] = [];
+    fetchLoaderMock.mockImplementation((_path, requestInit) => {
+      const signal = requestInit!.signal as AbortSignal;
+      return new Promise((resolve, reject) => {
+        signals.push(signal);
+        resolvers.push(resolve);
+        signal.addEventListener('abort', () => reject(signal.reason));
+      });
+    });
+
+    renderRouter({
+      _layout: {
+        default: () => <Slot />,
+        SuspenseFallback: () => <Text>Loading</Text>,
+      },
+      index: () => <Text>Home</Text>,
+      'users/[id]': function UserScreen() {
+        const data = useLoaderData();
+        return <Text testID="user-data">{JSON.stringify(data)}</Text>;
+      },
+    });
+    jest.useRealTimers();
+
+    await act(async () => router.push('/users/1'));
+    expect(screen.getByText('Loading')).toBeVisible();
+    expect(fetchLoaderMock).toHaveBeenCalledWith(
+      '/users/1',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
+    expect(signals).toHaveLength(1);
+
+    await act(async () => router.back());
+    expect(signals[0]!.aborted).toBe(true);
+    expect(defaultLoaderContextValue.store.get('/users/1')).toBeUndefined();
+
+    await act(async () => router.push('/users/1'));
+    expect(signals).toHaveLength(2);
+    expect(signals[1]).not.toBe(signals[0]);
+
+    await act(async () => {
+      resolvers[1]!({ fresh: true });
+      await Promise.resolve();
+    });
+    expect(await screen.findByTestId('user-data')).toHaveTextContent('{"fresh":true}');
+    expect(defaultLoaderContextValue.store.get('/users/1')).toEqual({ data: { fresh: true } });
+  });
+
+  it.each([
+    ['params', '/users/1', '/users/2'],
+    ['query', '/users/1?sort=asc', '/users/1?sort=desc'],
+  ])(
+    'abandons an old pending path when a mounted route changes %s',
+    async (_, oldPath, newPath) => {
+      const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+      const signals: AbortSignal[] = [];
+      fetchLoaderMock.mockImplementation((_path, requestInit) => {
+        const signal = requestInit!.signal as AbortSignal;
+        signals.push(signal);
+        return new Promise((_, reject) => {
+          signal.addEventListener('abort', () => reject(signal.reason));
+        });
+      });
+      const { ctx } = createLoaderTestContext();
+
+      function UserScreen({ path }: { path: string }) {
+        const result = readLoaderData(ctx, path, fetchLoaderMock);
+        if (result instanceof Promise) {
+          use(result);
+        }
+        return <Text>User</Text>;
+      }
+
+      function UserRouteShell({ path }: { path: string }) {
+        return (
+          <>
+            <LoaderRouteLifecycle path={path} />
+            <Suspense fallback={<Text>Loading</Text>}>
+              <UserScreen path={path} />
+            </Suspense>
+          </>
+        );
+      }
+
+      const route = await renderAsync(
+        <LoaderContext value={ctx}>
+          <UserRouteShell path={oldPath} />
+        </LoaderContext>
+      );
+
+      await route.rerenderAsync(
+        <LoaderContext value={ctx}>
+          <UserRouteShell path={newPath} />
+        </LoaderContext>
+      );
+
+      expect(fetchLoaderMock.mock.calls.map(([path]) => path)).toEqual([oldPath, newPath]);
+      expect(signals[0]!.aborted).toBe(true);
+      expect(signals[1]!.aborted).toBe(false);
+      expect(ctx.store.get(oldPath)).toBeUndefined();
+    }
+  );
+
+  it('keeps a pending route load through Strict Mode effect replay', async () => {
+    const ctx = createLoaderContextValue(new LoaderClient());
+    let signal!: AbortSignal;
+    readLoaderData(ctx, '/slow', (_path, requestInit) => {
+      signal = requestInit.signal as AbortSignal;
+      return new Promise(() => {});
+    });
+
+    const lifecycle = render(
+      <StrictMode>
+        <LoaderContext value={ctx}>
+          <LoaderRouteLifecycle path="/slow" />
+        </LoaderContext>
+      </StrictMode>
+    );
+    await act(async () => {});
+
+    expect(signal.aborted).toBe(false);
+    expect(ctx.store.get('/slow')).toBeDefined();
+
+    lifecycle.unmount();
+    await act(async () => {});
+    expect(signal.aborted).toBe(true);
+    expect(ctx.store.get('/slow')).toBeUndefined();
+  });
+
+  it('keeps a pending load when replacing the current route with the same path', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    let signal!: AbortSignal;
+    let resolveFetch!: (value: { fresh: boolean }) => void;
+    let fallbackMounts = 0;
+    let fallbackCleanups = 0;
+
+    fetchLoaderMock.mockImplementation((_path, requestInit) => {
+      const requestSignal = requestInit!.signal!;
+      signal = requestSignal;
+      return new Promise((resolve, reject) => {
+        resolveFetch = resolve;
+        requestSignal.addEventListener('abort', () => reject(requestSignal.reason));
+      });
+    });
+
+    function LoadingFallback() {
+      useLayoutEffect(() => {
+        fallbackMounts++;
+        return () => {
+          fallbackCleanups++;
+        };
+      }, []);
+      return <Text>Loading</Text>;
+    }
+
+    renderRouter({
+      _layout: {
+        default: () => <Slot />,
+        SuspenseFallback: LoadingFallback,
+      },
+      index: () => <Text>Home</Text>,
+      'users/[id]': function UserScreen() {
+        const data = useLoaderData();
+        return <Text testID="user-data">{JSON.stringify(data)}</Text>;
+      },
+    });
+    jest.useRealTimers();
+
+    await act(async () => router.push('/users/1'));
+    const pending = defaultLoaderContextValue.store.get('/users/1');
+    expect(screen.getByText('Loading')).toBeVisible();
+    expect(fallbackMounts).toBe(1);
+    expect(fallbackCleanups).toBe(0);
+
+    await act(async () => router.replace('/users/1'));
+    await act(async () => {});
+
+    expect(fallbackCleanups).toBe(1);
+    expect(fallbackMounts).toBe(2);
+    expect(signal.aborted).toBe(false);
+    expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
+    expect(defaultLoaderContextValue.store.get('/users/1')).toBe(pending);
+
+    await act(async () => {
+      resolveFetch({ fresh: true });
+      await Promise.resolve();
+    });
+    expect(await screen.findByTestId('user-data')).toHaveTextContent('{"fresh":true}');
+  });
+
+  it('keeps a pending load when a committed sibling reader remains', async () => {
+    const ctx = createLoaderContextValue(new LoaderClient());
+    let signal!: AbortSignal;
+    readLoaderData(ctx, '/slow', (_path, requestInit) => {
+      signal = requestInit.signal as AbortSignal;
+      return new Promise(() => {});
+    });
+    const unsubscribeSibling = ctx.client.subscribeLoader('/slow', undefined, {
+      committed: true,
+    });
+
+    const lifecycle = render(
+      <LoaderContext value={ctx}>
+        <LoaderRouteLifecycle path="/slow" />
+      </LoaderContext>
+    );
+    lifecycle.unmount();
+    await act(async () => {});
+
+    expect(signal.aborted).toBe(false);
+    expect(ctx.store.get('/slow')).toBeDefined();
+    unsubscribeSibling();
+    ctx.client.clear();
+    ctx.store.reset();
   });
 
   it(`uses the loader function's return types`, () => {
