@@ -100,7 +100,7 @@
   "lottie-react-native": "~7.3.8",
   "react": "19.2.3",
   "react-dom": "19.2.3",
-  "react-native": "0.87.0-rc.4",
+  "react-native": "0.87.0",
   "react-native-web": "~0.21.0",
   "react-native-gesture-handler": "~3.1.0",
   "react-native-keyboard-controller": "1.21.9",
