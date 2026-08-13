@@ -47,13 +47,13 @@ Each image URL is reported at most once per app session. Calling `Observe.config
 
 **Event attributes:**
 
-| Attribute      | Type     | Description                                                          |
-| -------------- | -------- | -------------------------------------------------------------------- |
-| `url`          | `string` | URL of the oversized image.                                          |
-| `imageWidth`   | `number` | Decoded image width in pixels.                                       |
-| `imageHeight`  | `number` | Decoded image height in pixels.                                      |
-| `screenWidth`  | `number` | Screen width in points.                                              |
-| `screenHeight` | `number` | Screen height in points.                                             |
+| Attribute      | Type     | Description                                                           |
+| -------------- | -------- | --------------------------------------------------------------------- |
+| `url`          | `string` | URL of the oversized image.                                           |
+| `imageWidth`   | `number` | Decoded image width in pixels.                                        |
+| `imageHeight`  | `number` | Decoded image height in pixels.                                       |
+| `screenWidth`  | `number` | Screen width in points.                                               |
+| `screenHeight` | `number` | Screen height in points.                                              |
 | `pixelRatio`   | `number` | Device pixel ratio used to compute the screen's physical pixel count. |
 
 ## Configuration
@@ -85,11 +85,6 @@ In the dashboard: open your project, navigate to [**Observe > Events**](https://
 
 From the CLI:
 
-<Terminal
-  cmd={[
-    '# Show oversized image events',
-    '$ eas observe:events expo-image.oversized',
-  ]}
-/>
+<Terminal cmd={['# Show oversized image events', '$ eas observe:events expo-image.oversized']} />
 
 For naming, severity, and attribute details shared by all events, see [User-defined events](/eas/observe/events/).
