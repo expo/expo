@@ -8,6 +8,7 @@ platforms: ['ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Slider`](../universal/slider) — it renders the appropriate native component per platform.
@@ -32,7 +33,13 @@ Expo UI Slider matches the official SwiftUI [Slider API](https://developer.apple
 
 ### Basic slider
 
-```tsx BasicSliderExample.tsx
+<ComponentExample
+  title="BasicSliderExample.tsx"
+  src="/static/images/expo-ui/examples/slider-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/slider-basic-ios-dark.webp"
+  alt="A slider with its thumb at the midpoint of the track">
+
+```tsx
 import { useState } from 'react';
 import { Host, Slider } from '@expo/ui/swift-ui';
 
@@ -47,9 +54,17 @@ export default function BasicSliderExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Slider with custom range
 
-```tsx CustomRangeSliderExample.tsx
+<ComponentExample
+  title="CustomRangeSliderExample.tsx"
+  src="/static/images/expo-ui/examples/slider-custom-range-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/slider-custom-range-ios-dark.webp"
+  alt="A slider over a range of 0 to 100 with its thumb at the midpoint">
+
+```tsx
 import { useState } from 'react';
 import { Host, Slider } from '@expo/ui/swift-ui';
 
@@ -64,11 +79,19 @@ export default function CustomRangeSliderExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Slider with step
 
 Use the `step` prop to define discrete increments. Set `step` to `0` for continuous values.
 
-```tsx SteppedSliderExample.tsx
+<ComponentExample
+  title="SteppedSliderExample.tsx"
+  src="/static/images/expo-ui/examples/slider-stepped-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/slider-stepped-ios-dark.webp"
+  alt="A slider with its thumb at the far left, at the minimum value of zero">
+
+```tsx
 import { useState } from 'react';
 import { Host, Slider } from '@expo/ui/swift-ui';
 
@@ -83,11 +106,19 @@ export default function SteppedSliderExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Slider with labels
 
 You can add labels to describe a slider's purpose and to mark the minimum and maximum value positions.
 
-```tsx LabeledSliderExample.tsx
+<ComponentExample
+  title="LabeledSliderExample.tsx"
+  src="/static/images/expo-ui/examples/slider-labeled-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/slider-labeled-ios-dark.webp"
+  alt="A slider flanked by a 0 label on the left and a 100 label on the right">
+
+```tsx
 import { useState } from 'react';
 import { Host, Slider, Text } from '@expo/ui/swift-ui';
 
@@ -109,6 +140,8 @@ export default function LabeledSliderExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
