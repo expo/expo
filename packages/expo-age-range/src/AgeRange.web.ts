@@ -3,6 +3,7 @@ import type {
   AgeRangeResponse,
   AgeRangeRegulatoryFeature,
   AgeSignalsStatus,
+  FakeAgeSignals,
 } from './ExpoAgeRange.types';
 
 export async function requestAgeRangeAsync(_: AgeRangeRequest): Promise<AgeRangeResponse> {
@@ -27,4 +28,12 @@ export async function getRequiredRegulatoryFeaturesAsync(): Promise<
 
 export async function requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus | null> {
   return null;
+}
+
+export async function isFakeAgeSignalsEnabledAsync(): Promise<boolean> {
+  return false;
+}
+
+export async function setFakeAgeSignalsAsync(_fake: FakeAgeSignals | null): Promise<void> {
+  // no-op on web
 }

@@ -20,12 +20,22 @@ class AgeRangeModule : Module() {
 
   private val ageSignalsManager by lazy { AgeSignalsManagerFactory.create(context.applicationContext) }
 
+  private var fakeAgeSignals: FakeAgeSignals? = null
+
+  /**
+   * A [FakeAgeSignalsManager][com.google.android.play.agesignals.testing.FakeAgeSignalsManager] once
+   * a build that opted in to [FAKE_AGE_SIGNALS_META_DATA] has installed fake signals, and the real
+   * manager otherwise.
+   */
+  private val currentAgeSignalsManager: AgeSignalsManager
+    get() = fakeAgeSignals?.manager() ?: ageSignalsManager
+
   override fun definition() = ModuleDefinition {
     Name("ExpoAgeRange")
 
     AsyncFunction("requestAgeRangeAsync") { _: Any, promise: Promise ->
       requestAgeRange(
-        ageSignalsManager = ageSignalsManager,
+        ageSignalsManager = currentAgeSignalsManager,
         onSuccess = { result -> promise.resolve(result) },
         onError = { exception -> promise.reject(exception) },
         onCancelled = { promise.reject(AgeRangeTaskCancelledException()) }
@@ -38,12 +48,23 @@ class AgeRangeModule : Module() {
 
     AsyncFunction("requestAgeSignalsAccessAsync") { promise: Promise ->
       requestAgeSignalsAccess(
-        ageSignalsManager = ageSignalsManager,
+        ageSignalsManager = currentAgeSignalsManager,
         activity = appContext.throwingActivity,
         onSuccess = { status -> promise.resolve(status) },
         onError = { exception -> promise.reject(exception) },
         onCancelled = { promise.reject(AgeRangeTaskCancelledException()) }
       )
+    }
+
+    AsyncFunction("isFakeAgeSignalsEnabledAsync") {
+      isFakeAgeSignalsEnabled(context)
+    }
+
+    AsyncFunction("setFakeAgeSignalsAsync") { options: FakeAgeSignalsOptions? ->
+      if (!isFakeAgeSignalsEnabled(context)) {
+        throw FakeAgeSignalsDisabledException()
+      }
+      fakeAgeSignals = options?.let(::FakeAgeSignals)
     }
   }
 }

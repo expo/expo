@@ -32,4 +32,13 @@ describe('ExpoAgeRange', () => {
     // The mock represents the unsupported case (iOS and web).
     await expect(ExpoAgeRange.requestAgeSignalsAccessAsync()).resolves.toBeNull();
   });
+
+  it(`reports fake age signals as unavailable on unsupported platforms`, async () => {
+    await expect(ExpoAgeRange.isFakeAgeSignalsEnabledAsync()).resolves.toBe(false);
+  });
+
+  it(`invokes setFakeAgeSignalsAsync`, async () => {
+    await expect(ExpoAgeRange.setFakeAgeSignalsAsync({ lowerBound: 18 })).resolves.toBeUndefined();
+    await expect(ExpoAgeRange.setFakeAgeSignalsAsync(null)).resolves.toBeUndefined();
+  });
 });

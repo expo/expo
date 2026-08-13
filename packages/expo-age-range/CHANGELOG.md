@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [Android] Add `setFakeAgeSignalsAsync` and `isFakeAgeSignalsEnabledAsync` to report Play's `FakeAgeSignalsManager` signals from JS, in builds that opt in with the new config plugin's `enableFakeAgeSignals` property. ([#00000](https://github.com/expo/expo/pull/00000) by [@kmadden_rbi](https://github.com/kmadden_rbi))
+
 ### 🐛 Bug fixes
 
 - [iOS] Report `ageRangeDeclaration: 'confirmed'` for the six system-verified cases that iOS 26.2 added and iOS 26.5 deprecated, instead of reporting them as `'selfDeclared'`. ([#48486](https://github.com/expo/expo/pull/48486) by [@vonovak](https://github.com/vonovak))

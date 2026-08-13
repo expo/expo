@@ -98,6 +98,37 @@ export type AgeRangeResponse = {
 export type AgeSignalsStatus = 'SHARED' | 'NOT_SHARED' | 'VERIFICATION_REQUIRED';
 
 /**
+ * The age signals that [`setFakeAgeSignalsAsync`](#agerangesetfakeagesignalsasyncfake) reports in
+ * place of the ones Play would report. Every field is optional, and an omitted field is reported as
+ * `null`, the same way Play reports a signal it has no value for.
+ *
+ * @platform android
+ */
+export type FakeAgeSignals = {
+  /** Reported as `lowerBound` by [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions). */
+  lowerBound?: number | null;
+  /** Reported as `upperBound` by [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions). */
+  upperBound?: number | null;
+  /** Reported as `installId` by [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions). */
+  installId?: string | null;
+  /** Reported as `ageRangeSource` by [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions). */
+  ageRangeSource?: 'TIER_A' | 'TIER_B' | 'TIER_C' | 'TIER_D' | null;
+  /** Reported as `significantChangeStatus` by [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions). */
+  significantChangeStatus?: 'APPROVED' | 'PENDING' | 'DECLINED' | null;
+  /** Reported as `significantChangeApprovalDate` by [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions). */
+  significantChangeApprovalDate?: number | null;
+  /** Reported by [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync). */
+  ageSignalsStatus?: AgeSignalsStatus | null;
+  /**
+   * When set, both `requestAgeRangeAsync` and `requestAgeSignalsAccessAsync` reject with this Play
+   * Age Signals error code instead of reporting a result. See the
+   * [error code reference](https://developer.android.com/google/play/age-signals/handle-errors)
+   * for the available codes.
+   */
+  errorCode?: number | null;
+};
+
+/**
  * A regulatory feature that your app may need to support for the current user.
  *
  * Mirrors [`AgeRangeService.RegulatoryFeature`](https://developer.apple.com/documentation/declaredagerange/agerangeservice/regulatoryfeature).
@@ -115,4 +146,6 @@ export interface ExpoAgeRangeModule extends NativeModule {
   showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
   getRequiredRegulatoryFeaturesAsync(): Promise<AgeRangeRegulatoryFeature[] | null>;
   requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus | null>;
+  isFakeAgeSignalsEnabledAsync(): Promise<boolean>;
+  setFakeAgeSignalsAsync(fake: FakeAgeSignals | null): Promise<void>;
 }
