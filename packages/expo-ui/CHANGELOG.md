@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- [universal] Fix `Cannot use shared object that was already released` when a worklet callback prop closes over an unstable value. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.10 — 2026-08-10

@@ -1,9 +1,22 @@
 import { requireNativeModule } from 'expo';
-import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
+import { type SharedObject, useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
 
 import { worklets } from './optionalWorklets';
 
 const ExpoUI = requireNativeModule('ExpoUI');
+
+function createSerializable(callback?: (...args: any[]) => void, propName?: string) {
+  if (!callback || !worklets) {
+    return null;
+  }
+  if (!worklets.isWorkletFunction(callback)) {
+    const name = propName ? `'${propName}'` : 'The callback';
+    throw new Error(
+      `${name} must be a worklet function. Add the 'worklet' directive as the first statement in your callback.`
+    );
+  }
+  return worklets.createSerializable(callback);
+}
 
 /**
  * Creates a `WorkletCallback` SharedObject that wraps a worklet function.
@@ -16,17 +29,21 @@ export function useWorkletProp(
   callback?: (...args: any[]) => void,
   propName?: string
 ): SharedObject | null {
-  return useReleasingSharedObject(() => {
-    if (!callback || !worklets) {
-      return null;
-    }
-    try {
-      return new ExpoUI.WorkletCallback(worklets.createSerializable(callback));
-    } catch {
-      const name = propName ? `'${propName}'` : 'The callback';
-      throw new Error(
-        `${name} must be a worklet function. Add the 'worklet' directive as the first statement in your callback.`
-      );
-    }
-  }, [callback]);
+  return useReleasingSharedObjectWithLifecycle(
+    {
+      factory: () => {
+        const serializable = createSerializable(callback, propName);
+        return serializable ? new ExpoUI.WorkletCallback(serializable) : null;
+      },
+      // Only removing the callback needs a different object.
+      shouldRecreate: () => !callback,
+      update: (object) => {
+        const serializable = createSerializable(callback, propName);
+        if (serializable) {
+          object.setWorklet(serializable);
+        }
+      },
+    },
+    [callback]
+  );
 }
