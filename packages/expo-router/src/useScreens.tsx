@@ -20,6 +20,9 @@ import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layou
 import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
+import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
+import { resolveLoaderPath } from './loaders/resolveLoaderPath';
+import { getContextKey } from './matchers';
 import { unstable_navigationEvents } from './navigationEvents';
 import {
   hasParam,
@@ -42,6 +45,7 @@ import {
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import type { UnknownOutputParams } from './types';
+import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
@@ -303,6 +307,15 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
+    const isRouteType = value.type === 'route';
+    const resolvedLoaderPath = React.useMemo(() => {
+      if (!isRouteType || isGuarded) {
+        return null;
+      }
+      // NOTE(@hassankhan): `RouteNode` does not expose whether its module has a loader without
+      // eagerly loading it. Static loader metadata would let loader-free routes skip this work.
+      return resolveLoaderPath(getContextKey(value.contextKey), stateForPath);
+    }, [isGuarded, isRouteType, stateForPath]);
 
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'
@@ -355,7 +368,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       }
     }, [isFocused, isGuarded, redirectHref]);
 
-    const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
 
     if (isGuarded) {
@@ -372,6 +384,10 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     return (
       <Route node={value} params={route?.params}>
         <SuspenseFallbackContext value={providedSuspenseFallback}>
+          {/* This committed-shell signal is intentionally best-effort. A navigator may unmount a
+              retained route shell, which aborts pending work and causes a later visit to refetch.
+              Activity visibility and transition-attempt ownership need explicit lifecycle APIs. */}
+          {resolvedLoaderPath && <LoaderRouteLifecycle path={resolvedLoaderPath} />}
           {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
             <AnalyticsListeners navigation={navigation} screenId={route.key} />
           )}
@@ -546,17 +562,4 @@ export function routeToScreen<
   );
 }
 
-export function getSingularId(name: string, options: Record<string, any> = {}) {
-  return name
-    .split('/')
-    .map((segment) => {
-      if (segment.startsWith('[...')) {
-        return options.params?.[segment.slice(4, -1)]?.join('/') || segment;
-      } else if (segment.startsWith('[') && segment.endsWith(']')) {
-        return options.params?.[segment.slice(1, -1)] || segment;
-      } else {
-        return segment;
-      }
-    })
-    .join('/');
-}
+export { getSingularId } from './utils/getSingularId';
