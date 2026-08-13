@@ -143,7 +143,9 @@ async function respond(nodeResponse, webResponse, options) {
     const cancelBody = (reason) => {
         if (!_cancelled) {
             _cancelled = true;
-            (void reader.cancel(reason).catch(() => { }));
+            reader.cancel(reason).catch(() => {
+                /*noop*/
+            });
         }
     };
     const onAbort = () => {
