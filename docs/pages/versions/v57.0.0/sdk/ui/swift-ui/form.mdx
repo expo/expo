@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Form matches the official SwiftUI [Form API](https://developer.apple.com/documentation/swiftui/form). It provides a container for grouping controls used for data entry, such as in settings or inspection panes.
@@ -28,8 +29,13 @@ Expo UI Form matches the official SwiftUI [Form API](https://developer.apple.com
 
 ### Basic form
 
-```tsx BasicFormExample.tsx
-import { useState } from 'react';
+<ComponentExample
+  title="BasicFormExample.tsx"
+  src="/static/images/expo-ui/examples/form-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/form-basic-ios-dark.webp"
+  alt="A form holding a single Enter your name text field">
+
+```tsx
 import { Host, Form, TextField } from '@expo/ui/swift-ui';
 
 export default function BasicFormExample() {
@@ -43,11 +49,19 @@ export default function BasicFormExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Form with sections
 
 Use the [`Section`](section) component to group related controls within a form.
 
-```tsx FormWithSectionsExample.tsx
+<ComponentExample
+  title="FormWithSectionsExample.tsx"
+  src="/static/images/expo-ui/examples/form-with-sections-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/form-with-sections-ios-dark.webp"
+  alt="A form with a Profile section of two fields, a Preferences section of two toggles, and a Save changes button">
+
+```tsx
 import { useState } from 'react';
 import { Host, Form, Section, TextField, Toggle, Button } from '@expo/ui/swift-ui';
 
@@ -81,12 +95,19 @@ export default function FormWithSectionsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Form with custom background
 
 Use the `scrollContentBackground` modifier to customize or hide the form's background.
 
-```tsx FormBackgroundExample.tsx
-import { useState } from 'react';
+<ComponentExample
+  title="FormBackgroundExample.tsx"
+  src="/static/images/expo-ui/examples/form-background-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/form-background-ios-dark.webp"
+  alt="A form with a light grey background behind a Custom Background section">
+
+```tsx
 import { Host, Form, Section, TextField } from '@expo/ui/swift-ui';
 import { scrollContentBackground, background } from '@expo/ui/swift-ui/modifiers';
 
@@ -103,13 +124,21 @@ export default function FormBackgroundExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Non-scrollable form
 
 Use the [`scrollDisabled`](modifiers/#scrolldisableddisabled) modifier to prevent the form from scrolling.
 
 > **Note:** The `scrollDisabled` modifier is only available on iOS 16+ and tvOS 16+.
 
-```tsx NonScrollableFormExample.tsx
+<ComponentExample
+  title="NonScrollableFormExample.tsx"
+  src="/static/images/expo-ui/examples/form-non-scrollable-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/form-non-scrollable-ios-dark.webp"
+  alt="A form with a Settings section holding one Enable feature toggle">
+
+```tsx
 import { useState } from 'react';
 import { Host, Form, Section, TextField, Toggle } from '@expo/ui/swift-ui';
 import { scrollDisabled } from '@expo/ui/swift-ui/modifiers';
@@ -129,11 +158,19 @@ export default function NonScrollableFormExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Pull-to-refresh form
 
 Use the `refreshable` modifier to add pull-to-refresh functionality.
 
-```tsx RefreshableFormExample.tsx
+<ComponentExample
+  title="RefreshableFormExample.tsx"
+  src="/static/images/expo-ui/examples/form-refreshable-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/form-refreshable-ios-dark.webp"
+  alt="A form with a Pull to refresh section showing the last refresh time">
+
+```tsx
 import { useState, useCallback } from 'react';
 import { Host, Form, Section, Text } from '@expo/ui/swift-ui';
 import { refreshable } from '@expo/ui/swift-ui/modifiers';
@@ -158,6 +195,8 @@ export default function RefreshableFormExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
