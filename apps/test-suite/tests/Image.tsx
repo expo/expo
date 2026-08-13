@@ -146,12 +146,11 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
       });
 
       t.it('load animated image and emits animated is true', async () => {
-        // `helpers` is still JS, so `mountAndWaitFor` has no type parameter yet.
-        const event = (await mountAndWaitFor(
+        const event = await mountAndWaitFor<ImageLoadEventData>(
           <Image source={ANIMATED_IMAGE_SOURCE} style={{ height: 100, width: 100 }} />,
           'onLoad',
           setPortalChild
-        )) as ImageLoadEventData;
+        );
 
         t.expect(event.source.isAnimated).toBe(true);
       });
@@ -339,7 +338,6 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
       t.describe('generateBlurhashAsync', () => {
         t.it('returns a correct blurhash for url', async () => {
           // A bundled asset, so the bytes the hash is computed from never change.
-          // The remote image this used to read was re-encoded upstream and drifted.
           const asset = await Asset.fromModule(require('../assets/icons/app.png')).downloadAsync();
           const result = await Image.generateBlurhashAsync(requireNotNull(asset.localUri), [4, 3]);
           t.expect(result).toBe(LOCAL_ASSET_BLURHASH);
