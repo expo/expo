@@ -25,8 +25,10 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevSettings.h>
+#import <React/RCTDevMenu.h>
 #import <React/RCTPackagerConnection.h>
 #import <React/RCTRootView.h>
+#import <Expo/EXBundleConfiguration.h>
 
 #if __has_include(<ExpoModulesCore-Swift.h>)
 #import <ExpoModulesCore-Swift.h>
@@ -134,7 +136,11 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     [self _startObservingNotificationsForHost];
     
     if (!_isHeadless) {
-      _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
+      _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView]
+                                                                                 initialProperties:[self initialPropertiesForRootView]
+                                                                                     launchOptions:nil
+                                                                               bundleConfiguration:[EXBundleConfiguration configurationWithBundleURL:[self bundleUrl]]
+                                                                              devMenuConfiguration:[RCTDevMenuConfiguration defaultConfiguration]];
     }
 
     [self setupWebSocketControls];
