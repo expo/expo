@@ -19,7 +19,7 @@ struct DeviceLoginErrorView: View {
       Button {
         onRetry()
       } label: {
-        Text(retryLabel)
+        Text("Get a new code")
           .font(.headline)
           .foregroundColor(.white)
           .frame(maxWidth: .infinity)
@@ -53,7 +53,7 @@ struct DeviceLoginErrorView: View {
     case .invalid:
       return "This code has already been used, or Expo returned something unexpected. Get a new code, and contact support@expo.dev if it keeps happening."
     case .network:
-      return "Check your connection and try again. Your code was not used."
+      return "Expo Go couldn't reach the server. Check your connection and get a new code."
     case .server(let message):
       return "\(sentence(from: message)) Wait a moment before trying again."
     }
@@ -66,10 +66,5 @@ struct DeviceLoginErrorView: View {
       return "Expo turned down the request."
     }
     return ".!?".contains(last) ? trimmed : trimmed + "."
-  }
-
-  /// A network failure never reached the server, so the same attempt can simply be retried.
-  private var retryLabel: String {
-    failure == .network ? "Try again" : "Get a new code"
   }
 }
