@@ -142,6 +142,11 @@ public struct AppMetrics {
   ///
   /// This session starts when the app launches and continues until the app terminates.
   /// Unlike foreground sessions, there is only one main session per app process.
+  /// The shared sink every span producer writes completed rows through. Nonisolated so the
+  /// JS-thread module functions can hand it to span handles; it resolves the database on the
+  /// actor at write time.
+  static let spanWriter = SpanWriter()
+
   static let mainSession = MainSession()
 
   // MARK: - Foreground session

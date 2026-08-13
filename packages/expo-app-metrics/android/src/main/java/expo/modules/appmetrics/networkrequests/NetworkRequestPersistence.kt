@@ -2,16 +2,11 @@
 
 package expo.modules.appmetrics.networkrequests
 
-import android.util.Log
-import expo.modules.appmetrics.storage.MetricsDatabase
+import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.Span
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.json.JSONArray
 import org.json.JSONObject
-
-private const val TAG = "ExpoAppMetrics"
 
 /**
  * Routes completed requests from `NetworkRequestMonitor` into the `spans` table, attributed to
@@ -27,8 +22,7 @@ private const val TAG = "ExpoAppMetrics"
  * the delegate contract (weak registration, `shouldObserveRequest` filtering) doesn't apply.
  */
 class NetworkRequestPersistence(
-  private val database: MetricsDatabase,
-  private val scope: CoroutineScope,
+  private val writer: SpanWriter,
   initialConfiguration: NetworkSpansConfiguration = NetworkSpansConfiguration(),
   /**
    * A plain value, not a provider: the id is constant for a persistence instance (it is
@@ -55,46 +49,31 @@ class NetworkRequestPersistence(
   }
 
   /**
-   * Persists one completed request as a span. The insert runs on `scope` so the monitor's
-   * record path (OkHttp dispatcher threads) never blocks on the database; failures are logged
-   * and swallowed — persistence must never break the monitor's fan-out.
+   * Persists one completed request as a span: applies the recording policy, maps the snapshot
+   * onto the generic row shape, and hands it to the shared writer.
    */
   fun persist(request: NetworkRequest) {
     if (!configuration.allows(request.url, request.method)) {
       return
     }
     val span = request.toSpan(sessionId) ?: return
-    scope.launch {
-      try {
-        database.spanDao().insertCapped(span)
-      } catch (e: Exception) {
-        Log.w(TAG, "Failed to persist a network request span", e)
-      }
-    }
+    writer.write(span)
   }
 
   /**
-   * Persists the monitor's buffered startup requests. One coroutine for the whole batch: the
-   * install path runs on the module's serial queue during startup, competing with the session
-   * INSERT and crash-report processing, so converting up to 200 requests inline (JSON
-   * serialization, URL parsing) and queueing one coroutine per row there would be the most
-   * expensive way to do it. Conversion and inserts all happen inside the single launch.
+   * Persists the monitor's buffered startup requests. The producer runs lazily inside the
+   * writer's single batch coroutine: the install path runs on the module's serial queue during
+   * startup, competing with the session INSERT and crash-report processing, so converting up
+   * to 200 requests inline (JSON serialization, URL parsing) and queueing one coroutine per
+   * row there would be the most expensive way to do it.
    */
   fun persistBuffered(requests: List<NetworkRequest>, onComplete: () -> Unit = {}) {
     if (requests.isEmpty()) {
       return
     }
-    scope.launch {
-      for (request in requests) {
-        if (!configuration.allows(request.url, request.method)) {
-          continue
-        }
-        val span = request.toSpan(sessionId) ?: continue
-        try {
-          database.spanDao().insertCapped(span)
-        } catch (e: Exception) {
-          Log.w(TAG, "Failed to persist a network request span", e)
-        }
+    writer.writeAll {
+      requests.mapNotNull { request ->
+        request.takeIf { configuration.allows(it.url, it.method) }?.toSpan(sessionId)
       }
       // Deliberately not in a `finally`: a cancelled batch must not report completion, so the
       // caller can retry the drain on the next install.

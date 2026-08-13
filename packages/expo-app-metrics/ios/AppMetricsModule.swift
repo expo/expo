@@ -193,7 +193,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
         attributes: options?.attributes,
         startTimestampMs: options?.startTime.map { Int64($0) } ?? currentUnixMilliseconds()
       )
-      return SpanHandle(recorder: recorder, onEnd: insertSpanRow)
+      return SpanHandle(recorder: recorder, onEnd: AppMetrics.spanWriter.schedule)
     }
 
     Function("recordSpan") { (name: String, options: RecordSpanOptions) in
@@ -209,7 +209,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
         startTimestampMs: Int64(startTime)
       )
       if let row = recorder.end(statusCode: nil, statusMessage: nil, endTimestampMs: Int64(endTime)) {
-        insertSpanRow(row)
+        AppMetrics.spanWriter.schedule(row)
       }
     }
 
@@ -342,21 +342,6 @@ private func spanStatusCode(from status: String?) throws -> Int? {
     return SpanRow.statusError
   case .some(let other):
     throw InvalidSpanStatusException(other)
-  }
-}
-
-/// Inserts a completed span row, hopping to the metrics actor. Failures are logged and
-/// swallowed — recording telemetry must never break the caller.
-private func insertSpanRow(_ row: SpanRow) {
-  Task { @AppMetricsActor in
-    guard let database = AppMetrics.database else {
-      return
-    }
-    do {
-      try database.insert(span: row)
-    } catch {
-      logger.warn("[AppMetrics] Failed to persist span \"\(row.name)\": \(error.localizedDescription)")
-    }
   }
 }
 
