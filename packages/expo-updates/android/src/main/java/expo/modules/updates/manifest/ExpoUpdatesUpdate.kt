@@ -14,6 +14,7 @@ import expo.modules.updates.db.enums.UpdateStatus
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.IOException
 import java.text.ParseException
 import java.util.*
 
@@ -95,27 +96,43 @@ class ExpoUpdatesUpdate private constructor(
   companion object {
     private val TAG = Update::class.java.simpleName
 
-    @Throws(JSONException::class)
+    @Throws(Exception::class)
     fun fromExpoUpdatesManifest(
       manifest: ExpoUpdatesManifest,
       extensions: JSONObject?,
       configuration: UpdatesConfiguration
-    ): ExpoUpdatesUpdate = ExpoUpdatesUpdate(
-      manifest,
-      id = UUID.fromString(manifest.getID()),
-      configuration.scopeKey,
-      commitTime = try {
-        UpdatesUtils.parseDateString(manifest.getCreatedAt())
-      } catch (e: ParseException) {
-        Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
-        Date()
-      },
-      runtimeVersion = manifest.getRuntimeVersion(),
-      launchAsset = manifest.getLaunchAsset(),
-      assets = manifest.getAssets(),
-      extensions = extensions,
-      url = configuration.updateUrl,
-      requestHeaders = configuration.requestHeaders
-    )
+    ): ExpoUpdatesUpdate {
+      val update = ExpoUpdatesUpdate(
+        manifest,
+        id = UUID.fromString(manifest.getID()),
+        configuration.scopeKey,
+        commitTime = try {
+          UpdatesUtils.parseDateString(manifest.getCreatedAt())
+        } catch (e: ParseException) {
+          Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
+          Date()
+        },
+        runtimeVersion = manifest.getRuntimeVersion(),
+        launchAsset = manifest.getLaunchAsset(),
+        assets = manifest.getAssets(),
+        extensions = extensions,
+        url = configuration.updateUrl,
+        requestHeaders = configuration.requestHeaders
+      )
+
+      update.assetEntityList.forEach { asset ->
+        val filename = UpdatesUtils.createFilenameForAsset(asset)
+        if (!UpdatesUtils.isSafeFilename(filename)) {
+          throw IOException(
+            "Update ${manifest.getID()} could not be loaded because the asset filename " +
+              "\"$filename\" is not a valid filename. Assets are stored under their key and file " +
+              "extension, so neither may contain a path separator. Check the server that produced " +
+              "this manifest."
+          )
+        }
+      }
+
+      return update
+    }
   }
 }
