@@ -3,8 +3,9 @@ name: AI code review (dismiss)
 
 # Maintainer PR-comment command to hide/restore a reviewer finding on this PR:
 #   /dismiss <id> [<id> …] [-- reason]   hide finding(s); they move to a collapsed
-#                                        "Dismissed" section and stay there on re-review
+#   @expo-bot dismiss <id> …             "Dismissed" section and stay there on re-review
 #   /undismiss <id> [<id> …]             restore finding(s)
+#   @expo-bot undismiss <id> …
 # <id> is the short `id:` shown on each finding in the reviewer comment. This only
 # edits the reviewer's comment (no review run, no model secret).
 
@@ -23,10 +24,14 @@ concurrency:
 
 jobs:
   dismiss:
-    # PR comments starting with /dismiss or /undismiss, from a maintainer only.
+    # PR comments starting with /dismiss, /undismiss, or the @expo-bot forms.
     if: >-
       github.event.issue.pull_request != null &&
-      (startsWith(github.event.comment.body, '/dismiss') || startsWith(github.event.comment.body, '/undismiss')) &&
+      github.event.comment.user.login != 'expo-bot' &&
+      (startsWith(github.event.comment.body, '/dismiss') ||
+      startsWith(github.event.comment.body, '/undismiss') ||
+      startsWith(github.event.comment.body, '@expo-bot dismiss') ||
+      startsWith(github.event.comment.body, '@expo-bot undismiss')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     # @ref LLP 0009#guard-step-ordering-and-job-budgets [constrained-by] — no review budget to cover; capped low regardless
@@ -41,13 +46,23 @@ jobs:
           COMMENT: ${{ github.event.comment.body }}
         run: |
           line=$(printf '%s' "$COMMENT" | head -n1 | tr -d '\r')
-          verb=$(printf '%s' "$line" | awk '{print $1}')
-          case "$verb" in
-            /dismiss) sub=dismiss ;;
-            /undismiss) sub=undismiss ;;
-            *) echo "run=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
-          esac
-          rest=$(printf '%s' "$line" | cut -s -d' ' -f2-)
+          first=$(printf '%s' "$line" | awk '{print tolower($1)}')
+          second=$(printf '%s' "$line" | awk '{print tolower($2)}')
+          if [ "$first" = "@expo-bot" ]; then
+            case "$second" in
+              dismiss) sub=dismiss ;;
+              undismiss) sub=undismiss ;;
+              *) echo "run=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
+            esac
+            rest=$(printf '%s' "$line" | awk '{for (i=3;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":"")}')
+          else
+            case "$first" in
+              /dismiss) sub=dismiss ;;
+              /undismiss) sub=undismiss ;;
+              *) echo "run=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
+            esac
+            rest=$(printf '%s' "$line" | cut -s -d' ' -f2-)
+          fi
           # Optional reason after ' -- '.
           reason=""
           ids_part="$rest"

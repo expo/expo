@@ -31,7 +31,7 @@ jobs:
     # read-only, so this job cannot reach the model credential AND cannot post a comment —
     # not even to explain itself. Without this guard, labeling an external PR produced a
     # failed run and total silence. `expo-code-review-fork-hint.yml` now posts the
-    # review-command pointer for that case, and the `/review` or `/expo-review`
+    # review-command pointer for that case, and the `/review`, `/expo-review`, or `@expo-bot review`
     # command path (issue_comment) is what actually reviews a fork PR: it runs in
     # base-repo context with full secrets.
     # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — spin-up avoidance only; real policy is config.jsonc review.trigger
