@@ -258,6 +258,11 @@ async function getProjectCodeSigningCertificateAsync(
 ): Promise<CodeSigningInfo | null> {
   const codeSigningCertificatePath = exp.updates?.codeSigningCertificate;
   if (!codeSigningCertificatePath) {
+    if (privateKeyPath) {
+      throw new CommandError(
+        '--private-key-path was specified, but updates.codeSigningCertificate is not set in the resolved app config. Code signing requires both the certificate in app config and the private key. Ensure codeSigningCertificate (and codeSigningMetadata) are present, or omit --private-key-path if you do not intend to sign.\nLearn more: https://docs.expo.dev/eas-update/code-signing/'
+      );
+    }
     return null;
   }
 
