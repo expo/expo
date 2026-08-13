@@ -145,3 +145,13 @@ data class Event(
   val metrics: List<EASMetric>,
   val logs: List<LogEvent> = emptyList()
 )
+
+/**
+ * One session's spans paired with the event carrying that session's resource metadata, ready
+ * for the traces dispatch. Spans travel separately from `Event` because they aren't part of
+ * the payload shape the metrics/logs signals share.
+ */
+data class SpanBatch(
+  val event: Event,
+  val spans: List<OTSpan>
+)
