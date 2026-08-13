@@ -105,9 +105,10 @@ test('handle dispatching with ref', () => {
 
       getStateForAction(state, action, options) {
         if (action.type === 'REVERSE') {
+          const routes = state.routes.slice().reverse();
           return {
-            ...state,
-            routes: state.routes.slice().reverse(),
+            state: { ...state, routes },
+            affectedRouteKey: routes[state.index]?.key,
           };
         }
         return CurrentMockRouter.getStateForAction(state, action, options);

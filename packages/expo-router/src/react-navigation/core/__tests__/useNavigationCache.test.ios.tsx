@@ -194,10 +194,13 @@ test('returns correct value for isFocused after changing screens', () => {
         );
 
         return {
-          ...state,
-          routeNames,
-          routes,
-          index: routes.length - 1,
+          state: {
+            ...state,
+            routeNames,
+            routes,
+            index: routes.length - 1,
+          },
+          affectedRouteKey: routes[routes.length - 1]?.key,
         };
       },
     };

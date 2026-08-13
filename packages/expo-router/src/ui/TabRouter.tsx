@@ -71,7 +71,10 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
         // TODO(@ubax): Remove this branch together with nested trigger href support. Refocusing
         // a tab that hosts a navigator must not re-apply the trigger's nested payload
         // (`params.screen`), which would reset the preserved child state.
-        return rnTabRouter.getStateForRouteFocus(state, route.key);
+        return {
+          state: rnTabRouter.getStateForRouteFocus(state, route.key),
+          affectedRouteKey: route.key,
+        };
       } else {
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }

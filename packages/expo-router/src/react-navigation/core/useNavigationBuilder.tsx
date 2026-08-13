@@ -474,15 +474,16 @@ export function useNavigationBuilder<
     }
 
     // The update should be limited to current navigator only, so we call the router manually
-    const updatedState = action
+    const actionResult = action
       ? router.getStateForAction(nextState, action, {
           routeNames,
           routeGetIdList,
         })
       : null;
+    const updatedState = actionResult?.state;
 
     nextState =
-      updatedState !== null
+      updatedState !== undefined
         ? router.getRehydratedState(updatedState, {
             routeNames,
             routeGetIdList,

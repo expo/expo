@@ -190,7 +190,7 @@ export type Router<
   getStateForRouteFocus(state: State, key: string): State;
 
   /**
-   * Take the current state and action, and return a new state.
+   * Take the current state and action, and return a new state and the affected route key.
    * If the action cannot be handled, return `null`. Custom routers must explicitly handle
    * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
    *
@@ -202,7 +202,7 @@ export type Router<
     state: State,
     action: Action,
     options: RouterConfigOptions
-  ): State | PartialState<State> | null;
+  ): RouterActionResult<State> | null;
 
   /**
    * Whether the action should also change focus in parent navigator
@@ -215,4 +215,19 @@ export type Router<
    * Action creators for the router.
    */
   actionCreators?: ActionCreators<Action>;
+};
+
+/**
+ * The result of reducing a navigation action.
+ */
+export type RouterActionResult<State extends NavigationState> = {
+  /**
+   * The navigation state produced by the action.
+   */
+  state: State | PartialState<State>;
+  /**
+   * The key of the route affected by the action. This is `undefined` when a partial state does
+   * not provide a key for the affected route.
+   */
+  affectedRouteKey: string | undefined;
 };

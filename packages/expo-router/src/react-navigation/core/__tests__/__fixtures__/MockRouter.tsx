@@ -89,10 +89,13 @@ export function MockRouter(_options: DefaultRouterOptions) {
           const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
 
           if (nextState.routes.length !== 0) {
-            return nextState;
+            return {
+              state: nextState,
+              affectedRouteKey: nextState.routes[nextState.index]?.key,
+            };
           }
 
-          return {
+          const result = {
             ...nextState,
             index: 0,
             routes: [
@@ -102,13 +105,14 @@ export function MockRouter(_options: DefaultRouterOptions) {
               },
             ],
           };
+          return { state: result, affectedRouteKey: result.routes[result.index]?.key };
         }
 
         case 'UPDATE':
-          return { ...state };
+          return { state: { ...state }, affectedRouteKey: state.routes[state.index]?.key };
 
         case 'NOOP':
-          return state;
+          return { state, affectedRouteKey: state.routes[state.index]?.key };
 
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
@@ -147,9 +151,12 @@ export function MockRouter(_options: DefaultRouterOptions) {
           }
 
           return {
-            ...state,
-            index,
-            routes,
+            state: {
+              ...state,
+              index,
+              routes,
+            },
+            affectedRouteKey: routes[index]!.key,
           };
         }
 
@@ -159,8 +166,11 @@ export function MockRouter(_options: DefaultRouterOptions) {
           }
 
           return {
-            ...state,
-            index: state.index - 1,
+            state: {
+              ...state,
+              index: state.index - 1,
+            },
+            affectedRouteKey: state.routes[state.index - 1]!.key,
           };
         }
 

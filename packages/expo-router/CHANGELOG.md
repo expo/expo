@@ -6,6 +6,7 @@
 
 - Remove the deprecated `Link` and `useLinkProps` exports from `expo-router/react-navigation`. Use `Link` from `expo-router` with an `href` instead. ([#48895](https://github.com/expo/expo/pull/48895) by [@Ubax](https://github.com/Ubax))
 - Remove the deprecated `navigateDeprecated` action and the `navigationInChildEnabled` container prop from `expo-router/react-navigation`. ([#49102](https://github.com/expo/expo/pull/49102) by [@Ubax](https://github.com/Ubax))
+- Change custom routers' `getStateForAction` return value to `{ state, affectedRouteKey }`.
 - Remove `getInitialState` from the `Router` interface. Custom routers no longer create initial state; the navigator creates it and passes it to `getRehydratedState`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
 - Remove `routeParamList` from `RouterConfigOptions` and remove the `RouterActionOptions` type. Custom routers receive `RouterConfigOptions` in both `getRehydratedState` and `getStateForAction`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
 - Remove the deprecated `NavigationContainer` export ([#48760](https://github.com/expo/expo/pull/48760) by [@Ubax](https://github.com/Ubax))
