@@ -53,13 +53,13 @@ export function ComponentExample({ title, src, darkSrc, alt, children }: Props) 
           <SnippetContent className="flex-1 rounded-none border-0 p-0">{children}</SnippetContent>
         </div>
         <div className="flex w-56 shrink-0 items-center justify-center border-l border-default bg-subtle p-4 max-lg:w-full max-lg:border-t max-lg:border-l-0">
-          <div className="aspect-9/14 w-full max-w-52 overflow-hidden rounded-sm [&_button]:block [&_button]:size-full [&_button]:cursor-pointer">
+          <div className="w-full max-w-52 overflow-hidden rounded-sm [&_button]:block [&_button]:w-full [&_button]:cursor-pointer">
             <LightboxImage
               src={activeSrc}
               alt={alt}
               width={1206}
               height={2622}
-              className="size-full object-cover object-center"
+              className="h-auto w-full"
             />
           </div>
         </div>

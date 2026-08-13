@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`List`](../universal/list) — it renders the appropriate native component per platform.
@@ -32,7 +33,13 @@ Expo UI List matches the official SwiftUI [List API](https://developer.apple.com
 
 ### Basic list
 
-```tsx BasicListExample.tsx
+<ComponentExample
+  title="BasicListExample.tsx"
+  src="/static/images/expo-ui/examples/list-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-basic-ios-dark.webp"
+  alt="A list with Fruits and Vegetables sections">
+
+```tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
 
 export default function BasicListExample() {
@@ -55,9 +62,17 @@ export default function BasicListExample() {
 }
 ```
 
+</ComponentExample>
+
 ### List with labels and icons
 
-```tsx ListWithLabelsExample.tsx
+<ComponentExample
+  title="ListWithLabelsExample.tsx"
+  src="/static/images/expo-ui/examples/list-with-labels-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-with-labels-ios-dark.webp"
+  alt="A Settings list with Wi-Fi, Bluetooth, and Cellular rows with blue SF Symbol icons">
+
+```tsx
 import { Host, List, Label, Section } from '@expo/ui/swift-ui';
 
 export default function ListWithLabelsExample() {
@@ -75,13 +90,21 @@ export default function ListWithLabelsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### List styles
 
 Use the [`listStyle`](modifiers/#liststylestyle) modifier to change the list's appearance.
 
 > **Note:** The `inset`, `insetGrouped`, and `sidebar` styles are not available on tvOS.
 
-```tsx ListStylesExample.tsx
+<ComponentExample
+  title="ListStylesExample.tsx"
+  src="/static/images/expo-ui/examples/list-styles-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-styles-ios-dark.webp"
+  alt="A list with a List Style menu picker set to automatic and three sample items">
+
+```tsx
 import { useState } from 'react';
 import { Host, List, Text, Section, Picker } from '@expo/ui/swift-ui';
 import { listStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
@@ -118,6 +141,8 @@ export default function ListStylesExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Selection and edit mode
 
 Enable selection, deletion, and reordering of list items using the [`List.ForEach`](#listforeach) compound component with `onDelete` and `onMove` props.
@@ -127,7 +152,13 @@ Enable selection, deletion, and reordering of list items using the [`List.ForEac
 - Use the [`selection`](#selection) prop to control selected items
 - Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](modifiers/#deletedisableddisabled) modifiers to disable these actions on individual items
 
-```tsx EditableListExample.tsx
+<ComponentExample
+  title="EditableListExample.tsx"
+  src="/static/images/expo-ui/examples/list-editable-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-editable-ios-dark.webp"
+  alt="A list with an Edit mode toggle and four task rows">
+
+```tsx
 import { useState } from 'react';
 import { Host, List, Label, Section, Button, Toggle } from '@expo/ui/swift-ui';
 import { environment, tag } from '@expo/ui/swift-ui/modifiers';
@@ -182,11 +213,19 @@ export default function EditableListExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Pull to refresh
 
 Use the [`refreshable`](modifiers/#refreshablehandler) modifier to enable pull-to-refresh functionality.
 
-```tsx RefreshableListExample.tsx
+<ComponentExample
+  title="RefreshableListExample.tsx"
+  src="/static/images/expo-ui/examples/list-refreshable-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-refreshable-ios-dark.webp"
+  alt="A list with a Pull down to refresh row">
+
+```tsx
 import { useState } from 'react';
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
 import { refreshable } from '@expo/ui/swift-ui/modifiers';
@@ -212,6 +251,8 @@ export default function RefreshableListExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ### Row styling
 
@@ -247,7 +288,13 @@ export default function RowStylingExample() {
 
 Use the [`scrollDismissesKeyboard`](modifiers/#scrolldismisseskeyboardmode) modifier to control how the keyboard is dismissed when scrolling.
 
-```tsx KeyboardDismissExample.tsx
+<ComponentExample
+  title="KeyboardDismissExample.tsx"
+  src="/static/images/expo-ui/examples/list-keyboard-dismiss-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-keyboard-dismiss-ios-dark.webp"
+  alt="A form list with Name, Email, and Phone text fields">
+
+```tsx
 import { Host, List, Section, TextField } from '@expo/ui/swift-ui';
 import { scrollDismissesKeyboard } from '@expo/ui/swift-ui/modifiers';
 
@@ -266,11 +313,19 @@ export default function KeyboardDismissExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Header prominence
 
 Use the [`headerProminence`](modifiers/#headerprominenceprominence) modifier to adjust the visual prominence of section headers.
 
-```tsx HeaderProminenceExample.tsx
+<ComponentExample
+  title="HeaderProminenceExample.tsx"
+  src="/static/images/expo-ui/examples/list-header-prominence-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-header-prominence-ios-dark.webp"
+  alt="Two list sections with large prominent headers">
+
+```tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
 import { headerProminence } from '@expo/ui/swift-ui/modifiers';
 
@@ -289,6 +344,8 @@ export default function HeaderProminenceExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
