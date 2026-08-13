@@ -12,6 +12,7 @@
 
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
 - Fixed the devtools plugin bundle missing its `wa-sqlite.wasm` asset. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
+- Fixed `SQLiteStorage` permanently throwing `no such table: storage` when the synchronous and asynchronous APIs raced the first-run migration. ([#48878](https://github.com/expo/expo/pull/48878) by [@giaBaoJS](https://github.com/giaBaoJS))
 
 ### 💡 Others
 

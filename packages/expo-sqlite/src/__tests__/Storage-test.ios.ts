@@ -1,7 +1,9 @@
 // @ts-ignore-next-line: no @types/node
 import fs from 'fs/promises';
 
+import { openDatabaseSync } from '../SQLiteDatabase';
 import { SQLiteStorage } from '../Storage';
+import { createDatabasePath } from '../pathUtils';
 
 jest.mock('expo/devtools', () => ({
   getDevToolsPluginClientAsync: jest.fn(),
@@ -322,5 +324,101 @@ describe('react-native-async-storage API compatibility', () => {
     const value2 = await storage.getItem('key2');
     expect(value1).toBe(JSON.stringify({ a: 1, b: 3, c: 4 }));
     expect(value2).toBe(JSON.stringify({ x: 10, y: 30, z: 40 }));
+  });
+});
+
+describe('SQLiteStorage migration', () => {
+  const databaseName = 'TestStorageMigration';
+
+  async function removeDatabaseFile() {
+    await fs.unlink(createDatabasePath(databaseName)).catch(() => {});
+  }
+
+  /**
+   * Seeds a database file that is already at `user_version = 1` but has no `storage` table.
+   * This is the state a device is left in when `getDbSync()` migrates on a second connection
+   * while `getDbAsync()` is migrating on the first one. See https://github.com/expo/expo/issues/47448.
+   */
+  function seedDatabaseWithoutStorageTable() {
+    const db = openDatabaseSync(databaseName);
+    db.execSync('PRAGMA user_version = 1');
+    db.closeSync();
+  }
+
+  function readUserVersion(): number {
+    const db = openDatabaseSync(databaseName);
+    const result = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
+    db.closeSync();
+    return result?.user_version ?? 0;
+  }
+
+  function tableExists(): boolean {
+    const db = openDatabaseSync(databaseName);
+    const result = db.getFirstSync<{ name: string }>(
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'storage'"
+    );
+    db.closeSync();
+    return result != null;
+  }
+
+  beforeEach(removeDatabaseFile);
+  afterEach(removeDatabaseFile);
+
+  it('should recreate the storage table when the database is at the current version but the table is missing (sync)', () => {
+    seedDatabaseWithoutStorageTable();
+    expect(tableExists()).toBe(false);
+
+    const storage = new SQLiteStorage(databaseName);
+    try {
+      expect(storage.getItemSync('key1')).toBeNull();
+      storage.setItemSync('key1', 'value1');
+      expect(storage.getItemSync('key1')).toBe('value1');
+    } finally {
+      storage.closeSync();
+    }
+    expect(tableExists()).toBe(true);
+  });
+
+  it('should recreate the storage table when the database is at the current version but the table is missing (async)', async () => {
+    seedDatabaseWithoutStorageTable();
+    expect(tableExists()).toBe(false);
+
+    const storage = new SQLiteStorage(databaseName);
+    try {
+      await expect(storage.getItemAsync('key1')).resolves.toBeNull();
+      await storage.setItemAsync('key1', 'value1');
+      await expect(storage.getItemAsync('key1')).resolves.toBe('value1');
+    } finally {
+      await storage.closeAsync();
+    }
+    expect(tableExists()).toBe(true);
+  });
+
+  it('should migrate a fresh database and bump the user version', () => {
+    const storage = new SQLiteStorage(databaseName);
+    try {
+      storage.setItemSync('key1', 'value1');
+    } finally {
+      storage.closeSync();
+    }
+    expect(tableExists()).toBe(true);
+    expect(readUserVersion()).toBe(1);
+  });
+
+  it('should keep existing data when reopening an already migrated database', () => {
+    const storage = new SQLiteStorage(databaseName);
+    storage.setItemSync('key1', 'value1');
+    storage.setItemSync('key2', 'value2');
+    storage.closeSync();
+
+    const reopened = new SQLiteStorage(databaseName);
+    try {
+      expect(reopened.getItemSync('key1')).toBe('value1');
+      expect(reopened.getItemSync('key2')).toBe('value2');
+      expect(reopened.getLengthSync()).toBe(2);
+    } finally {
+      reopened.closeSync();
+    }
+    expect(readUserVersion()).toBe(1);
   });
 });

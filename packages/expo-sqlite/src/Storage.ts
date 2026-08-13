@@ -372,6 +372,9 @@ export class SQLiteStorage {
   }
 
   private getDbSync(): SQLiteDatabase {
+    // NOTE: Unlike `getDbAsync()`, this cannot acquire `awaitLock` because the lock is
+    // promise-based and this method is synchronous. The migration is idempotent instead,
+    // so racing it with `getDbAsync()` cannot leave the database without a `storage` table.
     if (!this.db) {
       const db = openDatabaseSync(this.databaseName);
       this.maybeMigrateDbSync(db);
@@ -383,30 +386,26 @@ export class SQLiteStorage {
   private maybeMigrateDbAsync(db: SQLiteDatabase) {
     return db.withTransactionAsync(async () => {
       const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-      let currentDbVersion = result?.user_version ?? 0;
-      if (currentDbVersion >= DATABASE_VERSION) {
-        return;
+      const currentDbVersion = result?.user_version ?? 0;
+      // `MIGRATION_STATEMENT_0` uses `CREATE TABLE IF NOT EXISTS`, so it is a no-op when the
+      // table is already there. Running it unconditionally rather than only when the version is
+      // still 0 also repairs a database left at `user_version = 1` without a `storage` table.
+      await db.execAsync(MIGRATION_STATEMENT_0);
+      if (currentDbVersion < DATABASE_VERSION) {
+        await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
       }
-      if (currentDbVersion === 0) {
-        await db.execAsync(MIGRATION_STATEMENT_0);
-        currentDbVersion = 1;
-      }
-      await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
     });
   }
 
   private maybeMigrateDbSync(db: SQLiteDatabase) {
     db.withTransactionSync(() => {
       const result = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
-      let currentDbVersion = result?.user_version ?? 0;
-      if (currentDbVersion >= DATABASE_VERSION) {
-        return;
+      const currentDbVersion = result?.user_version ?? 0;
+      // See the comment in `maybeMigrateDbAsync()`.
+      db.execSync(MIGRATION_STATEMENT_0);
+      if (currentDbVersion < DATABASE_VERSION) {
+        db.execSync(`PRAGMA user_version = ${DATABASE_VERSION}`);
       }
-      if (currentDbVersion === 0) {
-        db.execSync(MIGRATION_STATEMENT_0);
-        currentDbVersion = 1;
-      }
-      db.execSync(`PRAGMA user_version = ${DATABASE_VERSION}`);
     });
   }
 
