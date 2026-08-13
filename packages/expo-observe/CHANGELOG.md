@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Mark the `AppMetrics` export as deprecated in favor of `Observe`.
+
 ## 57.0.9 — 2026-07-29
 
 _This version does not introduce any user-facing changes._
