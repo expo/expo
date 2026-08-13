@@ -534,6 +534,41 @@ test('handles navigate action with open drawer', () => {
   expect(result?.affectedRouteKey).toBe('baz');
 });
 
+test('attaches trusted state while closing the drawer', () => {
+  const router = DrawerRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar'],
+    routeGetIdList: {},
+  };
+  const childState = { routes: [{ name: 'child' }], __internal__routerActionState: true as const };
+
+  const result = router.getStateForAction(
+    {
+      stale: false,
+      type: 'drawer',
+      key: 'root',
+      index: 1,
+      routeNames: ['baz', 'bar'],
+      routes: [
+        { key: 'baz', name: 'baz' },
+        { key: 'bar', name: 'bar' },
+      ],
+      history: [
+        { type: 'route', key: 'bar' },
+        { type: 'drawer', status: 'open' },
+      ],
+    },
+    {
+      type: 'NAVIGATE',
+      payload: { name: 'baz', state: childState },
+    },
+    options
+  );
+
+  expect(result?.state.routes[0]?.state).toBe(childState);
+  expect(result?.state.history).toEqual([{ type: 'route', key: 'baz' }]);
+});
+
 test('closes open drawer on replace with backBehavior: fullHistory', () => {
   const router = DrawerRouter({ backBehavior: 'fullHistory' });
   const options: RouterConfigOptions = {

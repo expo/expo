@@ -42,6 +42,7 @@ export function push(url: Href, options?: NavigationOptions) {
   return linkTo(resolveHref(url), { ...options, event: 'PUSH' });
 }
 
+// `GO_BACK` follows focused back handling; `POP` explicitly removes stack routes.
 export function dismiss(count: number = 1) {
   if (emitDomDismiss(count)) {
     return;
@@ -147,6 +148,7 @@ export function linkTo(originalHref: Href | string, options: LinkToOptions = {})
     return goBack();
   }
 
+  // TODO(@ubax): Extract this change to standalone PR
   const linkAction = {
     type: 'NAVIGATE_TO_HREF' as const,
     payload: {

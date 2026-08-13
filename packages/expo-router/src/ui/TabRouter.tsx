@@ -7,6 +7,7 @@ import {
   type TabRouterOptions as RNTabRouterOptions,
   TabRouter as RNTabRouter,
 } from '../react-navigation/native';
+import { attachRouteState, type RouteState } from '../react-navigation/routers/attachRouteState';
 import type { TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
@@ -24,6 +25,7 @@ export type ExpoTabActionType =
         name: string;
         resetOnFocus?: boolean;
         params?: object;
+        state?: RouteState;
       };
     };
 
@@ -71,8 +73,16 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
         // TODO(@ubax): Remove this branch together with nested trigger href support. Refocusing
         // a tab that hosts a navigator must not re-apply the trigger's nested payload
         // (`params.screen`), which would reset the preserved child state.
+        const selectedRoute = attachRouteState(route, action);
+        const nextState =
+          selectedRoute === route
+            ? state
+            : {
+                ...state,
+                routes: state.routes.map((r) => (r.key === route.key ? selectedRoute : r)),
+              };
         return {
-          state: rnTabRouter.getStateForRouteFocus(state, route.key),
+          state: rnTabRouter.getStateForRouteFocus(nextState, route.key),
           affectedRouteKey: route.key,
         };
       } else {

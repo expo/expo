@@ -137,18 +137,23 @@ describe('routingQueue', () => {
       payload: { name: 'home', params: {}, singular: false },
       target: '123',
     };
-    mockGetNavigateAction.mockReturnValueOnce(navigateAction);
+    mockGetNavigateAction.mockReturnValueOnce({
+      status: 'action',
+      action: navigateAction,
+    });
+    const registry = new Map();
 
     routingQueue.add({
       type: 'NAVIGATE_TO_HREF',
       payload: { href: '/home', options: { event: 'NAVIGATE' } },
     });
 
-    routingQueue.run(ref, routeInfo, navigationActionContext(ref.current!));
+    routingQueue.run(ref, routeInfo, navigationActionContext(ref.current!), registry);
 
     expect(mockGetNavigateAction).toHaveBeenCalledWith(
       '/home',
       { event: 'NAVIGATE' },
+      registry,
       'NAVIGATE',
       undefined,
       undefined,
@@ -166,33 +171,38 @@ describe('routingQueue', () => {
       payload: { name: 'a', params: {}, singular: false },
       target: 'root',
     };
-    mockGetNavigateAction.mockReturnValueOnce(navigateAction);
+    mockGetNavigateAction.mockReturnValueOnce({ status: 'action', action: navigateAction });
 
     routingQueue.add({ type: 'NAVIGATE_TO_HREF', payload: { href: '/a', options: {} } });
     routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
 
-    routingQueue.run(ref);
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
 
     const dispatch = ref.current!.dispatch as jest.Mock;
     expect(dispatch.mock.calls).toEqual([[navigateAction], [{ type: 'GO_BACK' }]]);
   });
 
-  it('run() does not dispatch when getNavigateAction returns undefined', () => {
+  it('run() warns when a path is invalid', () => {
     const ref = makeRef();
-    mockGetNavigateAction.mockReturnValueOnce(undefined);
-
+    mockGetNavigateAction.mockReturnValueOnce({
+      status: 'invalid',
+      href: '/invalid',
+    });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     routingQueue.add({
       type: 'NAVIGATE_TO_HREF',
-      payload: { href: '/redirect', options: { event: 'NAVIGATE' } },
+      payload: { href: '/invalid', options: { event: 'NAVIGATE' } },
     });
 
     routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
 
-    expect(ref.current!.dispatch).not.toHaveBeenCalled();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('/invalid'));
+    warn.mockRestore();
   });
 
-  it('run() does nothing when ref.current is null', () => {
+  it('run() warns when ref.current is null', () => {
     const ref = { current: null };
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
     routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
 
@@ -200,6 +210,75 @@ describe('routingQueue', () => {
 
     // Queue should still be drained (reset identity happens before dispatch loop)
     expect(routingQueue.queue).toHaveLength(0);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('not mounted'));
+    warn.mockRestore();
+  });
+
+  it('run() warns when two actions target the same navigator with sub-trees', () => {
+    const ref = makeRef();
+    const action = {
+      type: 'NAVIGATE',
+      target: 'root',
+      payload: { name: 'home', state: { routes: [{ name: 'child' }] } },
+    };
+    mockGetNavigateAction
+      .mockReturnValueOnce({ status: 'action', action })
+      .mockReturnValueOnce({ status: 'action', action });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    routingQueue.add({
+      type: 'NAVIGATE_TO_HREF',
+      payload: { href: '/one', options: {} },
+    });
+    routingQueue.add({
+      type: 'NAVIGATE_TO_HREF',
+      payload: { href: '/two', options: {} },
+    });
+
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
+
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('same navigator'));
+    warn.mockRestore();
+  });
+
+  it('run() continues after an item throws during conversion', () => {
+    const ref = makeRef();
+    const nextAction = { type: 'NAVIGATE', payload: { name: 'next' } };
+    mockGetNavigateAction
+      .mockImplementationOnce(() => {
+        throw new Error('malformed');
+      })
+      .mockReturnValueOnce({ status: 'action', action: nextAction });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    routingQueue.add({
+      type: 'NAVIGATE_TO_HREF',
+      payload: { href: '/bad', options: {} },
+    });
+    routingQueue.add({
+      type: 'NAVIGATE_TO_HREF',
+      payload: { href: '/next', options: {} },
+    });
+
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
+
+    expect(ref.current!.dispatch).toHaveBeenCalledWith(nextAction);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('malformed'));
+    warn.mockRestore();
+  });
+
+  it('run() continues after an item throws during dispatch', () => {
+    const dispatch = jest.fn().mockImplementationOnce(() => {
+      throw new Error('dispatch failed');
+    });
+    const ref = makeRef({ dispatch });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
+
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
+
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('dispatch failed'));
+    warn.mockRestore();
   });
 
   it('run() resets queue identity so new actions during run go to a fresh array', () => {

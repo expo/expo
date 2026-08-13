@@ -54,6 +54,7 @@ export const store = {
   get navigationRef() {
     return storeRef.current.navigationRef;
   },
+  // TODO: Rename this to `rootRouteNode`; it represents the root node of the app's route tree.
   get routeNode() {
     return storeRef.current.routeNode;
   },

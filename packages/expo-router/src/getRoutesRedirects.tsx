@@ -30,6 +30,7 @@ export function applyRedirects(
       href = `https:${href}`;
     }
 
+    // TODO: Revisit whether redirect resolution should open external URLs or only return them.
     Linking.openURL(href);
     return href;
   }

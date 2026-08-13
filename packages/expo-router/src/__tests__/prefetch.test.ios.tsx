@@ -62,7 +62,6 @@ it('prefetch a sibling route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -71,7 +70,6 @@ it('prefetch a sibling route', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -126,7 +124,6 @@ it('will prefetch the correct route within a group', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -135,7 +132,6 @@ it('will prefetch the correct route within a group', () => {
             {
               key: expect.any(String),
               name: '(a)/index',
-              params: undefined,
               path: '/',
             },
             {
@@ -190,7 +186,6 @@ it('will prefetch the correct route within nested groups', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -199,7 +194,6 @@ it('will prefetch the correct route within nested groups', () => {
             {
               key: expect.any(String),
               name: '(a)/index',
-              params: undefined,
               path: '/',
             },
             {
@@ -252,7 +246,6 @@ it('works with relative Href', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -261,7 +254,6 @@ it('works with relative Href', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -314,7 +306,6 @@ it('works with params', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -323,7 +314,6 @@ it('works with params', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -392,7 +382,6 @@ it('ignores the current route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -401,7 +390,6 @@ it('ignores the current route', () => {
             {
               key: expect.any(String),
               name: 'directory',
-              params: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -410,7 +398,6 @@ it('ignores the current route', () => {
                   {
                     key: expect.any(String),
                     name: 'index',
-                    params: undefined,
                     path: '/directory',
                   },
                   {
@@ -499,7 +486,6 @@ it('can prefetch a deeply nested route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -508,7 +494,6 @@ it('can prefetch a deeply nested route', () => {
             {
               key: expect.any(String),
               name: 'directory',
-              params: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -517,20 +502,14 @@ it('can prefetch a deeply nested route', () => {
                   {
                     key: expect.any(String),
                     name: 'index',
-                    params: undefined,
                     path: '/directory',
                   },
                   {
                     key: expect.any(String),
                     name: 'apple',
-                    params: {
-                      params: {
-                        params: {},
-                        screen: 'index',
-                      },
-                      screen: 'banana',
-                    },
+                    params: {},
                     state: {
+                      __internal__routerActionState: true,
                       index: 0,
                       key: expect.any(String),
                       routeNames: ['banana'],
@@ -538,9 +517,9 @@ it('can prefetch a deeply nested route', () => {
                         {
                           key: expect.any(String),
                           name: 'banana',
-                          params: { params: {}, screen: 'index' },
-                          path: undefined,
+                          params: {},
                           state: {
+                            __internal__routerActionState: true,
                             index: 0,
                             key: expect.any(String),
                             routeNames: ['index'],
@@ -549,7 +528,7 @@ it('can prefetch a deeply nested route', () => {
                                 key: expect.any(String),
                                 name: 'index',
                                 params: {},
-                                path: undefined,
+                                path: '/directory/apple/banana',
                               },
                             ],
                             stale: false,
@@ -648,7 +627,6 @@ it('can prefetch a parent route', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
@@ -657,7 +635,6 @@ it('can prefetch a parent route', () => {
             {
               key: expect.any(String),
               name: 'directory',
-              params: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -666,7 +643,6 @@ it('can prefetch a parent route', () => {
                   {
                     key: expect.any(String),
                     name: 'apple',
-                    params: undefined,
                     state: {
                       index: 0,
                       key: expect.any(String),
@@ -675,7 +651,6 @@ it('can prefetch a parent route', () => {
                         {
                           key: expect.any(String),
                           name: 'banana',
-                          params: undefined,
                           state: {
                             index: 0,
                             key: expect.any(String),
@@ -684,7 +659,6 @@ it('can prefetch a parent route', () => {
                               {
                                 key: expect.any(String),
                                 name: 'index',
-                                params: undefined,
                                 path: '/directory/apple/banana',
                               },
                             ],

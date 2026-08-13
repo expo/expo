@@ -49,8 +49,9 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
 export function findDivergentState(
   _actionState: ResultState,
   _navigationState: NavigationState,
-  // If true, look through all tabs to find the target state, rather then just the current tab
-  lookThroughAllTabs: boolean = false
+  // TODO: Convert these positional options to an object if more are added.
+  lookThroughAllTabs = false,
+  isMounted: (key: string) => boolean = () => true
 ) {
   let actionState: PartialState<NavigationState> | undefined = _actionState;
   let navigationState: NavigationState | undefined = _navigationState;
@@ -61,7 +62,7 @@ export function findDivergentState(
     actionStateRoute = actionState.routes[actionState.index ?? actionState.routes.length - 1]!;
     // TODO(ENG-22021): Resolve navigator types independently of state for the tab checks in this loop.
     // https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
-    const stateRoute = (() => {
+    const stateRoute: NavigationState['routes'][number] = (() => {
       if (navigationState.type === 'tab' && lookThroughAllTabs) {
         return (
           navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
@@ -80,6 +81,8 @@ export function findDivergentState(
       actionStateRoute.name !== stateRoute.name ||
       !childState ||
       !nextNavigationState ||
+      !isKeyedNavigationState(nextNavigationState) ||
+      !isMounted(nextNavigationState.key) ||
       (dynamicName &&
         actionStateRoute.params?.[dynamicName.name] !==
           (stateRoute.params as Record<string, any> | undefined)?.[dynamicName.name]);
@@ -96,7 +99,7 @@ export function findDivergentState(
     navigationRoutes.push(stateRoute);
 
     actionState = childState;
-    navigationState = nextNavigationState as NavigationState;
+    navigationState = nextNavigationState;
   }
 
   return {
@@ -105,4 +108,10 @@ export function findDivergentState(
     actionStateRoute,
     navigationRoutes,
   };
+}
+
+function isKeyedNavigationState(
+  state: NavigationState | PartialState<NavigationState> | undefined
+): state is NavigationState {
+  return typeof state?.key === 'string';
 }

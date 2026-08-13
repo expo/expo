@@ -20,6 +20,7 @@ import {
   StackRouter as RNStackRouter,
 } from '../react-navigation/native';
 import type { NativeStackNavigatorProps } from '../react-navigation/native-stack';
+import { attachRouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../useScreens';
@@ -173,6 +174,10 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
             // END FORK
           }
 
+          if (route) {
+            route = attachRouteState(route, action);
+          }
+
           let params;
 
           if (action.type === 'NAVIGATE' && action.payload.merge && route) {
@@ -268,12 +273,15 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           } else {
             routes = [
               ...activeRoutes,
-              {
-                key: `${action.payload.name}-${nanoid()}`,
-                name: action.payload.name,
-                path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
-                params,
-              },
+              attachRouteState(
+                {
+                  key: `${action.payload.name}-${nanoid()}`,
+                  name: action.payload.name,
+                  path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
+                  params,
+                },
+                action
+              ),
             ];
           }
 
@@ -356,15 +364,18 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
                   if (r.key !== route?.key) {
                     return r;
                   }
-                  return {
-                    ...r,
-                    params: preloadZoomTransitionId
-                      ? {
-                          ...action.payload.params,
-                          [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: r.key,
-                        }
-                      : action.payload.params,
-                  };
+                  return attachRouteState(
+                    {
+                      ...r,
+                      params: preloadZoomTransitionId
+                        ? {
+                            ...action.payload.params,
+                            [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: r.key,
+                          }
+                        : action.payload.params,
+                    },
+                    action
+                  );
                 }),
               },
               affectedRouteKey: route.key,
@@ -372,16 +383,20 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           } else {
             // START FORK
             const preloadedRouteKey = `${action.payload.name}-${nanoid()}`;
-            const currentPreloadedRoute: (typeof state)['routes'][number] = {
-              key: preloadedRouteKey,
-              name: action.payload.name,
-              params: preloadZoomTransitionId
-                ? {
-                    ...action.payload.params,
-                    [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: preloadedRouteKey,
-                  }
-                : action.payload.params,
-            };
+            const currentPreloadedRoute: (typeof state)['routes'][number] = attachRouteState(
+              {
+                key: preloadedRouteKey,
+                name: action.payload.name,
+                params: preloadZoomTransitionId
+                  ? {
+                      ...action.payload.params,
+                      [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]:
+                        preloadedRouteKey,
+                    }
+                  : action.payload.params,
+              },
+              action
+            );
             // END FORK
             return {
               state: {
