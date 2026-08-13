@@ -206,6 +206,58 @@ Then rebuild the native project:
 
 Your app is now set up to use App Intents. Depending on the selected examples, you can add handlers or populate the App Intents from JavaScript:
 
+<Collapsible summary="Connect an on-screen view to an entity">
+
+On iOS 18.4 and later, `appEntityIdentifier()` tells Siri which entity an [`@expo/ui`](/versions/latest/sdk/ui/) SwiftUI view represents. Use the same entity kind and identifier in the native registration, JavaScript catalog, and view modifier.
+
+The `--visual-intelligence` mail example registers `mailDraft` in **AppIntentsSetup.swift**:
+
+```swift
+OnCreate {
+  if #available(iOS 18.0, *) {
+    AppEntityIdentifierRegistry.shared.registerIndexed(
+      "mailDraft",
+      as: MailDraftEntity.self
+    )
+  }
+}
+```
+
+`registerIndexed()` makes identifiers available to on-screen intelligence and keeps Spotlight synchronized with the entity catalog. A custom indexed entity must conform to `IndexedEntity` and `AppIntentEntityRecordConvertible`. To support on-screen intelligence without Spotlight indexing, register the entity with `AppEntityIdentifierRegistry.shared.register()` instead.
+
+Publish the entity from JavaScript using the same `mailDraft` kind:
+
+```ts
+await AppIntents.setEntityCatalogAsync('mailDraft', [
+  {
+    id: 'release-notes',
+    title: 'Release notes for review',
+    subtitle: 'The release notes are ready for a final pass.',
+  },
+]);
+```
+
+Then attach the matching kind and identifier to an `@expo/ui` view:
+
+```tsx
+import { Column, Host, Text } from '@expo/ui';
+import * as AppIntents from 'expo-app-intents';
+
+export function MailDraftCard({ draft }: { draft: { id: string; subject: string } }) {
+  return (
+    <Host matchContents={{ vertical: true }}>
+      <Column modifiers={[AppIntents.appEntityIdentifier('mailDraft', draft.id)]}>
+        <Text>{draft.subject}</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+The view still renders normally on earlier iOS versions or when the kind is not registered. In these cases, the system cannot associate the view with the entity.
+
+</Collapsible>
+
 <Collapsible summary="Handle the counter example">
 
 The counter example dispatches an `increaseCounter` invocation. Mount the hook once near the root of your app. It can then process pending invocations captured while JavaScript was not running and live invocations received while the app is running.
