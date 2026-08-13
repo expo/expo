@@ -696,7 +696,7 @@ jobs:
               exit 1
             fi
             fork_default=$(gh api "repos/$fork" --jq .default_branch)
-            # The dedicated sync-expo-bot-fork workflow (EXPO_BOT_FORK_SYNC_TOKEN)
+            # The dedicated sync-expo-bot-fork workflow (DO_NOT_USE_EXPO_BOT_FORK_SYNC_TOKEN)
             # is what is allowed to move workflow files. This token is not.
             # Retry a few times: a verify that starts on the same push as a
             # workflow change can land before that job finishes. Keep the API

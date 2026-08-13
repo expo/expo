@@ -8,7 +8,7 @@
 # only in this job: one API call, no checkout of untrusted code, no agent.
 #
 # Add the secret BEFORE merging this workflow:
-#   EXPO_BOT_FORK_SYNC_TOKEN
+#   DO_NOT_USE_EXPO_BOT_FORK_SYNC_TOKEN
 # Fine-grained, resource expo-bot/expo only: Contents write + Workflows write.
 # Classic fallback: public_repo + workflow, owned by expo-bot.
 # Do not reuse EXPO_BOT_GITHUB_TOKEN.
@@ -34,10 +34,10 @@ jobs:
     steps:
       - name: Fast-forward expo-bot/expo
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_FORK_SYNC_TOKEN }}
+          GH_TOKEN: ${{ secrets.DO_NOT_USE_EXPO_BOT_FORK_SYNC_TOKEN }}
         run: |
           if [ -z "$GH_TOKEN" ]; then
-            echo "::error::EXPO_BOT_FORK_SYNC_TOKEN is not set. Add it (Contents + Workflows write on expo-bot/expo) before this job can run."
+            echo "::error::DO_NOT_USE_EXPO_BOT_FORK_SYNC_TOKEN is not set. Add it (Contents + Workflows write on expo-bot/expo) before this job can run."
             exit 1
           fi
           fork="expo-bot/${GITHUB_REPOSITORY#*/}"
