@@ -1,3 +1,4 @@
+import { IS_DOM } from 'expo/dom';
 import type { MouseEvent } from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { Platform } from 'react-native';
@@ -39,6 +40,8 @@ type UseLinkToPathPropsOptions = LinkToOptions & {
 
 export default function useLinkToPathProps({ href, ...options }: UseLinkToPathPropsOptions) {
   const onPress = (event?: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
+    // TODO: Align external links: anchors stay in the same tab, while a non-anchor `asChild`
+    // falls back to `linkTo` and `Linking.openURL`, which opens a new tab.
     if (shouldHandleMouseEvent(event)) {
       if (emitDomLinkEvent(href, options)) {
         return;
