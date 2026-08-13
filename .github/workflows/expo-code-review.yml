@@ -49,15 +49,15 @@ jobs:
     # A reviewer failure must never fail the PR's checks.
     continue-on-error: true
     steps:
-      # SECURITY: check out the PR's immutable BASE commit, never the PR head or
+      # SECURITY: check out the PR's trusted base branch tip, never the PR head or
       # merge ref. Everything security-sensitive on this runner (`ecr verify-config`'s
-      # sweep, and any ambient files) therefore comes from a commit that already
-      # merged. `ecr ci` additionally enforces this itself: it materializes the base
-      # commit via the GitHub API for configuration and the head commit (scrubbed of
-      # runtime config) for source reads, so this checkout is defense in depth, not
-      # the only line. persist-credentials off — the CLI's own git fetches
-      # authenticate through `gh` from GH_TOKEN, so the token never lands in
-      # .git/config.
+      # sweep, and any ambient files) therefore comes from a branch only maintainers
+      # can land on. `ecr ci` additionally enforces this itself: it materializes the
+      # PR's immutable base commit via the GitHub API for configuration and the head
+      # commit (scrubbed of runtime config) for source reads, so this checkout is
+      # defense in depth, not the only line. persist-credentials off — the CLI's own
+      # git fetches authenticate through `gh` from GH_TOKEN, so the token never lands
+      # in .git/config.
       # @ref LLP 0009#workflow-security-posture [implements] — trusted base branch, never PR head/merge ref
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

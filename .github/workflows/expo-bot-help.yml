@@ -20,13 +20,17 @@ permissions:
 
 jobs:
   help:
+    # `startsWith('@expo-bot help')` (no trailing space) so a newline or tab
+    # after `help` still matches — expression literals cannot name those
+    # characters. The two-space form is a separate prefix because
+    # `startsWith('@expo-bot help')` is false for `@expo-bot  help`.
     if: >-
       github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event.comment.user.login != 'expo-bot' &&
       (github.event.comment.body == '@expo-bot' ||
-      github.event.comment.body == '@expo-bot help' ||
-      startsWith(github.event.comment.body, '@expo-bot help ')) &&
+      startsWith(github.event.comment.body, '@expo-bot help') ||
+      startsWith(github.event.comment.body, '@expo-bot  help')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     timeout-minutes: 5

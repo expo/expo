@@ -145,8 +145,8 @@ jobs:
       !startsWith(github.event.comment.body, '@expo-bot dismiss ') &&
       github.event.comment.body != '@expo-bot undismiss' &&
       !startsWith(github.event.comment.body, '@expo-bot undismiss ') &&
-      github.event.comment.body != '@expo-bot help' &&
-      !startsWith(github.event.comment.body, '@expo-bot help '))) &&
+      !startsWith(github.event.comment.body, '@expo-bot help') &&
+      !startsWith(github.event.comment.body, '@expo-bot  help'))) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     outputs:
@@ -207,6 +207,8 @@ jobs:
     # `@expo-bot verify` is /verify, so it must run on issues as well as PRs.
     # Other `@expo-bot …` forms stay PR-only (work mode), except reserved
     # verbs (review, dismiss, undismiss, help) which other workflows own.
+    # Help is excluded as a prefix (`@expo-bot help…`, plus the two-space
+    # typo) so a newline after `help` cannot start this job.
     # Excluding expo-bot itself prevents a result comment from forming a loop.
     # The authoritative write-access check is the step below.
     # (Runs are backed by the expo-verification-bot service account.)
@@ -225,8 +227,8 @@ jobs:
       !startsWith(github.event.comment.body, '@expo-bot dismiss ') &&
       github.event.comment.body != '@expo-bot undismiss' &&
       !startsWith(github.event.comment.body, '@expo-bot undismiss ') &&
-      github.event.comment.body != '@expo-bot help' &&
-      !startsWith(github.event.comment.body, '@expo-bot help '))) &&
+      !startsWith(github.event.comment.body, '@expo-bot help') &&
+      !startsWith(github.event.comment.body, '@expo-bot  help'))) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     # ONE budget, in one place, and the ordering is the point:
@@ -326,16 +328,16 @@ jobs:
                     echo "This mention is handled by another workflow."
                     exit 0
                     ;;
-                  # A word that merely BEGINS with a reserved verb is prose,
-                  # not a command: "reviewers", "dismissing", "verified",
-                  # "verify-fix", "helpful". Treating it as a work task made
-                  # every such aside either fail loudly in public or, worse,
-                  # fall through to a full verify investigation. Decline
-                  # quietly instead — the maintainer did not ask for anything.
-                  # `verif*`, not `verify*`: "verified" is verif+ied and does
-                  # not start with "verify" at all.
-                  verif*|review*|dismiss*|undismiss*|help*)
-                    echo "'$second' begins with a reserved verb but is not one; treating the comment as prose."
+                  # Named inflections of reserved verbs, not an open prefix.
+                  # `review-feedback` and `help-text` are real work tasks;
+                  # `verif*|review*` also swallowed them. `verified` is
+                  # verif+ied (it does not start with `verify`). `verify-*`
+                  # is a mangled verify (`verify-fix`), not work. `help*`
+                  # covers `@expo-bot  helpful` (double space), which the
+                  # job `if:` cannot exclude — `startsWith('@expo-bot help')`
+                  # is false there, and help.yml may not have started.
+                  reviewers|reviewing|reviewed|dismissing|dismissed|dismissal|dismissals|verified|verifying|helpful|helping|helper|helpers|undismissed|undismissing|verify-*|help*)
+                    echo "'$second' is a reserved-verb inflection, not a command; treating the comment as prose."
                     exit 0
                     ;;
                   *) mode=work ;;
