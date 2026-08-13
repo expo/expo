@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- [Android] Add `setFakeAgeSignalsAsync` and `isFakeAgeSignalsEnabledAsync` to report Play's `FakeAgeSignalsManager` signals from JS, in builds that opt in with the new config plugin's `enableFakeAgeSignals` property. ([#00000](https://github.com/expo/expo/pull/00000) by [@kmadden84](https://github.com/kmadden84))
+- [Android] Add `setFakeAgeSignalsAsync` and `isFakeAgeSignalsEnabledAsync` to report Play's `FakeAgeSignalsManager` signals from JS, in builds that opt in with the new config plugin's `enableFakeAgeSignals` property. ([#48909](https://github.com/expo/expo/pull/48909) by [@kmadden84](https://github.com/kmadden84))
 
 ### 🐛 Bug fixes
 
