@@ -172,6 +172,34 @@ for (const outputMode of outputModes) {
       await expect(suspenseFallback).not.toBeVisible();
     });
 
+    test('abandons a suspended load on Back and starts fresh on revisit', async ({ page }) => {
+      const pageErrors = pageCollectErrors(page);
+      const slowRequests: string[] = [];
+      page.on('request', (request) => {
+        if (request.url().includes('/_expo/loaders/slow')) {
+          slowRequests.push(request.url());
+        }
+      });
+
+      await page.goto(expoStart.url.href);
+      await page.click('a[href="/slow"]');
+      await expect(page.locator('[data-testid="suspense-fallback"]')).toBeVisible();
+      await expect.poll(() => slowRequests).toHaveLength(1);
+
+      await page.goBack();
+      await expect(page).toHaveURL(expoStart.url.href);
+
+      await page.click('a[href="/slow"]');
+      await expect(page.locator('[data-testid="suspense-fallback"]')).toBeVisible();
+      await expect.poll(() => slowRequests).toHaveLength(2);
+
+      const loaderResult = page.locator('[data-testid="loader-result"]');
+      await expect(loaderResult).toBeVisible({ timeout: 10_000 });
+      expect(JSON.parse((await loaderResult.textContent())!)).toMatchObject({ data: 'slow' });
+      expect(slowRequests).toHaveLength(2);
+      expect(pageErrors.all).toEqual([]);
+    });
+
     test('navigates from route without loader to route with loader', async ({ page }) => {
       const pageErrors = pageCollectErrors(page);
 
