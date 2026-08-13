@@ -326,6 +326,55 @@ class NetworkRequestPersistenceTest {
   }
 
   @Test
+  fun `drops every request while recording is disabled`() = runTest(testDispatcher) {
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      database = database,
+      scope = this,
+      initialConfiguration = NetworkSpansConfiguration(enabled = false),
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    assertTrue(database.spanDao().getAll().isEmpty())
+  }
+
+  @Test
+  fun `records only requests matching the configured filter`() = runTest(testDispatcher) {
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      database = database,
+      scope = this,
+      initialConfiguration = NetworkSpansConfiguration(enabled = true, hosts = listOf("API.myapp.com")),
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest(url = "https://api.example.com/skip"))
+    persistence.persist(makeRequest(url = "https://api.myapp.com/keep"))
+    testScheduler.advanceUntilIdle()
+    val rows = database.spanDao().getAll()
+    assertEquals(1, rows.size)
+    val recordedUrl = JSONObject(checkNotNull(rows.single().attributes)).getString("url.full")
+    assertEquals("https://api.myapp.com/keep", recordedUrl)
+  }
+
+  @Test
+  fun `applies a configuration change to subsequent requests only`() = runTest(testDispatcher) {
+    // "Applies forward": rows persisted before the change stay in the table and still dispatch.
+    insertSession("s")
+    val persistence = NetworkRequestPersistence(
+      database = database,
+      scope = this,
+      sessionId = "s"
+    )
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    persistence.setConfiguration(NetworkSpansConfiguration(enabled = false))
+    persistence.persist(makeRequest())
+    testScheduler.advanceUntilIdle()
+    assertEquals(1, database.spanDao().getAll().size)
+  }
+
+  @Test
   fun `persists a completed request as a span attributed to the provided session`() = runTest(testDispatcher) {
     insertSession("main-session")
     val persistence = NetworkRequestPersistence(

@@ -25,6 +25,20 @@ class AppMetricsPreferencesTest {
   }
 
   @Test
+  fun `network spans configuration round-trips and defaults to enabled`() {
+    assertEquals(
+      expo.modules.appmetrics.networkrequests.NetworkSpansConfiguration(),
+      AppMetricsPreferences.getNetworkSpansConfiguration(context)
+    )
+    val configured = expo.modules.appmetrics.networkrequests.NetworkSpansConfiguration(
+      enabled = true,
+      hosts = listOf("api.example.com")
+    )
+    AppMetricsPreferences.setNetworkSpansConfiguration(context, configured)
+    assertEquals(configured, AppMetricsPreferences.getNetworkSpansConfiguration(context))
+  }
+
+  @Test
   fun `getEnvironment returns default environment when nothing saved`() {
     val expected = if (BuildConfig.DEBUG) "development" else null
     assertEquals(expected, AppMetricsPreferences.getEnvironment(context))

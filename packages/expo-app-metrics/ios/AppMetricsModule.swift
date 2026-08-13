@@ -64,6 +64,25 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       GlobalAttributes.set(attributes)
     }
 
+    Function("setNetworkSpansConfig") { (config: NetworkSpansConfigParam) in
+      let configuration = NetworkSpansConfiguration(
+        enabled: config.enabled,
+        hosts: config.filter?.hosts,
+        methods: config.filter?.methods
+      )
+      // Persist first so the setting survives the process; the live producer picks it up for
+      // every request recorded after this hop to the actor. Applies forward only — rows
+      // persisted earlier in the launch still dispatch.
+      AppMetricsUserDefaults.networkSpansConfiguration = configuration
+      Task { @AppMetricsActor in
+        // Re-read instead of capturing `configuration`: two rapid `configure()` calls create
+        // two unordered actor hops, while the persisted value is written in call order —
+        // reading it here makes the last write win regardless of task interleaving.
+        let latest = AppMetricsUserDefaults.networkSpansConfiguration ?? NetworkSpansConfiguration()
+        NetworkRequestMonitor.shared.persistence?.setConfiguration(latest)
+      }
+    }
+
     AsyncFunction("getAppStartupTimesAsync") {
       return await AppMetrics.mainSession.appStartupMonitor.metrics
     }
@@ -185,6 +204,16 @@ private func storedSession(id: String) throws -> StoredSession? {
     return nil
   }
   return StoredSession(from: row)
+}
+
+/// Payload of `setNetworkSpansConfig`: the normalized `traces.network` setting pushed down by
+/// `Observe.configure`.
+internal struct NetworkSpansConfigParam: Record {
+  @Field
+  var enabled: Bool = true
+
+  @Field
+  var filter: NetworkRequestFilter?
 }
 
 struct MetricAttributes: Record {
