@@ -2264,6 +2264,9 @@ importers:
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
+      expo:
+        specifier: '*'
+        version: link:../../expo
       react:
         specifier: '*'
         version: 19.2.3
