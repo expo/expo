@@ -8,6 +8,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
   private enum Keys: String {
     case lastAppLaunchState
     case environment
+    case networkSpansConfiguration
   }
 
   private init() {
@@ -39,6 +40,18 @@ public final class AppMetricsUserDefaults: UserDefaults {
     }
     set {
       defaults.set(codable: newValue, forKey: Keys.lastAppLaunchState.rawValue)
+    }
+  }
+
+  /// Last-applied network spans recording policy, or `nil` when JS never configured one (the
+  /// default policy applies). Persisted so requests observed before the JS bundle configures
+  /// the SDK — early startup, or the next launch — follow the last-known setting.
+  static var networkSpansConfiguration: NetworkSpansConfiguration? {
+    get {
+      return defaults.codable(forKey: Keys.networkSpansConfiguration.rawValue, as: NetworkSpansConfiguration.self)
+    }
+    set {
+      defaults.set(codable: newValue, forKey: Keys.networkSpansConfiguration.rawValue)
     }
   }
 }

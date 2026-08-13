@@ -1,5 +1,10 @@
 import type { NativeModule } from 'expo';
-import type { LogAttributeValue, LogEventOptions, MetricAttributes } from 'expo-app-metrics';
+import type {
+  LogAttributeValue,
+  LogEventOptions,
+  MetricAttributes,
+  NetworkRequestFilter,
+} from 'expo-app-metrics';
 
 /**
  * Value types accepted as attribute values in `setGlobalAttributes` and the
@@ -81,6 +86,38 @@ export type ObserveConfig = {
    * [integrate your own package](/eas/observe/integrations/third-party/).
    */
   integrations?: ObserveIntegrationsConfig;
+  /**
+   * Controls which trace spans are recorded on the device.
+   */
+  traces?: ObserveTracesConfig;
+};
+
+export type ObserveTracesNetworkConfig = {
+  /**
+   * Only network requests matching the filter are recorded as spans. Requests that don't match
+   * are never written to the local database. An omitted field matches every request; an empty
+   * array matches none.
+   */
+  filter?: NetworkRequestFilter | null;
+};
+
+export type ObserveTracesConfig = {
+  /**
+   * Whether observed network requests are recorded as trace spans and exported to EAS Observe.
+   *
+   * The setting controls recording, not just export: when disabled (or when a request doesn't
+   * match the configured filter), the request is never written to the local database. Spans
+   * recorded before `configure` ran - including requests from early startup - are unaffected
+   * and still dispatch.
+   *
+   * The value persists across launches, so requests observed before `configure` runs on the
+   * next launch follow the last-applied setting.
+   *
+   * Pass an object to record only requests matching a filter.
+   *
+   * @default true
+   */
+  network?: boolean | ObserveTracesNetworkConfig;
 };
 
 export type ObserveNavigationIntegrationConfig = {
