@@ -364,8 +364,8 @@ internal struct MediaHandler {
             assetId: asset.localIdentifier
           )
         } catch {
-          // Fall through to the slower path below. Remove the partial export first,
-          // otherwise a later read finds a truncated file.
+          // Fall through to the slower path below, which writes to a freshly generated URL.
+          // Remove the partial export so truncated files don't pile up in the caches directory.
           try? FileManager.default.removeItem(at: destinationUrl)
         }
       }
@@ -448,8 +448,8 @@ internal struct MediaHandler {
               assetId: assetId
             )
           } catch {
-            // Fall through to the slower path below. Remove the partial export first,
-            // otherwise a later read finds a truncated file.
+            // Fall through to the slower path below, which writes to a freshly generated URL.
+            // Remove the partial export so truncated files don't pile up in the caches directory.
             try? FileManager.default.removeItem(at: destinationUrl)
           }
         }

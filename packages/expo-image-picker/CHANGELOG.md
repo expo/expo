@@ -16,7 +16,7 @@
 - [iOS] Fix `base64` returning original (non-JPEG) image data when `allowsEditing` is `false`. ([#48005](https://github.com/expo/expo/pull/48005) by [@barthap](https://github.com/barthap))
 - [iOS] Fixed crop square detection using the main screen's scale instead of the scale of the view being measured. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix a failed crop resolving with the uncropped original image instead of rejecting when `allowsEditing` is `true`. ([#48524](https://github.com/expo/expo/issues/48524) by [@aashishshrestha5532](https://github.com/aashishshrestha5532), [#48541](https://github.com/expo/expo/pull/48541) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Fix the video `PHAssetResourceManager` fast path rejecting instead of falling back to the slower path that can fetch iCloud assets, and pass `shouldDownloadFromNetwork` through when reading Live Photo resources. ([#48658](https://github.com/expo/expo/issues/48658))
+- [iOS] Fix the video `PHAssetResourceManager` fast path rejecting instead of falling back to the slower path that can fetch iCloud assets, and pass `shouldDownloadFromNetwork` through when reading Live Photo resources. As a result, a video whose data is not stored locally is now downloaded through the fallback path even when `shouldDownloadFromNetwork` is `false` and `videoExportPreset` is `Passthrough`. ([#48658](https://github.com/expo/expo/issues/48658) by [@gcampoyf-cloud](https://github.com/gcampoyf-cloud), [#48794](https://github.com/expo/expo/pull/48794) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 
