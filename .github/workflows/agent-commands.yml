@@ -695,21 +695,30 @@ jobs:
               echo "::error::Could not resolve or create the bot fork $fork; fix mode refuses to use a secret-bearing same-repository branch."
               exit 1
             fi
-            fork_default=$(gh api "repos/$fork" --jq .default_branch)
-            if ! gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
-              echo "::error::Could not synchronize $fork with upstream; refusing a push that may include stale workflow commits."
-              exit 1
-            fi
+            # Do NOT merge-upstream. That fast-forwards the fork's default
+            # branch through every missing workflow file and needs the
+            # `workflow` scope this token deliberately lacks (run 31664540660).
+            # Point a throwaway ref at THIS checkout SHA instead — GitHub
+            # already has the object via the parent network — then dry-run a
+            # push that introduces no new commit.
+            base_sha=$(git rev-parse HEAD)
+            probe="agent-preflight-$GITHUB_RUN_ID"
+            bash .github/scripts/ensure-fork-branch.sh "$fork" "$probe" "$base_sha"
             gh auth setup-git
             # No pipe here: `git ... | tail` would report tail's exit status and
             # the check would pass no matter what git did.
-            if ! git push --dry-run "https://github.com/$fork.git" "HEAD:refs/heads/agent-preflight-$GITHUB_RUN_ID"; then
+            if ! git push --dry-run "https://github.com/$fork.git" "HEAD:refs/heads/$probe"; then
               echo "::error::EXPO_BOT_GITHUB_TOKEN cannot push to the bot fork $fork, so fix mode could not open a pull request."
+              gh api -X DELETE "repos/$fork/git/refs/heads/$probe" >/dev/null 2>&1 || true
               exit 1
             fi
-            echo "BOT_FORK_OWNER=$fork_owner" >> "$GITHUB_ENV"
-            echo "BOT_FORK=$fork" >> "$GITHUB_ENV"
-            echo "preflight: push credentials work for $fork; fix mode can open a fork pull request"
+            gh api -X DELETE "repos/$fork/git/refs/heads/$probe" >/dev/null 2>&1 || true
+            {
+              echo "BOT_FORK_OWNER=$fork_owner"
+              echo "BOT_FORK=$fork"
+              echo "FORK_BASE_SHA=$base_sha"
+            } >> "$GITHUB_ENV"
+            echo "preflight: fork accepts a branch at $base_sha; fix mode can open a fork pull request"
           fi
 
       - name: Run agent command
@@ -1405,32 +1414,23 @@ jobs:
           # agent-authored change with repository secrets available.
           fork_owner=${BOT_FORK_OWNER:-}
           fork=${BOT_FORK:-}
-          # SYNC THE FORK FIRST. A branch pushed to a stale fork introduces
-          # every upstream commit between the fork's tip and this checkout —
-          # including any that touch .github/workflows/** — and a classic PAT
-          # carrying public_repo (which deliberately excludes `workflow`) is
-          # refused outright. Observed on run 31540508035:
-          #
-          #   ! [remote rejected] HEAD -> verify/48804-31540508035 (refusing to
-          #     allow a Personal Access Token to create or update workflow
-          #     `.github/workflows/verify-command.yml` without `workflow` scope)
-          #
-          # The path denylist above already refuses an agent patch that touches
-          # .github/**, so once the fork is level with upstream the push carries
-          # only the agent's own commit and there is no workflow file in it.
-          # Note this gets WORSE the staler the fork is, so it is not optional.
-          if [ -n "$fork" ]; then
-            fork_default=$(gh api "repos/$fork" --jq .default_branch 2>/dev/null || echo main)
-            if ! gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
-              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not synchronize the bot fork. It refused to push a branch that might include stale workflow commits, and refused the secret-bearing same-repository fallback. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
-              echo "::error::could not sync $fork with upstream; refusing to push."
-              exit 1
-            fi
-            echo "synced $fork ($fork_default) with upstream before pushing"
-          fi
+          # Do not merge-upstream (needs `workflow` to move .github/workflows
+          # on a stale fork). Create the publish branch at the checkout SHA
+          # GitHub already has, then push only the agent commit. Observed
+          # merge-upstream failure: run 31664540660. Observed workflow-scope
+          # push failure without a parent ref: run 31540508035.
           if [ -z "$fork" ]; then
             gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not resolve or create the bot fork. It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
             echo "::error::could not resolve or create the bot fork; refusing unsafe same-repository fallback."
+            exit 1
+          fi
+          base_sha=${FORK_BASE_SHA:-}
+          if [ -z "$base_sha" ]; then
+            base_sha=$(git rev-parse HEAD^)
+          fi
+          if ! bash .github/scripts/ensure-fork-branch.sh "$fork" "$branch" "$base_sha"; then
+            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not create the bot-fork branch at the trusted checkout. It refused to merge-upstream (that needs the \`workflow\` scope) and refused the secret-bearing same-repository fallback. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
+            echo "::error::could not create $fork $branch at $base_sha; refusing to push."
             exit 1
           fi
           if ! git push -q "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
