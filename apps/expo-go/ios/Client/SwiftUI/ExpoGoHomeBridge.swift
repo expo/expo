@@ -35,36 +35,14 @@ import UIKit
       return
     }
 
-    let expiredMessage = expiredPartnerSessionMessage()
-    if expiredMessage != nil {
-      AuthenticationService.clearSession()
-    }
+    let expiredMessage = consumeExpiredSessionMessage()
 
-    let pendingVerificationURI = PendingDeviceLogin.shared.current(forProjectURL: appUrl)
-    let alreadyGranted = pendingVerificationURI?.host.map {
-      AuthenticationService.isDeviceLoginAlreadyGranted(forVerificationHost: $0)
-    } ?? false
-
-    if !alreadyGranted, let verificationURI = PendingDeviceLogin.shared.offerOnce(forProjectURL: appUrl) {
-      UserDefaults.standard.set(true, forKey: "ExpoGoOnboardingFinished")
-
-      Task { @MainActor in
-        guard let homeViewModel = self.homeViewModel else {
-          // Home is not up yet, so leave the pending sign in for the next attempt.
-          print("[DeviceLogin] Home is not ready, so the sign in sheet could not be presented yet.")
-          completion(false, nil)
-          return
-        }
-
-        // Declining still opens the project. The mismatch error then explains why it failed.
-        if await homeViewModel.presentDeviceLogin(verificationURI: verificationURI) {
-          if let host = verificationURI.host, let username = AuthenticationService.currentUsername {
-            AuthenticationService.recordDeviceLoginGrant(username: username, forVerificationHost: host)
-          }
-          PendingDeviceLogin.shared.clear()
-        }
-        self.openApp(url: url, snackParams: snackParams, completion: completion)
-      }
+    if presentDeviceLoginIfPending(
+      appUrl: appUrl,
+      url: url,
+      snackParams: snackParams,
+      completion: completion
+    ) {
       return
     }
 
@@ -186,6 +164,52 @@ import UIKit
       EXKernel.sharedInstance().createNewApp(with: appUrl, initialProps: nil)
       completion(true, nil)
     }
+  }
+
+  private func consumeExpiredSessionMessage() -> String? {
+    guard let message = expiredPartnerSessionMessage() else {
+      return nil
+    }
+    AuthenticationService.clearSession()
+    return message
+  }
+
+  /// True when a sign in has taken over the open, so the caller should stop and let it finish.
+  private func presentDeviceLoginIfPending(
+    appUrl: URL,
+    url: String,
+    snackParams: NSDictionary?,
+    completion: @escaping (Bool, String?) -> Void
+  ) -> Bool {
+    let alreadyGranted = PendingDeviceLogin.shared.current(forProjectURL: appUrl)?.host.map {
+      AuthenticationService.isDeviceLoginAlreadyGranted(forVerificationHost: $0)
+    } ?? false
+
+    guard !alreadyGranted,
+          let verificationURI = PendingDeviceLogin.shared.offerOnce(forProjectURL: appUrl) else {
+      return false
+    }
+
+    UserDefaults.standard.set(true, forKey: "ExpoGoOnboardingFinished")
+
+    Task { @MainActor in
+      guard let homeViewModel else {
+        // Home is not up yet, so leave the pending sign in for the next attempt.
+        print("[DeviceLogin] Home is not ready, so the sign in sheet could not be presented yet.")
+        completion(false, nil)
+        return
+      }
+
+      // Declining still opens the project. The mismatch error then explains why it failed.
+      if await homeViewModel.presentDeviceLogin(verificationURI: verificationURI) {
+        if let host = verificationURI.host, let username = AuthenticationService.currentUsername {
+          AuthenticationService.recordDeviceLoginGrant(username: username, forVerificationHost: host)
+        }
+        PendingDeviceLogin.shared.clear()
+      }
+      self.openApp(url: url, snackParams: snackParams, completion: completion)
+    }
+    return true
   }
 
   /// Convenience overload for non-snack apps (no session setup needed)
