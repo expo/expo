@@ -117,20 +117,23 @@ permissions:
   pull-requests: read
 
 jobs:
-  # Assigns the run to one of VERIFY_SLOTS queues. Actions has no "at most N
-  # concurrent" primitive — a concurrency group runs exactly one job at a
-  # time — so N queues, keyed by target number modulo N, is how you get N.
-  # Expressions cannot do modulo, hence a job: `concurrency` accepts the
-  # `needs` context, so the slot has to be computed before the job that uses
-  # it. Its `if:` must be a SUPERSET of verify's: a skipped `needs` skips the
+  # Announces the run's target early. A run does not advertise its target
+  # anywhere cheap — issue_comment runs carry the issue TITLE, dispatch runs
+  # the workflow name — so this job echoes "target <n> -> slot <k>" within
+  # seconds of run creation, and `verify ls` in expo-sandbox-mcp resolves
+  # targets from this job's log for the whole life of the run.
+  #
+  # The modulo "slot" is a legacy LABEL kept only for that log contract.
+  # Capacity is no longer per-slot concurrency groups — a group holds at
+  # most ONE pending run, so bursts cancelled queued work instead of
+  # delaying it. Capacity now lives in the verify job's admission step,
+  # which waits; same-target serialisation is a per-target group there.
+  #
+  # Its `if:` must be a SUPERSET of verify's: a skipped `needs` skips the
   # dependent job outright, so a command shape this gate misses NEVER runs —
   # which is why the @expo-bot form appears here too. It still filters to
   # command-shaped maintainer comments, or every unrelated comment on the
   # repository would spin up a runner.
-  #
-  # Same-target runs still serialise: one number always maps to one slot, so
-  # a second /verify on an issue still queues behind the first rather than
-  # racing it for the same sandboxes.
   slot:
     # Display name, NOT a key rename: the key `slot` anchors `needs:` and the
     # concurrency group, while this name is what the run graph and the jobs
@@ -192,18 +195,20 @@ jobs:
     # Job-level, NOT workflow-level: a workflow-level group is claimed at run
     # creation — before the `if:` below skips the job — so any unrelated
     # comment on this issue would cancel an in-flight verification and strand
-    # its sandboxes and EAS builds. cancel-in-progress:false queues a second
-    # /verify instead of killing the first.
+    # its sandboxes and EAS builds.
     #
-    # KNOWN LIMIT, and it is GitHub's, not a choice here: a concurrency group
-    # holds at most ONE pending run. A third arrival into a busy slot cancels
-    # the one already waiting there. So this bounds concurrency at 4 and
-    # queues one deep per slot — it is not an unbounded queue, and under a
-    # burst some runs are dropped rather than delayed. The maintainer can
-    # re-trigger; nothing is spent, because a cancelled pending run never
-    # started.
+    # The group serialises the SAME target only: two commands on one issue
+    # must not race each other for the same sandboxes. Global capacity is
+    # NOT a concurrency group — a group holds at most ONE pending run, and a
+    # third arrival cancels the one already waiting (run 31760888967 was
+    # dropped exactly that way when commands on different PRs shared a
+    # modulo slot). Capacity is the FIFO admission step below, which waits
+    # instead of cancelling. Within one target, cancel-in-progress:false
+    # queues a second command behind the first; a THIRD command on the same
+    # target still replaces the queued second — those are duplicates of the
+    # same work, not independent runs.
     concurrency:
-      group: verify-slot-${{ needs.slot.outputs.slot }}
+      group: verify-target-${{ github.event.issue.number || inputs.target }}
       cancel-in-progress: false
     # Commands must begin the comment: incidental mentions do not launch work.
     # The work form is `@expo-bot <task>` with a SPACE — expression literals
@@ -244,8 +249,11 @@ jobs:
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     # ONE budget, in one place, and the ordering is the point:
-    #   scoped-token TTL (180m) > job timeout (150m) > sum of the phase
-    #   timeouts (90 + 15 + 30 = 135m) + setup.
+    #   scoped-token TTL (180m) > post-admission work (150m: phase timeouts
+    #   90 + 15 + 30 = 135m, plus setup) — every credential is minted AFTER
+    #   the admission wait, so queue time never eats TTL.
+    #   job timeout (350m) = max admission wait (200m, the wait step's own
+    #   bound) + post-admission work (150m).
     # Get it backwards and the credential dies mid-run — which is exactly what
     # happened when the phases were split in three against an unchanged
     # 70-minute token: up to 140 minutes of agent time on it, and the phase
@@ -262,7 +270,7 @@ jobs:
     # build wall-clock alone can approach 100 minutes. 90m covers a realistic
     # four-build run. A genuine five-build matrix is still at risk, and the
     # honest answer there is fewer arms, not more clock.
-    timeout-minutes: 150
+    timeout-minutes: 350
     continue-on-error: true
     # Resolved once, for both trigger paths, so no step has to know which
     # event it is running under.
@@ -460,6 +468,73 @@ jobs:
             body="🔍 \`/verify\` started for @$TRIGGER_ACTOR — [watch the investigation run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Findings will be posted here when it completes."
           fi
           gh issue comment "$TARGET_NUMBER" -R "${{ github.repository }}" --body "$body"
+
+      # Admission control, and it WAITS — it never cancels. GitHub
+      # concurrency cannot express "at most N concurrent, queue the rest":
+      # a group holds one running job plus ONE pending run, and a third
+      # arrival cancels the waiter, which dropped real verifications under
+      # bursts. So capacity is enforced by polling: proceed when this run
+      # is among the CAP oldest live runs of this workflow. Waiting runs
+      # are in_progress too, so ordering by (created_at, id) IS the queue;
+      # admission by global position keeps the executing count at CAP even
+      # when several waiters poll at once. Runs pending on the per-target
+      # group are not in_progress and hold no capacity. The announce above
+      # already posted the watch link, so the queue wait is visible from
+      # the thread.
+      - name: Wait for a free verification slot
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
+        env:
+          # The bot PAT, like the neighboring steps — NOT the automatic
+          # workflow token, which the agent step inherits and which must not
+          # grow an actions:read scope just for this listing.
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
+          # Four concurrent verifications is eight sandboxes against a
+          # 20-sandbox E2B account — the same constraint the slot count
+          # encoded. Keep in step with VERIFY_SLOTS above.
+          CAP: 4
+          POLL_SECONDS: 30
+          # Job timeout (350m) minus the post-admission budget (150m).
+          MAX_WAIT_MINUTES: 200
+        run: |
+          deadline=$(( $(date +%s) + MAX_WAIT_MINUTES * 60 ))
+          misses=0
+          while :; do
+            queue=$(gh api "repos/${{ github.repository }}/actions/workflows/agent-commands.yml/runs?status=in_progress&per_page=100" \
+              --jq '[.workflow_runs[] | {id, created_at}] | sort_by(.created_at, .id) | map(.id)' 2>/dev/null) || queue=""
+            if [ -z "$queue" ]; then
+              # The listing call failed (network, rate limit). Keep waiting —
+              # the deadline still bounds us, and proceeding blind would
+              # break the capacity cap. Not a ghost-miss: that counter is
+              # for a listing that answers but never contains this run.
+              echo "run listing unavailable; retrying in ${POLL_SECONDS}s"
+            else
+              pos=$(printf '%s' "$queue" | jq --argjson me "$RUN_ID" 'index($me) // -1')
+              total=$(printf '%s' "$queue" | jq 'length')
+              if [ "$pos" -ge 0 ] && [ "$pos" -lt "$CAP" ]; then
+                echo "admitted at queue position $pos of $total (capacity $CAP)"
+                break
+              fi
+              if [ "$pos" -lt 0 ]; then
+                # The listing has not caught up with this run yet. Transient,
+                # but if it never appears the count is broken — proceed loudly
+                # rather than deadlock the whole queue behind a ghost.
+                misses=$(( misses + 1 ))
+                if [ "$misses" -ge 10 ]; then
+                  echo "::warning::this run never appeared in the in_progress listing; proceeding without a queue position"
+                  break
+                fi
+              else
+                misses=0
+                echo "queue position $pos of $total (capacity $CAP); polling again in ${POLL_SECONDS}s"
+              fi
+            fi
+            if [ "$(date +%s)" -ge "$deadline" ]; then
+              echo "::error::no verification slot freed in ${MAX_WAIT_MINUTES} minutes; re-run the command."
+              exit 1
+            fi
+            sleep "$POLL_SECONDS"
+          done
 
       # Base ref only — the prompt file must come from the trusted branch,
       # and no PR-head code may ever run on this runner.
