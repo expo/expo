@@ -1,10 +1,10 @@
-'use strict';
-
 import { Asset } from 'expo-asset';
-import { Image } from 'expo-image';
+import { Image, type ImageLoadEventData } from 'expo-image';
 import React from 'react';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface, TestPortal } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError } from './helpers';
 
 export const name = 'Image';
@@ -14,12 +14,14 @@ const REMOTE_SOURCE = {
   blurhash: 'LPC6uxxa9GWB01WBs:R*?uayV@WB',
 };
 const NON_EXISTENT_SOURCE = { uri: 'file://non_existent_path.jpg' };
+// Blurhash of `../assets/icons/app.png` at 4x3 components.
+const LOCAL_ASSET_BLURHASH = 'L4BYE^o#9GkXIrfQNGay0Lay~Uj[';
 const ANIMATED_IMAGE_SOURCE = {
   uri: 'https://media1.giphy.com/media/gZEBpuOkPuydi/giphy.gif?cid=ecf05e47fc23hje74g3ryyry6xnui81pej12o4eojtd9ruax&ep=v1_gifs_search&rid=giphy.gif&ct=g',
 };
 
-export async function test(t, { setPortalChild, cleanupPortal }) {
-  const throws = async (run) => {
+export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal }: TestPortal) {
+  const throws = async (run: () => Promise<unknown>) => {
     let error = null;
     try {
       await run();
@@ -144,7 +146,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
 
       t.it('load animated image and emits animated is true', async () => {
-        const event = await mountAndWaitFor(
+        const event = await mountAndWaitFor<ImageLoadEventData>(
           <Image source={ANIMATED_IMAGE_SOURCE} style={{ height: 100, width: 100 }} />,
           'onLoad',
           setPortalChild
@@ -296,8 +298,8 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           const cached = await Image.readFromCacheAsync(CACHE_KEY);
           t.expect(cached).toBeDefined();
           t.expect(cached instanceof Image.Image).toBe(true);
-          t.expect(cached.width).toBeGreaterThan(0);
-          t.expect(cached.height).toBeGreaterThan(0);
+          t.expect(cached?.width).toBeGreaterThan(0);
+          t.expect(cached?.height).toBeGreaterThan(0);
         });
 
         t.it('seeds the cache from a local file URI', async () => {
@@ -308,7 +310,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           const asset = await Asset.fromModule(require('../assets/icons/app.png')).downloadAsync();
           t.expect(typeof asset.localUri).toBe('string');
 
-          await Image.writeToCacheAsync(asset.localUri, CACHE_KEY);
+          await Image.writeToCacheAsync(requireNotNull(asset.localUri), CACHE_KEY);
 
           const path = await Image.getCachePathAsync(CACHE_KEY);
           t.expect(typeof path).toBe('string');
@@ -335,11 +337,13 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     if (Platform.OS === 'ios') {
       t.describe('generateBlurhashAsync', () => {
         t.it('returns a correct blurhash for url', async () => {
-          const result = await Image.generateBlurhashAsync(REMOTE_SOURCE.uri, [4, 3]);
-          t.expect(result).toBe(REMOTE_SOURCE.blurhash);
+          // A bundled asset, so the bytes the hash is computed from never change.
+          const asset = await Asset.fromModule(require('../assets/icons/app.png')).downloadAsync();
+          const result = await Image.generateBlurhashAsync(requireNotNull(asset.localUri), [4, 3]);
+          t.expect(result).toBe(LOCAL_ASSET_BLURHASH);
         });
         t.it('rejects on a missing url', async () => {
-          await throws(Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));
+          await throws(() => Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));
         });
       });
     }

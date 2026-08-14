@@ -877,6 +877,7 @@ module Expo
         installer.pods_project.targets.each do |target|
           target.build_configurations.each do |config|
             existing = config.build_settings['HEADER_SEARCH_PATHS'] || '$(inherited)'
+            existing = existing.join(' ') if existing.is_a?(Array)
             unless existing.include?(paths_string)
               config.build_settings['HEADER_SEARCH_PATHS'] = "#{existing} #{paths_string}"
             end

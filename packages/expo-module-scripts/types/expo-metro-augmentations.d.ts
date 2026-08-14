@@ -68,6 +68,7 @@ declare module '@expo/metro/metro-babel-transformer' {
     useMd5Filename?: boolean | undefined;
     liveBindings?: 'false' | undefined;
     isLoaderBundle?: 'true' | undefined;
+    prewarm?: '1' | undefined;
   }
 }
 

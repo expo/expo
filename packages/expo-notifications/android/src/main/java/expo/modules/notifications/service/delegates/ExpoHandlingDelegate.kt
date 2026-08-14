@@ -69,7 +69,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
 
       val backgroundActivityIntent = Intent(context, NotificationForwarderActivity::class.java)
       backgroundActivityIntent.data = broadcastIntent.data
-      backgroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+      backgroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
       backgroundActivityIntent.putExtras(broadcastIntent)
       val requestCode = broadcastIntent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode()
       return PendingIntent.getActivity(context, requestCode, backgroundActivityIntent, intentFlags)
