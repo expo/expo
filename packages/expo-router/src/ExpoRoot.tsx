@@ -17,11 +17,7 @@ import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils'
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
-import type {
-  LinkingOptions,
-  LocaleDirection,
-  NavigationAction,
-} from './react-navigation/native';
+import type { LinkingOptions, LocaleDirection, NavigationAction } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
 import type { RequireContext } from './types';
