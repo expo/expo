@@ -362,7 +362,7 @@ open class SecureStoreModule : Module() {
     return getKeyEntry(keyStoreEntryClass, encryptor, options, requireAuthentication, isDeviceCredentialsRequired) ?: run {
       // Android won't allow us to generate the keys if the device doesn't support biometrics or no biometrics are enrolled
       if (requireAuthentication) {
-        if (options.isDeviceCredentialsRequired) {
+        if (isDeviceCredentialsRequired) {
           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             throw UnsupportedDeviceCredentialsException()
           }

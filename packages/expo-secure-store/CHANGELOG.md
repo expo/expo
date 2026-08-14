@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Add `canUseDeviceCredentialsAuthentication` function. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
+- Add `requireAuthentication: 'deviceCredentials'` for device credential fallback (on Android, requires API 30+). Authenticated entries written on Android are not backward compatible with older versions and may be deleted after a downgrade. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -45,8 +48,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
-- Add `canUseDeviceCredentialsAuthentication` function. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
-- Add `requireAuthentication: 'deviceCredentials'` for device credential fallback (on Android, requires API 30+). ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
 
 ## 55.0.13 - 2026-04-09
 

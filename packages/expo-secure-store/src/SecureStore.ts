@@ -87,6 +87,8 @@ export type SecureStoreOptions = {
    * Warning: This option is not supported in Expo Go when biometric authentication is available due to a missing NSFaceIDUsageDescription.
    * In release builds or when using continuous native generation, make sure to use the `expo-secure-store` config plugin.
    *
+   * > **Note:** Test authentication behavior on a real device because emulators and simulators may not show authentication prompts in the same way.
+   *
    * @default false
    */
   requireAuthentication?: boolean | 'biometry' | 'deviceCredentials';
@@ -150,9 +152,8 @@ export async function deleteItemAsync(
  * @return A promise that resolves to the previously stored value. It resolves with `null` if there is no entry
  * for the given key or if the key has been invalidated. It rejects if an error occurs while retrieving the value.
  *
- * > Keys are invalidated by the system when biometrics change, such as adding a new fingerprint or changing the face profile used for face recognition.
+ * > Keys stored with `requireAuthentication: true` or `'biometry'` are invalidated by the system when biometrics change, such as adding a new fingerprint or changing the face profile used for face recognition.
  * > After a key has been invalidated, it becomes impossible to read its value.
- * > This only applies to values stored with `requireAuthentication` not set to `false`.
  *
  * > **Note:** When `requireAuthentication` is not `false`, the authentication prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
  * > In these cases the promise rejects with an error whose `message` is the native string (for example, `"User canceled the authentication"` on Android or `"User canceled the operation."` on iOS).
