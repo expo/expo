@@ -24,10 +24,8 @@
       "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
-    "./data": {
-      "expo-source": "./src/sdk-compatibility.json",
-      "default": "./build/sdk-compatibility.json"
-    },
+    "./data": "./src/sdk-compatibility.json",
+    "./types": "./src/types.ts",
     "./package.json": "./package.json"
   },
   "scripts": {
