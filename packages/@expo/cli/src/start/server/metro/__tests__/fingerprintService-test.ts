@@ -4,7 +4,7 @@ import {
   getPrebuildFingerprintMarkerPath,
   importFingerprint,
 } from '../../../../utils/nativeFingerprint';
-import { createFingerprintService } from '../fingerprintService';
+import { createFingerprintService, touchesFingerprintInputs } from '../fingerprintService';
 
 jest.mock('../../../../utils/nativeFingerprint', () => ({
   ...jest.requireActual('../../../../utils/nativeFingerprint'),
@@ -121,6 +121,17 @@ describe(createFingerprintService, () => {
     await expect(service.getFingerprintAsync('ios')).resolves.toBeNull();
   });
 
+  it(`does not cache an unresolvable fingerprint package`, async () => {
+    // Servers without file watching (CI) never clear the cache, so a cached null would make
+    // the endpoint return 503 forever — even after dependencies finish installing.
+    mockFingerprintModule(jest.fn(async () => ({ hash: 'hash-a', sources: [] })));
+    jest.mocked(importFingerprint).mockReturnValueOnce(null);
+    const service = createFingerprintService(projectRoot, { warn: jest.fn() });
+
+    await expect(service.getFingerprintAsync('ios')).resolves.toBeNull();
+    await expect(service.getFingerprintAsync('ios')).resolves.toMatchObject({ hash: 'hash-a' });
+  });
+
   describe('recordClientFingerprint', () => {
     const server = { hash: 'server-hash', fingerprintVersion: '0.20.6', sources: [] };
 
@@ -224,5 +235,63 @@ describe(createFingerprintService, () => {
       }
       expect(warn).toHaveBeenCalledTimes(1);
     });
+  });
+});
+
+describe(touchesFingerprintInputs, () => {
+  function changeEvent(changes: {
+    addedFiles?: [string, object][];
+    modifiedFiles?: [string, object][];
+    removedFiles?: [string, object][];
+    addedDirectories?: string[];
+    removedDirectories?: string[];
+  }): any {
+    return {
+      rootDir: '/repo',
+      changes: {
+        addedFiles: [],
+        modifiedFiles: [],
+        removedFiles: [],
+        addedDirectories: [],
+        removedDirectories: [],
+        ...changes,
+      },
+    };
+  }
+
+  it(`ignores .expo tooling state, which the dev server writes on every manifest request`, () => {
+    const event = changeEvent({ modifiedFiles: [['/app/.expo/devices.json', {}]] });
+    expect(touchesFingerprintInputs(event, '/app')).toBe(false);
+  });
+
+  it(`invalidates on a project file change`, () => {
+    const event = changeEvent({ modifiedFiles: [['/app/app.config.js', {}]] });
+    expect(touchesFingerprintInputs(event, '/app')).toBe(true);
+  });
+
+  it(`invalidates when an event mixes .expo and project changes`, () => {
+    const event = changeEvent({
+      modifiedFiles: [
+        ['/app/.expo/devices.json', {}],
+        ['/app/ios/Podfile', {}],
+      ],
+    });
+    expect(touchesFingerprintInputs(event, '/app')).toBe(true);
+  });
+
+  it(`invalidates on directory changes`, () => {
+    const event = changeEvent({ addedDirectories: ['/app/plugins'] });
+    expect(touchesFingerprintInputs(event, '/app')).toBe(true);
+  });
+
+  it(`resolves watcher-relative paths against the watched root`, () => {
+    const event = changeEvent({ modifiedFiles: [['app/.expo/devices.json', {}]] });
+    expect(touchesFingerprintInputs(event, '/repo/app')).toBe(false);
+  });
+
+  it(`does not treat a project as its own .expo prefix`, () => {
+    // A project directory literally named like the prefix must not be over-matched.
+    const event = changeEvent({ modifiedFiles: [['/app/.expo-shared/assets.json', {}]] });
+    expect(touchesFingerprintInputs(event, '/app')).toBe(true);
   });
 });

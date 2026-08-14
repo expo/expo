@@ -1,13 +1,13 @@
 import type { FingerprintSource } from '@expo/fingerprint';
-import fs from 'fs';
+import type { ChangeEvent } from '@expo/metro/metro-file-map';
 import path from 'path';
 
 import {
   formatPrebuildChanges,
-  getPrebuildStaleness,
+  getNativeDirectoryStaleness,
   importFingerprint,
   nativeFingerprintOptions,
-  readPrebuildFingerprintMarker,
+  rebuildCommands,
 } from '../../../utils/nativeFingerprint';
 
 export type FingerprintPlatform = 'android' | 'ios';
@@ -32,10 +32,9 @@ export type MismatchAdvice = {
 };
 
 /**
- * Explain a mismatch the way `npx expo needs-rebuild` does. When the app config or a config
- * plugin changed after the native directories were generated, a plain rebuild compiles the
- * stale directories and embeds the new hash — hiding the problem instead of fixing it, so the
- * advice has to name `prebuild` first.
+ * Explain a mismatch the way `npx expo needs-rebuild` does: staleness detection and commands
+ * come from the same shared helpers, so the dev-server advice cannot diverge from the CLI
+ * verdict.
  */
 function getMismatchAdvice(
   projectRoot: string,
@@ -43,25 +42,46 @@ function getMismatchAdvice(
   server: ServerFingerprint
 ): MismatchAdvice {
   const prefix = `The installed ${platform} app does not match the project`;
-  // Without a native directory there is nothing to regenerate. A bare project has one but no
-  // marker, which reads as `unknown` and falls through to the plain rebuild advice.
-  if (fs.existsSync(path.join(projectRoot, platform))) {
-    const { status, changes } = getPrebuildStaleness({
-      marker: readPrebuildFingerprintMarker(projectRoot, platform),
-      currentSources: server.sources,
-      currentFingerprintVersion: server.fingerprintVersion,
-    });
-    if (status === 'stale') {
-      return {
-        recommendation: `${prefix} — ${formatPrebuildChanges(changes)} changed after the ${platform} directory was generated.`,
-        commands: [`npx expo prebuild -p ${platform}`, `npx expo run:${platform}`],
-      };
-    }
+  const { status, changes } = getNativeDirectoryStaleness(projectRoot, platform, server);
+  if (status === 'stale') {
+    return {
+      recommendation: `${prefix} — ${formatPrebuildChanges(changes)} changed after the ${platform} directory was generated.`,
+      commands: rebuildCommands(platform, { prebuildFirst: true }),
+    };
   }
   return {
     recommendation: `${prefix} — native inputs changed since it was built.`,
-    commands: [`npx expo run:${platform}`],
+    commands: rebuildCommands(platform, { prebuildFirst: false }),
   };
+}
+
+/**
+ * Whether a watcher change event can affect the project fingerprint. The `.expo` directory
+ * holds tooling state the fingerprint never hashes — and the dev server itself writes there
+ * on every manifest request (`.expo/devices.json`), which would otherwise clear the cache
+ * right before each app launch announces its fingerprint.
+ */
+export function touchesFingerprintInputs(event: ChangeEvent, projectRoot: string): boolean {
+  const stateDirPrefix = path.join(projectRoot, '.expo') + path.sep;
+  const { addedFiles, modifiedFiles, removedFiles, addedDirectories, removedDirectories } =
+    event.changes;
+  function* changedPaths() {
+    for (const [filePath] of addedFiles) yield filePath;
+    for (const [filePath] of modifiedFiles) yield filePath;
+    for (const [filePath] of removedFiles) yield filePath;
+    yield* addedDirectories;
+    yield* removedDirectories;
+  }
+  for (const changedPath of changedPaths()) {
+    // Canonical watcher paths are relative to the watched root.
+    const absolutePath = path.isAbsolute(changedPath)
+      ? changedPath
+      : path.join(event.rootDir, changedPath);
+    if (!absolutePath.startsWith(stateDirPrefix)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 /**
@@ -100,13 +120,23 @@ export function createFingerprintService(
       let promise = cache.get(platform);
       if (!promise) {
         promise = computeAsync(platform);
-        promise.catch(() => {
-          // Never cache failures. Only delete when still current — a clear plus a fresh
-          // computation may have replaced this entry while it was rejecting.
-          if (cache.get(platform) === promise) {
-            cache.delete(platform);
+        promise.then(
+          (server) => {
+            // A resolved null (fingerprint package unresolvable) must not outlive the request:
+            // servers without file watching (CI) would otherwise return 503 forever, even
+            // after dependencies finish installing.
+            if (server === null && cache.get(platform) === promise) {
+              cache.delete(platform);
+            }
+          },
+          () => {
+            // Never cache failures. Only delete when still current — a clear plus a fresh
+            // computation may have replaced this entry while it was rejecting.
+            if (cache.get(platform) === promise) {
+              cache.delete(platform);
+            }
           }
-        });
+        );
         cache.set(platform, promise);
       }
       return promise;
