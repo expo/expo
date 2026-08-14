@@ -205,10 +205,49 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     class_replaceMethod(object_getClass(ExpoFabricView.self), #selector(appContextFromClass), appContextBlockImp, "@@:")
   }
 
+  /**
+   Keeps a strong reference to the app context that the injected initializer builds the views from.
+   The view classes are cached in `viewClassesRegistry` for the entire process lifetime, so they
+   outlive the app context they were created with. With the context captured weakly, Fabric could
+   instantiate a cached class at a moment when that reference was already `nil` — on a reload,
+   after the previous context has been released but before `registerNativeViews` runs again on the
+   main actor — and the initializer aborted the process. Replacing the reference on each
+   registration keeps the previous context alive across that window, and releases it right after.
+   */
+  private final class AppContextHolder {
+    var appContext: AppContext
+
+    init(_ appContext: AppContext) {
+      self.appContext = appContext
+    }
+  }
+
+  /**
+   Holders of the app context, keyed by the identity of the view class the initializer was injected to.
+   Not keyed by the class name, unlike `viewClassesRegistry` — there might be more than one class
+   with the same name (Expo Go), and they need an initializer each.
+   Used from the main thread only: `makeViewClass` is called by `registerNativeViews` (`@MainActor`)
+   and the injected initializer runs while Fabric is performing a mounting transaction.
+   */
+  private static var appContextHolders = [ObjectIdentifier: AppContextHolder]()
+
   internal static func injectInitializer(appContext: AppContext, moduleName: String, viewName: String, toViewClass viewClass: AnyClass) {
+    let holderKey = ObjectIdentifier(viewClass)
+
+    // A cached class already has the initializer injected, and `moduleName` and `viewName` are part
+    // of the class name, so they can't have changed. Only the app context has — point the existing
+    // initializer at the new one instead of injecting another.
+    if let holder = appContextHolders[holderKey] {
+      holder.appContext = appContext
+      return
+    }
+    let holder = AppContextHolder(appContext)
+    appContextHolders[holderKey] = holder
+
     // The default initializer for native views. It will be called by Fabric.
-    let newBlock: @convention(block) () -> Any = {[weak appContext] in
-      guard let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
+    let newBlock: @convention(block) () -> Any = {[holder] in
+      let appContext = holder.appContext
+      guard let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
         fatalError(Exceptions.AppContextLost().reason)
       }
       guard let view = moduleHolder.definition.views[viewName]?.createView(appContext: appContext) else {
