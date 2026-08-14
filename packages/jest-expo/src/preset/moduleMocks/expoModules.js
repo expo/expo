@@ -2242,7 +2242,9 @@ module.exports = {
           debugMode: { type: 'boolean', mock: true },
           deviceName: { type: 'string' },
           executionEnvironment: { type: 'string' },
-          fingerprint: { type: 'string' },
+          // Null matches the documented default (no embedded fingerprint); the generic 'mock'
+          // string would make `if (Constants.fingerprint)` gates take the embedded branch.
+          fingerprint: { type: 'string', mock: null },
           getWebViewUserAgentAsync: { type: 'function' },
           isHeadless: { type: 'boolean', mock: false },
           manifest: { type: 'object' },
