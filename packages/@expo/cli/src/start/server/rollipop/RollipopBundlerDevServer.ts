@@ -5,16 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import chalk from 'chalk';
+import { spawn } from 'child_process';
+import type { ChildProcess } from 'child_process';
 import { createRequire } from 'module';
 import path from 'path';
 
-import { spawn } from 'child_process';
-import type { ChildProcess } from 'child_process';
-
-import chalk from 'chalk';
-
-import * as Log from '../../log';
-import { CommandError } from '../../utils/errors';
+import * as Log from '../../../log';
+import { CommandError } from '../../../utils/errors';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
 
@@ -46,7 +44,7 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
   private child: ChildProcess | null = null;
 
   protected async startImplementationAsync(
-    options: BundlerStartOptions,
+    options: BundlerStartOptions
   ): Promise<DevServerInstance> {
     const port = options.port ?? 8081;
     const host = options.location.hostType === 'localhost' ? 'localhost' : '0.0.0.0';
@@ -80,7 +78,7 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
         cwd: projectRoot,
         env,
         stdio: ['ignore', 'pipe', 'pipe'],
-      },
+      }
     );
 
     child.stdout?.on('data', (chunk) => {
