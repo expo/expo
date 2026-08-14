@@ -6,14 +6,16 @@ description: View, cancel, and re-run EAS Workflow runs.
 
 Each time a workflow is triggered, EAS creates a workflow run. You can use the EAS dashboard to follow the run, inspect its jobs, cancel work that is in progress, or create a new run from a completed attempt.
 
-## Workflow run lifecycle
+## Workflow run statuses
 
-A workflow run moves through the following stages:
+A workflow run can change between non-terminal statuses as its jobs are scheduled and completed:
 
-- **Queued**: EAS created the run, but no job has started.
+- **New**: No job is running. A run starts with this status and can return to it while all unfinished jobs are queued.
 - **In progress**: One or more jobs are running.
 - **Action required**: A job is waiting for a manual action, such as an approval.
-- **Complete**: The run ends with a successful, failed, or canceled status.
+- **Success**: All jobs completed successfully. This status is terminal.
+- **Failure**: At least one job failed. This status is terminal.
+- **Canceled**: The run was canceled before it completed. This status is terminal.
 
 For the status values returned by the EAS REST API, see [Get a workflow run](/eas/workflows/rest-api/#get-a-workflow-run).
 
@@ -23,7 +25,7 @@ Open your project's [workflows page](https://expo.dev/accounts/[account]/project
 
 ## Cancel a workflow run
 
-Open a run that is queued, in progress, or waiting for an action, and select **Cancel workflow**. Jobs that already completed keep their final status. EAS stops the remaining work and marks the run as canceled.
+Open a run with a non-terminal status and select **Cancel workflow**. Jobs that already completed keep their final status. EAS stops the remaining work and marks the run as canceled.
 
 ## Re-run a workflow
 
@@ -54,8 +56,6 @@ Select **Re-run workflow** and then **Re-run all jobs** to create a new run that
 
 Use this option when the failure may depend on work completed by an earlier job, or when you need fresh outputs and artifacts from every job.
 
-### Retention limits
+### Re-run availability
 
-Re-running uses the original run's project source. The dashboard disables the re-run options after that source expires. Start the workflow again from its trigger or with `eas workflow:run` if the re-run options are unavailable.
-
-Logs and artifacts reused from successful jobs keep their original expiration times. A re-run does not extend their retention period. Start the re-run before an artifact expires if a later job needs it. For manual recovery, download the artifact before it expires.
+A re-run can reuse source and artifacts only while EAS retains them. If the dashboard no longer shows the re-run options, start a new run with `eas workflow:run .eas/workflows/my-workflow.yml`.
