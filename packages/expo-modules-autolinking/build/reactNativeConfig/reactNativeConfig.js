@@ -162,9 +162,16 @@ async function createReactNativeConfigAsync({ appRoot, sourceDir, autolinkingOpt
     return {
         root: appRoot,
         reactNativePath,
-        dependencies,
+        dependencies: sortDependenciesByName(dependencies),
         project: await resolveAppProjectConfigAsync(appRoot, autolinkingOptions.platform, sourceDir),
     };
+}
+function sortDependenciesByName(dependencies) {
+    const sortedDependencies = {};
+    for (const name of Object.keys(dependencies).sort()) {
+        sortedDependencies[name] = dependencies[name];
+    }
+    return sortedDependencies;
 }
 function resolveAppleProjectSourceDir(projectRoot, platform) {
     const platformDir = path_1.default.join(projectRoot, platform);
