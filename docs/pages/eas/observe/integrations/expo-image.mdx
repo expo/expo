@@ -27,7 +27,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 ## Enable the integration
 
-Call `Observe.configure()` with the `expo-image` integration flag at module scope:
+Call `Observe.configure()` once with the `expo-image` integration flag at module scope, before your app mounts:
 
 ```tsx src/app/_layout.tsx
 import { Observe } from 'expo-observe';
@@ -43,7 +43,7 @@ No other setup is needed. Once enabled, the integration observes every image loa
 
 On every image load, the integration compares the image's decoded pixel size with the number of physical pixels on the device's screen. That pixel count is the screen's point size multiplied by the square of the device pixel ratio. When the decoded area exceeds the screen's pixel count by more than the configured threshold, the integration logs an `expo-image.oversized` event with `warn` severity.
 
-Each image URL is reported at most once per app session. Calling `Observe.configure()` again resets this deduplication and applies the new configuration.
+Each image URL is reported at most once per app session.
 
 **Event attributes:**
 
