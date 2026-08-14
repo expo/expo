@@ -97,7 +97,10 @@ rootProject.name = 'helloworld'
       updateAndroidSettingsGradle({ contents: TEMPLATE_SETTINGS_GRADLE, buildFromSource: false })
     ).toBe(TEMPLATE_SETTINGS_GRADLE);
     expect(
-      updateAndroidSettingsGradle({ contents: TEMPLATE_SETTINGS_GRADLE, buildFromSource: undefined })
+      updateAndroidSettingsGradle({
+        contents: TEMPLATE_SETTINGS_GRADLE,
+        buildFromSource: undefined,
+      })
     ).toBe(TEMPLATE_SETTINGS_GRADLE);
   });
 
