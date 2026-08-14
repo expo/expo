@@ -1,6 +1,6 @@
 import AppIntents
-import Foundation
 internal import ExpoAppIntents
+import Foundation
 
 @available(iOS 18.0, *)
 @AppEntity(schema: .mail.draft)
@@ -36,11 +36,9 @@ struct MailDraftEntity {
     self.account = account
   }
 
-  /**
-   Builds a draft from a catalog record published by JavaScript with
-   `setEntityCatalogAsync('mailDraft', drafts)`. The record's title carries the subject and its
-   subtitle carries the body, so Siri can resolve a draft the user names out loud.
-   */
+  /// Builds a draft from a catalog record published by JavaScript with
+  /// `setEntityCatalogAsync('mailDraft', drafts)`. The record's title carries the subject and its
+  /// subtitle carries the body, so Siri can resolve a draft the user names out loud.
   init(record: AppIntentEntityRecord) {
     self.init(
       id: record.id,
@@ -73,28 +71,24 @@ struct MailDraftEntity {
     return String(body.characters)
   }
 
-  /**
-   A flat, JS-friendly recipient list. `IntentPerson` models a name and a handle rather than a
-   plain string, so it is projected to an address (or a display name when no address is known)
-   before it crosses into JavaScript.
-
-   Each address stays a separate element. A display name formatted as "Doe, John" contains a comma
-   of its own, so joining the addresses into one string would let JavaScript read it as two
-   recipients.
-   */
+  /// A flat, JS-friendly recipient list. `IntentPerson` models a name and a handle rather than a
+  /// plain string, so it is projected to an address (or a display name when no address is known)
+  /// before it crosses into JavaScript.
+  ///
+  /// Each address stays a separate element. A display name formatted as "Doe, John" contains a comma
+  /// of its own, so joining the addresses into one string would let JavaScript read it as two
+  /// recipients.
   var recipientAddresses: [String] {
     return (to + cc + bcc).compactMap(Self.address(of:))
   }
 
-  /**
-   The same addresses as one string, for the places that want a single line instead of an array: a
-   summary label, or one string to match a search term against.
-
-   Nothing in this example reads it yet. `displayRepresentation` shows the subject and a body
-   preview, and `MailDraftEntityQuery` searches those two, because a draft built from a catalog
-   record has no recipients - `init(record:)` above leaves `to`, `cc` and `bcc` empty. Add
-   recipients to the records your app publishes, then search this too.
-   */
+  /// The same addresses as one string, for the places that want a single line instead of an array: a
+  /// summary label, or one string to match a search term against.
+  ///
+  /// Nothing in this example reads it yet. `displayRepresentation` shows the subject and a body
+  /// preview, and `MailDraftEntityQuery` searches those two, because a draft built from a catalog
+  /// record has no recipients - `init(record:)` above leaves `to`, `cc` and `bcc` empty. Add
+  /// recipients to the records your app publishes, then search this too.
   var recipientList: String {
     return recipientAddresses.joined(separator: ", ")
   }

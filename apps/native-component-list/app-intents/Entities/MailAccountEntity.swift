@@ -1,11 +1,9 @@
 import AppIntents
 import Foundation
 
-/**
- The `.mail.draft` schema requires a non-optional account, so every draft needs one. This
- example ships a single hardcoded account. A real mail app would publish its accounts to the
- entity catalog from JavaScript, the same way the restaurant example publishes dishes.
- */
+/// The `.mail.draft` schema requires a non-optional account, so every draft needs one. This
+/// example ships a single hardcoded account. A real mail app would publish its accounts to the
+/// entity catalog from JavaScript, the same way the restaurant example publishes dishes.
 @available(iOS 18.0, *)
 @AppEntity(schema: .mail.account)
 struct MailAccountEntity {

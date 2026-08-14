@@ -1,9 +1,7 @@
 import AppIntents
 internal import ExpoAppIntents
 
-/**
- The simplest shape of an App Intent: open the app and hand the invocation to JavaScript.
- */
+/// The simplest shape of an App Intent: open the app and hand the invocation to JavaScript.
 struct IncreaseCounterIntent: AppIntent {
   static let title: LocalizedStringResource = "Increase Counter"
   static let openAppWhenRun: Bool = true

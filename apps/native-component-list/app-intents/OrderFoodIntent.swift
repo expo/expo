@@ -1,12 +1,10 @@
 import AppIntents
 internal import ExpoAppIntents
 
-/**
- A phrase-based shortcut that orders a dish.
-
- The required dish parameter lets Siri either resolve the dish from the launch phrase or ask
- a follow-up question when the user only says "Place an order".
- */
+/// A phrase-based shortcut that orders a dish.
+///
+/// The required dish parameter lets Siri either resolve the dish from the launch phrase or ask
+/// a follow-up question when the user only says "Place an order".
 struct OrderFoodIntent: AppIntent {
   static let title: LocalizedStringResource = "Order Food"
   static let openAppWhenRun: Bool = true
@@ -24,7 +22,7 @@ struct OrderFoodIntent: AppIntent {
       name: "orderFood",
       params: [
         "dishId": .string(dish.id),
-        "dishName": .string(dish.name)
+        "dishName": .string(dish.name),
       ]
     )
 
