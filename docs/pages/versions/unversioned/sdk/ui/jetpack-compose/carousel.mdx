@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI provides three carousel components matching the official Jetpack Compose [Carousel](https://developer.android.com/develop/ui/compose/components/carousel) API: `HorizontalCenteredHeroCarousel`, `HorizontalMultiBrowseCarousel`, and `HorizontalUncontainedCarousel`.
@@ -32,7 +33,13 @@ Expo UI provides three carousel components matching the official Jetpack Compose
 
 Centers one large hero item between two small peek items — ideal for spotlighting content like movie posters.
 
-```tsx CenteredHeroExample.tsx
+<ComponentExample
+  title="CenteredHeroExample.tsx"
+  src="/static/images/expo-ui/examples/carousel-centered-hero-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/carousel-centered-hero-android-dark.webp"
+  alt="A wide purple hero slide with two narrow peek slides beside it">
+
+```tsx
 import { Host, HorizontalCenteredHeroCarousel, Box, Text } from '@expo/ui/jetpack-compose';
 import { size, background } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -56,11 +63,19 @@ export default function CenteredHeroExample() {
 }
 ```
 
+</ComponentExample>
+
 ### HorizontalMultiBrowseCarousel
 
 Shows a large item alongside smaller peek items, letting users browse what comes next.
 
-```tsx MultiBrowseExample.tsx
+<ComponentExample
+  title="MultiBrowseExample.tsx"
+  src="/static/images/expo-ui/examples/carousel-multi-browse-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/carousel-multi-browse-android-dark.webp"
+  alt="A large first card followed by progressively narrower peek cards">
+
+```tsx
 import { Host, HorizontalMultiBrowseCarousel, Box, Text } from '@expo/ui/jetpack-compose';
 import { size, background } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -87,11 +102,19 @@ export default function MultiBrowseExample() {
 }
 ```
 
+</ComponentExample>
+
 ### HorizontalUncontainedCarousel
 
 Each item has a fixed width with free-form scrolling.
 
-```tsx UncontainedExample.tsx
+<ComponentExample
+  title="UncontainedExample.tsx"
+  src="/static/images/expo-ui/examples/carousel-uncontained-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/carousel-uncontained-android-dark.webp"
+  alt="Equal width photo cards scrolling off the edge of the screen">
+
+```tsx
 import { Host, HorizontalUncontainedCarousel, Box, Text } from '@expo/ui/jetpack-compose';
 import { size, background } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -117,6 +140,8 @@ export default function UncontainedExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
