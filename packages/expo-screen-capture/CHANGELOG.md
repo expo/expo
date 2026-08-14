@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.2 — 2026-08-14
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed the screen-recording overlay staying attached (permanent black screen) after `allowScreenCaptureAsync` is called while a recording is active. ([#48000](https://github.com/expo/expo/pull/48000) by [@bluespore](https://github.com/bluespore))
 - [iOS] Fixed screenshot prevention and the recording overlay attaching to a window in a background scene rather than the one on screen. ([#48372](https://github.com/expo/expo/pull/48372) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
 
 ## 57.0.1 — 2026-07-15
 

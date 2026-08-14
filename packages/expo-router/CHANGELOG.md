@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Fix broken navigation state when a long press on a `Link` with a menu is released before the context menu fully presents. ([#48104](https://github.com/expo/expo/pull/48104) by [@jiunshinn](https://github.com/jiunshinn))
-
 ### 💡 Others
+
+## 57.0.13 — 2026-08-14
+
+### 🐛 Bug fixes
+
+- [ios] Fix broken navigation state when a long press on a `Link` with a menu is released before the context menu fully presents. ([#48104](https://github.com/expo/expo/pull/48104) by [@jiunshinn](https://github.com/jiunshinn))
 
 ## 57.0.12 — 2026-08-10
 

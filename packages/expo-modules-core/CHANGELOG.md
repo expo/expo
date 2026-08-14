@@ -6,13 +6,16 @@
 
 ### 🎉 New features
 
-- [iOS] Added `SceneGeometry.foregroundScene()` for resolving the foregrounded scene without a view. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
-
-- [iOS] Added `SceneGeometry` for reading bounds, safe area, display scale and interface orientation from the scene a view belongs to. ([#48168](https://github.com/expo/expo/pull/48168) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.11 — 2026-08-14
+
+### 🎉 New features
+
+- [iOS] Added `SceneGeometry.foregroundScene()` for resolving the foregrounded scene without a view. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Added `SceneGeometry` for reading bounds, safe area, display scale and interface orientation from the scene a view belongs to. ([#48168](https://github.com/expo/expo/pull/48168) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.10 — 2026-08-06
 

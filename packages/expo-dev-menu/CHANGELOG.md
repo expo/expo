@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.12 — 2026-08-14
+
+### 💡 Others
+
 - [iOS] Remove the manual packager socket reconnect now that the bundle configuration resolves the dev server host. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.11 — 2026-08-10

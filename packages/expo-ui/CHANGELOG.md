@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.11 — 2026-08-14
+
+### 🎉 New features
+
 - [iOS] Added `menuStyle` and `menuIndicator` SwiftUI modifiers, which together with `buttonStyle('plain')` keep a `Menu`'s custom label as its entire trigger on Mac Catalyst. ([#48447](https://github.com/expo/expo/issues/48447) by [@cvburgess](https://github.com/cvburgess)) ([#48448](https://github.com/expo/expo/pull/48448) by [@cvburgess](https://github.com/cvburgess))
 - [iOS] Added the `listRowSeparatorTint` modifier, so a list row separator can be recolored and not only shown or hidden. ([#48804](https://github.com/expo/expo/issues/48804) by [@marco242424](https://github.com/marco242424)) ([#48810](https://github.com/expo/expo/pull/48810) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Added the `geometryGroup` modifier, so a view's subviews can resolve their geometry against it instead of an animating ancestor. Without it, a `Button` inside a container with an `animation` modifier can draw its label away from its own background while the animation runs. ([#48838](https://github.com/expo/expo/pull/48838) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
@@ -13,8 +21,6 @@
 ### 🐛 Bug fixes
 
 - [universal] Fix `Cannot use shared object that was already released` when a worklet callback prop closes over an unstable value. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 57.0.10 — 2026-08-10
 
