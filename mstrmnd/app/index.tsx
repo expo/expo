@@ -2,8 +2,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AgentGrid } from '@/components/AgentGrid';
+import { BrandMark } from '@/components/BrandMark';
 import { MainAgentWindow } from '@/components/MainAgentWindow';
-import { colors, spacing } from '@/constants/theme';
+import { brand, colors, spacing } from '@/constants/theme';
 import { useController } from '@/context/ControllerContext';
 
 export default function ControllerScreen() {
@@ -12,15 +13,18 @@ export default function ControllerScreen() {
   return (
     <View style={styles.root}>
       <LinearGradient
-        colors={['#0E1318', '#07090C', '#050607']}
-        locations={[0, 0.45, 1]}
+        colors={['#101014', '#070708', '#000000']}
+        locations={[0, 0.5, 1]}
         style={StyleSheet.absoluteFill}
       />
       <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
         <View style={styles.topBar}>
-          <View>
-            <Text style={styles.brand}>mstrmnd</Text>
-            <Text style={styles.sub}>mastermind agent controller</Text>
+          <View style={styles.brandRow}>
+            <BrandMark size={28} glow={false} />
+            <View>
+              <Text style={styles.brand}>{brand.wordmark}</Text>
+              <Text style={styles.sub}>agent controller</Text>
+            </View>
           </View>
           <View style={styles.session}>
             <View style={[styles.dot, { backgroundColor: selectedAgent.accent }]} />
@@ -57,17 +61,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     paddingTop: 4,
   },
+  brandRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   brand: {
     fontFamily: 'Syne_800ExtraBold',
-    fontSize: 28,
-    color: colors.ink,
-    letterSpacing: -0.8,
+    fontSize: 18,
+    color: colors.chromeHot,
+    letterSpacing: 4.5,
   },
   sub: {
     fontFamily: 'SpaceGrotesk_400Regular',
     color: colors.muted,
-    fontSize: 10,
-    letterSpacing: 1.6,
+    fontSize: 9,
+    letterSpacing: 1.8,
     textTransform: 'uppercase',
     marginTop: 2,
   },

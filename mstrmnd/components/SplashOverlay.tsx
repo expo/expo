@@ -8,7 +8,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '@/constants/theme';
+import { BrandMark } from '@/components/BrandMark';
+import { brand, colors } from '@/constants/theme';
 
 type Props = {
   visible: boolean;
@@ -17,54 +18,58 @@ type Props = {
 
 export function SplashOverlay({ visible, onDone }: Props) {
   const opacity = useSharedValue(1);
-  const brandY = useSharedValue(18);
+  const brandY = useSharedValue(22);
   const brandOp = useSharedValue(0);
-  const line = useSharedValue(0);
+  const markScale = useSharedValue(0.86);
+  const pillars = useSharedValue(0);
 
   useEffect(() => {
     if (!visible) return;
-    brandOp.value = withDelay(200, withTiming(1, { duration: 700 }));
+    brandOp.value = withDelay(180, withTiming(1, { duration: 800 }));
     brandY.value = withDelay(
-      200,
-      withTiming(0, { duration: 800, easing: Easing.out(Easing.cubic) }),
+      180,
+      withTiming(0, { duration: 900, easing: Easing.out(Easing.cubic) }),
     );
-    line.value = withDelay(500, withTiming(1, { duration: 900 }));
+    markScale.value = withDelay(
+      120,
+      withTiming(1, { duration: 1000, easing: Easing.out(Easing.cubic) }),
+    );
+    pillars.value = withDelay(700, withTiming(1, { duration: 700 }));
 
     const t = setTimeout(() => {
-      opacity.value = withTiming(0, { duration: 550 }, (finished) => {
-        if (finished) {
-          // run on JS
-        }
-      });
-      setTimeout(onDone, 580);
-    }, 2100);
+      opacity.value = withTiming(0, { duration: 600 });
+      setTimeout(onDone, 620);
+    }, 2600);
 
     return () => clearTimeout(t);
-  }, [visible, opacity, brandOp, brandY, line, onDone]);
+  }, [visible, opacity, brandOp, brandY, markScale, pillars, onDone]);
 
   const root = useAnimatedStyle(() => ({ opacity: opacity.value }));
-  const brand = useAnimatedStyle(() => ({
+  const mark = useAnimatedStyle(() => ({
+    opacity: brandOp.value,
+    transform: [{ translateY: brandY.value }, { scale: markScale.value }],
+  }));
+  const copy = useAnimatedStyle(() => ({
     opacity: brandOp.value,
     transform: [{ translateY: brandY.value }],
   }));
-  const rule = useAnimatedStyle(() => ({
-    transform: [{ scaleX: line.value }],
-    opacity: line.value,
-  }));
+  const footer = useAnimatedStyle(() => ({ opacity: pillars.value }));
 
   if (!visible) return null;
 
   return (
     <Animated.View style={[styles.root, root]} pointerEvents="none">
-      <LinearGradient colors={['#050607', '#0B0F14', '#070A0D']} style={StyleSheet.absoluteFill} />
+      <LinearGradient colors={['#000000', '#08080A', '#000000']} style={StyleSheet.absoluteFill} />
       <View style={styles.center}>
-        <Animated.Text style={[styles.brand, brand]}>mstrmnd</Animated.Text>
-        <Animated.View style={[styles.rule, rule]} />
-        <Animated.Text style={[styles.tag, brand]}>
-          your tuned mastermind · pad grid online
-        </Animated.Text>
+        <Animated.View style={mark}>
+          <BrandMark size={96} />
+        </Animated.View>
+        <Animated.Text style={[styles.wordmark, copy]}>{brand.wordmark}</Animated.Text>
+        <Animated.Text style={[styles.tagline, copy]}>{brand.tagline}</Animated.Text>
       </View>
-      <Text style={styles.boot}>BOOT // AGENT CONTROLLER</Text>
+      <Animated.Text style={[styles.pillars, footer]}>
+        {brand.pillars.map((p) => p.toUpperCase()).join('  ·  ')}
+      </Animated.Text>
     </Animated.View>
   );
 }
@@ -83,33 +88,32 @@ const styles = StyleSheet.create({
   },
   center: {
     alignItems: 'center',
-    gap: 14,
+    gap: 18,
+    paddingHorizontal: 28,
   },
-  brand: {
+  wordmark: {
     fontFamily: 'Syne_800ExtraBold',
-    fontSize: 52,
-    color: colors.ink,
-    letterSpacing: -1.5,
+    fontSize: 34,
+    color: colors.chromeHot,
+    letterSpacing: 10,
+    marginTop: 8,
   },
-  rule: {
-    width: 120,
-    height: 2,
-    backgroundColor: colors.signal,
-    borderRadius: 1,
-  },
-  tag: {
+  tagline: {
     fontFamily: 'SpaceGrotesk_400Regular',
-    color: colors.muted,
-    fontSize: 12,
-    letterSpacing: 1.5,
+    color: colors.metal,
+    fontSize: 11,
+    letterSpacing: 1.1,
+    textAlign: 'center',
     textTransform: 'uppercase',
+    lineHeight: 18,
+    maxWidth: 300,
   },
-  boot: {
+  pillars: {
     position: 'absolute',
     bottom: 48,
     fontFamily: 'SpaceGrotesk_500Medium',
-    color: colors.metal,
-    fontSize: 10,
-    letterSpacing: 2,
+    color: colors.muted,
+    fontSize: 9,
+    letterSpacing: 2.4,
   },
 });

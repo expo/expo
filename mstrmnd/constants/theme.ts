@@ -1,17 +1,27 @@
-/** mstrmnd visual system — MIDI chassis meets living agents */
+/** Official MSTRMND brand tokens — metallic tetrahedron system */
+export const brand = {
+  name: 'MSTRMND',
+  wordmark: 'M S T R M N D',
+  tagline: 'Building intelligent systems. Empowering human potential.',
+  pillars: ['Research', 'Technology', 'Systems', 'Future'] as const,
+} as const;
+
 export const colors = {
-  void: '#050607',
-  chassis: '#0B0D10',
-  chassisRaised: '#12151A',
-  recess: '#080A0C',
-  pad: '#151A21',
-  padPressed: '#1C2430',
-  bezel: '#1E252F',
-  hairline: 'rgba(255,255,255,0.06)',
-  metal: '#8B949E',
-  ink: '#E8EDF2',
-  muted: '#6B7580',
-  signal: '#C8F542',
+  void: '#000000',
+  chassis: '#0A0A0C',
+  chassisRaised: '#121214',
+  recess: '#070708',
+  pad: '#141416',
+  padPressed: '#1C1C20',
+  bezel: '#2A2A30',
+  hairline: 'rgba(255,255,255,0.08)',
+  metal: '#A8ADB4',
+  chrome: '#D8DCE2',
+  chromeHot: '#F4F6F8',
+  ink: '#F2F4F6',
+  muted: '#7A8088',
+  /** Brand signal — silver, not neon */
+  signal: '#C8CDD4',
   amber: '#FFB020',
   cyan: '#3DDCFF',
   coral: '#FF6B4A',

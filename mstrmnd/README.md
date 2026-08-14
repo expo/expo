@@ -1,6 +1,8 @@
-# mstrmnd
+# MSTRMND
 
 Tuned mastermind agent controller for Expo (SDK 57).
+
+Official brand mark is the metallic tetrahedron. Splash / chrome use **M S T R M N D** with the tagline *Building intelligent systems. Empowering human potential.*
 
 The full screen is a MIDI-style drum-pad grid: **12 department agents** in a **3×4** layout, with a **CONDUCTOR** main window consuming the lower third. Pads are gamified (level / XP / status) and animated so active agents feel alive.
 
@@ -8,7 +10,7 @@ The full screen is a MIDI-style drum-pad grid: **12 department agents** in a **3
 
 - Expo SDK 57 + Expo Router
 - Vercel AI SDK (`ai` + `@ai-sdk/react`) with `expo/fetch` streaming
-- Reanimated living pulses / orbs (shader-like motion without a heavy GL stack)
+- Reanimated living pulses / orbs + SVG brand mark
 - Syne + Space Grotesk typography
 - Native splash + branded boot overlay
 
@@ -18,6 +20,12 @@ The full screen is a MIDI-style drum-pad grid: **12 department agents** in a **3
 cd mstrmnd
 npm install --legacy-peer-deps
 npx expo start
+```
+
+Regenerate splash/icon rasters after mark changes:
+
+```bash
+node scripts/generate-brand-assets.mjs
 ```
 
 ### Live streaming
@@ -32,7 +40,7 @@ Without a key, tapping **RUN** uses a local character-stream demo so the pad dec
 
 | Zone | Role |
 |------|------|
-| Top brand bar | `mstrmnd` identity + session LED |
+| Top brand bar | Tetrahedron mark + `M S T R M N D` + session LED |
 | Pad deck (~2/3) | 12 department pads (STRAT → BRAND) |
 | Main window (~1/3) | Active agent transcript + cue input |
 

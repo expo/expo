@@ -16,7 +16,7 @@ import { DefaultChatTransport } from 'ai';
 import { fetch as expoFetch } from 'expo/fetch';
 import { LivingPulse, LifeOrb } from '@/components/LivingPulse';
 import { useController } from '@/context/ControllerContext';
-import { colors, radii, spacing } from '@/constants/theme';
+import { colors, radii, spacing, brand } from '@/constants/theme';
 import { generateAPIUrl } from '@/utils/api';
 import { streamDemoReply } from '@/utils/demoStream';
 
@@ -120,7 +120,7 @@ export function MainAgentWindow() {
         >
           <LifeOrb color={selectedAgent.accent} active={isStreaming || selectedId === 'conductor'} />
           <View style={styles.headerText}>
-            <Text style={styles.brandLine}>mstrmnd · main window</Text>
+            <Text style={styles.brandLine}>{brand.wordmark} · main window</Text>
             <Text style={[styles.agentName, { color: selectedAgent.accent }]}>
               {selectedAgent.name}
             </Text>
@@ -226,7 +226,7 @@ const styles = StyleSheet.create({
     fontFamily: 'SpaceGrotesk_400Regular',
     color: colors.muted,
     fontSize: 9,
-    letterSpacing: 1.4,
+    letterSpacing: 2.2,
     textTransform: 'uppercase',
   },
   agentName: {
