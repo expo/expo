@@ -56,6 +56,7 @@ onlyBuiltDependencies:
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
   '@shopify/react-native-skia@2.6.2': patches/@shopify__react-native-skia@2.6.2.patch
+  react-native-keyboard-controller: patches/react-native-keyboard-controller.patch
   react-native-reanimated: patches/react-native-reanimated.patch
   react-native-safe-area-context@5.7.0: patches/react-native-safe-area-context@5.7.0.patch
   react-native-screens@4.26.0: patches/react-native-screens@4.26.0.patch
