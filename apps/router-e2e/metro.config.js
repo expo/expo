@@ -41,5 +41,8 @@ const config = getDefaultConfig(
 
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
+if (process.env.E2E_FORCE_BABEL === '1') {
+  config.transformer.babelTransformerPath = require.resolve('./forced-babel-transformer');
+}
 
 module.exports = config;

@@ -40,3 +40,26 @@ export async function replayRequestText(request: Request) {
 
   return await response.text();
 }
+
+/**
+ * Statuses of network-served responses for a loader path. Browser-cache hits are excluded via
+ * CDP's `fromDiskCache` (Playwright responses don't expose it), so a non-growing status list
+ * proves a cache hit.
+ */
+export async function trackLoaderNetworkStatuses(page: Page, pathname: string): Promise<number[]> {
+  const session = await page.context().newCDPSession(page);
+  const requestUrls = new Map<string, string>();
+  const statuses: number[] = [];
+
+  await session.send('Network.enable');
+  session.on('Network.requestWillBeSent', ({ requestId, request }) => {
+    requestUrls.set(requestId, request.url);
+  });
+  session.on('Network.responseReceived', ({ requestId, response }) => {
+    if (requestUrls.get(requestId)?.includes(pathname) && !response.fromDiskCache) {
+      statuses.push(response.status);
+    }
+  });
+
+  return statuses;
+}

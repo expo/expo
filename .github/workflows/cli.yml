@@ -18,12 +18,10 @@ on:
       - packages/@expo/router-server/**
       - packages/@expo/log-box/**
       - packages/@expo/metro-file-map/**
-      - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**
       - packages/expo-router/**
       - packages/expo-server/**
-      - pnpm-lock.yaml
       - '!**.md'
   pull_request:
     paths:
@@ -41,12 +39,10 @@ on:
       - packages/@expo/router-server/**
       - packages/@expo/log-box/**
       - packages/@expo/metro-file-map/**
-      - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**
       - packages/expo-router/**
       - packages/expo-server/**
-      - pnpm-lock.yaml
       - '!**.md'
   schedule:
     - cron: 0 14 * * *
@@ -107,7 +103,9 @@ jobs:
         run: pnpm test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   jest-windows:
-    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'schedule' && github.repository == 'expo/expo')
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -236,7 +234,9 @@ jobs:
           retention-days: 30
 
   playwright-windows:
-    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'schedule' && github.repository == 'expo/expo')
     runs-on: windows-2022
     strategy:
       fail-fast: false

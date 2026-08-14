@@ -3,6 +3,7 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
+import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
 import type {
   BottomTabDescriptorMap,
@@ -14,8 +15,8 @@ import { BottomTabView } from '../views/BottomTabView';
 
 export interface BottomTabNavigatorCreateProps {
   routeNames: string[];
-  preloadedRouteKeys: string[];
   popNestedStackToTop: (routeKey: string) => void;
+  preload: (name: string) => void;
 }
 
 export type BottomTabNavigatorContentProps = BottomTabNavigationConfig &
@@ -34,8 +35,8 @@ function BottomTabNavigatorContent({
   actions,
   emitter,
   routeNames,
-  preloadedRouteKeys,
   popNestedStackToTop,
+  preload,
   ...rest
 }: ContentArgs) {
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
@@ -44,6 +45,9 @@ function BottomTabNavigatorContent({
     focusedRouteKey: state.routes[state.index]?.key,
     descriptors,
   });
+  // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
+  // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
+  const bottomTabDescriptors = descriptors as unknown as BottomTabDescriptorMap;
   const navigateToTab = (routeKey: string) => {
     const route = state.routes.find((route) => route.key === routeKey);
     if (route) {
@@ -56,7 +60,14 @@ function BottomTabNavigatorContent({
     }
   };
 
-  if (visibleRoutes.length === 0) {
+  usePreloadPlaceholderRoutes({
+    routes: visibleRoutes,
+    descriptors: bottomTabDescriptors,
+    preload,
+    lazyByDefault: true,
+  });
+
+  if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;
   }
 
@@ -69,12 +80,9 @@ function BottomTabNavigatorContent({
         routes: visibleRoutes,
         index: focusedIndex,
       }}
-      // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
-      // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
-      descriptors={descriptors as unknown as BottomTabDescriptorMap}
+      descriptors={bottomTabDescriptors}
       emitter={emitter}
       navigateToTab={navigateToTab}
-      preloadedRouteKeys={preloadedRouteKeys}
       popNestedStackToTop={popNestedStackToTop}
     />
   );

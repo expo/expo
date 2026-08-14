@@ -127,7 +127,6 @@ it('push should include (group)/index as an anchor route when using withAnchor',
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -136,7 +135,6 @@ it('push should include (group)/index as an anchor route when using withAnchor',
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -152,17 +150,14 @@ it('push should include (group)/index as an anchor route when using withAnchor',
                   {
                     key: expect.any(String),
                     name: 'test',
-                    params: undefined,
                   },
                   {
                     key: expect.any(String),
                     name: 'orange',
                     params: { initial: false },
-                    path: undefined,
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
@@ -213,7 +208,6 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -222,7 +216,6 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -239,11 +232,9 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
                     key: expect.any(String),
                     name: 'orange',
                     params: {},
-                    path: undefined,
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],

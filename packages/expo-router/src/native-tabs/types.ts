@@ -317,6 +317,8 @@ export interface NativeTabsProps extends PropsWithChildren {
   tintColor?: ColorValue;
   /**
    * The background color of the tab bar.
+   *
+   * On iOS 26 and later, the system draws the tab bar background and this prop has no effect.
    */
   backgroundColor?: ColorValue;
   /**
@@ -355,11 +357,15 @@ export interface NativeTabsProps extends PropsWithChildren {
   /**
    * The blur effect applied to the tab bar.
    *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
+   *
    * @platform iOS
    */
   blurEffect?: NativeTabsBlurEffect;
   /**
    * The color of the shadow.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
    *
@@ -377,6 +383,8 @@ export interface NativeTabsProps extends PropsWithChildren {
   };
   /**
    * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * @platform iOS
    */
@@ -530,7 +538,6 @@ export interface NativeTabsViewProps extends Omit<
 
 export interface NativeTabsViewTabItem {
   options: NativeTabOptions;
-  routeKey: string;
   name: string;
   contentRenderer: () => React.ReactNode;
 }
@@ -689,6 +696,8 @@ export interface NativeTabTriggerProps {
   contentStyle?: NativeTabOptions['contentStyle'];
   /**
    * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
    *

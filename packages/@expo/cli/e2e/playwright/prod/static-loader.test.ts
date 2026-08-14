@@ -60,7 +60,7 @@ test.describe('static loaders in production', () => {
     expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
   });
 
-  test('caches loader data for subsequent navigations', async ({ page }) => {
+  test('revalidates headerless loader data on every fresh mount', async ({ page }) => {
     const loaderRequests: string[] = [];
     page.on('request', (request) => {
       if (request.url().includes('/_expo/loaders/')) {
@@ -83,8 +83,13 @@ test.describe('static loaders in production', () => {
     await page.click('a[href="/posts/static-post-1"]');
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    // Should not make additional requests for cached static-post-1
-    expect(loaderRequests.length).toBe(2);
+    expect(loaderRequests).toEqual([
+      expect.stringContaining('/_expo/loaders/posts/static-post-1'),
+      expect.stringContaining('/_expo/loaders/index'),
+      expect.stringContaining('/_expo/loaders/posts/static-post-2'),
+      expect.stringContaining('/_expo/loaders/index'),
+      expect.stringContaining('/_expo/loaders/posts/static-post-1'),
+    ]);
   });
 
   test('handles loader module fetch errors gracefully', async ({ page }) => {

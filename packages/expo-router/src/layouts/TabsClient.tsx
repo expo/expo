@@ -21,6 +21,10 @@ import {
   type TabRouterOptions,
 } from '../react-navigation/native';
 import { unstable_integrateWithRouter } from '../standard-navigation';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { Href } from '../types';
 
 // Keep React Navigation client-only so the entry evaluates in React Server Components.
@@ -44,12 +48,15 @@ const Tabs = unstable_integrateWithRouter<
   TabRouterOptions,
   BottomTabNavigatorCreateProps
 >(createStandardBottomTabNavigator, TabRouter, {
+  processDescriptors: appendMissingPlaceholderTabDescriptors,
+  processState: appendMissingPlaceholderTabRoutes,
   createProps: ({ state, dispatch }) => ({
     routeNames: state.routeNames,
-    preloadedRouteKeys: state.preloadedRouteKeys,
+    preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
     popNestedStackToTop: (routeKey) => {
       const nestedState = state.routes.find((route) => route.key === routeKey)?.state;
-      if (nestedState?.type === 'stack' && nestedState.key) {
+      // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
+      if (nestedState?.key) {
         dispatch({ ...StackActions.popToTop(), target: nestedState.key });
       }
     },

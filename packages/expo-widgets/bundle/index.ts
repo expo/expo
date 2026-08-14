@@ -15,14 +15,17 @@ declare global {
     props: Dictionary,
     environment: Dictionary & { target?: string }
   ) => Dictionary | undefined;
+  var __expoWidgetEnvironment: Dictionary | undefined;
 }
 
 const __expoWidgetRender = function (props: Dictionary, environment: Dictionary) {
-  const { timestamp, ...rest } = environment;
+  // `materialColors` backs the native expo-ui module stub and stays out of the layout environment.
+  const { timestamp, materialColors, ...rest } = environment;
   const decoratedEnvironment: Dictionary = { ...rest };
   if (timestamp) {
     decoratedEnvironment.date = new Date(timestamp as number);
   }
+  globalThis.__expoWidgetEnvironment = { ...decoratedEnvironment, materialColors };
 
   return decorateInteractiveTargets(globalThis.__expoWidgetLayout(props, decoratedEnvironment));
 };

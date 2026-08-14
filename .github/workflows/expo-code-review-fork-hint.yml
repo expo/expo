@@ -50,17 +50,18 @@ jobs:
             echo "Hint already posted on #$PR — nothing to do."
             exit 0
           fi
+          # One paragraph per line, deliberately not wrapped: GitHub renders a single
+          # newline inside a comment paragraph as a hard break, so wrapping this to a
+          # column width posts ragged mid-sentence breaks. Let GitHub reflow it.
           cat > /tmp/fork-hint.md <<'MARKDOWN'
           <!-- expo-ai-code-reviewer:fork-hint -->
           The `ai-review` label does not start a review on a pull request from a fork.
 
-          GitHub does not give secrets to workflow runs triggered by a forked pull
-          request, so the reviewer cannot reach its model credential there. This is a
-          platform rule, not a setting we can change.
+          With the exception of a read-only `GITHUB_TOKEN`, [GitHub does not pass secrets to a workflow triggered from a forked repository](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull-request-events-for-forked-repositories), so the reviewer cannot reach its model credential there. This is a platform rule, not a setting we can change.
 
-          **A maintainer can comment `/review` or `/expo-review` on this PR instead.**
-          That path runs in the base repository's context, so it has the credential
-          and works normally.
+          **A maintainer can comment `/review`, `/expo-review`, or `@expo-bot review` on this PR instead.** That path runs in the base repository's context, so it has the credential and works normally.
+
+          Running it does not execute anything from the pull request: the branch is never checked out, and no dependency install, build, or script from it runs. The reviewer reads the diff and the changed files. Treat the result as advisory — a pull request's own code and description are part of what the reviewer reads, so a review that finds nothing is not evidence that the change is safe to merge.
           MARKDOWN
           gh pr comment "$PR" --repo "$REPO" --body-file /tmp/fork-hint.md
           echo "Posted the fork hint on #$PR."

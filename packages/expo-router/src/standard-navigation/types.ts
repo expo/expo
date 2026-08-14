@@ -12,6 +12,7 @@ import type {
   NavigationHelpers,
   NavigationState,
   ParamListBase,
+  DescriptorRouteProp,
   RouteSource,
 } from '../react-navigation/native';
 import type { GoBackAction, NavigateAction } from '../react-navigation/routers/CommonActions';
@@ -23,6 +24,20 @@ export type StandardNavigatorEventMapBase = Record<
 >;
 
 export type StandardNavigationAction = NavigateAction | GoBackAction;
+
+export type PlaceholderDescriptorMap = Record<
+  string,
+  {
+    route: DescriptorRouteProp<ParamListBase, string>;
+    options: object;
+    render: () => React.ReactNode;
+    routeSource?: RouteSource;
+  }
+>;
+
+export type DescribePlaceholderRoute = (
+  route: DescriptorRouteProp<ParamListBase, string>
+) => NonNullable<PlaceholderDescriptorMap[string]>;
 
 export type StandardNavigator<
   NavigatorOptions extends object,
@@ -54,9 +69,9 @@ export interface StandardNavigatorCreatePropsFactoryDeps<State extends Navigatio
  * Allows router-specific information to be exposed via navigator props alongside the standard
  * `state` and `actions`.
  *
- * Receives the raw Expo Router `state` and `dispatch`. Both are internal and may have small
- * breaking changes between releases, so prefer the `state` and `actions` passed to
- * `NavigatorContent` when they suffice.
+ * Receives the processed Expo Router `state` and raw `dispatch`. Both are internal and may have
+ * small breaking changes between releases, so prefer the `state` and `actions` passed to
+ * `NavigatorContent` when they suffice. When `processState` is provided, `state` is its result.
  *
  * @example
  * ```tsx
@@ -88,6 +103,28 @@ export type IntegrateWithRouterOptions<
   NavigatorOptions extends object = Record<string, any>,
   EventMap extends EventMapBase = EventMapBase,
 > = CreatePropsOption<State, CreateProps> & {
+  /**
+   * Pre-processes the builder state before it is converted to standard-navigation state.
+   *
+   * @example
+   * ```tsx
+   * processState: (state) => ({
+   *   ...state,
+   *   routes: state.routes.filter((route) => route.params?.hidden !== true),
+   * })
+   * ```
+   */
+  processState?: (
+    state: State,
+    descriptors: PlaceholderDescriptorMap,
+    describe: DescribePlaceholderRoute
+  ) => State;
+  /** Creates additional descriptors before `processState` and navigator rendering. */
+  processDescriptors?: (
+    descriptors: PlaceholderDescriptorMap,
+    state: State,
+    describe: DescribePlaceholderRoute
+  ) => PlaceholderDescriptorMap;
   /**
    * Transforms the screens declared as children of the navigator before they are rendered.
    *
@@ -180,6 +217,9 @@ export type StandardRouterNavigatorProps<
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
-> = StandardUseNavigationBuilderOptions<State, NavigatorOptions, EventMap> &
-  NavigatorProps &
-  RouterOptions;
+> = Omit<
+  StandardUseNavigationBuilderOptions<State, NavigatorOptions, EventMap>,
+  'initialRouteName'
+> &
+  Omit<NavigatorProps, 'initialRouteName'> &
+  Omit<RouterOptions, 'initialRouteName'>;

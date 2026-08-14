@@ -12,6 +12,8 @@ const projectRoot = getRouterE2ERoot();
 const inputDir = 'router-misc';
 
 test.describe(inputDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
@@ -26,7 +28,7 @@ test.describe(inputDir, () => {
     },
   });
 
-  test.beforeEach(async () => {
+  test.beforeAll(async () => {
     console.time('expo start');
     await expoStart.startAsync();
     console.timeEnd('expo start');
@@ -35,7 +37,7 @@ test.describe(inputDir, () => {
     await expoStart.fetchBundleAsync('/');
     console.timeEnd('Eagerly bundled JS');
   });
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await expoStart.stopAsync();
   });
 

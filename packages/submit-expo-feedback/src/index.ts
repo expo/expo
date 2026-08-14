@@ -10,7 +10,6 @@ export type {
   CliFeedbackRequest,
   CliFeedbackSandboxEnvironment,
   CliFeedbackTelemetryMetadata,
-  CliFeedbackUserMetadata,
 } from './types';
 
 runExpoFeedbackAsync().catch(logErrorAndExit);

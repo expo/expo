@@ -30,6 +30,7 @@ export function getTabPathFromRootStateByHref(
 
   const tabPath: TabPath[] = [];
   navigationRoutes.forEach((route, i, arr) => {
+    // TODO(ENG-22021): Fix link preview by detecting navigator type on native. https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
     if (route.state?.type === 'tab') {
       const tabState = route.state as TabNavigationState<ParamListBase>;
       const oldTabKey = tabState.routes[tabState.index]!.key;

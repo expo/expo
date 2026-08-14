@@ -42,22 +42,21 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
 
       const route = state.routes.find((route) => route.name === action.payload.name);
 
-      if (!route || !state) {
-        // This shouldn't occur, but lets just hand it off to the next navigator in case.
-        return null;
+      if (!route) {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
-      // We should reset if this is the first time visiting the route
-      let shouldReset = !state.history?.some((item) => item.key === route?.key) && !route.state;
+      // We should reset if this is the first time visiting the route.
+      let shouldReset =
+        !(state.history == null ? state.routes : state.history).some(
+          (item) => item.key === route.key
+        ) && !route.state;
 
       if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
         shouldReset = state.routes[state.index ?? 0]!.key !== route.key;
       }
 
       if (shouldReset) {
-        routerConfigOptions.routeParamList[route.name] = {
-          ...routerConfigOptions.routeParamList[route.name],
-        };
         state = {
           ...state,
           routes: state.routes.map((r) => {
