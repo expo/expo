@@ -5,6 +5,10 @@ name: AI code review (command)
 #   /review (or /expo-review, or @expo-bot review)  run once; router picks agents
 #   /review all (or /expo-review all, or @expo-bot review all)
 #   /review correctness security (either command, or @expo-bot review …)
+#   @expo-bot check          the review half of "verify + review from one
+#                            comment" (agent-commands.yml owns the verify
+#                            half). Any tail belongs to verify (--fix), so
+#                            the router always picks agents here.
 # This never changes configuration. CONTINUOUS review is configured in
 # expo-code-review.yml (the `pull_request` workflow) via the `review.trigger`
 # policy in .expo-code-review/config.jsonc and the `ai-review:skip` label.
@@ -21,7 +25,8 @@ permissions:
 
 jobs:
   command:
-    # Only PR comments starting with /review, /expo-review, or @expo-bot review.
+    # Only PR comments starting with /review, /expo-review, @expo-bot review,
+    # or @expo-bot check.
     # @ref LLP 0009#workflow-security-posture [implements] — gate controls who triggers, not what code runs
     if: >-
       github.event.issue.pull_request != null &&
@@ -31,7 +36,9 @@ jobs:
       github.event.comment.body == '/expo-review' ||
       startsWith(github.event.comment.body, '/expo-review ') ||
       github.event.comment.body == '@expo-bot review' ||
-      startsWith(github.event.comment.body, '@expo-bot review ')) &&
+      startsWith(github.event.comment.body, '@expo-bot review ') ||
+      github.event.comment.body == '@expo-bot check' ||
+      startsWith(github.event.comment.body, '@expo-bot check ')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     # Job-level so a prose comment that the gate rejects cannot claim this
@@ -59,10 +66,20 @@ jobs:
           # /review, /expo-review, or @expo-bot review (one-shot). Continuous
           # review is policy/label-driven; none of these change configuration.
           if [ "$first" = "@expo-bot" ]; then
-            if [ "$second" != "review" ]; then
-              echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
-            fi
-            rest=$(printf '%s' "$line" | awk '{for (i=3;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":"")}')
+            case "$second" in
+              review)
+                rest=$(printf '%s' "$line" | awk '{for (i=3;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":"")}')
+                ;;
+              # check = verify + review from one comment; agent-commands.yml
+              # owns the verify half. Any tail is verify's (--fix), so the
+              # review half ignores it and lets the router pick agents.
+              check)
+                rest=""
+                ;;
+              *)
+                echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+                ;;
+            esac
           else
             case "$first" in
               /review|/expo-review) rest=$(printf '%s' "$line" | cut -s -d' ' -f2-) ;;
