@@ -26,6 +26,7 @@
 ### 💡 Others
 
 - Re-enable sextant QR code for Zed ([#48382](https://github.com/expo/expo/pull/48382) by [@mchisolm0](https://github.com/mchisolm0))
+- [Internal] Add sandbox detection to telemetry context ([#47928](https://github.com/expo/expo/pull/47928) by [@davidmokos](https://github.com/davidmokos))
 
 ## 57.0.13 — 2026-08-06
 

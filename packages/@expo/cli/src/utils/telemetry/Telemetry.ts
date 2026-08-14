@@ -5,6 +5,7 @@ import { FetchDetachedClient } from './clients/FetchDetachedClient';
 import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
 import { getAgentTelemetryContext } from './utils/agent';
 import { createContext } from './utils/context';
+import { getSandboxTelemetryContext } from './utils/sandbox';
 import { getAnonymousId } from '../../api/user/UserSettings';
 import { env } from '../env';
 
@@ -92,6 +93,7 @@ export class Telemetry {
 
   private recordInternal(records: TelemetryRecord[]) {
     const agent = getAgentTelemetryContext();
+    const sandboxProvider = getSandboxTelemetryContext();
 
     return this.client.record(
       records.map((record) => ({
@@ -104,6 +106,7 @@ export class Telemetry {
         context: {
           ...this.context,
           sessionId: this.actor.sessionId,
+          ...(sandboxProvider ? { sandbox_provider: sandboxProvider } : {}),
           ...(agent ? { agent } : {}),
           client: { mode: this.client.strategy },
         },
