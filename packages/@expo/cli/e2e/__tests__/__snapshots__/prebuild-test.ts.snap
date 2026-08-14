@@ -2,6 +2,8 @@
 
 exports[`runs \`npx expo prebuild\` 1`] = `
 [
+  ".expo/prebuild/fingerprint-android.json",
+  ".expo/prebuild/fingerprint-ios.json",
   "App.js",
   "android/.gitignore",
   "android/app/build.gradle",

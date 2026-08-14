@@ -376,11 +376,11 @@ If you don't have any developer profiles setup on your computer then you'll need
 
 `npx expo needs-rebuild` checks whether the app installed on your simulator or device still matches your project. It compares the [fingerprint](/versions/latest/sdk/fingerprint/) embedded in the app at build time against the current project fingerprint, and reports the result through its exit code, so scripts and agents can act on it:
 
-| Exit code | Meaning                                                                               |
-| --------- | ------------------------------------------------------------------------------------ |
-| `0`       | Up to date — a JS reload is enough.                                                   |
-| `1`       | Rebuild required — run `npx expo run:<platform>`.                                     |
-| `2`       | Prebuild required — run `npx expo prebuild`, then rebuild.                    |
+| Exit code | Meaning                                                                                        |
+| --------- | ---------------------------------------------------------------------------------------------- |
+| `0`       | Up to date — a JS reload is enough.                                                            |
+| `1`       | Rebuild required — run `npx expo run:<platform>`.                                              |
+| `2`       | Prebuild required — run `npx expo prebuild`, then rebuild.                                     |
 | `3`       | Cannot determine — no device, app not installed, no embedded fingerprint, or the check failed. |
 
 By default, the command checks every platform with a reachable device. Use `--platform <all|android|ios>` to check specific platforms, `--device <name|udid|serial>` to check one specific simulator or device, `--app-id <id>` to look for a specific application ID (for example, with build flavors; requires a single `--platform`), and `--json` for machine-readable output that includes the recommended commands, the reason for the verdict, and the sources that changed.

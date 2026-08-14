@@ -278,7 +278,7 @@ describe(needsRebuildAsync, () => {
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     try {
       jest.mocked(getConfigEnvMode).mockReturnValue('development');
-      await needsRebuildAsync(projectRoot, { platform: 'ios', json: true });
+      await needsRebuildAsync(projectRoot, { platform: 'android', json: true });
       expect(loadEnvFiles).toHaveBeenCalledWith(projectRoot, {
         mode: 'development',
         silent: true,
@@ -306,12 +306,12 @@ describe(needsRebuildAsync, () => {
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     try {
       await needsRebuildAsync(projectRoot, {
-        platform: 'ios',
+        platform: 'android',
         device: 'UDID-1',
         appId: 'dev.expo.flavor',
         json: true,
       });
-      expect(getInstalledFingerprintIosAsync).toHaveBeenCalledWith(projectRoot, {
+      expect(getInstalledFingerprintAndroidAsync).toHaveBeenCalledWith(projectRoot, {
         expectedHash: expect.any(Promise),
         device: 'UDID-1',
         appId: 'dev.expo.flavor',
