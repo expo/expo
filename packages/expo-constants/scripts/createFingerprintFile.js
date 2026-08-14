@@ -45,7 +45,10 @@ async function createFingerprintFileAsync(projectRoot, destinationDir, platform,
 
   let Fingerprint;
   try {
-    Fingerprint = require('expo/fingerprint');
+    // Resolve from the project root — the same anchor as the check side (`@expo/cli` resolves
+    // `expo/fingerprint` from the project too). A module-relative require could load a different
+    // copy in a hoisted monorepo, embedding a hash the check side can never reproduce.
+    Fingerprint = require(require.resolve('expo/fingerprint', { paths: [projectRoot] }));
   } catch {
     return null;
   }
