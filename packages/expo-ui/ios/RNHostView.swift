@@ -5,8 +5,20 @@ import ExpoModulesCore
 
 internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
   @Field var matchContents: Bool = false
+  // Read by `ExpoViewShadowNode` in C++, never here. Declaring it makes it a supported prop name,
+  // without which React Native drops it before it reaches the shadow node.
+  @Field var layoutRoot: Bool = false
 }
 
+// EXPERIMENT (in-hierarchy touch ownership): when true, do not attach our own
+// `RCTSurfaceTouchHandler`. The surface root above us already dispatches this subtree's touches, and
+// running both produces two streams in two coordinate spaces, which cancels presses on any movement.
+// Deferring means `measure()` must be surface-relative, so `layoutRoot` is off too. Not yet valid for
+// content presented in its own window (sheet/popover), where there is no ancestor root.
+private let deferToSurfaceRoot = true
+
+// Opts out of the automatic `display: contents` applied to SwiftUI views: the hosted React Native
+// children lay out inside this view's Yoga box, so it has to keep one.
 struct RNHostView: ExpoSwiftUI.View {
 
   @ObservedObject var props: RNHostViewProps
@@ -15,12 +27,20 @@ struct RNHostView: ExpoSwiftUI.View {
   @StateObject private var touchHandler = RNHostTouchHandler()
 
   var body: some View {
+    hostedContent
+      .modifier(PublishContentOriginModifier(shadowNodeProxy: props.shadowNodeProxy))
+  }
+
+  @ViewBuilder
+  private var hostedContent: some View {
     if props.matchContents, let childUIView = firstChildUIView {
       ApplySizeFromYogaNode(childUIView: childUIView) {
         Children()
       }
       .onAppear {
-        touchHandler.attach(to: childUIView)
+        if !deferToSurfaceRoot {
+          touchHandler.attach(to: childUIView)
+        }
       }
       .onDisappear {
         touchHandler.detach()
@@ -40,7 +60,7 @@ struct RNHostView: ExpoSwiftUI.View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
         .onAppear {
-          if let view = firstChildUIView {
+          if !deferToSurfaceRoot, let view = firstChildUIView {
             touchHandler.attach(to: view)
           }
         }
@@ -52,6 +72,30 @@ struct RNHostView: ExpoSwiftUI.View {
 
   private var firstChildUIView: UIView? {
     props.children?.first?.uiView
+  }
+}
+
+// Publishes where SwiftUI placed this view inside its `Host`, so `measure()` reports the position
+// the hosted content actually occupies. Yoga positions this view's box relative to the `Host`, but
+// SwiftUI draws it wherever the surrounding stacks put it; without this the responder region sits
+// above the content and `Pressable` cancels a press as soon as the finger moves.
+private struct PublishContentOriginModifier: ViewModifier {
+  let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+
+  func body(content: Content) -> some View {
+    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+      content
+        .onGeometryChange(for: CGRect.self) { proxy in
+          proxy.frame(in: .named(expoHostCoordinateSpace))
+        } action: { frame in
+          shadowNodeProxy.setContentOrigin?(frame.origin)
+        }
+        .onDisappear {
+          shadowNodeProxy.clearContentOrigin?()
+        }
+    } else {
+      content
+    }
   }
 }
 
