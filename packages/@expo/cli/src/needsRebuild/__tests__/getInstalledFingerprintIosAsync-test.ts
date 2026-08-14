@@ -94,6 +94,9 @@ describe(getInstalledFingerprintIosAsync, () => {
     it.each([
       ['UDID', 'UDID-B'],
       ['name', 'iPhone 17 Pro'],
+      // Case-insensitive, like `expo run:ios --device` — UDIDs are often copied lowercased.
+      ['lowercase UDID', 'udid-b'],
+      ['differently cased name', 'IPHONE 17 pro'],
     ])(`checks only the simulator matching --device by %s`, async (_kind, deviceFilter) => {
       jest.mocked(getBootedSimulatorsAsync).mockResolvedValue([simB, simA]);
       vol.fromJSON({

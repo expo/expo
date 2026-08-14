@@ -51,6 +51,25 @@ export function assertWithOptionsArgs(
   }
 }
 
+/**
+ * Parse args like `assertArgs`, but exit with the given code on user-input errors — for
+ * commands whose exit codes are a public API and reserve code 1 for a verdict.
+ */
+export function assertArgsWithExitCode(
+  schema: arg.Spec,
+  argv: string[] | undefined,
+  errorExitCode: number
+): arg.Result<arg.Spec> {
+  try {
+    return arg(schema, { argv });
+  } catch (error: any) {
+    if ('code' in error && error.code.startsWith('ARG_') && !error.code.startsWith('ARG_CONFIG_')) {
+      Log.exit(error.message, errorExitCode);
+    }
+    throw error;
+  }
+}
+
 export function printHelp(info: string, usage: string, options: string, extra: string = ''): never {
   Log.exit(
     chalk`

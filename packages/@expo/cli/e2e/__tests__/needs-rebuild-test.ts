@@ -59,3 +59,14 @@ it('exits with code 3 on an invalid platform', async () => {
   // errors must surface as 3 (cannot determine), never as 1.
   expect(error.exitCode).toBe(3);
 });
+
+it('exits with code 3 on a mistyped flag', async () => {
+  const error: any = await executeExpoAsync(projectRoot, ['needs-rebuild', '--platfrom', 'ios'], {
+    verbose: false,
+  }).catch((error) => error);
+  expect(error).toBeInstanceOf(Error);
+  expect(error.message).toMatch(/unknown or unexpected option/i);
+  // Argument parsing errors go through a different path than command errors; both must
+  // report 3, never the rebuild-required code 1.
+  expect(error.exitCode).toBe(3);
+});

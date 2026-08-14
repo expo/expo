@@ -1,10 +1,6 @@
 import { vol } from 'memfs';
 
-import {
-  getPrebuildStaleness,
-  importFingerprint,
-  readPrebuildFingerprintMarker,
-} from '../../utils/nativeFingerprint';
+import { getNativeDirectoryStaleness, importFingerprint } from '../../utils/nativeFingerprint';
 import { getConfigEnvMode, loadEnvFiles } from '../../utils/nodeEnv';
 import { getInstalledFingerprintAndroidAsync } from '../getInstalledFingerprintAndroidAsync';
 import { getInstalledFingerprintIosAsync } from '../getInstalledFingerprintIosAsync';
@@ -15,8 +11,7 @@ import { checkNeedsRebuildAsync, needsRebuildAsync } from '../needsRebuildAsync'
 jest.mock('../../utils/nativeFingerprint', () => ({
   ...jest.requireActual('../../utils/nativeFingerprint'),
   importFingerprint: jest.fn(),
-  readPrebuildFingerprintMarker: jest.fn(),
-  getPrebuildStaleness: jest.fn(),
+  getNativeDirectoryStaleness: jest.fn(),
 }));
 jest.mock('../../utils/nodeEnv');
 jest.mock('../getInstalledFingerprintIosAsync');
@@ -47,8 +42,10 @@ beforeEach(() => {
     } as any,
     version: '0.19.3',
   });
-  jest.mocked(readPrebuildFingerprintMarker).mockReturnValue(null);
-  jest.mocked(getPrebuildStaleness).mockReturnValue({ status: 'unknown', changes: [] });
+  jest.mocked(getNativeDirectoryStaleness).mockReturnValue({
+    status: 'not-applicable',
+    changes: [],
+  });
   mockInstalled('current-hash', 'ios');
   mockInstalled('current-hash', 'android');
 });
@@ -90,8 +87,7 @@ describe(checkNeedsRebuildAsync, () => {
   });
 
   it(`exits 2 when the prebuild marker is stale, without waiting for a device`, async () => {
-    vol.fromJSON({ [`${projectRoot}/ios/Podfile`]: '' });
-    jest.mocked(getPrebuildStaleness).mockReturnValue({
+    jest.mocked(getNativeDirectoryStaleness).mockReturnValue({
       status: 'stale',
       changes: [
         { source: 'app config', change: 'changed' },
@@ -117,17 +113,6 @@ describe(checkNeedsRebuildAsync, () => {
       { source: 'plugins/withFoo.js', change: 'added' },
     ]);
     expect(result.exitCode).toBe(2);
-  });
-
-  it(`skips the prebuild check when the native directory is absent`, async () => {
-    jest.mocked(getPrebuildStaleness).mockReturnValue({ status: 'stale', changes: [] });
-    const result = await checkNeedsRebuildAsync(projectRoot, ['ios'], {
-      explicit: true,
-    });
-    expect(result.platforms.ios).toMatchObject({
-      status: 'up-to-date',
-      prebuildStatus: 'not-applicable',
-    });
   });
 
   it(`exits 3 when @expo/fingerprint is unavailable`, async () => {
@@ -260,8 +245,13 @@ describe(checkNeedsRebuildAsync, () => {
   });
 
   it(`aggregates the worst exit code (prebuild-stale over rebuild)`, async () => {
-    vol.fromJSON({ [`${projectRoot}/ios/Podfile`]: '' });
-    jest.mocked(getPrebuildStaleness).mockReturnValue({ status: 'stale', changes: [] });
+    jest
+      .mocked(getNativeDirectoryStaleness)
+      .mockImplementation((_root, platform) =>
+        platform === 'ios'
+          ? { status: 'stale', changes: [] }
+          : { status: 'not-applicable', changes: [] }
+      );
     mockInstalled('old-hash', 'android');
     const result = await checkNeedsRebuildAsync(projectRoot, ['android', 'ios'], {
       explicit: true,

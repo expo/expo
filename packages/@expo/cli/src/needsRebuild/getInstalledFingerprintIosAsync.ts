@@ -30,8 +30,11 @@ export async function getInstalledFingerprintIosAsync(
     (simulator) => simulator.osType === 'iOS'
   );
   if (deviceFilter) {
+    // Case-insensitive, matching how `expo run:ios --device` resolves devices.
+    const filter = deviceFilter.toLowerCase();
     simulators = simulators.filter(
-      (simulator) => simulator.udid === deviceFilter || simulator.name === deviceFilter
+      (simulator) =>
+        simulator.udid.toLowerCase() === filter || simulator.name.toLowerCase() === filter
     );
   }
   if (!simulators.length) {
