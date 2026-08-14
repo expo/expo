@@ -74,7 +74,7 @@ afterEvaluate {
 
   // Embed the fingerprint in debuggable variants only. Release builds skip the computation
   // and never ship the file — `npx expo needs-rebuild` targets the development loop.
-  project.android.applicationVariants.all { variant ->
+  project.android.libraryVariants.all { variant ->
     if (!variant.buildType.debuggable) {
       return
     }
