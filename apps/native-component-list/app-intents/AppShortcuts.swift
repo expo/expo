@@ -1,14 +1,12 @@
 import AppIntents
 
-/**
- All App Shortcuts for this app. Phrases are compiled into the app and cannot be created
- at runtime. Required parameters that are not in the launch phrase are collected by Siri
- as follow-up questions.
-
- System rules:
- - Every phrase must include \(.applicationName) or the phrase is dropped at build time.
- - At most 10 App Shortcuts per app. Apple recommends 2-5.
- */
+/// All App Shortcuts for this app. Phrases are compiled into the app and cannot be created
+/// at runtime. Required parameters that are not in the launch phrase are collected by Siri
+/// as follow-up questions.
+///
+/// System rules:
+/// - Every phrase must include \(.applicationName) or the phrase is dropped at build time.
+/// - At most 10 App Shortcuts per app. Apple recommends 2-5.
 struct AppShortcuts: AppShortcutsProvider {
   static var appShortcuts: [AppShortcut] {
     AppShortcut(
@@ -26,14 +24,10 @@ struct AppShortcuts: AppShortcutsProvider {
         "Place an order in \(.applicationName)",
         "Order food in \(.applicationName)",
         "Order \(\.$dish) in \(.applicationName)",
-        "Place an order for \(\.$dish) in \(.applicationName)"
+        "Place an order for \(\.$dish) in \(.applicationName)",
       ],
       shortTitle: "Place an order",
       systemImageName: "fork.knife"
     )
-
-    // The mail example deliberately adds no phrase. Its intents conform to Apple's `mail`
-    // schema domain, so Siri, Apple Intelligence, and the Shortcuts app discover them from
-    // the extracted App Intents metadata instead.
   }
 }

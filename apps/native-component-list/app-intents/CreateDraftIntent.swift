@@ -1,11 +1,9 @@
 import AppIntents
-import Foundation
 internal import ExpoAppIntents
+import Foundation
 
-/**
-  On devices running the new AI Siri, the `CreateDraftIntent` should be automatically
-  picked up by the system without the need of registering it in AppShortcutProvider phrases.
- */
+/// On devices running the new AI Siri, the `CreateDraftIntent` should be automatically
+/// picked up by the system without the need of registering it in AppShortcutProvider phrases.
 @available(iOS 18.0, *)
 @AppIntent(schema: .mail.createDraft)
 struct CreateDraftIntent {
@@ -39,7 +37,7 @@ struct CreateDraftIntent {
         "subject": .string(subject ?? ""),
         "body": .string(draft.bodyText),
         "recipients": .array(draft.recipientAddresses.map(AppIntentValue.string)),
-        "attachmentCount": .int(attachments.count)
+        "attachmentCount": .int(attachments.count),
       ]
     )
 
