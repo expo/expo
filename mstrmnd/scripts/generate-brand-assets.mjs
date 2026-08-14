@@ -11,14 +11,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const assets = path.join(__dirname, '..', 'assets');
 
 function markSvg(size, bg = 'transparent') {
-  const stroke = Math.max(6, size * 0.045);
+  const stroke = Math.max(5, size * 0.052);
   const cx = size / 2;
-  const cy = size / 2 + size * 0.02;
-  const r = size * 0.36;
-  const top = `${cx},${cy - r}`;
-  const bl = `${cx - r * 0.866},${cy + r * 0.5}`;
-  const br = `${cx + r * 0.866},${cy + r * 0.5}`;
-  const mid = `${cx},${cy + size * 0.02}`;
+  const cy = size / 2;
+  const R = size * 0.36;
+  const topX = cx;
+  const topY = cy - R;
+  const blX = cx - R * 0.8660254;
+  const blY = cy + R * 0.5;
+  const brX = cx + R * 0.8660254;
+  const brY = cy + R * 0.5;
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
@@ -29,7 +31,7 @@ function markSvg(size, bg = 'transparent') {
       <stop offset="100%" stop-color="#8A9098"/>
     </linearGradient>
     <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="${size * 0.02}" result="blur"/>
+      <feGaussianBlur stdDeviation="${size * 0.018}" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -38,10 +40,10 @@ function markSvg(size, bg = 'transparent') {
   </defs>
   <rect width="100%" height="100%" fill="${bg}"/>
   <g filter="url(#glow)" fill="none" stroke="url(#chrome)" stroke-width="${stroke}" stroke-linejoin="round" stroke-linecap="round">
-    <polygon points="${top} ${br} ${bl}"/>
-    <line x1="${top.split(',')[0]}" y1="${top.split(',')[1]}" x2="${mid.split(',')[0]}" y2="${mid.split(',')[1]}"/>
-    <line x1="${bl.split(',')[0]}" y1="${bl.split(',')[1]}" x2="${mid.split(',')[0]}" y2="${mid.split(',')[1]}"/>
-    <line x1="${br.split(',')[0]}" y1="${br.split(',')[1]}" x2="${mid.split(',')[0]}" y2="${mid.split(',')[1]}"/>
+    <polygon points="${topX},${topY} ${brX},${brY} ${blX},${blY}"/>
+    <line x1="${topX}" y1="${topY}" x2="${cx}" y2="${cy}"/>
+    <line x1="${blX}" y1="${blY}" x2="${cx}" y2="${cy}"/>
+    <line x1="${brX}" y1="${brY}" x2="${cx}" y2="${cy}"/>
   </g>
 </svg>`;
 }
@@ -60,11 +62,15 @@ await writePng('android-icon-foreground.png', 432, 'transparent');
 await writePng('brand-mark.png', 512, 'transparent');
 await writePng('brand-mark-dark.png', 512, '#000000');
 
-// adaptive background solid black
 await sharp({
   create: { width: 432, height: 432, channels: 3, background: '#000000' },
 })
   .png()
   .toFile(path.join(assets, 'android-icon-background.png'));
+
+fs.copyFileSync(
+  path.join(assets, 'brand-mark-dark.png'),
+  path.join(assets, 'android-icon-monochrome.png'),
+);
 
 console.log('brand assets ready');
