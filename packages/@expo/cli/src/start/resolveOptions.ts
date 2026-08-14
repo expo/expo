@@ -23,6 +23,8 @@ export type Options = {
   devClient: boolean;
   scheme: string | null;
   host: 'localhost' | 'lan' | 'tunnel';
+  /** Native bundler override, e.g. `expo start --bundler rollipop`. */
+  bundler?: 'metro' | 'webpack' | 'rollipop';
 };
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
@@ -79,6 +81,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
     scheme,
     host,
+    bundler: args['--bundler'] as Options['bundler'] | undefined,
   };
 }
 
@@ -160,8 +163,8 @@ export function resolveHostType(options: {
 export async function resolvePortsAsync(
   projectRoot: string,
   options: Partial<Pick<Options, 'port' | 'devClient'>>,
-  bundlers: ('metro' | 'webpack')[]
-): Promise<{ metroPort: number; webpackPort?: number }> {
+  bundlers: ('metro' | 'webpack' | 'rollipop')[]
+): Promise<{ metroPort: number; webpackPort?: number; rollipopPort?: number }> {
   const metroPort = await resolveMetroPortAsync(projectRoot, {
     defaultPort: options.port,
     fallbackPort: 8081,
@@ -180,6 +183,17 @@ export async function resolvePortsAsync(
       throw new AbortCommandError();
     }
     return { metroPort, webpackPort };
+  }
+
+  if (bundlers.includes('rollipop')) {
+    const rollipopPort = await choosePortAsync(projectRoot, {
+      defaultPort: 8081,
+      host: env.WEB_HOST,
+    });
+    if (rollipopPort == null) {
+      throw new AbortCommandError();
+    }
+    return { metroPort, rollipopPort };
   }
 
   return { metroPort };

@@ -60,7 +60,11 @@ export async function _getMultiBundlerStartOptions(
 
   const multiBundlerStartOptions = bundlers.map((bundler) => {
     const port =
-      bundler === 'webpack' ? multiBundlerSettings.webpackPort : multiBundlerSettings.metroPort;
+      bundler === 'webpack'
+        ? multiBundlerSettings.webpackPort
+        : bundler === 'rollipop'
+          ? multiBundlerSettings.rollipopPort
+          : multiBundlerSettings.metroPort;
     return {
       type: bundler,
       options: {
@@ -100,7 +104,7 @@ export async function startAsync(
     });
   }
 
-  const platformBundlers = getPlatformBundlers(projectRoot, exp);
+  const platformBundlers = getPlatformBundlers(projectRoot, exp, options.bundler);
 
   const [defaultOptions, startOptions, webPort] = await _getMultiBundlerStartOptions(
     projectRoot,

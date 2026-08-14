@@ -28,6 +28,9 @@ const BUNDLERS = {
   metro: () =>
     require('./metro/MetroBundlerDevServer')
       .MetroBundlerDevServer as typeof import('./metro/MetroBundlerDevServer').MetroBundlerDevServer,
+  rollipop: () =>
+    require('./rollipop/RollipopBundlerDevServer')
+      .RollipopBundlerDevServer as typeof import('./rollipop/RollipopBundlerDevServer').RollipopBundlerDevServer,
 };
 
 /** Manages interacting with multiple dev servers. */
