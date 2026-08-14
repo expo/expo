@@ -117,3 +117,27 @@ test('replaces a tab child state when trusted carried state differs', () => {
 
   expect(result?.state.routes[1]?.state).toBe(nextChildState);
 });
+
+test('resetOnFocus preserves child state when reselecting the focused tab', () => {
+  const router = ExpoTabRouter({ triggerMap: {} });
+  const options = { routeNames: ['first', 'second'], routeGetIdList: {} };
+  const childState = { routes: [{ name: 'child' }, { name: 'details' }], index: 1 };
+  const state = router.getRehydratedState(
+    {
+      index: 1,
+      routes: [
+        { key: 'first-key', name: 'first' },
+        { key: 'second-key', name: 'second', state: childState },
+      ],
+    },
+    options
+  );
+
+  const result = router.getStateForAction(
+    state,
+    { type: 'JUMP_TO', payload: { name: 'second', resetOnFocus: true } },
+    options
+  );
+
+  expect(result?.state.routes[1]?.state).toBe(childState);
+});

@@ -1,5 +1,7 @@
+import { store } from '../../../global-state/router-store';
 import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/index';
+import { INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME } from '../../../navigationParams';
 import type { NavigationState } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
 import {
@@ -258,6 +260,8 @@ describe(getTabPathFromRootStateByHref, () => {
 });
 
 describe(getPreloadedRouteFromRootStateByHref, () => {
+  let getStateForHref: jest.SpyInstance | undefined;
+
   beforeEach(() => {
     renderRouter({
       _layout: () => (
@@ -277,6 +281,11 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       'explore/news/index': () => null,
       'explore/news/[title]': () => null,
     });
+  });
+
+  afterEach(() => {
+    getStateForHref?.mockRestore();
+    getStateForHref = undefined;
   });
 
   it('returns correct preloaded route in the same stack', () => {
@@ -423,5 +432,134 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
         face: '1e3a8a',
       },
     });
+  });
+
+  it('matches the preloaded route by nested state shape', () => {
+    getStateForHref = jest.spyOn(store, 'getStateForHref').mockReturnValue({
+      routes: [
+        {
+          name: 'details',
+          params: { id: 'one' },
+          state: {
+            routes: [{ name: 'child', params: { filter: 'target' } }],
+          },
+        },
+      ],
+    });
+    const matchingRoute = {
+      key: 'details-matching',
+      name: 'details',
+      params: {
+        id: 'one',
+        [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+      },
+      state: {
+        key: 'child-stack-generated',
+        index: 0,
+        routeNames: ['child'],
+        routes: [
+          {
+            key: 'child-generated',
+            name: 'child',
+            params: {
+              filter: 'target',
+              [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+            },
+          },
+        ],
+        stale: false as const,
+        type: 'stack' as const,
+        __internal__routerActionState: true as const,
+      },
+    };
+    const state = {
+      key: 'root-stack',
+      index: 0,
+      routeNames: ['details'],
+      routes: [
+        {
+          key: 'details-active',
+          name: 'details',
+          params: { id: 'one' },
+          state: {
+            key: 'active-child-stack',
+            index: 0,
+            routeNames: ['child'],
+            routes: [
+              {
+                key: 'active-child',
+                name: 'child',
+                params: { filter: 'active' },
+              },
+            ],
+            stale: false as const,
+            type: 'stack' as const,
+          },
+        },
+        {
+          key: 'details-wrong',
+          name: 'details',
+          params: { id: 'one' },
+          state: {
+            key: 'wrong-child-stack',
+            index: 0,
+            routeNames: ['child'],
+            routes: [
+              {
+                key: 'wrong-child',
+                name: 'child',
+                params: { filter: 'wrong' },
+              },
+            ],
+            stale: false as const,
+            type: 'stack' as const,
+          },
+        },
+        matchingRoute,
+      ],
+      stale: false as const,
+      type: 'stack' as const,
+    };
+
+    expect(getPreloadedRouteFromRootStateByHref('/details', state)).toBe(matchingRoute);
+  });
+
+  it('does not match a preloaded route from a different branch', () => {
+    getStateForHref = jest.spyOn(store, 'getStateForHref').mockReturnValue({
+      routes: [
+        {
+          name: 'target',
+          state: { routes: [{ name: 'child', params: { filter: 'target' } }] },
+        },
+      ],
+    });
+    const unrelatedPreloadedRoute = {
+      key: 'child-preloaded',
+      name: 'child',
+      params: { filter: 'target' },
+    };
+    const state = {
+      key: 'root-stack',
+      index: 0,
+      routeNames: ['current', 'target'],
+      routes: [
+        {
+          key: 'current',
+          name: 'current',
+          state: {
+            key: 'current-stack',
+            index: 0,
+            routeNames: ['index', 'child'],
+            routes: [{ key: 'index', name: 'index' }, unrelatedPreloadedRoute],
+            stale: false as const,
+            type: 'stack' as const,
+          },
+        },
+      ],
+      stale: false as const,
+      type: 'stack' as const,
+    };
+
+    expect(getPreloadedRouteFromRootStateByHref('/target/child', state)).toBeUndefined();
   });
 });

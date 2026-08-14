@@ -1,12 +1,20 @@
 import type { UrlObject } from '../LocationProvider';
-import { findRouteNodeByName, type RouteNode } from '../Route';
+import {
+  findRouteNodeByName,
+  getValidInitialRouteName,
+  sortRoutesWithInitial,
+  type RouteNode,
+} from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
+import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
+import type { RouterRegistry } from '../global-state/routerRegistry';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type {
   LinkingOptions,
+  NavigationAction,
+  NavigationState,
   ParamListBase,
-  PartialRoute,
-  Route,
+  PartialState,
 } from '../react-navigation/native';
 import type { Href } from '../types';
 import { type ScreenProps, useSortedScreens } from '../useScreens';
@@ -34,12 +42,55 @@ type TriggerConfig =
       name: string;
       href: string;
       routeNode: RouteNode;
+      layoutRouteNode: RouteNode;
       contextKey: string;
       action: JumpToNavigationAction;
+      targetState?: PartialState<NavigationState>;
+      deep: boolean;
     }
   | { type: 'external'; name: string; href: string };
 
 export type TriggerMap = Record<string, TriggerConfig>;
+
+export function buildTabAction(
+  config: Extract<TriggerConfig, { type: 'internal' }>,
+  state: NavigationState,
+  registry: RouterRegistry,
+  resetOnFocus?: boolean
+): NavigationAction {
+  const route = state.routes.find((route) => route.name === config.routeNode.route);
+  const isSwitching = state.routes[state.index]?.key !== route?.key;
+  const shouldResolve =
+    config.deep || route?.state === undefined || Boolean(resetOnFocus && isSwitching);
+  const navigationState =
+    resetOnFocus && isSwitching && route?.state
+      ? {
+          ...state,
+          routes: state.routes.map((currentRoute) =>
+            currentRoute.key === route.key ? { ...currentRoute, state: undefined } : currentRoute
+          ),
+        }
+      : state;
+  const action = {
+    ...config.action,
+    type: shouldResolve && !isSwitching ? 'NAVIGATE' : 'JUMP_TO',
+    payload: {
+      ...config.action.payload,
+      ...(resetOnFocus !== undefined ? { resetOnFocus } : undefined),
+    },
+  };
+
+  return shouldResolve && config.targetState
+    ? (resolveNavigationDestination({
+        targetState: config.targetState,
+        navigationState,
+        routeNode: config.layoutRouteNode,
+        registry,
+        action,
+        // The resolver preserves the supplied action type.
+      }) as NavigationAction)
+    : action;
+}
 
 export function useTriggersToScreens(
   triggers: ScreenTrigger[],
@@ -156,23 +207,19 @@ export function useTriggersToScreens(
       );
     }
 
-    const params = { ...routeState.params };
-    let nestedState = routeState.state;
-    while (nestedState) {
-      const nestedRoute = nestedState.routes[nestedState.index ?? nestedState.routes.length - 1]!;
-      Object.assign(params, nestedRoute.params);
-      nestedState = nestedRoute.state;
-    }
-
-    // TODO(@ubax): Remove nested trigger href support to unify with other tab navigators.
-    const action = stateToAction(state, layoutRouteNode.route);
-    action.payload.params = { ...params, ...action.payload.params };
+    const action: JumpToNavigationAction = {
+      type: 'JUMP_TO',
+      payload: { name: routeState.name, params: routeState.params },
+    };
     configs.push({
       ...trigger,
       href: resolvedHref,
       routeNode,
+      layoutRouteNode,
       contextKey,
       action,
+      targetState: state.state,
+      deep: hasDeepDestination(routeState, routeNode),
     });
   }
 
@@ -199,46 +246,32 @@ export function useTriggersToScreens(
   };
 }
 
-// TODO(@ubax): Remove stateToAction together with nested trigger href support.
-export function stateToAction(
-  state: PartialRoute<Route<string, object | undefined>> | undefined,
-  startAtRoute?: string
-): JumpToNavigationAction {
-  const rootPayload: any = {};
-  let payload = rootPayload;
-
-  startAtRoute = startAtRoute === '' ? '__root' : startAtRoute;
-
-  let foundStartingPoint = startAtRoute === undefined || !state?.state;
+function hasDeepDestination(
+  route: { state?: PartialState<NavigationState> },
+  routeNode: RouteNode
+) {
+  let state = route.state;
+  let node = routeNode;
 
   while (state) {
-    if (foundStartingPoint) {
-      if (payload === rootPayload) {
-        payload.name = state.name;
-      } else {
-        payload.screen = state.name;
-      }
-      payload.params = state.params ? { ...state.params } : {};
-
-      state = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
-
-      if (state) {
-        payload.params ??= {};
-        payload = payload.params;
-      }
-    } else {
-      if (state.name === startAtRoute) {
-        foundStartingPoint = true;
-      }
-      const nextState = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
-      if (nextState) {
-        state = nextState;
-      }
+    const childRoute = state.routes[state.index ?? state.routes.length - 1];
+    const initialRouteName =
+      getValidInitialRouteName(node) ?? [...node.children].sort(sortRoutesWithInitial())[0]?.route;
+    if (
+      !childRoute ||
+      childRoute.name !== initialRouteName ||
+      (childRoute.params && Object.keys(childRoute.params).length > 0)
+    ) {
+      return true;
     }
+
+    const childNode = findRouteNodeByName(node, childRoute.name);
+    if (!childNode) {
+      return true;
+    }
+    node = childNode;
+    state = childRoute.state;
   }
 
-  return {
-    type: 'JUMP_TO',
-    payload: rootPayload,
-  };
+  return false;
 }

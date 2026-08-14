@@ -242,7 +242,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
               params: {
                 '#': 'hash1',
               },
-              path: '/',
+              path: '/?#hash1',
             },
           ],
           stale: false,

@@ -84,8 +84,10 @@ test('continues a blocked parent back after disabling nested prevention', () => 
 });
 
 test('throws a descriptive error when beforeRemove calls preventDefault', () => {
+  let goBack: () => void;
   const Form = () => {
     const navigation = useNavigation();
+    goBack = navigation.goBack;
     React.useEffect(
       () =>
         navigation.addListener('beforeRemove', (event) => {
@@ -107,7 +109,7 @@ test('throws a descriptive error when beforeRemove calls preventDefault', () => 
 
   act(() => router.push('/form'));
 
-  expect(() => act(() => router.back())).toThrow(
+  expect(() => act(() => goBack())).toThrow(
     '`beforeRemove` is a notification-only event and cannot prevent screen removal. Use `usePreventRemove` with the `removePrevented` event instead.'
   );
   expect(store.getRouteInfo().pathname).toBe('/form');

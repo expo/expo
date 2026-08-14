@@ -755,15 +755,8 @@ export type NavigationContainerEventMap = {
   };
 };
 
-type NotUndefined<T> = T extends undefined ? never : T;
-
 export type ParamListRoute<ParamList extends ParamListBase> = {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  [RouteName in keyof ParamList]: NavigatorScreenParams<{}> extends ParamList[RouteName]
-    ? NotUndefined<ParamList[RouteName]> extends NavigatorScreenParams<infer T>
-      ? ParamListRoute<T>
-      : Route<Extract<RouteName, string>, ParamList[RouteName]>
-    : Route<Extract<RouteName, string>, ParamList[RouteName]>;
+  [RouteName in keyof ParamList]: Route<Extract<RouteName, string>, ParamList[RouteName]>;
 }[keyof ParamList];
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -918,39 +911,6 @@ type TypedNavigatorInternal<
   ) => null;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type NavigatorScreenParams<ParamList extends {}> =
-  | {
-      screen?: never;
-      params?: never;
-      merge?: never;
-      initial?: never;
-      pop?: never;
-      path?: string;
-      state: PartialState<NavigationState> | NavigationState | undefined;
-    }
-  | {
-      [RouteName in keyof ParamList]: undefined extends ParamList[RouteName]
-        ? {
-            screen: RouteName;
-            params?: ParamList[RouteName];
-            merge?: boolean;
-            initial?: boolean;
-            path?: string;
-            pop?: boolean;
-            state?: never;
-          }
-        : {
-            screen: RouteName;
-            params: ParamList[RouteName];
-            merge?: boolean;
-            initial?: boolean;
-            path?: string;
-            pop?: boolean;
-            state?: never;
-          };
-    }[keyof ParamList];
-
 type PathConfigAlias = {
   /**
    * Path string to match against.
@@ -1003,11 +963,5 @@ export type PathConfig<ParamList extends {}> = Partial<PathConfigAlias> & {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export type PathConfigMap<ParamList extends {}> = {
-  [RouteName in keyof ParamList]?: NonNullable<ParamList[RouteName]> extends NavigatorScreenParams<
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    infer T extends {}
-  >
-    ? string | PathConfig<T>
-    : // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-        string | Omit<PathConfig<{}>, 'screens' | 'initialRouteName'>;
+  [RouteName in keyof ParamList]?: string | PathConfig<ParamListBase>;
 };

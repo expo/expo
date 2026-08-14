@@ -227,12 +227,7 @@ test('builds action from href outside of a navigator', () => {
 
     expect(action).toEqual({
       type: 'NAVIGATE',
-      payload: {
-        name: 'Foo',
-        path: '/foo',
-        params: {},
-        pop: true,
-      },
+      payload: { name: 'Foo', path: '/foo', pop: true },
     });
 
     return null;
@@ -255,12 +250,7 @@ test('builds action from href in navigator screen', () => {
 
     expect(action).toEqual({
       type: 'NAVIGATE',
-      payload: {
-        name: 'Foo',
-        path: '/foo',
-        params: {},
-        pop: true,
-      },
+      payload: { name: 'Foo', path: '/foo', pop: true },
     });
 
     return null;
@@ -289,14 +279,12 @@ test('builds action from href in nested navigator', () => {
       type: 'NAVIGATE',
       payload: {
         name: 'Foo',
-        params: {
-          id: '42',
-          initial: true,
-          screen: 'Bar',
-          params: { id: '42' },
-          path: '/foo/bar/42',
-        },
+        params: { id: '42' },
         pop: true,
+        state: {
+          __internal__routerActionState: true,
+          routes: [{ name: 'Bar', path: '/foo/bar/42', params: { id: '42' } }],
+        },
       },
     });
 

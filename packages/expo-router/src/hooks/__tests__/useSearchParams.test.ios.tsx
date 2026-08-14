@@ -38,6 +38,19 @@ describe(useSearchParams, () => {
     expect(result.current.getAll('test')).toEqual(['1', '2']);
   });
 
+  it('includes screen and params in global search params', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const { result } = renderHook(() => useSearchParams({ global: true }), ['index'], {
+      initialUrl: '/?screen=feed&params=value',
+    });
+
+    expect([...result.current.entries()]).toEqual([
+      ['screen', 'feed'],
+      ['params', 'value'],
+    ]);
+    warn.mockRestore();
+  });
+
   it(`cannot set params`, () => {
     const { result } = renderHook(() => useSearchParams(), ['index'], {
       initialUrl: '/?test=1&test=2',
