@@ -1,7 +1,8 @@
 /** Official MSTRMND brand tokens — metallic tetrahedron system */
 export const brand = {
   name: 'MSTRMND',
-  wordmark: 'M S T R M N D',
+  /** Continuous wordmark — use letterSpacing in UI, not literal spaces */
+  wordmark: 'MSTRMND',
   tagline: 'Building intelligent systems. Empowering human potential.',
   pillars: ['Research', 'Technology', 'Systems', 'Future'] as const,
 } as const;
@@ -20,7 +21,7 @@ export const colors = {
   chromeHot: '#F4F6F8',
   ink: '#F2F4F6',
   muted: '#7A8088',
-  /** Brand signal — silver, not neon */
+  /** Brand signal — silver */
   signal: '#C8CDD4',
   amber: '#FFB020',
   cyan: '#3DDCFF',

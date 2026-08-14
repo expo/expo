@@ -10,11 +10,11 @@ import sharp from 'sharp';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const assets = path.join(__dirname, '..', 'assets');
 
-function markSvg(size, bg = 'transparent') {
-  const stroke = Math.max(5, size * 0.052);
+function markSvg(size, bg = 'transparent', strokeScale = 0.064) {
+  const stroke = Math.max(6, size * strokeScale);
   const cx = size / 2;
   const cy = size / 2;
-  const R = size * 0.36;
+  const R = size * 0.35;
   const topX = cx;
   const topY = cy - R;
   const blX = cx - R * 0.8660254;
@@ -25,13 +25,13 @@ function markSvg(size, bg = 'transparent') {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
   <defs>
-    <linearGradient id="chrome" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="chrome" x1="15%" y1="0%" x2="90%" y2="100%">
       <stop offset="0%" stop-color="#FFFFFF"/>
-      <stop offset="40%" stop-color="#D4D8DE"/>
-      <stop offset="100%" stop-color="#8A9098"/>
+      <stop offset="42%" stop-color="#D2D6DC"/>
+      <stop offset="100%" stop-color="#8B919A"/>
     </linearGradient>
     <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
-      <feGaussianBlur stdDeviation="${size * 0.018}" result="blur"/>
+      <feGaussianBlur stdDeviation="${size * 0.016}" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>

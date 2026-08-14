@@ -2,9 +2,9 @@ import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AgentGrid } from '@/components/AgentGrid';
-import { BrandMark } from '@/components/BrandMark';
+import { BrandLockup } from '@/components/BrandLockup';
 import { MainAgentWindow } from '@/components/MainAgentWindow';
-import { brand, colors, spacing } from '@/constants/theme';
+import { colors, spacing } from '@/constants/theme';
 import { useController } from '@/context/ControllerContext';
 
 export default function ControllerScreen() {
@@ -19,12 +19,9 @@ export default function ControllerScreen() {
       />
       <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
         <View style={styles.topBar}>
-          <View style={styles.brandRow}>
-            <BrandMark size={28} glow={false} />
-            <View>
-              <Text style={styles.brand}>{brand.wordmark}</Text>
-              <Text style={styles.sub}>agent controller</Text>
-            </View>
+          <View>
+            <BrandLockup markSize={26} compact />
+            <Text style={styles.sub}>agent controller</Text>
           </View>
           <View style={styles.session}>
             <View style={[styles.dot, { backgroundColor: selectedAgent.accent }]} />
@@ -61,24 +58,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     paddingTop: 4,
   },
-  brandRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  brand: {
-    fontFamily: 'Syne_800ExtraBold',
-    fontSize: 18,
-    color: colors.chromeHot,
-    letterSpacing: 4.5,
-  },
   sub: {
     fontFamily: 'SpaceGrotesk_400Regular',
     color: colors.muted,
     fontSize: 9,
     letterSpacing: 1.8,
     textTransform: 'uppercase',
-    marginTop: 2,
+    marginTop: 4,
+    marginLeft: 36,
   },
   session: {
     flexDirection: 'row',
