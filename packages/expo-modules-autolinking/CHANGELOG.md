@@ -18,6 +18,7 @@
 - [Android] Resolve symlinks in the Gradle plugin `sourceDir` before it reaches `includeBuild`. Android Studio failed to sync with `Missing ExternalProject for :` in pnpm workspaces with a patched dependency. ([#48495](https://github.com/expo/expo/pull/48495) by [@lukmccall](https://github.com/lukmccall))
 - Fixed unsorted autolinking result and introduced unstable fingerprint. ([#48629](https://github.com/expo/expo/pull/48629) by [@kudo](https://github.com/kudo))
 - [iOS] Fix `'React/RCTBridge.h' file not found` with `ios.useFrameworks: "dynamic"` by reverting the dynamic-framework linkage guard from [#47500](https://github.com/expo/expo/pull/47500). Under `:dynamic` linkage every pod target is already a dynamic framework, so the guard skipped the whole `USE_FRAMEWORKS` downgrade. `@rnmapbox/maps` 10.3.2 no longer needs the guard because it skips its own dynamic flip when precompiled modules are enabled. ([#48869](https://github.com/expo/expo/pull/48869) by [@kudo](https://github.com/kudo))
+- [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -801,8 +802,6 @@ _This version does not introduce any user-facing changes._
 ## 1.4.0 — 2023-06-13
 
 ### 🎉 New features
-
-- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
 
 ## 1.3.0 — 2023-05-08
 

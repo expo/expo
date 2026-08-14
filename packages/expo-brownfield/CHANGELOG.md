@@ -10,6 +10,9 @@
 
 - [android] Fix `brownfield.fused.strip-packages` corrupting the generated `ExpoModulesPackageList.kt` when given a broad prefix (e.g. `expo.modules`). ([@gabrieldonadel](https://github.com/gabrieldonadel)) ([#48118](https://github.com/expo/expo/pull/48118) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix `ARG_MAX` error when using `multipleFrameworks`. ([#47999](https://github.com/expo/expo/pull/47999) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [android] Use `minSdk { version = release(24) }` in the fused library template, since AGP 9 replaced the `minSdk` property on `androidFusedLibrary` with a `MinSdkSpec` block. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [android] Declare the fused-mode AGP version as a minimum constraint instead of forcing it, so `--fused` builds no longer downgrade AGP below the version React Native's Gradle plugin was compiled against. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Add support for React Native 0.87 ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
