@@ -2,24 +2,26 @@
 
 import Constants from 'expo-constants';
 import type { ComponentType } from 'react';
-import { Fragment, useEffect, useMemo } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
+import type { RouteNode } from '../Route';
 import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
 import { routePatternToRegex } from '../fork/getStateFromPath-forks';
 import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
 import { getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
-import { useNavigationContainerRef } from '../react-navigation/native';
+import { type NavigationState, useNavigationContainerRef } from '../react-navigation/native';
 import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
+import { createSeededRootState } from './createSeededNavigationState';
 import { getRouteInfoFromState } from './getRouteInfoFromState';
 import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
 import { storeRef, getSplashScreenAnimationFrame, setSplashScreenAnimationFrame } from './store';
 import type { StoreContextValue } from './storeContext';
-import type { ReactNavigationState, StoreRedirects } from './types';
+import type { StoreRedirects } from './types';
 
 export function useStore(
   context: RequireContext,
@@ -28,10 +30,9 @@ export function useStore(
 ): StoreContextValue {
   const navigationRef = useNavigationContainerRef();
   const config = Constants.expoConfig?.extra?.router;
-  const storeValue = useMemo(() => {
+  const configValue = useMemo(() => {
     let linking: ExpoLinkingOptions | undefined;
     let rootComponent: ComponentType<any> = Fragment;
-    let initialState: ReactNavigationState | undefined;
     const routeNode = getRoutes(context, {
       ...config,
       skipGenerated: true,
@@ -62,20 +63,6 @@ export function useStore(
         notFound: config?.notFound ?? true,
       });
       rootComponent = getQualifiedRouteComponent(routeNode);
-
-      // Prefetch synchronous state and route info for consumers that run before the container mounts.
-      // The container derives its own initial state from linking.
-      const initialURL = linking?.getInitialURL?.();
-      if (typeof initialURL === 'string') {
-        let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);
-
-        // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
-        if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
-
-        initialState = linking.getStateFromPath!(initialPath, linking.config);
-        const initialRouteInfo = getRouteInfoFromState(initialState);
-        setCachedRouteInfo(initialState as any, initialRouteInfo);
-      }
     } else {
       // Only error in production, in development we will show the onboarding screen
       if (process.env.NODE_ENV === 'production') {
@@ -86,28 +73,42 @@ export function useStore(
       rootComponent = Fragment;
     }
 
-    return {
+    return { linking, rootComponent, redirects, routeNode };
+  }, [config, context, linkingConfigOptions, navigationRef, serverUrl]);
+
+  const { linking, rootComponent, redirects, routeNode } = configValue;
+
+  // One object per mount: identity marks store ownership, and state is seeded once from the URL
+  // (or left undefined when the URL is asynchronous).
+  const [owner] = useState(() => ({ state: seedInitialState(linking, routeNode) }));
+  const isFirstRender = storeRef.current.owner !== owner;
+  const state = isFirstRender ? owner.state : storeRef.current.state;
+
+  // TODO: Move this assignment to an effect or remove the global store ref entirely.
+  storeRef.current = {
+    owner,
+    navigationRef,
+    routeNode,
+    config,
+    linking,
+    state,
+  };
+
+  if (state) {
+    storeRef.current.routeInfo = getCachedRouteInfo(state);
+  }
+
+  const storeValue = useMemo(
+    () => ({
       navigationRef,
       linking,
-      initialState,
+      initialState: owner.state,
       rootComponent,
       redirects,
       routeNode,
-    };
-  }, [config, context, linkingConfigOptions, navigationRef, serverUrl]);
-
-  // TODO(@ubax): Check whether updating the store ref during every render is safe and needed.
-  storeRef.current = {
-    navigationRef,
-    routeNode: storeValue.routeNode,
-    config,
-    linking: storeValue.linking,
-    state: storeValue.initialState,
-  };
-
-  if (storeValue.initialState) {
-    storeRef.current.routeInfo = getCachedRouteInfo(storeValue.initialState);
-  }
+    }),
+    [navigationRef, linking, owner, rootComponent, redirects, routeNode]
+  );
 
   useEffect(() => {
     return () => {
@@ -122,4 +123,30 @@ export function useStore(
   });
 
   return storeValue;
+}
+
+function seedInitialState(
+  linking: ExpoLinkingOptions | undefined,
+  routeNode: RouteNode | null
+): NavigationState | undefined {
+  // Static rendering only gets one pass, so synchronously available URLs are seeded immediately.
+  if (!linking || !routeNode) {
+    return undefined;
+  }
+
+  const initialURL = linking.getInitialURL?.();
+  if (typeof initialURL !== 'string') {
+    return undefined;
+  }
+
+  let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);
+  // It does not matter if the path starts with a `/`, but this keeps parsing consistent.
+  if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
+
+  const initialState = createSeededRootState(
+    linking.getStateFromPath!(initialPath, linking.config),
+    routeNode
+  );
+  setCachedRouteInfo(initialState, getRouteInfoFromState(initialState));
+  return initialState;
 }

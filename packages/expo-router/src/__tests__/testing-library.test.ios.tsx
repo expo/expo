@@ -14,6 +14,10 @@ function getThrownMessage(fn: () => void): string {
   throw new Error('Expected function to throw');
 }
 
+function normalizeStateKeys(message: string) {
+  return message.replace(/"key":\s*"[^"]+"/g, '"key": "<key>"');
+}
+
 /*
  * Smoke Tests for the Testing Library. While we use these functions in the other tests, we want to make sure they work as expected.
  */
@@ -130,14 +134,14 @@ describe('toHaveRouterState', () => {
   it('fails with the correct message', () => {
     renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
     const message = getThrownMessage(() => expect(screen).toHaveRouterState({ routes: [] }));
-    expect(message).toMatchSnapshot();
+    expect(normalizeStateKeys(message)).toMatchSnapshot();
   });
 
   it('fails with the correct message for a .not assertion', () => {
     const result = renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
     const state = result.getRouterState();
     const message = getThrownMessage(() => expect(screen).not.toHaveRouterState(state));
-    expect(message).toMatchSnapshot();
+    expect(normalizeStateKeys(message)).toMatchSnapshot();
   });
 });
 // https://github.com/expo/expo/issues/46864

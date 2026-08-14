@@ -1,11 +1,12 @@
 import { act, render, waitFor } from '@testing-library/react-native';
 
+import type { RouteNode } from '../../Route';
 import { RouterRegistryProvider } from '../../global-state/routerRegistry';
 import { routingQueue } from '../../global-state/routingQueue';
 import { Screen } from '../../react-navigation/core/Screen';
 import { createNavigationContainerRef } from '../../react-navigation/core/createNavigationContainerRef';
 import { useNavigationBuilder } from '../../react-navigation/core/useNavigationBuilder';
-import { CommonActions, StackRouter } from '../../react-navigation/routers';
+import { CommonActions, StackRouter, type NavigationState } from '../../react-navigation/routers';
 import { NavigationContainer } from '../NavigationContainer';
 import { createMemoryHistory } from '../createMemoryHistory';
 import { useLinking } from '../useLinking';
@@ -13,10 +14,23 @@ import { useLinking } from '../useLinking';
 jest.mock('../createMemoryHistory');
 
 let mockNavigationRef: ReturnType<typeof createNavigationContainerRef>;
+let mockStoreState: NavigationState | undefined;
+let mockStoreEnabled = false;
+const mockRouteNode: RouteNode = {
+  type: 'route',
+  route: 'root',
+  children: [],
+  dynamic: null,
+  contextKey: 'root',
+  loadRoute: () => ({}),
+};
 jest.mock('../../global-state/storeContext', () => ({
   useExpoRouterStore: () => ({
     get state() {
-      return mockNavigationRef?.current?.getRootState();
+      return mockStoreState ?? mockNavigationRef?.current?.getRootState();
+    },
+    get routeNode() {
+      return mockStoreEnabled ? mockRouteNode : null;
     },
   }),
 }));
@@ -41,6 +55,8 @@ function EmptyScreen() {
 }
 
 beforeEach(() => {
+  mockStoreState = undefined;
+  mockStoreEnabled = false;
   routingQueue.queue = [];
   jest.mocked(createMemoryHistory).mockReturnValue(history);
   Object.defineProperty(globalThis, 'location', {
@@ -130,36 +146,66 @@ webTest('queues forward history and restores saved, parsed, and initial state', 
   });
 });
 
-webTest('uses getInitialURL to derive the initial state', async () => {
-  const Details = jest.fn(() => null);
-  const Stack = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
+webTest('parses the initial URL instead of returning the existing store state', async () => {
+  mockStoreEnabled = true;
+  const existingState = {
+    stale: false as const,
+    key: 'root',
+    index: 0,
+    routeNames: ['home'],
+    routes: [{ key: 'home', name: 'home' }],
   };
+  mockNavigationRef = createNavigationContainerRef();
+  mockStoreState = existingState;
+  Object.assign(globalThis.location, { pathname: '/home', search: '', hash: '' });
+  let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
+  const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
 
-  render(
-    <RouterRegistryProvider>
-      <NavigationContainer
-        documentTitle={{ enabled: false }}
-        linking={{
-          prefixes: [],
-          config: { screens: { home: 'home', details: 'details' } },
-          getInitialURL: () => 'http://localhost/details',
-        }}>
-        <Stack>
-          <Screen name="home" component={EmptyScreen} />
-          <Screen name="details">{Details}</Screen>
-        </Stack>
-      </NavigationContainer>
-    </RouterRegistryProvider>
-  );
+  function Sample() {
+    getInitialState = useLinking(
+      mockNavigationRef,
+      { prefixes: [], getInitialURL: () => 'http://localhost/home', getStateFromPath },
+      jest.fn()
+    ).getInitialState;
+    return null;
+  }
 
-  await waitFor(() => expect(Details).toHaveBeenCalled());
+  render(<Sample />);
+
+  const state = await getInitialState?.();
+  expect(getStateFromPath).toHaveBeenCalledWith('/home', undefined);
+  expect(state).not.toBe(existingState);
+  expect(state).toMatchObject({
+    stale: false,
+    routeNames: ['home'],
+    routes: [{ name: 'home' }],
+  });
+});
+
+webTest('getInitialState is computed once with first-render options', async () => {
+  mockStoreEnabled = true;
+  mockNavigationRef = createNavigationContainerRef();
+  Object.assign(globalThis.location, { pathname: '/home', search: '', hash: '' });
+  const firstGetStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
+  const secondGetStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
+  let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
+
+  function Sample({ getStateFromPath }: { getStateFromPath: typeof firstGetStateFromPath }) {
+    getInitialState = useLinking(
+      mockNavigationRef,
+      { prefixes: [], getInitialURL: () => 'http://localhost/home', getStateFromPath },
+      jest.fn()
+    ).getInitialState;
+    return null;
+  }
+
+  const element = render(<Sample getStateFromPath={firstGetStateFromPath} />);
+  const firstGetInitialState = getInitialState;
+  element.rerender(<Sample getStateFromPath={secondGetStateFromPath} />);
+  await firstGetInitialState?.();
+
+  expect(firstGetStateFromPath).toHaveBeenCalledWith('/home', undefined);
+  expect(secondGetStateFromPath).not.toHaveBeenCalled();
 });
 
 afterEach(() => {
@@ -183,6 +229,13 @@ test('does not add browser history when preloading a stack route', async () => {
   };
   const ref = createNavigationContainerRef<any>();
   mockNavigationRef = ref;
+  mockStoreState = {
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['home', 'details'],
+    routes: [{ key: 'home', name: 'home' }],
+  };
   const onStateChange = jest.fn();
 
   render(

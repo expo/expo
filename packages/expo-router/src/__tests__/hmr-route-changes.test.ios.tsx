@@ -15,6 +15,27 @@ import { getMockContext, renderRouter } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs as HeadlessTabs } from '../ui';
 import { Slot } from '../views/Navigator';
 
+it('preserves live navigation state when the initial location changes on re-render', () => {
+  const routes = {
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="second" />
+      </Stack>
+    ),
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  };
+  const result = renderRouter(routes, { initialUrl: '/' });
+  act(() => router.push('/second'));
+  const navigationState = store.state;
+
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
+
+  expect(store.state).toStrictEqual(navigationState);
+  expect(screen.getByTestId('second')).toBeVisible();
+});
+
 it('does not crash when a route file is removed and the app re-renders', () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
