@@ -80,7 +80,7 @@ import {
 } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest, inflateManifest } from './fetchRouterManifest';
-import { createFingerprintService } from './fingerprintService';
+import { createFingerprintService, touchesFingerprintInputs } from './fingerprintService';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { debugEvent } from './metroDebugEvents';
 import {
@@ -1507,10 +1507,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       // Any watched file can be a fingerprint input (config, plugins, node_modules), so every
-      // change invalidates the cached project fingerprint. Registered after the API-route
+      // change invalidates the cached project fingerprint — except `.expo` tooling state, which
+      // the dev server itself writes on every manifest request. Registered after the API-route
       // watcher so existing call-order expectations remain stable. Note: in environments where
       // Metro's file watching is disabled (e.g. CI), the cache lives for the server's lifetime.
-      observeAnyFileChanges({ metro, server }, () => fingerprintService.onFileChange());
+      observeAnyFileChanges({ metro, server }, (event) => {
+        if (touchesFingerprintInputs(event, this.projectRoot)) {
+          fingerprintService.onFileChange();
+        }
+      });
 
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
