@@ -30,6 +30,7 @@ export function Background(props: BackgroundProps) {
   return (
     <BackgroundNativeView
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      modifiers={modifiers}
       {...restProps}>
       {children}
     </BackgroundNativeView>
