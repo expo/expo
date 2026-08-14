@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Added a development warning when the system refuses an orientation lock request, and switched to reading interface orientation from the scene's effective geometry. ([#48173](https://github.com/expo/expo/pull/48173) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fixed per-screen orientation lookup through deeply nested view-controller containers.
+- [iOS] Fixed per-screen orientation lookup through deeply nested view-controller containers. ([#48912](https://github.com/expo/expo/pull/48912) by [@IkeStudios](https://github.com/IkeStudios))
 
 ### 💡 Others
 
