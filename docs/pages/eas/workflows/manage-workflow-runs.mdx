@@ -1,0 +1,61 @@
+---
+title: Manage EAS Workflow runs
+sidebar_title: Manage workflow runs
+description: View, cancel, and re-run EAS Workflow runs.
+---
+
+Each time a workflow is triggered, EAS creates a workflow run. You can use the EAS dashboard to follow the run, inspect its jobs, cancel work that is in progress, or create a new run from a completed attempt.
+
+## Workflow run lifecycle
+
+A workflow run moves through the following stages:
+
+- **Queued**: EAS created the run, but no job has started.
+- **In progress**: One or more jobs are running.
+- **Action required**: A job is waiting for a manual action, such as an approval.
+- **Complete**: The run ends with a successful, failed, or canceled status.
+
+For the status values returned by the EAS REST API, see [Get a workflow run](/eas/workflows/rest-api/#get-a-workflow-run).
+
+## View a workflow run
+
+Open your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows) and select a run. The run details show the status of each job, its logs and errors, and any outputs or artifacts that it produced.
+
+## Cancel a workflow run
+
+Open a run that is queued, in progress, or waiting for an action, and select **Cancel workflow**. Jobs that already completed keep their final status. EAS stops the remaining work and marks the run as canceled.
+
+## Re-run a workflow
+
+A re-run creates a new workflow run from the same workflow revision, project source, event data, and inputs as the original run. The dashboard links the attempts so that you can review their results.
+
+### Re-run from failed jobs
+
+Use this option to recover from a temporary failure without repeating successful jobs. For example, if a build job succeeds but its dependent submission job fails, the new run reuses the build and its `build_id` output, then retries the submission.
+
+To re-run from failed jobs:
+
+1. Open the failed or canceled workflow run.
+2. Select **Re-run workflow** and then **Re-run from failed jobs**.
+3. Confirm the new run.
+
+The new run handles jobs as follows:
+
+- Successful jobs are not run again. The new run reuses their results, outputs, logs, and artifacts.
+- Failed jobs run again.
+- Jobs that were blocked by a failed dependency are evaluated when that dependency completes. They run if their dependencies and conditions allow it.
+- Jobs skipped by an `if` condition remain skipped if the condition still evaluates to false.
+
+You cannot select an arbitrary job as the starting point. Use **Re-run from failed jobs** to continue after failures, or use **Re-run all jobs** when you need every job to run again.
+
+### Re-run all jobs
+
+Select **Re-run workflow** and then **Re-run all jobs** to create a new run that executes every job from the beginning. For a successful workflow, select **Re-run workflow** to do the same thing.
+
+Use this option when the failure may depend on work completed by an earlier job, or when you need fresh outputs and artifacts from every job.
+
+### Retention limits
+
+Re-running uses the original run's project source. The dashboard disables the re-run options after that source expires. Start the workflow again from its trigger or with `eas workflow:run` if the re-run options are unavailable.
+
+Logs and artifacts reused from successful jobs keep their original expiration times. A re-run does not extend their retention period. Start the re-run before an artifact expires if a later job needs it. For manual recovery, download the artifact before it expires.
