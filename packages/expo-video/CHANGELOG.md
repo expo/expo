@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `VideoPlayer` constructor throwing `MissingActivity` when the player is created while the `Activity` is briefly unavailable (e.g. during a configuration change or right after backgrounding) — the constructor only needs the application context, which doesn't depend on the `Activity`. ([#48914](https://github.com/expo/expo/pull/48914) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fix races between overlapping source loads and player release. ([#47967](https://github.com/expo/expo/pull/47967) by [@behenate](https://github.com/behenate))
 - [iOS] Set the default `audioMixingMode` to `auto`, [as documented](https://docs.expo.dev/versions/latest/sdk/video/#audiomixingmode); was `doNotMix`. ([#47363](https://github.com/expo/expo/issues/47363) by [@andymatuschak](https://github.com/andymatuschak))
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))
