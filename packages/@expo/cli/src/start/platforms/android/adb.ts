@@ -172,8 +172,8 @@ export async function getPackageInfoAsync(
 
 /**
  * Get the paths of the installed APKs for an app based on its Android package name.
- * Returns an empty list when the app is not installed. Transport-level failures
- * (device offline or unauthorized) throw — they say nothing about the app.
+ * Returns an empty list when the app is not installed. Every other failure (device offline,
+ * unauthorized, shell errors) throws — it says nothing about the app.
  */
 export async function getPackagePathsAsync(
   device: DeviceContext,
@@ -185,16 +185,14 @@ export async function getPackagePathsAsync(
       adbShellArgs(device.pid, 'pm', 'path', '--user', env.EXPO_ADB_USER, appId)
     );
   } catch (error: any) {
-    const message = `${error.message ?? ''} ${error.stderr ?? ''}`;
-    // adb quotes the serial in some forms: `error: device 'emulator-5554' not found`.
-    if (
-      /device (?:'[^']*' )?(offline|unauthorized|still connecting|not found)/i.test(message) ||
-      /insufficient permissions for device|more than one device\/emulator/i.test(message)
-    ) {
-      throw error;
+    // `pm path` exits code 1 and prints nothing when the package is not installed;
+    // `resolveAdbPromise` keeps the bare spawn message in that case. Any failure with adb
+    // output — transport errors, authorization states, shell errors — says nothing about the
+    // app and must propagate instead of reading as "not installed".
+    if (/exited with non-zero code: 1$/.test(error?.message ?? '')) {
+      return [];
     }
-    // `pm path` exits non-zero when the package is not installed.
-    return [];
+    throw error;
   }
   return output
     .split(/\r?\n/)
