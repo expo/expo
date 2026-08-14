@@ -237,9 +237,19 @@ export async function createReactNativeConfigAsync({
   return {
     root: appRoot,
     reactNativePath,
-    dependencies,
+    dependencies: sortDependenciesByName(dependencies),
     project: await resolveAppProjectConfigAsync(appRoot, autolinkingOptions.platform, sourceDir),
   };
+}
+
+function sortDependenciesByName(
+  dependencies: Record<string, RNConfigDependency>
+): Record<string, RNConfigDependency> {
+  const sortedDependencies: Record<string, RNConfigDependency> = {};
+  for (const name of Object.keys(dependencies).sort()) {
+    sortedDependencies[name] = dependencies[name]!;
+  }
+  return sortedDependencies;
 }
 
 function resolveAppleProjectSourceDir(projectRoot: string, platform: string): string {
