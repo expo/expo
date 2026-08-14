@@ -88,14 +88,15 @@ export default function AppIntentMailScreen() {
   const highlightedDraftId = route.params?.source === 'siri' ? route.params?.draftId : undefined;
 
   const addSamples = React.useCallback(async () => {
-    const drafts = await addSampleMailDrafts();
-    await syncMailDraftCatalogAsync(drafts);
+    await addSampleMailDrafts();
+    await syncMailDraftCatalogAsync();
   }, []);
   const toggleFlag = React.useCallback(
     async (id: string, flag: 'hideInSpotlight' | 'hideInSuggestions') => {
       // Republishing the catalog is what applies the change: expo-app-intents rebuilds the
       // Spotlight index from it, and the app-target query reads hideInSuggestions out of metadata.
-      await syncMailDraftCatalogAsync(await toggleMailDraftFlag(id, flag));
+      await toggleMailDraftFlag(id, flag);
+      await syncMailDraftCatalogAsync();
     },
     []
   );
@@ -147,7 +148,7 @@ export default function AppIntentMailScreen() {
               // nothing changes.
               clearMailDrafts()
                 .then(() => {
-                  syncMailDraftCatalogAsync([]).catch((error: unknown) => {
+                  syncMailDraftCatalogAsync().catch((error: unknown) => {
                     console.warn(
                       'The mail drafts were cleared, but their App Intents catalog could not be emptied. Siri may continue offering stale drafts until the catalog is published again.',
                       error
