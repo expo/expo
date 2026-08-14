@@ -182,17 +182,6 @@ export async function prebuildAsync(
     throw error;
   }
 
-  // Record what the native directories were generated from, so `npx expo needs-rebuild`
-  // can detect stale directories later. Never fails prebuild; runs concurrently with
-  // CocoaPods installation to keep it off the critical path.
-  const recordFingerprintPromise = (async () => {
-    for (const platform of options.platforms) {
-      if (platform === 'android' || platform === 'ios') {
-        await recordPrebuildFingerprintAsync(projectRoot, platform);
-      }
-    }
-  })();
-
   // Install CocoaPods
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
@@ -214,7 +203,15 @@ export async function prebuildAsync(
     });
   }
 
-  await recordFingerprintPromise;
+  // Record what the native directories were generated from, so `npx expo needs-rebuild` can
+  // detect stale directories later. Never fails prebuild. Runs after `pod install`: the
+  // fingerprint scans the ios directory, and a concurrent scan could hit files mid-write —
+  // losing the marker or persisting a torn state.
+  for (const platform of options.platforms) {
+    if (platform === 'android' || platform === 'ios') {
+      await recordPrebuildFingerprintAsync(projectRoot, platform);
+    }
+  }
 
   donePrebuild('done', {
     platforms: options.platforms,
