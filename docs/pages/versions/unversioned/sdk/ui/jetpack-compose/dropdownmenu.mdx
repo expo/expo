@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI DropdownMenu matches the official Jetpack Compose [Menu API](https://developer.android.com/develop/ui/compose/components/menu) and displays a dropdown menu when a trigger element is pressed.
@@ -28,7 +29,13 @@ Expo UI DropdownMenu matches the official Jetpack Compose [Menu API](https://dev
 
 ### Basic dropdown menu
 
-```tsx BasicDropdownMenuExample.tsx
+<ComponentExample
+  title="BasicDropdownMenuExample.tsx"
+  src="/static/images/expo-ui/examples/dropdownmenu-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/dropdownmenu-basic-android-dark.webp"
+  alt="An outlined Show menu button with an open menu below it holding one Home item and a house icon">
+
+```tsx
 import {
   Host,
   DropdownMenu,
@@ -47,7 +54,9 @@ export default function BasicDropdownMenuExample() {
     <Host matchContents>
       <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
         <DropdownMenu.Trigger>
-          <OutlinedButton onClick={() => setIsExpanded(true)}>Show menu</OutlinedButton>
+          <OutlinedButton onClick={() => setIsExpanded(true)}>
+            <Text>Show menu</Text>
+          </OutlinedButton>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>
           <DropdownMenuItem
@@ -69,11 +78,19 @@ export default function BasicDropdownMenuExample() {
 }
 ```
 
+</ComponentExample>
+
 ### React Native components as trigger
 
 You can use a React Native view (such as `Pressable`) as the dropdown's trigger by wrapping it in [`RNHostView`](rnhostview).
 
-```tsx RNTriggerDropdownMenuExample.tsx
+<ComponentExample
+  title="RNTriggerDropdownMenuExample.tsx"
+  src="/static/images/expo-ui/examples/dropdownmenu-rn-trigger-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/dropdownmenu-rn-trigger-android-dark.webp"
+  alt="A purple React Native button with an open menu below it holding Item 1 and Item 2">
+
+```tsx
 import {
   Host,
   DropdownMenu,
@@ -122,11 +139,19 @@ export default function RNTriggerDropdownMenuExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Long-press trigger
 
 Jetpack Compose has no dedicated long-press menu primitive — you compose one from a [`combinedClickable`](./modifiers.mdx) modifier on the trigger view plus the existing controlled `DropdownMenu`. The menu anchors to the trigger automatically.
 
-```tsx LongPressDropdownMenuExample.tsx
+<ComponentExample
+  title="LongPressDropdownMenuExample.tsx"
+  src="/static/images/expo-ui/examples/dropdownmenu-long-press-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/dropdownmenu-long-press-android-dark.webp"
+  alt="A menu opened by long press, holding Copy and a red Delete item">
+
+```tsx
 import { Host, DropdownMenu, DropdownMenuItem, Text } from '@expo/ui/jetpack-compose';
 import { background, combinedClickable } from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
@@ -167,6 +192,8 @@ export default function LongPressDropdownMenuExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
