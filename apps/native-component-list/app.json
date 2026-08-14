@@ -80,10 +80,7 @@
     "experiments": {
       "noxcturnalTransformWorker": true,
       "inlineModules": {
-        "watchedDirectories": [
-          "src/screens/inlineModules/inlineModulesExamples/",
-          "app-intents"
-        ]
+        "watchedDirectories": ["src/screens/inlineModules/inlineModulesExamples/", "app-intents"]
       }
     }
   }
