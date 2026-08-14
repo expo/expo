@@ -22,7 +22,13 @@ export function useOnGetState({ getState, getStateListeners }: Options) {
 
     // Avoid returning new route objects if we don't need to
     const routes = state.routes.map((route) => {
-      const childState = getStateListeners[route.key]?.();
+      const getChildState = getStateListeners[route.key];
+      if (!getChildState) {
+        // Preserve seeded child state until its navigator registers a listener.
+        return route;
+      }
+
+      const childState = getChildState();
 
       if (route.state === childState) {
         return route;

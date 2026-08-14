@@ -45,9 +45,14 @@ function validateInitialState(state: InitialState | undefined): void {
     return;
   }
 
-  if ('key' in state || 'routeNames' in state || ('stale' in state && state.stale === false)) {
+  if (
+    !('stale' in state) ||
+    state.stale !== false ||
+    !('key' in state) ||
+    !('routeNames' in state)
+  ) {
     throw new Error(
-      'The `initialState` prop must contain a partial navigation state. Complete navigation states include internal fields (`key`, `routeNames`, or `stale: false`) that cannot be safely restored. Remove these fields and pass the partial state returned by `getStateFromPath` instead.'
+      'The `initialState` prop must contain a complete navigation state. Include `key`, `routeNames`, and `stale: false` at every level.'
     );
   }
 
@@ -88,7 +93,7 @@ export function BaseNavigationContainer({
 
   const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(() => {
     validateInitialState(initialState == null ? undefined : initialState);
-    // `InitialState` is the public recursive shape of a partial navigation state.
+    // Validation guarantees that the recursive initial state is complete.
     return (initialState == null ? undefined : initialState) as State;
   });
 

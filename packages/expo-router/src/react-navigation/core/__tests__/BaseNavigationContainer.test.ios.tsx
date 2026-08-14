@@ -13,6 +13,7 @@ import {
 import { NavigationIndependentTree } from '../NavigationIndependentTree';
 import { NavigationStateContext } from '../NavigationStateContext';
 import { Screen } from '../Screen';
+import { BaseNavigationContainer as RawBaseNavigationContainer } from '../BaseNavigationContainer';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import type { EventListenerCallback, NavigationContainerEventMap } from '../types';
 import { useNavigationBuilder } from '../useNavigationBuilder';
@@ -93,7 +94,45 @@ test('throws when nesting containers', () => {
   ).not.toThrow("Looks like you have nested a 'NavigationContainer' inside another.");
 });
 
-test('rejects a complete initial state', () => {
+test('rejects a partial initial state', () => {
+  const initialState = { routes: [{ name: 'home' }] };
+
+  expect(() =>
+    render(
+      <RawBaseNavigationContainer initialState={initialState}>
+        {null}
+      </RawBaseNavigationContainer>
+    )
+  ).toThrow('The `initialState` prop must contain a complete navigation state.');
+});
+
+test('rejects a partial nested initial state', () => {
+  const initialState = {
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['home'],
+    routes: [
+      {
+        key: 'home',
+        name: 'home',
+        state: {
+          routes: [{ name: 'details' }],
+        },
+      },
+    ],
+  };
+
+  expect(() =>
+    render(
+      <RawBaseNavigationContainer initialState={initialState}>
+        {null}
+      </RawBaseNavigationContainer>
+    )
+  ).toThrow('The `initialState` prop must contain a complete navigation state.');
+});
+
+test('preserves a complete initial state by identity', () => {
   const initialState: NavigationState = {
     stale: false,
     key: 'root',
@@ -101,31 +140,29 @@ test('rejects a complete initial state', () => {
     routeNames: ['home'],
     routes: [{ key: 'home', name: 'home' }],
   };
-  expect(() =>
-    render(<BaseNavigationContainer initialState={initialState}>{null}</BaseNavigationContainer>)
-  ).toThrow('The `initialState` prop must contain a partial navigation state.');
+  const ref = createNavigationContainerRef<ParamListBase>();
+
+  function Stack(props: any) {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  }
+
+  render(
+    <RawBaseNavigationContainer ref={ref} initialState={initialState}>
+      <Stack>
+        <Screen name="home">{() => null}</Screen>
+      </Stack>
+    </RawBaseNavigationContainer>
+  );
+
+  expect(ref.current?.getRootState()).toBe(initialState);
 });
 
-test('rejects a complete nested initial state', () => {
-  const initialState = {
-    routes: [
-      {
-        name: 'home',
-        state: {
-          stale: false as const,
-          key: 'nested',
-          index: 0,
-          routeNames: ['details'],
-          routes: [{ key: 'details', name: 'details' }],
-        },
-      },
-    ],
-  };
-
-  expect(() =>
-    render(<BaseNavigationContainer initialState={initialState}>{null}</BaseNavigationContainer>)
-  ).toThrow('The `initialState` prop must contain a partial navigation state.');
-});
 test('handle dispatching with ref', () => {
   function CurrentRootRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
@@ -168,7 +205,11 @@ test('handle dispatching with ref', () => {
   const onStateChange = jest.fn();
 
   const initialState = {
+    stale: false as const,
+    type: 'test',
+    key: '0',
     index: 1,
+    routeNames: ['foo', 'foo2', 'bar', 'baz'],
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
@@ -529,7 +570,17 @@ test('emits state events when new navigator mounts', () => {
   const element = (
     <BaseNavigationContainer
       ref={ref}
-      initialState={{ routes: [{ name: 'foo' }, { name: 'bar' }] }}
+      initialState={{
+        stale: false,
+        type: 'test',
+        key: '2',
+        index: 0,
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo-0', name: 'foo' },
+          { key: 'bar-1', name: 'bar' },
+        ],
+      }}
       onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>

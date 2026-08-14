@@ -1,17 +1,21 @@
-import { type RefObject, useEffect, useCallback, useRef } from 'react';
+import { type RefObject, useEffect } from 'react';
 
+import {
+  completeParsedState,
+  createSeededRootState,
+} from '../global-state/createSeededNavigationState';
+import { useExpoRouterStore } from '../global-state/storeContext';
 import {
   type LinkingOptions,
   getPathFromState as getPathFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
+  type NavigationState,
   type ParamListBase,
   useNavigationIndependentTree,
 } from '../react-navigation/native';
 import { extractExpoPathFromURL } from './extractPathFromURL';
 import { useBrowserHistorySync } from './useBrowserHistorySync';
-
-type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
 const linkingHandlers: symbol[] = [];
 
@@ -29,6 +33,7 @@ export function useLinking(
   const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
   const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
   const independent = useNavigationIndependentTree();
+  const store = useExpoRouterStore();
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -66,40 +71,28 @@ export function useLinking(
     };
   }, [enabled, independent]);
 
-  // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
-  // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
-  // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-  const enabledRef = useRef(enabled);
-  const prefixesRef = useRef(prefixes);
-  const configRef = useRef(config);
-  const getInitialURLRef = useRef(getInitialURL);
-  const getStateFromPathRef = useRef(getStateFromPath);
+  // `useThenable` only consumes this function from the first render, keeping initialization options consistent.
+  const getInitialState = () => {
+    let state: NavigationState | undefined;
 
-  useEffect(() => {
-    enabledRef.current = enabled;
-    prefixesRef.current = prefixes;
-    configRef.current = config;
-    getInitialURLRef.current = getInitialURL;
-    getStateFromPathRef.current = getStateFromPath;
-  });
-
-  const getInitialState = useCallback(() => {
-    let state: ResultState | undefined;
-
-    if (enabledRef.current) {
+    if (enabled) {
       const getStateFromURL = (url: string | null | undefined) => {
-        let path = url ? extractExpoPathFromURL(prefixesRef.current, url) : undefined;
+        let path = url ? extractExpoPathFromURL(prefixes, url) : undefined;
         if (path !== undefined && !path.startsWith('/')) {
           path = `/${path}`;
         }
 
-        const state = path ? getStateFromPathRef.current(path, configRef.current) : undefined;
+        const parsedState = path ? getStateFromPath(path, config) : undefined;
+        const routeNode = store?.routeNode;
+        const state = routeNode
+          ? createSeededRootState(parsedState, routeNode)
+          : completeParsedState(parsedState);
 
         // If the link were handled, it gets cleared in NavigationContainer
         onUnhandledLinking(path);
         return state;
       };
-      const url = getInitialURLRef.current();
+      const url = getInitialURL();
 
       if (typeof url !== 'string' && url != null) {
         return url.then(getStateFromURL);
@@ -109,7 +102,7 @@ export function useLinking(
     }
 
     const thenable = {
-      then(onfulfilled?: (state: ResultState | undefined) => void) {
+      then(onfulfilled?: (state: NavigationState | undefined) => void) {
         return Promise.resolve(onfulfilled ? onfulfilled(state) : state);
       },
       catch() {
@@ -117,9 +110,8 @@ export function useLinking(
       },
     };
 
-    return thenable as PromiseLike<ResultState | undefined>;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return thenable as PromiseLike<NavigationState | undefined>;
+  };
 
   useBrowserHistorySync({
     ref,

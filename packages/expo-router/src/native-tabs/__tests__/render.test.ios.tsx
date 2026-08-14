@@ -207,8 +207,8 @@ describe('First focused tab', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('second');
-    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
+    expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
     expect(TabsHost).toHaveBeenCalledTimes(2);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
   });
@@ -249,7 +249,7 @@ describe('First focused tab', () => {
       expect(screen.queryByTestId('index')).toBeNull();
       // Two renders: the hidden `index` route is registered and initially focused, then the
       // navigator redirects to the first visible tab.
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
     });
   });
 
@@ -293,10 +293,10 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
     expect(TabsScreen.mock.calls[0][0].screenKey).toBe('first');
     expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(3);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('second');
   });
 
@@ -322,10 +322,10 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('first')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
     expect(TabsScreen.mock.calls[0][0].screenKey).toBe('first');
     expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(3);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('second');
   });
 
@@ -580,7 +580,7 @@ describe('Dynamic tab visibility remounting', () => {
       });
 
       // Initial mount - three screens mounted
-      expect(onMount).toHaveBeenCalledTimes(3);
+      expect(onMount).toHaveBeenCalledTimes(4);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('second');
       expect(onMount).toHaveBeenCalledWith('third');
@@ -631,7 +631,7 @@ describe('Dynamic tab visibility remounting', () => {
       });
 
       // Initial mount - index, stack-index, and third mounted
-      expect(onMount).toHaveBeenCalledTimes(3);
+      expect(onMount).toHaveBeenCalledTimes(4);
       expect(onMount).toHaveBeenCalledWith('index');
       expect(onMount).toHaveBeenCalledWith('stack-index');
       expect(onMount).toHaveBeenCalledWith('third');

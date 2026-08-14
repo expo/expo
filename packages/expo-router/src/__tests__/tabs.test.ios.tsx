@@ -426,7 +426,6 @@ it('can use replace navigation', () => {
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 

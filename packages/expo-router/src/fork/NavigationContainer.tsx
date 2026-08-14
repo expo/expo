@@ -1,6 +1,8 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
 
+import { seedStoreState } from '../global-state/store';
+import { useExpoRouterStore } from '../global-state/storeContext';
 import { useImperativeApiEmitter } from '../imperative-api';
 import type {
   DocumentTitleOptions,
@@ -73,6 +75,8 @@ function NavigationContainerInner(
   }: Props<ParamListBase>,
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
 ) {
+  const store = useExpoRouterStore();
+
   if (linking?.config) {
     validatePathConfig(linking.config);
   }
@@ -137,6 +141,20 @@ function NavigationContainerInner(
   });
 
   const [isResolved, initialState] = useThenable(getInitialState);
+  if (
+    store &&
+    // Linking state remains the initial state forever. Once navigation is ready,
+    // `onStateChange` owns the store and this must not restore stale state.
+    !refContainer.current?.isReady() &&
+    // Async linking may not have produced its initial state yet.
+    initialState &&
+    // Avoid recalculating route info when the store already has this exact state.
+    initialState !== store.state
+  ) {
+    // TODO(@ubax): remove this when we migrate to global state
+    // Children read route info during this render, so an effect would update the store too late.
+    seedStoreState(initialState);
+  }
 
   React.useImperativeHandle(ref, () => refContainer.current!);
 

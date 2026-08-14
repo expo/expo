@@ -2,6 +2,7 @@ import { screen, act } from '@testing-library/react-native';
 import { useEffect } from 'react';
 import { Text } from 'react-native';
 
+import { store } from '../global-state/store';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -10,10 +11,11 @@ import {
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../navigationParams';
-import type { StackNavigationState } from '../react-navigation/native';
+import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
 import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { renderRouter } from '../testing-library';
 import { useNavigation } from '../useNavigation';
+import { expectCompleteStateToMatch } from './assertCompleteState';
 
 type HeaderTitleFunction = Extract<
   NativeStackNavigationOptions['headerTitle'],
@@ -34,7 +36,7 @@ it('prefetch a sibling route', () => {
     },
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -54,7 +56,7 @@ it('prefetch a sibling route', () => {
     router.prefetch('/test');
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -79,12 +81,10 @@ it('prefetch a sibling route', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -96,7 +96,7 @@ it('will prefetch the correct route within a group', () => {
     '(b)/test': () => null,
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -116,7 +116,7 @@ it('will prefetch the correct route within a group', () => {
     router.prefetch('/test');
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -141,12 +141,10 @@ it('will prefetch the correct route within a group', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -158,7 +156,7 @@ it('will prefetch the correct route within nested groups', () => {
     '(b)/test': () => null,
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -178,7 +176,7 @@ it('will prefetch the correct route within nested groups', () => {
     router.prefetch('/test');
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -208,7 +206,6 @@ it('will prefetch the correct route within nested groups', () => {
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -218,7 +215,7 @@ it('works with relative Href', () => {
     test: () => null,
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -238,7 +235,7 @@ it('works with relative Href', () => {
     router.prefetch('./test');
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     index: 0,
     key: expect.any(String),
     routeNames: ['__root', '+not-found', '_sitemap'],
@@ -268,7 +265,6 @@ it('works with relative Href', () => {
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -278,7 +274,7 @@ it('works with params', () => {
     test: () => null,
   });
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -330,7 +326,6 @@ it('works with params', () => {
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -347,7 +342,7 @@ it('ignores the current route', () => {
     }
   );
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -412,12 +407,10 @@ it('ignores the current route', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -448,7 +441,7 @@ it('can prefetch a deeply nested route', () => {
     }
   );
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -545,12 +538,10 @@ it('can prefetch a deeply nested route', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -576,7 +567,7 @@ it('can prefetch a parent route', () => {
     }
   );
 
-  expect(screen).toHaveRouterState({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -663,12 +654,10 @@ it('can prefetch a parent route', () => {
                               },
                             ],
                             stale: false,
-                            type: 'stack',
                           },
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -683,12 +672,10 @@ it('can prefetch a parent route', () => {
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -821,11 +808,11 @@ it('stamps zoom transition screen ID on preloaded route', () => {
 
   const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
   const innerState = state?.routes[0]!.state;
-  if (innerState?.type !== 'stack') {
+  if (!innerState) {
     throw new Error('Expected a stack navigator');
   }
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  const stackState = innerState as StackNavigationState<{}>;
+  // The complete initial state stays typeless until this navigator dispatches an action.
+  const stackState = innerState as StackNavigationState<ParamListBase>;
   const preloadedRoute = stackState.routes[stackState.index + 1]!;
 
   expect(preloadedRoute.name).toBe('target');
@@ -848,11 +835,11 @@ it('does not stamp zoom transition screen ID without zoom source param', () => {
 
   const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
   const innerState = state?.routes[0]!.state;
-  if (innerState?.type !== 'stack') {
+  if (!innerState) {
     throw new Error('Expected a stack navigator');
   }
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  const stackState = innerState as StackNavigationState<{}>;
+  // The complete initial state stays typeless until this navigator dispatches an action.
+  const stackState = innerState as StackNavigationState<ParamListBase>;
   const preloadedRoute = stackState.routes[stackState.index + 1]!;
 
   expect(preloadedRoute.name).toBe('target');
@@ -889,7 +876,7 @@ it('stamps zoom transition screen ID on preloaded route that is navigated to', (
 
   const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
   const innerState = state?.routes[0]!.state;
-  if (innerState?.type !== 'stack') {
+  if (!innerState) {
     throw new Error('Expected a stack navigator');
   }
   const navigatedRoute = innerState.routes[innerState.routes.length - 1]!;

@@ -5,6 +5,7 @@ import { router } from '../exports';
 import { store } from '../global-state/router-store';
 import { renderRouter } from '../testing-library';
 import { parseUrlUsingCustomBase } from '../utils/url';
+import { expectCompleteStateToMatch } from './assertCompleteState';
 
 it('can push a hash url', () => {
   renderRouter({
@@ -205,7 +206,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
     index: () => <Text testID="index" />,
   });
 
-  expect(store.state).toStrictEqual({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
