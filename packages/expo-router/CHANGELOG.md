@@ -30,6 +30,7 @@
 
 ### 🎉 New features
 
+- Add a `direction` prop to `ExpoRoot`, forwarded to the `NavigationContainer` it renders, so apps can set the navigation layout direction without `I18nManager`.
 - Add global registry for routers. ([#48707](https://github.com/expo/expo/pull/48707) by [@Ubax](https://github.com/Ubax))
 - Improve withLayoutContext types ([#48356](https://github.com/expo/expo/pull/48356) by [@Ubax](https://github.com/Ubax))
 - Expose `unstable_nativeProps` props from Stack component ([#48152](https://github.com/expo/expo/pull/48152) by [@Ubax](https://github.com/Ubax))

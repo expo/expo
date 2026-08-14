@@ -17,7 +17,11 @@ import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils'
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
-import type { LinkingOptions, NavigationAction } from './react-navigation/native';
+import type {
+  LinkingOptions,
+  LocaleDirection,
+  NavigationAction,
+} from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
 import type { RequireContext } from './types';
@@ -31,6 +35,11 @@ export type ExpoRootProps = {
   location?: URL | string;
   wrapper?: ComponentType<PropsWithChildren>;
   linking?: Partial<ExpoLinkingOptions>;
+  /**
+   * Layout direction used by the navigators. Defaults to the direction reported by
+   * `I18nManager`, which is fixed for the lifetime of the app.
+   */
+  direction?: LocaleDirection;
 };
 
 export type NativeIntent = {
@@ -101,6 +110,7 @@ function ContextNavigator({
   location: initialLocation = initialUrl,
   wrapper: WrapperComponent = Fragment,
   linking = {},
+  direction,
 }: ExpoRootProps) {
   // location and linking.getInitialURL are both used to initialize the router state
   //  - location is used on web and during static rendering
@@ -158,6 +168,7 @@ function ContextNavigator({
       <RouterRegistryProvider>
         <UpstreamNavigationContainer
           ref={store.navigationRef}
+          direction={direction}
           initialState={store.state}
           linking={store.linking as LinkingOptions<any>}
           onUnhandledAction={onUnhandledAction}
