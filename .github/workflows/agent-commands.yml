@@ -8,10 +8,15 @@
 #   @expo-bot verify --fix   same as /verify --fix.
 #   /verify --no-fix         report only, never open a pull request.
 #   @expo-bot verify --no-fix  same as /verify --no-fix.
+#   @expo-bot check          verify + review from one comment. This workflow runs the
+#                            verify half (--fix / --no-fix apply, issues and PRs);
+#                            expo-code-review-command.yml picks up the review half
+#                            from the same comment (PRs only). On an issue, check is
+#                            just verify.
 #   @expo-bot <task>         on an open PR authored by expo-bot, carry out a concrete
 #                            follow-up task and push the checked commit to that PR.
-#   Reserved verbs (handled by other workflows, never work mode):
-#     review, dismiss, undismiss, help.
+#   Reserved verbs, never work mode: check (runs here as verify);
+#     review, dismiss, undismiss, help (handled by other workflows).
 #
 # The agent is headless Claude Code connected to the expo-sandbox-mcp server
 # (hosted E2B sandboxes, proxied EAS builds, hosted iOS simulators). It
@@ -138,6 +143,8 @@ jobs:
       startsWith(github.event.comment.body, '/verify ') ||
       github.event.comment.body == '@expo-bot verify' ||
       startsWith(github.event.comment.body, '@expo-bot verify ') ||
+      github.event.comment.body == '@expo-bot check' ||
+      startsWith(github.event.comment.body, '@expo-bot check ') ||
       (startsWith(github.event.comment.body, '@expo-bot ') &&
       github.event.comment.body != '@expo-bot review' &&
       !startsWith(github.event.comment.body, '@expo-bot review ') &&
@@ -205,6 +212,9 @@ jobs:
     # on `@expo-bot!` and similar asides, and each false fire ends in a
     # public parse-failure comment.
     # `@expo-bot verify` is /verify, so it must run on issues as well as PRs.
+    # `@expo-bot check` is verify plus a one-shot review; its verify half runs
+    # on issues too, so it sits beside verify here (the review half's own
+    # workflow gates itself to PRs).
     # Other `@expo-bot …` forms stay PR-only (work mode), except reserved
     # verbs (review, dismiss, undismiss, help) which other workflows own.
     # Help is excluded as a prefix (`@expo-bot help…`, plus the two-space
@@ -219,6 +229,8 @@ jobs:
       startsWith(github.event.comment.body, '/verify ') ||
       github.event.comment.body == '@expo-bot verify' ||
       startsWith(github.event.comment.body, '@expo-bot verify ') ||
+      github.event.comment.body == '@expo-bot check' ||
+      startsWith(github.event.comment.body, '@expo-bot check ') ||
       (github.event.issue.pull_request != null &&
       startsWith(github.event.comment.body, '@expo-bot ') &&
       github.event.comment.body != '@expo-bot review' &&
@@ -324,6 +336,11 @@ jobs:
               @expo-bot)
                 case "$second" in
                   verify) mode=verify ;;
+                  # check = verify + review from one comment. This workflow
+                  # runs the verify half (flags apply as with verify);
+                  # expo-code-review-command.yml picks up the review half
+                  # from the same comment and gates itself to PRs.
+                  check) mode=verify ;;
                   review|dismiss|undismiss|help)
                     echo "This mention is handled by another workflow."
                     exit 0
@@ -336,7 +353,10 @@ jobs:
                   # covers `@expo-bot  helpful` (double space), which the
                   # job `if:` cannot exclude — `startsWith('@expo-bot help')`
                   # is false there, and help.yml may not have started.
-                  reviewers|reviewing|reviewed|dismissing|dismissed|dismissal|dismissals|verified|verifying|helpful|helping|helper|helpers|undismissed|undismissing|verify-*|help*)
+                  # `checks`/`checking`/`checked` are prose like the other
+                  # inflections; `check-*` is a mangled check (`check-fix`).
+                  # `checkout` and `checklist` stay work — both are real tasks.
+                  reviewers|reviewing|reviewed|dismissing|dismissed|dismissal|dismissals|verified|verifying|helpful|helping|helper|helpers|undismissed|undismissing|checks|checking|checked|check-*|verify-*|help*)
                     echo "'$second' is a reserved-verb inflection, not a command; treating the comment as prose."
                     exit 0
                     ;;
