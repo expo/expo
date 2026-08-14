@@ -1,4 +1,4 @@
-import { Host, HStack, RNHostView, VStack } from '@expo/ui/swift-ui';
+import { BottomSheet, Host, HStack, RNHostView, VStack } from '@expo/ui/swift-ui';
 import { padding } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
@@ -41,6 +41,28 @@ function measureAsync(ref: React.RefObject<View | null>, label = 'view'): Promis
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Measures once the view exists and reports a real size. Content that is presented — a sheet — only
+ * mounts when it is on screen and animates in, so there is no single layout callback to wait on.
+ */
+async function measureWhenPresented(
+  ref: React.RefObject<View | null>,
+  label: string,
+  timeoutMs = 5000
+): Promise<Measurement> {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    if (ref.current) {
+      const measurement = await measureAsync(ref, label).catch(() => null);
+      if (measurement != null && measurement.width > 0 && measurement.height > 0) {
+        return measurement;
+      }
+    }
+    await delay(50);
+  }
+  throw new Error(`Timed out waiting for ${label} to be presented and laid out`);
 }
 
 export async function test(
@@ -273,6 +295,39 @@ export async function test(
       // while the differences above stay right, because those two views scroll together.
       expect(hostedAfter.pageX - viewport.pageX).toBe(PADDING);
       expect(hostedAfter.pageY - viewport.pageY).toBe(SCROLL_LEAD + PADDING - SCROLL_BY);
+    });
+
+    // A sheet presents its content in its own view controller, so that content is not a descendant
+    // of the React Native surface: nothing above it dispatches touches, and a surface-relative
+    // position would describe somewhere the content never occupies. A hosted view there dispatches
+    // its own touches and is measured from itself instead, which is what the `layoutRoot` prop turns
+    // on. Every other test in this file reports surface coordinates; this one must report zero.
+    it('measures a hosted view in a sheet relative to itself', async () => {
+      const hostedRef = React.createRef<View>();
+
+      setPortalChild(
+        <Host matchContents>
+          <VStack modifiers={[padding({ all: PADDING })]}>
+            <BottomSheet isPresented onIsPresentedChange={() => {}} fitToContents>
+              <VStack modifiers={[padding({ all: PADDING })]}>
+                <RNHostView matchContents>
+                  <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+                </RNHostView>
+              </VStack>
+            </BottomSheet>
+          </VStack>
+        </Host>
+      );
+
+      const hosted = await measureWhenPresented(hostedRef, 'the hosted box in a sheet');
+
+      // The measure walk stops at the hosting view, so the hosted content sits at its origin. This
+      // is the same space the touches dispatched here arrive in — without it they would be compared
+      // against a position in a surface the sheet is not part of.
+      expect(hosted.pageX).toBe(0);
+      expect(hosted.pageY).toBe(0);
+      expect(hosted.width).toBeCloseTo(BOX, 0);
+      expect(hosted.height).toBeCloseTo(BOX, 0);
     });
   });
 }
