@@ -49,8 +49,10 @@ export async function getInstalledFingerprintAndroidAsync(
 ): Promise<InstalledFingerprintResult> {
   let devices = (await getAttachedDevicesAsync()).filter((device) => device.isAuthorized);
   if (deviceFilter) {
+    // Case-insensitive, matching how `expo run:android --device` resolves devices.
+    const filter = deviceFilter.toLowerCase();
     devices = devices.filter(
-      (device) => device.pid === deviceFilter || device.name === deviceFilter
+      (device) => device.pid?.toLowerCase() === filter || device.name.toLowerCase() === filter
     );
   }
   if (!devices.length) {

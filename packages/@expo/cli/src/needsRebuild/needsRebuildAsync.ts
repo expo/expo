@@ -1,15 +1,13 @@
 import chalk from 'chalk';
-import fs from 'fs';
-import path from 'path';
 
 import { Log } from '../log';
 import { CommandError } from '../utils/errors';
 import {
   formatPrebuildChanges,
-  getPrebuildStaleness,
+  getNativeDirectoryStaleness,
   importFingerprint,
   nativeFingerprintOptions,
-  readPrebuildFingerprintMarker,
+  rebuildCommands,
   type PrebuildSourceChange,
   type ResolvedFingerprint,
 } from '../utils/nativeFingerprint';
@@ -177,8 +175,6 @@ async function checkPlatformAsync(
   resolved: ResolvedFingerprint | null,
   { device, appId }: { device?: string; appId?: string }
 ): Promise<PlatformCheckResult> {
-  const runCommand = `npx expo run:${platform}`;
-
   if (!resolved) {
     return {
       status: 'unknown',
@@ -219,23 +215,17 @@ async function checkPlatformAsync(
   // Stale generated native directories require `prebuild` (clean by default) before the build —
   // a plain rebuild would compile the old directories and embed the new hash, hiding the
   // problem. This check needs no device, so it runs first.
-  let prebuildStatus: PlatformCheckResult['prebuildStatus'] = 'not-applicable';
-  let prebuildChanges: PrebuildSourceChange[] = [];
-  if (fs.existsSync(path.join(projectRoot, platform))) {
-    const staleness = getPrebuildStaleness({
-      marker: readPrebuildFingerprintMarker(projectRoot, platform),
-      currentSources: fingerprint.sources,
-      currentFingerprintVersion: resolved.version,
-    });
-    prebuildStatus = staleness.status;
-    prebuildChanges = staleness.changes;
-  }
+  const { status: prebuildStatus, changes: prebuildChanges } = getNativeDirectoryStaleness(
+    projectRoot,
+    platform,
+    { sources: fingerprint.sources, fingerprintVersion: resolved.version }
+  );
   if (prebuildStatus === 'stale') {
     return {
       status: 'rebuild-required',
       reason: 'prebuild-stale',
       recommendation: `The app config or a config plugin changed after the native directories were generated${describeChanges(prebuildChanges)}. Regenerate them, then rebuild.`,
-      commands: [`npx expo prebuild -p ${platform}`, runCommand],
+      commands: rebuildCommands(platform, { prebuildFirst: true }),
       device: null,
       installedHash: null,
       currentHash: fingerprint.hash,
@@ -275,7 +265,7 @@ async function checkPlatformAsync(
         status: 'unknown',
         reason: 'app-not-installed',
         recommendation: `The app (${installed.appId}) is not installed on ${installed.device.name}. Build and install it first.`,
-        commands: [runCommand],
+        commands: rebuildCommands(platform, { prebuildFirst: false }),
         device: installed.device,
         installedHash: null,
         exitCode: 3,
@@ -287,7 +277,7 @@ async function checkPlatformAsync(
         reason: 'no-embedded-fingerprint',
         recommendation:
           'The installed app has no embedded fingerprint. It is a release build (only debug builds embed the fingerprint), was built before fingerprint embedding existed, or was built with EXPO_SKIP_FINGERPRINT_EMBED set. Install a debug build to enable detection.',
-        commands: [runCommand],
+        commands: rebuildCommands(platform, { prebuildFirst: false }),
         device: installed.device,
         installedHash: null,
         exitCode: 3,
@@ -310,7 +300,7 @@ async function checkPlatformAsync(
         status: 'rebuild-required',
         reason: 'hash-mismatch',
         recommendation: 'Native inputs changed since the installed app was built. Rebuild the app.',
-        commands: [runCommand],
+        commands: rebuildCommands(platform, { prebuildFirst: false }),
         device: installed.device,
         installedHash: installed.hash,
         exitCode: 1,

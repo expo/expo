@@ -192,6 +192,9 @@ describe(getInstalledFingerprintAndroidAsync, () => {
     it.each([
       ['serial', 'emulator-5556'],
       ['name', 'Pixel_9'],
+      // Case-insensitive, like `expo run:android --device`.
+      ['uppercase serial', 'EMULATOR-5556'],
+      ['differently cased name', 'pixel_9'],
     ])(`checks only the device matching --device by %s`, async (_kind, deviceFilter) => {
       jest.mocked(getAttachedDevicesAsync).mockResolvedValue([deviceB, device]);
       mockAdbServer({ 'emulator-5556': makeEmptyZip(), 'emulator-5554': loadApkFixture() });

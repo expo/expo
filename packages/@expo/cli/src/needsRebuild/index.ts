@@ -2,34 +2,27 @@
 import chalk from 'chalk';
 
 import type { Command } from '../index';
-import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { assertArgsWithExitCode, getProjectRoot, printHelp } from '../utils/args';
 
 export const expoNeedsRebuild: Command = async (argv) => {
-  let args: ReturnType<typeof assertArgs>;
-  try {
-    args = assertArgs(
-      {
-        // Types
-        '--help': Boolean,
-        '--json': Boolean,
-        '--platform': String,
-        '--device': String,
-        '--app-id': String,
-        // Aliases
-        '-h': '--help',
-        '-p': '--platform',
-        '-d': '--device',
-      },
-      argv
-    );
-  } catch (error: any) {
-    // A mistyped flag must not exit with code 1 — see the exit-code note below.
-    if (!(error instanceof Error)) {
-      throw error;
-    }
-    (await import('../log.js')).exit(error, 3);
-    throw error; // Unreachable — `exit` never returns; this satisfies control-flow analysis.
-  }
+  // A mistyped flag must not exit with code 1 — the exit code is this command's public API
+  // (1 = rebuild required), so usage errors report as 3: cannot determine.
+  const args = assertArgsWithExitCode(
+    {
+      // Types
+      '--help': Boolean,
+      '--json': Boolean,
+      '--platform': String,
+      '--device': String,
+      '--app-id': String,
+      // Aliases
+      '-h': '--help',
+      '-p': '--platform',
+      '-d': '--device',
+    },
+    argv,
+    3
+  );
 
   if (args['--help']) {
     printHelp(
