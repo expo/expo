@@ -63,11 +63,7 @@ class ScreenOrientationViewController: UIViewController {
     if let vc = vcWithRNScreenOrientation() {
       // react-native-screens has per-screen orientation set. Defer to that VC's
       // supportedInterfaceOrientations so RNScreens' swizzled implementation can
-      // resolve the active screen's orientation mask. When the matching VC is
-      // self, call super to avoid recursing into this override.
-      if vc === self {
-        return super.supportedInterfaceOrientations
-      }
+      // resolve the active screen's orientation mask.
       return vc.supportedInterfaceOrientations
     }
 
@@ -114,17 +110,7 @@ class ScreenOrientationViewController: UIViewController {
 
     func activeChildren(of viewController: UIViewController) -> [UIViewController] {
       if let navigationController = viewController as? UINavigationController {
-        var children: [UIViewController] = []
-        if let topViewController = navigationController.topViewController {
-          children.append(topViewController)
-        }
-        if let visibleViewController = navigationController.visibleViewController,
-           !children.contains(where: { $0 === visibleViewController }) {
-          // The caller searches in reverse, so a presented modal is checked before the route
-          // underneath it while the route remains eligible to own the orientation.
-          children.append(visibleViewController)
-        }
-        return children
+        return navigationController.topViewController.map { [$0] } ?? []
       }
       if let tabBarController = viewController as? UITabBarController {
         return tabBarController.selectedViewController.map { [$0] } ?? []
@@ -133,10 +119,20 @@ class ScreenOrientationViewController: UIViewController {
         return pageViewController.viewControllers ?? []
       }
       if let splitViewController = viewController as? UISplitViewController {
-        return splitViewController.viewControllers.filter { $0.viewIfLoaded?.window != nil }
+        let splitChildren = splitViewController.viewControllers
+        if splitViewController.viewIfLoaded?.window == nil, splitChildren.count == 1 {
+          return splitChildren
+        }
+        return splitChildren.filter { $0.viewIfLoaded?.window != nil }
       }
-      if viewController.children.count == 1 {
-        return viewController.children
+      if let onlyChild = viewController.children.first, viewController.children.count == 1 {
+        // Before attachment, a single-child wrapper has no ambiguous branch to choose. Once the
+        // wrapper is on-screen, require its child to be attached so a retained stale child cannot
+        // supply the orientation during replacement or teardown.
+        if viewController.viewIfLoaded?.window == nil || onlyChild.viewIfLoaded?.window != nil {
+          return [onlyChild]
+        }
+        return []
       }
       // Unknown wrappers do not expose an active-child API. Only follow children whose views
       // are currently attached, so retained off-screen controllers cannot supply the mask.
@@ -144,28 +140,30 @@ class ScreenOrientationViewController: UIViewController {
     }
 
     func findOrientationOwner(in viewController: UIViewController) -> UIViewController? {
-      // Prefer the active descendant over a broad container. The RNScreens predicate inspects
-      // a container's last child, which is not necessarily active for every UIKit container.
       let children = activeChildren(of: viewController)
+      // Only trust the predicate when the last child that RNScreens inspects is active.
+      // Return that RNS container directly: generic parents do not necessarily forward
+      // supportedInterfaceOrientations to every RNS container type.
+      if let inspectedChild = viewController.children.last,
+         children.contains(where: { $0 === inspectedChild }),
+         shouldAskScreensForOrientation(in: viewController) {
+        return inspectedChild
+      }
       for child in children.reversed() {
         if let owner = findOrientationOwner(in: child) {
           return owner
         }
       }
-      // Only query the parent when the last child that RNScreens will inspect is active.
-      // Otherwise its predicate can select a retained, off-screen navigation branch.
-      if let inspectedChild = viewController.children.last,
-         children.contains(where: { $0 === inspectedChild }),
-         shouldAskScreensForOrientation(in: viewController) {
-        return viewController
-      }
       return nil
     }
 
-    if shouldAskScreensForOrientation(in: self) {
-      return self
+    let rootChildren = activeChildren(of: self)
+    if let inspectedChild = self.children.last,
+       rootChildren.contains(where: { $0 === inspectedChild }),
+       shouldAskScreensForOrientation(in: self) {
+      return inspectedChild
     }
-    for child in activeChildren(of: self).reversed() {
+    for child in rootChildren.reversed() {
       if let owner = findOrientationOwner(in: child) {
         return owner
       }
