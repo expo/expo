@@ -132,47 +132,21 @@ export async function requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus |
 }
 
 /**
- * Whether [`setFakeAgeSignalsAsync`](#agerangesetfakeagesignalsasyncfake) works in this build, which
- * is only the case when the app opted in to fake age signals. Resolves with `false` on iOS and web.
- *
- * Use it to decide whether to show your own testing affordances, instead of calling
- * `setFakeAgeSignalsAsync` and handling the rejection.
- *
- * @platform android
- */
-export async function isFakeAgeSignalsEnabledAsync(): Promise<boolean> {
-  if (Platform.OS === 'android') {
-    return ExpoAgeRange.isFakeAgeSignalsEnabledAsync();
-  }
-  return false;
-}
-
-/**
- * Makes [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions) and
- * [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) report `fake` instead of
- * the signals Play reports, using Play's own
+ * Reports `fake` from [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions) and
+ * [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) instead of the real
+ * signals, using Google Play's
  * [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api).
- * Pass `null` to go back to the real signals. Resolves without doing anything on iOS and web.
+ * Pass `null` to report the real signals again. Does nothing on iOS and web.
  *
- * Play only reports live age signals to accounts in the cohorts it has enabled, which cannot be
- * created elsewhere, so this is the only way most apps can exercise their age gate end to end.
+ * Google Play only reports age signals to accounts it has enabled, so use this to test your app
+ * against other age ranges. It is meant for development and testing, not for production builds.
  *
- * The app has to opt in for this to work, which keeps the fake out of production builds. Set the
- * `enableFakeAgeSignals` property of the config plugin for the build profiles you test with:
- *
- * ```json
- * { "plugins": [["expo-age-range", { "enableFakeAgeSignals": true }]] }
- * ```
- *
- * Without it, this function rejects with `ERR_AGE_RANGE_FAKE_SIGNALS_DISABLED` — check
- * [`isFakeAgeSignalsEnabledAsync`](#agerangeisfakeagesignalsenabledasync) first.
- *
- * @param fake The age signals to report, or `null` to report the real ones again.
+ * @param fake The signals to report, or `null` to report the real ones.
  *
  * @example
  * ```ts
- * // A supervised 13 to 15 year old whose guardian has not approved the latest significant change.
- * await setFakeAgeSignalsAsync({
+ * // A supervised 13 to 15 year old with a change waiting for approval.
+ * setFakeAgeSignals({
  *   ageSignalsStatus: 'SHARED',
  *   lowerBound: 13,
  *   upperBound: 15,
@@ -183,8 +157,8 @@ export async function isFakeAgeSignalsEnabledAsync(): Promise<boolean> {
  *
  * @platform android
  */
-export async function setFakeAgeSignalsAsync(fake: FakeAgeSignals | null): Promise<void> {
+export function setFakeAgeSignals(fake: FakeAgeSignals | null): void {
   if (Platform.OS === 'android') {
-    return ExpoAgeRange.setFakeAgeSignalsAsync(fake);
+    ExpoAgeRange.setFakeAgeSignals(fake);
   }
 }

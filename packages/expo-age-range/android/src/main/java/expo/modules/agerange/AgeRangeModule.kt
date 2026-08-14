@@ -24,8 +24,7 @@ class AgeRangeModule : Module() {
 
   /**
    * A [FakeAgeSignalsManager][com.google.android.play.agesignals.testing.FakeAgeSignalsManager] once
-   * a build that opted in to [FAKE_AGE_SIGNALS_META_DATA] has installed fake signals, and the real
-   * manager otherwise.
+   * the app has set fake signals, and the real manager otherwise.
    */
   private val currentAgeSignalsManager: AgeSignalsManager
     get() = fakeAgeSignals?.manager() ?: ageSignalsManager
@@ -56,14 +55,7 @@ class AgeRangeModule : Module() {
       )
     }
 
-    AsyncFunction("isFakeAgeSignalsEnabledAsync") {
-      isFakeAgeSignalsEnabled(context)
-    }
-
-    AsyncFunction("setFakeAgeSignalsAsync") { options: FakeAgeSignalsOptions? ->
-      if (!isFakeAgeSignalsEnabled(context)) {
-        throw FakeAgeSignalsDisabledException()
-      }
+    Function("setFakeAgeSignals") { options: FakeAgeSignalsOptions? ->
       fakeAgeSignals = options?.let(::FakeAgeSignals)
     }
   }

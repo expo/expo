@@ -30,10 +30,6 @@ export async function requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus |
   return null;
 }
 
-export async function isFakeAgeSignalsEnabledAsync(): Promise<boolean> {
-  return false;
-}
-
-export async function setFakeAgeSignalsAsync(_fake: FakeAgeSignals | null): Promise<void> {
+export function setFakeAgeSignals(_fake: FakeAgeSignals | null): void {
   // no-op on web
 }
