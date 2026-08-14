@@ -12,6 +12,7 @@
 - Resolve development server requests from the URL the bundle was loaded from, instead of the default Metro address ([#48276](https://github.com/expo/expo/pull/48276) by [@kitten](https://github.com/kitten))
 - Stop the iOS webview wrapper printing `Unknown message type` for DOM runtime messages that LogBox does not handle, matching Android. ([#48813](https://github.com/expo/expo/pull/48813) by [@kudo](https://github.com/Kudo))
 - [ios] Fix LogBox not appearing for fatal errors reported from the JS thread ([#49056](https://github.com/expo/expo/pull/49056) by [@hassankhan](https://github.com/hassankhan))
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
