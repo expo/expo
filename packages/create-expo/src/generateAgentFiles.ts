@@ -1,30 +1,18 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
-function getExpoSdkVersion(root: string): string | null {
-  try {
-    const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf-8'));
-    const expoVersion = (pkg.dependencies?.expo ?? pkg.devDependencies?.expo) as string | undefined;
-    if (!expoVersion) return null;
-    const match = expoVersion.match(/(\d+)\./);
-    return match?.[1] ?? null;
-  } catch {
-    return null;
-  }
+const AGENT_TEMPLATE_FILE_NAMES = ['AGENTS.md', 'CLAUDE.md'] as const;
+
+// Agent templates are synced from `expo/llm-configs` at publish time (see
+// `scripts/sync-agent-templates.js`) and bundled under `template/agent-files`, so project
+// creation works offline. `__dirname` is the build output directory, one level below the
+// package root in both the source tree and the published package.
+const AGENT_TEMPLATES_DIR = path.join(__dirname, '..', 'template', 'agent-files');
+
+function resolveAgentTemplatePath(fileName: (typeof AGENT_TEMPLATE_FILE_NAMES)[number]): string {
+  return path.join(AGENT_TEMPLATES_DIR, fileName);
 }
-
-function getAgentsMdContent(sdkVersion: string | null): string {
-  const docsUrl = sdkVersion
-    ? `https://docs.expo.dev/versions/v${sdkVersion}.0.0/`
-    : 'https://docs.expo.dev';
-  return `# Expo HAS CHANGED
-
-Read the exact versioned docs at ${docsUrl} before writing any code.
-`;
-}
-
-const CLAUDE_MD_CONTENT = `@AGENTS.md
-`;
 
 const CLAUDE_SETTINGS_CONTENT = `{
   "enabledPlugins": {
@@ -33,21 +21,43 @@ const CLAUDE_SETTINGS_CONTENT = `{
 }
 `;
 
-export function generateAgentFiles(root: string): void {
-  const sdkVersion = getExpoSdkVersion(root);
+function isClaudeCodeInstalled(): boolean {
+  const home = os.homedir();
+  return (
+    !!home &&
+    (fs.existsSync(path.join(home, '.claude.json')) || fs.existsSync(path.join(home, '.claude')))
+  );
+}
 
-  const files: { filePath: string; content: string }[] = [
-    { filePath: path.join(root, 'AGENTS.md'), content: getAgentsMdContent(sdkVersion) },
-    { filePath: path.join(root, 'CLAUDE.md'), content: CLAUDE_MD_CONTENT },
-    { filePath: path.join(root, '.claude', 'settings.json'), content: CLAUDE_SETTINGS_CONTENT },
+async function copyFileIfMissing(sourcePath: string, destinationPath: string): Promise<void> {
+  if (fs.existsSync(destinationPath)) {
+    return;
+  }
+  const dir = path.dirname(destinationPath);
+  await fs.promises.mkdir(dir, { recursive: true });
+  await fs.promises.copyFile(sourcePath, destinationPath);
+}
+
+async function writeFileIfMissing(filePath: string, content: string): Promise<void> {
+  if (fs.existsSync(filePath)) {
+    return;
+  }
+  const dir = path.dirname(filePath);
+  await fs.promises.mkdir(dir, { recursive: true });
+  await fs.promises.writeFile(filePath, content);
+}
+
+export async function generateAgentFiles(root: string): Promise<void> {
+  const tasks: Promise<void>[] = [
+    copyFileIfMissing(resolveAgentTemplatePath('AGENTS.md'), path.join(root, 'AGENTS.md')),
   ];
 
-  for (const { filePath, content } of files) {
-    if (fs.existsSync(filePath)) {
-      continue;
-    }
-    const dir = path.dirname(filePath);
-    fs.mkdirSync(dir, { recursive: true });
-    fs.writeFileSync(filePath, content);
+  if (isClaudeCodeInstalled()) {
+    tasks.push(
+      copyFileIfMissing(resolveAgentTemplatePath('CLAUDE.md'), path.join(root, 'CLAUDE.md')),
+      writeFileIfMissing(path.join(root, '.claude', 'settings.json'), CLAUDE_SETTINGS_CONTENT)
+    );
   }
+
+  await Promise.all(tasks);
 }

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Reuse agent files from `@expo/llm-configs` ([#46968](https://github.com/expo/expo/pull/46968) by [@davidmokos](https://github.com/davidmokos))
+
 ### 🐛 Bug fixes
 
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
