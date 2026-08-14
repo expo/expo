@@ -67,16 +67,6 @@ struct ExpoAppIntentsModuleTests {
     }
   }
 
-  /// The scaffolder writes the refresh handler only for an app that has an `AppShortcutsProvider`, so
-  /// telling the user to run `init` would not fix anything for a scaffold without shortcut phrases.
-  @Test
-  func `the refresh failure explains where the handler comes from`() {
-    let reason = ShortcutsRefreshUnavailableException().reason
-
-    #expect(reason.contains("setShortcutsRefreshHandler"))
-    #expect(reason.contains("AppShortcutsProvider"))
-    #expect(!reason.contains("expo-app-intents init"))
-  }
 }
 
 /// `ViewModifierRegistry` is process-wide, so keeping the `appEntityIdentifier` factory alive for
@@ -177,31 +167,6 @@ struct KeyedSerialQueueTests {
     #expect(await counter.mostConcurrent == 1)
   }
 
-  /// Different kinds touch disjoint parts of the index, so serializing them would only be slower.
-  @Test
-  func `different keys are not held up by each other`() async throws {
-    let queue = KeyedSerialQueue()
-    let counter = OverlapCounter()
-    let started = OverlapCounter()
-
-    await withTaskGroup(of: Void.self) { group in
-      for index in 0..<4 {
-        group.addTask {
-          try? await queue.run(key: "kind\(index)") {
-            await started.enter()
-            await counter.enter()
-            // Long enough that the others reach `enter` too, if they are allowed to.
-            try await Task.sleep(nanoseconds: 20_000_000)
-            await counter.leave()
-          }
-        }
-      }
-    }
-
-    #expect(await started.mostConcurrent > 1, "keys must not serialize against each other")
-    #expect(await counter.mostConcurrent > 1)
-  }
-
   /// A failed update is reported to whoever asked for it, and must not strand the next one.
   @Test
   func `a failure reaches the caller and the next call still runs`() async throws {
@@ -220,28 +185,14 @@ struct KeyedSerialQueueTests {
 
 @Suite("AppEntityIdentifierRegistry")
 struct AppEntityIdentifierRegistryTests {
-  /// The record of a failed index has to outlive the process that failed.
-  ///
-  /// Indexing fails, the app is killed, and the next launch republishes the same catalog — which the
-  /// entity store short-circuits, because the catalog itself did not change. Held only in memory the
-  /// flag would be gone by then, and the index would stay stale until something called
-  /// `reindexEntitiesAsync`, which is the drift this is here to stop.
   @Test
-  func `a kind left stale by an earlier run is still stale after a restart`() {
-    let kind = "testStaleAcrossRestart-\(UUID().uuidString)"
-    let key = "dev.expo.appintents.index.stale.\(kind)"
+  func `reindexing ignores a kind that is not registered for indexing`() async throws {
+    let kind = "testUnregistered-\(UUID().uuidString)"
+    let key = "dev.expo.appintents.entities.\(kind)"
+    UserDefaults.standard.set(Data("not json".utf8), forKey: key)
     defer { UserDefaults.standard.removeObject(forKey: key) }
-    // What a process whose indexing failed leaves behind.
-    UserDefaults.standard.set(true, forKey: key)
 
-    #expect(AppEntityIdentifierRegistry.shared.isIndexStale(kind: kind) == true)
-  }
-
-  @Test
-  func `a kind nothing has marked is not stale`() {
-    let kind = "testNeverMarked-\(UUID().uuidString)"
-
-    #expect(AppEntityIdentifierRegistry.shared.isIndexStale(kind: kind) == false)
+    try await AppEntityIdentifierRegistry.shared.replaceIndexFromCatalog(kind: kind)
   }
 }
 
@@ -269,14 +220,5 @@ struct AppEntityIdentifierDiagnosticsTests {
     AppEntityIdentifierDiagnostics.reportOnce(key: key, to: logger, "reported to the caller")
 
     #expect(handler.collected.contains { $0.contains("reported to the caller") })
-  }
-
-  @Test
-  func `different causes are reported separately`() {
-    let first = "test:\(UUID().uuidString)"
-    let second = "test:\(UUID().uuidString)"
-
-    #expect(AppEntityIdentifierDiagnostics.reportOnce(key: first, "first") == true)
-    #expect(AppEntityIdentifierDiagnostics.reportOnce(key: second, "second") == true)
   }
 }

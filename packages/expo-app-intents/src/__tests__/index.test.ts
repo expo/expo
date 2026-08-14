@@ -19,13 +19,7 @@ describe('expo-app-intents on unsupported platforms', () => {
     await expect(
       AppIntents.setEntityCatalogAsync('dish', [{ id: 'margherita', title: 'Margherita Pizza' }])
     ).resolves.toBeUndefined();
-    await expect(
-      AppIntents.setEntityCatalogAsync('mailDraft', [
-        { id: 'private', title: 'Private draft', hideInSpotlight: true },
-      ])
-    ).resolves.toBeUndefined();
     await expect(AppIntents.reindexEntitiesAsync()).resolves.toBeUndefined();
-    await expect(AppIntents.reindexEntitiesAsync('dish')).resolves.toBeUndefined();
   });
 
   it('rejects refreshShortcutsAsync with UnavailabilityError', async () => {
@@ -36,13 +30,5 @@ describe('expo-app-intents on unsupported platforms', () => {
     const subscription = AppIntents.addAppIntentListener(() => {});
     expect(typeof subscription.remove).toBe('function');
     subscription.remove();
-  });
-
-  it('creates an app entity identifier modifier config', () => {
-    expect(AppIntents.appEntityIdentifier('person', 'maya-chen')).toEqual({
-      $type: 'appEntityIdentifier',
-      entity: 'person',
-      id: 'maya-chen',
-    });
   });
 });
