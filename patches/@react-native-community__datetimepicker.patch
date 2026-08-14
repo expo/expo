@@ -1,0 +1,38 @@
+diff --git a/android/build.gradle b/android/build.gradle
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -18,7 +18,17 @@
+ }
+ 
+ apply plugin: 'com.android.library'
+-apply plugin: 'org.jetbrains.kotlin.android'
++// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
++// Only apply it when built-in Kotlin is unavailable or explicitly disabled with
++// android.builtInKotlin=false.
++// Note: Groovy's ?: operates on truthiness, so a plain `?.toBoolean() ?: true` would
++// coerce an explicit `false` back to true. Check for null explicitly instead.
++def expoBuiltInKotlinProp = findProperty('android.builtInKotlin')
++def expoAgpBuiltInKotlin = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger() >= 9 &&
++    (expoBuiltInKotlinProp == null || expoBuiltInKotlinProp.toString().toBoolean())
++if (!expoAgpBuiltInKotlin) {
++  apply plugin: 'org.jetbrains.kotlin.android'
++}
+ if (isNewArchitectureEnabled()) {
+   apply plugin: "com.facebook.react"
+ }
+@@ -54,11 +61,12 @@
+             }
+         }
+     }
+-    kotlinOptions {
+-        jvmTarget = '17'
+-    }
+ }
+ 
++// kotlinOptions comes from KGP and doesn't exist with AGP 9's built-in Kotlin; the
++// project-level kotlin extension is registered under both modes.
++kotlin.compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.fromTarget('17')
++
+ repositories {
+     google()
+     mavenLocal()
