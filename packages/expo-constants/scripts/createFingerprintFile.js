@@ -90,6 +90,11 @@ if (require.main === module) {
   const projectRoot = process.argv[2];
   const destinationDir = process.argv[3];
   const platform = process.argv[4];
+  // Match the check side (`npx expo needs-rebuild` and the dev server), which evaluates the
+  // app config in development mode (EXPO_CONFIG_MODE overrides). Builds launched from the IDE
+  // have no NODE_ENV, which would skip the .env.development files the check side loads.
+  process.env.NODE_ENV =
+    process.env.EXPO_CONFIG_MODE === 'production' ? 'production' : 'development';
   require('@expo/env').load(projectRoot);
   process.chdir(projectRoot);
   createFingerprintFileAsync(projectRoot, destinationDir, platform, true).catch(
