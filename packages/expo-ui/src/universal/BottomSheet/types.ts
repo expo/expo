@@ -64,7 +64,7 @@ export interface BottomSheetProps {
   snapPoints?: SnapPoint[];
 
   /**
-   * Padding between the sheet and [`children`](#children), in points on iOS, dp on Android and
+   * Padding between the sheet and [`children`](#children), in dp on Android, points on iOS, and
    * CSS pixels on web. Pass `0` for content that reaches the sheet's edges.
    *
    * When omitted, each platform keeps the inset it applies by default.

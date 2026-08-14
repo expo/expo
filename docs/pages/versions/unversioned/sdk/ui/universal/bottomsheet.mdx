@@ -68,7 +68,7 @@ export default function BottomSheetNoIndicatorExample() {
 }
 ```
 
-### Full-bleed content
+### Content padding
 
 The sheet insets its content by default. Pass [`contentPadding`](#contentpadding) to change that inset — `0` lets a row, image, or divider reach the sheet's edges.
 
@@ -88,7 +88,7 @@ export default function BottomSheetContentPaddingExample() {
         contentPadding={0}>
         <Column>
           <Column style={{ backgroundColor: '#0a84ff', padding: 16 }}>
-            <Text>This banner spans the full width of the sheet.</Text>
+            <Text>This banner reaches the sheet's edge.</Text>
           </Column>
           <Button label="Close" onPress={() => setIsPresented(false)} />
         </Column>
