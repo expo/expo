@@ -33,3 +33,55 @@ diff --git a/compatibility.json b/compatibility.json
        "react-native-worklets": ["0.10.x"]
      },
      "4.4.x": {
+diff --git a/android/build.gradle.kts b/android/build.gradle.kts
+--- a/android/build.gradle.kts
++++ b/android/build.gradle.kts
+@@ -8,9 +8,20 @@
+     id("com.android.library")
+     id("maven-publish")
+     id("com.diffplug.spotless") version "8.4.0"
+-    id("org.jetbrains.kotlin.android")
++    id("org.jetbrains.kotlin.android") apply false
+ }
+ 
++// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
++// Only apply the plugin when built-in Kotlin is unavailable or explicitly disabled
++// with android.builtInKotlin=false.
++val agpBuiltInKotlin =
++    com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.substringBefore(".").toInt() >= 9 &&
++        (findProperty("android.builtInKotlin")?.toString()?.toBoolean() ?: true)
++
++if (!agpBuiltInKotlin) {
++    apply(plugin = "org.jetbrains.kotlin.android")
++}
++
+ fun safeExtGet(prop: String, fallback: Any?): Any? =
+     if (rootProject.extensions.extraProperties.has(prop)) rootProject.extensions.extraProperties.get(prop) else fallback
+ 
+@@ -245,10 +256,22 @@
+ }
+ 
+ if (project != rootProject) {
+-    kotlin {
+-        compilerOptions {
+-            jvmTarget = JvmTarget.fromTarget("17")
+-        }
++    // Configured reflectively: depending on the host app this script compiles against
++    // different KGP versions (or, with AGP 9's built-in Kotlin, no usable KGP on the
++    // script classpath at all), so typed references to KGP classes here break script
++    // compilation in some host apps. The extension instance and JvmTarget value must
++    // come from the same class loader, hence Class.forName on the extension's loader.
++    project.extensions.findByName("kotlin")?.let { kotlinExt ->
++        val compilerOptions = kotlinExt.javaClass.getMethod("getCompilerOptions").invoke(kotlinExt)
++        @Suppress("UNCHECKED_CAST")
++        val jvmTargetProperty = compilerOptions.javaClass.getMethod("getJvmTarget").invoke(compilerOptions)
++            as org.gradle.api.provider.Property<Any>
++        val jvmTarget17 = Class.forName(
++            "org.jetbrains.kotlin.gradle.dsl.JvmTarget",
++            true,
++            kotlinExt.javaClass.classLoader,
++        ).getMethod("fromTarget", String::class.java).invoke(null, "17")
++        jvmTargetProperty.set(jvmTarget17)
+     }
+ }
+ 
