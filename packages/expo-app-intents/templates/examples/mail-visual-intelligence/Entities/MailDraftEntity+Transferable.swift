@@ -9,8 +9,10 @@ import UniformTypeIdentifiers
 extension MailDraftEntity: Transferable {
   static var transferRepresentation: some TransferRepresentation {
     FileRepresentation(exportedContentType: .plainText) { draft in
-      let fileURL = FileManager.default.temporaryDirectory
-        .appendingPathComponent(draft.draftFilename)
+      let exportDirectory = FileManager.default.temporaryDirectory
+        .appendingPathComponent(UUID().uuidString, isDirectory: true)
+      try FileManager.default.createDirectory(at: exportDirectory, withIntermediateDirectories: true)
+      let fileURL = exportDirectory.appendingPathComponent(draft.draftFilename)
 
       try draft.bodyText.write(to: fileURL, atomically: true, encoding: .utf8)
 
@@ -38,7 +40,8 @@ extension MailDraftEntity: Transferable {
       .joined(separator: " ")
       .trimmingCharacters(in: .whitespacesAndNewlines)
 
-    return "\(filename.isEmpty ? "No subject" : filename).txt"
+    let boundedFilename = String(filename.unicodeScalars.prefix(50))
+    return "\(boundedFilename.isEmpty ? "No subject" : boundedFilename).txt"
   }
 }
 

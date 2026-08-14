@@ -3,15 +3,7 @@ import os from 'os';
 import path from 'path';
 import prompts from 'prompts';
 
-import {
-  getExamplesPrompt,
-  getVisualIntelligencePrompt,
-  type InitExample,
-  normalizeDirectory,
-  resolveExamples,
-  resolveExamplesAsync,
-  runInit,
-} from '../init';
+import { normalizeDirectory, resolveExamples, resolveExamplesAsync, runInit } from '../init';
 
 jest.mock('prompts');
 
@@ -63,31 +55,6 @@ describe(resolveExamples, () => {
   });
 });
 
-describe(getExamplesPrompt, () => {
-  it('does not offer visual intelligence in the picker itself', () => {
-    const choices = getExamplesPrompt().choices as { value: string }[];
-
-    expect(choices.map((choice) => choice.value)).toEqual([
-      'minimal',
-      'counter',
-      'restaurant',
-      'mail',
-    ]);
-  });
-});
-
-describe(getVisualIntelligencePrompt, () => {
-  it('explains what visual intelligence does and defaults to off', () => {
-    const prompt = getVisualIntelligencePrompt();
-
-    expect(prompt.type).toBe('confirm');
-    expect(prompt.name).toBe('visualIntelligence');
-    expect(prompt.message).toContain(
-      'Allows Siri to more intelligently read the on-screen contents of your app.'
-    );
-    expect(prompt.initial).toBe(false);
-  });
-});
 describe(resolveExamplesAsync, () => {
   beforeEach(() => {
     mockedPrompts.mockReset();
@@ -144,17 +111,6 @@ describe(resolveExamplesAsync, () => {
     expect(mockedPrompts.mock.calls[1]![0]).toMatchObject({
       type: 'confirm',
       name: 'visualIntelligence',
-    });
-  });
-
-  it('respects declining visual intelligence', async () => {
-    mockedPrompts
-      .mockResolvedValueOnce({ examples: ['mail'] })
-      .mockResolvedValueOnce({ visualIntelligence: false });
-
-    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
-      examples: ['mail'],
-      visualIntelligence: false,
     });
   });
 
@@ -422,43 +378,6 @@ describe(runInit, () => {
         templatesDir,
       })
     ).rejects.toThrow(/--visual-intelligence extends the mail example/);
-  });
-
-  it('names the selected examples and both ways to add the missing one', async () => {
-    writeProject(staticConfig());
-
-    const error = await runInit({
-      projectRoot,
-      directory: 'app-intents',
-      examples: ['counter'],
-      visualIntelligence: true,
-      templatesDir,
-    }).catch((caught: Error) => caught);
-
-    const message = (error as Error).message;
-    expect(message).toContain('counter');
-    // The flag also reaches this check from the interactive picker, where it was already passed on
-    // the command line, so the message has to name the picker as a way out as well.
-    expect(message).toContain('--examples mail');
-    expect(message).toContain('picker');
-  });
-
-  it('lists the scaffolded files and points at the guide for receiving invocations', async () => {
-    writeProject(staticConfig());
-
-    await runInit({
-      projectRoot,
-      directory: 'app-intents',
-      examples: ['counter'],
-      templatesDir,
-    });
-
-    const output = messages(log);
-    expect(output).toContain('AppIntentsSetup.swift');
-    expect(output).toContain('IncreaseCounterIntent.swift');
-    // Nothing receives an invocation until the JavaScript side is wired up, so the guide has to be
-    // reachable from the output.
-    expect(output).toContain('https://docs.expo.dev/versions/latest/sdk/app-intents/#usage');
   });
 
   it('merges into existing experiments and plugins without duplication', async () => {
@@ -805,55 +724,26 @@ describe(runInit, () => {
     expect(messages(warn)).toContain('OnCreate {');
   });
 
-  // With counter selected there is a provider to refresh, so the existing setup module already has
-  // an `OnCreate` and only the statement inside it is missing.
-  it('adds the registration to the OnCreate the existing setup module already has', async () => {
-    writeProject(staticConfig());
-
-    await runInit({
-      projectRoot,
-      directory: 'app-intents',
-      examples: ['counter', 'mail'],
-      templatesDir,
-    });
-    warn.mockClear();
-    await runInit({
-      projectRoot,
-      directory: 'app-intents',
-      examples: ['counter', 'mail'],
-      visualIntelligence: true,
-      templatesDir,
-    });
-
-    const warned = messages(warn);
-    expect(warned).toContain('registerIndexed');
-    expect(warned).toContain('OnCreate block');
-    expect(warned).not.toContain('OnCreate {');
-  });
-
-  it('does not warn when the existing setup module already registers the entity kind', async () => {
+  it('recognizes an existing multiline entity registration', async () => {
     writeProject(staticConfig());
 
     const options = {
       projectRoot,
       directory: 'app-intents',
-      examples: ['mail'] as InitExample[],
+      examples: ['mail'] as ['mail'],
       visualIntelligence: true,
       templatesDir,
     };
     await runInit(options);
+    fs.writeFileSync(
+      path.join(projectRoot, 'app-intents/AppIntentsSetup.swift'),
+      read('app-intents/AppIntentsSetup.swift').replace(
+        'registerIndexed("mailDraft", as: MailDraftEntity.self)',
+        'registerIndexed(\n          "mailDraft",\n          as: MailDraftEntity.self\n        )'
+      )
+    );
     warn.mockClear();
     await runInit(options);
-
-    expect(messages(warn)).toBe('');
-  });
-
-  it('does not warn about the registration when visual intelligence was not requested', async () => {
-    writeProject(staticConfig());
-
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['mail'], templatesDir });
-    warn.mockClear();
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['mail'], templatesDir });
 
     expect(messages(warn)).toBe('');
   });

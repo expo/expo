@@ -27,7 +27,7 @@ struct MailDraftEntityQuery: EntityStringQuery {
     }
 
     return try await suggestedEntities().filter { draft in
-      [draft.displaySubject, draft.bodyText]
+      [draft.displaySubject, draft.bodyText, draft.recipientList]
         .joined(separator: " ")
         .lowercased()
         .contains(query)
