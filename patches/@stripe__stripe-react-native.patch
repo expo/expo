@@ -1,0 +1,36 @@
+diff --git a/android/build.gradle b/android/build.gradle
+index 0e66ee0e00e20b61a538f0b3fd650d10fbed5a7a..682a6c8410aa6d3b234629474661a0e92c1aabad 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -63,7 +63,17 @@ def kotlinVersion = getExtOrDefault("kotlinVersion")
+ def kotlinMajor = kotlinVersion.tokenize("\\.")[0].toInteger()
+ 
+ apply plugin: "com.android.library"
+-apply plugin: "kotlin-android"
++// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
++// Only apply it when built-in Kotlin is unavailable or explicitly disabled with
++// android.builtInKotlin=false.
++// Note: Groovy's ?: operates on truthiness, so a plain `?.toBoolean() ?: true` would
++// coerce an explicit `false` back to true. Check for null explicitly instead.
++def expoBuiltInKotlinProp = findProperty('android.builtInKotlin')
++def expoAgpBuiltInKotlin = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger() >= 9 &&
++    (expoBuiltInKotlinProp == null || expoBuiltInKotlinProp.toString().toBoolean())
++if (!expoAgpBuiltInKotlin) {
++  apply plugin: 'kotlin-android'
++}
+ apply plugin: "kotlin-parcelize"
+ // Only apply the compose plugin if we have the old compose-compiler on the classpath
+ if (kotlinMajor >= 2) {
+@@ -118,8 +125,10 @@ android {
+     targetCompatibility JavaVersion.VERSION_1_8
+   }
+ 
+-  kotlinOptions {
+-    allWarningsAsErrors = System.getenv("RN_STRIPE_WARNINGS_AS_ERRORS") == "true"
++  if (!expoAgpBuiltInKotlin) {
++    kotlinOptions {
++      allWarningsAsErrors = System.getenv("RN_STRIPE_WARNINGS_AS_ERRORS") == "true"
++    }
+   }
+ 
+   buildFeatures {
