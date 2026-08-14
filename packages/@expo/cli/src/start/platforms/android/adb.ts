@@ -186,10 +186,15 @@ export async function getPackagePathsAsync(
     );
   } catch (error: any) {
     // `pm path` exits code 1 and prints nothing when the package is not installed;
-    // `resolveAdbPromise` keeps the bare spawn message in that case. Any failure with adb
-    // output — transport errors, authorization states, shell errors — says nothing about the
-    // app and must propagate instead of reading as "not installed".
-    if (/exited with non-zero code: 1$/.test(error?.message ?? '')) {
+    // `resolveAdbPromise` keeps the bare spawn message in that case. Some devices print an
+    // explicit package error instead. Any other failure — transport errors, authorization
+    // states, shell errors — says nothing about the app and must propagate instead of
+    // reading as "not installed".
+    const message = error?.message ?? '';
+    if (
+      /exited with non-zero code: 1$/.test(message) ||
+      /can't find package|package \S+ (is )?not (found|installed)|unknown package/i.test(message)
+    ) {
       return [];
     }
     throw error;

@@ -84,6 +84,17 @@ describe(getPackagePathsAsync, () => {
     await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).resolves.toEqual([]);
   });
 
+  // Some devices print an explicit package error for a missing package instead of exiting
+  // silently; these must read as "not installed", not as a failed check.
+  it.each([
+    "Error: Can't find package: dev.bacon.app",
+    'Failure: package dev.bacon.app not found',
+    'Unknown package: dev.bacon.app',
+  ])(`returns an empty list for the package error %p`, async (message) => {
+    jest.mocked(getServer().runAsync).mockRejectedValueOnce(new Error(message));
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).resolves.toEqual([]);
+  });
+
   // Any failure with adb output says nothing about the app: transport errors, authorization
   // states, and shell errors must all throw instead of reading as "not installed".
   it.each([

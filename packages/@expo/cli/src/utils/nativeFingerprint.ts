@@ -54,33 +54,25 @@ export function nativeFingerprintOptions(platform: 'android' | 'ios'): {
 }
 
 /**
- * Resolve `@expo/fingerprint` from the project so the hash matches the one computed at build
- * time (the expo-constants build phase resolves `expo/fingerprint` from the project too).
+ * Resolve `@expo/fingerprint` from the project (via the `expo` package's `./fingerprint`
+ * re-export) so the hash matches the one computed at build time (the expo-constants build
+ * phase resolves `expo/fingerprint` from the project too). This feature ships with the `expo`
+ * version that introduces the re-export, so there is no older `expo` install to fall back for.
  * Returns null when the project has no resolvable fingerprint package.
  */
 export function importFingerprint(projectRoot: string): ResolvedFingerprint | null {
-  for (const moduleId of ['expo/fingerprint', '@expo/fingerprint']) {
-    let modulePath: string;
-    try {
-      modulePath = require.resolve(moduleId, { paths: [projectRoot] });
-    } catch (error: any) {
-      // Fall through to the next module ID — e.g. older `expo` packages without the
-      // `./fingerprint` subpath export throw ERR_PACKAGE_PATH_NOT_EXPORTED.
-      event('fingerprint_module_unresolved', {
-        moduleId,
-        projectRoot: event.path(projectRoot),
-        error: event.error(error as Error),
-      });
-      continue;
-    }
-    // Only resolution failures mean "not installed". Load failures (a corrupted install,
-    // an ESM-only build) throw here so they don't get misreported as a missing package.
-    return {
-      Fingerprint: require(modulePath),
-      version: resolveFingerprintVersion(modulePath),
-    };
+  let modulePath: string;
+  try {
+    modulePath = require.resolve('expo/fingerprint', { paths: [projectRoot] });
+  } catch {
+    return null;
   }
-  return null;
+  // Only a resolution failure means "not installed". A load failure (a corrupted install, an
+  // ESM-only build) throws here so it doesn't get misreported as a missing package.
+  return {
+    Fingerprint: require(modulePath),
+    version: resolveFingerprintVersion(modulePath),
+  };
 }
 
 function resolveFingerprintVersion(fingerprintModulePath: string): string | null {
@@ -189,6 +181,47 @@ export type PrebuildStaleness = {
   /** Sources that differ from the marker. Empty unless the status is `stale`. */
   changes: PrebuildSourceChange[];
 };
+
+export type NativeDirectoryStaleness = {
+  status: 'fresh' | 'stale' | 'unknown' | 'not-applicable';
+  changes: PrebuildSourceChange[];
+};
+
+/**
+ * Staleness of the generated native directory for a platform, read from the prebuild marker.
+ * `not-applicable` when the project has no native directory — nothing to regenerate. Shared by
+ * `npx expo needs-rebuild` and the dev server so their verdicts cannot diverge.
+ */
+export function getNativeDirectoryStaleness(
+  projectRoot: string,
+  platform: 'android' | 'ios',
+  current: { sources: FingerprintSource[]; fingerprintVersion: string | null }
+): NativeDirectoryStaleness {
+  if (!fs.existsSync(path.join(projectRoot, platform))) {
+    return { status: 'not-applicable', changes: [] };
+  }
+  // A bare project has a native directory but no marker, which reads as `unknown` and falls
+  // through to the plain rebuild advice.
+  return getPrebuildStaleness({
+    marker: readPrebuildFingerprintMarker(projectRoot, platform),
+    currentSources: current.sources,
+    currentFingerprintVersion: current.fingerprintVersion,
+  });
+}
+
+/**
+ * Commands that bring a stale installed app up to date, in order. When the generated native
+ * directories are stale, a plain rebuild would compile them as-is and embed the new hash —
+ * hiding the problem instead of fixing it — so `prebuild` has to run first.
+ */
+export function rebuildCommands(
+  platform: 'android' | 'ios',
+  { prebuildFirst }: { prebuildFirst: boolean }
+): string[] {
+  return prebuildFirst
+    ? [`npx expo prebuild -p ${platform}`, `npx expo run:${platform}`]
+    : [`npx expo run:${platform}`];
+}
 
 /**
  * Decide whether the generated native directories are stale relative to the current project,

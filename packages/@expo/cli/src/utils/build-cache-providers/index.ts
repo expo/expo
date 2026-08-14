@@ -12,7 +12,6 @@ import * as Log from '../../log';
 import { debugEvent } from '../../run/events';
 import { ensureDependenciesAsync } from '../../start/doctor/dependencies/ensureDependenciesAsync';
 import { CommandError } from '../errors';
-import { importFingerprint } from '../nativeFingerprint';
 import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
 
 export const resolveBuildCacheProvider = async (
@@ -167,14 +166,32 @@ async function calculateFingerprintHashAsync({
     );
   }
 
-  const resolved = importFingerprint(projectRoot);
-  if (!resolved) {
+  const Fingerprint = importFingerprintForDev(projectRoot);
+  if (!Fingerprint) {
     Log.warn('@expo/fingerprint is not installed in the project, skipping build cache.');
     return null;
   }
-  const fingerprint = await resolved.Fingerprint.createFingerprintAsync(projectRoot);
+  const fingerprint = await Fingerprint.createFingerprintAsync(projectRoot);
 
   return fingerprint.hash;
+}
+
+/**
+ * Resolve `@expo/fingerprint` directly from the project — NOT through the shared
+ * `importFingerprint`, which prefers `expo/fingerprint` and exists for parity with the
+ * embedded-fingerprint channel. Build-cache keys predate that channel: resolving a different
+ * copy would silently change every existing key, and `MODULE_NOT_FOUND` while loading
+ * (a corrupted install) must degrade to "skip build cache", not abort `expo run:*`.
+ */
+function importFingerprintForDev(projectRoot: string): null | typeof import('@expo/fingerprint') {
+  try {
+    return require(require.resolve('@expo/fingerprint', { paths: [projectRoot] }));
+  } catch (error: any) {
+    if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
+      return null;
+    }
+    throw error;
+  }
 }
 
 /**

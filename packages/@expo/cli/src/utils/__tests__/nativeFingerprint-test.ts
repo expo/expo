@@ -3,10 +3,12 @@ import { vol } from 'memfs';
 
 import {
   formatPrebuildChanges,
+  getNativeDirectoryStaleness,
   getPrebuildFingerprintMarkerPath,
   getPrebuildStaleness,
   importFingerprint,
   readPrebuildFingerprintMarker,
+  rebuildCommands,
   recordPrebuildFingerprintAsync,
 } from '../nativeFingerprint';
 
@@ -232,23 +234,62 @@ describe(readPrebuildFingerprintMarker, () => {
 describe(importFingerprint, () => {
   it(`throws when the fingerprint package resolves but fails to load`, () => {
     // Resolve the real package the same way importFingerprint does, then poison its load.
-    const resolveFrom = (moduleId: string): string | null => {
-      try {
-        return require.resolve(moduleId, { paths: [__dirname] });
-      } catch {
-        return null;
-      }
-    };
-    const target = resolveFrom('expo/fingerprint') ?? resolveFrom('@expo/fingerprint');
-    expect(target).not.toBeNull();
-    jest.doMock(target!, () => {
+    const target = require.resolve('expo/fingerprint', { paths: [__dirname] });
+    jest.doMock(target, () => {
       throw new SyntaxError('Unexpected token — corrupted install');
     });
     try {
       // A load failure must surface instead of being misreported as "not installed" (null).
       expect(() => importFingerprint(__dirname)).toThrow('Unexpected token');
     } finally {
-      jest.dontMock(target!);
+      jest.dontMock(target);
     }
+  });
+});
+
+describe(getNativeDirectoryStaleness, () => {
+  const current = { sources: [configSource], fingerprintVersion: '0.20.6' };
+
+  it(`is not applicable without a native directory — nothing to regenerate`, () => {
+    expect(getNativeDirectoryStaleness(projectRoot, 'ios', current)).toEqual({
+      status: 'not-applicable',
+      changes: [],
+    });
+  });
+
+  it(`reads as unknown with a native directory but no marker (bare project)`, () => {
+    vol.fromJSON({ [`${projectRoot}/ios/Podfile`]: '' });
+    expect(getNativeDirectoryStaleness(projectRoot, 'ios', current)).toEqual({
+      status: 'unknown',
+      changes: [],
+    });
+  });
+
+  it(`compares against the marker when the native directory exists`, () => {
+    vol.fromJSON({
+      [`${projectRoot}/ios/Podfile`]: '',
+      [getPrebuildFingerprintMarkerPath(projectRoot, 'ios')]: JSON.stringify({
+        version: 1,
+        platform: 'ios',
+        hash: 'marker-hash',
+        sources: [{ ...configSource, hash: 'old-config-hash' }],
+        fingerprintVersion: '0.20.6',
+        createdAt: '2026-08-14T00:00:00.000Z',
+      }),
+    });
+    expect(getNativeDirectoryStaleness(projectRoot, 'ios', current)).toEqual({
+      status: 'stale',
+      changes: [{ source: 'app config', change: 'changed' }],
+    });
+  });
+});
+
+describe(rebuildCommands, () => {
+  it(`names prebuild first when the native directories are stale`, () => {
+    expect(rebuildCommands('ios', { prebuildFirst: true })).toEqual([
+      'npx expo prebuild -p ios',
+      'npx expo run:ios',
+    ]);
+    expect(rebuildCommands('android', { prebuildFirst: false })).toEqual(['npx expo run:android']);
   });
 });
