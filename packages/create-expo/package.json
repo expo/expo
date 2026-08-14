@@ -33,8 +33,9 @@
     "typecheck": "expo-module typecheck",
     "test": "expo-module test",
     "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
+    "sync-agent-templates": "node scripts/sync-agent-templates.js",
     "watch": "pnpm run build --watch",
-    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+    "prepublishOnly": "pnpm run sync-agent-templates && pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
