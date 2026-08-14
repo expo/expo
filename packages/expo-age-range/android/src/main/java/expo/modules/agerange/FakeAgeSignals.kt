@@ -33,29 +33,29 @@ internal class FakeAgeSignalsOptions : Record {
 
   @Field
   var errorCode: Int? = null
-
-  val signals: List<Any?>
-    get() = listOf(
-      lowerBound,
-      upperBound,
-      installId,
-      ageRangeSource,
-      significantChangeStatus,
-      significantChangeApprovalDate,
-      ageSignalsStatus
-    )
 }
+
+private fun FakeAgeSignalsOptions.hasSignals(): Boolean = listOfNotNull(
+  lowerBound,
+  upperBound,
+  installId,
+  ageRangeSource,
+  significantChangeStatus,
+  significantChangeApprovalDate,
+  ageSignalsStatus
+).isNotEmpty()
 
 /**
  * Fake signals for [FakeAgeSignalsManager] to report, either a response or an error.
  */
 internal class FakeAgeSignals(options: FakeAgeSignalsOptions) {
-  private val exception = options.errorCode?.let { errorCode ->
-    if (options.signals.any { it != null }) {
+  init {
+    if (options.errorCode != null && options.hasSignals()) {
       throw FakeAgeSignalsConflictException()
     }
-    AgeSignalsException(errorCode)
   }
+
+  private val exception = options.errorCode?.let(::AgeSignalsException)
 
   private val ageSignalsResult: AgeSignalsResult = AgeSignalsResult.builder()
     .setAgeLower(options.lowerBound)

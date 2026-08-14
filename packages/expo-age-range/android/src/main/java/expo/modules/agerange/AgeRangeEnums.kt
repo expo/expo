@@ -7,7 +7,7 @@ import com.google.android.play.agesignals.model.SignificantChangeStatus
 import expo.modules.kotlin.types.Enumerable
 
 /**
- * A value JS knows by name and Play Age Signals knows by [playValue].
+ * A value JS knows by name and Google Play Age Signals knows by [playValue].
  */
 internal interface PlayValue {
   val playValue: Int
@@ -55,8 +55,8 @@ internal enum class AgeSignalsStatusValue : Enumerable, PlayValue {
 }
 
 /**
- * The name JS knows [value] by. `null` for an absent value, for [unspecified], and for a value Play
- * added after this was written.
+ * The name JS knows [value] by. `null` for an absent value, for [unspecified], and for a value
+ * Google Play added after this was written.
  */
 internal fun <E> playValueToString(
   entries: List<E>,
