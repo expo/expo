@@ -89,13 +89,13 @@ export function ComponentExample({ title, src, darkSrc, alt, children }: Props) 
         </div>
         <div className="flex w-56 shrink-0 items-center justify-center border-l border-default bg-subtle p-4 max-lg:w-full max-lg:border-t max-lg:border-l-0">
           <div
-            className="relative w-full max-w-48 border border-default bg-[#101012] p-0.75 shadow-xs"
+            className="relative w-full max-w-48 border border-default bg-[#101012] p-0.75 shadow-xs dark:bg-[#3c3c40]"
             style={{ borderRadius: device.frameRadius }}>
             {device.buttons.map(button => (
               <span
                 key={`${button.side}-${button.top}`}
                 aria-hidden
-                className="absolute w-0.5 bg-[#101012]"
+                className="absolute w-0.5 bg-[#101012] dark:bg-[#3c3c40]"
                 style={{
                   top: button.top,
                   height: button.height,
