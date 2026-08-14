@@ -39,6 +39,7 @@ struct HomeRootView: View {
     self.viewModel = viewModel
     let shouldSkip = DevelopmentServerService.isSimulator
       || UserDefaults.standard.bool(forKey: DevelopmentServerService.networkPermissionGrantedKey)
+      || !UserDefaults.standard.bool(forKey: "ExpoGoOnboardingFinished")
     _hasCompletedPermissionFlow = State(initialValue: shouldSkip)
   }
 

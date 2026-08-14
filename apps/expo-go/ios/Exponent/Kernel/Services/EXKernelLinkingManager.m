@@ -33,6 +33,9 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
     DDLogInfo(@"Tried to route invalid url: %@", urlString);
     return;
   }
+  // An external link means the user already has a project to open, so never gate them behind onboarding.
+  [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ExpoGoOnboardingFinished"];
+
   EXKernelAppRegistry *appRegistry = [EXKernel sharedInstance].appRegistry;
   EXKernelAppRecord *destinationApp = nil;
   NSURL *urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
