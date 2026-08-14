@@ -345,9 +345,6 @@ export function updateAndroidSettingsGradle({
     tag: 'expo-build-properties-react-native-source',
     commentPrefix: '//',
   };
-  // Always purge any previously generated block first so repeated prebuilds stay idempotent
-  // (instead of appending another `includeBuild` block every run) and toggling
-  // `buildReactNativeFromSource` back off removes the block.
   let newContents = purgeContents(contents, sectionOptions);
   if (buildFromSource === true) {
     const addCodeBlock = [
