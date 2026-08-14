@@ -6,6 +6,33 @@ const path = require('node:path');
 
 const FINGERPRINT_FILE_NAME = 'app.fingerprint';
 
+// TODO: Verify we can remove projectRoot validation, now that we no longer
+// support React Native <= 62
+/**
+ * Resolve the Expo app root from either the app directory itself or its native project directory.
+ * Android's Gradle settings default to `<project>/android`, while fingerprinting and module
+ * resolution must be anchored at `<project>`. Explicit custom project roots already point at the
+ * app and pass through unchanged.
+ *
+ * @param {string} possibleProjectRoot
+ * @returns {string}
+ */
+function resolveProjectRoot(possibleProjectRoot) {
+  const resolvedProjectRoot = path.resolve(possibleProjectRoot);
+  if (fs.existsSync(path.join(resolvedProjectRoot, 'package.json'))) {
+    return resolvedProjectRoot;
+  }
+
+  const parentProjectRoot = path.dirname(resolvedProjectRoot);
+  if (fs.existsSync(path.join(parentProjectRoot, 'package.json'))) {
+    return parentProjectRoot;
+  }
+
+  throw new Error(
+    `Unable to locate project (no package.json found) at path: ${possibleProjectRoot}`
+  );
+}
+
 /**
  * Computes the project fingerprint and writes it to `app.fingerprint`, next to `app.config`.
  * The file is the build-time baseline that `npx expo needs-rebuild` compares against.
@@ -31,7 +58,7 @@ const FINGERPRINT_FILE_NAME = 'app.fingerprint';
  */
 async function createFingerprintFileAsync(projectRoot, destinationDir, platform, enabled) {
   const filePath = path.join(destinationDir, FINGERPRINT_FILE_NAME);
-  fs.rmSync(filePath, { force: true });
+  await fs.promises.rm(filePath, { force: true });
 
   if (!enabled) {
     return null;
@@ -61,7 +88,7 @@ async function createFingerprintFileAsync(projectRoot, destinationDir, platform,
     return null;
   }
 
-  fs.writeFileSync(filePath, hash);
+  await fs.promises.writeFile(filePath, hash);
   return filePath;
 }
 
@@ -81,23 +108,31 @@ function warnFingerprintEmbedFailed(error) {
   );
 }
 
-module.exports = { createFingerprintFileAsync, warnFingerprintEmbedFailed, FINGERPRINT_FILE_NAME };
+module.exports = {
+  createFingerprintFileAsync,
+  resolveProjectRoot,
+  warnFingerprintEmbedFailed,
+  FINGERPRINT_FILE_NAME,
+};
 
 // Direct invocation from the Android build: the gradle script registers the fingerprint task
 // for debuggable variants only, so `enabled` is always true here. Loading the project env vars
 // before computing keeps the hash identical to the check side (`npx expo needs-rebuild`).
 if (require.main === module) {
-  const projectRoot = process.argv[2];
+  const possibleProjectRoot = process.argv[2] ?? process.cwd();
   const destinationDir = process.argv[3];
   const platform = process.argv[4];
-  // Match the check side (`npx expo needs-rebuild` and the dev server), which evaluates the
-  // app config in development mode (EXPO_CONFIG_MODE overrides). Builds launched from the IDE
-  // have no NODE_ENV, which would skip the .env.development files the check side loads.
-  process.env.NODE_ENV =
-    process.env.EXPO_CONFIG_MODE === 'production' ? 'production' : 'development';
-  require('@expo/env').load(projectRoot);
-  process.chdir(projectRoot);
-  createFingerprintFileAsync(projectRoot, destinationDir, platform, true).catch(
-    warnFingerprintEmbedFailed
-  );
+  Promise.resolve()
+    .then(() => {
+      const projectRoot = resolveProjectRoot(possibleProjectRoot);
+      // Match the check side (`npx expo needs-rebuild` and the dev server), which evaluates the
+      // app config in development mode (EXPO_CONFIG_MODE overrides). Builds launched from the IDE
+      // have no NODE_ENV, which would skip the .env.development files the check side loads.
+      process.env.NODE_ENV =
+        process.env.EXPO_CONFIG_MODE === 'production' ? 'production' : 'development';
+      require('@expo/env').load(projectRoot);
+      process.chdir(projectRoot);
+      return createFingerprintFileAsync(projectRoot, destinationDir, platform, true);
+    })
+    .catch(warnFingerprintEmbedFailed);
 }
