@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog](https://developer.android.com/develop/ui/compose/components/dialog) API and displays a minimal dialog that accepts custom children as its content, giving you full control over the dialog layout.
@@ -28,7 +29,13 @@ Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog]
 
 ### Basic dialog with custom content
 
-```tsx BasicAlertDialogExample.tsx
+<ComponentExample
+  title="BasicAlertDialogExample.tsx"
+  src="/static/images/expo-ui/examples/basicalertdialog-custom-content-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/basicalertdialog-custom-content-android-dark.webp"
+  alt="A dialog holding custom content: supportive text with a Confirm button at the trailing edge">
+
+```tsx
 import { useState } from 'react';
 import {
   Host,
@@ -69,7 +76,7 @@ export default function BasicAlertDialogExample() {
                 regarding the Dialog's purpose.
               </Text>
               <Spacer modifiers={[height(24)]} />
-              <TextButton onClick={() => setVisible(false)} modifiers={[align('centerEnd')]}>
+              <TextButton onClick={() => setVisible(false)} modifiers={[align('end')]}>
                 <Text>Confirm</Text>
               </TextButton>
             </Column>
@@ -80,6 +87,8 @@ export default function BasicAlertDialogExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
