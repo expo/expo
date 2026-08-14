@@ -85,12 +85,7 @@ export function loadEnvFiles(projectRoot: string, options: LoadEnvFilesOptions) 
     systemEnv: process.env,
   };
 
-  let envInfo: ReturnType<typeof env.loadProjectEnv>;
-  try {
-    envInfo = env.loadProjectEnv(projectRoot, params);
-  } finally {
-    delete process.env.EXPO_CONFIG_MODE;
-  }
+  const envInfo = env.loadProjectEnv(projectRoot, params);
   const envOutput: EnvOutput = {};
   if (envInfo.result === 'loaded') {
     prevEnvKeys = new Set();
