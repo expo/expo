@@ -8,9 +8,9 @@ Each time a workflow is triggered, EAS creates a workflow run. You can use the E
 
 ## Workflow run statuses
 
-A workflow run can change between non-terminal statuses as its jobs are scheduled and completed:
+A workflow run has one of the following statuses:
 
-- **New**: No job is running. A run starts with this status and can return to it while all unfinished jobs are queued.
+- **New**: EAS created the run, but it has not started yet.
 - **In progress**: One or more jobs are running.
 - **Action required**: A job is waiting for a manual action, such as an approval.
 - **Success**: All jobs completed successfully. This status is terminal.
