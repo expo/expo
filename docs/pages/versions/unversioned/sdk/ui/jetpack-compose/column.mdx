@@ -50,9 +50,15 @@ export default function ColumnExample() {
         verticalArrangement={{ spacedBy: 8 }}
         horizontalAlignment="center"
         modifiers={[fillMaxWidth(), paddingAll(16)]}>
-        <Text color={colors.onBackground}>First</Text>
-        <Text color={colors.onBackground}>Second</Text>
-        <Text color={colors.onBackground}>Third</Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          First
+        </Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Second
+        </Text>
+        <Text style={{ fontSize: 28 }} color={colors.onBackground}>
+          Third
+        </Text>
       </Column>
     </Host>
   );
