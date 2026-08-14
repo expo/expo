@@ -7,25 +7,21 @@ const mockCreateProjectHashAsync = jest.fn();
 function loadModule({ fingerprintResolvable = true } = {}) {
   jest.resetModules();
   if (fingerprintResolvable) {
-    jest.doMock(
-      'expo/fingerprint',
-      () => ({ createProjectHashAsync: mockCreateProjectHashAsync }),
-      { virtual: true }
-    );
+    jest.doMock('expo/fingerprint', () => ({
+      createProjectHashAsync: mockCreateProjectHashAsync,
+    }));
   } else {
-    jest.doMock(
-      'expo/fingerprint',
-      () => {
-        throw new Error("Cannot find module 'expo/fingerprint'");
-      },
-      { virtual: true }
-    );
+    jest.doMock('expo/fingerprint', () => {
+      throw new Error("Cannot find module 'expo/fingerprint'");
+    });
   }
   return require('../createFingerprintFile');
 }
 
 describe(`createFingerprintFileAsync`, () => {
-  const projectRoot = '/fake/project';
+  // The script resolves `expo/fingerprint` from the project root (the same anchor as the check
+  // side in `@expo/cli`), so the root must be a real directory that can resolve the module.
+  const projectRoot = path.join(__dirname, '..', '..');
   let destinationDir;
 
   beforeEach(() => {
