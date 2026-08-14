@@ -1,6 +1,7 @@
 import zlib from 'zlib';
 
 const EOCD_SIGNATURE = 0x06054b50;
+const ZIP64_EOCD_LOCATOR_SIGNATURE = 0x07064b50;
 const CENTRAL_DIRECTORY_SIGNATURE = 0x02014b50;
 const LOCAL_HEADER_SIGNATURE = 0x04034b50;
 /** The end-of-central-directory record is 22 bytes plus a comment of at most 0xffff bytes. */
@@ -49,15 +50,31 @@ export function readZipEntry(zip: Buffer, entryName: string): Buffer | null {
 export function parseEndOfCentralDirectory(tail: Buffer): ZipCentralDirectory {
   const scanStart = Math.max(0, tail.length - EOCD_MAX_LENGTH);
   for (let offset = tail.length - 22; offset >= scanStart; offset--) {
-    if (tail.readUInt32LE(offset) === EOCD_SIGNATURE) {
-      const entryCount = tail.readUInt16LE(offset + 10);
-      const size = tail.readUInt32LE(offset + 12);
-      const centralDirectoryOffset = tail.readUInt32LE(offset + 16);
-      if (entryCount === 0xffff || centralDirectoryOffset === 0xffffffff) {
+    if (tail.readUInt32LE(offset) !== EOCD_SIGNATURE) {
+      continue;
+    }
+    // Signature bytes can occur inside the archive comment (e.g. comments appended by packer
+    // tools). Only the real record's comment-length field matches the number of bytes between
+    // the record's end and the end of the file exactly.
+    if (tail.readUInt16LE(offset + 20) !== tail.length - offset - 22) {
+      continue;
+    }
+    const entryCount = tail.readUInt16LE(offset + 10);
+    const size = tail.readUInt32LE(offset + 12);
+    const centralDirectoryOffset = tail.readUInt32LE(offset + 16);
+    if (size === 0xffffffff || centralDirectoryOffset === 0xffffffff) {
+      throw new Error('ZIP64 archives are not supported');
+    }
+    if (entryCount === 0xffff) {
+      // 0xffff is a ZIP64 sentinel but also a legal entry count. The ZIP64 EOCD locator (20
+      // bytes right before this record) disambiguates; when the buffer cannot contain one,
+      // stay on the safe side.
+      const locatorOffset = offset - 20;
+      if (locatorOffset < 0 || tail.readUInt32LE(locatorOffset) === ZIP64_EOCD_LOCATOR_SIGNATURE) {
         throw new Error('ZIP64 archives are not supported');
       }
-      return { entryCount, offset: centralDirectoryOffset, size };
     }
+    return { entryCount, offset: centralDirectoryOffset, size };
   }
   throw new Error('Could not find the zip end-of-central-directory record');
 }
