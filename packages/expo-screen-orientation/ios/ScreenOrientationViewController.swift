@@ -100,20 +100,74 @@ class ScreenOrientationViewController: UIViewController {
   }
 
   /// Finds the VC whose subtree has a react-native-screens screen with orientation set.
-  /// Checks self first (the common case), then each child VC. The child-level search handles
-  /// cases where an intermediate VC (e.g. DevLauncherViewController from expo-dev-client)
-  /// sits between this root VC and the RNSNavigationController, blocking the single-level
-  /// traversal that RNScreens' shouldAskScreensForScreenOrientation performs.
+  /// Checks self first (the common case), then walks the containment hierarchy. This handles
+  /// wrappers such as DevLauncherViewController without depending on their exact nesting depth.
   private func vcWithRNScreenOrientation() -> UIViewController? {
     guard let screenWindowTraitsClass = NSClassFromString("RNSScreenWindowTraits") else {
       return nil
     }
-    if screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: self) ?? false {
+
+    func shouldAskScreensForOrientation(in viewController: UIViewController) -> Bool {
+      return screenWindowTraitsClass
+        .shouldAskScreensForScreenOrientation?(in: viewController) ?? false
+    }
+
+    func activeChildren(of viewController: UIViewController) -> [UIViewController] {
+      if let navigationController = viewController as? UINavigationController {
+        var children: [UIViewController] = []
+        if let topViewController = navigationController.topViewController {
+          children.append(topViewController)
+        }
+        if let visibleViewController = navigationController.visibleViewController,
+           !children.contains(where: { $0 === visibleViewController }) {
+          // The caller searches in reverse, so a presented modal is checked before the route
+          // underneath it while the route remains eligible to own the orientation.
+          children.append(visibleViewController)
+        }
+        return children
+      }
+      if let tabBarController = viewController as? UITabBarController {
+        return tabBarController.selectedViewController.map { [$0] } ?? []
+      }
+      if let pageViewController = viewController as? UIPageViewController {
+        return pageViewController.viewControllers ?? []
+      }
+      if let splitViewController = viewController as? UISplitViewController {
+        return splitViewController.viewControllers.filter { $0.viewIfLoaded?.window != nil }
+      }
+      if viewController.children.count == 1 {
+        return viewController.children
+      }
+      // Unknown wrappers do not expose an active-child API. Only follow children whose views
+      // are currently attached, so retained off-screen controllers cannot supply the mask.
+      return viewController.children.filter { $0.viewIfLoaded?.window != nil }
+    }
+
+    func findOrientationOwner(in viewController: UIViewController) -> UIViewController? {
+      // Prefer the active descendant over a broad container. The RNScreens predicate inspects
+      // a container's last child, which is not necessarily active for every UIKit container.
+      let children = activeChildren(of: viewController)
+      for child in children.reversed() {
+        if let owner = findOrientationOwner(in: child) {
+          return owner
+        }
+      }
+      // Only query the parent when the last child that RNScreens will inspect is active.
+      // Otherwise its predicate can select a retained, off-screen navigation branch.
+      if let inspectedChild = viewController.children.last,
+         children.contains(where: { $0 === inspectedChild }),
+         shouldAskScreensForOrientation(in: viewController) {
+        return viewController
+      }
+      return nil
+    }
+
+    if shouldAskScreensForOrientation(in: self) {
       return self
     }
-    for child in children {
-      if screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: child) ?? false {
-        return child
+    for child in activeChildren(of: self).reversed() {
+      if let owner = findOrientationOwner(in: child) {
+        return owner
       }
     }
     return nil
