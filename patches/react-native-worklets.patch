@@ -1,4 +1,5 @@
 diff --git a/RNWorklets.podspec b/RNWorklets.podspec
+index 11e10b7a731f754b524c9e8ccd8126334b6adb68..1d0b6ede2e7278398eaa8557b91ea27a3605d9b3 100644
 --- a/RNWorklets.podspec
 +++ b/RNWorklets.podspec
 @@ -56,6 +56,7 @@
@@ -32,3 +33,61 @@ diff --git a/compatibility.json b/compatibility.json
    },
    "0.9.x": {
      "react-native": ["0.83", "0.84", "0.85", "0.86"]
+diff --git a/android/build.gradle.kts b/android/build.gradle.kts
+index 2e01292a695638f4b82d27531d82c0670c149075..26a1a5d9fe2da1345cd3d6f1cfda5054afe69710 100644
+--- a/android/build.gradle.kts
++++ b/android/build.gradle.kts
+@@ -1,6 +1,5 @@
+ import groovy.json.JsonSlurper
+ import org.apache.tools.ant.taskdefs.condition.Os
+-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ import java.util.Properties
+ import javax.inject.Inject
+ 
+@@ -8,7 +7,18 @@ plugins {
+     id("com.android.library")
+     id("maven-publish")
+     id("com.diffplug.spotless") version "8.1.0"
+-    id("org.jetbrains.kotlin.android")
++    id("org.jetbrains.kotlin.android") apply false
++}
++
++// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
++// Only apply the plugin when built-in Kotlin is unavailable or explicitly disabled
++// with android.builtInKotlin=false.
++val agpBuiltInKotlin =
++    com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.substringBefore(".").toInt() >= 9 &&
++        (findProperty("android.builtInKotlin")?.toString()?.toBoolean() ?: true)
++
++if (!agpBuiltInKotlin) {
++    apply(plugin = "org.jetbrains.kotlin.android")
+ }
+ 
+ fun safeExtGet(prop: String, fallback: Any?): Any? =
+@@ -283,10 +293,22 @@ android {
+ }
+ 
+ if (project != rootProject) {
+-    kotlin {
+-        compilerOptions {
+-            jvmTarget = JvmTarget.fromTarget("17")
+-        }
++    // Configured reflectively: depending on the host app this script compiles against
++    // different KGP versions (or, with AGP 9's built-in Kotlin, no usable KGP on the
++    // script classpath at all), so typed references to KGP classes here break script
++    // compilation in some host apps. The extension instance and JvmTarget value must
++    // come from the same class loader, hence Class.forName on the extension's loader.
++    project.extensions.findByName("kotlin")?.let { kotlinExt ->
++        val compilerOptions = kotlinExt.javaClass.getMethod("getCompilerOptions").invoke(kotlinExt)
++        @Suppress("UNCHECKED_CAST")
++        val jvmTargetProperty = compilerOptions.javaClass.getMethod("getJvmTarget").invoke(compilerOptions)
++            as org.gradle.api.provider.Property<Any>
++        val jvmTarget17 = Class.forName(
++            "org.jetbrains.kotlin.gradle.dsl.JvmTarget",
++            true,
++            kotlinExt.javaClass.classLoader,
++        ).getMethod("fromTarget", String::class.java).invoke(null, "17")
++        jvmTargetProperty.set(jvmTarget17)
+     }
+ }
+ 

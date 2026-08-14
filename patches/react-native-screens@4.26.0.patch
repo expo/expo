@@ -1,0 +1,118 @@
+diff --git a/android/build.gradle b/android/build.gradle
+index 3f3b0d543b844104305b31d58ff0e27a93a38e75..62f979cec85fff559f7f58e2d97c65862106337e 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -86,7 +86,17 @@ if (isRunningInContextOfScreensRepo()) {
+     apply plugin: "com.facebook.react"
+ }
+ apply plugin: 'com.android.library'
+-apply plugin: 'kotlin-android'
++// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
++// Only apply it when built-in Kotlin is unavailable or explicitly disabled with
++// android.builtInKotlin=false.
++// Note: Groovy's ?: operates on truthiness, so a plain `?.toBoolean() ?: true` would
++// coerce an explicit `false` back to true. Check for null explicitly instead.
++def expoBuiltInKotlinProp = findProperty('android.builtInKotlin')
++def expoAgpBuiltInKotlin = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger() >= 9 &&
++    (expoBuiltInKotlinProp == null || expoBuiltInKotlinProp.toString().toBoolean())
++if (!expoAgpBuiltInKotlin) {
++  apply plugin: 'kotlin-android'
++}
+ 
+ def reactNativeArchitectures() {
+     def value = project.getProperties().get("reactNativeArchitectures")
+diff --git a/ios/RNSScreenContentWrapper.mm b/ios/RNSScreenContentWrapper.mm
+index 7756a55b7aef23de1ad248e3471cebf69e4aceba..a99df644938f7bc6f9e1409d3284c15577b4e059 100644
+--- a/ios/RNSScreenContentWrapper.mm
++++ b/ios/RNSScreenContentWrapper.mm
+@@ -15,6 +15,15 @@ namespace react = facebook::react;
+ 
+ @implementation RNSScreenContentWrapper
+ 
++- (instancetype)initWithFrame:(CGRect)frame
++{
++  if (self = [super initWithFrame:frame]) {
++    static const auto defaultProps = std::make_shared<const react::RNSScreenContentWrapperProps>();
++    _props = defaultProps;
++  }
++  return self;
++}
++
+ - (void)notifyDelegateWithFrame:(CGRect)frame
+ {
+   [self.delegate contentWrapper:self receivedReactFrame:frame];
+diff --git a/ios/RNSScreenFooter.mm b/ios/RNSScreenFooter.mm
+index 9c6f27973ee29ffb71602869a83bcb0632c47e4c..70774e8d039909f9ac3ce0af18f3158334c56b6d 100644
+--- a/ios/RNSScreenFooter.mm
++++ b/ios/RNSScreenFooter.mm
+@@ -12,6 +12,8 @@
+ - (instancetype)init
+ {
+   if (self = [super init]) {
++    static const auto defaultProps = std::make_shared<const facebook::react::RNSScreenFooterProps>();
++    _props = defaultProps;
+     self.translatesAutoresizingMaskIntoConstraints = false;
+     _parent = nil;
+   }
+diff --git a/ios/gamma/modals/form-sheet/RNSFormSheetContentWrapperComponentView.mm b/ios/gamma/modals/form-sheet/RNSFormSheetContentWrapperComponentView.mm
+index 3ffeda3281f67379a79caceac665ebd97917dc70..7a030292b40ad17c2dde7d413cbcde88b20bd196 100644
+--- a/ios/gamma/modals/form-sheet/RNSFormSheetContentWrapperComponentView.mm
++++ b/ios/gamma/modals/form-sheet/RNSFormSheetContentWrapperComponentView.mm
+@@ -7,6 +7,15 @@ namespace react = facebook::react;
+ 
+ @implementation RNSFormSheetContentWrapperComponentView
+ 
++- (instancetype)initWithFrame:(CGRect)frame
++{
++  if (self = [super initWithFrame:frame]) {
++    static const auto defaultProps = std::make_shared<const react::RNSFormSheetContentWrapperProps>();
++    _props = defaultProps;
++  }
++  return self;
++}
++
+ #pragma mark - RCTComponentViewProtocol
+ 
+ + (react::ComponentDescriptorProvider)componentDescriptorProvider
+diff --git a/ios/gamma/stack/host/RNSStackHostComponentView.mm b/ios/gamma/stack/host/RNSStackHostComponentView.mm
+index f947c8e8f53244bd0e4bd9bb2acd28ba376af6cc..ec061ab4161261b47a3e71d98cc8dbd607c69af9 100644
+--- a/ios/gamma/stack/host/RNSStackHostComponentView.mm
++++ b/ios/gamma/stack/host/RNSStackHostComponentView.mm
+@@ -30,6 +30,8 @@ namespace react = facebook::react;
+ - (instancetype)initWithFrame:(CGRect)frame
+ {
+   if (self = [super initWithFrame:frame]) {
++    static const auto defaultProps = std::make_shared<const react::RNSStackHostProps>();
++    _props = defaultProps;
+     [self initState];
+   }
+   return self;
+diff --git a/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryComponentView.mm b/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryComponentView.mm
+index a47b40b51aad299d81e8402ee8cb622446845639..ecca7665689569ffae725c55b2121a14dd32f421 100644
+--- a/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryComponentView.mm
++++ b/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryComponentView.mm
+@@ -25,6 +25,8 @@ namespace react = facebook::react;
+ - (instancetype)initWithFrame:(CGRect)frame
+ {
+   if (self = [super initWithFrame:frame]) {
++    static const auto defaultProps = std::make_shared<const react::RNSTabsBottomAccessoryProps>();
++    _props = defaultProps;
+     [self initState];
+   }
+   return self;
+diff --git a/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryContentComponentView.mm b/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryContentComponentView.mm
+index ec7cec3520dc270fb714b4c75577b9f0b701961f..595aa3194e1f112240828be694f010f6d566643e 100644
+--- a/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryContentComponentView.mm
++++ b/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryContentComponentView.mm
+@@ -17,7 +17,10 @@ namespace react = facebook::react;
+ 
+ - (instancetype)initWithFrame:(CGRect)frame
+ {
+-  self = [super initWithFrame:frame];
++  if (self = [super initWithFrame:frame]) {
++    static const auto defaultProps = std::make_shared<const react::RNSTabsBottomAccessoryContentProps>();
++    _props = defaultProps;
++  }
+   return self;
+ }
+ 
