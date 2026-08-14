@@ -89,7 +89,7 @@
     "babel-preset-expo": "workspace:~57.0.7",
     "expo-asset": "workspace:~57.0.11",
     "expo-constants": "workspace:~57.0.11",
-    "expo-file-system": "workspace:~57.0.3",
+    "expo-file-system": "workspace:~57.0.4",
     "expo-font": "workspace:~57.0.1",
     "expo-keep-awake": "workspace:~57.0.1",
     "expo-modules-autolinking": "workspace:~57.0.10",

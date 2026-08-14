@@ -3532,7 +3532,7 @@ importers:
         specifier: workspace:~57.0.11
         version: link:../expo-constants
       expo-file-system:
-        specifier: workspace:~57.0.3
+        specifier: workspace:~57.0.4
         version: link:../expo-file-system
       expo-font:
         specifier: workspace:~57.0.1
