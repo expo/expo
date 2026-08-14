@@ -6,6 +6,7 @@
 
 #include <react/renderer/components/view/ConcreteViewShadowNode.h>
 
+#include "ContentOriginRegistry.h"
 #include "ExpoViewEventEmitter.h"
 #include "ExpoViewProps.h"
 #include "ExpoViewState.h"
@@ -49,6 +50,28 @@ public:
   static facebook::react::ShadowNodeTraits BaseTraits() {
     auto traits = ConcreteViewShadowNode::BaseTraits();
     return traits;
+  }
+
+  /**
+   Reports where this view's contents were actually drawn, for views laid out by SwiftUI or Compose
+   instead of Yoga. Without it `measure()` returns this node's Yoga box, which is not where the
+   hosted content ended up. This is used by `RNHostView`
+   */
+  facebook::react::Point getContentOriginOffset(bool includeTransform) const override {
+    if (!includeTransform) {
+      return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
+    }
+
+    auto contentOrigin = ContentOriginRegistry::get(this->getTag());
+    if (contentOrigin.x == 0 && contentOrigin.y == 0) {
+      return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
+    }
+
+    // `computeRelativeLayoutMetrics` adds this node's own Yoga origin before consulting us, so
+    // returning the raw offset would count it twice. Publish only the part Yoga cannot see: where
+    // the native layout system placed the content inside its host.
+    auto ownOrigin = this->getLayoutMetrics().frame.origin;
+    return {.x = contentOrigin.x - ownOrigin.x, .y = contentOrigin.y - ownOrigin.y};
   }
 
 private:

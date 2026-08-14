@@ -27,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height;
 
+- (void)setContentOrigin:(CGPoint)contentOrigin;
+
+- (void)clearContentOrigin;
+
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 
 /*

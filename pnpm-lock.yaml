@@ -1570,6 +1570,9 @@ importers:
       '@expo/styleguide-base':
         specifier: ^1.0.1
         version: 1.0.1(react@19.2.3)
+      '@expo/ui':
+        specifier: workspace:*
+        version: link:../../packages/expo-ui
       '@react-native-async-storage/async-storage':
         specifier: ^2.2.0
         version: 2.2.0(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))

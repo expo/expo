@@ -186,6 +186,18 @@ namespace react = facebook::react;
   }
 }
 
+- (void)setContentOrigin:(CGPoint)contentOrigin
+{
+  expo::ContentOriginRegistry::set(
+    (react::Tag)self.tag,
+    react::Point{.x = (react::Float)contentOrigin.x, .y = (react::Float)contentOrigin.y});
+}
+
+- (void)clearContentOrigin
+{
+  expo::ContentOriginRegistry::clear((react::Tag)self.tag);
+}
+
 - (BOOL)supportsPropWithName:(nonnull NSString *)name
 {
   // Implemented in `SwiftUIVirtualView.swift`
