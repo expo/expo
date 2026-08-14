@@ -52,7 +52,7 @@ const persistedState = {
   ],
 };
 
-test('rejects a persisted state before a typeless router can rehydrate it', () => {
+test('accepts a complete persisted state for a typeless router', () => {
   expect(() =>
     render(
       <BaseNavigationContainer initialState={persistedState}>
@@ -62,5 +62,5 @@ test('rejects a persisted state before a typeless router can rehydrate it', () =
         </TestNavigator>
       </BaseNavigationContainer>
     )
-  ).toThrow('The `initialState` prop must contain a partial navigation state.');
+  ).not.toThrow();
 });

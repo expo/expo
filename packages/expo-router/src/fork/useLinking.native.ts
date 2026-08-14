@@ -1,17 +1,21 @@
 import * as ExpoLinking from 'expo-linking';
-import { type RefObject, useEffect, useCallback, useRef } from 'react';
+import { type RefObject, useCallback, useEffect, useRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
+import {
+  completeParsedState,
+  createSeededRootState,
+} from '../global-state/createSeededNavigationState';
 import { routingQueue } from '../global-state/routingQueue';
+import { useExpoRouterStore } from '../global-state/storeContext';
 import {
   type LinkingOptions,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
+  type NavigationState,
   type ParamListBase,
 } from '../react-navigation/native';
 import { extractExpoPathFromURL } from './extractPathFromURL';
-
-type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
 type Options = LinkingOptions<ParamListBase>;
 
@@ -55,6 +59,8 @@ export function useLinking(
       };
     });
   const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
+  const store = useExpoRouterStore();
+
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       return undefined;
@@ -87,22 +93,16 @@ export function useLinking(
     };
   }, [enabled]);
 
-  // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
-  // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
-  // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-  const enabledRef = useRef(enabled);
+  // We store these options in refs to keep getInitialState stable across renders.
   const prefixesRef = useRef(prefixes);
   const filterRef = useRef(filter);
   const configRef = useRef(config);
-  const getInitialURLRef = useRef(getInitialURL);
   const getStateFromPathRef = useRef(getStateFromPath);
 
   useEffect(() => {
-    enabledRef.current = enabled;
     prefixesRef.current = prefixes;
     filterRef.current = filter;
     configRef.current = config;
-    getInitialURLRef.current = getInitialURL;
     getStateFromPathRef.current = getStateFromPath;
   });
 
@@ -119,20 +119,31 @@ export function useLinking(
 
       return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
     },
-
     []
   );
 
   const getInitialState = useCallback(() => {
-    let state: ResultState | undefined;
+    let state: NavigationState | undefined;
 
-    if (enabledRef.current) {
-      const url = getInitialURLRef.current();
+    if (enabled) {
+      const url = getInitialURL();
+      const createInitialState = (url: string | null | undefined) => {
+        let parsedState;
+        if (url && (!filter || filter(url))) {
+          const path = getInitialPath(prefixes, url);
+          parsedState = getStateFromPath(path, config);
+        }
+
+        const routeNode = store?.routeNode;
+        return routeNode
+          ? createSeededRootState(parsedState, routeNode)
+          : completeParsedState(parsedState);
+      };
 
       if (url != null) {
         if (typeof url !== 'string') {
           return url.then((url) => {
-            const state = getStateFromURL(url, true);
+            const state = createInitialState(url);
 
             if (typeof url === 'string') {
               // If the link were handled, it gets cleared in NavigationContainer
@@ -146,11 +157,11 @@ export function useLinking(
         }
       }
 
-      state = getStateFromURL(url, true);
+      state = createInitialState(url);
     }
 
     const thenable = {
-      then(onfulfilled?: (state: ResultState | undefined) => void) {
+      then(onfulfilled?: (state: NavigationState | undefined) => void) {
         return Promise.resolve(onfulfilled ? onfulfilled(state) : state);
       },
       catch() {
@@ -158,8 +169,17 @@ export function useLinking(
       },
     };
 
-    return thenable as PromiseLike<ResultState | undefined>;
-  }, [getStateFromURL, onUnhandledLinking, prefixes]);
+    return thenable as PromiseLike<NavigationState | undefined>;
+  }, [
+    config,
+    enabled,
+    filter,
+    getInitialURL,
+    getStateFromPath,
+    onUnhandledLinking,
+    prefixes,
+    store,
+  ]);
 
   useEffect(() => {
     const listener = (url: string) => {

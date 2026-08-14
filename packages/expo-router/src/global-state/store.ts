@@ -6,8 +6,8 @@ import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
 import type { Href } from '../types';
 import * as SplashScreen from '../views/Splash';
-import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
-import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
+import { defaultRouteInfo, getRouteInfoFromState, type UrlObject } from './getRouteInfoFromState';
+import { getCachedRouteInfo, routeInfoSubscribers, setCachedRouteInfo } from './routeInfoCache';
 import type {
   FocusedRouteState,
   LinkToOptions,
@@ -18,6 +18,7 @@ import type {
 export type RouterStore = typeof store;
 
 type StoreRef = {
+  owner?: object;
   navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   routeNode: RouteNode | null;
   rootComponent: ComponentType<any>;
@@ -31,6 +32,13 @@ type StoreRef = {
 export const storeRef = {
   current: {} as StoreRef,
 };
+
+export function seedStoreState(state: ReactNavigationState) {
+  const routeInfo = getRouteInfoFromState(state);
+  storeRef.current.state = state;
+  storeRef.current.routeInfo = routeInfo;
+  setCachedRouteInfo(state, routeInfo);
+}
 
 let splashScreenAnimationFrame: number | undefined;
 let hasAttemptedToHideSplash = false;
