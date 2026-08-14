@@ -95,7 +95,7 @@ export type NeedsRebuildResult = {
 
 export async function needsRebuildAsync(projectRoot: string, options: Options): Promise<void> {
   const { platforms, explicit } = resolvePlatformOption(options.platform);
-  if (options.appId && platforms.length !== 1) {
+  if (options.appId && options.platform !== 'android' && options.platform !== 'ios') {
     throw new CommandError(
       'Specify a single --platform (android or ios) when using --app-id — application IDs are platform-specific.'
     );
