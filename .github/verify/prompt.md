@@ -106,6 +106,19 @@ Exactly ONE findings comment gets posted from that file in your second turn, via
 
 The same wrapping rule applies to `body`: one line per paragraph, no hard wrapping at 80 or 90 columns. A single newline is a visible line break on GitHub, not whitespace.
 
+**Write the comment in Simplified Technical English.** Your readers are engineers in many countries. Many of them do not speak English as a first language. Write every piece of prose you emit — the `body` text, the text inside `<details>` blocks, and evidence labels — under the ASD-STE100 Simplified Technical English rules:
+
+- **One word, one meaning.** Choose one term for a thing and reuse it. Do not alternate between synonyms for the same object ("the handler" / "the callback" / "the hook").
+- **Short sentences.** Use 20 words or fewer. Split a long sentence into two.
+- **Active voice.** Write "the parser drops the flag", not "the flag is dropped by the parser". Name the actor.
+- **Plain words.** Write "use", not "utilize"; "before", not "prior to"; "because", not "due to the fact that". Remove hedges ("arguably", "it seems that") and intensifiers ("very", "extremely").
+- **One topic per paragraph.** Keep paragraphs short.
+- **No idiom, metaphor, or sarcasm.** State what happens.
+
+This rule is about prose only. Quoted code, exact commands and their output, error strings, identifiers, file paths, census tables, and build ids are copied verbatim and are never rewritten to fit these rules.
+
+Simple language must not cost precision. Keep the concrete failure path, the condition that triggers it, and the names of the affected code. Short sentences are a way to say the same thing, not a way to say less.
+
 **Every reference you make must be a link a reader can follow.** A bare `Loader.kt:201-215`, a bare commit hash, or "a regression about five months ago" costs the maintainer the exact search you already did.
 - **Source you cite**: permalink it at the checkout commit given in the preamble — `https://github.com/<owner>/<repo>/blob/<sha>/<path>#L<start>-L<end>`. Never link a branch: `blob/main/...` points at different lines every week.
 - **A commit or pull request you blame, or one you say fixed or caused something**: link it (`/commit/<sha>`, `/pull/<n>`). Never date a change ("~5 months ago") without the commit that made it. You have no shell on this runner, so find it in the sandbox: clone the repository there (`git clone --filter=blob:none` — this repository is large and blame still works) and use `git log`/`git blame`/`git log -S` on the real history, exactly as you would locally. `git log --format=%s` shows the squashed subject, which carries the `(#NNNNN)` pull-request number.

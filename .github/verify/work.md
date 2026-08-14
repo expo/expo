@@ -100,6 +100,19 @@ Put implementation detail, related issue/PR research, the proportionality decisi
 
 **Do not hard-wrap the prose,** here or in `pr.md`. These are files, so the instinct is to break lines at 80 or 90 columns like source. GitHub renders a comment body as GitHub-Flavored Markdown, where a single newline is a VISIBLE line break, so a wrapped paragraph arrives as a column of ragged short lines. Write each paragraph as ONE line, however long, and let the browser wrap it. Blank lines still separate paragraphs; code fences, tables, and list items keep their own line structure.
 
+**Write the report in Simplified Technical English,** here and in `pr.md`. Your readers are engineers in many countries. Many of them do not speak English as a first language. Write every piece of prose you emit — the visible opening and the text inside `<details>` blocks — under the ASD-STE100 Simplified Technical English rules:
+
+- **One word, one meaning.** Choose one term for a thing and reuse it. Do not alternate between synonyms for the same object ("the handler" / "the callback" / "the hook").
+- **Short sentences.** Use 20 words or fewer. Split a long sentence into two.
+- **Active voice.** Write "the parser drops the flag", not "the flag is dropped by the parser". Name the actor.
+- **Plain words.** Write "use", not "utilize"; "before", not "prior to"; "because", not "due to the fact that". Remove hedges ("arguably", "it seems that") and intensifiers ("very", "extremely").
+- **One topic per paragraph.** Keep paragraphs short.
+- **No idiom, metaphor, or sarcasm.** State what happens.
+
+This rule is about prose only. Quoted code, diffs, exact commands and their output, error strings, identifiers, and file paths are copied verbatim and are never rewritten to fit these rules.
+
+Simple language must not cost precision. Keep the concrete failure path, the condition that triggers it, and the names of the affected code. Short sentences are a way to say the same thing, not a way to say less.
+
 Every source, commit, issue, and pull request reference must be followable. Use source permalinks at the pinned PR head SHA; link commits and pull requests; use `#123` for issues in this repository. Cite only items you actually inspected.
 
 The final resumed turn posts with `mcp__sandbox__github_comment_issue`. Include attested screenshot/census evidence only when device behavior was actually part of the chosen tier. A Tier 1 or Tier 2 report normally has no screenshots; exact repository commands and their output are the relevant evidence.
