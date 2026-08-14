@@ -287,7 +287,8 @@ export function parseProjectEnv(
 /**
  * Parse all environment variables using the detected list of `.env*` files from a project.
  * This won't override existing environment variables defined in the system environment.
- * A development or production mode also sets `NODE_ENV` before loading.
+ * A development or production mode also sets `NODE_ENV` before loading and removes
+ * `EXPO_CONFIG_MODE` after loading.
  * Once the mutations are done, this will also set a property `__EXPO_ENV=true` on the system env to avoid multiple mutations.
  * This check can be disabled through `{ force: true }`.
  */
@@ -295,14 +296,24 @@ export function loadProjectEnv(
   projectRoot: string,
   options?: Parameters<typeof getEnvFiles>[0] & Parameters<typeof loadEnvFiles>[1]
 ) {
-  if (options?.mode === 'development' || options?.mode === 'production') {
-    setNodeEnv(options.mode, { systemEnv: options.systemEnv });
+  const mode = options?.mode;
+  const systemEnv = options?.systemEnv ?? process.env;
+  const hasExpoMode = mode === 'development' || mode === 'production';
+
+  if (hasExpoMode) {
+    setNodeEnv(mode, { systemEnv });
   }
 
-  return loadEnvFiles(
-    getEnvFiles(options).map((envFile) => path.join(projectRoot, envFile)),
-    options
-  );
+  try {
+    return loadEnvFiles(
+      getEnvFiles(options).map((envFile) => path.join(projectRoot, envFile)),
+      options
+    );
+  } finally {
+    if (hasExpoMode) {
+      delete systemEnv.EXPO_CONFIG_MODE;
+    }
+  }
 }
 
 /**
