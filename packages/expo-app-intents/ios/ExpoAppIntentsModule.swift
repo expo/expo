@@ -119,7 +119,7 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
   /// rather than from the context that registered them, which is what lets one registration serve every
   /// context. See `AppEntityIdentifierModifierRegistration`.
   private static func registerAppEntityIdentifierModifier() {
-    if #available(iOS 18.4, *) {
+    if #available(iOS 18.4, macOS 15.4, tvOS 18.4, *) {
       ViewModifierRegistry.register("appEntityIdentifier") { params, appContext, _ in
         // The modifier reports a call it cannot honour from `body`, and this logger is what carries
         // the report to the JavaScript console rather than only to OSLog.
@@ -135,7 +135,8 @@ public final class ExpoAppIntentsModule: Module, @unchecked Sendable {
           key: "unavailableOSVersion",
           to: appContext.jsLogger,
           "expo-app-intents: appEntityIdentifier() does nothing on this device, because reporting "
-            + "the entity behind a view to the system requires iOS 18.4 or newer. The view still "
+            + "the entity behind a view to the system requires iOS or tvOS 18.4, or macOS 15.4. "
+            + "The view still "
             + "renders the same way, so gate the call on the OS version only if your app has to "
             + "tell the two cases apart."
         )

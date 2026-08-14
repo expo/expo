@@ -81,7 +81,7 @@ const VISUAL_INTELLIGENCE_REGISTRATION = `      if #available(iOS 18.0, *) {
       }`;
 
 /** Finds the registration in an `AppIntentsSetup.swift` on disk, however it is formatted around. */
-const VISUAL_INTELLIGENCE_REGISTRATION_MARKER = 'registerIndexed("mailDraft"';
+const VISUAL_INTELLIGENCE_REGISTRATION_PATTERN = /registerIndexed\s*\(\s*["']mailDraft["']/;
 
 /**
  * Builds the setup module. It is generated rather than copied because what it wires up depends on
@@ -468,7 +468,7 @@ async function warnAboutMissingEntityRegistrationAsync(
   directory: string
 ): Promise<void> {
   const contents = await fs.readFile(filePath, 'utf8');
-  if (contents.includes(VISUAL_INTELLIGENCE_REGISTRATION_MARKER)) {
+  if (VISUAL_INTELLIGENCE_REGISTRATION_PATTERN.test(contents)) {
     return;
   }
 

@@ -16,14 +16,7 @@ struct MailDraftEntity {
   var attachments: [IntentFile]
   var account: MailAccountEntity
 
-  /// Mirrors the `hideInSpotlight` flag from the catalog published by JavaScript.
-  ///
-  /// Nothing in this example reads it. It only starts to matter with the visual intelligence layer,
-  /// where **MailDraftEntity+Spotlight.swift** forwards it to `IndexedEntity.hideInSpotlight` so
-  /// Spotlight honours the flag too, and not only expo-app-intents. Scaffold that layer with
-  /// `npx expo-app-intents init --examples mail --visual-intelligence`. It is declared here rather
-  /// than in the layer itself because a Swift extension cannot add stored properties and
-  /// `init(record:)` below has to fill it in; drop the property if you never index drafts.
+  /// Mirrors the catalog flag for `IndexedEntity.hideInSpotlight` in the optional visual layer.
   var isHiddenInSpotlight: Bool = false
 
   init(
@@ -53,11 +46,8 @@ struct MailDraftEntity {
   /// subtitle carries the body, so Siri can resolve a draft the user names out loud. Anything with
   /// no field of its own on the record travels in `metadata`.
   init(record: AppIntentEntityRecord) {
-    let bodyText = record.metadata["body"] ?? record.subtitle ?? ""
-    let recipients = (record.metadata["recipients"] ?? "")
-      .split(separator: ",")
-      .map { $0.trimmingCharacters(in: .whitespaces) }
-      .filter { !$0.isEmpty }
+    let bodyText = record.subtitle ?? ""
+    let recipients = Self.recipients(from: record.metadata["recipients"])
 
     self.init(
       id: record.id,
@@ -104,11 +94,6 @@ struct MailDraftEntity {
 
   /// The same addresses as one string, for the places that want a single line instead of an array: a
   /// summary label, or one string to match a search term against.
-  ///
-  /// Nothing in this example reads it yet. `displayRepresentation` shows the subject and a body
-  /// preview, and `MailDraftEntityQuery` searches those two, because a draft built from a catalog
-  /// record has no recipients - `init(record:)` above leaves `to`, `cc` and `bcc` empty. Add
-  /// recipients to the records your app publishes, then search this too.
   var recipientList: String {
     return recipientAddresses.joined(separator: ", ")
   }
@@ -137,6 +122,17 @@ struct MailDraftEntity {
     @unknown default:
       return nil
     }
+  }
+
+  /// Catalog metadata is JSON so display names containing commas remain one recipient.
+  private static func recipients(from metadata: String?) -> [String] {
+    guard let metadata,
+      let data = metadata.data(using: .utf8),
+      let recipients = try? JSONDecoder().decode([String].self, from: data)
+    else {
+      return []
+    }
+    return recipients
   }
 
   private var bodyPreview: String {

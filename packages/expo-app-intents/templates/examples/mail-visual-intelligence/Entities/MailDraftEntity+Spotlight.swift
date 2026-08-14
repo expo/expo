@@ -29,9 +29,8 @@ extension MailDraftEntity: IndexedEntity {
   /// Groups the app's Spotlight items so they can be managed together.
   static let spotlightDomainIdentifier = "dev.expo.appintents.mailDraft"
 
-  /// Apple's own opt-out, honoured by Spotlight from iOS 18.4. expo-app-intents already keeps hidden
-  /// drafts out of the index it manages; forwarding the flag here also covers indexing the system
-  /// performs itself.
+  /// Apple's own opt-out, honoured by Spotlight from iOS 18.4. expo-app-intents also filters these
+  /// records from the catalog-managed index.
   var hideInSpotlight: Bool {
     return isHiddenInSpotlight
   }

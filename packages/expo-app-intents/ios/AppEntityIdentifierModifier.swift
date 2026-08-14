@@ -41,8 +41,13 @@ extension Array {
 /// matching neither catalog. Updates to different kinds touch disjoint parts of the index, so they are
 /// free to run at the same time.
 internal final class KeyedSerialQueue: @unchecked Sendable {
+  private struct Tail {
+    let id: UUID
+    let task: Task<Void, Never>
+  }
+
   private let lock = NSLock()
-  private var tails: [String: Task<Void, Never>] = [:]
+  private var tails: [String: Tail] = [:]
 
   /// Runs `work` after every earlier call for `key` has finished, and returns or rethrows what it does.
   ///
@@ -59,14 +64,22 @@ internal final class KeyedSerialQueue: @unchecked Sendable {
     key: String,
     _ work: @escaping @Sendable () async throws -> T
   ) async throws -> T {
+    let id = UUID()
     let task: Task<T, any Error> = lock.withLock {
-      let previous = tails[key]
+      let previous = tails[key]?.task
       let next = Task {
         _ = await previous?.value
         return try await work()
       }
-      tails[key] = Task { _ = try? await next.value }
+      tails[key] = Tail(id: id, task: Task { _ = try? await next.value })
       return next
+    }
+    defer {
+      lock.withLock {
+        if tails[key]?.id == id {
+          tails.removeValue(forKey: key)
+        }
+      }
     }
     return try await task.value
   }
@@ -141,7 +154,8 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   /// This is a separate method rather than an overload of `register(_:as:)` on purpose: overloads
   /// that differ only by an extra conformance resolve by specificity, and picking the wrong one
   /// would silently mean no indexing.
-  @available(iOS 18.0, *)
+  @available(iOS 18.0, macOS 15.0, *)
+  @available(tvOS, unavailable)
   public func registerIndexed<Entity>(_ entity: String, as entityType: Entity.Type)
   where Entity: AppEntity & IndexedEntity & AppIntentEntityRecordConvertible, Entity.ID == String {
     register(entity, as: entityType)
@@ -254,8 +268,13 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   /// Throws when the catalog cannot be read or the index cannot be written. Swallowing that would
   /// report success to the system for work that did not happen, and the system would never ask again.
   public func replaceIndexFromCatalog(kind: String) async throws {
-    let records = try await catalogRecords(kind: kind)
-    try await runIndexer(kind: kind, records: records, update: .replaceEverything)
+    try await indexing.run(key: kind) {
+      guard self.hasIndexer(kind: kind) else {
+        return
+      }
+      let records = try await self.catalogRecords(kind: kind)
+      try await self.performIndex(kind: kind, records: records, update: .replaceEverything)
+    }
   }
 
   /// Refreshes only the given entities in the Spotlight index, leaving the rest of the index alone. An
@@ -265,8 +284,21 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
   /// Call this from `IndexedEntityQuery.reindexEntities(for:indexDescription:)`. Throws for the same
   /// reason `replaceIndexFromCatalog` does.
   public func updateIndexFromCatalog(kind: String, matching identifiers: [String]) async throws {
-    let records = try await catalogRecords(kind: kind, matching: identifiers)
-    try await runIndexer(kind: kind, records: records, update: .refreshOnly(requested: identifiers))
+    try await indexing.run(key: kind) {
+      guard self.hasIndexer(kind: kind) else {
+        return
+      }
+      let records = try await self.catalogRecords(kind: kind, matching: identifiers)
+      try await self.performIndex(
+        kind: kind,
+        records: records,
+        update: .refreshOnly(requested: identifiers)
+      )
+    }
+  }
+
+  private func hasIndexer(kind: String) -> Bool {
+    return lock.withLock { indexers[kind] != nil }
   }
 
   /// Reads the catalog a reindex is to be built from.
@@ -288,17 +320,6 @@ public final class AppEntityIdentifierRegistry: @unchecked Sendable {
       markIndexStale(kind: kind)
       log.error("expo-app-intents: could not read the '\(kind)' entity catalog to reindex: \(error)")
       throw error
-    }
-  }
-
-  /// Runs the kind's indexer, one update to a kind at a time.
-  private func runIndexer(
-    kind: String,
-    records: [AppIntentEntityRecord],
-    update: IndexUpdate
-  ) async throws {
-    try await indexing.run(key: kind) {
-      try await self.performIndex(kind: kind, records: records, update: update)
     }
   }
 
@@ -440,7 +461,7 @@ internal final class AppEntityIdentifierModifierRegistration: @unchecked Sendabl
   }
 }
 
-@available(iOS 18.4, *)
+@available(iOS 18.4, macOS 15.4, tvOS 18.4, *)
 struct AppEntityIdentifierModifier: ViewModifier, Record {
   @Field var entity: String = ""
   @Field var id: String = ""
