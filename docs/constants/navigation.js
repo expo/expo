@@ -475,7 +475,7 @@ export const eas = [
   makeSection('EAS Workflows', [
     makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
-    makePage('eas/workflows/rerun-workflows.mdx'),
+    makePage('eas/workflows/manage-workflow-runs.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/custom-functions.mdx'),
