@@ -65,10 +65,8 @@ function renderAppIntentsSetup(options: { hasShortcuts: boolean }): string {
   return `internal import ExpoAppIntents
 internal import ExpoModulesCore
 
-/**
- Registered Expo inline module that wires app-target App Intents code to expo-app-intents.
- Do not change the name of this class.
- */
+/// Registered Expo inline module that wires app-target App Intents code to expo-app-intents.
+/// Do not change the name of this class.
 final class AppIntentsSetup: Module {
   public func definition() -> ExpoModulesCore.ModuleDefinition {
 ${body.join('\n\n')}
@@ -79,15 +77,13 @@ ${body.join('\n\n')}
 
 const APP_SHORTCUTS_HEADER = `import AppIntents
 
-/**
- All App Shortcuts for this app. Phrases are compiled into the app and cannot be created
- at runtime. Required parameters that are not in the launch phrase are collected by Siri
- as follow-up questions.
-
- System rules:
- - Every phrase must include \\(.applicationName) or the phrase is dropped at build time.
- - At most 10 App Shortcuts per app. Apple recommends 2-5.
- */
+/// All App Shortcuts for this app. Phrases are compiled into the app and cannot be created
+/// at runtime. Required parameters that are not in the launch phrase are collected by Siri
+/// as follow-up questions.
+///
+/// System rules:
+/// - Every phrase must include \\(.applicationName) or the phrase is dropped at build time.
+/// - At most 10 App Shortcuts per app. Apple recommends 2-5.
 struct AppShortcuts: AppShortcutsProvider {
   static var appShortcuts: [AppShortcut] {`;
 
@@ -122,7 +118,7 @@ const SHORTCUT_ENTRIES: Partial<Record<InitExample, ShortcutEntry>> = {
         "Place an order in \\(.applicationName)",
         "Order food in \\(.applicationName)",
         "Order \\(\\.$dish) in \\(.applicationName)",
-        "Place an order for \\(\\.$dish) in \\(.applicationName)"
+        "Place an order for \\(\\.$dish) in \\(.applicationName)",
       ],
       shortTitle: "Place an order",
       systemImageName: "fork.knife"
