@@ -5,20 +5,31 @@ import ExpoModulesCore
 
 internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
   @Field var matchContents: Bool = false
-  // Read by `ExpoViewShadowNode` in C++, never here. Declaring it makes it a supported prop name,
-  // without which React Native drops it before it reaches the shadow node.
+  /**
+   Whether this view owns its subtree's touches and is the origin its content is measured from. Set
+   by the JavaScript side for content presented in its own view controller — see `RNHostView.tsx`,
+   which reads it from the sheet or popover presenting the content.
+
+   Also read by `ExpoViewShadowNode` in C++, which turns it into the `RootNodeKind` trait so
+   `measure()` stops its ancestor walk here. Dispatch and measurement come from this one prop so
+   they cannot disagree, which is the failure mode that produced presses landing in the wrong place.
+   */
   @Field var layoutRoot: Bool = false
 }
 
-// EXPERIMENT (in-hierarchy touch ownership): when true, do not attach our own
-// `RCTSurfaceTouchHandler`. The surface root above us already dispatches this subtree's touches, and
-// running both produces two streams in two coordinate spaces, which cancels presses on any movement.
-// Deferring means `measure()` must be surface-relative, so `layoutRoot` is off too. Not yet valid for
-// content presented in its own window (sheet/popover), where there is no ancestor root.
-private let deferToSurfaceRoot = true
-
-// Opts out of the automatic `display: contents` applied to SwiftUI views: the hosted React Native
-// children lay out inside this view's Yoga box, so it has to keep one.
+// Who dispatches a hosted subtree's touches depends on where the content is presented.
+//
+//   - In the normal hierarchy the surface root above us already streams this subtree's touches.
+//     Attaching a second handler would produce two streams in two coordinate spaces — UIKit delivers
+//     a touch to recognizers on the hit view and every ancestor, and the root's cannot be suppressed
+//     from below — which cancels presses on any movement. So we attach nothing and publish a content
+//     origin instead, which is what keeps `measure()` agreeing with the root's surface-relative
+//     touches.
+//   - Content presented in its own view controller (a sheet, a popover) is not a descendant of the
+//     surface, so nothing above it dispatches and it would receive no touches at all. There we
+//     attach our own handler, and `layoutRoot` makes `measure()` report positions relative to this
+//     view — the space those touches arrive in. No content origin is needed, because the `measure()`
+//     walk stops here and there is no ancestor chain left to correct.
 struct RNHostView: ExpoSwiftUI.View {
 
   @ObservedObject var props: RNHostViewProps
@@ -28,7 +39,15 @@ struct RNHostView: ExpoSwiftUI.View {
 
   var body: some View {
     hostedContent
-      .modifier(PublishContentOriginModifier(shadowNodeProxy: props.shadowNodeProxy))
+      // Only meaningful while the surface root owns dispatch: it corrects a `measure()` walk that
+      // runs through this node up to the surface. As a `layoutRoot` that walk stops here, so there
+      // is nothing to correct.
+      .modifier(
+        PublishContentOriginModifier(
+          shadowNodeProxy: props.shadowNodeProxy,
+          isEnabled: !props.layoutRoot
+        )
+      )
   }
 
   @ViewBuilder
@@ -38,7 +57,7 @@ struct RNHostView: ExpoSwiftUI.View {
         Children()
       }
       .onAppear {
-        if !deferToSurfaceRoot {
+        if props.layoutRoot {
           touchHandler.attach(to: childUIView)
         }
       }
@@ -55,7 +74,7 @@ struct RNHostView: ExpoSwiftUI.View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
         .onAppear {
-          if !deferToSurfaceRoot, let view = firstChildUIView {
+          if props.layoutRoot, let view = firstChildUIView {
             touchHandler.attach(to: view)
           }
         }
@@ -76,9 +95,10 @@ struct RNHostView: ExpoSwiftUI.View {
 // above the content and `Pressable` cancels a press as soon as the finger moves.
 private struct PublishContentOriginModifier: ViewModifier {
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+  let isEnabled: Bool
 
   func body(content: Content) -> some View {
-    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
+    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *), isEnabled {
       content
         .onGeometryChange(for: CGRect.self) { proxy in
           proxy.frame(in: .named(expoHostCoordinateSpace))

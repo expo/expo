@@ -1,5 +1,7 @@
 import { requireNativeView } from 'expo';
 
+import { useIsPresentedInOwnWindow } from '../PresentedContentContext';
+
 const RNHostNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'RNHostView');
 
 export interface RNHostViewProps {
@@ -23,9 +25,15 @@ export interface RNHostViewProps {
 const hugCrossAxis = { alignSelf: 'flex-start' } as const;
 
 export function RNHostView(props: RNHostViewProps) {
+  // A sheet or popover presents its content in its own view controller, where the React Native
+  // surface root is not an ancestor and so dispatches nothing. Hosted content there owns its touches
+  // and is the origin it is measured from; native reads this one prop for both, so they agree.
+  const layoutRoot = useIsPresentedInOwnWindow();
+
   return (
     <RNHostNativeView
       {...props}
+      layoutRoot={layoutRoot}
       style={props.matchContents ? hugCrossAxis : undefined}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
