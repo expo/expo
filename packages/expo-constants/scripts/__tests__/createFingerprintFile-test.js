@@ -18,6 +18,42 @@ function loadModule({ fingerprintResolvable = true } = {}) {
   return require('../createFingerprintFile');
 }
 
+describe(`resolveProjectRoot`, () => {
+  let monorepoRoot;
+  let projectRoot;
+
+  beforeEach(() => {
+    monorepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-constants-monorepo-test-'));
+    projectRoot = path.join(monorepoRoot, 'apps', 'example');
+    fs.mkdirSync(path.join(projectRoot, 'android'), { recursive: true });
+    fs.writeFileSync(path.join(projectRoot, 'package.json'), '{}');
+  });
+
+  afterEach(() => {
+    fs.rmSync(monorepoRoot, { recursive: true, force: true });
+  });
+
+  it(`accepts the app directory`, () => {
+    const { resolveProjectRoot } = loadModule();
+
+    expect(resolveProjectRoot(projectRoot)).toBe(projectRoot);
+  });
+
+  it(`resolves an Android native directory to its app in a monorepo`, () => {
+    const { resolveProjectRoot } = loadModule();
+
+    expect(resolveProjectRoot(path.join(projectRoot, 'android'))).toBe(projectRoot);
+  });
+
+  it(`rejects a directory outside an Expo app`, () => {
+    const { resolveProjectRoot } = loadModule();
+    const unrelatedDirectory = path.join(monorepoRoot, 'unrelated', 'android');
+    fs.mkdirSync(unrelatedDirectory, { recursive: true });
+
+    expect(() => resolveProjectRoot(unrelatedDirectory)).toThrow(/Unable to locate project/);
+  });
+});
+
 describe(`createFingerprintFileAsync`, () => {
   // The script resolves `expo/fingerprint` from the project root (the same anchor as the check
   // side in `@expo/cli`), so the root must be a real directory that can resolve the module.

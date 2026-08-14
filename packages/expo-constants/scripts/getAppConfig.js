@@ -7,6 +7,7 @@ const path = require('node:path');
 
 const {
   createFingerprintFileAsync,
+  resolveProjectRoot,
   warnFingerprintEmbedFailed,
 } = require('./createFingerprintFile');
 
@@ -18,18 +19,7 @@ const platform = process.argv[4];
 // fingerprint computation and never ship the file.
 const embedFingerprint = process.argv[5] === 'true';
 
-// TODO: Verify we can remove projectRoot validation, now that we no longer
-// support React Native <= 62
-let projectRoot;
-if (fs.existsSync(path.join(possibleProjectRoot, 'package.json'))) {
-  projectRoot = possibleProjectRoot;
-} else if (fs.existsSync(path.join(possibleProjectRoot, '..', 'package.json'))) {
-  projectRoot = path.resolve(possibleProjectRoot, '..');
-} else {
-  throw new Error(
-    `Unable to locate project (no package.json found) at path: ${possibleProjectRoot}`
-  );
-}
+const projectRoot = resolveProjectRoot(possibleProjectRoot);
 
 if (embedFingerprint) {
   // The embedded fingerprint must match the check side (`npx expo needs-rebuild` and the dev
