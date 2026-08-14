@@ -16,6 +16,7 @@ import {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StyleSheet } from 'react-native';
 import { ControllerProvider } from '@/context/ControllerContext';
+import { MobileShell } from '@/components/MobileShell';
 import { SplashOverlay } from '@/components/SplashOverlay';
 import { colors } from '@/constants/theme';
 
@@ -45,17 +46,19 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={styles.root}>
-      <ControllerProvider>
-        <StatusBar style="light" />
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: colors.void },
-            animation: 'fade',
-          }}
-        />
-        <SplashOverlay visible={showBrandSplash} onDone={onSplashDone} />
-      </ControllerProvider>
+      <MobileShell>
+        <ControllerProvider>
+          <StatusBar style="light" />
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              contentStyle: { backgroundColor: colors.void, flex: 1 },
+              animation: 'fade',
+            }}
+          />
+          <SplashOverlay visible={showBrandSplash} onDone={onSplashDone} />
+        </ControllerProvider>
+      </MobileShell>
     </GestureHandlerRootView>
   );
 }
