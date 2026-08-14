@@ -181,6 +181,7 @@ module Expo
         print_linking_summary
         disable_swift_interface_verification(installer)
         configure_use_frameworks(installer)
+        requote_swift_compat_header_paths(installer)
         ensure_artifacts(installer)
         configure_header_search_paths(installer)
         configure_codegen_for_prebuilt_modules(installer)
@@ -834,6 +835,14 @@ module Expo
         xcframework_path = File.join(react_prebuilt_dir, 'React.xcframework')
         return unless File.exist?(xcframework_path)
 
+        # This workaround rewires the xcframework-root Headers/ layout that react-native
+        # shipped up to 0.86. react-native 0.87 dropped that layout (headers are extracted
+        # to a Pods/React-Core-prebuilt/Headers sidecar with its own modulemap instead),
+        # so applying it there would point the React module at a missing umbrella header
+        # and break every React module build. Skip when the expected layout is absent.
+        umbrella_header = File.join(xcframework_path, 'Headers', 'React_Core', 'React_Core-umbrella.h')
+        return unless File.exist?(umbrella_header)
+
         target_support_dir = File.join(installer.sandbox.root, 'Target Support Files', 'React-Core-prebuilt')
         FileUtils.mkdir_p(target_support_dir)
 
@@ -842,6 +851,21 @@ module Expo
         inject_isystem_flags(installer, target_support_dir)
 
         Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
+      end
+
+      # CocoaPods shell-splits `pod_target_xcconfig` search paths, dropping the quotes
+      # around entries that contain spaces. `.../Swift Compatibility Header` then lands
+      # in the generated pod xcconfigs as three broken -I flags, so a source-built Swift
+      # pod's dependents can't find its generated ObjC compatibility header (e.g. the
+      # Expo pod importing ExpoModulesCore-Swift.h). Re-quote those entries after
+      # CocoaPods writes the xcconfigs. Aggregate (user-target) xcconfigs keep their
+      # quotes and are left untouched by the negative-lookaround guards.
+      def requote_swift_compat_header_paths(installer)
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+          fixed = content.gsub(%r{(?<!")(\$[({]PODS_CONFIGURATION_BUILD_DIR[)}]/[^ "\n]+/Swift Compatibility Header)(?!")}, '"\1"')
+          File.write(xcconfig_path, fixed) if fixed != content
+        end
       end
 
       # TODO(ExpoModulesJSI-xcframework): Remove this method when ExpoModulesJSI.xcframework
