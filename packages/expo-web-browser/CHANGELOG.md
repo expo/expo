@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On Android, fix `openAuthSessionAsync` and `openBrowserAsync` not opening the browser when App Links (`autoVerify`) are configured for the same domain, by pinning the Custom Tab to a browser package. ([#46428](https://github.com/expo/expo/issues/46428) by [@spaansba](https://github.com/spaansba))
+
 ### 💡 Others
 
 ## 57.0.2 - 2026-07-22
