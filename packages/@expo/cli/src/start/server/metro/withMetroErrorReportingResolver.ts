@@ -7,8 +7,7 @@ import { stripVTControlCharacters } from 'util';
 
 import { isPathInside } from '../../../utils/dir';
 import { env } from '../../../utils/env';
-
-const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
+import { event } from './resolveEvents';
 
 // TODO: Do we need to expose this?
 const STACK_DEPTH_LIMIT = 35;
@@ -302,13 +301,11 @@ export const createMutateResolutionError =
       stackDepthLimit
     );
 
-    debug('Number of explored stacks:', stackCounter);
+    event('error_stacks_explored', { count: stackCounter });
 
     if (inverseStack && inverseStack.frames.length > 0) {
       const formattedImport = chalk`{gray  |} {cyan import} `;
       const importMessagePadding = ' '.repeat(stripVTControlCharacters(formattedImport).length + 1);
-
-      debug('Found inverse graph:', JSON.stringify(inverseStack, null, 2));
 
       let extraMessage = chalk.bold(
         `Import stack${stackCounter >= stackCountLimit ? ` (${stackCounter})` : ''}:`
@@ -363,7 +360,6 @@ export const createMutateResolutionError =
 
       error._expoImportStack = extraMessage;
     } else {
-      debug('Found no inverse tree for:', context.originModulePath);
     }
 
     return error;

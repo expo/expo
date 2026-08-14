@@ -44,10 +44,12 @@ minimumReleaseAge: 1440
 
 minimumReleaseAgeExclude:
   - '@expo/*'
+  - '@noxcturnal/*'
   - '@react-native/*'
   - '@turbo/*'
   - 'react-native'
   - multitars
+  - noxcturnal
   - 'react-native-gesture-handler'
   - 'react-native-reanimated'
   - 'react-native-screens'
@@ -61,3 +63,4 @@ minimumReleaseAgeExclude:
   - 'expo-modules-jsi'
   - 'babel-preset-expo'
   - 'jest-expo'
+  - '2g'

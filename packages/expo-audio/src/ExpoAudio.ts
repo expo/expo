@@ -100,6 +100,7 @@ export function useAudioPlayer(
     downloadFirst = false,
     keepAudioSessionActive = false,
     preferredForwardBufferDuration = 0,
+    allowsExternalPlayback = true,
   } = options;
 
   // If downloadFirst is true, we don't need to resolve the source, because it will be resolved in the useEffect below.
@@ -115,13 +116,15 @@ export function useAudioPlayer(
         initialSource,
         updateInterval,
         keepAudioSessionActive,
-        preferredForwardBufferDuration
+        preferredForwardBufferDuration,
+        allowsExternalPlayback
       ),
     [
       JSON.stringify(initialSource),
       updateInterval,
       keepAudioSessionActive,
       preferredForwardBufferDuration,
+      allowsExternalPlayback,
     ]
   );
 
@@ -406,13 +409,15 @@ export function createAudioPlayer(
     downloadFirst = false,
     keepAudioSessionActive = false,
     preferredForwardBufferDuration = 0,
+    allowsExternalPlayback = true,
   } = options;
   const initialSource = downloadFirst ? null : resolveSource(source);
   const player = new AudioModule.AudioPlayer(
     initialSource,
     updateInterval,
     keepAudioSessionActive,
-    preferredForwardBufferDuration
+    preferredForwardBufferDuration,
+    allowsExternalPlayback
   );
 
   if (downloadFirst && source) {

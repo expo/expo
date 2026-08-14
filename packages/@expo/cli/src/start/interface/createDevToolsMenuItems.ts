@@ -8,8 +8,6 @@ import type { DevToolsPlugin } from '../server/DevToolsPlugin';
 import type { DevToolsPluginCommand } from '../server/DevToolsPlugin.schema';
 import { cliExtensionMenuItemHandler } from './cliExtensionMenuItemHandler';
 
-const debug = require('debug')('expo:start:devtools') as typeof console.log;
-
 export interface MoreToolMenuItem extends ExpoChoice<string> {
   action?: () => unknown;
 }
@@ -62,9 +60,8 @@ export const createDevToolsMenuItems = (
             try {
               const value = await selectAsync(chalk`{dim Select command}`, children);
               await children.find((item) => item.value === value)?.action?.();
-            } catch (error: any) {
+            } catch {
               // Handle aborting prompt
-              debug(`Aborted selection prompt by user: ${error.toString()}`);
             }
           },
         };
@@ -133,9 +130,8 @@ const cliExtensionFactory = (
         } else {
           await cliExtensionMenuItemHandlerFunc(plugin, cmd, metroServerOrigin);
         }
-      } catch (error: any) {
+      } catch {
         // Handle aborting prompt
-        debug(`Failed to execute command: ${error.toString()}`);
       }
     },
   };

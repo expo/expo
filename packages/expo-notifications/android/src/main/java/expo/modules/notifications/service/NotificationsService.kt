@@ -578,7 +578,7 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     /**
-     * Marshals [Parcelable] into to a byte array.
+     * Marshals [Parcelable] into a byte array.
      *
      * @param notificationResponse Notification response to marshall
      * @return Given request marshalled to a byte array or null if the process failed.

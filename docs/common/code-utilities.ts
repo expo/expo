@@ -309,7 +309,7 @@ export function getCodeData(value: string, className?: string, version?: string)
 
   const processedValue = replaceCodeBlockVariables(value, version);
   const rawHtml = Prism.highlight(processedValue, grammar, lang);
-  if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
+  if (['properties', 'ruby', 'bash', 'yaml', 'yml'].includes(lang)) {
     return replaceHashCommentsWithAnnotations(rawHtml);
   } else if (['xml', 'html'].includes(lang)) {
     return replaceXmlCommentsWithAnnotations(rawHtml);

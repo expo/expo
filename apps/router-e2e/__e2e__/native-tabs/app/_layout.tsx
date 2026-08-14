@@ -15,7 +15,7 @@ export default function Layout() {
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <NativeTabs rippleColor="#f00" labelVisibilityMode="labeled">
-        <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger name="index" testID="index-tab" accessibilityLabel="Index tab">
           <NativeTabs.Trigger.Label>Index label</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon sf="applewatch.side.right" md="watch" />
         </NativeTabs.Trigger>

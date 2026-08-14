@@ -118,6 +118,15 @@ export type LiveActivityEnvironment = {
    */
   isActivityFullscreen?: boolean;
   /**
+   * Whether the activity's content is out of date, based on the `staleDate` passed to
+   * `LiveActivityFactory.start()` or `LiveActivity.update()`.
+   *
+   * Use it to de-emphasize content the system can no longer vouch for. It becomes `true`
+   * without the app running, so a Live Activity can degrade while the app is suspended.
+   * @platform iOS 16.2+
+   */
+  isStale?: boolean;
+  /**
    * A Boolean value that indicates whether the Live Activity update synchronization rate is reduced.
    * @platform iOS 18+
    */
@@ -143,6 +152,22 @@ export type WidgetTimelineEntry<T extends object = object> = {
    * Props to be passed to the widget.
    */
   props: T;
+};
+
+export type WidgetConfigurationEnum = {
+  /**
+   * User-visible option label.
+   */
+  name: string;
+  /**
+   * Value available in `environment.configuration`.
+   */
+  value: string;
+  /**
+   * Optional secondary text displayed to user.
+   * @platform iOS
+   */
+  subtitle?: string;
 };
 
 export type ExpoTimelineEntry = {
@@ -281,6 +306,7 @@ export declare class NativeWidgetObject extends SharedObject {
   updateSnapshot(props: Record<string, any>): void;
   updateTimeline(entries: ExpoTimelineEntry[]): void;
   getTimeline(): Promise<ExpoTimelineEntry[]>;
+  setConfigurationParameterEnum(parameterName: string, options?: WidgetConfigurationEnum[]): void;
 }
 
 export declare class NativeLiveActivityFactory extends SharedObject {

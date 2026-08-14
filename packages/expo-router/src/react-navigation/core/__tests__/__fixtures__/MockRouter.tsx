@@ -11,29 +11,24 @@ export type MockActions = CommonNavigationAction | { type: 'NOOP' | 'UPDATE' };
 
 export const MockRouterKey = { current: 0 };
 
-export function MockRouter(options: DefaultRouterOptions) {
+function getStateForRouteNamesChange(state: NavigationState, routeNames: string[]) {
+  const routes = state.routes.filter((route) => routeNames.includes(route.name));
+
+  return {
+    ...state,
+    routeNames,
+    routes,
+    index: Math.min(state.index, routes.length - 1),
+  };
+}
+
+export function MockRouter(_options: DefaultRouterOptions) {
   const router: Router<NavigationState, MockActions> = {
     type: 'test',
 
-    getInitialState({ routeNames, routeParamList }) {
-      const index =
-        options.initialRouteName === undefined ? 0 : routeNames.indexOf(options.initialRouteName);
+    getStateForDeclaredRoutes: BaseRouter.getStateForDeclaredRoutes,
 
-      return {
-        stale: false,
-        type: 'test',
-        key: String(MockRouterKey.current++),
-        index,
-        routeNames,
-        routes: routeNames.map((name) => ({
-          name,
-          key: name,
-          params: routeParamList[name],
-        })),
-      };
-    },
-
-    getRehydratedState(partialState, { routeNames, routeParamList }) {
+    getRehydratedState(partialState, { routeNames }) {
       const state = partialState;
 
       if (state.stale === false) {
@@ -47,13 +42,6 @@ export function MockRouter(options: DefaultRouterOptions) {
             ({
               ...route,
               key: route.key || `${route.name}-${MockRouterKey.current++}`,
-              params:
-                routeParamList[route.name] !== undefined
-                  ? {
-                      ...routeParamList[route.name],
-                      ...route.params,
-                    }
-                  : route.params,
             }) as Route<string>
         );
 
@@ -61,7 +49,6 @@ export function MockRouter(options: DefaultRouterOptions) {
         routes.push({
           name: routeNames[0]!,
           key: `${routeNames[0]}-${MockRouterKey.current++}`,
-          params: routeParamList[routeNames[0]!],
         });
       }
 
@@ -86,24 +73,6 @@ export function MockRouter(options: DefaultRouterOptions) {
       };
     },
 
-    getStateForRouteNamesChange(state, { routeNames }) {
-      const routes = state.routes.filter((route) => routeNames.includes(route.name));
-
-      if (routes.length === 0) {
-        routes.push({
-          name: routeNames[0]!,
-          key: `${routeNames[0]}-${MockRouterKey.current++}`,
-        });
-      }
-
-      return {
-        ...state,
-        routeNames,
-        routes,
-        index: Math.min(state.index, routes.length - 1),
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 
@@ -114,8 +83,27 @@ export function MockRouter(options: DefaultRouterOptions) {
       return { ...state, index };
     },
 
-    getStateForAction(state, action, { routeParamList }) {
+    getStateForAction(state, action) {
       switch (action.type) {
+        case 'ROUTE_NAMES_CHANGED': {
+          const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
+
+          if (nextState.routes.length !== 0) {
+            return nextState;
+          }
+
+          return {
+            ...nextState,
+            index: 0,
+            routes: [
+              {
+                name: action.payload.routeNames[0]!,
+                key: `${action.payload.routeNames[0]}-${MockRouterKey.current++}`,
+              },
+            ],
+          };
+        }
+
         case 'UPDATE':
           return { ...state };
 
@@ -138,13 +126,7 @@ export function MockRouter(options: DefaultRouterOptions) {
               {
                 name: action.payload.name,
                 key: `${action.payload.name}-${MockRouterKey.current++}`,
-                params:
-                  action.payload.params !== undefined
-                    ? {
-                        ...routeParamList[action.payload.name],
-                        ...action.payload.params,
-                      }
-                    : routeParamList[action.payload.name],
+                params: action.payload.params,
               },
             ];
             index = routes.length - 1;

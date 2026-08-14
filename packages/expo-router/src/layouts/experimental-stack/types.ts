@@ -1,6 +1,7 @@
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  NavigationAction,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -33,6 +34,7 @@ export type ExperimentalStackNavigationOptions = {
  * @experimental
  */
 export type ExperimentalStackNavigationEventMap = {
+  removePrevented: { data: { action: NavigationAction } };
   transitionStart: { data: { closing: boolean } };
   transitionEnd: { data: { closing: boolean } };
   gestureCancel: { data: undefined };
@@ -66,15 +68,18 @@ export type ExperimentalStackNavigationHelpers = NavigationHelpers<
   ExperimentalStackNavigationEventMap
 >;
 
-export type ExperimentalStackNavigatorProps = DefaultNavigatorOptions<
-  ParamListBase,
-  string | undefined,
-  StackNavigationState<ParamListBase>,
-  ExperimentalStackNavigationOptions,
-  ExperimentalStackNavigationEventMap,
-  ExperimentalStackNavigationProp<ParamListBase>
-> &
-  StackRouterOptions;
+export type ExperimentalStackNavigatorProps = Omit<
+  DefaultNavigatorOptions<
+    ParamListBase,
+    string | undefined,
+    StackNavigationState<ParamListBase>,
+    ExperimentalStackNavigationOptions,
+    ExperimentalStackNavigationEventMap,
+    ExperimentalStackNavigationProp<ParamListBase>
+  > &
+    StackRouterOptions,
+  'initialRouteName'
+>;
 
 export type ExperimentalStackDescriptor = Descriptor<
   ExperimentalStackNavigationOptions,

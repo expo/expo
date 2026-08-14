@@ -8,12 +8,33 @@
 
 ### 🎉 New features
 
+- Warn projects using Expo SDKs affected by the Hermes v1 memory regression ([#48887](https://github.com/expo/expo/pull/48887) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- [Internal] Prevent `ncc` from removing dynamic requires where we need them ([#48887](https://github.com/expo/expo/pull/48887) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+## 1.20.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 1.20.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.10 - 2026-06-10
+
 ### 🐛 Bug fixes
 
 - Recognize the React Native Directory `new-arch-only` status so New-Architecture-only libraries aren't flagged ([#46755](https://github.com/expo/expo/pull/46755) by [@zoontek](https://github.com/zoontek))
-- Fix SDK 55 Metro config check for missing `metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
 
-### 💡 Others
+## 1.19.9 - 2026-06-05
+
+### 🐛 Bug fixes
+
+- Fix SDK 55 Metro config check for missing `metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
 
 ## 1.19.8 — 2026-05-23
 

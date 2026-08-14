@@ -29,6 +29,7 @@ jest.mock('expo-app-metrics', () => {
 jest.mock('../init', () => ({
   __esModule: true,
   isInitialized: jest.fn(() => true),
+  getReactNavigationIntegrationConfig: jest.fn(() => undefined),
   initReactNavigationIntegration: jest.fn(),
 }));
 
@@ -57,7 +58,10 @@ const reactNavigationModule = require('@react-navigation/native') as {
 const mockUseRoute = reactNavigationModule.__useRoute;
 const mockUseNavigation = reactNavigationModule.__useNavigation;
 const mockUseStateForPath = reactNavigationModule.useStateForPath;
-const initModule = require('../init') as { isInitialized: jest.Mock };
+const initModule = require('../init') as {
+  isInitialized: jest.Mock;
+  getReactNavigationIntegrationConfig: jest.Mock;
+};
 
 const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 
@@ -74,6 +78,7 @@ let storage: ReactNavigationIntegrationStorage;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  initModule.getReactNavigationIntegrationConfig.mockReturnValue(undefined);
   jest.spyOn(console, 'log').mockImplementation(() => {});
   jest.spyOn(console, 'warn').mockImplementation(() => {});
   initModule.isInitialized.mockReturnValue(true);
@@ -121,6 +126,46 @@ describe('useObserveForReactNavigation', () => {
       params: { x: 'payload' },
       routeName: '/A',
     });
+  });
+
+  it('filters route params from hook-emitted TTI', async () => {
+    initModule.getReactNavigationIntegrationConfig.mockReturnValue({ filteredParams: ['x'] });
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
+    jest.spyOn(performance, 'now').mockReturnValue(1300);
+
+    const { result } = renderHook(() => useObserveForReactNavigation(), {
+      wrapper: wrapper({ storage }),
+    });
+    await act(async () => {
+      await result.current!();
+    });
+
+    expect(mockAddMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ params: { routeParams: {}, urlHidden: true } })
+    );
+  });
+
+  it('omits non-serializable route params from hook-emitted TTI', async () => {
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    mockUseRoute.mockReturnValue({
+      key: 'screen-a',
+      name: 'A',
+      params: { id: '42', callback: () => {}, circular },
+    });
+    storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
+    jest.spyOn(performance, 'now').mockReturnValue(1300);
+
+    const { result } = renderHook(() => useObserveForReactNavigation(), {
+      wrapper: wrapper({ storage }),
+    });
+    await act(async () => {
+      await result.current!();
+    });
+
+    expect(mockAddMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ params: { routeParams: { id: '42' } } })
+    );
   });
 
   it('still records lastInteractiveCall when the screen is not focused (skips markInteractive and TTI)', async () => {

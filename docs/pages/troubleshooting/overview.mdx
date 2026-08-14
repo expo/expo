@@ -8,6 +8,7 @@ import { RouterLogo } from '@expo/styleguide';
 import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 
@@ -57,6 +58,13 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
   title="Clear bundler caches on Windows"
   description="Learn how to clear the bundler cache when using Yarn or npm with Expo CLI or React Native CLI on Windows."
   href="/troubleshooting/clear-cache-windows/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title='"Project is incompatible with this version of Expo Go" error'
+  description="Learn how to install a version of Expo Go that is compatible with your project's Expo SDK version."
+  href="/troubleshooting/expo-go-version-mismatch/"
   Icon={BookOpen02Icon}
 />
 
@@ -162,4 +170,11 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
   description="Solutions for common issues when setting up and using EAS Observe."
   href="/eas/observe/reference/troubleshooting/"
   Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="EAS Workflows: Troubleshooting"
+  description="Diagnose and fix common issues when running EAS Workflows."
+  href="/eas/workflows/troubleshooting/"
+  Icon={Dataflow03Icon}
 />

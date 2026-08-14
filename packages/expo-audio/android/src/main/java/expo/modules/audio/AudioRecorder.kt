@@ -59,6 +59,9 @@ class AudioRecorder(
   private fun currentFileUrl(): String? =
     filePath?.let(::File)?.toUri()?.toString()
 
+  val fileSize: Long
+    get() = filePath?.let { File(it).length() } ?: 0L
+
   private fun getAudioRecorderLevels(): Double? {
     if (!meteringEnabled || recorder == null || !isRecording) {
       return null
@@ -237,7 +240,12 @@ class AudioRecorder(
   }
 
   private fun createRecordingFilePath(options: RecordingOptions): String {
-    val filename = "recording-${UUID.randomUUID()}${options.extension}"
+    val provided = options.fileName?.takeIf { it.isNotEmpty() }
+    if (provided != null && (provided.contains('/') || provided.contains('\\') || provided.contains(".."))) {
+      throw InvalidRecordingFileNameException(provided)
+    }
+    val baseName = provided ?: "recording-${UUID.randomUUID()}"
+    val filename = "$baseName${options.extension}"
     val parentDirectory = when (options.directory ?: RecordingDirectory.CACHE) {
       RecordingDirectory.CACHE -> _appContext.cacheDirectory
       RecordingDirectory.DOCUMENT -> _appContext.persistentFilesDirectory
@@ -310,6 +318,7 @@ class AudioRecorder(
       putBoolean("canRecord", isPrepared)
       putBoolean("isRecording", isRecording)
       putLong("durationMillis", getAudioRecorderDurationMillis())
+      putLong("fileSize", fileSize)
       getAudioRecorderLevels()?.let {
         putDouble("metering", it)
       }
@@ -320,6 +329,7 @@ class AudioRecorder(
       putBoolean("canRecord", false)
       putBoolean("isRecording", false)
       putLong("durationMillis", 0)
+      putLong("fileSize", 0)
       putString("url", null)
     }
   }

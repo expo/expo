@@ -45,6 +45,11 @@ function(add_pch_if_eligible target)
     "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
   )
 
+  # clang rejects a PCH built with a different C++ dialect, so pin consumers
+  # to the owner's -std=c++20 (libraries that set CMAKE_CXX_STANDARD themselves
+  # would otherwise get -std=gnu++20).
+  set_target_properties(${target} PROPERTIES CXX_STANDARD 20 CXX_EXTENSIONS OFF)
+
   target_precompile_headers(${target} REUSE_FROM appmodules_pch)
 endfunction()
 

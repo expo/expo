@@ -15,13 +15,20 @@ exceptions:
   - '.*app\.plugin\.js.*'
   - '.*app directory.*'
   - '.*assets.*'
+  - '.*build\.yml.*'
   - '.*create-expo-app.*'
   - '.*create-react-native-app.*'
+  - '.*e2e-test.*'
+  - '.*get-build.*'
+  - '.*hello\.yml.*'
   - '.*^iOS(.*)'
   - '.*iPhone.*'
+  - '.*preview\.yml.*'
+  - '.*production\.yml.*'
   - '.*web.*'
   - '.*AASA.*'
   - '.*AES.*'
+  - '.*AGENTS\.md.*'
   - '.*\bAI\b.*'
   - '.*API.*'
   - '.*APIs.*'
@@ -52,6 +59,7 @@ exceptions:
   - '.*AWS.*'
   - '.*Babel.*'
   - '.*babel\.config\.js.*'
+  - '.*Beta App Review.*'
   - '.*Bundler.*'
   - '.*Cache-Control.*'
   - '.*Can I pay.*'
@@ -61,6 +69,7 @@ exceptions:
   - '.*CLI.*'
   - '.*TTI.*'
   - '.*Classic Updates.*'
+  - '.*CLAUDE\.md.*'
   - '.*Claude Code.*'
   - '.*Clerk.*'
   - '.*CNG.*'
@@ -103,7 +112,6 @@ exceptions:
   - '.*FileSystem.*'
   - '.*FlatList.*'
   - '.*Flipper.*'
-  - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
   - '.*FAB.*'
   - '.*FAQ.*'
@@ -147,6 +155,7 @@ exceptions:
   - '.*Link component.*'
   - '.*Linking.*'
   - '.*MCP*'
+  - '.*Mac Catalyst.*'
   - '.*Material Symbols.*'
   - '.*MultiBrowse.*'
   - '.*macOS.*'
@@ -155,7 +164,6 @@ exceptions:
   - '.*Maven.*'
   - '.*Netlify.*'
   - '.*Node\.js.*'
-  - '.*Node Package Managers.*'
   - '.*NavigationContainer.*'
   - '.*Next\.js.*'
   - '.*New Architecture.*'
@@ -206,6 +214,7 @@ exceptions:
   - '.*Storage Access Framework.*'
   - '.*Strict-Transport-Security.*'
   - '.*SSO.*'
+  - '.*Supabase.*'
   - '.*Suspense.*'
   - '.*Swift.*'
   - '.*Terser.*'
@@ -295,7 +304,6 @@ exceptions:
   - Maestro
   - Maestro Cloud
   - Require Approval
-  - Asset Caching
   - Getting Started
   - Keyboard Controller
   - PR
@@ -317,7 +325,6 @@ exceptions:
   - 'Prerequisite: Creating a widget'
   - 'Prerequisite: Creating a Live Activity'
   - Hiding the Tab bar
-  - Integrated vs Isolated
   - Expo Skills
   - DSL
   - TriStateCheckbox

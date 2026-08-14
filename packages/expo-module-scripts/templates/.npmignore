@@ -17,3 +17,6 @@ __rsc_tests__
 /android/src/androidTest/
 /android/src/test/
 /ios/Tests
+
+CLAUDE.md
+CONTRIBUTING.md

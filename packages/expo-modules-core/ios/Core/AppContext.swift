@@ -252,7 +252,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public lazy var constants: EXConstantsInterface? = ConstantsProvider.shared
 
   /**
-   Provides access to the file system utilities. Can be overridden if the app should use different different directories or file permissions.
+   Provides access to the file system utilities. Can be overridden if the app should use different directories or file permissions.
    For instance, Expo Go uses sandboxed environment per project where the cache and document directories must be scoped.
    It's an optional type for historical reasons, for now let's keep it like this for backwards compatibility.
    */
@@ -435,6 +435,10 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    onto the JS thread through them. When either is `nil`, the runtime falls back
    to a synchronous no-op scheduler — callers can detect this via
    `JavaScriptRuntime.supportsAsyncScheduling`.
+
+   `scheduler` is an opaque handle that `dispatch` understands; the factories pass
+   a handle created by `expo::createReactSchedulerHandle` that references the React
+   runtime scheduler weakly (see `EXReactSchedulerDispatch.h`).
 
    `dispatch` is a raw pointer to a C function with signature
    `void (*)(void *scheduler, int priority, void (^callback)())` — cast back

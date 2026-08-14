@@ -261,7 +261,7 @@ module Expo
       # Write to the shell script so it's always in-sync with the autolinking configuration
       IO.write(
         support_script_path,
-        generate_support_script(autolinking_manager, modules_provider_path, entitlement_path)
+        generate_support_script(autolinking_manager, target.target_definition.name, modules_provider_path, entitlement_path)
       )
 
       # Make the support script executable
@@ -303,7 +303,7 @@ module Expo
     end
 
     # Generates the support script that is executed by the build script phase.
-    def self.generate_support_script(autolinking_manager, modules_provider_path, entitlement_path)
+    def self.generate_support_script(autolinking_manager, target_name, modules_provider_path, entitlement_path)
       args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }
       platform = autolinking_manager.platform_name.downcase
       package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
@@ -361,6 +361,7 @@ module Expo
         expo-modules-autolinking \\
         generate-modules-provider #{args.join(' ')} \\
         --target "#{modules_provider_path}" \\
+        --target-name "#{target_name}" \\
         #{entitlement_param} \\
         #{app_root_param} \\
         #{podfile_properties_param} \\

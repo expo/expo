@@ -80,12 +80,16 @@ if [[ "$RN_MACOS_VERSION" != "null" ]]; then
 else
     RN_MINOR_VERSION=$(jq -r '.dependencies["react-native"] | capture("^(?<major>\\d+)\\.(?<minor>\\d+)") | "\( .major ).\( .minor )"' package.json)
     echo " ⚠️  Attempting to install react-native-macos@$RN_MINOR_VERSION..."
-    if ! pnpm add "react-native-macos@$RN_MINOR_VERSION" --silent; then
+    # These versions are explicitly chosen, so opt out of the workspace minimumReleaseAge
+    # policy — it would reject any react-native-macos release younger than 24 hours.
+    if ! pnpm add "react-native-macos@$RN_MINOR_VERSION" --silent --config.minimum-release-age=0; then
         echo "⚠️  Failed to install react-native-macos@$RN_MINOR_VERSION, falling back to latest version"
         # Manually extract the last react-native-macos version (highest) from npm because we can't rely on the @latest tag
         latest_version=$(npm view react-native-macos versions --json | jq -r '.[-1]')
-        pnpm add "react-native-macos@$latest_version"
-
+        if ! pnpm add "react-native-macos@$latest_version" --config.minimum-release-age=0; then
+            echo " ❌ Could not install react-native-macos@$latest_version; the macOS project cannot be set up without it. See the pnpm error above."
+            exit 1
+        fi
     fi
 fi
 

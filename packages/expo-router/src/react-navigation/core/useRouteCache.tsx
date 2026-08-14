@@ -16,7 +16,7 @@ export const CHILD_STATE = Symbol('CHILD_STATE');
 
 /**
  * Hook to cache route props for each screen in the navigator.
- * This lets add warnings and modifications to the route object but keep references between renders.
+ * This lets us add warnings and modifications to the route object but keep references between renders.
  */
 export function useRouteCache<State extends NavigationState>(routes: State['routes']) {
   // Cache object which holds route objects for each screen

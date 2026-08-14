@@ -36,7 +36,7 @@ export function getNavigateAction(
   href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
   href = applyRedirects(href, store.redirects) ?? undefined;
 
-  // If the href is undefined, it means that the redirect has already been handled the navigation
+  // If the href is undefined, it means that the redirect has already been handled by the navigation
   if (!href) {
     return;
   }
@@ -73,14 +73,6 @@ export function getNavigateAction(
    * We need to convert the action state to a payload that can be dispatched
    */
   const rootPayload = getPayloadFromStateRoute(actionStateRoute || {});
-
-  if (type === 'PUSH' && navigationState.type !== 'stack') {
-    type = 'NAVIGATE';
-  } else if (navigationState.type === 'expo-tab') {
-    type = 'JUMP_TO';
-  } else if (type === 'REPLACE' && navigationState.type === 'drawer') {
-    type = 'JUMP_TO';
-  }
 
   if (withAnchor) {
     if (rootPayload.params.initial) {

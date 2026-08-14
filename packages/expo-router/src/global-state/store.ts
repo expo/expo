@@ -4,7 +4,7 @@ import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
-import type { RequireContext, Href } from '../types';
+import type { Href } from '../types';
 import * as SplashScreen from '../views/Splash';
 import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
 import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
@@ -26,7 +26,6 @@ type StoreRef = {
   config: any;
   redirects: StoreRedirects[];
   routeInfo?: UrlObject;
-  context?: RequireContext;
 };
 
 export const storeRef = {

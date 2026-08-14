@@ -205,7 +205,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
             'rounded-md px-2 py-1 text-sm font-semibold transition-colors',
             isActive
               ? 'bg-palette-gray6 text-palette-white'
-              : 'text-palette-gray9 hocus:bg-palette-gray5'
+              : 'text-palette-gray11 hocus:bg-palette-gray5'
           )}
           onClick={() => {
             onSelect(manager);

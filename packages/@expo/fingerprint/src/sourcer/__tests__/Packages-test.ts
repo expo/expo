@@ -9,32 +9,33 @@ const FAKE_REACT_NATIVE_PACKAGE_JSON = {
 };
 jest.mock('fs/promises');
 jest.mock('resolve-from');
-jest.mock('/app/node_modules/react-native/package.json', () => FAKE_REACT_NATIVE_PACKAGE_JSON, {
-  virtual: true,
-});
 
 describe(getPackageSourceAsync, () => {
   afterEach(() => {
     vol.reset();
   });
 
-  it('should return package.json contents when packageJsonOnly=true', async () => {
+  it('should return a package source with embedded name and version when sourceType is package', async () => {
+    vol.fromJSON({
+      '/app/node_modules/react-native/package.json': JSON.stringify(FAKE_REACT_NATIVE_PACKAGE_JSON),
+    });
     const mockedResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
     mockedResolveFrom.mockReturnValueOnce('/app/node_modules/react-native/package.json');
 
     const source = await getPackageSourceAsync('/app', {
       packageName: 'react-native',
-      packageJsonOnly: true,
+      sourceType: 'package',
     });
     expect(source).toEqual({
-      type: 'contents',
-      id: 'package:react-native',
-      contents: JSON.stringify(FAKE_REACT_NATIVE_PACKAGE_JSON),
+      type: 'package',
+      name: 'react-native',
+      version: '1.0.0',
+      filePath: 'node_modules/react-native/package.json',
       reasons: ['package:react-native'],
     });
   });
 
-  it('should return directory when packageJsonOnly=false', async () => {
+  it('should return a directory source when sourceType is files', async () => {
     vol.mkdirpSync('/app/node_modules/react-native');
     vol.writeFileSync(
       '/app/node_modules/react-native/package.json',
@@ -46,7 +47,7 @@ describe(getPackageSourceAsync, () => {
 
     const source = await getPackageSourceAsync('/app', {
       packageName: 'react-native',
-      packageJsonOnly: false,
+      sourceType: 'files',
     });
     expect(source).toEqual({
       type: 'dir',
@@ -58,7 +59,7 @@ describe(getPackageSourceAsync, () => {
   it('should return null if package.json is not found', async () => {
     const source = await getPackageSourceAsync('/app', {
       packageName: 'nonexistent-package',
-      packageJsonOnly: true,
+      sourceType: 'package',
     });
     expect(source).toBe(null);
   });

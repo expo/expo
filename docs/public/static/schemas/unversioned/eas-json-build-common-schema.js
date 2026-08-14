@@ -131,7 +131,7 @@ export default [
     name: 'env',
     type: 'object',
     description: [
-      '[Environment variables](/guides/environment-variables/) that should be set during the build process. It should only be used for values that you would commit to your git repository and not for passwords or [secrets](/build-reference/variables/).',
+      '[Environment variables](/guides/environment-variables/) that should be set during the build process. It should only be used for values that you would commit to your git repository and not for passwords or [secrets](/eas/environment-variables/#visibility-settings-for-environment-variables).',
     ],
   },
   {

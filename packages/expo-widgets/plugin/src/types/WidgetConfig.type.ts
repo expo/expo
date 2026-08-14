@@ -5,9 +5,9 @@ export type WidgetConfig = {
   displayName: string;
   description: string;
   // @deprecated: use `ios.supportedFamilies` instead.
-  supportedFamilies: WidgetFamily[];
+  supportedFamilies?: WidgetFamily[];
   // @deprecated: use `ios.contentMarginsDisabled` instead.
-  contentMarginsDisabled: boolean;
+  contentMarginsDisabled?: boolean;
   // @deprecated: use `ios.configuration` instead.
   configuration?: {
     title: string;
@@ -52,6 +52,7 @@ export type WidgetParameterBoolean = {
 export type WidgetParameterEnum = {
   title: string;
   type: 'enum';
+  dynamic?: boolean;
   values: {
     name: string;
     value: string;

@@ -58,8 +58,9 @@ it('can pass nativeProps via unstable_nativeProps prop', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(NativeTabsView).toHaveBeenCalledTimes(1);
-  const call = NativeTabsView.mock.calls[0]![0];
+  expect(NativeTabsView).toHaveBeenCalledTimes(2);
+  // [1] is the render after placeholder preload.
+  const call = NativeTabsView.mock.calls.at(1)![0];
   expect(call.tabs[0]!.options).toMatchObject({
     nativeProps: {
       ...indexOptions,
@@ -314,8 +315,9 @@ describe('Icons', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    const call = NativeTabsView.mock.calls[0]![0];
+    expect(NativeTabsView).toHaveBeenCalledTimes(2);
+    // [1] is the render after placeholder preload.
+    const call = NativeTabsView.mock.calls.at(1)![0];
     expect(call.tabs[0]!.options).toMatchObject({
       selectedIconColor: 'blue',
     } as NativeTabOptions);
@@ -549,9 +551,11 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('one')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.title).toBe(undefined);
-    expect(NativeTabsView.mock.calls[0]![0].tabs[1]!.options.title).toBe(undefined);
+    expect(NativeTabsView).toHaveBeenCalledTimes(2);
+    // [1] is the render after placeholder preload.
+    const call = NativeTabsView.mock.calls.at(1)![0];
+    expect(call.tabs[0]!.options.title).toBe(undefined);
+    expect(call.tabs[1]!.options.title).toBe(undefined);
   });
 
   it('uses last Label value when multiple are provided', () => {
@@ -639,8 +643,9 @@ describe('Label', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    const call = NativeTabsView.mock.calls[0]![0];
+    expect(NativeTabsView).toHaveBeenCalledTimes(2);
+    // [1] is the render after placeholder preload.
+    const call = NativeTabsView.mock.calls.at(1)![0];
     expect(call.tabs[0]!.options).toMatchObject({
       selectedLabelStyle: { fontSize: 32, color: 'blue' },
     } as NativeTabOptions);
@@ -693,8 +698,9 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0]![0];
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      // [1] is the render after placeholder preload.
+      const call = NativeTabsView.mock.calls.at(1)![0];
       expect(call.tabs[0]!.options).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
@@ -756,8 +762,9 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0]![0];
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      // [1] is the render after placeholder preload.
+      const call = NativeTabsView.mock.calls.at(1)![0];
       expect(call.tabs[0]!.options).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
@@ -848,8 +855,9 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0]![0];
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      // [1] is the render after placeholder preload.
+      const call = NativeTabsView.mock.calls.at(1)![0];
       expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(true);
       expect(call.tabs[1]!.options.disableTransparentOnScrollEdge).toBe(true);
     });
@@ -867,8 +875,9 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0]![0];
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      // [1] is the render after placeholder preload.
+      const call = NativeTabsView.mock.calls.at(1)![0];
       // Trigger's value (false) takes precedence over NativeTabs' value (true)
       expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(false);
       // Tab without explicit value inherits from NativeTabs
@@ -888,8 +897,9 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0]![0];
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      // [1] is the render after placeholder preload.
+      const call = NativeTabsView.mock.calls.at(1)![0];
       // Trigger's value (true) takes precedence over NativeTabs' value (false)
       expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(true);
       // Tab without explicit value inherits from NativeTabs
@@ -993,6 +1003,69 @@ describe('Tab options', () => {
       expect(screen.getByTestId('index')).toBeVisible();
       const lastCall = NativeTabsView.mock.calls.at(-1)![0];
       expect(lastCall.tabs[0]!.options.disabled).toBe(false);
+    });
+  });
+
+  describe('testID and accessibilityLabel', () => {
+    it('When set on a layout trigger, they are converted to tab bar item options', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options).toMatchObject({
+        tabBarItemTestID: 'home-tab',
+        tabBarItemAccessibilityLabel: 'Home tab',
+      } as NativeTabOptions);
+    });
+
+    it('When not set, the options do not contain the keys', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options).not.toHaveProperty('tabBarItemTestID');
+      expect(call.tabs[0]!.options).not.toHaveProperty('tabBarItemAccessibilityLabel');
+    });
+
+    it('Screen-mode trigger can set testID and accessibilityLabel dynamically', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => (
+          <View testID="index">
+            <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
+          </View>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      const initial = NativeTabsView.mock.calls[0]![0];
+      const afterFocus = NativeTabsView.mock.calls[1]![0];
+      expect(initial.tabs[0]!.options).not.toHaveProperty('tabBarItemTestID');
+      expect(afterFocus.tabs[0]!.options).toMatchObject({
+        tabBarItemTestID: 'home-tab',
+        tabBarItemAccessibilityLabel: 'Home tab',
+      } as NativeTabOptions);
     });
   });
 });
@@ -1102,8 +1175,9 @@ describe('Dynamic options', () => {
     // Tab + preview
     expect(screen.getAllByTestId('second')).toHaveLength(2);
     expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    const call = NativeTabsView.mock.calls[0]![0];
+    expect(NativeTabsView).toHaveBeenCalledTimes(2);
+    // [1] is the render after placeholder preload.
+    const call = NativeTabsView.mock.calls.at(1)![0];
     expect(call.tabs[0]!.options.title).toBe('Initial Title');
     expect(call.tabs[0]!.options.icon).toBeUndefined();
     expect(call.tabs[0]!.options.selectedIcon).toBeUndefined();

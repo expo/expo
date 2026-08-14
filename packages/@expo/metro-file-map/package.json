@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-file-map",
-  "version": "56.0.3",
+  "version": "57.0.1",
   "description": "A metro-file-map fork for Expo used with the Metro bundler",
   "keywords": [
     "expo",
@@ -35,6 +35,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "2g": "^0.4.3",
     "debug": "^4.3.4",
     "fb-watchman": "^2.0.2",
     "invariant": "^2.2.4",

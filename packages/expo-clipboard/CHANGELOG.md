@@ -6,12 +6,25 @@
 
 ### 🎉 New features
 
-- Add macOS support. ([#46479](https://github.com/expo/expo/pull/46479) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Added `android.isSensitive` option to `setStringAsync` and `setImageAsync` methods. ([#43291](https://github.com/expo/expo/pull/43291) by [@maykonmichel](https://github.com/maykonmichel))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 - 2026-06-05
+
+### 🎉 New features
+
+- Add macOS support. ([#46479](https://github.com/expo/expo/pull/46479) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.3 — 2026-05-06
 

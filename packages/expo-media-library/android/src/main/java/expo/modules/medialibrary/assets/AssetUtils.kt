@@ -294,7 +294,9 @@ fun getAssetDimensionsFromCursor(
 fun exportMediaType(mediaType: Int) = when (mediaType) {
   MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE -> MediaType.PHOTO
   MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO,
-  MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST -> MediaType.AUDIO
+  @Suppress("DEPRECATION") // MEDIA_TYPE_PLAYLIST is deprecated, we keep it for backward compatibility, however it has been removed in the new API
+  MediaStore.Files.FileColumns.MEDIA_TYPE_PLAYLIST
+  -> MediaType.AUDIO
   MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO -> MediaType.VIDEO
   else -> MediaType.UNKNOWN
 }.apiName

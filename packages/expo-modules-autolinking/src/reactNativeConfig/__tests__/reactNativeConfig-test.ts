@@ -130,6 +130,46 @@ describe(createReactNativeConfigAsync, () => {
     `);
   });
 
+  itWithMemoize('should return dependencies sorted by name', async () => {
+    const packageJson = {
+      name: 'test',
+      version: '1.0.0',
+      dependencies: {
+        'react-native-z': '~0.0.1',
+        'react-native': '0.0.1',
+        'react-native-a': '~0.0.2',
+      },
+    };
+
+    vol.fromJSON({
+      '/app/package.json': JSON.stringify(packageJson),
+      '/app/node_modules/react-native/package.json': '',
+      '/app/node_modules/react-native-z/package.json': '',
+      '/app/node_modules/react-native-a/package.json': '',
+    });
+    mockPlatformResolverIos.mockImplementation(async ({ path: packageRoot }) => ({
+      podspecPath: `${packageRoot}/Test.podspec`,
+      version: '1.0.0',
+      configurations: [],
+      scriptPhases: [],
+    }));
+
+    const result = await createReactNativeConfigAsync({
+      appRoot: '/app',
+      sourceDir: undefined,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
+    });
+
+    expect(Object.keys(result.dependencies)).toEqual([
+      'react-native',
+      'react-native-a',
+      'react-native-z',
+    ]);
+  });
+
   itWithMemoize('should return config with local dependencies', async () => {
     const packageJson = {
       name: 'test',

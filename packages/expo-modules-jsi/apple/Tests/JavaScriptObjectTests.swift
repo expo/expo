@@ -238,8 +238,11 @@ struct JavaScriptObjectTests {
     @JavaScriptActor
     func `set property with async function closure`() async throws {
       let object = JavaScriptObject(runtime)
-      object.setProperty("addAsync") { this, arguments async throws in
-        return JavaScriptValue(self.runtime, arguments[0].getInt() + arguments[1].getInt())
+      object.setProperty("addAsync") { this, arguments in
+        let sum = arguments[0].getInt() + arguments[1].getInt()
+        return {
+          return JavaScriptValue(self.runtime, sum)
+        }
       }
       let fn = try object.getPropertyAsFunction("addAsync")
       let result = try await fn.call(arguments: 20, 22).getPromise().await()
@@ -275,7 +278,7 @@ struct JavaScriptObjectTests {
       object.defineProperty("test", descriptor: .init(value: JavaScriptValue(runtime, true)))
       #expect(object.hasProperty("test") == true)
       #expect(object.getProperty("test").getBool() == true)
-      #expect(object.getPropertyNames().contains("test") == false)  // non-enumerable by default
+      #expect(object.getPropertyNames().contains("test") == false) // non-enumerable by default
     }
 
     @Test
@@ -526,7 +529,11 @@ struct JavaScriptObjectTests {
     func `PropertyDescriptor with all properties`() {
       let value = JavaScriptValue(runtime, "test")
       let descriptor = JavaScriptObject.PropertyDescriptor(
-        configurable: true, enumerable: true, writable: true, value: value)
+        configurable: true,
+        enumerable: true,
+        writable: true,
+        value: value
+      )
       let object = descriptor.toObject(runtime)
       #expect(object.hasProperty("configurable") == true)
       #expect(object.getProperty("configurable").getBool() == true)
@@ -541,7 +548,11 @@ struct JavaScriptObjectTests {
     @Test
     func `PropertyDescriptor to object conversion`() {
       let descriptor = JavaScriptObject.PropertyDescriptor(
-        configurable: false, enumerable: true, writable: false, value: JavaScriptValue(runtime, 42))
+        configurable: false,
+        enumerable: true,
+        writable: false,
+        value: JavaScriptValue(runtime, 42)
+      )
       let object = descriptor.toObject(runtime)
       #expect(object.getProperty("enumerable").getBool() == true)
       #expect(object.getProperty("value").getInt() == 42)

@@ -36,6 +36,7 @@ class AudioPlayer(
   player = ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
     .setAudioAttributes(AudioAttributes.DEFAULT, false)
+    .setHandleAudioBecomingNoisy(true)
     .setSeekForwardIncrementMs(SEEK_JUMP_INTERVAL_MS)
     .setSeekBackIncrementMs(SEEK_JUMP_INTERVAL_MS)
     .apply {
@@ -95,6 +96,12 @@ class AudioPlayer(
     ref.setMediaSource(source)
     ref.prepare()
     startUpdating()
+  }
+
+  fun clearMediaSource() {
+    previousPlaybackState = Player.STATE_IDLE
+    ref.pause()
+    ref.clearMediaItems()
   }
 
   override fun onPlaybackStateUpdated(playbackState: Int, justFinished: Boolean) {

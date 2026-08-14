@@ -1,6 +1,6 @@
 {
   "name": "expo-manifests",
-  "version": "56.0.4",
+  "version": "57.0.1",
   "description": "Code to parse and use Expo and Expo Updates manifests.",
   "keywords": [
     "expo",

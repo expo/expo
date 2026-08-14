@@ -3,6 +3,7 @@ title: Camera
 description: A React component that renders a preview for the device's front or back camera.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-camera'
 packageName: 'expo-camera'
+exampleName: 'with-camera'
 iconUrl: '/static/images/packages/expo-camera.png'
 platforms: ['android*', 'ios*', 'web', 'expo-go']
 ---
@@ -76,11 +77,13 @@ You can configure `expo-camera` using its built-in [config plugin](/config-plugi
     {
       name: 'barcodeScannerEnabled',
       description:
-        'A boolean that determines whether to enable barcode scanning support. Disabling this reduces app size when barcode scanning is not needed.',
+        'A boolean that determines whether to enable barcode scanning support. Disabling this reduces app size when barcode scanning is not needed. On Android, this option only takes effect when `expo-camera` builds from source. [Prebuilt modules](/guides/prebuilt-expo-modules/) already include the barcode scanning libraries. To make this option apply, add `expo-camera` to `buildFromSource` in **package.json**.',
       default: 'true',
     },
   ]}
 />
+
+To localize the iOS camera or microphone permission message, add `NSCameraUsageDescription` or `NSMicrophoneUsageDescription` to the `ios` object in each [locale file](/guides/localization/#translating-app-metadata). Keep `cameraPermission` and `microphonePermission` as the default values. Expo writes the localized values to **InfoPlist.strings** during prebuild.
 
 <ConfigReactNative>
 
@@ -130,7 +133,7 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
 
 > **warning** Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
 
-<SnackInline label='Basic Camera Usage' dependencies={['expo-camera']}>
+<SnackInline label='Basic Camera usage' dependencies={['expo-camera']}>
 
 ```tsx
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';

@@ -347,7 +347,8 @@ struct MetricsDatabaseTests {
           routeName: "/home",
           updateId: "update-1",
           params: "{\"k\":1}"
-        ))
+        )
+      )
 
       let row = try #require(try database.getMetrics(sessionId: "s").first)
       #expect(row.id != nil)
@@ -433,7 +434,8 @@ struct MetricsDatabaseTests {
           body: "something exploded",
           attributes: "{\"key\":\"value\"}",
           droppedAttributesCount: 3
-        ))
+        )
+      )
 
       let row = try #require(try database.getLogs(sessionId: "s").first)
       #expect(row.id != nil)

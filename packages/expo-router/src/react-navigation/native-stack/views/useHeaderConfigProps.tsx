@@ -196,10 +196,12 @@ export function useHeaderConfigProps({
   title,
   unstable_headerLeftItems: headerLeftItems,
   unstable_headerRightItems: headerRightItems,
+  unstable_nativeProps,
 }: Props): ScreenStackHeaderConfigProps {
   const { direction } = useLocale();
   const { colors, fonts, dark } = useTheme();
   const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
+  const headerNativeProps = unstable_nativeProps?.headerConfig;
 
   const headerBackTitleStyleFlattened =
     StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
@@ -375,7 +377,7 @@ export function useHeaderConfigProps({
         <>
           {headerLeftElement != null || typeof headerTitle === 'function' ? (
             // The style passed to header left, together with title element being wrapped
-            // in flex view is reqruied for proper header layout, in particular,
+            // in flex view is required for proper header layout, in particular,
             // for the text truncation to work.
             <ScreenStackHeaderLeftView style={!isCenterViewRenderedAndroid ? { flex: 1 } : null}>
               {headerLeftElement}
@@ -475,5 +477,6 @@ export function useHeaderConfigProps({
     headerLeftBarButtonItems: processBarButtonItems(leftItems, colors, fonts),
     headerRightBarButtonItems: processBarButtonItems(rightItems, colors, fonts),
     experimental_userInterfaceStyle: dark ? 'dark' : 'light',
+    ...headerNativeProps,
   } as const;
 }

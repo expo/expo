@@ -5,6 +5,9 @@
 
 #include <TargetConditionals.h>
 
+// `jsi.h` only forward-declares `jsi::Instrumentation`.
+#include <jsi/instrumentation.h>
+
 #include "HostFunctionClosure.h"
 #include "CppError.h"
 #include "IRuntimeCompat.h"
@@ -125,26 +128,41 @@ inline bool isHostObject(jsi::IRuntime &runtime, const jsi::Object &object) {
 
 jsi::Runtime* createHermesRuntime();
 
+/**
+ Destroys a `jsi::Runtime` created by `createHermesRuntime()`. Since the runtime is imported into
+ Swift as an immortal reference type (no ARC-managed lifetime), Swift can't `delete` it directly, so
+ the standalone `JavaScriptRuntime` calls this from its `deinit` to free the runtime it owns. Must
+ not be called on a runtime owned elsewhere (e.g. the React Native-provided one).
+ */
+inline void destroyRuntime(jsi::Runtime &runtime) {
+  delete &runtime;
+}
+
 inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return runtime.evaluateJavaScript(buffer, sourceURL);
   });
 }
 
+// `jsi::Instrumentation` is not imported into Swift, so reach it from here.
+inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
+  runtime.instrumentation().collectGarbage(cause);
+}
+
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.call(runtime, args, count);
   });
 }
 
 inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.callWithThis(runtime, jsThis, args, count);
   });
 }
 
 inline jsi::Value callAsConstructor(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.callAsConstructor(runtime, args, count);
   });
 }

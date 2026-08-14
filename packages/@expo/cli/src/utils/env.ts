@@ -106,9 +106,14 @@ class Env {
     return string('EXPO_PUBLIC_FOLDER', 'public');
   }
 
-  /** Higher priority `$EDIOTR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
+  /** Higher priority `$EDITOR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
   get EXPO_EDITOR(): string {
     return string('EXPO_EDITOR', '');
+  }
+
+  /** Overwrite the hostname used in dev server URLs, disregarding the `--host`, `--lan` and `--localhost` arguments. */
+  get REACT_NATIVE_PACKAGER_HOSTNAME(): string | null {
+    return string('REACT_NATIVE_PACKAGER_HOSTNAME', '')?.trim() || null;
   }
 
   /**
@@ -238,6 +243,11 @@ class Env {
   /** Internal key used to pass eager bundle data from the CLI to the native run scripts during `npx expo run` commands. */
   get __EXPO_EAGER_BUNDLE_OPTIONS() {
     return getOriginalEnvValue('__EXPO_EAGER_BUNDLE_OPTIONS') || '';
+  }
+
+  /** @internal Mode passed to `expo config` or `expo prebuild` by another tool. */
+  get EXPO_CONFIG_MODE(): string | undefined {
+    return getOriginalEnvValue('EXPO_CONFIG_MODE') || undefined;
   }
 
   /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */

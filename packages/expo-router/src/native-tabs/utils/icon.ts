@@ -48,7 +48,7 @@ export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
       }
     };
     loadIcon();
-    // Checking `src` rather then icon here, to avoid unnecessary re-renders
+    // Checking `src` rather than icon here, to avoid unnecessary re-renders
     // The icon object can be recreated, while src should stay the same
     // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
     // So we should be safe with promise resolving

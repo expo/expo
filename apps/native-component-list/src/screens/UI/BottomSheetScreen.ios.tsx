@@ -18,6 +18,7 @@ import {
   pickerStyle,
   presentationDetents,
   presentationDragIndicator,
+  presentationBackground,
   presentationBackgroundInteraction,
   interactiveDismissDisabled,
   tag,
@@ -38,6 +39,8 @@ export default function BottomSheetScreen() {
   const [showBasic, setShowBasic] = React.useState(false);
 
   const [showFitsContent, setShowFitsContent] = React.useState(false);
+
+  const [showBackgroundColor, setShowBackgroundColor] = React.useState(false);
 
   const [showConfigured, setShowConfigured] = React.useState(false);
   const [useMedium, setUseMedium] = React.useState(true);
@@ -93,7 +96,23 @@ export default function BottomSheetScreen() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="Basic">
-          <Button label="Open Basic Sheet" onPress={() => setShowBasic(true)} />
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            The open button is passed as the `anchor` prop
+          </Text>
+          <BottomSheet
+            isPresented={showBasic}
+            onIsPresentedChange={setShowBasic}
+            anchor={<Button label="Open Basic Sheet" onPress={() => setShowBasic(true)} />}>
+            <Group modifiers={[presentationDetents(['medium', 'large'])]}>
+              <VStack modifiers={[padding({ all: 20 })]}>
+                <Text>Basic Bottom Sheet</Text>
+                <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+                  Swipe down or tap outside to dismiss
+                </Text>
+                <Button label="Close" onPress={() => setShowBasic(false)} />
+              </VStack>
+            </Group>
+          </BottomSheet>
         </Section>
 
         <Section title="Fits Content">
@@ -101,6 +120,17 @@ export default function BottomSheetScreen() {
             Sheet automatically sizes to fit its content
           </Text>
           <Button label="Open Fits Content Sheet" onPress={() => setShowFitsContent(true)} />
+        </Section>
+
+        <Section title="Solid Background Color">
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            presentationBackground paints a solid sheet color and disables the translucent (Liquid
+            Glass) material
+          </Text>
+          <Button
+            label="Open Solid Background Sheet"
+            onPress={() => setShowBackgroundColor(true)}
+          />
         </Section>
 
         <Section title="Configured Sheet">
@@ -158,19 +188,6 @@ export default function BottomSheetScreen() {
         </Section>
       </Form>
 
-      {/* Basic Sheet */}
-      <BottomSheet isPresented={showBasic} onIsPresentedChange={setShowBasic}>
-        <Group modifiers={[presentationDetents(['medium', 'large'])]}>
-          <VStack modifiers={[padding({ all: 20 })]}>
-            <Text>Basic Bottom Sheet</Text>
-            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
-              Swipe down or tap outside to dismiss
-            </Text>
-            <Button label="Close" onPress={() => setShowBasic(false)} />
-          </VStack>
-        </Group>
-      </BottomSheet>
-
       {/* Fits Content Sheet */}
       <BottomSheet
         isPresented={showFitsContent}
@@ -183,6 +200,20 @@ export default function BottomSheetScreen() {
               This sheet sizes to fit its content automatically
             </Text>
             <Button label="Close" onPress={() => setShowFitsContent(false)} />
+          </VStack>
+        </Group>
+      </BottomSheet>
+
+      {/* Solid Background Color Sheet */}
+      <BottomSheet isPresented={showBackgroundColor} onIsPresentedChange={setShowBackgroundColor}>
+        <Group
+          modifiers={[presentationDetents(['medium', 'large']), presentationBackground('#ffffff')]}>
+          <VStack modifiers={[padding({ all: 20 })]}>
+            <Text modifiers={[foregroundStyle('#000000')]}>Solid white sheet background</Text>
+            <Text modifiers={[foregroundStyle('#666666')]}>
+              presentationBackground replaces the default translucent material
+            </Text>
+            <Button label="Close" onPress={() => setShowBackgroundColor(false)} />
           </VStack>
         </Group>
       </BottomSheet>

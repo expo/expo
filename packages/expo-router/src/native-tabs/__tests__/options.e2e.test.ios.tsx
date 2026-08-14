@@ -55,11 +55,11 @@ it('can pass props via unstable_nativeProps', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+  expect(TabsScreen).toHaveBeenCalledTimes(4);
+  expect(TabsScreen.mock.calls[2][0]).toMatchObject({
     ...indexOptions,
   });
-  expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+  expect(TabsScreen.mock.calls[3][0]).toMatchObject({
     ...secondOptions,
   });
 });
@@ -102,7 +102,7 @@ it('when no options are passed, default ones are used', () => {
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
     hidden: false,
     specialEffects: {},
-    screenKey: expect.stringMatching(/^index-[-\w]+/),
+    screenKey: 'index',
     children: expect.objectContaining({}),
   } as TabsScreenProps);
 });
@@ -160,6 +160,26 @@ describe('disabled', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalled();
     expect(TabsScreen.mock.calls.at(-1)![0].preventNativeSelection).toBe(false);
+  });
+});
+
+describe('testID and accessibilityLabel', () => {
+  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0]).toMatchObject({
+      tabBarItemTestID: 'home-tab',
+      tabBarItemAccessibilityLabel: 'Home tab',
+    } as TabsScreenProps);
   });
 });
 
@@ -374,8 +394,8 @@ describe('Icons', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen.mock.calls[2][0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -386,7 +406,7 @@ describe('Icons', () => {
         },
       },
     } as Partial<TabsScreenProps>);
-    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[3][0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -603,9 +623,9 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('one')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0].title).toBe('index');
-    expect(TabsScreen.mock.calls[1][0].title).toBe('one');
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen.mock.calls[2][0].title).toBe('index');
+    expect(TabsScreen.mock.calls[3][0].title).toBe('one');
   });
 
   it('uses last Label value when multiple are provided', () => {
@@ -702,8 +722,8 @@ describe('Label', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen.mock.calls[2][0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -715,7 +735,7 @@ describe('Label', () => {
         },
       },
     } as Partial<TabsScreenProps>);
-    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[3][0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -772,8 +792,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(TabsScreen).toHaveBeenCalledTimes(2);
-      expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      expect(TabsScreen).toHaveBeenCalledTimes(4);
+      expect(TabsScreen.mock.calls[2][0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
           repeatedTabSelection: {
@@ -781,7 +801,7 @@ describe('Tab options', () => {
           },
         },
       } as TabsScreenProps);
-      expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+      expect(TabsScreen.mock.calls[3][0]).toMatchObject({
         title: 'One',
         specialEffects: {
           repeatedTabSelection: {
@@ -833,8 +853,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(TabsScreen).toHaveBeenCalledTimes(2);
-      expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      expect(TabsScreen).toHaveBeenCalledTimes(4);
+      expect(TabsScreen.mock.calls[2][0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
           repeatedTabSelection: {
@@ -842,7 +862,7 @@ describe('Tab options', () => {
           },
         },
       } as TabsScreenProps);
-      expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+      expect(TabsScreen.mock.calls[3][0]).toMatchObject({
         title: 'One',
         specialEffects: {
           repeatedTabSelection: {
@@ -896,7 +916,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: 'index',
       children: expect.objectContaining({}),
       ios: {
         icon: undefined,
@@ -907,7 +927,7 @@ describe('Dynamic options', () => {
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: 'index',
       children: expect.objectContaining({}),
       ios: {
         icon: undefined,
@@ -939,7 +959,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: 'index',
       ios: {
         icon: undefined,
         selectedIcon: undefined,
@@ -949,7 +969,7 @@ describe('Dynamic options', () => {
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: 'index',
       badgeValue: '5',
       ios: {
         icon: {
@@ -1004,13 +1024,13 @@ describe('Dynamic options', () => {
       },
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: 'index',
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: 'index',
       badgeValue: '5',
       ios: {
         icon: {
@@ -1055,13 +1075,13 @@ describe('Dynamic options', () => {
         },
       },
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: 'index',
     } as TabsScreenProps);
     expect(TabsScreen.mock.calls[1][0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: 'index',
       badgeValue: '5',
       ios: {
         icon: {
@@ -1137,22 +1157,22 @@ describe('Dynamic options', () => {
     // Tab + preview
     expect(screen.getAllByTestId('second')).toHaveLength(2);
     expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen.mock.calls[2][0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^index-[-\w]+/),
+      screenKey: 'index',
       ios: {
         icon: undefined,
         selectedIcon: undefined,
       },
     } as TabsScreenProps);
-    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[3][0]).toMatchObject({
       title: 'Second',
       hidden: false,
       specialEffects: {},
-      screenKey: expect.stringMatching(/^second-[-\w]+/),
+      screenKey: 'second',
       ios: {
         icon: undefined,
         selectedIcon: undefined,

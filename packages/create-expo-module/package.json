@@ -1,6 +1,6 @@
 {
   "name": "create-expo-module",
-  "version": "56.0.3",
+  "version": "57.0.0",
   "description": "The script to create the Expo module",
   "keywords": [
     "expo",
@@ -59,7 +59,7 @@
     "ejs": "^3.1.10",
     "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
-    "multitars": "^1.0.0",
+    "multitars": "^1.0.2",
     "ora": "^5.4.1",
     "prompts": "^2.4.2",
     "validate-npm-package-name": "^6.0.2"

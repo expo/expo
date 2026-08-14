@@ -22,10 +22,13 @@ import java.lang.ref.WeakReference
 import java.lang.reflect.Proxy
 
 class DevMenuDevToolsDelegate(
-  private val weakDevSupportManager: WeakReference<out DevSupportManager>
+  private val devSupportManagerProvider: () -> DevSupportManager?
 ) {
+  constructor(weakDevSupportManager: WeakReference<out DevSupportManager>) :
+    this({ weakDevSupportManager.get() })
+
   private val devSupportManager: DevSupportManager?
-    get() = weakDevSupportManager.get()
+    get() = devSupportManagerProvider()
 
   private val currentActivity: Activity?
     get() = devSupportManager?.currentActivity
@@ -116,18 +119,29 @@ class DevMenuDevToolsDelegate(
     }
   }
 
+  private fun getDevServerHost(): String? {
+    val sourceUri = reactContext?.sourceURL?.toUri()
+    val scheme = sourceUri?.scheme
+    // A bundle loaded from disk has no reachable origin.
+    if (sourceUri != null && (scheme == "http" || scheme == "https")) {
+      sourceUri.authority?.let { authority ->
+        return "$scheme://$authority"
+      }
+    }
+    val debugServerHost = devSettings?.packagerConnectionSettings?.debugServerHost ?: return null
+    return "http://$debugServerHost"
+  }
+
   @OptIn(DelicateCoroutinesApi::class)
   fun openJSInspector() {
-    val devSettings = devSettings ?: return
     val context = context ?: return
-
-    val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
+    val devServerHost = getDevServerHost() ?: return
 
     // We can use GlobalScope here because this operation is not tied to any specific lifecycle.
     // We just want to fire and forget.
     GlobalScope.launch(Dispatchers.Default) {
       try {
-        DevMenuMetroClient.openJSInspector(metroHost, context.packageName)
+        DevMenuMetroClient.openJSInspector(devServerHost, context.packageName)
       } catch (e: Exception) {
         Log.w("DevMenu", "Unable to open js inspector: ${e.message}", e)
       }

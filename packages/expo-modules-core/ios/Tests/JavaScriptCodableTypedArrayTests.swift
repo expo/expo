@@ -139,4 +139,49 @@ struct JavaScriptCodableTypedArrayTests {
     #expect(decoded.kind == .Uint8Array)
     #expect(decoded[0] == 5)
   }
+
+  // MARK: - Remaining concrete kinds
+
+  @Test
+  func `decodes the remaining concrete kinds`() throws {
+    let runtime = try runtime
+    #expect(try Int8Array.decode(runtime.eval("new Int8Array([1])"), in: runtime).kind == .Int8Array)
+    #expect(try Uint16Array.decode(runtime.eval("new Uint16Array([1])"), in: runtime).kind == .Uint16Array)
+    #expect(try Uint32Array.decode(runtime.eval("new Uint32Array([1])"), in: runtime).kind == .Uint32Array)
+    #expect(try BigUint64Array.decode(runtime.eval("new BigUint64Array([1n])"), in: runtime).kind == .BigUint64Array)
+  }
+
+  @Test
+  func `decodes a Uint8ClampedArray distinctly from a Uint8Array`() throws {
+    // `Uint8ClampedArray` shares the `UInt8` element type with `Uint8Array`, so its `.kind` is the only
+    // thing distinguishing the two — a copy/paste kind bug would surface here.
+    let runtime = try runtime
+    let decoded = try Uint8ClampedArray.decode(runtime.eval("new Uint8ClampedArray([1, 2])"), in: runtime)
+    #expect(decoded.kind == .Uint8ClampedArray)
+  }
+
+  // MARK: - Element fidelity
+
+  @Test
+  func `decodes signed and wide integer boundary values`() throws {
+    let runtime = try runtime
+    let int8 = try Int8Array.decode(runtime.eval("new Int8Array([-128, 127])"), in: runtime)
+    #expect(int8[0] == -128)
+    #expect(int8[1] == 127)
+    let uint32 = try Uint32Array.decode(runtime.eval("new Uint32Array([4294967295])"), in: runtime)
+    #expect(uint32[0] == 4_294_967_295)
+    let bigInt64 = try BigInt64Array.decode(runtime.eval("new BigInt64Array([-9223372036854775808n])"), in: runtime)
+    #expect(bigInt64[0] == Int64.min)
+  }
+
+  // MARK: - Empty typed array
+
+  @Test
+  func `decodes an empty typed array`() throws {
+    // An empty typed array has no backing storage; the decode must not dereference a nil base address.
+    let runtime = try runtime
+    let decoded = try Uint8Array.decode(runtime.eval("new Uint8Array([])"), in: runtime)
+    #expect(decoded.kind == .Uint8Array)
+    #expect(decoded.length == 0)
+  }
 }

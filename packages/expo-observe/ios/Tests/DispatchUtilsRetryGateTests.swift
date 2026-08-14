@@ -29,7 +29,7 @@ struct DispatchUtilsRetryGateTests {
       backoff: stubbedBackoff
     )
     #expect(next.consecutiveRetryableFailures == 0)
-    #expect(next.dispatchAfterDate == state.dispatchAfterDate)  // untouched
+    #expect(next.dispatchAfterDate == state.dispatchAfterDate) // untouched
   }
 
   /// `.partialSuccess` is treated the same as success for gate purposes: the bytes landed on

@@ -3,6 +3,7 @@ export type PageMetadata = {
   description?: string;
   sourceCodeUrl?: string;
   packageName?: string;
+  exampleName?: string;
   cliVersion?: string;
   maxHeadingDepth?: number;
   iconUrl?: string;

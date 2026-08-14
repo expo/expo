@@ -55,10 +55,11 @@
   // runtime scheduler + dispatch trampoline alongside the runtime pointer.
   auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(runtime);
   auto scheduler = binding ? binding->getRuntimeScheduler() : nullptr;
+  void *schedulerHandle = expo::createReactSchedulerHandle(scheduler);
 
   [appContext setRuntime:&runtime
-               scheduler:scheduler.get()
-                dispatch:scheduler ? reinterpret_cast<const void *>(&expo::dispatchOnReactScheduler) : nullptr];
+               scheduler:schedulerHandle
+                dispatch:schedulerHandle ? reinterpret_cast<const void *>(&expo::dispatchOnReactScheduler) : nullptr];
   [appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
   [appContext registerNativeModules];

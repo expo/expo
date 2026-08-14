@@ -2,15 +2,6 @@
 
 import Foundation
 
-/// Represents the parsed source map from Metro bundler
-struct SourceMap: Codable {
-  let version: Int
-  let sources: [String]
-  let sourcesContent: [String?]?
-  let mappings: String
-  let names: [String]
-}
-
 /// Represents a node in the file tree (file or directory)
 struct FileTreeNode: Identifiable, Hashable {
   var id: String { path }
@@ -18,17 +9,15 @@ struct FileTreeNode: Identifiable, Hashable {
   let path: String
   let isDirectory: Bool
   var children: [FileTreeNode]
-  let contentIndex: Int?
 
   let searchableName: String
   let searchablePath: String
 
-  init(name: String, path: String, isDirectory: Bool, children: [FileTreeNode] = [], contentIndex: Int? = nil) {
+  init(name: String, path: String, isDirectory: Bool, children: [FileTreeNode] = []) {
     self.name = name
     self.path = path
     self.isDirectory = isDirectory
     self.children = children
-    self.contentIndex = contentIndex
     self.searchableName = name.lowercased()
     self.searchablePath = path.lowercased()
   }
@@ -46,7 +35,7 @@ struct FileTreeNode: Identifiable, Hashable {
 enum SourceMapLoadingState {
   case idle
   case loading
-  case loaded(SourceMap)
+  case loaded
   case error(SourceMapError)
 }
 
@@ -59,6 +48,8 @@ enum SourceMapError: Error, LocalizedError {
   case httpError(Int)
   case noSourceMapFound
   case invalidInlineSourceMap
+  case invalidSnackId(String)
+  case hermesBytecodeBundle
 
   var errorDescription: String? {
     switch self {
@@ -76,6 +67,10 @@ enum SourceMapError: Error, LocalizedError {
       return "No source map found. Enable inline source maps in your Metro config or ensure the bundle is stored locally."
     case .invalidInlineSourceMap:
       return "Found inline source map but failed to decode it."
+    case .invalidSnackId(let id):
+      return "The Snack ID \"\(id)\" from the project link isn't a valid identifier, so its code can't be fetched. Check the link or QR code used to open this Snack."
+    case .hermesBytecodeBundle:
+      return "This project is running compiled Hermes bytecode, which has no readable source. Publish the update with plain JavaScript and inline source maps (eas update --no-bytecode --source-maps inline) to view its source here."
     }
   }
 }

@@ -1,7 +1,6 @@
-import AntDesign from '@expo/vector-icons/AntDesign';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Slider from '@react-native-community/slider';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
 import {
   BarcodeScanningResult,
   CameraView,
@@ -15,9 +14,14 @@ import {
   VideoStabilization,
 } from 'expo-camera';
 import * as FileSystem from 'expo-file-system/legacy';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Dimensions, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import {
+  GestureDetector,
+  useCompetingGestures,
+  useLongPressGesture,
+  useTapGesture,
+} from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import GalleryScreen from './GalleryScreen';
@@ -78,36 +82,28 @@ interface State {
 }
 
 function Gestures({ children }: { children: React.ReactNode }) {
-  const doubleTapGesture = useMemo(
-    () =>
-      Gesture.Tap()
-        .numberOfTaps(2)
-        .maxDuration(250)
-        .onStart(() => {
-          console.log('doubleTapGesture > onStart');
-        }),
-    []
-  );
+  const doubleTapGesture = useTapGesture({
+    numberOfTaps: 2,
+    maxDuration: 250,
+    onActivate: () => {
+      console.log('doubleTapGesture > onActivate');
+    },
+  });
 
-  const longPressGesture = useMemo(
-    () =>
-      Gesture.LongPress()
-        .minDuration(750)
-        .onStart(() => {
-          console.log('longPressGesture > onStart');
-        }),
-    []
-  );
+  const longPressGesture = useLongPressGesture({
+    minDuration: 750,
+    onActivate: () => {
+      console.log('longPressGesture > onActivate');
+    },
+  });
+
+  const gesture = useCompetingGestures(doubleTapGesture, longPressGesture);
 
   if (Platform.OS === 'web') {
     return children;
   }
 
-  return (
-    <GestureDetector gesture={Gesture.Race(doubleTapGesture, longPressGesture)}>
-      {children}
-    </GestureDetector>
-  );
+  return <GestureDetector gesture={gesture}>{children}</GestureDetector>;
 }
 
 export default function CameraScreen() {
@@ -378,9 +374,9 @@ export default function CameraScreen() {
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={updatePreviewState}>
         {state.previewPaused ? (
-          <AntDesign name="play-circle" size={24} color="white" />
+          <Ionicons name="play-circle" size={24} color="white" />
         ) : (
-          <AntDesign name="pause-circle" size={24} color="white" />
+          <Ionicons name="pause-circle" size={24} color="white" />
         )}
       </TouchableOpacity>
       <TouchableOpacity style={styles.toggleButton} onPress={toggleMoreOptions}>
@@ -472,21 +468,12 @@ export default function CameraScreen() {
 
   const renderBarcode = () => (
     <View style={styles.barcode} pointerEvents="none">
-      <Animated.View style={barcodeOverlayStyle}>
-        <Text
-          style={{
-            position: 'absolute',
-            bottom: '100%',
-            left: 0,
-            color: 'black',
-            fontSize: 12,
-            fontWeight: 'bold',
-            paddingHorizontal: 4,
-            paddingVertical: 2,
-          }}>
-          {barcodeData}
-        </Text>
-      </Animated.View>
+      <Animated.View style={barcodeOverlayStyle} />
+      {barcodeData ? (
+        <View style={styles.barcodeDataLabel}>
+          <Text style={styles.barcodeDataText}>{barcodeData}</Text>
+        </View>
+      ) : null}
     </View>
   );
 
@@ -514,7 +501,7 @@ export default function CameraScreen() {
             videoStabilizationMode={state.videoStabilizationMode}
             onMountError={handleMountError}
             barcodeScannerSettings={{
-              barcodeTypes: ['qr', 'pdf417'],
+              barcodeTypes: ['pdf417', 'codabar', 'code39'],
             }}
             onBarcodeScanned={state.barcodeScanning ? onBarcodeScanned : undefined}
           />
@@ -647,5 +634,24 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+  },
+  barcodeDataLabel: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  barcodeDataText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    overflow: 'hidden',
   },
 });

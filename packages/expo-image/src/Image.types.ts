@@ -11,6 +11,7 @@ import type {
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type ExpoImage from './ExpoImage';
+import type { ExpoImageIntegrationConfig } from './observe';
 
 export type ImageSource = {
   /**
@@ -435,6 +436,8 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    *
    * Set this prop to `false` to use the official standard-compliant [libwebp](https://github.com/webmproject/libwebp) codec for WebP images.
    * The default implementation from Apple is faster and uses less memory but may render animated images with incorrect blending or play them at the wrong framerate.
+   * Some animated WebP files also decode very slowly with Apple's codec, which can make the image take a long time to appear and keep a CPU core busy while it loads.
+   * If you run into that, try setting this prop to `false` to switch to libwebp instead.
    * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
    *
    * @default true
@@ -722,6 +725,39 @@ export type ImageTransition = {
     | 'sf:up-up'
     | 'sf:off-up'
     | null;
+
+  /**
+   * Skips the transition when an image first appears from a cache hit. Already-cached images are
+   * then shown instantly instead of re-animating on every mount, tab change, or scroll back into
+   * view.
+   *
+   * This only affects the first appearance of an image in a view. A later `source` change on a
+   * populated view always plays its transition. A visible placeholder still counts as the first
+   * appearance.
+   *
+   * - `'none'` - The transition always plays. This is the default.
+   * - `'memory'` - Skips the transition for images served from the in-memory cache.
+   * - `'all'` - Skips it for any cache hit, so only uncached (typically network) loads animate.
+   *
+   * Locally bundled assets are always instantly available, so both `'memory'` and `'all'` treat
+   * them as in-memory cache hits and skip their transition.
+   *
+   * @example
+   * ```tsx
+   * // Fade a list item in the first time it loads, but show it instantly
+   * // when it scrolls back into view.
+   * <Image
+   *   source={item.uri}
+   *   recyclingKey={item.id}
+   *   transition={{ duration: 300, skipOnCacheHit: 'all' }}
+   * />
+   * ```
+   *
+   * @default 'none'
+   * @platform android
+   * @platform ios
+   */
+  skipOnCacheHit?: 'none' | 'memory' | 'all' | null;
 };
 
 export type ImageLoadEventData = {
@@ -834,7 +870,7 @@ export declare class ImageNativeModule extends NativeModule<ImageModuleEvents> {
 }
 
 /**
- * An object with options for the [`useImage`](#useimage) hook.
+ * An object with options for the [`useImage`](#useimagesource-options-dependencies) hook.
  */
 export type ImageLoadOptions = {
   /**
@@ -885,3 +921,16 @@ export type ImageCacheConfig = {
    */
   maxMemoryCount?: number;
 };
+
+// Register the `'expo-image'` key on expo-observe's open `ObserveIntegrationsConfig` interface via
+// declaration merging, so `Observe.configure({ integrations: { 'expo-image': ... } })` is suggested
+// and type-checked. The config type itself lives in `observe.ts` (imported at the top of this file).
+// This augmentation lives here, not in `observe.ts`, because `index.ts` reaches `observe.ts` only
+// through a runtime value import that is elided from the emitted `index.d.ts` — so an augmentation
+// there would not ship to consumers. `Image.types.ts` is re-exported via `export *`, which survives
+// declaration emit, so the augmentation is always in the package's public type graph.
+declare module 'expo-observe' {
+  interface ObserveIntegrationsConfig {
+    'expo-image'?: boolean | ExpoImageIntegrationConfig;
+  }
+}

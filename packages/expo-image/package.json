@@ -1,6 +1,6 @@
 {
   "name": "expo-image",
-  "version": "56.0.9",
+  "version": "57.0.1",
   "description": "A cross-platform, performant image component for React Native and Expo with Web support",
   "keywords": [
     "react-native"
@@ -47,7 +47,9 @@
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo-app-metrics": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "expo-observe": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

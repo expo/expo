@@ -23,4 +23,10 @@ class CameraExceptions {
     CodedException("Google Play Services is not available on this device. This feature requires Google Play Services.")
 
   class WriteImageException(cause: String?) : CodedException("Writing image has failed: $cause")
+
+  class DocumentScannerUnavailableException :
+    CodedException("Document scanning is unavailable. It requires Google Play Services and the ML Kit document scanner module. Check `CameraView.isDocumentScannerAvailable` before calling `scanDocumentAsync`.")
+
+  class DocumentScanningFailedException(cause: String?) :
+    CodedException("Document scanning failed: $cause")
 }

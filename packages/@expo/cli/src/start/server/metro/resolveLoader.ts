@@ -2,6 +2,13 @@ import type { RouteNode } from 'expo-router/build/Route';
 import type { RouteInfo, RoutesManifest } from 'expo-server/private';
 
 /**
+ * An allowlist of loader `Response` headers that are written to the export
+ * manifest as `pageHeaders` rules during `expo export`. In development, they
+ * are forwarded on the loader response, matching static exports.
+ */
+export const SSG_LOADER_HEADER_ALLOWLIST = ['Cache-Control'];
+
+/**
  * Unified route information needed for loader execution
  */
 export interface ResolvedLoaderRoute {

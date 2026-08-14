@@ -14,7 +14,9 @@ class UriExtractor {
   }
 
   private static func extract(fromImage phAsset: PHAsset) async throws -> URL {
-    let result = try await phAsset.requestContentEditingInput()
+    let options = PHContentEditingInputRequestOptions()
+    options.isNetworkAccessAllowed = true
+    let result = try await phAsset.requestContentEditingInput(options: options)
     guard let contentEditingInput = result.input else {
       throw FailedToExtractUri("Missing content editing input for image")
     }
@@ -27,6 +29,7 @@ class UriExtractor {
   private static func extract(fromVideo phAsset: PHAsset) async throws -> URL {
     let options = PHVideoRequestOptions()
     options.version = .original
+    options.isNetworkAccessAllowed = true
     let result = try await PHImageManager.default()
       .requestAVAsset(forVideo: phAsset, options: options)
     guard let avAsset = result.asset else {

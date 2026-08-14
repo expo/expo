@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 57.0.4 - 2026-07-22
+
+### 💡 Others
+
+- Engage Node.js `stripTypeScriptTypes` fallback when `typescript@^7.0.0` is installed ([#47759](https://github.com/expo/expo/pull/47759) by [@kitten](https://github.com/kitten))
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-03
+
+### 🐛 Bug fixes
+
+- Automatically switch to ESM mode when evaluated module contains non-qualifying module syntax, like `import.meta` or top-level await ([#47441](https://github.com/expo/expo/pull/47441) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Annotate more top-level errors when evaluating modules ([#47441](https://github.com/expo/expo/pull/47441) by [@kitten](https://github.com/kitten))
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
 ## 56.1.3 — 2026-05-23
 
 _This version does not introduce any user-facing changes._

@@ -174,6 +174,16 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    */
   disabled?: boolean;
   /**
+   * @platform android
+   * @platform iOS
+   */
+  tabBarItemTestID?: string;
+  /**
+   * @platform android
+   * @platform iOS
+   */
+  tabBarItemAccessibilityLabel?: string;
+  /**
    * @platform iOS
    */
   specialEffects?: TabsScreenProps['specialEffects'];
@@ -307,6 +317,8 @@ export interface NativeTabsProps extends PropsWithChildren {
   tintColor?: ColorValue;
   /**
    * The background color of the tab bar.
+   *
+   * On iOS 26 and later, the system draws the tab bar background and this prop has no effect.
    */
   backgroundColor?: ColorValue;
   /**
@@ -345,11 +357,15 @@ export interface NativeTabsProps extends PropsWithChildren {
   /**
    * The blur effect applied to the tab bar.
    *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
+   *
    * @platform iOS
    */
   blurEffect?: NativeTabsBlurEffect;
   /**
    * The color of the shadow.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
    *
@@ -367,6 +383,8 @@ export interface NativeTabsProps extends PropsWithChildren {
   };
   /**
    * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * @platform iOS
    */
@@ -520,7 +538,6 @@ export interface NativeTabsViewProps extends Omit<
 
 export interface NativeTabsViewTabItem {
   options: NativeTabOptions;
-  routeKey: string;
   name: string;
   contentRenderer: () => React.ReactNode;
 }
@@ -616,6 +633,27 @@ export interface NativeTabTriggerProps {
    */
   disabled?: boolean;
   /**
+   * A test identifier for the tab bar item.
+   *
+   * On iOS it maps to the item's accessibility identifier, which XCUITest and Maestro match.
+   * On Android it maps to the item's view tag, which Espresso-based drivers like Detox read
+   * but Maestro and Appium do not. Use `accessibilityLabel` to match the tab by id there.
+   *
+   * @platform android
+   * @platform iOS
+   */
+  testID?: string;
+  /**
+   * The accessibility label of the tab bar item, announced by screen readers.
+   * Defaults to the visible tab label.
+   *
+   * On Android, maps to the item's `contentDescription` and requires API 26 or above.
+   *
+   * @platform android
+   * @platform iOS
+   */
+  accessibilityLabel?: string;
+  /**
    * The children of the trigger.
    *
    * Use `Icon`, `Label`, and `Badge` components to customize the tab.
@@ -658,6 +696,8 @@ export interface NativeTabTriggerProps {
   contentStyle?: NativeTabOptions['contentStyle'];
   /**
    * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+   *
+   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
    *
    * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
    *

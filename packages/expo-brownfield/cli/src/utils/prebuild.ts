@@ -17,14 +17,24 @@ export const validatePrebuild = async (
 
   if (!checkPrebuild(platform)) {
     console.info(`${chalk.yellow(`⚠ Prebuild for platform: ${platform} is missing`)}`);
-    const response = await prompts({
-      type: 'confirm',
-      name: 'shouldRunPrebuild',
-      message: 'Do you want to run the prebuild now?',
-      initial: false,
-    });
 
-    if (response.shouldRunPrebuild) {
+    let shouldRunPrebuild: boolean;
+    if (isInteractive()) {
+      const response = await prompts({
+        type: 'confirm',
+        name: 'shouldRunPrebuild',
+        message: 'Do you want to run the prebuild now?',
+        initial: false,
+      });
+      shouldRunPrebuild = !!response.shouldRunPrebuild;
+    } else {
+      console.info(
+        `Non-interactive shell detected; running \`npx expo prebuild --platform ${platform}\` automatically`
+      );
+      shouldRunPrebuild = true;
+    }
+
+    if (shouldRunPrebuild) {
       await withSpinner({
         operation: () => spawnAsync('npx', ['expo', 'prebuild', '--platform', platform]),
         loaderMessage: `Running 'npx expo prebuild' for platform: ${platform}...`,
@@ -108,4 +118,8 @@ export const validatePackageInstalled = (): void => {
 const checkPrebuild = (platform: Platform): boolean => {
   const nativeDirectory = path.join(process.cwd(), platform);
   return fs.existsSync(nativeDirectory);
+};
+
+const isInteractive = (): boolean => {
+  return !!process.stdin.isTTY && !!process.stdout.isTTY;
 };

@@ -1,0 +1,98 @@
+---
+title: Custom functions in EAS Workflows
+sidebar_title: Custom functions
+description: Learn how to define reusable step sequences with custom functions.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+Custom functions define reusable step sequences for custom jobs and hooks. You can call them with a relative path using [`uses`](/eas/workflows/syntax/#jobsjob_idstepsstepuses), like built-in functions. Each custom function defines its steps under `runs.steps` in a **function.yml** or **function.yaml** file. These steps use the same format as [custom job steps](/eas/workflows/syntax/#custom-jobs).
+
+For the **function.yml** schema, see [Custom functions](/eas/workflows/syntax/#custom-functions) in the syntax reference.
+
+## How it works
+
+Create a directory for your custom function with a **function.yml** file inside it. EAS Workflows also accepts **function.yaml**. EAS Workflows resolves the path you pass to `uses` relative to your EAS project directory:
+
+<FileTree
+  files={[
+    'my-app/.eas/workflows/publish-preview-update.yml',
+    'my-app/.eas/functions/setup/function.yml',
+    'my-app/eas.json',
+  ]}
+/>
+
+The **.eas/functions/&lt;name&gt;** path in the example above is only one option. The `uses` value must start with `./` or `../` and point to a directory containing a **function.yml** or **function.yaml** file. A path that starts with `../` can point outside the EAS project directory, but the custom function must remain within the repository.
+
+A relative `working_directory` on a step inside the custom function resolves from the job's default working directory, not the directory containing **function.yml**.
+
+You can use custom functions in:
+
+- Custom job [`steps`](/eas/workflows/syntax/#jobsjob_idsteps)
+- Build job [`steps`](/eas/workflows/syntax/#jobsjob_idsteps)
+- Job [`hooks`](/eas/workflows/syntax/#jobsjob_idhooks) and [`defaults.hooks`](/eas/workflows/syntax/#defaultshooks)
+
+## Inputs, outputs and scope
+
+Pass inputs at the call site with `with:`. Inside the function, read an input with `${{ inputs.<name> }}`.
+
+Define function outputs with `outputs` in **function.yml**. EAS Workflows exposes each output as a string. Read outputs as `${{ steps.<call_id>.outputs.<name> }}`. Use the `id` from the call step. The caller cannot reference the function's internal step identifiers.
+
+Expressions use the following scopes:
+
+- Inside the function, `steps.*` references resolve against the function's own steps.
+- EAS Workflows evaluates the call step's `with`, `env`, and `if` values in the caller's scope.
+- Every step in the function inherits the call step's `env` values. In nested calls, inner values override outer values with the same name.
+- EAS Workflows evaluates input defaults and expressions inside the function in the function's scope.
+- The call step's `if` gates the whole function as a single unit.
+
+## Nesting
+
+A custom function can call other custom functions and built-in `eas/*` functions. Currently, custom functions cannot call `eas/build` or `eas/maestro_test`. EAS Workflows resolves every nested path relative to the EAS project directory, not the directory containing the calling function.
+
+You can nest custom functions up to 10 levels deep. A custom function cannot call itself, either directly or through other custom functions.
+
+## Example
+
+**.eas/functions/greet/function.yml** defines a custom function with one input, one output, and one step:
+
+```yaml .eas/functions/greet/function.yml
+name: Greet
+inputs:
+  - name: who
+    default_value: world
+outputs:
+  message:
+    value: '${{ steps.make.outputs.message }}'
+runs:
+  steps:
+    - id: make
+      run: set-output message "Hello, ${{ inputs.who }}!"
+```
+
+A workflow calls it with `uses: ./.eas/functions/greet`, passes an input with `with:`, and reads the output from `${{ steps.greet.outputs.message }}`:
+
+```yaml .eas/workflows/hello.yml
+name: Hello
+jobs:
+  greet:
+    steps:
+      - id: greet
+        uses: ./.eas/functions/greet
+        with:
+          who: Expo
+      - run: echo "${{ steps.greet.outputs.message }}"
+```
+
+You can also call a custom function from a [hook](/eas/workflows/syntax/#jobsjob_idhooks):
+
+```yaml .eas/workflows/build.yml
+jobs:
+  build_ios:
+    type: build
+    params:
+      platform: ios
+    hooks:
+      before_install_node_modules:
+        - uses: ./.eas/functions/setup
+```

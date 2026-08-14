@@ -15,7 +15,6 @@ describe(useRootNavigationState, () => {
     expect(result.current).toEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -46,7 +45,11 @@ describe(useRootNavigationState, () => {
 
     renderRouter({
       _layout: () => <Stack />,
-      '(app)/_layout': () => <Tabs />,
+      '(app)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+        </Tabs>
+      ),
       '(app)/index': function Index() {
         fn(useRootNavigationState());
         return <Text>Index</Text>;
@@ -56,7 +59,6 @@ describe(useRootNavigationState, () => {
     expect(fn).toHaveBeenCalledWith({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -101,7 +103,6 @@ describe(useRootNavigationState, () => {
     expect(fn).toHaveBeenCalledWith({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -131,7 +132,11 @@ describe(useRootNavigationState, () => {
       _layout: () => <Stack />,
       '(app)/_layout': function Layout() {
         fn(useRootNavigationState());
-        return <Tabs />;
+        return (
+          <Tabs>
+            <Tabs.Screen name="index" />
+          </Tabs>
+        );
       },
       '(app)/index': () => <Text>Index</Text>,
     });
@@ -139,7 +144,6 @@ describe(useRootNavigationState, () => {
     expect(fn).toHaveBeenCalledWith({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
