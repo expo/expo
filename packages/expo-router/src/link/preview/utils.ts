@@ -3,9 +3,9 @@ import { findDivergentState } from '../../global-state/routing';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
 import type {
   ParamListBase,
-  StackNavigationState,
   NavigationRoute,
   NavigationState,
+  PartialState,
   TabNavigationState,
 } from '../../react-navigation/native';
 import type { Href } from '../../types';
@@ -56,50 +56,73 @@ export function getPreloadedRouteFromRootStateByHref(
   if (!hrefState || !state) {
     return undefined;
   }
-  // Replicating the logic from `linkTo`
-  const { navigationState, actionStateRoute } = findDivergentState(
-    hrefState,
-    state as NavigationState,
-    true
-  );
+  return findPreloadedRoute(hrefState, state as NavigationState);
+}
 
-  if (!navigationState || !actionStateRoute) {
+// TODO(@ubax):Try to simplify this logic and move it to native if possible
+// ENG-22021
+function findPreloadedRoute(
+  targetState: PartialState<NavigationState>,
+  navigationState: NavigationState
+): NavigationRoute<ParamListBase, string> | undefined {
+  const targetRoute = targetState.routes[targetState.index ?? targetState.routes.length - 1];
+  if (!targetRoute) {
     return undefined;
   }
 
+  // We can safely check for type here, since we are looking for preloaded route
+  // In order to create a preloaded route, an action needs to be dispatched, so type
+  // will be defined
   if (navigationState.type === 'stack') {
-    const stackState = navigationState as StackNavigationState<ParamListBase>;
-    const targetParams = actionStateRoute.params;
-    const activeRoutes = stackState.routes.slice(0, stackState.index + 1);
-    const preloadedRoutes = stackState.routes.slice(stackState.index + 1);
-
-    const preloadedRoute = preloadedRoutes.find(
-      (route) =>
-        route.name === actionStateRoute.name &&
-        deepEqual(
-          removeInternalExpoRouterParams(route.params),
-          removeInternalExpoRouterParams(targetParams)
-        )
-    );
-
-    const activeRoute = activeRoutes[stackState.index]!;
-    // When the active route is the same as the preloaded route,
-    // then we should not navigate. It aligns with base link behavior.
-    if (
-      activeRoute.name === preloadedRoute?.name &&
-      deepEqual(
-        // using ?? {}, because from our perspective undefined === {}, as both mean no params
-        removeInternalExpoRouterParams(activeRoute.params ?? {}),
-        removeInternalExpoRouterParams(targetParams ?? {})
-      )
-    ) {
-      return undefined;
+    const focusedRoute = navigationState.routes[navigationState.index]!;
+    const preloadedRoute = navigationState.routes
+      .slice(navigationState.index + 1)
+      .find((route) => routesHaveSameShape(route, targetRoute));
+    if (preloadedRoute) {
+      // A focused route with the same shape means the destination is already active.
+      return routesHaveSameShape(focusedRoute, targetRoute) ? undefined : preloadedRoute;
     }
-
-    return preloadedRoute;
   }
 
-  return undefined;
+  // TODO(ENG-22021): Resolve navigator types independently of state for the tab checks in this loop.
+  // https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
+  const navigationRoute =
+    navigationState.type === 'tab'
+      ? navigationState.routes.find((route) => route.name === targetRoute.name)
+      : navigationState.routes[navigationState.index ?? 0];
+
+  return targetRoute.state && navigationRoute?.name === targetRoute.name && navigationRoute.state
+    ? findPreloadedRoute(targetRoute.state, navigationRoute.state as NavigationState)
+    : undefined;
+}
+
+function routesHaveSameShape(
+  route: NavigationState['routes'][number] | PartialState<NavigationState>['routes'][number],
+  targetRoute: PartialState<NavigationState>['routes'][number]
+): boolean {
+  if (
+    route.name !== targetRoute.name ||
+    !deepEqual(
+      removeInternalExpoRouterParams(route.params ?? {}),
+      removeInternalExpoRouterParams(targetRoute.params ?? {})
+    )
+  ) {
+    return false;
+  }
+
+  if (!route.state || !targetRoute.state) {
+    return route.state === targetRoute.state;
+  }
+
+  const routeState = route.state;
+  return (
+    (routeState.index ?? routeState.routes.length - 1) ===
+      (targetRoute.state.index ?? targetRoute.state.routes.length - 1) &&
+    routeState.routes.length === targetRoute.state.routes.length &&
+    routeState.routes.every((childRoute, index) =>
+      routesHaveSameShape(childRoute, targetRoute.state!.routes[index]!)
+    )
+  );
 }
 
 export function deepEqual(

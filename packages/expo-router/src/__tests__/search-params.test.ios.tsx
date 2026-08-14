@@ -168,7 +168,7 @@ describe('navigate', () => {
                 params: {
                   c: 'true',
                 },
-                path: '/page',
+                path: '/page?c=true',
               },
             ],
             stale: false,
@@ -219,7 +219,7 @@ describe('navigate', () => {
                 params: {
                   page: 'a',
                 },
-                path: undefined,
+                path: '/a',
               },
               {
                 key: expect.any(String),
@@ -227,7 +227,7 @@ describe('navigate', () => {
                 params: {
                   page: 'b',
                 },
-                path: undefined,
+                path: '/b',
               },
               {
                 key: expect.any(String),
@@ -235,7 +235,7 @@ describe('navigate', () => {
                 params: {
                   page: 'c',
                 },
-                path: undefined,
+                path: '/c',
               },
             ],
             stale: false,

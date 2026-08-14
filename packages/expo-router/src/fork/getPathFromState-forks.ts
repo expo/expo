@@ -25,7 +25,7 @@ export function fixCurrentParams(
   // Better handle array params
   const currentParams = Object.fromEntries(
     Object.entries(route.params!).flatMap(([key, value]) => {
-      if (key === 'screen' || key === 'params' || value === undefined) {
+      if (value === undefined) {
         return [];
       }
 

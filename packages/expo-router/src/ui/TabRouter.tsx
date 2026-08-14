@@ -48,15 +48,9 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
-      // We should reset if this is the first time visiting the route.
-      let shouldReset =
-        !(state.history == null ? state.routes : state.history).some(
-          (item) => item.key === route.key
-        ) && !route.state;
-
-      if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
-        shouldReset = state.routes[state.index ?? 0]!.key !== route.key;
-      }
+      const isSwitching = state.routes[state.index ?? 0]!.key !== route.key;
+      const shouldReset =
+        'resetOnFocus' in action.payload && Boolean(action.payload.resetOnFocus && isSwitching);
 
       if (shouldReset) {
         state = {
@@ -68,26 +62,16 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
             return { ...r, state: undefined };
           }),
         };
-        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
-      } else if (route.state !== undefined) {
-        // TODO(@ubax): Remove this branch together with nested trigger href support. Refocusing
-        // a tab that hosts a navigator must not re-apply the trigger's nested payload
-        // (`params.screen`), which would reset the preserved child state.
-        const selectedRoute = attachRouteState(route, action);
-        const nextState =
-          selectedRoute === route
-            ? state
-            : {
-                ...state,
-                routes: state.routes.map((r) => (r.key === route.key ? selectedRoute : r)),
-              };
-        return {
-          state: rnTabRouter.getStateForRouteFocus(nextState, route.key),
-          affectedRouteKey: route.key,
-        };
-      } else {
-        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
+
+      if (!isSwitching && route.state !== undefined) {
+        const selectedRoute = attachRouteState(route, action);
+        if (selectedRoute === route) {
+          return { state, affectedRouteKey: route.key };
+        }
+      }
+
+      return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
     },
   };
 

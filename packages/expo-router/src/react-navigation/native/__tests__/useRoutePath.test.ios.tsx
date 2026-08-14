@@ -2,11 +2,8 @@ import { act, render, screen } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { NavigationContainer } from '../../../fork/NavigationContainer';
-import {
-  createNavigationContainerRef,
-  NavigationRouteContext,
-  type NavigatorScreenParams,
-} from '../../core';
+import { createNavigationContainerRef, NavigationRouteContext, useNavigation } from '../../core';
+import type { StackNavigationProp } from '../../stack';
 import { createStackNavigator } from '../__stubs__/createStackNavigator';
 import { useRoutePath } from '../useRoutePath';
 
@@ -79,7 +76,7 @@ test('gets path for route in root navigator screen', () => {
 
 test('gets path for route in nested navigator screen', () => {
   type AStackParamList = {
-    a: NavigatorScreenParams<BStackParamList>;
+    a: undefined;
   };
 
   type BStackParamList = {
@@ -91,6 +88,12 @@ test('gets path for route in nested navigator screen', () => {
   const StackB = createStackNavigator<BStackParamList>();
 
   const navigation = createNavigationContainerRef<AStackParamList>();
+  let navigateToC: () => void;
+  const NestedTest = () => {
+    const navigation = useNavigation<StackNavigationProp<BStackParamList>>();
+    navigateToC = () => navigation.navigate('c');
+    return <Test />;
+  };
 
   render(
     <NavigationContainer
@@ -108,8 +111,8 @@ test('gets path for route in nested navigator screen', () => {
         <StackA.Screen name="a">
           {() => (
             <StackB.Navigator>
-              <StackB.Screen name="b" component={Test} />
-              <StackB.Screen name="c" component={Test} />
+              <StackB.Screen name="b" component={NestedTest} />
+              <StackB.Screen name="c" component={NestedTest} />
             </StackB.Navigator>
           )}
         </StackA.Screen>
@@ -119,7 +122,7 @@ test('gets path for route in nested navigator screen', () => {
 
   expect(screen).toMatchInlineSnapshot(`"b: /foo/bar/apple"`);
 
-  act(() => navigation.navigate('a', { screen: 'c' }));
+  act(() => navigateToC());
 
   expect(screen).toMatchInlineSnapshot(`"c: /baz"`);
 });

@@ -5,6 +5,7 @@ import type { View, PressableProps } from 'react-native';
 import { StyleSheet, Pressable } from 'react-native';
 
 import { appendBaseUrl } from '../fork/getPathFromState';
+import { RouterRegistryContext } from '../global-state/routerRegistry';
 import { router } from '../imperative-api';
 import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
 import { stripGroupSegmentsFromPath } from '../matchers';
@@ -12,7 +13,7 @@ import type { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 import { useNavigatorContext } from '../views/Navigator';
 import { TabTriggerMapContext } from './TabContext';
-import type { TriggerMap } from './common';
+import { buildTabAction, type TriggerMap } from './common';
 
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
   children?: ReactNode | undefined;
@@ -148,6 +149,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
   const { state, navigation, contextKey, descriptors } = useNavigatorContext();
   const { name, resetOnFocus, onPress, onLongPress } = options;
   const triggerMap = use(TabTriggerMapContext);
+  const registry = use(RouterRegistryContext);
 
   const getTrigger = useCallback(
     (name: string) => {
@@ -199,14 +201,18 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         if (config.type === 'external') {
           return router.navigate(config.href);
         } else {
-          return navigation?.dispatch({
-            ...config.action,
-            type: 'JUMP_TO',
-            payload: {
-              ...config.action.payload,
-              ...options,
-            },
-          });
+          if (!registry) {
+            throw new Error('Router registry is unavailable. This is likely a bug in expo-router.');
+          }
+          const owningState =
+            config.contextKey !== contextKey
+              ? navigation?.getParent(config.contextKey)?.getState()
+              : state;
+          if (!owningState) {
+            return;
+          }
+          const action = buildTabAction(config, owningState, registry, options?.resetOnFocus);
+          return navigation?.dispatch(action);
         }
       } else {
         return navigation?.dispatch({
@@ -217,7 +223,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         });
       }
     },
-    [navigation, triggerMap]
+    [contextKey, navigation, registry, state, triggerMap]
   );
 
   const handleOnPress = useCallback<NonNullable<PressableProps['onPress']>>(
@@ -234,7 +240,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       if (!shouldHandleMouseEvent(event)) return;
 
-      if (!trigger.isFocused) {
+      if (!trigger.isFocused || (trigger.type === 'internal' && trigger.deep)) {
         switchTab(name, { resetOnFocus });
       }
     },

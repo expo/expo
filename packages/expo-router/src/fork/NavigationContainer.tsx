@@ -18,7 +18,6 @@ import {
   LocaleDirContext,
   ThemeProvider,
   UNSTABLE_UnhandledLinkingContext as UnhandledLinkingContext,
-  getActionFromState,
 } from '../react-navigation/native';
 import useLatestCallback from '../utils/useLatestCallback';
 import { getPathFromState } from './getPathFromState';
@@ -132,7 +131,6 @@ function NavigationContainerInner(
             prefixes: linking?.prefixes ?? [],
             getStateFromPath: linking?.getStateFromPath ?? getStateFromPath,
             getPathFromState: linking?.getPathFromState ?? getPathFromState,
-            getActionFromState: linking?.getActionFromState ?? getActionFromState,
           };
         },
       });
