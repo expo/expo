@@ -35,4 +35,17 @@ describe('app.fingerprint protocol parity', () => {
     const contents = fs.readFileSync(path.join(packagesDir, file), 'utf8');
     expect(contents).toContain(literal);
   });
+
+  // The embed script and the check side must compute byte-identical hashes, so their
+  // fingerprint options must not drift either. Both declare them locally: the embed script
+  // cannot import from @expo/cli, and the CLI resolves the fingerprint package from the
+  // user's project at runtime.
+  it.each([
+    ['the embed script', 'expo-constants/scripts/createFingerprintFile.js'],
+    ['the check side (@expo/cli)', '@expo/cli/src/utils/nativeFingerprint.ts'],
+  ])(`%s uses the shared fingerprint options`, (_description, file) => {
+    const contents = fs.readFileSync(path.join(packagesDir, file), 'utf8');
+    expect(contents).toContain('platforms: [platform]');
+    expect(contents).toContain('silent: true');
+  });
 });
