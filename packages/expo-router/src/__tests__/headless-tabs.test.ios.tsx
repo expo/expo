@@ -393,7 +393,7 @@ it('does not reset tab content when triggers are reordered', () => {
   expect(appleMounts).toBe(1);
   expect(tabState).toEqual({
     routeNames: ['orange', 'apple'],
-    routes: ['apple', 'orange'],
+    routes: ['apple'],
   });
   act(() => router.back());
   expect(screen).toHaveSegments(['orange']);
@@ -738,7 +738,7 @@ it('works with nested layouts', () => {
   expect(screen).toHaveSegments(['page']);
 });
 
-it('registers declared routes in trigger order', () => {
+it('starts with only the initial declared route', () => {
   function StateProbe() {
     const { state } = useNavigatorContext();
     return (
@@ -766,7 +766,7 @@ it('registers declared routes in trigger order', () => {
     { initialUrl: '/apple' }
   );
 
-  expect(screen.getByTestId('tab-state')).toHaveTextContent('orange,apple:apple');
+  expect(screen.getByTestId('tab-state')).toHaveTextContent('apple:apple');
 });
 
 it('redirects router.push from a filesystem route without a trigger', () => {
@@ -862,7 +862,8 @@ it.each(['second', 'second/index'])('redirects to initial route %s', (initialRou
       _layout: {
         unstable_settings: { initialRouteName },
         default: () => (
-          <Tabs>
+          // The cast simulates a stale prop supplied by untyped JavaScript.
+          <Tabs options={{ initialRouteName: 'index' } as never}>
             <TabList>
               <TabTrigger name="index" href="/" />
               <TabTrigger name="second" href="/second" />
@@ -906,6 +907,29 @@ it('falls back to the first trigger when the initial route has no trigger', () =
 
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeVisible();
+});
+
+it('throws when the configured initial route does not exist', () => {
+  expect(() =>
+    renderRouter({
+      _layout: {
+        unstable_settings: { initialRouteName: 'missing' },
+        default: () => (
+          <Tabs>
+            <TabList>
+              <TabTrigger name="index" href="/" />
+              <TabTrigger name="second" href="/second" />
+            </TabList>
+            <TabSlot />
+          </Tabs>
+        ),
+      },
+      index: () => <Text testID="index">Index</Text>,
+      second: () => <Text testID="second">Second</Text>,
+    })
+  ).toThrow(
+    'The initial route name "missing" was not found in the layout at "./_layout.js". Available routes are: "index", "second". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+  );
 });
 
 describe('warnings/errors', () => {

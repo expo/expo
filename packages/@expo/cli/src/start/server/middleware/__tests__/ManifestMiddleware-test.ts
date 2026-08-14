@@ -384,6 +384,8 @@ describe('getHandler', () => {
     middleware._getManifestResponseAsync = jest.fn(
       async () =>
         new Response('body', {
+          status: 201,
+          statusText: 'Created',
           headers: { header: 'value' },
         })
     );
@@ -399,6 +401,8 @@ describe('getHandler', () => {
       },
     });
     const res = new MockServerResponse();
+    const chunks: Buffer[] = [];
+    res.on('data', (chunk) => chunks.push(chunk));
     await handleAsync(req, asRes(res), next);
 
     // Ensure that devices are stored successfully.
@@ -408,7 +412,31 @@ describe('getHandler', () => {
     expect(middleware._getManifestResponseAsync).toHaveBeenCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
-    expect(res.statusCode).toEqual(200);
+    expect(res.statusCode).toEqual(201);
+    expect(res.statusMessage).toEqual('Created');
+    expect(res.setHeader).toHaveBeenCalledWith('header', 'value');
+    expect(Buffer.concat(chunks).toString()).toEqual('body');
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it(`does not report an error when the response closes while the manifest resolves`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+    });
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
+    const res = new MockServerResponse();
+    middleware._getManifestResponseAsync = jest.fn(async () => {
+      res.destroy();
+      return new Response('body');
+    });
+
+    const handleAsync = middleware.getHandler();
+    const next = jest.fn();
+    const req = asReq({ url: '/', headers: {} });
+
+    await handleAsync(req, asRes(res), next);
+
+    expect(Log.exception).not.toHaveBeenCalled();
     expect(next).not.toHaveBeenCalled();
   });
 

@@ -53,6 +53,7 @@ describe(startBundlerAsync, () => {
   it(`starts in headless mode`, async () => {
     const manager = await startBundlerAsync('/', {
       headless: true,
+      mode: 'production',
       port: 3000,
     });
 
@@ -63,6 +64,7 @@ describe(startBundlerAsync, () => {
           headless: true,
           location: {},
           minify: false,
+          mode: 'production',
           port: 3000,
         },
         type: 'metro',
@@ -74,6 +76,7 @@ describe(startBundlerAsync, () => {
   it(`starts a server`, async () => {
     const manager = await startBundlerAsync('/', {
       headless: false,
+      mode: 'development',
       port: 3000,
     });
 
@@ -84,6 +87,7 @@ describe(startBundlerAsync, () => {
           headless: false,
           location: {},
           minify: false,
+          mode: 'development',
           port: 3000,
         },
         type: 'metro',

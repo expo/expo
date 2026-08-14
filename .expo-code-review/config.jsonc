@@ -78,14 +78,14 @@
     ]
   },
 
-  // Trusted host-side documentation research. Review-time queries contain only
-  // bounded API identifiers; scoped search results are independently allowlisted,
-  // fetched from official documentation, and fenced as untrusted evidence.
+  // Bounded documentation research available directly to reviewer and cross-file
+  // passes. The built-in MCP sanitizes agent-authored API queries, restricts discovery
+  // and direct fetches to fixed official providers, and audits accepted results.
   "research": {
     "enabled": true,
     "maxQueries": 20,
     "resultsPerQuery": 2,
-    "timeoutMs": 15000
+    "timeoutMs": 30000
   },
 
   // Large diffs are split into focused chunks by changed-line count, plus a

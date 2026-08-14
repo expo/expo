@@ -4,6 +4,7 @@ import type { PanGesture } from 'react-native-gesture-handler';
 import type { HeaderOptions } from '../elements';
 import type {
   Descriptor,
+  DescriptorRouteProp,
   DrawerActionHelpers,
   DrawerNavigationState,
   NavigationHelpers,
@@ -299,7 +300,8 @@ export type DrawerOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = DrawerScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<DrawerScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 

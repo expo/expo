@@ -2,14 +2,18 @@
 
 import React, { use, useCallback, useMemo, useRef } from 'react';
 
-import { useRouteNode } from '../Route';
 import type {
   ParamListBase,
   TabNavigationState,
   TabRouterOptions,
 } from '../react-navigation/native';
 import { unstable_createStandardRouterNavigator } from '../standard-navigation';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { StandardNavigatorContentProps } from '../standard-navigation/types';
+import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
@@ -30,12 +34,18 @@ import { convertIconColorPropToObject, convertLabelStylePropToObject } from './u
 const defaultBackBehavior = 'initialRoute';
 export const NativeTabsContext = React.createContext<boolean>(false);
 
+export interface NativeTabsNavigatorCreateProps {
+  routeNames: string[];
+  preload: (name: string) => void;
+}
+
 function NativeTabsContent({
   state,
   routeNames,
   descriptors,
   actions,
   emitter,
+  preload,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
   // `NativeTabsView` as top-level props.
@@ -54,7 +64,8 @@ function NativeTabsContent({
   NativeTabOptions,
   NativeTabNavigationEventMap,
   Omit<InternalNativeTabsProps, 'screenListeners'>
-> & { routeNames: string[] }) {
+> &
+  NativeTabsNavigatorCreateProps) {
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
@@ -74,17 +85,23 @@ function NativeTabsContent({
       visibleRoutes.map(
         (route): NativeTabsViewTabItem => ({
           options: descriptors[route.key]!.options,
-          routeKey: route.key,
           name: route.name,
           contentRenderer: () => descriptors[route.key]!.render(),
         })
       ),
     [descriptors, visibleRoutes]
   );
-  const visibleTabsKeys = useMemo(
-    () => visibleTabs.map((tab) => tab.routeKey).join(';'),
+  const visibleTabNames = useMemo(
+    () => visibleTabs.map((tab) => tab.name).join(';'),
     [visibleTabs]
   );
+
+  usePreloadPlaceholderRoutes({
+    routes: visibleRoutes,
+    descriptors,
+    preload,
+    lazyByDefault: false,
+  });
 
   const provenanceRef = useRef(0);
 
@@ -96,7 +113,7 @@ function NativeTabsContent({
         // so the provenance counter is left untouched.
         emitter.emit({
           type: 'tabPress',
-          target: selectedKey,
+          target: routes.find((route) => route.name === selectedKey)?.key ?? selectedKey,
           data: {
             __internalTabsType: 'native',
             isPrevented: true,
@@ -109,7 +126,7 @@ function NativeTabsContent({
       provenanceRef.current = provenance;
 
       if (isNativeAction) {
-        const selectedRoute = routes.find((route) => route.key === selectedKey);
+        const selectedRoute = routes.find((route) => route.name === selectedKey);
         if (!selectedRoute) {
           if (process.env.NODE_ENV !== 'production') {
             console.warn(
@@ -121,7 +138,7 @@ function NativeTabsContent({
         }
         emitter.emit({
           type: 'tabPress',
-          target: selectedKey,
+          target: selectedRoute.key,
           data: {
             __internalTabsType: 'native',
             isPrevented: false,
@@ -142,7 +159,7 @@ function NativeTabsContent({
   > &
     Record<Exclude<keyof typeof rest, keyof NativeTabsViewProps>, never> = rest;
 
-  if (visibleTabs.length === 0) {
+  if (visibleTabs.length === 0 || focusedIndex < 0) {
     return null;
   }
 
@@ -150,7 +167,7 @@ function NativeTabsContent({
     <NativeTabsContext value>
       <NativeTabsView
         {...nativeTabsViewProps}
-        key={visibleTabsKeys}
+        key={visibleTabNames}
         focusedIndex={focusedIndex}
         // Provenance should only be sent with updates, and updates
         // on JS side are only triggered by rerender, so passing ref
@@ -169,13 +186,17 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
   NativeTabNavigationEventMap,
   Omit<InternalNativeTabsProps, 'screenListeners'>,
   TabRouterOptions,
-  { routeNames: string[] }
+  NativeTabsNavigatorCreateProps
 >(NativeTabsContent, NativeBottomTabsRouter, {
-  createProps: ({ state }) => ({ routeNames: state.routeNames }),
+  processDescriptors: appendMissingPlaceholderTabDescriptors,
+  processState: appendMissingPlaceholderTabRoutes,
+  createProps: ({ state, dispatch }) => ({
+    routeNames: state.routeNames,
+    preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
+  }),
 });
 
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
-  const routeNode = useRouteNode();
   const triggerChildren = useMemo(
     () =>
       getAllChildrenOfType(props.children, NativeTabTrigger).filter((child) => !child.props.hidden),
@@ -255,7 +276,6 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
       children={triggerChildren}
       nonTriggerChildren={nonTriggerChildren}
       screenOptions={screenOptions}
-      initialRouteName={routeNode?.initialRouteName}
       // Passed to TabRouter
       backBehavior={backBehavior}
     />

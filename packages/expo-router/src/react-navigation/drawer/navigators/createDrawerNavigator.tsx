@@ -3,6 +3,7 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
+import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
 import type { DrawerNavigationState, ParamListBase } from '../../native';
 import type {
@@ -17,6 +18,7 @@ import { DrawerView } from '../views/DrawerView';
 export interface DrawerNavigatorCreateProps {
   drawerState: DrawerNavigationState<ParamListBase>;
   navigation: DrawerNavigationHelpers;
+  preload: (name: string) => void;
 }
 
 export interface DrawerNavigatorConfig extends DrawerNavigationConfig {
@@ -41,6 +43,7 @@ function DrawerNavigatorContent({
   descriptors,
   drawerState,
   navigation,
+  preload,
   defaultStatus = 'closed',
   drawerContent,
   detachInactiveScreens,
@@ -51,8 +54,18 @@ function DrawerNavigatorContent({
     focusedRouteKey: drawerState.routes[drawerState.index]?.key,
     descriptors,
   });
+  // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
+  // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
+  const drawerDescriptors = descriptors as unknown as DrawerDescriptorMap;
 
-  if (visibleRoutes.length === 0) {
+  usePreloadPlaceholderRoutes({
+    routes: visibleRoutes,
+    descriptors: drawerDescriptors,
+    preload,
+    lazyByDefault: true,
+  });
+
+  if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;
   }
 
@@ -64,9 +77,7 @@ function DrawerNavigatorContent({
         index: focusedIndex,
       }}
       navigation={navigation}
-      // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
-      // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
-      descriptors={descriptors as unknown as DrawerDescriptorMap}
+      descriptors={drawerDescriptors}
       defaultStatus={defaultStatus}
       drawerContent={drawerContent}
       detachInactiveScreens={detachInactiveScreens}

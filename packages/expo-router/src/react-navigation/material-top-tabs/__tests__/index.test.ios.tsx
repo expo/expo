@@ -299,6 +299,10 @@ test('handles screens preloading', () => {
   });
 
   expect(screen.queryByText('Screen second', { includeHiddenElements: true })).toBeNull();
+  expect(getTabViewProps().navigationState.routes[1]).toMatchObject({
+    key: 'second',
+    name: 'second',
+  });
 
   act(() => router.prefetch('/second'));
 
@@ -309,6 +313,36 @@ test('handles screens preloading', () => {
   }
   expect(tabViewProps.lazy({ route: secondRoute })).toBe(false);
   expect(screen.queryByText('Screen second', { includeHiddenElements: true })).not.toBeNull();
+});
+
+test('renders an eager (default) unvisited tab after mount', () => {
+  renderRouter({
+    _layout: () => (
+      <TopTabs>
+        <TopTabs.Screen name="index" />
+        <TopTabs.Screen name="second" />
+      </TopTabs>
+    ),
+    index: () => null,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  expect(screen.queryByText('Screen second', { includeHiddenElements: true })).not.toBeNull();
+});
+
+test('does not render an unvisited lazy tab', () => {
+  renderRouter({
+    _layout: () => (
+      <TopTabs>
+        <TopTabs.Screen name="index" />
+        <TopTabs.Screen name="second" options={{ lazy: true }} />
+      </TopTabs>
+    ),
+    index: () => null,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  expect(screen.queryByText('Screen second', { includeHiddenElements: true })).toBeNull();
 });
 
 test('warns when navigateToTab receives an unknown route key', () => {

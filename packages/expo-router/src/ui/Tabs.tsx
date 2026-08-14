@@ -3,19 +3,24 @@ import { Children, Fragment, isValidElement, use, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
-import { useRouteNode, useContextKey } from '../Route';
+import { getValidInitialRouteName, useRouteNode, useContextKey } from '../Route';
+import { useComponent } from '../fork/useComponent';
 import { useRouteInfo } from '../hooks';
 import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
 import type {
   DefaultNavigatorOptions,
   ParamListBase,
-  RouteSource,
   TabActionHelpers,
   TabNavigationState,
   TabRouterOptions,
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../standard-navigation/appendMissingPlaceholderTabRoutes';
+import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
@@ -29,7 +34,6 @@ import { isTabSlot } from './TabSlot';
 import { isTabTrigger } from './TabTrigger';
 import type { ScreenTrigger } from './common';
 import { ViewSlot, useTriggersToScreens } from './common';
-import { useComponent } from './useComponent';
 
 export * from './TabContext';
 export * from './TabList';
@@ -50,7 +54,7 @@ export type UseTabsOptions = Omit<
     TabNavigationEventMap,
     any
   >,
-  'children'
+  'children' | 'initialRouteName'
 > & {
   backBehavior?: TabRouterOptions['backBehavior'];
 };
@@ -156,7 +160,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
   }
 
-  const initialRouteName = routeNode.initialRouteName;
+  const initialRouteName = getValidInitialRouteName(routeNode);
 
   const { children, triggerMap } = useTriggersToScreens(
     triggers,
@@ -184,18 +188,29 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 
   const {
     state,
-    descriptors,
+    describe,
+    descriptors: sparseDescriptors,
     navigation,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
+  const descriptors = useMemo(
+    () =>
+      appendMissingPlaceholderTabDescriptors(
+        sparseDescriptors,
+        state,
+        describe
+      ) as typeof sparseDescriptors,
+    [describe, sparseDescriptors, state]
+  );
 
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () => ({
-      ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
+      ...(navigatorContext as unknown as NavigatorContextValue),
+      descriptors: descriptors as unknown as NavigatorContextValue['descriptors'],
       contextKey,
       router: ExpoTabRouter,
     }),
-    [navigatorContext, contextKey, ExpoTabRouter]
+    [navigatorContext, descriptors, contextKey, ExpoTabRouter]
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
@@ -210,7 +225,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     </GuardContextProvider>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent };
+  return { state, describe, descriptors, navigation, NavigationContent };
 }
 
 function TabVisibilityRedirect({
@@ -218,12 +233,16 @@ function TabVisibilityRedirect({
   descriptors,
 }: {
   state: TabNavigationState<any>;
-  descriptors: Record<string, { routeSource?: RouteSource; options: ExpoTabsScreenOptions }>;
+  descriptors: PlaceholderDescriptorMap;
 }) {
+  const stateWithPlaceholders = useMemo(
+    () => appendMissingPlaceholderTabRoutes(state, descriptors),
+    [descriptors, state]
+  );
   useVisibleTabsWithRedirect({
-    routes: state.routes,
-    routeNames: state.routeNames,
-    focusedRouteKey: state.routes[state.index]?.key,
+    routes: stateWithPlaceholders.routes,
+    routeNames: stateWithPlaceholders.routeNames,
+    focusedRouteKey: stateWithPlaceholders.routes[stateWithPlaceholders.index]?.key,
     descriptors,
   });
   return null;

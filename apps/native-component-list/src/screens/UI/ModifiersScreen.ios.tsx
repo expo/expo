@@ -31,6 +31,7 @@ import {
   rotationEffect,
   offset,
   listRowSeparator,
+  listRowSeparatorTint,
   listRowSpacing,
   border,
   strokeBorder,
@@ -243,6 +244,12 @@ export default function ModifiersScreen() {
             <Text>Default separator</Text>
             <Text>Default separator</Text>
             <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
+          </Section>
+
+          <Section title="List row separator tint">
+            <Text modifiers={[listRowSeparatorTint('red')]}>Red separator</Text>
+            <Text modifiers={[listRowSeparatorTint('blue', 'bottom')]}>Blue bottom separator</Text>
+            <Text>Default separator</Text>
           </Section>
 
           <Section title="List row spacing">

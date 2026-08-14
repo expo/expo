@@ -4,6 +4,7 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
+import { getValidInitialRouteName, useRouteNode } from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -173,14 +174,15 @@ export function unstable_integrateWithRouter<
   >;
 
   function StandardRouterNavigator(props: NavPropsType) {
+    const routeNode = useRouteNode();
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
       NavigatorOptions,
       State,
       EventMap,
       NavigatorProps,
       RouterOptions
-    >(props);
-    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
+    >(props, getValidInitialRouteName(routeNode));
+    const { state, navigation, describe, descriptors, NavigationContent } = useNavigationBuilder<
       State,
       RouterOptions,
       Record<string, (...args: unknown[]) => void>,
@@ -190,14 +192,26 @@ export function unstable_integrateWithRouter<
 
     const { dispatch } = navigation;
 
+    const processedDescriptors = useMemo(
+      () =>
+        (options?.processDescriptors?.(descriptors, state, describe) as
+          | typeof descriptors
+          | undefined) ?? descriptors,
+      [state, descriptors, describe, options]
+    );
+    const processedState = useMemo(
+      () => options?.processState?.(state, processedDescriptors, describe) ?? state,
+      [state, processedDescriptors, describe, options]
+    );
+
     const derivedProps = useMemo<Partial<CreateProps>>(
-      () => options?.createProps?.({ state, dispatch, navigation }) ?? {},
-      [state, dispatch, navigation, options]
+      () => options?.createProps?.({ state: processedState, dispatch, navigation }) ?? {},
+      [processedState, dispatch, navigation, options]
     );
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
-      state: useStandardState(state),
-      descriptors,
+      state: useStandardState(processedState),
+      descriptors: processedDescriptors,
       actions: useStandardActions(navigation, state.key),
       emitter: useStandardEmitter(navigation),
     };
@@ -245,13 +259,15 @@ function partitionNavigatorProps<
     NavigatorProps,
     RouterOptions
   > & {
+    initialRouteName?: unknown;
     ref?: unknown;
-  }
+  },
+  routeNodeInitialRouteName?: string
 ) {
   const {
     id,
     children,
-    initialRouteName,
+    initialRouteName: _initialRouteName,
     layout,
     // `ref` is supplied by `withLayoutContext` and consumed by React; it must not be forwarded
     // to `NavigatorContent`, so it is pulled out of the props here and intentionally dropped.
@@ -274,7 +290,7 @@ function partitionNavigatorProps<
   > = {
     id,
     children,
-    initialRouteName,
+    initialRouteName: routeNodeInitialRouteName,
     layout,
     screenLayout,
     screenListeners,

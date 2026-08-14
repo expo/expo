@@ -3,7 +3,7 @@
 import { createContext, use, useMemo, type ReactNode } from 'react';
 
 import type { RouteNode } from '../Route';
-import { LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
+import { getValidInitialRoute, LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
 import { getContextKey } from '../matchers';
 import type { Href } from '../types';
 
@@ -119,17 +119,11 @@ function removeFallbacksTargetingNavigator(
 }
 
 function findDefaultRedirectRouteInNavigator(
-  node: Pick<RouteNode, 'children' | 'initialRouteName'>,
+  node: RouteNode,
   guardedRedirects: GuardedRedirects
 ): RouteNode | undefined {
-  const children = [...node.children].sort(sortRoutesWithInitial(node.initialRouteName));
-  const anchor = node.initialRouteName
-    ? children.find(
-        (child) =>
-          child.route === node.initialRouteName ||
-          normalizeRouteName(child.route) === node.initialRouteName
-      )
-    : undefined;
+  const anchor = getValidInitialRoute(node);
+  const children = [...node.children].sort(sortRoutesWithInitial(anchor?.route));
 
   if (anchor && !isRouteGuarded(anchor.route, guardedRedirects)) {
     return anchor;

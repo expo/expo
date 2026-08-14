@@ -24,12 +24,21 @@ const { ScreenStackItem } = jest.requireMock(
   'react-native-screens'
 ) as typeof import('react-native-screens');
 const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof ScreenStackItem>;
+
 /**
  * Stacks are the most common navigator and have unique navigation actions
  *
  * This file is for testing Stack specific functionality
  */
 describe('canDismiss', () => {
+  it('works with fresh stack state', () => {
+    renderRouter({ index: () => null, b: () => null });
+
+    expect(router.canDismiss()).toBe(false);
+    act(() => router.push('/b'));
+    expect(router.canDismiss()).toBe(true);
+  });
+
   it('should work within the default Stack', () => {
     renderRouter(
       {
@@ -165,7 +174,6 @@ test('dismissAll nested', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           history: [
             {
@@ -179,20 +187,17 @@ test('dismissAll nested', () => {
           ],
           index: 2,
           key: expect.any(String),
-          preloadedRouteKeys: [],
           routeNames: ['a', 'b', 'one'],
           routes: [
             {
               key: expect.any(String),
               name: 'a',
-              params: undefined,
               path: '/a',
             },
             {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -201,7 +206,6 @@ test('dismissAll nested', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 3,
                 key: expect.any(String),
@@ -211,7 +215,6 @@ test('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -242,7 +245,6 @@ test('dismissAll nested', () => {
                           key: expect.any(String),
                           name: 'index',
                           params: {},
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
@@ -258,12 +260,10 @@ test('dismissAll nested', () => {
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
@@ -287,7 +287,6 @@ test('dismissAll nested', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           history: [
             {
@@ -301,20 +300,17 @@ test('dismissAll nested', () => {
           ],
           index: 2,
           key: expect.any(String),
-          preloadedRouteKeys: [],
           routeNames: ['a', 'b', 'one'],
           routes: [
             {
               key: expect.any(String),
               name: 'a',
-              params: undefined,
               path: '/a',
             },
             {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -323,7 +319,6 @@ test('dismissAll nested', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 3,
                 key: expect.any(String),
@@ -333,7 +328,6 @@ test('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -364,16 +358,13 @@ test('dismissAll nested', () => {
                           key: expect.any(String),
                           name: 'index',
                           params: {},
-                          path: undefined,
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
@@ -397,7 +388,6 @@ test('dismissAll nested', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           history: [
             {
@@ -411,20 +401,17 @@ test('dismissAll nested', () => {
           ],
           index: 2,
           key: expect.any(String),
-          preloadedRouteKeys: [],
           routeNames: ['a', 'b', 'one'],
           routes: [
             {
               key: expect.any(String),
               name: 'a',
-              params: undefined,
               path: '/a',
             },
             {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -433,7 +420,6 @@ test('dismissAll nested', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
@@ -443,11 +429,9 @@ test('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
-                    path: undefined,
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
@@ -734,7 +718,8 @@ describe('Stack.Screen types', () => {
   it('accepts layout navigation props', () => {
     expectTypeOf<ScreenProps>().not.toHaveProperty('redirect');
     expectTypeOf<StackScreenProps>().not.toHaveProperty('redirect');
-    expectTypeOf({ name: 'profile', initialParams: { id: '123' } }).toExtend<StackScreenProps>();
+    expectTypeOf<ScreenProps>().not.toHaveProperty('initialParams');
+    expectTypeOf<StackScreenProps>().not.toHaveProperty('initialParams');
     expectTypeOf({ name: 'settings', dangerouslySingular: true }).toExtend<StackScreenProps>();
     expectTypeOf({
       name: 'details',

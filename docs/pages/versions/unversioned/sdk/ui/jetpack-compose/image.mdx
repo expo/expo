@@ -1,0 +1,53 @@
+---
+title: Image
+description: A Jetpack Compose Image component for displaying images.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo UI Image wraps the official Jetpack Compose [Image](https://developer.android.com/develop/ui/compose/graphics/images) API and displays a bundled or remote image. Set the size with modifiers such as `size`, `width`, or `fillMaxWidth`, then `contentScale` to control how the image fills those bounds.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/image/android-light.webp"
+  darkSrc="/static/images/expo-ui/image/android-dark.webp"
+  alt="Images rendered with different contentScale props"
+/>
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+```tsx ImageExample.tsx
+import { Host, Image } from '@expo/ui/jetpack-compose';
+import { size } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function ImageExample() {
+  return (
+    <Host matchContents>
+      <Image
+        source={require('./assets/photo.jpg')}
+        contentScale="crop"
+        contentDescription="A mountain at sunset"
+        modifiers={[size(240, 160)]}
+      />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Image } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/image" apiName="Image" />

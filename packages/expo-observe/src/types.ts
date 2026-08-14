@@ -62,7 +62,23 @@ export type ObserveConfig = {
    */
   sampleRate?: number;
   /**
-   * Opt in to per-integration behavior.
+   * Whether to record unhandled JavaScript errors as `exception` log events.
+   *
+   * When `false`, unhandled errors are no longer recorded. React Native's own handling is
+   * unaffected either way: the red box in development and fatal termination in production still
+   * happen. Errors you report yourself with `reportError`, and render-phase errors captured by
+   * `ObserveErrorBoundary`, are also unaffected.
+   *
+   * > Note: The handler is installed when the package is first imported, which is earlier than any
+   * > `configure` call. An error thrown before `configure` runs is therefore still recorded.
+   *
+   * @default true
+   */
+  errorHandlingEnabled?: boolean;
+  /**
+   * Opt in to per-integration behavior. See the [Expo Router](/eas/observe/integrations/expo-router/)
+   * and [React Navigation](/eas/observe/integrations/react-navigation/) integrations, or
+   * [integrate your own package](/eas/observe/integrations/third-party/).
    */
   integrations?: ObserveIntegrationsConfig;
 };
@@ -116,9 +132,40 @@ export type ObserveModuleEvents = {
 };
 
 export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
+  /**
+   * Dispatches pending events to the server immediately.
+   *
+   * Events are dispatched automatically when the app moves to the background. On Android,
+   * a background worker dispatches events once network connectivity is available. On iOS,
+   * dispatching happens when the app resigns active state or is about to terminate. Call
+   * this method to flush events manually, for example, during testing or to ensure events
+   * are sent before a specific point.
+   *
+   * @returns A promise that resolves when the pending events have been dispatched.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * await Observe.dispatchEvents();
+   * ```
+   */
   dispatchEvents(): Promise<void>;
   /**
-   * Configures observability settings.
+   * Configures how observability events are collected and dispatched at runtime, such as
+   * the environment label, dispatching behavior, sampling, and integrations.
+   *
+   * @param config Observability settings to apply.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * Observe.configure({
+   *   environment: 'production',
+   *   dispatchingEnabled: true,
+   * });
+   * ```
    */
   configure(config: ObserveConfig): void;
   /**

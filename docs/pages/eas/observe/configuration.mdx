@@ -4,40 +4,7 @@ sidebar_title: Configuration
 description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, and custom endpoints.
 ---
 
-Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers the `configure()` and `dispatchEvents()`, enabling metrics in development, using a custom endpoint, and separating data by environment.
-
-## `configure()`
-
-Use the `configure()` method to control how EAS Observe behaves at runtime:
-
-```tsx
-import { Observe } from 'expo-observe';
-
-Observe.configure({
-  environment: 'production',
-  dispatchingEnabled: true,
-});
-```
-
-| Option               | Type      | Default                | Description                                                                                                                                                                                                                                           |
-| -------------------- | --------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events                                                                                                                                                                                                        |
-| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server                                                                                                                                                                                                        |
-| `dispatchInDebug`    | `boolean` | `false`                | Whether to dispatch metrics that were collected in a debug build. Has no effect on release builds.                                                                                                                                                    |
-| `sampleRate`         | `number`  | `undefined`            | Fraction of installations that dispatch metrics, in `[0, 1]`. See [Sampling](#sampling).                                                                                                                                                              |
-| `integrations`       | `object`  | `undefined`            | Opt-in settings for EAS Observe integrations. See [Expo Router](/eas/observe/integrations/expo-router/) and [React Navigation](/eas/observe/integrations/react-navigation/), or [integrate your own package](/eas/observe/integrations/third-party/). |
-
-## `dispatchEvents()`
-
-Events are automatically dispatched when the app moves to the background. On Android, a background worker dispatches events once network connectivity is available. On iOS, this happens when the app resigns active state or is about to terminate.
-
-To flush events manually (for example, during testing or to ensure events are sent before a specific point), call `dispatchEvents()`:
-
-```tsx
-import { Observe } from 'expo-observe';
-
-await Observe.dispatchEvents();
-```
+Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, using a custom endpoint, and separating data by environment. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
 
 ## Sampling
 
@@ -58,7 +25,7 @@ A few details worth knowing:
 
 - Values outside the `[0, 1]` range are clamped to the nearest edge. `0` always drops; `1` always dispatches.
 - Out-of-sample devices drop pending metrics rather than accumulating them. Lowering the rate later does not retroactively send earlier sessions.
-- Sampling depends on [`dispatchingEnabled`](#configure). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
+- Sampling depends on [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
 
 ## Enable metrics in development
 
@@ -74,7 +41,7 @@ Observe.configure({
 
 A build is treated as a debug build if either the native app is a debug build or the JS bundle is a development bundle (`__DEV__` is `true`). This detection is independent of the `environment` value (see [Environments](#environments)).
 
-`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](#configure) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
+`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
 
 > **warning** Enable this only when testing your EAS Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
 
@@ -104,6 +71,6 @@ The path includes your project ID before the standard `/v1/metrics` and `/v1/log
 
 ## Environments
 
-All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset). To override it, use [`configure({ environment })`](#configure).
+All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset). To override it, use [`configure({ environment })`](/versions/latest/sdk/observe/#configureconfig).
 
 The environment is a metadata tag attached to each metric and is independent of how the bundle was built. To control whether debug-build metrics are dispatched, see [Enable metrics in development](#enable-metrics-in-development). To disable all dispatching globally, use `configure({ dispatchingEnabled: false })`.
