@@ -120,9 +120,9 @@ const styles = StyleSheet.create({
 
 ## Testing age signals on Android
 
-Google Play only reports age signals to accounts it has enabled, so your test accounts may not produce the age range you want to test. Use [`setFakeAgeSignals`](#agerangesetfakeagesignalsfake) to report [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api) signals instead of the real ones. Do not call it in production builds.
+Google Play only reports age signals to accounts it has enabled, so your test accounts may not have the age range you need. Use [`setFakeAgeSignals`](#agerangesetfakeagesignalsfake) to fake them instead, through Google Play's [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api). Do not call it in production builds.
 
-The requests are unchanged, so the rest of your app works the same way:
+Your requests do not change, only what they report:
 
 ```ts
 // Report a supervised 13 to 15 year old with a change waiting for approval.

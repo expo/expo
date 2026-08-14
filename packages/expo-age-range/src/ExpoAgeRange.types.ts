@@ -98,10 +98,12 @@ export type AgeRangeResponse = {
 export type AgeSignalsStatus = 'SHARED' | 'NOT_SHARED' | 'VERIFICATION_REQUIRED';
 
 /**
- * What [`setFakeAgeSignals`](#agerangesetfakeagesignalsfake) reports: either a response or an error,
- * never both. Response fields match [`AgeRangeResponse`](#agerangeresponse), plus the
- * `ageSignalsStatus` that [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync)
- * reports. Omitted fields are reported as `null`.
+ * Fake age signals for [`setFakeAgeSignals`](#agerangesetfakeagesignalsfake): either a response or
+ * an error, never both.
+ *
+ * The response fields match [`AgeRangeResponse`](#agerangeresponse), with `ageSignalsStatus` for
+ * [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync). Omitted fields are
+ * reported as `null`.
  *
  * @platform android
  */

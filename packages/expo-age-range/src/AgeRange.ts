@@ -132,14 +132,14 @@ export async function requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus |
 }
 
 /**
- * Reports `fake` from [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions) and
- * [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) instead of the real
- * signals, using Google Play's
+ * Fakes the age signals that [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions) and
+ * [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) report, using Google
+ * Play's
  * [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api).
- * Pass `null` to report the real signals again. Does nothing on iOS and web.
+ * Pass `null` to go back to the real signals. Does nothing on iOS and web.
  *
- * Google Play only reports age signals to accounts it has enabled, so use this to test your app
- * against other age ranges. It is meant for development and testing, not for production builds.
+ * Google Play only reports age signals to accounts it has enabled. Use this to test your app
+ * against other age ranges. Do not call it in production builds.
  *
  * @param fake The signals to report, or `null` to report the real ones.
  *
