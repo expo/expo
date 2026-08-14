@@ -8,7 +8,6 @@ import { applyRedirects } from './getRoutesRedirects';
 import type { StoreRedirects } from './global-state/router-store';
 import { getInitialURL, getPathFromState, subscribe } from './link/linking';
 import type { LinkingOptions } from './react-navigation/native';
-import { getActionFromState } from './react-navigation/native';
 import type { NativeIntent, RequireContext } from './types';
 
 export function getNavigationConfig(
@@ -136,9 +135,6 @@ export function getLinkingConfig(
         }) ?? '/'
       );
     },
-    // Add all functions to ensure the types never need to fallback.
-    // This is a convenience for usage in the package.
-    getActionFromState,
   };
 }
 

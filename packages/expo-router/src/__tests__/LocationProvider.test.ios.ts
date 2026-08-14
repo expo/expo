@@ -1,4 +1,4 @@
-import { getNormalizedStatePath } from '../LocationProvider';
+import { getNormalizedStatePath, getRouteInfoFromState } from '../LocationProvider';
 
 describe(getNormalizedStatePath, () => {
   // Ensure all values are correctly decoded
@@ -11,6 +11,7 @@ describe(getNormalizedStatePath, () => {
           beta: 'gamma',
           charlie: 'delta%20echo',
           delta: ['evan', 'foxtrot%20gamma', 'hotel india'],
+          params: { nested: 'value%20with%20spaces' },
         },
       })
     ).toEqual({
@@ -21,6 +22,7 @@ describe(getNormalizedStatePath, () => {
         charlie: 'delta echo',
         // Ensure arrays are preserved (rest params).
         delta: ['evan', 'foxtrot gamma', 'hotel india'],
+        params: '[object Object]',
       },
     });
   });
@@ -50,4 +52,17 @@ describe(getNormalizedStatePath, () => {
       },
     });
   });
+});
+
+it('does not treat a screen=index param as an index route', () => {
+  const getPath = jest.fn((_state, _asPath: boolean) => ({
+    path: '/page?screen=index',
+    params: { screen: 'index' },
+  }));
+
+  expect(
+    getRouteInfoFromState(getPath, {
+      routes: [{ name: 'page', params: { screen: 'index' } }],
+    }).isIndex
+  ).toBe(false);
 });

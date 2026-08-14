@@ -105,9 +105,60 @@ it('should render the correct screen with nested navigators', () => {
   fireEvent.press(screen.getByTestId('goto-apple'));
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
-  // Banana route should be preserved
+  // A deep trigger resolves its destination against the preserved stack.
   fireEvent.press(screen.getByTestId('goto-banana'));
-  expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
+  expect(screen).toHaveSegments(['(group)', 'banana', '[dynamic]']);
+});
+
+it('can resolve a deep trigger in the focused tab through useTabTrigger', () => {
+  function DeepTrigger() {
+    const { switchTab } = useTabTrigger({ name: 'banana' });
+    return <Button title="Deep trigger" onPress={() => switchTab('banana', {})} />;
+  }
+
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="banana" href="/banana/details" />
+          </TabList>
+          <DeepTrigger />
+          <TabSlot />
+        </Tabs>
+      ),
+      'banana/_layout': () => <Stack />,
+      'banana/index': () => <Text testID="banana-index">Index</Text>,
+      'banana/details': () => <Text testID="banana-details">Details</Text>,
+    },
+    { initialUrl: '/banana' }
+  );
+
+  fireEvent.press(screen.getByText('Deep trigger'));
+  expect(screen.getByTestId('banana-details')).toBeVisible();
+});
+
+it('pressing a deep trigger resolves its href in the focused tab', () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="banana" href="/banana/details" />
+          </TabList>
+          <TabTrigger name="banana" testID="deep-trigger" />
+          <TabSlot />
+        </Tabs>
+      ),
+      'banana/_layout': () => <Stack />,
+      'banana/index': () => <Text testID="banana-index">Index</Text>,
+      'banana/details': () => <Text testID="banana-details">Details</Text>,
+    },
+    { initialUrl: '/banana' }
+  );
+
+  fireEvent.press(screen.getByTestId('deep-trigger'));
+  expect(screen.getByTestId('banana-details')).toBeVisible();
 });
 
 it('should respect `unstable_settings on native', () => {
@@ -1093,15 +1144,12 @@ it('passes query params to a direct child navigator', () => {
     ),
     index: () => null,
     'movies/_layout': function MoviesLayout() {
-      const { filter } = useLocalSearchParams();
-      return (
-        <>
-          <Text testID="filter">{filter}</Text>
-          <Stack />
-        </>
-      );
+      return <Stack />;
     },
-    'movies/index': () => null,
+    'movies/index': function Movies() {
+      const { filter } = useLocalSearchParams();
+      return <Text testID="filter">{filter}</Text>;
+    },
   });
 
   fireEvent.press(screen.getByTestId('goto-movies'));
@@ -1268,6 +1316,34 @@ it('resets on focus when resetOnFocus is true', () => {
   fireEvent.press(screen.getByTestId('goto-stack'));
   expect(screen.getByTestId('stack-index')).toBeVisible();
   expect(screen).toHaveSegments(['stack']);
+});
+
+it('resets before resolving a deep trigger destination', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" testID="goto-index" href="/" />
+          <TabTrigger name="stack" testID="goto-stack" href="/stack/details" resetOnFocus />
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    index: () => null,
+    'stack/_layout': () => <Stack />,
+    'stack/index': () => <Text testID="stack-index">Index</Text>,
+    'stack/page': () => <Text testID="stack-page">Page</Text>,
+    'stack/details': () => <Text testID="stack-details">Details</Text>,
+  });
+
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  act(() => router.push('/stack/page'));
+  fireEvent.press(screen.getByTestId('goto-index'));
+  fireEvent.press(screen.getByTestId('goto-stack'));
+  expect(screen.getByTestId('stack-details')).toBeVisible();
+
+  act(() => router.back());
+  expect(screen).toHavePathname('/');
 });
 
 it('resets when focused tab is pressed again', async () => {

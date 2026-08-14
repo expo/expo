@@ -1,5 +1,6 @@
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
+import { warnIfNestedParams, warnIfScreenParam } from '../navigationParams';
 import type { NavigationState, PartialState } from '../react-navigation/native';
 import { safeDecodeURIComponent } from '../utils/url';
 import type { FocusedRouteState } from './types';
@@ -32,18 +33,11 @@ type StrictState = (FocusedRouteState | NavigationState | PartialState<Navigatio
   routes: {
     key?: string;
     name: string;
-    params?: StrictFocusedRouteParams;
+    params?: object;
     path?: string;
     state?: StrictState;
   }[];
 };
-
-type StrictFocusedRouteParams =
-  | Record<string, string | string[]>
-  | {
-      screen?: string;
-      params?: StrictFocusedRouteParams;
-    };
 
 export function getRouteInfoFromState(state?: StrictState): UrlObject {
   if (!state) return defaultRouteInfo;
@@ -51,6 +45,8 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   // TODO(@kitten): Review edge-case type safety
   const index = 'index' in state ? (state.index ?? 0) : 0;
   let route = state.routes[index]!;
+  warnIfScreenParam(route.params);
+  warnIfNestedParams(route.params);
 
   if (route.name === NOT_FOUND_ROUTE_NAME || route.name === SITEMAP_ROUTE_NAME) {
     const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
@@ -70,10 +66,12 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   state = route.state;
 
   const segments: string[] = [];
-  let params: UrlObject['params'] = Object.create(null);
+  let params: Record<string, unknown> = Object.create(null);
 
   while (state) {
     route = state.routes['index' in state && state.index ? state.index : 0]!;
+    warnIfScreenParam(route.params);
+    warnIfNestedParams(route.params);
 
     Object.assign(params, route.params);
 
@@ -91,46 +89,16 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
       if (typeof value === 'string') {
         return [key, safeDecodeURIComponent(value)];
       } else if (Array.isArray(value)) {
-        return [key, value.map((v) => safeDecodeURIComponent(v))];
+        return [key, value.map((v) => (typeof v === 'string' ? safeDecodeURIComponent(v) : v))];
       } else {
         return [key, value];
       }
     })
   );
 
-  /**
-   * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
-   * then the state may be incomplete. The rest of the path is in the params, instead of being a route
-   */
-  let routeParams: StrictFocusedRouteParams | undefined = route.params;
-  while (routeParams && 'screen' in routeParams) {
-    if (typeof routeParams.screen === 'string') {
-      const screen = routeParams.screen.startsWith('/')
-        ? routeParams.screen.slice(1)
-        : routeParams.screen;
-      segments.push(...screen.split('/'));
-    }
-
-    if (typeof routeParams.params === 'object' && !Array.isArray(routeParams.params)) {
-      routeParams = routeParams.params;
-    } else {
-      routeParams = undefined;
-    }
-  }
-
-  if (route.params && 'screen' in route.params && route.params.screen === 'string') {
-    const screen = route.params.screen.startsWith('/')
-      ? route.params.screen.slice(1)
-      : route.params.screen;
-    segments.push(...screen.split('/'));
-  }
-
   if (segments[segments.length - 1] === 'index') {
     segments.pop();
   }
-
-  delete params['screen'];
-  delete params['params'];
 
   const pathParams = new Set<string>();
 
@@ -150,9 +118,9 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
             // Not founds are optional, do nothing if its not present
             return [];
           } else if (Array.isArray(notFoundPath)) {
-            return notFoundPath;
+            return notFoundPath.map(String);
           } else {
-            return [notFoundPath];
+            return [String(notFoundPath)];
           }
         } else if (segment.startsWith('[...') && segment.endsWith(']')) {
           let paramName = segment.slice(4, -1);
@@ -166,14 +134,14 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
           pathParams.add(paramName);
 
           // Catchall params are optional
-          return values || [];
+          return Array.isArray(values) ? values.map(String) : values ? [String(values)] : [];
         } else if (segment.startsWith('[') && segment.endsWith(']')) {
           const paramName = segment.slice(1, -1);
           const value = params[paramName];
           pathParams.add(paramName);
 
           // Optional params are optional
-          return value ? [value] : [];
+          return value ? [String(value)] : [];
         } else {
           return [segment];
         }
@@ -186,9 +154,9 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
       if (pathParams.has(key)) {
         return [];
       } else if (Array.isArray(value)) {
-        return value.map((v) => [key, v]);
+        return value.map((v) => [key, String(v)]);
       }
-      return [[key, value]];
+      return [[key, String(value)]];
     })
   );
 
@@ -206,7 +174,9 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   return {
     segments,
     pathname,
-    params,
+    // Navigation params can contain ordinary object values at runtime despite the public search-param type.
+    // TODO: address this together with other params serialization issues
+    params: params as UrlObject['params'],
     unstable_globalHref: appendBaseUrl(pathnameWithParams),
     searchParams,
     pathnameWithParams,

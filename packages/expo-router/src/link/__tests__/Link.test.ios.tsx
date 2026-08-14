@@ -431,7 +431,7 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
+                path: '/apple',
               },
             ],
             stale: false,
@@ -587,7 +587,7 @@ test('can dynamically route using singular function', () => {
                 id: '1',
                 slug: 'apple',
               },
-              path: undefined,
+              path: '/apple?id=1',
             },
           ],
           stale: false,

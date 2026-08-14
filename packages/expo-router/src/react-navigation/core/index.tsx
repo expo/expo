@@ -16,10 +16,6 @@ export { findFocusedRoute } from '../../fork/findFocusedRoute';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { getActionFromState } from './getActionFromState';
-/**
- * @deprecated Will be removed in a future SDK.
- */
 export { getFocusedRouteNameFromRoute } from './getFocusedRouteNameFromRoute';
 /**
  * @deprecated Will be removed in a future SDK.

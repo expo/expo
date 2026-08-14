@@ -1,6 +1,6 @@
 import { getPathFromState, getPathDataFromState, type Options } from '../getPathFromState';
 
-it(`handles nested params.screen/params.params for dynamic routes`, () => {
+it(`serializes screen and object params instead of treating them as nested state`, () => {
   const state = {
     routes: [
       {
@@ -31,7 +31,9 @@ it(`handles nested params.screen/params.params for dynamic routes`, () => {
     },
   };
 
-  expect(getPathFromState(state, config as Options<object>)).toBe('/foo/bar');
+  expect(getPathFromState(state, config as Options<object>)).toBe(
+    '/?screen=foo&params=%5Bobject%20Object%5D'
+  );
 });
 
 it('serializes screen as a query param for non-group routes without nested state', () => {
@@ -52,7 +54,7 @@ it('serializes screen as a query param for non-group routes without nested state
   expect(getPathFromState(state, config)).toBe('/root?screen=child');
 });
 
-it('does not serialize screen as a query param for routes with nested state', () => {
+it('does not hoist screen from an ancestor route into focused query params', () => {
   const state = {
     routes: [
       {
@@ -74,6 +76,22 @@ it('does not serialize screen as a query param for routes with nested state', ()
   };
 
   expect(getPathFromState(state, config)).toBe('/root/child');
+});
+
+it('does not implicitly select a child for group routes without nested state', () => {
+  const state = { routes: [{ name: '(group)' }] };
+  const config = {
+    screens: {
+      '(group)': {
+        screens: {
+          index: 'index',
+          other: 'other',
+        },
+      },
+    },
+  };
+
+  expect(getPathFromState(state, config)).toBe('/');
 });
 
 it('does not implicitly select a child for non-group routes without nested state', () => {

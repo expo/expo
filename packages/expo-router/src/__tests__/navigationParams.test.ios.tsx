@@ -4,6 +4,7 @@ import {
   hasParam,
   removeInternalExpoRouterParams,
   removeParams,
+  warnIfScreenParam,
   type InternalExpoRouterParamName,
   type InternalExpoRouterParams,
 } from '../navigationParams';
@@ -24,12 +25,10 @@ describe(appendInternalExpoRouterParams, () => {
   it.each([NO_ANIMATION, IS_PREVIEW])('appends internal params %p to empty params', (param) => {
     expect(appendInternalExpoRouterParams({}, { [param]: true })).toEqual({
       [param]: true,
-      params: { [param]: true },
     });
 
     expect(appendInternalExpoRouterParams({}, { [param]: false })).toEqual({
       [param]: false,
-      params: { [param]: false },
     });
   });
 
@@ -37,22 +36,20 @@ describe(appendInternalExpoRouterParams, () => {
     expect(appendInternalExpoRouterParams({ foo: 1 }, { [IS_PREVIEW]: true })).toEqual({
       foo: 1,
       [IS_PREVIEW]: true,
-      params: { [IS_PREVIEW]: true },
     });
 
     expect(appendInternalExpoRouterParams({ foo: 1, bar: 2 }, { [IS_PREVIEW]: true })).toEqual({
       foo: 1,
       bar: 2,
       [IS_PREVIEW]: true,
-      params: { [IS_PREVIEW]: true },
     });
   });
 
-  it('merges internal params with nested params', () => {
+  it('preserves ordinary nested params without writing internal params into them', () => {
     expect(appendInternalExpoRouterParams({ params: { baz: 3 } }, { [IS_PREVIEW]: false })).toEqual(
       {
         [IS_PREVIEW]: false,
-        params: { baz: 3, [IS_PREVIEW]: false },
+        params: { baz: 3 },
       }
     );
 
@@ -61,11 +58,11 @@ describe(appendInternalExpoRouterParams, () => {
     ).toEqual({
       foo: 1,
       [IS_PREVIEW]: true,
-      params: { bar: 2, [IS_PREVIEW]: true },
+      params: { bar: 2 },
     });
   });
 
-  it('overwrites existing internal params in nested params', () => {
+  it('does not overwrite internal params in ordinary nested params', () => {
     expect(
       appendInternalExpoRouterParams(
         { params: { [IS_PREVIEW]: false, other: 1 } },
@@ -73,7 +70,7 @@ describe(appendInternalExpoRouterParams, () => {
       )
     ).toEqual({
       [IS_PREVIEW]: true,
-      params: { other: 1, [IS_PREVIEW]: true },
+      params: { other: 1, [IS_PREVIEW]: false },
     });
   });
 
@@ -84,7 +81,6 @@ describe(appendInternalExpoRouterParams, () => {
       foo: 1,
       [NO_ANIMATION]: true,
       [IS_PREVIEW]: false,
-      params: { [NO_ANIMATION]: true, [IS_PREVIEW]: false },
     });
   });
 
@@ -92,7 +88,6 @@ describe(appendInternalExpoRouterParams, () => {
     expect(appendInternalExpoRouterParams({ foo: 1 }, { [IS_PREVIEW]: undefined })).toEqual({
       foo: 1,
       [IS_PREVIEW]: undefined,
-      params: { [IS_PREVIEW]: undefined },
     });
   });
 
@@ -106,7 +101,6 @@ describe(appendInternalExpoRouterParams, () => {
   it('returns params with only expoParams if params is undefined', () => {
     expect(appendInternalExpoRouterParams(undefined, { [IS_PREVIEW]: true })).toEqual({
       [IS_PREVIEW]: true,
-      params: { [IS_PREVIEW]: true },
     });
   });
 
@@ -125,19 +119,21 @@ describe(getInternalExpoRouterParams, () => {
     expect(getInternalExpoRouterParams(params)).toEqual({ [param]: 42 });
   });
 
-  it.each([NO_ANIMATION, IS_PREVIEW])('gets internal params %p from nested params', (param) => {
-    const params = { foo: 1, params: { [param]: 'abc' } };
-    expect(getInternalExpoRouterParams(params)).toEqual({ [param]: 'abc' });
-  });
+  it.each([NO_ANIMATION, IS_PREVIEW])(
+    'ignores internal params %p in ordinary nested params',
+    (param) => {
+      const params = { foo: 1, params: { [param]: 'abc' } };
+      expect(getInternalExpoRouterParams(params)).toEqual({});
+    }
+  );
 
-  it('gets internal params from both root and nested, prefers root', () => {
+  it('gets internal params only from the root', () => {
     const params = {
       [IS_PREVIEW]: 'root',
       params: { [NO_ANIMATION]: 'nested', [IS_PREVIEW]: 'nested' },
     };
     expect(getInternalExpoRouterParams(params)).toEqual({
       [IS_PREVIEW]: 'root',
-      [NO_ANIMATION]: 'nested',
     });
   });
 
@@ -153,15 +149,15 @@ describe(removeInternalExpoRouterParams, () => {
     expect(removeInternalExpoRouterParams(params)).toEqual({ foo: 1 });
   });
 
-  it('removes internal params from nested params', () => {
+  it('preserves internal-looking params in ordinary nested params', () => {
     const params = { foo: 1, params: { bar: 2, [IS_PREVIEW]: 3 } };
     expect(removeInternalExpoRouterParams(params)).toEqual({
       foo: 1,
-      params: { bar: 2 },
+      params: { bar: 2, [IS_PREVIEW]: 3 },
     });
   });
 
-  it('removes internal params from both root and nested', () => {
+  it('removes internal params only from the root', () => {
     const params = {
       [IS_PREVIEW]: 1,
       foo: 2,
@@ -169,7 +165,7 @@ describe(removeInternalExpoRouterParams, () => {
     };
     expect(removeInternalExpoRouterParams(params)).toEqual({
       foo: 2,
-      params: { bar: 5 },
+      params: { [NO_ANIMATION]: 3, [IS_PREVIEW]: 4, bar: 5 },
     });
   });
 
@@ -182,9 +178,12 @@ describe(removeInternalExpoRouterParams, () => {
     expect(removeInternalExpoRouterParams(params)).toEqual({});
   });
 
-  it('removes "params" key if nested params become empty', () => {
+  it('preserves the ordinary "params" key', () => {
     const params = { foo: 1, params: { [IS_PREVIEW]: 2 } };
-    expect(removeInternalExpoRouterParams(params)).toEqual({ foo: 1 });
+    expect(removeInternalExpoRouterParams(params)).toEqual({
+      foo: 1,
+      params: { [IS_PREVIEW]: 2 },
+    });
   });
 });
 
@@ -199,23 +198,23 @@ describe(removeParams, () => {
     expect(removeParams(params, ['bar', 'qux'])).toEqual({ foo: 1, baz: 3 });
   });
 
-  it('removes params from nested params', () => {
+  it('does not remove params from nested objects', () => {
     const params = { foo: 1, params: { bar: 2, baz: 3 } };
     expect(removeParams(params, ['baz'])).toEqual({
       foo: 1,
-      params: { bar: 2 },
+      params: { bar: 2, baz: 3 },
     });
   });
 
-  it('removes params from both root and nested', () => {
+  it('removes params only from the root', () => {
     const params = { foo: 1, bar: 2, params: { baz: 3, qux: 4 } };
     expect(removeParams(params, ['bar', 'qux'])).toEqual({
       foo: 1,
-      params: { baz: 3 },
+      params: { baz: 3, qux: 4 },
     });
   });
 
-  it('removes params from deeply nested structure', () => {
+  it('preserves deeply nested structures', () => {
     const params = {
       foo: 1,
       bar: 2,
@@ -223,13 +222,13 @@ describe(removeParams, () => {
     };
     expect(removeParams(params, ['bar', 'qux'])).toEqual({
       foo: 1,
-      params: { baz: 3, params: { params: { x: 1 } } },
+      params: { baz: 3, qux: 4, params: { bar: 3, params: { qux: 2, x: 1 } } },
     });
   });
 
-  it('removes "params" key from result when nested params become empty', () => {
+  it('does not inspect whether nested params would become empty', () => {
     const params = { foo: 1, params: { bar: 2 } };
-    expect(removeParams(params, ['bar'])).toEqual({ foo: 1 });
+    expect(removeParams(params, ['bar'])).toEqual({ foo: 1, params: { bar: 2 } });
   });
 
   it('returns empty object if all params are removed', () => {
@@ -242,11 +241,11 @@ describe(removeParams, () => {
     expect(removeParams(params, ['baz', 'qux'])).toEqual({ foo: 1, bar: 2 });
   });
 
-  it('preserves other nested params when removing some', () => {
+  it('preserves all nested params when removing a root key', () => {
     const params = { foo: 1, params: { bar: 2, baz: 3, qux: 4 } };
     expect(removeParams(params, ['baz'])).toEqual({
       foo: 1,
-      params: { bar: 2, qux: 4 },
+      params: { bar: 2, baz: 3, qux: 4 },
     });
   });
 
@@ -259,21 +258,20 @@ describe(removeParams, () => {
     expect(removeParams({}, ['foo'])).toEqual({});
   });
 
-  it('always removes "params" key from root level', () => {
+  it('removes "params" only when explicitly requested', () => {
     const params = { foo: 1, params: { bar: 2 } };
     expect(removeParams(params, [])).toEqual({ foo: 1, params: { bar: 2 } });
-    // Even if "params" is in the paramName array, it's always filtered out
-    expect(removeParams(params, ['params'])).toEqual({ foo: 1, params: { bar: 2 } });
+    expect(removeParams(params, ['params'])).toEqual({ foo: 1 });
   });
 
   it('handles params with nested params that are not objects', () => {
     const params = { foo: 1, params: 'not an object' };
-    expect(removeParams(params, ['foo'])).toEqual({});
+    expect(removeParams(params, ['foo'])).toEqual({ params: 'not an object' });
   });
 
   it('handles params with nested params as null', () => {
     const params = { foo: 1, params: null };
-    expect(removeParams(params, ['foo'])).toEqual({});
+    expect(removeParams(params, ['foo'])).toEqual({ params: null });
   });
 
   it('handles complex nested structure', () => {
@@ -286,7 +284,7 @@ describe(removeParams, () => {
     expect(removeParams(params, ['bar', 'quux', 'corge'])).toEqual({
       foo: 1,
       baz: 3,
-      params: { qux: 4 },
+      params: { qux: 4, quux: 5, corge: 6 },
     });
   });
 
@@ -327,9 +325,9 @@ describe(hasParam, () => {
     expect(hasParam(params, 'bar')).toBe(false);
   });
 
-  it('returns true when param exists in nested params', () => {
+  it('returns false when param exists only in nested params', () => {
     const params = { foo: 1, params: { bar: 2 } };
-    expect(hasParam(params, 'bar')).toBe(true);
+    expect(hasParam(params, 'bar')).toBe(false);
   });
 
   it('returns true when param exists at both root and nested levels', () => {
@@ -342,9 +340,9 @@ describe(hasParam, () => {
     expect(hasParam(params, 'baz')).toBe(false);
   });
 
-  it('returns true when param exists in deeply nested params', () => {
+  it('does not search deeply nested params', () => {
     const params = { foo: 1, params: { bar: 2, params: { baz: 3 } } };
-    expect(hasParam(params, 'baz')).toBe(true);
+    expect(hasParam(params, 'baz')).toBe(false);
   });
 
   it('handles undefined params', () => {
@@ -390,7 +388,7 @@ describe(hasParam, () => {
     expect(hasParam({ foo: '' }, 'foo')).toBe(true);
   });
 
-  it('searches recursively through multiple nested levels', () => {
+  it('checks only the root level', () => {
     const params = {
       a: 1,
       params: {
@@ -404,9 +402,9 @@ describe(hasParam, () => {
       },
     };
     expect(hasParam(params, 'a')).toBe(true);
-    expect(hasParam(params, 'b')).toBe(true);
-    expect(hasParam(params, 'c')).toBe(true);
-    expect(hasParam(params, 'd')).toBe(true);
+    expect(hasParam(params, 'b')).toBe(false);
+    expect(hasParam(params, 'c')).toBe(false);
+    expect(hasParam(params, 'd')).toBe(false);
     expect(hasParam(params, 'e')).toBe(false);
   });
 
@@ -422,8 +420,28 @@ describe(hasParam, () => {
     expect(hasParam(params, NO_ANIMATION)).toBe(true);
   });
 
-  it('checks for internal expo router params in nested params', () => {
+  it('does not check for internal expo router params in nested params', () => {
     const params = { foo: 1, params: { [IS_PREVIEW]: false } };
-    expect(hasParam(params, IS_PREVIEW)).toBe(true);
+    expect(hasParam(params, IS_PREVIEW)).toBe(false);
+  });
+});
+
+describe(warnIfScreenParam, () => {
+  it('warns once per params object with the migration message', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const first = { screen: 'feed' };
+    const second = { screen: 'settings' };
+
+    warnIfScreenParam(first);
+    warnIfScreenParam(first);
+    warnIfScreenParam(second);
+    warnIfScreenParam({ params: { screen: 'nested' } });
+
+    expect(warn).toHaveBeenCalledTimes(2);
+    expect(warn).toHaveBeenCalledWith(
+      "Navigating with a `screen` param is no longer supported. Expo Router now builds real navigation state for nested destinations, so `screen` and `params` are treated as ordinary user params. Navigate with a full href instead, for example `router.push('/(tabs)/feed')`."
+    );
+
+    warn.mockRestore();
   });
 });

@@ -2,7 +2,6 @@ import type { ColorValue } from 'react-native';
 
 import type { getStateFromPath as getExpoStateFromPath } from '../../fork/getStateFromPath';
 import type {
-  getActionFromState as getActionFromStateDefault,
   getPathFromState as getPathFromStateDefault,
   PathConfigMap,
   Route,
@@ -167,10 +166,6 @@ export type LinkingOptions<ParamList extends object> = {
    * Only applicable on Web.
    */
   getPathFromState?: typeof getPathFromStateDefault;
-  /**
-   * Custom function to convert the state object to a valid action (advanced).
-   */
-  getActionFromState?: typeof getActionFromStateDefault;
 };
 
 /**

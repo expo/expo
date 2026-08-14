@@ -202,11 +202,9 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'one',
-              params: {
-                params: {},
-                screen: 'index',
-              },
+              params: {},
               state: {
+                __internal__routerActionState: true,
                 index: 3,
                 key: expect.any(String),
                 routeNames: ['index', 'two', 'page'],
@@ -215,6 +213,7 @@ test('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
+                    path: '/one',
                   },
                   {
                     key: expect.any(String),
@@ -231,12 +230,10 @@ test('dismissAll nested', () => {
                   {
                     key: expect.any(String),
                     name: 'two',
-                    params: {
-                      params: {},
-                      screen: 'index',
-                    },
+                    params: {},
                     path: undefined,
                     state: {
+                      __internal__routerActionState: true,
                       index: 2,
                       key: expect.any(String),
                       routeNames: ['index', 'page'],
@@ -245,6 +242,7 @@ test('dismissAll nested', () => {
                           key: expect.any(String),
                           name: 'index',
                           params: {},
+                          path: '/one/two',
                         },
                         {
                           key: expect.any(String),
@@ -317,11 +315,9 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'one',
-              params: {
-                params: {},
-                screen: 'index',
-              },
+              params: {},
               state: {
+                __internal__routerActionState: true,
                 index: 3,
                 key: expect.any(String),
                 routeNames: ['index', 'two', 'page'],
@@ -330,6 +326,7 @@ test('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
+                    path: '/one',
                   },
                   {
                     key: expect.any(String),
@@ -346,12 +343,10 @@ test('dismissAll nested', () => {
                   {
                     key: expect.any(String),
                     name: 'two',
-                    params: {
-                      params: {},
-                      screen: 'index',
-                    },
+                    params: {},
                     path: undefined,
                     state: {
+                      __internal__routerActionState: true,
                       index: 0,
                       key: expect.any(String),
                       routeNames: ['index', 'page'],
@@ -360,6 +355,7 @@ test('dismissAll nested', () => {
                           key: expect.any(String),
                           name: 'index',
                           params: {},
+                          path: '/one/two',
                         },
                       ],
                       stale: false,
@@ -420,11 +416,9 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'one',
-              params: {
-                params: {},
-                screen: 'index',
-              },
+              params: {},
               state: {
+                __internal__routerActionState: true,
                 index: 0,
                 key: expect.any(String),
                 routeNames: ['index', 'two', 'page'],
@@ -433,6 +427,7 @@ test('dismissAll nested', () => {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
+                    path: '/one',
                   },
                 ],
                 stale: false,
@@ -725,7 +720,10 @@ describe('Stack.Screen types', () => {
     expectTypeOf<StackScreenProps>().not.toHaveProperty('redirect');
     expectTypeOf<ScreenProps>().not.toHaveProperty('initialParams');
     expectTypeOf<StackScreenProps>().not.toHaveProperty('initialParams');
-    expectTypeOf({ name: 'settings', dangerouslySingular: true }).toExtend<StackScreenProps>();
+    expectTypeOf({
+      name: 'settings',
+      dangerouslySingular: true,
+    }).toExtend<StackScreenProps>();
     expectTypeOf({
       name: 'details',
       dangerouslySingular: (name, params) => `${name}-${params.id}`,
@@ -746,7 +744,9 @@ describe('Stack.Screen types', () => {
 
   it('accepts function-form options', () => {
     expectTypeOf({
-      options: ({ route }) => ({ title: (route.params as Record<string, string>)?.name }),
+      options: ({ route }) => ({
+        title: (route.params as Record<string, string>)?.name,
+      }),
     } satisfies StackScreenProps).toExtend<StackScreenProps>();
     expectTypeOf({
       name: 'profile',
@@ -794,7 +794,9 @@ describe('function-form options', () => {
   });
 
   it('calls function-form options with route and navigation', () => {
-    const optionsFn = jest.fn(({ route }) => ({ title: `Page: ${route.name}` }));
+    const optionsFn = jest.fn(({ route }) => ({
+      title: `Page: ${route.name}`,
+    }));
 
     renderRouter({
       _layout: () => (
