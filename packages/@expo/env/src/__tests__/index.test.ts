@@ -343,6 +343,24 @@ describe(loadProjectEnv, () => {
     expect(process.env.NODE_ENV).toBe('production');
   });
 
+  it('removes EXPO_CONFIG_MODE after loading with a mode', () => {
+    const systemEnv: NodeJS.ProcessEnv = { EXPO_CONFIG_MODE: 'production' };
+    vol.fromJSON({ '.env.production': 'EXPO_CONFIG_MODE=development' }, '/');
+
+    loadProjectEnv('/', { mode: 'production', systemEnv });
+
+    expect(systemEnv.NODE_ENV).toBe('production');
+    expect(systemEnv.EXPO_CONFIG_MODE).toBeUndefined();
+  });
+
+  it('keeps EXPO_CONFIG_MODE when no mode is given', () => {
+    process.env.EXPO_CONFIG_MODE = 'production';
+
+    loadProjectEnv('/');
+
+    expect(process.env.EXPO_CONFIG_MODE).toBe('production');
+  });
+
   it('parses .env file with mutating system environment variables', () => {
     delete process.env.FOO;
     vol.fromJSON({ '.env': 'FOO=bar' }, '/');
