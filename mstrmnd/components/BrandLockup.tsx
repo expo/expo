@@ -32,18 +32,21 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
+    gap: 8,
+    flexShrink: 1,
   },
   word: {
     fontFamily: 'Syne_800ExtraBold',
     fontSize: 22,
     color: colors.chromeHot,
     letterSpacing: 5.5,
+    flexShrink: 1,
   },
   wordCompact: {
     fontFamily: 'Syne_800ExtraBold',
-    fontSize: 16,
+    fontSize: 15,
     color: colors.chromeHot,
-    letterSpacing: 4.2,
+    letterSpacing: 2.8,
+    flexShrink: 1,
   },
 });
