@@ -92,7 +92,8 @@ public actor AppIntentEntityStore {
     ofKind kind: String,
     matching identifiers: [String]
   ) throws -> [AppIntentEntityRecord] {
-    return try entities(ofKind: kind).filter { identifiers.contains($0.id) }
+    let identifierSet = Set(identifiers)
+    return try entities(ofKind: kind).filter { identifierSet.contains($0.id) }
   }
 
   /// Replaces the catalog of the given kind, throwing instead of leaving the previous one in place
