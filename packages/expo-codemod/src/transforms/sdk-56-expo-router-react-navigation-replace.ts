@@ -201,13 +201,27 @@ const transform: Transform = (fileInfo, api) => {
     printErrorBlock('Unsupported import style — manual change needed', errors);
   }
 
-  if (unsupportedPackageErrors.length || errors.length) {
-    return undefined;
-  }
-
+  // We intentionally do not bail out of the entire file when there are
+  // unsupported packages (e.g. native-stack/drawer) or unsupported import
+  // styles. Those are reported above for the user to migrate manually, but any
+  // clean named imports in the same file must still be rewritten. Otherwise they
+  // are left pointing at `@react-navigation/*`, which silently loads a second
+  // copy of react-navigation and crashes at navigator registration.
+  let didRewrite = false;
   for (const path of mappablePaths) {
+    const specifiers = (path.node.specifiers ?? []) as ImportSpecifierWithKind[];
+    // Skip imports we cannot safely rewrite (default/namespace style). These are
+    // reported above and left untouched for the user to migrate manually.
+    if (specifiers.some((spec) => UNSUPPORTED_SPECIFIERS[spec.type] != null)) {
+      continue;
+    }
     const sourceModule = path.node.source.value as string;
     path.node.source.value = IMPORT_MAP[sourceModule];
+    didRewrite = true;
+  }
+
+  if (!didRewrite) {
+    return undefined;
   }
 
   const groups = groupPathsBySource(root.find(j.ImportDeclaration).paths());
