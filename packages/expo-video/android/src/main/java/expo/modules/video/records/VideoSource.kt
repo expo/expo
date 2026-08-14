@@ -40,7 +40,6 @@ class VideoSource(
       "DRMHeadersValues:${this.drm?.headers?.values?.joinToString { it }}}" +
       "NotificationDataTitle:${this.metadata?.title}" +
       "NotificationDataSecondaryText:${this.metadata?.artist}" +
-      "NotificationDataAlbum:${this.metadata?.album}" +
       "NotificationDataArtwork:${this.metadata?.artwork?.path}" +
       "ContentType:${this.contentType.value}"
   }
