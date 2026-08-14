@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- [iOS] Added `BackgroundTaskStatus.Denied`, returned when the user has turned Background App Refresh off for the app or for the whole system. It is distinct from `Restricted`, which the user cannot lift. ([#PR](https://github.com/expo/expo/pull/PR) by [@arnautresserras](https://github.com/arnautresserras))
+
 ### 🐛 Bug fixes
+
+- [iOS] Fixed `getStatusAsync` reporting `Available` on every physical device regardless of the system Background App Refresh setting. It now reads `UIApplication.backgroundRefreshStatus` instead of only checking whether the app is running on a simulator. ([#PR](https://github.com/expo/expo/pull/PR) by [@arnautresserras](https://github.com/arnautresserras))
 
 ### 💡 Others
 
