@@ -4,6 +4,7 @@ import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { getValidInitialRouteName, useRouteNode, useContextKey } from '../Route';
+import { useComponent } from '../fork/useComponent';
 import { useRouteInfo } from '../hooks';
 import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
@@ -33,7 +34,6 @@ import { isTabSlot } from './TabSlot';
 import { isTabTrigger } from './TabTrigger';
 import type { ScreenTrigger } from './common';
 import { ViewSlot, useTriggersToScreens } from './common';
-import { useComponent } from './useComponent';
 
 export * from './TabContext';
 export * from './TabList';

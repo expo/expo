@@ -8,11 +8,11 @@ import type {
   NavigationState,
   ParamListBase,
 } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { NavigatorTypeContext } from '../NavigatorTypeContext';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
@@ -21,15 +21,13 @@ beforeEach(() => {
 
 // `MockRouter` with `type` dropped from every state it produces.
 function StateWithoutTypeRouter(options: DefaultRouterOptions) {
-  const { getInitialState, getRehydratedState, ...router } = MockRouter(options);
+  const { getRehydratedState, ...router } = MockRouter(options);
 
   // `MockRouter` always sets a type, so the result is only a `NavigationState` because `type` is optional.
   const omitType = ({ type: _stateType, ...state }: NavigationState) => state as NavigationState;
 
   return {
     ...router,
-    getInitialState: (...args: Parameters<typeof getInitialState>) =>
-      omitType(getInitialState(...args)),
     getRehydratedState: (...args: Parameters<typeof getRehydratedState>) =>
       omitType(getRehydratedState(...args)),
   };
