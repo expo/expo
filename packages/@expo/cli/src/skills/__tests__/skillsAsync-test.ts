@@ -333,7 +333,7 @@ describe('autoSyncSkillsAsync', () => {
         expo: { skills: { autoSync: true, agents: ['claude-code'] } },
       }),
     });
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent, codexAgent]);
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
@@ -357,7 +357,7 @@ describe('autoSyncSkillsAsync', () => {
       packageName: 'other',
       linkName: 'npm-other-other-skill',
     };
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill, otherSkill]);
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
@@ -376,7 +376,7 @@ describe('autoSyncSkillsAsync', () => {
         expo: { skills: { autoSync: true, agents: ['claude-code'] } },
       }),
     });
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
@@ -395,8 +395,8 @@ describe('autoSyncSkillsAsync', () => {
         expo: { skills: { autoSync: true } },
       }),
     });
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(null);
-    jest.mocked(detectInstalledAgents).mockReturnValueOnce([cursorAgent]);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(null);
+    jest.mocked(detectInstalledAgentsAsync).mockResolvedValueOnce([cursorAgent]);
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
 
@@ -412,8 +412,8 @@ describe('autoSyncSkillsAsync', () => {
         expo: { skills: { autoSync: true } },
       }),
     });
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(null);
-    jest.mocked(detectInstalledAgents).mockReturnValueOnce([]);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(null);
+    jest.mocked(detectInstalledAgentsAsync).mockResolvedValueOnce([]);
 
     await autoSyncSkillsAsync('/root');
 
@@ -427,7 +427,7 @@ describe('autoSyncSkillsAsync', () => {
         expo: { skills: { autoSync: true, agents: ['claude-code'] } },
       }),
     });
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
     jest.mocked(discoverSkillsAsync).mockRejectedValueOnce(new Error('boom'));
 

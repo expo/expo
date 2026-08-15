@@ -119,11 +119,16 @@ it('syncs agent skills on `npx expo install` when auto sync is enabled', async (
   await writeSkillPackageAsync(path.join(projectRoot, 'test-skills'), 'test-skills', ['alpha']);
   await writeSkillPackageAsync(path.join(projectRoot, 'other-skills'), 'other-skills', ['beta']);
 
-  // Enable auto sync for Claude Code
+  // Enable auto sync and cache the Claude Code agent selection
   const pkgPath = path.resolve(projectRoot, 'package.json');
   const pkg = JSON.parse(await fs.readFile(pkgPath, 'utf8'));
-  pkg.expo = { skills: { autoSync: true, agents: ['claude-code'] } };
+  pkg.expo = { skills: { autoSync: true } };
   await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
+  await fs.mkdir(path.join(projectRoot, '.expo'), { recursive: true });
+  await fs.writeFile(
+    path.join(projectRoot, '.expo/skills.json'),
+    JSON.stringify({ agents: ['claude-code'] })
+  );
 
   const env = {
     EXPO_NO_NEW_ARCH_COMPAT_CHECK: '1',

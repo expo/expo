@@ -193,7 +193,7 @@ export async function autoSyncSkillsAsync(
       return;
     }
 
-    const agents = getConfiguredAgents(projectRoot);
+    const agents = await getConfiguredAgentsAsync(projectRoot);
     if (!agents.length) {
       debugEvent('auto_sync_skipped', { reason: 'no-agents' });
       return;
