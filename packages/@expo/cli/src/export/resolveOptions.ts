@@ -18,6 +18,8 @@ export type Options = {
   inlineSourceMaps: boolean;
   skipSSG: boolean;
   hostedNative: boolean;
+  /** Bundler override for production export, e.g. `expo export --bundler rollipop`. */
+  bundler?: 'metro' | 'rollipop';
 };
 
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
@@ -98,6 +100,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   return {
     platforms,
     hostedNative: !!args['--unstable-hosted-native'],
+    bundler: (args['--bundler'] as 'metro' | 'rollipop' | undefined) ?? undefined,
     outputDir: args['--output-dir'] ?? 'dist',
     minify: !args['--no-minify'],
     bytecode: !args['--no-bytecode'],

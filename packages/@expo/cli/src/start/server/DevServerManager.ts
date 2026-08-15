@@ -37,12 +37,24 @@ const BUNDLERS = {
 export class DevServerManager {
   private devServers: BundlerDevServer[] = [];
 
-  static async startMetroAsync(projectRoot: string, startOptions: BundlerStartOptions) {
+  static async startMetroAsync(
+    projectRoot: string,
+    startOptions: BundlerStartOptions,
+    /** Bundler override for export, e.g. `expo export --bundler rollipop`. */
+    bundlerOverride?: 'metro' | 'webpack' | 'rollipop'
+  ) {
     const devServerManager = new DevServerManager(projectRoot, startOptions);
+
+    // When exporting, use the bundler configured for native platforms (e.g.
+    // `ios.bundler` / `android.bundler` in app.json), unless explicitly
+    // overridden via `--bundler`. Rollipop ships its own dev server and is
+    // driven through `RollipopBundlerDevServer`.
+    const { exp } = getConfig(projectRoot, { skipPlugins: true, skipSDKVersionRequirement: true });
+    const bundler = bundlerOverride ?? getPlatformBundlers(projectRoot, exp).ios;
 
     await devServerManager.startAsync([
       {
-        type: 'metro',
+        type: bundler,
         options: startOptions,
       },
     ]);

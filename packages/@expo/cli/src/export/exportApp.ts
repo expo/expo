@@ -10,8 +10,8 @@ import path from 'node:path';
 
 import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
+import { BundlerDevServer } from '../start/server/BundlerDevServer';
 import { DevServerManager } from '../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
@@ -66,6 +66,7 @@ export async function exportAppAsync(
     | 'maxWorkers'
     | 'skipSSG'
     | 'hostedNative'
+    | 'bundler'
   >
 ): Promise<void> {
   const projectConfig = getConfig(projectRoot);
@@ -114,18 +115,24 @@ export async function exportAppAsync(
 
   const files: ExportAssetMap = new Map();
 
-  const devServerManager = await DevServerManager.startMetroAsync(projectRoot, {
-    minify,
-    mode,
-    port: 8081,
-    isExporting: true,
-    location: {},
-    resetDevServer: clear,
-    maxWorkers,
-  });
+  const devServerManager = await DevServerManager.startMetroAsync(
+    projectRoot,
+    {
+      minify,
+      mode,
+      port: 8081,
+      isExporting: true,
+      location: {},
+      resetDevServer: clear,
+      maxWorkers,
+    },
+    bundler
+  );
 
   const devServer = devServerManager.getDefaultDevServer();
-  assert(devServer instanceof MetroBundlerDevServer);
+  // `nativeExportBundleAsync` is implemented by both the Metro and Rollipop
+  // dev servers; only Metro supports React Server Components / DOM components.
+  assert(devServer instanceof BundlerDevServer);
 
   const bundles: Partial<Record<Platform, BundleOutput>> = {};
   const domComponentAssetsMetadata: Partial<Record<Platform, PlatformMetadata['assets']>> = {};
@@ -136,8 +143,10 @@ export async function exportAppAsync(
       ? platforms.filter((platform) => platform !== 'web')
       : platforms;
 
+  const isMetro = devServer.name === 'metro';
+
   try {
-    if (devServer.isReactServerComponentsEnabled) {
+    if (isMetro && devServer.isReactServerComponentsEnabled) {
       // In RSC mode, we only need these to be in the client dir.
       // TODO: Merge back with other copy after we add SSR.
       try {
@@ -219,17 +228,19 @@ export async function exportAppAsync(
             isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
           });
 
-          const expoDomComponentReferences = [
-            ...new Set(
-              bundle.artifacts
-                .map((artifact) =>
-                  Array.isArray(artifact.metadata.expoDomComponentReferences)
-                    ? artifact.metadata.expoDomComponentReferences
-                    : []
-                )
-                .flat()
-            ),
-          ];
+          const expoDomComponentReferences = isMetro
+            ? [
+                ...new Set(
+                  bundle.artifacts
+                    .map((artifact) =>
+                      Array.isArray(artifact.metadata.expoDomComponentReferences)
+                        ? artifact.metadata.expoDomComponentReferences
+                        : []
+                    )
+                    .flat()
+                ),
+              ]
+            : [];
           await Promise.all(
             // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
             expoDomComponentReferences.map(async (filePath) => {
@@ -352,7 +363,7 @@ export async function exportAppAsync(
 
     // Additional web-only steps...
 
-    if (platforms.includes('web') && useServerRendering) {
+    if (isMetro && platforms.includes('web') && useServerRendering) {
       const exportServer = exp.web?.output === 'server';
 
       if (exportServer) {
