@@ -1,0 +1,48 @@
+/* Linear aesthetic — keep in sync with tokens/index.ts (also injected from tokens/css.ts). */
+
+:root {
+  --linear-substrate: #000000;
+  --linear-obsidian: #030303;
+  --linear-surface: #0b0b0c;
+  --linear-elevated: #121214;
+  --linear-border-muted: #1f1f23;
+  --linear-border-highlight: #2e2e33;
+  --linear-text-primary: #f5f5f7;
+  --linear-text-secondary: #8a8a93;
+  --linear-accent: #5e6ad2;
+  --linear-hairline: rgba(255, 255, 255, 0.08);
+  --linear-glass-tint: rgba(255, 255, 255, 0.03);
+  --linear-glass-tint-soft: rgba(255, 255, 255, 0.01);
+  --linear-glass-fallback: rgba(18, 18, 20, 0.85);
+  --linear-accent-glow: rgba(94, 106, 210, 0.15);
+  --linear-overlay: rgba(0, 0, 0, 0.5);
+  --linear-shimmer-start: #ffffff;
+  --linear-shimmer-end: #a3a3a3;
+  --linear-blur: 20px;
+  --linear-radius-card: 12px;
+}
+
+.linear-glow-card {
+  background: linear-gradient(
+    135deg,
+    var(--linear-glass-tint) 0%,
+    var(--linear-glass-tint-soft) 100%
+  );
+  backdrop-filter: blur(var(--linear-blur));
+  -webkit-backdrop-filter: blur(var(--linear-blur));
+  border: 1px solid var(--linear-hairline);
+  border-radius: var(--linear-radius-card);
+  box-shadow: 0 4px 30px var(--linear-overlay);
+}
+
+.linear-text-shimmer {
+  background: linear-gradient(
+    180deg,
+    var(--linear-shimmer-start) 0%,
+    var(--linear-shimmer-end) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}

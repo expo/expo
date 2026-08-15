@@ -10,7 +10,7 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import type { DepartmentAgent } from '@/constants/agents';
 import type { AgentStatus } from '@/constants/agents';
-import { colors, radii } from '@/constants/theme';
+import { colors, fonts, radii } from '@/constants/theme';
 import { LifeOrb, LivingPulse } from '@/components/LivingPulse';
 
 type Props = {
@@ -78,8 +78,8 @@ export function AgentPad({
         <LinearGradient
           colors={
             lit
-              ? ['#1A222C', '#10151C', `${agent.accent}22`]
-              : ['#171C24', '#0E1218']
+              ? [colors.padPressed, colors.chassis, `${agent.accent}22`]
+              : [colors.pad, colors.chassis]
           }
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   code: {
-    fontFamily: 'SpaceGrotesk_500Medium',
+    fontFamily: fonts.sansMedium,
     fontSize: 9,
     letterSpacing: 1.2,
     opacity: 0.9,
@@ -167,13 +167,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
-    fontFamily: 'Syne_700Bold',
+    fontFamily: fonts.displayBold,
     color: colors.ink,
     fontSize: 13,
     letterSpacing: 0.6,
   },
   dept: {
-    fontFamily: 'SpaceGrotesk_400Regular',
+    fontFamily: fonts.sans,
     color: colors.muted,
     fontSize: 9,
     marginTop: 1,
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     gap: 3,
   },
   status: {
-    fontFamily: 'SpaceGrotesk_500Medium',
+    fontFamily: fonts.sansMedium,
     fontSize: 8,
     letterSpacing: 0.8,
   },

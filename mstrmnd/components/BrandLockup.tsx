@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { BrandMark } from '@/components/BrandMark';
-import { brand, colors } from '@/constants/theme';
+import { brand, colors, fonts } from '@/constants/theme';
 
 type Props = {
   markSize?: number;
@@ -36,14 +36,14 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   word: {
-    fontFamily: 'Syne_800ExtraBold',
+    fontFamily: fonts.display,
     fontSize: 22,
     color: colors.chromeHot,
     letterSpacing: 5.5,
     flexShrink: 1,
   },
   wordCompact: {
-    fontFamily: 'Syne_800ExtraBold',
+    fontFamily: fonts.display,
     fontSize: 15,
     color: colors.chromeHot,
     letterSpacing: 2.8,

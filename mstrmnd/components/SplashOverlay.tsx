@@ -7,9 +7,9 @@ import Animated, {
   withDelay,
   withTiming,
 } from 'react-native-reanimated';
-import { LinearGradient } from 'expo-linear-gradient';
+import { CinematicBackground } from '@/components/CinematicBackground';
 import { BrandMark } from '@/components/BrandMark';
-import { brand, colors } from '@/constants/theme';
+import { brand, colors, fonts } from '@/constants/theme';
 
 type Props = {
   visible: boolean;
@@ -59,16 +59,7 @@ export function SplashOverlay({ visible, onDone }: Props) {
 
   return (
     <Animated.View style={[styles.root, root]} pointerEvents="none">
-      <LinearGradient
-        colors={['#000000', '#0A0A0C', '#000000']}
-        locations={[0, 0.45, 1]}
-        style={StyleSheet.absoluteFill}
-      />
-      {/* soft spotlight */}
-      <LinearGradient
-        colors={['rgba(255,255,255,0.07)', 'rgba(255,255,255,0.0)']}
-        style={styles.spot}
-      />
+      <CinematicBackground />
       <View style={styles.center}>
         <Animated.View style={mark}>
           <BrandMark size={108} glow weight="bold" tone="chrome" />
@@ -95,28 +86,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: colors.void,
   },
-  spot: {
-    position: 'absolute',
-    top: '18%',
-    left: '15%',
-    right: '15%',
-    height: '42%',
-    borderRadius: 999,
-  },
   center: {
     alignItems: 'center',
     gap: 20,
     paddingHorizontal: 28,
   },
   wordmark: {
-    fontFamily: 'Syne_800ExtraBold',
+    fontFamily: fonts.display,
     fontSize: 40,
     color: colors.chromeHot,
     letterSpacing: 8,
     marginTop: 4,
   },
   tagline: {
-    fontFamily: 'SpaceGrotesk_400Regular',
+    fontFamily: fonts.sans,
     color: colors.metal,
     fontSize: 11,
     letterSpacing: 1.2,
@@ -128,7 +111,7 @@ const styles = StyleSheet.create({
   pillars: {
     position: 'absolute',
     bottom: 48,
-    fontFamily: 'SpaceGrotesk_500Medium',
+    fontFamily: fonts.sansMedium,
     color: colors.muted,
     fontSize: 9,
     letterSpacing: 2.4,
