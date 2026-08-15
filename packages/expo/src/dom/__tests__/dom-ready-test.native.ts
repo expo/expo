@@ -6,7 +6,7 @@ import type { BridgeMessage } from '../dom.types';
 describe('notifyDOMReady', () => {
   const postMessage = jest.fn();
   const hasWebViewBridge = jest.fn();
-  let createdWindow = false;
+  let hasGlobalWindow = false;
 
   beforeEach(() => {
     // `marshal` reads the environment at module scope, so set it up before requiring it.
@@ -15,17 +15,16 @@ describe('notifyDOMReady', () => {
       hasWebViewBridge,
       getWebViewBridge: () => ({ postMessage, injectedObjectJson: () => '{}' }),
     }));
-    createdWindow = typeof globalThis.window === 'undefined';
+    hasGlobalWindow = typeof globalThis.window !== 'undefined';
     globalThis.window ??= {} as Window & typeof globalThis;
     globalThis.window.$$EXPO_INITIAL_PROPS = { names: [], props: {} };
   });
 
   afterEach(() => {
+    delete globalThis.window.$$EXPO_INITIAL_PROPS;
     // The next suite renders in node and expects no `window`.
-    if (createdWindow) {
+    if (!hasGlobalWindow) {
       delete (globalThis as any).window;
-    } else {
-      delete globalThis.window.$$EXPO_INITIAL_PROPS;
     }
   });
 
