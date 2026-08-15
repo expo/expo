@@ -231,6 +231,11 @@ export default class FallbackWatcher extends AbstractWatcher {
    * concurrent walk's failed read does not roll that watcher back.
    */
   #recordCompletedRead(dir: string): void {
+    if (this.#watched[dir] == null) {
+      // A rollback removed the pre-read watch while this read was in flight,
+      // so watch again, like the earlier post-read behavior did.
+      this.#watchdirDuringWalk(dir);
+    }
     const watcher = this.#watched[dir];
     if (watcher != null) {
       this.#readUnderWatch.add(watcher);

@@ -292,15 +292,17 @@ describe('FallbackWatcher', () => {
     const nmDir = path.join(root, 'node_modules');
     const packageDir = path.join(nmDir, 'two-pkg');
 
-    // Stub the `node_modules` watch, so the test delivers its events by hand
-    // and controls exactly when each of the two walks starts.
+    // Stub the root and `node_modules` watches, so no real parent event can
+    // start a walk and the test delivers both walk-starting events by hand.
     const realWatch = fs.watch;
     let nmListener: ((event: string, filename: string) => void) | null = null;
     let packageWatchCount = 0;
     let packageWatchClosed = false;
     jest.spyOn(fs, 'watch').mockImplementation(((dir: any, ...rest: any[]) => {
-      if (dir === nmDir) {
-        nmListener = rest[rest.length - 1];
+      if (dir === root || dir === nmDir) {
+        if (dir === nmDir) {
+          nmListener = rest[rest.length - 1];
+        }
         return new StubWatcher() as unknown as fs.FSWatcher;
       }
       const created = (realWatch as any)(dir, ...rest);
@@ -362,6 +364,90 @@ describe('FallbackWatcher', () => {
     await waitFor(
       () => hasTouchEvent('node_modules/two-pkg/package.json'),
       'a touch event through the surviving watch'
+    );
+  });
+
+  test('rewatches a directory whose read completes after a rollback removed its watch', async () => {
+    const nmDir = path.join(root, 'node_modules');
+    const packageDir = path.join(nmDir, 'late-read-pkg');
+
+    // Stub the root and `node_modules` watches, so no real parent event can
+    // start a walk and the test delivers both walk-starting events by hand.
+    const realWatch = fs.watch;
+    let nmListener: ((event: string, filename: string) => void) | null = null;
+    let packageWatchCount = 0;
+    let firstPackageWatchClosed = false;
+    jest.spyOn(fs, 'watch').mockImplementation(((dir: any, ...rest: any[]) => {
+      if (dir === root || dir === nmDir) {
+        if (dir === nmDir) {
+          nmListener = rest[rest.length - 1];
+        }
+        return new StubWatcher() as unknown as fs.FSWatcher;
+      }
+      const created = (realWatch as any)(dir, ...rest);
+      if (dir === packageDir) {
+        packageWatchCount++;
+        if (packageWatchCount === 1) {
+          created.once('close', () => {
+            firstPackageWatchClosed = true;
+          });
+        }
+      }
+      return created;
+    }) as typeof fs.watch);
+
+    // Hold every read of the directory, so the test controls their order.
+    const realReaddir = fs.readdir;
+    const heldReads: ((...args: any[]) => void)[] = [];
+    jest.spyOn(fs, 'readdir').mockImplementation(((dir: any, ...args: any[]) => {
+      if (dir === packageDir) {
+        heldReads.push(args[args.length - 1]);
+        return undefined;
+      }
+      return (realReaddir as any)(dir, ...args);
+    }) as typeof fs.readdir);
+
+    // Start inline: the probe in `startWatcher` needs real parent events.
+    watcher = new FallbackWatcher(root, { dot: true, globs: [], ignored: null });
+    watcher.onFileEvent((event) => {
+      events.push(event);
+    });
+    watcher.onError((error) => {
+      errors.push(error);
+    });
+    await watcher.startWatching();
+
+    fs.mkdirSync(packageDir);
+    fs.writeFileSync(path.join(packageDir, 'index.js'), 'module.exports = 1;\n');
+
+    // Walk A: starts the provisional watch, then stalls in its read.
+    nmListener!('rename', 'late-read-pkg');
+    await waitFor(
+      () => packageWatchCount === 1 && heldReads.length === 1,
+      'walk A to watch the directory and start its read'
+    );
+
+    // Walk B: sees the watched directory and stalls in its read too.
+    nmListener!('rename', 'late-read-pkg');
+    await waitFor(() => heldReads.length === 2, 'walk B to start its read');
+
+    // Walk A's read fails first. No read has completed under the watch, so
+    // the rollback closes it.
+    heldReads[0]!(makeFsError('ENOENT', 'scandir', packageDir));
+    await waitFor(() => firstPackageWatchClosed, "the rollback to close walk A's watch");
+
+    // Walk B's read now completes and must watch the directory again.
+    (realReaddir as any)(packageDir, heldReads[1]!);
+    await waitFor(() => packageWatchCount >= 2, 'a new watch after the completed read');
+    await waitFor(
+      () => hasTouchEvent('node_modules/late-read-pkg/index.js'),
+      "walk B's touch event for node_modules/late-read-pkg/index.js"
+    );
+
+    fs.writeFileSync(path.join(packageDir, 'package.json'), '{"name":"late-read-pkg"}');
+    await waitFor(
+      () => hasTouchEvent('node_modules/late-read-pkg/package.json'),
+      'a touch event through the new watch'
     );
   });
 
