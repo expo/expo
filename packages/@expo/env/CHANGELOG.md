@@ -7,11 +7,12 @@
 ### 🎉 New features
 
 - Add `setNodeEnv` for Expo commands and tools. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Add `consumeConfigEnvMode` for Expo commands and tools. ([#48938](https://github.com/expo/expo/pull/48938) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 🐛 Bug fixes
 
 - Set `NODE_ENV` when `loadProjectEnv` receives a development or production mode. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
-- Remove `EXPO_CONFIG_MODE` after loading env files with a mode. ([#48938](https://github.com/expo/expo/pull/48938) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Prevent env files from setting `EXPO_CONFIG_MODE`. ([#48938](https://github.com/expo/expo/pull/48938) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
