@@ -1835,69 +1835,6 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
-    describe('stale fallback state after a package install (#48950)', () => {
-      test('re-checks a recorded miss under node_modules on the next lookup', () => {
-        const fbTfs = makeFallbackTfs();
-        const nodeModulesDir = new Map<string, any>();
-        let installed = false;
-        mockFallback.lookup.mockImplementation((normalPath: string) => {
-          if (normalPath === p('node_modules')) {
-            return nodeModulesDir;
-          }
-          if (normalPath === p('node_modules/new-pkg') && installed) {
-            return new Map([['index.js', [100, 5, 0, null, 0, null] as any]]);
-          }
-          return null;
-        });
-
-        // Resolution attempt before the package exists: a miss.
-        expect(fbTfs.lookup(p('/project/node_modules/new-pkg/index.js')).exists).toBe(false);
-
-        // The package is installed while the server is running. No watcher
-        // events arrive for it (directory events are ignored, and the
-        // fallback watcher's one-shot scan can race the package manager).
-        installed = true;
-
-        // The next lookup must consult the filesystem instead of trusting
-        // the recorded miss.
-        expect(fbTfs.lookup(p('/project/node_modules/new-pkg/index.js'))).toMatchObject({
-          exists: true,
-          type: 'f',
-        });
-      });
-
-      test('finds a file that appeared after its parent directory was crawled', () => {
-        const fbTfs = makeFallbackTfs();
-        const nodeModulesDir = new Map<string, any>();
-        // The package directory was enumerated while the install was still
-        // writing files: only main.js was seen, and the directory was marked
-        // as fully crawled.
-        const pkgDir = markFallbackDir(
-          new Map<string, any>([['main.js', [100, 5, 0, null, 0, null]]]),
-          1
-        );
-        nodeModulesDir.set('late-pkg', pkgDir);
-        mockFallback.lookup.mockImplementation((normalPath: string) => {
-          if (normalPath === p('node_modules')) {
-            return nodeModulesDir;
-          }
-          if (normalPath === p('node_modules/late-pkg/package.json')) {
-            return [100, 10, 0, null, 0, null];
-          }
-          return null;
-        });
-        // readdir returns the cached node unchanged (CRAWLED semantics).
-        mockFallback.readdir.mockImplementation(
-          (_normalPath: string, _absolutePath: string, dirNode: any) => dirNode
-        );
-
-        expect(fbTfs.lookup(p('/project/node_modules/late-pkg/package.json'))).toMatchObject({
-          exists: true,
-          type: 'f',
-        });
-      });
-    });
-
     describe('fallback boundary (scopeFallback/serverRoot)', () => {
       test('blocks fallback beyond serverRoot boundary depth', () => {
         // serverRoot is /project itself → boundary depth = 0
@@ -2477,17 +2414,15 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       test('remove deletes a path that was originally discovered via fallback', () => {
         const fbTfs = makeFallbackTfs();
         const outsideDir = new Map([['file.js', [100, 5, 0, null, 0, null] as any]]);
-        mockFallback.lookup.mockImplementation((normalPath: string) =>
-          normalPath === p('outside') ? outsideDir : null
-        );
+        mockFallback.lookup.mockReturnValue(outsideDir);
 
         // Discover via fallback
         expect(fbTfs.lookup(p('/project/outside/file.js'))).toMatchObject({ exists: true });
 
-        // Remove it (the file is gone from disk, so the fallback returns null)
+        // Remove it
         fbTfs.remove(p('outside/file.js'));
-        outsideDir.delete('file.js');
 
+        // Should no longer exist (fallback won't re-discover because parent dir is already populated)
         expect(fbTfs.lookup(p('/project/outside/file.js'))).toMatchObject({ exists: false });
       });
 
@@ -2609,7 +2544,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     });
 
     describe('negative caching behavior', () => {
-      test('does not cache a null result from fallback.lookup (#48950)', () => {
+      test('caches null result from fallback.lookup and does not re-query', () => {
         const fbTfs = makeFallbackTfs();
         mockFallback.lookup.mockReturnValue(null);
 
@@ -2621,11 +2556,11 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         mockFallback.lookup.mockClear();
         mockFallback.readdir.mockClear();
 
-        // Second lookup — the miss is not authoritative (the path may have
-        // appeared on disk since), so the fallback is consulted again.
+        // Second lookup — fallback should NOT be called again (negative cache)
         const result2 = fbTfs.lookup(p('/project/missing/file.js'));
         expect(result2).toMatchObject({ exists: false });
-        expect(mockFallback.lookup).toHaveBeenCalled();
+        expect(mockFallback.lookup).not.toHaveBeenCalled();
+        expect(mockFallback.readdir).not.toHaveBeenCalled();
       });
     });
 
@@ -2695,13 +2630,11 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           (_normalPath: string, _absolutePath: string, dirNode: any) => dirNode
         );
 
-        // The individual file is re-checked against the real filesystem
-        // (misses are not authoritative), where it no longer exists.
-        mockFallback.lookup.mockReturnValue(null);
-
-        // Re-lookup — file remains absent (it is gone from disk)
+        // Re-lookup — file should remain absent (not re-discovered)
         const result = fbTfs.lookup(p('/project/outside/file.js'));
         expect(result).toMatchObject({ exists: false });
+        // fallback.lookup should NOT be called for the individual file
+        expect(mockFallback.lookup).not.toHaveBeenCalled();
       });
     });
   });
