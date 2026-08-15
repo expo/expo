@@ -22,6 +22,10 @@
 #                   $EXPO_ROOT_DIR/apps/bare-expo/ios/Pods (set by direnv).
 #   PLATFORM_NAME   (optional) Build for a specific platform (e.g. iphoneos, iphonesimulator).
 #                   When unset, builds for both iphoneos and iphonesimulator.
+#   EXPO_MODULES_JSI_XCFRAMEWORK_CACHE_DIR
+#                   (optional) Persistent directory for complete, content-keyed
+#                   xcframework slices. This directory can be restored before a
+#                   clean CI build and saved after it.
 
 set -euo pipefail
 
@@ -44,6 +48,7 @@ BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 UNEXPORTED_SYMBOLS_LIST="${PACKAGE_DIR}/scripts/unexported-swift-runtime-symbols.txt"
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+source "${PACKAGE_DIR}/scripts/xcframework-cache.sh"
 
 resolve_pods_root "$PACKAGE_DIR"
 
@@ -480,6 +485,24 @@ fi
 
 current_hash=$(compute_hash)
 
+# node_modules is normally created from scratch in CI, which removes the
+# package-local Products directory and its build hashes. Restore complete
+# slices from an explicitly configured external cache before checking them.
+# --clean always bypasses this restore so it keeps its force-rebuild meaning.
+if [[ "$CLEAN" == false ]] && [[ -n "${EXPO_MODULES_JSI_XCFRAMEWORK_CACHE_DIR:-}" ]]; then
+  for platform in "${PLATFORMS[@]}"; do
+    slice_id=$(platform_slice_id "$platform")
+    if restore_xcframework_slice_cache \
+      "$EXPO_MODULES_JSI_XCFRAMEWORK_CACHE_DIR" \
+      "$current_hash" \
+      "$slice_id" \
+      "$XCFRAMEWORK_PATH"; then
+      log "Restored ${platform} slice from external cache"
+    fi
+  done
+  write_xcframework_plist "$XCFRAMEWORK_PATH" "$PACKAGE_NAME"
+fi
+
 # Filter out platforms whose slice is already up to date.
 platforms_to_build=()
 for platform in "${PLATFORMS[@]}"; do
@@ -492,6 +515,16 @@ for platform in "${PLATFORMS[@]}"; do
 done
 
 if [[ ${#platforms_to_build[@]} -eq 0 ]]; then
+  if [[ -n "${EXPO_MODULES_JSI_XCFRAMEWORK_CACHE_DIR:-}" ]]; then
+    for platform in "${PLATFORMS[@]}"; do
+      slice_id=$(platform_slice_id "$platform")
+      store_xcframework_slice_cache \
+        "$EXPO_MODULES_JSI_XCFRAMEWORK_CACHE_DIR" \
+        "$current_hash" \
+        "$slice_id" \
+        "$XCFRAMEWORK_PATH"
+    done
+  fi
   log "xcframework slices up to date, skipping build"
   exit 0
 fi
@@ -512,6 +545,15 @@ SECONDS=0
 
 for platform in "${PLATFORMS[@]}"; do
   build_slice "$platform"
+  if [[ -n "${EXPO_MODULES_JSI_XCFRAMEWORK_CACHE_DIR:-}" ]]; then
+    slice_id=$(platform_slice_id "$platform")
+    store_xcframework_slice_cache \
+      "$EXPO_MODULES_JSI_XCFRAMEWORK_CACHE_DIR" \
+      "$current_hash" \
+      "$slice_id" \
+      "$XCFRAMEWORK_PATH"
+    log "Stored ${platform} slice in external cache"
+  fi
 done
 
 write_xcframework_plist "$XCFRAMEWORK_PATH" "$PACKAGE_NAME"
