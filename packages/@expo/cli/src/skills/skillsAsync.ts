@@ -112,16 +112,13 @@ export async function listSkillsAsync(
       const status = linkedDirs.length
         ? chalk.green(`linked in ${linkedDirs.join(', ')}`)
         : chalk.dim('not linked');
-      const description = skill.description ? chalk.dim(` — ${skill.description}`) : '';
+      const description = skill.description ? chalk.dim(` - ${skill.description}`) : '';
       Log.log(`  ${skill.name} ${chalk.dim(`(${status})`)}${description}`);
     }
   }
 }
 
-/**
- * Print the raw SKILL.md contents of a package's skills, so agents can load a
- * skill into context straight from the CLI without linking it first.
- */
+/** Print the raw SKILL.md of a package's skills, so agents can read a skill without linking it. */
 export async function showSkillsAsync(
   projectRoot: string,
   packageName: string,
@@ -160,8 +157,7 @@ export async function cleanSkillsAsync(
   projectRoot: string,
   options: Pick<SkillsOptions, 'dryRun'> & Partial<SkillsOptions>
 ): Promise<void> {
-  // Clean every known agent directory: the `npm-` prefix guard makes this safe even for
-  // directories belonging to agents the user never selected.
+  // The `npm-` prefix guard makes it safe to clean directories of agents the user never selected.
   const skillsDirs = uniqueSkillsDirs(getAllAgents());
   const { pruned } = await cleanSkillLinksAsync(projectRoot, skillsDirs, {
     dryRun: options.dryRun,
@@ -174,13 +170,10 @@ export async function cleanSkillsAsync(
 }
 
 /**
- * Best-effort skill sync for `expo install` / `expo start`, enabled with
- * `expo.skills.autoSync: true` in the app's package.json.
- * Never prompts and never throws.
- *
- * With `packages` (the specs just installed, e.g. `['uuid', 'expo-camera@~16.0.0']`) only the
- * skills of those packages are linked and nothing is pruned. Without it, a full sync runs:
- * missing links are created and stale ones are removed.
+ * Best-effort skill sync for `expo install` and `expo start`, enabled with
+ * `expo.skills.autoSync: true` in package.json. Never prompts and never throws.
+ * With `packages` (the specs that were just installed), only the skills of those
+ * packages are linked and nothing is pruned. Without it, a full sync runs.
  */
 export async function autoSyncSkillsAsync(
   projectRoot: string,
