@@ -1,8 +1,9 @@
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
 import * as Log from '../log';
-import { createTemporaryProjectFile } from '../start/project/dotExpo';
+import { ensureDotExpoProjectDirectoryInitialized } from '../start/project/dotExpo';
 import { directoryExistsAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { isInteractive } from '../utils/interactive';
@@ -69,7 +70,9 @@ export function getAllAgents(): SkillsAgent[] {
 }
 
 /** Per-machine cache in `.expo` remembering which agents were selected. */
-const skillsCacheFile = createTemporaryProjectFile<{ agents?: string[] }>('skills.json', {});
+function getAgentsCachePath(projectRoot: string): string {
+  return path.join(projectRoot, '.expo', 'agents.json');
+}
 
 /** Agents with a marker directory in the project or in the user home directory. */
 export async function detectInstalledAgentsAsync(projectRoot: string): Promise<SkillsAgent[]> {
@@ -87,9 +90,15 @@ export async function detectInstalledAgentsAsync(projectRoot: string): Promise<S
   return detected.filter((agent): agent is SkillsAgent => agent != null);
 }
 
-/** Agent ids selected in a previous run, from the `.expo/skills.json` cache, or `null` when unset. */
+/** Agent ids selected in a previous run, from the `.expo/agents.json` cache, or `null` when unset. */
 export async function getPersistedAgentIdsAsync(projectRoot: string): Promise<string[] | null> {
-  const { agents: ids } = await skillsCacheFile.readAsync(projectRoot);
+  let ids: unknown;
+  try {
+    const contents = await fs.promises.readFile(getAgentsCachePath(projectRoot), 'utf8');
+    ids = JSON.parse(contents).agents;
+  } catch {
+    return null;
+  }
   if (!Array.isArray(ids)) {
     return null;
   }
@@ -98,7 +107,7 @@ export async function getPersistedAgentIdsAsync(projectRoot: string): Promise<st
   const unknownIds = ids.filter((id) => !knownIds.includes(id as string));
   if (unknownIds.length) {
     Log.warn(
-      `Ignoring unknown agents in the .expo/skills.json cache: ${unknownIds.join(', ')}. Valid agents: ${getAgentIds().join(', ')}.`
+      `Ignoring unknown agents in the .expo/agents.json cache: ${unknownIds.join(', ')}. Valid agents: ${getAgentIds().join(', ')}.`
     );
   }
 
@@ -107,7 +116,8 @@ export async function getPersistedAgentIdsAsync(projectRoot: string): Promise<st
 
 /**
  * Resolve which agents to link skills for, in order: `--agent` flags, the cached
- * selection in `.expo/skills.json`, an interactive prompt, then marker detection.
+ * selection in `.expo/agents.json`, an interactive prompt, then marker detection.
+ * Only prompt selections are written to the cache, `--agent` never changes it.
  */
 export async function resolveAgentsAsync(
   projectRoot: string,
@@ -145,13 +155,20 @@ export async function resolveAgentsAsync(
   return { agents: detected, fromPrompt: false };
 }
 
-/** Store the selected agent ids in the `.expo/skills.json` cache. */
+/** Store the selected agent ids in the `.expo/agents.json` cache. */
 export async function persistAgentSelectionAsync(
   projectRoot: string,
   agents: SkillsAgent[]
 ): Promise<void> {
   const ids = [...new Set(agents.map((agent) => agent.id))].sort();
-  await skillsCacheFile.setAsync(projectRoot, { agents: ids });
+  ensureDotExpoProjectDirectoryInitialized(projectRoot);
+
+  const cachePath = getAgentsCachePath(projectRoot);
+  let existing = {};
+  try {
+    existing = JSON.parse(await fs.promises.readFile(cachePath, 'utf8'));
+  } catch {}
+  await fs.promises.writeFile(cachePath, JSON.stringify({ ...existing, agents: ids }, null, 2));
 }
 
 async function promptAgentsAsync(detected: SkillsAgent[]): Promise<SkillsAgent[]> {
