@@ -71,7 +71,7 @@ export function getAllAgents(): SkillsAgent[] {
 
 /** Per-machine cache in `.expo` remembering which agents were selected. */
 function getAgentsCachePath(projectRoot: string): string {
-  return path.join(projectRoot, '.expo', 'agents.json');
+  return path.join(projectRoot, '.expo', 'agent-links.json');
 }
 
 /** Agents with a marker directory in the project or in the user home directory. */
@@ -90,7 +90,7 @@ export async function detectInstalledAgentsAsync(projectRoot: string): Promise<S
   return detected.filter((agent): agent is SkillsAgent => agent != null);
 }
 
-/** Agent ids selected in a previous run, from the `.expo/agents.json` cache, or `null` when unset. */
+/** Agent ids selected in a previous run, from the `.expo/agent-links.json` cache, or `null` when unset. */
 export async function getPersistedAgentIdsAsync(projectRoot: string): Promise<string[] | null> {
   let ids: unknown;
   try {
@@ -107,29 +107,31 @@ export async function getPersistedAgentIdsAsync(projectRoot: string): Promise<st
   const unknownIds = ids.filter((id) => !knownIds.includes(id as string));
   if (unknownIds.length) {
     Log.warn(
-      `Ignoring unknown agents in the .expo/agents.json cache: ${unknownIds.join(', ')}. Valid agents: ${getAgentIds().join(', ')}.`
+      `Ignoring unknown agents in the .expo/agent-links.json cache: ${unknownIds.join(', ')}. Valid agents: ${getAgentIds().join(', ')}.`
     );
   }
 
   return knownIds;
 }
 
+/** Where a resolved agent selection came from, `flags` and `prompt` become the new cache. */
+export type AgentSelectionSource = 'flags' | 'cache' | 'prompt' | 'detected';
+
 /**
  * Resolve which agents to link skills for, in order: `--agent` flags, the cached
- * selection in `.expo/agents.json`, an interactive prompt, then marker detection.
- * Only prompt selections are written to the cache, `--agent` never changes it.
+ * selection in `.expo/agent-links.json`, an interactive prompt, then marker detection.
  */
 export async function resolveAgentsAsync(
   projectRoot: string,
   options: { agents?: string[] }
-): Promise<{ agents: SkillsAgent[]; fromPrompt: boolean }> {
+): Promise<{ agents: SkillsAgent[]; source: AgentSelectionSource }> {
   if (options.agents?.length) {
-    return { agents: options.agents.map(assertAgent), fromPrompt: false };
+    return { agents: options.agents.map(assertAgent), source: 'flags' };
   }
 
   const persistedIds = await getPersistedAgentIdsAsync(projectRoot);
   if (persistedIds?.length) {
-    return { agents: persistedIds.map(assertAgent), fromPrompt: false };
+    return { agents: persistedIds.map(assertAgent), source: 'cache' };
   }
 
   const detected = await detectInstalledAgentsAsync(projectRoot);
@@ -142,7 +144,7 @@ export async function resolveAgentsAsync(
         `No agent was selected, so there is nowhere to link the skills to. Run the command again and select at least one agent with the space bar, or pass them directly, e.g. --agent claude-code. Valid agents: ${getAgentIds().join(', ')}.`
       );
     }
-    return { agents, fromPrompt: true };
+    return { agents, source: 'prompt' };
   }
 
   if (!detected.length) {
@@ -152,10 +154,10 @@ export async function resolveAgentsAsync(
     );
   }
 
-  return { agents: detected, fromPrompt: false };
+  return { agents: detected, source: 'detected' };
 }
 
-/** Store the selected agent ids in the `.expo/agents.json` cache. */
+/** Store the selected agent ids in the `.expo/agent-links.json` cache. */
 export async function persistAgentSelectionAsync(
   projectRoot: string,
   agents: SkillsAgent[]
