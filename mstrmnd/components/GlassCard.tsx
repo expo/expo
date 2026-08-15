@@ -9,6 +9,8 @@ type Props = {
   style?: StyleProp<ViewStyle>;
   intensity?: number;
   padded?: boolean;
+  /** Stretch children when the card is a flex:1 region (windows, decks). */
+  fill?: boolean;
 };
 
 /**
@@ -20,8 +22,9 @@ export function GlassCard({
   style,
   intensity = blur.intensity,
   padded = true,
+  fill = false,
 }: Props) {
-  const cardStyle = [styles.card, padded && styles.padded, style];
+  const cardStyle = [styles.card, padded && styles.padded, fill && styles.fill, style];
 
   const body = (
     <>
@@ -32,7 +35,7 @@ export function GlassCard({
         pointerEvents="none"
         style={StyleSheet.absoluteFill}
       />
-      <View style={styles.body}>{children}</View>
+      <View style={[styles.body, fill && styles.fill]}>{children}</View>
     </>
   );
 
@@ -56,8 +59,11 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   body: {
-    flex: 1,
     zIndex: 1,
+  },
+  fill: {
+    flex: 1,
+    minHeight: 0,
   },
   padded: {
     padding: space.lg,

@@ -107,7 +107,7 @@ export function MainAgentWindow() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.shell}
     >
-      <GlassCard style={styles.window} padded={false}>
+      <GlassCard style={styles.window} padded={false} fill>
         <Pressable
           onPress={() => selectAgent('conductor')}
           style={[

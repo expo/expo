@@ -17,7 +17,7 @@ export function AgentGrid() {
   }
 
   return (
-    <GlassCard style={styles.chassis} padded={false}>
+    <GlassCard style={styles.chassis} padded={false} fill>
       <View style={styles.screwRow}>
         <View style={styles.screw} />
         <View style={styles.screw} />

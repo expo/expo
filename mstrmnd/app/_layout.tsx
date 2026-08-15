@@ -20,8 +20,7 @@ import { StyleSheet } from 'react-native';
 import { ControllerProvider } from '@/context/ControllerContext';
 import { MobileShell } from '@/components/MobileShell';
 import { SplashOverlay } from '@/components/SplashOverlay';
-import { linearNavigationTheme } from '@/tokens';
-import { color } from '@/tokens';
+import { linearNavigationTheme, color } from '@/tokens';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
