@@ -84,6 +84,14 @@ export async function startAsync(
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
+  if (options.agentSkills !== false) {
+    const { autoSyncSkillsAsync } =
+      require('../skills/skillsAsync') as typeof import('../skills/skillsAsync');
+    autoSyncSkillsAsync(projectRoot).catch(() => {
+      // noop -- autoSyncSkillsAsync handles its own errors.
+    });
+  }
+
   // Start dependency version check in the background as early as possible (non-blocking).
   // The result will be displayed in the TUI once it resolves.
   let dependencyCheckRef: DependencyCheckRef | undefined;

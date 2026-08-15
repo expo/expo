@@ -183,6 +183,14 @@ describe(resolveOptionsAsync, () => {
     jest.mocked(hasDirectDevClientDependency).mockReturnValueOnce(true);
     expect((await resolveOptionsAsync('/noop', { '--go': true })).devClient).toBe(false);
   });
+  it(`defaults agentSkills to true`, async () => {
+    expect((await resolveOptionsAsync('/noop', {})).agentSkills).toBe(true);
+  });
+  it(`--no-agent-skills sets agentSkills to false`, async () => {
+    expect((await resolveOptionsAsync('/noop', { '--no-agent-skills': true })).agentSkills).toBe(
+      false
+    );
+  });
 });
 
 describe(resolveHostType, () => {
