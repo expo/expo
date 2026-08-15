@@ -2,12 +2,13 @@
 import chalk from 'chalk';
 
 import type { Command } from '../index';
-import { assertArgsWithExitCode, getProjectRoot, printHelp } from '../utils/args';
+import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 
 export const expoNeedsRebuild: Command = async (argv) => {
-  // A mistyped flag must not exit with code 1 — the exit code is this command's public API
-  // (1 = rebuild required), so usage errors report as 3: cannot determine.
-  const args = assertArgsWithExitCode(
+  // A mistyped flag exits 1 through the same path every command uses. Exit code 1 is
+  // reserved exclusively for bad input — it never doubles as one of this command's check
+  // results, so a script or agent can always tell "fix your command" apart from any verdict.
+  const args = assertArgs(
     {
       // Types
       '--help': Boolean,
@@ -20,8 +21,7 @@ export const expoNeedsRebuild: Command = async (argv) => {
       '-p': '--platform',
       '-d': '--device',
     },
-    argv,
-    3
+    argv
   );
 
   if (args['--help']) {
@@ -39,9 +39,10 @@ export const expoNeedsRebuild: Command = async (argv) => {
       chalk`
   {bold Exit codes}
     0  up to date — a JS reload is enough
-    1  rebuild required — run {bold npx expo run:<platform>}
-    2  prebuild required — run {bold npx expo prebuild}, then rebuild
-    3  cannot determine — no device, app not installed, no embedded fingerprint, or an error
+    1  invalid usage — a mistyped flag or unsupported --platform/--app-id combination
+    2  rebuild required — run {bold npx expo run:<platform>}
+    3  prebuild required — run {bold npx expo prebuild}, then rebuild
+    4  cannot determine — no device, app not installed, no embedded fingerprint, or an error
 `
     );
   }
@@ -51,7 +52,7 @@ export const expoNeedsRebuild: Command = async (argv) => {
     // ./needsRebuildAsync
     { needsRebuildAsync },
     // ../utils/errors
-    { AbortCommandError, SilentError },
+    { AbortCommandError, CommandError, SilentError },
     // ../log
     Log,
   ] = await Promise.all([
@@ -69,15 +70,22 @@ export const expoNeedsRebuild: Command = async (argv) => {
       json: args['--json'],
     });
   } catch (error: any) {
-    // The exit code is this command's public API (1 = rebuild required), so an error —
-    // usage or unexpected — must never surface as code 1. Report it as 3: cannot determine.
+    // The exit code is this command's public API. `AbortCommandError`/`SilentError` extend
+    // `CommandError`, so they're checked first: neither is a usage error, so both report
+    // "cannot determine" (4), the same as any other failure that isn't a bad --platform or
+    // --app-id value. A plain `CommandError` (from resolvePlatformOption or the --app-id
+    // check above) is a usage error — the same category as a mistyped flag — so it gets the
+    // same code: 1.
     if (!(error instanceof Error)) {
       throw error;
     }
     if (error instanceof AbortCommandError || error instanceof SilentError) {
-      process.exit(3);
+      process.exit(4);
     }
-    Log.exit(error, 3);
+    if (error instanceof CommandError) {
+      Log.exit(error, 1);
+    }
+    Log.exit(error, 4);
   }
 
   // A detached device read (worst case a full APK pull) must not keep the process alive
