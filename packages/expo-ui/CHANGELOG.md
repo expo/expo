@@ -28,6 +28,10 @@
 - [iOS] Fix a hosted `Pressable` dropping its press when the finger moves, by measuring hosted React Native views where SwiftUI placed them. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix hosted React Native views receiving no touches inside a `BottomSheet` or `Popover`. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `RNHostView` with `matchContents` stretching to its parent on the cross axis, which left its size with no fixed point and could spin at 100% CPU. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix a hosted `Pressable` dropping its press when the finger moves, by measuring hosted React Native views where Jetpack Compose placed them. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix hosted React Native views stealing gestures from enclosing scrollables, and a back gesture being reported as a long press, by dispatching their touches from the surface root unless they are presented in their own window. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix hosted React Native views receiving no touches inside `AlertDialog`, `DropdownMenu` and `ExposedDropdownMenu`. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix a crash when `RNHostView` uses `matchContents`, where the view was sized from its content while Yoga stretched it to its parent. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
