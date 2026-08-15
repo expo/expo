@@ -146,6 +146,12 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       AndroidView(
         factory = {
           (wrapper.parent as? ViewGroup)?.removeView(wrapper)
+          // This wrapper outlives the holder Compose creates for it, and a detached view keeps the
+          // bounds its old holder gave it. React Native's touch walk descends by child index without
+          // consulting the parent's size or draw order, so between re-parenting and the next layout
+          // pass a stale wrapper answers for a screen rect it no longer occupies — and swallows
+          // presses meant for the page actually on screen. Collapse it until Compose places it.
+          wrapper.layout(0, 0, 0, 0)
           wrapper
         },
         modifier = modifiers

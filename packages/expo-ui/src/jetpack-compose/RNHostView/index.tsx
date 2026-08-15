@@ -23,15 +23,13 @@ export interface RNHostProps extends PrimitiveBaseProps {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-  /**
-   * Style applied to the host view's React Native shadow node. Useful for
-   * controlling its layout position (e.g. `position: 'absolute'`).
-   */
-  style?: StyleProp<ViewStyle>;
 }
 
 type NativeRNHostProps = RNHostProps & {
   layoutRoot: boolean;
+  // Set below, not by the caller: a React Native style cannot describe a Jetpack Compose view, and
+  // the one property that does reach the shadow node is the cross-axis sizing `matchContents` needs.
+  style?: StyleProp<ViewStyle>;
 };
 const NativeRNHostView: ComponentType<NativeRNHostProps> = requireNativeView(
   'ExpoUI',
@@ -64,8 +62,7 @@ export function RNHostView(props: RNHostProps) {
   return (
     <NativeRNHostView
       {...transformProps(props, layoutRoot)}
-      // The caller's own style comes last, so this stays an escape hatch rather than a rule.
-      style={props.matchContents ? [hugCrossAxis, props.style] : props.style}
+      style={props.matchContents ? hugCrossAxis : undefined}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
       key={props.matchContents ? 'matchContents' : 'noMatchContents'}
