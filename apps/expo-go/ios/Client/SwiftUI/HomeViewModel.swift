@@ -148,9 +148,14 @@ class HomeViewModel: ObservableObject {
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {
     let normalizedUrl = normalizeUrl(url)
 
-    if let existingIndex = recentlyOpenedApps.firstIndex(where: {
+    // Update permalinks are unique per published update, so entries for the same app are
+    // matched by name instead of URL to avoid one row per update.
+    let isDuplicate: (RecentlyOpenedApp) -> Bool = {
       normalizeUrl($0.url) == normalizedUrl
-    }) {
+        || (isUpdatePermalink($0.url) && isUpdatePermalink(url) && $0.name == name)
+    }
+
+    if let existingIndex = recentlyOpenedApps.firstIndex(where: isDuplicate) {
       let existingApp = recentlyOpenedApps[existingIndex]
 
       if existingApp.name == name && iconUrl != nil && existingApp.iconUrl == nil {
@@ -161,7 +166,7 @@ class HomeViewModel: ObservableObject {
         return
       }
 
-      recentlyOpenedApps.remove(at: existingIndex)
+      recentlyOpenedApps.removeAll(where: isDuplicate)
     }
 
     let newApp = RecentlyOpenedApp(
