@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 
 import * as Log from '../../log';
+import { getAgentTelemetryContext } from '../../utils/telemetry/utils/agent';
 import {
   detectInstalledAgentsAsync,
   getAllAgents,
@@ -14,12 +15,16 @@ import {
   autoSyncSkillsAsync,
   cleanSkillsAsync,
   listSkillsAsync,
+  printSkillsForAgentAsync,
   showSkillsAsync,
   syncSkillsAsync,
 } from '../skillsAsync';
 import type { DiscoveredSkill, SkillsAgent } from '../types';
 
 jest.mock('../../log');
+jest.mock('../../utils/telemetry/utils/agent', () => ({
+  getAgentTelemetryContext: jest.fn(() => null),
+}));
 jest.mock('../discovery', () => ({ discoverSkillsAsync: jest.fn() }));
 jest.mock('../agents', () => ({
   getAllAgents: jest.fn(),
@@ -384,5 +389,62 @@ describe('autoSyncSkillsAsync', () => {
 
     await expect(autoSyncSkillsAsync('/root')).resolves.toBeUndefined();
     expect(syncSkillLinksAsync).not.toHaveBeenCalled();
+  });
+});
+
+describe('printSkillsForAgentAsync', () => {
+  afterEach(() => vol.reset());
+
+  it('should do nothing when no agent is detected', async () => {
+    jest.mocked(getAgentTelemetryContext).mockReturnValueOnce(null);
+
+    await printSkillsForAgentAsync('/root', { packages: ['@acme/tool'] });
+
+    expect(discoverSkillsAsync).not.toHaveBeenCalled();
+    expect(Log.log).not.toHaveBeenCalled();
+  });
+
+  it('should print skill contents of the installed packages', async () => {
+    jest
+      .mocked(getAgentTelemetryContext)
+      .mockReturnValueOnce({ id: 'claude-code', sessionId: undefined });
+    vol.fromJSON({ '/root/node_modules/@acme/tool/skills/my-skill/SKILL.md': '# Skill body' });
+    const otherSkill: DiscoveredSkill = {
+      name: 'other-skill',
+      path: '/root/node_modules/other/skills/other-skill',
+      packageName: 'other',
+      linkName: 'npm-other-other-skill',
+    };
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill, otherSkill]);
+
+    await printSkillsForAgentAsync('/root', { packages: ['@acme/tool@~1.2.0'] });
+
+    const output = jest.mocked(Log.log).mock.calls.flat().join('\n');
+    expect(output).toContain('--- @acme/tool/skills/my-skill/SKILL.md ---');
+    expect(output).toContain('# Skill body');
+    expect(output).not.toContain('other-skill');
+  });
+
+  it('should print nothing when the installed packages ship no skills', async () => {
+    jest
+      .mocked(getAgentTelemetryContext)
+      .mockReturnValueOnce({ id: 'claude-code', sessionId: undefined });
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+
+    await printSkillsForAgentAsync('/root', { packages: ['uuid'] });
+
+    expect(Log.log).not.toHaveBeenCalled();
+  });
+
+  it('should warn instead of throwing when the discovery fails', async () => {
+    jest
+      .mocked(getAgentTelemetryContext)
+      .mockReturnValueOnce({ id: 'claude-code', sessionId: undefined });
+    jest.mocked(discoverSkillsAsync).mockRejectedValueOnce(new Error('boom'));
+
+    await expect(
+      printSkillsForAgentAsync('/root', { packages: ['@acme/tool'] })
+    ).resolves.toBeUndefined();
+    expect(Log.warn).toHaveBeenCalled();
   });
 });

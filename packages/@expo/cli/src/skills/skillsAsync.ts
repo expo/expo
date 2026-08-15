@@ -4,6 +4,7 @@ import path from 'path';
 
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
+import { getAgentTelemetryContext } from '../utils/telemetry/utils/agent';
 import {
   detectInstalledAgentsAsync,
   getAllAgents,
@@ -220,6 +221,38 @@ export async function autoSyncSkillsAsync(
     }
   } catch (error: any) {
     Log.warn(`Skipping agent skills auto-sync: ${error.message}`);
+  }
+}
+
+/**
+ * Print the SKILL.md of the packages that were just installed, so the coding agent
+ * that runs the install loads the skills into context right away. Does nothing
+ * when no agent is detected. Never throws.
+ */
+export async function printSkillsForAgentAsync(
+  projectRoot: string,
+  options: { packages: string[] }
+): Promise<void> {
+  try {
+    if (getAgentTelemetryContext() == null) {
+      return;
+    }
+
+    const packageNames = options.packages.map(parsePackageNameFromSpec);
+    const skills = (await discoverSkillsAsync(projectRoot)).filter((skill) =>
+      packageNames.includes(skill.packageName)
+    );
+    if (!skills.length) {
+      return;
+    }
+
+    Log.log(chalk.bold('The installed packages ship agent skills. Read them before use:'));
+    for (const skill of skills) {
+      Log.log(chalk.dim(`--- ${skill.packageName}/skills/${skill.name}/SKILL.md ---`));
+      Log.log(await fs.promises.readFile(path.join(skill.path, 'SKILL.md'), 'utf8'));
+    }
+  } catch (error: any) {
+    Log.warn(`Skipping agent skills output: ${error.message}`);
   }
 }
 

@@ -45,16 +45,17 @@ it('runs `npx expo install --help`', async () => {
         $ npx expo install
 
       Options
-        --check            Check which installed packages need to be updated
-        --dev              Save the dependencies as devDependencies
-        --fix              Automatically update any invalid package versions
-        --no-agent-skills  Skip linking agent skills from the installed packages
-        --npm              Use npm to install dependencies. Default when package-lock.json exists
-        --yarn             Use Yarn to install dependencies. Default when yarn.lock exists
-        --bun              Use bun to install dependencies. Default when bun.lock or bun.lockb exists
-        --pnpm             Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
-        -h, --help         Usage info
-        --json             Output dependency information in JSON format with --check flag
+        --check             Check which installed packages need to be updated
+        --dev               Save the dependencies as devDependencies
+        --fix               Automatically update any invalid package versions
+        --no-agent-skills   Skip linking agent skills from the installed packages
+        --no-skill-context  Skip printing installed skills for a detected coding agent
+        --npm               Use npm to install dependencies. Default when package-lock.json exists
+        --yarn              Use Yarn to install dependencies. Default when yarn.lock exists
+        --bun               Use bun to install dependencies. Default when bun.lock or bun.lockb exists
+        --pnpm              Use pnpm to install dependencies. Default when pnpm-lock.yaml exists
+        -h, --help          Usage info
+        --json              Output dependency information in JSON format with --check flag
 
       Additional options can be passed to the underlying install command by using --
         $ npx expo install react -- --verbose
@@ -128,4 +129,37 @@ it('syncs agent skills on `npx expo install` when auto sync is enabled', async (
   );
   expect(existsSync(path.join(projectRoot, '.claude/skills/beta'))).toBe(false);
   expect(existsSync(path.join(projectRoot, '.claude/skills/alpha'))).toBe(true);
+});
+
+it('prints installed skills on `npx expo install` when a coding agent is detected', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'install-skill-context',
+    'with-blank',
+    {
+      reuseExisting: false,
+    }
+  );
+  await writeSkillPackageAsync(path.join(projectRoot, 'test-skills'), 'test-skills', ['alpha']);
+
+  const env = {
+    EXPO_NO_NEW_ARCH_COMPAT_CHECK: '1',
+    CLAUDECODE: '1',
+  } as Partial<NodeJS.ProcessEnv> as NodeJS.ProcessEnv;
+
+  // The skill contents are printed for the agent, even without auto sync enabled
+  const results = await executeExpoAsync(
+    projectRoot,
+    ['install', 'test-skills@file:./test-skills'],
+    { env }
+  );
+  expect(results.stdout).toContain('--- test-skills/skills/alpha/SKILL.md ---');
+  expect(results.stdout).toContain('Body of alpha');
+
+  // `--no-skill-context` skips the output
+  const optOut = await executeExpoAsync(
+    projectRoot,
+    ['install', 'test-skills@file:./test-skills', '--no-skill-context'],
+    { env }
+  );
+  expect(optOut.stdout).not.toContain('Body of alpha');
 });
