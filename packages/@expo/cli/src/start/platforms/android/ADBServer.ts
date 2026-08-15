@@ -1,4 +1,4 @@
-import spawnAsync from '@expo/spawn-async';
+import spawnAsync, { SpawnResult } from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
 
 import { Log } from '../../../log';
@@ -9,6 +9,14 @@ import { event } from '../events';
 import { assertSdkRoot } from './AndroidSdk';
 
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
+
+/**
+ * Time in milliseconds to wait for an adb client command before assuming the adb server is
+ * unresponsive. Healthy invocations take milliseconds; a wedged server (commonly left behind by a
+ * device that disconnects mid-transfer) never answers at all, which would otherwise hang the CLI
+ * with no output.
+ */
+const ADB_COMMAND_TIMEOUT = 15000;
 
 // This is a tricky class since it controls a system state (side-effects).
 // A more ideal solution would be to implement ADB in JS.
@@ -45,7 +53,7 @@ export class ADBServer {
       }
     });
     const adb = this.getAdbExecutablePath();
-    const result = await this.resolveAdbPromise(spawnAsync(adb, ['start-server']));
+    const result = await this.resolveAdbPromise(this.spawnWithTimeoutAsync(adb, ['start-server']));
     const lines = result.stderr.trim().split(/\r?\n/);
     const isStarted = lines.includes('* daemon started successfully');
     this.isRunning = isStarted;
@@ -77,7 +85,7 @@ export class ADBServer {
     await this.startAsync();
 
     event('adb_server_run', { command: [adb, ...args].join(' ') });
-    const result = await this.resolveAdbPromise(spawnAsync(adb, args));
+    const result = await this.resolveAdbPromise(this.spawnWithTimeoutAsync(adb, args));
     return result.output.join('\n');
   }
 
@@ -96,6 +104,35 @@ export class ADBServer {
     );
     event('adb_file_output', { output: results });
     return results;
+  }
+
+  /**
+   * Spawn an adb client command, rejecting if the adb server does not answer within
+   * {@link ADB_COMMAND_TIMEOUT}. The client is killed on timeout so the CLI surfaces an actionable
+   * error instead of hanging with no output.
+   */
+  private async spawnWithTimeoutAsync(adb: string, args: string[]): Promise<SpawnResult> {
+    const promise = spawnAsync(adb, args);
+
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise<never>((_resolve, reject) => {
+          timer = setTimeout(() => {
+            promise.child.kill();
+            reject(
+              new CommandError(
+                'ADB_TIMEOUT',
+                `adb did not respond within ${ADB_COMMAND_TIMEOUT / 1000}s while running "${args.join(' ')}". The adb server may be unresponsive, which can happen when a device disconnects mid-transfer. Try running "adb kill-server" and then re-running this command.`
+              )
+            );
+          }, ADB_COMMAND_TIMEOUT);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
   }
 
   /** Formats error info. */
