@@ -1919,18 +1919,27 @@ export default class TreeFS implements MutableFileSystem {
       (!wasFollowing && this.#isOutsideFallbackBoundary(childCanonicalPath, parentNode))
     ) {
       return null;
-    } else if (parentCanonicalPath !== '' && shouldFallbackCrawlDir(parentCanonicalPath)) {
-      this.#populateDirFromFilesystem(parentNode, parentCanonicalPath, true, wasFollowing);
-      return parentNode.get(segmentName) ?? null;
-    } else if (parentNode.has(segmentName)) {
-      return parentNode.get(segmentName) ?? null;
-    } else {
-      const parentAbsolute = this.#pathUtils.normalToAbsolute(parentCanonicalPath);
-      const absolutePath = parentAbsolute + path.sep + segmentName;
-      const node = fallback.lookup(childCanonicalPath, absolutePath, parentNode.get(segmentName));
-      parentNode.set(segmentName, node);
-      return node;
     }
+    if (parentCanonicalPath !== '' && shouldFallbackCrawlDir(parentCanonicalPath)) {
+      this.#populateDirFromFilesystem(parentNode, parentCanonicalPath, true, wasFollowing);
+    }
+    const existing = parentNode.get(segmentName);
+    if (existing != null) {
+      return existing;
+    }
+    // A missing entry is not authoritative: the path may have appeared on disk
+    // after the parent directory was scanned, or after a miss was recorded
+    // here — e.g. a package installed while the dev server is running, whose
+    // watcher events raced the package manager writing the directory. Consult
+    // the real filesystem before treating this as a miss, and do not record
+    // misses, so that the next lookup checks the filesystem again.
+    const parentAbsolute = this.#pathUtils.normalToAbsolute(parentCanonicalPath);
+    const absolutePath = parentAbsolute + path.sep + segmentName;
+    const node = fallback.lookup(childCanonicalPath, absolutePath, null);
+    if (node != null) {
+      parentNode.set(segmentName, node);
+    }
+    return node;
   }
 
   /**

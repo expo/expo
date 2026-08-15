@@ -37,12 +37,23 @@ const DELETE_EVENT = common.DELETE_EVENT;
  */
 const DEBOUNCE_MS = 100;
 
+/**
+ * Delays after which a newly discovered directory is re-scanned. A new
+ * directory is walked while its creator (e.g. a package manager installing a
+ * package) may still be writing entries into it: entries written between the
+ * walk's readdir() enumeration and the fs.watch() registration produce no
+ * events and would otherwise never be observed. Re-scans only emit entries
+ * that are not already registered. See expo/expo#48950.
+ */
+const NEW_DIR_RESCAN_DELAYS_MS = [500, 2000];
+
 export default class FallbackWatcher extends AbstractWatcher {
   readonly #changeTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
   readonly #dirRegistry: {
     [directory: string]: { [file: string]: true };
   } = Object.create(null);
   readonly #watched: { [key: string]: FSWatcher } = Object.create(null);
+  readonly #rescanTimers: Set<ReturnType<typeof setTimeout>> = new Set();
 
   async startWatching(): Promise<void> {
     this.#watchdir(this.root);
@@ -197,6 +208,10 @@ export default class FallbackWatcher extends AbstractWatcher {
    */
   async stopWatching(): Promise<void> {
     await super.stopWatching();
+    for (const timer of this.#rescanTimers) {
+      clearTimeout(timer);
+    }
+    this.#rescanTimers.clear();
     const promises = Object.keys(this.#watched).map((dir) => this.#stopWatching(dir));
     await Promise.all(promises);
   }
@@ -281,51 +296,18 @@ export default class FallbackWatcher extends AbstractWatcher {
         ) {
           return;
         }
-        recReaddir(
-          path.resolve(this.root, relativePath),
-          (dir, stats) => {
-            if (this.#watchdir(dir)) {
-              this.#emitEvent({
-                event: TOUCH_EVENT,
-                relativePath: path.relative(this.root, dir),
-                metadata: {
-                  modifiedTime: stats.mtime.getTime(),
-                  size: stats.size,
-                  type: 'd',
-                },
-              });
-            }
-          },
-          (file, stats) => {
-            if (this.#register(file, 'f')) {
-              this.#emitEvent({
-                event: TOUCH_EVENT,
-                relativePath: path.relative(this.root, file),
-                metadata: {
-                  modifiedTime: stats.mtime.getTime(),
-                  size: stats.size,
-                  type: 'f',
-                },
-              });
-            }
-          },
-          (symlink, stats) => {
-            if (this.#register(symlink, 'l')) {
-              this.emitFileEvent({
-                event: TOUCH_EVENT,
-                relativePath: path.relative(this.root, symlink),
-                metadata: {
-                  modifiedTime: stats.mtime.getTime(),
-                  size: stats.size,
-                  type: 'l',
-                },
-              });
-            }
-          },
-          function endCallback() {},
-          this.#checkedEmitError,
-          this.ignored
-        );
+        const absoluteDir = path.resolve(this.root, relativePath);
+        const isNewDir = !this.#watched[absoluteDir];
+        this.#scanSubtree(absoluteDir);
+        if (isNewDir) {
+          for (const delayMs of NEW_DIR_RESCAN_DELAYS_MS) {
+            const timer = setTimeout(() => {
+              this.#rescanTimers.delete(timer);
+              this.#scanSubtree(absoluteDir);
+            }, delayMs);
+            this.#rescanTimers.add(timer);
+          }
+        }
       } else {
         const type = common.typeFromStat(stat);
         if (type == null) {
@@ -364,6 +346,60 @@ export default class FallbackWatcher extends AbstractWatcher {
       }
       await this.#stopWatching(fullPath);
     }
+  }
+
+  /**
+   * Walk a directory subtree, watching every directory and emitting touch
+   * events for entries that are not already registered. Used when a new
+   * directory appears, and again after NEW_DIR_RESCAN_DELAYS_MS to close the
+   * race with a process that is still writing into the new directory.
+   */
+  #scanSubtree(absoluteDir: string) {
+    recReaddir(
+      absoluteDir,
+      (dir, stats) => {
+        if (this.#watchdir(dir)) {
+          this.#emitEvent({
+            event: TOUCH_EVENT,
+            relativePath: path.relative(this.root, dir),
+            metadata: {
+              modifiedTime: stats.mtime.getTime(),
+              size: stats.size,
+              type: 'd',
+            },
+          });
+        }
+      },
+      (file, stats) => {
+        if (this.#register(file, 'f')) {
+          this.#emitEvent({
+            event: TOUCH_EVENT,
+            relativePath: path.relative(this.root, file),
+            metadata: {
+              modifiedTime: stats.mtime.getTime(),
+              size: stats.size,
+              type: 'f',
+            },
+          });
+        }
+      },
+      (symlink, stats) => {
+        if (this.#register(symlink, 'l')) {
+          this.emitFileEvent({
+            event: TOUCH_EVENT,
+            relativePath: path.relative(this.root, symlink),
+            metadata: {
+              modifiedTime: stats.mtime.getTime(),
+              size: stats.size,
+              type: 'l',
+            },
+          });
+        }
+      },
+      function endCallback() {},
+      this.#checkedEmitError,
+      this.ignored
+    );
   }
 
   /**

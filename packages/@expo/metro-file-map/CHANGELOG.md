@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Pick up packages installed while the dev server is running: re-scan newly created directories in `FallbackWatcher`, and re-check fallback misses against the real filesystem instead of caching them forever. ([#48950](https://github.com/expo/expo/issues/48950))
+
 ### 💡 Others
 
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
