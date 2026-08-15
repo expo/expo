@@ -11,6 +11,7 @@
 ### 🎉 New features
 
 - Add `npx expo skills` command to link agent skills from npm packages into `.claude/skills` and `.agents/skills`. ([#48592](https://github.com/expo/expo/pull/48592) by [@kudo](https://github.com/kudo))
+- Sync agent skills automatically on `npx expo install` when `expo.skills.autoSync` is enabled, opt out per run with `--no-agent-skills`. ([#48972](https://github.com/expo/expo/pull/48972) by [@kudo](https://github.com/kudo))
 - Add `pageHeaders` to exported routes manifests ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 - Apply `pageHeaders` when serving static exports with `expo serve` ([#47781](https://github.com/expo/expo/pull/47781) by [@hassankhan](https://github.com/hassankhan))
 - Create `pageHeaders` rules from loader-declared `Cache-Control` headers for SSG ([#47774](https://github.com/expo/expo/pull/47774) by [@hassankhan](https://github.com/hassankhan))
