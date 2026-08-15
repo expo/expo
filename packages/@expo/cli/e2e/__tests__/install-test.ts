@@ -122,7 +122,7 @@ it('syncs agent skills on `npx expo install` when auto sync is enabled', async (
   // Cache the Claude Code agent selection like a previous `expo skills` run would
   await fs.mkdir(path.join(projectRoot, '.expo'), { recursive: true });
   await fs.writeFile(
-    path.join(projectRoot, '.expo/agent-links.json'),
+    path.join(projectRoot, '.expo/agent-skill-links.json'),
     JSON.stringify({ agents: ['claude-code'] })
   );
 
@@ -132,7 +132,7 @@ it('syncs agent skills on `npx expo install` when auto sync is enabled', async (
 
   // Installing a package links its skills
   await executeExpoAsync(projectRoot, ['install', 'test-skills@file:./test-skills'], { env });
-  expect(existsSync(path.join(projectRoot, '.claude/skills/npm-test-skills-alpha'))).toBe(true);
+  expect(existsSync(path.join(projectRoot, '.claude/skills/alpha'))).toBe(true);
 
   // `--no-agent-skills` skips the sync, existing links are left alone
   await executeExpoAsync(
@@ -140,6 +140,6 @@ it('syncs agent skills on `npx expo install` when auto sync is enabled', async (
     ['install', 'other-skills@file:./other-skills', '--no-agent-skills'],
     { env }
   );
-  expect(existsSync(path.join(projectRoot, '.claude/skills/npm-other-skills-beta'))).toBe(false);
-  expect(existsSync(path.join(projectRoot, '.claude/skills/npm-test-skills-alpha'))).toBe(true);
+  expect(existsSync(path.join(projectRoot, '.claude/skills/beta'))).toBe(false);
+  expect(existsSync(path.join(projectRoot, '.claude/skills/alpha'))).toBe(true);
 });
