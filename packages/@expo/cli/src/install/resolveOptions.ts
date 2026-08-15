@@ -14,8 +14,6 @@ export type Options = Pick<NodePackageManagerForProject, 'npm' | 'pnpm' | 'yarn'
   dev?: boolean;
   /** Should output in JSON format (use with --check) */
   json?: boolean;
-  /** Should link agent skills after installing, set to false with --no-agent-skills */
-  agentSkills?: boolean;
 };
 
 function resolveOptions(options: Options): Options {
@@ -39,17 +37,7 @@ export async function resolveArgsAsync(
   const { variadic, extras, flags } = parseVariadicArguments(argv);
 
   assertUnexpectedVariadicFlags(
-    [
-      '--check',
-      '--dev',
-      '--fix',
-      '--npm',
-      '--pnpm',
-      '--yarn',
-      '--bun',
-      '--json',
-      '--no-agent-skills',
-    ],
+    ['--check', '--dev', '--fix', '--npm', '--pnpm', '--yarn', '--bun', '--json'],
     { variadic, extras, flags },
     'npx expo install'
   );
@@ -66,7 +54,6 @@ export async function resolveArgsAsync(
       pnpm: !!flags['--pnpm'],
       bun: !!flags['--bun'],
       json: !!flags['--json'],
-      agentSkills: !flags['--no-agent-skills'],
     }),
     extras,
   };

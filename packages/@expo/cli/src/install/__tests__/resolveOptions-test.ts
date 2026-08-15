@@ -81,7 +81,6 @@ describe(resolveArgsAsync, () => {
         bun: false,
         fix: false,
         dev: false,
-        agentSkills: true,
       },
       extras: ['--npm', '-g', 'not-a-plugin'],
     });
@@ -99,13 +98,8 @@ describe(resolveArgsAsync, () => {
         bun: false,
         fix: false,
         dev: false,
-        agentSkills: true,
       },
       extras: [],
     });
-  });
-  it(`disables agent skills with --no-agent-skills`, async () => {
-    const result = await resolveArgsAsync(['expo-camera', '--no-agent-skills']);
-    expect(result.options.agentSkills).toBe(false);
   });
 });
