@@ -81,7 +81,7 @@ export function registerDOMComponent(AppModule: any) {
           setProps(msg.data as MarshalledProps);
         }
       });
-      // Updates emitted while the WebView was loading had no listener to catch them.
+      // Must stay after `addEventListener`, or the reply lands with nothing listening.
       notifyDOMReady();
       return () => {
         remove();

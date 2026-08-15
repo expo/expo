@@ -1,8 +1,6 @@
-// Scoped to the native jest projects, because the other two cannot run it.
-// The node project compiles `typeof window` down to `undefined`, which turns the
-// DOM side of `marshal` into a no-op, and the jsdom project has no
+// `.native.ts` on purpose.
+// The node project makes `marshal`'s DOM side a no-op, and jsdom has no
 // `MessageChannel` for `react-dom/server`.
-// DOM components only run on native, so this costs no coverage.
 import type { BridgeMessage } from '../dom.types';
 
 describe('notifyDOMReady', () => {
@@ -23,7 +21,7 @@ describe('notifyDOMReady', () => {
   });
 
   afterEach(() => {
-    // The suites below run in a node environment and expect no `window`.
+    // The next suite renders in node and expects no `window`.
     if (createdWindow) {
       delete (globalThis as any).window;
     } else {
@@ -59,11 +57,8 @@ describe('$$dom_ready', () => {
     }));
   });
 
-  /**
-   * `react-dom/server` is the only renderer this package depends on, so this mounts
-   * without running effects.
-   * That is enough here, since `onMessage` is wired up during render.
-   */
+  // `react-dom/server` is the only renderer here, so this mounts without effects.
+  // Enough for these tests, since `onMessage` is wired up during render.
   function renderRawWebView(props: Record<string, unknown>) {
     const injectJavaScript = jest.fn();
     let webViewProps: Record<string, any> = {};

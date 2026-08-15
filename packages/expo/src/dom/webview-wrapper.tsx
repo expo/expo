@@ -179,7 +179,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
       }
 
       if (type === DOM_READY) {
-        // Re-send: anything emitted while the WebView was loading was dropped.
+        // Anything emitted while the WebView was loading was dropped.
         emit({ type: '$$props', data: smartActions });
         return;
       }
