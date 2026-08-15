@@ -31,10 +31,6 @@ export const addEventListener = <TData extends JSONValue>(
   };
 };
 
-/**
- * Tells the native side that this DOM component is now listening for `$$props`.
- * It replies with the current props, since anything emitted earlier was dropped.
- */
 export const notifyDOMReady = () => {
   emit({ type: DOM_READY, data: null });
 };

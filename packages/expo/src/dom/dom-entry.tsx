@@ -81,7 +81,7 @@ export function registerDOMComponent(AppModule: any) {
           setProps(msg.data as MarshalledProps);
         }
       });
-      // Must stay after `addEventListener`, or the reply lands with nothing listening.
+      // Must stay after `addEventListener`: props emitted before it existed were dropped.
       notifyDOMReady();
       return () => {
         remove();
