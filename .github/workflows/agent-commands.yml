@@ -8,6 +8,11 @@
 #   @expo-bot verify --fix   same as /verify --fix.
 #   /verify --no-fix         report only, never open a pull request.
 #   @expo-bot verify --no-fix  same as /verify --no-fix.
+#   ... --model <name>       run on a different model (fable/opus/sonnet/haiku or a
+#                            full claude-* id). --fable / --opus / --sonnet / --haiku
+#                            are shorthands. Works on any command form and on the
+#                            workflow_dispatch `model` input; default is the
+#                            VERIFY_MODEL repo variable, else claude-opus-5.
 #   @expo-bot check          verify + review from one comment. This workflow runs the
 #                            verify half (--fix / --no-fix apply, issues and PRs);
 #                            expo-code-review-command.yml picks up the review half
@@ -106,6 +111,10 @@ on:
         type: choice
         options: ["auto", "yes", "no"]
         default: "auto"
+      model:
+        description: "Override the agent model for this run (a full claude-* id, e.g. claude-fable-5). Empty = the VERIFY_MODEL repo variable, else claude-opus-5. Comment-path runs never set this."
+        required: false
+        type: string
 
 # Scopes the automatic workflow token, which is what the AGENT step gets:
 # issue comments yes, repository contents never. The agent therefore cannot
@@ -318,6 +327,7 @@ jobs:
           IS_PR: ${{ github.event.issue.pull_request != null }}
           INPUT_FIX: ${{ inputs.fix }}
           INPUT_MODE: ${{ inputs.mode }}
+          INPUT_MODEL: ${{ inputs.model }}
           REQUEST: ${{ github.event.comment.body || inputs.request }}
         run: |
           if [ "$QUIET" = "true" ]; then
@@ -441,11 +451,48 @@ jobs:
               case " $line " in *" --no-fix "*) fix=false ;; esac
             fi
           fi
+          # Per-run model override. Sources: the dispatch `model` input, a
+          # `--model <name>` flag, or a per-model shorthand (--fable). The
+          # value comes from write-gated text but still flows into a shell
+          # env, so it is validated to a strict shape and everything else is
+          # rejected loudly — a typo silently falling back to Opus would
+          # misreport which model produced the findings.
+          model=""
+          if [ "$QUIET" = "true" ]; then
+            model=$INPUT_MODEL
+          else
+            model=$(printf '%s\n' "$line" | sed -n 's/.*--model[= ][[:space:]]*\([A-Za-z0-9._-]*\).*/\1/p')
+            case " $line " in *" --fable "*)  model=fable ;; esac
+            case " $line " in *" --opus "*)   model=opus ;; esac
+            case " $line " in *" --sonnet "*) model=sonnet ;; esac
+            case " $line " in *" --haiku "*)  model=haiku ;; esac
+          fi
+          case "$model" in
+            fable)  model=claude-fable-5 ;;
+            opus)   model=claude-opus-5 ;;
+            sonnet) model=claude-sonnet-5 ;;
+            haiku)  model=claude-haiku-4-5-20251001 ;;
+          esac
+          if [ -n "$model" ]; then
+            case "$model" in
+              claude-*)
+                if [ -n "$(printf '%s' "$model" | tr -d 'A-Za-z0-9._-')" ]; then
+                  echo "::error::Invalid model override: $model"
+                  exit 1
+                fi
+                ;;
+              *)
+                echo "::error::Unknown model override '$model' (use fable/opus/sonnet/haiku or a full claude-* id)."
+                exit 1
+                ;;
+            esac
+          fi
           {
             echo "fix=$fix"
             echo "is_pr=$IS_PR"
+            echo "model=$model"
           } >> "$GITHUB_OUTPUT"
-          echo "mode: $mode; fix mode: $fix (target is $([ "$IS_PR" = true ] && echo 'a pull request' || echo 'an issue'))"
+          echo "mode: $mode; fix mode: $fix; model: ${model:-default} (target is $([ "$IS_PR" = true ] && echo 'a pull request' || echo 'an issue'))"
 
       - name: Acknowledge
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && env.QUIET != 'true'
@@ -582,7 +629,7 @@ jobs:
           c4: ${{ secrets.ECR_4 }}
           c5: ${{ secrets.ECR_5 }}
           fallback: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
-          model: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          model: ${{ steps.cmd.outputs.model || vars.VERIFY_MODEL || 'claude-opus-5' }}
 
       # The agent gets ZERO shell access (see the allowlist below), so its
       # view of the target arrives as files it can Read. This is what lets the
@@ -838,9 +885,13 @@ jobs:
           ISSUE_NUMBER: ${{ env.TARGET_NUMBER }}
           ISSUE_KIND: ${{ steps.cmd.outputs.is_pr == 'true' && 'pull request' || 'issue' }}
           REPO: ${{ github.repository }}
-          # Pinned to Opus explicitly; override with a VERIFY_MODEL repo
-          # variable (mirrors the code-review workflows' REVIEWER_MODEL).
-          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          # Pinned to Opus explicitly; override per-run with the `model`
+          # dispatch input (scripts/verify.ts --model in expo-sandbox-mcp) or
+          # a --model/--fable/--opus/--sonnet/--haiku comment flag, both
+          # resolved and validated by the parse step; or repo-wide with a
+          # VERIFY_MODEL repo variable (mirrors the code-review workflows'
+          # REVIEWER_MODEL).
+          VERIFY_MODEL: ${{ steps.cmd.outputs.model || vars.VERIFY_MODEL || 'claude-opus-5' }}
           FIX_MODE: ${{ steps.cmd.outputs.fix }}
           MODE: ${{ steps.cmd.outputs.mode }}
           WORK_HEAD_SHA: ${{ steps.cmd.outputs.work_head_sha }}
@@ -1188,7 +1239,7 @@ jobs:
           ISSUE_NUMBER: ${{ env.TARGET_NUMBER }}
           ISSUE_KIND: ${{ steps.cmd.outputs.is_pr == 'true' && 'pull request' || 'issue' }}
           REPO: ${{ github.repository }}
-          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          VERIFY_MODEL: ${{ steps.cmd.outputs.model || vars.VERIFY_MODEL || 'claude-opus-5' }}
           MODE: ${{ steps.cmd.outputs.mode }}
         run: |
           set -o pipefail
@@ -1220,7 +1271,7 @@ jobs:
         id: revise
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
-          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          VERIFY_MODEL: ${{ steps.cmd.outputs.model || vars.VERIFY_MODEL || 'claude-opus-5' }}
           # Via env, never inline ${{ }} — the same discipline the comment body
           # follows two steps down, applied to every value that reaches a shell.
           SESSION_ID: ${{ steps.investigate.outputs.session_id }}

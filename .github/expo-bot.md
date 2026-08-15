@@ -12,6 +12,7 @@ Comment `@expo-bot help` on an expo/expo thread for a short list. That command a
 | `@expo-bot verify` | `/verify` | issue or PR | Investigate and post attested findings. On an issue, also opens a fix PR when it can. On a PR, report only unless `--fix`. |
 | `@expo-bot verify --fix` | `/verify --fix` | PR (on an issue, fix is already the default) | Also attempt a fix pull request |
 | `@expo-bot verify --no-fix` | `/verify --no-fix` | issue or PR | Report only; never open a PR |
+| `… --model <name>` | `… --fable`, `--opus`, `--sonnet`, `--haiku` | issue or PR | Run the agent on a different model for this run (`fable`/`opus`/`sonnet`/`haiku` or a full `claude-*` id). Combines with any verify/check/work form. |
 | `@expo-bot review` | `/review`, `/expo-review` | PR | One-shot AI review; router picks agents |
 | `@expo-bot review all` | `/review all` | PR | Review with every agent |
 | `@expo-bot review <agents>` | `/review <agents>` | PR | Review with a named subset (`correctness security`, …) |
