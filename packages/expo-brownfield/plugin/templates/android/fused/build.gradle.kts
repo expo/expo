@@ -442,7 +442,25 @@ if (findProperty("brownfield.fused") == "true") {
 
     publications {
       register<MavenPublication>("brownfield${fusedVariantCapitalized}") {
-        afterEvaluate { from(components["fusedLibraryComponent"]) }
+        val publication = this
+        afterEvaluate {
+          // AGP's fused component also publishes a merged -sources jar whose merging
+          // task resolves a documentation variant from EVERY dependency. Libraries
+          // published without Gradle Module Metadata (e.g.
+          // `jp.wasabeef:glide-transformations` from expo-image) expose no such
+          // variant, which hard-fails dependency resolution on Gradle 9. Skip the
+          // sources variant on the component (removing publication artifacts is not
+          // enough — module-metadata generation walks the component's variants and
+          // keeps the merge task in the graph). The fat-AAR publication only needs
+          // the AAR and pom.
+          val fusedComponent = components["fusedLibraryComponent"]
+          if (fusedComponent is org.gradle.api.component.AdhocComponentWithVariants) {
+            configurations.findByName("runtimeSourcePublication")?.let { sourcesVariant ->
+              fusedComponent.withVariantsFromConfiguration(sourcesVariant) { skip() }
+            }
+          }
+          publication.from(fusedComponent)
+        }
         // Fused-library emits skip-list modules into the POM using Gradle project names
         // (`expo-camera`) instead of the real coords (`expo.modules.camera`), so they
         // can't be resolved by consumers. Strip them.
