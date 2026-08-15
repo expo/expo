@@ -11,7 +11,9 @@ import type { WatcherBackendChangeEvent } from '../../types';
 import FallbackWatcher from '../FallbackWatcher';
 
 // This suite drives a real `fs.watch`, so it opts out of the memfs mock from
-// `jest.setup.ts`, which cannot model the behaviour under test.
+// `jest.setup.ts`, which cannot model the behaviour under test. The
+// `jest.spyOn(fs, ...)` mocks below rely on the watcher calling `fs.watch`
+// and friends as properties of the `fs` module object.
 jest.unmock('fs');
 jest.unmock('fs/promises');
 
@@ -356,6 +358,7 @@ describe('FallbackWatcher', () => {
     // Walk A's read now fails. The rollback must not close the watch that
     // walk B read the directory under.
     heldReaddirCallback!(makeFsError('ENOENT', 'scandir', packageDir));
+    // Must exceed the watcher's 100 ms debounce for the rollback to settle.
     await new Promise((resolve) => setTimeout(resolve, 150));
     expect(packageWatchClosed).toBe(false);
     expect(packageWatchCount).toBe(1);
@@ -520,7 +523,7 @@ describe('FallbackWatcher', () => {
       watchListener!('rename', 'link.js');
 
       await waitFor(() => hasTouchEvent(linkRelativePath), 'a touch event for the symlink');
-      // Wait out the debounce window, so that a duplicate event can surface.
+      // Must exceed the watcher's 100 ms debounce, so a duplicate can surface.
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       expect(countTouchEvents(linkRelativePath)).toBe(1);

@@ -58,6 +58,8 @@ export default class FallbackWatcher extends AbstractWatcher {
           }
         },
         (dir) => {
+          // A completed read can no longer fail, so drop the rollback entry.
+          provisionalWatchers.delete(dir);
           this.#recordCompletedRead(dir);
         },
         (filename) => {
@@ -233,7 +235,9 @@ export default class FallbackWatcher extends AbstractWatcher {
   #recordCompletedRead(dir: string): void {
     if (this.#watched[dir] == null) {
       // A rollback removed the pre-read watch while this read was in flight,
-      // so watch again, like the earlier post-read behavior did.
+      // so watch again, like the earlier post-read behavior did. The rolled
+      // back touch event for the directory is not re-emitted: the file map
+      // ignores directory events (see `onChange` in `index.ts`).
       this.#watchdirDuringWalk(dir);
     }
     const watcher = this.#watched[dir];
@@ -386,6 +390,8 @@ export default class FallbackWatcher extends AbstractWatcher {
             }
           },
           (dir) => {
+            // A completed read can no longer fail, so drop the rollback entry.
+            provisionalWatchers.delete(dir);
             this.#recordCompletedRead(dir);
           },
           (file, stats) => {
