@@ -6,7 +6,6 @@
     "@ai-sdk/react": "^4.0.68",
     "@expo-google-fonts/inter": "^0.4.2",
     "@expo-google-fonts/syne": "^0.4.2",
-    "@react-navigation/native": "^7.1.17",
     "@expo/metro-runtime": "~57.0.9",
     "@stardazed/streams-text-encoding": "^1.0.2",
     "@ungap/structured-clone": "^1.3.3",
