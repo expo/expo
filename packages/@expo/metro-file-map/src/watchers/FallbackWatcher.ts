@@ -179,10 +179,8 @@ export default class FallbackWatcher extends AbstractWatcher {
     this.#watched[dir] = watcher;
 
     watcher.on('error', (error) => {
-      // Node closes the native handle of an errored watcher without a `close`
-      // event, and `close()` on it is a no-op. Forget the watcher here, so
-      // that the path can be watched again and shutdown does not wait for a
-      // `close` event that never comes.
+      // An errored watcher never emits `close`, so forget it here to let the
+      // path be watched again and to keep shutdown from waiting forever.
       this.#forgetWatcher(dir, watcher);
       watcher.close();
       this.#checkedEmitError(error);
@@ -198,23 +196,12 @@ export default class FallbackWatcher extends AbstractWatcher {
   };
 
   /**
-   * Watch a directory that a walk is about to read.
+   * Watch a directory just before a walk reads it, so that no entry written
+   * between the read and the start of the watch is lost. See
+   * https://github.com/expo/expo/issues/48950.
    *
-   * `walker` reads the entries of a directory before it reports the directory.
-   * A watch that starts when the directory is reported therefore starts after
-   * the read. An entry that another process writes between the read and the
-   * watch is in no listing, and it causes no event. The watcher never reports
-   * that entry, and the file map stays stale until the next restart. A package
-   * manager wins this race when it installs a package while the dev server
-   * runs. See https://github.com/expo/expo/issues/48950.
-   *
-   * The walk calls this method before it reads a directory. The read then
-   * reports every entry that exists before the watch starts, and the watch
-   * reports every entry that appears after it, so no entry is lost.
-   *
-   * Returns true if the directory was not watched before. Callers record a
-   * true return, so that they can roll the watch back when the read of that
-   * directory fails. See `#rollbackWalkWatch`.
+   * Returns true if the directory was not watched before. Callers use a true
+   * return to roll the watch back when the read fails.
    */
   #watchdirDuringWalk(dir: string): boolean {
     try {
@@ -226,10 +213,7 @@ export default class FallbackWatcher extends AbstractWatcher {
     }
   }
 
-  /**
-   * Forget a watcher, unless another watcher already replaced it at the same
-   * path.
-   */
+  /** Forget a watcher, unless another one already replaced it at the same path. */
   #forgetWatcher(dir: string, watcher: FSWatcher): void {
     if (this.#watched[dir] === watcher) {
       delete this.#watched[dir];
@@ -237,11 +221,8 @@ export default class FallbackWatcher extends AbstractWatcher {
   }
 
   /**
-   * Roll back the watch that a walk started on a directory whose read failed.
-   * A failed read reports no entries, so this method returns the directory to
-   * its state from before the watch: not watched, not registered, and with no
-   * pending touch event. A later event on the parent directory reports the
-   * directory again if it still exists. See `#watchdirDuringWalk`.
+   * Roll back the watch that a walk started on a directory whose read failed,
+   * returning the directory to its unwatched, unregistered state.
    */
   #rollbackWalkWatch(dir: string): void {
     const key = TOUCH_EVENT + '-' + path.relative(this.root, dir);
@@ -251,23 +232,17 @@ export default class FallbackWatcher extends AbstractWatcher {
       this.#changeTimers.delete(key);
     }
     this.#unregister(dir);
-    // The returned promise resolves after the watcher closes; it never
-    // rejects, so no handler is necessary here.
+    // Never rejects, so the promise is safe to ignore.
     this.#stopWatching(dir);
   }
 
-  /**
-   * Stop watching a directory. Idempotent: a watcher that already left
-   * `#watched`, through an earlier call or through its `error` or `close`
-   * handler, needs no further cleanup.
-   */
+  /** Stop watching a directory. Idempotent. */
   async #stopWatching(dir: string): Promise<void> {
     const watcher = this.#watched[dir];
     if (!watcher) {
       return;
     }
-    // Forget the watcher before the wait, so that a concurrent call does not
-    // wait for a `close` event that only this call's `close()` produces.
+    // Forget first, so a concurrent call returns instead of waiting here.
     this.#forgetWatcher(dir, watcher);
     await new Promise<void>((resolve) => {
       // A watcher that errors during the close emits `error` and no `close`.
@@ -398,8 +373,7 @@ export default class FallbackWatcher extends AbstractWatcher {
           },
           (symlink, stats) => {
             if (this.#register(symlink, 'l')) {
-              // Debounce through #emitEvent like regular files, so a symlink
-              // that the watch also reports produces one touch event.
+              // Debounce so a symlink the watch also reports emits one event.
               this.#emitEvent({
                 event: TOUCH_EVENT,
                 relativePath: path.relative(this.root, symlink),
@@ -518,10 +492,8 @@ function recReaddir(
   ignored: RegExp | undefined | null
 ) {
   const walk = walker(dir);
-  // The walker calls `filterDir` on a directory before it reads the entries of
-  // that directory, and it reports the directory only after the read. Callers
-  // start their watch here, so that no entry falls between the read and the
-  // watch. See `#watchdirDuringWalk`.
+  // `walker` calls `filterDir` before it reads a directory, so callers start
+  // their watch here. See `#watchdirDuringWalk`.
   walk.filterDir((currentDir: string, stats: Stats) => {
     if (ignored && common.posixPathMatchesPattern(ignored, currentDir)) {
       return false;
@@ -532,8 +504,7 @@ function recReaddir(
   walk
     .on('file', normalizeProxy(fileCallback))
     .on('symlink', normalizeProxy(symlinkCallback))
-    // `walker` reports the entry it failed on, e.g. the directory of a failed
-    // read. Callers use it to roll back the watch that `filterDir` started.
+    // The entry is the path the walker failed on, e.g. an unreadable directory.
     .on('error', (error: Error, entry?: string) =>
       errorCallback(error, entry == null ? undefined : path.normalize(entry))
     )

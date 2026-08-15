@@ -10,19 +10,16 @@ import path from 'path';
 import type { WatcherBackendChangeEvent } from '../../types';
 import FallbackWatcher from '../FallbackWatcher';
 
-// This suite drives a real `fs.watch`, so it opts out of the memfs mock that
-// `jest.setup.ts` installs. memfs cannot model the behaviour under test: its
-// watcher also reports entries of sub-directories, and a real watch reports
-// only the direct children of the directory it watches.
+// This suite drives a real `fs.watch`, so it opts out of the memfs mock from
+// `jest.setup.ts`, which cannot model the behaviour under test.
 jest.unmock('fs');
 jest.unmock('fs/promises');
 
 const WAIT_TIMEOUT_MS = 10000;
 const POLL_INTERVAL_MS = 10;
 
-// Keep Jest's timeout above the polling deadline plus the teardown, so that a
-// slow wait fails with the descriptive `waitFor` error instead of a generic
-// Jest abort. A test awaits at most three sequential waits.
+// Keep Jest's timeout above the polling deadline, so that a slow wait fails
+// with the descriptive `waitFor` error instead of a generic Jest abort.
 jest.setTimeout(WAIT_TIMEOUT_MS * 4);
 
 // Set during teardown so that no polling loop outlives its test.
@@ -52,27 +49,23 @@ function makeFsError(code: string, syscall: string, target: string): NodeJS.Errn
 }
 
 /**
- * Models an `FSWatcher` after Node handled a watch error: the native handle
- * is closed, `close()` is a no-op, and no `close` event ever fires. See
- * https://github.com/nodejs/node/blob/v24.3.0/lib/internal/fs/watchers.js#L203-L220
+ * Models an errored `FSWatcher`: Node has closed the native handle, `close()`
+ * is a no-op, and no `close` event ever fires.
  */
 class DeadWatcher extends EventEmitter {
   close(): void {}
 }
 
-/**
- * Models a healthy `FSWatcher` whose events the test delivers by hand.
- */
+/** Models a healthy `FSWatcher` whose events the test delivers by hand. */
 class StubWatcher extends EventEmitter {
   close(): void {
     this.emit('close');
   }
 }
 
-// Resolve the temp directory to its canonical long form. `realpathSync.native`
-// also expands Windows 8.3 short names such as `C:\Users\RUNNER~1`, which the
-// JavaScript `realpathSync` keeps. A watch root with a short-name component
-// crashes Node on libuv 1.52.x (https://github.com/libuv/libuv/issues/5010).
+// `realpathSync.native` expands Windows 8.3 short names: a watch root with a
+// short-name component crashes Node on libuv 1.52.x
+// (https://github.com/libuv/libuv/issues/5010).
 const TMP_DIR = fs.realpathSync.native(os.tmpdir());
 
 // `fs.symlinkSync` needs extra privileges on some Windows configurations.
@@ -125,11 +118,9 @@ describe('FallbackWatcher', () => {
     });
     await watcher.startWatching();
 
-    // Prove that the watch on `node_modules` delivers events before the
-    // scenario starts. `fs.watch` on macOS can miss changes that occur soon
-    // after the watch starts, so repeat the probe write until its event
-    // arrives. Space the writes out beyond the debounce, so that a write
-    // does not postpone the event of the previous write.
+    // `fs.watch` on macOS can miss changes soon after the watch starts, so
+    // write a probe file until its event proves that the pipeline is live.
+    // The writes are spaced beyond the debounce, so each one can emit.
     const probeRelativePath = path.join('node_modules', '.watch-probe');
     const probePath = path.join(root, probeRelativePath);
     const start = Date.now();
@@ -159,11 +150,8 @@ describe('FallbackWatcher', () => {
     const realWatch = fs.watch;
     let watchedPackageDir = false;
 
-    // Write `package.json` at the moment the watcher starts to watch the new
-    // package directory. A package manager wins this race when it writes a
-    // package while the dev server runs. The file is absent from every
-    // directory listing taken before the write, and it produces no event when
-    // the watch starts after the write.
+    // Write `package.json` at the moment the watch on the new directory
+    // starts: it is in no earlier listing, so the watch must report it.
     jest.spyOn(fs, 'watch').mockImplementation(((dir: any, ...rest: any[]) => {
       if (dir === packageDir && !watchedPackageDir) {
         watchedPackageDir = true;
@@ -229,9 +217,8 @@ describe('FallbackWatcher', () => {
       return created;
     }) as typeof fs.watch);
 
-    // Fail every read of the new directory until the test allows reads, as
-    // when the directory disappears after `fs.watch` succeeds and before the
-    // walk reads it.
+    // Fail every read of the new directory, as when it disappears between
+    // the start of the watch and the read.
     const realReaddir = fs.readdir;
     jest.spyOn(fs, 'readdir').mockImplementation(((dir: any, ...args: any[]) => {
       if (dir === packageDir && !readsAllowed) {
@@ -287,8 +274,7 @@ describe('FallbackWatcher', () => {
     fs.mkdirSync(packageDir);
     await waitFor(() => packageDirWatchCount >= 1, 'the watcher to watch the new directory');
 
-    // Model the error for a deleted watched directory: Node emits `error`,
-    // closes the native handle, and never emits `close`.
+    // Model the deletion of a watched directory: `error` fires, `close` never.
     deadWatcher.emit('error', makeFsError('ENOENT', 'watch', packageDir));
 
     fs.rmdirSync(packageDir);
@@ -323,8 +309,7 @@ describe('FallbackWatcher', () => {
     // The EPERM error models the deletion of a watched directory on Windows.
     deadWatcher.emit('error', makeFsError('EPERM', 'watch', packageDir));
 
-    // Both calls must resolve: the errored watcher emits no `close` event,
-    // and the second call must not wait for one either.
+    // Both calls must resolve even though the errored watcher emits no `close`.
     await watcher!.stopWatching();
     await watcher!.stopWatching();
   });
@@ -338,9 +323,8 @@ describe('FallbackWatcher', () => {
       const linkPath = path.join(packageDir, 'link.js');
       const linkRelativePath = path.join('node_modules', 'link-pkg', 'link.js');
 
-      // Flag the completion of the walk's lstat of the symlink. The walker
-      // reports the symlink synchronously from that lstat callback, so a set
-      // flag means the walk has registered the symlink and emitted its event.
+      // The walker reports a symlink synchronously from its lstat callback,
+      // so a completed lstat means the walk has processed the symlink.
       const realLstat = fs.lstat;
       let walkProcessedSymlink = false;
       jest.spyOn(fs, 'lstat').mockImplementation(((target: any, ...args: any[]) => {
@@ -353,9 +337,8 @@ describe('FallbackWatcher', () => {
         });
       }) as typeof fs.lstat);
 
-      // Return a controllable watcher for the new directory, and create the
-      // symlink after the watch starts and before the read. The walk then
-      // lists the symlink, and the test delivers the watch event for it.
+      // Create the symlink after the watch starts and before the read, so
+      // both the walk and the watch observe it.
       const realWatch = fs.watch;
       let watchListener: ((event: string, filename: string) => void) | null = null;
       jest.spyOn(fs, 'watch').mockImplementation(((dir: any, ...rest: any[]) => {
