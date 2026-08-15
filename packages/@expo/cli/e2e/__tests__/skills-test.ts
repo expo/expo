@@ -2,8 +2,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import { executeExpoAsync } from '../utils/expo';
+import { createExpoStart, executeExpoAsync } from '../utils/expo';
 import {
+  bin,
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
@@ -198,3 +199,61 @@ describe('skills actions', () => {
     );
   });
 });
+
+// Due to change in `expo` package the tests suit will fail on Windows, as npm pack fails to execute `expo` prepare on Windows.
+const describeSkipWin = process.platform === 'win32' ? describe.skip : describe;
+
+describeSkipWin('auto sync on `npx expo start`', () => {
+  let projectRoot: string;
+  let linkPath: string;
+
+  beforeAll(async () => {
+    projectRoot = await setupTestProjectWithOptionsAsync('skills-autosync-start', 'with-blank', {
+      reuseExisting: false,
+      linkExpoPackages: ['expo', 'babel-preset-expo'],
+    });
+    await addSkillDependencyAsync(projectRoot, 'test-skills', ['alpha']);
+
+    const pkgPath = path.join(projectRoot, 'package.json');
+    const pkg = JSON.parse(await fs.promises.readFile(pkgPath, 'utf8'));
+    pkg.expo = { skills: { autoSync: true, agents: ['claude-code'] } };
+    await fs.promises.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
+
+    linkPath = path.join(projectRoot, '.claude', 'skills', 'npm-test-skills-alpha');
+  });
+
+  it('links skills in the background', async () => {
+    const expo = createExpoStart({ cwd: projectRoot });
+    await expo.startAsync();
+    try {
+      await waitForAsync(() => fs.existsSync(linkPath), 30000);
+      expect(fs.existsSync(linkPath)).toBe(true);
+    } finally {
+      await expo.stopAsync();
+    }
+  });
+
+  it('skips linking with --no-agent-skills', async () => {
+    await executeExpoAsync(projectRoot, ['skills', 'clean']);
+
+    const expo = createExpoStart({
+      cwd: projectRoot,
+      command: (port) => [bin, 'start', `--port=${port}`, '--no-agent-skills'],
+    });
+    await expo.startAsync();
+    try {
+      // The sync starts before the dev server is ready, give it time to finish if it wrongly runs.
+      await waitForAsync(() => fs.existsSync(linkPath), 5000);
+      expect(fs.existsSync(linkPath)).toBe(false);
+    } finally {
+      await expo.stopAsync();
+    }
+  });
+});
+
+async function waitForAsync(check: () => boolean, timeoutMs: number): Promise<void> {
+  const endTime = Date.now() + timeoutMs;
+  while (!check() && Date.now() < endTime) {
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+}

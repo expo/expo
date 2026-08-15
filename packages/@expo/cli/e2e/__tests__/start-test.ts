@@ -67,6 +67,7 @@ it('runs `npx expo start --help`', async () => {
         --localhost                     Same as --host localhost
         
         --offline                       Skip network requests and use anonymous manifest signatures
+        --no-agent-skills               Skip linking agent skills from installed packages
         --https                         Start the dev server with https protocol. Deprecated in favor of --tunnel
         --scheme <scheme>               Custom URI protocol to use when launching an app
         -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
