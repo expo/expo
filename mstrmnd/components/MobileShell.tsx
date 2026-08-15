@@ -1,6 +1,7 @@
 import { Platform, StyleSheet, View, useWindowDimensions } from 'react-native';
 import type { ReactNode } from 'react';
-import { colors } from '@/constants/theme';
+import { MarketingFrame } from '@/components/MarketingFrame';
+import { color } from '@/tokens';
 
 /** Phone canvas used on web so the controller always reads as mobile */
 export const MOBILE_WIDTH = 390;
@@ -17,56 +18,55 @@ export function MobileShell({ children }: Props) {
     return <View style={styles.native}>{children}</View>;
   }
 
-  const scale = Math.min(
-    1,
-    Math.max(0.55, (width - 48) / MOBILE_WIDTH),
-    Math.max(0.55, (height - 48) / MOBILE_HEIGHT),
-  );
+  const wide = width >= 1100;
+  const budgetW = wide ? Math.min(420, width * 0.4) : width - 32;
+  const budgetH = wide ? height - 64 : Math.max(360, height * 0.58);
+  const scale = Math.min(1, budgetW / MOBILE_WIDTH, budgetH / MOBILE_HEIGHT);
 
   return (
-    <View style={styles.stage}>
+    <MarketingFrame>
       <View
-        style={[
-          styles.device,
-          {
-            width: MOBILE_WIDTH,
-            height: MOBILE_HEIGHT,
-            transform: [{ scale }],
-          },
-        ]}
+        style={{
+          width: MOBILE_WIDTH * scale,
+          height: MOBILE_HEIGHT * scale,
+        }}
       >
-        <View style={styles.bezelTop}>
-          <View style={styles.notch} />
-        </View>
-        <View style={styles.screen}>{children}</View>
-        <View style={styles.bezelBottom}>
-          <View style={styles.homeIndicator} />
+        <View
+          style={[
+            styles.device,
+            {
+              width: MOBILE_WIDTH,
+              height: MOBILE_HEIGHT,
+              transform: [{ scale }],
+              transformOrigin: 'top left',
+            },
+          ]}
+        >
+          <View style={styles.bezelTop}>
+            <View style={styles.notch} />
+          </View>
+          <View style={styles.screen}>{children}</View>
+          <View style={styles.bezelBottom}>
+            <View style={styles.homeIndicator} />
+          </View>
         </View>
       </View>
-    </View>
+    </MarketingFrame>
   );
 }
 
 const styles = StyleSheet.create({
   native: {
     flex: 1,
-    backgroundColor: colors.void,
-  },
-  stage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#050505',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: color.substrate,
   },
   device: {
-    backgroundColor: '#0A0A0C',
+    backgroundColor: color.surface,
     borderRadius: 40,
-    borderWidth: 3,
-    borderColor: '#1E1E24',
+    borderWidth: 1,
+    borderColor: color.borderHighlight,
     overflow: 'hidden',
-    shadowColor: '#000',
+    shadowColor: color.substrate,
     shadowOpacity: 0.6,
     shadowRadius: 48,
     shadowOffset: { width: 0, height: 22 },
@@ -86,12 +86,12 @@ const styles = StyleSheet.create({
     width: 108,
     height: 24,
     borderRadius: 16,
-    backgroundColor: '#000',
+    backgroundColor: color.substrate,
     marginBottom: 4,
   },
   screen: {
     flex: 1,
-    backgroundColor: colors.void,
+    backgroundColor: color.substrate,
     overflow: 'hidden',
   },
   bezelBottom: {

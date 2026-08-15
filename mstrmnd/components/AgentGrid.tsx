@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { DEPARTMENT_AGENTS } from '@/constants/agents';
 import { colors, spacing } from '@/constants/theme';
 import { AgentPad } from '@/components/AgentPad';
+import { GlassCard } from '@/components/GlassCard';
 import { useController } from '@/context/ControllerContext';
 
 const COLS = 3;
@@ -16,7 +17,7 @@ export function AgentGrid() {
   }
 
   return (
-    <View style={styles.chassis}>
+    <GlassCard style={styles.chassis} padded={false}>
       <View style={styles.screwRow}>
         <View style={styles.screw} />
         <View style={styles.screw} />
@@ -47,17 +48,13 @@ export function AgentGrid() {
         <View style={styles.screw} />
         <View style={styles.screw} />
       </View>
-    </View>
+    </GlassCard>
   );
 }
 
 const styles = StyleSheet.create({
   chassis: {
     flex: 1,
-    backgroundColor: colors.chassisRaised,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.bezel,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     minHeight: 0,
@@ -72,9 +69,9 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#2A313A',
+    backgroundColor: colors.bezel,
     borderWidth: 1,
-    borderColor: '#3A4450',
+    borderColor: colors.hairline,
   },
   grid: {
     flex: 1,

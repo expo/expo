@@ -1,4 +1,6 @@
-/** Official MSTRMND brand tokens — metallic tetrahedron system */
+/** Official MSTRMND brand — Linear token mapping lives in `@/tokens`. */
+import { color as linearColor, font, radius as linearRadius, space } from '@/tokens';
+
 export const brand = {
   name: 'MSTRMND',
   /** Continuous wordmark — use letterSpacing in UI, not literal spaces */
@@ -7,22 +9,27 @@ export const brand = {
   pillars: ['Research', 'Technology', 'Systems', 'Future'] as const,
 } as const;
 
+/**
+ * App-facing palette. Structural names map onto the shared Linear tokens
+ * so marketing CSS and native StyleSheet stay in lockstep.
+ */
 export const colors = {
-  void: '#000000',
-  chassis: '#0A0A0C',
-  chassisRaised: '#121214',
-  recess: '#070708',
-  pad: '#141416',
-  padPressed: '#1C1C20',
-  bezel: '#2A2A30',
-  hairline: 'rgba(255,255,255,0.08)',
+  void: linearColor.substrate,
+  chassis: linearColor.surface,
+  chassisRaised: linearColor.surfaceElevated,
+  recess: linearColor.substrateObsidian,
+  pad: linearColor.surfaceElevated,
+  padPressed: linearColor.borderMuted,
+  bezel: linearColor.borderHighlight,
+  hairline: linearColor.hairline,
   metal: '#A8ADB4',
   chrome: '#D8DCE2',
-  chromeHot: '#F4F6F8',
-  ink: '#F2F4F6',
-  muted: '#7A8088',
-  /** Brand signal — silver */
-  signal: '#C8CDD4',
+  chromeHot: linearColor.textPrimary,
+  ink: linearColor.textPrimary,
+  muted: linearColor.textSecondary,
+  /** Brand / system signal — Linear blur-indigo */
+  signal: linearColor.accent,
+  accent: linearColor.accent,
   amber: '#FFB020',
   cyan: '#3DDCFF',
   coral: '#FF6B4A',
@@ -30,16 +37,13 @@ export const colors = {
   danger: '#FF4D6A',
 } as const;
 
-export const spacing = {
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
-} as const;
+export const spacing = space;
 
 export const radii = {
-  pad: 10,
-  window: 14,
-  pill: 999,
+  pad: linearRadius.pad,
+  window: linearRadius.window,
+  pill: linearRadius.pill,
+  card: linearRadius.card,
 } as const;
+
+export const fonts = font;

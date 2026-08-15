@@ -1,10 +1,10 @@
 import { StyleSheet, Text, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AgentGrid } from '@/components/AgentGrid';
 import { BrandLockup } from '@/components/BrandLockup';
+import { CinematicBackground } from '@/components/CinematicBackground';
 import { MainAgentWindow } from '@/components/MainAgentWindow';
-import { colors, spacing } from '@/constants/theme';
+import { colors, fonts, spacing } from '@/constants/theme';
 import { useController } from '@/context/ControllerContext';
 
 export default function ControllerScreen() {
@@ -12,11 +12,7 @@ export default function ControllerScreen() {
 
   return (
     <View style={styles.root}>
-      <LinearGradient
-        colors={['#101014', '#070708', '#000000']}
-        locations={[0, 0.5, 1]}
-        style={StyleSheet.absoluteFill}
-      />
+      <CinematicBackground />
       <SafeAreaView style={styles.safe} edges={['top', 'left', 'right']}>
         <View style={styles.topBar}>
           <View>
@@ -59,7 +55,7 @@ const styles = StyleSheet.create({
     paddingTop: 4,
   },
   sub: {
-    fontFamily: 'SpaceGrotesk_400Regular',
+    fontFamily: fonts.sans,
     color: colors.muted,
     fontSize: 9,
     letterSpacing: 1.8,
@@ -79,8 +75,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   sessionText: {
-    fontFamily: 'SpaceGrotesk_500Medium',
-    color: colors.metal,
+    fontFamily: fonts.sansMedium,
+    color: colors.muted,
     fontSize: 9,
     letterSpacing: 1.2,
   },
