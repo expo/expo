@@ -14,7 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
@@ -54,6 +56,21 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   private val childViewState = mutableStateOf<View?>(null)
   private val wrapperState = mutableStateOf<TouchDispatchingRootViewGroup?>(null)
 
+  /**
+   * Whether this view owns its subtree's touches. False everywhere except content presented in its
+   * own window, where no React root sits above us to dispatch. Props and children can arrive in
+   * either order, so this is applied both here and when the wrapper is created.
+   */
+  private var layoutRoot = false
+
+  private var lastContentOriginX = Double.NaN
+  private var lastContentOriginY = Double.NaN
+
+  internal fun setLayoutRoot(value: Boolean) {
+    layoutRoot = value
+    wrapperState.value?.dispatchesTouchesToJS = value
+  }
+
   private val childSizeState = mutableStateOf(IntSize.Zero)
   private val childLayoutListener = View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
     childSizeState.value = IntSize(r - l, b - t)
@@ -68,6 +85,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     }
     child.addOnLayoutChangeListener(childLayoutListener)
     val wrapper = TouchDispatchingRootViewGroup(child.context).apply {
+      dispatchesTouchesToJS = layoutRoot
       val reactContext = child.context as? ReactContext
       if (reactContext != null) {
         eventDispatcher = UIManagerHelper.getEventDispatcherForReactTag(reactContext, child.id)
@@ -83,6 +101,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     if (view == childViewState.value) {
       view.removeOnLayoutChangeListener(childLayoutListener)
       wrapperState.value?.removeView(view)
+      clearPublishedContentOrigin()
       childViewState.value = null
       wrapperState.value = null
     } else {
@@ -95,8 +114,15 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       child.removeOnLayoutChangeListener(childLayoutListener)
       wrapperState.value?.removeView(child)
     }
+    clearPublishedContentOrigin()
     childViewState.value = null
     wrapperState.value = null
+  }
+
+  private fun clearPublishedContentOrigin() {
+    lastContentOriginX = Double.NaN
+    lastContentOriginY = Double.NaN
+    shadowNodeProxy.clearContentOrigin()
   }
 
   @Composable
@@ -114,6 +140,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
           .then(reportSizeToYogaNodeModifier())
       }
       val modifiers = sizingModifier
+        .then(publishContentOriginModifier())
         .then(ModifierRegistry.applyModifiers(props.modifiers, appContext, scope, globalEventDispatcher))
 
       AndroidView(
@@ -140,6 +167,36 @@ internal class RNHostView(context: Context, appContext: AppContext) :
         )
       } else {
         Modifier
+      }
+    }
+  }
+
+  /**
+   * Publishes where Compose placed this view inside its `Host`, which Yoga has no way to know:
+   * Yoga puts the box at the `Host`'s origin while Compose may draw it anywhere inside. Without
+   * this, `measure()` reports the Yoga box, the responder region sits away from the content, and a
+   * `Pressable` drops its press as soon as the finger moves.
+   *
+   * Only while an ancestor React root owns dispatch. As a `layoutRoot` the measure walk stops at
+   * this node, so there is no ancestor chain left to correct and publishing would offset it twice.
+   */
+  @Composable
+  private fun publishContentOriginModifier(): Modifier {
+    if (layoutRoot) {
+      return Modifier
+    }
+    val density = LocalDensity.current
+    return Modifier.onGloballyPositioned { coordinates ->
+      val position = coordinates.positionInRoot()
+      with(density) {
+        val x = position.x.toDp().value.toDouble()
+        val y = position.y.toDp().value.toDouble()
+        // Compose re-positions content on every scroll frame; only publish real movement.
+        if (x != lastContentOriginX || y != lastContentOriginY) {
+          lastContentOriginX = x
+          lastContentOriginY = y
+          shadowNodeProxy.setContentOrigin(x, y)
+        }
       }
     }
   }
@@ -190,6 +247,17 @@ private class TouchDispatchingRootViewGroup(
 
   var eventDispatcher: EventDispatcher? = null
 
+  /**
+   * Whether this view streams its subtree's touches to JavaScript.
+   *
+   * When false, an ancestor React root is already streaming them, and dispatching a second time
+   * would produce two streams in two coordinate spaces — the ancestor's moves land outside the
+   * host-relative responder region and `Pressable` drops the press on the first movement. The
+   * nested-scroll cooperation below stays active either way; only the JavaScript dispatch and the
+   * ancestor suppression are conditional.
+   */
+  var dispatchesTouchesToJS: Boolean = false
+
   private val reactContext: ThemedReactContext
     get() = context as ThemedReactContext
 
@@ -220,7 +288,12 @@ private class TouchDispatchingRootViewGroup(
       // duplicate JS touch stream in their own coordinate space. Their moves land outside the
       // host-relative responder region and break `Pressable`. Tell them a native child owns the
       // gesture, before dispatching our own start, so their stream ends ahead of it.
-      notifyAncestorRootViews { it.onChildStartedNativeGesture(this, ev) }
+      //
+      // Only when we are the one dispatching. Otherwise their stream is the only one there is, and
+      // suppressing it would leave this subtree with no touches at all.
+      if (dispatchesTouchesToJS) {
+        notifyAncestorRootViews { it.onChildStartedNativeGesture(this, ev) }
+      }
       // dispatchTouchEvent is the true start of every gesture, so reset all per-gesture state here.
       getLocationInWindow(gestureStartLocation)
       trackingGestureOffset = true
@@ -247,7 +320,9 @@ private class TouchDispatchingRootViewGroup(
 
     if (ev.actionMasked == MotionEvent.ACTION_UP || ev.actionMasked == MotionEvent.ACTION_CANCEL) {
       trackingGestureOffset = false
-      notifyAncestorRootViews { it.onChildEndedNativeGesture(this, ev) }
+      if (dispatchesTouchesToJS) {
+        notifyAncestorRootViews { it.onChildEndedNativeGesture(this, ev) }
+      }
     }
     return handled
   }
@@ -261,35 +336,47 @@ private class TouchDispatchingRootViewGroup(
   }
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-    eventDispatcher?.let { dispatcher ->
-      jsTouchDispatcher.handleTouchEvent(event, dispatcher, reactContext)
-      jsPointerDispatcher?.handleMotionEvent(event, dispatcher, true)
+    if (dispatchesTouchesToJS) {
+      eventDispatcher?.let { dispatcher ->
+        jsTouchDispatcher.handleTouchEvent(event, dispatcher, reactContext)
+        jsPointerDispatcher?.handleMotionEvent(event, dispatcher, true)
+      }
     }
     return super.onInterceptTouchEvent(event)
   }
 
   @SuppressLint("ClickableViewAccessibility")
   override fun onTouchEvent(event: MotionEvent): Boolean {
-    eventDispatcher?.let { dispatcher ->
-      jsTouchDispatcher.handleTouchEvent(event, dispatcher, reactContext)
-      jsPointerDispatcher?.handleMotionEvent(event, dispatcher, false)
+    if (dispatchesTouchesToJS) {
+      eventDispatcher?.let { dispatcher ->
+        jsTouchDispatcher.handleTouchEvent(event, dispatcher, reactContext)
+        jsPointerDispatcher?.handleMotionEvent(event, dispatcher, false)
+      }
     }
     super.onTouchEvent(event)
     return true
   }
 
   override fun onInterceptHoverEvent(event: MotionEvent): Boolean {
-    eventDispatcher?.let { jsPointerDispatcher?.handleMotionEvent(event, it, true) }
+    if (dispatchesTouchesToJS) {
+      eventDispatcher?.let { jsPointerDispatcher?.handleMotionEvent(event, it, true) }
+    }
     return super.onInterceptHoverEvent(event)
   }
 
   override fun onHoverEvent(event: MotionEvent): Boolean {
-    eventDispatcher?.let { jsPointerDispatcher?.handleMotionEvent(event, it, false) }
+    if (dispatchesTouchesToJS) {
+      eventDispatcher?.let { jsPointerDispatcher?.handleMotionEvent(event, it, false) }
+    }
     return super.onHoverEvent(event)
   }
 
   @OptIn(UnstableReactNativeAPI::class)
   override fun onChildStartedNativeGesture(childView: View?, ev: MotionEvent) {
+    if (!dispatchesTouchesToJS) {
+      // No stream of ours to cancel; the ancestor root that owns this subtree handles it.
+      return
+    }
     eventDispatcher?.let { dispatcher ->
       jsTouchDispatcher.onChildStartedNativeGesture(ev, dispatcher, reactContext)
       jsPointerDispatcher?.onChildStartedNativeGesture(childView, ev, dispatcher)
@@ -297,6 +384,9 @@ private class TouchDispatchingRootViewGroup(
   }
 
   override fun onChildEndedNativeGesture(childView: View, ev: MotionEvent) {
+    if (!dispatchesTouchesToJS) {
+      return
+    }
     eventDispatcher?.let { jsTouchDispatcher.onChildEndedNativeGesture(ev, it) }
     jsPointerDispatcher?.onChildEndedNativeGesture()
   }
