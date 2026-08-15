@@ -98,6 +98,7 @@ export async function installPackagesAsync(
     fix,
     check,
     dev,
+    agentSkills,
   }: Options & {
     /**
      * List of packages to version, grouped by the type of dependency.
@@ -183,6 +184,7 @@ export async function installPackagesAsync(
     // Pipe options to the next command
     if (fix) postInstallCommand.push('--fix');
     if (check) postInstallCommand.push('--check');
+    if (agentSkills === false) postInstallCommand.push('--no-agent-skills');
 
     // Abort after installing `expo`, follow up command is spawn in a new process
     return await installExpoPackageAsync(projectRoot, {
@@ -207,11 +209,11 @@ export async function installPackagesAsync(
 
   await applyPluginsAsync(projectRoot, versioning.packages);
 
-  // Opt-in via `expo.skills.autoSync` in package.json. Best-effort, never throws.
-  // Scoped to the packages that were just installed, so nothing else changes.
-  const { autoSyncSkillsAsync } =
-    require('../skills/skillsAsync') as typeof import('../skills/skillsAsync');
-  await autoSyncSkillsAsync(projectRoot, { packages: versioning.packages });
+  if (agentSkills !== false) {
+    const { autoSyncSkillsAsync } =
+      require('../skills/skillsAsync') as typeof import('../skills/skillsAsync');
+    await autoSyncSkillsAsync(projectRoot, { packages: versioning.packages });
+  }
 }
 
 /** Find a package, by name, in the requested packages list (`expo` -> `expo`/`expo@<version>`) */
