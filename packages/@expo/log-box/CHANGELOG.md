@@ -10,6 +10,7 @@
 
 - Fix the web overlay bundle printing a `Deep imports from the 'react-native' package are deprecated` warning on every load. ([#47772](https://github.com/expo/expo/pull/47772) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Resolve development server requests from the URL the bundle was loaded from, instead of the default Metro address ([#48276](https://github.com/expo/expo/pull/48276) by [@kitten](https://github.com/kitten))
+- Stop the iOS webview wrapper printing `Unknown message type: $$dom_ready` on every LogBox mount. ([#48813](https://github.com/expo/expo/pull/48813) by [@kudo](https://github.com/Kudo))
 
 ### 💡 Others
 
