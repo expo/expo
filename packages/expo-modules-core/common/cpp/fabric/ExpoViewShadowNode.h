@@ -55,15 +55,21 @@ public:
   /**
    Reports where this view's contents were actually drawn, for views laid out by SwiftUI or Compose
    instead of Yoga. Without it `measure()` returns this node's Yoga box, which is not where the
-   hosted content ended up. This is used by `RNHostView`
+   hosted content ended up. This is used by `RNHostView`.
    */
   facebook::react::Point getContentOriginOffset(bool includeTransform) const override {
+    // `includeTransform` means "apply this node's transform", and `ScrollViewShadowNode` is the only
+    // class that reads it. Exactly two callers pass `false`: `getScrollPosition`, behind
+    // `scrollLeft`/`scrollTop`, which reads the result as a scroll offset and would report a phantom
+    // one for a view that never scrolls; and `findNodeAtPoint`, behind the element inspector, which
+    // in exchange misses hosted content drawn away from its Yoga box. Touch dispatch is unaffected —
+    // UIKit and Android hit-test the real views.
     if (!includeTransform) {
       return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
     }
 
-    auto contentOrigin = ContentOriginRegistry::get(this->getTag());
-    if (contentOrigin.x == 0 && contentOrigin.y == 0) {
+    auto contentOrigin = ContentOriginRegistry::find(this->getTag());
+    if (!contentOrigin) {
       return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
     }
 
@@ -71,7 +77,7 @@ public:
     // returning the raw offset would count it twice. Publish only the part Yoga cannot see: where
     // the native layout system placed the content inside its host.
     auto ownOrigin = this->getLayoutMetrics().frame.origin;
-    return {.x = contentOrigin.x - ownOrigin.x, .y = contentOrigin.y - ownOrigin.y};
+    return {.x = contentOrigin->x - ownOrigin.x, .y = contentOrigin->y - ownOrigin.y};
   }
 
 private:
