@@ -177,7 +177,7 @@ export async function cleanSkillsAsync(
 
 /**
  * Best-effort skill sync for `expo install` and `expo start`. Runs only for the
- * agents cached in `.expo/agent-links.json` by a previous `npx expo skills` run, so it
+ * agents cached in `.expo/agent-skill-links.json` by a previous `npx expo skills` run, so it
  * stays off until the user selects agents once. Never prompts and never throws.
  * With `packages` (the specs that were just installed), only the skills of those
  * packages are linked and nothing is pruned. Without it, a full sync runs.
