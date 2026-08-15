@@ -99,6 +99,11 @@ describe('skills actions', () => {
     expect(fs.readFileSync(path.join(projectRoot, '.gitignore'), 'utf8')).toContain(
       '**/skills/npm-*'
     );
+
+    // The explicit --agent selection becomes the cache for later auto-syncs
+    expect(
+      JSON.parse(fs.readFileSync(path.join(projectRoot, '.expo/agent-links.json'), 'utf8'))
+    ).toEqual({ agents: ['claude-code'] });
   });
 
   it('creates nothing on a repeated run', async () => {

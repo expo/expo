@@ -39,8 +39,9 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
     return;
   }
 
-  const { agents, fromPrompt } = await resolveAgentsAsync(projectRoot, { agents: options.agents });
-  if (fromPrompt && !options.dryRun) {
+  const { agents, source } = await resolveAgentsAsync(projectRoot, { agents: options.agents });
+  // Explicit selections become the new cache, so `--agent` can also update an outdated one.
+  if ((source === 'prompt' || source === 'flags') && !options.dryRun) {
     await persistAgentSelectionAsync(projectRoot, agents);
   }
 

@@ -63,7 +63,7 @@ describe('syncSkillsAsync', () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
       agents: [claudeAgent, cursorAgent, codexAgent],
-      fromPrompt: false,
+      source: 'cache',
     });
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
 
@@ -81,7 +81,7 @@ describe('syncSkillsAsync', () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
       agents: [claudeAgent],
-      fromPrompt: true,
+      source: 'prompt',
     });
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
 
@@ -90,11 +90,24 @@ describe('syncSkillsAsync', () => {
     expect(persistAgentSelectionAsync).toHaveBeenCalledWith('/root', [claudeAgent]);
   });
 
-  it('should not persist agent selection when resolved from flags or config', async () => {
+  it('should persist the selection from --agent flags as the new cache', async () => {
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
+      agents: [cursorAgent],
+      source: 'flags',
+    });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+
+    await syncSkillsAsync('/root', { agents: ['cursor'], dryRun: false });
+
+    expect(persistAgentSelectionAsync).toHaveBeenCalledWith('/root', [cursorAgent]);
+  });
+
+  it('should not persist agent selection when resolved from the cache or detection', async () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
       agents: [claudeAgent],
-      fromPrompt: false,
+      source: 'cache',
     });
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
 
@@ -105,7 +118,7 @@ describe('syncSkillsAsync', () => {
 
   it('should update the gitignore only when links were created', async () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValue([testSkill]);
-    jest.mocked(resolveAgentsAsync).mockResolvedValue({ agents: [claudeAgent], fromPrompt: false });
+    jest.mocked(resolveAgentsAsync).mockResolvedValue({ agents: [claudeAgent], source: 'cache' });
 
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
     await syncSkillsAsync('/root', { agents: [], dryRun: false });
@@ -120,7 +133,7 @@ describe('syncSkillsAsync', () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
     jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
       agents: [claudeAgent],
-      fromPrompt: true,
+      source: 'prompt',
     });
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
 
@@ -147,7 +160,7 @@ describe('syncSkillsAsync', () => {
     jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
       agents: [claudeAgent],
-      fromPrompt: false,
+      source: 'cache',
     });
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: ['stale'] });
 

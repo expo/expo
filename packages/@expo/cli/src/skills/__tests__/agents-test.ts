@@ -26,7 +26,7 @@ function createDirectories(...directories: string[]) {
 }
 
 function writeSkillsCache(json: object) {
-  vol.fromJSON({ [`${projectRoot}/.expo/agents.json`]: JSON.stringify(json, null, 2) });
+  vol.fromJSON({ [`${projectRoot}/.expo/agent-links.json`]: JSON.stringify(json, null, 2) });
 }
 
 beforeEach(() => {
@@ -105,7 +105,7 @@ describe('Reading persisted agents', () => {
   it('should not create the cache file when reading', async () => {
     await getPersistedAgentIdsAsync(projectRoot);
 
-    expect(vol.existsSync(`${projectRoot}/.expo/agents.json`)).toBe(false);
+    expect(vol.existsSync(`${projectRoot}/.expo/agent-links.json`)).toBe(false);
   });
 
   it('should warn about unknown ids but keep the known ones', async () => {
@@ -123,7 +123,7 @@ describe('Resolving agents', () => {
 
     await expect(resolveAgentsAsync(projectRoot, { agents: ['codex'] })).resolves.toEqual({
       agents: [{ id: 'codex', displayName: 'Codex', skillsDir: '.agents/skills' }],
-      fromPrompt: false,
+      source: 'flags',
     });
   });
 
@@ -133,7 +133,7 @@ describe('Resolving agents', () => {
 
     await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual({
       agents: [{ id: 'cursor', displayName: 'Cursor', skillsDir: '.agents/skills' }],
-      fromPrompt: false,
+      source: 'cache',
     });
     expect(promptAsync).not.toHaveBeenCalled();
   });
@@ -147,7 +147,7 @@ describe('Resolving agents', () => {
 
     await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual({
       agents: [{ id: 'claude-code', displayName: 'Claude Code', skillsDir: '.claude/skills' }],
-      fromPrompt: true,
+      source: 'prompt',
     });
     expect(promptAsync).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -168,7 +168,7 @@ describe('Resolving agents', () => {
         { id: 'cursor', displayName: 'Cursor', skillsDir: '.agents/skills' },
         { id: 'gemini-cli', displayName: 'Gemini CLI', skillsDir: '.agents/skills' },
       ],
-      fromPrompt: false,
+      source: 'detected',
     });
     expect(promptAsync).not.toHaveBeenCalled();
   });
@@ -182,7 +182,7 @@ describe('Resolving agents', () => {
 
     await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual({
       agents: [{ id: 'codex', displayName: 'Codex', skillsDir: '.agents/skills' }],
-      fromPrompt: true,
+      source: 'prompt',
     });
   });
 
@@ -226,7 +226,7 @@ describe('Persisting the agent selection', () => {
     ]);
 
     expect(
-      JSON.parse(vol.readFileSync(`${projectRoot}/.expo/agents.json`, 'utf8') as string)
+      JSON.parse(vol.readFileSync(`${projectRoot}/.expo/agent-links.json`, 'utf8') as string)
     ).toEqual({ agents: ['claude-code', 'cursor'] });
   });
 
