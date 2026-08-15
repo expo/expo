@@ -122,7 +122,7 @@ it('syncs agent skills on `npx expo install` when auto sync is enabled', async (
   // Cache the Claude Code agent selection like a previous `expo skills` run would
   await fs.mkdir(path.join(projectRoot, '.expo'), { recursive: true });
   await fs.writeFile(
-    path.join(projectRoot, '.expo/agents.json'),
+    path.join(projectRoot, '.expo/agent-links.json'),
     JSON.stringify({ agents: ['claude-code'] })
   );
 
