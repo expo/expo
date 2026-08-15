@@ -1,33 +1,34 @@
-// Both ends of the `$$dom_ready` handshake: the DOM component asks for its
-// props once it is listening for them, and the native wrapper answers with the
-// props of the current render.
-//
-// This file is scoped to the native jest projects because the other two cannot
-// run it: the node project compiles `typeof window` down to `undefined` for
-// server bundles, which turns the DOM side of `marshal` into a no-op, and the
-// browser build of `react-dom/server` needs `MessageChannel`, which the jsdom
-// project does not provide. DOM components only run on native, so the code
-// under test is the same either way.
+// Scoped to the native jest projects, because the other two cannot run it.
+// The node project compiles `typeof window` down to `undefined`, which turns the
+// DOM side of `marshal` into a no-op, and the jsdom project has no
+// `MessageChannel` for `react-dom/server`.
+// DOM components only run on native, so this costs no coverage.
 import type { BridgeMessage } from '../dom.types';
 
 describe('notifyDOMReady', () => {
   const postMessage = jest.fn();
   const hasWebViewBridge = jest.fn();
+  let createdWindow = false;
 
   beforeEach(() => {
-    // `marshal` decides whether it runs inside a DOM component when the module
-    // is evaluated, so the environment has to be set up before requiring it.
+    // `marshal` reads the environment at module scope, so set it up before requiring it.
     jest.resetModules();
     jest.doMock('../webview-bridge', () => ({
       hasWebViewBridge,
       getWebViewBridge: () => ({ postMessage, injectedObjectJson: () => '{}' }),
     }));
+    createdWindow = typeof globalThis.window === 'undefined';
     globalThis.window ??= {} as Window & typeof globalThis;
     globalThis.window.$$EXPO_INITIAL_PROPS = { names: [], props: {} };
   });
 
   afterEach(() => {
-    delete globalThis.window.$$EXPO_INITIAL_PROPS;
+    // The suites below run in a node environment and expect no `window`.
+    if (createdWindow) {
+      delete (globalThis as any).window;
+    } else {
+      delete globalThis.window.$$EXPO_INITIAL_PROPS;
+    }
   });
 
   it('should post a $$dom_ready message to the native side', () => {
@@ -59,10 +60,9 @@ describe('$$dom_ready', () => {
   });
 
   /**
-   * Renders `RawWebView` with a stub webview so a test can drive `onMessage`
-   * and read back what the wrapper injects into the webview. `react-dom/server`
-   * is the only renderer this package depends on, so the render is a mount
-   * without effects — enough for `onMessage`, which is set up during render.
+   * `react-dom/server` is the only renderer this package depends on, so this mounts
+   * without running effects.
+   * That is enough here, since `onMessage` is wired up during render.
    */
   function renderRawWebView(props: Record<string, unknown>) {
     const injectJavaScript = jest.fn();
@@ -70,8 +70,7 @@ describe('$$dom_ready', () => {
     jest.doMock('@expo/dom-webview', () => ({
       WebView: (stubProps: any) => {
         webViewProps = stubProps;
-        // React hands `ref` to function components as a regular prop, and the
-        // wrapper injects scripts through it.
+        // `ref` arrives as a plain prop, and the wrapper injects scripts through it.
         stubProps.ref.current = { injectJavaScript };
         return null;
       },
@@ -85,7 +84,6 @@ describe('$$dom_ready', () => {
     return { injectJavaScript, webViewProps };
   }
 
-  /** Reads the `$$dom_event` payload back out of an injected script. */
   function readInjectedEvent(script: string): BridgeMessage<any> {
     const [, payload] = script.match(/new CustomEvent\("\$\$dom_event",([\s\S]*)\)\);/) ?? [];
     if (payload == null) {

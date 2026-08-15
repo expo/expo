@@ -179,9 +179,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
       }
 
       if (type === DOM_READY) {
-        // The DOM side only starts listening for `$$props` after it mounts, so
-        // any update emitted while the WebView was loading was dropped. Re-send
-        // the current props now that we know there is a listener.
+        // Re-send: anything emitted while the WebView was loading was dropped.
         emit({ type: '$$props', data: smartActions });
         return;
       }

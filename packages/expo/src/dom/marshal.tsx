@@ -32,9 +32,8 @@ export const addEventListener = <TData extends JSONValue>(
 };
 
 /**
- * Tell the native side that the DOM component has mounted and is now listening
- * for `$$props`. Anything emitted before this point was dispatched into a
- * document with no listener, so the native side replies with the current props.
+ * Tells the native side that this DOM component is now listening for `$$props`.
+ * It replies with the current props, since anything emitted earlier was dropped.
  */
 export const notifyDOMReady = () => {
   emit({ type: DOM_READY, data: null });

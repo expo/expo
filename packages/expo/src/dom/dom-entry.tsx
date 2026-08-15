@@ -81,8 +81,7 @@ export function registerDOMComponent(AppModule: any) {
           setProps(msg.data as MarshalledProps);
         }
       });
-      // Ask for the current props now that the listener exists. Updates emitted
-      // while the WebView was still loading had no listener to receive them.
+      // Updates emitted while the WebView was loading had no listener to catch them.
       notifyDOMReady();
       return () => {
         remove();
