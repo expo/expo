@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Prevent crashes when scheduling persisted TaskManager jobs without the required `RECEIVE_BOOT_COMPLETED` permission. ([#48979](https://github.com/expo/expo/pull/48979) by [@LizunovSergey](https://github.com/LizunovSergey))
 - [Android] Clear headless task manager on context destroy ([#47958](https://github.com/expo/expo/pull/47958) by [@Wenszel](https://github.com/Wenszel))
 - [Android] Fix a crash on Android 9 when delivering a task event through `JobScheduler` (geofencing, background location), where the job was built without the scheduling constraint that `JobInfo.Builder.build()` requires. ([#48305](https://github.com/expo/expo/pull/48305) by [@rvaccone](https://github.com/rvaccone))
 
