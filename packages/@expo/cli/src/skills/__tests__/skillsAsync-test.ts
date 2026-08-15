@@ -413,7 +413,7 @@ describe('printSkillsForAgentAsync', () => {
       name: 'other-skill',
       path: '/root/node_modules/other/skills/other-skill',
       packageName: 'other',
-      linkName: 'npm-other-other-skill',
+      linkName: 'other-skill',
     };
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill, otherSkill]);
 
