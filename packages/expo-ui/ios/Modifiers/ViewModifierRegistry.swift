@@ -871,11 +871,12 @@ internal struct AnyViewModifier: ViewModifier {
  */
 internal struct StableViewModifier: ViewModifier {
   let params: [String: Any]
-  let appContext: AppContext
+  weak var appContext: AppContext?
   let dispatcher: EventDispatcher
 
   func body(content: Content) -> some View {
     if let type = params["$type"] as? String,
+      let appContext,
       let factory = ViewModifierRegistry.shared.modifierFactories[type],
       let modifier = try? factory(params, appContext, dispatcher) {
       content.modifier(AnyViewModifier(modifier))
