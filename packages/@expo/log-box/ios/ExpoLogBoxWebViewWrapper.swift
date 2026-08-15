@@ -29,7 +29,6 @@ private struct Constants {
     static let DOM_EVENT = "$$dom_event"
     static let NATIVE_ACTION_RESULT = "$$native_action_result"
     static let NATIVE_ACTION = "$$native_action"
-    static let DOM_READY = "$$dom_ready"
 }
 
 class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
@@ -122,6 +121,7 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
 
         let data = messageBody["data"] as? [String: Any] ?? [:]
 
+        // The DOM runtime sends message types that LogBox has no reason to handle, so anything else is ignored.
         if (messageType == Constants.NATIVE_ACTION) {
             guard let actionId = data["actionId"] as? String,
                   let uid = data["uid"] as? String,
@@ -151,11 +151,6 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
             } catch {
                 sendReturn(error: error, uid: uid, actionId: actionId)
             }
-        } else if (messageType == Constants.DOM_READY) {
-            // Ignored on purpose.
-            // Every DOM component asks for its props once it starts listening, but LogBox props never change.
-        } else {
-            print("Unknown message type: \(messageType)")
         }
     }
 
