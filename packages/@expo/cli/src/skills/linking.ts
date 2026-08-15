@@ -70,8 +70,7 @@ export async function syncSkillLinksAsync(
       continue;
     }
 
-    // Anything managed that we did not just link is stale: the package was uninstalled,
-    // renamed, or the agent was deselected.
+    // Managed links we did not just create are stale, e.g. the package was uninstalled.
     for (const linkName of await listManagedLinksAsync(agentDirPath)) {
       if (linked.has(linkName)) {
         continue;
