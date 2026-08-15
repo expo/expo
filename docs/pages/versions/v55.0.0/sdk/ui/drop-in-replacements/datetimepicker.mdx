@@ -1,0 +1,145 @@
+---
+title: DateTimePicker
+description: A date and time picker compatible with @react-native-community/datetimepicker.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A `DateTimePicker` component with an API compatible with `@react-native-community/datetimepicker`. It uses Jetpack Compose on Android and SwiftUI on iOS, providing a modern Material 3 and SwiftUI appearance by default (the community module defaults to the older look on Android).
+
+`DateTimePicker` component is fully declarative. Use the `presentation` prop to render the picker `'inline'` directly in the view hierarchy or as a `'dialog'` on Android. There is no Android imperative API (`DateTimePickerAndroid.open()`).
+
+Under the hood this component wraps the platform-specific `@expo/ui` primitives:
+
+- **Android**: [Jetpack Compose DateTimePicker](../jetpack-compose/datetimepicker#datetimepicker) (inline), [DatePickerDialog/TimePickerDialog](../jetpack-compose/datetimepicker#datepickerdialog) (dialog)
+- **iOS**: [SwiftUI DatePicker](../swift-ui/datepicker)
+
+If you need lower-level control (custom modifiers, styles, or layouts), use those primitives directly.
+
+## Installation
+
+<APIInstallSection />
+
+## Migrating from `@react-native-community/datetimepicker`
+
+- Update the import from `import DateTimePicker from '@react-native-community/datetimepicker'` to `import DateTimePicker from '@expo/ui/datetimepicker'`.
+- There is no imperative `DateTimePickerAndroid.open()` API. Render the component and use `presentation="dialog"` instead.
+- `minuteInterval`, `textColor`, `firstDayOfWeek`, `neutralButton`, `onNeutralButtonPress`, `fullscreen`, `title` and `startOnYearSelection` props are not supported.
+- Use `timeZoneName` (IANA name) instead of `timeZoneOffsetInMinutes`.
+- The `countdown` mode is not supported.
+- `onError` prop is not needed.
+
+## Basic usage
+
+```tsx DateTimePickerExample.tsx
+import { useState } from 'react';
+import DateTimePicker from '@expo/ui/datetimepicker';
+
+export default function DateTimePickerExample() {
+  const [date, setDate] = useState(new Date());
+
+  return (
+    <DateTimePicker
+      value={date}
+      onValueChange={(event, selectedDate) => {
+        setDate(selectedDate);
+      }}
+      mode="date"
+    />
+  );
+}
+```
+
+## Time picker
+
+```tsx TimePickerExample.tsx
+import { useState } from 'react';
+import DateTimePicker from '@expo/ui/datetimepicker';
+
+export default function TimePickerExample() {
+  const [date, setDate] = useState(new Date());
+
+  return (
+    <DateTimePicker
+      value={date}
+      onValueChange={(event, selectedDate) => {
+        setDate(selectedDate);
+      }}
+      mode="time"
+    />
+  );
+}
+```
+
+## With date constraints
+
+```tsx ConstrainedDatePickerExample.tsx
+import { useState } from 'react';
+import DateTimePicker from '@expo/ui/datetimepicker';
+
+const today = new Date();
+const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+
+export default function ConstrainedDatePickerExample() {
+  const [date, setDate] = useState(new Date());
+
+  return (
+    <DateTimePicker
+      value={date}
+      onValueChange={(event, selectedDate) => {
+        setDate(selectedDate);
+      }}
+      mode="date"
+      minimumDate={today}
+      maximumDate={thirtyDaysFromNow}
+    />
+  );
+}
+```
+
+## Dialog presentation
+
+On Android, you can use `presentation="dialog"` to show the picker as a modal dialog. The dialog opens when the component mounts. Unmount it in response to `onValueChange` or `onDismiss`. On iOS, this prop is ignored and the picker always renders inline.
+
+```tsx AndroidDialogExample.tsx
+import { useState } from 'react';
+import { Button, View } from 'react-native';
+import DateTimePicker from '@expo/ui/datetimepicker';
+
+export default function AndroidDialogExample() {
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+
+  return (
+    <View>
+      <Button title="Pick a date" onPress={() => setShow(true)} />
+      {show && (
+        <DateTimePicker
+          value={date}
+          onValueChange={(event, selectedDate) => {
+            setShow(false);
+            setDate(selectedDate);
+          }}
+          onDismiss={() => {
+            setShow(false);
+          }}
+          mode="date"
+          presentation="dialog"
+        />
+      )}
+    </View>
+  );
+}
+```
+
+## API
+
+```tsx
+import DateTimePicker from '@expo/ui/datetimepicker';
+```
+
+<APISection packageName="expo-ui/datetime-picker" apiName="DateTimePicker" />

@@ -4,7 +4,9 @@ import androidx.media3.common.Format
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class VideoSize(
   @Field val width: Int = 0,
   @Field val height: Int = 0

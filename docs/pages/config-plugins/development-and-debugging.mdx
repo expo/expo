@@ -21,10 +21,10 @@ Use the following dependencies in a library that provides a config plugin:
 {
   "dependencies": {},
   "devDependencies": {
-    "expo": "^54.0.0"
+    "expo": "^{{expoSdkVersion}}"
   },
   "peerDependencies": {
-    "expo": ">=54.0.0"
+    "expo": ">={{expoSdkVersion}}"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -131,7 +131,7 @@ Packages should attempt to use the built-in **AndroidManifest.xml** [merging sys
 Here is an example of a package's **AndroidManifest.xml**, which injects a required permission:
 
 ```xml AndroidManifest.xml
-<!-- @info Include <code>xmlns:android="..."</code> to use <code>android:*</code> properties like <code>android:name</code> in your manifest. -->
+<!-- @info Include `xmlns:android="..."` to use `android:*` properties like `android:name` in your manifest. -->
 <manifest package="expo.modules.filesystem" xmlns:android="http://schemas.android.com/apk/res/android">
   <!-- @end -->
   <uses-permission android:name="android.permission.INTERNET"/>
@@ -302,7 +302,7 @@ We must define default **string.xml** values which the user will overwrite local
 </resources>
 ```
 
-At this point, bare users can configure this value by creating a string in their local **strings.xml** file (assuming they also have `expo-modules-core` support setup):
+At this point, users with [existing React Native projects](/bare/overview/) can configure this value by creating a string in their local **strings.xml** file (assuming they also have `expo-modules-core` support setup):
 
 ```xml ./android/app/src/main/res/values/strings.xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -311,7 +311,7 @@ At this point, bare users can configure this value by creating a string in their
 </resources>
 ```
 
-For managed users, we can expose this functionality (safely!) via an Expo config plugin:
+With [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), we can expose this functionality (safely!) via an Expo config plugin:
 
 ```js expo-custom/app.plugin.js
 const { AndroidConfig, withStringsXml } = require('expo/config-plugins');
@@ -336,7 +336,7 @@ function setStrings(strings, value) {
 }
 ```
 
-Managed Expo users can now interact with this API like so:
+Developers using CNG can now interact with this API like so:
 
 ```json app.json
 {
@@ -346,7 +346,7 @@ Managed Expo users can now interact with this API like so:
 }
 ```
 
-By re-running `npx expo prebuild -p` (`eas build -p android`, or `npx expo run:ios`) the user can now see the changes, safely applied in their managed project!
+By re-running `npx expo prebuild -p` (`eas build -p android`, or `npx expo run:ios`) the user can now see the changes, safely applied in their CNG project!
 
 As you can see from the example, we rely heavily on application code (expo-modules-core) to interact with application code (the native project). This ensures that our config plugins are safe and reliable, hopefully for a very long time!
 
@@ -387,7 +387,7 @@ Introspection works by creating custom base mods that work like the default base
 Instead of persisting, they save the results to the app config under `_internal.modResults`, followed by the name of the mod
 such as the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
-As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
+As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a CNG project, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
 {/* TODO: Link to VS Code extension after preview feature lands */}
 
@@ -433,7 +433,7 @@ For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if 
 
 Plugins can transform application code with regular expressions, but these modifications are dangerous if the template changes over time then the regex becomes hard to predict (similarly if the user modifies a file manually or uses a custom template). Here are some examples of files you shouldn't modify manually, and alternatives.
 
-### Android Gradle Files
+### Android Gradle files
 
 Gradle files are written in either Groovy or Kotlin. They are used to manage dependencies, versioning, and other settings in the Android app.
 Instead of modifying them directly with the `withProjectBuildGradle`, `withAppBuildGradle`, or `withSettingsGradle` mods, utilize the static `gradle.properties` file.
@@ -441,7 +441,7 @@ Instead of modifying them directly with the `withProjectBuildGradle`, `withAppBu
 The `gradle.properties` is a static key/value pair that groovy files can read from. For example, say you wanted to control some toggle in Groovy:
 
 ```properties gradle.properties
-# @info Safely modified using the <code>withGradleProperties()</code> mod. #
+# @info Safely modified using the `withGradleProperties()` mod. #
 expo.react.jsEngine=hermes
 # @end #
 ```
@@ -449,7 +449,7 @@ expo.react.jsEngine=hermes
 Then later in a Gradle file:
 
 ```groovy app/build.gradle
-project.ext.react = [/* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */ enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc' /* @end */]
+project.ext.react = [/* @info This code would be added to the template ahead of time, but it could be regexed in using `withAppBuildGradle()` */ enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc' /* @end */]
 ```
 
 - For keys in the `gradle.properties`, use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.
@@ -480,7 +480,7 @@ require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 # @end #
 
-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
+platform :ios, podfile_properties['ios.deploymentTarget'] || '{{iosDeploymentTarget}}'
 
 target 'yolo27' do
   use_expo_modules!
@@ -498,7 +498,7 @@ The Expo CLI `npx expo prebuild` command uses [`@expo/prebuild-config`](https://
 
 For example, say you wanted to add support for managing the `ios/*/AppDelegate.h` file, you could do this by adding a `ios.appDelegateHeader` modifier.
 
-> This example uses `tsx` for simple local TypeScript support, this isn't strictly necessary. [Learn more](/guides/typescript/#appconfigjs).
+> This example uses `tsx` for simple local TypeScript support, this isn't strictly necessary. See [using TypeScript with `app.config.js`](/guides/typescript/#appconfigjs).
 
 ```ts withAppDelegateHeaderBaseMod.ts
 import { ConfigPlugin, IOSConfig, Mod, withMod, BaseMods } from 'expo/config-plugins';

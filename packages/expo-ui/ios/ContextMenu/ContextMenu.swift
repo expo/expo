@@ -1,24 +1,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-struct SinglePressContextMenu<ActivationElement: View, MenuContent: View>: View {
-  let activationElement: ActivationElement
-  let menuContent: MenuContent
-
-  var body: some View {
-    #if !os(tvOS)
-    SwiftUI.Menu {
-      menuContent
-    } label: {
-      activationElement
-    }
-    #else
-    Text("SinglePressContextMenu is not supported on this platform")
-    #endif
-  }
-}
-
-struct LongPressContextMenuWithPreview<ActivationElement: View, Preview: View, MenuContent: View>: View {
+struct ContextMenuWithPreview<ActivationElement: View, Preview: View, MenuContent: View>: View {
   let activationElement: ActivationElement
   let preview: Preview
   let menuContent: MenuContent
@@ -38,30 +21,28 @@ struct LongPressContextMenuWithPreview<ActivationElement: View, Preview: View, M
   }
 }
 
+internal struct LongPressContextMenu<ActivationElement: View, MenuContent: View>: View {
+  let activationElement: ActivationElement
+  let menuContent: MenuContent
+
+  var body: some View {
+    activationElement.contextMenu(menuItems: {
+      menuContent
+    })
+  }
+}
+
 struct ContextMenu: ExpoSwiftUI.View {
   @ObservedObject var props: ContextMenuProps
 
   var body: some View {
-    let activationElement = (props.children?
-      .compactMap { $0.childView as? ContextMenuActivationElement }
-      .first) ?? ContextMenuActivationElement(props: ContextMenuActivationElementProps())
+    let activationElement = props.children?.slot("trigger")
+    let menuContent = props.children?.slot("items")
+    let preview = props.children?.slot("preview")
 
-    let menuContent = (props.children?
-      .compactMap { $0.childView as? ContextMenuContent }
-      .first) ?? ContextMenuContent(props: ContextMenuContentProps())
-
-    if props.activationMethod == .singlePress {
-      SinglePressContextMenu(
-        activationElement: activationElement,
-        menuContent: menuContent
-      )
-    } else {
-      let preview = props.children?
-        .compactMap { $0.childView as? ContextMenuPreview }
-        .first
-
+    if let activationElement {
       if let preview {
-        LongPressContextMenuWithPreview(
+        ContextMenuWithPreview(
           activationElement: activationElement,
           preview: preview,
           menuContent: menuContent

@@ -2,6 +2,7 @@
 
 #import "EXSplashScreenModule.h"
 #import "EXSplashScreenService.h"
+#import "EXKernel.h"
 #import <React/RCTRootView.h>
 #import <React/RCTSurfaceHostingView.h>
 #import <ExpoModulesCore/EXAppLifecycleService.h>
@@ -119,6 +120,11 @@ EX_EXPORT_METHOD_AS(preventAutoHideAsync,
   id<EXSplashScreenUtilService> utilService = [_moduleRegistry getSingletonModuleForName:@"Util"];
   if (utilService != nil) {
     return [utilService currentViewController];
+  }
+
+  UIViewController *visibleAppViewController = [EXKernel sharedInstance].visibleApp.viewController;
+  if (visibleAppViewController) {
+    return visibleAppViewController;
   }
 
   UIViewController *controller = [self viewControllerContainingRCTRootView];

@@ -9,13 +9,13 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/utils/assetTransformer.js#L1
  */
 import { type ParseResult, template, types as t } from '@babel/core';
-import { generateAssetCodeFileAst } from '@expo/metro/metro/Bundler/util';
 import type { BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
+import { generateAssetCodeFileAst } from '@expo/metro/metro/Bundler/util';
 import path from 'node:path';
 import url from 'node:url';
 
-import { getUniversalAssetData } from './getAssets';
 import { toPosixPath } from '../utils/filePath';
+import { getUniversalAssetData } from './getAssets';
 
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = template.statement(
@@ -24,9 +24,16 @@ const buildClientReferenceRequire = template.statement(
 
 const buildStringRef = template.statement(`module.exports = FILE_PATH;`);
 
+// The React Server Component version cannot have a function otherwise we'd be passing a function to the client component <Image />.
+// TODO: Make react-native Image and expo-image server components that can simplify the asset before passing to the client component.
 const buildStaticObjectRef = template.statement(
   // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
   `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT };`
+);
+
+const buildStaticObjectClientRef = template.statement(
+  // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
+  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri } };`
 );
 
 export async function transform(
@@ -67,7 +74,7 @@ export async function transform(
 
   if (
     (options.platform !== 'web' ||
-      // React Server DOM components should use the client reference in order to local embedded assets.
+      // React Server DOM components should use the client reference in order to locate embedded assets.
       isDomComponent) &&
     // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
     // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.
@@ -75,6 +82,7 @@ export async function transform(
   ) {
     return {
       ast: {
+        comments: null,
         ...t.file(
           t.program([
             buildClientReferenceRequire({
@@ -116,18 +124,17 @@ export async function transform(
 
     // If size data is known then it should be passed back to ensure the correct dimensions are used.
     if (data.width != null || data.height != null) {
+      const options: Parameters<typeof buildStaticObjectRef>[0] = {
+        FILE_PATH: JSON.stringify(assetPath),
+        WIDTH: data.width != null ? t.numericLiteral(data.width) : t.buildUndefinedNode(),
+        HEIGHT: data.height != null ? t.numericLiteral(data.height) : t.buildUndefinedNode(),
+      };
+      const creatorFunction = isReactServer ? buildStaticObjectRef : buildStaticObjectClientRef;
+
       return {
         ast: {
-          ...t.file(
-            t.program([
-              buildStaticObjectRef({
-                FILE_PATH: JSON.stringify(assetPath),
-                WIDTH: data.width != null ? t.numericLiteral(data.width) : t.buildUndefinedNode(),
-                HEIGHT:
-                  data.height != null ? t.numericLiteral(data.height) : t.buildUndefinedNode(),
-              }),
-            ])
-          ),
+          comments: null,
+          ...t.file(t.program([creatorFunction(options)])),
           errors: [],
         },
         reactClientReference: getClientReference(),
@@ -138,6 +145,7 @@ export async function transform(
     // module.exports = "/foo/bar.png";
     return {
       ast: {
+        comments: null,
         ...t.file(t.program([buildStringRef({ FILE_PATH: JSON.stringify(assetPath) })])),
         errors: [],
       },
@@ -147,6 +155,7 @@ export async function transform(
 
   return {
     ast: {
+      comments: null,
       ...generateAssetCodeFileAst(assetRegistryPath, data),
       errors: [],
     },

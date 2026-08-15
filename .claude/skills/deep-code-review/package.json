@@ -1,0 +1,13 @@
+{
+  "name": "deep-code-review",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "local-preview": "bun run post-review.ts local-preview",
+    "post-pending": "bun run post-review.ts post-pending",
+    "submit": "bun run post-review.ts submit",
+    "close": "bun run post-review.ts close"
+  }
+}
+

@@ -1,31 +1,48 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+@config '../tailwind.config.cjs';
 
-html {
-  @apply bg-default;
+@import './tailwind-compat.css';
+
+/* Selectors are doubled to outrank the same-specificity declarations in
+   @expo/styleguide/dist/expo-theme.css, which _app.tsx imports after this file. */
+:root:root {
+  /* AA contrast on palette blue3/blue4 backgrounds, where text-link falls short */
+  --expo-theme-text-link-on-blue: #0c6bbf;
+  /* AA contrast: styleguide maps tertiary text to slate-10, a solid-background step */
+  --expo-theme-text-tertiary: #686c75;
 }
 
-body {
-  text-rendering: optimizeLegibility;
-  line-height: 1;
+.dark-theme.dark-theme {
+  --expo-theme-text-link-on-blue: var(--blue-11);
+  --expo-theme-text-tertiary: #888c94;
 }
 
-input {
-  appearance: unset;
-}
+@layer base {
+  html {
+    @apply bg-default;
+  }
 
-#__next[aria-hidden] {
-  filter: none !important;
-}
+  body {
+    text-rendering: optimizeLegibility;
+    line-height: 1;
+  }
 
-img {
-  max-width: 768px;
-  width: 100%;
-}
+  input {
+    appearance: unset;
+  }
 
-img.wide-image {
-  max-width: 900px;
+  #__next[aria-hidden] {
+    filter: none !important;
+  }
+
+  img {
+    max-width: 768px;
+    width: 100%;
+  }
+
+  img.wide-image {
+    max-width: 900px;
+  }
 }
 
 code {
@@ -80,7 +97,7 @@ div:not(#root) > ::-webkit-scrollbar-track {
 }
 
 div:not(#root) > ::-webkit-scrollbar-thumb {
-  @apply rounded-sm bg-palette-gray5;
+  @apply bg-palette-gray5 rounded-sm;
 }
 
 div:not(#root) > ::-webkit-scrollbar-thumb:hover {
@@ -133,7 +150,7 @@ div.tippy-box {
 }
 
 .tippy-box[data-theme~='expo'] .tippy-content {
-  @apply rounded-md bg-palette-black px-4 py-3 text-sm text-palette-white;
+  @apply bg-palette-black text-palette-white rounded-md px-4 py-3 text-sm;
   line-height: 1.525;
 }
 
@@ -148,7 +165,7 @@ div.tippy-box {
 /* Diff */
 
 .diff-unified {
-  @apply text-2xs;
+  @apply text-xs;
   border-collapse: collapse;
   white-space: pre-wrap;
   width: 100%;
@@ -172,11 +189,11 @@ div.tippy-box {
 }
 
 .diff-gutter-col {
-  @apply w-10 bg-element;
+  @apply bg-element w-6;
 }
 
 .diff-gutter {
-  @apply px-2 text-3xs;
+  @apply px-1 text-xs;
   text-align: right;
   user-select: none;
 }
@@ -187,7 +204,7 @@ div.tippy-box {
 
 .diff-code {
   @apply pl-4;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .diff-code-insert {
@@ -347,4 +364,8 @@ div.tippy-box {
 
 .react-player > video {
   outline: none;
+}
+
+:lang(ja) {
+  line-break: strict;
 }

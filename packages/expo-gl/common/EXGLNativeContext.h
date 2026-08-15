@@ -1,28 +1,11 @@
 #pragma once
 
-#include "EXGLNativeApi.h"
+#include "pch.h"
 
-#ifdef __ANDROID__
-#include <GLES3/gl3.h>
-#include <GLES3/gl3ext.h>
-#endif
-#ifdef __APPLE__
-#include <OpenGLES/EAGL.h>
-#include <OpenGLES/ES3/gl.h>
-#include <OpenGLES/ES3/glext.h>
-#endif
-
-#include "EXTypedArrayApi.h"
-
-#include <exception>
-#include <future>
 #include <set>
-#include <sstream>
-#include <unordered_map>
-#include <vector>
 
-#include <jsi/jsi.h>
-
+#include "EXGLNativeApi.h"
+#include "EXTypedArrayApi.h"
 #include "EXJsiUtils.h"
 #include "EXPlatformUtils.h"
 #include "EXWebGLRenderer.h"
@@ -48,10 +31,13 @@ class EXGLContext {
   using Op = std::function<void(void)>;
   using Batch = std::vector<Op>;
 
- public:
+public:
   EXGLContext(EXGLContextId ctxId) : ctxId(ctxId) {}
+
   void prepareContext(jsi::Runtime &runtime, std::function<void(void)> flushMethod);
+
   void maybeResolveWorkletContext(jsi::Runtime &runtime);
+
   void prepareWorkletContext();
 
   // --- Queue handling --------------------------------------------------------
@@ -67,8 +53,10 @@ class EXGLContext {
 
   // [JS thread] Send the current 'next' batch to GL and make a new 'next' batch
   void endNextBatch() noexcept;
+
   // [JS thread] Add an Op to the 'next' batch
   void addToNextBatch(Op &&op) noexcept;
+
   // [JS thread] Add a blocking operation to the 'next' batch -- waits for the
   // queued function to run before returning
   void addBlockingToNextBatch(Op &&op);
@@ -86,8 +74,9 @@ class EXGLContext {
   // To make it work lookupObject can be called only on GL thread
   //
   jsi::Value addFutureToNextBatch(
-      jsi::Runtime &runtime,
-      std::function<unsigned int(void)> &&op) noexcept;
+    jsi::Runtime &runtime,
+    std::function<unsigned int(void)> &&op
+  ) noexcept;
 
   // [GL thread] Do all the remaining work we can do on the GL thread
   // triggered by call to flushOnGLThread
@@ -102,21 +91,26 @@ class EXGLContext {
   // mutex on the mapping.
 
   EXGLObjectId createObject(void) noexcept;
+
   void destroyObject(EXGLObjectId exglObjId) noexcept;
+
   void mapObject(EXGLObjectId exglObjId, GLuint glObj) noexcept;
+
   GLuint lookupObject(EXGLObjectId exglObjId) noexcept;
 
   void tryRegisterOnJSRuntimeDestroy(jsi::Runtime &runtime);
+
   glesContext prepareOpenGLESContext();
+
   void maybeReadAndCacheSupportedExtensions();
 
- private:
+private:
   // Queue
   Batch nextBatch;
   std::vector<Batch> backlog;
   std::mutex backlogMutex;
 
- public:
+public:
   EXGLContextId ctxId;
   // Worklet runtime is stored here only to avoid it passing through Java/Obj-C.
   // It should only be used in prepareContext and prepareWorkletContext.

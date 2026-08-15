@@ -1,13 +1,15 @@
 import { LinkBase, mergeClasses } from '@expo/styleguide';
+import { PrivacyChoicesButton } from '@expo/styleguide-cookie-consent';
 import { ArrowLeftIcon } from '@expo/styleguide-icons/outline/ArrowLeftIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
+import { useIntl } from 'react-intl';
 
 import { NavigationRouteWithSection } from '~/types/common';
+import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
 import { P, FOOTNOTE, UL, LI } from '~/ui/components/Text';
 
-import { ForumsLink, EditPageLink, IssuesLink, ShareFeedbackLink } from './Links';
-import { NewsletterSignUp } from './NewsletterSignUp';
+import { ForumsLink, EditPageLink, IssuesLink, LlmsTxtLink, ShareFeedbackLink } from './Links';
 import { PageVote } from './PageVote';
 
 type Props = {
@@ -30,10 +32,10 @@ export const Footer = ({
   modificationDate,
 }: Props) => {
   const router = useRouter();
+  const intl = useIntl();
   const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
   const isTutorial = router?.pathname.includes('/tutorial/') ?? false;
   const isExpoPackage = packageName ? packageName.startsWith('expo-') : isAPIPage;
-
   const shouldShowModifiedDate = !isExpoPackage && !isTutorial && title;
 
   return (
@@ -41,15 +43,15 @@ export const Footer = ({
       className={mergeClasses(
         'flex flex-col gap-10 px-14 pb-10',
         title ? 'pt-10' : 'pt-6',
-        'max-lg-gutters:px-4 max-lg-gutters:pb-12'
+        'max-lg:px-4 max-lg:pb-12'
       )}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(
             'flex gap-4',
-            'max-xl-gutters:flex-col-reverse',
-            'max-lg-gutters:flex-row',
-            'max-md-gutters:flex-col-reverse'
+            'max-xl:flex-col-reverse',
+            'max-lg:flex-row',
+            'max-md:flex-col-reverse'
           )}
           data-nosnippet>
           {previousPage ? (
@@ -59,10 +61,11 @@ export const Footer = ({
                 'flex w-full items-center gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
-              <ArrowLeftIcon className="shrink-0 text-icon-secondary" />
+              <ArrowLeftIcon aria-hidden="true" className="shrink-0 text-icon-secondary" />
               <div>
                 <FOOTNOTE theme="secondary">
-                  Previous{previousPage.section ? ` (${previousPage.section})` : ''}
+                  {intl.formatMessage({ id: 'footerPrevious' })}
+                  {previousPage.section ? ` (${previousPage.section})` : ''}
                 </FOOTNOTE>
                 <P weight="medium">{previousPage.sidebarTitle ?? previousPage.name}</P>
               </div>
@@ -79,35 +82,36 @@ export const Footer = ({
               )}>
               <div>
                 <FOOTNOTE theme="secondary">
-                  Next{nextPage?.section ? ` (${nextPage.section})` : ''}
+                  {intl.formatMessage({ id: 'footerNext' })}
+                  {nextPage?.section ? ` (${nextPage.section})` : ''}
                 </FOOTNOTE>
                 <P weight="medium">{nextPage.sidebarTitle ?? nextPage.name}</P>
               </div>
-              <ArrowRightIcon className="shrink-0 text-icon-secondary" />
+              <ArrowRightIcon aria-hidden="true" className="shrink-0 text-icon-secondary" />
             </LinkBase>
           ) : (
             <div className="w-full" />
           )}
         </div>
       )}
-      <div
-        className={mergeClasses('flex flex-row justify-between gap-4', 'max-md-gutters:flex-col')}>
+      <div className={mergeClasses('flex flex-row justify-between gap-4', 'max-md:flex-col')}>
         <div>
           <PageVote />
-          <UL className="!ml-0 !mt-0 flex-1 !list-none">
+          <UL className="mt-0! ml-0! flex-1 list-none!">
             <ShareFeedbackLink pathname={router?.pathname} />
             {title && <ForumsLink isAPIPage={isAPIPage} title={title} />}
             {title && isAPIPage && (
               <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
             )}
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
+            <LlmsTxtLink />
             {!isDev && shouldShowModifiedDate && modificationDate && (
-              <LI className="!mt-4 !text-2xs !text-quaternary">
+              <LI className="mt-4! text-xs! text-quaternary!">
                 Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
               </LI>
             )}
             {isDev && shouldShowModifiedDate && (
-              <LI className="!mt-4 !text-2xs !text-quaternary">
+              <LI className="mt-4! text-xs! text-quaternary!">
                 Last updated data is not available in dev mode
               </LI>
             )}
@@ -115,6 +119,7 @@ export const Footer = ({
         </div>
         <NewsletterSignUp />
       </div>
+      <PrivacyChoicesButton />
     </footer>
   );
 };

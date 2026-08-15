@@ -2,7 +2,9 @@ package expo.modules.intentlauncher
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class IntentLauncherParams(
   @Field
   val type: String?,

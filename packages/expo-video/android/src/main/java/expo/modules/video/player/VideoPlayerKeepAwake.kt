@@ -4,7 +4,7 @@ import androidx.annotation.OptIn
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
-import expo.modules.video.VideoManager
+import expo.modules.video.managers.VideoManager
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 import kotlin.properties.ReadWriteProperty

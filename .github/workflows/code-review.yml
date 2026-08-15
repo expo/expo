@@ -6,7 +6,7 @@ on:
       pullNumber:
         description: 'Number of the pull request to review'
         required: true
-  pull_request_target:
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.pullNumber || github.event.number }}
@@ -14,25 +14,40 @@ concurrency:
 
 jobs:
   code_review:
+    # Auto-run only on same-repo PRs to expo/expo. Fork PRs don't get
+    # EXPO_BOT_GITHUB_TOKEN under `pull_request`, so the review would fail
+    # anyway — skip cleanly instead of leaving a red check. Forks dispatching
+    # this workflow manually would also fail for the same reason; gate on
+    # `github.repository` to short-circuit.
+    if: >-
+      github.repository == 'expo/expo' &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
-      - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
-          node-version: 22
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
-        with:
-          yarn-tools: 'true'
-      - name: 🧶 Yarn install
-        working-directory: tools
-        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
-        run: yarn install --immutable
+      - name: 🛠 Build expotools
+        run: pnpm turbo build --filter expotools...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       ### This job is run on Ubuntu which doesn't have SwiftLint installed, so we need to build it from sources.
       ### Building it on each run may take too much time, so we bundle the binary in `@expo/swiftlint` package.
@@ -44,13 +59,13 @@ jobs:
       #     swift build -c release
       #     cp .build/release/swiftlint /usr/local/bin/
       # - name: 📦 Make an artifact
-      #   uses: actions/upload-artifact@v4
+      #   uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
       #   with:
       #     name: swiftlint
       #     path: SwiftLint/.build
       #     include-hidden-files: true
 
       - name: 🔬 Reviewing a pull request
-        run: expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
+        run: pnpm expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}

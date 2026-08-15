@@ -6,7 +6,7 @@ pluginManagement {
     }.standardOutput.asText.get().trim()
   ).getParentFile().absolutePath
   includeBuild(reactNativeGradlePlugin)
-
+  
   def expoPluginsPath = new File(
     providers.exec {
       workingDir(rootDir)
@@ -37,3 +37,12 @@ expoAutolinking.useExpoVersionCatalog()
 
 include ':app'
 includeBuild(expoAutolinking.reactNativeGradlePlugin)
+include ':brownfield'
+def brownfieldPluginsPath = new File(
+  providers.exec {
+    workingDir(rootDir)
+    commandLine("node", "--print", "require.resolve('expo-brownfield/package.json')")
+  }.standardOutput.asText.get().trim(),
+  "../gradle-plugins"
+).absolutePath
+includeBuild(brownfieldPluginsPath)

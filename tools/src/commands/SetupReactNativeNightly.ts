@@ -24,8 +24,6 @@ export default (program: Command) => {
 async function main() {
   const nightlyVersion = await queryNpmDistTagVersionAsync('react-native', 'nightly');
 
-  await removePostinstallPatchAsync();
-
   logger.info('Adding bare-expo optional packages:');
   await addBareExpoOptionalPackagesAsync();
 
@@ -43,25 +41,19 @@ async function main() {
       'lottie-react-native': 'latest',
       'react-native-pager-view': 'latest',
       'react-native-safe-area-context': 'latest',
-      'react-native-screens': '3.29.0',
+      'react-native-screens': 'latest',
       'react-native-svg': 'latest',
       'react-native-webview': 'latest',
     })),
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
-  logger.info('Yarning...');
+  logger.info('Installing...');
   await workspaceInstallAsync();
 
-  const patches = [
-    'datetimepicker.patch',
-    'lottie-react-native.patch',
-    'react-native-gesture-handler.patch',
-    'react-native-pager-view.patch',
-    'react-native-screens.patch',
-    'react-native-reanimated.patch',
-    'react-native-safe-area-context.patch',
-  ];
+  // Patches for 3rd party libraries that don't build against react-native nightlies yet.
+  // Add a `*.patch` file under `react-native-nightlies/patches` and list its filename here.
+  const patches: string[] = [];
   await Promise.all(
     patches.map(async (patch) => {
       const patchFile = path.join(PATCHES_ROOT, patch);
@@ -75,17 +67,6 @@ async function main() {
 
   logger.info('Setting up project files for bare-expo.');
   await updateBareExpoAsync(nightlyVersion);
-}
-
-async function removePostinstallPatchAsync() {
-  const packageJsonPath = path.join(EXPO_DIR, 'package.json');
-  const packageJson = await JsonFile.readAsync(packageJsonPath);
-  packageJson.scripts = {
-    ...((packageJson.scripts as Record<string, string> | undefined) ?? {}),
-    postinstall:
-      'yarn-deduplicate && yarn workspace @expo/cli prepare && node ./tools/bin/expotools.js validate-workspace-dependencies',
-  };
-  await JsonFile.writeAsync(packageJsonPath, packageJson);
 }
 
 /**
@@ -113,7 +94,7 @@ async function addBareExpoOptionalPackagesAsync() {
     logger.log('  ', pkg);
   }
 
-  await spawnAsync('yarn', ['add', ...installPackages], { cwd: bareExpoRoot });
+  await spawnAsync('pnpm', ['add', ...installPackages], { cwd: bareExpoRoot });
 }
 
 async function addPinnedPackagesAsync(packages: Record<string, string>) {

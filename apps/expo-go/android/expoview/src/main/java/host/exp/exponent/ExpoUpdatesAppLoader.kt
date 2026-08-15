@@ -2,6 +2,7 @@
 package host.exp.exponent
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.easclient.EASClientID
@@ -30,6 +31,7 @@ import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.kernel.KernelConfig
 import host.exp.exponent.storage.ExponentSharedPreferences
+import host.exp.exponent.utils.HermesBundleUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,6 +39,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
+import java.net.URI
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -44,6 +47,7 @@ import kotlin.time.toDuration
 private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
 private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
 private const val UPDATE_ERROR_EVENT = "error"
+private val EAS_UPDATE_HOSTS = setOf("u.expo.dev", "staging-u.expo.dev")
 
 /**
  * Entry point to expo-updates in Expo Go. Fulfills many of the
@@ -134,7 +138,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         this[UpdatesConfiguration.UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY] = "ALWAYS"
         this[UpdatesConfiguration.UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY] = 60000
       }
-      this[UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders
+      this[UpdatesConfiguration.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders(httpManifestUrl)
       this[UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY] = "exposdk:${Constants.SDK_VERSION}"
       // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates from the multipart manifest response part
       this[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_CERTIFICATE] = context.assets.open("expo-root.pem").readBytes().decodeToString()
@@ -263,7 +267,18 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 
             // ReactAndroid will load the bundle on its own in development mode
             if (!manifest.isDevelopmentMode()) {
-              callback.onBundleCompleted(launcher.launchAssetFile!!)
+              val launchAssetFile = launcher.launchAssetFile!!
+              val isEasUpdate = runCatching { URI(manifestUrl).host }
+                .getOrNull()
+                ?.let(EAS_UPDATE_HOSTS::contains) == true
+              if (!isEasUpdate && HermesBundleUtils.isHermesBundle(File(launchAssetFile))) {
+                val errorJson = JSONObject().apply {
+                  put("errorCode", "EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED")
+                  put("message", "Hermes bytecode bundle is not supported by Expo Go")
+                }
+                throw ManifestException(null, manifestUrl, errorJson)
+              }
+              callback.onBundleCompleted(launchAssetFile)
             }
           } catch (e: Exception) {
             callback.onError(e)
@@ -319,30 +334,40 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
   }
 
   // XDL expects the full "exponent-" header names
-  private val requestHeaders: Map<String, String?>
-    get() {
-      val headers = mutableMapOf<String, String>()
-      headers["Expo-Updates-Environment"] = clientEnvironment
-      headers["Expo-Client-Environment"] = clientEnvironment
-      val versionName = ExpoViewKernel.instance.versionName
-      if (versionName != null) {
-        headers["Exponent-Version"] = versionName
-      }
-      val sessionSecret = exponentSharedPreferences.sessionSecret
-      if (sessionSecret != null) {
-        headers["Expo-Session"] = sessionSecret
-      }
-
-      // XDL expects the full "exponent-" header names
-      headers["Exponent-Accept-Signature"] = "true"
-      headers["Exponent-Platform"] = "android"
-      if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
-        headers["Exponent-SDK-Version"] = "UNVERSIONED"
-      } else {
-        headers["Exponent-SDK-Version"] = Constants.SDK_VERSION
-      }
-      return headers
+  private fun requestHeaders(manifestUrl: Uri): Map<String, String?> {
+    val headers = mutableMapOf<String, String>()
+    headers["Expo-Updates-Environment"] = clientEnvironment
+    headers["Expo-Client-Environment"] = clientEnvironment
+    headers.putAll(getForwardedHeaders(manifestUrl))
+    val versionName = ExpoViewKernel.instance.versionName
+    if (versionName != null) {
+      headers["Exponent-Version"] = versionName
     }
+    val sessionSecret = exponentSharedPreferences.sessionSecret
+    if (sessionSecret != null) {
+      headers["Expo-Session"] = sessionSecret
+    }
+
+    // XDL expects the full "exponent-" header names
+    headers["Exponent-Accept-Signature"] = "true"
+    headers["Exponent-Platform"] = "android"
+    if (KernelConfig.FORCE_UNVERSIONED_PUBLISHED_EXPERIENCES) {
+      headers["Exponent-SDK-Version"] = "UNVERSIONED"
+    } else {
+      headers["Exponent-SDK-Version"] = Constants.SDK_VERSION
+    }
+    return headers
+  }
+
+  private fun getForwardedHeaders(url: Uri): Map<String, String> {
+    val authority = url.encodedAuthority ?: return emptyMap()
+    val scheme = url.scheme ?: return emptyMap()
+    return mutableMapOf(
+      "Forwarded" to "host=\"$authority\";proto=$scheme",
+      "X-Forwarded-Host" to authority,
+      "X-Forwarded-Proto" to scheme
+    )
+  }
 
   private val clientEnvironment: String
     get() = if (EmulatorUtilities.isRunningOnEmulator()) {

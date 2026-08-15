@@ -9,6 +9,8 @@ export type SerialAsset = {
 
   metadata: {
     hmrId?: string;
+    /** Media query baked into a `css-external` `<link>` tag (e.g. `screen and (min-width: 900px)`). */
+    media?: string;
     isAsync?: boolean;
     modulePaths?: string[];
     paths?: Record<string, Record<string, string>>;
@@ -18,6 +20,8 @@ export type SerialAsset = {
     reactClientReferences?: string[];
     // DOM Component references from the static babel pass.
     expoDomComponentReferences?: string[];
+    // File paths of route modules that have loader exports.
+    loaderReferences?: string[];
     requires?: string[];
   };
 };

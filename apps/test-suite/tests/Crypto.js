@@ -54,7 +54,7 @@ function supportedAlgorithm(algorithm) {
 
 export async function test({ describe, it, expect }) {
   describe('Crypto', () => {
-    describe('digestStringAsync()', async () => {
+    describe('digestStringAsync()', () => {
       it(`Invalid CryptoEncoding throws an error`, async () => {
         let error = null;
         try {
@@ -92,7 +92,7 @@ export async function test({ describe, it, expect }) {
       }
     });
 
-    describe('digest()', async () => {
+    describe('digest()', () => {
       for (const entry of Object.entries(CryptoDigestAlgorithm)) {
         const [key, algorithm] = entry;
         it(`CryptoDigestAlgorithm.${key}`, async () => {

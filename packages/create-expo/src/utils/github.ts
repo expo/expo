@@ -1,9 +1,9 @@
 import type { Endpoints } from '@octokit/types';
-import { Readable } from 'stream';
 
+import { CREATE_EXPO_CONFIG_NAME } from '../createExpoConfig';
+import { createGlobFilter } from '../createFileTransform';
 import { fetch } from './fetch';
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
-import { createGlobFilter } from '../createFileTransform';
 
 const debug = require('debug')('expo:init:github') as typeof console.log;
 
@@ -17,7 +17,7 @@ type GitHubRepoInfo = {
 
 // See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/prebuild/resolveTemplate.ts#L60-L84
 async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo> {
-  const [, owner, name, t, branch, ...file] = url.pathname.split('/');
+  const [, owner = '', name = '', t, branch, ...file] = url.pathname.split('/');
   const filePath = file.join('/');
 
   // Support repos whose entire purpose is to be an example, e.g.
@@ -60,8 +60,9 @@ async function isValidGitHubRepoAsync(repo: GitHubRepoInfo): Promise<boolean> {
 async function extractRemoteGitHubTarballAsync(
   url: string,
   repo: GitHubRepoInfo,
+  output: string,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   const response = await fetch(url);
 
   if (!response.ok) throw new Error(`Unexpected response: ${response.statusText} (${url})`);
@@ -72,37 +73,42 @@ async function extractRemoteGitHubTarballAsync(
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.length + 1;
   // Only extract the relevant (sub)directories, ignoring irrelevant files
-  // The filder auto-ignores dotfiles, unless explicitly included
+  // The filter auto-ignores dotfiles, unless explicitly included
+  const subDirPrefix = directory.length ? `*/${directory.join('/')}` : '*';
   const filter = createGlobFilter(
-    !directory.length
-      ? ['*/**', '*/ios/.xcode.env']
-      : [`*/${directory.join('/')}/**`, `*/${directory.join('/')}/ios/.xcode.env`],
+    [
+      `${subDirPrefix}/**`,
+      `${subDirPrefix}/ios/.xcode.env`,
+      // Templates ship their monorepo config as a root-level dotfile; without
+      // an explicit allow-list entry, picomatch's default `dot: false` drops
+      // it during extraction so downstream consumers see no config at all.
+      `${subDirPrefix}/${CREATE_EXPO_CONFIG_NAME}`,
+    ],
     {
       // Always ignore the `.xcworkspace` folder
       ignore: ['**/ios/*.xcworkspace/**'],
     }
   );
 
-  await extractNpmTarballAsync(
-    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
-    Readable.fromWeb(response.body),
-    { ...props, filter, strip }
-  );
+  return await extractNpmTarballAsync(response.body, output, {
+    ...props,
+    filter,
+    strip,
+  });
 }
 
 export async function downloadAndExtractGitHubRepositoryAsync(
   repoUrl: URL,
+  output: string,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   debug('Looking for GitHub repository');
 
   const info = await getGitHubRepoAsync(repoUrl);
 
   const isValid = await isValidGitHubRepoAsync(info);
   if (!isValid) {
-    throw new Error(
-      `Could not to locate repository for "${repoUrl}", ensure this repository exists`
-    );
+    throw new Error(`Could not locate repository for "${repoUrl}", ensure this repository exists`);
   }
 
   const url = `https://codeload.github.com/${info.owner}/${info.name}/tar.gz/${info.branch}`;
@@ -110,5 +116,5 @@ export async function downloadAndExtractGitHubRepositoryAsync(
   debug('Resolved GitHub repository', info);
   debug('Downloading GitHub repository from:', url);
 
-  await extractRemoteGitHubTarballAsync(url, info, props);
+  return await extractRemoteGitHubTarballAsync(url, info, output, props);
 }

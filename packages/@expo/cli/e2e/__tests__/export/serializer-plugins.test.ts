@@ -1,12 +1,11 @@
-/* eslint-env jest */
 import JsonFile from '@expo/json-file';
+import type { BasicSourceMap } from '@expo/metro/metro-source-map';
 import fs from 'fs';
-import type { BasicSourceMap } from 'metro-source-map';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -72,7 +71,7 @@ describe('exports with serializer plugins', () => {
     expect(files).not.toEqual([]);
 
     // Load the sourcemap and parse it as JSON
-    const rawmap = await JsonFile.readAsync(path.resolve(outputDir, files[0]));
+    const rawmap = await JsonFile.readAsync(path.resolve(outputDir, files[0] ?? ''));
     const sourcemap = rawmap as unknown as BasicSourceMap;
 
     // Ensure the sourcemap does not contain absolute paths to the project directory

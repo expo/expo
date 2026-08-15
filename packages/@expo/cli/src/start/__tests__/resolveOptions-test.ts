@@ -1,5 +1,5 @@
 import { Log } from '../../log';
-import { resolvePortAsync } from '../../utils/port';
+import { choosePortAsync, resolveMetroPortAsync } from '../../utils/port';
 import { getOptionalDevClientSchemeAsync } from '../../utils/scheme';
 import { canResolveDevClient, hasDirectDevClientDependency } from '../detectDevClient';
 import {
@@ -12,7 +12,8 @@ import {
 jest.mock('../../log');
 jest.mock('../../utils/port', () => {
   return {
-    resolvePortAsync: jest.fn(),
+    resolveMetroPortAsync: jest.fn(),
+    choosePortAsync: jest.fn(),
   };
 });
 jest.mock('../../utils/scheme', () => {
@@ -211,54 +212,56 @@ describe(resolveHostType, () => {
 describe(resolvePortsAsync, () => {
   beforeEach(() => {
     jest
-      .mocked(resolvePortAsync)
-      .mockImplementation(async (root, { defaultPort, fallbackPort }) => {
+      .mocked(resolveMetroPortAsync)
+      .mockImplementation(async (root, { defaultPort, fallbackPort } = {}) => {
         if (typeof defaultPort === 'string' && defaultPort) {
           return parseInt(defaultPort, 10);
         } else if (typeof defaultPort === 'number' && defaultPort) {
           return defaultPort;
         }
-        return fallbackPort;
+        return fallbackPort ?? null;
       });
   });
   it(`resolves default port for metro`, async () => {
-    await expect(resolvePortsAsync('/noop', {}, { webOnly: false })).resolves.toStrictEqual({
+    await expect(resolvePortsAsync('/noop', {}, ['metro'])).resolves.toStrictEqual({
       metroPort: 8081,
     });
   });
   it(`resolves default port with given port`, async () => {
-    await expect(
-      resolvePortsAsync('/noop', { port: 1234 }, { webOnly: false })
-    ).resolves.toStrictEqual({
+    await expect(resolvePortsAsync('/noop', { port: 1234 }, ['metro'])).resolves.toStrictEqual({
       metroPort: 1234,
     });
     await expect(
-      resolvePortsAsync('/noop', { port: 1234, devClient: true }, { webOnly: false })
+      resolvePortsAsync('/noop', { port: 1234, devClient: true }, ['metro'])
     ).resolves.toStrictEqual({
       metroPort: 1234,
-    });
-    await expect(
-      resolvePortsAsync('/noop', { port: 1234 }, { webOnly: true })
-    ).resolves.toStrictEqual({
-      webpackPort: 1234,
     });
   });
   it(`resolves default port for metro with dev client`, async () => {
-    await expect(
-      resolvePortsAsync('/noop', { devClient: true }, { webOnly: false })
-    ).resolves.toStrictEqual({
-      metroPort: 8081,
+    await expect(resolvePortsAsync('/noop', { devClient: true }, ['metro'])).resolves.toStrictEqual(
+      {
+        metroPort: 8081,
+      }
+    );
+  });
+  it(`does not abort when port resolves to 0`, async () => {
+    jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce(0);
+    await expect(resolvePortsAsync('/noop', { port: 0 }, ['metro'])).resolves.toStrictEqual({
+      metroPort: 0,
     });
   });
-  it(`resolves default port for webpack`, async () => {
-    await expect(resolvePortsAsync('/noop', {}, { webOnly: true })).resolves.toStrictEqual({
-      webpackPort: 19006,
-    });
-    // dev client changes nothing on Webpack...
+  it(`resolves the webpack port from its own default, ignoring --port`, async () => {
+    jest.mocked(choosePortAsync).mockResolvedValueOnce(19006);
     await expect(
-      resolvePortsAsync('/noop', { devClient: true }, { webOnly: true })
+      resolvePortsAsync('/noop', { port: 1234 }, ['metro', 'webpack'])
     ).resolves.toStrictEqual({
+      metroPort: 1234,
       webpackPort: 19006,
     });
+    // Web ignores `--port`, so the webpack port is resolved from its own default (19006).
+    expect(choosePortAsync).toHaveBeenCalledWith(
+      '/noop',
+      expect.objectContaining({ defaultPort: 19006 })
+    );
   });
 });

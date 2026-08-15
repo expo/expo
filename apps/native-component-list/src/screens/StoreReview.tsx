@@ -1,4 +1,4 @@
-import { StackNavigationProp } from '@react-navigation/stack';
+import { type NativeStackNavigationProp } from 'expo-router';
 import * as StoreReview from 'expo-store-review';
 import React from 'react';
 import { Platform, StyleSheet, Text, View } from 'react-native';
@@ -7,7 +7,7 @@ import Button from '../components/Button';
 import Colors from '../constants/Colors';
 
 type Props = {
-  navigation: StackNavigationProp<any>;
+  navigation: NativeStackNavigationProp<any>;
 };
 
 function getStoreUrlInfo(): string {
@@ -61,7 +61,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   textContainer: {
     marginBottom: 16,

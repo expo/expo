@@ -1,7 +1,6 @@
 #import <React/RCTBridgeModule.h>
-#import <React/RCTBridgeDelegate.h>
 
-#import <UIKit/UIKit.h>
+#import <ExpoModulesCore/Platform.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
 // Otherwise, it's available only locally with double-quoted imports.
@@ -31,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class EXDevLauncherRecentlyOpenedAppsRegistry;
 @class EXDevLauncherController;
 @class EXDevLauncherErrorManager;
+@class ExpoDevLauncherReactDelegateHandler;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
 
@@ -39,19 +39,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
+@interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <EXUpdatesExternalInterfaceDelegate>
 
-@property (nonatomic, weak) RCTBridge * _Nullable appBridge;
 @property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
-@property (nonatomic, strong) id<EXUpdatesExternalInterface> updatesInterface;
+@property (nonatomic, strong) id<EXUpdatesDevLauncherInterface> updatesInterface;
+@property (nonatomic, weak, nullable) ExpoDevLauncherReactDelegateHandler *delegate;
 
 + (instancetype)sharedInstance;
+
++ (void)disablePackagerServerAccess;
 
 - (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
 
 - (nullable NSURL *)sourceUrl;
+
+- (void)launchDefaultUrlFallbackOrNavigateToLauncher;
 
 - (void)navigateToLauncher;
 
@@ -60,6 +64,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)loadApp:(NSURL *)url onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
 - (void)loadApp:(NSURL *)expoUrl withProjectUrl:(NSURL  * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
+
+- (void)loadLocalBundleOnSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError;
 
 - (void)clearRecentlyOpenedApps;
 

@@ -1,7 +1,8 @@
 import * as AgeRange from 'expo-age-range';
 import { useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
@@ -10,6 +11,25 @@ import Colors from '../constants/Colors';
 export default function AgeRangeScreen() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const requestAgeSignalsAccess = async () => {
+    setError(null);
+    setResult(null);
+
+    try {
+      // Android shows Play Age Signals' in-app consent screen here. On iOS the consent prompt is
+      // part of requestAgeRangeAsync, so there is nothing separate to call and this resolves null.
+      const status = await AgeRange.requestAgeSignalsAccessAsync();
+      setResult(
+        status === null
+          ? 'null (unsupported on this platform, or no status reported)'
+          : `ageSignalsStatus: ${status}`
+      );
+    } catch (err: any) {
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
 
   const requestAgeRange = async () => {
     setError(null);
@@ -25,6 +45,58 @@ export default function AgeRangeScreen() {
       });
 
       setResult(JSON.stringify(response, null, 2));
+    } catch (err: any) {
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
+
+  const checkEligibility = async () => {
+    setError(null);
+    setResult(null);
+
+    try {
+      const eligible = await AgeRange.isEligibleForAgeFeaturesAsync();
+      setResult(
+        eligible === null
+          ? 'null (unsupported on this OS / platform)'
+          : `isEligibleForAgeFeatures: ${eligible}`
+      );
+    } catch (err: any) {
+      if (err?.code === 'ERR_AGE_RANGE_NOT_AVAILABLE') {
+        setResult('ERR_AGE_RANGE_NOT_AVAILABLE');
+        return;
+      }
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
+
+  const showSignificantUpdate = async () => {
+    setError(null);
+    setResult(null);
+
+    try {
+      await AgeRange.showSignificantUpdateAcknowledgmentAsync(
+        'This is a developer-specified message.'
+      );
+    } catch (err: any) {
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
+
+  const getRequiredRegulatoryFeatures = async () => {
+    setError(null);
+    setResult(null);
+
+    try {
+      const features = await AgeRange.getRequiredRegulatoryFeaturesAsync();
+      setResult(
+        features === null
+          ? 'null (unsupported on this OS / platform)'
+          : `Required regulatory features: ${JSON.stringify(features, null, 2)}`
+      );
     } catch (err: any) {
       setError(err.message || 'Unknown error occurred');
       Alert.alert('Error', err.message || 'Unknown error occurred');
@@ -53,16 +125,39 @@ export default function AgeRangeScreen() {
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <HeadingText style={styles.heading}>Age Range API</HeadingText>
 
-      <Text style={styles.description}>
+      <BodyText color="secondary" style={styles.description}>
         Request the user's age range with directly configurable (iOS) thresholds. This example uses
         thresholds at 13, 16, and 18 years old.
-      </Text>
+      </BodyText>
 
-      {Platform.OS === 'ios' && (
-        <Text style={styles.warning}>Note: This API requires iOS 26.0 or later.</Text>
-      )}
+      <BodyText color="secondary" style={styles.description}>
+        On Android, request age signals access first and continue only when the status is SHARED.
+        Play reports every field as null until then. The age range result below reports
+        ageRangeSource, significantChangeStatus and significantChangeApprovalDate on Android, and
+        ageRangeDeclaration on iOS.
+      </BodyText>
 
+      <Button
+        onPress={requestAgeSignalsAccess}
+        title="Request Age Signals Access (Android)"
+        style={styles.button}
+      />
+      <Button
+        onPress={checkEligibility}
+        title="Check Age Features Eligibility (iOS 26.2+)"
+        style={styles.button}
+      />
       <Button onPress={requestAgeRange} title="Request Age Range" style={styles.button} />
+      <Button
+        onPress={showSignificantUpdate}
+        title="Show Significant Update Acknowledgment (iOS 26.4+)"
+        style={styles.button}
+      />
+      <Button
+        onPress={getRequiredRegulatoryFeatures}
+        title="Get Required Regulatory Features (iOS 26.4+)"
+        style={styles.button}
+      />
       <Button
         onPress={faultyRequestAgeRange}
         title="Request Faulty Age Range"
@@ -89,7 +184,6 @@ export default function AgeRangeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.greyBackground,
   },
   contentContainer: {
     padding: 16,
@@ -99,7 +193,6 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 14,
-    color: Colors.secondaryText,
     marginBottom: 12,
     lineHeight: 20,
   },

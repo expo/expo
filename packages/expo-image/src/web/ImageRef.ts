@@ -1,6 +1,6 @@
 import { SharedRef } from 'expo';
 
-import { ImageRef } from '../Image.types';
+import type { ImageRef } from '../Image.types';
 
 export default class ImageRefWeb extends SharedRef<'image'> implements ImageRef {
   override nativeRefType = 'image';

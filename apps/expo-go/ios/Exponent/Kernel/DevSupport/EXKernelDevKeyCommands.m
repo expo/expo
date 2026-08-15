@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXEnvironment.h"
 #import "EXKernelDevKeyCommands.h"
 #import "EXKernel.h"
 #import "EXKernelAppRegistry.h"
 #import "EXReactAppManager.h"
+#import "Expo_Go-Swift.h"
 
 #import <React/RCTDefines.h>
 #import <React/RCTUtils.h>
@@ -257,16 +257,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleMenuCommand
 {
-  
-  [[EXKernel sharedInstance].visibleApp.appManager showDevMenu];
+  [[DevMenuManager shared] toggleMenu];
 }
 
 - (void)_handleRefreshCommand
 {
-  // This reloads only JS
-  //  [[EXKernel sharedInstance].visibleApp.appManager reloadBridge];
-
-  // This reloads manifest and JS
   [[EXKernel sharedInstance] reloadVisibleApp];
 }
 
@@ -282,9 +277,6 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (void)_handleKernelMenuCommand
 {
-  if ([EXKernel sharedInstance].visibleApp == [EXKernel sharedInstance].appRegistry.homeAppRecord) {
-    [[EXKernel sharedInstance].appRegistry.homeAppRecord.appManager showDevMenu];
-  }
 }
 
 #pragma mark - managing list of commands

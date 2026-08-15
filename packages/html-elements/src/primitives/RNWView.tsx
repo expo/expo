@@ -9,7 +9,7 @@
 import * as React from 'react';
 import StyleSheet from 'react-native-web/dist/exports/StyleSheet';
 import TextAncestorContext from 'react-native-web/dist/exports/Text/TextAncestorContext';
-import { ViewProps } from 'react-native-web/dist/exports/View/types';
+import type { ViewProps } from 'react-native-web/dist/exports/View/types';
 import createElement from 'react-native-web/dist/exports/createElement';
 import * as forwardedProps from 'react-native-web/dist/modules/forwardedProps';
 import pick from 'react-native-web/dist/modules/pick';

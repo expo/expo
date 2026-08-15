@@ -2,9 +2,9 @@ package expo.modules.kotlin.objects
 
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.types.toAnyType
 import expo.modules.kotlin.types.toReturnType
-import kotlin.reflect.KType
 
 open class PropertyComponentBuilder(
   val name: String
@@ -32,7 +32,7 @@ open class PropertyComponentBuilder(
 }
 
 class PropertyComponentBuilderWithThis<ThisType>(
-  val thisType: KType,
+  val thisType: TypeDescriptor,
   name: String
 ) : PropertyComponentBuilder(name) {
 

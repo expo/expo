@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { type NodePath, traverse, types } from '@babel/core';
-import generate from '@babel/generator';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
 import type {
   AsyncDependencyType,
   MixedOutput,
@@ -13,21 +13,17 @@ import type {
   ReadOnlyGraph,
 } from '@expo/metro/metro/DeltaBundler/types';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import type { SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 
-import { ExpoSerializerOptions } from './fork/baseJSBundle';
-import { isExpoJsOutput } from './jsOutput';
-import { sortDependencies } from './reconcileTransformSerializerPlugin';
-import { hasSideEffectWithDebugTrace } from './sideEffects';
-import {
+import type {
   DependencyData,
   MutableInternalDependency,
 } from '../transform-worker/collect-dependencies';
 import { collectDependenciesForShaking } from '../transform-worker/metro-transform-worker';
-
-const debug = require('debug')('expo:treeshake') as typeof console.log;
-const isDebugEnabled = require('debug').enabled('expo:treeshake');
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
+import { isExpoJsOutput } from './jsOutput';
+import { sortDependencies } from './reconcileTransformSerializerPlugin';
+import { hasSideEffectWithDebugTrace } from './sideEffects';
 
 const OPTIMIZE_GRAPH = true;
 
@@ -74,7 +70,8 @@ export function isModuleEmptyFor(ast?: types.File) {
 
 function isEmptyModule(value: Module<MixedOutput>): boolean {
   return value.output.every((outputItem) => {
-    return isModuleEmptyFor(accessAst(outputItem));
+    // TODO: Module type should be properly upcast
+    return isModuleEmptyFor(accessAst(outputItem as AdvancedMixedOutput));
   });
 }
 
@@ -149,7 +146,6 @@ function populateModuleWithImportUsage(value: Module<AdvancedMixedOutput>) {
     assert(reconcile, 'reconcile settings are required in the module graph for post transform.');
 
     const deps = collectDependenciesForShaking(
-      // @ts-expect-error
       ast,
       reconcile.collectDependenciesOptions
     ).dependencies;
@@ -162,10 +158,6 @@ function populateModuleWithImportUsage(value: Module<AdvancedMixedOutput>) {
 }
 
 function markUnused(path: NodePath) {
-  // Format path as code
-  if (isDebugEnabled) {
-    debug('Delete AST:\n' + generate(path.node).code);
-  }
   path.remove();
 }
 
@@ -194,44 +186,12 @@ export async function treeShakeSerializer(
 
   for (const value of graph.dependencies.values()) {
     // TODO: Move this to the transformer and combine with collect dependencies.
-    getExportsForModule(value);
+    // TODO: Module type should be properly upcast
+    getExportsForModule(value as Module<AdvancedMixedOutput>);
   }
-
-  const beforeList = [...graph.dependencies.keys()];
 
   // Tree shake the graph.
   optimizePaths([entryPoint]);
-
-  if (isDebugEnabled) {
-    // Debug pass: Print all orphaned modules.
-    for (const [, value] of graph.dependencies.entries()) {
-      if (value.inverseDependencies.size !== 0) {
-        let hasNormalNode = false;
-        for (const dep of value.inverseDependencies) {
-          if (!graph.dependencies.has(dep)) {
-            debug(
-              `[ISSUE]: Dependency: ${value.path}, has inverse relation to missing node: ${dep}`
-            );
-          } else {
-            hasNormalNode = true;
-          }
-        }
-        if (!hasNormalNode) {
-          debug(`[ERROR]: All inverse dependencies are missing for: ${value.path}`);
-        }
-      }
-    }
-
-    const afterList = [...graph.dependencies.keys()];
-
-    // Print the removed modules:
-    const removedModules = beforeList.filter((value) => !afterList.includes(value));
-
-    if (removedModules.length) {
-      debug('Modules that were fully removed:');
-      debug(removedModules.sort().join('\n'));
-    }
-  }
 
   return [entryPoint, preModules, graph, options];
 
@@ -334,7 +294,11 @@ export async function treeShakeSerializer(
           if (path.node.source) {
             // Get module for import ID:
             const nextModule = getDepForImportId(path.node.source.value);
-            const exportResults = getExportsForModule(nextModule, checkedModules);
+            // TODO: Module type should be properly upcast
+            const exportResults = getExportsForModule(
+              nextModule as Module<AdvancedMixedOutput>,
+              checkedModules
+            );
             // console.log('exportResults', exportResults);
 
             if (exportResults.isStatic && !exportResults.hasUnresolvableStarExport) {
@@ -372,7 +336,6 @@ export async function treeShakeSerializer(
               // TODO: Update deps
               populateModuleWithImportUsage(value);
             } else {
-              debug('Cannot resolve star export:', nextModule.path);
               hasUnresolvableStarExport = true;
             }
 
@@ -467,9 +430,6 @@ export async function treeShakeSerializer(
 
     //
     if (graphEntryForTargetImport.path.match(/\.(s?css|sass)$/)) {
-      debug('Skip graph unlinking for CSS:');
-      debug('- Origin module:', graphModule.path);
-      debug('- Module ID:', importModuleId);
       // Skip CSS imports.
       return { path: importInstance.absolutePath, removed: false };
     }
@@ -479,14 +439,11 @@ export async function treeShakeSerializer(
       // @ts-expect-error: exportNames is added by babel
       importInstance.data.data.exportNames?.includes('default')
     ) {
-      debug('Skip graph unlinking for duplicate default export:');
-      debug('- Origin module:', graphModule.path);
-      debug('- Module ID:', importModuleId);
       // Skip CSS imports.
       return { path: importInstance.absolutePath, removed: false };
     }
 
-    const [authorMarkedSideEffect, trace] = hasSideEffectWithDebugTrace(
+    const [authorMarkedSideEffect] = hasSideEffectWithDebugTrace(
       options,
       graph,
       graphEntryForTargetImport
@@ -494,29 +451,6 @@ export async function treeShakeSerializer(
 
     // If the package.json chain explicitly marks the module as side-effect-free, then we can remove imports that have no specifiers.
     const isFx = authorMarkedSideEffect ?? isSideEffectyImport;
-
-    if (isDebugEnabled && isSideEffectyImport) {
-      if (authorMarkedSideEffect == null) {
-        // This is for debugging modules that should be marked as side-effects but are not.
-        if (!trace.length) {
-          debug('----');
-          debug(
-            'Found side-effecty import (no specifiers) that is not marked as a side effect in the package.json:'
-          );
-          debug('- Origin module:', graphModule.path);
-          debug('- Module ID (needs marking):', importModuleId);
-          // debug('- FX trace:', trace.join(' > '));
-          debug('----');
-        }
-      } else if (!isFx) {
-        debug(
-          'Removing side-effecty import (package.json indicates it is not a side-effect):',
-          importModuleId,
-          'from:',
-          graphModule.path
-        );
-      }
-    }
 
     // let trace: string[] = [];
 
@@ -542,7 +476,6 @@ export async function treeShakeSerializer(
         graphEntryForTargetImport.inverseDependencies.delete(graphModule.path);
 
         if (graphEntryForTargetImport.inverseDependencies.size === 0) {
-          debug('Unlink module from graph:', importInstance.absolutePath);
           // Remove the dependency from the graph as no other modules are using it anymore.
           disposeOfGraphNode(importInstance.absolutePath);
         }
@@ -550,29 +483,17 @@ export async function treeShakeSerializer(
 
       // Mark the module as removed so we know to traverse again.
       return { path: importInstance.absolutePath, removed: true };
-    } else {
-      if (isFx) {
-        debug('Skip graph unlinking due to side-effect:');
-        debug('- Origin module:', graphModule.path);
-        debug('- Module ID:', importModuleId);
-        debug('- FX trace:', trace.join(' > '));
-      } else {
-        debug('Skip graph unlinking:', {
-          depId: targetHashId,
-          isFx,
-        });
-      }
     }
 
     return { path: importInstance.absolutePath, removed: false };
   }
 
   function removeUnusedExports(value: Module<MixedOutput>, depth: number = 0): string[] {
-    if (!accessAst(value.output[0]) || !value.inverseDependencies.size) {
+    // TODO: Output type should be properly upcast
+    if (!accessAst(value.output[0] as AdvancedMixedOutput) || !value.inverseDependencies.size) {
       return [];
     }
     if (depth > 5) {
-      debug('Max export removal depth reached for:', value.path);
       return [];
     }
     const dirtyImports: string[] = [];
@@ -588,7 +509,7 @@ export async function treeShakeSerializer(
 
     const isExportUsed = (importName: string) => {
       return inverseDeps.some((dep) => {
-        const isModule = dep?.output.some((outputItem: AdvancedMixedOutput) => {
+        const isModule = dep?.output.some((outputItem) => {
           return outputItem.type === 'js/module';
         });
 
@@ -683,13 +604,6 @@ export async function treeShakeSerializer(
               if (decl.id.type === 'Identifier') {
                 if (possibleUnusedExports.includes(decl.id.name) && !isExportUsed(decl.id.name)) {
                   // TODO: Update source maps
-                  debug(
-                    `mark remove (type: var, depth: ${depth}):`,
-                    decl.id.name,
-                    'from:',
-                    value.path
-                  );
-
                   // Account for variables, and classes which may contain references to other exports.
                   shouldRecurseUnusedExports = true;
                   return false; // Remove this declaration
@@ -708,12 +622,6 @@ export async function treeShakeSerializer(
               possibleUnusedExports.includes(declaration.id.name) &&
               !isExportUsed(declaration.id.name)
             ) {
-              debug(
-                `mark remove (type: function, depth: ${depth}):`,
-                declaration.id.name,
-                'from:',
-                value.path
-              );
               // TODO: Update source maps
               markUnused(path);
 
@@ -752,7 +660,8 @@ export async function treeShakeSerializer(
 
     if (needsImportReindex) {
       // TODO: Do this better with a tracked removal of the import rather than a full reparse.
-      populateModuleWithImportUsage(value);
+      // TODO: Module type should be properly upcast
+      populateModuleWithImportUsage(value as Module<AdvancedMixedOutput>);
     }
 
     if (shouldRecurseUnusedExports) {
@@ -842,7 +751,7 @@ export async function treeShakeSerializer(
 
       const isUsed = (
         specifier: // import { imported as local } from './foo'
-        | types.ImportSpecifier
+          | types.ImportSpecifier
           // import local from './foo'
           | types.ImportDefaultSpecifier
           // import * as local from './foo'
@@ -866,7 +775,6 @@ export async function treeShakeSerializer(
           isSideEffectyImport: absoluteOriginalSize === 0 ? true : undefined,
         });
         if (removeRequest.removed) {
-          debug('Disconnect import:', importModuleId, 'from:', value.path);
           // TODO: Update source maps
           // Delete the import AST
           markUnused(path);
@@ -884,13 +792,15 @@ export async function treeShakeSerializer(
     }
     const dirtyImports = value.output
       .map((outputItem) => {
-        return removeUnusedImportsFromModule(value, accessAst(outputItem));
+        // TODO: Module type should be properly upcast
+        return removeUnusedImportsFromModule(value, accessAst(outputItem as AdvancedMixedOutput));
       })
       .flat();
 
     if (dirtyImports.length) {
       // TODO: Do this better with a tracked removal of the import rather than a full reparse.
-      populateModuleWithImportUsage(value);
+      // TODO: Module type should be properly upcast
+      populateModuleWithImportUsage(value as Module<AdvancedMixedOutput>);
     }
     return dirtyImports;
   }
@@ -934,16 +844,6 @@ export async function treeShakeSerializer(
       dep.dependencies.forEach((dep) => {
         if (isResolvedDependency(dep)) paths.push(dep.absolutePath);
       });
-    }
-
-    if (isDebugEnabled) {
-      // Print if any dependencies weren't checked (this shouldn't happen)
-      const unchecked = [...graph.dependencies.entries()]
-        .filter(([key, value]) => !checked.has(key) && accessAst(value.output[0]))
-        .map(([key]) => key);
-      if (unchecked.length) {
-        debug('[ISSUE]: Unchecked modules:', unchecked);
-      }
     }
   }
 }

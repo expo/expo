@@ -1,6 +1,8 @@
 package expo.modules.agerange
 
+import android.app.Activity
 import android.content.Context
+import com.google.android.play.agesignals.AgeSignalsAccessRequest
 import com.google.android.play.agesignals.AgeSignalsException
 import com.google.android.play.agesignals.AgeSignalsManager
 import com.google.android.play.agesignals.AgeSignalsManagerFactory
@@ -16,16 +18,29 @@ class AgeRangeModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
+  private val ageSignalsManager by lazy { AgeSignalsManagerFactory.create(context.applicationContext) }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoAgeRange")
 
     AsyncFunction("requestAgeRangeAsync") { _: Any, promise: Promise ->
-      val ageSignalsManager =
-        AgeSignalsManagerFactory.create(context.applicationContext)
-
       requestAgeRange(
         ageSignalsManager = ageSignalsManager,
         onSuccess = { result -> promise.resolve(result) },
+        onError = { exception -> promise.reject(exception) },
+        onCancelled = { promise.reject(AgeRangeTaskCancelledException()) }
+      )
+    }
+
+    AsyncFunction("isEligibleForAgeFeaturesAsync") {
+      null as Boolean?
+    }
+
+    AsyncFunction("requestAgeSignalsAccessAsync") { promise: Promise ->
+      requestAgeSignalsAccess(
+        ageSignalsManager = ageSignalsManager,
+        activity = appContext.throwingActivity,
+        onSuccess = { status -> promise.resolve(status) },
         onError = { exception -> promise.reject(exception) },
         onCancelled = { promise.reject(AgeRangeTaskCancelledException()) }
       )
@@ -53,8 +68,31 @@ fun requestAgeRange(
     }
 }
 
+fun requestAgeSignalsAccess(
+  ageSignalsManager: AgeSignalsManager,
+  activity: Activity,
+  onSuccess: (String?) -> Unit,
+  onError: (CodedException) -> Unit,
+  onCancelled: () -> Unit
+) {
+  ageSignalsManager
+    .requestAgeSignalsAccess(
+      AgeSignalsAccessRequest.builder().setActivity(activity).build()
+    )
+    .addOnCanceledListener {
+      onCancelled()
+    }
+    .addOnFailureListener { exception ->
+      onError(processAgeSignalsError(exception))
+    }
+    .addOnSuccessListener { accessResult ->
+      onSuccess(ageSignalsStatusToString(accessResult.ageSignalsStatus()))
+    }
+}
+
 fun processAgeSignalsError(exception: Exception): CodedException {
   if (exception is AgeSignalsException) {
+    // for codes explanation see https://developer.android.com/google/play/age-signals/handle-errors
     val errorCode = exception.status.statusCode
     val status = exception.status.statusMessage ?: "An error occurred with code $errorCode"
     return CodedException(errorCode.toString(), status, exception)

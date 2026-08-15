@@ -41,7 +41,6 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-font',
   'expo-gl',
   // 'expo-haptics',
-  // 'expo-image-loader',
   // 'expo-image-manipulator',
   // 'expo-image-picker',
   // 'expo-keep-awake',

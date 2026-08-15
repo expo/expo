@@ -5,7 +5,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { parse, StackFrame as UpstreamStackFrame } from 'stacktrace-parser';
+import type { StackFrame as UpstreamStackFrame } from 'stacktrace-parser';
+import { parse } from 'stacktrace-parser';
+
+import { fetch } from '../../../../utils/fetch';
 
 export type CodeFrame = {
   content: string;
@@ -86,6 +89,9 @@ async function symbolicateStackTrace(stack: UpstreamStackFrame[]): Promise<Symbo
 
   return fetch(baseUrl + '/symbolicate', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({ stack }),
   }).then((res) => res.json());
 }

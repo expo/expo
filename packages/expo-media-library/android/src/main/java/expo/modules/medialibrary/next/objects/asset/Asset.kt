@@ -3,6 +3,7 @@ package expo.modules.medialibrary.next.objects.asset
 import android.net.Uri
 import android.os.Bundle
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetDelegate
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
@@ -46,6 +47,9 @@ class Asset(val assetDelegate: AssetDelegate) : SharedObject() {
   suspend fun getInfo(): AssetInfo =
     assetDelegate.getInfo()
 
+  suspend fun getAlbums(): List<Album> =
+    assetDelegate.getAlbums()
+
   suspend fun getMimeType(): MimeType =
     assetDelegate.getMimeType()
 
@@ -54,6 +58,12 @@ class Asset(val assetDelegate: AssetDelegate) : SharedObject() {
 
   suspend fun getExif(): Bundle =
     assetDelegate.getExif()
+
+  suspend fun getFavorite(): Boolean =
+    assetDelegate.getFavorite()
+
+  suspend fun setFavorite(isFavorite: Boolean) =
+    assetDelegate.setFavorite(isFavorite)
 
   suspend fun move(relativePath: RelativePath) = withContext(Dispatchers.IO) {
     assetDelegate.move(relativePath)

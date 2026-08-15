@@ -9,6 +9,8 @@ import androidx.media3.database.StandaloneDatabaseProvider
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.video.cache.CacheVariantIndex
+import expo.modules.video.managers.VideoManager
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.UUID
@@ -37,6 +39,10 @@ class VideoCache(context: Context) {
     return sharedPreferences.getLong(CACHE_SIZE_KEY, DEFAULT_CACHE_SIZE)
   }
 
+  fun release() {
+    instance.release()
+  }
+
   fun setMaxCacheSize(size: Long) {
     assertModificationReleaseConditions()
     instance.release()
@@ -54,7 +60,7 @@ class VideoCache(context: Context) {
     // Weird structure, because kotlin marks the result of `getString` as nullable
     val videoCacheDirName = sharedPreferences.getString(VIDEO_CACHE_DIR_KEY, null) ?: run {
       val newCacheDirName = generateCacheDirName()
-      sharedPreferences.edit().putString(VIDEO_CACHE_DIR_KEY, newCacheDirName).apply()
+      sharedPreferences.edit().putString(VIDEO_CACHE_DIR_KEY, newCacheDirName).commit()
       newCacheDirName
     }
     val cacheParentDir = File(context.cacheDir, VIDEO_CACHE_PARENT_DIR)
@@ -82,6 +88,9 @@ class VideoCache(context: Context) {
     instance = SimpleCache(getCacheDir(), cacheEvictor, databaseProvider)
     oldCache.release()
     oldCacheDirectory.deleteRecursively()
+    // Variants live in a sibling directory outside SimpleCache, so they must
+    // be wiped explicitly — otherwise an explicit clear leaves orphan records.
+    CacheVariantIndex.clearAll(context)
   }
 
   private fun getFileSize(file: File): Long {

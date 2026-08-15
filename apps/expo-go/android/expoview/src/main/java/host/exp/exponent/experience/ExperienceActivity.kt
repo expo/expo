@@ -51,7 +51,6 @@ import host.exp.exponent.experience.splashscreen.ManagedAppSplashScreenViewProvi
 import host.exp.exponent.experience.splashscreen.legacy.singletons.SplashScreen
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExponentUrls
-import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelConstants.ExperienceOptions
 import host.exp.exponent.kernel.KernelProvider
@@ -75,6 +74,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import versioned.host.exp.exponent.ExponentPackageDelegate
 import versioned.host.exp.exponent.ReactUnthemedRootView
+import versioned.host.exp.exponent.VersionedUtils
 import java.lang.ref.WeakReference
 
 open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDelegate {
@@ -109,12 +109,13 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
   private val devBundleDownloadProgressListener: DevBundleDownloadProgressListener =
     object : DevBundleDownloadProgressListener {
-      override fun onProgress(status: String?, done: Int?, total: Int?) {
+      override fun onProgress(status: String?, done: Int?, total: Int?, percent: Int?) {
         lifecycleScope.launch {
           loadingProgressPopupController.updateProgress(
             status,
             done,
-            total
+            total,
+            percent
           )
         }
       }
@@ -195,7 +196,10 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
           override fun onManifestCompleted(manifest: Manifest) {
             lifecycleScope.launch {
               try {
-                val bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL())
+                val bundleUrl = ExponentUrls.bundleUrlFromManifest(
+                  manifest,
+                  this@ExperienceActivity.manifestUrl!!
+                )
                 setManifest(
                   this@ExperienceActivity.manifestUrl!!,
                   manifest,
@@ -297,14 +301,16 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     return false
   }
 
-  /**
-   * Handles key commands.
-   */
-  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    if (reactHost != null && !isCrashed) {
-      return devMenuFragment?.onKeyUp(keyCode, event) ?: super.onKeyUp(keyCode, event)
+  override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+    if (event.action == KeyEvent.ACTION_UP) {
+      if (reactHost != null && !isCrashed) {
+        val wasHandled = devMenuFragment?.onKeyUp(event.keyCode, event)
+        if (wasHandled == true) {
+          return true
+        }
+      }
     }
-    return super.onKeyUp(keyCode, event)
+    return super.dispatchKeyEvent(event)
   }
 
   /**
@@ -319,10 +325,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
   }
 
-  fun onEventMainThread(event: KernelStartedRunningEvent?) {
-    AsyncCondition.notify(KERNEL_STARTED_RUNNING_KEY)
-  }
-
   override fun onDoneLoading() {
     reactSurface?.view?.let {
       setReactRootView(it)
@@ -333,6 +335,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
           goToHomeAction = {
             kernel.openHomeActivity()
           },
+          reloadAction = {
+            VersionedUtils.reloadExpoApp()
+          },
           appInfoProvider = { _, _ ->
             DevMenuState.AppInfo(
               appName = manifest?.getName() ?: "Unknown",
@@ -342,7 +347,11 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
               sdkVersion = manifest?.getExpoGoSDKVersion() ?: "Unknown",
               engine = "Hermes"
             )
-          }
+          },
+          preferences = DevMenuSharedPreferencesAdapter(
+            application,
+            kernel.exponentSharedPreferences
+          )
         )
       )
     }
@@ -402,7 +411,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         ReactSurfaceView::class.java,
         splashScreenView
       )
-      SplashScreen.show(this, managedAppSplashScreenViewController!!, true)
+      SplashScreen.show(this, managedAppSplashScreenViewController!!)
     } else {
       managedAppSplashScreenViewProvider!!.updateSplashScreenViewWithManifest(
         manifest!!
@@ -637,7 +646,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     Exponent.instance
       .testPackagerStatus(
         isDebugModeEnabled,
-        manifest!!,
+        ExponentUrls.bundleUrlFromManifest(manifest!!, manifestUrl!!),
         object : Exponent.PackagerStatusCallback {
           override fun onSuccess() {
             reactHost = startReactInstance(
@@ -778,7 +787,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
   companion object {
     private val TAG = ExperienceActivity::class.java.simpleName
-    private const val KERNEL_STARTED_RUNNING_KEY = "experienceActivityKernelDidLoad"
     const val PERSISTENT_EXPONENT_NOTIFICATION_ID = 10101
     private const val READY_FOR_BUNDLE = "readyForBundle"
 

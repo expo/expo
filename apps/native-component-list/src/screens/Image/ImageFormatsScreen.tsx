@@ -121,6 +121,14 @@ const data: SectionListData<ImageProps>[] = [
       },
     ],
   },
+  Platform.OS === 'ios' && {
+    title: 'PSD',
+    data: [
+      {
+        source: 'https://filesamples.com/samples/image/psd/sample_640%C3%97426.psd',
+      },
+    ],
+  },
 ].filter(Boolean) as SectionListData<ImageProps>[];
 
 function keyExtractor(item: any, index: number) {

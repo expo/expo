@@ -4,8 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { types as t } from '@babel/core';
+import type { types as t } from '@babel/core';
 import generate from '@babel/generator';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
+import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
 import type {
   MixedOutput,
   Module,
@@ -15,33 +17,33 @@ import type {
 import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import { locToKey } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import type { SerializerConfigT } from '@expo/metro/metro-config';
-import { toSegmentTuple } from '@expo/metro/metro-source-map';
-import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
 import assert from 'assert';
-import util from 'node:util';
 
-import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
-import { hasSideEffectWithDebugTrace } from './sideEffects';
+import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
 import collectDependencies, {
-  Dependency,
-  DependencyData,
   getKeyForDependency,
   hashKey,
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from '../transform-worker/collect-dependencies';
-import { countLinesAndTerminateMap } from '../transform-worker/count-lines';
 import {
   applyImportSupport,
   InvalidRequireCallError,
   minifyCode,
 } from '../transform-worker/metro-transform-worker';
+import type { ExpoJsOutput } from './jsOutput';
+import { isExpoJsOutput } from './jsOutput';
+import {
+  countLinesAndTerminateSourceMap,
+  installPackedMap,
+  packRawMappings,
+  type SerializableSourceMap,
+} from './packedMap';
+import { hasSideEffectWithDebugTrace } from './sideEffects';
+import { type BabelSourceMapSegment } from './sourceMap';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
 type SerializerParameters = Parameters<Serializer>;
-
-const debug = require('debug')('expo:treeshaking') as typeof console.log;
 
 const FORCE_REQUIRE_NAME_HINTS = false;
 
@@ -94,12 +96,6 @@ export function sortDependencies(
       return null;
     }
 
-    debug(
-      'failed to finding matching dependency',
-      util.inspect(dep, { colors: true, depth: 6 }),
-      util.inspect(accordingTo, { colors: true, depth: 6 })
-    );
-
     throw new Error(
       `Dependency ${dep.data.key} (${dep.name}) not found in the original module during optimization pass. Available keys: ${Array.from(
         accordingTo.entries()
@@ -109,7 +105,7 @@ export function sortDependencies(
     );
   };
 
-  // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
+  // Metro uses this Map hack so we need to create a new map and add the items in the expected order.
   dependencies.forEach((dep) => {
     const original = findDependency(dep);
 
@@ -176,7 +172,6 @@ export async function reconcileTransformSerializerPlugin(
       value.path.endsWith('.json') ||
       value.path.match(/\.(s?css|sass)$/)
     ) {
-      debug('Skipping post transform for non-js/module: ' + value.path);
       return outputItem;
     }
 
@@ -294,41 +289,47 @@ export async function reconcileTransformSerializerPlugin(
       outputItem.data.code
     );
 
-    // @ts-expect-error: incorrectly typed upstream
-    let map = result.rawMappings ? result.rawMappings.map(toSegmentTuple) : [];
+    // `rawMappings` is omitted from `@types/babel__generator`'s
+    // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
+    const rawMappings = (result as { rawMappings?: BabelSourceMapSegment[] }).rawMappings ?? [];
     let code = result.code;
+    let sourceMap: SerializableSourceMap;
 
     if (reconcile.minify) {
       const source = value.getSource().toString('utf-8');
 
-      ({ map, code } = await minifyCode(
+      ({ sourceMap, code } = await minifyCode(
         reconcile.minify,
         value.path,
         result.code,
         source,
-        map,
+        rawMappings,
         reserved
       ));
+    } else {
+      sourceMap = packRawMappings(rawMappings);
     }
 
     let lineCount;
-    ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+    ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
-    return {
-      ...outputItem,
-      data: {
-        ...outputItem.data,
-        code,
-        map,
-        lineCount,
-        functionMap:
-          // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
-          ast.metadata?.metro?.functionMap ??
-          // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
-          ast.functionMap ??
-          outputItem.data.functionMap ??
-          null,
-      },
+    const newData = {
+      ...outputItem.data,
+      code,
+      lineCount,
+      functionMap:
+        // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
+        ast.metadata?.metro?.functionMap ??
+        // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
+        ast.functionMap ??
+        outputItem.data.functionMap ??
+        null,
     };
+    // Reconcile runs post-graph-build, so it bypasses the
+    // `Bundler.transformFile` wrapper that normally installs the packed
+    // shape from worker output. Install it here directly so the encoder
+    // fast path stays live for reconciled modules.
+    installPackedMap(newData, sourceMap);
+    return { ...outputItem, data: newData };
   }
 }

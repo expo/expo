@@ -3,7 +3,7 @@ title: LivePhoto
 description: A library that allows displaying Live Photos on iOS.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-live-photo'
 packageName: 'expo-live-photo'
-platforms: ['ios']
+platforms: ['ios', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -67,11 +67,11 @@ export default function LivePhotoScreen() {
         }}
       />
       <View style={livePhoto ? styles.pickImageCollapsed : styles.pickImageExpanded}>
-        <Button title={livePhoto ? 'Change Image' : 'Pick an image'} onPress={pickImage} />
+        <Button title={livePhoto ? 'Change image' : 'Pick an image'} onPress={pickImage} />
       </View>
-      <Button title="Start Playback Hint" onPress={() => viewRef.current?.startPlayback('hint')} />
-      <Button title="Start Playback" onPress={() => viewRef.current?.startPlayback('full')} />
-      <Button title="Stop Playback" onPress={() => viewRef.current?.stopPlayback()} />
+      <Button title="Start playback hint" onPress={() => viewRef.current?.startPlayback('hint')} />
+      <Button title="Start playback" onPress={() => viewRef.current?.startPlayback('full')} />
+      <Button title="Stop playback" onPress={() => viewRef.current?.stopPlayback()} />
     </View>
   );
 }

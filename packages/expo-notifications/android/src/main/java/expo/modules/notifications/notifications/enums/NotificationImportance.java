@@ -3,6 +3,10 @@ package expo.modules.notifications.notifications.enums;
 import androidx.core.app.NotificationManagerCompat;
 
 public enum NotificationImportance {
+  /**
+   * IMPORTANCE_UNSPECIFIED fails validation in com.android.server.notification.PreferencesHelper.createNotificationChannel
+   * and it should not be used
+   * */
   UNSPECIFIED(NotificationManagerCompat.IMPORTANCE_UNSPECIFIED, 1),
   NONE(NotificationManagerCompat.IMPORTANCE_NONE, 2),
   MIN(NotificationManagerCompat.IMPORTANCE_MIN, 3),

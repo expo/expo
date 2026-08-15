@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 
 import NotificationCategoriesModule from './NotificationCategoriesModule';
 
@@ -11,9 +11,7 @@ import NotificationCategoriesModule from './NotificationCategoriesModule';
  * @platform ios
  * @header categories
  */
-export default async function deleteNotificationCategoryAsync(
-  identifier: string
-): Promise<boolean> {
+export async function deleteNotificationCategoryAsync(identifier: string): Promise<boolean> {
   if (!NotificationCategoriesModule.deleteNotificationCategoryAsync) {
     throw new UnavailabilityError('Notifications', 'deleteNotificationCategoryAsync');
   }

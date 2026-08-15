@@ -12,7 +12,6 @@
 
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
 import '@expo/metro-runtime/rsc/runtime';
-
 import { decodeActionId } from 'expo-router/internal/rsc';
 import type { ReactNode } from 'react';
 import { renderToReadableStream, decodeReply } from 'react-server-dom-webpack/server';
@@ -40,6 +39,8 @@ export type RenderRscArgs = {
   input: string;
   context: Record<string, unknown> | undefined;
   body?: ReadableStream | undefined;
+  method?: 'GET' | 'POST';
+  headers?: Record<string, string>;
   contentType?: string | undefined;
   decodedBody?: unknown;
   moduleIdCallback?: (module: {
@@ -197,7 +198,17 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   }
 
   const actionId = decodeActionId(input);
-  if (actionId) {
+  // CSRF preflight checks
+  // - Enforces Sec-Fetch-Site isn't "cross-site"
+  // - Otherwise, we enforce expo-platform to enforce preflight
+  const fetchSite = args.headers?.['sec-fetch-site'];
+  if (actionId && args.method !== 'POST') {
+    throw new Error(`Server action "${actionId}" rejected: Invalid method`);
+  } else if (actionId && fetchSite === 'cross-site') {
+    throw new Error(`Server action "${actionId}" rejected: Cross-site request`);
+  } else if (actionId && !fetchSite && !args.headers?.['expo-platform']) {
+    throw new Error(`Server action "${actionId}" rejected: Missing required header`);
+  } else if (actionId) {
     if (
       !opts.isExporting &&
       // @ts-ignore
@@ -206,28 +217,40 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       throw new Error('Experimental support for React Server Functions is not enabled');
     }
 
-    const args = Array.isArray(decodedBody) ? decodedBody : [];
-
+    const actionArgs = Array.isArray(decodedBody) ? decodedBody : [];
     const chunkInfo = serverConfig[actionId];
+    if (!chunkInfo) {
+      throw new Error(`Could not find server action "${actionId}" in the server config.`);
+    }
 
     // Load module into memory.
     await Promise.all(chunkInfo.chunks.map((chunk) => globalThis.__webpack_chunk_load__(chunk)));
 
     // Import module.
     const mod: any = globalThis.__webpack_require__(chunkInfo.id);
-    const fn = chunkInfo.name === '*' ? chunkInfo.name : mod[chunkInfo.name] || mod;
 
-    if (!fn) {
+    let fn: ((...args: unknown[]) => unknown) | undefined;
+    if (mod == null || (typeof mod !== 'object' && typeof mod !== 'function')) {
+      fn = undefined;
+    } else if (chunkInfo.name === '*' || chunkInfo.name === '') {
+      fn = mod.__esModule === true && Object.hasOwn(mod, 'default') ? mod.default : mod;
+    } else if (Object.hasOwn(mod, chunkInfo.name)) {
+      fn = mod[chunkInfo.name];
+    } else {
+      fn = undefined;
+    }
+
+    if (typeof fn !== 'function') {
       throw new Error(
         `Could not find server action: ${actionId}. Module: ${JSON.stringify(chunkInfo, null, 2)}`
       );
     }
 
-    return renderWithContextWithAction(context, fn, args);
+    return renderWithContextWithAction(context, fn, actionArgs);
+  } else {
+    // method === 'GET'
+    return renderWithContext(context, input, decodedBody);
   }
-
-  // method === 'GET'
-  return renderWithContext(context, input, decodedBody);
 }
 
 // TODO is this correct? better to use a library?
@@ -273,7 +296,7 @@ const streamToString = async (stream: ReadableStream): Promise<string> => {
     result = await reader.read();
     if (result.value) {
       if (!(result.value instanceof Uint8Array)) {
-        throw new Error('Unexepected buffer type');
+        throw new Error('Unexpected buffer type');
       }
       outs.push(decoder.decode(result.value, { stream: true }));
     }

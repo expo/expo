@@ -25,7 +25,7 @@ export const GridItem = ({
     )}
     isStyled>
     <Icon title={title} image={image} />
-    <RawH4 className="!mt-1 text-center">{title}</RawH4>
+    <RawH4 className="mt-1! text-center">{title}</RawH4>
     {(protocol || []).length > 0 && (
       <CALLOUT
         theme="secondary"

@@ -15,7 +15,16 @@ import type { DefineFn, RequireFn } from '../require';
 jest.unmock('fs');
 jest.unmock('resolve-from');
 
-type RuntimeGlobal = object;
+type RuntimeGlobal = {
+  __REACT_DEVTOOLS_GLOBAL_HOOK__?: any;
+  // Metro installs its module-system globals (e.g. `__d`, `__r`) under dynamic,
+  // prefix-derived keys, so allow arbitrary string indexing.
+  [key: string]: any;
+};
+
+declare const global: {
+  __REACT_DEVTOOLS_GLOBAL_HOOK__?: any;
+};
 
 /**
  * A runtime that combines Metro's module system, a React renderer
@@ -45,13 +54,14 @@ export class Runtime {
    * The instance of React running in this runtime. Conceptually equivalent to
    * require('react').
    */
-  React: typeof import('react');
+  // Assigned synchronously inside the `jest.isolateModules` callback in the constructor.
+  React!: typeof import('react');
 
   /**
    * The React renderer running in this runtime. Conceptually equivalent to
    * require('react-test-renderer').
    */
-  renderer: typeof import('react-test-renderer');
+  renderer!: typeof import('react-test-renderer');
 
   /**
    * Jest mock functions used as event handlers.
@@ -66,12 +76,12 @@ export class Runtime {
     onFullReload: jest.fn(),
 
     /**
-     * Called when Fast Refresh has occured.
+     * Called when Fast Refresh has occurred.
      */
     onFastRefresh: jest.fn(),
   };
 
-  #reactRefreshRuntime: typeof import('react-refresh/runtime');
+  #reactRefreshRuntime!: typeof import('react-refresh/runtime');
   #global: RuntimeGlobal = {};
   #globalPrefix: string = '';
 
@@ -90,7 +100,6 @@ export class Runtime {
 
       // Associate the renderer instance with this runtime's global object.
       // NOTE: Strictly speaking, this is an implementation detail of React.
-      // @ts-expect-error
       global.__REACT_DEVTOOLS_GLOBAL_HOOK__ = this.#global.__REACT_DEVTOOLS_GLOBAL_HOOK__;
       this.renderer = require('react-test-renderer');
       delete global.__REACT_DEVTOOLS_GLOBAL_HOOK__;
@@ -140,7 +149,7 @@ export const moduleSystemCode = (() => {
 export const createModuleSystem =
   // eslint-disable-next-line no-new-func
   new Function('global', '__DEV__', '__METRO_GLOBAL_PREFIX__', moduleSystemCode) as unknown as (
-    RuntimeGlobal,
-    boolean,
-    string
+    global: RuntimeGlobal,
+    __DEV__: boolean,
+    __METRO_GLOBAL_PREFIX__: string
   ) => any;

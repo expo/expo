@@ -1,12 +1,9 @@
 import { createHash } from 'crypto';
 import { createReadStream } from 'fs';
 import fs from 'fs/promises';
-import pLimit from 'p-limit';
 import path from 'path';
 import { pipeline, type Readable } from 'stream';
 
-import { FileHookTransform } from './FileHookTransform';
-import { ReactImportsPatchTransform } from './ReactImportsPatcher';
 import type {
   DebugInfoDir,
   DebugInfoFile,
@@ -16,13 +13,18 @@ import type {
   HashResultContents,
   HashResultDir,
   HashResultFile,
+  HashResultPackage,
   HashSource,
   HashSourceContents,
+  HashSourcePackage,
   NormalizedOptions,
 } from '../Fingerprint.types';
+import { createLimiter, type Limiter } from '../utils/Concurrency';
 import { isIgnoredPathWithMatchObjects, toPosixPath } from '../utils/Path';
 import { nonNullish } from '../utils/Predicates';
 import { profile } from '../utils/Profile';
+import { FileHookTransform } from './FileHookTransform';
+import { ReactImportsPatchTransform } from './ReactImportsPatcher';
 
 /**
  * Create a `Fingerprint` from `HashSources` array
@@ -32,7 +34,7 @@ export async function createFingerprintFromSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<Fingerprint> {
-  const limiter = pLimit(options.concurrentIoLimit);
+  const limiter = createLimiter(options.concurrentIoLimit);
   const fingerprintSources = await Promise.all(
     sources.map((source) => createFingerprintSourceAsync(source, limiter, projectRoot, options))
   );
@@ -58,7 +60,7 @@ export async function createFingerprintFromSourcesAsync(
  */
 export async function createFingerprintSourceAsync(
   source: HashSource,
-  limiter: pLimit.Limit,
+  limiter: Limiter,
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<FingerprintSource> {
@@ -77,6 +79,9 @@ export async function createFingerprintSourceAsync(
         `createDirHashResultsAsync(${source.filePath})`
       )(source.filePath, limiter, projectRoot, options);
       break;
+    case 'package':
+      result = await createPackageHashResultsAsync(source, options);
+      break;
     default:
       throw new Error('Unsupported source type');
   }
@@ -93,7 +98,7 @@ export async function createFingerprintSourceAsync(
  */
 export async function createFileHashResultsAsync(
   filePath: string,
-  limiter: pLimit.Limit,
+  limiter: Limiter,
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<HashResultFile | null> {
@@ -191,7 +196,7 @@ export async function createFileHashResultsAsync(
  */
 export async function createDirHashResultsAsync(
   dirPath: string,
-  limiter: pLimit.Limit,
+  limiter: Limiter,
   projectRoot: string,
   options: NormalizedOptions,
   depth: number = 0
@@ -288,6 +293,33 @@ export async function createContentsHashResultsAsync(
 }
 
 /**
+ * Create a `HashResult` for a package from its embedded `name` and `version`.
+ * The sourcer reads these from the `package.json`, so the hash depends on the package identity
+ * rather than its resolved path or unrelated contents.
+ * Returns null when the package is ignored.
+ */
+export async function createPackageHashResultsAsync(
+  source: HashSourcePackage,
+  options: NormalizedOptions
+): Promise<HashResultPackage | null> {
+  if (isIgnoredPathWithMatchObjects(source.filePath, options.ignorePathMatchObjects)) {
+    return null;
+  }
+
+  const { name, version } = source;
+  const hex = createHash(options.hashAlgorithm)
+    .update(JSON.stringify({ name, version }))
+    .digest('hex');
+  const debugInfo = options.debug ? { path: source.filePath, name, version, hash: hex } : undefined;
+  return {
+    type: 'package',
+    id: createSourceId(source),
+    hex,
+    ...(debugInfo ? { debugInfo } : undefined),
+  };
+}
+
+/**
  * Create id from given source
  */
 export function createSourceId(source: HashSource): string {
@@ -298,6 +330,8 @@ export function createSourceId(source: HashSource): string {
       return source.overrideHashKey ?? source.filePath;
     case 'dir':
       return source.overrideHashKey ?? source.filePath;
+    case 'package':
+      return source.overrideHashKey ?? `${source.name}@${source.version}`;
     default:
       throw new Error('Unsupported source type');
   }

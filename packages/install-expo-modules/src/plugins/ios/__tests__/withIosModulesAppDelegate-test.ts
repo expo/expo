@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { getLatestSdkVersion, getSdkVersion } from '../../../utils/expoVersionMappings';
+import { getSdkVersion } from '../../../utils/expoVersionMappings';
 import { updateVirtualMetroEntryIos } from '../../cli/withCliIntegration';
 import {
   updateModulesAppDelegateObjcHeader,
@@ -12,13 +12,27 @@ import {
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 
 describe(updateModulesAppDelegateObjcHeader, () => {
+  it('should migrate from react-native@>=0.83.0 AppDelegate.swift', async () => {
+    const [rawContents, expectContents] = await Promise.all([
+      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn083.swift'), 'utf8'),
+      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn083-updated.swift'), 'utf8'),
+    ]);
+
+    const sdkVersion = getSdkVersion('0.83.0');
+    const contents = updateModulesAppDelegateSwift(rawContents, sdkVersion);
+    expect(contents).toEqual(expectContents);
+    // Try it twice...
+    const nextContents = updateModulesAppDelegateSwift(contents, sdkVersion);
+    expect(nextContents).toEqual(expectContents);
+  });
+
   it('should migrate from react-native@>=0.79.0 AppDelegate.swift', async () => {
     const [rawContents, expectContents] = await Promise.all([
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn079.swift'), 'utf8'),
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn079-updated.swift'), 'utf8'),
     ]);
 
-    const sdkVersion = getLatestSdkVersion().sdkVersion;
+    const sdkVersion = getSdkVersion('0.79.0');
     const contents = updateModulesAppDelegateSwift(rawContents, sdkVersion);
     expect(contents).toEqual(expectContents);
     // Try it twice...

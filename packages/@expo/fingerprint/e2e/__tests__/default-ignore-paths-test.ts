@@ -2,9 +2,9 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
-import rimraf from 'rimraf';
 
 import { createFingerprintAsync } from '../../src/Fingerprint';
+import { E2E_EXPECTED_3RD_PARTY_MODULES, E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
@@ -22,26 +22,32 @@ describe('default template ignore paths', () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'default', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await fs.rm(projectRoot, { force: true, recursive: true });
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `default@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should not contain non-native node modules', async () => {
     const fingerprint = await createFingerprintAsync(projectRoot);
     for (const source of fingerprint.sources) {
-      if (source.type === 'contents') {
+      // `contents` and `package` sources are hashed by value/identity, not by including a module's
+      // files, so they're not subject to this check (e.g. the `react-native` package source).
+      if (source.type === 'contents' || source.type === 'package') {
         continue;
       }
       const { filePath } = source;
@@ -56,6 +62,11 @@ describe('default template ignore paths', () => {
       if (moduleName === 'expo' || moduleName === '@expo' || moduleName.startsWith('expo-')) {
         continue;
       }
+
+      if (E2E_EXPECTED_3RD_PARTY_MODULES.includes(moduleName)) {
+        continue;
+      }
+
       expect(moduleName).toMatch(/^(react-native-)/);
     }
   });
@@ -89,16 +100,20 @@ macosDescribe('CocoaPods generated files', () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'default', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await fs.rm(projectRoot, { force: true, recursive: true });
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `default@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
     const appJsonPath = path.join(projectRoot, 'app.json');
     const config = JSON.parse(await fs.readFile(appJsonPath, 'utf8'));
     config.expo.ios.bundleIdentifier = 'com.example.test';
@@ -114,7 +129,7 @@ ios/**/*
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should ignore pod install generated files', async () => {

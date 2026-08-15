@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicNumberType<NumberType>: AnyDynamicType {
   let numberType: NumberType.Type
 
@@ -12,14 +14,23 @@ internal struct DynamicNumberType<NumberType>: AnyDynamicType {
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    if jsValue.kind == .number {
+    if jsValue.isNumber() {
+      // Fast paths for common types avoid expensive `as? any BinaryFloatingPoint` conformance lookups.
+      let double = jsValue.getDouble()
+      if NumberType.self == Double.self {
+        return double
+      }
+      if NumberType.self == Int.self {
+        return Int(double.rounded())
+      }
+      if NumberType.self == Float.self {
+        return Float(double)
+      }
       if let FloatingPointType = NumberType.self as? any BinaryFloatingPoint.Type {
-        return FloatingPointType.init(jsValue.getDouble())
+        return FloatingPointType.init(double)
       }
       if let IntegerType = NumberType.self as? any BinaryInteger.Type {
-        // JS stores all numbers as doubles, so using `getDouble` makes more sense
-        // than `getInt` and lets us do schoolbook rounding instead of floor.
-        return IntegerType.init(jsValue.getDouble().rounded())
+        return IntegerType.init(double.rounded())
       }
     }
     throw Conversions.ConversionToNativeFailedException((kind: jsValue.kind, nativeType: numberType))
@@ -57,6 +68,16 @@ internal struct DynamicNumberType<NumberType>: AnyDynamicType {
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    // Fast paths for common types avoid expensive `as? any BinaryFloatingPoint` conformance lookups.
+    if let value = value as? Double {
+      return .number(value)
+    }
+    if let value = value as? Int {
+      return .number(Double(value))
+    }
+    if let value = value as? Float {
+      return .number(Double(value))
+    }
     if let value = value as? any BinaryFloatingPoint {
       return .number(Double(value))
     }

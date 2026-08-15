@@ -27,7 +27,7 @@ function startUpdatesServerIfNeeded() {
     echo "Updates server already running with PID $UPDATES_SERVER_PID"
   else
     echo "Starting updates server"
-    npx ts-node ./maestro/updates-server/start.ts >/dev/null 2>&1 &
+    pnpm ts-node ./maestro/updates-server/start.ts >/dev/null 2>&1 &
   fi
 }
 
@@ -35,7 +35,7 @@ function cleanup()
 {
   echo 'Cleaning up...'
   killUpdatesServerIfNeeded
-  yarn maestro:$MAESTRO_PLATFORM:uninstall || true
+  pnpm maestro:$MAESTRO_PLATFORM:uninstall || true
 }
 
 # Fail if anything errors
@@ -57,4 +57,5 @@ function beforeAll() {
 
 beforeAll
 
-maestro test $MAESTRO_TEST_SUITE
+# Without -p, maestro runs on any connected device and ignores the platform argument
+maestro -p "$MAESTRO_PLATFORM" test $MAESTRO_TEST_SUITE

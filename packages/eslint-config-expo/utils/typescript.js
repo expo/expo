@@ -47,6 +47,10 @@ module.exports = {
         // undefined variables, including types
         'no-undef': 'off',
 
+        // This conflicts with TypeScript's exhaustive branch checks, in case the return type allows `return;` via `undefined`
+        // "Function lacks ending return statement and ..."
+        'no-useless-return': 'off',
+
         // Prevent use of CJS `require` syntax unless importing assets to align with Metro behavior.
         '@typescript-eslint/no-require-imports': [
           'warn',

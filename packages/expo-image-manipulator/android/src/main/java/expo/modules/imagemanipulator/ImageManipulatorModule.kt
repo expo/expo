@@ -1,8 +1,5 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.imagemanipulator
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
@@ -12,8 +9,8 @@ import expo.modules.imagemanipulator.transformers.CropTransformer
 import expo.modules.imagemanipulator.transformers.FlipTransformer
 import expo.modules.imagemanipulator.transformers.ResizeTransformer
 import expo.modules.imagemanipulator.transformers.RotateTransformer
+import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface.ResultListener
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.functions.Coroutine
@@ -31,53 +28,58 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class ImageManipulatorModule : Module() {
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
-  private fun createManipulatorContext(url: Uri): ImageManipulatorContext {
+  private fun createManipulatorContext(url: Uri, options: ImageLoadOptions? = null): ImageManipulatorContext {
     val loader = suspend {
-      val imageLoader = appContext.imageLoader
+      val imageLoader = appContext.service<ImageLoaderInterface>()
         ?: throw ImageLoaderNotFoundException()
+      val maxWidth = options?.maxWidth
+      val maxHeight = options?.maxHeight
 
-      suspendCancellableCoroutine { continuation ->
-        imageLoader.loadImageForManipulationFromURL(
-          url.toString(),
-          object : ResultListener {
-            override fun onSuccess(bitmap: Bitmap) {
-              continuation.resume(bitmap)
-            }
-
-            override fun onFailure(cause: Throwable?) {
-              continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
-            }
+      val bitmap = suspendCancellableCoroutine { continuation ->
+        val resultListener = object : ResultListener {
+          override fun onSuccess(bitmap: Bitmap) {
+            continuation.resume(bitmap)
           }
-        )
+
+          override fun onFailure(cause: Throwable?) {
+            continuation.resumeWithException(ImageLoadingFailedException(url.toString(), cause.toCodedException()))
+          }
+        }
+        if (maxWidth != null || maxHeight != null) {
+          imageLoader.loadImageForManipulationFromURL(url.toString(), maxWidth, maxHeight, resultListener)
+        } else {
+          imageLoader.loadImageForManipulationFromURL(url.toString(), resultListener)
+        }
       }
+      // Guarantee the bounds regardless of how the loader implementation decodes the image.
+      downscaleIfExceedsBounds(bitmap, maxWidth, maxHeight)
     }
 
     val task = ManipulatorTask(appContext.backgroundCoroutineScope, loader)
-    return ImageManipulatorContext(runtimeContext, task)
+    return ImageManipulatorContext(runtime, task)
   }
 
-  private fun createManipulatorContext(bitmap: Bitmap): ImageManipulatorContext {
-    val task = ManipulatorTask(appContext.backgroundCoroutineScope) { bitmap }
-    return ImageManipulatorContext(runtimeContext, task)
+  private fun createManipulatorContext(bitmap: Bitmap, options: ImageLoadOptions? = null): ImageManipulatorContext {
+    val task = ManipulatorTask(appContext.backgroundCoroutineScope) {
+      downscaleIfExceedsBounds(bitmap, options?.maxWidth, options?.maxHeight)
+    }
+    return ImageManipulatorContext(runtime, task)
   }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoImageManipulator")
 
-    Function("manipulate") { url: EitherOfThree<Uri, SharedRef<Bitmap>, SharedRef<Drawable>> ->
+    Function("manipulate") { url: EitherOfThree<Uri, SharedRef<Bitmap>, SharedRef<Drawable>>, options: ImageLoadOptions? ->
       return@Function if (url.`is`(Uri::class)) {
-        createManipulatorContext(url.get(Uri::class))
+        createManipulatorContext(url.get(Uri::class), options)
       } else if (url.`is`(toKClass<SharedRef<Bitmap>>())) {
         val bitmap = url.get(toKClass<SharedRef<Bitmap>>()).ref
-        createManipulatorContext(bitmap)
+        createManipulatorContext(bitmap, options)
       } else {
         val drawable = url.get(toKClass<SharedRef<Drawable>>()).ref
         val bitmap = (drawable as? BitmapDrawable)?.bitmap
           ?: throw Exceptions.IllegalArgument("The drawable cannot be converted to a bitmap")
-        createManipulatorContext(bitmap)
+        createManipulatorContext(bitmap, options)
       }
     }
 
@@ -108,7 +110,7 @@ class ImageManipulatorModule : Module() {
 
       AsyncFunction("renderAsync") Coroutine { context: ImageManipulatorContext ->
         val image = context.render()
-        ImageRef(image, runtimeContext)
+        ImageRef(image, runtime)
       }
     }
 
@@ -118,7 +120,7 @@ class ImageManipulatorModule : Module() {
 
       AsyncFunction("saveAsync") Coroutine { image: ImageRef, options: ManipulateOptions? ->
         val options = options ?: ManipulateOptions()
-        val path = FileUtils.generateRandomOutputPath(context, options.format)
+        val path = FileUtils.generateRandomOutputPath(appContext.cacheDirectory, options.format)
         val compression = (options.compress * 100).toInt()
         val resultBitmap = image.ref
 

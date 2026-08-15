@@ -1,4 +1,4 @@
-import { ExpoModuleConfig } from './ExpoModuleConfig';
+import type { ExpoModuleConfig } from './ExpoModuleConfig';
 
 type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 
@@ -31,6 +31,7 @@ export interface ModuleAndroidProjectInfo {
   name: string;
   sourceDir: string;
   modules: ModuleAndroidModuleInfo[];
+  services: string[];
   packages: string[];
   publication?: AndroidPublication;
   aarProjects?: AndroidGradleAarProjectDescriptor[];
@@ -44,7 +45,10 @@ export interface ModuleAndroidModuleInfo {
 
 export interface ModuleAndroidPluginInfo {
   id: string;
-  sourceDir: string;
+  group: string;
+  sourceDir?: string;
+  version?: string;
+  applyToRootProject?: boolean;
 }
 
 export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDescriptor {
@@ -83,6 +87,8 @@ export interface ModuleDescriptorDevTools {
   packageName: string;
   packageRoot: string;
   webpageRoot?: string;
+  bannerTitle?: boolean | string;
+  serverEntryPoint?: string;
   cliExtensions?: {
     description: string;
     commands: {
@@ -124,7 +130,13 @@ export interface AndroidGradlePluginDescriptor {
   /**
    * Relative path to the gradle plugin directory
    */
-  sourceDir: string;
+  sourceDir?: string;
+
+  /**
+   * Version of a published gradle plugin.
+   * Ignored when `sourceDir` is declared.
+   */
+  version?: string;
 
   /**
    * Whether to apply the plugin to the root project
@@ -243,10 +255,16 @@ export type RawAndroidProjectConfig = {
    * Won't be run if the publication is not defined.
    */
   shouldUsePublicationScriptPath?: string;
+
   /**
-   * Names of the modules to be linked in the project.
+   * List of modules provided by the package.
    */
   modules?: (string | RawAndroidModuleConfig)[];
+
+  /**
+   * Full qualified names of Android services (`expo.modules.kotlin.services.Service`) provided by the package.
+   */
+  services?: string[];
 
   /**
    * Prebuilded AAR projects.
@@ -306,6 +324,17 @@ export interface RawExpoModuleConfig {
      * The webpage root directory for Expo CLI DevTools to serve the web resources. Only set if the module has a web interface.
      */
     webpageRoot?: string;
+    /**
+     * The title to show in the Expo CLI startup banner. Defaults to the package name if passing `true`,
+     * otherwise the banner is not shown.
+     */
+    bannerTitle?: string | boolean;
+    /**
+     * A package-local JavaScript file default-exporting a `handler(request)` function that
+     * handles requests to the plugin endpoint and optional `webSocketHandlers` for WebSocket connections.
+     * Runs in the Expo CLI Node.js process.
+     */
+    serverEntryPoint?: string;
     /**
      * Cli extension config for the module.
      */

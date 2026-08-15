@@ -1,67 +1,84 @@
 import { requireNativeView } from 'expo';
-import { NativeSyntheticEvent } from 'react-native';
+import { useState, type ComponentType, type ReactNode } from 'react';
+import { type NativeSyntheticEvent } from 'react-native';
 
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type PresentationDetent = 'medium' | 'large' | number;
-export type PresentationDragIndicatorVisibility = 'automatic' | 'visible' | 'hidden';
+export interface BottomSheetProps extends CommonViewModifierProps {
+  /**
+   * The sheet's content, mounted while presented and unmounted after dismiss. Wrap it in `Group`
+   * to apply presentation modifiers.
+   */
+  children: ReactNode;
+  /**
+   * A view the sheet is anchored to, for example the `Button` that opens it. Rendered in place and
+   * kept mounted, so presenting the sheet doesn't shift surrounding layout. Optional.
+   */
+  anchor?: ReactNode;
+  /**
+   * Whether the `BottomSheet` is presented.
+   */
+  isPresented: boolean;
+  /**
+   * Callback function that is called when the `BottomSheet` presented state changes.
+   */
+  onIsPresentedChange: (isPresented: boolean) => void;
+  /**
+   * Callback function that is called after the `BottomSheet` has been fully dismissed.
+   */
+  onDismiss?: () => void;
+  /**
+   * When `true`, the sheet will automatically size itself to fit its content.
+   * This sets the presentation detent to match the height of the children.
+   * @default false
+   */
+  fitToContents?: boolean;
+}
 
-export type BottomSheetProps = {
-  /**
-   * The children of the `BottomSheet` component.
-   */
-  children: any;
-  /**
-   * Whether the `BottomSheet` is opened.
-   */
-  isOpened: boolean;
-  /**
-   * Callback function that is called when the `BottomSheet` is opened.
-   */
-  onIsOpenedChange: (isOpened: boolean) => void;
-  /**
-   * Setting it to `true` will disable the interactive dismiss of the `BottomSheet`.
-   */
-  interactiveDismissDisabled?: boolean;
-  /**
-   * Array of presentation detents for the `BottomSheet`.
-   * Controls the heights that the sheet can snap to.
-   * - `medium` - Medium height sheet
-   * - `large` - Full height sheet
-   * - number (0-1) - Fraction of screen height (for example, 0.4 equals to 40% of screen)
-   */
-  presentationDetents?: PresentationDetent[];
-  /**
-   * Controls the visibility of the drag indicator for the `BottomSheet`.
-   * - `automatic` - System decides based on context (default)
-   * - `visible` - Always show the drag indicator
-   * - `hidden` - Never show the drag indicator
-   */
-  presentationDragIndicator?: PresentationDragIndicatorVisibility;
-} & CommonViewModifierProps;
-
-type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsOpenedChange'> & {
-  onIsOpenedChange: (event: NativeSyntheticEvent<{ isOpened: boolean }>) => void;
+type NativeBottomSheetProps = Omit<
+  BottomSheetProps,
+  'onIsPresentedChange' | 'onDismiss' | 'anchor'
+> & {
+  onIsPresentedChange: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
+  onDismiss: (event: NativeSyntheticEvent<object>) => void;
 };
 
-const BottomSheetNativeView: React.ComponentType<NativeBottomSheetProps> = requireNativeView(
+const BottomSheetNativeView: ComponentType<NativeBottomSheetProps> = requireNativeView(
   'ExpoUI',
   'BottomSheetView'
 );
 
-function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-    onIsOpenedChange: ({ nativeEvent: { isOpened } }) => {
-      props?.onIsOpenedChange?.(isOpened);
-    },
-  };
+/**
+ * `BottomSheet` presents content from the bottom of the screen.
+ */
+function BottomSheet(props: BottomSheetProps) {
+  const { modifiers, onIsPresentedChange, onDismiss, anchor, children, ...restProps } = props;
+  const [isMounted, setIsMounted] = useState(props.isPresented);
+
+  if (props.isPresented && !isMounted) {
+    setIsMounted(true);
+  }
+
+  // The anchor stays mounted so it's always visible; the content mounts on present and unmounts
+  // after dismiss.
+  return (
+    <BottomSheetNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      onIsPresentedChange={({ nativeEvent: { isPresented } }) => {
+        onIsPresentedChange?.(isPresented);
+      }}
+      onDismiss={() => {
+        setIsMounted(false);
+        onDismiss?.();
+      }}>
+      {anchor != null ? <Slot name="anchor">{anchor}</Slot> : null}
+      {isMounted ? children : null}
+    </BottomSheetNativeView>
+  );
 }
 
-export function BottomSheet(props: BottomSheetProps) {
-  return <BottomSheetNativeView {...transformBottomSheetProps(props)} />;
-}
+export { BottomSheet };

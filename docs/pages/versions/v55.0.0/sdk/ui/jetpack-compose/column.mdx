@@ -1,0 +1,48 @@
+---
+title: Column
+description: A Jetpack Compose Column component for placing children vertically.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Column matches the official Jetpack Compose [Column](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Column) API and places children vertically with configurable arrangement and alignment.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+`Column` places children vertically. Use `verticalArrangement` and `horizontalAlignment` to control spacing and alignment.
+
+```tsx ColumnExample.tsx
+import { Host, Column, Text } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth, paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function ColumnExample() {
+  return (
+    <Host matchContents>
+      <Column
+        verticalArrangement={{ spacedBy: 8 }}
+        horizontalAlignment="center"
+        modifiers={[fillMaxWidth(), paddingAll(16)]}>
+        <Text>First</Text>
+        <Text>Second</Text>
+        <Text>Third</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Column } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/column" apiName="Column" />

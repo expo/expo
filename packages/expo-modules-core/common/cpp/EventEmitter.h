@@ -6,6 +6,13 @@
 #include <list>
 #include <jsi/jsi.h>
 
+// Apple ships ExpoModulesJSI; non-Apple platforms (Android) don't, so the
+// EventEmitter native state falls back to inheriting from `jsi::NativeState`
+// directly when this header isn't available.
+#if __has_include(<ExpoModulesJSI/NativeState.h>)
+#include <ExpoModulesJSI/NativeState.h>
+#endif
+
 namespace jsi = facebook::jsi;
 
 namespace expo::EventEmitter {
@@ -68,14 +75,29 @@ private:
   void call(jsi::Runtime &runtime, const std::string& eventName, const jsi::Object &thisObject, const jsi::Value *args, size_t count) noexcept;
 };
 
+// Apple platforms ship `expo::NativeState`, which carries an opaque context pointer
+// (used to round-trip through Swift's `JavaScriptNativeState`). On other platforms
+// the native state inherits directly from `jsi::NativeState`; the context args
+// passed to the constructor are ignored there.
+#if __has_include(<ExpoModulesJSI/NativeState.h>)
+using NativeStateBase = expo::NativeState;
+#else
+using NativeStateBase = facebook::jsi::NativeState;
+#endif
+
 /**
  Class representing a native state of objects that emit events.
  */
-class JSI_EXPORT NativeState : public jsi::NativeState {
+class JSI_EXPORT NativeState : public NativeStateBase {
 public:
   using Shared = std::shared_ptr<NativeState>;
 
-  NativeState();
+  /**
+   The `context` and `contextDeallocator` are forwarded to `expo::NativeState`
+   on Apple platforms so the JS-side `getNativeState` can round-trip back to a
+   Swift wrapper. They are ignored on platforms without ExpoModulesJSI.
+   */
+  explicit NativeState(void *context = nullptr, void (*contextDeallocator)(void *) = nullptr);
   ~NativeState() override;
 
   /**
@@ -94,7 +116,12 @@ public:
  Emits an event with the given name and arguments to the emitter object.
  Does nothing if the given object is not an instance of the EventEmitter class.
  */
-void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments);
+void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments);
+
+/**
+ Same as above but takes a raw `jsi::Value` pointer and count.
+ */
+void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count);
 
 /**
  Gets `expo.EventEmitter` class from the given runtime.

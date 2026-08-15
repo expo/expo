@@ -1,14 +1,14 @@
-import { ModConfig } from '@expo/config-plugins';
-import JsonFile, { JSONObject } from '@expo/json-file';
+import type { ModConfig } from '@expo/config-plugins';
+import type { JSONObject } from '@expo/json-file';
+import JsonFile from '@expo/json-file';
+import { resolveFrom } from '@expo/require-utils';
 import deepMerge from 'deepmerge';
-import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 import semver from 'semver';
 import slugify from 'slugify';
 
-import {
+import type {
   AppJSONConfig,
   ConfigFilePaths,
   ExpoConfig,
@@ -72,13 +72,39 @@ function reduceExpoObject(config?: any): SplitConfigs | null {
  * @param projectRoot
  * @param exp
  */
-function getSupportedPlatforms(projectRoot: string): Platform[] {
+function getSupportedPlatforms(projectRoot: string, exp: Partial<ExpoConfig>): Platform[] {
   const platforms: Platform[] = [];
-  if (resolveFrom.silent(projectRoot, 'react-native')) {
+  if (resolveFrom(projectRoot, 'react-native/package.json')) {
     platforms.push('ios', 'android');
   }
-  if (resolveFrom.silent(projectRoot, 'react-dom')) {
+  if (resolveFrom(projectRoot, 'react-dom/package.json')) {
     platforms.push('web');
+  }
+  if (exp.experiments?.outOfTreePlatforms) {
+    if (resolveFrom(projectRoot, 'react-native-tvos/package.json')) {
+      platforms.push('tvos');
+    }
+    if (resolveFrom(projectRoot, 'react-native-macos/package.json')) {
+      platforms.push('macos');
+    }
+  }
+  return platforms;
+}
+
+/**
+ * Resolves the platforms a project targets, as configured or detected.
+ *
+ * @param projectRoot
+ * @param exp
+ */
+export function getPlatformsFromConfig(projectRoot: string, exp: Partial<ExpoConfig>): Platform[] {
+  let platforms =
+    (exp?.platforms as Platform[] | undefined) ?? getSupportedPlatforms(projectRoot, exp);
+  // TODO(@kitten): Update when XDL schema is modified
+  if (!exp.experiments?.outOfTreePlatforms) {
+    platforms = platforms.filter(
+      (platform) => platform === 'android' || platform === 'ios' || platform === 'web'
+    );
   }
   return platforms;
 }
@@ -160,7 +186,7 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
     }
 
     if (options.isPublicConfig) {
-      // TODD(EvanBacon): Drop plugins array after it's been resolved.
+      // TODO(EvanBacon): Drop plugins array after it's been resolved.
 
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
@@ -239,24 +265,14 @@ export function getConfigFilePaths(projectRoot: string): ConfigFilePaths {
   };
 }
 
+const DYNAMIC_CONFIG_EXTS = ['.ts', '.mts', '.cts', '.mjs', '.cjs', '.js'];
+
 function getDynamicConfigFilePath(projectRoot: string): string | null {
-  for (const fileName of ['app.config.ts', 'app.config.js']) {
-    const configPath = path.join(projectRoot, fileName);
-    if (fs.existsSync(configPath)) {
-      return configPath;
-    }
-  }
-  return null;
+  return resolveFrom(projectRoot, './app.config', { extensions: DYNAMIC_CONFIG_EXTS });
 }
 
 function getStaticConfigFilePath(projectRoot: string): string | null {
-  for (const fileName of ['app.config.json', 'app.json']) {
-    const configPath = path.join(projectRoot, fileName);
-    if (fs.existsSync(configPath)) {
-      return configPath;
-    }
-  }
-  return null;
+  return resolveFrom(projectRoot, './app.config.json') ?? resolveFrom(projectRoot, './app.json');
 }
 
 /**
@@ -483,10 +499,10 @@ function ensureConfigHasDefaultValues({
     if (!skipSDKVersionRequirement) throw error;
   }
 
-  let platforms = exp.platforms;
-  if (!platforms) {
-    platforms = getSupportedPlatforms(projectRoot);
-  }
+  // TODO(@kitten): Remove once platforms are updated in XDL schema
+  const platforms = getPlatformsFromConfig(projectRoot, exp) as NonNullable<
+    ExpoConfig['platforms']
+  >;
 
   return {
     exp: { ...expWithDefaults, sdkVersion, platforms },

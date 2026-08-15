@@ -2,7 +2,7 @@ import assert from 'assert';
 import { ExpoConfig } from 'expo/config';
 import { ConfigPlugin, createRunOncePlugin, InfoPlist, withInfoPlist } from 'expo/config-plugins';
 
-const pkg = require('expo-screen-orientation/package.json');
+const pkg = require('../../package.json');
 
 // This value must match the `EXDefaultScreenOrientationMask` string used in `expo-screen-orientation/ios/EXScreenOrientation/EXScreenOrientationViewController.m` (do not change).
 export const INITIAL_ORIENTATION_KEY = 'EXDefaultScreenOrientationMask';
@@ -25,11 +25,18 @@ interface ExpoConfigWithInitialOrientation extends ExpoConfig {
   initialOrientation?: OrientationMasks;
 }
 
-const withScreenOrientationViewController: ConfigPlugin<
-  {
-    initialOrientation?: keyof typeof OrientationLock;
-  } | void
-> = (config, { initialOrientation } = {}) => {
+export type Props = {
+  /**
+   * The iOS initial screen orientation. Accepts `DEFAULT`, `ALL`, `PORTRAIT`, `PORTRAIT_UP`, `PORTRAIT_DOWN`, `LANDSCAPE`, `LANDSCAPE_LEFT`, `LANDSCAPE_RIGHT`.
+   * @platform ios
+   */
+  initialOrientation?: keyof typeof OrientationLock;
+};
+
+const withScreenOrientationViewController: ConfigPlugin<Props | void> = (
+  config,
+  { initialOrientation } = {}
+) => {
   config = withInfoPlist(config, (config) => {
     const extendedConfig = {
       ...config,

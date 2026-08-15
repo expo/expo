@@ -2,6 +2,7 @@
 
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXUtilities.h>
+#import <React/RCTLog.h>
 
 @interface EXUtilities ()
 
@@ -69,55 +70,6 @@ EX_REGISTER_MODULE();
   }
 }
 
-// Copied from RN
-+ (BOOL)isMainQueue
-{
-  static void *mainQueueKey = &mainQueueKey;
-  static dispatch_once_t onceToken;
-  
-  dispatch_once(&onceToken, ^{
-    dispatch_queue_set_specific(dispatch_get_main_queue(),
-                                mainQueueKey, mainQueueKey, NULL);
-  });
-  
-  return dispatch_get_specific(mainQueueKey) == mainQueueKey;
-}
-
-// Copied from RN
-+ (void)unsafeExecuteOnMainQueueOnceSync:(dispatch_once_t *)onceToken block:(dispatch_block_t)block
-{
-  // The solution was borrowed from a post by Ben Alpert:
-  // https://benalpert.com/2014/04/02/dispatch-once-initialization-on-the-main-thread.html
-  // See also: https://www.mikeash.com/pyblog/friday-qa-2014-06-06-secrets-of-dispatch_once.html
-  if ([self isMainQueue]) {
-    dispatch_once(onceToken, block);
-  } else {
-    if (DISPATCH_EXPECT(*onceToken == 0L, NO)) {
-      dispatch_sync(dispatch_get_main_queue(), ^{
-        dispatch_once(onceToken, block);
-      });
-    }
-  }
-}
-
-// Copied from RN
-+ (CGFloat)screenScale
-{
-  static dispatch_once_t onceToken;
-  static CGFloat scale;
-  
-  [self unsafeExecuteOnMainQueueOnceSync:&onceToken block:^{
-#if TARGET_OS_IOS || TARGET_OS_TV
-    scale = [UIScreen mainScreen].scale;
-#elif TARGET_OS_OSX
-    scale = [NSScreen mainScreen].backingScaleFactor;
-#endif
-  }];
-  
-  return scale;
-}
-
-
 // Kind of copied from RN to make UIColor:(id)json work
 + (NSArray<NSNumber *> *)NSNumberArray:(id)json
 {
@@ -165,7 +117,7 @@ EX_REGISTER_MODULE();
     CGFloat b = (argb & 0xFF) / 255.0;
     return [UIColor colorWithRed:r green:g blue:b alpha:a];
   } else {
-    EXLogInfo(@"%@ cannot be converted to a UIColor", json);
+    RCTLogInfo(@"%@ cannot be converted to a UIColor", json);
     return nil;
   }
 }
@@ -186,12 +138,12 @@ EX_REGISTER_MODULE();
     });
     NSDate *date = [formatter dateFromString:json];
     if (!date) {
-      EXLogError(@"JSON String '%@' could not be interpreted as a date. "
+      RCTLogError(@"JSON String '%@' could not be interpreted as a date. "
                   "Expected format: YYYY-MM-DD'T'HH:mm:ss.sssZ", json);
     }
     return date;
   } else if (json) {
-    EXLogError(json, @"a date");
+    RCTLogError(json, @"a date");
   }
   return nil;
 }
@@ -228,17 +180,3 @@ EX_REGISTER_MODULE();
 }
 
 @end
-
-UIApplication * EXSharedApplication(void)
-{
-  if ([[[[NSBundle mainBundle] bundlePath] pathExtension] isEqualToString:@"appex"]) {
-    return nil;
-  }
-  return [[UIApplication class] performSelector:@selector(sharedApplication)];
-}
-
-NSError *EXErrorWithMessage(NSString *message)
-{
-  NSDictionary<NSString *, id> *errorInfo = @{NSLocalizedDescriptionKey: message};
-  return [[NSError alloc] initWithDomain:@"EXModulesErrorDomain" code:0 userInfo:errorInfo];
-}

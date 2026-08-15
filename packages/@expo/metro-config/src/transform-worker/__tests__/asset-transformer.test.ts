@@ -1,12 +1,17 @@
 import * as generator from '@babel/generator';
-import { getAssetData } from '@expo/metro/metro/Assets';
+import { getAssetData, type AssetData } from '@expo/metro/metro/Assets';
 import * as fs from 'fs';
 import { vol } from 'memfs';
 
 import { transform } from '../asset-transformer';
 
-function getMockImageDev() {
+// Fixtures stand in for the resolved `getAssetData` value. They include the Expo-only
+// `fileHashes` field (normally injected downstream) to exercise that code path, so the
+// returned object is cast to the Metro `AssetData` type the mock is typed against.
+function getMockImageDev(): AssetData {
   return {
+    __packager_asset: true,
+    fileSystemLocation: '/root/local',
     httpServerLocation: '/assets/?unstable_path=.%2Fassets%2Fimages',
     width: 1024,
     height: 1024,
@@ -14,23 +19,27 @@ function getMockImageDev() {
     hash: '4e3f888fc8475f69fd5fa32f1ad5216a',
     name: 'icon',
     type: 'png',
+    files: [],
     fileHashes: ['4e3f888fc8475f69fd5fa32f1ad5216a'],
-  };
+  } as AssetData;
 }
-function getMockFontDev() {
+function getMockFontDev(): AssetData {
   return {
     __packager_asset: true,
+    fileSystemLocation: '/root/local',
     httpServerLocation: '/assets/?unstable_path=.%2Fassets%2Ffonts',
     scales: [1],
     hash: '49a79d66bdea2debf1832bf4d7aca127',
     name: 'SpaceMono-Regular',
     type: 'ttf',
+    files: [],
     fileHashes: ['49a79d66bdea2debf1832bf4d7aca127'],
-  };
+  } as AssetData;
 }
-function getMockImageExport() {
+function getMockImageExport(): AssetData {
   return {
     __packager_asset: true,
+    fileSystemLocation: '/root/local',
     httpServerLocation: '/assets/assets/images',
     width: 1024,
     height: 1024,
@@ -38,8 +47,9 @@ function getMockImageExport() {
     hash: '4e3f888fc8475f69fd5fa32f1ad5216a',
     name: 'icon',
     type: 'png',
+    files: [],
     fileHashes: ['4e3f888fc8475f69fd5fa32f1ad5216a'],
-  };
+  } as AssetData;
 }
 
 jest.mock('fs');
@@ -55,7 +65,9 @@ beforeEach(() => {
 const EXPORT_PUBLIC_PATH = '/assets?export_path=/assets';
 
 it(`parses asset as normal module in client environment`, async () => {
-  jest.mocked(getAssetData).mockResolvedValueOnce({ files: [], fileHashes: [] });
+  jest
+    .mocked(getAssetData)
+    .mockResolvedValueOnce({ files: [], fileHashes: [] } as unknown as AssetData);
   const results = await transform(
     {
       filename: '/root/local/foo.png',
@@ -99,7 +111,10 @@ it(`parses asset for dom components export`, async () => {
     "module.exports = {
       uri: "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png",
       width: 1024,
-      height: 1024
+      height: 1024,
+      toString() {
+        return this.uri;
+      }
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
@@ -124,7 +139,10 @@ it(`parses asset as string in client environment for web`, async () => {
     "module.exports = {
       uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
       width: 1024,
-      height: 1024
+      height: 1024,
+      toString() {
+        return this.uri;
+      }
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
@@ -170,7 +188,10 @@ it(`parses asset as string in client environment for web during export`, async (
     "module.exports = {
       uri: "/assets/assets/images/icon.4e3f888fc8475f69fd5fa32f1ad5216a.png",
       width: 1024,
-      height: 1024
+      height: 1024,
+      toString() {
+        return this.uri;
+      }
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
@@ -194,13 +215,15 @@ it(`parses asset as string in react server environment for web`, async () => {
     []
   );
   expect(getAssetData).toHaveBeenCalledTimes(1);
-  expect(astString(results.ast)).toMatchInlineSnapshot(`
+  const asset = astString(results.ast);
+  expect(asset).toMatchInlineSnapshot(`
     "module.exports = {
       uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
       width: 1024,
       height: 1024
     };"
   `);
+  expect(asset).not.toContain('toString');
   expect(results.reactClientReference).toBe('file:///root/local/foo.png');
 });
 

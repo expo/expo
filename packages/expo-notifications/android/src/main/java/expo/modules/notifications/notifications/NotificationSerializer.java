@@ -6,6 +6,8 @@ import static expo.modules.notifications.notifications.model.NotificationRespons
 
 import android.os.Bundle;
 
+import expo.modules.notifications.service.NotificationsService;
+
 import androidx.annotation.Nullable;
 
 import com.google.firebase.messaging.RemoteMessage;
@@ -206,7 +208,7 @@ public class NotificationSerializer {
     serializedTrigger.putString("channelId", extras.getString("channelId"));
 
     Bundle serializedRequest = new Bundle();
-    serializedRequest.putString("identifier", extras.getString("google.message_id"));
+    serializedRequest.putString("identifier", extras.getString(NotificationsService.GOOGLE_MESSAGE_ID_KEY));
     serializedRequest.putBundle("trigger", serializedTrigger);
     serializedRequest.putBundle("content", serializedContent);
 

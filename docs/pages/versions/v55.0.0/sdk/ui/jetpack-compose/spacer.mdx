@@ -1,0 +1,68 @@
+---
+title: Spacer
+description: A Jetpack Compose Spacer component for adding flexible space between elements.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Spacer matches the official Jetpack Compose [Spacer](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Spacer) API and is used to add flexible or fixed-size space between elements in a layout.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Spacer with weight
+
+Use the `weight()` modifier to make the spacer fill available space proportionally within a `Row` or `Column`.
+
+```tsx SpacerWeightExample.tsx
+import { Host, Row, Spacer, Text } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth, weight } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function SpacerWeightExample() {
+  return (
+    <Host matchContents>
+      <Row modifiers={[fillMaxWidth()]}>
+        <Text>Left</Text>
+        <Spacer modifiers={[weight(1)]} />
+        <Text>Right</Text>
+      </Row>
+    </Host>
+  );
+}
+```
+
+### Spacer with fixed size
+
+Use a `height` or `width` modifier to create a spacer with a fixed dimension.
+
+```tsx SpacerFixedSizeExample.tsx
+import { Host, Column, Spacer, Text } from '@expo/ui/jetpack-compose';
+import { height } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function SpacerFixedSizeExample() {
+  return (
+    <Host matchContents>
+      <Column>
+        <Text>Above</Text>
+        <Spacer modifiers={[height(24)]} />
+        <Text>Below (24dp gap)</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Spacer } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/spacer" apiName="Spacer" />

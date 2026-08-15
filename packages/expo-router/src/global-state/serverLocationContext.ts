@@ -5,6 +5,7 @@ export type ServerContextType = {
   location?: {
     pathname: string;
     search: string;
+    hash?: string;
   };
 };
 

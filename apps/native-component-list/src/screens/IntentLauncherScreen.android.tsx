@@ -26,7 +26,7 @@ export default class IntentLauncherScreen extends React.Component {
             try {
               const result = await startActivityAsync(activityAction, intentParams);
               ToastAndroid.show(`Activity finished: ${JSON.stringify(result)}`, ToastAndroid.SHORT);
-            } catch (e) {
+            } catch (e: any) {
               ToastAndroid.show(`An error occurred: ${e.message}`, ToastAndroid.SHORT);
             }
           }}
@@ -45,7 +45,7 @@ export default class IntentLauncherScreen extends React.Component {
               openApplication(packageName);
               // This directly attempts to open the app (if available).
               // If the app doesn't exist, an error should be thrown.
-            } catch (e) {
+            } catch (e: any) {
               ToastAndroid.show(`Error opening the app: ${e.message}`, ToastAndroid.SHORT);
             }
           }}
@@ -68,7 +68,7 @@ export default class IntentLauncherScreen extends React.Component {
               } else {
                 ToastAndroid.show('No icon found.', ToastAndroid.SHORT);
               }
-            } catch (e) {
+            } catch (e: any) {
               ToastAndroid.show(`Error loading the icon: ${e.message}`, ToastAndroid.SHORT);
             }
           }}

@@ -6,8 +6,6 @@ import androidx.annotation.RequiresApi
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.notifications.ModuleNotFoundException
-import expo.modules.notifications.notifications.channels.managers.NotificationsChannelManager
 import expo.modules.notifications.notifications.channels.serializers.NotificationsChannelSerializer
 import expo.modules.notifications.notifications.enums.NotificationImportance
 import java.util.Objects
@@ -15,20 +13,16 @@ import java.util.Objects
 /**
  * An exported module responsible for exposing methods for managing notification channels.
  */
-open class NotificationChannelManagerModule : Module() {
-  private lateinit var channelManager: NotificationsChannelManager
-  private lateinit var channelSerializer: NotificationsChannelSerializer
+open class NotificationChannelManagerModule : Module(), NotificationsChannelProviderAccessor {
+  private val channelManager by lazy {
+    getChannelProvider(appContext.registry).channelManager
+  }
+  private val channelSerializer by lazy {
+    getChannelProvider(appContext.registry).channelSerializer
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoNotificationChannelManager")
-
-    OnCreate {
-      val provider = appContext.legacyModule<NotificationsChannelsProvider>()
-        ?: throw ModuleNotFoundException(NotificationsChannelsProvider::class)
-
-      channelManager = provider.channelManager
-      channelSerializer = provider.channelSerializer
-    }
 
     AsyncFunction<List<Bundle?>>("getNotificationChannelsAsync") {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -42,8 +36,7 @@ open class NotificationChannelManagerModule : Module() {
 
     AsyncFunction("getNotificationChannelAsync") { channelId: String ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val notificationChannel = channelManager.getNotificationChannel(channelId)
-        channelSerializer.toBundle(notificationChannel)
+        channelManager.getNotificationChannel(channelId)?.let { channelSerializer.toBundle(it) }
       } else {
         null
       }
@@ -51,6 +44,12 @@ open class NotificationChannelManagerModule : Module() {
 
     AsyncFunction("setNotificationChannelAsync") { channelId: String, channelOptions: ReadableArguments ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (!channelManager.customSoundExists(channelOptions)) {
+          appContext.jsLogger?.error(
+            "expo-notifications: Custom sound '${channelOptions.getString("sound", null)}' not found in native app. " +
+              "Make sure the sound file (e.g. 'custom_sound.wav') is included in the expo-notifications config plugin sounds array in app config."
+          )
+        }
         val channel = channelManager.createNotificationChannel(
           channelId,
           getNameFromOptions(channelOptions),

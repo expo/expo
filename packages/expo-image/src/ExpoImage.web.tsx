@@ -3,12 +3,17 @@ import React from 'react';
 import { View } from 'react-native-web';
 
 import type { ImageNativeProps, ImageSource, ImageLoadEventData, ImageRef } from './Image.types';
-import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
+import type { AnimationManagerNode } from './web/AnimationManager';
+import AnimationManager from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
 
 loadStyle();
+
+type ExpoImageWebProps = ImageNativeProps & {
+  dataSet?: Record<string, string | undefined>;
+};
 
 function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
   return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -70,6 +75,7 @@ export default function ExpoImage({
   onLoadEnd,
   onDisplay,
   priority,
+  loading,
   blurRadius,
   recyclingKey,
   style,
@@ -79,12 +85,16 @@ export default function ExpoImage({
   tintColor,
   containerViewRef,
   draggable,
+  dataSet,
   ...props
-}: ImageNativeProps) {
+}: ExpoImageWebProps) {
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
   const imageHashStyle = {
     objectFit: placeholderContentFit || contentFit,
   };
+  const resolvedLoading =
+    loading ?? (responsivePolicy == null || responsivePolicy === 'static' ? 'lazy' : undefined);
+
   const selectedSource = useSourceSelection(
     source,
     responsivePolicy,
@@ -119,6 +129,7 @@ export default function ExpoImage({
               accessibilityLabel={accessibilityLabel ?? alt}
               cachePolicy={cachePolicy}
               priority={priority}
+              loading={resolvedLoading}
               tintColor={tintColor}
               draggable={draggable}
             />
@@ -151,6 +162,7 @@ export default function ExpoImage({
           className={className}
           cachePolicy={cachePolicy}
           priority={priority}
+          loading={resolvedLoading}
           contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
           hashPlaceholderContentPosition={contentPosition}
           hashPlaceholderStyle={imageHashStyle}
@@ -164,7 +176,7 @@ export default function ExpoImage({
     <View
       ref={containerViewRef}
       // @ts-expect-error: TODO(@kitten): This is related to react-native-web presumably
-      dataSet={{ expoimage: true }}
+      dataSet={{ ...dataSet, expoimage: 'true' }}
       style={[{ overflow: 'hidden' }, style]}
       {...props}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>

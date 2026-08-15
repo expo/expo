@@ -12,6 +12,15 @@ node_modules
 npm-debug.log
 yarn-error.log
 
+# pnpm
+.pnpm-debug.log*
+
+# Turborepo
+.turbo/
+
+# build outputs
+/packages/**/build/
+
 # Ruby
 .direnv
 
@@ -45,6 +54,9 @@ xcuserdata
 *.iml
 .gradle
 .idea
+
+# Kotlin compiler daemon session files
+.kotlin/
 
 # Eclipse
 .project
@@ -122,16 +134,21 @@ docs/pages/versions/*/react-native/*.diff
 /apps/expo-go/src/dist
 
 # Prebuilds
-/packages/**/*.xcframework
+/packages/**/xcframeworks/
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
+/packages/**/.build/
+/packages/precompile/.cache/
 !crsqlite.xcframework
 
 # iOS
 **/ios/.xcode.env.local
 
 # TypeScript state
-tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# SWC cache outputs
+.swc/
 
 # Secrets - contains real secrets fetched from GCP
 /secrets/keys.json

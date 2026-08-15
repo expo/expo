@@ -5,8 +5,10 @@ description: An overview of troubleshooting guides for app development with Expo
 ---
 
 import { RouterLogo } from '@expo/styleguide';
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
 import { NotificationBoxIcon } from '@expo/styleguide-icons/outline/NotificationBoxIcon';
 
@@ -60,6 +62,13 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
 />
 
 <BoxLink
+  title='"Project is incompatible with this version of Expo Go" error'
+  description="Learn how to install a version of Expo Go that is compatible with your project's Expo SDK version."
+  href="/troubleshooting/expo-go-version-mismatch/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
   title='"React Native version mismatch" errors'
   description="Learn about what React Native version mismatch means and how to resolve it in an Expo or React Native app."
   href="/troubleshooting/react-native-version-mismatch/"
@@ -108,7 +117,7 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
 <BoxLink
   title="Expo Router FAQ"
   description="A list of common questions about Expo Router."
-  href="/router/reference/faq/"
+  href="/router/introduction/"
   Icon={RouterLogo}
 />
 
@@ -140,7 +149,7 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
 <BoxLink
   title="EAS Update: Advanced debugging"
   description="Learn advanced strategies on how to debug EAS Update."
-  href="/eas-update/debug-advanced/"
+  href="/eas-update/debug/"
   Icon={LayersTwo02Icon}
 />
 
@@ -154,4 +163,18 @@ This page lists a collection of various troubleshooting guides for Expo and EAS.
   }
   href="/eas-update/error-recovery/"
   Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="EAS Observe: Troubleshooting"
+  description="Solutions for common issues when setting up and using EAS Observe."
+  href="/eas/observe/reference/troubleshooting/"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="EAS Workflows: Troubleshooting"
+  description="Diagnose and fix common issues when running EAS Workflows."
+  href="/eas/workflows/troubleshooting/"
+  Icon={Dataflow03Icon}
 />

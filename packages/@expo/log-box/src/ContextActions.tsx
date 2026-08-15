@@ -1,4 +1,5 @@
-import React, { createContext, ReactNode, use } from 'react';
+import type { ReactNode } from 'react';
+import React, { createContext, use } from 'react';
 
 interface ActionsContextType {
   onMinimize: (() => void) | undefined;

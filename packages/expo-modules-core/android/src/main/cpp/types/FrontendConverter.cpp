@@ -1,5 +1,6 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "../ExpoHeader.pch"
 #include "FrontendConverter.h"
 #include "ExpectedType.h"
 #include "FrontendConverterProvider.h"
@@ -8,14 +9,15 @@
 #include "../JavaScriptTypedArray.h"
 #include "../JSIContext.h"
 #include "../JavaScriptObject.h"
+#include "../ArrayBuffer.h"
 #include "../JavaScriptArrayBuffer.h"
+#include "../NativeArrayBuffer.h"
 #include "../JavaScriptValue.h"
 #include "../JavaScriptFunction.h"
 #include "../javaclasses/Collections.h"
 
 #include "react/jni/ReadableNativeMap.h"
 #include "react/jni/ReadableNativeArray.h"
-#include <jsi/JSIDynamic.h>
 
 #include <utility>
 #include <algorithm>
@@ -30,9 +32,12 @@ jobject IntegerFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .i = static_cast<int>(value.asNumber())
+  };
+
   auto &integerClass = JCacheHolder::get().jInteger;
-  return env->NewObject(integerClass.clazz, integerClass.constructor,
-                        static_cast<int>(value.asNumber()));
+  return env->NewObjectA(integerClass.clazz, integerClass.constructor, &jValue);
 }
 
 bool IntegerFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -44,9 +49,12 @@ jobject LongFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .j = static_cast<jlong>(value.asNumber())
+  };
+
   auto &longClass = JCacheHolder::get().jLong;
-  return env->NewObject(longClass.clazz, longClass.constructor,
-                        static_cast<jlong>(value.asNumber()));
+  return env->NewObjectA(longClass.clazz, longClass.constructor, &jValue);
 }
 
 bool LongFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -58,9 +66,12 @@ jobject FloatFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .f = static_cast<float>(value.asNumber())
+  };
+
   auto &floatClass = JCacheHolder::get().jFloat;
-  return env->NewObject(floatClass.clazz, floatClass.constructor,
-                        static_cast<float>(value.asNumber()));
+  return env->NewObjectA(floatClass.clazz, floatClass.constructor, &jValue);
 }
 
 bool FloatFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -72,8 +83,12 @@ jobject BooleanFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .z = value.asBool()
+  };
+
   auto &booleanClass = JCacheHolder::get().jBoolean;
-  return env->NewObject(booleanClass.clazz, booleanClass.constructor, value.asBool());
+  return env->NewObjectA(booleanClass.clazz, booleanClass.constructor, &jValue);
 }
 
 bool BooleanFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -85,8 +100,12 @@ jobject DoubleFrontendConverter::convert(
   JNIEnv *env,
   const jsi::Value &value
 ) const {
+  jvalue jValue{
+    .d = value.asNumber()
+  };
+
   auto &doubleClass = JCacheHolder::get().jDouble;
-  return env->NewObject(doubleClass.clazz, doubleClass.constructor, value.asNumber());
+  return env->NewObjectA(doubleClass.clazz, doubleClass.constructor, &jValue);
 }
 
 bool DoubleFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
@@ -182,6 +201,70 @@ bool TypedArrayFrontendConverter::canConvert(
   return value.isObject();
 }
 
+jobject ArrayBufferFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+  auto object = value.asObject(rt);
+
+  if (isTypedArray(rt, object)) {
+    auto typedArray = TypedArray(rt, object);
+    return ArrayBuffer::newInstance(jsiContext, rt, typedArray).release();
+  }
+
+  auto arrayBuffer = object.getArrayBuffer(rt);
+  return ArrayBuffer::newInstance(
+    jsiContext,
+    rt,
+    std::move(arrayBuffer)
+  ).release();
+}
+
+bool ArrayBufferFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  if (value.isObject()) {
+    auto object = value.getObject(rt);
+    return object.isArrayBuffer(rt) || isTypedArray(rt, object);
+  }
+  return false;
+}
+
+jobject NativeArrayBufferFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Value &value
+) const {
+  JSIContext *jsiContext = getJSIContext(rt);
+  auto object = value.asObject(rt);
+
+  if (isTypedArray(rt, object)) {
+    auto typedArray = TypedArray(rt, object);
+    return NativeArrayBuffer::newInstance(jsiContext, rt, typedArray).release();
+  }
+
+  auto arrayBuffer = object.getArrayBuffer(rt);
+  return NativeArrayBuffer::newInstance(
+    jsiContext,
+    rt,
+    arrayBuffer
+  ).release();
+}
+
+bool NativeArrayBufferFrontendConverter::canConvert(
+  jsi::Runtime &rt,
+  const jsi::Value &value
+) const {
+  if (value.isObject()) {
+    auto object = value.getObject(rt);
+    return object.isArrayBuffer(rt) || isTypedArray(rt, object);
+  }
+  return false;
+}
+
 jobject JavaScriptValueFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
@@ -226,10 +309,14 @@ jobject JavaScriptArrayBufferFrontendConverter::convert(
   const jsi::Value &value
 ) const {
   JSIContext *jsiContext = getJSIContext(rt);
+  auto object = value.asObject(rt);
+  auto arrayBuffer = isTypedArray(rt, object) ?
+    TypedArray(rt, object).getViewedBufferSlice(rt) :
+    object.getArrayBuffer(rt);
   return JavaScriptArrayBuffer::newInstance(
     jsiContext,
     jsiContext->runtimeHolder->weak_from_this(),
-    std::make_shared<jsi::ArrayBuffer>(value.asObject(rt).getArrayBuffer(rt))
+    std::make_shared<jsi::ArrayBuffer>(std::move(arrayBuffer))
   ).release();
 }
 
@@ -237,7 +324,11 @@ bool JavaScriptArrayBufferFrontendConverter::canConvert(
   jsi::Runtime &rt,
   const jsi::Value &value
 ) const {
-  return value.isObject() && value.getObject(rt).isArrayBuffer(rt);
+  if (value.isObject()) {
+    auto object = value.getObject(rt);
+    return object.isArrayBuffer(rt) || isTypedArray(rt, object);
+  }
+  return false;
 }
 
 jobject JavaScriptFunctionFrontendConverter::convert(

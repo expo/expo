@@ -1,4 +1,4 @@
-import { type EventSubscription, requireNativeModule } from 'expo-modules-core';
+import { type EventSubscription, requireNativeModule } from 'expo';
 
 const ExpoLocalizationModule = requireNativeModule('ExpoLocalization');
 
@@ -16,6 +16,9 @@ export function addCalendarListener(
   return ExpoLocalizationModule.addListener('onCalendarSettingsChanged', listener);
 }
 
+/**
+ * @deprecated use subscription.remove() instead.
+ */
 export function removeSubscription(subscription: EventSubscription) {
   subscription.remove();
 }

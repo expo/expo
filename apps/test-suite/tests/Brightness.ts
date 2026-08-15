@@ -2,12 +2,28 @@ import * as Brightness from 'expo-brightness';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
+import type { JasmineInterface } from '../types';
 
 export const name = 'Brightness (device-only)';
 
-export const EPSILON = Math.pow(10, -5);
+// Android system brightness is stored as an integer in the [1, 255] range
+// This means the maximum error after mapping to the [0, 1] range can be half of the interval
+const ANDROID_EPSILON = 1 / 254 / 2;
+// Arbitrary precision, which compensates for floating-point inaccuracies
+const IOS_EPSILON = Math.pow(10, -5);
+const EPSILON = Platform.OS === 'android' ? ANDROID_EPSILON : IOS_EPSILON;
+// Arbitrary delay to give the system time to set the brightness
+const BRIGHTNESS_UPDATE_DELAY_MS = 400;
 
-export async function test(t) {
+function timeoutWrapper(fn: () => void | Promise<void>, time: number): Promise<void> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      Promise.resolve(fn()).then(resolve, reject);
+    }, time);
+  });
+}
+
+export async function test(t: JasmineInterface) {
   const shouldSkipTestsRequiringPermissions =
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
@@ -32,9 +48,11 @@ export async function test(t) {
         } catch {
           wasRejected = true;
         }
-        const obtainedValue = await Brightness.getBrightnessAsync();
-        t.expect(Math.abs(originalValue - obtainedValue)).toBeLessThan(EPSILON);
-        t.expect(wasRejected).toBe(false);
+        await timeoutWrapper(async () => {
+          const obtainedValue = await Brightness.getBrightnessAsync();
+          t.expect(Math.abs(originalValue - obtainedValue)).toBeLessThan(EPSILON);
+          t.expect(wasRejected).toBe(false);
+        }, BRIGHTNESS_UPDATE_DELAY_MS);
       });
 
       t.it(
@@ -47,9 +65,11 @@ export async function test(t) {
           } catch {
             wasRejected = true;
           }
-          const obtainedValue = await Brightness.getBrightnessAsync();
-          t.expect(Math.abs(0 - obtainedValue)).toBeLessThan(EPSILON);
-          t.expect(wasRejected).toBe(false);
+          await timeoutWrapper(async () => {
+            const obtainedValue = await Brightness.getBrightnessAsync();
+            t.expect(Math.abs(0 - obtainedValue)).toBeLessThan(EPSILON);
+            t.expect(wasRejected).toBe(false);
+          }, BRIGHTNESS_UPDATE_DELAY_MS);
         }
       );
 
@@ -63,9 +83,11 @@ export async function test(t) {
           } catch {
             wasRejected = true;
           }
-          const obtainedValue = await Brightness.getBrightnessAsync();
-          t.expect(Math.abs(1 - obtainedValue)).toBeLessThan(EPSILON);
-          t.expect(wasRejected).toBe(false);
+          await timeoutWrapper(async () => {
+            const obtainedValue = await Brightness.getBrightnessAsync();
+            t.expect(Math.abs(1 - obtainedValue)).toBeLessThan(EPSILON);
+            t.expect(wasRejected).toBe(false);
+          }, BRIGHTNESS_UPDATE_DELAY_MS);
         }
       );
 
@@ -110,9 +132,11 @@ export async function test(t) {
             } catch {
               wasRejected = true;
             }
-            const obtainedValue = await Brightness.getSystemBrightnessAsync();
-            t.expect(Math.abs(originalValue - obtainedValue)).toBeLessThan(EPSILON);
-            t.expect(wasRejected).toBe(false);
+            await timeoutWrapper(async () => {
+              const obtainedValue = await Brightness.getSystemBrightnessAsync();
+              t.expect(Math.abs(originalValue - obtainedValue)).toBeLessThan(EPSILON);
+              t.expect(wasRejected).toBe(false);
+            }, BRIGHTNESS_UPDATE_DELAY_MS);
           });
 
           t.it(
@@ -125,9 +149,11 @@ export async function test(t) {
               } catch {
                 wasRejected = true;
               }
-              const obtainedValue = await Brightness.getSystemBrightnessAsync();
-              t.expect(Math.abs(0 - obtainedValue)).toBeLessThan(EPSILON);
-              t.expect(wasRejected).toBe(false);
+              await timeoutWrapper(async () => {
+                const obtainedValue = await Brightness.getSystemBrightnessAsync();
+                t.expect(Math.abs(0 - obtainedValue)).toBeLessThan(EPSILON);
+                t.expect(wasRejected).toBe(false);
+              }, BRIGHTNESS_UPDATE_DELAY_MS);
             }
           );
 
@@ -141,9 +167,11 @@ export async function test(t) {
               } catch {
                 wasRejected = true;
               }
-              const obtainedValue = await Brightness.getSystemBrightnessAsync();
-              t.expect(Math.abs(1 - obtainedValue)).toBeLessThan(EPSILON);
-              t.expect(wasRejected).toBe(false);
+              await timeoutWrapper(async () => {
+                const obtainedValue = await Brightness.getSystemBrightnessAsync();
+                t.expect(Math.abs(1 - obtainedValue)).toBeLessThan(EPSILON);
+                t.expect(wasRejected).toBe(false);
+              }, BRIGHTNESS_UPDATE_DELAY_MS);
             }
           );
 
@@ -183,9 +211,11 @@ export async function test(t) {
           } catch {
             wasRejected = true;
           }
-          const obtainedValue = await Brightness.getBrightnessAsync();
-          t.expect(Math.abs(obtainedValue - systemValue)).toBeLessThan(EPSILON);
-          t.expect(wasRejected).toBe(false);
+          await timeoutWrapper(async () => {
+            const obtainedValue = await Brightness.getBrightnessAsync();
+            t.expect(Math.abs(obtainedValue - systemValue)).toBeLessThan(EPSILON);
+            t.expect(wasRejected).toBe(false);
+          }, BRIGHTNESS_UPDATE_DELAY_MS);
         });
 
         t.it(`is overridden by setting the app brightness`, async () => {
@@ -199,9 +229,11 @@ export async function test(t) {
           } catch {
             wasRejected = true;
           }
-          const obtainedValue = await Brightness.getBrightnessAsync();
-          t.expect(Math.abs(obtainedValue - appValue)).toBeLessThan(EPSILON);
-          t.expect(wasRejected).toBe(false);
+          await timeoutWrapper(async () => {
+            const obtainedValue = await Brightness.getBrightnessAsync();
+            t.expect(Math.abs(obtainedValue - appValue)).toBeLessThan(EPSILON);
+            t.expect(wasRejected).toBe(false);
+          }, BRIGHTNESS_UPDATE_DELAY_MS);
         });
       });
 

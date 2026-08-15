@@ -84,6 +84,16 @@ describe('ProvisioningProfile module', () => {
         const pbxprojContents = fs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
         expect(pbxprojContents).toMatch(/DevelopmentTeam = "Something Spaced";/);
       });
+      it('configures the project.pbxproj file with a custom code sign identity', () => {
+        setProvisioningProfileForPbxproj(projectRoot, {
+          profileName: '*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z',
+          appleTeamId: 'J5FM626PE2',
+          codeSignIdentity: 'Apple Development: Test User',
+        });
+        const pbxprojContents = fs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
+        expect(pbxprojContents).toMatch(/CODE_SIGN_IDENTITY = "Apple Development: Test User"/);
+        expect(pbxprojContents).not.toMatch(/CODE_SIGN_IDENTITY = "iPhone Distribution"/);
+      });
       it('throws descriptive error when target name does not exist', () => {
         expect(() =>
           setProvisioningProfileForPbxproj(projectRoot, {

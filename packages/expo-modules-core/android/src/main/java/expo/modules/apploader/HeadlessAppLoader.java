@@ -5,19 +5,7 @@ import android.content.Context;
 import expo.modules.core.interfaces.Consumer;
 
 public interface HeadlessAppLoader {
-
-  class AppConfigurationError extends Exception {
-
-    public AppConfigurationError(String message) {
-      super(message);
-    }
-
-    public AppConfigurationError(String message, Exception cause) {
-      super(message, cause);
-    }
-  }
-
-  void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback) throws AppConfigurationError;
+  void loadApp(Context context, Params params, Runnable alreadyRunning, Consumer<Boolean> callback);
 
   boolean invalidateApp(String appScopeKey);
 
@@ -39,7 +27,5 @@ public interface HeadlessAppLoader {
     public String getAppUrl() {
       return appUrl;
     }
-
   }
-
 }

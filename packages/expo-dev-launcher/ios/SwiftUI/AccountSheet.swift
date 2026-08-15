@@ -5,6 +5,7 @@ import SwiftUI
 struct AccountSheet: View {
   @Environment(\.dismiss) private var dismiss
   @EnvironmentObject var viewModel: DevLauncherViewModel
+  @State private var showingLogoutConfirmation = false
 
   var body: some View {
     VStack(spacing: 0) {
@@ -26,10 +27,10 @@ struct AccountSheet: View {
           loginSignupCard
         }
       }
-      .padding(.horizontal, 16)
+      .padding(.horizontal, 20)
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     .background(Color(.systemGroupedBackground))
     #endif
   }
@@ -53,7 +54,7 @@ struct AccountSheet: View {
             .frame(width: 44, height: 44)
         }
       }
-      .padding(.horizontal, 16)
+      .padding(.horizontal, 20)
       .padding(.top, 8)
     }
   }
@@ -76,19 +77,32 @@ struct AccountSheet: View {
         }
       }
 
-      Button {
+      logOutButton
+    }
+  }
+
+  private var logOutButton: some View {
+    Button(role: .destructive) {
+      showingLogoutConfirmation = true
+    }
+    label: {
+      Text("Log out")
+        .font(.headline)
+        .foregroundColor(.red)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+    }
+    .background(Color.expoSecondarySystemBackground)
+    .cornerRadius(12)
+    .confirmationDialog(
+      "Are you sure you want to log out?",
+      isPresented: $showingLogoutConfirmation,
+      titleVisibility: .visible
+    ) {
+      Button("Log out", role: .destructive) {
         viewModel.signOut()
       }
-      label: {
-        Text("Logout")
-          .font(.headline)
-          .fontWeight(.bold)
-          .foregroundColor(.white)
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 12)
-      }
-      .background(Color.black)
-      .cornerRadius(12)
+      Button("Cancel", role: .cancel) {}
     }
   }
 
@@ -108,11 +122,6 @@ struct AccountSheet: View {
         signUpButton
       }
       #endif
-
-      if viewModel.isAuthenticating {
-        ProgressView()
-          .scaleEffect(0.8)
-      }
     }
   }
 
@@ -123,12 +132,22 @@ struct AccountSheet: View {
       }
     }
     label: {
-      Text("Log In")
-        .font(.headline)
-        .fontWeight(.semibold)
-        .foregroundColor(.white)
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
+      HStack(spacing: 8) {
+        if viewModel.isAuthenticating {
+          ProgressView()
+            .tint(.white)
+            .scaleEffect(0.8)
+            .transition(.scale.combined(with: .opacity))
+        }
+
+        Text("Log in")
+          .font(.headline)
+          .fontWeight(.semibold)
+      }
+      .foregroundColor(.white)
+      .frame(maxWidth: .infinity)
+      .padding(.vertical, 12)
+      .animation(.easeInOut(duration: 0.2), value: viewModel.isAuthenticating)
     }
     .background(Color.black)
     .cornerRadius(12)
@@ -142,7 +161,7 @@ struct AccountSheet: View {
       }
     }
     label: {
-      Text("Sign Up")
+      Text("Sign up")
         .font(.headline)
         .fontWeight(.semibold)
         .foregroundColor(.black.opacity(0.7))
@@ -179,7 +198,7 @@ struct AccountSheet: View {
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 12)
-      #if !os(tvOS)
+      #if !os(tvOS) && !os(macOS)
       .background(Color(.systemBackground))
       #endif
     }
@@ -211,7 +230,7 @@ struct AccountSheet: View {
           .scaledToFill()
       } placeholder: {
         Circle()
-        #if !os(tvOS)
+        #if !os(tvOS) && !os(macOS)
           .fill(Color(.systemGray5))
         #endif
           .overlay(

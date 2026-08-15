@@ -1,16 +1,6 @@
-import spawnAsync from '@expo/spawn-async';
-import fs from 'fs/promises';
 import path from 'path';
-import rimraf from 'rimraf';
 
 import { getFingerprintFromCLIAsync } from './utils/CLIUtils';
-import {
-  createFingerprintAsync,
-  createProjectHashAsync,
-  diffFingerprintChangesAsync,
-} from '../../src/Fingerprint';
-import { normalizeOptionsAsync } from '../../src/Options';
-import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src

@@ -1,12 +1,14 @@
+import type { Terminal } from '@expo/metro/metro-core';
+
 import { TerminalReporter } from '../TerminalReporter';
-import { TerminalReportableEvent } from '../TerminalReporter.types';
+import type { TerminalReportableEvent } from '../TerminalReporter.types';
 
 function createReporter() {
   const reporter = new TerminalReporter({
     log: jest.fn(),
     persistStatus: jest.fn(),
     status: jest.fn(),
-  });
+  } as unknown as Terminal);
   return reporter;
 }
 

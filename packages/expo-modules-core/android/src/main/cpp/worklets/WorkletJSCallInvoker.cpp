@@ -1,5 +1,3 @@
-#if WORKLETS_ENABLED
-
 #include "WorkletJSCallInvoker.h"
 
 namespace expo {
@@ -14,7 +12,7 @@ namespace expo {
       return;
     }
 
-    workletRuntime->executeAsync(std::move(func));
+    workletRuntime->schedule(std::move(func));
   }
 
 
@@ -30,5 +28,3 @@ namespace expo {
     });
   }
 } // namespace expo
-
-#endif

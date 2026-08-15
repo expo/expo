@@ -6,6 +6,7 @@ import { loadRequestedParcels } from './loadRequestedParcels';
 import Git from '../../Git';
 import logger from '../../Logger';
 import * as Npm from '../../Npm';
+import { promptOtp, withOtpRetry } from '../../NpmOtp';
 import { sdkVersionNumberAsync } from '../../ProjectVersions';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
@@ -28,6 +29,11 @@ export const assignTagForSdkRelease = new Task<TaskArgs>(
 
     if (!shouldAssignSdkTag || options.canary) {
       return;
+    }
+
+    // Prompt for OTP up front if requested.
+    if (options.promptOtp) {
+      process.env.NPM_OTP = await promptOtp();
     }
 
     await runWithSpinner(
@@ -53,7 +59,7 @@ export const assignTagForSdkRelease = new Task<TaskArgs>(
           );
 
           if (!options.dry) {
-            await Npm.addTagAsync(pkgName, pkgVersion, sdkTag);
+            await withOtpRetry(() => Npm.addTagAsync(pkgName, pkgVersion, sdkTag));
           }
         }
       },

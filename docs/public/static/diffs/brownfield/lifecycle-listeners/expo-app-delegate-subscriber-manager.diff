@@ -1,0 +1,26 @@
+diff --git a/AppDelegate.swift b/AppDelegate.swift
+index 68219923e77..4d885879bfc 100644
+--- a/AppDelegate.swift
++++ b/AppDelegate.swift
+@@ -1,17 +1,19 @@
++import Expo
++
+ public class AppDelegate: UIApplicationDelegate {
+
+   open func application(
+     _ application: UIApplication,
+     willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+   ) -> Bool {
+-
++    return ExpoAppDelegateSubscriberManager.application(application, willFinishLaunchingWithOptions: launchOptions)
+   }
+
+   open func application(
+     _ application: UIApplication,
+     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
+   ) -> Bool {
+-
++    return ExpoAppDelegateSubscriberManager.application(application, didFinishLaunchingWithOptions: launchOptions)
+   }
+
+   ...

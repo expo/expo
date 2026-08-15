@@ -1,4 +1,5 @@
-import { IOSConfig, XcodeProject } from '@expo/config-plugins';
+import type { XcodeProject } from '@expo/config-plugins';
+import { IOSConfig } from '@expo/config-plugins';
 import fs from 'fs';
 
 export type CodeSigningInfo = Record<

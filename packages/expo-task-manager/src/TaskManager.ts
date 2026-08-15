@@ -1,6 +1,15 @@
-import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo';
+import { LegacyEventEmitter } from 'expo-modules-core';
+import { AppRegistry } from 'react-native';
 
 import ExpoTaskManager from './ExpoTaskManager';
+
+// Register a no-op headless task so that HeadlessJsTaskContext.startTask()
+// doesn't log a warning. On Android, TaskService registers a headless task
+// in native code to keep JS timers alive during background task execution.
+if (Platform.OS === 'android') {
+  AppRegistry.registerHeadlessTask('expo-task-manager', () => async () => {});
+}
 
 // @needsAudit @docsMissing
 /**
@@ -64,7 +73,12 @@ export interface TaskManagerTask {
   taskName: string;
 
   /**
-   * Type of the task which depends on how the task was registered.
+   * Type of the task which depends on how the task was registered. Standard
+   * values emitted by Expo SDK libraries are `'location'` and `'geofencing'`
+   * (`expo-location`), `'backgroundFetch'` (`expo-background-fetch`),
+   * `'expo-background-task'` on Android or `'backgroundTask'` on iOS
+   * (`expo-background-task`), and `'remote-notification'`
+   * (`expo-notifications`). User-registered tasks may have any string value.
    */
   taskType: string;
 
@@ -99,11 +113,10 @@ function _validate(taskName: unknown) {
 
 // @needsAudit
 /**
- * Defines task function. It must be called in the global scope of your JavaScript bundle.
- * In particular, it cannot be called in any of React lifecycle methods like `componentDidMount`.
- * This limitation is due to the fact that when the application is launched in the background,
- * we need to spin up your JavaScript app, run your task and then shut down — no views are mounted
- * in this scenario.
+ * Defines task function. It must be called in the global scope of your JavaScript bundle,
+ * not inside a React component. When the application is launched in
+ * the background, no components are mounted, so the task must already be registered at
+ * module load time.
  *
  * @param taskName Name of the task. It must be the same as the name you provided when registering the task.
  * @param taskExecutor A function that will be invoked when the task with given `taskName` is executed.
@@ -206,7 +219,7 @@ export async function getRegisteredTasksAsync(): Promise<TaskManagerTask[]> {
 /**
  * Unregisters task from the app, so the app will not be receiving updates for that task anymore.
  * _It is recommended to use methods specialized by modules that registered the task, eg.
- * [`Location.stopLocationUpdatesAsync`](./location/#expolocationstoplocationupdatesasynctaskname)._
+ * [`Location.stopLocationUpdatesAsync`](./location/#locationstoplocationupdatesasynctaskname)._
  *
  * @param taskName Name of the task to unregister.
  * @return A promise which fulfills as soon as the task is unregistered.
@@ -255,7 +268,7 @@ if (ExpoTaskManager) {
         }
       } else {
         console.warn(
-          `TaskManager: Task "${taskName}" has been executed but looks like it is not defined. Make sure that "TaskManager.defineTask" is called during initialization phase.`
+          `TaskManager: Execution of "${taskName}" was requested but looks like it is not defined. Available tasks: [${[...tasks.keys()].join(', ')}]. Make sure that "TaskManager.defineTask" is called during initialization phase.`
         );
         // No tasks defined -> we need to notify about finish anyway.
         await ExpoTaskManager.notifyTaskFinishedAsync(taskName, { eventId, result });

@@ -1,15 +1,15 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 import fs from 'fs';
 import { globSync } from 'glob';
 import path from 'path';
 
-import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withAppBuildGradle } from '../plugins/android-plugins';
 import { withDangerousMod } from '../plugins/withDangerousMod';
 import { directoryExistsAsync } from '../utils/modules';
 import { addWarningAndroid } from '../utils/warnings';
+import { getAppBuildGradleFilePath, getProjectFilePath } from './Paths';
 
 const debug = Debug('expo:config-plugins:android:package');
 
@@ -238,8 +238,8 @@ export function setPackageInBuildGradle(config: Pick<ExpoConfig, 'android'>, bui
     return buildGradle;
   }
 
-  const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
-  return buildGradle.replace(pattern, `$1 '${packageName}'`);
+  const pattern = new RegExp(`(applicationId|namespace)(\\s*=\\s*|\\s+)['"].*['"]`, 'g');
+  return buildGradle.replace(pattern, `$1$2'${packageName}'`);
 }
 
 export async function getApplicationIdAsync(projectRoot: string): Promise<string | null> {
@@ -248,7 +248,9 @@ export async function getApplicationIdAsync(projectRoot: string): Promise<string
     return null;
   }
   const buildGradle = await fs.promises.readFile(buildGradlePath, 'utf8');
-  const matchResult = buildGradle.match(/applicationId ['"](.*)['"]/);
+  // Match both the legacy method-call form (`applicationId "com.app"`) and the
+  // Gradle assignment form (`applicationId = "com.app"`)
+  const matchResult = buildGradle.match(/applicationId\s*=?\s*['"](.*)['"]/);
   // TODO add fallback for legacy cases to read from AndroidManifest.xml
   return matchResult?.[1] ?? null;
 }

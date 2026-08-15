@@ -48,7 +48,7 @@ class VideoCacheManager {
       do {
         try self.limitCacheSize(to: maxCacheSize)
       } catch {
-        log.warn("Failed to auto clean expo-video cache")
+        log.warn("[expo-video] Failed to auto clean expo-video cache")
       }
     }
   }
@@ -155,6 +155,11 @@ class VideoCacheManager {
     }
   }
 
+  private func isAuxiliaryCacheFile(_ url: URL) -> Bool {
+    let s = url.absoluteString
+    return s.hasSuffix(Self.mediaInfoSuffix) || s.hasSuffix(CacheVariantIndex.fileSuffix)
+  }
+
   private func getCacheDirectory() -> URL? {
     let cacheDirs = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)
     if let cacheDir = cacheDirs.first {
@@ -173,7 +178,7 @@ class VideoCacheManager {
       includingPropertiesForKeys: [.contentAccessDateKey, .contentModificationDateKey],
       options: .skipsHiddenFiles)
     ) ?? []
-    return fileUrls.filter { !$0.absoluteString.hasSuffix(Self.mediaInfoSuffix) }
+    return fileUrls.filter { !isAuxiliaryCacheFile($0) }
   }
 
   private func fileIsOpen(url: URL) -> Bool {

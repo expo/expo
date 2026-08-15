@@ -1,0 +1,11 @@
+diff --git a/android/app/build.gradle b/android/app/build.gradle
+index 0000000..1111111 100644
+--- a/android/app/build.gradle
++++ b/android/app/build.gradle
+@@ -1,4 +1,5 @@
++def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+
+react {
+
++  entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
+}

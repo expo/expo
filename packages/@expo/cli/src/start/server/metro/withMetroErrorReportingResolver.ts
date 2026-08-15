@@ -1,14 +1,13 @@
 import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import canonicalize from '@expo/metro/metro-core/canonicalize';
 import type { ResolutionContext } from '@expo/metro/metro-resolver';
 import chalk from 'chalk';
 import path from 'path';
 import { stripVTControlCharacters } from 'util';
 
-import type { ExpoCustomMetroResolver } from './withMetroResolvers';
 import { isPathInside } from '../../../utils/dir';
 import { env } from '../../../utils/env';
-
-const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
+import { event } from './resolveEvents';
 
 // TODO: Do we need to expose this?
 const STACK_DEPTH_LIMIT = 35;
@@ -25,27 +24,18 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
 
   const mutateResolutionError = createMutateResolutionError(config, depGraph);
 
+  // Single-entry cache for the most recent (options, platform, origin) → deps map.
+  // Metro resolves depth-first, so the same origin repeats for consecutive calls.
+  let _prevOptions: Record<string, unknown> | null | undefined;
+  let _prevPlatform: string | undefined;
+  let _prevOrigin: string | undefined;
+  let _prevDeps: Map<string, string> | undefined;
+
   return {
     ...config,
     resolver: {
       ...config.resolver,
       resolveRequest(context, moduleName, platform) {
-        const storeResult = (res: NonNullable<ReturnType<ExpoCustomMetroResolver>>) => {
-          const inputPlatform = platform ?? 'null';
-
-          const key = optionsKeyForContext(context);
-          if (!depGraph.has(key)) depGraph.set(key, new Map());
-          const mapByTarget = depGraph.get(key);
-          if (!mapByTarget!.has(inputPlatform)) mapByTarget!.set(inputPlatform, new Map());
-          const mapByPlatform = mapByTarget!.get(inputPlatform);
-          if (!mapByPlatform!.has(context.originModulePath))
-            mapByPlatform!.set(context.originModulePath, new Set());
-          const setForModule = mapByPlatform!.get(context.originModulePath)!;
-
-          const qualifiedModuleName = res?.type === 'sourceFile' ? res.filePath : moduleName;
-          setForModule.add({ path: qualifiedModuleName, request: moduleName });
-        };
-
         // If the user defined a resolver, run it first and depend on the documented
         // chaining logic: https://facebook.github.io/metro/docs/resolution/#resolution-algorithm
         //
@@ -58,7 +48,34 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
         try {
           const firstResolver = originalResolveRequest ?? context.resolveRequest;
           const res = firstResolver(context, moduleName, platform);
-          storeResult(res);
+
+          const inputPlatform = platform ?? 'null';
+          let depsForModule: Map<string, string> | undefined;
+
+          if (
+            context.customResolverOptions === _prevOptions &&
+            inputPlatform === _prevPlatform &&
+            context.originModulePath === _prevOrigin
+          ) {
+            depsForModule = _prevDeps!;
+          } else {
+            const key = optionsKeyForContext(context);
+            let mapByTarget = depGraph.get(key);
+            if (!mapByTarget) depGraph.set(key, (mapByTarget = new Map()));
+            let mapByPlatform = mapByTarget.get(inputPlatform);
+            if (!mapByPlatform) mapByTarget.set(inputPlatform, (mapByPlatform = new Map()));
+            depsForModule = mapByPlatform.get(context.originModulePath);
+            if (!depsForModule)
+              mapByPlatform.set(context.originModulePath, (depsForModule = new Map()));
+            _prevOptions = context.customResolverOptions;
+            _prevPlatform = inputPlatform;
+            _prevOrigin = context.originModulePath;
+            _prevDeps = depsForModule;
+          }
+
+          const qualifiedModuleName = res?.type === 'sourceFile' ? res.filePath : moduleName;
+          depsForModule.set(qualifiedModuleName, moduleName);
+
           return res;
         } catch (error: any) {
           throw mutateResolutionError(error, context, moduleName, platform);
@@ -77,21 +94,32 @@ export type DepGraph = Map<
     Map<
       // origin module name
       string,
-      Set<{
-        // required module name
-        path: string;
-        // This isn't entirely accurate since a module can be imported multiple times in a file,
-        // and use different names. But it's good enough for now.
-        request: string;
-      }>
+      // resolved path → import request
+      // This isn't entirely accurate since a module can be imported multiple times in a file,
+      // and use different names. But it's good enough for now.
+      Map<string, string>
     >
   >
 >;
 
-function optionsKeyForContext(context: ResolutionContext) {
-  const canonicalize: typeof import('@expo/metro/metro-core/canonicalize').default = require('@expo/metro/metro-core/canonicalize');
-  // Compound key for the resolver cache
-  return JSON.stringify(context.customResolverOptions ?? {}, canonicalize) ?? '';
+const optionsKeyCache = new WeakMap<Record<string, unknown>, string>();
+const EMPTY_OPTIONS_KEY = '{}';
+
+function optionsKeyForContext(context: ResolutionContext): string {
+  const options = context.customResolverOptions;
+  if (options == null) {
+    return EMPTY_OPTIONS_KEY;
+  }
+  let key = optionsKeyCache.get(options);
+  if (key == null) {
+    key = JSON.stringify(options, canonicalize) ?? EMPTY_OPTIONS_KEY;
+    optionsKeyCache.set(options, key);
+  }
+  return key;
+}
+
+interface ErrorWithExpoImportStack extends Error {
+  _expoImportStack?: string;
 }
 
 export const createMutateResolutionError =
@@ -101,7 +129,12 @@ export const createMutateResolutionError =
     stackDepthLimit = STACK_DEPTH_LIMIT,
     stackCountLimit = STACK_COUNT_LIMIT
   ) =>
-  (error: Error, context: ResolutionContext, moduleName: string, platform: string | null) => {
+  (
+    error: ErrorWithExpoImportStack,
+    context: ResolutionContext,
+    moduleName: string,
+    platform: string | null
+  ) => {
     const inputPlatform = platform ?? 'null';
 
     const mapByOrigin = depGraph.get(optionsKeyForContext(context));
@@ -120,15 +153,13 @@ export const createMutateResolutionError =
         return inverseOrigin;
       }
 
-      for (const [originKey, mapByTarget] of mapByPlatform) {
-        // search comparing origin to path
-
-        const found = [...mapByTarget.values()].find((resolution) => resolution.path === origin);
-        if (found) {
+      for (const [originKey, depsMap] of mapByPlatform) {
+        const request = depsMap.get(origin);
+        if (request !== undefined) {
           inverseOrigin.push({
             origin,
             previous: originKey,
-            request: found.request,
+            request,
           });
         }
       }
@@ -184,7 +215,7 @@ export const createMutateResolutionError =
         return true;
       }
 
-      const stackOrigin = stack.frames[stack.frames.length - 1].origin;
+      const stackOrigin = stack.frames[stack.frames.length - 1]?.origin;
 
       if (
         stackOrigin &&
@@ -270,13 +301,11 @@ export const createMutateResolutionError =
       stackDepthLimit
     );
 
-    debug('Number of explored stacks:', stackCounter);
+    event('error_stacks_explored', { count: stackCounter });
 
     if (inverseStack && inverseStack.frames.length > 0) {
       const formattedImport = chalk`{gray  |} {cyan import} `;
       const importMessagePadding = ' '.repeat(stripVTControlCharacters(formattedImport).length + 1);
-
-      debug('Found inverse graph:', JSON.stringify(inverseStack, null, 2));
 
       let extraMessage = chalk.bold(
         `Import stack${stackCounter >= stackCountLimit ? ` (${stackCounter})` : ''}:`
@@ -329,10 +358,8 @@ export const createMutateResolutionError =
 
       extraMessage += '\n';
 
-      // @ts-expect-error
       error._expoImportStack = extraMessage;
     } else {
-      debug('Found no inverse tree for:', context.originModulePath);
     }
 
     return error;

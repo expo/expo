@@ -1,5 +1,4 @@
 import { screen, act } from '@testing-library/react-native';
-import React from 'react';
 import { Text } from 'react-native';
 
 import { store } from '../global-state/router-store';
@@ -123,49 +122,42 @@ it('push should include (group)/index as an anchor route when using withAnchor',
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
               key: expect.any(String),
               name: '(group)',
+              params: { initial: false, params: { initial: false }, screen: 'orange' },
               path: undefined,
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['test', 'orange'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'test',
-                    params: undefined,
                   },
                   {
                     key: expect.any(String),
                     name: 'orange',
-                    params: {},
-                    path: undefined,
+                    params: { initial: false },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
@@ -211,48 +203,38 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
               key: expect.any(String),
               name: '(group)',
-              params: {
-                params: {},
-                screen: 'orange',
-              },
+              params: { params: {}, screen: 'orange' },
               path: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['test', 'orange'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'orange',
                     params: {},
-                    path: undefined,
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],

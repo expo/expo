@@ -1,43 +1,50 @@
-apply plugin: 'com.android.library'
-
-group = '<%- project.package %>'
-version = '<%- project.version %>'
-
-def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
-apply from: expoModulesCorePlugin
-applyKotlinExpoModulesCorePlugin()
-useCoreDependencies()
-useExpoPublishing()
-
-// If you want to use the managed Android SDK versions from expo-modules-core, set this to true.
-// The Android SDK versions will be bumped from time to time in SDK releases and may introduce breaking changes in your module code.
-// Most of the time, you may like to manage the Android SDK versions yourself.
-def useManagedAndroidSdkVersions = false
-if (useManagedAndroidSdkVersions) {
-  useDefaultAndroidSdkVersions()
-} else {
-  buildscript {
-    // Simple helper that allows the root project to override versions declared by this library.
-    ext.safeExtGet = { prop, fallback ->
-      rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
-    }
+<% if (usesCompose) { -%>
+buildscript {
+  repositories {
+    mavenCentral()
   }
-  project.android {
-    compileSdkVersion safeExtGet("compileSdkVersion", 36)
-    defaultConfig {
-      minSdkVersion safeExtGet("minSdkVersion", 24)
-      targetSdkVersion safeExtGet("targetSdkVersion", 36)
-    }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
   }
 }
+
+<% } -%>
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+<% if (usesCompose) { -%>
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+<% } -%>
+
+group = '<%- project.package %>'
+version = '<% if (type === 'remote') { %><%- project.version %><% } else { %>0.1.0<% } %>'
 
 android {
   namespace "<%- project.package %>"
   defaultConfig {
     versionCode 1
-    versionName "<%- project.version %>"
+    versionName "<% if (type === 'remote') { %><%- project.version %><% } else { %>0.1.0<% } %>"
   }
+<% if (usesCompose) { -%>
+  buildFeatures {
+    compose true
+  }
+<% } -%>
   lintOptions {
     abortOnError false
   }
 }
+<% if (usesCompose) { -%>
+
+dependencies {
+  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
+  implementation 'androidx.compose.ui:ui-android:1.10.6'
+  implementation 'androidx.compose.material3:material3-android:1.5.0-alpha17'
+  if (findProject(':expo-ui') != null) {
+    implementation project(':expo-ui')
+  } else {
+    implementation 'expo.modules.ui:expo.modules.ui:+'
+  }
+}
+<% } -%>

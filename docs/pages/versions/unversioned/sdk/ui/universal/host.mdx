@@ -1,0 +1,169 @@
+---
+title: Host
+description: A cross-platform Host component that wraps universal @expo/ui content.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A container for universal `@expo/ui` content. On Android and iOS it re-exports the platform-native [`Host` for Jetpack Compose](../jetpack-compose/host)/[`Host` for SwiftUI](../swift-ui/host), so Jetpack Compose/SwiftUI children render exactly as they would in the platform-specific packages. On web, it falls back to a React Native [`View`](https://reactnative.dev/docs/view). Use `Host` as the root of any universal subtree so the same component tree works across all three platforms.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic usage
+
+```tsx HostExample.tsx
+import { Host, Column, Text, Button } from '@expo/ui';
+
+export default function HostExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Column spacing={12} alignment="center">
+        <Text>Hello, world!</Text>
+        <Button label="Press me" onPress={() => alert('Pressed')} />
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Match contents sizing
+
+Use `matchContents` to let `Host` size itself to fit its content. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it applies `alignSelf: 'flex-start'` to the underlying `View` so the host shrinks to fit its children instead of being stretched by its parent.
+
+> **Note:** On web, the per-axis form (`{ horizontal: true }` / `{ vertical: true }`) behaves the same as the boolean form, since `alignSelf` only controls stretching on the parent's cross axis. Components that rely on independent per-axis sizing should expect the same shrink-to-fit behavior on web regardless of which axis is opted in.
+
+```tsx MatchContentsExample.tsx
+import { Host, Button } from '@expo/ui';
+
+export default function MatchContentsExample() {
+  return (
+    <Host matchContents>
+      <Button label="Sized to content" onPress={() => {}} />
+    </Host>
+  );
+}
+```
+
+### Layout direction
+
+Use `layoutDirection` to render the subtree as left-to-right or right-to-left. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it sets the `dir` attribute on the underlying `View` so descendants inherit the chosen direction.
+
+```tsx LayoutDirectionExample.tsx
+import { Host, Row, Text } from '@expo/ui';
+
+export default function LayoutDirectionExample() {
+  return (
+    <Host layoutDirection="rightToLeft">
+      <Row spacing={8}>
+        <Text>First</Text>
+        <Text>Second</Text>
+      </Row>
+    </Host>
+  );
+}
+```
+
+### Reacting to content layout
+
+Use `onLayoutContent` to be notified of the current dimensions of the host's content. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it is derived from the underlying `View`'s `onLayout` callback.
+
+```tsx OnLayoutContentExample.tsx
+import { Host, Text } from '@expo/ui';
+
+export default function OnLayoutContentExample() {
+  return (
+    <Host
+      matchContents
+      onLayoutContent={({ nativeEvent: { width, height } }) =>
+        console.log(`content size: ${width}x${height}`)
+      }>
+      <Text>Hello, world!</Text>
+    </Host>
+  );
+}
+```
+
+### Filling the viewport
+
+Use `useViewportSizeMeasurement` for content that should size to the available viewport space. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, the host's underlying `View` is given the current window's width and height; any explicit `style` you pass still wins.
+
+```tsx UseViewportSizeMeasurementExample.tsx
+import { Host, Column, Text } from '@expo/ui';
+
+export default function UseViewportSizeMeasurementExample() {
+  return (
+    <Host useViewportSizeMeasurement>
+      <Column spacing={12} alignment="center">
+        <Text>Fills the viewport</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Ignoring safe areas
+
+By default, `Host` respects the device safe area insets (notch, home indicator, and so on). Use `ignoreSafeArea="all"` to let content extend edge-to-edge, or `ignoreSafeArea="keyboard"` to keep safe-area padding but ignore the keyboard inset. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it is implemented via the CSS `env(safe-area-inset-*)` values applied as padding on the underlying `View`; the default also folds in `env(keyboard-inset-*)` for pages that opt in to the [VirtualKeyboard API](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API).
+
+```tsx IgnoreSafeAreaExample.tsx
+import { Host, Text } from '@expo/ui';
+
+export default function IgnoreSafeAreaExample() {
+  return (
+    <Host ignoreSafeArea="all">
+      <Text>Extends behind the notch and home indicator</Text>
+    </Host>
+  );
+}
+```
+
+### Forcing a color scheme
+
+Use `colorScheme` to override the appearance of the subtree. Pass `'light'` or `'dark'` to force one, or omit it to follow the device setting. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it sets `data-theme` on the underlying `View` so the design-token CSS variables resolve to the forced scheme regardless of `prefers-color-scheme`.
+
+```tsx HostColorSchemeExample.tsx
+import { Host, Button } from '@expo/ui';
+
+export default function HostColorSchemeExample() {
+  return (
+    <Host colorScheme="dark" style={{ flex: 1 }}>
+      <Button label="Always dark" onPress={() => {}} />
+    </Host>
+  );
+}
+```
+
+### Seeding the color theme
+
+Use `seedColor` to derive the theme applied to the subtree from a single base color. Each platform interprets it natively. On Android, it generates a full Material 3 palette (`SchemeTonalSpot`, the same algorithm as Material You) that themes Compose children and is exposed to descendants via [`useMaterialColors`](../jetpack-compose/colors#usematerialcolorsoptions). On iOS, it is applied as the SwiftUI tint, propagating through the environment to theme interactive controls such as buttons, switches, and sliders. On web, it generates a primary color scale exposed as CSS variables to the underlying `View`. When omitted, each platform falls back to its default theme.
+
+```tsx HostSeedColorExample.tsx
+import { Host, Column, Button, Switch } from '@expo/ui';
+
+export default function HostSeedColorExample() {
+  return (
+    <Host seedColor="#00bc7d" style={{ flex: 1 }}>
+      <Column spacing={12} alignment="center">
+        <Button label="Themed button" onPress={() => {}} />
+        <Switch value onValueChange={() => {}} />
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Host } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/host" apiName="Host" />

@@ -12,7 +12,7 @@ import Reanimated, {
 import Colors from '../../constants/Colors';
 
 // TODO: (alan) Moving this import causes `Platform.OS` to be undefined?
-// eslint-disable-next-line import/order
+// oxfmt-ignore
 import { AudioPlayer, useAudioSampleListener } from 'expo-audio';
 
 // for some reason, iOS returns much smaller sample values
@@ -42,7 +42,11 @@ export function JsiAudioBar({ player, isPlaying }: { player: AudioPlayer; isPlay
   });
 
   if (!player.isAudioSamplingSupported) {
-    return <Text style={styles.errorText}>Audio sampling is not supported on this platform</Text>;
+    return (
+      <Text style={styles.errorText}>
+        Audio sampling requires the crossOrigin option for cross-origin sources
+      </Text>
+    );
   }
 
   if (!isPlaying) {

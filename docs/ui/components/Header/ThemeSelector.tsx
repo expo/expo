@@ -2,36 +2,30 @@ import { Themes, useTheme } from '@expo/styleguide';
 import { Contrast02SolidIcon } from '@expo/styleguide-icons/solid/Contrast02SolidIcon';
 import { Moon01SolidIcon } from '@expo/styleguide-icons/solid/Moon01SolidIcon';
 import { SunSolidIcon } from '@expo/styleguide-icons/solid/SunSolidIcon';
-import { useEffect, useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import { Select } from '~/ui/components/Select';
 
-const options = [
-  {
-    id: Themes.AUTO,
-    label: 'Auto',
-    Icon: Contrast02SolidIcon,
-  },
-  {
-    id: Themes.LIGHT,
-    label: 'Light',
-    Icon: SunSolidIcon,
-  },
-  {
-    id: Themes.DARK,
-    label: 'Dark',
-    Icon: Moon01SolidIcon,
-  },
-];
-
 export function ThemeSelector() {
+  const intl = useIntl();
   const { themeName, setAutoMode, setDarkMode, setLightMode } = useTheme();
-
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(function didMount() {
-    setLoaded(true);
-  }, []);
+  const options = [
+    {
+      id: Themes.AUTO,
+      label: intl.formatMessage({ id: 'themeAuto' }),
+      Icon: Contrast02SolidIcon,
+    },
+    {
+      id: Themes.LIGHT,
+      label: intl.formatMessage({ id: 'themeLight' }),
+      Icon: SunSolidIcon,
+    },
+    {
+      id: Themes.DARK,
+      label: intl.formatMessage({ id: 'themeDark' }),
+      Icon: Moon01SolidIcon,
+    },
+  ];
 
   function onThemeSelect(value: string) {
     if (value === Themes.AUTO) {
@@ -47,8 +41,8 @@ export function ThemeSelector() {
 
   return (
     <Select
-      className="min-w-[108px]"
-      value={loaded ? (themeName ?? Themes.AUTO) : undefined}
+      className="min-w-27"
+      value={themeName ?? Themes.AUTO}
       onValueChange={onThemeSelect}
       options={options}
       optionsLabel="Theme"

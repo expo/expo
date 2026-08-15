@@ -1,4 +1,6 @@
 require 'fileutils'
+require 'json'
+require 'open3'
 require 'colored2'
 
 module Expo
@@ -132,6 +134,67 @@ module Expo
       end
     end
 
+    # Integrates the core macro plugins into the targets.
+    def self.integrate_core_macro_plugins(targets)
+      macro_flags = nil
+      targets.each do |target|
+        unless macro_flags
+          core_pod_target = target.pod_targets.find { |pod_target| pod_target.name == 'ExpoModulesCore' }
+          core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
+            File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
+          macros_plugin_dir = resolve_macros_plugin_dir(core_src_root)
+          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
+        end
+
+        target.pod_targets.each do |pod_target|
+          is_core = pod_target.name == 'ExpoModulesCore'
+          has_core_dependency = pod_target.dependencies.find { |dependency| dependency == 'ExpoModulesCore' }
+          next unless is_core || has_core_dependency
+
+          pod_target.build_settings.each do |build_configuration_name, build_settings|
+            xcconfig_path = pod_target.xcconfig_path(build_configuration_name)
+            append_macro_flags(build_settings, xcconfig_path, macro_flags)
+          end
+
+          # Test specs are compiled into their own native targets with their own xcconfigs, so the flag
+          # set on the library target above doesn't reach them. Apply it to each test spec's build
+          # settings as well, so macros can be used from unit tests.
+          pod_target.test_specs.each do |test_spec|
+            test_type = test_spec.consumer(pod_target.platform).test_type
+            pod_target.test_spec_build_settings_by_config[test_spec.name].each do |build_configuration_name, build_settings|
+              xcconfig_variant = "#{test_type.capitalize}-#{pod_target.subspec_label(test_spec)}.#{build_configuration_name}"
+              xcconfig_path = pod_target.xcconfig_path(xcconfig_variant)
+              append_macro_flags(build_settings, xcconfig_path, macro_flags)
+            end
+          end
+        end
+      end
+    end
+
+    # Appends the macro plugin flags to the target's `OTHER_SWIFT_FLAGS` and saves the xcconfig,
+    # skipping it when the flags are already present.
+    def self.append_macro_flags(build_settings, xcconfig_path, macro_flags)
+      xcconfig = build_settings.xcconfig
+      swift_flags = xcconfig.attributes[SWIFT_FLAGS] || '$(inherited)'
+      return if swift_flags.include?(macro_flags)
+
+      xcconfig.attributes[SWIFT_FLAGS] = "#{swift_flags} #{macro_flags}"
+      xcconfig.save_as(xcconfig_path)
+    end
+
+    def self.resolve_macros_plugin_dir(core_src_root)
+      js = "require.resolve('@expo/expo-modules-macros-plugin/package.json', { paths: #{[core_src_root].to_json} })"
+      stdout, stderr, status = Open3.capture3('node', '--print', js)
+      pkg_json_path = stdout.strip
+
+      if !status.success? || pkg_json_path.empty?
+        node_error = stderr.lines.find { |line| line.start_with?('Error:') }&.strip
+        raise "[Expo] Could not resolve `@expo/expo-modules-macros-plugin` from #{core_src_root}.#{node_error ? " (#{node_error})" : ''} Reinstall your JavaScript dependencies and rerun `pod install`."
+      end
+
+      File.join(File.dirname(pkg_json_path), 'apple')
+    end
+
     # Makes sure that the build script configuring the project is installed,
     # is up-to-date and is placed before the "Compile Sources" phase.
     def self.integrate_build_script(autolinking_manager, project, target, native_target)
@@ -198,7 +261,7 @@ module Expo
       # Write to the shell script so it's always in-sync with the autolinking configuration
       IO.write(
         support_script_path,
-        generate_support_script(autolinking_manager, modules_provider_path, entitlement_path)
+        generate_support_script(autolinking_manager, target.target_definition.name, modules_provider_path, entitlement_path)
       )
 
       # Make the support script executable
@@ -240,12 +303,13 @@ module Expo
     end
 
     # Generates the support script that is executed by the build script phase.
-    def self.generate_support_script(autolinking_manager, modules_provider_path, entitlement_path)
+    def self.generate_support_script(autolinking_manager, target_name, modules_provider_path, entitlement_path)
       args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }
       platform = autolinking_manager.platform_name.downcase
       package_names = autolinking_manager.packages_to_generate.map { |package| "\"#{package.name}\"" }
       entitlement_param = entitlement_path.nil? ? '' : "--entitlement \"#{entitlement_path}\""
       app_root_param = autolinking_manager.custom_app_root.nil? ? '' : "--app-root \"#{autolinking_manager.custom_app_root}\""
+      podfile_properties_param = "--podfile-properties-file-path \"#{autolinking_manager.get_podfile_properties_path()}\""
 
       <<~SUPPORT_SCRIPT
       #!/usr/bin/env bash
@@ -293,11 +357,14 @@ module Expo
 
       with_node \\
         --no-warnings \\
-        --eval "require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))" \\
+        --eval "require(\'expo/bin/autolinking\')" \\
+        expo-modules-autolinking \\
         generate-modules-provider #{args.join(' ')} \\
         --target "#{modules_provider_path}" \\
+        --target-name "#{target_name}" \\
         #{entitlement_param} \\
         #{app_root_param} \\
+        #{podfile_properties_param} \\
         --platform "apple" \\
         --packages #{package_names.join(' ')}
       SUPPORT_SCRIPT

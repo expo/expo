@@ -1,3 +1,5 @@
+import { getBundleOrigin } from 'expo/internal/bundle-origin';
+
 import type { CodeFrame, MetroStackFrame } from '../Data/Types';
 import { fetchTextAsync } from '../fetchHelper';
 
@@ -14,20 +16,15 @@ export function getBaseUrl() {
     return devServerOverride;
   }
 
-  if (process.env.EXPO_OS !== 'web') {
-    const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
-    const devServer = getDevServer();
-    if (!devServer.bundleLoadedFromServer) {
-      throw new Error('Cannot create devtools websocket connections in embedded environments.');
-    }
-
-    return devServer.url;
+  const bundleOrigin = getBundleOrigin();
+  if (bundleOrigin === null) {
+    throw new Error('Cannot create devtools websocket connections in embedded environments.');
   }
 
-  return window.location.protocol + '//' + window.location.host;
+  return bundleOrigin;
 }
 
-function fetchTextAsyncWithBase(url: string, init?: { method?: string; body?: string }) {
+function fetchTextAsyncWithBase(url: string, init?: RequestInit) {
   const fullUrl = new URL(url, getBaseUrl()).href;
   return fetchTextAsync(fullUrl, init);
 }
@@ -35,6 +32,9 @@ function fetchTextAsyncWithBase(url: string, init?: { method?: string; body?: st
 export function openFileInEditor(file: string, lineNumber: number): void {
   fetchTextAsyncWithBase('/open-stack-frame', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({ file, lineNumber }),
   });
 }
@@ -54,6 +54,9 @@ export async function fetchProjectMetadataAsync(): Promise<{
 async function symbolicateStackTrace(stack: MetroStackFrame[]): Promise<SymbolicatedStackTrace> {
   const response = await fetchTextAsyncWithBase('/symbolicate', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({ stack }),
   });
   return JSON.parse(response);

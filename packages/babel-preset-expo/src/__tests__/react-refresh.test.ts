@@ -13,7 +13,7 @@ const ENABLED_CALLER: ExpoBabelCaller = {
   isHMREnabled: true,
 };
 
-function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
+function getCaller(props: Partial<ExpoBabelCaller>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
 }
 

@@ -1,4 +1,4 @@
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 
 import type { VideoPlayer } from './VideoPlayer.types';
 
@@ -22,7 +22,7 @@ export type SurfaceType = 'textureView' | 'surfaceView';
 
 export interface VideoViewProps extends ViewProps {
   /**
-   * A video player instance. Use [`useVideoPlayer()`](#usevideoplayersource-setup) hook to create one.
+   * A video player instance. Use [`useVideoPlayer()`](#usevideoplayersource-setup-playerbuilderoptions) hook to create one.
    */
   player?: VideoPlayer | null;
 
@@ -40,14 +40,6 @@ export interface VideoViewProps extends ViewProps {
    * @default 'contain'
    */
   contentFit?: VideoContentFit;
-
-  /**
-   * Determines whether fullscreen mode is allowed or not.
-   *
-   * > Note: This option has been deprecated in favor of the `fullscreenOptions` prop and will be disabled in the future.
-   * @default true
-   */
-  allowsFullscreen?: boolean;
 
   /**
    * Determines the fullscreen mode options.
@@ -68,6 +60,12 @@ export interface VideoViewProps extends ViewProps {
    * @platform ios
    */
   requiresLinearPlayback?: boolean;
+
+  /**
+   * Configuration for controlling the visibility of player control buttons.
+   * @platform android
+   */
+  buttonOptions?: ButtonOptions;
 
   /**
    * Determines the type of the surface used to render the video.
@@ -164,6 +162,17 @@ export interface VideoViewProps extends ViewProps {
   useExoShutter?: boolean;
 
   /**
+   * Determines whether the native controls are shown automatically when playback starts, pauses, or ends.
+   * When `false`, the controls won't appear automatically, but can still be shown by tapping the view. This is
+   * useful when playback is driven programmatically (for example an auto-advancing playlist), where the controls
+   * appearing on every play reads as a flash.
+   *
+   * @platform android
+   * @default true
+   */
+  controllerAutoShow?: boolean;
+
+  /**
    * Determines the [cross origin policy](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin) used by the underlying native view on web.
    * If `undefined` (default), does not use CORS at all. If set to `'anonymous'`, the video will be loaded with CORS enabled.
    * Note that some videos may not play if CORS is enabled, depending on the CDN settings.
@@ -189,6 +198,63 @@ export interface VideoViewProps extends ViewProps {
 }
 
 /**
+ * Configuration for controlling the visibility of player control buttons.
+ *
+ * > The fullscreen button should be controlled with [`fullscreenOptions.enable`](#fullscreenoptions).
+ *
+ * @platform android
+ */
+export type ButtonOptions = {
+  /**
+   * Whether to show the next button.
+   * @default false
+   */
+  showNext?: boolean;
+  /**
+   * Whether to show the previous button.
+   * @default false
+   */
+  showPrevious?: boolean;
+  /**
+   * Whether to show the seek forward button.
+   * @default true
+   */
+  showSeekForward?: boolean;
+  /**
+   * Whether to show the seek backward button.
+   * @default true
+   */
+  showSeekBackward?: boolean;
+  /**
+   * Whether to show the subtitles button.
+   * - `true`: Button is always visible
+   * - `false`: Button is never visible
+   * - `undefined`: Button is visible only when subtitles are available (default behavior)
+   * @default undefined
+   */
+  showSubtitles?: boolean | null;
+  /**
+   * Whether to show the settings button.
+   * @default true
+   */
+  showSettings?: boolean;
+  /**
+   * Whether to show the play/pause button.
+   * @default true
+   */
+  showPlayPause?: boolean;
+  /**
+   * Whether to show the bottom control bar (containing time, progress bar, and buttons).
+   * When set to `false`, the entire bottom bar including the progress bar will be hidden.
+   *
+   * > **Note**: The bottom bar is always visible in fullscreen mode to allow users to exit fullscreen.
+   *
+   * @default true
+   */
+  showBottomBar?: boolean;
+};
+
+/**
  * Describes the orientation of the video in fullscreen mode. Available values are:
  * - `default`: The video is displayed in any of the available device rotations.
  * - `portrait`: The video is displayed in one of two available portrait orientations and rotates between them.
@@ -208,12 +274,20 @@ export type FullscreenOrientation =
   | 'landscapeRight';
 
 /**
+ * Determines whether the player keeps fullscreen when Picture in Picture (PiP) stops.
+ * Only has an effect if the player was in fullscreen when PiP started.
+ * - `'always'`: Always re-enter fullscreen when PiP stops.
+ * - `'autoEnter'`: Re-enter fullscreen only when PiP was started automatically by the app going to the background.
+ * - `'never'`: Do not re-enter fullscreen when PiP stops.
+ */
+export type KeepFullscreenOnPiPStopBehavior = 'always' | 'autoEnter' | 'never';
+
+/**
  * Describes the options for fullscreen video mode.
  */
 export type FullscreenOptions = {
   /**
    * Specifies whether the fullscreen mode should be available to the user. When `false`, the fullscreen button will be hidden in the player.
-   * Equivalent to the `allowsFullscreen` prop.
    * @default true
    */
   enable: boolean;
@@ -236,4 +310,13 @@ export type FullscreenOptions = {
    * @platform ios
    */
   autoExitOnRotate?: boolean;
+
+  /**
+   * Determines whether the player keeps fullscreen when Picture in Picture (PiP) stops.
+   * Only has an effect if the player was in fullscreen when PiP started.
+   *
+   * @default 'autoEnter'
+   * @platform ios
+   */
+  keepFullscreenOnPiPStop?: KeepFullscreenOnPiPStopBehavior;
 };

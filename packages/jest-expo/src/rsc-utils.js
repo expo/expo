@@ -1,5 +1,4 @@
 import path from 'path';
-import { renderToReadableStream } from 'react-server-dom-webpack/server';
 
 import { toPosixPath } from './filePath';
 
@@ -40,6 +39,7 @@ export async function renderJsxToFlightStringAsync(jsx, throwOnError = true) {
 }
 
 export function renderJsxToReadableStream(jsx, { onError } = {}) {
+  const { renderToReadableStream } = require('react-server-dom-webpack/server');
   const clientBoundaries = [];
   const bundlerConfig = new Proxy(
     {},

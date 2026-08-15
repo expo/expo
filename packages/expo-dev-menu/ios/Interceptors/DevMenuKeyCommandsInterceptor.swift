@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import UIKit
 import React
 import EXDevMenuInterface
 
@@ -11,20 +10,29 @@ class DevMenuKeyCommandsInterceptor {
   static var isInstalled: Bool = false {
     willSet {
       if isInstalled != newValue {
-        if newValue {
-          registerKeyCommands()
-        } else {
-          unregisterKeyCommands()
+        DispatchQueue.main.async {
+          if newValue {
+            registerKeyCommands()
+          } else {
+            unregisterKeyCommands()
+          }
         }
       }
     }
   }
 
-  static private var moduleObserver: NSObjectProtocol?
+  static func reinstall() {
+    guard isInstalled else {
+      return
+    }
+
+    DispatchQueue.main.async {
+      unregisterKeyCommands()
+      registerKeyCommands()
+    }
+  }
 
   static private func registerKeyCommands() {
-    addModuleObserver()
-
     guard let commands = RCTKeyCommands.sharedInstance() else {
       return
     }
@@ -39,14 +47,6 @@ class DevMenuKeyCommandsInterceptor {
       withInput: "d",
       modifierFlags: .control,
       action: { _ in DevMenuManager.shared.toggleMenu() }
-    )
-
-    commands.registerKeyCommand(
-      withInput: "r",
-      modifierFlags: .command,
-      action: { _ in
-        DevMenuManager.shared.reload()
-      }
     )
 
     commands.registerKeyCommand(
@@ -82,45 +82,7 @@ class DevMenuKeyCommandsInterceptor {
     commands.unregisterKeyCommand(withInput: "d", modifierFlags: .command)
     commands.unregisterKeyCommand(withInput: "d", modifierFlags: .control)
     commands.unregisterKeyCommand(withInput: "r", modifierFlags: [])
-    commands.unregisterKeyCommand(withInput: "r", modifierFlags: .command)
     commands.unregisterKeyCommand(withInput: "i", modifierFlags: .command)
     commands.unregisterKeyCommand(withInput: "p", modifierFlags: .command)
-
-    removeModuleObserver()
-  }
-
-  static private func refreshKeyCommands() {
-    guard isInstalled else {
-      return
-    }
-
-    RCTExecuteOnMainQueue {
-      unregisterKeyCommands()
-      registerKeyCommands()
-    }
-  }
-
-  static private func addModuleObserver() {
-    guard moduleObserver == nil else {
-      return
-    }
-
-    moduleObserver = NotificationCenter.default.addObserver(
-      forName: NSNotification.Name.RCTDidInitializeModule,
-      object: nil,
-      queue: .main
-    ) { notification in
-      if (notification.userInfo?["module"] as? RCTDevMenu) != nil {
-        refreshKeyCommands()
-      }
-    }
-  }
-
-  static private func removeModuleObserver() {
-    let center = NotificationCenter.default
-    if let moduleObserver {
-      center.removeObserver(moduleObserver)
-      self.moduleObserver = nil
-    }
   }
 }

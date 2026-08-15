@@ -1,7 +1,6 @@
-import { DeviceEventEmitter } from 'react-native';
-
+import * as devLoadingViewEmitter from '../devLoadingViewEmitter';
+import { getFullBundlerUrl as getFullBundlerUrlHelper } from '../utils/getFullBundlerUrl';
 import { HMRMetroBuildError } from './buildErrors';
-import { getFullBundlerUrl as getFullBundlerUrlHelper } from './getFullBundlerUrl';
 
 export function getFullBundlerUrl(_: {
   serverScheme?: string;
@@ -14,13 +13,13 @@ export function getFullBundlerUrl(_: {
 
 export function showLoading(message: string, _type: 'load' | 'refresh') {
   // Ensure events are sent so custom Fast Refresh views are shown.
-  DeviceEventEmitter.emit('devLoadingView:showMessage', {
+  devLoadingViewEmitter.emit('devLoadingView:showMessage', {
     message,
   });
 }
 
 export function hideLoading() {
-  DeviceEventEmitter.emit('devLoadingView:hide', {});
+  devLoadingViewEmitter.emit('devLoadingView:hide', {});
 }
 
 export function resetErrorOverlay() {

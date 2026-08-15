@@ -2,10 +2,10 @@ import { vol } from 'memfs';
 import nock from 'nock';
 import prompts from 'prompts';
 
+import type { GithubContent } from '../Examples';
 import {
   ensureExampleExists,
   fetchMetadataAsync,
-  GithubContent,
   promptExamplesAsync,
   sanitizeScriptsAsync,
 } from '../Examples';
@@ -25,7 +25,7 @@ describe(ensureExampleExists, () => {
     scope.done();
   });
 
-  it('rejects when example does note exists', async () => {
+  it('rejects when example does not exist', async () => {
     const scope = nock('https://api.github.com')
       .get('/repos/expo/examples/contents/test/package.json')
       .reply(404);

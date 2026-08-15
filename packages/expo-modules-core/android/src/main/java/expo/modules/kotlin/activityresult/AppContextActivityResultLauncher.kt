@@ -3,8 +3,8 @@ package expo.modules.kotlin.activityresult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContract
 import java.io.Serializable
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 /**
  * A launcher for a previously-[AppContextActivityResultCaller.registerForActivityResult] prepared call
@@ -22,8 +22,13 @@ abstract class AppContextActivityResultLauncher<I : Serializable, O> {
    */
   abstract fun launch(input: I, callback: ActivityResultCallback<O>)
 
-  suspend fun launch(input: I): O = suspendCoroutine { continuation ->
-    launch(input) { output -> continuation.resume(output) }
+  suspend fun launch(input: I): O = suspendCancellableCoroutine { continuation ->
+    launch(input) { output ->
+      // avoids IllegalStateException: Already resumed - a rare crash likely due to race condition in lifecycle events
+      if (continuation.isActive) {
+        continuation.resume(output)
+      }
+    }
   }
 
   abstract val contract: AppContextActivityResultContract<I, O>

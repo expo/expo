@@ -1,7 +1,7 @@
 import { expect, test } from '@jest/globals';
-import type { InitialState } from '@react-navigation/routers';
 import { produce } from 'immer';
 
+import type { InitialState } from '../../react-navigation/routers';
 import { findFocusedRoute } from '../findFocusedRoute';
 import { getPathFromState } from '../getPathFromState';
 import { getStateFromPath } from '../getStateFromPath';
@@ -581,7 +581,7 @@ test('handles parse in nested object for second route depth', () => {
   expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-test('handles parse in nested object for second route depth and and path and parse in roots', () => {
+test('handles parse in nested object for second route depth and path and parse in roots', () => {
   const path = '/baz';
   const config = {
     screens: {
@@ -2821,7 +2821,7 @@ test('throws when invalid properties are specified in the config', () => {
     - path (string)
     - initialRouteName (string)
     - screens (object)
-    - alias (array)
+    - _route (object)
     - exact (boolean)
     - stringify (object)
     - parse (object)
@@ -2830,6 +2830,17 @@ test('throws when invalid properties are specified in the config', () => {
 
     See https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration."
   `);
+
+  expect(() =>
+    getStateFromPath<object>('', {
+      screens: {
+        Foo: {
+          path: 'foo',
+          alias: ['bar'],
+        },
+      },
+    } as any)
+  ).toThrow('- alias (extraneous)');
 
   expect(() =>
     getStateFromPath<object>('', {
@@ -2886,46 +2897,43 @@ test('encodes special characters in params', () => {
   expect(getPathFromState<object>(getStateFromPath<object>(path, config)!, config)).toEqual(path);
 });
 
-// Start Fork
-// Expo Router changes this functionality so all segments see the last :id
-// test('resolves nested path params with same name to correct screen', () => {
-//   const path = '/foo/42/bar/43';
+test('resolves nested path params with same name to correct screen', () => {
+  const path = '/foo/42/bar/43';
 
-//   const config = {
-//     initialRouteName: 'Foo',
-//     screens: {
-//       Foo: {
-//         path: 'foo/:id',
-//         screens: {
-//           Bar: {
-//             path: 'bar/:id',
-//           },
-//         },
-//       },
-//     },
-//   };
+  const config = {
+    initialRouteName: 'Foo',
+    screens: {
+      Foo: {
+        path: 'foo/:id',
+        screens: {
+          Bar: {
+            path: 'bar/:id',
+          },
+        },
+      },
+    },
+  };
 
-//   const state = {
-//     routes: [
-//       {
-//         name: 'Foo',
-//         params: { id: '42' },
-//         state: {
-//           routes: [
-//             {
-//               name: 'Bar',
-//               params: { id: '43' },
-//               path,
-//             },
-//           ],
-//         },
-//       },
-//     ],
-//   };
+  const state = {
+    routes: [
+      {
+        name: 'Foo',
+        params: { id: '42' },
+        state: {
+          routes: [
+            {
+              name: 'Bar',
+              params: { id: '43' },
+              path,
+            },
+          ],
+        },
+      },
+    ],
+  };
 
-//   expect(getStateFromPath<object>(path, config)).toEqual(state);
-// });
-// End Fork
+  expect(getStateFromPath<object>(path, config)).toEqual(state);
+});
 
 test('parses / same as empty string', () => {
   const config = {

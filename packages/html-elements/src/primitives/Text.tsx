@@ -1,8 +1,9 @@
-import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import { StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
+import type { ClassAttributes, ComponentProps, ComponentType } from 'react';
+import type { StyleProp, TextStyle as NativeTextStyle } from 'react-native';
+import { Text as NativeText } from 'react-native';
 
-import { WebViewStyle } from './View';
 import { createSafeStyledView } from '../css/createSafeStyledView';
+import type { WebViewStyle } from './View';
 
 // https://github.com/necolas/react-native-web/issues/832
 

@@ -1,4 +1,4 @@
-import { BridgeMessage, JSONValue } from './dom.types';
+import type { BridgeMessage, JSONValue } from './dom.types';
 
 const globalListeners = new Set<(message: BridgeMessage<any>) => void>();
 

@@ -1,4 +1,5 @@
 import { MiddlewareFunction } from 'expo-router/server';
+import { setResponseHeaders } from 'expo-server';
 
 const secret = new TextEncoder().encode(process.env.TEST_SECRET_KEY);
 
@@ -16,6 +17,13 @@ const middleware: MiddlewareFunction = async (request) => {
 
   if (scenario === 'error') {
     throw new Error('The middleware threw an error');
+  }
+
+  if (scenario === 'runtime-api') {
+    setResponseHeaders({
+      'X-Foo': 'bar',
+    });
+    return Response.redirect(new URL('/second', url.origin));
   }
 
   if (scenario === 'read-env') {

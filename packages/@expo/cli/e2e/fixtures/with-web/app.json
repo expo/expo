@@ -8,6 +8,9 @@
     },
     "web": {
       "bundler": "webpack"
+    },
+    "experiments": {
+      "autolinkingModuleResolution": true
     }
   }
 }

@@ -1,11 +1,52 @@
-import { withMetroServer } from './utils';
+import { vol } from 'memfs';
+
 import { openInEditorAsync } from '../../../../../utils/editor';
 import { createMetroMiddleware } from '../createMetroMiddleware';
+import { withMetroServer } from './utils';
 
 jest.mock('../../../../../utils/editor');
 
 describe(createMetroMiddleware, () => {
+  afterEach(() => {
+    vol.reset();
+  });
+
   const { metro, server, projectRoot } = withMetroServer();
+
+  it('responds to a bundle request with compression', async () => {
+    // Mocked Metro Server response for a bundle request
+    metro.middleware.use('/test.bundle', (_req, res) => {
+      res.setHeader('Content-Type', 'application/javascript');
+      res.write('console.log("Hello, world!");');
+      res.end();
+    });
+    const response = await server.fetch('/test.bundle', { headers: { 'Accept-Encoding': 'gzip' } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBe('gzip');
+  });
+
+  it('responds to a map request with compression', async () => {
+    // Mocked Metro Server response for a map request
+    metro.middleware.use('/test.map', (_req, res) => {
+      res.setHeader('Content-Type', 'application/json');
+      res.write('{}');
+      res.end();
+    });
+    const response = await server.fetch('/test.map', { headers: { 'Accept-Encoding': 'gzip' } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBe('gzip');
+  });
+
+  it('responds to a request without compression', async () => {
+    metro.middleware.use('/test', (_req, res) => {
+      res.setHeader('Content-Type', 'text/plain');
+      res.write('Hello, world!');
+      res.end();
+    });
+    const response = await server.fetch('/test', { headers: { 'Accept-Encoding': 'gzip' } });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Encoding')).toBeFalsy();
+  });
 
   it('disables cache on all requests', async () => {
     // Register an endpoint to capture the response headers
@@ -24,6 +65,47 @@ describe(createMetroMiddleware, () => {
     expect(response.headers.get('Expires')).toBe('0');
   });
 
+  it('does not apply blanket no-cache headers to loader requests', async () => {
+    metro.middleware.use('/_expo/loaders/cacheable', (_req, res) => {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.end('{}');
+    });
+
+    const response = await server.fetch('/_expo/loaders/cacheable');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Cache-Control')).toBe('public, max-age=3600');
+    expect(response.headers.get('Surrogate-Control')).toBeNull();
+    expect(response.headers.get('Pragma')).toBeNull();
+    expect(response.headers.get('Expires')).toBeNull();
+  });
+
+  it('strips the internal loader cache-busting param before downstream handlers', async () => {
+    let seenUrl: string | undefined;
+    metro.middleware.use('/_expo/loaders/stripped', (req, res) => {
+      seenUrl = req.url;
+      res.end('{}');
+    });
+
+    const response = await server.fetch('/_expo/loaders/stripped?user=1&_expo_loader_v=3');
+
+    expect(response.status).toBe(200);
+    expect(seenUrl).toContain('user=1');
+    expect(seenUrl).not.toContain('_expo_loader_v');
+  });
+
+  it('leaves loader URLs without the cache-busting param untouched', async () => {
+    let seenUrl: string | undefined;
+    metro.middleware.use('/_expo/loaders/untouched', (req, res) => {
+      seenUrl = req.url;
+      res.end('{}');
+    });
+
+    await server.fetch('/_expo/loaders/untouched?a=b%20c&d=1');
+
+    expect(seenUrl).toContain('a=b%20c&d=1');
+  });
+
   it('responds to /status requests', async () => {
     const response = await server.fetch('/status');
 
@@ -35,46 +117,38 @@ describe(createMetroMiddleware, () => {
     await expect(response.text()).resolves.toBe('packager-status:running');
   });
 
-  it('responds to /open-stack-frame requests', async () => {
-    // Avoid opening the fake file
-    jest.mocked(openInEditorAsync).mockResolvedValue(true);
+  describe('/open-stack-frame', () => {
+    it('rejects calls to /open-stack-frame outside of server root', async () => {
+      vol.fromJSON({ '/other/test-file.ts': '' });
 
-    const response = await server.fetch('/open-stack-frame', {
-      method: 'POST',
-      body: JSON.stringify({ file: 'test-file.ts', lineNumber: 1337 }),
+      // Avoid opening the fake file
+      jest.mocked(openInEditorAsync).mockResolvedValue(true);
+
+      const response = await server.fetch('/open-stack-frame', {
+        method: 'POST',
+        body: JSON.stringify({ file: '/other/test-file.ts', lineNumber: 1337 }),
+      });
+
+      expect(response.status).toBe(400);
+      expect(openInEditorAsync).not.toHaveBeenCalled();
     });
 
-    // Ensure the request is successful
-    expect(response.status).toBe(200);
-    // Ensure the open in editor was called
-    expect(openInEditorAsync).toHaveBeenCalledWith('test-file.ts', 1337);
-  });
+    it('responds to /open-stack-frame requests', async () => {
+      vol.fromJSON({ '/project/test-file.ts': '' });
 
-  it('prepares /symbolicate requests with raw body', async () => {
-    // Create a fake middleware to capture the request and respond with OK
-    const middleware = jest.fn((_req, res) => res.end('OK'));
-    // Create a fake symbolicate request body
-    const body = JSON.stringify({
-      stack: [
-        {
-          file: 'test-file.ts',
-          methodName: 'testMethod',
-          arguments: [],
-          lineNumber: 1337,
-          column: 0,
-        },
-      ],
+      // Avoid opening the fake file
+      jest.mocked(openInEditorAsync).mockResolvedValue(true);
+
+      const response = await server.fetch('/open-stack-frame', {
+        method: 'POST',
+        body: JSON.stringify({ file: '/project/test-file.ts', lineNumber: 1337 }),
+      });
+
+      // Ensure the request is successful
+      expect(response.status).toBe(200);
+      // Ensure the open in editor was called
+      expect(openInEditorAsync).toHaveBeenCalledWith('/project/test-file.ts', 1337);
     });
-
-    // Register the middleware to capture the request
-    metro.middleware.use('/symbolicate', middleware);
-
-    const response = await server.fetch('/symbolicate', { method: 'POST', body });
-
-    // Ensure the request is successful
-    expect(response.status).toBe(200);
-    // Ensure the request body was loaded as `rawBody` string
-    expect(middleware.mock.calls[0][0]).toHaveProperty('rawBody', body);
   });
 
   describe('websockets', () => {

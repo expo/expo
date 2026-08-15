@@ -1,4 +1,4 @@
-import { ConfigT } from '@expo/metro/metro-config';
+import type { ConfigT } from '@expo/metro/metro-config';
 import FailedToResolveNameError from '@expo/metro/metro-resolver/errors/FailedToResolveNameError';
 import FailedToResolvePathError from '@expo/metro/metro-resolver/errors/FailedToResolvePathError';
 

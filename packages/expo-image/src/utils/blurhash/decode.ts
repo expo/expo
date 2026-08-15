@@ -7,11 +7,15 @@ import { sRGBToLinear, signPow, linearTosRGB } from './utils';
  * @param blurhash
  */
 const validateBlurhash = (blurhash: string) => {
-  if (!blurhash || blurhash.length < 6) {
+  const charAt0 = blurhash[0];
+  const charAt1 = blurhash[1];
+
+  if (!charAt0 || !charAt1 || blurhash.length < 6) {
     throw new ValidationError('The blurhash string must be at least 6 characters');
   }
 
-  const sizeFlag = decode83(blurhash[0]);
+  const sizeFlag = decode83(charAt0);
+  const quantisedMaximumValue = decode83(charAt1);
   const numY = Math.floor(sizeFlag / 9) + 1;
   const numX = (sizeFlag % 9) + 1;
 
@@ -22,6 +26,8 @@ const validateBlurhash = (blurhash: string) => {
       }`
     );
   }
+
+  return { sizeFlag, quantisedMaximumValue };
 };
 
 export const isBlurhashValid = (blurhash: string): { result: boolean; errorReason?: string } => {
@@ -56,15 +62,13 @@ const decodeAC = (value: number, maximumValue: number) => {
 };
 
 const decode = (blurhash: string, width: number, height: number, punch?: number) => {
-  validateBlurhash(blurhash);
+  const { sizeFlag, quantisedMaximumValue } = validateBlurhash(blurhash);
 
   punch = (punch || 1) | 1;
 
-  const sizeFlag = decode83(blurhash[0]);
   const numY = Math.floor(sizeFlag / 9) + 1;
   const numX = (sizeFlag % 9) + 1;
 
-  const quantisedMaximumValue = decode83(blurhash[1]);
   const maximumValue = (quantisedMaximumValue + 1) / 166;
 
   const colors = new Array(numX * numY);

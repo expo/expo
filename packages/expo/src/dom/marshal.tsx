@@ -1,18 +1,17 @@
-import { BridgeMessage, JSONValue } from './dom.types';
-import { DOM_EVENT, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
+import type { BridgeMessage, JSONValue } from './dom.types';
+import { DOM_EVENT, DOM_READY, NATIVE_ACTION, NATIVE_ACTION_RESULT } from './injection';
+import { getWebViewBridge, hasWebViewBridge } from './webview-bridge';
 
 const IS_DOM =
   typeof window !== 'undefined' &&
-  // @ts-expect-error: Added via expo/dom
   typeof window.$$EXPO_INITIAL_PROPS !== 'undefined' &&
-  // @ts-expect-error: Added via react-native-webview
-  typeof window.ReactNativeWebView !== 'undefined';
+  hasWebViewBridge();
 
 const emit = <TData extends JSONValue>(message: BridgeMessage<TData>) => {
   if (!IS_DOM) {
     return;
   }
-  (window as any).ReactNativeWebView.postMessage(JSON.stringify(message));
+  getWebViewBridge().postMessage(JSON.stringify(message));
 };
 
 export const addEventListener = <TData extends JSONValue>(
@@ -30,6 +29,10 @@ export const addEventListener = <TData extends JSONValue>(
   return () => {
     window.removeEventListener(DOM_EVENT, listener);
   };
+};
+
+export const notifyDOMReady = () => {
+  emit({ type: DOM_READY, data: null });
 };
 
 function invokeNativeAction(actionId: string, args: any[]): Promise<any> {

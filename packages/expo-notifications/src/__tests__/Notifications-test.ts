@@ -1,8 +1,9 @@
-import { fail } from 'assert';
+import { fail } from 'node:assert';
 
 import NotificationScheduler from '../NotificationScheduler';
-import { SchedulableTriggerInputTypes, NotificationTriggerInput } from '../Notifications.types';
-import scheduleNotificationAsync from '../scheduleNotificationAsync';
+import type { NotificationTriggerInput } from '../Notifications.types';
+import { SchedulableTriggerInputTypes } from '../Notifications.types';
+import { scheduleNotificationAsync } from '../scheduleNotificationAsync';
 
 const notificationTriggerInputTest = {
   identifier: 'test_id',
@@ -370,7 +371,6 @@ it(`verifies calendar trigger handling`, async () => {
     input.identifier,
     input.content,
     {
-      type: 'calendar',
       repeats: false,
       ...input.trigger,
     }
@@ -387,7 +387,6 @@ it(`verifies calendar trigger handling`, async () => {
     input.identifier,
     input.content,
     {
-      type: 'calendar',
       repeats: false,
       ...input.trigger,
       second: 10,
@@ -406,7 +405,6 @@ it(`verifies calendar trigger handling`, async () => {
     input.identifier,
     input.content,
     {
-      type: 'calendar',
       repeats: true,
       ...input.trigger,
       second: 10,

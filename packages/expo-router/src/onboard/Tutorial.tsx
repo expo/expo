@@ -2,11 +2,23 @@ import React from 'react';
 import { Platform, StatusBar, StyleSheet, Text, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { createEntryFileAsync } from './createEntryFile';
-import { Link } from '../exports';
+import { Link } from '../link';
 import { Pressable } from '../views/Pressable';
 
 const canAutoTouchFile = process.env.EXPO_ROUTER_APP_ROOT != null;
+
+function createEntryFileAsync() {
+  if (process.env.NODE_ENV === 'production') {
+    // No dev server
+    console.warn('createEntryFile() cannot be used in production');
+    return;
+  }
+
+  return fetch('/_expo/touch', {
+    method: 'POST',
+    body: JSON.stringify({ type: 'router_index' }),
+  });
+}
 
 export function Tutorial() {
   React.useEffect(() => {
@@ -75,13 +87,13 @@ export function Tutorial() {
 }
 
 function getRootDir() {
-  const dir = process.env.EXPO_ROUTER_ABS_APP_ROOT!;
-  if (dir.match(/\/src\/app$/)) {
+  const dir = process.env.EXPO_ROUTER_APP_ROOT ?? '';
+  if (/[\\/]src[\\/]app$/.test(dir)) {
     return 'src/app';
-  } else if (dir.match(/\/app$/)) {
+  } else if (/[\\/]app$/.test(dir)) {
     return 'app';
   }
-  return dir.split('/').pop() ?? dir;
+  return dir.split(/[\\/]/).pop() ?? '';
 }
 
 function Button() {
@@ -118,8 +130,7 @@ function Button() {
                   native: { color: '#000' },
                 }),
             ]}>
-            <Text style={styles.textSecondary}>$</Text> touch {getRootDir()}
-            /index.tsx
+            <Text style={styles.textSecondary}>$</Text> touch {`${getRootDir()}/index.tsx`}
           </Text>
         </View>
       )}

@@ -1,14 +1,14 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo';
 import { AppState } from 'react-native';
 import type { AppStateStatus, NativeEventSubscription } from 'react-native';
 
-import {
+import type {
   WebBrowserAuthSessionResult,
   WebBrowserOpenOptions,
   WebBrowserResult,
-  WebBrowserResultType,
   WebBrowserWindowFeatures,
 } from './WebBrowser.types';
+import { WebBrowserResultType } from './WebBrowser.types';
 
 const POPUP_WIDTH = 500;
 const POPUP_HEIGHT = 650;
@@ -86,7 +86,7 @@ export default {
 
     if (skipRedirectCheck !== true) {
       const redirectUrl = window.localStorage.getItem(getRedirectUrlHandle(handle));
-      // Compare the original redirect url against the current url with it's query params removed.
+      // Compare the original redirect url against the current url with its query params removed.
       const currentUrl = normalizeUrl(window.location);
       if (redirectUrl !== currentUrl) {
         return {
@@ -104,7 +104,7 @@ export default {
     if (!parent) {
       throw new CodedError(
         'ERR_WEB_BROWSER_REDIRECT',
-        `The window cannot complete the redirect request because the invoking window doesn't have a reference to it's parent. This can happen if the parent window was reloaded.`
+        `The window cannot complete the redirect request because the invoking window doesn't have a reference to its parent. This can happen if the parent window was reloaded.`
       );
     }
     // Send the URL back to the opening window.
@@ -165,7 +165,7 @@ export default {
           return;
         }
         const { data } = event;
-        // Use a crypto hash to invalid message.
+        // Use a crypto hash to validate message.
         const handle = window.localStorage.getItem(getHandle());
         // Ensure the sender is also from expo-web-browser
         if (data.expoSender === handle) {
@@ -283,9 +283,13 @@ function generateRandom(size: number): string {
 
 function bufferToString(buffer: Uint8Array): string {
   let state: string = '';
-  for (let i = 0; i < buffer.byteLength; i += 1) {
-    const index = buffer[i] % CHARSET.length;
-    state += CHARSET[index];
+  for (const byte of buffer) {
+    const index = byte % CHARSET.length;
+    const char = CHARSET[index];
+
+    if (char != null) {
+      state += char;
+    }
   }
   return state;
 }

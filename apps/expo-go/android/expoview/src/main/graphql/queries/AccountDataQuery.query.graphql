@@ -1,0 +1,15 @@
+query Home_AccountData($accountName: String!, $appLimit: Int!, $snackLimit: Int!, $platform: AppPlatform!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      appCount
+      apps(limit: $appLimit, offset: 0, includeUnpublished: true) {
+        ...CommonAppData
+      }
+      snacks(limit: $snackLimit, offset: 0) {
+        ...CommonSnackData
+      }
+    }
+  }
+}

@@ -11,6 +11,8 @@ export {
   SharedObject,
   SharedRef,
   NativeModule,
+  UnavailabilityError,
+  CodedError,
 
   // Methods
   requireNativeModule,
@@ -18,6 +20,24 @@ export {
   requireNativeViewManager as requireNativeView,
   registerWebModule,
   reloadAppAsync,
+
+  // Worklets
+  installOnUIRuntime,
+
+  // Utils
+  Platform,
+  uuid,
+  createSnapshotFriendlyRef,
+  useReleasingSharedObject,
+  useReleasingSharedObjectWithLifecycle,
+} from 'expo-modules-core';
+
+export type {
+  EventSubscription,
+  TypedArray,
+  IntBasedTypedArray,
+  UintBasedTypedArray,
+  FloatBasedTypedArray,
 } from 'expo-modules-core';
 
 export type {
@@ -30,5 +50,14 @@ export type {
   /** @deprecated Move to `SharedObject` with a type-only import instead */
   SharedObject as SharedObjectType,
 } from 'expo-modules-core/types';
+
+export {
+  PermissionStatus,
+  type PermissionExpiration,
+  type PermissionResponse,
+  type PermissionHookOptions,
+} from 'expo-modules-core';
+
+export { createPermissionHook } from 'expo-modules-core';
 
 export { useEvent, useEventListener } from './hooks/useEvent';

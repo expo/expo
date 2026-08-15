@@ -1,38 +1,32 @@
+import type { ConfigPlugin } from 'expo/config-plugins';
 import {
   AndroidConfig,
-  ConfigPlugin,
   History,
-  WarningAggregator,
   withAndroidManifest,
   withAndroidStyles,
+  withAppBuildGradle,
   withDangerousMod,
   withSettingsGradle,
 } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
+import {
+  PCH_CMAKE_CONTENTS,
+  PCH_HEADER_CONTENTS,
+  PCH_ONLOAD_CONTENTS,
+  PCH_OWNER_SOURCE_CONTENTS,
+  STUB_PCH_GRADLE_TASK,
+} from './androidPCHTemplates';
 import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
 import { appendContents, purgeContents } from './fileContentsUtils';
 import type { PluginConfigType } from './pluginConfig';
+import { resolveConfigValue } from './pluginConfig';
 
 const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 
 export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<PluginConfigType>(
   [
-    {
-      propName: 'newArchEnabled',
-      propValueGetter: (config) => {
-        if (config.android?.newArchEnabled !== undefined) {
-          WarningAggregator.addWarningAndroid(
-            'withAndroidBuildProperties',
-            'android.newArchEnabled is deprecated, use app config `newArchEnabled` instead.',
-            'https://docs.expo.dev/versions/latest/config/app/#newarchenabled'
-          );
-        }
-
-        return config.android?.newArchEnabled?.toString();
-      },
-    },
     {
       propName: 'android.minSdkVersion',
       propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
@@ -48,6 +42,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     {
       propName: 'android.buildToolsVersion',
       propValueGetter: (config) => config.android?.buildToolsVersion,
+    },
+    {
+      propName: 'android.cmakeVersion',
+      propValueGetter: (config) => config.android?.cmakeVersion,
     },
     {
       propName: 'android.kotlinVersion',
@@ -87,7 +85,7 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     },
     {
       propName: 'reactNativeReleaseLevel',
-      propValueGetter: (config) => config.android?.reactNativeReleaseLevel,
+      propValueGetter: (config) => resolveConfigValue(config, 'android', 'reactNativeReleaseLevel'),
     },
     {
       propName: 'expo.useLegacyPackaging',
@@ -120,6 +118,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
     {
       propName: 'exclusiveEnterpriseRepository',
       propValueGetter: (config) => config.android?.exclusiveMavenMirror,
+    },
+    {
+      propName: 'hermesV1Enabled',
+      propValueGetter: (config) => resolveConfigValue(config, 'android', 'useHermesV1')?.toString(),
     },
   ],
   'withAndroidBuildProperties'
@@ -306,7 +308,10 @@ export const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType> = (config,
           name: 'AppTheme',
           parent: 'Theme.AppCompat.DayNight.NoActionBar',
         },
-        item: [...style[0].item.filter(({ $ }) => !excludedAttributes.includes($.name))],
+        item:
+          style[0] != null
+            ? [...style[0].item.filter(({ $ }) => !excludedAttributes.includes($.name))]
+            : [],
       },
       ...style.filter(({ $ }) => !excludedStyles.includes($.name)),
     ];
@@ -317,9 +322,13 @@ export const withAndroidDayNightTheme: ConfigPlugin<PluginConfigType> = (config,
 
 export const withAndroidSettingsGradle: ConfigPlugin<PluginConfigType> = (config, props) => {
   return withSettingsGradle(config, (config) => {
+    // Resolution order: android.buildReactNativeFromSource > top-level > deprecated android.buildFromSource
+    const buildFromSource =
+      resolveConfigValue(props, 'android', 'buildReactNativeFromSource') ??
+      props.android?.buildFromSource; // Deprecated fallback (last resort)
     config.modResults.contents = updateAndroidSettingsGradle({
       contents: config.modResults.contents,
-      buildFromSource: props.android?.buildReactNativeFromSource ?? props.android?.buildFromSource,
+      buildFromSource,
     });
     return config;
   });
@@ -332,10 +341,13 @@ export function updateAndroidSettingsGradle({
   contents: string;
   buildFromSource?: boolean;
 }) {
-  let newContents = contents;
+  const sectionOptions = {
+    tag: 'expo-build-properties-react-native-source',
+    commentPrefix: '//',
+  };
+  let newContents = purgeContents(contents, sectionOptions);
   if (buildFromSource === true) {
     const addCodeBlock = [
-      '', // new line
       'includeBuild(expoAutolinking.reactNative) {',
       '  dependencySubstitution {',
       '    substitute(module("com.facebook.react:react-android")).using(project(":packages:react-native:ReactAndroid"))',
@@ -344,10 +356,94 @@ export function updateAndroidSettingsGradle({
       '    substitute(module("com.facebook.react:hermes-engine")).using(project(":packages:react-native:ReactAndroid:hermes-engine"))',
       '  }',
       '}',
-      '', // new line
     ];
-    newContents += addCodeBlock.join('\n');
+    newContents = appendContents(newContents, addCodeBlock.join('\n'), sectionOptions);
   }
 
   return newContents;
+}
+
+export const withAndroidPrecompiledHeaders: ConfigPlugin<PluginConfigType> = (config, props) => {
+  if (
+    !props.android?.usePrecompiledHeaders &&
+    process.env.EXPO_USE_ANDROID_PRECOMPILED_HEADERS !== '1'
+  ) {
+    return config;
+  }
+
+  config = withAppBuildGradle(config, (config) => {
+    if (config.modResults.language === 'groovy') {
+      config.modResults.contents = updateBuildGradleForPCH(config.modResults.contents);
+    } else {
+      throw new Error(
+        'Precompiled headers are not supported with Kotlin build.gradle files. Convert android/app/build.gradle.kts to Groovy, or disable `android.usePrecompiledHeaders`.'
+      );
+    }
+
+    return config;
+  });
+
+  config = withDangerousMod(config, [
+    'android',
+    async (config) => {
+      const jniDir = path.join(config.modRequest.platformProjectRoot, 'app', 'src', 'main', 'jni');
+      await fs.promises.mkdir(jniDir, { recursive: true });
+      await Promise.all([
+        fs.promises.writeFile(path.join(jniDir, 'CMakeLists.txt'), PCH_CMAKE_CONTENTS),
+        fs.promises.writeFile(path.join(jniDir, 'OnLoad.cpp'), PCH_ONLOAD_CONTENTS),
+        fs.promises.writeFile(path.join(jniDir, 'pch.h'), PCH_HEADER_CONTENTS),
+        fs.promises.writeFile(
+          path.join(jniDir, 'appmodules_pch_owner.cpp'),
+          PCH_OWNER_SOURCE_CONTENTS
+        ),
+      ]);
+      return config;
+    },
+  ]);
+
+  return config;
+};
+
+function findBlockClosingLineIndex(lines: string[], blockStartIndex: number): number {
+  let depth = 0;
+  for (let i = blockStartIndex; i < lines.length; i++) {
+    const line = lines[i] ?? '';
+    for (const ch of line) {
+      if (ch === '{') {
+        depth++;
+      } else if (ch === '}') {
+        depth--;
+      }
+    }
+
+    if (depth === 0) {
+      return i;
+    }
+  }
+
+  return -1;
+}
+
+export function updateBuildGradleForPCH(contents: string): string {
+  let result = contents;
+
+  if (!result.includes('externalNativeBuild')) {
+    const block = `    externalNativeBuild {\n        cmake {\n            path "src/main/jni/CMakeLists.txt"\n        }\n    }`;
+    const lines = result.split('\n');
+    const androidStart = lines.findIndex((line) => /^android\s*\{/.test(line));
+    const closingIndex = findBlockClosingLineIndex(lines, androidStart);
+    if (closingIndex < 0) {
+      throw new Error(
+        'Cannot configure precompiled headers: unable to find the `android` block in build.gradle.'
+      );
+    }
+    lines.splice(closingIndex, 0, block);
+    result = lines.join('\n');
+  }
+
+  const sectionOptions = { tag: 'expo-build-properties-pch', commentPrefix: '//' };
+  result = purgeContents(result, sectionOptions);
+  result = appendContents(result, STUB_PCH_GRADLE_TASK, sectionOptions);
+
+  return result;
 }

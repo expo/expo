@@ -1,11 +1,12 @@
 import ExpoModulesCore
+import RNScreens
 
-class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
-  LinkPreviewModalDismissible, LinkPreviewMenuUpdatable
+class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDelegate,
+  RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable
 {
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
-  private var directChild: UIView?
+  var directChild: UIView?
   var nextScreenId: String? {
     didSet {
       performUpdateOfPreloadedView()
@@ -18,7 +19,9 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
   }
   private var actions: [LinkPreviewNativeActionView] = []
 
-  private let linkPreviewNativeNavigation = LinkPreviewNativeNavigation()
+  private lazy var linkPreviewNativeNavigation: LinkPreviewNativeNavigation = {
+    return LinkPreviewNativeNavigation(logger: logger)
+  }()
 
   let onPreviewTapped = EventDispatcher()
   let onPreviewTappedAnimationCompleted = EventDispatcher()
@@ -47,60 +50,69 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     }
     // However if one these is defined then we can perform the native update
     linkPreviewNativeNavigation.updatePreloadedView(
-      screenId: nextScreenId, tabPath: tabPath, responder: self)
+      screenId: nextScreenId,
+      tabPath: tabPath,
+      responder: self
+    )
   }
 
   // MARK: - Children
-  #if RCT_NEW_ARCH_ENABLED
-    override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
-      if let previewView = childComponentView as? NativeLinkPreviewContentView {
-        preview = previewView
-      } else if let actionView = childComponentView as? LinkPreviewNativeActionView {
-        actionView.parentMenuUpdatable = self
-        actions.append(actionView)
-      } else {
-        if directChild != nil {
-          print(
-            "[expo-router] Found a second child of <Link.Trigger>. Only one is allowed. This is most likely a bug in expo-router."
-          )
-          return
-        }
-        directChild = childComponentView
-        if let interaction = self.interaction {
+  override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
+    if let previewView = childComponentView as? NativeLinkPreviewContentView {
+      preview = previewView
+    } else if let actionView = childComponentView as? LinkPreviewNativeActionView {
+      actionView.parentMenuUpdatable = self
+      actions.append(actionView)
+    } else {
+      if directChild != nil {
+        logger?.warn(
+          "[expo-router] Found a second child of <Link.Trigger>. Only one is allowed. This is most likely a bug in expo-router."
+        )
+        return
+      }
+      directChild = childComponentView
+      if let interaction = self.interaction {
+        if let indirectTrigger = childComponentView as? LinkPreviewIndirectTriggerProtocol {
+          indirectTrigger.indirectTrigger?.addInteraction(interaction)
+        } else {
           childComponentView.addInteraction(interaction)
         }
-        super.mountChildComponentView(childComponentView, index: index)
       }
+      super.mountChildComponentView(childComponentView, index: index)
     }
+  }
 
-    override func unmountChildComponentView(_ child: UIView, index: Int) {
-      if child is NativeLinkPreviewContentView {
-        preview = nil
-      } else if let actionView = child as? LinkPreviewNativeActionView {
-        actions.removeAll(where: {
-          $0 == actionView
-        })
-      } else {
-        if let directChild = directChild {
-          if directChild != child {
-            print(
-              "[expo-router] Unmounting unexpected child from <Link.Trigger>. This is most likely a bug in expo-router."
-            )
-            return
-          }
-          if let interaction = self.interaction {
-            directChild.removeInteraction(interaction)
-          }
-          super.unmountChildComponentView(child, index: index)
-        } else {
-          print(
-            "[expo-router] No link child found to unmount. This is most likely a bug in expo-router."
+  override func unmountChildComponentView(_ child: UIView, index: Int) {
+    if child is NativeLinkPreviewContentView {
+      preview = nil
+    } else if let actionView = child as? LinkPreviewNativeActionView {
+      actions.removeAll(where: {
+        $0 == actionView
+      })
+    } else {
+      if let directChild = directChild {
+        if directChild != child {
+          logger?.warn(
+            "[expo-router] Unmounting unexpected child from <Link.Trigger>. This is most likely a bug in expo-router."
           )
           return
         }
+        if let interaction = self.interaction {
+          if let indirectTrigger = directChild as? LinkPreviewIndirectTriggerProtocol {
+            indirectTrigger.indirectTrigger?.removeInteraction(interaction)
+          } else {
+            directChild.removeInteraction(interaction)
+          }
+        }
+        super.unmountChildComponentView(child, index: index)
+      } else {
+        logger?.warn(
+          "[expo-router] No link child found to unmount. This is most likely a bug in expo-router."
+        )
+        return
       }
     }
-  #endif
+  }
 
   // MARK: - UIContextMenuInteractionDelegate
 
@@ -108,6 +120,7 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     _ interaction: UIContextMenuInteraction,
     configurationForMenuAtLocation location: CGPoint
   ) -> UIContextMenuConfiguration? {
+    cancelReactNativeTouches()
     onWillPreviewOpen()
     return UIContextMenuConfiguration(
       identifier: nil,
@@ -116,7 +129,8 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
       },
       actionProvider: { [weak self] _ in
         self?.createContextMenu()
-      })
+      }
+    )
   }
 
   func contextMenuInteraction(
@@ -124,16 +138,18 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     configuration: UIContextMenuConfiguration,
     highlightPreviewForItemWithIdentifier identifier: any NSCopying
   ) -> UITargetedPreview? {
-    if let superview = self.superview {
-      if let directChild = self.directChild {
-        let target = UIPreviewTarget(
-          container: superview, center: self.convert(directChild.center, to: superview))
+    if let superview, let directChild {
+      let triggerView: UIView =
+        (directChild as? LinkPreviewIndirectTriggerProtocol)?.indirectTrigger ?? directChild
+      let target = UIPreviewTarget(
+        container: superview,
+        center: self.convert(triggerView.center, to: superview)
+      )
 
-        let parameters = UIPreviewParameters()
-        parameters.backgroundColor = .clear
+      let parameters = UIPreviewParameters()
+      parameters.backgroundColor = triggerView.backgroundColor ?? .clear
 
-        return UITargetedPreview(view: directChild, parameters: parameters, target: target)
-      }
+      return UITargetedPreview(view: triggerView, parameters: parameters, target: target)
     }
     return nil
   }
@@ -158,8 +174,8 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
     animator: UIContextMenuInteractionAnimating?
   ) {
     onPreviewWillClose()
-    animator?.addCompletion {
-      self.onPreviewDidClose()
+    animator?.addCompletion { [weak self] in
+      self?.onPreviewDidClose()
     }
   }
 
@@ -174,6 +190,28 @@ class NativeLinkPreviewView: ExpoView, UIContextMenuInteractionDelegate,
         self?.linkPreviewNativeNavigation.pushPreloadedView()
         self?.onPreviewTappedAnimationCompleted()
       }
+    }
+  }
+
+  // A press released before the menu fully presents is still recognized as a tap by
+  // react-native, so cancel in-flight touches on the nearest surface when the interaction
+  // starts. Unlike rnscreens_cancelTouches, `reset` is omitted deliberately: the press is
+  // still active and UIKit delivers touchesCancelled after this returns — resetting first
+  // desyncs the touch registry (NSAssert in -[RCTSurfaceTouchHandler _updateTouches:]).
+  private func cancelReactNativeTouches() {
+    guard let touchHandlerClass = NSClassFromString("RCTSurfaceTouchHandler") else {
+      return
+    }
+    var view: UIView? = self
+    while let current = view {
+      if let recognizer = current.gestureRecognizers?.first(where: { $0.isKind(of: touchHandlerClass) }) {
+        if recognizer.isEnabled {
+          recognizer.isEnabled = false
+          recognizer.isEnabled = true
+        }
+        return
+      }
+      view = current.superview
     }
   }
 
@@ -231,4 +269,8 @@ class PreviewViewController: UIViewController {
     super.viewDidAppear(animated)
     linkPreviewNativePreview.setInitialSize(bounds: self.view.bounds)
   }
+}
+
+protocol LinkPreviewIndirectTriggerProtocol {
+  var indirectTrigger: UIView? { get }
 }

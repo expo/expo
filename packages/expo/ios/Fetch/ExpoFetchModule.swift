@@ -2,8 +2,11 @@
 
 @preconcurrency import ExpoModulesCore
 
+/// Typealias matching React Native's NSURLSessionConfigurationProvider block type
+public typealias URLSessionConfigurationProvider = @convention(block) () -> URLSessionConfiguration?
+
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
-nonisolated(unsafe) internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
+nonisolated(unsafe) internal var urlSessionConfigurationProvider: URLSessionConfigurationProvider?
 
 public final class ExpoFetchModule: Module {
   private lazy var urlSession = createURLSession()
@@ -19,6 +22,19 @@ public final class ExpoFetchModule: Module {
 
     OnDestroy {
       urlSession.invalidateAndCancel()
+    }
+
+    // TODO(kudo,20260706): remove this when we install expo-blob as globalThis.Blob
+    AsyncFunction("unstable_createBlobData") { (data: Data) -> String in
+      guard let blobManager: NSObject = self.appContext?.nativeModule(named: "BlobModule") else {
+        throw FetchBlobModuleUnavailableException()
+      }
+      let store = NSSelectorFromString("store:")
+      guard blobManager.responds(to: store),
+        let blobId = blobManager.perform(store, with: data as NSData)?.takeUnretainedValue() as? String else {
+        throw FetchBlobModuleUnavailableException()
+      }
+      return blobId
     }
 
     // swiftlint:disable:next closure_body_length
@@ -56,14 +72,22 @@ public final class ExpoFetchModule: Module {
       Property("redirected", \.redirected)
 
       AsyncFunction("arrayBuffer") { (response: NativeResponse, promise: Promise) in
-        response.waitFor(states: [.bodyCompleted]) { _ in
+        response.waitFor(states: [.bodyCompleted, .errorReceived]) { state in
+          if state == .errorReceived {
+            promise.reject(response.error ?? FetchUnknownException())
+            return
+          }
           let data = response.sink.finalize()
-          promise.resolve(data)
+          promise.resolve(NativeArrayBuffer.wrap(dataWithoutCopy: data))
         }
       }.runOnQueue(fetchRequestQueue)
 
       AsyncFunction("text") { (response: NativeResponse, promise: Promise) in
-        response.waitFor(states: [.bodyCompleted]) { _ in
+        response.waitFor(states: [.bodyCompleted, .errorReceived]) { state in
+          if state == .errorReceived {
+            promise.reject(response.error ?? FetchUnknownException())
+            return
+          }
           let data = response.sink.finalize()
           let text = String(decoding: data, as: UTF8.self)
           promise.resolve(text)

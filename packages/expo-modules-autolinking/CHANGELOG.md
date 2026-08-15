@@ -6,22 +6,351 @@
 
 ### 🎉 New features
 
-- Added support for cli command extensions in the interactive devtools menu ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
-- [Android] Sync flavor dimensions and product flavors from app to expo module ([#40238](https://github.com/expo/expo/pull/40238) by [@kosmydel](https://github.com/kosmydel))
+- [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
+- [Android] Support linking published Gradle plugins. ([#48334](https://github.com/expo/expo/pull/48334) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `HEADER_SEARCH_PATHS` corruption for pod targets whose existing build setting is an array: interpolating the array into a string rendered it as `["…", "…"]`, producing unresolvable include paths. Surfaced as `'React/RCTSurfaceTouchHandler.h' file not found` when building `@expo/ui` with `use_frameworks! :linkage => :dynamic`. ([#48665](https://github.com/expo/expo/pull/48665) by [@Lanchez](https://github.com/Lanchez))
+- [Android] Fix autolinking pure C++ React Native modules published without `includesGeneratedCode: true`. ([#48514](https://github.com/expo/expo/pull/48514) by [@satya164](https://github.com/satya164))
+- [iOS] Only stub a source pod bundled inside a prebuilt XCFramework (e.g. `SDWebImage` in `ExpoImage.xcframework`) when one of its consumers also links the owning prebuilt pod. An app extension that depends on such a pod on its own now keeps building it from source instead of failing to link with undefined symbols. ([#47847](https://github.com/expo/expo/pull/47847) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix a duplicate pod error (`multiple dependencies with different sources`) for precompiled modules in a Podfile with multiple targets. `prebuilt_react_active?` now mirrors React Native's default for `RCT_USE_PREBUILT_RNCORE` (prebuilt unless explicitly `0`), since `use_react_native!` only sets it after `use_expo_modules!` has run. ([#47329](https://github.com/expo/expo/pull/47329) by [@janicduplessis](https://github.com/janicduplessis))
+- [Android] Resolve symlinks in the Gradle plugin `sourceDir` before it reaches `includeBuild`. Android Studio failed to sync with `Missing ExternalProject for :` in pnpm workspaces with a patched dependency. ([#48495](https://github.com/expo/expo/pull/48495) by [@lukmccall](https://github.com/lukmccall))
+- Fixed unsorted autolinking result and introduced unstable fingerprint. ([#48629](https://github.com/expo/expo/pull/48629) by [@kudo](https://github.com/kudo))
+- [iOS] Fix `'React/RCTBridge.h' file not found` with `ios.useFrameworks: "dynamic"` by reverting the dynamic-framework linkage guard from [#47500](https://github.com/expo/expo/pull/47500). Under `:dynamic` linkage every pod target is already a dynamic framework, so the guard skipped the whole `USE_FRAMEWORKS` downgrade. `@rnmapbox/maps` 10.3.2 no longer needs the guard because it skips its own dynamic flip when precompiled modules are enabled. ([#48869](https://github.com/expo/expo/pull/48869) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- [Android] Make the autolinking Gradle plugin compatible with Android Gradle Plugin 9. ([#46766](https://github.com/expo/expo/pull/46766) by [@lukmccall](https://github.com/lukmccall))
+- Add experimental `tvos` and `macos` resolution ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
+
+## 57.0.9 - 2026-07-22
+
+### 🐛 Bug fixes
+
+- [iOS] Propagate `buildFromSource` across the precompiled dependency graph, so building a prebuilt dependency from source (e.g. `react-native-worklets`) also forces its dependents (e.g. `react-native-reanimated`) to build from source, instead of linking a prebuilt XCFramework against a source-built dependency. ([#48041](https://github.com/expo/expo/pull/48041) by [@chrfalch](https://github.com/chrfalch))
+
+## 57.0.8 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.7 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-15
+
+### 🎉 New features
+
+- Added support for compile-only inline module files, which are compiled into the target without being registered as Expo modules. ([#46969](https://github.com/expo/expo/pull/46969) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [iOS] Pass target name to the generateModulesProviderCommand to match it against inline modules targets, when checking if inline modules should be autolinked with that target. ([#47502](https://github.com/expo/expo/pull/47502) by [@HubertBer](https://github.com/HubertBer))
+- [Android] Scan the whole Kotlin file for its `package` declaration when registering inline modules, so modules with long comments (for example, a license header) before the `package` declaration are no longer silently skipped. ([#47656](https://github.com/expo/expo/pull/47656) by [@HubertBer](https://github.com/HubertBer))
+
+## 57.0.5 - 2026-07-07
+
+### 🐛 Bug fixes
+
+- [iOS] Under precompiled modules, preserve a dynamic-framework subgraph set up by an earlier `pre_install` hook (e.g. `@rnmapbox/maps`) — both the dynamic frameworks and the pods that link against them — instead of forcing them back to static libraries. ([#47500](https://github.com/expo/expo/pull/47500) by [@kudo](https://github.com/kudo))
+- [iOS] Raise resource bundle targets to their pod's effective deployment target, fixing builds failing on Xcode 27 for pods whose podspec declares a deployment target below iOS 15.0 (e.g. `ReachabilitySwift`). ([#47562](https://github.com/expo/expo/pull/47562) by [@tsapeta](https://github.com/tsapeta))
+
+## 57.0.4 - 2026-07-03
+
+### 🐛 Bug fixes
+
+- [iOS] Add the missing `ENABLE_CROSS_RUNTIME_STACK_TRACES` flag to the `react-native-worklets` precompile config so its prebuilt XCFramework matches the package's `staticFlags.json`. ([#47478](https://github.com/expo/expo/pull/47478) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.3 - 2026-06-30
+
+### 🐛 Bug fixes
+
+- [iOS] Respect an explicit `ios.usePrecompiledModules: false` even when `EXPO_USE_PRECOMPILED_MODULES` is already set in the environment (e.g. EAS Build). ([#46983](https://github.com/expo/expo/pull/46983) by [@ryanda9910](https://github.com/ryanda9910))
+
+## 57.0.2 - 2026-06-30
+
+### 🎉 New features
+
+- [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.5.0`'s generated component and native view sources. ([#47201](https://github.com/expo/expo/pull/47201) by [@lukmccall](https://github.com/lukmccall))
+
+## 56.0.16 - 2026-06-15
+
+### 🎉 New features
+
+- Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
+
+## 56.0.15 - 2026-06-05
+
+### 🐛 Bug fixes
+
+- Fixed the macro plugin flag not being applied to test targets, so macros couldn't be used in unit tests. ([#46595](https://github.com/expo/expo/pull/46595) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.14 - 2026-05-28
+
+### 🐛 Bug fixes
+
+- [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.4.1` upstream defaults, adding the `CSS/core/transition` and `PseudoStyles` header mappings along with the missing `IOS_CSS_CORE_ANIMATION` and `USE_ANIMATION_BACKEND` feature flags so its XCFramework builds. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
+- Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
+
+## 56.0.13 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- [iOS] Align precompile feature flags for `react-native-worklets@0.8.3` and `react-native-reanimated@4.3.1` with upstream defaults. ([#46221](https://github.com/expo/expo/pull/46221) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Raise every autolinked Expo module's deployment target to at least `ExpoModulesCore`'s during `pod install`, so adapters whose podspecs declare a lower platform value no longer fail. ([#46175](https://github.com/expo/expo/pull/46175) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.12 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.11 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- [iOS] Update `@shopify/react-native-skia` precompile config for the 2.6.x source layout ([#46081](https://github.com/expo/expo/pull/46081) by [@chrfalch](https://github.com/chrfalch))
+
+## 56.0.10 — 2026-05-21
+
+### 🎉 New features
+
+- [iOS] Include and consume shared SPM dependencies in the precompiled pod / npm publish pipeline. ([#46069](https://github.com/expo/expo/pull/46069) by [@chrfalch](https://github.com/chrfalch))
+
+## 56.0.9 — 2026-05-20
+
+### 🐛 Bug fixes
+
+- Fix Hermes version resolution polarity in `precompiled_modules.rb` so external prebuilt artifacts are looked up under the V1 Hermes subfolder by default, matching `hermes-engine.podspec`. ([#46053](https://github.com/expo/expo/pull/46053) by [@chrfalch](https://github.com/chrfalch))
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 56.0.8 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `pod install` failing with `bad component (expected absolute path component)` for precompiled Expo modules when the project lives under a path containing non-ASCII characters (e.g. emoji). ([#45779](https://github.com/expo/expo/pull/45779) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Cache prebuilt module status lookups to reduce repeated `File.exist?` calls during `pod install`. ([#45742](https://github.com/expo/expo/pull/45742) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Wire the macro plugin flag into `ExpoModulesCore`'s own xcconfig so SourceKit can resolve `#externalMacro` references in core source files. ([#45778](https://github.com/expo/expo/pull/45778) by [@tsapeta](https://github.com/tsapeta))
+- Disallow devtools plugins to point to `webpageRoot` outside of their own bounds ([#45841](https://github.com/expo/expo/pull/45841) by [@kitten](https://github.com/kitten))
+
+## 56.0.6 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-13
+
+### 🐛 Bug fixes
+
+[iOS] Added fallback to source for missing framework slice. ([#45664](https://github.com/expo/expo/pull/45664) by [@chrfalch](https://github.com/chrfalch))
+
+## 56.0.4 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-08
+
+### 🐛 Bug fixes
+
+- [iOS] Re-stamp `ExpoModulesJSI.xcframework` stub slices on every `pod install` so cached pods can't ship with missing slices. ([#45542](https://github.com/expo/expo/pull/45542) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+### 🐛 Bug fixes
+
+- [iOS] Avoid logging the precompiled modules React Native fallback as a CocoaPods warning. ([#45431](https://github.com/expo/expo/pull/45431) by [@chrfalch](https://github.com/chrfalch))
+
+### 💡 Others
+
+- [iOS] Reduce prominence of expected source-build fallback logs for missing external precompiled XCFrameworks. ([#45435](https://github.com/expo/expo/pull/45435) by [@chrfalch](https://github.com/chrfalch))
+
+## 56.0.0 — 2026-05-05
+
+### 🎉 New features
+
+- Expose `isNativeModuleAsync` utility in internal exports ([#44458](https://github.com/expo/expo/pull/44458) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- [iOS] removed fix for FB 54066 which is now merged and ready to be used. Introduced in #40219. ([#44290](https://github.com/expo/expo/pull/44290) by [@chrfalch](https://github.com/chrfalch))
+- Add `package.json:exports` with no-op reexport paths ([#44002](https://github.com/expo/expo/pull/44002) by [@kitten](https://github.com/kitten), [@hassankhan](https://github.com/hassankhan))
+- [iOS] Add early escape in generateModulesProviderAsync to avoid touching files that haven't changed ([#44289](https://github.com/expo/expo/pull/44289) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Added `@OptimizedFunction` macros support for Expo modules. ([#44262](https://github.com/expo/expo/pull/44262) by [@kudo](https://github.com/kudo))
+- [iOS] Add more detailed warnings when a package is not linked due to a mismatch between project and package deployment target. ([#44200](https://github.com/expo/expo/pull/44200) by [@behenate](https://github.com/behenate))
+- Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
+- [iOS] Don't skip companion pods that depend on external (non-Expo) sibling pods. ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.21 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.20 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.19 - 2026-04-28
+
+### 🐛 Bug fixes
+
+- [iOS] Disable precompiled modules with a clear warning when `EXPO_USE_PRECOMPILED_MODULES=1` is set without `RCT_USE_PREBUILT_RNCORE=1` ([#45381](https://github.com/expo/expo/pull/45381) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fall back to source build when a remote precompiled XCFramework download returns 404. ([#45240](https://github.com/expo/expo/pull/45240) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Resolve npm-bundled precompiled XCFrameworks for nested Expo packages like `expo-modules-core` during `pod install`. ([#45166](https://github.com/expo/expo/pull/45166) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Build precompiled Expo modules from source when a required upstream Expo dependency is unavailable as prebuilt. ([#45160](https://github.com/expo/expo/pull/45160) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add support for optionally downloading external precompiled XCFramework tarballs from during `pod install`. ([#45067](https://github.com/expo/expo/pull/45067) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Resolve 3rd-party prebuilt xcframework packages via `@react-native-community/cli` autolinking output instead of guessing `node_modules/<pkg>`, fixing pnpm non-hoisted layouts, transitive native deps, yarn resolutions/PnP, and aliased specifiers ([#45004](https://github.com/expo/expo/pull/45004) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.18 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- Fix missing deep object merging that should allow a project config to override a dependency's per-platform config options selectively ([#44668](https://github.com/expo/expo/pull/44668) by [@kitten](https://github.com/kitten))
+
+## 55.0.17 - 2026-04-10
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-07
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed precompiled modules use_frameworks! override running when only prebuilt React Native is active. ([#44554](https://github.com/expo/expo/pull/44554) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.14 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-02
+
+### 🎉 New features
+
+- Add support for loading precompiled frameworks from npm. ([#44360](https://github.com/expo/expo/pull/44360) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.12 - 2026-03-27
+
+### 🐛 Bug fixes
+
+- [Android] Fixed build failures caused by the "=" character in pnpm virtual store paths. ([#44109](https://github.com/expo/expo/pull/44109) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixes an issue where the modulemap is destroyed when switching between Debug and Release configurations. ([#44665](https://github.com/expo/expo/pull/44665) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.11 - 2026-03-18
+
+### 🎉 New features
+
+- Add `include` option to `package.json:expo.autolinking` and per-platform configurations. This allows the verification and deduplication checks to also apply to additional packages that aren't otherwise recognized as native modules, which is useful to detect or deduplicate additional packages with singleton state, for example. ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
+
+## 55.0.10 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-11
+
+### 🐛 Bug fixes
+
+- Stop dependency resolution at depth limit and increase max depth limit to 9 ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
+- Sort on unresolved path and load `version` for duplicate dependencies ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
+- Fix regression that caused `pod install` to fail with `no implicit conversion of nil into String` due to an off-by-one in the depth limit check. ([#43731](https://github.com/expo/expo/pull/43731) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-20
+
+### 💡 Others
+
+- Reduce memory retained after autolinking runs ([#42947](https://github.com/expo/expo/pull/42947) by [@kitten](https://github.com/kitten))
+- Add concurrency limits to IO-bound autolinking tasks ([#42968](https://github.com/expo/expo/pull/42968) by [@kitten](https://github.com/kitten))
+
+## 55.0.5 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-16
+
+### 💡 Others
+
+- Replace `require-from-string` with `@expo/require-utils` ([#42884](https://github.com/expo/expo/pull/42884) by [@kitten](https://github.com/kitten))
+
+## 55.0.3 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- Added support for cli command extensions in the interactive devtools menu ([#39598](https://github.com/expo/expo/pull/39598) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Sync flavor dimensions and product flavors from app to expo module ([#40238](https://github.com/expo/expo/pull/40238) by [@kosmydel](https://github.com/kosmydel))
+- [Android] Added support for `services`. ([#41809](https://github.com/expo/expo/pull/41809) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- [iOS] Added the new ExpoModulesJSI to the forceStaticLinking default values ([#41298](https://github.com/expo/expo/pull/41298) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Fix passing exclude options. ([#40014](https://github.com/expo/expo/pull/40014) by [@jakex7](https://github.com/jakex7))
-- Sort results from file discovery to keep fingerprint stable ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 - Fix [#40601](https://github.com/expo/expo/pull/40601) assuming case-insensitive path for default derived podspec path in `react-native-config` resolution ([#40894](https://github.com/expo/expo/pull/40894) by [@kitten](https://github.com/kitten)) ([#40931](https://github.com/expo/expo/pull/40931) by [@kitten](https://github.com/kitten))
-- Fix [#40651](https://github.com/expo/expo/pull/40651) causing already read versions to be lost depending on traversal order ([#40912](https://github.com/expo/expo/pull/40912) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
 - [Android] Move generate-package-list to Gradle task ([#39917](https://github.com/expo/expo/pull/39917) by [@jakex7](https://github.com/jakex7))
 - [Android] Use module name from `expo-module.config.json`. ([#39985](https://github.com/expo/expo/pull/39985) by [@jakex7](https://github.com/jakex7))
+- [Android] Align `expo-gradle-plugin`'s CLI command to align with iOS invocation of `expo-modules-autolinking` ([#41264](https://github.com/expo/expo/pull/41264) by [@kitten](https://github.com/kitten))
+- [Android] Removed `AppContext.camera`, `AppContext.font` and `AppContext.taskManager`. ([#41810](https://github.com/expo/expo/pull/41810) by [@lukmccall](https://github.com/lukmccall))
+- Make `ExpoModulesProvider` internal ([#42317](https://github.com/expo/expo/pull/42317) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 3.0.23 - 2025-12-04
+
+### 💡 Others
+
+- Fallback to resolving modules from list of duplicates, if a search path module is invalid or fails to resolve ([#41309](https://github.com/expo/expo/pull/41309) by [@kitten](https://github.com/kitten))
+
+## 3.0.22 - 2025-11-17
+
+### 🐛 Bug fixes
+
+- Fix [#40651](https://github.com/expo/expo/pull/40651) causing already read versions to be lost depending on traversal order ([#40912](https://github.com/expo/expo/pull/40912) by [@kitten](https://github.com/kitten)) ([#40651](https://github.com/expo/expo/pull/40651), [#40912](https://github.com/expo/expo/pull/40912) by [@kitten](https://github.com/kitten))
+
+## 3.0.20 - 2025-11-03
+
+### 🐛 Bug fixes
+
+- Sort results from file discovery to keep fingerprint stable ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
 - Refactor test suite and file discovery implementation to drop `glob` ([#40601](https://github.com/expo/expo/pull/40601) by [@kitten](https://github.com/kitten))
 - Improve recursive dependency resolution performance ([#40651](https://github.com/expo/expo/pull/40651) by [@kitten](https://github.com/kitten))
+- Add `expo-max-sdk-override-plugin` gradle plugin to change the default manifest merger behaviour for `android:maxSdkVersion` conflicts. ([#40973](https://github.com/expo/expo/pull/40973) by [@behenate](https://github.com/behenate))
 
 ## 3.0.19 - 2025-10-23
 
@@ -95,6 +424,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- [iOS] Added modular headers for companion pods ([#44805](https://github.com/expo/expo/pull/44805) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile ([#39479](https://github.com/expo/expo/pull/39479) by [@chrfalch](https://github.com/chrfalch))
 - Remove dependency on `find-up` ([#39470](https://github.com/expo/expo/pull/39470) by [@kitten](https://github.com/kitten))
 - [iOS] Force codegen for `FBReactNativeSpec` when generated files are missing in React Native source ([#39512](https://github.com/expo/expo/pull/39512) by [@kitten](https://github.com/kitten))
@@ -159,7 +489,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Improved error message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
 - Prevent Expo Modules from being detected as C++-only React Native modules ([#38658](https://github.com/expo/expo/pull/38658) by [@kitten](https://github.com/kitten))
 - Ignore optional peer dependencies in dependency traversal ([#38713](https://github.com/expo/expo/pull/38713) by [@kitten](https://github.com/kitten))
 
@@ -361,7 +691,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
+- Removed `expo_patch_react_imports!` and align more standard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
 - Exported a new `findProjectRootSync` API. ([#31966](https://github.com/expo/expo/pull/31966) by [@kudo](https://github.com/kudo))
 
 ## 1.11.2 - 2024-08-14

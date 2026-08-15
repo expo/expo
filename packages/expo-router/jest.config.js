@@ -1,3 +1,6 @@
+const path = require('node:path');
+
+const createJestPreset = require('expo-module-scripts/createJestPreset');
 const {
   getWebPreset,
   getNodePreset,
@@ -21,6 +24,10 @@ function withDefaults({ watchPlugins, ...config }) {
       // Plain CSS (and other style files) can be stubbed with an empty object.
       '^.+\\.(css|less|sass|scss)$': '<rootDir>/__mocks__/styleMock.js',
     },
+    transform: {
+      ...(config.transform || {}),
+      '^.+\\.(png|jpg|jpeg|gif|svg)$': '<rootDir>/__mocks__/imageTransformer.js',
+    },
   };
 }
 
@@ -30,9 +37,21 @@ const projects = [
   getWebPreset(),
   getIOSPreset(),
   getAndroidPreset(),
-].map(withDefaults);
+]
+  .map(createJestPreset)
+  .map(withDefaults);
+
+// Run the config plugin's tests as their own project so a single `jest` covers the package.
+// `watchPlugins`/`prettierPath` are root-only, so strip them from the sub-project.
+const { watchPlugins, prettierPath, ...pluginProject } = require('./plugin/jest.config.js');
+projects.push({ ...pluginProject, rootDir: path.join(__dirname, 'plugin') });
+
+// Run the RSC `__rsc_tests__` as their own per-platform projects (`rsc/<platform>`) so a single
+// `jest` covers them too. These match only `**/__rsc_tests__/**`, separate from the projects above.
+projects.push(...require('jest-expo/rsc/jest-preset').projects);
 
 const config = withWatchPlugins({
+  ...require('jest-expo/config/maxWorkers'),
   projects,
 });
 

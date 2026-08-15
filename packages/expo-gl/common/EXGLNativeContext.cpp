@@ -1,4 +1,7 @@
 #include "EXGLNativeContext.h"
+
+#include <future>
+
 #include "EXPlatformUtils.h"
 
 namespace expo {
@@ -34,7 +37,7 @@ void EXGLContext::maybeResolveWorkletContext(jsi::Runtime &runtime) {
     return;
   }
   uintptr_t rawWorkletRuntimePointer =
-      *reinterpret_cast<uintptr_t *>(workletRuntimeArrayBuffer.data(runtime));
+    *reinterpret_cast<uintptr_t *>(workletRuntimeArrayBuffer.data(runtime));
   jsi::Runtime *workletRuntime = reinterpret_cast<jsi::Runtime *>(rawWorkletRuntimePointer);
   this->maybeWorkletRuntime = workletRuntime;
 }
@@ -45,7 +48,7 @@ void EXGLContext::prepareWorkletContext() {
   }
   jsi::Runtime &runtime = *this->maybeWorkletRuntime;
   createWebGLRenderer(
-      runtime, this, initialGlesContext, runtime.global().getPropertyAsObject(runtime, "global"));
+    runtime, this, initialGlesContext, runtime.global().getPropertyAsObject(runtime, "global"));
   tryRegisterOnJSRuntimeDestroy(runtime);
 }
 
@@ -76,8 +79,8 @@ void EXGLContext::addBlockingToNextBatch(Op &&op) {
 // [JS thread] Enqueue a function and return an EXGL object that will get mapped
 // to the function's return value when it is called on the GL thread.
 jsi::Value EXGLContext::addFutureToNextBatch(
-    jsi::Runtime &runtime,
-    std::function<unsigned int(void)> &&op) noexcept {
+  jsi::Runtime &runtime,
+  std::function<unsigned int(void)> &&op) noexcept {
   auto exglObjId = createObject();
   addToNextBatch([=] {
     assert(objects.find(exglObjId) == objects.end());
@@ -94,8 +97,8 @@ void EXGLContext::flush(void) {
     std::lock_guard<std::mutex> lock(backlogMutex);
     std::swap(backlog, copy);
   }
-  for (const auto &batch : copy) {
-    for (const auto &op : batch) {
+  for (const auto &batch: copy) {
+    for (const auto &op: batch) {
       op();
     }
   }
@@ -128,10 +131,10 @@ void EXGLContext::tryRegisterOnJSRuntimeDestroy(jsi::Runtime &runtime) {
   // `jsi::Runtime` is being destroyed and that will trigger destructor of
   // `InvalidateCacheOnDestroy` class which will invalidate JSI PropNameID cache.
   global.setProperty(
-      runtime,
-      OnJSRuntimeDestroyPropertyName,
-      jsi::Object::createFromHostObject(
-          runtime, std::make_shared<InvalidateCacheOnDestroy>(runtime)));
+    runtime,
+    OnJSRuntimeDestroyPropertyName,
+    jsi::Object::createFromHostObject(
+      runtime, std::make_shared<InvalidateCacheOnDestroy>(runtime)));
 }
 
 glesContext EXGLContext::prepareOpenGLESContext() {

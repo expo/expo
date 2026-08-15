@@ -9,11 +9,10 @@ import {
 
 export { ExpoError } from './abstract';
 
-export type RequestHandler<Env = unknown> = (
-  req: Request,
-  env: Env,
-  ctx: ExecutionContext
-) => Promise<Response>;
+export interface RequestHandler<Env = unknown> {
+  (req: Request, env: Env, ctx: ExecutionContext): Promise<Response>;
+  preload(): Promise<void>;
+}
 
 const STORE = new AsyncLocalStorage();
 
@@ -25,9 +24,13 @@ export function createRequestHandler<Env = unknown>(
   setup?: RequestHandlerParams
 ): RequestHandler<Env> {
   const run = createWorkerdRequestScope(STORE, params);
-  const onRequest = createExpoHandler({
-    ...createWorkerdEnv(params),
-    ...setup,
-  });
-  return (request, env, ctx) => run(onRequest, request, env, ctx);
+  const common = createWorkerdEnv(params);
+  const onRequest = createExpoHandler({ ...common, ...setup });
+
+  function handler(request: Request, env: Env, ctx: ExecutionContext) {
+    return run(onRequest, request, env, ctx);
+  }
+
+  handler.preload = common.preload;
+  return handler;
 }

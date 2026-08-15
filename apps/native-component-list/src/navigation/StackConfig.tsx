@@ -1,51 +1,49 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { HeaderStyleInterpolators } from '@react-navigation/stack';
-import { ThemeType } from 'ThemeProvider';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import { ThemeType, useTheme } from 'ThemeProvider';
+import { Stack, router, type NativeStackNavigationOptions, useRouter } from 'expo-router';
 import * as React from 'react';
-import { View, Platform, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Platform, TouchableOpacity } from 'react-native';
 
-export default function getStackConfig(navigation: BottomTabNavigationProp<any>, theme: ThemeType) {
+// iOS takes an SF Symbol name, Android needs an xml drawable.
+const searchIcon =
+  process.env.EXPO_OS === 'ios' ? 'magnifyingglass' : require('@expo/material-symbols/search.xml');
+
+export function getStackScreenOptions(theme: ThemeType): NativeStackNavigationOptions {
   return {
-    cardStyle: {
-      backgroundColor: theme.background.default,
-    },
-    screenOptions: () => ({
-      headerStyleInterpolator: HeaderStyleInterpolators.forUIKit,
-      headerStyle: {
-        backgroundColor: theme.background.default,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: theme.border.secondary,
-        ...Platform.select({
-          android: {
-            elevation: 0,
-          },
-        }),
-      },
-      headerTintColor: theme.icon.info,
-      headerTitleStyle: {
-        color: theme.text.default,
-      },
-      headerPressColorAndroid: theme.icon.info,
-      headerRight: () => <HeaderRightComponent navigation={navigation} theme={theme} />,
-    }),
+    contentStyle: { backgroundColor: theme.background.default },
+    headerStyle: { backgroundColor: theme.background.default },
+    headerTintColor: theme.icon.info,
+    headerTitleStyle: { color: theme.text.default },
   };
 }
 
-const IS_NAV_PERSISTED = 'PERSIST_NAV_STATE';
-const HeaderRightComponent = ({
-  navigation,
-  theme,
-}: {
-  navigation: BottomTabNavigationProp<any>;
-  theme: ThemeType;
-}) => {
-  const [isNavPersisted, setIsNavPersisted] = React.useState(false);
-  React.useEffect(() => {
-    AsyncStorage.getItem(IS_NAV_PERSISTED).then((value) => setIsNavPersisted(!!value));
-  }, []);
+/** Header search button, rendered by the screens that browse the API and component lists. */
+export function SearchToolbar() {
+  const { theme } = useTheme();
 
+  // Toolbar items have no native counterpart on web, so `asChild` renders a JS button instead.
+  if (Platform.OS === 'web') {
+    return (
+      <Stack.Toolbar placement="right" asChild>
+        <HeaderRightComponent theme={theme} />
+      </Stack.Toolbar>
+    );
+  }
+
+  return (
+    <Stack.Toolbar placement="right">
+      <Stack.Toolbar.Button
+        accessibilityLabel="Search"
+        icon={searchIcon}
+        tintColor={theme.icon.info}
+        onPress={() => router.push('/search')}
+      />
+    </Stack.Toolbar>
+  );
+}
+
+const HeaderRightComponent = ({ theme }: { theme: ThemeType }) => {
+  const router = useRouter();
   return (
     <View
       style={{
@@ -56,20 +54,7 @@ const HeaderRightComponent = ({
         marginTop: 4,
         gap: 20,
       }}>
-      <TouchableOpacity
-        onPress={() => {
-          (isNavPersisted
-            ? AsyncStorage.removeItem(IS_NAV_PERSISTED)
-            : AsyncStorage.setItem(IS_NAV_PERSISTED, 'enabled')
-          ).then(() => setIsNavPersisted(!isNavPersisted));
-        }}>
-        <Ionicons
-          name={isNavPersisted ? 'lock-closed' : 'lock-open'}
-          size={Platform.OS === 'ios' ? 22 : 25}
-          color={isNavPersisted ? theme.icon.info : theme.icon.default}
-        />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('searchNavigator')}>
+      <TouchableOpacity onPress={() => router.push('/search')}>
         <Ionicons name="search" size={Platform.OS === 'ios' ? 22 : 25} color={theme.icon.info} />
       </TouchableOpacity>
       {/* This toggler does not work properly, it only updates the navigation and not the body UI */}

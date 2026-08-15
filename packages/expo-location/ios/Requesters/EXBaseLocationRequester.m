@@ -2,6 +2,7 @@
 
 #import <ExpoLocation/EXBaseLocationRequester.h>
 #import <ExpoModulesCore/EXUtilities.h>
+#import <React/RCTLog.h>
 
 #import <objc/message.h>
 
@@ -36,7 +37,7 @@
 
   CLAuthorizationStatus systemStatus;
   if (![EXBaseLocationRequester isConfiguredForAlwaysAuthorization] && ![EXBaseLocationRequester isConfiguredForWhenInUseAuthorization]) {
-    EXFatal(EXErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/3iLqy6S (https://docs.expo.dev/distribution/app-stores/#system-permissions-dialogs-on-ios) for more information."));
+    RCTFatal(RCTErrorWithMessage(@"This app is missing usage descriptions, so location services will fail. Add one of the `NSLocation*UsageDescription` keys to your bundle's Info.plist. See https://bit.ly/3iLqy6S (https://docs.expo.dev/distribution/app-stores/#system-permissions-dialogs-on-ios) for more information."));
     systemStatus = kCLAuthorizationStatusDenied;
   } else {
     systemStatus = [CLLocationManager authorizationStatus];
@@ -88,13 +89,13 @@
     // same as asking for foreground permissions and then asking for background permissions.
     //
     // "Allow once" is a temporary permission (limited to the current app session). It is not possible to get
-    // info from the API about wether or not the current permission is temporary. You cannot request background
+    // info from the API about whether or not the current permission is temporary. You cannot request background
     // permissions with a temporary token - a background request will then return denied.
     //
     // Requesting background permissions directly and "Allow while using the App" gives you a provisional
     // background permission that can later be elevated to a full "Always allow" permission.
     // You will be asked at a later point if you want to convert to "Always allow". The system waits until
-    // you have started using the newly aquired permission before showing the permission dialog.
+    // you have started using the newly acquired permission before showing the permission dialog.
     //
     // Test the following scenarios in BareExpo -> APIs -> Location
     // ------------------------------------------------------------
@@ -107,11 +108,11 @@
     // - rfp -> "Allow while using App", then rbp -> "Keep only while using"    = (fp: granted, bg: denied)
     // - rfp -> "Allow while using App", then rbp -> "Change to always allow"   = (fp: granted, bg: granted)
     // - rfp -> "Don't allow", then rbp -> no dialog                            = (fp: denied, bg: denied)
-    // - rbp -> "Allow once", no more dalogs                                    = (fp: granted (temporary), bg: denied)
+    // - rbp -> "Allow once", no more dialogs                                   = (fp: granted (temporary), bg: denied)
     // - rbp -> "Allow while using App", no more dialogs                        = (fp: granted, bg: granted (provisional))
     // - rbp -> "Don't allow"                                                   = (fp: denied, bg: denied)
     
-    // Save start statue and call requestLocationPermissions
+    // Save start status and call requestLocationPermissions
     _beginStatus = [self.locationManager authorizationStatus];
     [self requestLocationPermissions];
   }
@@ -158,5 +159,15 @@
   return [self isConfiguredForWhenInUseAuthorization] && [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysAndWhenInUseUsageDescription"];
 }
 
+- (NSString *)accuracyAuthorizationString
+{
+  if (@available(iOS 14, *)) {
+    CLLocationManager *manager = self.locationManager ?: [[CLLocationManager alloc] init];
+    if (manager.accuracyAuthorization == CLAccuracyAuthorizationReducedAccuracy) {
+      return @"reduced";
+    }
+  }
+  return @"full";
+}
 
 @end

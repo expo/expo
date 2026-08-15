@@ -102,8 +102,6 @@ class KernelReactNativeHost(
       ExponentPackage.kernelExponentPackage(
         application.applicationContext,
         exponentManifest.getKernelManifestAndAssetRequestHeaders().manifest,
-        HomeActivity.homeExpoPackages(),
-        HomeActivity.Companion,
         data?.initialURL
       ),
       ExpoTurboPackage.kernelExpoTurboPackage(

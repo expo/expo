@@ -136,6 +136,29 @@ open class EitherOfFour<FirstType, SecondType, ThirdType, FourthType>: EitherOfT
   }
 }
 
+// MARK: - Equatable
+
+private func isEitherEqual<T: Equatable>(_ lhs: T, _ rhs: Any) -> Bool {
+  guard let rhs = rhs as? T else { return false }
+  return lhs == rhs
+}
+
+extension Either: Equatable {
+  public static func == (lhs: Either, rhs: Either) -> Bool {
+    switch (lhs.value, rhs.value) {
+    case (nil, nil):
+      return true
+    case (nil, _), (_, nil):
+      return false
+    case let (lhs?, rhs?):
+      if let lhs = lhs as? any Equatable {
+        return isEitherEqual(lhs, rhs)
+      }
+      return false
+    }
+  }
+}
+
 // MARK: - Exceptions
 
 /**

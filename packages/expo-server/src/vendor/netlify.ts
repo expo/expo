@@ -41,7 +41,7 @@ const STORE: ScopeDefinition = {
 
 export function createRequestHandler(params: { build: string }) {
   const makeRequestAPISetup = (request: Request, context?: NetlifyContext) => ({
-    origin: (context ?? getContext()).site?.url || request.headers.get('Origin') || 'null',
+    origin: (context ?? getContext()).site?.url || request.headers.get('Origin') || null,
     environment: (context ?? getContext()).deploy?.context || null,
     waitUntil: (context ?? getContext()).waitUntil,
   });

@@ -1,10 +1,10 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
 import path from 'path';
-import rimraf from 'rimraf';
 
-import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { createProjectHashAsync } from '../../src/Fingerprint';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
+import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
@@ -20,17 +20,20 @@ describe('updates managed support', () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
-    // Pin the SDK version to prevent the latest version breaking snapshots
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-51', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await fs.rm(projectRoot, { force: true, recursive: true });
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `blank@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
 
     // Add appId
     const appConfigPath = path.join(projectRoot, 'app.json');
@@ -41,7 +44,7 @@ describe('updates managed support', () => {
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should have same hash before and after prebuild', async () => {
@@ -73,7 +76,7 @@ describe('updates managed support', () => {
         ...process.env,
         // NOTE(cedric): for some reason older version of `@expo/image-utils` find a binary of sharp on Windows.
         // Unfortunately, this doesn't mean we can use Sharp and will cause prebuild to fail.
-        // Manually disable Sharp for this test to avoid falky test behavior on Windows CI.
+        // Manually disable Sharp for this test to avoid flaky test behavior on Windows CI.
         EXPO_IMAGE_UTILS_NO_SHARP: '1',
       },
     });

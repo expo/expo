@@ -1,5 +1,5 @@
 import NativeVideoAirPlayButton from './NativeVideoAirPlayButtonView';
-import { VideoAirPlayButtonProps } from './VideoAirPlayButton.types';
+import type { VideoAirPlayButtonProps } from './VideoAirPlayButton.types';
 
 export default function VideoAirPlayButton(props: VideoAirPlayButtonProps) {
   return (

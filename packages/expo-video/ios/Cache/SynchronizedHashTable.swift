@@ -2,7 +2,12 @@
 
 internal class SynchronizedHashTable<T: AnyObject> {
   private let lock = NSLock()
-  private var hashTable: NSHashTable<T> = NSHashTable()
+  private let hashTable: NSHashTable<T>
+
+  init(weakObjects: Bool = false) {
+    hashTable = weakObjects ? NSHashTable<T>.weakObjects() : NSHashTable<T>()
+  }
+
   var allObjects: [T] {
     lock.lock()
     defer { lock.unlock() }

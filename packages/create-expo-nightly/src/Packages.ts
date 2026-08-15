@@ -1,21 +1,16 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { mergeJsonFilesAsync, readJsonFileAsync } from './JsonFile.js';
 import { runAsync } from './Processes.js';
-
-let cachedPackages: Package[] | null = null;
 
 const EXCLUDE_PACKAGES = [
   '@expo/fingerprint',
   'create-expo',
   'eslint-config-universe',
-  'expo-dev-client-components',
   'expo-doctor',
   'expo-env-info',
   'expo-module-scripts',
   'expo-module-template',
-  'expo-module-template-local',
   'expo-test-runner',
   'install-expo-modules',
   'pod-install',
@@ -43,19 +38,6 @@ interface Package {
 }
 
 /**
- * Add given workspace packages to the project.
- */
-export async function addWorkspacePackagesToAppAsync(projectRoot: string, packages: Package[]) {
-  const packageJson = await readJsonFileAsync(path.join(projectRoot, 'package.json'));
-  const dependencies: Record<string, string> =
-    (packageJson.dependencies as Record<string, string>) ?? {};
-  for (const pkg of packages) {
-    dependencies[pkg.name] = 'workspace:*';
-  }
-  await mergeJsonFilesAsync(path.join(projectRoot, 'package.json'), { dependencies });
-}
-
-/**
  * Cleanup and reinstall all packages in the given project.
  */
 export async function reinstallPackagesAsync(projectRoot: string) {
@@ -65,42 +47,7 @@ export async function reinstallPackagesAsync(projectRoot: string) {
     fs.promises.rm(path.join(projectRoot, 'bun.lockb'), { force: true }),
     fs.promises.rm(path.join(projectRoot, 'yarn.lock'), { force: true }),
   ]);
-  await runAsync('bun', ['install', '--ignore-scripts'], { cwd: projectRoot });
-}
-
-/**
- * Get a list of all expo packages in the expo repo.
- */
-export async function getExpoPackagesAsync(expoRepoPath: string): Promise<Package[]> {
-  if (cachedPackages != null) {
-    return cachedPackages;
-  }
-
-  const paths = await Array.fromAsync(
-    fs.promises.glob('**/package.json', {
-      cwd: path.join(expoRepoPath, 'packages'),
-      exclude: [
-        '**/example/**',
-        '**/node_modules/**',
-        '**/__tests__/**',
-        '**/__mocks__/**',
-        '**/__fixtures__/**',
-        '**/e2e/**',
-        '**/build/**',
-      ],
-    })
-  );
-  const packages = (
-    await Promise.all(
-      paths.map(async (packageJsonName) => {
-        const packageRoot = path.join(expoRepoPath, 'packages', path.dirname(packageJsonName));
-        return await createPackageAsync(packageRoot);
-      })
-    )
-  ).filter((pkg) => pkg != null) as Package[];
-
-  cachedPackages = packages.sort((a, b) => a.name.localeCompare(b.name));
-  return cachedPackages;
+  await runAsync('pnpm', ['install', '--ignore-scripts'], { cwd: projectRoot });
 }
 
 /**
@@ -118,16 +65,22 @@ export async function getReactNativeTransitivePackagesAsync(
   return packages;
 }
 
-async function createPackageAsync(packageRoot: string): Promise<Package | null> {
-  const packageJsonPath = path.join(packageRoot, 'package.json');
-  const packagePath = path.dirname(packageJsonPath);
-  const packageJson = await readJsonFileAsync(packageJsonPath);
-  const name = packageJson.name as string;
-  if (EXCLUDE_PACKAGES.includes(name)) {
-    return null;
-  }
-  return {
-    name,
-    path: packagePath,
-  };
+/**
+ * Get the names of every Expo package in the expo repo that can be linked from
+ * local source, i.e. every workspace package under `packages/` minus the
+ * excluded ones.
+ */
+export async function getExpoPackageNamesAsync(expoRepoPath: string): Promise<Set<string>> {
+  const { stdout } = await runAsync('pnpm', ['list', '--depth=-1', '--recursive', '--json'], {
+    cwd: expoRepoPath,
+  });
+
+  const workspaces = JSON.parse(stdout) as Package[];
+  const packagesRoot = path.join(expoRepoPath, 'packages') + path.sep;
+
+  const names = workspaces
+    .filter(({ name, path }) => path.startsWith(packagesRoot) && !EXCLUDE_PACKAGES.includes(name))
+    .map(({ name }) => name);
+
+  return new Set(names);
 }

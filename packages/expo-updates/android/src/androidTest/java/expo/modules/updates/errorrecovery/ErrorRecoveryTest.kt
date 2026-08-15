@@ -16,12 +16,12 @@ class ErrorRecoveryTest {
   private var mockDelegate: ErrorRecoveryDelegate = mockk()
   private val context = InstrumentationRegistry.getInstrumentation().targetContext.applicationContext
   private val updatesLogger = UpdatesLogger(context.filesDir)
-  private var errorRecovery: ErrorRecovery = ErrorRecovery(updatesLogger, enableBridgelessArchitecture = true)
+  private var errorRecovery: ErrorRecovery = ErrorRecovery(updatesLogger)
 
   @Before
   fun setup() {
     mockDelegate = mockk(relaxed = true)
-    errorRecovery = ErrorRecovery(updatesLogger, enableBridgelessArchitecture = true)
+    errorRecovery = ErrorRecovery(updatesLogger)
     errorRecovery.initialize(mockDelegate)
     errorRecovery.handler = spyk(ErrorRecoveryHandler(errorRecovery.handlerThread.looper, mockDelegate, UpdatesLogger(context.filesDir)))
     // make handler run synchronously

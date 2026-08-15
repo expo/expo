@@ -1,3 +1,4 @@
+import { isRunningInExpoGo } from 'expo';
 import { Platform } from 'expo-modules-core';
 
 import ExponentTest from './ExponentTest';
@@ -15,7 +16,7 @@ function browserSupportsWebGL() {
   }
 }
 
-function optionalRequire(requirer) {
+function optionalRequire<T>(requirer: () => T): T | undefined {
   try {
     return requirer();
   } catch {
@@ -39,6 +40,18 @@ export function getTestModules() {
   const modules: Module[] = [
     // Sanity
     require('./tests/Basic'),
+    require('./tests/JSDestructuring'),
+    require('./tests/JSAsync'),
+    require('./tests/JSAsyncGenerator'),
+    require('./tests/JSBlockScoping'),
+    require('./tests/JSPrivateMethods'),
+    require('./tests/JSPrivateProperties'),
+    require('./tests/JSReactJSX'),
+    require('./tests/JSNamedGroupsRegexes'),
+    require('./tests/JSUnicodeRegexes'),
+    require('./tests/JSNullishCoalescing'),
+    require('./tests/JSOptionalChaining'),
+    require('./tests/JSHermesMisc'),
   ];
 
   // Expo core modules should run everywhere
@@ -56,18 +69,22 @@ export function getTestModules() {
   modules.push(
     require('./tests/EASClient'),
     require('./tests/Crypto'),
+    require('./tests/CryptoAES'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
-    require('./tests/LinearGradient'),
     require('./tests/HTML'),
-    require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
     require('./tests/Fetch'),
     require('./tests/SQLite')
   );
 
+  if (Platform.OS !== 'android') {
+    modules.push(require('./tests/LinearGradient'));
+  }
+
   if (['android', 'ios'].includes(Platform.OS)) {
+    modules.push(require('./tests/AppMetrics'));
     modules.push(require('./tests/Blob'));
     modules.push(require('./tests/FileSystem'));
     modules.push(require('./tests/CalendarNext'));
@@ -84,6 +101,7 @@ export function getTestModules() {
   if (Platform.OS === 'web') {
     modules.push(
       require('./tests/Contacts'),
+      require('./tests/ContactsNext'),
       require('./tests/Localization'),
       require('./tests/Recording'),
       optionalRequire(() => require('./tests/Notifications')),
@@ -112,10 +130,13 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Speech')),
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
-    optionalRequire(() => require('./tests/Notifications')),
-    optionalRequire(() => require('./tests/NavigationBar')),
+
     optionalRequire(() => require('./tests/SystemUI'))
   );
+
+  if (!isRunningInExpoGo()) {
+    modules.push(optionalRequire(() => require('./tests/Notifications')));
+  }
 
   if (!isDeviceFarm()) {
     // Popup to request device's location which uses Google's location service
@@ -126,10 +147,13 @@ export function getTestModules() {
     modules.push(require('./tests/SMS'));
     // Requires permission
     modules.push(optionalRequire(() => require('./tests/Contacts')));
+    modules.push(optionalRequire(() => require('./tests/ContactsNext')));
     modules.push(optionalRequire(() => require('./tests/Calendar')));
     modules.push(optionalRequire(() => require('./tests/CalendarReminders')));
-    modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
-    modules.push(optionalRequire(() => require('./tests/MediaLibraryNext')));
+    if (!isRunningInExpoGo()) {
+      modules.push(optionalRequire(() => require('./tests/MediaLibrary')));
+      modules.push(optionalRequire(() => require('./tests/MediaLibraryNext')));
+    }
 
     modules.push(optionalRequire(() => require('./tests/Battery')));
     modules.push(optionalRequire(() => require('./tests/Brightness')));
@@ -138,6 +162,9 @@ export function getTestModules() {
     modules.push(TaskManagerTestScreen);
     // Audio tests are flaky in CI due to asynchronous fetching of resources
     modules.push(optionalRequire(() => require('./tests/Audio')));
+
+    // Same as Audio
+    modules.push(optionalRequire(() => require('./tests/Video')));
   }
 
   modules.push(optionalRequire(() => require('./tests/Cellular')));

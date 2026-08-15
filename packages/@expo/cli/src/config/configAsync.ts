@@ -1,10 +1,10 @@
-import { ExpoConfig, getConfig, ProjectConfig } from '@expo/config';
+import type { ExpoConfig, ProjectConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import assert from 'assert';
 import util from 'util';
 
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
-import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
 
 type Options = {
@@ -44,9 +44,6 @@ export async function configAsync(projectRoot: string, options: Options) {
     console.warn = function () {};
     console.error = function () {};
   }
-  setNodeEnv('development');
-  require('@expo/env').load(projectRoot);
-
   if (options.type) {
     assert.match(options.type, /^(public|prebuild|introspect)$/);
   }

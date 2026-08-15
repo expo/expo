@@ -10,6 +10,19 @@ struct CdpNetwork {
   typealias RequestId = String
   typealias TimeSinceEpoch = TimeInterval
 
+  static func normalizeMimeType(_ contentType: String?) -> String {
+    return contentType?
+      .components(separatedBy: ";")
+      .first?
+      .trimmingCharacters(in: .whitespacesAndNewlines)
+      .lowercased() ?? ""
+  }
+
+  static func isTextContentType(_ contentType: String?) -> Bool {
+    let mimeType = normalizeMimeType(contentType)
+    return mimeType.starts(with: "text/") || mimeType == "application/json"
+  }
+
   enum ResourceType: String, Encodable {
     case image = "Image"
     case media = "Media"
@@ -19,6 +32,7 @@ struct CdpNetwork {
     case other = "Other"
 
     static func fromMimeType(_ mimeType: String) -> ResourceType {
+      let mimeType = CdpNetwork.normalizeMimeType(mimeType)
       if mimeType.starts(with: "image/") {
         return image
       }
@@ -72,7 +86,7 @@ struct CdpNetwork {
         }
       }
       self.headers = headers
-      self.mimeType = response.value(forHTTPHeaderField: "Content-Type") ?? ""
+      self.mimeType = CdpNetwork.normalizeMimeType(response.value(forHTTPHeaderField: "Content-Type"))
       self.encodedDataLength = encodedDataLength
     }
   }
@@ -110,7 +124,7 @@ struct CdpNetwork {
 
   struct RequestWillBeSentExtraInfoParams: EventParams {
     let requestId: RequestId
-    var associatedCookies = [String: String]()
+    var associatedCookies = [String]()
     let headers: Headers
     let connectTiming: ConnectTiming
 

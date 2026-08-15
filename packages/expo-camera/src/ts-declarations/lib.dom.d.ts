@@ -2,24 +2,9 @@
 export {};
 
 /**
- * Handle deprecations and missing typings that not available in the main lib.dom.d.ts file.
+ * Handle missing typings that are not available in the main lib.dom.d.ts file.
  */
 declare global {
-  type GetUserMediaFunctionType = (
-    constraints: MediaStreamConstraints,
-    successCallback: () => MediaStream,
-    failureCallback: () => DOMException
-  ) => undefined;
-  interface Navigator {
-    /**
-     * This method has been deprecated: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/getUserMedia
-     * TODO: migrate to https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-     */
-    getUserMedia?: GetUserMediaFunctionType;
-    webkitGetUserMedia?: GetUserMediaFunctionType;
-    mozGetUserMedia?: GetUserMediaFunctionType;
-  }
-
   type PermissionNameWithAdditionalValues = PermissionName | 'camera' | 'microphone';
 
   // TODO: remove once "microphone" name is added to the PermissionName union type exposed by the main lib.dom.d.ts file.

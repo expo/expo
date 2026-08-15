@@ -4,7 +4,6 @@ package host.exp.exponent;
 
 import java.lang.reflect.InvocationTargetException;
 
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode;
 import host.exp.exponent.generated.ExponentBuildConstants;
 
 public class Constants {
@@ -13,7 +12,6 @@ public class Constants {
     public String VERSION_NAME;
     public int ANDROID_VERSION_CODE;
     public boolean FCM_ENABLED;
-    public SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
   }
 
   private static final String TAG = Constants.class.getSimpleName();
@@ -24,7 +22,6 @@ public class Constants {
   public static boolean DISABLE_NUX = false;
   public static int ANDROID_VERSION_CODE;
   public static boolean FCM_ENABLED;
-  public static SplashScreenImageResizeMode SPLASH_SCREEN_IMAGE_RESIZE_MODE;
 
   static {
     try {
@@ -33,7 +30,6 @@ public class Constants {
       VERSION_NAME = appConstants.VERSION_NAME;
       ANDROID_VERSION_CODE = appConstants.ANDROID_VERSION_CODE;
       FCM_ENABLED = appConstants.FCM_ENABLED;
-      SPLASH_SCREEN_IMAGE_RESIZE_MODE = appConstants.SPLASH_SCREEN_IMAGE_RESIZE_MODE;
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
     } catch (IllegalAccessException e) {

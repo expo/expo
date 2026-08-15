@@ -59,3 +59,33 @@ public func StaticAsyncFunction<R, A0: AnyArgument, each A: AnyArgument>(
     closure
   )
 }
+
+/**
+ Static asynchronous function without arguments.
+ */
+public func StaticAsyncFunction<R>(
+  _ name: String,
+  @_inheritActorContext @_implicitSelfCapture _ closure: sending @escaping @Sendable () async throws -> sending R
+) -> StaticConcurrentFunctionDefinition<(), Void, R> {
+  return StaticConcurrentFunctionDefinition(
+    name,
+    firstArgType: Void.self,
+    dynamicArgumentTypes: [],
+    closure
+  )
+}
+
+/**
+ Static asynchronous function with one or more arguments.
+ */
+public func StaticAsyncFunction<R, A0: AnyArgument, each A: AnyArgument>(
+  _ name: String,
+  @_inheritActorContext @_implicitSelfCapture _ closure: sending @escaping @Sendable (A0, repeat each A) async throws -> sending R
+) -> StaticConcurrentFunctionDefinition<(A0, repeat each A), A0, R> {
+  return StaticConcurrentFunctionDefinition(
+    name,
+    firstArgType: A0.self,
+    dynamicArgumentTypes: buildDynamicTypes(A0.self, repeat (each A).self),
+    closure
+  )
+}

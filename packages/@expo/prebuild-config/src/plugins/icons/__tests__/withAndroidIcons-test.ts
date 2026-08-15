@@ -1,6 +1,6 @@
 import { AndroidConfig } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
-import * as fs from 'fs';
+import type { ExpoConfig } from '@expo/config-types';
+import type * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
@@ -63,7 +63,7 @@ describe('Android Icon', () => {
     });
   });
 
-  it(`returns adaptive icon over android icon`, () => {
+  it(`returns android icon separately from adaptive icon values`, () => {
     const config = {
       icon: 'icon',
       android: {
@@ -78,8 +78,9 @@ describe('Android Icon', () => {
     const { foregroundImage, backgroundColor, backgroundImage } = getAdaptiveIcon(
       config as ExpoConfig
     );
-    const icon = foregroundImage || getIcon(config as ExpoConfig);
-    expect(icon).toMatch('adaptiveIcon');
+    const icon = getIcon(config as ExpoConfig);
+    expect(icon).toMatch('androidIcon');
+    expect(foregroundImage).toMatch('adaptiveIcon');
     expect(backgroundColor).toMatch('#000000');
     expect(backgroundImage).toMatch('backgroundImage');
   });
@@ -104,12 +105,56 @@ describe('Android Icon', () => {
     expect(
       await setIconAsync('./', {
         icon: null,
+        foregroundImage: null,
         backgroundImage: null,
         backgroundColor: null,
         isAdaptive: false,
         monochromeImage: null,
       })
     ).toBe(null);
+  });
+
+  it('uses android.icon for legacy launcher files when adaptive icon is also configured', async () => {
+    const projectRoot = '/app';
+    vol.fromJSON(
+      { './android/app/src/main/res/values/colors.xml': SAMPLE_COLORS_XML },
+      projectRoot
+    );
+    setUpMipmapDirectories();
+    vol.mkdirpSync('/app/assets');
+    vol.writeFileSync('/app/assets/legacyIcon.png', 'legacy-icon');
+    vol.writeFileSync('/app/assets/adaptiveForeground.png', 'adaptive-foreground');
+    vol.writeFileSync('/app/assets/adaptiveBackground.png', 'adaptive-background');
+
+    await setIconAsync(projectRoot, {
+      icon: '/app/assets/legacyIcon.png',
+      foregroundImage: '/app/assets/adaptiveForeground.png',
+      backgroundImage: '/app/assets/adaptiveBackground.png',
+      backgroundColor: '#123456',
+      isAdaptive: true,
+      monochromeImage: null,
+    });
+
+    expect(
+      vol.readFileSync('/app/android/app/src/main/res/mipmap-mdpi/ic_launcher.webp', 'utf8')
+    ).toBe('legacy-icon');
+    expect(
+      vol.readFileSync('/app/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp', 'utf8')
+    ).toBe('legacy-icon');
+    expect(
+      vol.readFileSync(
+        '/app/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.webp',
+        'utf8'
+      )
+    ).toBe('adaptive-foreground');
+    expect(
+      vol.readFileSync(
+        '/app/android/app/src/main/res/mipmap-mdpi/ic_launcher_background.webp',
+        'utf8'
+      )
+    ).toBe('adaptive-background');
+
+    vol.reset();
   });
 });
 

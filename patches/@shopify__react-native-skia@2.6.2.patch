@@ -1,0 +1,13 @@
+diff --git a/apple/SkiaWebGPUView.mm b/apple/SkiaWebGPUView.mm
+index 2e2c142263c18eba80ca4576a1fe4023e25f477e..c334b728d270aec8e737e19b794bf300ef876179 100644
+--- a/apple/SkiaWebGPUView.mm
++++ b/apple/SkiaWebGPUView.mm
+@@ -7,7 +7,7 @@
+ #import <react/renderer/components/rnskia/Props.h>
+ #import <react/renderer/components/rnskia/RCTComponentViewHelpers.h>
+
+-#import "RCTFabricComponentsPlugins.h"
++#import <React/RCTFabricComponentsPlugins.h>
+ #import "WebGPUMetalView.h"
+
+ using namespace facebook::react;

@@ -1,10 +1,12 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import path from 'path';
 
-import { AndroidConfig, withDangerousMod } from '..';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
+import { withDangerousMod } from '../plugins/withDangerousMod';
 import { writeXMLAsync } from '../utils/XML';
-import { getResolvedLocalesAsync, LocaleJson } from '../utils/locales';
+import type { LocaleJson } from '../utils/locales';
+import { getResolvedLocalesAsync } from '../utils/locales';
+import * as Paths from './Paths';
 
 export const withLocales: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
@@ -32,14 +34,14 @@ export async function setLocalesAsync(
   if (!locales) {
     return config;
   }
-  const localesMap = await getResolvedLocalesAsync(projectRoot, locales, 'android');
+  const { localesMap } = await getResolvedLocalesAsync(projectRoot, locales, 'android');
   for (const [lang, localizationObj] of Object.entries(localesMap)) {
     const stringsFilePath = path.join(
-      await AndroidConfig.Paths.getResourceFolderAsync(projectRoot),
+      await Paths.getResourceFolderAsync(projectRoot),
       `values-b+${lang.replaceAll('-', '+')}`,
       'strings.xml'
     );
-    writeXMLAsync({
+    await writeXMLAsync({
       path: stringsFilePath,
       xml: {
         resources: Object.entries(localizationObj).map(([k, v]) => ({

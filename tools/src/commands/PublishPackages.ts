@@ -54,6 +54,16 @@ export default (program: Command) => {
       'Restrict publishing to template packages under templates/. Dependencies will not be auto-included.',
       false
     )
+    .option(
+      '--include-expo-module-scripts',
+      'Include expo-module-scripts in publishing (excluded by default).',
+      false
+    )
+    .option(
+      '--cascade-all',
+      'Include dependents of shared tooling packages (babel-preset-expo, jest-expo, etc.) that are normally excluded from cascading.',
+      false
+    )
 
     /* exclusive options */
     .option(
@@ -82,9 +92,20 @@ export default (program: Command) => {
       'Whether to build and publish Android artifacts to the local NPM registry.',
       false
     )
+    .option('--skip-ios-prebuilds', 'Skips bundling iOS xcframeworks.', false)
+    .option(
+      '--skip-turbo-checks',
+      'Skips the Turbo check batch (build/typecheck/depscheck/test/lint) on the selected packages.',
+      false
+    )
     .option(
       '--auto-select-unpublished',
       'When retrying after a failed publish, auto-select all packages whose current version is not published yet and allow deselecting in a multi-select prompt.',
+      false
+    )
+    .option(
+      '--prompt-otp',
+      'Prompt for an npm OTP code before publishing. Re-prompts automatically when the code expires.',
       false
     )
     /* debug options */
@@ -244,7 +265,7 @@ function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
   if (options.canary) {
     if (!process.env.CI) {
       logger.info(
-        `🛠️ You can also use the CI action instead: https://github.com/expo/expo/actions/workflows/publish-canaries.yml`
+        `🛠️ You can also use the CI action instead: https://github.com/expo/expo/actions/workflows/publish-packages.yml`
       );
     }
     if (options.packageNames.length > 0) {

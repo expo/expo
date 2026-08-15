@@ -7,9 +7,10 @@
 import JsonFile from '@expo/json-file';
 import fs from 'fs';
 import path from 'path';
-import type { AcceptedPlugin, ProcessOptions } from 'postcss';
+import type { AcceptedPlugin, ProcessOptions, Processor } from 'postcss';
 import resolveFrom from 'resolve-from';
 
+import { debugEvent } from './events';
 import { tryRequireThenImport } from './utils/require';
 
 type PostCSSInputConfig = {
@@ -24,46 +25,55 @@ type PostCSSInputConfig = {
 
 const CONFIG_FILE_NAME = 'postcss.config';
 
-const debug = require('debug')('expo:metro:transformer:postcss');
+interface LoadedPipeline {
+  processor: Processor;
+  baseOptions: Omit<ProcessOptions, 'from' | 'to' | 'map'>;
+  emitMap: boolean;
+}
+
+const loadPostcssPipelineAsync = (function () {
+  let promise: Promise<LoadedPipeline | null> | null = null;
+  return function _loadPostcssPipelineAsync(projectRoot: string) {
+    if (promise == null) {
+      promise = (async () => {
+        const inputConfig = await resolvePostcssConfig(projectRoot);
+        if (!inputConfig) return null;
+
+        const { plugins, processOptions } = await parsePostcssConfigAsync(projectRoot, {
+          config: inputConfig,
+          resourcePath: projectRoot,
+        });
+
+        const postcss = require('postcss') as typeof import('postcss');
+        const { from: _from, to: _to, map: _map, ...baseOptions } = processOptions;
+        return {
+          processor: postcss.default(plugins),
+          baseOptions,
+          emitMap: inputConfig.map === true,
+        };
+      })();
+    }
+    return promise;
+  };
+})();
 
 export async function transformPostCssModule(
   projectRoot: string,
   { src, filename }: { src: string; filename: string }
 ): Promise<{ src: string; hasPostcss: boolean }> {
-  const inputConfig = await resolvePostcssConfig(projectRoot);
-  if (!inputConfig) {
+  const pipeline = await loadPostcssPipelineAsync(projectRoot);
+  if (!pipeline) {
     return { src, hasPostcss: false };
   }
 
-  return {
-    src: await processWithPostcssInputConfigAsync(projectRoot, {
-      inputConfig,
-      src,
-      filename,
-    }),
-    hasPostcss: true,
-  };
-}
-
-async function processWithPostcssInputConfigAsync(
-  projectRoot: string,
-  { src, filename, inputConfig }: { src: string; filename: string; inputConfig: PostCSSInputConfig }
-) {
-  const { plugins, processOptions } = await parsePostcssConfigAsync(projectRoot, {
-    config: inputConfig,
-    resourcePath: filename,
+  const { content } = await pipeline.processor.process(src, {
+    ...pipeline.baseOptions,
+    from: filename,
+    to: filename,
+    map: pipeline.emitMap ? { inline: true } : false,
   });
 
-  debug('options:', processOptions);
-  debug('plugins:', plugins);
-
-  // TODO: Surely this can be cached...
-  const postcss = require('postcss') as typeof import('postcss');
-
-  const processor = postcss.default(plugins);
-  const { content } = await processor.process(src, processOptions);
-
-  return content;
+  return { src: content, hasPostcss: true };
 }
 
 async function parsePostcssConfigAsync(
@@ -155,7 +165,7 @@ async function parsePostcssConfigAsync(
 
 function loadPlugin(projectRoot: string, plugin: string, options: unknown, file: string) {
   try {
-    debug('load plugin:', plugin);
+    debugEvent('postcss:plugin_loaded', { plugin });
 
     // e.g. `tailwindcss`
     let loadedPlugin = require(resolveFrom(projectRoot, plugin));
@@ -199,23 +209,27 @@ export function pluginFactory() {
           listOfPlugins.set(name, options);
         } else if (plugin && typeof plugin === 'function') {
           listOfPlugins.set(plugin, undefined);
-        } else if (
-          plugin &&
-          Object.keys(plugin).length === 1 &&
-          (typeof plugin[Object.keys(plugin)[0]] === 'object' ||
-            typeof plugin[Object.keys(plugin)[0]] === 'boolean') &&
-          plugin[Object.keys(plugin)[0]] !== null
-        ) {
-          const [name] = Object.keys(plugin);
-          const options = plugin[name];
-
-          if (options === false) {
-            listOfPlugins.delete(name);
-          } else {
-            listOfPlugins.set(name, options);
-          }
         } else if (plugin) {
-          listOfPlugins.set(plugin, undefined);
+          const pluginKeys = Object.keys(plugin);
+
+          if (
+            pluginKeys.length === 1 &&
+            pluginKeys[0] != null &&
+            (typeof plugin[pluginKeys[0]] === 'object' ||
+              typeof plugin[pluginKeys[0]] === 'boolean') &&
+            plugin[pluginKeys[0]] !== null
+          ) {
+            const [name] = pluginKeys;
+            const options = plugin[name];
+
+            if (options === false) {
+              listOfPlugins.delete(name);
+            } else {
+              listOfPlugins.set(name, options);
+            }
+          } else {
+            listOfPlugins.set(plugin, undefined);
+          }
         }
       }
     } else {
@@ -240,7 +254,7 @@ export async function resolvePostcssConfig(
   for (const ext of ['.mjs', '.js']) {
     const configPath = path.join(projectRoot, CONFIG_FILE_NAME + ext);
     if (fs.existsSync(configPath)) {
-      debug('load file:', configPath);
+      debugEvent('postcss:config_loaded', { path: configPath });
       const config = await tryRequireThenImport<
         PostCSSInputConfig | Record<'default', PostCSSInputConfig>
       >(configPath);
@@ -250,7 +264,7 @@ export async function resolvePostcssConfig(
 
   const jsonConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.json');
   if (fs.existsSync(jsonConfigPath)) {
-    debug('load file:', jsonConfigPath);
+    debugEvent('postcss:config_loaded', { path: jsonConfigPath });
     return JsonFile.read(jsonConfigPath, { json5: true });
   }
 

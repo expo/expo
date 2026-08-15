@@ -6,8 +6,10 @@ import expo.modules.kotlin.records.Record
 import expo.modules.video.player.DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS
 import expo.modules.video.player.DefaultLoadControl.DEFAULT_PRIORITIZE_TIME_OVER_SIZE_THRESHOLDS
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
 @UnstableApi
+@OptimizedRecord
 class BufferOptions(
   @Field var preferredForwardBufferDuration: Double? = null,
   @Field var maxBufferBytes: Long = 0,

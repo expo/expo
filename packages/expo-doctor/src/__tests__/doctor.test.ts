@@ -1,5 +1,6 @@
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
-import { DoctorCheck } from '../checks/checks.types';
+import { VectorIconsCheck } from '../checks/VectorIconsCheck';
+import type { DoctorCheck } from '../checks/checks.types';
 import {
   printCheckResultSummaryOnComplete,
   printFailedCheckIssueAndAdvice,
@@ -88,6 +89,32 @@ describe(resolveChecksInScope, () => {
     expect(
       checks.find((check) => check instanceof InstalledDependencyVersionCheck)
     ).not.toBeUndefined();
+  });
+
+  describe('VectorIconsCheck SDK version filtering', () => {
+    it('includes VectorIconsCheck for SDK 56 and above', async () => {
+      const checks = resolveChecksInScope(
+        {
+          name: 'foo',
+          slug: 'foo',
+          sdkVersion: '56.0.0',
+        },
+        {}
+      );
+      expect(checks.find((check) => check instanceof VectorIconsCheck)).not.toBeUndefined();
+    });
+
+    it('excludes VectorIconsCheck for SDK 55 and below', async () => {
+      const checks = resolveChecksInScope(
+        {
+          name: 'foo',
+          slug: 'foo',
+          sdkVersion: '55.0.0',
+        },
+        {}
+      );
+      expect(checks.find((check) => check instanceof VectorIconsCheck)).toBeUndefined();
+    });
   });
 });
 
@@ -238,8 +265,8 @@ describe(printCheckResultSummaryOnComplete, () => {
       },
       false
     );
-    expect(jest.mocked(Log.error).mock.calls[0][0]).toContain('Unexpected error while running');
-    expect(jest.mocked(Log.exception).mock.calls[0][0].message).toContain('Some error');
+    expect(jest.mocked(Log.error).mock.calls[0]![0]).toContain('Unexpected error while running');
+    expect(jest.mocked(Log.exception).mock.calls[0]![0].message).toContain('Some error');
   });
 
   it(`Prints the error cause if check throws a network error`, () => {
@@ -259,7 +286,7 @@ describe(printCheckResultSummaryOnComplete, () => {
       },
       false
     );
-    expect(jest.mocked(Log.error).mock.calls[1][0]).toContain('ENOTFOUND');
+    expect(jest.mocked(Log.error).mock.calls[1]![0]).toContain('ENOTFOUND');
   });
 });
 
@@ -281,8 +308,8 @@ describe(printFailedCheckIssueAndAdvice, () => {
       check: new MockFailedCheck(),
       duration: 0,
     });
-    expect(jest.mocked(Log.log).mock.calls[1][0]).toContain('issue1');
-    expect(jest.mocked(Log.log).mock.calls[2][0]).toContain('issue2');
+    expect(jest.mocked(Log.log).mock.calls[1]![0]).toContain('issue1');
+    expect(jest.mocked(Log.log).mock.calls[2]![0]).toContain('issue2');
   });
   it(`Prints advice when check fails if available`, () => {
     jest.mocked(Log.log).mockReset();
@@ -291,6 +318,6 @@ describe(printFailedCheckIssueAndAdvice, () => {
       check: new MockFailedCheck(),
       duration: 0,
     });
-    expect(jest.mocked(Log.log).mock.calls[2][0]).toContain('Advice:');
+    expect(jest.mocked(Log.log).mock.calls[2]![0]).toContain('Advice:');
   });
 });

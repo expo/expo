@@ -13,7 +13,6 @@
 
 Please refer to the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/clipboard/).
 
-
 ## Installation in bare React Native projects
 
 For bare React Native projects, ensure you've [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/).

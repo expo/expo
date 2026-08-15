@@ -16,7 +16,30 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
   private let saveFilePath: String
   private let fileExtension: String
   private let cachedResource: CachedResource
+  /// Caller-declared headers sent on the network request.
   private let urlRequestHeaders: [String: String]?
+  /// Normalized request identity used for cache variant matching. This includes
+  /// the cookie snapshot that `URLSession` is expected to attach.
+  private let cacheRequestHeaders: [String: String]
+  private let variantKey: String
+  /// Whether the response may be stored for offline playback. Defaults to `true`
+  /// ("store unless proven otherwise") and is flipped to `false` if the response
+  /// is evaluated as non-cacheable.
+  ///
+  /// Policy is evaluated only on the *first* HTTP response (see the `policyEvaluated`
+  /// guard in `evaluateCachePolicy`) — that's the authoritative content-information
+  /// response carrying the resource's `Cache-Control`/`Vary`. Later range responses
+  /// for the same resource are assumed to share that policy and are not re-evaluated.
+  /// This is deliberate: re-evaluating every range response would let a transient or
+  /// edge non-2xx (e.g. a `416` on an out-of-range request, or a one-off `503`) flip
+  /// storage to denied and evict an otherwise-good download — hurting offline playback.
+  ///
+  /// The default of `true` is safe because this delegate is only reachable on the
+  /// http(s) loader path (`createUrlRequest` always builds an http(s) request from
+  /// `self.url`), so the first response is always an `HTTPURLResponse` and is
+  /// evaluated before any data is saved in `didCompleteWithError`.
+  private var responseAllowsStorage: Bool = true
+  private var policyEvaluated: Bool = false
   internal var onError: ((Error) -> Void)?
 
   private var cachableRequests: SynchronizedHashTable<CachableRequest> = SynchronizedHashTable()
@@ -36,14 +59,31 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     return self.saveFilePath
   }
 
-  init(url: URL, saveFilePath: String, fileExtension: String, urlRequestHeaders: [String: String]?) {
+  init(
+    url: URL,
+    saveFilePath: String,
+    fileExtension: String,
+    urlRequestHeaders: [String: String]?,
+    cacheRequestHeaders: [String: String],
+    variantKey: String
+  ) {
     self.url = url
     self.saveFilePath = saveFilePath
     self.fileExtension = fileExtension
     self.urlRequestHeaders = urlRequestHeaders
+    self.cacheRequestHeaders = cacheRequestHeaders
+    self.variantKey = variantKey
     cachedResource = CachedResource(dataFileUrl: saveFilePath, resourceUrl: url, dataPath: saveFilePath)
     super.init()
-    self.session = URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+    // Serial delegate queue (maxConcurrentOperationCount = 1): the cache-policy
+    // state below (`policyEvaluated` / `responseAllowsStorage`) is mutated from
+    // `didReceive response:` and read from `didCompleteWithError:`. A serial
+    // queue makes those callbacks non-overlapping so the state is safe without
+    // an extra lock. Do not revert to `delegateQueue: nil` (concurrent) without
+    // adding synchronization, or it reintroduces a data race on that state.
+    let delegateQueue = OperationQueue()
+    delegateQueue.maxConcurrentOperationCount = 1
+    self.session = URLSession(configuration: .default, delegate: self, delegateQueue: delegateQueue)
   }
 
   deinit {
@@ -83,14 +123,45 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     cachableRequest.onReceivedData(data: subdata)
 
     if dataRequest.requestsAllDataToEndOfResource {
+      guard currentOffset >= requestedOffset else {
+        log.warn("[expo-video] Current offset (\(currentOffset)) < requested offset (\(requestedOffset))")
+        return
+      }
+
       let currentDataResponseOffset = Int(currentOffset - requestedOffset)
+      guard currentDataResponseOffset >= 0 && currentDataResponseOffset <= cachableRequest.receivedData.count else {
+        log.warn("Invalid offset: \(currentDataResponseOffset), receivedData.count: \(cachableRequest.receivedData.count)")
+        return
+      }
+
       let currentDataResponseLength = cachableRequest.receivedData.count - currentDataResponseOffset
-      let subdata = cachableRequest.receivedData.subdata(in: currentDataResponseOffset..<currentDataResponseOffset + currentDataResponseLength)
+      guard currentDataResponseLength >= 0 else {
+        return
+      }
+
+      let endOffset = currentDataResponseOffset + currentDataResponseLength
+      guard endOffset <= cachableRequest.receivedData.count else {
+        log.warn("[expo-video] End offset (\(endOffset)) exceeds receivedData.count (\(cachableRequest.receivedData.count))")
+        return
+      }
+
+      let subdata = cachableRequest.receivedData.subdata(in: currentDataResponseOffset..<endOffset)
       dataRequest.respond(with: subdata)
-    } else if currentOffset - requestedOffset <= cachableRequest.receivedData.count {
+    } else if currentOffset >= requestedOffset && currentOffset - requestedOffset < cachableRequest.receivedData.count {
       let rangeStart = Int(currentOffset - requestedOffset)
       let rangeLength = min(cachableRequest.receivedData.count - rangeStart, length)
-      let subdata = cachableRequest.receivedData.subdata(in: rangeStart..<rangeStart + rangeLength)
+
+      guard rangeStart >= 0 && rangeStart < cachableRequest.receivedData.count && rangeLength > 0 else {
+        return
+      }
+
+      let endOffset = rangeStart + rangeLength
+      guard endOffset <= cachableRequest.receivedData.count else {
+        log.warn("[expo-video] End offset (\(endOffset)) exceeds receivedData.count (\(cachableRequest.receivedData.count))")
+        return
+      }
+
+      let subdata = cachableRequest.receivedData.subdata(in: rangeStart..<endOffset)
       dataRequest.respond(with: subdata)
     }
   }
@@ -101,6 +172,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     didReceive response: URLResponse,
     completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
   ) {
+    evaluateCachePolicy(forResponse: response)
     if let cachedDataRequest = cachableRequest(by: dataTask) {
       cachedDataRequest.response = response
       if cachedDataRequest.loadingRequest.contentInformationRequest != nil {
@@ -114,6 +186,37 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     completionHandler(.allow)
   }
 
+  private func evaluateCachePolicy(forResponse response: URLResponse) {
+    guard !policyEvaluated, let httpResponse = response as? HTTPURLResponse else {
+      return
+    }
+    policyEvaluated = true
+    var headers: [String: String] = [:]
+    for (key, value) in httpResponse.allHeaderFields {
+      if let keyString = key as? String, let valueString = value as? String {
+        headers[keyString] = valueString
+      }
+    }
+    let policy = CachePolicy.evaluate(responseHeaders: headers, statusCode: httpResponse.statusCode)
+    responseAllowsStorage = policy.isCacheable
+    if !responseAllowsStorage {
+      evictStoredFiles()
+      return
+    }
+    CacheVariantIndex.recordVariant(
+      forUrl: url,
+      storageKey: variantKey,
+      requestHeaders: cacheRequestHeaders,
+      fileExtension: fileExtension,
+      policy: policy
+    )
+  }
+
+  private func evictStoredFiles() {
+    try? FileManager.default.removeItem(atPath: saveFilePath)
+    try? FileManager.default.removeItem(atPath: saveFilePath + VideoCacheManager.mediaInfoSuffix)
+  }
+
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     guard let cachedDataRequest = cachableRequest(by: task) else {
       return
@@ -121,13 +224,18 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
 
     // The data shouldn't be corrupted and can be cached
     if let error = error as? URLError, error.code == URLError.cancelled || error.code == URLError.networkConnectionLost {
-      cachedDataRequest.saveData(to: cachedResource)
+      if responseAllowsStorage {
+        cachedDataRequest.saveData(to: cachedResource)
+      }
+      cachedDataRequest.loadingRequest.finishLoading(with: error)
     } else if error == nil {
-      cachedDataRequest.saveData(to: cachedResource)
+      if responseAllowsStorage {
+        cachedDataRequest.saveData(to: cachedResource)
+      }
+      cachedDataRequest.loadingRequest.finishLoading()
     } else {
       cachedDataRequest.loadingRequest.finishLoading(with: error)
     }
-    cachedDataRequest.loadingRequest.finishLoading(with: error)
     cachableRequests.remove(cachedDataRequest)
   }
 
@@ -135,7 +243,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
     let (remainingRequest, dataReceived) = attemptToRespondFromCache(forRequest: loadingRequest)
 
     // Cache fulfilled the entire request
-    if dataReceived != nil && remainingRequest == nil {
+    if dataReceived != nil && dataReceived?.isEmpty != true && remainingRequest == nil {
       return
     }
 
@@ -161,7 +269,7 @@ final class ResourceLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate, URL
       }
       cachableRequests.add(cachableRequest)
     } else {
-      log.warn("ResourceLoaderDelegate has received a loading request without a data request")
+      log.warn("[expo-video] ResourceLoaderDelegate has received a loading request without a data request")
     }
     dataTask.resume()
   }

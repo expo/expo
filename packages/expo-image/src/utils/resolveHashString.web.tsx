@@ -1,4 +1,4 @@
-import { ImageSource } from '../Image.types';
+import type { ImageSource } from '../Image.types';
 
 /**
  * Converts a string in blurhash format (`blurhash:/<hash>/<width>/<height>`
@@ -7,7 +7,7 @@ import { ImageSource } from '../Image.types';
  * @return An ImageSource representing the provided blurhash.
  * */
 export function resolveBlurhashString(str: string): ImageSource {
-  const [hash, width, height] = str.replace(/^blurhash:\//, '').split('/');
+  const [hash, width = '', height = ''] = str.replace(/^blurhash:\//, '').split('/');
   return {
     uri: 'blurhash:/' + hash,
     width: parseInt(width, 10) || 16,

@@ -2,8 +2,8 @@
 
 #define STBI_ONLY_JPEG
 #define STBI_ONLY_PNG
-#define STBI_ONLY_GIF
 #define STB_IMAGE_IMPLEMENTATION
+
 #include "stb_image.h"
 
 namespace jsi = facebook::jsi;
@@ -48,14 +48,14 @@ void flipPixels(GLubyte *pixels, size_t bytesPerRow, size_t rows) {
     return;
   }
 
-  GLuint middle = (GLuint)rows / 2;
-  GLuint intsPerRow = (GLuint)bytesPerRow / sizeof(GLuint);
-  GLuint remainingBytes = (GLuint)bytesPerRow - intsPerRow * sizeof(GLuint);
+  GLuint middle = (GLuint) rows / 2;
+  GLuint intsPerRow = (GLuint) bytesPerRow / sizeof(GLuint);
+  GLuint remainingBytes = (GLuint) bytesPerRow - intsPerRow * sizeof(GLuint);
 
-  for (GLuint rowTop = 0, rowBottom = (GLuint)rows - 1; rowTop < middle; ++rowTop, --rowBottom) {
+  for (GLuint rowTop = 0, rowBottom = (GLuint) rows - 1; rowTop < middle; ++rowTop, --rowBottom) {
     // Swap in packs of sizeof(GLuint) bytes
-    GLuint *iTop = (GLuint *)(pixels + rowTop * bytesPerRow);
-    GLuint *iBottom = (GLuint *)(pixels + rowBottom * bytesPerRow);
+    GLuint *iTop = (GLuint *) (pixels + rowTop * bytesPerRow);
+    GLuint *iBottom = (GLuint *) (pixels + rowBottom * bytesPerRow);
     GLuint iTmp;
     GLuint n = intsPerRow;
     do {
@@ -65,8 +65,8 @@ void flipPixels(GLubyte *pixels, size_t bytesPerRow, size_t rows) {
     } while (--n > 0);
 
     // Swap remainder bytes
-    GLubyte *bTop = (GLubyte *)iTop;
-    GLubyte *bBottom = (GLubyte *)iBottom;
+    GLubyte *bTop = (GLubyte *) iTop;
+    GLubyte *bBottom = (GLubyte *) iBottom;
     GLubyte bTmp;
     switch (remainingBytes) {
       case 3:
@@ -118,11 +118,11 @@ void decodeURI(char *dst, const char *src) {
 }
 
 std::shared_ptr<uint8_t> loadImage(
-    jsi::Runtime &runtime,
-    const jsi::Object &jsPixels,
-    int *fileWidth,
-    int *fileHeight,
-    int *fileComp) {
+  jsi::Runtime &runtime,
+  const jsi::Object &jsPixels,
+  int *fileWidth,
+  int *fileHeight,
+  int *fileComp) {
   auto localUriProp = jsPixels.getProperty(runtime, "localUri");
   if (localUriProp.isString()) {
     auto localUri = localUriProp.asString(runtime).utf8(runtime);
@@ -133,8 +133,8 @@ std::shared_ptr<uint8_t> loadImage(
     decodeURI(localPath, localUri.c_str() + 7);
 
     return std::shared_ptr<uint8_t>(
-        stbi_load(localPath, fileWidth, fileHeight, fileComp, STBI_rgb_alpha),
-        [](void *data) { stbi_image_free(data); });
+      stbi_load(localPath, fileWidth, fileHeight, fileComp, STBI_rgb_alpha),
+      [](void *data) { stbi_image_free(data); });
   }
   return std::shared_ptr<uint8_t>(nullptr);
 }

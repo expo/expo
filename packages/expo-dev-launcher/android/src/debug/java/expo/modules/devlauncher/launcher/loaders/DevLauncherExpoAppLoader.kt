@@ -4,14 +4,12 @@ import android.content.Context
 import android.graphics.Color
 import android.util.Log
 import android.view.View
-import com.facebook.react.ReactActivity
 import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.modules.appearance.AppearanceModule
 import expo.modules.devlauncher.helpers.isValidColor
 import expo.modules.devlauncher.helpers.setProtectedDeclaredField
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import expo.modules.devlauncher.launcher.configurators.DevLauncherExpoActivityConfigurator
 import expo.modules.devlauncher.launcher.manifest.DevLauncherUserInterface
 import expo.modules.manifests.core.Manifest
 
@@ -19,17 +17,8 @@ abstract class DevLauncherExpoAppLoader(
   private val manifest: Manifest,
   appHost: ReactHost,
   context: Context,
-  controller: DevLauncherControllerInterface,
-  private val activityConfigurator: DevLauncherExpoActivityConfigurator =
-    DevLauncherExpoActivityConfigurator(manifest, context)
+  controller: DevLauncherControllerInterface
 ) : DevLauncherAppLoader(appHost, context, controller) {
-  override fun onCreate(activity: ReactActivity) = with(activityConfigurator) {
-    applyOrientation(activity)
-    applyStatusBarConfiguration(activity)
-    applyTaskDescription(activity)
-    applyNavigationBarConfiguration(activity)
-  }
-
   override fun onReactContext(context: ReactContext) {
     context.currentActivity?.run {
       val rootView = findViewById<View>(android.R.id.content).rootView

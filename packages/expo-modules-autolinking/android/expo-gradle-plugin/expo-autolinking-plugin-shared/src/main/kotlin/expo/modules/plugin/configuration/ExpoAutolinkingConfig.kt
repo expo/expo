@@ -41,7 +41,7 @@ data class ExpoAutolinkingConfig(
       }
 
       Json {
-        // We don't want to fail on a unknown key
+        // We don't want to fail on an unknown key
         ignoreUnknownKeys = true
         serializersModule = module
       }
@@ -104,6 +104,7 @@ data class GradleProject(
   val publication: Publication? = null,
   val aarProjects: List<GradleAarProject> = emptyList(),
   val modules: List<ModuleInfo> = emptyList(),
+  val services: List<String> = emptyList(),
   val packages: List<String> = emptyList(),
   val shouldUsePublicationScriptPath: String? = null,
   @Transient val configuration: GradleProjectConfiguration = GradleProjectConfiguration()
@@ -129,18 +130,31 @@ data class ModuleInfo(
 )
 
 /**
- * Object representing a gradle plugin
+ * Object representing a gradle plugin.
+ *
+ * A plugin is either built from sources shipped with the module ([sourceDir] is set and the
+ * build is included into the project) or resolved from a published artifact ([version] is set).
  */
 @Serializable
 data class GradlePlugin(
   val id: String,
   val group: String,
-  val sourceDir: String,
+  val sourceDir: String? = null,
+  val version: String? = null,
   val applyToRootProject: Boolean = true
-)
+) {
+  val classpathCoordinate: String
+    get() = when {
+      sourceDir != null -> "$group:$id"
+      version != null -> "$id:$id.gradle.plugin:$version"
+      else -> throw IllegalArgumentException(
+        "The gradle plugin '$id' declares neither a 'sourceDir' nor a 'version'."
+      )
+    }
+}
 
 /**
- * Object representing an gradle project containing AAR file
+ * Object representing a gradle project containing AAR file
  */
 @Serializable
 data class GradleAarProject(

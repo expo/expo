@@ -2,7 +2,9 @@ package expo.modules.medialibrary
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class AssetsOptions(
   @Field val first: Double,
   @Field val after: String?,

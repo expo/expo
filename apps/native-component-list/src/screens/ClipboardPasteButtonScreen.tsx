@@ -4,6 +4,8 @@ import React from 'react';
 import { Text, View, StyleSheet, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
+import { BodyText } from '../components/BodyText';
+
 const available = Clipboard.isPasteButtonAvailable;
 
 export default function ClipboardPasteButtonScreen() {
@@ -13,7 +15,7 @@ export default function ClipboardPasteButtonScreen() {
   if (!available) {
     return (
       <View style={styles.screen}>
-        <Text>ClipboardPasteButton is not available on this device</Text>
+        <BodyText>ClipboardPasteButton is not available on this device</BodyText>
       </View>
     );
   }
@@ -21,7 +23,7 @@ export default function ClipboardPasteButtonScreen() {
   return (
     <ScrollView>
       <View style={styles.screen}>
-        <Text selectable>Random text you can copy</Text>
+        <BodyText selectable>Random text you can copy</BodyText>
         <ClipboardPasteButton
           imageOptions={{ format: 'png' }}
           onPress={(data) => {
@@ -35,7 +37,7 @@ export default function ClipboardPasteButtonScreen() {
         />
         {textData && (
           <View style={styles.sectionContainer}>
-            <Text style={styles.heading}>Text Paste Result:</Text>
+            <BodyText style={styles.heading}>Text Paste Result:</BodyText>
 
             <View style={styles.textResult}>
               <Text style={{ textAlign: 'center' }}>{textData.text}</Text>
@@ -44,7 +46,7 @@ export default function ClipboardPasteButtonScreen() {
         )}
         {imageData && (
           <View style={styles.sectionContainer}>
-            <Text style={styles.heading}>Image Paste Result:</Text>
+            <BodyText style={styles.heading}>Image Paste Result:</BodyText>
             <Image source={{ uri: imageData.data }} style={styles.image} />
           </View>
         )}

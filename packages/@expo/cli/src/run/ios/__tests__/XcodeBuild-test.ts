@@ -1,3 +1,4 @@
+import { ExpoRunFormatter } from '@expo/xcpretty';
 import path from 'path';
 
 import {
@@ -5,6 +6,9 @@ import {
   getProcessOptions,
   getXcodeBuildArgsAsync,
   _assertXcodeBuildResults,
+  _extractXcodeBuildErrorLines,
+  _formatXcodeBuildFailure,
+  _hasXcodeBuildErrorDetails,
   matchEstimatedBinaryPath,
   getAppBinaryPath,
 } from '../XcodeBuild';
@@ -24,7 +28,8 @@ describe(getXcodeBuildArgsAsync, () => {
         configuration: 'Debug',
         isSimulator: false,
         scheme: 'project-with-build-configurations',
-        device: { udid: 'demo-udid', name: 'foobar' },
+        device: { udid: 'demo-udid', name: 'foobar', osType: 'iOS' },
+        osType: 'iOS',
         xcodeProject: {
           isWorkspace: true,
           name: 'demo-project',
@@ -39,6 +44,8 @@ describe(getXcodeBuildArgsAsync, () => {
       'project-with-build-configurations',
       '-destination',
       'id=demo-udid',
+      'COCOAPODS_PARALLEL_CODE_SIGN=true',
+      'COMPILER_INDEX_STORE_ENABLE=NO',
       'DEVELOPMENT_TEAM=my-dev-team',
       '-allowProvisioningUpdates',
       '-allowProvisioningDeviceRegistration',
@@ -54,7 +61,8 @@ describe(getXcodeBuildArgsAsync, () => {
         configuration: 'Release',
         isSimulator: true,
         scheme: 'project-with-build-configurations',
-        device: { udid: 'demo-udid', name: 'foobar' },
+        device: { udid: 'demo-udid', name: 'foobar', osType: 'iOS' },
+        osType: 'iOS',
         xcodeProject: {
           isWorkspace: false,
           name: 'demo-project',
@@ -69,8 +77,67 @@ describe(getXcodeBuildArgsAsync, () => {
       'project-with-build-configurations',
       '-destination',
       'id=demo-udid',
+      'COCOAPODS_PARALLEL_CODE_SIGN=true',
+      'COMPILER_INDEX_STORE_ENABLE=NO',
     ]);
     expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledTimes(0);
+  });
+  it(`returns generic simulator destination when device is null`, async () => {
+    await expect(
+      getXcodeBuildArgsAsync({
+        projectRoot: '/path/to/project',
+        buildCache: true,
+        configuration: 'Release',
+        isSimulator: true,
+        scheme: 'my-app',
+        device: null,
+        osType: 'iOS',
+        xcodeProject: {
+          isWorkspace: true,
+          name: 'my-app.xcworkspace',
+        },
+      })
+    ).resolves.toEqual([
+      '-workspace',
+      'my-app.xcworkspace',
+      '-configuration',
+      'Release',
+      '-scheme',
+      'my-app',
+      '-destination',
+      'generic/platform=iOS Simulator',
+      'COCOAPODS_PARALLEL_CODE_SIGN=true',
+      'COMPILER_INDEX_STORE_ENABLE=NO',
+    ]);
+    expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenCalledTimes(0);
+  });
+  it(`returns generic tvOS simulator destination when osType is tvOS`, async () => {
+    await expect(
+      getXcodeBuildArgsAsync({
+        projectRoot: '/path/to/project',
+        buildCache: true,
+        configuration: 'Release',
+        isSimulator: true,
+        scheme: 'my-tv-app',
+        device: null,
+        osType: 'tvOS',
+        xcodeProject: {
+          isWorkspace: true,
+          name: 'my-tv-app.xcworkspace',
+        },
+      })
+    ).resolves.toEqual([
+      '-workspace',
+      'my-tv-app.xcworkspace',
+      '-configuration',
+      'Release',
+      '-scheme',
+      'my-tv-app',
+      '-destination',
+      'generic/platform=tvOS Simulator',
+      'COCOAPODS_PARALLEL_CODE_SIGN=true',
+      'COMPILER_INDEX_STORE_ENABLE=NO',
+    ]);
   });
 });
 
@@ -123,6 +190,112 @@ describe(_assertXcodeBuildResults, () => {
     ).toThrow(
       'This operation can fail if the version of the OS on the device is newer than the version of Xcode that is running.'
     );
+  });
+
+  it(`shows the log path and compile error before the full build output`, () => {
+    let message = '';
+    try {
+      _assertXcodeBuildResults(
+        65,
+        fs.readFileSync(path.resolve(__dirname, './fixtures/unhandled-compile-error.log'), 'utf8'),
+        '',
+        { name: 'BareExpo' },
+        './output.log'
+      );
+    } catch (error: any) {
+      message = error.message;
+    }
+    expect(message).toContain(
+      "call to undeclared function 'RCTBundleURLProviderAllowPackagerServerAccess'"
+    );
+    expect(message).toContain('./output.log');
+    expect(message.indexOf('./output.log')).toBeLessThan(
+      message.indexOf('ComputeTargetDependencyGraph')
+    );
+    expect(message.indexOf('call to undeclared function')).toBeLessThan(
+      message.indexOf('ComputeTargetDependencyGraph')
+    );
+  });
+
+  it(`surfaces an error line that only appeared on stderr`, () => {
+    let message = '';
+    try {
+      _assertXcodeBuildResults(
+        65,
+        'ComputeTargetDependencyGraph\nnote: Building targets in dependency order\n** BUILD FAILED **',
+        '/path/Script-ABC123.sh: error: config generation failed\n',
+        { name: 'BareExpo' },
+        './output.log'
+      );
+    } catch (error: any) {
+      message = error.message;
+    }
+    expect(message).toContain('error: config generation failed');
+  });
+});
+
+describe(_formatXcodeBuildFailure, () => {
+  it(`includes the build log path`, () => {
+    expect(_formatXcodeBuildFailure(65, '/app/.expo/xcodebuild.log')).toContain(
+      '/app/.expo/xcodebuild.log'
+    );
+  });
+});
+
+describe(_hasXcodeBuildErrorDetails, () => {
+  it(`returns false for Xcode's no-output message`, () => {
+    const formatter = ExpoRunFormatter.create('/', {
+      xcodeProject: { name: 'BareExpo' },
+      isDebug: false,
+    });
+    formatter.pipe(
+      'error: the following command failed with exit code 1 but produced no further output\n'
+    );
+
+    expect(formatter.errors).toHaveLength(1);
+    expect(_hasXcodeBuildErrorDetails(formatter.errors)).toBe(false);
+  });
+
+  it(`returns true for other errors`, () => {
+    expect(_hasXcodeBuildErrorDetails(['error: config generation failed'])).toBe(true);
+  });
+});
+
+describe(_extractXcodeBuildErrorLines, () => {
+  it(`extracts and dedupes compiler error lines`, () => {
+    const output = [
+      'CompileC Foo.o Foo.m normal arm64',
+      '/path/Foo.m:1:2: error: use of undeclared identifier',
+      '/path/Foo.m:1:2: error: use of undeclared identifier',
+      '› 0 error(s), and 3 warning(s)',
+      "note: expanded from macro 'BAR'",
+    ].join('\n');
+    expect(_extractXcodeBuildErrorLines(output)).toEqual([
+      '/path/Foo.m:1:2: error: use of undeclared identifier',
+    ]);
+  });
+
+  it(`returns nothing when no error lines are present`, () => {
+    expect(_extractXcodeBuildErrorLines('** BUILD SUCCEEDED **\n› 0 error(s)')).toEqual([]);
+  });
+
+  it(`keeps Xcode's no-output message when it is the only error`, () => {
+    const message =
+      'error: the following command failed with exit code 1 but produced no further output';
+
+    expect(_extractXcodeBuildErrorLines(message)).toEqual([message]);
+  });
+
+  it(`keeps Xcode's no-output message with another error`, () => {
+    const output = [
+      'script.sh: error: config generation failed',
+      'error: the following command failed with exit code 1 but produced no further output',
+    ].join('\n');
+
+    expect(_extractXcodeBuildErrorLines(output)).toEqual([
+      'script.sh: error: config generation failed',
+      'error: the following command failed with exit code 1 but produced no further output',
+    ]);
   });
 });
 

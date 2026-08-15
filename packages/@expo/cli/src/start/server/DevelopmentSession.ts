@@ -1,4 +1,5 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 
 import {
   closeDevelopmentSessionAsync,
@@ -7,12 +8,14 @@ import {
 import { hasCredentials } from '../../api/user/UserSettings';
 import { env } from '../../utils/env';
 import * as ProjectDevices from '../project/devices';
-
-const debug = require('debug')('expo:start:server:developmentSession') as typeof console.log;
+import { debugEvent } from './events';
 
 export class DevelopmentSession {
-  /** If the `startAsync` was successfully called */
-  private hasActiveSession = false;
+  /** If the `startAsync` was successfully called. Underscored + public so tests can observe when
+   * the fire-and-forget ping completes (it is set last) instead of polling. */
+  _hasActiveSession = false;
+
+  private abortController: AbortController | undefined;
 
   constructor(
     /** Project root directory. */
@@ -36,38 +39,40 @@ export class DevelopmentSession {
     exp?: Pick<ExpoConfig, 'name' | 'description' | 'slug' | 'primaryColor'>;
     runtime: 'native' | 'web';
   }): Promise<void> {
-    try {
-      if (env.CI || env.EXPO_OFFLINE) {
-        debug(
-          env.CI
-            ? 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in CI.'
-            : 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
-        );
-        return;
-      }
-
-      const deviceIds = await this.getDeviceInstallationIdsAsync();
-
-      if (!hasCredentials() && !deviceIds?.length) {
-        debug(
-          'Development session will not ping because the user is not authenticated and there are no devices.'
-        );
-        return;
-      }
-
-      if (this.url) {
-        debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
-        await updateDevelopmentSessionAsync({
-          url: this.url,
-          runtime,
-          exp,
-          deviceIds,
-        });
-        this.hasActiveSession = true;
-      }
-    } catch (error: any) {
-      debug(`Error updating development session API: ${error}`);
+    if (env.CI || env.EXPO_OFFLINE) {
+      return;
     }
+
+    const fireAndForget = async () => {
+      try {
+        const deviceIds = await this.getDeviceInstallationIdsAsync();
+
+        if (!hasCredentials() && !deviceIds?.length) {
+          return;
+        }
+
+        if (this.url) {
+          debugEvent('session_ping', { runtime, url: this.url });
+          this.abortController = new AbortController();
+          await updateDevelopmentSessionAsync({
+            url: this.url,
+            runtime,
+            exp,
+            deviceIds,
+            signal: this.abortController.signal,
+          });
+          this._hasActiveSession = true;
+        }
+      } catch (error: any) {
+        debugEvent('session_ping_failed', { error: debugEvent.error(error as Error) });
+      } finally {
+        this.abortController = undefined;
+      }
+    };
+
+    // NOTE(@kitten): We never want to wait for this call, as it's not essential to the CLI startup
+    // But we do add a tick delay, for testing
+    await Promise.race([fireAndForget(), Promise.resolve()]);
   }
 
   /** Get all recent devices for the project. */
@@ -78,13 +83,18 @@ export class DevelopmentSession {
 
   /** Try to close any pending development sessions, but always resolve */
   public async closeAsync(): Promise<boolean> {
-    if (env.CI || env.EXPO_OFFLINE || !this.hasActiveSession) {
+    if (env.CI || env.EXPO_OFFLINE) {
+      return false;
+    } else if (this.abortController) {
+      this.abortController.abort();
+      return false;
+    } else if (!this._hasActiveSession) {
       return false;
     }
 
     // Clear out the development session, even if the call fails.
     // This blocks subsequent calls to `stopAsync`
-    this.hasActiveSession = false;
+    this._hasActiveSession = false;
 
     try {
       const deviceIds = await this.getDeviceInstallationIdsAsync();
@@ -102,7 +112,7 @@ export class DevelopmentSession {
 
       return true;
     } catch (error: any) {
-      debug(`Error closing development session API: ${error}`);
+      debugEvent('session_close_failed', { error: debugEvent.error(error as Error) });
       return false;
     }
   }

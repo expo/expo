@@ -122,7 +122,10 @@ class Contact(var contactId: String, var appContext: AppContext) {
         emails.add(item)
       }
 
-      CommonDataKinds.Im.CONTENT_ITEM_TYPE -> {
+      // Legacy API supports IM addresses, deprecated since Android API 35. The new Contacts API removes these fields.
+      @Suppress("DEPRECATION")
+      CommonDataKinds.Im.CONTENT_ITEM_TYPE
+      -> {
         val item = ImAddressModel()
         item.fromCursor(cursor)
         imAddresses.add(item)
@@ -198,8 +201,6 @@ class Contact(var contactId: String, var appContext: AppContext) {
   fun toInsertOperationList(): ArrayList<ContentProviderOperation> {
     val ops = ArrayList<ContentProviderOperation>()
     var op = ContentProviderOperation.newInsert(RawContacts.CONTENT_URI)
-      .withValue(RawContacts.ACCOUNT_TYPE, null)
-      .withValue(RawContacts.ACCOUNT_NAME, null)
       .withValue(RawContacts.STARRED, isFavorite)
     ops.add(op.build())
     op = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
@@ -322,6 +323,8 @@ class Contact(var contactId: String, var appContext: AppContext) {
     get() = arrayOf(
       CommonDataKinds.Event.CONTENT_ITEM_TYPE,
       CommonDataKinds.Email.CONTENT_ITEM_TYPE,
+      // Legacy API supports IM addresses, deprecated since Android API 35. The new Contacts API removes these fields.
+      @Suppress("DEPRECATION")
       CommonDataKinds.Im.CONTENT_ITEM_TYPE,
       CommonDataKinds.Phone.CONTENT_ITEM_TYPE,
       CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE,

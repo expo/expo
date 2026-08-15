@@ -1,14 +1,25 @@
 package expo.modules.devlauncher.compose.screens
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import expo.modules.devlauncher.compose.models.ErrorAction
@@ -16,12 +27,23 @@ import expo.modules.devlauncher.compose.ui.ActionButton
 import expo.modules.devlauncher.compose.ui.StackTrace
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
+import kotlinx.coroutines.delay
 
 @Composable
 fun ErrorScreen(
   stack: String,
   onAction: (ErrorAction) -> Unit = {}
 ) {
+  val context = LocalContext.current
+  var copied by remember { mutableStateOf(false) }
+
+  LaunchedEffect(copied) {
+    if (copied) {
+      delay(2000)
+      copied = false
+    }
+  }
+
   Column(
     modifier = Modifier
       .background(NewAppTheme.colors.background.subtle)
@@ -43,7 +65,7 @@ fun ErrorScreen(
         )
       )
 
-      NewText("This development build encountered the following error.")
+      NewText("This development build encountered the following error:")
     }
 
     StackTrace(
@@ -69,15 +91,35 @@ fun ErrorScreen(
         }
       )
 
-      ActionButton(
-        "Go To Home",
-        foreground = NewAppTheme.colors.buttons.secondary.foreground,
-        background = NewAppTheme.colors.buttons.secondary.background,
-        modifier = Modifier.padding(vertical = NewAppTheme.spacing.`2`),
-        onClick = {
-          onAction(ErrorAction.GoToHome)
+      Row(
+        horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
+      ) {
+        Box(modifier = Modifier.weight(1f)) {
+          ActionButton(
+            "Go home",
+            foreground = NewAppTheme.colors.buttons.secondary.foreground,
+            background = NewAppTheme.colors.buttons.secondary.background,
+            modifier = Modifier.padding(vertical = NewAppTheme.spacing.`2`),
+            onClick = {
+              onAction(ErrorAction.GoToHome)
+            }
+          )
         }
-      )
+
+        Box(modifier = Modifier.weight(1f)) {
+          ActionButton(
+            if (copied) "Copied!" else "Copy",
+            foreground = NewAppTheme.colors.buttons.secondary.foreground,
+            background = NewAppTheme.colors.buttons.secondary.background,
+            modifier = Modifier.padding(vertical = NewAppTheme.spacing.`2`),
+            onClick = {
+              val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+              clipboard.setPrimaryClip(ClipData.newPlainText("Error", stack))
+              copied = true
+            }
+          )
+        }
+      }
     }
   }
 }

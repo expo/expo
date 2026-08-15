@@ -1,3 +1,43 @@
+import type { ReactNode } from 'react';
+
+/**
+ * Asset manifest for client hydration bundles.
+ *
+ * {@link import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
+ */
+export interface AssetInfo {
+  css: string[];
+  /**
+   * External stylesheets (`@import url(https://...)`) extracted from the bundled CSS. Rendered
+   * verbatim as `<link rel="stylesheet">` so attributes like `media` are preserved in the SSR HTML.
+   */
+  externalCss?: ExternalCssInfo[];
+  js: string[];
+  /** Public href of a favicon generated from `web.favicon` in the app config. */
+  favicon?: string;
+}
+
+/** A single external stylesheet `<link>` (e.g. from `@import url(https://...)`). */
+export interface ExternalCssInfo {
+  href: string;
+  /** Media query baked into the `<link>` tag, when present. */
+  media?: string;
+}
+
+/**
+ * Rendering configuration. Discriminated union supporting multiple rendering modes.
+ */
+export type RenderingConfiguration = RenderingConfigurationForSSR; // RenderingConfigurationForSSG | RenderingConfigurationForRSC
+
+/**
+ * Configuration for server-side rendering (SSR). HTML is rendered at runtime on each request.
+ */
+export interface RenderingConfigurationForSSR {
+  mode: 'ssr';
+  /** Path to the SSR render module, typically `_expo/server/render.js` */
+  file: string;
+}
+
 export interface MiddlewareInfo {
   /**
    * Path to the module that contains the middleware function as a default export.
@@ -26,6 +66,33 @@ export interface RouteInfo<TRegex = RegExp | string> {
   permanent?: boolean;
   /** If a redirect, which methods are allowed. Undefined represents all methods */
   methods?: string[];
+  /** Path to the loader module for this route, typically `_expo/loaders/[ROUTE].js`. When present, the loader should be executed before rendering. */
+  loader?: string;
+  /** Per-route async chunk assets. Merged with top-level `assets` at serve time. */
+  assets?: AssetInfo;
+}
+
+/**
+ * A per-path header rule, applied to matching page responses only.
+ *
+ * For scalar headers, the order is headers already on the response (set by
+ * `expo-server` or declared by the route itself), then matching rules, then
+ * global `headers`. When multiple rules match a path, the rule declared last
+ * in the `pageHeaders` array takes precedence.
+ *
+ * For array headers, always append. Values from `headers` come first,
+ * then `pageHeaders`.
+ */
+export interface PageHeaderInfo<TRegex = RegExp | string> {
+  /**
+   * Regex for matching the requested path against this rule.
+   */
+  namedRegex: TRegex;
+  /**
+   * Headers to apply to matching responses. Scalar values are set unless the response already
+   * carries the header; array values always append.
+   */
+  headers: Record<string, string | string[]>;
 }
 
 export interface RoutesManifest<TRegex = RegExp | string> {
@@ -38,6 +105,10 @@ export interface RoutesManifest<TRegex = RegExp | string> {
    * Headers to be applied to all responses from the server.
    */
   headers?: Record<string, string | string[]>;
+  /**
+   * Headers to be applied to path-specific responses from the server.
+   */
+  pageHeaders?: PageHeaderInfo<TRegex>[];
   /**
    * Routes that are matched after HTML routes and invoke WinterCG-compliant functions.
    */
@@ -59,8 +130,38 @@ export interface RoutesManifest<TRegex = RegExp | string> {
    * Rewrites. After middleware has processed and regular routing resumes, these occur first.
    */
   rewrites: RouteInfo<TRegex>[];
+  /**
+   * CSS/JS assets. Used for client hydration in SSR mode.
+   */
+  assets?: AssetInfo;
+  /**
+   * Rendering configuration. Determines how HTML is generated.
+   * When present, HTML routes are rendered at runtime instead of being served from pre-rendered files.
+   */
+  rendering?: RenderingConfiguration;
 }
 
 export type RawManifest = RoutesManifest<string>;
 export type Manifest = RoutesManifest<RegExp>;
 export type Route = RouteInfo<RegExp>;
+
+/**
+ * @type {import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
+ */
+export interface GetStaticContentOptions {
+  loader?: { data?: unknown; key: string };
+  request?: Request;
+  assets?: AssetInfo;
+}
+
+/**
+ * @type {import('@expo/router-server/src/static/renderStreamingContent').GetStreamingContentOptions}
+ */
+export interface GetStreamingContentOptions {
+  loader?: { data?: unknown; key: string };
+  metadata?: {
+    headNodes: ReactNode[];
+  } | null;
+  request?: Request;
+  assets?: AssetInfo;
+}

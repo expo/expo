@@ -4,6 +4,7 @@ import { type SVGProps } from 'react';
 export function ReactLogo({ className }: SVGProps<SVGSVGElement>) {
   return (
     <svg
+      aria-hidden="true"
       className={mergeClasses('icon-md', className)}
       viewBox="0 0 512 512"
       fill="none"

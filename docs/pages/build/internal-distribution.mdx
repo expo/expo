@@ -30,9 +30,33 @@ See the tutorial on Internal distribution with EAS Build below for more informat
 
 ### Automation on CI (optional)
 
-It's possible to run internal distribution builds non-interactively in CI using the `--non-interactive` flag. However, if you are using ad hoc provisioning on iOS you will not be able to add new devices to your provisioning profile when using this flag. After registering a device through `eas device:create`, you need to run `eas build` interactively and authenticate with Apple in order for EAS to add the device to your provisioning profile. [Learn more about triggering builds from CI](/build/building-on-ci).
+You can run internal distribution builds non-interactively in CI with the [`--non-interactive`](/eas/cli/#eas-build) flag. [Learn more about triggering builds from CI](/build/building-on-ci).
+
+For iOS ad hoc builds, `eas build --non-interactive` reuses a valid provisioning profile without updating its device list. The build can succeed, but the app may not install on registered devices added after the profile was last updated.
+
+Pass `--refresh-ad-hoc-provisioning-profile` with `--non-interactive` to update the Expo-managed ad hoc provisioning profile on the Apple Developer Portal before the build.
+
+> **info** `--refresh-ad-hoc-provisioning-profile` requires EAS CLI 19.1.0 or later.
+
+EAS authenticates with an App Store Connect API key. It reads devices registered on EAS for your Apple team. It registers any missing UDIDs on the portal. Then it refreshes the profile device list.
+
+When you use this flag, EAS selects all matching devices for the build target's Apple platform: iPhone and iPad for iOS, Mac for macOS.
+
+<Terminal
+  cmd={[
+    '$ eas build --platform ios --profile preview --non-interactive --refresh-ad-hoc-provisioning-profile',
+  ]}
+/>
+
+For [EAS Workflows](/eas/workflows/get-started), set `refresh_ad_hoc_provisioning_profile: true` in the build job's `params` with the same profile requirements. See the [build job parameters](/eas/workflows/pre-packaged-jobs#build).
+
+The profile must set [`"distribution": "internal"`](/eas/json/#distribution) and use [credentials managed by EAS](/app-signing/app-credentials/). You need at least one device from [`eas device:create`](/eas/cli/#eas-device-create) and an App Store Connect API key in CI through [environment variables](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team) (`EXPO_ASC_API_KEY_PATH`, `EXPO_ASC_KEY_ID`, and `EXPO_ASC_ISSUER_ID`) or a key stored in EAS for submissions on the project.
+
+Otherwise, after registering a device with [`eas device:create`](/eas/cli/#eas-device-create), run [`eas build`](/eas/cli/#eas-build) interactively and sign in with your Apple account so EAS can update the ad hoc provisioning profile.
 
 ### Managing devices
+
+With [EAS Workflows](/eas/workflows/get-started), you can pause a workflow until a tester enrolls an iOS device and a team member approves it using the [`apple-device-registration-request`](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) job. Pair it with a `build` job that sets `refresh_ad_hoc_provisioning_profile: true` to include the new device in an internal distribution build.
 
 You can see any devices registered via `eas device:create` by running:
 
@@ -41,7 +65,9 @@ You can see any devices registered via `eas device:create` by running:
   cmdCopy="eas device:list"
 />
 
-Devices registered with Expo for ad hoc provisioning will appear on your Apple Developer Portal after they are used to generate a provisioning profile for a new internal build with EAS Build or to [resign an existing build](/app-signing/app-credentials/#re-signing-new-credentials) with `eas build:resign`.
+Devices registered with Expo for ad hoc provisioning will appear on your Apple Developer Portal after they are used to generate a provisioning profile for a new internal build with EAS Build or to [re-sign an existing build](/app-signing/app-credentials/#re-signing-new-credentials) with `eas build:resign`.
+
+> **warning** **On new or recently renewed Apple Developer Program memberships, a newly registered device may not be immediately installable.** Registering a device with Expo does not register it with Apple. The device is added to your Apple Developer Portal only when it's first included in a provisioning profile, which happens when you create a new internal build or re-sign an existing one. For these memberships, Apple can take [up to 24–72 hours](https://developer.apple.com/help/account/reference/device-registration-updates/) to finish processing a newly registered device, and during that time the device can't be added to provisioning profiles. As a result, the first build or re-sign that includes a new device may fail. Wait for Apple to finish processing, then create a new build or re-sign again to produce an installable build that includes the device.
 
 #### Remove devices
 
@@ -85,7 +111,7 @@ to your Apple Developer account. This method requires a paid Apple Developer acc
 
 You will need to know the UDID (Unique Device Identifier) of each device that will install your app, which may be challenging if you try to share with someone who is not a developer. Adding a new device will require a rebuild of your app or [re-signing the build with new credentials](/app-signing/app-credentials/#re-signing-new-credentials).
 
-Setting up Ad Hoc certificates correctly can be intimidating if you haven't done it before and tedious even if you have. If you're using [EAS Build](#internal-distribution-with-eas-build), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts of setting up Ad Hoc credentials for you.
+Setting up Ad Hoc certificates correctly can be intimidating if you haven't done it before and tedious even if you have. If you're using [EAS Build](#using-internal-distribution), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts of setting up Ad Hoc credentials for you.
 
 </Collapsible>
 

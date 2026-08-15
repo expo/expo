@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import type { ProxyNativeModule } from 'expo-modules-core';
 
 // @docsMissing
 /**
@@ -29,6 +29,9 @@ export enum AndroidAudioContentType {
  * */
 export enum AndroidImportance {
   UNKNOWN = 0,
+  /**
+   * Use `DEFAULT` instead. This value is present for compatibility reasons.
+   * */
   UNSPECIFIED = 1,
   NONE = 2,
   MIN = 3,
@@ -61,6 +64,9 @@ export enum AndroidAudioUsage {
 }
 
 // @docsMissing
+/**
+ * @platform android
+ */
 export interface AudioAttributes {
   usage: AndroidAudioUsage;
   contentType: AndroidAudioContentType;
@@ -73,6 +79,9 @@ export interface AudioAttributes {
 // We're making inner flags required to set intentionally.
 // Not providing `true` for a flag makes it false, it doesn't make sense
 // to let it be left undefined.
+/**
+ * @platform android
+ */
 export type AudioAttributesInput = Partial<AudioAttributes>;
 
 /**

@@ -7,12 +7,16 @@
 #elif TARGET_OS_OSX
 
 #import <AppKit/AppKit.h>
+
 #import <React/RCTUIKit.h>
 
 @compatibility_alias UIView NSView;
 @compatibility_alias UIResponder NSResponder;
 @compatibility_alias UIColor NSColor;
 @compatibility_alias UIWindow NSWindow;
+@compatibility_alias UIHostingController NSHostingController;
+@compatibility_alias UIImage NSImage;
+@compatibility_alias UIImageView NSImageView;
 
 #ifndef UIApplication
 @compatibility_alias UIApplication NSApplication;

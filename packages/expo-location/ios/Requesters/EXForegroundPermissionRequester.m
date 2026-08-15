@@ -53,8 +53,15 @@ static SEL whenInUseAuthorizationSelector;
       break;
     }
   }
-  
-  return @{ @"status": @(status), @"scope": @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none") };
+  NSString *scope = @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none");
+  NSString *accuracy = [self accuracyAuthorizationString];
+
+  return @{ @"status": @(status),
+            @"ios": @{
+              @"scope": scope,
+              @"accuracy": accuracy
+            },
+         };
 }
 
 @end

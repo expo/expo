@@ -2,8 +2,8 @@ import JsonFile from '@expo/json-file';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class ExpoConfigCommonIssueCheck implements DoctorCheck {
   description = 'Check Expo config for common issues';
@@ -63,7 +63,7 @@ export class ExpoConfigCommonIssueCheck implements DoctorCheck {
 function getExpoSDKVersionFromPackage(projectRoot: string): string | undefined {
   const packageJsonPath = resolveFrom.silent(projectRoot, 'expo/package.json');
   if (!packageJsonPath) {
-    // (probably) technically impossible - if this happens, `getConfig` throws and Doctor crashes
+    // (probably) technically impossible - if this happens, `getProjectConfigAsync` throws and Doctor crashes
     return undefined;
   }
   const expoPackageJson = JsonFile.read(packageJsonPath, { json5: true });

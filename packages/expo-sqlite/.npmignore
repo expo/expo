@@ -9,6 +9,7 @@ __tests__
 __rsc_tests__
 
 /babel.config.js
+/oxlint.config.mjs
 /android/src/androidTest/
 /android/src/test/
 
@@ -21,3 +22,6 @@ __rsc_tests__
 
 # Exclude source of dev-plugin-webui to reduce package size
 /dev-plugin-webui/
+
+# Include all files in the bundled dev-plugin-dist
+!/dev-plugin-dist/**/*

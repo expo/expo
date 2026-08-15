@@ -13,7 +13,7 @@ export class PathUtilities {
    * @returns A string representing the joined path.
    */
   static join(...paths: (string | File | Directory)[]): string {
-    const [firstSegment, ...rest] = paths.map(uriObjectToString);
+    const [firstSegment = '', ...rest] = paths.map(uriObjectToString);
     const pathAsUrl = asUrl(firstSegment);
     if (pathAsUrl) {
       pathAsUrl.pathname = nodePath.join(pathAsUrl.pathname, ...rest.map(encodeURLChars));

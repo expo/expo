@@ -2,9 +2,6 @@
 
 #include "Exceptions.h"
 
-#include "JSIContext.h"
-#include "JSReferencesCache.h"
-
 namespace jni = facebook::jni;
 
 namespace expo {

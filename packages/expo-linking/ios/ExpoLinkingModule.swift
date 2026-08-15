@@ -10,7 +10,12 @@ public class ExpoLinkingModule: Module {
     Events(onURLReceived)
 
     OnStartObserving(onURLReceived) {
-      NotificationCenter.default.addObserver(self, selector: #selector(handleURLReceivedNotification), name: onURLReceivedNotification, object: nil)
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(handleURLReceivedNotification),
+        name: onURLReceivedNotification,
+        object: nil
+      )
     }
 
     OnStopObserving(onURLReceived) {
@@ -20,6 +25,10 @@ public class ExpoLinkingModule: Module {
 
     Function("getLinkingURL") {
       return ExpoLinkingRegistry.shared.initialURL?.absoluteString
+    }
+
+    Function("clearInitialURL") {
+      ExpoLinkingRegistry.shared.initialURL = nil
     }
   }
 

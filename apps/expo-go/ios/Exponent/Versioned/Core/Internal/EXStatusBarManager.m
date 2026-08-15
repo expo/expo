@@ -1,6 +1,5 @@
 
 #import "EXStatusBarManager.h"
-#import "EXUnversioned.h"
 
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTLog.h>
@@ -47,15 +46,27 @@ RCT_ENUM_CONVERTER(UIStatusBarAnimation, (@{
 - (void)setBridge:(RCTBridge *)bridge
 {
   _bridge = bridge;
-  _capturedStatusBarProperties = [[self _currentStatusBarProperties] mutableCopy];
+
+  // `_currentStatusBarProperties` reads UIApplication properties that require the main thread.
+  // Under bridgeless/TurboModule, `setBridge:` is invoked on the JS thread during lazy module
+  // construction, so hop to the main queue for the initial capture.
+  void (^captureProperties)(void) = ^{
+    self->_capturedStatusBarProperties = [[self _currentStatusBarProperties] mutableCopy];
+  };
+  if ([NSThread isMainThread]) {
+    captureProperties();
+  } else {
+    dispatch_sync(dispatch_get_main_queue(), captureProperties);
+  }
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidForeground:)
-                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidForegroundNotification")
+                                               name:@"EXKernelBridgeDidForegroundNotification"
                                              object:self.bridge];
-  
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(_bridgeDidBackground:)
-                                               name:EX_UNVERSIONED(@"EXKernelBridgeDidBackgroundNotification")
+                                               name:@"EXKernelBridgeDidBackgroundNotification"
                                              object:self.bridge];
 }
 

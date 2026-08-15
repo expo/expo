@@ -18,10 +18,61 @@ remove_dependencies() {
 echo " ☛  Ensuring macOS project is setup..."
 
 echo " Removing macOS incompatible dependencies..."
-remove_dependencies "@shopify/react-native-skia" "react-native-gesture-handler" "react-native-reanimated" "react-native-worklets"
+remove_dependencies "react-native-svg"
 
 echo " Copying macOS patches..."
 cp -r ./scripts/fixtures/macos/patches/* ../../patches/
+
+echo " Registering macOS patches in pnpm-workspace.yaml..."
+node -e "
+  const fs = require('fs');
+  const patchDir = './scripts/fixtures/macos/patches';
+  const workspaceFile = '../../pnpm-workspace.yaml';
+
+  const files = fs.readdirSync(patchDir).filter(f => f.endsWith('.patch'));
+  let yaml = fs.readFileSync(workspaceFile, 'utf8');
+
+  for (const file of files) {
+    if (yaml.includes('patches/' + file)) continue;
+
+    const name = file.replace('.patch', '');
+    const parts = name.split('+');
+    let pkg;
+    if (parts[0].startsWith('@')) {
+      pkg = parts[0] + '/' + parts[1];
+    } else {
+      pkg = parts[0];
+    }
+
+    const quotedKey = pkg.includes('/') || pkg.includes('@') ? \"'\" + pkg + \"'\" : pkg;
+    const entry = '  ' + quotedKey + ': patches/' + file;
+
+    // Insert after the last entry in patchedDependencies
+    const lines = yaml.split('\n');
+    let insertIdx = -1;
+    let inSection = false;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i] === 'patchedDependencies:') {
+        inSection = true;
+        continue;
+      }
+      if (inSection) {
+        if (lines[i].startsWith('  ') && lines[i].trim()) {
+          insertIdx = i + 1;
+        } else if (lines[i].trim() && !lines[i].startsWith('  ')) {
+          break;
+        }
+      }
+    }
+
+    if (insertIdx !== -1) {
+      lines.splice(insertIdx, 0, entry);
+      yaml = lines.join('\n');
+    }
+  }
+
+  fs.writeFileSync(workspaceFile, yaml);
+"
 
 RN_MACOS_VERSION=$(jq -r '.dependencies["react-native-macos"]' package.json)
 if [[ "$RN_MACOS_VERSION" != "null" ]]; then
@@ -29,15 +80,30 @@ if [[ "$RN_MACOS_VERSION" != "null" ]]; then
 else
     RN_MINOR_VERSION=$(jq -r '.dependencies["react-native"] | capture("^(?<major>\\d+)\\.(?<minor>\\d+)") | "\( .major ).\( .minor )"' package.json)
     echo " ⚠️  Attempting to install react-native-macos@$RN_MINOR_VERSION..."
-    if ! yarn add "react-native-macos@$RN_MINOR_VERSION" --non-interactive --silent; then
+    # These versions are explicitly chosen, so opt out of the workspace minimumReleaseAge
+    # policy — it would reject any react-native-macos release younger than 24 hours.
+    if ! pnpm add "react-native-macos@$RN_MINOR_VERSION" --silent --config.minimum-release-age=0; then
         echo "⚠️  Failed to install react-native-macos@$RN_MINOR_VERSION, falling back to latest version"
         # Manually extract the last react-native-macos version (highest) from npm because we can't rely on the @latest tag
         latest_version=$(npm view react-native-macos versions --json | jq -r '.[-1]')
-        yarn add "react-native-macos@$latest_version"
-
+        if ! pnpm add "react-native-macos@$latest_version" --config.minimum-release-age=0; then
+            echo " ❌ Could not install react-native-macos@$latest_version; the macOS project cannot be set up without it. See the pnpm error above."
+            exit 1
+        fi
     fi
 fi
 
-echo " Running yarn from root..."
+EXPECTED_REACT_VERSION=$(jq -r '.peerDependencies.react' node_modules/react-native-macos/package.json)
+CURRENT_REACT_VERSION=$(jq -r '.dependencies.react' package.json)
+if [[ "$EXPECTED_REACT_VERSION" == "null" || -z "$EXPECTED_REACT_VERSION" ]]; then
+    echo " ⚠️  Could not determine react peer dependency from react-native-macos, skipping react install"
+elif [[ "$CURRENT_REACT_VERSION" == "$EXPECTED_REACT_VERSION" ]]; then
+    echo " ✅ react@$CURRENT_REACT_VERSION already matches react-native-macos peer dependency"
+else
+    echo " ⚠️  Installing react@$EXPECTED_REACT_VERSION to match react-native-macos peer dependency (was $CURRENT_REACT_VERSION)..."
+    pnpm add "react@$EXPECTED_REACT_VERSION" --silent
+fi
+
+echo " Running pnpm from root..."
 cd ../../
-yarn install
+pnpm install --ignore-scripts --frozen-lockfile=false

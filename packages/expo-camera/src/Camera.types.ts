@@ -1,20 +1,23 @@
-import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  EventSubscription,
-  NativeModule,
-} from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
+import { NativeModule } from 'expo';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
-import { AndroidBarcode } from './AndroidBarcode.types';
-import { PictureRef } from './PictureRef';
+import type { AndroidBarcode } from './AndroidBarcode.types';
+import type { PictureRef } from './PictureRef';
 
 export type CameraType = 'front' | 'back';
 
-export type FlashMode = 'off' | 'on' | 'auto';
+/**
+ * Flash mode for the camera.
+ * - `off` - Flash is disabled.
+ * - `on` - Flash will fire for every capture.
+ * - `auto` - Flash will fire automatically when required.
+ * - `screen` - Uses the device screen as a flash for front camera selfies.
+ *   On Android, this uses CameraX's dedicated screen flash mode.
+ *   On iOS, this maps to 'on' which triggers Retina Flash automatically.
+ */
+export type FlashMode = 'off' | 'on' | 'auto' | 'screen';
 
 export type ImageType = 'png' | 'jpg';
 
@@ -38,7 +41,13 @@ export type VideoCodec = 'avc1' | 'hvc1' | 'jpeg' | 'apcn' | 'ap4h';
 
 /**
  * This option specifies the stabilization mode to use when recording a video.
- * @platform ios
+ * - `off` - No stabilization.
+ * - `standard` - Standard stabilization.
+ * - `cinematic` - Cinematic stabilization (provides more aggressive stabilization).
+ * - `auto` - The system automatically chooses the best stabilization mode.
+ *
+ * On Android, `standard`, `cinematic`, and `auto` all enable video stabilization,
+ * while `off` disables it. The specific stabilization method is determined by the device.
  */
 export type VideoStabilization = 'off' | 'standard' | 'cinematic' | 'auto';
 
@@ -217,6 +226,22 @@ export type CameraRecordingOptions = {
 };
 
 /**
+ * Information about an available camera lens.
+ */
+export type LensInfo = {
+  /**
+   * The stable device type identifier (for example, `"AVCaptureDeviceTypeBuiltInUltraWideCamera"`).
+   * Use this value for the `selectedLens` prop.
+   */
+  deviceType: string;
+  /**
+   * The localized display name for the lens (for example, `"Back Ultra Wide Camera"`).
+   * Use this for displaying lens options in the UI.
+   */
+  localizedName: string;
+};
+
+/**
  * @hidden
  */
 export type PictureSavedListener = (event: {
@@ -229,7 +254,7 @@ export type PictureSavedListener = (event: {
 export type AvailableLensesChangedListener = (event: { nativeEvent: AvailableLenses }) => void;
 
 // @docsMissing
-export type AvailableLenses = { lenses: string[] };
+export type AvailableLenses = { lenses: LensInfo[] };
 
 /**
  * @hidden
@@ -313,7 +338,7 @@ export type BarcodeScanningResult = {
    * [Google MLKit's native order](https://developers.google.com/android/reference/com/google/mlkit/vision/barcode/common/Barcode#getCornerPoints())
    * is used, which is `topLeft`, `topRight`, `bottomRight`, `bottomLeft`.
    * On iOS, the order is `bottomLeft`, `bottomRight`, `topLeft`, `topRight`. On Web, the order is
-   * `topLeft`, `bottomLeft`, `topRight`, `bottomRight`.
+   * `topLeft`, `topRight`, `bottomRight`, `bottomLeft` (matching Android/BarcodeDetector order).
    *
    */
   cornerPoints: BarcodePoint[];
@@ -405,10 +430,30 @@ export type CameraViewProps = ViewProps & {
    */
   pictureSize?: string;
   /**
-   * Available lenses are emitted to the `onAvailableLensesChanged` callback whenever the currently selected camera changes or by calling [`getAvailableLensesAsync`](#getavailablelensesasync).
-   * You can read more about the available lenses in the [Apple documentation](https://developer.apple.com/documentation/avfoundation/avcapturedevice/devicetype-swift.struct).
+   * The `deviceType` identifier for the lens to use. Retrieve available lenses by calling
+   * [`getAvailableLensesAsync`](#getavailablelensesasync) or listening to the `onAvailableLensesChanged`
+   * callback, then pass the `deviceType` value from the returned `LensInfo` objects.
+   *
+   * Common values include:
+   * - `"AVCaptureDeviceTypeBuiltInWideAngleCamera"` - Standard wide angle camera
+   * - `"AVCaptureDeviceTypeBuiltInUltraWideCamera"` - Ultra wide angle camera
+   * - `"AVCaptureDeviceTypeBuiltInTelephotoCamera"` - Telephoto camera
+   *
+   * If not specified or if the value doesn't match an available lens, the default camera for the
+   * current position (front/back) is used.
+   *
+   * You can read more about device types in the [Apple documentation](https://developer.apple.com/documentation/avfoundation/avcapturedevice/devicetype-swift.struct).
+   *
+   * @example
+   * ```tsx
+   * const lenses = await cameraRef.current.getAvailableLensesAsync();
+   * const ultraWide = lenses.find(l => l.deviceType === 'AVCaptureDeviceTypeBuiltInUltraWideCamera');
+   * if (ultraWide) {
+   *   setSelectedLens(ultraWide.deviceType);
+   * }
+   * ```
+   *
    * @platform ios
-   * @default 'builtInWideAngleCamera'
    */
   selectedLens?: string;
   /**
@@ -419,7 +464,7 @@ export type CameraViewProps = ViewProps & {
   /**
    * The video stabilization mode used for a video recording. Use one of [`VideoStabilization.<value>`](#videostabilization).
    * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
-   * @platform ios
+   * @default 'auto'
    */
   videoStabilizationMode?: VideoStabilization;
   /**
@@ -489,7 +534,7 @@ export interface CameraViewRef {
   readonly takePicture: (options: CameraPictureOptions) => Promise<CameraCapturedPicture>;
   readonly takePictureRef?: (options: CameraPictureOptions) => Promise<PictureRef>;
   readonly getAvailablePictureSizes: () => Promise<string[]>;
-  readonly getAvailableLenses: () => Promise<string[]>;
+  readonly getAvailableLenses: () => Promise<LensInfo[]>;
   readonly record: (options?: CameraRecordingOptions) => Promise<{ uri: string }>;
   readonly toggleRecording: () => Promise<void>;
   readonly stopRecording: () => Promise<void>;
@@ -559,6 +604,40 @@ export type ScanningOptions = {
 };
 
 /**
+ * @platform android
+ * @platform ios
+ */
+export type DocumentScanningOptions = {
+  /**
+   * Whether to also produce a multi-page PDF of the scan in addition to per-page images.
+   * @default false
+   */
+  requestPdf?: boolean;
+  /**
+   * The JPEG compression quality of the saved page images, between `0` and `1`. `0` means
+   * compress for the smallest size, `1` means compress for maximum quality.
+   * > Has no effect on Android, where the ML Kit scanner controls image compression.
+   * @default 1
+   */
+  quality?: number;
+};
+
+/**
+ * @platform android
+ * @platform ios
+ */
+export type DocumentScanningResult = {
+  /**
+   * An ordered array of `file://` URIs, one per scanned page image.
+   */
+  pages: string[];
+  /**
+   * A `file://` URI of the generated multi-page PDF. Only present when `requestPdf` was `true`.
+   */
+  pdfUri?: string;
+};
+
+/**
  * The available barcode types that can be scanned.
  */
 export type BarcodeType =
@@ -577,12 +656,12 @@ export type BarcodeType =
   | 'upc_a';
 
 export {
-  PermissionResponse,
+  type EventSubscription as Subscription,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  EventSubscription as Subscription,
-};
+  type PermissionExpiration,
+  type PermissionHookOptions,
+} from 'expo';
 
 export type PhotoResult = {
   /**
@@ -632,10 +711,14 @@ export declare class CameraNativeModule extends NativeModule<CameraEvents> {
   Picture: typeof PictureRef;
 
   readonly isModernBarcodeScannerAvailable: boolean;
+  readonly isDocumentScannerAvailable: boolean;
   readonly toggleRecordingAsyncAvailable: boolean;
   readonly isAvailableAsync: () => Promise<boolean>;
   readonly launchScanner: (options?: ScanningOptions) => Promise<void>;
   readonly dismissScanner: () => Promise<void>;
+  readonly scanDocumentAsync: (
+    options?: DocumentScanningOptions
+  ) => Promise<DocumentScanningResult | null>;
   readonly scanFromURLAsync: (
     url: string,
     barcodeTypes?: BarcodeType[]
@@ -645,4 +728,7 @@ export declare class CameraNativeModule extends NativeModule<CameraEvents> {
   readonly getMicrophonePermissionsAsync: () => Promise<PermissionResponse>;
   readonly requestMicrophonePermissionsAsync: () => Promise<PermissionResponse>;
   readonly getAvailableVideoCodecsAsync: () => Promise<VideoCodec[]>;
+
+  readonly Type: Record<keyof CameraType, CameraNativeProps['facing']>;
+  readonly FlashMode: Record<keyof FlashMode, CameraNativeProps['flashMode']>;
 }

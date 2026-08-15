@@ -5,6 +5,7 @@ sidebar_title: Continuous Native Generation
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 
 A single native project on its own is complicated to maintain, scale, and update. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies.
@@ -26,13 +27,20 @@ React Native apps can use **CNG** by using [Prebuild](#usage) to automate upgrad
 5. Native subscribers, for reducing native code side-effects in entry point files, such as **MainApplication** or **AppDelegate**.
 6. EAS Credentials for code signing additional targets and entitlements.
 
-The end result is a workflow where a developer can express any native application with the app config and generate that project continuously &mdash; by running `npx expo prebuild`.
+The end result is a workflow where a developer can express any native application with the app config and generate that project continuously — by running `npx expo prebuild`.
 
 ## Usage
 
 Prebuild can be used by running:
 
-<Terminal cmd={['$ npx expo prebuild']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild'],
+    yarn: ['$ yarn expo prebuild'],
+    pnpm: ['$ pnpm expo prebuild'],
+    bun: ['$ bun expo prebuild'],
+  }}
+/>
 
 This creates the **android** and **ios** directories for running your React code. If you modify the generated directories manually then you risk losing your changes the next time you run `npx expo prebuild --clean`. Instead, use [config plugins](/config-plugins/introduction/) , which are functions that perform modifications on native projects during prebuild.
 
@@ -61,13 +69,36 @@ If you troubleshoot your app by [compiling it locally](/guides/local-app-develop
 You can perform a native build locally by running:
 
 <Terminal
-  cmd={[
-    '# Build your native Android project',
-    '$ npx expo run:android',
-    '',
-    '# Build your native iOS project',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Build your native Android project',
+      '$ npx expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Build your native Android project',
+      '$ yarn expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Build your native Android project',
+      '$ pnpm expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Build your native Android project',
+      '$ bun expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 If native directories are absent, `npx expo prebuild` will run once for the specific platform. On subsequent uses of these `run` commands, manually run `npx expo prebuild --clean` to ensure the native code is freshly synchronized with your local configuration.
@@ -76,7 +107,14 @@ If native directories are absent, `npx expo prebuild` will run once for the spec
 
 Prebuild currently supports Android and iOS. Web support is not required because there is no native project to generate for the web and the web app it runs in a web browser. Use the `--platform` option to run prebuild for individual platforms:
 
-<Terminal cmd={['$ npx expo prebuild --platform ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --platform ios'],
+    yarn: ['$ yarn expo prebuild --platform ios'],
+    pnpm: ['$ pnpm expo prebuild --platform ios'],
+    bun: ['$ bun expo prebuild --platform ios'],
+  }}
+/>
 
 ## Dependencies
 
@@ -84,7 +122,14 @@ Prebuild begins by initializing new native projects from a template correspondin
 
 You can skip changing npm package versions with the `--skip-dependency-update` option:
 
-<Terminal cmd={['$ npx expo prebuild --skip-dependency-update react-native,react']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --skip-dependency-update react-native,react'],
+    yarn: ['$ yarn expo prebuild --skip-dependency-update react-native,react'],
+    pnpm: ['$ pnpm expo prebuild --skip-dependency-update react-native,react'],
+    bun: ['$ bun expo prebuild --skip-dependency-update react-native,react'],
+  }}
+/>
 
 ## Package managers
 
@@ -98,7 +143,7 @@ The `--clean` option deletes any existing native directories before generating. 
 
 For example, some config plugins aren't idempotent. When a project utilizes multiple "dangerous modifiers" to add regex changes to an app's code, it can lead to unexpected behavior. This is why using the `--clean` option is the safest way to use the prebuild command and is generally recommended in most cases.
 
-#### Using `--clean` option
+### Using `--clean` option
 
 When using the `--clean` option, you'll be warned if you have any uncommitted changes to your git code repository, as this option will delete and recreate all of your native project files. This prompt is optional and will be skipped when encountered in CI. You can disable this check by enabling the environment variable `EXPO_NO_GIT_STATUS=1`.
 
@@ -114,7 +159,7 @@ Prebuild starts from template files, which are then modified with config plugins
 
 ## Side effects
 
-`npx expo prebuild` performs several side effects outside of generating the **android** and **ios** directories. Work is in progress to eliminate these side effects &mdash; ideally, running `npx expo prebuild` would generate the Android and iOS projects and leave the rest of the project untouched.
+`npx expo prebuild` performs several side effects outside of generating the **android** and **ios** directories. Work is in progress to eliminate these side effects — ideally, running `npx expo prebuild` would generate the Android and iOS projects and leave the rest of the project untouched.
 
 In addition to generating the native directories, prebuild also makes the following modifications:
 
@@ -125,11 +170,13 @@ The convenience change to the `scripts` field is the only side effect that alter
 
 ## Optionality
 
-Prebuild is optional and works seamlessly with all Expo tools and services. For existing React Native projects, where the native projects are managed manually, do not use `npx expo prebuild`, as that may overwrite any manual customizations. Developers can continue to make ([direct changes to their native projects](/more/glossary-of-terms/#bare-workflow)) while adopting other Expo tools and workflows. Later on, they can move their manual customizations to app config and/or config plugins, and then adopt CNG.
+Prebuild is optional and works seamlessly with all Expo tools and services. For [existing React Native projects](/bare/overview/), where the native projects are managed manually, do not use `npx expo prebuild`, as that may overwrite any manual customizations. Developers can continue to make ([direct changes to their native projects](/more/glossary-of-terms/#bare-workflow)) while adopting other Expo tools and workflows. Later on, they can move their manual customizations to app config and/or config plugins, and then adopt CNG.
 
-Everything offered by Expo including [EAS](/eas/), Expo CLI, and the libraries in the Expo SDK are built to **fully support** bare React Native projects as this is a minimum requirement for supporting projects using `npx expo prebuild`. The only exception is the [Expo Go](https://expo.dev/go) app, which can load arbitrary React Native projects only if they include JavaScript fallbacks for native code absent in the Expo Go runtime.
+Everything offered by Expo including [EAS](/eas/), Expo CLI, and the libraries in the Expo SDK are built to **fully support** existing React Native projects as this is a minimum requirement for supporting projects using `npx expo prebuild`. The only exception is the [Expo Go](https://expo.dev/go) app, which can load arbitrary React Native projects only if they include JavaScript fallbacks for native code absent in the Expo Go runtime.
 
 ## Common questions
+
+<FAQ>
 
 ### CNG
 
@@ -153,7 +200,7 @@ React Native library authors can adopt CNG in several ways. It depends on the co
 
 - **Libraries Dependent on Native Runtime Hooks**: Libraries that depend on specific native runtime hooks, such as intercepting the initial launch URL via the `AppDelegate`, `MainActivity`, `MainApplication`, and so on, can utilize [**Lifecycle listeners**](/modules/android-lifecycle-listeners/) in the Expo Modules API. These lifecycle listeners allow these runtime hooks to be applied via Expo Autolinking instead of by modifying these standard native project files, eliminating the need for a config plugin.
 
-Many complex libraries and services already support CNG via Expo Prebuild such as, [MapBox](https://github.com/rnmapbox/maps), [OneSignal](https://github.com/OneSignal/onesignal-expo-plugin), [Stripe](https://github.com/stripe/stripe-react-native), and [React Native Firebase](https://rnfirebase.io/#expo).
+Many complex libraries and services already support CNG via Expo Prebuild such as, [MapBox](https://github.com/rnmapbox/maps), [Sentry](https://github.com/getsentry/sentry-react-native), [Stripe](https://github.com/stripe/stripe-react-native), and [React Native Firebase](https://rnfirebase.io/#installation-for-expo-projects).
 
 Adopting CNG by library authors is not a preqrequisite for using `npx expo prebuild`. If a library author has not adopted CNG, developers can still use `npx expo prebuild` by creating local [Config Plugins](https://github.com/expo/config-plugins/) to modify the native generation pipeline. This flexibility makes CNG accessible and beneficial to all developers within the React Native community.
 
@@ -173,13 +220,9 @@ Here are a few community examples of difficult native features converted into si
 
 - [iMessage Sticker App](https://github.com/expo/config-plugins/tree/main/packages/ios-stickers): This Expo config plugin can generate an entire iMessage Sticker App from a JSON object.
 
-- [Cross-platform end-to-end testing](https://github.com/expo/config-plugins/tree/main/packages/detox): Configure native apps to support E2E testing with Detox in a single-line.
-
 - [The entire Firebase suite](https://rnfirebase.io/): Here you can see the entire native Firebase suite going from a multi-step native configuration process across multiple IDEs, down to basic JSON configuration.
 
 - [Cross-platform home screen widgets](https://github.com/gaishimo/eas-widget-example): This Expo config plugin can generate a home screen widget for Android and iOS.
-
-- [Notification extension and code signing](https://github.com/OneSignal/onesignal-expo-plugin): This Expo config plugin generates a notification extension target on iOS and it augments the EAS credentials service to keep zero-config code signing working.
 
 - [Apple App Clips](https://github.com/bndkt/react-native-app-clip): This Expo config plugin takes the process of generating an Apple App Clip from a multi-step process, ranging across multiple targets, and reduces it to a single line `["react-native-app-clip", { "name": "My App Clip" }]`.
 
@@ -274,3 +317,5 @@ Other packages, such as [`react-native-ble-plx`](https://github.com/Polidea/reac
 Alternatively, we also have a repo for [out-of-tree config plugins](https://github.com/expo/config-plugins) which provides plugins for popular packages that haven't adopted the system yet. Think of this like [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) for TypeScript. We prefer packages ship their own config plugin, but if they haven't adopted the system yet, the community can use the packages listed in the repo.
 
 </Collapsible>
+
+</FAQ>

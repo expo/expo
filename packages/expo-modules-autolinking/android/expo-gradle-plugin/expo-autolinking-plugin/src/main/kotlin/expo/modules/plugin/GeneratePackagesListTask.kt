@@ -2,11 +2,11 @@ package expo.modules.plugin
 
 import expo.modules.plugin.configuration.ExpoModule
 import org.gradle.api.DefaultTask
-import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -38,17 +38,18 @@ abstract class GeneratePackagesListTask : DefaultTask() {
   lateinit var modules: List<ExpoModule>
 
   /**
-   * The output file where the package list should be written.
+   * The output directory where the package list should be written.
    */
-  @get:OutputFile
-  abstract val outputFile: RegularFileProperty
+  @get:OutputDirectory
+  abstract val outputDirectory: DirectoryProperty
 
   @TaskAction
   fun generatePackagesList() {
-    val target = outputFile.get().asFile
-    val content = generatePackageListFileContent()
-
-    target.writeText(content)
+    val target = outputDirectory.get().asFile
+      .resolve(namespace.get().replace('.', '/'))
+      .resolve(generatedPackageListFilename)
+    target.parentFile.mkdirs()
+    target.writeText(generatePackageListFileContent())
   }
 
   private fun generatePackageListFileContent(): String {
@@ -61,30 +62,30 @@ import expo.modules.kotlin.ModulesProvider;
 class ExpoModulesPackageList : ModulesProvider {
   companion object {
     val packagesList: List<Package> = listOf(
-${
-  modules
-    .filterNot { it.packageName == "expo" }
-    .flatMap { module ->
-      module.projects.flatMap { project ->
-        project.packages.map { "      ${it}()" }
-      }
+    ${
+      modules
+        .filterNot { it.packageName == "expo" }
+        .flatMap { module ->
+          module.projects.flatMap { project ->
+            project.packages.map { "      ${it}()" }
+          }
+        }
+        .joinToString(",\n")
     }
-    .joinToString(",\n")
-}
     )
 
     val modulesMap: Map<Class<out Module>, String?> = mapOf(
-${
-  modules
-    .flatMap { module ->
-      module.projects.flatMap { project ->
-        project.modules.map { (classifier, name) ->
-          "      ${classifier}::class.java to ${name?.let { "\"${it}\"" }}" 
+    ${
+      modules
+        .flatMap { module ->
+          module.projects.flatMap { project ->
+            project.modules.map { (classifier, name) ->
+              "      ${classifier}::class.java to ${name?.let { "\"${it}\"" }}"
+            }
+          }
         }
-      }
-    }
-    .joinToString(",\n")
-}
+        .joinToString(",\n")
+    } 
     )
 
     @JvmStatic
@@ -96,7 +97,22 @@ ${
   override fun getModulesMap(): Map<Class<out Module>, String?> {
     return modulesMap
   }
+  
+  override fun getServices(): List<Class<out expo.modules.kotlin.services.Service>> {
+    return listOf<Class<out expo.modules.kotlin.services.Service>>(
+    ${
+      modules
+        .flatMap { module ->
+          module.projects.flatMap { project ->
+            project.services.map { "      ${it}::class.java" }
+          }
+        }
+        .joinToString(",\n")
+    }
+    )
+  }
 }
+
 """.trimIndent()
   }
 }

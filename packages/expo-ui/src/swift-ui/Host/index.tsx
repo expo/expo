@@ -1,10 +1,10 @@
 import { requireNativeView } from 'expo';
-import { type ColorSchemeName, I18nManager, StyleProp, ViewStyle } from 'react-native';
+import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type HostProps = {
+export interface HostProps extends CommonViewModifierProps {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
    * Can be only set once on mount.
@@ -28,7 +28,14 @@ export type HostProps = {
   /**
    * The color scheme of the host view.
    */
-  colorScheme?: ColorSchemeName;
+  colorScheme?: 'light' | 'dark';
+
+  /**
+   * Seed color applied to the SwiftUI content as its tint. It propagates
+   * through the SwiftUI environment to theme interactive elements (buttons,
+   * switches, sliders, and similar controls) rendered by the children.
+   */
+  seedColor?: ColorValue;
 
   /**
    * The layout direction for the SwiftUI content.
@@ -36,9 +43,18 @@ export type HostProps = {
    */
   layoutDirection?: 'leftToRight' | 'rightToLeft';
 
+  /**
+   * Controls which safe area regions the SwiftUI hosting view should ignore.
+   * - `'all'` - ignores all safe area insets, including the keyboard.
+   * - `'container'` - ignores only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
+   * - `'keyboard'` - ignores only the keyboard safe area.
+   */
+  ignoreSafeArea?: 'all' | 'container' | 'keyboard';
+
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-} & CommonViewModifierProps;
+  pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
+}
 
 const HostNativeView: React.ComponentType<
   HostProps & { matchContentsVertical?: boolean; matchContentsHorizontal?: boolean }
@@ -48,7 +64,15 @@ const HostNativeView: React.ComponentType<
  * A hosting component for SwiftUI views.
  */
 export function Host(props: HostProps) {
-  const { matchContents, onLayoutContent, modifiers, layoutDirection, ...restProps } = props;
+  const {
+    matchContents,
+    onLayoutContent,
+    ignoreSafeArea,
+    modifiers,
+    layoutDirection,
+    seedColor,
+    ...restProps
+  } = props;
 
   return (
     <HostNativeView
@@ -64,6 +88,8 @@ export function Host(props: HostProps) {
       layoutDirection={
         layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
       }
+      ignoreSafeArea={ignoreSafeArea}
+      seedColor={seedColor}
       {...restProps}
     />
   );

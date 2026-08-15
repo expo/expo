@@ -1,31 +1,33 @@
-import {
-  BaseNavigationContainer,
-  DefaultTheme,
+import React from 'react';
+import { I18nManager } from 'react-native';
+
+import { useImperativeApiEmitter } from '../imperative-api';
+import type {
   DocumentTitleOptions,
-  LinkingContext,
   LinkingOptions,
-  LocaleDirContext,
   LocaleDirection,
   NavigationContainerProps,
   NavigationContainerRef,
   NavigationState,
   ParamListBase,
+} from '../react-navigation/native';
+import {
+  BaseNavigationContainer,
+  DefaultTheme,
+  LinkingContext,
+  LocaleDirContext,
   ThemeProvider,
   UNSTABLE_UnhandledLinkingContext as UnhandledLinkingContext,
   getActionFromState,
-  getPathFromState,
-  getStateFromPath,
-  validatePathConfig,
-} from '@react-navigation/native';
-import React from 'react';
-import { I18nManager } from 'react-native';
-import useLatestCallback from 'use-latest-callback';
-
+} from '../react-navigation/native';
+import useLatestCallback from '../utils/useLatestCallback';
+import { getPathFromState } from './getPathFromState';
+import { getStateFromPath } from './getStateFromPath';
 import { useBackButton } from './useBackButton';
 import { useDocumentTitle } from './useDocumentTitle';
 import { useLinking } from './useLinking';
 import { useThenable } from './useThenable';
-import { useImperativeApiEmitter } from '../imperative-api';
+import { validatePathConfig } from './validatePathConfig';
 
 declare global {
   // eslint-disable-next-line no-var

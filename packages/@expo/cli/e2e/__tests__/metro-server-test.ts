@@ -1,6 +1,6 @@
+import { createExpoStart } from '../utils/expo';
 /* eslint-env jest */
 import { setupTestProjectWithOptionsAsync } from './utils';
-import { createExpoStart } from '../utils/expo';
 
 const expo = createExpoStart({
   env: {
@@ -10,7 +10,7 @@ const expo = createExpoStart({
 
 beforeAll(async () => {
   expo.options.cwd = await setupTestProjectWithOptionsAsync('metro-server', 'with-assets', {
-    linkExpoPackages: ['expo', '@expo/log-box'],
+    linkExpoPackages: ['expo'],
   });
   await expo.startAsync();
 });

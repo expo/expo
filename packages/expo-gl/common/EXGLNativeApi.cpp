@@ -1,6 +1,7 @@
 #include "EXGLNativeApi.h"
 #include "EXGLContextManager.h"
 #include "EXGLNativeContext.h"
+#include "EXWebGLRenderer.h"
 
 using namespace expo::gl_cpp;
 
@@ -8,10 +9,14 @@ EXGLContextId EXGLContextCreate() {
   return ContextCreate();
 }
 
+void EXGLInstallWebGLBindings(void *jsiPtr) {
+  installWebGLConstructorsAndConstants(*reinterpret_cast<jsi::Runtime *>(jsiPtr));
+}
+
 void EXGLContextPrepare(
-    void *jsiPtr,
-    EXGLContextId exglCtxId,
-    std::function<void(void)> flushMethod) {
+  void *jsiPtr,
+  EXGLContextId exglCtxId,
+  std::function<void(void)> flushMethod) {
   auto [exglCtx, lock] = ContextGet(exglCtxId);
   if (exglCtx) {
     exglCtx->prepareContext(*reinterpret_cast<jsi::Runtime *>(jsiPtr), flushMethod);

@@ -1,5 +1,5 @@
 import { Slot as RUISlot } from '@radix-ui/react-slot';
-import {
+import React, {
   forwardRef,
   useMemo,
   type ForwardRefExoticComponent,
@@ -24,11 +24,27 @@ import { StyleSheet, type ViewProps } from 'react-native';
 function ShimSlotForReactNative(Component: typeof RUISlot): typeof RUISlot {
   return forwardRef(function RNSlotHOC({ style, ...props }, ref) {
     style = useMemo(() => StyleSheet.flatten(style), [style]);
+    if (process.env.NODE_ENV !== 'production') {
+      if (React.isValidElement(props.children)) {
+        if (
+          typeof props.children.props === 'object' &&
+          props.children.props !== null &&
+          'style' in props.children.props &&
+          Array.isArray(props.children.props.style)
+        ) {
+          throw new Error(
+            `[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.`
+          );
+        }
+      }
+    }
     return <Component ref={ref} {...props} style={style} />;
   });
 }
 
-export interface Slot<Props = ViewProps, Ref = Component<ViewProps>>
-  extends ForwardRefExoticComponent<Props & RefAttributes<Ref>> {}
+export interface Slot<
+  Props = ViewProps,
+  Ref = Component<ViewProps>,
+> extends ForwardRefExoticComponent<Props & RefAttributes<Ref>> {}
 
 export const Slot: Slot = ShimSlotForReactNative(RUISlot) as Slot;

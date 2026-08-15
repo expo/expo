@@ -3,11 +3,13 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXTaskConsumerInterface.h>
 
-#import <EXTaskManager/EXTask.h>
-#import <EXTaskManager/EXTaskService.h>
+#import <ExpoTaskManager/EXTask.h>
+#import <ExpoTaskManager/EXTaskService.h>
 
 #import <UMAppLoader/UMAppLoaderProvider.h>
 #import <UMAppLoader/UMAppRecordInterface.h>
+
+#import <React/RCTLog.h>
 
 @interface EXTaskService ()
 
@@ -37,7 +39,16 @@
 
 @implementation EXTaskService
 
-EX_REGISTER_SINGLETON_MODULE(TaskService)
++ (nonnull EXTaskService *)shared
+{
+  static EXTaskService *sharedInstance = nil;
+  static dispatch_once_t onceToken;
+
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[EXTaskService alloc] init];
+  });
+  return sharedInstance;
+}
 
 - (instancetype)init
 {
@@ -227,7 +238,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
     if (appEvents.count == 0) {
       [self->_events removeObjectForKey:appId];
       
-      // Invalidate app record but after 1 seconds delay so we can still take batched events.
+      // Invalidate app record but after 1 second delay so we can still take batched events.
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if (!self->_events[appId]) {
           [self _invalidateAppWithId:appId];
@@ -615,7 +626,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
                                   consumerClass:consumerClass
                                         options:taskConfig[@"options"]];
           } else {
-            EXLogWarn(
+            RCTLogWarn(
                       @"EXTaskService: Task consumer '%@' has version '%d' that is not compatible with the saved version '%d'.",
                       consumerClassName,
                       currentConsumerVersion,
@@ -624,7 +635,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
             [self _removeTaskFromConfig:taskName appId:appId];
           }
         } else {
-          EXLogWarn(@"EXTaskService: Cannot restore task '%@' because consumer class doesn't exist.", taskName);
+          RCTLogWarn(@"EXTaskService: Cannot restore task '%@' because consumer class doesn't exist.", taskName);
           [self _removeTaskFromConfig:taskName appId:appId];
         }
       }

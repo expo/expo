@@ -2,16 +2,15 @@ package expo.modules.calendar
 
 import expo.modules.calendar.domain.event.records.RecurrenceRuleEntity
 import expo.modules.calendar.domain.event.records.input.RecurrenceRuleInput
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.types.ConvertedValue
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.IncompatibleValue
+import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 import java.util.TimeZone
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import kotlin.reflect.typeOf
 
 class EventRecurrenceUtilsTest {
 
@@ -25,7 +24,6 @@ class EventRecurrenceUtilsTest {
     TimeZone.setDefault(null)
   }
 
-  @OptIn(EitherType::class)
   @Test
   fun testCreateRecurrenceRule_withAllFields() {
     val opts =
@@ -120,9 +118,8 @@ class EventRecurrenceUtilsTest {
   }
 }
 
-@OptIn(EitherType::class)
 private inline fun <reified L : Any, reified R : Any> eitherWithFirst(value: L): Either<L, R> {
-  val types = listOf(typeOf<L>(), typeOf<R>())
+  val types = listOf(typeDescriptorOf<L>(), typeDescriptorOf<R>())
 
   val deferredValue = mutableListOf(
     ConvertedValue(value),

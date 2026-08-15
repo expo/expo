@@ -2,10 +2,11 @@ import { useVideoPlayer, VideoView, isPictureInPictureSupported } from 'expo-vid
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 
-import { bigBuckBunnySource } from './videoSources';
-import { styles } from './videoStyles';
 import Button from '../../components/Button';
+import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 import TitledSwitch from '../../components/TitledSwitch';
+import { starVideoSource } from './videoSources';
+import { styles } from './videoStyles';
 
 export default function VideoPictureInPictureScreen() {
   const ref = useRef<VideoView>(null);
@@ -13,7 +14,7 @@ export default function VideoPictureInPictureScreen() {
   const [allowPiP, setAllowPiP] = useState(true);
   const [autoEnterPiP, setAutoEnterPiP] = useState(true);
 
-  const player = useVideoPlayer(bigBuckBunnySource, (player) => {
+  const player = useVideoPlayer(starVideoSource, (player) => {
     player.loop = true;
     player.showNowPlayingNotification = false;
     player.play();
@@ -40,15 +41,23 @@ export default function VideoPictureInPictureScreen() {
 
   return (
     <View style={styles.contentContainer}>
-      <VideoView
-        ref={ref}
-        player={player}
-        onPictureInPictureStart={() => setIsInPiP(true)}
-        onPictureInPictureStop={() => setIsInPiP(false)}
-        allowsPictureInPicture={allowPiP}
-        startsPictureInPictureAutomatically={autoEnterPiP}
-        style={styles.video}
-      />
+      {/* The viewshot wraps only the fixed-size video view: a full-screen container's bounds
+          race the system bar insets that are still settling right after exiting PiP. */}
+      <E2EViewShotContainer
+        testID="pip-view"
+        mode="keep-originals"
+        screenshotOutputPath="expo-video/screenshots/pip-1">
+        <VideoView
+          testID="pip-video-view"
+          ref={ref}
+          player={player}
+          onPictureInPictureStart={() => setIsInPiP(true)}
+          onPictureInPictureStop={() => setIsInPiP(false)}
+          allowsPictureInPicture={allowPiP}
+          startsPictureInPictureAutomatically={autoEnterPiP}
+          style={styles.video}
+        />
+      </E2EViewShotContainer>
       <ScrollView style={styles.controlsContainer}>
         <Button style={styles.button} title="Enter Picture In Picture" onPress={togglePiP} />
         <View style={styles.row}>
@@ -67,6 +76,13 @@ export default function VideoPictureInPictureScreen() {
             titleStyle={styles.switchTitle}
           />
         </View>
+        <Button
+          title="e2e pause"
+          onPress={() => {
+            player.pause();
+            player.currentTime = 10;
+          }}
+        />
       </ScrollView>
     </View>
   );

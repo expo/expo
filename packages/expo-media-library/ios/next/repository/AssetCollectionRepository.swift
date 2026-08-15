@@ -34,6 +34,19 @@ final class AssetCollectionRepository {
     return fetchedCollection
   }
 
+  func get(containing asset: PHAsset) -> [PHAssetCollection] {
+    var collections: [PHAssetCollection] = []
+    let pHFetchResult = PHAssetCollection.fetchAssetCollectionsContaining(
+      asset,
+      with: .album,
+      options: nil
+    )
+    pHFetchResult.enumerateObjects { collection, _, _ in
+      collections.append(collection)
+    }
+    return collections
+  }
+
   func get(byTitle title: String) -> PHAssetCollection? {
     let pHFetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: nil)
     var fetchedCollection: PHAssetCollection?
@@ -86,6 +99,15 @@ final class AssetCollectionRepository {
     try await PHPhotoLibrary.shared().performChanges {
       if let changeRequest = PHAssetCollectionChangeRequest(for: collection) {
         changeRequest.addAssets(assets as NSFastEnumeration)
+      }
+    }
+  }
+
+  func remove(assets: [PHAsset], from collection: PHAssetCollection) async throws {
+    try await PHPhotoLibrary.shared().performChanges {
+      let fetchResult = PHAsset.fetchAssets(in: collection, options: nil)
+      if let changeRequest = PHAssetCollectionChangeRequest(for: collection, assets: fetchResult) {
+        changeRequest.removeAssets(assets as NSFastEnumeration)
       }
     }
   }

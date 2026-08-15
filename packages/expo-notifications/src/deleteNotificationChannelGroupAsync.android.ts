@@ -1,8 +1,8 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 
 import NotificationChannelGroupManager from './NotificationChannelGroupManager';
 
-export default async function deleteNotificationChannelAsync(groupId: string): Promise<void> {
+export async function deleteNotificationChannelGroupAsync(groupId: string): Promise<void> {
   if (!NotificationChannelGroupManager.deleteNotificationChannelGroupAsync) {
     throw new UnavailabilityError('Notifications', 'deleteNotificationChannelGroupAsync');
   }

@@ -2,6 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
+import java.nio.ByteBuffer
 
 /**
  * A Kotlin representation of jsi::Value.
@@ -21,12 +22,19 @@ class JavaScriptArrayBuffer @DoNotStrip private constructor(@DoNotStrip private 
   external fun readFloat(position: Int): Float
   external fun readDouble(position: Int): Double
 
+  external fun toDirectBuffer(): ByteBuffer
+
+  /**
+   * Creates a native-owned copy of this ArrayBuffer.
+   */
+  fun copy(): ArrayBuffer = ArrayBuffer.copyOf(toDirectBuffer())
+
   @Throws(Throwable::class)
   protected fun finalize() {
-    deallocate()
+    mHybridData.resetNative()
   }
 
-  override fun deallocate() {
-    mHybridData.resetNative()
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
   }
 }

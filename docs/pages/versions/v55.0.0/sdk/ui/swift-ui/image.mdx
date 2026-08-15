@@ -1,0 +1,78 @@
+---
+title: Image
+description: A SwiftUI Image component for displaying SF Symbols.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Image displays SF Symbols using the SwiftUI [Image API](https://developer.apple.com/documentation/swiftui/image). SF Symbols are a library of configurable symbols provided by Apple.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic SF Symbol
+
+```tsx BasicImageExample.tsx
+import { Host, Image } from '@expo/ui/swift-ui';
+
+export default function BasicImageExample() {
+  return (
+    <Host matchContents>
+      <Image systemName="star.fill" />
+    </Host>
+  );
+}
+```
+
+### With size and color
+
+```tsx ImageSizeColorExample.tsx
+import { Host, HStack, Image } from '@expo/ui/swift-ui';
+
+export default function ImageSizeColorExample() {
+  return (
+    <Host matchContents>
+      <HStack spacing={16}>
+        <Image systemName="heart.fill" size={24} color="red" />
+        <Image systemName="star.fill" size={32} color="orange" />
+        <Image systemName="bell.fill" size={40} color="blue" />
+      </HStack>
+    </Host>
+  );
+}
+```
+
+### With variable value
+
+Some SF Symbols alter their appearance based on a variable value. Use the `variableValue` prop with a value between 0.0 and 1.0 to control the rendered symbol. Requires iOS 16.0+ and SF Symbols 4.0+.
+
+```tsx ImageVariableExample.tsx
+import { Host, HStack, Image } from '@expo/ui/swift-ui';
+
+export default function ImageVariableExample() {
+  return (
+    <Host matchContents>
+      <HStack spacing={16}>
+        <Image systemName="chart.bar.fill" size={32} variableValue={0.3} />
+        <Image systemName="chart.bar.fill" size={32} variableValue={0.6} />
+        <Image systemName="chart.bar.fill" size={32} variableValue={1.0} />
+      </HStack>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Image } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/image" apiName="Image" />

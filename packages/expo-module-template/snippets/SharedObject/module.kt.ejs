@@ -1,0 +1,14 @@
+    Class(<%- project.sharedObjectName %>::class) {
+      Constructor {
+        val instance = <%- project.sharedObjectName %>(appContext)
+        return@Constructor instance
+      }
+
+      Property("count")
+        .get { ref: <%- project.sharedObjectName %> ->
+          ref.count
+        }
+        .set { ref: <%- project.sharedObjectName %>, count: Int ->
+          ref.count = count
+        }
+    }

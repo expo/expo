@@ -1,10 +1,13 @@
-import { fetch } from 'expo/fetch';
 import * as FS from 'expo-file-system/legacy';
+import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
+
+import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'Fetch';
 
-export function test({ describe, expect, it, ...t }) {
+export function test({ describe, expect, it, ...t }: JasmineInterface) {
   describe('Response types', () => {
     setupTestTimeout(t);
 
@@ -33,6 +36,25 @@ export function test({ describe, expect, it, ...t }) {
       expect(buffer.byteLength).toBe(20);
     });
 
+    it('should process blob with size and type', async () => {
+      const resp = await fetch('https://httpbin.io/bytes/20');
+      const blob = await resp.blob();
+      expect(blob.size).toBe(20);
+      expect(blob.type).toBe('application/octet-stream');
+    });
+
+    it('should read blob content back through FileReader', async () => {
+      const resp = await fetch('https://httpbin.io/base64/aGVsbG8gYmxvYg==');
+      const blob = await resp.blob();
+      const buffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as ArrayBuffer);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(blob);
+      });
+      expect(new TextDecoder().decode(buffer)).toBe('hello blob');
+    });
+
     it('should process response in readablestream from late get reader call', async () => {
       const resp = await fetch('https://httpbin.io/get');
       expect(resp.ok).toBe(true);
@@ -42,7 +64,7 @@ export function test({ describe, expect, it, ...t }) {
       await delayAsync(500);
 
       const chunks = [];
-      const reader = resp.body.getReader();
+      const reader = requireNotNull(resp.body).getReader();
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -61,6 +83,88 @@ export function test({ describe, expect, it, ...t }) {
       expect(text).not.toBe('');
       const json = JSON.parse(text);
       expect(json.url).toMatch(/^https?:\/\/httpbin\.io\/get$/);
+    });
+  });
+
+  describe('Response clone', () => {
+    setupTestTimeout(t);
+
+    it('should clone a response and read both bodies independently', async () => {
+      const resp = await fetch('https://httpbin.io/get');
+      const cloned = resp.clone();
+      const [original, clone] = await Promise.all([resp.json(), cloned.json()]);
+      expect(original.url).toBe(clone.url);
+      expect(resp.bodyUsed).toBe(true);
+      expect(cloned.bodyUsed).toBe(true);
+    });
+
+    it('should clone a streaming response', async () => {
+      const resp = await fetch('https://httpbin.io/drip?numbytes=64&duration=1');
+      const cloned = resp.clone();
+      const [originalBuffer, clonedBuffer] = await Promise.all([
+        resp.arrayBuffer(),
+        cloned.arrayBuffer(),
+      ]);
+      expect(originalBuffer.byteLength).toBe(64);
+      expect(clonedBuffer.byteLength).toBe(64);
+    });
+
+    it('should clone a response and read both bodies as text independently', async () => {
+      const resp = await fetch('https://httpbin.io/get');
+      const cloned = resp.clone();
+      const [originalText, clonedText] = await Promise.all([resp.text(), cloned.text()]);
+      expect(originalText).toBe(clonedText);
+      expect(originalText).not.toBe('');
+      expect(resp.bodyUsed).toBe(true);
+      expect(cloned.bodyUsed).toBe(true);
+    });
+
+    it('should preserve response metadata on the clone', async () => {
+      const resp = await fetch('https://httpbin.io/get');
+      const cloned = resp.clone();
+      expect(cloned.status).toBe(resp.status);
+      expect(cloned.statusText).toBe(resp.statusText);
+      expect(cloned.url).toBe(resp.url);
+      expect(cloned.ok).toBe(resp.ok);
+      expect(cloned.headers.get('content-type')).toBe(resp.headers.get('content-type'));
+    });
+
+    it('should support cloning a clone', async () => {
+      const resp = await fetch('https://httpbin.io/get');
+      const cloned = resp.clone();
+      const reCloned = cloned.clone();
+      const json = await reCloned.json();
+      expect(json.url).toMatch(/^https?:\/\/httpbin\.io\/get$/);
+    });
+
+    it('should throw a TypeError when cloning after the body has been read', async () => {
+      const resp = await fetch('https://httpbin.io/get');
+      await resp.text();
+      let error: TypeError | null = null;
+      try {
+        resp.clone();
+      } catch (e: unknown) {
+        if (e instanceof TypeError) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(error?.message).toContain('body is already used');
+    });
+
+    it('should throw a TypeError when cloning a response with a locked body', async () => {
+      const resp = await fetch('https://httpbin.io/get');
+      requireNotNull(resp.body).getReader();
+      let error: TypeError | null = null;
+      try {
+        resp.clone();
+      } catch (e: unknown) {
+        if (e instanceof TypeError) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(error?.message).toContain('body is already used');
     });
   });
 
@@ -260,6 +364,41 @@ export function test({ describe, expect, it, ...t }) {
       expect(error).not.toBeNull();
     });
 
+    it('should abort request with AbortSignal.timeout', async () => {
+      const signal = AbortSignal.timeout(500);
+      let error: Error | null = null;
+      try {
+        await fetch('https://httpbin.io/delay/3', {
+          signal,
+        });
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(signal.aborted).toBe(true);
+      expect(signal.reason.name).toBe('TimeoutError');
+    });
+
+    it('should abort request with AbortSignal.any', async () => {
+      const controller = new AbortController();
+      const signal = AbortSignal.any([controller.signal, AbortSignal.timeout(3000)]);
+      setTimeout(() => controller.abort(), 500);
+      let error: Error | null = null;
+      try {
+        await fetch('https://httpbin.io/delay/3', {
+          signal,
+        });
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          error = e;
+        }
+      }
+      expect(error).not.toBeNull();
+      expect(signal.aborted).toBe(true);
+    });
+
     it('should abort streaming request', async () => {
       const controller = new AbortController();
       setTimeout(() => controller.abort(), 5000);
@@ -272,7 +411,7 @@ export function test({ describe, expect, it, ...t }) {
             Accept: 'text/event-stream',
           },
         });
-        const reader = resp.body.getReader();
+        const reader = requireNotNull(resp.body).getReader();
         while (true) {
           const { done } = await reader.read();
           hasReceivedChunk = true;
@@ -303,7 +442,7 @@ export function test({ describe, expect, it, ...t }) {
             Accept: 'text/event-stream',
           },
         });
-        const reader = resp.body.getReader();
+        const reader = requireNotNull(resp.body).getReader();
         while (true) {
           const { done } = await reader.read();
           hasReceivedChunk = true;
@@ -317,7 +456,7 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(error).not.toBeNull();
-      expect(error.message).toContain('Fetch request has been canceled');
+      expect(error?.message).toContain('Fetch request has been canceled');
       expect(hasReceivedChunk).toBe(false);
     });
   });
@@ -331,7 +470,7 @@ export function test({ describe, expect, it, ...t }) {
           Accept: 'text/event-stream',
         },
       });
-      const reader = resp.body.getReader();
+      const reader = requireNotNull(resp.body).getReader();
       const chunks = [];
       while (true) {
         const { done, value } = await reader.read();
@@ -352,10 +491,11 @@ export function test({ describe, expect, it, ...t }) {
         },
       });
 
-      expect(resp.body[Symbol.asyncIterator]).not.toBeNull();
+      const body = requireNotNull(resp.body);
+      expect(body[Symbol.asyncIterator]).not.toBeNull();
 
       const chunks = [];
-      for await (const chunk of resp.body) {
+      for await (const chunk of body) {
         chunks.push(chunk);
       }
       expect(chunks.length).toBeGreaterThan(3);
@@ -370,10 +510,11 @@ export function test({ describe, expect, it, ...t }) {
         },
       });
 
-      expect(resp.body[Symbol.asyncIterator]).not.toBeNull();
+      const body = requireNotNull(resp.body);
+      expect(body[Symbol.asyncIterator]).not.toBeNull();
 
       const chunks = [];
-      for await (const chunk of resp.body) {
+      for await (const chunk of body) {
         chunks.push(chunk);
         if (chunks.length === 2) {
           break;
@@ -420,7 +561,7 @@ export function test({ describe, expect, it, ...t }) {
   addLocalFileTestSuite({ describe, expect, it, ...t });
 }
 
-function addLocalFileTestSuite({ describe, expect, it, ...t }) {
+function addLocalFileTestSuite({ describe, expect, it, ...t }: JasmineInterface) {
   if (Platform.OS === 'web') {
     return;
   }
@@ -494,7 +635,7 @@ function addLocalFileTestSuite({ describe, expect, it, ...t }) {
 }
 
 function setupTestTimeout(t: Record<string, any>, timeout: number = 30000) {
-  let originalTimeout;
+  let originalTimeout: number;
 
   t.beforeAll(() => {
     // Increase the timeout in general because httpbin.test.k6.io can be slow.

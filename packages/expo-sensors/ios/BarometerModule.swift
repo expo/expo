@@ -8,6 +8,7 @@ private let EVENT_BAROMETER_DID_UPDATE = "barometerDidUpdate"
 public final class BarometerModule: Module {
   private lazy var altimeter = CMAltimeter()
   private lazy var operationQueue = OperationQueue()
+  private var isObserving = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoBarometer")
@@ -31,6 +32,7 @@ public final class BarometerModule: Module {
         }
       }
 
+      isObserving = true
       altimeter.startRelativeAltitudeUpdates(to: operationQueue) { [weak self] data, _ in
         guard let data else {
           return
@@ -45,10 +47,14 @@ public final class BarometerModule: Module {
     }
 
     OnStopObserving {
+      guard isObserving else { return }
+      isObserving = false
       altimeter.stopRelativeAltitudeUpdates()
     }
 
     OnDestroy {
+      guard isObserving else { return }
+      isObserving = false
       altimeter.stopRelativeAltitudeUpdates()
     }
   }

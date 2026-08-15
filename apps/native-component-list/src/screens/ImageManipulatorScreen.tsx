@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { Asset } from 'expo-asset';
 import { ImageResult, FlipType, useImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
@@ -93,7 +93,7 @@ export default function ImageManipulatorScreen() {
       originX: 0,
       originY: 0,
       width: image.width! / 2,
-      height: image.height! / 2,
+      height: image.height!,
     });
     refreshImage();
   }

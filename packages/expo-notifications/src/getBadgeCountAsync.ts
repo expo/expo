@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 
 import BadgeModule from './BadgeModule';
 
@@ -8,7 +8,7 @@ import BadgeModule from './BadgeModule';
  * @return Returns a Promise resolving to a number that represents the current badge of the app icon.
  * @header badge
  */
-export default async function getBadgeCountAsync(): Promise<number> {
+export async function getBadgeCountAsync(): Promise<number> {
   if (!BadgeModule.getBadgeCountAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'getBadgeCountAsync');
   }

@@ -1,14 +1,12 @@
 import ExpoModulesCore
 
 public class BackgroundFetchModule: Module {
-  private var taskManager: EXTaskManagerInterface?
+  private lazy var taskManager: EXTaskManagerInterface? = appContext?.legacyModule(
+    implementing: EXTaskManagerInterface.self
+  )
 
   public func definition() -> ModuleDefinition {
     Name("ExpoBackgroundFetch")
-
-    OnCreate {
-      taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
-    }
 
     AsyncFunction("getStatusAsync") {
       return getStatus().rawValue
@@ -48,7 +46,9 @@ public class BackgroundFetchModule: Module {
     case .denied:
       return .denied
     @unknown default:
-      log.error("Unhandled `UIBackgroundRefreshStatus` value: \(backgroundRefreshStatus), returning `denied` as fallback. Add the missing case as soon as possible.")
+      log.error(
+        "Unhandled `UIBackgroundRefreshStatus` value: \(backgroundRefreshStatus), returning `denied` as fallback. Add the missing case as soon as possible."
+      )
       return .denied
     }
   }

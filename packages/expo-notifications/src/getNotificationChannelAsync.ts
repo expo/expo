@@ -1,4 +1,4 @@
-import { NotificationChannel } from './NotificationChannelManager.types';
+import type { NotificationChannel } from './NotificationChannelManager.types';
 
 /**
  * Fetches information about a single notification channel.
@@ -8,7 +8,7 @@ import { NotificationChannel } from './NotificationChannelManager.types';
  * @platform android
  * @header channels
  */
-export default async function getNotificationChannelAsync(
+export async function getNotificationChannelAsync(
   channelId: string
 ): Promise<NotificationChannel | null> {
   console.debug('Notification channels feature is only supported on Android.');

@@ -1,6 +1,5 @@
 package expo.modules.kotlin.exception
 
-import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.permissions.Permissions
 import kotlin.reflect.KClass
 
@@ -12,7 +11,7 @@ class Exceptions {
    * An exception to throw when the view with the given tag and class cannot be found.
    */
   class ViewNotFound(
-    viewType: KClass<*>,
+    viewType: Class<*>,
     viewTag: Int
   ) : CodedException(message = "Unable to find the $viewType view with tag $viewTag")
 
@@ -20,6 +19,16 @@ class Exceptions {
    * The app context is no longer available.
    */
   class AppContextLost : CodedException(message = "The app context has been lost")
+
+  /**
+   * The converter context is no longer available.
+   */
+  class ConverterContextLost : CodedException(message = "The converter context has been lost")
+
+  /**
+   * The runtime is no longer available.
+   */
+  class RuntimeLost : CodedException(message = "The runtime has been lost")
 
   /**
    * The react app context is no longer available.
@@ -35,11 +44,6 @@ class Exceptions {
    * An exception to throw when there is no module implementing the [expo.modules.interfaces.permissions.Permissions] interface.
    */
   class PermissionsModuleNotFound : ModuleNotFound(Permissions::class)
-
-  /**
-   * An exception to throw when there is no module implementing the [expo.modules.interfaces.filesystem.FilePermissionModuleInterface] interface.
-   */
-  class FileSystemModuleNotFound : ModuleNotFound(FilePermissionModuleInterface::class)
 
   /**
    * An exception to throw when the operation is not supported on the simulator.

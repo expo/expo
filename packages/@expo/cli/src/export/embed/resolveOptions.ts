@@ -1,13 +1,13 @@
 import { resolveEntryPoint } from '@expo/config/paths';
-import type { OutputOptions } from '@expo/metro/metro/shared/types';
 import canonicalize from '@expo/metro/metro-core/canonicalize';
-import arg from 'arg';
+import type { OutputOptions } from '@expo/metro/metro/shared/types';
+import type arg from 'arg';
 import os from 'os';
 import path from 'path';
 
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
-import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
+import type { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
 import { isAndroidUsingHermes, isIosUsingHermes } from '../exportHermes';
 
 export interface Options {
@@ -30,6 +30,7 @@ export interface Options {
   unstableTransformProfile?: string;
   eager?: boolean;
   bytecode?: boolean;
+  skipServer?: boolean;
 }
 
 function assertIsBoolean(val: any): asserts val is boolean {
@@ -81,6 +82,7 @@ export function resolveOptions(
     minify: parsed.args['--minify'] as boolean | undefined,
     eager: !!parsed.args['--eager'],
     bytecode: parsed.args['--bytecode'] as boolean | undefined,
+    skipServer: !!parsed.args['--skip-server'],
   };
 
   if (commonOptions.eager) {
@@ -132,10 +134,11 @@ export function resolveEagerOptionsAsync(
 
   if (!bundleOutput) {
     destination ??= getTemporaryPath();
+    // Apple platforms (ios/tvos/macos) use `main.jsbundle`; Android uses `index.js`.
     bundleOutput =
-      platform === 'ios'
-        ? path.join(destination, 'main.jsbundle')
-        : path.join(destination, 'index.js');
+      platform === 'android'
+        ? path.join(destination, 'index.js')
+        : path.join(destination, 'main.jsbundle');
   }
 
   return {

@@ -21,6 +21,8 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::JS_OBJECT, JavaScriptObjectFrontendConverter);
   RegisterConverter(CppType::JS_VALUE, JavaScriptValueFrontendConverter);
   RegisterConverter(CppType::JS_ARRAY_BUFFER, JavaScriptArrayBufferFrontendConverter);
+  RegisterConverter(CppType::ARRAY_BUFFER, ArrayBufferFrontendConverter);
+  RegisterConverter(CppType::NATIVE_ARRAY_BUFFER, NativeArrayBufferFrontendConverter);
   RegisterConverter(CppType::JS_FUNCTION, JavaScriptFunctionFrontendConverter);
   RegisterConverter(CppType::STRING, StringFrontendConverter);
   RegisterConverter(CppType::READABLE_MAP, ReadableNativeMapArrayFrontendConverter);
@@ -28,6 +30,7 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::VIEW_TAG, ViewTagFrontendConverter);
   RegisterConverter(CppType::SHARED_OBJECT_ID, SharedObjectIdConverter);
   RegisterConverter(CppType::ANY, AnyFrontendConvert);
+
 #undef RegisterConverter
 
   auto registerPolyConverter = [this](const std::vector<CppType> &types) {
@@ -44,6 +47,13 @@ void FrontendConverterProvider::createConverters() {
 
   // Enums
   registerPolyConverter({CppType::STRING, CppType::INT});
+}
+
+void FrontendConverterProvider::registerConverter(
+  CppType type,
+  std::shared_ptr<FrontendConverter> converter
+) {
+  simpleConverters.insert({type, std::move(converter)});
 }
 
 std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(

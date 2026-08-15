@@ -1,8 +1,8 @@
-import { requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { NativeLinearGradientProps } from './NativeLinearGradient.types';
+import type { NativeLinearGradientProps } from './NativeLinearGradient.types';
 
 export default function NativeLinearGradient({
   colors,
@@ -48,4 +48,4 @@ export default function NativeLinearGradient({
   );
 }
 
-const BaseNativeLinearGradient = requireNativeViewManager('ExpoLinearGradient');
+const BaseNativeLinearGradient = requireNativeView('ExpoLinearGradient');

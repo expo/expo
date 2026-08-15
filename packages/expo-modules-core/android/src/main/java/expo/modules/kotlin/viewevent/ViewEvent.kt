@@ -4,10 +4,13 @@ import android.view.View
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import expo.modules.core.utilities.ifNull
+import expo.modules.kotlin.ModuleRegistry
 import expo.modules.kotlin.getUnimoduleProxy
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.putGeneric
+import expo.modules.kotlin.views.CallbacksDefinition
+import expo.modules.kotlin.views.ViewFunctionHolder
 
 fun interface ViewEventCallback<T> {
   operator fun invoke(arg: T)
@@ -26,17 +29,13 @@ open class ViewEvent<T>(
     val appContext = nativeModulesProxy.kotlinInteropModuleRegistry.appContext
 
     if (!isValidated) {
-      val holder = appContext.registry.getModuleHolder(view::class.java).ifNull {
-        logger.warn("⚠️ Cannot get module holder for ${view::class.java}")
-        return
-      }
-      val callbacks = appContext.registry.getViewDefinition(holder, view::class.java)?.callbacksDefinition.ifNull {
-        logger.warn("⚠️ Cannot get callbacks for ${holder.module::class.java}")
+      val callbacks = resolveCallbacksDefinition(view, appContext.registry).ifNull {
+        logger.warn("⚠️ Cannot get callbacks for ${view::class.java}")
         return
       }
 
       if (!callbacks.names.any { it == name }) {
-        logger.warn("⚠️ Event $name wasn't exported from ${holder.module::class.java}")
+        logger.warn("⚠️ Event $name wasn't exported from ${view::class.java}")
         return
       }
 
@@ -54,12 +53,26 @@ open class ViewEvent<T>(
   }
 
   private fun convertEventBody(arg: T): WritableMap? {
-    return when (val converted = JSTypeConverter.convertToJSValue(arg)) {
+    return when (val converted = JSTypeConverterProvider.convertToJSValue(arg)) {
       is Unit, null -> null
       is WritableMap -> converted
-      else -> JSTypeConverter.DefaultContainerProvider.createMap().apply {
+      else -> JSTypeConverterProvider.DefaultContainerProvider.createMap().apply {
         putGeneric("payload", converted)
       }
     }
   }
+}
+
+/**
+ * Resolves the callbacks declared for [view]. Views that reuse a single class
+ * (e.g. ComposeFunctionHolder) carry their own [CallbacksDefinition] because they
+ * can't be matched by class; everything else is looked up by class in the registry.
+ * See https://github.com/expo/expo/issues/46623.
+ */
+internal fun resolveCallbacksDefinition(view: View, registry: ModuleRegistry): CallbacksDefinition? {
+  if (view is ViewFunctionHolder) {
+    return view.callbacksDefinition
+  }
+  val holder = registry.getModuleHolder(view::class.java) ?: return null
+  return registry.getViewDefinition(holder, view::class.java)?.callbacksDefinition
 }

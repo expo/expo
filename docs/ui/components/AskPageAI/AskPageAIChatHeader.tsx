@@ -4,14 +4,11 @@ import { Minimize02Icon } from '@expo/styleguide-icons/outline/Minimize02Icon';
 import { RefreshCcw02Icon } from '@expo/styleguide-icons/outline/RefreshCcw02Icon';
 import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
 import { SwitchHorizontal01Icon } from '@expo/styleguide-icons/outline/SwitchHorizontal01Icon';
-import { ThumbsDownIcon } from '@expo/styleguide-icons/outline/ThumbsDownIcon';
-import { ThumbsUpIcon } from '@expo/styleguide-icons/outline/ThumbsUpIcon';
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
-import type { Reaction } from '@kapaai/react-sdk';
 import { useMemo, type CSSProperties } from 'react';
 
-import type { ContextScope, FeedbackTarget } from './AskPageAIChat.types';
 import { FOOTNOTE } from '../Text';
+import type { ContextScope } from './AskPageAIChat.types';
 
 type AskPageAIChatHeaderProps = {
   displayContextLabel: string;
@@ -21,8 +18,6 @@ type AskPageAIChatHeaderProps = {
   onSwitchToPageContext?: () => void;
   onReset: () => void;
   onClose: () => void;
-  feedbackTarget: FeedbackTarget;
-  onFeedback: (reaction: Reaction) => void;
 };
 
 export function AskPageAIChatHeader({
@@ -33,8 +28,6 @@ export function AskPageAIChatHeader({
   onSwitchToPageContext,
   onReset,
   onClose,
-  feedbackTarget,
-  onFeedback,
 }: AskPageAIChatHeaderProps) {
   const closeButtonThemeOverrides = useMemo(
     () =>
@@ -48,11 +41,6 @@ export function AskPageAIChatHeader({
 
   const headerAccentBackground = useMemo(() => ({ backgroundColor: 'rgba(255,255,255,0.1)' }), []);
 
-  const activeFeedbackBackground = useMemo(
-    () => ({ backgroundColor: 'rgba(255,255,255,0.12)' }),
-    []
-  );
-
   return (
     <div className="flex flex-col gap-3 border-b border-default bg-palette-black px-4 py-2.5 text-palette-white">
       <div className="flex items-center justify-between">
@@ -62,61 +50,27 @@ export function AskPageAIChatHeader({
               'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
             )}
             style={headerAccentBackground}>
-            <Star06Icon className="icon-sm text-palette-white" />
+            <Star06Icon aria-hidden="true" className="icon-sm text-palette-white" />
           </span>
-          <span className="text-sm font-medium leading-tight text-palette-white">
-            Expo AI Assistant
+          <span className="text-sm leading-tight font-medium text-palette-white">
+            Expo AI assistant
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            aria-label="Provide positive feedback"
-            theme="quaternary"
-            size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-            style={{
-              ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'upvote' ? activeFeedbackBackground : {}),
-            }}
-            aria-pressed={feedbackTarget?.reaction === 'upvote'}
-            disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
-            onClick={() => {
-              onFeedback('upvote');
-            }}>
-            <ThumbsUpIcon className="icon-xs text-palette-white" />
-          </Button>
-          <Button
-            type="button"
-            aria-label="Provide negative feedback"
-            theme="quaternary"
-            size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
-            style={{
-              ...closeButtonThemeOverrides,
-              ...(feedbackTarget?.reaction === 'downvote' ? activeFeedbackBackground : {}),
-            }}
-            aria-pressed={feedbackTarget?.reaction === 'downvote'}
-            disabled={!feedbackTarget?.isFeedbackSubmissionEnabled}
-            onClick={() => {
-              onFeedback('downvote');
-            }}>
-            <ThumbsDownIcon className="icon-xs text-palette-white" />
-          </Button>
           {onToggleExpand ? (
             <Button
               type="button"
               aria-label={isExpanded ? 'Restore Ask AI assistant size' : 'Expand Ask AI assistant'}
               theme="quaternary"
               size="xs"
-              className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+              className="px-2 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
               style={closeButtonThemeOverrides}
               aria-pressed={isExpanded}
               onClick={onToggleExpand}>
               {isExpanded ? (
-                <Minimize02Icon className="icon-xs text-palette-white" />
+                <Minimize02Icon aria-hidden="true" className="icon-xs text-palette-white" />
               ) : (
-                <Maximize02Icon className="icon-xs text-palette-white" />
+                <Maximize02Icon aria-hidden="true" className="icon-xs text-palette-white" />
               )}
             </Button>
           ) : null}
@@ -125,19 +79,19 @@ export function AskPageAIChatHeader({
             aria-label="Reset conversation"
             theme="quaternary"
             size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+            className="px-2 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
             style={closeButtonThemeOverrides}
             onClick={onReset}>
-            <RefreshCcw02Icon className="icon-xs text-palette-white" />
+            <RefreshCcw02Icon aria-hidden="true" className="icon-xs text-palette-white" />
           </Button>
           <Button
             aria-label="Close Ask AI assistant"
             theme="quaternary"
             size="xs"
-            className="px-2 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+            className="px-2 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
             style={closeButtonThemeOverrides}
             onClick={onClose}>
-            <XIcon className="icon-xs text-palette-white" />
+            <XIcon aria-hidden="true" className="icon-xs text-palette-white" />
           </Button>
         </div>
       </div>
@@ -154,10 +108,13 @@ export function AskPageAIChatHeader({
             type="button"
             theme="quaternary"
             size="xs"
-            className="inline-flex items-center self-start px-2 py-1.5 !text-palette-white hover:!text-palette-white focus:!text-palette-white"
+            className="inline-flex items-center self-start px-2 py-1.5 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
             style={closeButtonThemeOverrides}
             onClick={onSwitchToPageContext}>
-            <SwitchHorizontal01Icon className="icon-xs mr-2 self-center text-palette-white" />
+            <SwitchHorizontal01Icon
+              aria-hidden="true"
+              className="mr-2 icon-xs self-center text-palette-white"
+            />
             <span className="leading-snug">Switch back to {displayContextLabel} docs</span>
           </Button>
         ) : null}

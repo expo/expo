@@ -2,13 +2,13 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "baseUrl": ".",
-    "lib": [
-      "dom",
-      "esnext"
-    ],
+    "lib": ["dom", "esnext"],
     "paths": {
       "ThemeProvider": ["../common/ThemeProvider"],
-      "benchmarking": ["./modules/benchmarking"]
+      "benchmark-helper": ["./modules/benchmark-helper"],
+      "benchmarking": ["./modules/benchmarking"],
+      "worklets-tester": ["./modules/worklets-tester"],
+      "test-expo-ui": ["./modules/test-expo-ui"]
     }
   }
 }

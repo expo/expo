@@ -8,8 +8,8 @@ import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.module.LibraryGlideModule
+import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.image.events.OkHttpProgressListener
-import okhttp3.OkHttpClient
 import java.io.InputStream
 
 /**
@@ -22,7 +22,13 @@ import java.io.InputStream
 class GlideUrlWithCustomCacheKey(
   uri: String?,
   headers: Headers?,
-  private val cacheKey: String
+  private val cacheKey: String,
+  /**
+   * When set, this model is being used to seed the disk cache from a local file rather than
+   * to display a remote image. [LocalFileGlideModelLoader] reads the file at this path and lets
+   * Glide store its bytes under [cacheKey], so a later load using the same cache key hits the cache.
+   */
+  val localFilePath: String? = null
 ) : GlideUrl(uri, headers) {
   /**
    * Cached hash code value
@@ -71,10 +77,13 @@ data class GlideUrlWrapper(val glideUrl: GlideUrl) {
 @GlideModule
 class ExpoImageOkHttpClientGlideModule : LibraryGlideModule() {
   override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-    val client = OkHttpClient()
+    val client = OkHttpClientProvider.createClient()
     // We don't use the `GlideUrl` directly but we want to replace the default okhttp loader anyway
     // to make sure that the app will use only one client.
     registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client))
     registry.prepend(GlideUrlWrapper::class.java, InputStream::class.java, GlideUrlWrapperLoader.Factory(client))
+    // Prepend so seeding models (those with a local file path) take precedence over the inherited
+    // `GlideUrl` OkHttp loader. Regular `GlideUrlWithCustomCacheKey` loads have no path and fall through.
+    registry.prepend(GlideUrlWithCustomCacheKey::class.java, InputStream::class.java, LocalFileGlideModelLoader.Factory())
   }
 }

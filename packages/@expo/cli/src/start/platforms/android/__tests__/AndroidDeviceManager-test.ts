@@ -1,7 +1,8 @@
-import { shellDumpsysPackage } from './fixtures/adb-output';
 import { CommandError } from '../../../../utils/errors';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
-import { Device, getPackageInfoAsync, launchActivityAsync, openUrlAsync } from '../adb';
+import type { Device } from '../adb';
+import { getPackageInfoAsync, launchActivityAsync, openUrlAsync } from '../adb';
+import { shellDumpsysPackage } from './fixtures/adb-output';
 
 jest.mock('../adbReverse', () => ({
   startAdbReverseAsync: jest.fn(),
@@ -38,14 +39,18 @@ describe('launchActivityAsync', () => {
     jest.mocked(launchActivityAsync).mockImplementationOnce(() => {
       throw new CommandError('APP_NOT_INSTALLED', '...');
     });
-    await expect(device.launchActivityAsync).rejects.toThrow(/run:android/);
+    await expect(device.launchActivityAsync('dev.expo.test/.MainActivity')).rejects.toThrow(
+      /run:android/
+    );
   });
   it(`asserts that an unexpected error occurred`, async () => {
     const device = createDevice();
     jest.mocked(launchActivityAsync).mockImplementationOnce(() => {
       throw new Error('...');
     });
-    await expect(device.launchActivityAsync).rejects.toThrow(/\.\.\./);
+    await expect(device.launchActivityAsync('dev.expo.test/.MainActivity')).rejects.toThrow(
+      /\.\.\./
+    );
   });
   it(`launches activity with provided props`, async () => {
     const device = createDevice();

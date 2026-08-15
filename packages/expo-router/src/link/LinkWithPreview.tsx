@@ -4,24 +4,31 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { useRouter } from '../hooks';
+import type { Href } from '../types';
+import { getFirstChildOfType } from '../utils/children';
+import { shouldLinkExternally } from '../utils/url';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
+import { NativeMenuContext } from './NativeMenuContext';
 import { LinkMenu, LinkPreview, LinkTrigger } from './elements';
+import { resolveHref } from './href';
 import { useLinkPreviewContext } from './preview/LinkPreviewContext';
 import { NativeLinkPreview } from './preview/native';
 import { useNextScreenId } from './preview/useNextScreenId';
-import { LinkProps } from './useLinkHooks';
-import { getFirstChildOfType } from '../utils/children';
-import { shouldLinkExternally } from '../utils/url';
+import type { LinkProps } from './useLinkHooks';
 
 const isPad = Platform.OS === 'ios' && Platform.isPad;
 
-export function LinkWithPreview({ children, ...rest }: LinkProps) {
+interface LinkWithPreviewProps extends LinkProps {
+  hrefForPreviewNavigation: Href;
+}
+
+export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
   const router = useRouter();
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [isCurrentPreviewOpen, setIsCurrenPreviewOpen] = useState(false);
 
-  const hrefWithoutQuery = String(rest.href).split('?')[0];
+  const hrefWithoutQuery = resolveHref(rest.hrefForPreviewNavigation).split('?')[0];
   const prevHrefWithoutQuery = useRef(hrefWithoutQuery);
 
   useEffect(() => {
@@ -129,11 +136,17 @@ export function LinkWithPreview({ children, ...rest }: LinkProps) {
       }}
       style={{ display: 'contents' }}
       disableForceFlatten>
-      <InternalLinkPreviewContext value={{ isVisible: isCurrentPreviewOpen, href: rest.href }}>
-        <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
-        {preview}
-        {menuElement}
-      </InternalLinkPreviewContext>
+      <NativeMenuContext value>
+        <InternalLinkPreviewContext
+          value={{
+            isVisible: isCurrentPreviewOpen,
+            href: rest.hrefForPreviewNavigation,
+          }}>
+          <BaseExpoRouterLink {...rest} children={trigger} ref={rest.ref} />
+          {preview}
+          {menuElement}
+        </InternalLinkPreviewContext>
+      </NativeMenuContext>
     </NativeLinkPreview>
   );
 }

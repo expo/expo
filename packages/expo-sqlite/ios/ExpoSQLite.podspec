@@ -13,9 +13,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1',
-    :tvos => '15.1',
-    :osx => '11.0'
+    :ios => '16.4',
+    :tvos => '16.4',
+    :osx => '13.4'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.dependency 'ExpoModulesCore'
@@ -37,6 +37,7 @@ Pod::Spec.new do |s|
 
   sqlite_cflags = '-DHAVE_USLEEP=1 -DSQLITE_ENABLE_LOCKING_STYLE=0 -DSQLITE_ENABLE_BYTECODE_VTAB=1 -DSQLITE_TEMP_STORE=2'
   sqlite_cflags << ' -DSQLITE_ENABLE_SESSION=1 -DSQLITE_ENABLE_PREUPDATE_HOOK=1'
+  sqlite_cflags << ' -DSQLITE_ENABLE_MATH_FUNCTIONS=1'
   unless podfile_properties['expo.sqlite.enableFTS'] == 'false'
     sqlite_cflags << ' -DSQLITE_ENABLE_FTS4=1 -DSQLITE_ENABLE_FTS3_PARENTHESIS=1 -DSQLITE_ENABLE_FTS5=1'
   end
@@ -62,12 +63,12 @@ Pod::Spec.new do |s|
   end
 
   # Swift/Objective-C compatibility
+  s.static_framework = true
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS' => '$(inherited) ' + sqlite_cflags,
     'OTHER_SWIFT_FLAGS' => '$(inherited) ' + swift_flags,
   }
-
   s.source_files = "**/*.{c,h,m,swift}"
 
   vendored_frameworks = []

@@ -5,24 +5,51 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { MetroConfig } from '@expo/metro/metro';
-import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
-import { sourceMapString } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
-import type { SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
-import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
+import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
+import type { ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
+import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
+import { env } from '../env';
 import { stringToUUID } from './debugId';
 import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
-import { ExpoSerializerOptions, baseJSBundle } from './fork/baseJSBundle';
-import { reconcileTransformSerializerPlugin } from './reconcileTransformSerializerPlugin';
+import { event } from './events';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
-import { SerialAsset } from './serializerAssets';
-import { treeShakeSerializer } from './treeShakeSerializerPlugin';
-import { env } from '../env';
+import { sourceMapString } from './sourceMap';
+
+export type { SerialAsset } from './serializerAssets';
+
+// Lazy-loaded to avoid pulling in @babel/generator, @babel/core at startup
+let _reconcileTransformSerializerPlugin: typeof import('./reconcileTransformSerializerPlugin').reconcileTransformSerializerPlugin;
+function getReconcileTransformSerializerPlugin() {
+  if (!_reconcileTransformSerializerPlugin) {
+    _reconcileTransformSerializerPlugin =
+      require('./reconcileTransformSerializerPlugin').reconcileTransformSerializerPlugin;
+  }
+  return _reconcileTransformSerializerPlugin;
+}
+
+let _treeShakeSerializer: typeof import('./treeShakeSerializerPlugin').treeShakeSerializer;
+function getTreeShakeSerializer() {
+  if (!_treeShakeSerializer) {
+    _treeShakeSerializer = require('./treeShakeSerializerPlugin').treeShakeSerializer;
+  }
+  return _treeShakeSerializer;
+}
+
+// Lazy-loaded to avoid pulling in metro's getAppendScripts at startup
+let _baseJSBundle: typeof import('./fork/baseJSBundle').baseJSBundle;
+function getBaseJSBundle() {
+  if (!_baseJSBundle) {
+    _baseJSBundle = require('./fork/baseJSBundle').baseJSBundle;
+  }
+  return _baseJSBundle;
+}
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 
@@ -47,10 +74,10 @@ export type SerializerPlugin = (
   ...props: SerializerParameters
 ) => SerializerParameters | Promise<SerializerParameters>;
 
-export function withExpoSerializers(
-  config: InputConfigT,
+export function withExpoSerializers<Config extends InputConfigT = InputConfigT>(
+  config: Config,
   options: SerializerConfigOptions = {}
-): InputConfigT {
+): Config {
   const processors: SerializerPlugin[] = [];
   processors.push(serverPreludeSerializerPlugin);
   if (!env.EXPO_NO_CLIENT_ENV_VARS) {
@@ -58,21 +85,21 @@ export function withExpoSerializers(
   }
 
   // Then tree-shake the modules.
-  processors.push(treeShakeSerializer);
+  processors.push(getTreeShakeSerializer());
 
   // Then finish transforming the modules from AST to JS.
-  processors.push(reconcileTransformSerializerPlugin);
+  processors.push(getReconcileTransformSerializerPlugin());
 
   return withSerializerPlugins(config, processors, options);
 }
 
 // There can only be one custom serializer as the input doesn't match the output.
 // Here we simply run
-export function withSerializerPlugins(
-  config: InputConfigT,
+export function withSerializerPlugins<Config extends InputConfigT = InputConfigT>(
+  config: Config,
   processors: SerializerPlugin[],
   options: SerializerConfigOptions = {}
-): InputConfigT {
+): Config {
   const expoSerializer = createSerializerFromSerialProcessors(
     config,
     processors,
@@ -99,7 +126,7 @@ export function createDefaultExportCustomSerializer(
     entryPoint: string,
     preModules: readonly Module<MixedOutput>[],
     graph: ReadOnlyGraph<MixedOutput>,
-    inputOptions: SerializerOptions<MixedOutput>
+    inputOptions: ExpoSerializerOptions
   ): Promise<string | { code: string; map: string }> => {
     // NOTE(@kitten): My guess is that this was supposed to always be disabled for `node` since we set `hot: true` manually for it
     const isPossiblyDev =
@@ -113,7 +140,7 @@ export function createDefaultExportCustomSerializer(
       environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
-    const options: SerializerOptions<MixedOutput> = {
+    const options: ExpoSerializerOptions = {
       ...inputOptions,
       createModuleId: (moduleId, ...props) => {
         if (props.length > 0) {
@@ -135,7 +162,7 @@ export function createDefaultExportCustomSerializer(
       }
 
       // TODO: Perform this cheaper.
-      const bundle = baseJSBundle(entryPoint, preModules, graph, {
+      const bundle = getBaseJSBundle()(entryPoint, preModules, graph, {
         ...options,
         debugId: undefined,
       });
@@ -168,7 +195,7 @@ export function createDefaultExportCustomSerializer(
         }
       }
       bundleCode = bundleToString(
-        baseJSBundle(entryPoint, premodulesToBundle, graph, {
+        getBaseJSBundle()(entryPoint, premodulesToBundle, graph, {
           ...options,
           debugId,
         })
@@ -179,9 +206,7 @@ export function createDefaultExportCustomSerializer(
       bundleMap ??= sourceMapString(
         [...premodulesToBundle, ...getSortedModules([...graph.dependencies.values()], options)],
         {
-          // TODO: Surface this somehow.
-          excludeSource: false,
-          // excludeSource: options.serializerOptions?.excludeSource,
+          excludeSource: options.serializerOptions?.excludeSource ?? false,
           processModuleFilter: options.processModuleFilter,
           shouldAddToIgnoreList: options.shouldAddToIgnoreList,
         }
@@ -261,14 +286,26 @@ function getDefaultSerializer(
       environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
+    const isLoaderBundle =
+      graph.transformOptions?.customTransformOptions?.isLoaderBundle === 'true';
+    const loaderPaths = isLoaderBundle ? getLoaderPaths(graph.dependencies) : new Set<string>();
+
     const options: ExpoSerializerOptions = {
       ...inputOptions,
       createModuleId: (moduleId, ...props) => {
+        // For loader bundles, append `+loader` to modules with `loaderReference`.
+        // This creates different module IDs from `render.js` for the same source file,
+        // avoiding module ID collisions when both bundles are loaded in the same runtime.
+        let pathToHash = moduleId;
+        if (isLoaderBundle && loaderPaths.has(moduleId)) {
+          pathToHash = `${moduleId}+loader`;
+        }
+
         if (props.length > 0) {
-          return inputOptions.createModuleId(moduleId, ...props);
+          return inputOptions.createModuleId(pathToHash, ...props);
         }
         return inputOptions.createModuleId(
-          moduleId,
+          pathToHash,
           // @ts-expect-error: context is added by Expo and not part of the upstream Metro implementation.
           context
         );
@@ -353,13 +390,16 @@ export function createSerializerFromSerialProcessors(
   return wrapSerializerWithOriginal(
     originalSerializer,
     async (...props: SerializerParameters): ReturnType<Serializer> => {
+      const done = event.span();
       for (const processor of processors) {
         if (processor) {
           props = await processor(...props);
         }
       }
 
-      return finalSerializer(...props);
+      const result = await finalSerializer(...props);
+      done('serialize', { modules: props[2]?.dependencies?.size ?? 0 });
+      return result;
     }
   );
 }
@@ -373,4 +413,20 @@ function unwrapOriginalSerializer(serializer?: Serializer | null) {
   return serializer.__originalSerializer as Serializer | null;
 }
 
-export { SerialAsset };
+/**
+ * Collect paths of modules that have `loaderReference` metadata.
+ * In loader bundles, these modules need different IDs to avoid collisions with `render.js`.
+ */
+function getLoaderPaths(dependencies: ReadOnlyDependencies) {
+  const loaderPaths = new Set<string>();
+  for (const module of dependencies.values()) {
+    for (const output of module.output) {
+      // TODO: Module type should be upcast
+      const data = output.data as any;
+      if ('loaderReference' in data && typeof data.loaderReference === 'string') {
+        loaderPaths.add(module.path);
+      }
+    }
+  }
+  return loaderPaths;
+}

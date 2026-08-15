@@ -1,3 +1,4 @@
-/// <reference types="./global" />
-/// <reference types="./metro-require" />
-/// <reference types="./react-native-web" />
+import 'expo-modules-core/types';
+import './global';
+import './metro-require';
+import './react-native-web';

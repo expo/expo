@@ -41,19 +41,21 @@ internal struct RefreshableModifier: ViewModifier, Record {
   }
 
   func body(content: Content) -> some View {
-    content.refreshable {
-      await withCheckedContinuation { continuation in
-        let refreshId = UUID().uuidString
-        RefreshableManager.shared.storeContinuation(continuation, for: refreshId)
-        currentRefreshId = refreshId
-        eventDispatcher?(["refreshable": ["id": refreshId]])
-      }
-      currentRefreshId = nil
-    }.onDisappear {
-      if let refreshId = currentRefreshId {
-        RefreshableManager.shared.completeRefresh(id: refreshId)
+    content
+      .refreshable {
+        await withCheckedContinuation { continuation in
+          let refreshId = UUID().uuidString
+          RefreshableManager.shared.storeContinuation(continuation, for: refreshId)
+          currentRefreshId = refreshId
+          eventDispatcher?(["refreshable": ["id": refreshId]])
+        }
         currentRefreshId = nil
       }
-    }
+      .onDisappear {
+        if let refreshId = currentRefreshId {
+          RefreshableManager.shared.completeRefresh(id: refreshId)
+          currentRefreshId = nil
+        }
+      }
   }
 }

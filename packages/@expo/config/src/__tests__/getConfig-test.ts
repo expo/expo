@@ -5,7 +5,20 @@ import { getDynamicConfig, getStaticConfig } from '../getConfig';
 
 const mockConfigContext = {} as any;
 
-jest.mock('fs');
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
+
+// NOTE: For testing, we need to bypass the jest-require here and only eval
+jest.mock('@expo/require-utils', () => {
+  const requireUtils = jest.requireActual('@expo/require-utils');
+  return {
+    ...requireUtils,
+    loadModuleSync(filename: string) {
+      const contents = require('fs').readFileSync(filename, 'utf8');
+      return requireUtils.evalModule(contents, filename);
+    },
+  };
+});
 
 describe(modifyConfigAsync, () => {
   beforeAll(async () => {
@@ -145,7 +158,7 @@ describe(getDynamicConfig, () => {
   it(`throws a useful error for dynamic configs with a syntax error`, () => {
     const paths = getConfigFilePaths('syntax-error');
     expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrow(
-      /Error .* \(5:7\)/
+      /Error reading/
     );
   });
   // This tests error are thrown properly and ensures that a more specific
@@ -153,7 +166,7 @@ describe(getDynamicConfig, () => {
   it(`throws a useful error for dynamic configs with a missing import`, () => {
     const paths = getConfigFilePaths('missing-import-error');
     expect(() => getDynamicConfig(paths.dynamicConfigPath!, mockConfigContext)).toThrow(
-      /Require stack/
+      /Cannot find/
     );
   });
 });

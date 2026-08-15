@@ -1,11 +1,7 @@
-import {
-  AndroidConfig,
-  ConfigPlugin,
-  withAndroidColors,
-  withDangerousMod,
-} from '@expo/config-plugins';
-import { ResourceXML } from '@expo/config-plugins/build/android/Resources';
-import { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { AndroidConfig, withAndroidColors, withDangerousMod } from '@expo/config-plugins';
+import type { ResourceXML } from '@expo/config-plugins/build/android/Resources';
+import type { ExpoConfig } from '@expo/config-types';
 import { compositeImagesAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
 import path from 'path';
@@ -42,9 +38,10 @@ const IC_LAUNCHER_ROUND_XML = 'ic_launcher_round.xml';
 export const withAndroidIcons: ConfigPlugin = (config) => {
   const { foregroundImage, backgroundColor, backgroundImage, monochromeImage } =
     getAdaptiveIcon(config);
-  const icon = foregroundImage ?? getIcon(config);
+  const icon = getIcon(config);
+  const hasIcon = icon ?? foregroundImage;
 
-  if (!icon) {
+  if (!hasIcon) {
     return config;
   }
 
@@ -56,6 +53,7 @@ export const withAndroidIcons: ConfigPlugin = (config) => {
     async (config) => {
       await setIconAsync(config.modRequest.projectRoot, {
         icon,
+        foregroundImage,
         backgroundColor,
         backgroundImage,
         monochromeImage,
@@ -110,38 +108,62 @@ export async function setIconAsync(
   projectRoot: string,
   {
     icon,
+    foregroundImage,
     backgroundColor,
     backgroundImage,
     monochromeImage,
     isAdaptive,
   }: {
     icon: string | null;
+    foregroundImage?: string | null;
     backgroundColor: string | null;
     backgroundImage: string | null;
     monochromeImage: string | null;
     isAdaptive: boolean;
   }
 ) {
-  if (!icon) {
+  const legacyIcon = icon ?? foregroundImage;
+  const adaptiveForegroundImage = foregroundImage ?? legacyIcon;
+
+  if (!legacyIcon || !adaptiveForegroundImage) {
     return null;
   }
 
-  await configureLegacyIconAsync(projectRoot, icon, backgroundImage, backgroundColor);
+  const legacyBackgroundImage = icon ? null : backgroundImage;
+  const legacyBackgroundColor = icon ? null : backgroundColor;
+
+  await configureLegacyIconAsync(
+    projectRoot,
+    legacyIcon,
+    legacyBackgroundImage,
+    legacyBackgroundColor
+  );
   if (isAdaptive) {
-    await generateRoundIconAsync(projectRoot, icon, backgroundImage, backgroundColor);
+    await generateRoundIconAsync(
+      projectRoot,
+      legacyIcon,
+      legacyBackgroundImage,
+      legacyBackgroundColor
+    );
   } else {
     await deleteIconNamedAsync(projectRoot, IC_LAUNCHER_ROUND_WEBP);
   }
-  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, monochromeImage, isAdaptive);
+  await configureAdaptiveIconAsync(
+    projectRoot,
+    adaptiveForegroundImage,
+    backgroundImage,
+    monochromeImage,
+    isAdaptive
+  );
 
   return true;
 }
 
 /**
- * Configures legacy icon files to be used on Android 7 and earlier. If adaptive icon configuration
- * was provided, we create a pseudo-adaptive icon by layering the provided files (or background
- * color if no backgroundImage is provided. If no backgroundImage and no backgroundColor are provided,
- * the background is set to transparent.)
+ * Configures legacy icon files to be used on Android 7 and earlier. If only adaptive icon
+ * configuration was provided, we create a pseudo-adaptive icon by layering the provided files (or
+ * background color if no backgroundImage is provided. If no backgroundImage and no backgroundColor
+ * are provided, the background is set to transparent.)
  */
 async function configureLegacyIconAsync(
   projectRoot: string,

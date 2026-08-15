@@ -38,14 +38,18 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
                   <div className="inline-flex flex-row flex-wrap">
                     {property.deprecated && (
                       <>
-                        <StatusTag status="deprecated" className="!mr-0" />
-                        <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
+                        <StatusTag status="deprecated" className="mr-0!" />
+                        {(property.experimental || property.platform) && (
+                          <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
+                        )}
                       </>
                     )}
                     {property.experimental && (
                       <>
-                        <StatusTag status="experimental" className="!mr-0" />
-                        <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
+                        <StatusTag status="experimental" className="mr-0!" />
+                        {!!property.platform && (
+                          <span className={mergeClasses(STYLES_SECONDARY)}>&ensp;&bull;&ensp;</span>
+                        )}
                       </>
                     )}
                   </div>

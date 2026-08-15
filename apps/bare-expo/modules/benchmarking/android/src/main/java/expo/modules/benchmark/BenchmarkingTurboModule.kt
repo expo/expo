@@ -1,7 +1,11 @@
 package expo.modules.benchmark
 
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.iterator
 
 class BenchmarkingTurboModule(reactContext: ReactApplicationContext) : NativeBenchmarkingTurboModuleSpec(reactContext) {
@@ -9,8 +13,16 @@ class BenchmarkingTurboModule(reactContext: ReactApplicationContext) : NativeBen
     return "BenchmarkingTurboModule"
   }
 
-  override fun nothing() {
+  override fun nothing(): Double {
     // Do nothing
+
+    // For some reason, isBlockingSynchronousMethod doesn't let functions be Void/Unit
+    // so returning a dummy number
+    return 0.0
+  }
+
+  override fun nothingAsync(promise: Promise) {
+    promise.resolve(null)
   }
 
   override fun addNumbers(a: Double, b: Double): Double {
@@ -29,5 +41,12 @@ class BenchmarkingTurboModule(reactContext: ReactApplicationContext) : NativeBen
     }
 
     return sum
+  }
+
+  override fun passthroughDict(point: ReadableMap): WritableMap {
+    val result = Arguments.createMap()
+    result.putDouble("x", point.getDouble("x"))
+    result.putDouble("y", point.getDouble("y"))
+    return result
   }
 }

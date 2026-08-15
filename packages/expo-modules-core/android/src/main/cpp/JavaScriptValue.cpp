@@ -5,6 +5,7 @@
 #include "JavaScriptRuntime.h"
 #include "JavaScriptObject.h"
 #include "JavaScriptTypedArray.h"
+#include "JavaScriptArrayBuffer.h"
 #include "JavaScriptFunction.h"
 #include "TypedArray.h"
 #include "Exceptions.h"
@@ -38,14 +39,7 @@ JavaScriptValue::JavaScriptValue(
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::Value> jsValue
 ) : runtimeHolder(std::move(runtime)), jsValue(std::move(jsValue)) {
-  runtimeHolder.ensureRuntimeIsValid();
-}
-
-JavaScriptValue::JavaScriptValue(
-  WeakRuntimeHolder runtime,
-  std::shared_ptr<jsi::Value> jsValue
-) : runtimeHolder(std::move(runtime)), jsValue(std::move(jsValue)) {
-  runtimeHolder.ensureRuntimeIsValid();
+  assert((!runtimeHolder.expired()) && "JS Runtime was used after deallocation");
 }
 
 std::shared_ptr<jsi::Value> JavaScriptValue::get() {
@@ -112,8 +106,11 @@ bool JavaScriptValue::isSymbol() {
 
 bool JavaScriptValue::isFunction() {
   if (jsValue->isObject()) {
-    auto &jsRuntime = runtimeHolder.getJSRuntime();
-    return jsValue->asObject(jsRuntime).isFunction(jsRuntime);
+    auto runtime = runtimeHolder.lock();
+    assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+    auto &rawRuntime = runtime->get();
+
+    return jsValue->asObject(rawRuntime).isFunction(rawRuntime);
   }
 
   return false;
@@ -121,8 +118,11 @@ bool JavaScriptValue::isFunction() {
 
 bool JavaScriptValue::isArray() {
   if (jsValue->isObject()) {
-    auto &jsRuntime = runtimeHolder.getJSRuntime();
-    return jsValue->asObject(jsRuntime).isArray(jsRuntime);
+    auto runtime = runtimeHolder.lock();
+    assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+    auto &rawRuntime = runtime->get();
+
+    return jsValue->asObject(rawRuntime).isArray(rawRuntime);
   }
 
   return false;
@@ -134,8 +134,11 @@ bool JavaScriptValue::isObject() {
 
 bool JavaScriptValue::isTypedArray() {
   if (jsValue->isObject()) {
-    jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
-    return expo::isTypedArray(jsRuntime, jsValue->getObject(jsRuntime));
+    auto runtime = runtimeHolder.lock();
+    assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+    auto &rawRuntime = runtime->get();
+
+    return expo::isTypedArray(rawRuntime, jsValue->getObject(rawRuntime));
   }
   return false;
 }
@@ -149,46 +152,57 @@ double JavaScriptValue::getDouble() {
 }
 
 std::string JavaScriptValue::getString() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  return jsValue->getString(jsRuntime).utf8(jsRuntime);
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  return jsValue->getString(rawRuntime).utf8(rawRuntime);
 }
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptValue::getObject() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(jsRuntime));
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(rawRuntime));
   return JavaScriptObject::newInstance(
-    runtimeHolder.getJSIContext(),
+    expo::getJSIContext(rawRuntime),
     runtimeHolder,
     jsObject
   );
 }
 
 jni::local_ref<JavaScriptFunction::javaobject> JavaScriptValue::jniGetFunction() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
   auto jsFunction = std::make_shared<jsi::Function>(
-    jsValue->getObject(jsRuntime).asFunction(jsRuntime));
+    jsValue->getObject(rawRuntime).asFunction(rawRuntime));
   return JavaScriptFunction::newInstance(
-    runtimeHolder.getJSIContext(),
+    expo::getJSIContext(rawRuntime),
     runtimeHolder,
     jsFunction
   );
 }
 
 jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> JavaScriptValue::getArray() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  auto moduleRegistry = runtimeHolder.getJSIContext();
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+  auto jsiContext = expo::getJSIContext(rawRuntime);
 
   auto jsArray = jsValue
-    ->getObject(jsRuntime)
-    .asArray(jsRuntime);
-  size_t size = jsArray.size(jsRuntime);
+    ->getObject(rawRuntime)
+    .asArray(rawRuntime);
+  size_t size = jsArray.size(rawRuntime);
 
   auto result = jni::JArrayClass<JavaScriptValue::javaobject>::newArray(size);
   for (size_t i = 0; i < size; i++) {
     auto element = JavaScriptValue::newInstance(
-      moduleRegistry,
+      jsiContext,
       runtimeHolder,
-      std::make_shared<jsi::Value>(jsArray.getValueAtIndex(jsRuntime, i))
+      std::make_shared<jsi::Value>(jsArray.getValueAtIndex(rawRuntime, i))
     );
 
     result->setElement(i, element.release());
@@ -207,10 +221,13 @@ jni::local_ref<jstring> JavaScriptValue::jniGetString() {
 }
 
 jni::local_ref<JavaScriptTypedArray::javaobject> JavaScriptValue::getTypedArray() {
-  auto &jsRuntime = runtimeHolder.getJSRuntime();
-  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(jsRuntime));
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(rawRuntime));
   return JavaScriptTypedArray::newInstance(
-    runtimeHolder.getJSIContext(),
+    expo::getJSIContext(rawRuntime),
     runtimeHolder,
     jsObject
   );

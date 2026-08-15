@@ -4,11 +4,11 @@ import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundle
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import path from 'path';
 
-import { CSSMetadata } from './jsOutput';
-import { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
 import { toPosixPath } from '../utils/filePath';
 import { hashString } from '../utils/hash';
+import type { CSSMetadata } from './jsOutput';
+import type { SerialAsset } from './serializerAssets';
 
 type Options = {
   processModuleFilter: (modules: Module) => boolean;
@@ -73,11 +73,12 @@ export function getCssSerialAssets<T extends any>(
 
       if (cssMetadata.externalImports) {
         for (const external of cssMetadata.externalImports) {
-          let source = `<link rel="stylesheet" href="${external.url}"`;
+          let source = `<link rel="stylesheet" href="${escapeHtmlAttribute(external.url)}"`;
 
+          // TODO(@hassankhan): We should be able to remove this when we remove the static renderer
           // TODO: How can we do this for local css imports?
           if (external.media) {
-            source += `media="${external.media}"`;
+            source += ` media="${escapeHtmlAttribute(external.media)}"`;
           }
 
           // TODO: supports attribute
@@ -92,6 +93,9 @@ export function getCssSerialAssets<T extends any>(
             source,
             metadata: {
               hmrId: pathToHtmlSafeName(originFilename),
+              // Carried alongside the baked `source` field so the streaming renderer can rebuild
+              // the `<link>` as a React node without having to parse the HTML string
+              media: external.media ?? undefined,
             },
           });
         }
@@ -150,6 +154,7 @@ function getCssMetadata(module: Module<any>): CSSMetadata | null {
   return null;
 }
 
+// TODO(@hassankhan): Move this function into its own file
 export function fileNameFromContents({ filepath, src }: { filepath: string; src: string }): string {
   // TODO(@kitten): As of metro@0.83.2 but maybe before, this does not look correct. Encoding has changed, see: https://github.com/facebook/metro/commit/cb02cdb
   // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
@@ -157,6 +162,12 @@ export function fileNameFromContents({ filepath, src }: { filepath: string; src:
   return getFileName(decoded) + '-' + hashString(src);
 }
 
+// TODO(@hassankhan): Move this function into its own file
+// TODO(@hassankhan): Investigate why we don't always pass the filename with extension here
 export function getFileName(module: string) {
-  return path.basename(module).replace(/\.[^.]+$/, '');
+  return path.basename(module).replace(/\.\w+$/, '');
+}
+
+function escapeHtmlAttribute(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 }

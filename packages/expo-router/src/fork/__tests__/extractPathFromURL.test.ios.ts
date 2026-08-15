@@ -1,5 +1,3 @@
-import { ExpoGlobal } from 'expo-modules-core';
-
 import {
   extractExpoPathFromURL,
   parsePathAndParamsFromExpoGoLink,
@@ -9,9 +7,10 @@ import {
 describe(extractExpoPathFromURL, () => {
   beforeEach(() => {
     if (typeof expo === 'undefined') {
+      // Partial mock of ExpoGlobal
       globalThis.expo = {
         modules: {},
-      } as ExpoGlobal;
+      } as unknown as typeof expo;
     }
     delete expo.modules.ExpoGo;
   });
@@ -83,6 +82,12 @@ describe(extractExpoPathFromURL, () => {
     delete expo.modules.ExpoGo;
     expect(extractExpoPathFromURL([], `custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
   });
+  it('preserves a URL used as a query parameter', () => {
+    delete expo.modules.ExpoGo;
+    expect(
+      extractExpoPathFromURL([], 'https://mysite.com/readPolicy?url=https://test.com?param=1')
+    ).toEqual('readPolicy?url=https://test.com?param=1');
+  });
   it(`decodes query params in Expo Go`, () => {
     expo.modules.ExpoGo = {};
     expect(extractExpoPathFromURL([], `custom:///?x=%20%2B%2F`)).toEqual('?x= +/');
@@ -90,6 +95,18 @@ describe(extractExpoPathFromURL, () => {
       'test/path?x= +/'
     );
     expect(extractExpoPathFromURL([], `exp://x?y=%20%2B%2F`)).toEqual('?y= +/');
+  });
+
+  it(`does not throw on malformed percent-encoding in query params`, () => {
+    delete expo.modules.ExpoGo;
+    expect(() => extractExpoPathFromURL([], `custom:///?q=%GG`)).not.toThrow();
+    expect(extractExpoPathFromURL([], `custom:///?q=%GG`)).toEqual('?q=%GG');
+  });
+  it(`does not throw on malformed percent-encoding in dev-client url param`, () => {
+    delete expo.modules.ExpoGo;
+    expect(() =>
+      extractExpoPathFromURL([], `scheme://expo-development-client/?url=http://localhost:8081/%GG`)
+    ).not.toThrow();
   });
 
   it(`only handles Expo Go URLs in Expo Go`, () => {

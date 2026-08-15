@@ -1,5 +1,12 @@
 import type { RouteNode } from 'expo-router/build/Route';
-import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
+import type { RouteInfo, RoutesManifest } from 'expo-server/private';
+
+/**
+ * An allowlist of loader `Response` headers that are written to the export
+ * manifest as `pageHeaders` rules during `expo export`. In development, they
+ * are forwarded on the loader response, matching static exports.
+ */
+export const SSG_LOADER_HEADER_ALLOWLIST = ['Cache-Control'];
 
 /**
  * Unified route information needed for loader execution
@@ -9,6 +16,9 @@ export interface ResolvedLoaderRoute {
   file: string;
   /** The pathname being rendered */
   pathname: string;
+  // TODO(@hassankhan): Rename `contextKey` property to `page`
+  /** The context key for the route including unresolved parameters. For example, `/x/[y]/z` */
+  contextKey: string;
   /** Extracted URL parameters */
   params: Record<string, string | string[]>;
 }
@@ -26,7 +36,8 @@ export function fromRuntimeManifestRoute(
   route: RouteNode,
   options: FromRuntimeManifestRouteOptions
 ): ResolvedLoaderRoute | null {
-  if (route.generated) {
+  // Skip internal routes (like `_sitemap` or `+not-found`)
+  if (route.internal) {
     return null;
   }
 
@@ -49,6 +60,7 @@ export function fromRuntimeManifestRoute(
 
   return {
     file: serverManifestRoute.file,
+    contextKey: serverManifestRoute.page,
     pathname,
     params: extractParams(pathname, serverManifestRoute),
   };
@@ -67,6 +79,7 @@ export function fromServerManifestRoute(
 
   return {
     file: route.file,
+    contextKey: route.page,
     pathname,
     params: extractParams(pathname, route),
   };
@@ -83,7 +96,7 @@ function extractParams(
   const match = route.namedRegex.exec(pathname);
   if (match?.groups) {
     for (const [key, value] of Object.entries(match.groups)) {
-      const namedKey = route.routeKeys[key];
+      const namedKey = route.routeKeys[key]!;
       params[namedKey] = value;
     }
   }

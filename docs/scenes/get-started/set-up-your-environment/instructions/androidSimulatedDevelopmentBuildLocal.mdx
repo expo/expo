@@ -24,7 +24,14 @@ import { BuildEnvironmentSwitch } from '../BuildEnvironmentSwitch';
 
 Run the following command in your project's root directory:
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
 
 </Step>
 
@@ -32,7 +39,14 @@ Run the following command in your project's root directory:
 
 Run the following from your terminal:
 
-<Terminal cmd={['$ npx expo run:android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
 
 > This command runs a development server after building your app. You can skip running `npx expo start` on the next page.
 

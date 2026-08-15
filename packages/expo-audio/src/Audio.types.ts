@@ -1,4 +1,19 @@
-import { AudioQuality, IOSOutputFormat } from './RecordingConstants';
+import type { AudioQuality, IOSOutputFormat } from './RecordingConstants';
+
+/**
+ * Represents audio source information returned from native.
+ * This is the object returned when reading sources from a queue.
+ */
+export type AudioSourceInfo = {
+  /**
+   * A string representing the resource identifier for the audio.
+   */
+  uri?: string;
+  /**
+   * An optional display name for the audio source.
+   */
+  name?: string;
+};
 
 // @docsMissing
 export type AudioSource =
@@ -21,6 +36,11 @@ export type AudioSource =
        * On web requires the `Access-Control-Allow-Origin` header returned by the server to include the current domain.
        */
       headers?: Record<string, string>;
+      /**
+       * An optional display name for the audio source.
+       * Useful for showing track names in a queue or playlist UI.
+       */
+      name?: string;
     };
 
 /**
@@ -104,6 +124,52 @@ export type AudioPlayerOptions = {
    * @default false
    */
   keepAudioSessionActive?: boolean;
+  /**
+   * The duration in seconds the player should buffer ahead of the current playback position.
+   * A higher value improves playback stability at the cost of more memory/network usage.
+   *
+   * - **iOS**: Maps to `AVPlayerItem.preferredForwardBufferDuration`. A value of `0` lets the system decide.
+   * - **Android**: Configures ExoPlayer's `DefaultLoadControl` max buffer duration.
+   * - **Web**: Not applicable (browser manages buffering).
+   *
+   * @default 0 (system default)
+   *
+   * @platform ios
+   * @platform android
+   */
+  preferredForwardBufferDuration?: number;
+  /**
+   * Whether the player can switch to AirPlay's external playback mode. In this mode, iOS sends
+   * the media URL directly to the AirPlay device and the local player only sends playback
+   * commands to it.
+   *
+   * Set to `false` to keep the local player in control. Audio still routes to the AirPlay device
+   * through the audio session, and playback notifications (including looping) keep working.
+   *
+   * @default true
+   * @platform ios
+   */
+  allowsExternalPlayback?: boolean;
+};
+
+/**
+ * Options for configuring audio preloading behavior.
+ */
+export type PreloadOptions = {
+  /**
+   * The duration in seconds the player should buffer ahead of the current playback position.
+   * A higher value improves playback stability at the cost of more memory/network usage.
+   *
+   * - **iOS**: Maps to `AVPlayerItem.preferredForwardBufferDuration`. A value of `0` lets the system decide.
+   * - **Android**: Configures ExoPlayer's buffer duration.
+   * - **Web**: Not applicable (browser manages buffering).
+   *
+   * @default 10
+   *
+   * @platform ios
+   * @platform android
+   */
+  preferredForwardBufferDuration?: number;
 };
 
 /**
@@ -147,7 +213,7 @@ export type PitchCorrectionQuality = 'low' | 'medium' | 'high';
  */
 export type AudioStatus = {
   /** Unique identifier for the player instance. */
-  id: number;
+  id: string;
   /** Current playback position in seconds. */
   currentTime: number;
   /** String representation of the player's internal playback state. */
@@ -177,6 +243,29 @@ export type AudioStatus = {
    * @default true
    */
   shouldCorrectPitch: boolean;
+  /**
+   * Whether the media services were reset by the system.
+   * When `true`, the player was interrupted because the system's media daemon crashed.
+   * The player will automatically attempt to recover by reloading the source and resuming playback.
+   * @platform ios
+   */
+  mediaServicesDidReset?: boolean;
+  /**
+   * Whether the current audio source is a live stream with indefinite duration.
+   */
+  isLive: boolean;
+  /**
+   * Seconds behind the live edge, or `null` if not a live stream
+   * or if the offset cannot be determined.
+   * @platform ios
+   * @platform android
+   */
+  currentOffsetFromLive: number | null;
+  /**
+   * Playback error message, or `null` if no error.
+   * Cleared when a new source is loaded or playback resumes successfully.
+   */
+  error: string | null;
 };
 
 /**
@@ -188,7 +277,7 @@ export type AudioStatus = {
  */
 export type RecordingStatus = {
   /** Unique identifier for the recording session. */
-  id: number;
+  id: string;
   /** Whether the recording has finished (stopped). */
   isFinished: boolean;
   /** Whether an error occurred during recording. */
@@ -197,6 +286,13 @@ export type RecordingStatus = {
   error: string | null;
   /** File URL of the completed recording, if available. */
   url: string | null;
+  /**
+   * Whether the media services were reset by the system.
+   * When `true`, the recording was interrupted because the system's media daemon crashed.
+   * The recorder is now invalid and must be re-prepared by calling `prepareToRecordAsync()`.
+   * @platform ios
+   */
+  mediaServicesDidReset?: boolean;
 };
 
 /**
@@ -213,6 +309,15 @@ export type RecorderState = {
   isRecording: boolean;
   /** Duration of the current recording in milliseconds. */
   durationMillis: number;
+  /**
+   * Current size of the recording file in bytes, or `0` if no recording file exists yet.
+   *
+   * The value reflects the bytes already flushed to disk, so during an active recording it can lag
+   * slightly behind real time. On web, it updates when the browser delivers recorded data
+   * (typically when the recording stops), and the value is an approximation that may differ
+   * slightly from the final file size.
+   */
+  fileSize: number;
   /** Whether the media services have been reset (typically indicates a system interruption). */
   mediaServicesDidReset: boolean;
   /** Current audio level/volume being recorded (if metering is enabled). */
@@ -288,7 +393,43 @@ export type RecordingStartOptions = {
   atTime?: number;
 };
 
+/**
+ * Directory where the recording file is stored.
+ *
+ * - `cache`: Stores recordings in the app cache directory, a place to store files that can be deleted by the system when the device runs low on storage.
+ * - `document`: Stores recordings in the app document directory, a place to store files that are safe from being deleted by the system.
+ *
+ * @platform android
+ * @platform ios
+ */
+export type RecordingDirectory = 'cache' | 'document';
+
 export type RecordingOptions = {
+  /**
+   * The directory where the recording file should be stored.
+   *
+   * @default 'cache'
+   * @platform android
+   * @platform ios
+   */
+  directory?: RecordingDirectory;
+  /**
+   * The basename of the recording file (without extension). The SDK appends `extension`
+   * and writes into `<directory>/Audio/<fileName><extension>` on Android and `<directory>/ExpoAudio/<fileName><extension>` on iOS.
+   *
+   * If omitted, defaults to a random UUID.
+   *
+   * Path separators (`/`, `\`) and parent-directory references (`..`) are rejected
+   * at runtime so callers cannot escape the recording directory.
+   *
+   * > **Note:** When using the default `cache` [`directory`](#recordingdirectory), the system may delete
+   * > the file when it is not being used. Use `document` [`directory`](#recordingdirectory) or [`expo-file-system`](/versions/latest/sdk/filesystem/)
+   * > to retain it.
+   *
+   * @platform android
+   * @platform ios
+   */
+  fileName?: string;
   /**
    * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
    */
@@ -450,22 +591,30 @@ export type RecordingOptionsAndroid = {
 export type AudioMode = {
   /**
    * Determines if audio playback is allowed when the device is in silent mode.
+   * On Android, when `false`, playback is suppressed when the ringer mode is silent or vibrate.
    *
-   * @platform ios
+   * @default true
    */
   playsInSilentMode: boolean;
   /**
-   * Determines how the audio session interacts with other sessions.
+   * Determines how the audio session interacts with other audio sessions.
    *
-   * @platform ios
+   * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+   * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
+   * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
+   *   On Android, this means no audio focus is requested. Best suited for sound effects,
+   *   UI feedback, or short audio clips.
+   *
+   * @default 'mixWithOthers'
    */
   interruptionMode: InterruptionMode;
   /**
    * Determines how the audio session interacts with other sessions on Android.
    *
    * @platform android
+   * @deprecated Use `interruptionMode` instead, which now works on both platforms.
    */
-  interruptionModeAndroid: InterruptionModeAndroid;
+  interruptionModeAndroid?: InterruptionModeAndroid;
   /**
    * Whether the audio session allows recording.
    *
@@ -475,12 +624,16 @@ export type AudioMode = {
   allowsRecording: boolean;
   /**
    * Whether the audio session stays active when the app moves to the background.
+   *
+   * > **Note**: On Android, you have to enable the lockscreen controls with [`setActiveForLockScreen`](#setactiveforlockscreenactive-metadata-options) for sustained background playback. Otherwise, the audio will stop after approximately 3 minutes of background playback (OS limitation). Make sure to also appropriately [configure the config-plugin](#configuration-in-app-config).
    * @default false
    */
   shouldPlayInBackground: boolean;
   /**
    * Whether the audio should route through the earpiece.
-   * @platform android
+   * On iOS, this only has an effect when `allowsRecording` is `true` (i.e., the audio session
+   * category is `.playAndRecord`). When `false` (the default), audio is routed through the speaker.
+   * @default false
    */
   shouldRouteThroughEarpiece: boolean;
   /**
@@ -494,24 +647,28 @@ export type AudioMode = {
 };
 
 /**
- * Audio interruption behavior modes for iOS.
+ * Audio interruption behavior modes.
  *
- * Controls how your app's audio interacts with other apps' audio when interruptions occur.
- * This affects what happens when phone calls, notifications, or other apps play audio.
+ * Controls how your app's audio interacts with other apps' audio.
  *
- * @platform ios
+ * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+ * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
+ * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
+ *
+ *   On Android, this means no audio focus is requested. Best suited for sound effects,
+ *   UI feedback, or short audio clips. Note that on Android your app won't receive
+ *   audio focus loss callbacks (for example, during phone calls) when using this mode.
+ *
+ *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix`.
+ *
+ * @default 'mixWithOthers'
  */
 export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
 
 /**
- * Audio interruption behavior modes for Android.
- *
- * Controls how your app's audio interacts with other apps' audio on Android.
- * Note that Android doesn't support 'mixWithOthers' mode; audio focus is more strictly managed.
- *
- * @platform android
+ * @deprecated Use `InterruptionMode` instead, which now works on both platforms.
  */
-export type InterruptionModeAndroid = 'doNotMix' | 'duckOthers';
+export type InterruptionModeAndroid = InterruptionMode;
 
 /**
  * Recording source for android.
@@ -545,4 +702,79 @@ export type AudioMetadata = {
   artist?: string;
   albumTitle?: string;
   artworkUrl?: string;
+};
+
+/**
+ * Loop mode for audio playlist playback.
+ *
+ * - `'none'`: No looping. Playback stops after the last track.
+ * - `'single'`: Loops the current track indefinitely.
+ * - `'all'`: Loops the entire playlist, returning to the first track after the last.
+ */
+export type AudioPlaylistLoopMode = 'none' | 'single' | 'all';
+
+/**
+ * Options for configuring an audio playlist.
+ */
+export type AudioPlaylistOptions = {
+  /**
+   * Initial sources to add to the playlist. Each source can be a local asset, remote URL, or null.
+   * @default []
+   */
+  sources?: AudioSource[];
+
+  /**
+   * How often (in milliseconds) to emit playback status updates. Defaults to 500ms.
+   * @default 500
+   */
+  updateInterval?: number;
+
+  /**
+   * Loop mode for the playlist.
+   * - `'none'`: No looping (default)
+   * - `'single'`: Loop the current track
+   * - `'all'`: Loop the entire playlist
+   * @default 'none'
+   */
+  loop?: AudioPlaylistLoopMode;
+
+  /**
+   * Sets the `crossOrigin` attribute on the `<audio>` elements used for playback.
+   * Required for CORS-enabled audio files when you need to access audio data.
+   * @platform web
+   * @default undefined
+   */
+  crossOrigin?: 'anonymous' | 'use-credentials';
+};
+
+/**
+ * Status information for an audio playlist.
+ */
+export type AudioPlaylistStatus = {
+  /** Unique identifier for the playlist instance. */
+  id: string;
+  /** Index of the currently playing track in the playlist. */
+  currentIndex: number;
+  /** Total number of tracks in the playlist. */
+  trackCount: number;
+  /** Current playback position in seconds. */
+  currentTime: number;
+  /** Total duration of the current track in seconds. */
+  duration: number;
+  /** Whether the player is currently playing. */
+  playing: boolean;
+  /** Whether the player is buffering. */
+  isBuffering: boolean;
+  /** Whether the current track has finished loading. */
+  isLoaded: boolean;
+  /** Current playback rate (1.0 = normal speed). */
+  playbackRate: number;
+  /** Whether the player is muted. */
+  muted: boolean;
+  /** Current volume level (0.0 to 1.0). */
+  volume: number;
+  /** Current loop mode. */
+  loop: AudioPlaylistLoopMode;
+  /** Whether the current track just finished playing. */
+  didJustFinish: boolean;
 };

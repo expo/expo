@@ -3,13 +3,16 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class EllipseViewProps: UIBaseViewProps {
-}
+public final class EllipseViewProps: UIBaseViewProps {}
 
-internal struct EllipseView: ExpoSwiftUI.View {
-  @ObservedObject var props: EllipseViewProps
+public struct EllipseView: ExpoSwiftUI.View {
+  @ObservedObject public var props: EllipseViewProps
 
-  var body: some View {
+  public init(props: EllipseViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     Ellipse()
   }
 }

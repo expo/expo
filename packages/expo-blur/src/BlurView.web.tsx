@@ -3,7 +3,7 @@
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { View } from 'react-native';
 
-import { BlurViewProps } from './BlurView.types';
+import type { BlurViewProps } from './BlurView.types';
 import getBackgroundColor from './getBackgroundColor';
 
 const BlurView = forwardRef<{ setNativeProps: (props: BlurViewProps) => void }, BlurViewProps>(
@@ -32,8 +32,12 @@ const BlurView = forwardRef<{ setNativeProps: (props: BlurViewProps) => void }, 
             }
           }
 
-          blurViewRef.current.style.backgroundColor = blurStyle.backgroundColor;
-          blurViewRef.current.style.backdropFilter = blurStyle.backdropFilter;
+          if (blurStyle.backgroundColor) {
+            blurViewRef.current.style.backgroundColor = blurStyle.backgroundColor;
+          }
+          if (blurStyle.backdropFilter) {
+            blurViewRef.current.style.backdropFilter = blurStyle.backdropFilter;
+          }
           // @ts-expect-error: Webkit-specific legacy property (let's not type this, since it's deprecated)
           blurViewRef.current.style['webkitBackdropFilter'] = blurStyle.WebkitBackdropFilter;
         },

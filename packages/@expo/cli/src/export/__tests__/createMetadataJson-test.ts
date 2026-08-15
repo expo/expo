@@ -67,6 +67,23 @@ describe(createMetadataJson, () => {
       version: expect.any(Number),
     });
   });
+  it(`deduplicates assets with the same file hash`, () => {
+    const metadata = createMetadataJson({
+      fileNames: { ios: ['ios-bundle.js'] },
+      bundles: {
+        ios: {
+          assets: [
+            { hash: 'abc', type: 'png', fileHashes: ['hash1', 'hash2'] } as any,
+            { hash: 'abc', type: 'png', fileHashes: ['hash1', 'hash2'] } as any,
+          ],
+        },
+      },
+    });
+    expect(metadata.fileMetadata.ios.assets).toEqual([
+      { ext: 'png', path: 'assets/hash1' },
+      { ext: 'png', path: 'assets/hash2' },
+    ]);
+  });
   it(`writes metadata manifest with dom components asset`, async () => {
     const metadata = await createMetadataJson({
       fileNames: { ios: ['_expo/static/js/ios/ios-xxfooxxbarxx.js', 'other'] },

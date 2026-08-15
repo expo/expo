@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-import { Config } from './Config';
+import type { Config } from './Config';
 
 export default class ConfigReader {
   constructor(private path: string) {}

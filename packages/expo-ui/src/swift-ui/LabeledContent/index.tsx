@@ -1,29 +1,20 @@
 import { requireNativeView } from 'expo';
 
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type LabeledContentProps = {
+export interface LabeledContentProps extends CommonViewModifierProps {
   /**
    * The label to be displayed in the labeled content.
    */
   label?: string | React.ReactNode;
   children: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
 const LabeledContentNativeView: React.ComponentType<LabeledContentProps> = requireNativeView(
   'ExpoUI',
   'LabeledContentView'
-);
-
-const LabeledContentLabel: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'LabeledContentLabel'
-);
-
-const LabeledContentContent: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'LabeledContentContent'
 );
 
 /**
@@ -43,8 +34,8 @@ export function LabeledContent(props: LabeledContentProps) {
       label={isLabelString ? label : undefined}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      {label && !isLabelString && <LabeledContentLabel>{label}</LabeledContentLabel>}
-      <LabeledContentContent>{children}</LabeledContentContent>
+      {label && !isLabelString && <Slot name="label">{label}</Slot>}
+      <Slot name="content">{children}</Slot>
     </LabeledContentNativeView>
   );
 }

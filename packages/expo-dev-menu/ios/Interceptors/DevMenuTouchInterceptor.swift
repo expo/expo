@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+#if os(iOS) || os(tvOS)
 import UIKit
 
 class DevMenuTouchInterceptor {
@@ -52,3 +53,5 @@ extension UIWindow {
     return self.EXDevMenu_gestureRecognizers
   }
 }
+
+#endif

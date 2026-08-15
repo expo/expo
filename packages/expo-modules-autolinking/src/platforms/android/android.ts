@@ -1,9 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import { taskAll } from '../../concurrency';
 import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
-import { scanFilesRecursively } from '../../utils';
+import { maybeRealpath, scanFilesRecursively } from '../../utils';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
@@ -36,13 +37,23 @@ export async function resolveModuleAsync(
     return null;
   }
 
-  const plugins = (revision.config?.androidGradlePlugins() ?? []).map(
-    ({ id, group, sourceDir, applyToRootProject }) => ({
-      id,
-      group,
-      sourceDir: path.join(revision.path, sourceDir),
-      applyToRootProject: applyToRootProject ?? true,
-    })
+  const plugins = await taskAll(
+    revision.config?.androidGradlePlugins() ?? [],
+    async ({ id, group, sourceDir, version, applyToRootProject }) => {
+      if (!sourceDir) {
+        return { id, group, version, applyToRootProject };
+      }
+      const pluginPath = path.join(revision.path, sourceDir);
+      return {
+        id,
+        group,
+        // The plugin source dir ends up in Gradle's `includeBuild`, which must not receive a
+        // symlink - Android Studio's Tooling API fails to import symlinked included builds.
+        // See: https://youtrack.jetbrains.com/issue/IDEA-329756.
+        sourceDir: (await maybeRealpath(pluginPath)) ?? pluginPath,
+        applyToRootProject,
+      };
+    }
   );
 
   const defaultProjectName = convertPackageToProjectName(packageName);
@@ -65,58 +76,57 @@ export async function resolveModuleAsync(
     };
   }
 
-  const projects = await Promise.all(
-    androidProjects.map(async (project) => {
-      const projectPath = path.join(revision.path, project.path);
+  const projects = await taskAll(androidProjects, async (project) => {
+    const projectPath = path.join(revision.path, project.path);
 
-      const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
-        const projectName = `${defaultProjectName}$${aarProject.name}`;
-        const projectDir = path.join(projectPath, 'build', projectName);
-        return {
-          name: projectName,
-          aarFilePath: path.join(revision.path, aarProject.aarFilePath),
-          projectDir,
-        };
-      });
+    const aarProjects = (project.gradleAarProjects ?? [])?.map((aarProject) => {
+      const projectName = `${defaultProjectName}$${aarProject.name}`;
+      const projectDir = path.join(projectPath, 'build', projectName);
+      return {
+        name: projectName,
+        aarFilePath: path.join(revision.path, aarProject.aarFilePath),
+        projectDir,
+      };
+    });
 
-      const { publication } = project;
-      const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
-        ? path.join(revision.path, project.shouldUsePublicationScriptPath)
-        : undefined;
+    const { publication } = project;
+    const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
+      ? path.join(revision.path, project.shouldUsePublicationScriptPath)
+      : undefined;
 
-      const packages = new Set<string>();
-      for await (const file of scanFilesRecursively(projectPath)) {
-        if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
-          continue;
-        }
-        const fileContent = await fs.promises.readFile(file.path, 'utf8');
+    const packages = new Set<string>();
+    for await (const file of scanFilesRecursively(projectPath)) {
+      if (!file.name.endsWith('Package.java') && !file.name.endsWith('Package.kt')) {
+        continue;
+      }
+      const fileContent = await fs.promises.readFile(file.path, 'utf8');
 
-        // Very naive check to skip non-expo packages
-        if (
-          !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
-        ) {
-          continue;
-        }
-
-        const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
-
-        if (classPathMatches) {
-          const basename = path.basename(file.name, path.extname(file.name));
-          packages.add(`${classPathMatches[1]}.${basename}`);
-        }
+      // Very naive check to skip non-expo packages
+      if (
+        !/\bimport\s+expo\.modules\.core\.(interfaces\.Package|BasePackage)\b/.test(fileContent)
+      ) {
+        continue;
       }
 
-      return {
-        name: project.name,
-        sourceDir: projectPath,
-        modules: project.modules ?? [],
-        packages: [...packages].sort((a, b) => a.localeCompare(b)),
-        ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
-        ...(publication ? { publication } : {}),
-        ...(aarProjects?.length > 0 ? { aarProjects } : {}),
-      };
-    })
-  );
+      const classPathMatches = fileContent.match(/^package ([\w.]+)\b/m);
+
+      if (classPathMatches) {
+        const basename = path.basename(file.name, path.extname(file.name));
+        packages.add(`${classPathMatches[1]}.${basename}`);
+      }
+    }
+
+    return {
+      name: project.name,
+      sourceDir: projectPath,
+      modules: project.modules ?? [],
+      services: project.services ?? [],
+      packages: [...packages].sort((a, b) => a.localeCompare(b)),
+      ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),
+      ...(publication ? { publication } : {}),
+      ...(aarProjects?.length > 0 ? { aarProjects } : {}),
+    };
+  });
 
   const coreFeatures = revision.config?.coreFeatures() ?? [];
 
@@ -199,7 +209,7 @@ export function convertPackageWithGradleToProjectName(
 export function searchGradlePropertyFirst(contents: string, propertyName: string): string | null {
   const lines = contents.split('\n');
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const line = lines[i]?.trim();
     if (line && !line.startsWith('#')) {
       const eok = line.indexOf('=');
       const key = line.slice(0, eok);

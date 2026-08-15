@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/reactNativeConfig/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,sDAAoC;AACpC,4DAA0C","sourcesContent":["export * from './reactNativeConfig';\nexport * from './reactNativeConfig.types';\n"]}

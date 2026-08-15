@@ -2,6 +2,7 @@
 
 import Photos
 import ExpoModulesCore
+internal import React
 
 public class CameraPermissionRequester: NSObject, EXPermissionsRequester {
   static public func permissionType() -> String {
@@ -19,7 +20,7 @@ public class CameraPermissionRequester: NSObject, EXPermissionsRequester {
     var status: EXPermissionStatus
     let cameraUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSCameraUsageDescription")
     if cameraUsageDescription == nil {
-      EXFatal(EXErrorWithMessage("""
+      RCTFatal(RCTErrorWithMessage("""
       This app is missing 'NSCameraUsageDescription', video services will fail. \
       Ensure this key exists in the app's Info.plist
       """))
@@ -72,11 +73,11 @@ public class MediaLibraryWriteOnlyPermissionRequester: DefaultMediaLibraryPermis
 public class DefaultMediaLibraryPermissionRequester: NSObject {}
 
 /**
- * This extension is adding default implmentation for EXPermissionsRequester that can be shared by many classe.
+ * This extension is adding default implementation for EXPermissionsRequester that can be shared by many classes.
  * In Swift language you cannot override static methods in subclasses, so you cannot subclass any already implemented
  * PermissionRequester as instances of this class are registered by the unique name coming from `static func permissionType()`.
  * To prevent repeating the similar code for every MediaLibrary PermissionRequester (the only differences so far are
- * aforementioned permissionType and accessLevel, while the latter can be easily overritten) I've extracted the code
+ * aforementioned permissionType and accessLevel, while the latter can be easily overridden) I've extracted the code
  * to this extension. I'm using as a mixin that implements major part of EXPermissionsRequester protocol.
  */
 extension DefaultMediaLibraryPermissionRequester {

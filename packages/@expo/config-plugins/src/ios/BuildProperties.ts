@@ -2,7 +2,10 @@ import type { ExpoConfig } from '@expo/config-types';
 
 import type { ConfigPlugin } from '../Plugin.types';
 import { withPodfileProperties } from '../plugins/ios-plugins';
-import { BuildPropertiesConfig, ConfigToPropertyRuleType } from '../utils/BuildProperties.types';
+import type {
+  BuildPropertiesConfig,
+  ConfigToPropertyRuleType,
+} from '../utils/BuildProperties.types';
 
 /**
  * Creates a `withPodfileProperties` config-plugin based on given config to property mapping rules.
@@ -50,24 +53,11 @@ export const withJsEnginePodfileProps = createBuildPodfilePropsConfigPlugin<Expo
   [
     {
       propName: 'expo.jsEngine',
-      propValueGetter: (config) => config.ios?.jsEngine ?? config.jsEngine ?? 'hermes',
+      propValueGetter: (config) =>
+        (config.ios as any)?.jsEngine ?? (config as any).jsEngine ?? 'hermes',
     },
   ],
   'withJsEnginePodfileProps'
-);
-
-/**
- * A config-plugin to update `ios/Podfile.properties.json` from the `newArchEnabled` in expo config
- */
-export const withNewArchEnabledPodfileProps = createBuildPodfilePropsConfigPlugin<ExpoConfig>(
-  [
-    {
-      propName: 'newArchEnabled',
-      propValueGetter: (config) =>
-        (config.ios?.newArchEnabled ?? config.newArchEnabled)?.toString(),
-    },
-  ],
-  'withNewArchEnabledPodfileProps'
 );
 
 export function updateIosBuildPropertiesFromConfig<SourceConfigType extends BuildPropertiesConfig>(

@@ -52,11 +52,45 @@ internal final class FileSystemFile: FileSystemPath {
 
   var md5: String {
     get throws {
-      return try withCorrectTypeAndScopedAccess(permission: .read) {
-        let fileData = try Data(contentsOf: url)
-        let hash = Insecure.MD5.hash(data: fileData)
-        return hash.map { String(format: "%02hhx", $0) }.joined()
+      return try digest(algorithm: "MD5")
+    }
+  }
+
+  func digest(algorithm: String) throws -> String {
+    switch algorithm {
+    case "MD5":
+      return try calculateDigest(using: Insecure.MD5())
+    case "SHA-1":
+      return try calculateDigest(using: Insecure.SHA1())
+    case "SHA-256":
+      return try calculateDigest(using: SHA256())
+    case "SHA-384":
+      return try calculateDigest(using: SHA384())
+    case "SHA-512":
+      return try calculateDigest(using: SHA512())
+    default:
+      throw Exception(
+        name: "UnsupportedDigestAlgorithm",
+        description: "Unsupported digest algorithm: \(algorithm)"
+      )
+    }
+  }
+
+  // Keep the hasher generic so the streaming loop can be specialized for each hasher type
+  private func calculateDigest<H: HashFunction>(using hasher: H) throws -> String {
+    return try withCorrectTypeAndScopedAccess(permission: .read) {
+      let bufferSize = 65536
+
+      let handle = try FileHandle(forReadingFrom: url)
+      defer { try? handle.close() }
+
+      var mutableHasher = hasher
+      while let chunk = try handle.read(upToCount: bufferSize), !chunk.isEmpty {
+        mutableHasher.update(data: chunk)
       }
+
+      let hash = mutableHasher.finalize()
+      return hash.map { String(format: "%02hhx", $0) }.joined()
     }
   }
 
@@ -75,23 +109,51 @@ internal final class FileSystemFile: FileSystemPath {
     return nil
   }
 
-  func write(_ content: String) throws {
+  func write(_ content: String, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
+      if append, let data = content.data(using: .utf8) {
+        try writeAppending(data)
+      } else {
+        try content.write(to: url, atomically: false, encoding: .utf8) // TODO: better error handling
+      }
     }
   }
 
-  func write(_ data: Data) throws {
+  func write(_ data: Data, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      try data.write(to: url)
+      if append {
+        try writeAppending(data)
+      } else {
+        try data.write(to: url)
+      }
     }
   }
 
   // TODO: blob support
-  func write(_ content: TypedArray) throws {
+  func write(_ content: NativeArrayBuffer, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      try Data(bytes: content.rawPointer, count: content.byteLength).write(to: url)
+      let data = content.withUnsafeBytes { rawBuffer in
+        Data(rawBuffer)
+      }
+      if append {
+        try writeAppending(data)
+      } else {
+        try data.write(to: url)
+      }
     }
+  }
+
+  private func writeAppending(_ data: Data) throws {
+    if !FileManager.default.fileExists(atPath: url.path) {
+      try data.write(to: url)
+      return
+    }
+    let fileHandle = try FileHandle(forWritingTo: url)
+    defer {
+      fileHandle.closeFile()
+    }
+    fileHandle.seekToEndOfFile()
+    fileHandle.write(data)
   }
 
   func text() throws -> String {

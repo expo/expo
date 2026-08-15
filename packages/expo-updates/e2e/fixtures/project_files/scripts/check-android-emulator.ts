@@ -1,4 +1,4 @@
-#!/usr/bin/env yarn --silent ts-node --transpile-only
+#!/usr/bin/env pnpm --silent ts-node --transpile-only
 
 const spawnAsync = require('@expo/spawn-async');
 const delay = require('timers/promises').setTimeout;

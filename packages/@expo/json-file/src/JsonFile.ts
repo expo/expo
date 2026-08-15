@@ -1,4 +1,3 @@
-import { codeFrameColumns } from '@babel/code-frame';
 import JSON5 from 'json5';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,6 +18,7 @@ type Options<TJSONObject extends JSONObject> = {
   jsonParseErrorDefault?: TJSONObject;
   cantReadFileDefault?: TJSONObject;
   ensureDir?: boolean;
+  mode?: fs.Mode;
   default?: TJSONObject;
   json5?: boolean;
   space?: number;
@@ -30,6 +30,7 @@ const DEFAULT_OPTIONS = {
   jsonParseErrorDefault: undefined,
   cantReadFileDefault: undefined,
   ensureDir: false,
+  mode: undefined,
   default: undefined,
   json5: false,
   space: 2,
@@ -215,6 +216,9 @@ function parseJsonString<TJSONObject extends JSONObject>(
     if (defaultValue === undefined) {
       const location = locationFromSyntaxError(e, json);
       if (location) {
+        const {
+          codeFrameColumns,
+        }: typeof import('@babel/code-frame') = require('@babel/code-frame');
         const codeFrame = codeFrameColumns(json, { start: location });
         e.codeFrame = codeFrame;
         e.message += `\n${codeFrame}`;
@@ -280,7 +284,7 @@ function write<TJSONObject extends JSONObject>(
     throw new JsonFileError(`Couldn't JSON.stringify object for file: ${file}`, e);
   }
   const data = addNewLineAtEOF ? `${json}\n` : json;
-  writeFileAtomicSync(file, data);
+  writeFileAtomicSync(file, data, { mode: options?.mode });
   return object;
 }
 
@@ -306,7 +310,7 @@ async function writeAsync<TJSONObject extends JSONObject>(
     throw new JsonFileError(`Couldn't JSON.stringify object for file: ${file}`, e);
   }
   const data = addNewLineAtEOF ? `${json}\n` : json;
-  await writeFileAtomic(file, data);
+  await writeFileAtomic(file, data, { mode: options?.mode });
   return object;
 }
 
@@ -388,7 +392,7 @@ async function deleteKeysAsync<TJSONObject extends JSONObject>(
 
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
-    if (object.hasOwnProperty(key)) {
+    if (key != null && object.hasOwnProperty(key)) {
       delete object[key];
       didDelete = true;
     }
@@ -410,7 +414,7 @@ function deleteKeys<TJSONObject extends JSONObject>(
 
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
-    if (object.hasOwnProperty(key)) {
+    if (key != null && object.hasOwnProperty(key)) {
       delete object[key];
       didDelete = true;
     }
@@ -476,10 +480,13 @@ function locationFromSyntaxError(error: any, sourceString: string) {
   }
   // JSON SyntaxError only includes the index in the message.
   const match = /at position (\d+)/.exec(error.message);
-  if (match) {
+  if (match && match[1] != null) {
     const index = parseInt(match[1], 10);
     const lines = sourceString.slice(0, index + 1).split('\n');
-    return { line: lines.length, column: lines[lines.length - 1].length };
+    const lastLine = lines[lines.length - 1];
+    if (lastLine != null) {
+      return { line: lines.length, column: lastLine.length };
+    }
   }
 
   return null;

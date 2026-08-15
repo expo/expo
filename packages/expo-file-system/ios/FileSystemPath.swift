@@ -66,16 +66,27 @@ internal class FileSystemPath: SharedObject {
     return destination.url
   }
 
-  func copy(to destination: FileSystemPath) throws {
+  func copy(to destination: FileSystemPath, options: RelocationOptions) throws {
     try validatePermission(.read)
     try destination.validatePermission(.write)
-    try FileManager.default.copyItem(at: url, to: getMoveOrCopyPath(to: destination))
+    let destinationUrl = try getMoveOrCopyPath(to: destination)
+ 
+    if options.overwrite && FileManager.default.fileExists(atPath: destinationUrl.path) {
+      try FileManager.default.removeItem(at: destinationUrl)
+    }
+
+    try FileManager.default.copyItem(at: url, to: destinationUrl)
   }
 
-  func move(to destination: FileSystemPath) throws {
+  func move(to destination: FileSystemPath, options: RelocationOptions) throws {
     try validatePermission(.write)
     try destination.validatePermission(.write)
     let destinationUrl = try getMoveOrCopyPath(to: destination)
+
+    if options.overwrite && FileManager.default.fileExists(atPath: destinationUrl.path) {
+      try FileManager.default.removeItem(at: destinationUrl)
+    }
+
     try FileManager.default.moveItem(at: url, to: destinationUrl)
     url = destinationUrl
   }

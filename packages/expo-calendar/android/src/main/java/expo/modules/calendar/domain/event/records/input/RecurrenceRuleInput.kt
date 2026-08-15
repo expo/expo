@@ -3,12 +3,12 @@ package expo.modules.calendar.domain.event.records.input
 import expo.modules.calendar.CalendarUtils.recurrenceRuleSDF
 import expo.modules.calendar.extensions.DateTimeInput
 import expo.modules.calendar.extensions.getTimeInMillis
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.util.Calendar
+import expo.modules.kotlin.types.OptimizedRecord
 
-@OptIn(EitherType::class)
+@OptimizedRecord
 data class RecurrenceRuleInput(
   @Field val frequency: String = "",
   @Field val interval: Int? = null,

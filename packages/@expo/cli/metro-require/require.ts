@@ -84,7 +84,11 @@ interface ModuleDefinition {
 
 type ModuleList = Map<ModuleID, ModuleDefinition | null>;
 
-export type RequireFn = (id: ModuleID | VerboseModuleNameForDev) => Exports;
+export interface RequireFn {
+  (id: ModuleID | VerboseModuleNameForDev, moduleIdHint?: string): Exports;
+  Refresh?: any;
+  Systrace?: any;
+}
 
 export type DefineFn = (
   factory: FactoryFn,
@@ -115,7 +119,7 @@ const { hasOwnProperty } = {};
 if (__DEV__) {
   // UPSTREAM: https://github.com/facebook/metro/commit/15fef8ebcf5ae0a13e7f0925a22d4211dde95e02
   global.$RefreshReg$ = global.$RefreshReg$ ?? (() => {});
-  global.$RefreshSig$ = global.$RefreshSig$ ?? (() => type => type);
+  global.$RefreshSig$ = global.$RefreshSig$ ?? (() => (type) => type);
 }
 
 function clear(): ModuleList {
@@ -215,7 +219,7 @@ function metroRequire(
         .map((id) => modules.get(id)?.verboseName ?? '[unknown]');
 
       if (shouldPrintRequireCycle(cycle)) {
-        cycle.push(cycle[0]); // We want to print A -> B -> A:
+        cycle.push(cycle[0]!); // We want to print A -> B -> A:
 
         console.warn(
           `Require cycle: ${cycle.join(' -> ')}\n\n` +
@@ -239,7 +243,7 @@ function shouldPrintRequireCycle(modules: readonly (string | null | undefined)[]
   // const regExps = eval(`${__METRO_GLOBAL_PREFIX__}__requireCycleIgnorePatterns`);
   const rcip = __METRO_GLOBAL_PREFIX__ + '__requireCycleIgnorePatterns';
   // Try using the globalThis version to reach outside the bundle in SSR bundles.
-  const regExps = globalThis[rcip] ?? global[rcip] ?? [/(^|\/|\\)node_modules($|\/|\\)/];
+  const regExps = (globalThis as any)[rcip] ?? global[rcip] ?? [/(^|\/|\\)node_modules($|\/|\\)/];
   if (!Array.isArray(regExps)) {
     return true;
   }
@@ -251,12 +255,15 @@ function shouldPrintRequireCycle(modules: readonly (string | null | undefined)[]
   return modules.every((module) => !isIgnored(module));
 }
 
-function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev): any | Exports {
+function metroImportDefault(
+  moduleId: ModuleID | VerboseModuleNameForDev,
+  moduleIdHint?: string
+): any | Exports {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedDefault !== EMPTY) {
     return modules.get(moduleId)!.importedDefault;
   }
 
-  const exports: Exports = metroRequire(moduleId);
+  const exports: Exports = metroRequire(moduleId, moduleIdHint);
   const importedDefault: any | Exports = exports && exports.__esModule ? exports.default : exports;
 
   return (modules.get(moduleId)!.importedDefault = importedDefault);
@@ -264,13 +271,14 @@ function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev): any |
 metroRequire.importDefault = metroImportDefault;
 
 function metroImportAll(
-  moduleId: ModuleID | VerboseModuleNameForDev
+  moduleId: ModuleID | VerboseModuleNameForDev,
+  moduleIdHint?: string
 ): any | Exports | Record<string, any> {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedAll !== EMPTY) {
     return modules.get(moduleId)!.importedAll;
   }
 
-  const exports: Exports = metroRequire(moduleId);
+  const exports: Exports = metroRequire(moduleId, moduleIdHint);
   let importedAll: Exports | Record<string, any>;
 
   if (exports && exports.__esModule) {
@@ -294,7 +302,7 @@ function metroImportAll(
 }
 
 // NOTE(EvanBacon): Tag for e2e testing.
-metroRequire[Symbol.for('expo.require')] = true;
+(metroRequire as any)[Symbol.for('expo.require')] = true;
 
 metroRequire.importAll = metroImportAll;
 
@@ -335,7 +343,7 @@ metroRequire.unguarded = function requireUnguarded(
         .map((id) => modules.get(id)?.verboseName ?? '[unknown]');
 
       if (shouldPrintRequireCycle(cycle)) {
-        cycle.push(cycle[0]); // We want to print A -> B -> A:
+        cycle.push(cycle[0]!); // We want to print A -> B -> A:
 
         console.warn(
           `Require cycle: ${cycle.join(' -> ')}\n\n` +
@@ -492,7 +500,7 @@ function loadModuleImplementation(
     }
     moduleObject.id = moduleId;
 
-    // keep args in sync with with defineModuleCode in
+    // keep args in sync with defineModuleCode in
     // metro/src/Resolver/index.js
     // and metro/src/ModuleGraph/worker.js
     factory?.(
@@ -518,11 +526,7 @@ function loadModuleImplementation(
       if (Refresh != null) {
         // UPSTREAM: https://github.com/facebook/metro/commit/c8de6512c63c3c0f6556446f8aec924380ac2014
         const prefixedModuleId = __METRO_GLOBAL_PREFIX__ + ' ' + moduleId;
-        registerExportsForReactRefresh(
-          Refresh,
-          moduleObject.exports,
-          prefixedModuleId,
-        );
+        registerExportsForReactRefresh(Refresh, moduleObject.exports, prefixedModuleId);
       }
     }
 
@@ -656,7 +660,7 @@ if (__DEV__) {
           }
           // If we bubble through the roof, there is no way to do a hot update.
           // Bail out altogether. This is the failure case.
-          const parentIDs = inverseDependencies[pendingID];
+          const parentIDs = inverseDependencies[pendingID]!;
           if (parentIDs.length === 0) {
             // Reload the app because the hot reload can't succeed.
             // This should work both on web and React Native.
@@ -691,7 +695,7 @@ if (__DEV__) {
     // Run the actual factories.
     const seenModuleIDs = new Set<ModuleID>();
     for (let i = 0; i < updatedModuleIDs.length; i++) {
-      const updatedID = updatedModuleIDs[i];
+      const updatedID = updatedModuleIDs[i]!;
       if (seenModuleIDs.has(updatedID)) {
         continue;
       }
@@ -734,7 +738,7 @@ if (__DEV__) {
           // We'll be conservative. The only case in which we won't do a full
           // reload is if all parent modules are also refresh boundaries.
           // In that case we'll add them to the current queue.
-          const parentIDs = inverseDependencies[updatedID];
+          const parentIDs = inverseDependencies[updatedID]!;
           if (parentIDs.length === 0) {
             // Looks like we bubbled to the root. Can't recover from that.
             performFullRefresh(
@@ -748,7 +752,7 @@ if (__DEV__) {
           }
           // Schedule all parent refresh boundaries to re-run in this loop.
           for (let j = 0; j < parentIDs.length; j++) {
-            const parentID = parentIDs[j];
+            const parentID = parentIDs[j]!;
             const parentMod = modules.get(parentID);
             if (parentMod == null) {
               throw new Error('[Refresh] Expected to find parent module.');
@@ -854,8 +858,11 @@ if (__DEV__) {
     const prevExports = mod.publicModule.exports;
     mod.publicModule.exports = {};
     hot._didAccept = false;
-    hot._acceptCallback = null;
-    hot._disposeCallback = null;
+
+    // NOTE(@kitten): accept() may widen this again, so we upcast this assignment
+    hot._acceptCallback = null as HotModuleReloadingCallback | null;
+    hot._disposeCallback = null as HotModuleReloadingCallback | null;
+
     metroRequire(id);
 
     if (mod.hasError) {
@@ -875,7 +882,6 @@ if (__DEV__) {
 
     if (hot._acceptCallback) {
       try {
-        // @ts-expect-error
         hot._acceptCallback();
       } catch (error) {
         console.error(`Error while calling accept handler for module ${id}: `, error);
@@ -990,11 +996,7 @@ if (__DEV__) {
     return signature;
   };
 
-  var registerExportsForReactRefresh = (
-    Refresh: any,
-    moduleExports: Exports,
-    moduleID: string
-  ) => {
+  var registerExportsForReactRefresh = (Refresh: any, moduleExports: Exports, moduleID: string) => {
     Refresh.register(moduleExports, moduleID + ' %exports%');
     if (moduleExports == null || typeof moduleExports !== 'object') {
       // Exit if we can't iterate over exports.
@@ -1022,7 +1024,7 @@ if (__DEV__) {
   // having to make them publicly available.
 
   var requireSystrace = function requireSystrace() {
-    return global[__METRO_GLOBAL_PREFIX__ + '__SYSTRACE'] || metroRequire.Systrace;
+    return global[__METRO_GLOBAL_PREFIX__ + '__SYSTRACE'] || (metroRequire as RequireFn).Systrace;
   };
 
   // UPSTREAM: https://github.com/facebook/metro/commit/c8de6512c63c3c0f6556446f8aec924380ac2014
@@ -1035,8 +1037,7 @@ if (__DEV__) {
     return (
       global[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'] ||
       global[global.__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'] ||
-      // @ts-expect-error: missing prop
-      metroRequire.Refresh
+      (metroRequire as RequireFn).Refresh
     );
   };
 }

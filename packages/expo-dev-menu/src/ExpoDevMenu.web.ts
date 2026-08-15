@@ -1,4 +1,4 @@
-import { ExpoDevMenu } from './ExpoDevMenu.types';
+import type { ExpoDevMenu } from './ExpoDevMenu.types';
 import WebUnsupportedError from './WebUnsupportedError';
 
 export default {
@@ -9,6 +9,9 @@ export default {
     throw new WebUnsupportedError();
   },
   hideMenu() {
+    throw new WebUnsupportedError();
+  },
+  setToolsButtonVisible() {
     throw new WebUnsupportedError();
   },
   addDevMenuCallbacks() {

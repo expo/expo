@@ -6,7 +6,158 @@
 
 ### 🎉 New features
 
+- [iOS] Add `IOSConfig.DevServer.withMetroPort` to write the `RCTMetroPort` Info.plist key from the `RCT_METRO_PORT` build setting. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
+
+- Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
+
+### 💡 Others
+
+- [iOS] Documented that `UIRequiresFullScreen` no longer opts an app out of resizing as of iOS 27, and noted it in the iPad multitasking warning. ([#48175](https://github.com/expo/expo/pull/48175) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-07
+
+### 🐛 Bug fixes
+
+- Honor `ios.version` and `android.version` in `Updates.getAppVersion`, `Updates.getNativeVersion`, and the `appVersion` runtime version policy. Previously the platform-specific overrides were ignored, so projects that used only `ios.version`/`android.version` (with no top-level `version` in `app.json`) received the `package.json` fallback (or `"1.0.0"`) wherever these helpers were consumed. `Updates.getAppVersion` gains an optional `platform` argument; passing it prefers the platform-specific override, and calls without a platform keep the previous behavior. Also fixes `Updates.getNativeVersion` on Android, which previously used the iOS version for the `${version}` component. ([#47416](https://github.com/expo/expo/pull/47416) by [@tlenahan](https://github.com/tlenahan))
+
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 - 2026-06-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-20
+
+### 🎉 New features
+
+- Support `.cjs`, `.mjs`, `.ts`, `.cts`, `.mts` extensions for config plugins ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Pass through better error message from `loadModuleSync` when loading/parsing config plugins fails ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- [Internal] Align config-plugin resolution support to `@expo/config` using `@expo/reqire-utils` ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
+- [Internal] Drop `resolve-from` for `@expo/require-utils` ([#45990](https://github.com/expo/expo/pull/45990) by [@kitten](https://github.com/kitten))
+
+## 56.0.6 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-13
+
+### 💡 Others
+
+- Add missing `pathPrefix`, `pathSuffix`, `mimeType`, `pathPattern`, `pathAdvancedPattern`, and `port` to intent filter types ([#45718](https://github.com/expo/expo/pull/45718) by [@kitten](https://github.com/kitten)
+
+## 56.0.4 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Replaced `AndroidConfig.StatusBar` with `AndroidConfig.SystemBars`, which sets transparent defaults for both status and navigation bar colors. ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
+
+### 🎉 New features
+
+- Add `ios.deploymentTarget` config support to set the minimum iOS version. ([#43700](https://github.com/expo/expo/pull/43700) by [@evanbacon](https://github.com/evanbacon))
+- Add missing `CFBundleTypeRole` to `URLScheme` type ([#44650](https://github.com/expo/expo/pull/44650) by [@hassankhan](https://github.com/hassankhan))
+
+### 💡 Others
+
+- [Android] Bump `com.google.gms:google-services` Gradle plugin version to `4.4.4`. (by [@vonovak](https://github.com/vonovak)) ([#45320](https://github.com/expo/expo/pull/45320) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.8 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 - 2026-03-18
+
+### 🎉 New features
+
+- Added optional `codeSignIdentity` parameter to `setProvisioningProfileForPbxproj` to allow callers to specify the code signing identity instead of always using `"iPhone Distribution"`. ([#43986](https://github.com/expo/expo/pull/43986) by [@qwertey6](https://github.com/qwertey6))
+
+## 55.0.6 — 2026-02-25
+
+### 💡 Others
+
+- Deprecated and turned into no-ops the `androidStatusBar.backgroundColor` and `androidStatusBar.translucent` app config properties. ([#43276](https://github.com/expo/expo/pull/43276) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.5 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-26
+
+### 💡 Others
+
+- Drop `slash` dependency ([#42484](https://github.com/expo/expo/pull/42484) by [@kitten](https://github.com/kitten))
+
+## 55.0.2 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+### 🐛 Bug fixes
+
+- Add `android:maxSdkVersion="32"` to storage permissions in templates. ([#42401](https://github.com/expo/expo/pull/42401) by [@brentvatne](https://github.com/brentvatne))
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [iOS] Add `locales` support for `Localizable.strings`. ([#39022](https://github.com/expo/expo/pull/39022) by [@desii101](https://github.com/desii101))
+
+### 💡 Others
+
+- Remove `newArchEnabled` option. ([#41684](https://github.com/expo/expo/pull/41684) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated maps config-plugin to support `@main` as the anchor. ([#41868](https://github.com/expo/expo/pull/41868) by [@kudo](https://github.com/kudo))
+
+## 54.0.3 - 2025-12-04
 
 ### 💡 Others
 
@@ -287,7 +438,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- On `Android`, Build settings related to gradle.properties will now be **merged** (_and deduped_) if they are `Arrays` instead of overwritten. For now the only array value is `extraMavenRepos`. This allow library plugins to use `extraMavenRepos` even if they are not the last plugin called. ([#30269](https://github.com/expo/expo/pull/30269) by [@Titozzz](https://github.com/Titozzz))
+- On `Android`, Build settings related to gradle.properties will now be **merged** (_and deduped_) if they are `Arrays` instead of overwritten. For now the only array value is `extraMavenRepos`. This allows library plugins to use `extraMavenRepos` even if they are not the last plugin called. ([#30269](https://github.com/expo/expo/pull/30269) by [@Titozzz](https://github.com/Titozzz))
 
 ## 8.0.7 - 2024-07-03
 

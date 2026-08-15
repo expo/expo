@@ -1,14 +1,14 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
+import { createAndroidManifestPlugin } from '../plugins/android-plugins';
+import type { AndroidManifest } from './Manifest';
 import {
   addMetaDataItemToMainApplication,
   addUsesLibraryItemToMainApplication,
-  AndroidManifest,
   getMainApplicationOrThrow,
   removeMetaDataItemFromMainApplication,
   removeUsesLibraryItemFromMainApplication,
 } from './Manifest';
-import { createAndroidManifestPlugin } from '../plugins/android-plugins';
 
 const META_API_KEY = 'com.google.android.geo.API_KEY';
 const LIB_HTTP = 'org.apache.http.legacy';

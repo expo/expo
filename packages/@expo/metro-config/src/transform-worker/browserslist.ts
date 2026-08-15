@@ -2,9 +2,12 @@
  * Copyright © 2025 650 Industries.
  */
 
-const debug = require('debug')('expo:metro:browserslist') as typeof console.log;
+import { debugEvent } from './events';
 
 const browserslistCache: Record<string, import('lightningcss').Targets> = {};
+
+// Suppress `browserslist`'s own "data is X months old" warning in transform workers.
+process.env.BROWSERSLIST_IGNORE_OLD_DATA = '1';
 
 export async function getBrowserslistTargets(
   projectRoot: string
@@ -23,7 +26,7 @@ export async function getBrowserslistTargets(
     })
   );
 
-  debug('Browserslist targets: %O', targets);
+  debugEvent('browserslist:targets', { targets: targets as Record<string, unknown> });
   browserslistCache[projectRoot] = targets;
   return targets;
 }

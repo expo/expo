@@ -13,21 +13,21 @@ import type {
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import countLines from '@expo/metro/metro/lib/countLines';
 
-import { SerializerParameters } from './withExpoSerializers';
-
-const debug = require('debug')('expo:metro-config:serializer:env-var') as typeof console.log;
+import { installPackedMap } from './packedMap';
+import type { SerializerParameters } from './withExpoSerializers';
 
 export function getTransformEnvironment(url: string): string | null {
   const match = url.match(/[&?]transform\.environment=([^&]+)/);
-  return match ? match[1] : null;
+  return match?.[1] ?? null;
 }
 
-function getAllExpoPublicEnvVars(inputEnv: NodeJS.ProcessEnv = process.env) {
+function getAllExpoPublicEnvVars(
+  inputEnv: NodeJS.ProcessEnv = process.env
+): Record<string, string> {
   // Create an object containing all environment variables that start with EXPO_PUBLIC_
-  const env = {};
+  const env: Record<string, string> = {};
   for (const key in inputEnv) {
-    if (key.startsWith('EXPO_PUBLIC_')) {
-      // @ts-expect-error: TS doesn't know that the key starts with EXPO_PUBLIC_
+    if (key.startsWith('EXPO_PUBLIC_') && inputEnv[key] != null) {
       env[key] = inputEnv[key];
     }
   }
@@ -59,13 +59,15 @@ export function serverPreludeSerializerPlugin(
   if (isServerEnvironment(graph, options)) {
     const prelude = preModules.find((module) => module.path === '__prelude__');
     if (prelude) {
-      debug('Stripping environment variable polyfill in server environment.');
-      prelude.output[0].data.code = prelude.output[0].data.code
+      // TODO: The module output type should be upcast
+      const data = prelude.output[0]?.data as any;
+      data.code = data.code
         .replace(/process=this\.process\|\|{},/, '')
         .replace(
           /process\.env=process\.env\|\|{};process\.env\.NODE_ENV=process\.env\.NODE_ENV\|\|"\w+";/,
           ''
         );
+      data.lineCount = countLines(data.code);
     }
   }
   return [entryPoint, preModules, graph, options];
@@ -79,16 +81,12 @@ export function environmentVariableSerializerPlugin(
 ): SerializerParameters {
   // Skip replacement in Node.js environments.
   if (isServerEnvironment(graph, options)) {
-    debug('Skipping environment variable inlining in Node.js environment.');
     return [entryPoint, preModules, graph, options];
   }
 
   // In development, we need to add the process.env object to ensure it
   // persists between Fast Refresh updates.
   if (!options.dev) {
-    debug(
-      'Skipping environment variable inlining in production environment in favor of babel-preset-expo inlining with source maps.'
-    );
     return [entryPoint, preModules, graph, options];
   }
 
@@ -96,10 +94,12 @@ export function environmentVariableSerializerPlugin(
 
   const prelude = preModules.find((module) => module.path === '\0polyfill:environment-variables');
   if (prelude) {
-    debug('Injecting environment variables in virtual module.');
-
+    // TODO: The module type should be upcast
+    const data = prelude.output[0]?.data as any;
     // !!MUST!! be one line in order to ensure Metro's asymmetric serializer system can handle it.
-    prelude.output[0].data.code = code;
+    data.code = code;
+    data.lineCount = countLines(data.code);
+    installPackedMap(data, []);
     return [entryPoint, preModules, graph, options];
   }
 
@@ -153,7 +153,7 @@ function getEnvPrelude(code: string): Module<MixedOutput> {
         type: 'js/script/virtual',
         data: {
           code,
-          lineCount: 1,
+          lineCount: countLines(code),
           map: [],
         },
       },

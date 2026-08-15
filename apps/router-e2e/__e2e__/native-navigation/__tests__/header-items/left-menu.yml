@@ -1,0 +1,21 @@
+appId: com.expo.routere2e
+name: Header Items left menu
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://header-items?leftMenu=1
+- runFlow: ../close-warning.yml
+- assertVisible: "Stack Header Items E2E Test Screen"
+- assertVisible: "Left Menu"
+- assertVisible: "99"
+- tapOn: "Left Menu"
+- assertVisible: "Option 1"
+- assertVisible:
+    id: "1.circle"
+- assertVisible: "Option 2"
+- assertVisible:
+    id: "2.circle"
+- assertVisible:
+    id: "checkmark"
+- tapOn: "Option 1"
+- assertVisible: "Option 1"
+- tapOn: "OK"

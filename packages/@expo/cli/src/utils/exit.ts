@@ -1,10 +1,18 @@
 import { ChildProcess } from 'node:child_process';
 import process from 'node:process';
 
-import { guardAsync } from './fn';
 import { warn } from '../log';
+import { event } from './events';
+import { guardAsync } from './fn';
 
-const debug = require('debug')('expo:utils:exit') as typeof console.log;
+// NOTE: This is an internal method, not designed to be exposed. It's also our only way to get this info
+declare global {
+  namespace NodeJS {
+    interface Process {
+      _getActiveHandles(): readonly any[];
+    }
+  }
+}
 
 type AsyncExitHook = (signal: NodeJS.Signals) => void | Promise<void>;
 
@@ -41,17 +49,13 @@ export function installExitHooks(asyncExitHook: AsyncExitHook): () => void {
 // Create a function that runs before the process exits and guards against running multiple times.
 function createExitHook(signal: NodeJS.Signals) {
   return guardAsync(async () => {
-    debug(`pre-exit (signal: ${signal}, queue length: ${queue.length})`);
-
     for (const [index, hookAsync] of Object.entries(queue)) {
       try {
         await hookAsync(signal);
       } catch (error: any) {
-        debug(`Error in exit hook: %O (queue: ${index})`, error);
+        event('exit_hook_error', { index, error: event.error(error as Error) });
       }
     }
-
-    debug(`post-exit (code: ${process.exitCode ?? 0})`);
 
     process.exit();
   });
@@ -77,7 +81,7 @@ function attachMasterListener() {
  *
  * @see https://nodejs.org/docs/latest-v18.x/api/process.html#processgetactiveresourcesinfo
  */
-export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtMs = Date.now()) {
+export function ensureProcessExitsAfterDelay(waitUntilExitMs = 4_000, startedAtMs = Date.now()) {
   // Create a list of the expected active resources before exiting.
   // Note, the order is undeterministic
   const expectedResources = [
@@ -98,30 +102,40 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     return true;
   });
 
-  const canExitProcess = !unexpectedActiveResources.length;
-  if (canExitProcess) {
-    return debug('no active resources detected, process can safely exit');
-  } else {
-    debug(
-      `process is trying to exit, but is stuck on unexpected active resources:`,
-      unexpectedActiveResources
-    );
+  // Check if there are any resources that block the process from exiting.
+  // CloseReq is always transient and completes on its own.
+  // NOTE: Timeout is NOT excluded — getActiveResourcesInfo() only reports ref'd timers,
+  // so any Timeout in this list will keep the event loop alive indefinitely.
+  const hasBlockingResources = unexpectedActiveResources.some(
+    (resource) => resource !== 'CloseReq'
+  );
+
+  if (!hasBlockingResources) {
+    event('exit_safe', {});
+    return;
   }
+
+  event('exit_blocked', { resources: unexpectedActiveResources });
 
   // Check if the process needs to be force-closed
   const elapsedTime = Date.now() - startedAtMs;
   if (elapsedTime > waitUntilExitMs) {
-    debug('active handles detected past the exit delay, forcefully exiting:', activeResources);
+    event('exit_forced', { resources: activeResources });
     tryWarnActiveProcesses();
     return process.exit(0);
   }
 
   const timeoutId = setTimeout(() => {
-    // Ensure the timeout is cleared before checking the active resources
-    clearTimeout(timeoutId);
-    // Check if the process can exit
-    ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs);
-  }, 100);
+    // Delay the next check by one tick so the current timer is fully cleaned up
+    // and doesn't appear in the active resources list.
+    process.nextTick(() => ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs));
+
+    // setTimeout is using the global definitions from React Native which is missing the unref method in Node.js.
+  }, 100) as unknown as NodeJS.Timeout;
+
+  // Unref the timeout so it doesn't prevent the process from exiting naturally
+  // when this timeout is the only remaining active resource
+  timeoutId.unref();
 }
 
 /**
@@ -137,19 +151,40 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
  * ```
  */
 function tryWarnActiveProcesses() {
-  let activeProcesses: string[] = [];
+  const activeProcesses: string[] = [];
+  const handleSummary: Record<string, number> = {};
+  const timeoutDetails: string[] = [];
 
   try {
-    const children: ChildProcess[] = process
-      // @ts-expect-error - This is an internal method, not designed to be exposed. It's also our only way to get this info
-      ._getActiveHandles()
-      .filter((handle: any) => handle instanceof ChildProcess);
+    const handles = process._getActiveHandles();
 
-    if (children.length) {
-      activeProcesses = children.map((child) => child.spawnargs.join(' '));
+    // Categorize handles by their constructor name
+    for (const handle of handles) {
+      const name = handle?.constructor?.name ?? 'Unknown';
+      handleSummary[name] = (handleSummary[name] ?? 0) + 1;
+
+      // Collect ChildProcess command info
+      if (handle instanceof ChildProcess) {
+        activeProcesses.push(handle.spawnargs.join(' '));
+      }
+
+      // Try to get more info about Timeout handles
+      if (name === 'Timeout') {
+        try {
+          // Attempt to get callback name or source info
+          const callback = handle._onTimeout ?? handle._repeat;
+          const callbackName = callback?.name || '<anonymous>';
+          const delay = handle._idleTimeout ?? 'unknown';
+          timeoutDetails.push(`Timeout(${delay}ms, fn: ${callbackName})`);
+        } catch {
+          timeoutDetails.push('Timeout(details unavailable)');
+        }
+      }
     }
+
+    event('exit_handles', { summary: handleSummary });
   } catch (error) {
-    debug('failed to get active process information:', error);
+    event('exit_handle_info_failed', { error: event.error(error as Error) });
   }
 
   if (!activeProcesses.length) {

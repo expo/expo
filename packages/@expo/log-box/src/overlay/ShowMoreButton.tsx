@@ -1,7 +1,5 @@
-import React from 'react';
-
+import type { Message } from '../Data/Types';
 import { SHOW_MORE_MESSAGE_LENGTH } from './Constants';
-import { Message } from '../Data/Types';
 
 export default function ShowMoreButton({
   message,

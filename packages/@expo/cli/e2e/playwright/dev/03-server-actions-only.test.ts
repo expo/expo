@@ -1,9 +1,12 @@
 import { test, expect } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
-import { pageCollectErrors } from '../page';
+import { sanitizeRSCPayloadString } from '../../utils/rsc';
+import { pageCollectErrors, replayRequestText } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -11,9 +14,15 @@ test.afterAll(() => restoreEnv());
 const projectRoot = getRouterE2ERoot();
 const testName = '03-server-actions-only';
 const inputDir = 'dist-' + testName;
+const mutatedServerAction = path.join(
+  projectRoot,
+  '__e2e__/03-server-actions-only/components/two-action.tsx'
+);
 
 test.describe(inputDir, () => {
   test.describe.configure({ mode: 'serial' });
+
+  let originalServerAction: string;
 
   const expoStart = createExpoStart({
     cwd: projectRoot,
@@ -31,7 +40,9 @@ test.describe(inputDir, () => {
     },
   });
 
-  test.beforeEach('bundle and serve', async () => {
+  test.beforeAll('bundle and serve', async () => {
+    originalServerAction = await fs.promises.readFile(mutatedServerAction, 'utf8');
+
     console.time('expo start');
     await expoStart.startAsync();
     console.timeEnd('expo start');
@@ -40,8 +51,12 @@ test.describe(inputDir, () => {
     await expoStart.fetchBundleAsync('/');
     console.timeEnd('Eagerly bundled JS');
   });
-  test.afterEach(async () => {
-    await expoStart.stopAsync();
+  test.afterAll(async () => {
+    try {
+      await expoStart.stopAsync();
+    } finally {
+      await fs.promises.writeFile(mutatedServerAction, originalServerAction);
+    }
   });
 
   test('renders RSC and calls server action', async ({ page }) => {
@@ -66,24 +81,18 @@ test.describe(inputDir, () => {
       );
     });
 
-    const serverActionResponsePromise = page.waitForResponse((response) => {
-      return new URL(response.url()).pathname.startsWith('/_flight/web/ACTION_');
-    });
-
     // Navigate to the app
     console.time('Open page');
     await page.goto(expoStart.url.href);
     console.timeEnd('Open page');
 
-    await serverActionRequest;
-    const response = await serverActionResponsePromise;
-
     // Wait for the app to load
     await page.waitForSelector('[data-testid="index-text"]');
 
-    const rscPayload = new TextDecoder().decode(await response.body());
+    const request = await serverActionRequest;
+    const rscPayload = await replayRequestText(request);
 
-    expect(rscPayload).toMatch(
+    expect(sanitizeRSCPayloadString(rscPayload)).toMatch(
       '2:I["node_modules/react-native-web/dist/exports/Text/index.js",["/node_modules/react-native-web/dist/exports/Text/index.js.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F03-server-actions-only%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"]'
     );
 

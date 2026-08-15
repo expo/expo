@@ -1,0 +1,11 @@
+diff --git a/ios/ExpoRadialChart.podspec b/ios/ExpoRadialChart.podspec
+index 0000000..1111111 100644
+--- a/ios/ExpoRadialChart.podspec
++++ b/ios/ExpoRadialChart.podspec
+@@ -1,5 +1,6 @@
+  s.static_framework = true
+
+  s.dependency 'ExpoModulesCore'
++ s.dependency 'DGCharts', '~> 5.1.0'
+
+   # Swift/Objective-C compatibility

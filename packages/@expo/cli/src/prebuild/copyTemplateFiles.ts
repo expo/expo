@@ -1,13 +1,12 @@
-import { ModPlatform } from '@expo/config-plugins';
-import { MergeResults } from '@expo/config-plugins/build/utils/generateCode';
+import type { ModPlatform } from '@expo/config-plugins';
+import type { MergeResults } from '@expo/config-plugins/build/utils/generateCode';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
 import { copySync } from '../utils/dir';
 import { mergeGitIgnorePaths } from '../utils/mergeGitIgnorePaths';
-
-const debug = require('debug')('expo:prebuild:copyTemplateFiles') as typeof console.log;
+import { debugEvent } from './events';
 
 type CopyFilesResults = {
   /** Merge results for the root `.gitignore` file */
@@ -85,7 +84,7 @@ export function copyTemplateFiles(
     templateDirectory,
     platforms
   );
-  debug(`All platforms have an internal gitignore: ${hasPlatformSpecificGitIgnores}`);
+  debugEvent('gitignore_check', { allPlatformsHaveGitignore: hasPlatformSpecificGitIgnores });
 
   // TODO: Remove gitignore modifications -- maybe move to `npx expo-doctor`
   const gitignore = hasPlatformSpecificGitIgnores

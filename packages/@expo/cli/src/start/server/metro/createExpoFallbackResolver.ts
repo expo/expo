@@ -50,8 +50,6 @@ interface ModuleDescription {
   moduleTestRe: RegExp;
 }
 
-const debug = require('debug')('expo:start:server:metro:fallback-resolver') as typeof console.log;
-
 /** Converts a list of module names to a regex that may either match bare module names or sub-modules of modules */
 const dependenciesToRegex = (dependencies: string[]) =>
   new RegExp(`^(?:${dependencies.join('|')})(?:$|/)`);
@@ -67,7 +65,6 @@ const getModuleDescriptionWithResolver = (
   try {
     const resolution = resolve(path.join(originModuleName, 'package.json'));
     if (resolution.type !== 'sourceFile') {
-      debug(`Fallback module resolution failed for origin module: ${originModuleName})`);
       return null;
     }
     filePath = resolution.filePath;
@@ -77,9 +74,6 @@ const getModuleDescriptionWithResolver = (
       return null;
     }
   } catch (error: any) {
-    debug(
-      `Fallback module resolution threw: ${error.constructor.name}. (module: ${filePath || originModuleName})`
-    );
     return null;
   }
   let dependencies: string[] = [];
@@ -114,9 +108,9 @@ const getModuleDescriptionWithResolver = (
     : null;
 };
 
-/** Creates a fallback module resolver that resolves dependencis of modules named in `originModuleNames` via their path.
+/** Creates a fallback module resolver that resolves dependencies of modules named in `originModuleNames` via their path.
  * @remarks
- * The fallback resolver targets modules dependended on by modules named in `originModuleNames` and resolves
+ * The fallback resolver targets modules depended on by modules named in `originModuleNames` and resolves
  * them from the module root of these origin modules instead.
  * It should only be used as a fallback after normal Node resolution (and other resolvers) have failed for:
  * - the `expo` package
@@ -165,6 +159,26 @@ export function createFallbackModuleResolver({
   const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
 
   return function requestFallbackModule(immutableContext, moduleName, platform) {
+    if (moduleName === '../../App') {
+      // Fix up the `../../App` relative path, escaping `node_modules/expo` for monorepos and isolated dependencies
+      // NOTE(@kitten): If `expo/AppEntry.js` changes, this will likely have to change too!
+      if (/[/\\]node_modules[/\\]expo[/\\]AppEntry\.js$/.test(immutableContext.originModulePath)) {
+        // We instead resolve from the project root
+        const context: ResolutionContext = {
+          ...immutableContext,
+          nodeModulesPaths: [],
+          // NOTE(@kitten): We need to add a fake filename here. Metro performs a `path.dirname` on this path
+          // and then searches `${path.dirname(originModulePath)}/node_modules`. If we don't add it, we miss
+          // fallback resolution for packages that failed to hoist
+          originModulePath: path.join(projectRoot, 'index.js'),
+        };
+        const res = getStrictResolver(context, platform)('./App');
+        return res;
+      } else {
+        return null;
+      }
+    }
+
     // Early return if `moduleName` cannot be a module specifier
     // This doesn't have to be accurate as this resolver is a fallback for failed resolutions and
     // we're only doing this to avoid unnecessary resolution work
@@ -178,18 +192,32 @@ export function createFallbackModuleResolver({
         // We instead resolve as if it was depended on by the `originModulePath` (the module named in `originModuleNames`)
         const context: ResolutionContext = {
           ...immutableContext,
-          nodeModulesPaths: [moduleDescription.originModulePath],
+          nodeModulesPaths: [],
           // NOTE(@kitten): We need to add a fake filename here. Metro performs a `path.dirname` on this path
           // and then searches `${path.dirname(originModulePath)}/node_modules`. If we don't add it, we miss
           // fallback resolution for packages that failed to hoist
           originModulePath: path.join(moduleDescription.originModulePath, 'index.js'),
         };
         const res = getStrictResolver(context, platform)(moduleName);
-        debug(
-          `Fallback resolution for ${platform}: ${moduleName} -> from origin: ${originModuleName}`
-        );
         return res;
       }
+    }
+
+    // Self-resolution
+    const pkg = immutableContext.getPackageForModule(immutableContext.originModulePath);
+    const pkgName = pkg?.packageJson.name;
+    if (pkgName && dependenciesToRegex([pkgName]).test(moduleName)) {
+      const context: ResolutionContext = {
+        ...immutableContext,
+        nodeModulesPaths: [],
+        // NOTE(@kitten): Metro currently fails self-resolution, so if the package failed to resolve itself
+        // from within itself, we add a hint to where to find itself to the `extraNodeModules` lookups
+        extraNodeModules: {
+          [pkgName]: pkg.rootPath,
+        },
+      };
+      const res = getStrictResolver(context, platform)(moduleName);
+      return res;
     }
 
     return null;

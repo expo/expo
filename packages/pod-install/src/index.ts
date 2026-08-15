@@ -65,13 +65,14 @@ async function runAsync(maybeProjectDirectory?: string): Promise<void> {
 
   info('🔍️ Scanning for pods...');
 
-  if (!(await CocoaPodsPackageManager.isCLIInstalledAsync())) {
-    await CocoaPodsPackageManager.installCLIAsync({
-      nonInteractive: program.opts().nonInteractive,
-    });
-  }
-  const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
   try {
+    const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
+    if (!(await manager.isCLIInstalledAsync())) {
+      await manager.installCLIAsync({
+        nonInteractive: program.opts().nonInteractive,
+      });
+    }
+
     await manager.installAsync();
   } catch (error: any) {
     if (error.isPackageManagerError) {

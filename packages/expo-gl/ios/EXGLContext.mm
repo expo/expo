@@ -2,11 +2,10 @@
 
 #import <ExpoGL/EXGLContext.h>
 #import <ExpoGL/EXGLObjectManager.h>
-
 #import <ExpoModulesCore/EXUtilities.h>
-#import <ExpoModulesCore/EXUIManager.h>
-#import <ExpoModulesCore/EXJavaScriptContextProvider.h>
-#import <ExpoModulesCore/EXFileSystemInterface.h>
+
+
+#import <React/RCTLog.h>
 
 #include <OpenGLES/ES3/gl.h>
 #include <OpenGLES/ES3/glext.h>
@@ -16,7 +15,7 @@
 @interface EXGLContext ()
 
 @property (nonatomic, strong) dispatch_queue_t glQueue;
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) id<EXFileSystemInterface> fileSystemManager;
 @property (nonatomic, assign) BOOL isContextReady;
 @property (nonatomic, assign) BOOL wasPrepareCalled;
 @property (nonatomic) BOOL appIsBackgrounded;
@@ -26,12 +25,12 @@
 @implementation EXGLContext
 
 - (nonnull instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate
-                       andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
+                              fileSystem:(nullable id<EXFileSystemInterface>)fileSystemManager
 {
   if (self = [super init]) {
     self.delegate = delegate;
 
-    _moduleRegistry = moduleRegistry;
+    _fileSystemManager = fileSystemManager;
     _glQueue = dispatch_queue_create("host.exp.gl", DISPATCH_QUEUE_SERIAL);
     _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3] ?: [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     _isContextReady = NO;
@@ -99,52 +98,32 @@
   [self flush];
 }
 
-- (void)prepare:(void(^)(BOOL))callback andEnableExperimentalWorkletSupport:(BOOL)enableExperimentalWorkletSupport
+- (void)prepareWithRuntimePointer:(void *)runtimePointer
+                         callback:(void(^)(BOOL))callback
+   enableExperimentalWorkletSupport:(BOOL)enableExperimentalWorkletSupport
 {
   if (_wasPrepareCalled) {
     return;
   }
   _wasPrepareCalled = YES;
-  id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
-  id<EXJavaScriptContextProvider> jsContextProvider = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXJavaScriptContextProvider)];
 
-  void *jsRuntimePtr = [jsContextProvider javaScriptRuntimePointer];
+  EXGLContextSetDefaultFramebuffer(_contextId, [self defaultFramebuffer]);
+  EXGLContextPrepare(runtimePointer, _contextId, [self](){
+    [self flush];
+  });
 
-  if (jsRuntimePtr) {
-    __weak __typeof__(self) weakSelf = self;
-    __weak __typeof__(uiManager) weakUIManager = uiManager;
-
-    [uiManager dispatchOnClientThread:^{
-      EXGLContext *self = weakSelf;
-      id<EXUIManager> uiManager = weakUIManager;
-
-      if (!self || !uiManager) {
-        BLOCK_SAFE_RUN(callback, NO);
-        return;
-      }
-
-      EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
-      EXGLContextPrepare(jsRuntimePtr, self->_contextId, [self](){
-        [self flush];
-      });
-
-      if (enableExperimentalWorkletSupport) {
-        dispatch_sync(dispatch_get_main_queue(), ^{
-          EXGLContextPrepareWorklet(self->_contextId);
-        });
-      }
-      _isContextReady = YES;
-
-      if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
-        [self.delegate glContextInitialized:self];
-      }
-
-      BLOCK_SAFE_RUN(callback, YES);
-    }];
-  } else {
-    BLOCK_SAFE_RUN(callback, NO);
-    EXLogWarn(@"EXGL: Can only run on JavaScriptCore! Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://reactnative.dev/docs/debugging)? EXGL is not supported while using Remote Debugging, you will need to disable it to use EXGL.");
+  if (enableExperimentalWorkletSupport) {
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      EXGLContextPrepareWorklet(self->_contextId);
+    });
   }
+  self.isContextReady = YES;
+
+  if ([self.delegate respondsToSelector:@selector(glContextInitialized:)]) {
+    [self.delegate glContextInitialized:self];
+  }
+
+  BLOCK_SAFE_RUN(callback, YES);
 }
 
 - (void)flush
@@ -166,7 +145,15 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
 
+  __weak EXGLContext *weakSelf = self;
+
   [self runAsync:^{
+    EXGLContext *self = weakSelf;
+
+    if (!self) {
+      return;
+    }
+
     if ([self.delegate respondsToSelector:@selector(glContextWillDestroy:)]) {
       [self.delegate glContextWillDestroy:self];
     }
@@ -174,14 +161,11 @@
     // Flush all the stuff
     EXGLContextFlush(self->_contextId);
 
-    id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
-    [uiManager dispatchOnClientThread:^{
-      // Destroy JS binding
-      EXGLContextDestroy(self->_contextId);
+    // Destroy JS binding
+    EXGLContextDestroy(self->_contextId);
 
-      // Remove from dictionary of contexts
-      [[EXGLObjectManager shared] deleteContextWithId:@(self->_contextId)];
-    }];
+    // Remove from dictionary of contexts
+    [[EXGLObjectManager shared] deleteContextWithId:@(self->_contextId)];
   }];
 }
 
@@ -193,12 +177,22 @@
 // - `framebuffer`: WebGLFramebuffer that we will be reading from. If not specified, the default framebuffer for this context will be used.
 // - `rect`: { x, y, width, height } object used to crop the snapshot.
 // - `format`: "jpeg" or "png" - specifies what type of compression and file extension should be used.
-// - `compress`: A value in 0 - 1 range specyfing compression level. JPEG format only.
+// - `compress`: A value in 0 - 1 range specifying compression level. JPEG format only.
 - (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options
                         resolve:(EXPromiseResolveBlock)resolve
                          reject:(EXPromiseRejectBlock)reject
 {
   [self flush];
+
+  // The drawable is sized with the view's scale, so the snapshot must convert pixels to points with
+  // the same value. Read it on the main thread before handing off to the GL queue.
+  __block CGFloat scale = 1;
+  id<EXGLContextDelegate> delegate = self.delegate;
+  [EXUtilities performSynchronouslyOnMainThread:^{
+    if (delegate) {
+      scale = [delegate glContextGetScale];
+    }
+  }];
 
   [self runAsync:^{
     NSDictionary *rect = options[@"rect"] ?: [self currentViewport];
@@ -229,7 +223,7 @@
       reject(
              @"E_GL_NO_FRAMEBUFFER",
              nil,
-             EXErrorWithMessage(@"No framebuffer bound. Create and bind one to take a snapshot from it.")
+             RCTErrorWithMessage(@"No framebuffer bound. Create and bind one to take a snapshot from it.")
              );
       return;
     }
@@ -237,7 +231,7 @@
       reject(
              @"E_GL_INVALID_VIEWPORT",
              nil,
-             EXErrorWithMessage(@"Rect's width and height must be greater than 0. If you didn't set `rect` option, check if the viewport is set correctly.")
+             RCTErrorWithMessage(@"Rect's width and height must be greater than 0. If you didn't set `rect` option, check if the viewport is set correctly.")
              );
       return;
     }
@@ -258,7 +252,6 @@
                                         providerRef, NULL, true, kCGRenderingIntentDefault);
 
     // Begin image context
-    CGFloat scale = [EXUtilities screenScale];
     NSInteger widthInPoints = width / scale;
     NSInteger heightInPoints = height / scale;
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(widthInPoints, heightInPoints), NO, scale);
@@ -286,7 +279,7 @@
     NSString *extension;
 
     if ([format isEqualToString:@"webp"]) {
-      EXLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
+      RCTLogWarn(@"iOS doesn't support 'webp' representation, so 'takeSnapshot' won't work with that format. The image is going to be exported as 'png', but consider using a different code for iOS. Check this docs to learn how to do platform specific code (https://reactnative.dev/docs/platform-specific-code)");
       imageData = UIImagePNGRepresentation(image);
       extension = @".png";
     }
@@ -339,11 +332,13 @@
 
 - (NSString *)generateSnapshotPathWithExtension:(NSString *)extension
 {
-  id<EXFileSystemInterface> fileSystem = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXFileSystemInterface)];
-  NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"GLView"];
+  if (!_fileSystemManager) {
+    RCTFatal(RCTErrorWithMessage(@"[expo-gl] File system manager is not available."));
+  }
+  NSString *directory = [_fileSystemManager.cachesDirectory stringByAppendingPathComponent:@"GLView"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:extension];
 
-  [fileSystem ensureDirExistsWithPath:directory];
+  [_fileSystemManager ensureDirExistsWithPath:directory];
 
   return [directory stringByAppendingPathComponent:fileName];
 }

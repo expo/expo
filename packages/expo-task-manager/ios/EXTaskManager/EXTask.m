@@ -1,6 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
-#import <EXTaskManager/EXTask.h>
+#import <ExpoTaskManager/EXTask.h>
 
 @implementation EXTask
 

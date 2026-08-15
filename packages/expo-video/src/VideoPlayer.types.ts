@@ -1,7 +1,7 @@
 import { SharedObject } from 'expo';
 
-import { VideoPlayerEvents } from './VideoPlayerEvents.types';
-import { VideoThumbnail } from './VideoThumbnail';
+import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
+import type { VideoThumbnail } from './VideoThumbnail';
 
 /**
  * A class that represents an instance of the video player.
@@ -225,6 +225,25 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   readonly availableVideoTracks: VideoTrack[];
 
   /**
+   * Specifies the maximum resolution that the player will select when choosing between the video tracks of an adaptive stream.
+   * The player picks the highest-quality track that does not exceed this resolution.
+   *
+   * Set this property to `null` to remove the limit and allow all available resolutions. Dimensions
+   * which are not greater than zero are treated the same as `null`.
+   *
+   * The cap is enforced differently per platform:
+   * - On Android it is a hard constraint, unless no track satisfies it, in which case the lowest-resolution track is used.
+   * - On iOS it is a preferred maximum, which the player treats as a soft hint when selecting a track.
+   *
+   * > **Note:** On iOS this property only applies to HTTP Live Streaming (HLS) sources.
+   *
+   * @default null
+   * @platform android
+   * @platform ios
+   */
+  maxResolution: VideoSize | null;
+
+  /**
    * Indicates whether the player is currently playing back the media to an external device via AirPlay.
    *
    * @platform ios
@@ -255,9 +274,14 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    *
    * @param source The source of the video to be played.
    * @param useSynchronousReplace Optional parameter, when `true` `source` from the first parameter will be loaded on the main thread.
+   * @param playerBuilderOptions Options to apply to the player builder before the native constructor is invoked.
    * @hidden
    */
-  constructor(source: VideoSource, useSynchronousReplace?: boolean);
+  constructor(
+    source: VideoSource,
+    useSynchronousReplace?: boolean,
+    playerBuilderOptions?: PlayerBuilderOptions
+  );
 
   /**
    * Resumes the player.
@@ -338,66 +362,64 @@ export type VideoThumbnailOptions = {
  */
 export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
 
-export type VideoSource =
-  | string
-  | number
-  | null
-  | {
-      /**
-       * The URI of the video.
-       *
-       * On iOS, `PHAsset` URIs are supported, but can only be loaded using the [`replaceAsync`](#replaceasyncsource) method or the default [`VideoPlayer`](#videoplayer) constructor.
-       *
-       * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
-       */
-      uri?: string;
+export type VideoSource = string | number | null | VideoSourceObject;
 
-      /**
-       * The asset ID of a local video asset, acquired with the `require` function.
-       * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
-       */
-      assetId?: number;
+export type VideoSourceObject = {
+  /**
+   * The URI of the video.
+   *
+   * On iOS, `PHAsset` URIs are supported, but can only be loaded using the [`replaceAsync`](#replaceasyncsource) method or the default [`VideoPlayer`](#videoplayer) constructor.
+   *
+   * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
+   */
+  uri?: string;
 
-      /**
-       * Specifies the DRM options which will be used by the player while loading the video.
-       */
-      drm?: DRMOptions;
+  /**
+   * The asset ID of a local video asset, acquired with the `require` function.
+   * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
+   */
+  assetId?: number;
 
-      /**
-       * Specifies information which will be displayed in the now playing notification.
-       * When undefined the player will display information contained in the video metadata.
-       * @platform android
-       * @platform ios
-       */
-      metadata?: VideoMetadata;
+  /**
+   * Specifies the DRM options which will be used by the player while loading the video.
+   */
+  drm?: DRMOptions;
 
-      /**
-       * Specifies headers sent with the video request.
-       * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
-       * @platform android
-       * @platform ios
-       */
-      headers?: Record<string, string>;
+  /**
+   * Specifies information which will be displayed in the now playing notification.
+   * When undefined the player will display information contained in the video metadata.
+   * @platform android
+   * @platform ios
+   */
+  metadata?: VideoMetadata;
 
-      /**
-       * Specifies whether the player should use caching for the video.
-       * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
-       * @default false
-       * @platform android
-       * @platform ios
-       */
-      useCaching?: boolean;
+  /**
+   * Specifies headers sent with the video request.
+   * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
+   * @platform android
+   * @platform ios
+   */
+  headers?: Record<string, string>;
 
-      /**
-       * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
-       *
-       * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
-       * @default 'auto'
-       * @platform android
-       * @platform ios
-       */
-      contentType?: ContentType;
-    };
+  /**
+   * Specifies whether the player should use caching for the video.
+   * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  useCaching?: boolean;
+
+  /**
+   * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
+   *
+   * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
+   * @default 'auto'
+   * @platform android
+   * @platform ios
+   */
+  contentType?: ContentType;
+};
 
 /**
  * Contains information about any errors that the player encountered during the playback
@@ -571,7 +593,7 @@ export type SubtitleTrack = {
    *
    * @platform android
    */
-  id: string;
+  id?: string;
 
   /**
    * Language of the subtitle track. For example, `en`, `pl`, `de`.
@@ -582,6 +604,27 @@ export type SubtitleTrack = {
    * Label of the subtitle track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the subtitle track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default subtitle track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
 
 /**
@@ -594,6 +637,11 @@ export type VideoTrack = {
    * > This field is platform-specific and may return different depending on the operating system.
    */
   id: string;
+
+  /**
+   * The URL of the `VideoTrack` for HLS video sources. `null` for other source types.
+   */
+  url: string | null;
 
   /**
    * Size of the video track.
@@ -614,13 +662,31 @@ export type VideoTrack = {
 
   /**
    * Specifies the bitrate in bits per second. This is the peak bitrate if known, or else the average bitrate if known, or else null.
+   *
+   * @deprecated Use `peakBitrate` or `averageBitrate` instead.
    */
   bitrate: number | null;
+
+  /**
+   * Specifies the average bitrate in bits per second or null if the value is unknown.
+   *
+   */
+  averageBitrate: number | null;
+
+  /**
+   * Specifies the average bitrate in bits per second or null if the value is unknown.
+   */
+  peakBitrate: number | null;
 
   /**
    * Specifies the frame rate of the video track in frames per second.
    */
   frameRate: number | null;
+
+  /**
+   * Specifies the video range of the video track.
+   */
+  videoRange: VideoRange;
 };
 
 /**
@@ -642,7 +708,7 @@ export type AudioTrack = {
    * A string used by expo-video to identify the audio track.
    * @platform android
    */
-  id: string;
+  id?: string;
 
   /**
    * Language of the audio track. For example, 'en', 'pl', 'de'.
@@ -653,6 +719,27 @@ export type AudioTrack = {
    * Label of the audio track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the audio track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default audio track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
 
 /**
@@ -736,3 +823,52 @@ export type ScrubbingModeOptions = {
    */
   allowSkippingMediaCodecFlush?: boolean;
 };
+
+/**
+ * Determines whether the player is allowed to call [`Surface.setFrameRate`](https://developer.android.com/reference/android/view/Surface#setFrameRate(float,%20int))
+ * to match the display refresh rate to the frame rate of the video being played.
+ * - `'onlyIfSeamless'`: the display refresh rate is changed only when the switch is seamless (no visual interruption). This is the ExoPlayer default.
+ * - `'off'`: the player never calls `Surface.setFrameRate`.
+ *
+ * > On devices with adaptive refresh rate displays (for example, Pixel 9 and 10 series), the platform can respond to a 30 fps video
+ * > by lowering the display render rate and capping the rendering of the entire app, including scrolling and animations, at 30 Hz
+ * > for as long as the video is visible. Set this option to `'off'` to keep the UI running at the full refresh rate, for example
+ * > in a vertical video feed. Frame rate matching mainly benefits TV-class displays, where mismatched rates cause judder.
+ * @platform android
+ */
+export type VideoChangeFrameRateStrategy = 'off' | 'onlyIfSeamless';
+
+/**
+ * Options to apply to the player builder before the native constructor is invoked
+ * @platform android
+ */
+export type PlayerBuilderOptions = {
+  /**
+   * Seek backward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekBackwardIncrement?: number;
+
+  /**
+   * Seek forward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekForwardIncrement?: number;
+
+  /**
+   * Determines whether the player is allowed to change the display refresh rate to match the frame rate of the video.
+   * @default 'onlyIfSeamless'
+   * @platform android
+   */
+  videoChangeFrameRateStrategy?: VideoChangeFrameRateStrategy;
+};
+
+/**
+ * Specifies the dynamic range of the video content.
+ * - `sdr`: Standard Dynamic Range video.
+ * - `hlg`: Hybrid Log-Gamma - HDR backward-compatible with SDR displays
+ * - `pq`: Perceptual Quantizer - Formats like HDR10 and Dolby Vision
+ */
+export type VideoRange = 'sdr' | 'hlg' | 'pq';

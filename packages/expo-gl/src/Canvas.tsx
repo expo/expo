@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { LayoutChangeEvent, PixelRatio, StyleSheet, View, ViewProps } from 'react-native';
+import type { LayoutChangeEvent, ViewProps } from 'react-native';
+import { PixelRatio, StyleSheet, View } from 'react-native';
 import createElement from 'react-native-web/dist/exports/createElement';
 
 interface Size {
@@ -77,10 +78,10 @@ const CanvasWrapper: React.FunctionComponent<
 
       if (width !== size?.width || height !== size?.height) {
         setSize({ width, height });
+      }
 
-        if (props.onLayout) {
-          props.onLayout(event);
-        }
+      if (props.onLayout) {
+        props.onLayout(event);
       }
     },
     [size?.width, size?.height, props.onLayout]

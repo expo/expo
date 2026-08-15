@@ -1,4 +1,4 @@
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
 import { getLinkingImplementationForPlatform } from '../platforms';
 import type { SupportedPlatform } from '../types';
 

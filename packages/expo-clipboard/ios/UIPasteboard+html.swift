@@ -1,5 +1,6 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if !os(macOS)
 import UIKit
 import MobileCoreServices
 import UniformTypeIdentifiers
@@ -46,3 +47,4 @@ extension UIPasteboard {
     contains(pasteboardTypes: [UTType.html.identifier, UTType.rtf.identifier])
   }
 }
+#endif

@@ -1,9 +1,8 @@
-import { BlurTint } from './BlurView.types';
+import type { BlurTint } from './BlurView.types';
 
 export default function getBackgroundColor(intensity: number, tint: BlurTint): string {
   const opacity = intensity / 100;
   switch (tint) {
-    // From Apple iOS 14 Sketch Kit - https://developer.apple.com/design/resources/
     // From Apple iOS 14 Sketch Kit - https://developer.apple.com/design/resources/
     case 'dark':
     case 'systemMaterialDark':

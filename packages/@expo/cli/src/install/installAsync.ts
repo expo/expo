@@ -2,19 +2,19 @@ import { getConfig, getPackageJson } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
-import { applyPluginsAsync } from './applyPlugins';
-import { checkPackagesAsync } from './checkPackages';
-import { installExpoPackageAsync } from './installExpoPackage';
-import { Options } from './resolveOptions';
 import * as Log from '../log';
-import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
-import { setNodeEnv } from '../utils/nodeEnv';
 import { joinWithCommasAnd } from '../utils/strings';
+import { applyPluginsAsync } from './applyPlugins';
+import { checkPackagesAsync } from './checkPackages';
+import { event } from './events';
+import { installExpoPackageAsync } from './installExpoPackage';
+import type { Options } from './resolveOptions';
+import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
 
 /**
  * Installs versions of specified packages compatible with the current Expo SDK version, or
@@ -30,11 +30,9 @@ export async function installAsync(
   options: Options & { projectRoot?: string },
   packageManagerArguments: string[] = []
 ) {
-  setNodeEnv('development');
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo install` from a subdirectory of the project.
   const projectRoot = options?.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
-  require('@expo/env').load(projectRoot);
 
   // Resolve the package manager used by the project, or based on the provided arguments.
   const packageManager = PackageManager.createForProject(projectRoot, {
@@ -195,11 +193,17 @@ export async function installPackagesAsync(
     });
   }
 
+  const done = event.span();
   if (dev) {
     await packageManager.addDevAsync([...packageManagerArguments, ...versioning.packages]);
   } else {
     await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
   }
+  done('done', {
+    packages: versioning.packages,
+    dev: !!dev,
+    packageManager: packageManager.name,
+  });
 
   await applyPluginsAsync(projectRoot, versioning.packages);
 }
@@ -211,5 +215,5 @@ function findPackageByName(packages: string[], name: string) {
 
 /** Determine if a specific version is requested for a package */
 function packageHasVersion(name = '') {
-  return name.includes('@');
+  return name.indexOf('@', 1) > 0; // Scoped packages may start with `@`
 }

@@ -1,21 +1,24 @@
-import { Platform, UnavailabilityError, type EventSubscription } from 'expo-modules-core';
-import { type Ref, Component, createRef } from 'react';
+import { Platform, UnavailabilityError, type EventSubscription } from 'expo';
+import { Component, createRef } from 'react';
 
-import {
+import type {
   CameraCapturedPicture,
   CameraOrientation,
   CameraPictureOptions,
   CameraViewProps,
   CameraRecordingOptions,
   CameraViewRef,
+  DocumentScanningOptions,
+  DocumentScanningResult,
   ScanningOptions,
   ScanningResult,
   VideoCodec,
   AvailableLenses,
+  LensInfo,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
-import { PictureRef } from './PictureRef';
+import type { PictureRef } from './PictureRef';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
 const EventThrottleMs = 500;
@@ -52,10 +55,6 @@ function ensurePictureOptions(options?: CameraPictureOptions): CameraPictureOpti
 }
 
 function ensureRecordingOptions(options: CameraRecordingOptions = {}): CameraRecordingOptions {
-  if (!options || typeof options !== 'object') {
-    return {};
-  }
-
   if (options.mirror) {
     console.warn(
       'The `mirror` option is deprecated. Please use the `mirror` prop on the `CameraView` instead.'
@@ -83,6 +82,13 @@ export default class CameraView extends Component<CameraViewProps> {
    * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
    */
   static isModernBarcodeScannerAvailable: boolean = CameraManager.isModernBarcodeScannerAvailable;
+  /**
+   * Property that determines whether the current device can present the system document scanner through
+   * [`scanDocumentAsync`](#scandocumentasyncoptions) —
+   * ML Kit document scanner on Android, which requires Google Play Services or the
+   * VisionKit's `VNDocumentCameraViewController` on iOS.
+   */
+  static isDocumentScannerAvailable: boolean = CameraManager.isDocumentScannerAvailable;
   /**
    * Check whether the current device has a camera. This is useful for web and simulators cases.
    * This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser).
@@ -123,10 +129,10 @@ export default class CameraView extends Component<CameraViewProps> {
   /**
    * Returns the available lenses for the currently selected camera.
    *
-   * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+   * @return An array of `LensInfo` objects containing both the stable `deviceType` identifier and the `localizedName` for display purposes. The `deviceType` can be passed to the `selectedLens` prop.
    * @platform ios
    */
-  async getAvailableLensesAsync(): Promise<string[]> {
+  async getAvailableLensesAsync(): Promise<LensInfo[]> {
     return (await this._cameraRef.current?.getAvailableLenses()) ?? [];
   }
 
@@ -168,7 +174,6 @@ export default class CameraView extends Component<CameraViewProps> {
     flash: 'off',
   };
 
-  _cameraHandle?: number | null;
   _cameraRef = createRef<CameraViewRef>();
   _lastEvents: { [eventName: string]: string } = {};
   _lastEventsTimes: { [eventName: string]: Date } = {};
@@ -206,7 +211,7 @@ export default class CameraView extends Component<CameraViewProps> {
    * `exif` is included if the `exif` option was truthy, and is an object containing EXIF
    * data for the image. The names of its properties are EXIF tags and their values are the values for those tags.
    *
-   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copy`](filesystem/#copydestination-1)
+   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copy`](filesystem/#copydestination-options-1)
    * > to make a permanent copy of the image.
    */
   async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
@@ -226,10 +231,7 @@ export default class CameraView extends Component<CameraViewProps> {
    * @platform android
    * @platform ios
    */
-  static async launchScanner(options?: ScanningOptions): Promise<void> {
-    if (!options) {
-      options = { barcodeTypes: [] };
-    }
+  static async launchScanner(options: ScanningOptions = { barcodeTypes: [] }): Promise<void> {
     if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.launchScanner(options);
     }
@@ -244,6 +246,39 @@ export default class CameraView extends Component<CameraViewProps> {
     if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.dismissScanner();
     }
+  }
+
+  /**
+   * Presents the system document scanner and returns the captured pages once the user saves. On iOS, this uses
+   * VisionKit's [`VNDocumentCameraViewController`](https://developer.apple.com/documentation/visionkit/vndocumentcameraviewcontroller);
+   * on Android it uses the [ML Kit document scanner](https://developers.google.com/ml-kit/vision/doc-scanner).
+   *
+   * The page images and the optional PDF are written to the app's cache directory, so copy them to a permanent
+   * location with [`expo-file-system`](/versions/latest/sdk/filesystem/) if you need to keep them.
+   *
+   * @param options A map of `DocumentScanningOptions`.
+   * @return A promise that resolves to a [`DocumentScanningResult`](#documentscanningresult), or `null` if the user
+   * cancels the scan or the scanner is unavailable on the device.
+   *
+   * @example
+   * ```ts
+   * const result = await CameraView.scanDocumentAsync({ requestPdf: true });
+   * if (result) {
+   *   console.log(result.pages); // ['file:///.../DocumentScanner/<uuid>.jpg', ...]
+   *   console.log(result.pdfUri); // 'file:///.../DocumentScanner/<uuid>.pdf'
+   * }
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  static async scanDocumentAsync(
+    options?: DocumentScanningOptions
+  ): Promise<DocumentScanningResult | null> {
+    if (Platform.OS === 'web' || !CameraView.isDocumentScannerAvailable) {
+      return null;
+    }
+    return (await CameraManager.scanDocumentAsync(options ?? {})) ?? null;
   }
 
   /**
@@ -301,21 +336,15 @@ export default class CameraView extends Component<CameraViewProps> {
   }
 
   _onCameraReady = () => {
-    if (this.props.onCameraReady) {
-      this.props.onCameraReady();
-    }
+    this.props.onCameraReady?.();
   };
 
   _onAvailableLensesChanged = ({ nativeEvent }: { nativeEvent: AvailableLenses }) => {
-    if (this.props.onAvailableLensesChanged) {
-      this.props.onAvailableLensesChanged(nativeEvent);
-    }
+    this.props.onAvailableLensesChanged?.(nativeEvent);
   };
 
   _onMountError = ({ nativeEvent }: { nativeEvent: { message: string } }) => {
-    if (this.props.onMountError) {
-      this.props.onMountError(nativeEvent);
-    }
+    this.props.onMountError?.(nativeEvent);
   };
 
   _onResponsiveOrientationChanged = ({
@@ -323,9 +352,7 @@ export default class CameraView extends Component<CameraViewProps> {
   }: {
     nativeEvent: { orientation: CameraOrientation };
   }) => {
-    if (this.props.onResponsiveOrientationChanged) {
-      this.props.onResponsiveOrientationChanged(nativeEvent);
-    }
+    this.props.onResponsiveOrientationChanged?.(nativeEvent);
   };
 
   _onObjectDetected =
@@ -347,15 +374,6 @@ export default class CameraView extends Component<CameraViewProps> {
         this._lastEvents[type] = JSON.stringify(nativeEvent);
       }
     };
-
-  _setReference = (ref: Ref<CameraViewRef>) => {
-    if (ref) {
-      // TODO(Bacon): Unify these - perhaps with hooks?
-      if (Platform.OS === 'web') {
-        this._cameraHandle = ref as any;
-      }
-    }
-  };
 
   render() {
     const nativeProps = ensureNativeProps(this.props);

@@ -8,13 +8,11 @@ import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import expo.modules.camera.CameraViewHelper
 import expo.modules.camera.records.BarcodeType
-import expo.modules.camera.records.CameraType
 import expo.modules.camera.utils.BarCodeScannerResult
 
 @OptIn(ExperimentalGetImage::class)
-class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeType>, val onComplete: (BarCodeScannerResult) -> Unit) : ImageAnalysis.Analyzer {
+class BarcodeAnalyzer(formats: List<BarcodeType>, val onComplete: (BarCodeScannerResult) -> Unit) : ImageAnalysis.Analyzer {
   private val barcodeFormats = if (formats.isEmpty()) {
     0
   } else {
@@ -32,8 +30,14 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
     val mediaImage = imageProxy.image
 
     if (mediaImage != null) {
-      val rotation = CameraViewHelper.getCorrectCameraRotation(imageProxy.imageInfo.rotationDegrees, lensFacing)
-      val image = InputImage.fromMediaImage(mediaImage, rotation)
+      val rotationDegrees = imageProxy.imageInfo.rotationDegrees
+      val image = InputImage.fromMediaImage(mediaImage, rotationDegrees)
+
+      // MLKit returns coordinates in the upright (rotated) coordinate space,
+      // so we need the post-rotation dimensions for correct scaling.
+      val isRotated = rotationDegrees == 90 || rotationDegrees == 270
+      val effectiveWidth = if (isRotated) imageProxy.height else imageProxy.width
+      val effectiveHeight = if (isRotated) imageProxy.width else imageProxy.height
 
       barcodeScanner.process(image)
         .addOnSuccessListener { barcodes ->
@@ -61,8 +65,8 @@ class BarcodeAnalyzer(private val lensFacing: CameraType, formats: List<BarcodeT
               raw,
               extra,
               cornerPoints,
-              imageProxy.width,
-              imageProxy.height
+              effectiveHeight,
+              effectiveWidth
             )
           )
         }

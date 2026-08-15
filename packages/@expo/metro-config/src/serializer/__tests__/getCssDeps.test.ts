@@ -1,6 +1,8 @@
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 
-import { getCssSerialAssets, fileNameFromContents, JSModule } from '../getCssDeps';
+import type { JSModule } from '../getCssDeps';
+import { getCssSerialAssets, fileNameFromContents } from '../getCssDeps';
+import type { CSSMetadata } from '../jsOutput';
 
 describe(fileNameFromContents, () => {
   it('returns the filename from the filepath', () => {
@@ -12,6 +14,11 @@ describe(fileNameFromContents, () => {
     expect(
       fileNameFromContents({ filepath: 'node_modules%5Cexpo-router%5Centry.js', src: 'foo' })
     ).toBe('entry-acbd18db4cc2f85cedef654fccc4a4d8');
+  });
+  it('preserves catch-all route segment name', () => {
+    expect(fileNameFromContents({ filepath: 'app/[...post]', src: 'foo' })).toBe(
+      '[...post]-acbd18db4cc2f85cedef654fccc4a4d8'
+    );
   });
 });
 
@@ -65,6 +72,37 @@ const barModule: JSModule = {
   getSource: () => Buffer.from('bar-source'),
 };
 
+const externalImportModule: JSModule = {
+  path: '/external.js',
+  dependencies: new Map(),
+  inverseDependencies: new CountingSet(),
+  output: [
+    {
+      type: 'js/module',
+      data: {
+        code: '__d(function() {/* code for external */});',
+        map: null,
+        lineCount: 1,
+        css: {
+          code: '.local { color: blue; }',
+          map: [],
+          lineCount: 1,
+          functionMap: null,
+          externalImports: [
+            { url: 'https://fonts.example.com/all.css', supports: null, media: null },
+            {
+              url: 'https://fonts.example.com/wide.css',
+              supports: null,
+              media: 'screen and (min-width: 900px)',
+            },
+          ],
+        } as CSSMetadata,
+      },
+    },
+  ],
+  getSource: () => Buffer.from('__d(function() {/* code for external */});'),
+};
+
 describe(getCssSerialAssets, () => {
   it(`returns css serial assets`, () => {
     expect(
@@ -87,6 +125,31 @@ describe(getCssSerialAssets, () => {
         originFilename: 'foobar.js',
         source: '.container { background: red; }',
         type: 'css',
+      },
+    ]);
+  });
+
+  it('emits a `css-external` asset per external import and carries its `media` query', () => {
+    const externalAssets = getCssSerialAssets(new Map([['/external.js', externalImportModule]]), {
+      entryFile: '/external.js',
+      projectRoot: '/',
+    }).filter((asset) => asset.type === 'css-external');
+
+    expect(externalAssets).toEqual([
+      {
+        type: 'css-external',
+        originFilename: 'external.js',
+        filename: 'https://fonts.example.com/all.css',
+        source: '<link rel="stylesheet" href="https://fonts.example.com/all.css">',
+        metadata: { hmrId: 'external_js', media: undefined },
+      },
+      {
+        type: 'css-external',
+        originFilename: 'external.js',
+        filename: 'https://fonts.example.com/wide.css',
+        source:
+          '<link rel="stylesheet" href="https://fonts.example.com/wide.css" media="screen and (min-width: 900px)">',
+        metadata: { hmrId: 'external_js', media: 'screen and (min-width: 900px)' },
       },
     ]);
   });

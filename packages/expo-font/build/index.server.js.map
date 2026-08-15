@@ -1,1 +1,0 @@
-{"version":3,"file":"index.server.js","sourceRoot":"","sources":["../src/index.server.ts"],"names":[],"mappings":"AAAA,cAAc,QAAQ,CAAC;AAEvB,MAAM,UAAU,QAAQ;IACtB,OAAO,EAAE,CAAC;AACZ,CAAC","sourcesContent":["export * from './Font';\n\nexport function useFonts() {\n  return [];\n}\n"]}

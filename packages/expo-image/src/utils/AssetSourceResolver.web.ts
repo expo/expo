@@ -1,5 +1,5 @@
-import { PackagerAsset } from '@react-native/assets-registry/registry';
-import { Platform } from 'expo-modules-core';
+import type { PackagerAsset } from '@react-native/assets-registry/registry';
+import { Platform } from 'expo';
 import { PixelRatio } from 'react-native';
 
 export type ResolvedAssetSource = {
@@ -78,9 +78,9 @@ export default class AssetSourceResolver {
   }
 
   static pickScale(scales: number[], deviceScale: number): number {
-    for (let i = 0; i < scales.length; i++) {
-      if (scales[i] >= deviceScale) {
-        return scales[i];
+    for (const scale of scales) {
+      if (scale >= deviceScale) {
+        return scale;
       }
     }
     return scales[scales.length - 1] || 1;

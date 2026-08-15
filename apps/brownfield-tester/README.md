@@ -1,12 +1,11 @@
 # Brownfield Tester App
 
 This is a sample application used to test brownfield integration with Expo modules.
-It uses the "integrated" approach to load JS code of the `minimal-tester` app by configuring a custom project root.
 
-## Android App
+## Structure
 
-The Android app was initialized by creating a new Empty Activity project in Android Studio 2025.1.3 and following the [Brownfield Integration](https://docs.expo.dev/brownfield/get-started/) guide to integrate Expo modules. As a final step, due to the React Native targeting Java 17 we removed the default `compileOptions` from `app/build.gradle.kts` and removed `dependencyResolutionManagement` `repositoriesMode` from `settings.gradle.kts` because the `react-native` plugin configures the maven repo.
+- **[expo-app/](expo-app/)** — The React Native / Expo app that serves as the JavaScript source and brownfield artifact builder. See its [README](expo-app/README.md) for build instructions.
 
-## iOS App
+- **[integrated/](integrated/)** — Native Android and iOS apps that integrate directly with the monorepo using Expo autolinking. They point their project root to `expo-app/` and resolve modules at build time.
 
-The iOS app was initialized by creating a new SwiftUI project in Xcode 26 and following the [Brownfield Integration](https://docs.expo.dev/brownfield/get-started/) guide to integrate Expo modules. As a final step, due to Swift 6 not being totally supported yet it was necessary to set "Default Actor isolation" to "nonisolated" in the project settings.
+- **[isolated/](isolated/)** — Standalone native Android and iOS apps that consume pre-built brownfield artifacts (Maven / xcframeworks). They are fully self-contained and do not depend on the monorepo at build time. This is the recommended distribution approach.

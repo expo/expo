@@ -1,4 +1,4 @@
-import { Asset } from 'expo-asset';
+import type { Asset } from 'expo-asset';
 
 // @needsAudit
 /**
@@ -20,6 +20,11 @@ export type FontResource = {
    */
   display?: FontDisplay;
   default?: string;
+  /**
+   * Sets a custom test string passed to the [FontFace Observer](https://www.npmjs.com/package/fontfaceobserver).
+   * @platform web
+   */
+  testString?: string;
 };
 
 // @needsAudit
@@ -71,3 +76,19 @@ export enum FontDisplay {
  * @hidden
  */
 export type UnloadFontOptions = Pick<FontResource, 'display'>;
+
+export type UseFontHook = (map: string | Record<string, FontSource>) => [boolean, Error | null];
+
+export type ServerFontResourceDescriptor =
+  | {
+      type: 'style';
+      css: string;
+      id: string;
+    }
+  | {
+      type: 'link';
+      as: 'font';
+      crossOrigin?: 'anonymous' | 'use-credentials' | '' | undefined;
+      href: string;
+      rel: 'preload';
+    };

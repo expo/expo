@@ -9,6 +9,7 @@ import expo.modules.kotlin.types.Enumerable
 import java.io.ByteArrayOutputStream
 import kotlin.math.max
 import kotlin.math.min
+import expo.modules.kotlin.types.OptimizedRecord
 
 internal const val DEFAULT_TYPE = ""
 
@@ -176,6 +177,7 @@ internal enum class EndingType(val str: String) : Enumerable {
   NATIVE("native")
 }
 
+@OptimizedRecord
 internal class BlobOptionsBag : Record {
   @Field
   val type: String = DEFAULT_TYPE

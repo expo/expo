@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { loadRequestedParcels } from './loadRequestedParcels';
 import logger from '../../Logger';
 import * as Npm from '../../Npm';
+import { withOtpRetry } from '../../NpmOtp';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 
@@ -39,7 +40,9 @@ export const grantTeamAccessToPackages = new Task<TaskArgs>(
     if (!options.dry) {
       for (const packageName of packagesToGrantAccess) {
         try {
-          await Npm.grantReadWriteAccessAsync(packageName, Npm.EXPO_DEVELOPERS_TEAM_NAME);
+          await withOtpRetry(() =>
+            Npm.grantReadWriteAccessAsync(packageName, Npm.EXPO_DEVELOPERS_TEAM_NAME)
+          );
         } catch (e) {
           logger.debug(e.stderr || e.stdout);
           logger.error(`🎖  Granting access to ${green(packageName)} failed`);

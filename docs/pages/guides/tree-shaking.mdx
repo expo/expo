@@ -227,7 +227,7 @@ const { View, Image } = require('react-native-web');
 
 ## Remove unused imports and exports
 
-> Experimentally available in SDK 52 and later.
+> [Experimentally](/more/release-statuses/#experimental) available in SDK 52 and later.
 
 You can experimentally enable support for automatically removing unused imports and exports across modules. This is useful for speeding up native OTA downloads and optimizing web performance where JavaScript must be parsed and executed using a standard JavaScript engine.
 
@@ -277,7 +277,7 @@ This system scales up to automatically optimize all `import` and `export` syntax
 
 ## Enabling tree shaking
 
-> Experimentally available in SDK 52 and later.
+> [Experimentally](/more/release-statuses/#experimental) available in SDK 52 and later.
 
 <Step label="1">
 
@@ -335,7 +335,14 @@ This will only be used in production mode.
 
 Bundle your app in production mode to see the effects of tree shaking.
 
-<Terminal cmd={['$ npx expo export']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export'],
+    yarn: ['$ yarn expo export'],
+    pnpm: ['$ pnpm expo export'],
+    bun: ['$ bun expo export'],
+  }}
+/>
 
 </Step>
 
@@ -343,7 +350,7 @@ This feature is very experimental because it changes the fundamental structure o
 
 ## Barrel files
 
-> Experimentally available in SDK 52 and later.
+> [Experimentally](/more/release-statuses/#experimental) available in SDK 52 and later.
 
 With Expo tree shaking, star exports will automatically be expanded and shaken based on usage. For example, consider the following code snippet:
 
@@ -359,13 +366,13 @@ export { ArrowRight, ArrowLeft } from './icons';
 
 This will be shaken according to standard tree shaking rules. If you only import `ArrowRight`, then `ArrowLeft` will be removed from the production bundle.
 
-If the star export pulls in ambiguous exports such as `module.exports.ArrowUp` or `exports.ArrowDown`, then the optimization pass will not expand the star export and no exports will be removed from the barrel file. You can use [Expo Atlas](/guides/analyzing-bundles/#analyzing-bundle-size-with-atlas) to inspect the expanded exports.
+If the star export pulls in ambiguous exports such as `module.exports.ArrowUp` or `exports.ArrowDown`, then the optimization pass will not expand the star export and no exports will be removed from the barrel file. You can use [Expo Atlas](/guides/analyzing-bundles/#analyzing-bundle-size-with-expo-atlas) to inspect the expanded exports.
 
 You can use this strategy with libraries like `lucide-react` to remove all icons that are not used in your app.
 
 ## Recursive optimizations
 
-> Experimentally available in SDK 52 and later.
+> [Experimentally](/more/release-statuses/#experimental) available in SDK 52 and later.
 
 Expo optimizes a module by recursing through the graph exhaustively to find unused imports. Consider the following code snippet:
 

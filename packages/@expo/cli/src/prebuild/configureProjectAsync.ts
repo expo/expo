@@ -1,5 +1,6 @@
-import { ExpoConfig } from '@expo/config';
-import { compileModsAsync, ModPlatform } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config';
+import type { ModPlatform } from '@expo/config-plugins';
+import { compileModsAsync } from '@expo/config-plugins';
 import { getPrebuildConfigAsync } from '@expo/prebuild-config';
 
 import { logConfig } from '../config/configAsync';

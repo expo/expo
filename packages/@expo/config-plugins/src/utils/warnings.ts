@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 
-import { ModPlatform } from '../Plugin.types';
+import type { ModPlatform } from '../Plugin.types';
 
 /**
  * Log a warning that doesn't disrupt the spinners.

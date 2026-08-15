@@ -66,7 +66,7 @@ function ISODateString(d: Date): string {
 const toString = Object.prototype.toString;
 function type(obj: object): string | null {
   const m = toString.call(obj).match(/\[object (.*)\]/);
-  return m ? m[1] : m;
+  return m?.[1] ?? null;
 }
 
 /**
@@ -125,7 +125,7 @@ function walk_obj(next: any, next_child: any): void {
   } else if (name === 'Object') {
     next_child = next_child.ele('dict');
     for (prop in next) {
-      if (next.hasOwnProperty(prop) && next[prop] !== undefined) {
+      if (Object.prototype.hasOwnProperty.call(next, prop) && next[prop] !== undefined) {
         next_child.ele('key').txt(prop);
         walk_obj(next[prop], next_child);
       }

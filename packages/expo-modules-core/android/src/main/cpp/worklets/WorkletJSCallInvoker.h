@@ -1,14 +1,10 @@
 #pragma once
 
-#if WORKLETS_ENABLED
+#include "../ExpoHeader.pch"
 
 #include <ReactCommon/CallInvoker.h>
-#include <ReactCommon/RuntimeExecutor.h>
 
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
-
-#include <memory>
-
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -27,5 +23,3 @@ private:
 };
 
 } // namespace expo
-
-#endif

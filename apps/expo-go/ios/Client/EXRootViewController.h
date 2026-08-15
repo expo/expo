@@ -4,4 +4,6 @@
 
 @interface EXRootViewController : EXViewController
 
+- (void)setInitialHomeURL:(NSURL *)url;
+
 @end

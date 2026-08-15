@@ -1,8 +1,8 @@
-import { isRunningInExpoGo } from 'expo';
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { isRunningInExpoGo, Platform, UnavailabilityError } from 'expo';
 import * as TaskManager from 'expo-task-manager';
 
-import { BackgroundTaskOptions, BackgroundTaskStatus } from './BackgroundTask.types';
+import type { BackgroundTaskOptions } from './BackgroundTask.types';
+import { BackgroundTaskStatus } from './BackgroundTask.types';
 import ExpoBackgroundTaskModule from './ExpoBackgroundTaskModule';
 
 // Flag to warn about running on Apple simulator
@@ -54,7 +54,7 @@ export const getStatusAsync = async (): Promise<BackgroundTaskStatus> => {
  * import * as TaskManager from 'expo-task-manager';
  *
  * // Register the task outside of the component
- * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, () => {
+ * TaskManager.defineTask(BACKGROUND_TASK_IDENTIFIER, async () => {
  *   try {
  *     await AsyncStorage.setItem(LAST_TASK_DATE_KEY, Date.now().toString());
  *   } catch (error) {
@@ -158,5 +158,5 @@ export function addExpirationListener(listener: () => void): { remove: () => voi
 export {
   BackgroundTaskStatus,
   BackgroundTaskResult,
-  BackgroundTaskOptions,
+  type BackgroundTaskOptions,
 } from './BackgroundTask.types';

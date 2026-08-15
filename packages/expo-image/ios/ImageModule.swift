@@ -1,15 +1,24 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import SDWebImage
-import SDWebImageAVIFCoder
-import SDWebImageSVGCoder
+internal import SDWebImage
+internal import SDWebImageAVIFCoder
+internal import SDWebImageSVGCoder
 
 public final class ImageModule: Module {
   lazy var prefetcher = SDWebImagePrefetcher.shared
 
+  // Whether JS subscribed to `imageLoaded`. Skips the per-image-load bridge hop when nothing is
+  // listening
+  private var hasImageLoadedListener = false
+
   public func definition() -> ModuleDefinition {
     Name("ExpoImage")
+
+    Events("imageLoaded")
+
+    OnStartObserving("imageLoaded") { self.hasImageLoadedListener = true }
+    OnStopObserving("imageLoaded") { self.hasImageLoadedListener = false }
 
     OnCreate {
       ImageModule.registerCoders()
@@ -107,6 +116,18 @@ public final class ImageModule: Module {
         view.autoplay = autoplay ?? true
       }
 
+      Prop("sfEffect") { (view, sfEffect: [SFSymbolEffect]?) in
+        view.sfEffect = sfEffect
+      }
+
+      Prop("symbolWeight") { (view, symbolWeight: String?) in
+        view.symbolWeight = symbolWeight
+      }
+
+      Prop("symbolSize") { (view, symbolSize: Double?) in
+        view.symbolSize = symbolSize
+      }
+
       Prop("useAppleWebpCodec", true) { (view, useAppleWebpCodec: Bool) in
         view.useAppleWebpCodec = useAppleWebpCodec
       }
@@ -122,11 +143,19 @@ public final class ImageModule: Module {
       }
 
       AsyncFunction("startAnimating") { (view: ImageView) in
-        view.sdImageView.startAnimating()
+        if view.isSFSymbolSource {
+          view.startSymbolAnimation()
+        } else {
+          view.sdImageView.startAnimating()
+        }
       }
 
       AsyncFunction("stopAnimating") { (view: ImageView) in
-        view.sdImageView.stopAnimating()
+        if view.isSFSymbolSource {
+          view.stopSymbolAnimation()
+        } else {
+          view.sdImageView.stopAnimating()
+        }
       }
 
       AsyncFunction("lockResourceAsync") { (view: ImageView) in
@@ -182,20 +211,24 @@ public final class ImageModule: Module {
 
     AsyncFunction("generateBlurhashAsync") { (source: Either<Image, URL>, numberOfComponents: CGSize, promise: Promise) in
       let parsedNumberOfComponents = (width: Int(numberOfComponents.width), height: Int(numberOfComponents.height))
-      generatePlaceholder(source: source) { (image: UIImage) in
+      generatePlaceholder(source: source, onFailure: {
+        promise.reject(BlurhashGenerationException())
+      }, generator: { (image: UIImage) in
         if let blurhashString = blurhash(fromImage: image, numberOfComponents: parsedNumberOfComponents) {
           promise.resolve(blurhashString)
         } else {
           promise.reject(BlurhashGenerationException())
         }
-      }
+      })
     }
 
     AsyncFunction("generateThumbhashAsync") { (source: Either<Image, URL>, promise: Promise) in
-      generatePlaceholder(source: source) { (image: UIImage) in
+      generatePlaceholder(source: source, onFailure: {
+        promise.reject(ThumbhashGenerationException())
+      }, generator: { (image: UIImage) in
         let blurhashString = thumbHash(fromImage: image)
         promise.resolve(blurhashString.base64EncodedString())
-      }
+      })
     }
 
     AsyncFunction("clearMemoryCache") { () -> Bool in
@@ -225,8 +258,58 @@ public final class ImageModule: Module {
       }
     }
 
-    AsyncFunction("loadAsync") { (source: ImageSource, options: ImageLoadOptions?) -> Image? in
-      let image = try await ImageLoadTask(source, maxSize: options?.getMaxSize()).load()
+    AsyncFunction("writeToCacheAsync") { (source: Either<Image, URL>, cacheKey: String) async throws in
+      // UIImage isn't Sendable, but SDWebImage's store is internally thread-safe, so it's safe to hand off.
+      nonisolated(unsafe) let image: UIImage?
+      let imageData: Data?
+
+      if let imageRef: Image = source.get() {
+        // The ref carries no original encoded data, so let SDWebImage encode the image when storing.
+        image = imageRef.ref
+        imageData = nil
+      } else if let url: URL = source.get() {
+        guard url.isFileURL else {
+          throw WriteToCacheRemoteSourceException(url.absoluteString)
+        }
+        do {
+          imageData = try Data(contentsOf: url)
+        } catch {
+          throw WriteToCacheReadException(url.absoluteString).causedBy(error)
+        }
+        image = nil
+      } else {
+        throw WriteToCacheSourceException()
+      }
+
+      await withCheckedContinuation { continuation in
+        SDImageCache.shared.store(image, imageData: imageData, forKey: cacheKey, toDisk: true) {
+          continuation.resume()
+        }
+      }
+    }
+
+    AsyncFunction("readFromCacheAsync") { (cacheKey: String) async -> Image? in
+      let cachedImage: UIImage? = await withCheckedContinuation { continuation in
+        // Queries the memory cache first and falls back to disk, decoding the image if needed.
+        SDImageCache.shared.queryCacheOperation(forKey: cacheKey) { image, _, _ in
+          continuation.resume(returning: image)
+        }
+      }
+      guard let cachedImage else {
+        return nil
+      }
+      return Image(cachedImage)
+    }
+
+    AsyncFunction("loadAsync") { [weak appContext = self.appContext] (source: ImageSource, options: ImageLoadOptions?) -> Image? in
+      let image = try await ImageLoadTask(source, options: options ?? ImageLoadOptions()).load()
+      // Going through the `appContext` instead of capturing `self` keeps this `@Sendable async` closure from forcing 
+      // the whole module to be Sendable.
+      appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
+        url: source.uri?.absoluteString ?? "",
+        width: image.size.width * image.scale,
+        height: image.size.height * image.scale
+      )
       return Image(image)
     }
 
@@ -241,8 +324,20 @@ public final class ImageModule: Module {
     }
   }
 
+  func emitImageLoaded(url: String, width: CGFloat, height: CGFloat) {
+    guard hasImageLoadedListener, width > 0, height > 0, !url.isEmpty else {
+      return
+    }
+    emit(event: "imageLoaded", payload: [
+      "url": url,
+      "width": Double(width),
+      "height": Double(height)
+    ])
+  }
+
   func generatePlaceholder(
     source: Either<Image, URL>,
+    onFailure: @escaping () -> Void,
     generator: @escaping (UIImage) -> Void
   ) {
     if let image: Image = source.get() {
@@ -251,16 +346,21 @@ public final class ImageModule: Module {
       let downloader = SDWebImageDownloader()
       downloader.downloadImage(with: url, progress: nil, completed: { image, _, _, _ in
         DispatchQueue.global().async {
-          if let downloadedImage = image {
-            generator(downloadedImage)
+          guard let downloadedImage = image else {
+            onFailure()
+            return
           }
+          generator(downloadedImage)
         }
       })
+    } else {
+      onFailure()
     }
   }
 
   static func registerCoders() {
     SDImageCodersManager.shared.addCoder(WebPCoder.shared)
+    SDImageCodersManager.shared.addCoder(PSDCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)
@@ -270,6 +370,7 @@ public final class ImageModule: Module {
     SDImageLoadersManager.shared.addLoader(BlurhashLoader())
     SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
+    SDImageLoadersManager.shared.addLoader(SFSymbolLoader())
   }
 
   static func configureCache(config: ImageCacheConfig) {

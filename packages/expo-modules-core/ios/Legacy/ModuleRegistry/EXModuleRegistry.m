@@ -2,9 +2,10 @@
 
 #import <objc/runtime.h>
 
+#import <React/RCTLog.h>
+
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
-#import <ExpoModulesCore/Swift.h>
 
 @interface EXModuleRegistry ()
 
@@ -126,7 +127,7 @@
 {
   const NSString *exportedModuleName = [[exportedModule class] exportedModuleName];
   if (_exportedModules[exportedModuleName]) {
-    EXLogInfo(@"Module %@ overrides %@ as the module exported as %@.", exportedModule, _exportedModules[exportedModuleName], exportedModuleName);
+    RCTLogInfo(@"Module %@ overrides %@ as the module exported as %@.", exportedModule, _exportedModules[exportedModuleName], exportedModuleName);
   }
 
   _exportedModules[exportedModuleName] = exportedModule;
@@ -142,7 +143,7 @@
     [_singletonModules setObject:singletonModule forKey:[[singletonModule class] name]];
     #pragma clang diagnostic pop
   } else {
-    EXLogWarn(@"One of the singleton modules does not respond to +(NSString *)name selector. This probably means you're either try to pass a strange object as a singleton module (it won't get registered in the module registry, sorry) or the EXSingletonModule interface and the EXModuleRegistry implementations versions are out of sync, which means things will probably not work as expected.");
+    RCTLogWarn(@"One of the singleton modules does not respond to +(NSString *)name selector. This probably means you're either try to pass a strange object as a singleton module (it won't get registered in the module registry, sorry) or the EXSingletonModule interface and the EXModuleRegistry implementations versions are out of sync, which means things will probably not work as expected.");
   }
 }
 

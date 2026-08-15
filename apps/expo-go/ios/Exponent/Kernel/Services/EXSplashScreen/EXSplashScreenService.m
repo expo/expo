@@ -43,7 +43,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
                            options:options
           splashScreenViewProvider:splashScreenViewProvider
                    successCallback:^{}
-                   failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
+                   failureCallback:^(NSString *message){ RCTLogWarn(@"%@", message); }];
 }
 
 - (void)showSplashScreenFor:(UIViewController *)viewController
@@ -77,7 +77,6 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   if ((options & EXSplashScreenForceShow) == 0 && [self.splashScreenControllers objectForKey:viewController]) {
     return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
   }
-  
   [self.splashScreenControllers setObject:splashScreenController forKey:viewController];
   [[self.splashScreenControllers objectForKey:viewController] showWith:successCallback failure:failureCallback];
 }
@@ -139,12 +138,6 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  UIViewController *rootViewController = [[application keyWindow] rootViewController];
-  if (rootViewController) {
-    [self showSplashScreenFor:rootViewController options:EXSplashScreenDefault];
-  }
-
-  [self addRootViewControllerListener];
   return YES;
 }
 

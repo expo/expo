@@ -146,7 +146,7 @@ public class ExpoPrintWithPrinter {
       return
     }
 
-    // Assume that URLs without a scheme eq. /home/user/file.pdf will be local file urls
+    // Assume that URLs without a scheme e.g. /home/user/file.pdf will be local file urls
     if url.scheme == nil {
       url = URL(fileURLWithPath: uri)
     }

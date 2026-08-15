@@ -1,39 +1,19 @@
-import stream from 'stream';
+import { normalizeNpmPackResult, sanitizeNpmPackageName } from '../npm';
 
-import { extractNpmTarballAsync, sanitizeNpmPackageName } from '../npm';
+describe(normalizeNpmPackResult, () => {
+  const packageInfo = { name: 'expo', filename: 'expo.tgz' };
 
-jest.mock('tar', () => ({
-  extract: jest.fn().mockImplementation(() => {
-    const { Writable } = jest.requireActual('stream');
-    return new Writable({
-      write(chunk, encoding, callback) {
-        callback();
-      },
-    });
-  }),
-}));
+  it('supports the npm 11 and earlier array format', () => {
+    expect(normalizeNpmPackResult([packageInfo])).toEqual([packageInfo]);
+  });
 
-describe(extractNpmTarballAsync, () => {
-  it('should return the checksum from a tarball stream', async () => {
-    // Create a dummy stream rather than a real tarball
-    const readableStream = stream.Readable.from(Buffer.from('Hello world!'));
+  it('supports the npm 12 package-keyed object format', () => {
+    expect(normalizeNpmPackResult({ expo: packageInfo })).toEqual([packageInfo]);
+  });
 
-    await expect(
-      extractNpmTarballAsync(readableStream, {
-        name: 'test',
-        cwd: '/tmp',
-      })
-    ).resolves.toMatchInlineSnapshot(`"86fb269d190d2c85f6e0468ceca42a20"`);
-
-    await expect(
-      extractNpmTarballAsync(readableStream, {
-        name: 'test',
-        cwd: '/tmp',
-        checksumAlgorithm: 'sha256',
-      })
-    ).resolves.toMatchInlineSnapshot(
-      `"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"`
-    );
+  it('rejects non-container values', () => {
+    expect(normalizeNpmPackResult(null)).toBeNull();
+    expect(normalizeNpmPackResult('expo.tgz')).toBeNull();
   });
 });
 
@@ -50,7 +30,7 @@ describe(sanitizeNpmPackageName, () => {
       ['Hello World', 'helloworld'],
       ['\u2665', 'love'],
       ['あいう', 'app'],
-    ]) {
+    ] as [string, string][]) {
       expect(sanitizeNpmPackageName(before)).toBe(after);
     }
   });

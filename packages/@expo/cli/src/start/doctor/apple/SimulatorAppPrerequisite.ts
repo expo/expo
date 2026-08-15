@@ -1,42 +1,57 @@
-import { execAsync } from '@expo/osascript';
+import { safeIdOfAppAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
+import path from 'node:path';
 
-import * as Log from '../../../log';
+import { Log } from '../../../log';
 import { Prerequisite, PrerequisiteCommandError } from '../Prerequisite';
+import { debugEvent } from '../events';
 
-const debug = require('debug')('expo:doctor:apple:simulatorApp') as typeof console.log;
-
-async function getSimulatorAppIdAsync(): Promise<string | null> {
-  try {
-    return (await execAsync('id of app "Simulator"')).trim();
-  } catch {
-    // This error may occur in CI where the users intends to install just the simulators but no Xcode.
-  }
-  return null;
-}
+// NOTE(cedric): Xcode 27 Beta moved the `<xcode>/Contents/Developer/Applications` to `<xcode>/Contents/Applications`
+const XCODE_DEVICE_HUB_PATH = '../Applications/DeviceHub.app/Contents/Info.plist';
+const XCODE_SIMULATOR_PATH = './Applications/Simulator.app/Contents/Info.plist';
 
 export class SimulatorAppPrerequisite extends Prerequisite {
   static instance = new SimulatorAppPrerequisite();
 
   async assertImplementation(): Promise<void> {
-    const result = await getSimulatorAppIdAsync();
-    if (!result) {
-      // This error may occur in CI where the users intends to install just the simulators but no Xcode.
+    // Xcode 27 replaces Simulator with DeviceHub
+    // See: https://developer.apple.com/documentation/xcode/device-hub
+    // TODO(cedric): once Xcode 27 stable is released, resolve DeviceHub first
+    let appId = await safeIdOfAppAsync('Simulator').then((appId) => {
+      return appId || safeIdOfAppAsync('DeviceHub');
+    });
+
+    if (!appId) {
+      const xcodePath = await getXcodeSelectPath();
+      debugEvent('simulator_xcode_select_path', { path: xcodePath });
+      if (xcodePath) {
+        appId = await getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_SIMULATOR_PATH)).then(
+          (appId) => {
+            return appId || getXcodeInfoPlistBundleId(path.join(xcodePath, XCODE_DEVICE_HUB_PATH));
+          }
+        );
+      }
+    }
+
+    if (!appId) {
       throw new PrerequisiteCommandError(
         'SIMULATOR_APP',
-        "Can't determine id of Simulator app; the Simulator is most likely not installed on this machine. Run `sudo xcode-select -s /Applications/Xcode.app`"
+        "Can't determine id of Device Hub or Simulator app; the Device Hub or Simulator is most likely not installed on this machine. Run `sudo xcode-select -s /Applications/Xcode.app`"
       );
     }
+
     if (
-      result !== 'com.apple.iphonesimulator' &&
-      result !== 'com.apple.CoreSimulator.SimulatorTrampoline'
+      appId !== 'com.apple.dt.Devices' &&
+      appId !== 'com.apple.iphonesimulator' &&
+      appId !== 'com.apple.CoreSimulator.SimulatorTrampoline'
     ) {
       throw new PrerequisiteCommandError(
         'SIMULATOR_APP',
-        "Simulator is installed but is identified as '" + result + "'; don't know what that is."
+        `Device Hub or Simulator is installed but is identified as '${appId}'; don't know what that is.`
       );
     }
-    debug(`Simulator app id: ${result}`);
+
+    debugEvent('simulator_app_id', { appId });
 
     try {
       // make sure we can run simctl
@@ -48,5 +63,27 @@ export class SimulatorAppPrerequisite extends Prerequisite {
         'xcrun is not configured correctly. Ensure `sudo xcode-select --reset` works before running this command again.'
       );
     }
+  }
+}
+
+async function getXcodeSelectPath() {
+  try {
+    const result = await spawnAsync('xcode-select', ['--print-path']);
+    return result.stdout.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Read the Info.plist of an app within Xcode and return the bundle ID.
+ * This uses `defaults read <path>/Info.plist CFBundleIdentifier`.
+ */
+async function getXcodeInfoPlistBundleId(infoPlistPath: string) {
+  try {
+    const result = await spawnAsync('defaults', ['read', infoPlistPath, 'CFBundleIdentifier']);
+    return result.stdout.trim() || null;
+  } catch {
+    return null;
   }
 }

@@ -3,7 +3,9 @@ package expo.modules.camera
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class PictureOptions(
   @Field val quality: Double = 1.0,
   @Field val base64: Boolean = false,
@@ -19,12 +21,14 @@ data class PictureOptions(
   @Field val pictureRef: Boolean = false
 ) : Record
 
+@OptimizedRecord
 data class SavePictureOptions(
   @Field val quality: Double = 1.0,
   @Field val base64: Boolean = false,
   @Field val metadata: Map<String, Any>? = emptyMap()
 ) : Record
 
+@OptimizedRecord
 data class RecordingOptions(
   @Field val maxDuration: Int = 0,
   @Field val maxFileSize: Int = 0

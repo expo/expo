@@ -58,18 +58,14 @@ extension ExpoSwiftUI {
     /**
      View controller that embeds the content view into the UIKit view hierarchy.
      */
-    private let hostingController: UIViewController
+    private let hostingController: UIHostingController<AnyView>
 
     /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
       self.contentView = ContentView(props: props)
-      let rootView = AnyView(
-        contentView
-          .environmentObject(shadowNodeProxy)
-          .environment(\.appContext, appContext)
-      )
+      let rootView = AnyView(contentView)
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
@@ -80,18 +76,16 @@ extension ExpoSwiftUI {
 
       super.init(appContext: appContext)
 
-      shadowNodeProxy.setViewSize = { size in
-        #if RCT_NEW_ARCH_ENABLED
-        self.setViewSize(size)
-        #endif
+      shadowNodeProxy.setViewSize = { [weak self] size in
+        self?.setViewSize(size)
       }
-      
-      shadowNodeProxy.setStyleSize = { width, height in
-        #if RCT_NEW_ARCH_ENABLED
-        self.setStyleSize(width, height: height)
-        #endif
+
+      shadowNodeProxy.setStyleSize = { [weak self] width, height in
+        self?.setStyleSize(width, height: height)
       }
-      
+
+      props.shadowNodeProxy = shadowNodeProxy
+
       shadowNodeProxy.objectWillChange.send()
 
       #if os(iOS) || os(tvOS)
@@ -120,6 +114,10 @@ extension ExpoSwiftUI {
         try props.updateRawProps(rawProps, appContext: appContext)
       } catch let error {
         log.error("Updating props for \(ContentView.self) has failed: \(error.localizedDescription)")
+      }
+
+      if let safeAreaProps = props as? SafeAreaControllable {
+        hostingController.setSafeAreaRegions(ignoring: safeAreaProps.ignoreSafeArea)
       }
     }
 
@@ -153,7 +151,6 @@ extension ExpoSwiftUI {
       setupHostingViewConstraints()
     }
 
-#if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
      */
@@ -194,7 +191,6 @@ extension ExpoSwiftUI {
         props.objectWillChange.send()
       }
     }
-#endif // RCT_NEW_ARCH_ENABLED
 
     /**
      Setups layout constraints of the hosting controller view to match the layout set by React.
@@ -204,8 +200,8 @@ extension ExpoSwiftUI {
       guard let view = hostingController.view as UIView? else {
         return
       }
-      let frame = self.bounds;
-      view.frame = frame;
+      let frame = self.bounds
+      view.frame = frame
         #if os(iOS) || os(tvOS)
         view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         #elseif os(macOS)
@@ -218,11 +214,20 @@ extension ExpoSwiftUI {
     public override func didMoveToWindow() {
       super.didMoveToWindow()
 
+      #if os(iOS)
+      if let window {
+        // SwiftUI content can open a menu, and UIKit passes the tap that closes it through to
+        // React Native underneath. The gate stops that tap from reaching the view below.
+        SystemMenuTouchGate.install(in: window)
+      }
+      #endif
+
       if window != nil, let parentController = reactViewController() {
         #if !os(macOS)
-        if parentController as? UINavigationController == nil {
+        if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
           // Swift automatically adds the hostingController in the correct place when the parentController
-          // is UINavigationController, since it's children are supposed to be only screens
+          // is UINavigationController, since its children are supposed to be only screens.
+          // Similarly, for UITabBarController we expect its children to be only tabs.
           parentController.addChild(hostingController)
         }
         #else
@@ -251,5 +256,30 @@ extension ExpoSwiftUI {
       return self.window?.contentViewController
     }
 #endif
+  }
+}
+
+extension UIHostingController {
+  /// Applies the `ignoreSafeArea` mode reactively, restoring the default safe area when `nil` so
+  /// clearing the prop re-enables the safe area without an app reload.
+  func setSafeAreaRegions(ignoring mode: ExpoSwiftUI.IgnoreSafeArea?) {
+    // `safeAreaRegions` needs iOS 16.4+; the precompiled xcframework targets 16.0, so no-op below it.
+    guard #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) else {
+      return
+    }
+    var regions: SafeAreaRegions = .all
+    if let mode {
+      switch mode {
+      case .all:
+        regions = []
+      case .container:
+        regions.remove(.container)
+      case .keyboard:
+        regions.remove(.keyboard)
+      }
+    }
+    if safeAreaRegions != regions {
+      safeAreaRegions = regions
+    }
   }
 }

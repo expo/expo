@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from 'react';
 
-import { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
+import type { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
 import {
   addNotificationResponseReceivedListener,
   addNotificationResponseClearedListener,
@@ -45,7 +45,7 @@ import {
  * ```
  * @header listen
  */
-export default function useLastNotificationResponse() {
+export function useLastNotificationResponse() {
   const [lastNotificationResponse, setLastNotificationResponse] =
     useState<MaybeNotificationResponse>(undefined);
 

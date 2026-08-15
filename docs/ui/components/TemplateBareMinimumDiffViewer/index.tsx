@@ -8,6 +8,7 @@ import { DiffBlock } from '~/ui/components/Snippet';
 import { PermalinkedSnippetHeader } from '~/ui/components/Snippet/PermalinkedSnippetHeader';
 import { RawH3, RawH4 } from '~/ui/components/Text';
 
+import { NativeUpgradePromptCallout } from './NativeUpgradePromptCallout';
 import { VersionSelector, BETA_MAJOR_VERSION } from './VersionSelector';
 
 // versions used by SDK selector. This has "unversioned" removed on production versions. The diff selectors will match that.
@@ -48,9 +49,9 @@ export const TemplateBareMinimumDiffViewer = () => {
 
   return (
     <>
-      <div className={mergeClasses('grid grid-cols-2 gap-4', 'max-sm-gutters:grid-cols-1')}>
+      <div className={mergeClasses('grid grid-cols-2 gap-4', 'max-sm:grid-cols-1')}>
         <div>
-          <RawH4 className="mt-2 max-sm-gutters:!my-0">From SDK version:</RawH4>
+          <RawH4 className="mt-2 max-sm:my-0!">From SDK version:</RawH4>
           <VersionSelector
             version={fromVersion as string}
             setVersion={newFromVersion =>
@@ -60,7 +61,7 @@ export const TemplateBareMinimumDiffViewer = () => {
           />
         </div>
         <div>
-          <RawH4 className="mt-2 max-sm-gutters:!my-0">To SDK version:</RawH4>
+          <RawH4 className="mt-2 max-sm:my-0!">To SDK version:</RawH4>
           <VersionSelector
             version={toVersion as string}
             setVersion={newToVersion =>
@@ -75,6 +76,11 @@ export const TemplateBareMinimumDiffViewer = () => {
           <RawH3>
             Native code changes from SDK {fromVersion} to {toVersion}
           </RawH3>
+          <NativeUpgradePromptCallout
+            fromVersion={fromVersion as string}
+            toVersion={toVersion as string}
+            diff={diff}
+          />
           <DiffBlock
             key={diffName /* force re-mount on raw diff change */}
             raw={diff}

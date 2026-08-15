@@ -1,15 +1,14 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import fs from 'fs';
-import { minimatch } from 'minimatch';
 import path from 'path';
+import picomatch from 'picomatch';
 
-import { getAssetIdForLogGrouping, persistMetroAssetsAsync } from './persistMetroAssets';
-import type { Asset, BundleAssetWithFileHashes, BundleOutput, ExportAssetMap } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
-
-const debug = require('debug')('expo:export:exportAssets') as typeof console.log;
+import { debugEvent } from './events';
+import { getAssetIdForLogGrouping, persistMetroAssetsAsync } from './persistMetroAssets';
+import type { Asset, BundleAssetWithFileHashes, BundleOutput, ExportAssetMap } from './saveAssets';
 
 function mapAssetHashToAssetString(asset: Asset, hash: string) {
   return 'asset_' + hash + ('type' in asset && asset.type ? '.' + asset.type : '');
@@ -71,12 +70,12 @@ function setOfAssetsToBeBundled(
   );
 
   logPatterns(fullPatterns);
-
+  const matches = picomatch(fullPatterns);
   const allBundledAssets = assets
     .map((asset) => {
-      const shouldBundle = shouldBundleAsset(asset, fullPatterns);
+      const shouldBundle = shouldBundleAsset(asset, matches);
       if (shouldBundle) {
-        debug(`${shouldBundle ? 'Include' : 'Exclude'} asset ${asset.files?.[0]}`);
+        debugEvent('assets:asset_filter', { file: asset.files?.[0] ?? '', include: true });
         return asset.fileHashes.map((hash) => mapAssetHashToAssetString(asset, hash));
       }
       return [];
@@ -116,14 +115,9 @@ function logPatterns(patterns: string[]) {
   patterns.forEach((p) => Log.log('- ' + p));
 }
 
-function shouldBundleAsset(asset: Asset, patterns: string[]) {
+function shouldBundleAsset(asset: Asset, matcher: picomatch.Matcher) {
   const file = asset.files?.[0];
-  return !!(
-    '__packager_asset' in asset &&
-    asset.__packager_asset &&
-    file &&
-    patterns.some((pattern) => minimatch(file, pattern))
-  );
+  return !!('__packager_asset' in asset && asset.__packager_asset && file && matcher(file));
 }
 
 export async function exportAssetsAsync(
@@ -183,12 +177,14 @@ export async function exportAssetsAsync(
   const embeddedHashSet: Set<string> = new Set();
 
   if (assets[0]?.fileHashes) {
-    debug(`Assets = ${JSON.stringify(assets, null, 2)}`);
+    debugEvent('assets:all', { assets: JSON.stringify(assets, null, 2) });
     // Updates the manifest to reflect additional asset bundling + configs
     // Get only asset strings for assets we will save
     bundledAssetsSet = resolveAssetPatternsToBeBundled(projectRoot, exp, assets);
     if (bundledAssetsSet) {
-      debug(`Bundled assets = ${JSON.stringify([...bundledAssetsSet], null, 2)}`);
+      debugEvent('assets:bundled', {
+        bundledAssets: JSON.stringify([...bundledAssetsSet], null, 2),
+      });
       // Filter asset objects to only ones that include assetPatternsToBeBundled matches
       filteredAssets = assets.filter((asset) => {
         const shouldInclude = assetShouldBeIncludedInExport(asset, bundledAssetsSet);
@@ -197,7 +193,7 @@ export async function exportAssetsAsync(
         }
         return shouldInclude;
       });
-      debug(`Filtered assets count = ${filteredAssets.length}`);
+      debugEvent('assets:filtered_count', { count: filteredAssets.length });
     }
 
     const hashes = new Set<string>();
@@ -208,7 +204,7 @@ export async function exportAssetsAsync(
 
       asset.files.forEach((fp: string, index: number) => {
         const hash = asset.fileHashes[index];
-        if (hashes.has(hash)) return;
+        if (!hash || hashes.has(hash)) return;
         hashes.add(hash);
         files.set(path.join('assets', hash), {
           originFilename: path.relative(projectRoot, fp),

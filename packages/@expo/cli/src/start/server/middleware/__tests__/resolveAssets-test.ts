@@ -1,3 +1,4 @@
+import type { ExpoConfig } from '@expo/config';
 import { vol } from 'memfs';
 
 import * as Log from '../../../../log';
@@ -11,17 +12,9 @@ jest.mock('../../../../api/getExpoSchema', () => ({
       'notification.icon',
       'splash.image',
       'ios.icon',
-      'ios.splash.image',
-      'ios.splash.tabletImage',
       'android.icon',
       'android.adaptiveIcon.foregroundImage',
       'android.adaptiveIcon.backgroundImage',
-      'android.splash.image',
-      'android.splash.mdpi',
-      'android.splash.hdpi',
-      'android.splash.xhdpi',
-      'android.splash.xxhdpi',
-      'android.splash.xxxhdpi',
       'web.splash.image',
     ];
   },
@@ -34,6 +27,7 @@ describe(getAssetFieldPathsForManifestAsync, () => {
         icon: './icon.png',
         name: '',
         slug: '',
+        // `notification` is read dynamically via the asset schemas but is no longer in the ExpoConfig type.
         notification: { icon: './notification.png' },
         android: {
           adaptiveIcon: {
@@ -41,7 +35,7 @@ describe(getAssetFieldPathsForManifestAsync, () => {
             foregroundImage: './foreground.png',
           },
         },
-      })
+      } as ExpoConfig)
     ).toStrictEqual([
       'icon',
       'notification.icon',

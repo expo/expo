@@ -18,6 +18,9 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.json.JSONException
 import org.json.JSONObject
@@ -60,7 +63,8 @@ class RemoteLoaderTest {
       mockFileDownloader,
       File("testDirectory"),
       null,
-      mockLoaderFiles
+      mockLoaderFiles,
+      CoroutineScope(SupervisorJob() + UnconfinedTestDispatcher())
     )
 
     val manifestString = CertificateFixtures.testExpoUpdatesManifestBody

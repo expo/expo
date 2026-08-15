@@ -7,9 +7,7 @@ private let EVENT_DOWNLOAD_PROGRESS = "expo-file-system.downloadProgress"
 private let EVENT_UPLOAD_PROGRESS = "expo-file-system.uploadProgress"
 
 public final class FileSystemLegacyModule: Module {
-  private lazy var sessionTaskDispatcher = EXSessionTaskDispatcher(
-    sessionHandler: ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
-  )
+  private var sessionTaskDispatcher: EXSessionTaskDispatcher!
   private lazy var taskHandlersManager = EXTaskHandlersManager()
   private lazy var resourceManager = PHAssetResourceManager()
 
@@ -40,14 +38,32 @@ public final class FileSystemLegacyModule: Module {
     }
 
     Events(EVENT_DOWNLOAD_PROGRESS, EVENT_UPLOAD_PROGRESS)
+    
+    OnCreate {
+      Task { @MainActor in
+        sessionTaskDispatcher = EXSessionTaskDispatcher(
+          sessionHandler: ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
+        )
+      }
+    }
 
     AsyncFunction("getInfoAsync") { (url: URL, options: InfoOptions, promise: Promise) in
       let optionsDict = options.toDictionary(appContext: appContext)
       switch url.scheme {
       case "file":
-        EXFileSystemLocalFileHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        EXFileSystemLocalFileHandler.getInfoForFile(
+          url,
+          withOptions: optionsDict,
+          resolver: promise.legacyResolver,
+          rejecter: promise.legacyRejecter
+        )
       case "assets-library", "ph":
-        EXFileSystemAssetLibraryHandler.getInfoForFile(url, withOptions: optionsDict, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        EXFileSystemAssetLibraryHandler.getInfoForFile(
+          url,
+          withOptions: optionsDict,
+          resolver: promise.legacyResolver,
+          rejecter: promise.legacyRejecter
+        )
       default:
         throw UnsupportedSchemeException(url.scheme)
       }
@@ -69,12 +85,32 @@ public final class FileSystemLegacyModule: Module {
     AsyncFunction("writeAsStringAsync") { (url: URL, string: String, options: WritingOptions) in
       try ensurePathPermission(appContext, path: url.path, flag: .write)
 
+      let data: Data?
       if options.encoding == .base64 {
-        try writeFileAsBase64(path: url.path, string: string)
-        return
+        data = Data(base64Encoded: string, options: .ignoreUnknownCharacters)
+      } else {
+        data = string.data(using: options.encoding.toStringEncoding() ?? .utf8)
       }
+
+      guard let data else {
+        throw FileNotWritableException(url.path)
+      }
+
       do {
-        try string.write(toFile: url.path, atomically: true, encoding: options.encoding.toStringEncoding() ?? .utf8)
+        if options.append {
+          if !FileManager.default.fileExists(atPath: url.path) {
+            try data.write(to: url, options: .atomic)
+          } else {
+            let fileHandle = try FileHandle(forWritingTo: url)
+            defer {
+              fileHandle.closeFile()
+            }
+            fileHandle.seekToEndOfFile()
+            fileHandle.write(data)
+          }
+        } else {
+          try data.write(to: url, options: .atomic)
+        }
       } catch {
         throw FileNotWritableException(url.path)
           .causedBy(error)
@@ -117,9 +153,19 @@ public final class FileSystemLegacyModule: Module {
       try ensurePathPermission(appContext, path: toUrl.path, flag: .write)
 
       if fromUrl.scheme == "file" {
-        EXFileSystemLocalFileHandler.copy(from: fromUrl, to: toUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        EXFileSystemLocalFileHandler.copy(
+          from: fromUrl,
+          to: toUrl,
+          resolver: promise.legacyResolver,
+          rejecter: promise.legacyRejecter
+        )
       } else if ["ph", "assets-library"].contains(fromUrl.scheme) {
-        EXFileSystemAssetLibraryHandler.copy(from: fromUrl, to: toUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        EXFileSystemAssetLibraryHandler.copy(
+          from: fromUrl,
+          to: toUrl,
+          resolver: promise.legacyResolver,
+          rejecter: promise.legacyRejecter
+        )
       } else {
         throw InvalidFileUrlException(fromUrl)
       }
@@ -149,14 +195,19 @@ public final class FileSystemLegacyModule: Module {
 
       if sourceUrl.isFileURL {
         try ensurePathPermission(appContext, path: sourceUrl.path, flag: .read)
-        EXFileSystemLocalFileHandler.copy(from: sourceUrl, to: localUrl, resolver: promise.resolver, rejecter: promise.legacyRejecter)
+        EXFileSystemLocalFileHandler.copy(
+          from: sourceUrl,
+          to: localUrl,
+          resolver: promise.legacyResolver,
+          rejecter: promise.legacyRejecter
+        )
         return
       }
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
       let request = createUrlRequest(url: sourceUrl, headers: options.headers)
       let downloadTask = session.downloadTask(with: request)
       let taskDelegate = EXSessionDownloadTaskDelegate(
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter,
         localUrl: localUrl,
         shouldCalculateMd5: options.md5
@@ -175,7 +226,7 @@ public final class FileSystemLegacyModule: Module {
       }
       let session = options.sessionType == .background ? backgroundSession : foregroundSession
       let task = try createUploadTask(session: session, targetUrl: targetUrl, sourceUrl: localUrl, options: options)
-      let taskDelegate = EXSessionUploadTaskDelegate(resolve: promise.resolver, reject: promise.legacyRejecter)
+      let taskDelegate = EXSessionUploadTaskDelegate(resolve: promise.legacyResolver, reject: promise.legacyRejecter)
 
       sessionTaskDispatcher.register(taskDelegate, for: task)
       task.resume()
@@ -194,7 +245,7 @@ public final class FileSystemLegacyModule: Module {
         ])
       }
       let taskDelegate = EXSessionCancelableUploadTaskDelegate(
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter,
         onSendCallback: onSend,
         resumableManager: taskHandlersManager,
@@ -231,7 +282,7 @@ public final class FileSystemLegacyModule: Module {
       }
 
       let taskDelegate = EXSessionResumableDownloadTaskDelegate(
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter,
         localUrl: localUrl,
         shouldCalculateMd5: options.md5,

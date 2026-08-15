@@ -1,17 +1,21 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
-import UIKit
 import Combine
+import React
+import ExpoModulesCore
 
 @MainActor
 class DevMenuViewModel: ObservableObject {
   @Published var appInfo: AppInfo?
   @Published var devSettings: DevSettings?
   @Published var registeredCallbacks: [String] = []
+  @Published var availableAppKeys: [String] = []
+  @Published var currentAppKey: String?
   @Published var clipboardMessage: String?
   @Published var hostUrlCopiedMessage: String?
   @Published var isOnboardingFinished: Bool = true
+  @Published var showFloatingActionButton: Bool = false
 
   private let devMenuManager = DevMenuManager.shared
   private var cancellables = Set<AnyCancellable>()
@@ -20,13 +24,38 @@ class DevMenuViewModel: ObservableObject {
     loadData()
     checkOnboardingStatus()
     observeRegisteredCallbacks()
+    observeAvailableAppKeys()
     observeManifestChanges()
+    observeMenuWillShow()
   }
 
   private func loadData() {
     loadAppInfo()
     loadDevSettings()
     loadRegisteredCallbacks()
+    loadAvailableAppKeys()
+    loadFloatingActionButtonState()
+    refreshCurrentAppKey()
+  }
+
+  private func loadAvailableAppKeys() {
+    self.availableAppKeys = devMenuManager.availableAppKeys
+  }
+
+  /// Reads the moduleName of the currently mounted root view. Called each time
+  /// the menu is about to show, because the mounted component can change between
+  /// opens (either via this section or via a reload).
+  func refreshCurrentAppKey() {
+    self.currentAppKey = DevMenuComponentSwitcher.shared.currentModuleName()
+  }
+
+  func switchToComponent(_ name: String) {
+    devMenuManager.switchToComponent(name)
+    devMenuManager.closeMenu()
+  }
+
+  func refresh() {
+    loadData()
   }
 
   private func loadAppInfo() {
@@ -98,20 +127,27 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func openRNDevMenu() {
-    guard let rctDevMenu = devMenuManager.currentBridge?.devMenu else {
+    guard let rctDevMenu: RCTDevMenu = devMenuManager.currentAppContext?.nativeModule(named: "RCTDevMenu") else {
       return
     }
 
     devMenuManager.closeMenu {
-      DevMenuPackagerConnectionHandler.allowRNDevMenuTemporarily()
+// TODO(gabrieldonadel): Remove this once we bump react-native-macos to 0.84
+#if !os(macOS)
+      rctDevMenu.devMenuEnabled = true
       rctDevMenu.show()
+      rctDevMenu.devMenuEnabled = false
+#else
+      // react-native-macos's RCTDevMenu has no devMenuEnabled property, so show it directly.
+      rctDevMenu.show()
+#endif
     }
   }
 
   func copyToClipboard(_ content: String) {
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     UIPasteboard.general.string = content
-    hostUrlCopiedMessage = "Copied!"
+    hostUrlCopiedMessage = "Copied to clipboard"
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
       self.hostUrlCopiedMessage = nil
@@ -120,7 +156,7 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func copyAppInfo() {
-    #if !os(tvOS)
+    #if !os(tvOS) && !os(macOS)
     guard let appInfo = appInfo else {
       return
     }
@@ -142,7 +178,7 @@ class DevMenuViewModel: ObservableObject {
     let jsonString = jsonData.flatMap { String(data: $0, encoding: .utf8) } ?? "Unable to serialize app info"
 
     UIPasteboard.general.string = jsonString
-    clipboardMessage = "Copied to clipboard!"
+    clipboardMessage = "Copied to clipboard"
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
       self.clipboardMessage = nil
@@ -165,6 +201,14 @@ class DevMenuViewModel: ObservableObject {
     return devMenuManager.canNavigateHome
   }
 
+  var shouldShowReactNativeDevMenu: Bool {
+    return devMenuManager.shouldShowReactNativeDevMenu
+  }
+
+  var configuration: DevMenuConfiguration {
+    return devMenuManager.configuration
+  }
+
   private func checkOnboardingStatus() {
     isOnboardingFinished = devMenuManager.isOnboardingFinished
   }
@@ -174,6 +218,15 @@ class DevMenuViewModel: ObservableObject {
     isOnboardingFinished = true
   }
 
+  private func loadFloatingActionButtonState() {
+    showFloatingActionButton = DevMenuPreferences.showFloatingActionButton
+  }
+
+  func toggleFloatingActionButton() {
+    showFloatingActionButton.toggle()
+    DevMenuPreferences.showFloatingActionButton = showFloatingActionButton
+  }
+
   private func observeRegisteredCallbacks() {
     devMenuManager.callbacksPublisher
       .map { $0.map { $0.name } }
@@ -181,11 +234,27 @@ class DevMenuViewModel: ObservableObject {
       .assign(to: &$registeredCallbacks)
   }
 
+  private func observeAvailableAppKeys() {
+    devMenuManager.availableAppKeysPublisher
+      .receive(on: DispatchQueue.main)
+      .assign(to: &$availableAppKeys)
+  }
+
+  private func observeMenuWillShow() {
+    devMenuManager.menuWillShowPublisher
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in
+        self?.refreshCurrentAppKey()
+      }
+      .store(in: &cancellables)
+  }
+
   private func observeManifestChanges() {
     devMenuManager.manifestPublisher
       .receive(on: DispatchQueue.main)
       .sink { [weak self] _ in
         self?.loadAppInfo()
+        self?.loadDevSettings()
       }
       .store(in: &cancellables)
   }

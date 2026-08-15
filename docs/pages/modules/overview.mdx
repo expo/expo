@@ -4,11 +4,13 @@ sidebar_title: Overview
 description: An overview of the APIs and utilities provided by Expo to develop native modules.
 ---
 
-import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
 import { Settings01Icon } from '@expo/styleguide-icons/outline/Settings01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 
 ## What is the Expo Modules API
 
@@ -16,11 +18,19 @@ The Expo Modules API allows you to write Swift and Kotlin to add new capabilitie
 
 We believe that using the Expo Modules API makes building and maintaining nearly all kinds of React Native modules about as easy as it can be, and we think that the Expo Modules API is the best choice for the vast majority of developers building native modules for their apps.
 
+### Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it the module definition DSL and native view patterns:
+
+<RelatedSkills names={['expo-module']} />
+
 ### Common questions
+
+<FAQ>
 
 <Collapsible summary="Do I need to know the Expo Modules API to build an Expo / React Native app?">
 
-Most of the time, Expo and React Native developers don't need to write any native code &mdash; libraries are already available for a wide range of use cases, from camera to video to maps to haptics and much more.
+Most of the time, Expo and React Native developers don't need to write any native code — libraries are already available for a wide range of use cases, from camera to video to maps to haptics and much more.
 
 But sometimes, nothing does exactly what you need. Maybe you want to integrate an analytics service that your company mandates but that doesn't yet have a React Native library yet, so you need to build a module around their SDK. Or maybe you want to access a system feature that your app requires, but isn't commonly used, so nobody maintains a library for it.
 
@@ -80,34 +90,43 @@ Learn more about this in the [Integrate an existing library](/modules/existing-l
 
 </Collapsible>
 
+</FAQ>
+
 ## Next steps
 
 <BoxLink
   title="Tutorial: Creating a native module"
   description="A tutorial on creating a native module that persists settings with Expo Modules API."
   href="/modules/native-module-tutorial/"
-  Icon={Grid01Icon}
+  Icon={CpuChip01Icon}
 />
 
 <BoxLink
   title="Tutorial: Creating a native view"
   description="A tutorial on creating a native view that renders a WebView with Expo Modules API."
   href="/modules/native-view-tutorial/"
-  Icon={Grid01Icon}
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Expo Modules API: Get started"
+  description="Learn about getting started with Expo modules API."
+  href="/modules/module-api/"
+  Icon={CpuChip01Icon}
 />
 
 <BoxLink
   title="Expo Modules API: Reference"
   description="A reference on creating native modules using Kotlin and Swfit."
   href="/modules/module-api/"
-  Icon={Grid01Icon}
+  Icon={CpuChip01Icon}
 />
 
 <BoxLink
   title="Expo Modules API: Design considerations"
   description="An overview of the design considerations behind the Expo Modules API."
   href="/modules/design"
-  Icon={Grid01Icon}
+  Icon={CpuChip01Icon}
 />
 
 <BoxLink

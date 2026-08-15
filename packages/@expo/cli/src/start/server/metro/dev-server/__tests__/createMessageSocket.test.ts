@@ -1,10 +1,10 @@
 import { once } from 'node:events';
 import type { WebSocket } from 'ws';
 
-import { waitForExpect, withMetroServer } from './utils';
 import { Log } from '../../../../../log';
 import { createMessagesSocket } from '../createMessageSocket';
 import { serializeMessage } from '../utils/socketMessages';
+import { waitForExpect, withMetroServer } from './utils';
 
 jest.mock('../../../../../log');
 
@@ -38,6 +38,41 @@ describe(createMessagesSocket, () => {
       expect(client1Listener.mock.calls[0][0]).toBeInstanceOf(Buffer);
       expect(client1Listener.mock.calls[0][0].toString()).toBe(message);
     });
+  });
+
+  it('drops client-originated broadcasts of privileged methods', async () => {
+    const client1 = server.connect('/message');
+    const client2 = server.connect('/message');
+
+    await Promise.all([once(client1, 'open'), once(client2, 'open')]);
+
+    const client2Listener = jest.fn();
+    client2.on('message', client2Listener);
+
+    client1.send(
+      serializeMessage({
+        method: 'sendDevCommand',
+        params: { name: 'module-import', data: { id: 'x', code: '' } },
+      })
+    );
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(client2Listener).not.toHaveBeenCalled();
+  });
+
+  it('drops client-originated broadcasts from cross-origin clients', async () => {
+    const client1 = server.connect('/message', { headers: { Origin: 'http://evil.example' } });
+    const client2 = server.connect('/message');
+
+    await Promise.all([once(client1, 'open'), once(client2, 'open')]);
+
+    const client2Listener = jest.fn();
+    client2.on('message', client2Listener);
+
+    client1.send(serializeMessage({ method: 'reload' }));
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(client2Listener).not.toHaveBeenCalled();
   });
 
   it('exported broadcast method broadcasts messages', async () => {

@@ -1,12 +1,12 @@
 // This file runs in Node.js environments.
 // no relative imports
-import { type RequireContext } from 'expo-router';
-import { type RoutesManifest } from 'expo-server/private';
+import type { RequireContext } from 'expo-router';
+import type { RoutesManifest } from 'expo-server/private';
 
 import { type Options, getRoutes } from './getRoutesSSR';
 import { getServerManifest } from './getServerManifest';
 
-export { Options };
+export type { Options } from './getRoutesSSR';
 
 function createMockContextModule(map: string[] = []) {
   const contextModule = (_key: string) => ({ default() {} });
@@ -18,7 +18,10 @@ function createMockContextModule(map: string[] = []) {
   return contextModule as RequireContext;
 }
 
-export function createRoutesManifest(paths: string[], options: Options): RoutesManifest | null {
+export function createRoutesManifest(
+  paths: string[],
+  options: Options
+): RoutesManifest<string> | null {
   // TODO: Drop this part for Node.js
   const routeTree = getRoutes(createMockContextModule(paths), {
     ...options,
@@ -32,5 +35,5 @@ export function createRoutesManifest(paths: string[], options: Options): RoutesM
   if (!routeTree) {
     return null;
   }
-  return getServerManifest(routeTree, { headers: options.headers });
+  return getServerManifest(routeTree, options);
 }

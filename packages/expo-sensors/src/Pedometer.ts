@@ -1,10 +1,9 @@
 import {
-  PermissionExpiration,
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
   type EventSubscription,
   UnavailabilityError,
-} from 'expo-modules-core';
+} from 'expo';
 import invariant from 'invariant';
 
 import ExponentPedometer from './ExponentPedometer';
@@ -96,8 +95,8 @@ const defaultPermissionsResponse: PermissionResponse = {
 };
 
 export {
-  EventSubscription as Subscription,
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-};
+  type PermissionExpiration,
+  type EventSubscription as Subscription,
+} from 'expo';

@@ -17,7 +17,7 @@ import expo.modules.camera.utils.CameraViewHelper.getExifData
 import expo.modules.camera.utils.CameraViewHelper.setExifData
 import expo.modules.camera.utils.FileSystemUtils
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayInputStream
@@ -62,7 +62,7 @@ class ResolveTakenPicture(
   private var promise: Promise,
   private var options: PictureOptions,
   private var mirror: Boolean,
-  private val runtimeContext: RuntimeContext,
+  private val runtime: Runtime,
   private val directory: File,
   private var pictureSavedDelegate: PictureSavedDelegate
 ) {
@@ -140,7 +140,7 @@ class ResolveTakenPicture(
         }
 
         if (options.pictureRef) {
-          promise.resolve(PictureRef(bitmap, runtimeContext))
+          promise.resolve(PictureRef(bitmap, runtime))
           return response
         }
 

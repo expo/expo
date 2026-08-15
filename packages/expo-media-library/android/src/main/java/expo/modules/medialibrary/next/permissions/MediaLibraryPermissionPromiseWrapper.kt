@@ -27,7 +27,7 @@ class MediaLibraryPermissionPromiseWrapper(
     promise.resolve(addOnlySelectedInfoToPermissionsBundle(value, granularPermissions))
   }
 
-  override fun reject(code: String, message: String?, cause: Throwable?) {
+  override fun reject(code: String?, message: String?, cause: Throwable?) {
     promise.reject(code, message, cause)
   }
 

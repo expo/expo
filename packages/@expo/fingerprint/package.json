@@ -1,20 +1,24 @@
 {
   "name": "@expo/fingerprint",
-  "version": "0.15.1",
+  "version": "0.20.6",
   "description": "A library to generate a fingerprint from a React Native project",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "test:e2e": "yarn run prepare && expo-module test --config e2e/jest.config.js",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch"
+  "keywords": [
+    "expo",
+    "fingerprint",
+    "hash",
+    "node",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/fingerprint#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/fingerprint"
   },
   "bin": {
     "fingerprint": "bin/cli.js"
@@ -24,39 +28,47 @@
     "build",
     "cli/build"
   ],
-  "keywords": [
-    "expo",
-    "react-native",
-    "fingerprint",
-    "hash",
-    "node"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/fingerprint"
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:cli",
+    "build:lib": "expo-build cjs:src",
+    "build:cli": "expo-build --base cli cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "pretest:e2e": "expo-module prepublishOnly",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/fingerprint#readme",
   "dependencies": {
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/env": "workspace:^2.3.0",
+    "@expo/spawn-async": "^1.8.0",
     "arg": "^5.0.2",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "ignore": "^5.3.1",
-    "minimatch": "^9.0.0",
-    "p-limit": "^3.1.0",
+    "minimatch": "^10.2.2",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7",
+    "@expo/config": "workspace:~55.0.8",
+    "@expo/require-utils": "workspace:~55.0.2",
+    "@types/debug": "^4.1.5",
+    "@types/getenv": "^1.0.0",
+    "@types/node": "^22.14.0",
+    "@types/require-from-string": "^1.2.3",
+    "@types/semver": "^7.5.8",
+    "expo-module-scripts": "workspace:*",
+    "expo-splash-screen": "workspace:*",
+    "memfs": "^3.2.0",
     "require-from-string": "^2.0.2",
     "temp-dir": "^2.0.0"
   }

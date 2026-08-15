@@ -1,6 +1,7 @@
 package expo.modules.updates.loader
 
 import androidx.annotation.VisibleForTesting
+import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.OuterList
@@ -31,7 +32,6 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody
-import okhttp3.brotli.BrotliInterceptor
 import okio.Buffer
 import okio.BufferedSource
 import okio.ForwardingSource
@@ -72,11 +72,11 @@ class FileDownloader(
   // If the configured launch wait milliseconds is greater than the okhttp default (10_000)
   // we should use that as the timeout. For example, let's say launchWaitMs is 20 seconds,
   // the HTTP timeout should be at least 20 seconds.
-  private var client: OkHttpClient = OkHttpClient.Builder()
+  private var client: OkHttpClient = OkHttpClientProvider.getOkHttpClient().newBuilder()
     .cache(getCache())
     .connectTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)
     .readTimeout(max(configuration.launchWaitMs.toLong(), 10_000L), TimeUnit.MILLISECONDS)
-    .addInterceptor(BrotliInterceptor)
+    .addInterceptor(CompressionInterceptor)
     .build()
 
   /**
@@ -688,6 +688,12 @@ class FileDownloader(
     }
 
     val filename = UpdatesUtils.createFilenameForAsset(asset)
+    if (!UpdatesUtils.isSafeFilename(filename)) {
+      val message = "Failed to download asset ${asset.key}"
+      val error = IOException("Asset filename \"$filename\" would resolve outside the updates directory")
+      logger.error(message, error, UpdatesErrorCode.AssetsFailedToLoad)
+      throw IOException(message, error)
+    }
     val path = File(destinationDirectory, filename)
 
     if (path.exists()) {
@@ -786,6 +792,10 @@ class FileDownloader(
         header(A_IM_HEADER, "bsdiff")
       } else {
         removeHeader(A_IM_HEADER)
+      }
+      val runtimeVersion = configuration.runtimeVersionRaw
+      if (!runtimeVersion.isNullOrEmpty()) {
+        header("Expo-Runtime-Version", runtimeVersion)
       }
     }
     .apply {

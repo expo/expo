@@ -13,8 +13,7 @@ import type {
 import { resolve as metroResolver } from '@expo/metro/metro-resolver';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
-
-const debug = require('debug')('expo:metro:withMetroResolvers') as typeof console.log;
+import { event } from './resolveEvents';
 
 export type { CustomResolver as MetroResolver };
 
@@ -43,11 +42,10 @@ export function withMetroResolvers(
   inputResolvers: (ExpoCustomMetroResolver | undefined)[]
 ): MetroConfig {
   const resolvers = inputResolvers.filter((x) => x != null);
-  debug(
-    `Appending ${
-      resolvers.length
-    } custom resolvers to Metro config. (has custom resolver: ${!!config.resolver?.resolveRequest})`
-  );
+  event('resolvers_appended', {
+    count: resolvers.length,
+    hasCustom: !!config.resolver?.resolveRequest,
+  });
   // const hasUserDefinedResolver = !!config.resolver?.resolveRequest;
   // const defaultResolveRequest = getDefaultMetroResolver(projectRoot);
   const originalResolveRequest = config.resolver?.resolveRequest;
@@ -80,9 +78,6 @@ export function withMetroResolvers(
                 if (!isResolutionError) {
                   throw error;
                 }
-                debug(
-                  `Custom resolver (${resolver.name || '<anonymous>'}) threw: ${error.constructor.name}. (module: ${moduleName}, platform: ${platform}, env: ${ctx.customResolverOptions?.environment}, origin: ${ctx.originModulePath})`
-                );
               }
             }
             // If we haven't returned by now, use the original resolver or upstream resolver.
@@ -100,7 +95,17 @@ export function withMetroResolvers(
         //  return context.resolveRequest(context, moduleName, platform);
         // };
         const firstResolver = originalResolveRequest ?? universalContext.resolveRequest;
-        return firstResolver(universalContext, moduleName, platform);
+        const done = event.span();
+        const resolution = firstResolver(universalContext, moduleName, platform);
+        if (resolution) {
+          done('module', {
+            module: moduleName,
+            originModulePath: context.originModulePath,
+            platform,
+            type: resolution.type,
+          });
+        }
+        return resolution;
       },
     },
   };

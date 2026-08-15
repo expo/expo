@@ -1,13 +1,13 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { BlurTargetView, BlurView } from 'expo-blur';
 import { Image } from 'expo-image';
 import { useRef } from 'react';
 import { View, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 
-function TouchableIcon({ name }: { name: 'home' | 'heart' | 'gear' }) {
+function TouchableIcon({ name }: { name: 'home' | 'heart' | 'settings' }) {
   return (
     <TouchableOpacity>
-      <FontAwesome name={name} size={48} color="rgba(255, 255, 255, 0.85)" />
+      <Ionicons name={name} size={48} color="rgba(255, 255, 255, 0.85)" />
     </TouchableOpacity>
   );
 }
@@ -46,7 +46,7 @@ export default function BlurScrollScreen() {
           intensity={40}>
           <TouchableIcon name="home" />
           <TouchableIcon name="heart" />
-          <TouchableIcon name="gear" />
+          <TouchableIcon name="settings" />
         </BlurView>
       </View>
     </View>

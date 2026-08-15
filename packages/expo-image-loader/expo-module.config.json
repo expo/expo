@@ -1,3 +1,6 @@
 {
-  "platforms": ["apple", "android"]
+  "platforms": ["android"],
+  "android": {
+    "services": ["expo.modules.imageloader.ImageLoaderService"]
+  }
 }

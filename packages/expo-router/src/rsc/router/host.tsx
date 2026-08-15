@@ -12,6 +12,7 @@
 'use client';
 
 import Constants from 'expo-constants';
+import { getBundleUrl } from 'expo/internal/bundle-origin';
 import {
   createContext,
   createElement,
@@ -25,11 +26,10 @@ import {
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
+import { getOriginFromConstants } from '../../head/url';
 import { MetroServerError, ReactServerError } from './errors';
 import { fetch } from './fetch';
 import { encodeInput, encodeActionId } from './utils';
-import { getDevServer } from '../../getDevServer';
-import { getOriginFromConstants } from '../../head/url';
 
 declare namespace globalThis {
   let __EXPO_RSC_RELOAD_LISTENERS__: undefined | (() => void)[];
@@ -66,9 +66,7 @@ if (!BASE_PATH.endsWith('/')) {
 
 if (BASE_PATH === '/') {
   throw new Error(
-    `Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${
-      getDevServer().fullBundleUrl
-    }`
+    `Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${getBundleUrl()}`
   );
 }
 
@@ -130,6 +128,7 @@ const NO_CACHE_HEADERS: Record<string, string> =
         Expires: '0',
       };
 
+// `expo-platform` is required server-side on action to force a cross-origin preflight check
 const ACTION_HEADERS = {
   ...NO_CACHE_HEADERS,
   accept: RSC_CONTENT_TYPE,
@@ -188,7 +187,7 @@ const checkStatus = async <T extends ResponseLike>(responsePromise: Promise<T>):
 type Elements = Promise<Record<string, ReactNode>> & {
   prev?: Record<string, ReactNode> | undefined;
 };
-function getCached<T>(c: () => T, m: WeakMap<object, T>, k: object): T {
+function getCached<T>(c: () => T, m: WeakMap<any, T>, k: object): T {
   return (m.has(k) ? m : m.set(k, c())).get(k) as T;
 }
 
@@ -232,12 +231,9 @@ export const callServerRSC = async (
   fetchCache = defaultFetchCache
 ) => {
   const url = getAdjustedRemoteFilePath(BASE_PATH + encodeInput(encodeActionId(actionId)));
-  const response =
-    args === undefined
-      ? fetch(url, { headers: ACTION_HEADERS })
-      : encodeReply(args).then((body) =>
-          fetch(url, { method: 'POST', body, headers: ACTION_HEADERS })
-        );
+  const response = encodeReply(args ?? []).then((body) =>
+    fetch(url, { method: 'POST', body, headers: ACTION_HEADERS })
+  );
   const data = createFromFetch<Awaited<Elements>>(checkStatus(response), {
     callServer: (actionId: string, args: unknown[]) => callServerRSC(actionId, args, fetchCache),
   });

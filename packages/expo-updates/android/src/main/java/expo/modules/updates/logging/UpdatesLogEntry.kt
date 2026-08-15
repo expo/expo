@@ -3,7 +3,6 @@ package expo.modules.updates.logging
 import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
 import org.json.JSONArray
-import org.json.JSONException
 import org.json.JSONObject
 
 /**
@@ -59,9 +58,18 @@ data class UpdatesLogEntry(
             List(jsonArray.length()) { i -> jsonArray.getString(i) }
           }
         )
-      } catch (e: JSONException) {
+      } catch (e: Exception) {
+        // `JSONObject.require<T>` can surface a ClassCastException via a blind
+        // cast in the catch-all branch (e.g. an int-sized numeric `duration`
+        // token surfaces as `Integer`), which would otherwise escape and
+        // propagate to the caller.
         null
       }
+    }
+
+    fun getTimestamp(json: String): Long? {
+      return runCatching { JSONObject(json).getLong("timestamp") }
+        .getOrNull()
     }
   }
 }

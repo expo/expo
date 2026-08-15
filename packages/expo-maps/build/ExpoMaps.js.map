@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoMaps.js","sourceRoot":"","sources":["../src/ExpoMaps.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,MAAM,CAAC;AAI3C,eAAe,mBAAmB,CAAa,UAAU,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo';\n\nimport { MapsModule } from './shared.types';\n\nexport default requireNativeModule<MapsModule>('ExpoMaps');\n"]}

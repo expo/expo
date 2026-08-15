@@ -19,6 +19,8 @@ internal struct BackgroundModifier: ViewModifier, Record {
           content.background(color, in: makeCapsule(style: roundedCornerStyle))
         case .circle:
           content.background(color, in: Circle())
+        case .containerRelativeShape:
+          content.background(color, in: ContainerRelativeShape())
         case .ellipse:
           content.background(color, in: Ellipse())
         case .rectangle:

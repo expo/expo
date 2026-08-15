@@ -1,14 +1,11 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "../ExpoHeader.pch"
 #include "JSConstantsDecorator.h"
 #include "../JavaScriptObject.h"
 #include "JSIUtils.h"
-#include "JSFunctionsDecorator.h"
 #include "../JSIContext.h"
 #include "../types/JNIToJSIConverter.h"
-
-#include <jsi/jsi.h>
-#include <jsi/JSIDynamic.h>
 
 namespace jsi = facebook::jsi;
 

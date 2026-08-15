@@ -2,6 +2,7 @@
 
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXUIManager.h>
+#import <React/RCTLog.h>
 
 #import <ExpoGL/EXGLObjectManager.h>
 #import <ExpoGL/EXGLObject.h>
@@ -70,7 +71,7 @@
   EXGLContext *glContext = [self getContextWithId:exglCtxId];
 
   if (glContext == nil) {
-    reject(@"E_GL_BAD_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.takeSnapshotAsync: EXGLContext not found for given context id."));
+    reject(@"E_GL_BAD_VIEW_TAG", nil, RCTErrorWithMessage(@"ExponentGLObjectManager.takeSnapshotAsync: EXGLContext not found for given context id."));
     return;
   }
 
@@ -109,7 +110,7 @@
   EXGLContext *glContext = [self getContextWithId:exglCtxId];
 
   if (glContext == nil) {
-    reject(@"E_GL_BAD_VIEW_TAG", nil, EXErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected a GLView"));
+    reject(@"E_GL_BAD_VIEW_TAG", nil, RCTErrorWithMessage(@"ExponentGLObjectManager.createCameraTextureAsync: Expected a GLView"));
     return;
   }
 

@@ -7,11 +7,9 @@ import expo.modules.calendar.domain.event.enums.EventAccessLevel
 import expo.modules.calendar.domain.event.records.Alarm
 import expo.modules.calendar.extensions.DateTimeInput
 import expo.modules.calendar.extensions.getTimeInMillis
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import java.util.TimeZone
 
-@OptIn(EitherType::class)
 abstract class EventInputBase {
   @Field val alarms: List<Alarm>? = null
 

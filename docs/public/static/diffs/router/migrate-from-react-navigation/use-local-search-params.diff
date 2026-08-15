@@ -1,0 +1,12 @@
+diff --git a/app/index.tsx b/app/index.tsx
+index 0000000..1111111 100644
+--- a/app/index.tsx
++++ b/app/index.tsx
+@@ -1,5 +1,6 @@
++import { useLocalSearchParams } from 'expo-router';
+
+-export default function Page({ route }) {
+-  const user = route?.params?.user;
++export default function Page() {
++  const { user } = useLocalSearchParams();
+}

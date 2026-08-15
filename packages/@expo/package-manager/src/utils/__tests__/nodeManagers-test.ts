@@ -309,7 +309,7 @@ describe(resolvePackageManager, () => {
     expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
 
     // Due to the `yarn.lock` file being present when running `bun install --yarn`,
-    // yarn can be returned as package manager when prefering `yarn`.
+    // yarn can be returned as package manager when preferring `yarn`.
     expect(resolvePackageManager(projectRoot, 'yarn')).toBe('yarn');
   });
 
@@ -334,7 +334,7 @@ describe(resolvePackageManager, () => {
     expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
 
     // Due to the `yarn.lock` file being present when running `bun install --yarn`,
-    // yarn can be returned as package manager when prefering `yarn`.
+    // yarn can be returned as package manager when preferring `yarn`.
     expect(resolvePackageManager(projectRoot, 'yarn')).toBe('yarn');
   });
 });

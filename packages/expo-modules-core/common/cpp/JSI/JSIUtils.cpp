@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 #include <sstream>
+#include <utility>
 #include "JSIUtils.h"
 
 namespace expo::common {
@@ -13,7 +14,7 @@ jsi::Function createClass(jsi::Runtime &runtime, const char *name, ClassConstruc
   source << "(function " << name << "(...args) { return this." << nativeConstructorKey << "(...args); })";
   std::shared_ptr<jsi::StringBuffer> sourceBuffer = std::make_shared<jsi::StringBuffer>(source.str());
 
-  // Evaluate the code and obtain returned value (the constructor function).
+  // Evaluate the code and obtain the returned value (the constructor function).
   jsi::Object klass = runtime.evaluateJavaScript(sourceBuffer, "").asObject(runtime);
 
   // Set the native constructor in the prototype.
@@ -45,7 +46,7 @@ jsi::Function createInheritingClass(jsi::Runtime &runtime, const char *className
     .getProperty(runtime, prototypePropNameId)
     .asObject(runtime);
 
-  jsi::Function klass = createClass(runtime, className, constructor);
+  jsi::Function klass = createClass(runtime, className, std::move(constructor));
   jsi::Object klassPrototype = klass.getProperty(runtime, prototypePropNameId).asObject(runtime);
 
   klassPrototype.setProperty(runtime, "__proto__", baseClassPrototype);

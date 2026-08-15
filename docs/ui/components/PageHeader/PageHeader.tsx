@@ -3,10 +3,15 @@ import { useRouter } from 'next/compat/router';
 
 import { WithTestRequire } from '~/types/common';
 import { MarkdownActionsDropdown } from '~/ui/components/MarkdownActions/MarkdownActionsDropdown';
-import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/paths';
+import {
+  hasDynamicData,
+  normalizePath,
+  shouldShowMarkdownActions,
+} from '~/ui/components/MarkdownActions/paths';
 import { H1, P } from '~/ui/components/Text';
 
-import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI';
+import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI/AskPageAITrigger';
+import { PageCliVersion } from './PageCliVersion';
 import { PagePackageVersion } from './PagePackageVersion';
 import { PagePlatformTags } from './PagePlatformTags';
 import { PageTitleButtons } from './PageTitleButtons';
@@ -15,6 +20,7 @@ type Props = {
   title?: string;
   description?: string;
   packageName?: string;
+  cliVersion?: string;
   sourceCodeUrl?: string;
   iconUrl?: string;
   platforms?: string[];
@@ -28,6 +34,7 @@ export function PageHeader({
   title,
   description,
   packageName,
+  cliVersion,
   iconUrl,
   sourceCodeUrl,
   platforms,
@@ -41,7 +48,7 @@ export function PageHeader({
   const currentPath = router?.asPath ?? router?.pathname ?? '';
   const showMarkdownActions = shouldShowMarkdownActions({
     packageName,
-    path: currentPath,
+    path: router?.isReady ? currentPath : normalizePath(currentPath),
   });
   const showPackageMarkdown = packageName ? !hasDynamicData(currentPath) : false;
   const isSdkPage = currentPath.includes('/sdk/');
@@ -63,11 +70,11 @@ export function PageHeader({
     return (
       <>
         <div className="mt-2 flex flex-col">
-          <H1 className="!my-0">
+          <H1 className="my-0!">
             {iconUrl && (
               <img
                 src={iconUrl}
-                className="relative -top-0.5 float-left mr-3.5 size-[42px]"
+                className="relative -top-0.5 float-left mr-3.5 size-10.5"
                 alt={`Expo ${title} icon`}
               />
             )}
@@ -79,24 +86,20 @@ export function PageHeader({
               {description}
             </P>
           )}
+          {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3" />}
           {platforms && <PagePlatformTags platforms={platforms} className="mt-4" />}
         </div>
         <div
           className={mergeClasses(
             'mt-4 flex flex-wrap items-center justify-between gap-3 pb-1',
-            'max-md-gutters:flex-col max-md-gutters:items-stretch max-md-gutters:gap-0 max-md-gutters:pb-0'
+            'max-md:flex-col max-md:items-stretch max-md:gap-0 max-md:pb-0'
           )}>
           <div
             className={mergeClasses(
               'flex flex-wrap items-center gap-2',
-              'max-md-gutters:w-full max-md-gutters:items-center max-md-gutters:justify-between max-md-gutters:border-b max-md-gutters:border-default max-md-gutters:py-3'
+              'max-md:w-full max-md:items-center max-md:justify-between max-md:border-b max-md:border-default max-md:py-3'
             )}>
-            <div className="flex flex-wrap items-center">
-              {renderAskAIButton()}
-              {hasAskAIButton && (sourceCodeUrl || packageName) && (
-                <div className="max-sm:hidden bg-secondary mx-1 h-5 w-px" />
-              )}
-            </div>
+            <div className="flex flex-wrap items-center">{renderAskAIButton()}</div>
             <div className="flex items-center gap-1.5">
               <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
             </div>
@@ -104,13 +107,14 @@ export function PageHeader({
           <div
             className={mergeClasses(
               'flex flex-wrap items-center gap-3',
-              'max-md-gutters:w-full max-md-gutters:justify-between max-md-gutters:py-3'
+              'max-md:w-full max-md:justify-between max-md:py-3'
             )}>
             <PagePackageVersion
               packageName={packageName}
+              platforms={platforms}
               testRequire={testRequire}
               showMarkdownActions={showPackageMarkdown}
-              className="max-md-gutters:w-full max-md-gutters:justify-between"
+              className="max-md:w-full max-md:justify-between"
             />
           </div>
         </div>
@@ -123,20 +127,20 @@ export function PageHeader({
       <div
         className={mergeClasses(
           'mt-2 flex items-start justify-between gap-4',
-          'max-xl-gutters:flex-col max-xl-gutters:items-start'
+          'max-xl:flex-col max-xl:items-start'
         )}>
-        <H1 className="!my-0">
+        <H1 className="my-0!">
           {iconUrl && (
             <img
               src={iconUrl}
-              className="relative -top-0.5 float-left mr-3.5 size-[42px]"
+              className="relative -top-0.5 float-left mr-3.5 size-10.5"
               alt={`Expo ${title} icon`}
             />
           )}
           {packageName && packageName.startsWith('expo-') && 'Expo '}
           {title}
         </H1>
-        <span className="-mt-0.5 flex items-center gap-1 max-xl-gutters:hidden">
+        <span className="-mt-0.5 flex items-center gap-1 max-xl:hidden">
           <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
           {(showMarkdownActions || hasAskAIButton) && (
             <span className="flex items-center gap-1">
@@ -156,7 +160,8 @@ export function PageHeader({
           {description}
         </P>
       )}
-      <span className="mb-1 mt-3 hidden items-center gap-1 max-xl-gutters:flex">
+      {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3 max-xl:mt-2" />}
+      <span className="mt-3 mb-1 hidden items-center gap-1 max-xl:flex">
         <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
         {(showMarkdownActions || hasAskAIButton) && (
           <span className="ml-1 flex items-center gap-1">
@@ -173,13 +178,14 @@ export function PageHeader({
       <div
         className={mergeClasses(
           'mt-3 flex items-center justify-between',
-          'max-md-gutters:flex-col-reverse max-md-gutters:items-start max-md-gutters:gap-3',
+          'max-md:flex-col-reverse max-md:items-start max-md:gap-3',
           'empty:hidden'
         )}>
         {platforms && <PagePlatformTags platforms={platforms} />}
         {packageName && (
           <PagePackageVersion
             packageName={packageName}
+            platforms={platforms}
             testRequire={testRequire}
             showMarkdownActions={showPackageMarkdown}
           />

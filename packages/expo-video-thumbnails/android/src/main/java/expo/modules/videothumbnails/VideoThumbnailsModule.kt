@@ -8,12 +8,12 @@ import android.util.Log
 import android.webkit.URLUtil
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.core.utilities.FileUtilities
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.services.FilePermissionService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -115,7 +115,8 @@ class VideoThumbnailsModule : Module() {
   private fun isAllowedToRead(url: String): Boolean {
     val permissionModuleInterface = appContext.filePermission
       ?: throw FilePermissionsModuleNotFound()
-    return permissionModuleInterface.getPathPermissions(context, url).contains(Permission.READ)
+    return permissionModuleInterface.getPathPermissions(context, url)
+      .contains(FilePermissionService.Permission.READ)
   }
 
   private inline fun withModuleScope(promise: Promise, crossinline block: () -> Unit) = moduleCoroutineScope.launch {

@@ -1,0 +1,9 @@
+fragment CommonSnackData on Snack {
+  id
+  name
+  description
+  fullName
+  slug
+  isDraft
+  sdkVersion
+}

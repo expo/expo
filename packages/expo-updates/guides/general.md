@@ -2,7 +2,7 @@
 
 Last updated: 2022-10-13
 
-Some general meditiations / tacit knowledge on expo-updates that has accumulated through the years of working on this library.
+Some general meditations / tacit knowledge on expo-updates that has accumulated through the years of working on this library.
 
 There is some additional information in Notion (Updates module -> Past and future issues)
 

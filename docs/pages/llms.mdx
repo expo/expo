@@ -1,26 +1,34 @@
 ---
-title: Documentation for LLMs
+title: Documentation for AI agents and LLMs
 sidebar_title: LLMs
-description: A list of Expo and EAS documentation files available for large language models (LLMs) and apps that use them.
-hideTOC: true
-hideFromSearch: true
+description: Efficient ways for AI agents and LLMs to access and consume Expo documentation.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
+Use the following endpoints and tools to give AI agents and LLMs access to Expo documentation at lower token cost than fetching full web pages.
 
-At Expo, we support the [llms.txt](https://llmstxt.org/) initiative to provide documentation for large language models (LLMs) and apps that use them. Below is a list of documentation files available:
+## Quick start
 
-- [/llms.txt](/llms.txt): A list of all available documentation files
-- [/llms-full.txt](/llms-full.txt): Complete documentation for Expo, including Expo Router, Expo Modules API, development process, and more
-- [/llms-eas.txt](/llms-eas.txt): Complete documentation for the Expo Application Services (EAS)
-- [/llms-sdk.txt](/llms-sdk.txt): Complete documentation for the latest Expo SDK
+Pick the method that matches your tool:
 
-<Collapsible summary="Looking for deprecated Expo SDK versions?">
+| Method                 | Best for                                               | How                                                                           |
+| ---------------------- | ------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| Per-page markdown      | Chat interfaces (ChatGPT, Claude.ai) and coding agents | Append `/index.md` or `.md` to any documentation page URL.                    |
+| Copy Markdown dropdown | Quick prompts with a single page                       | Click **Copy page** > **Copy Markdown** at the top of any documentation page. |
+| Documentation index    | Project rules and coding agents                        | Add the general-purpose index (`/llms.txt`) to your AI tool configuration.    |
 
-- [/llms-sdk-v53.0.0.txt](/llms-sdk-v53.0.0.txt): Documentation for the Expo SDK v53.0.0
+## Per-page markdown
 
-- [/llms-sdk-v52.0.0.txt](/llms-sdk-v52.0.0.txt): Documentation for the Expo SDK v52.0.0
+Every documentation page has a lightweight markdown version accessible by appending either `/index.md` or `.md` to the page URL. Both URLs serve the same file. For example:
 
-- [/llms-sdk-v51.0.0.txt](/llms-sdk-v51.0.0.txt): Documentation for the Expo SDK v51.0.0
+```text Introduction to development builds
+https://docs.expo.dev/develop/development-builds/introduction/index.md
+https://docs.expo.dev/develop/development-builds/introduction.md
+```
 
-</Collapsible>
+The above method is useful when you want to give an AI agent context about a specific topic or page without overwhelming it with the full HTML of that page.
+
+## Documentation index
+
+Expo supports the [llms.txt](https://llmstxt.org/) initiative to provide documentation for large language models (LLMs) and apps that use them.
+
+The [/llms.txt](/llms.txt) file (~54 kB) lists every documentation page with a link to its markdown version and a short description. An AI agent can use it to discover the relevant pages for a task and then fetch only those pages, instead of loading the complete documentation into its context window.

@@ -1,66 +1,47 @@
-import * as NavigationBar from 'expo-navigation-bar';
+import { NavigationBar, NavigationBarStyle } from 'expo-navigation-bar';
 import * as React from 'react';
-import { Platform, ScrollView, Text } from 'react-native';
-import { useSafeAreaFrame, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Modal, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import { Page, Section } from '../components/Page';
-import { getRandomColor } from '../utilities/getRandomColor';
 
-function usePosition(): [
-  NavigationBar.NavigationBarPosition | null,
-  (position: NavigationBar.NavigationBarPosition) => void,
-] {
-  const [position, setPosition] = React.useState<NavigationBar.NavigationBarPosition | null>(null);
-
-  React.useEffect(() => {
-    let isMounted = true;
-    NavigationBar.unstable_getPositionAsync().then((position) => {
-      if (isMounted) {
-        setPosition(position);
-      }
-    });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const setNewPosition = React.useCallback(
-    (position: NavigationBar.NavigationBarPosition) => {
-      NavigationBar.setPositionAsync(position);
-      setPosition(position);
-    },
-    [setPosition]
-  );
-
-  return [position, setNewPosition];
-}
+const styles = StyleSheet.create({
+  section: {
+    gap: 8,
+  },
+  currentValue: {
+    fontWeight: '700',
+  },
+  buttonsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 4,
+  },
+  modal: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+  },
+});
 
 export default function NavigationBarScreen() {
   return (
     <ScrollView>
       <Page>
         {Platform.OS !== 'android' && (
-          <Text style={{ marginVertical: 8, fontSize: 16 }}>⚠️ NavigationBar is Android-only</Text>
+          <BodyText style={{ marginVertical: 8, fontSize: 16 }}>
+            ⚠️ NavigationBar is Android-only
+          </BodyText>
         )}
-        <Section title="Visibility">
-          <VisibilityExample />
-        </Section>
         <Section title="Appearance">
-          <ButtonStyleExample />
+          <StyleExample />
         </Section>
-        <Section title="Background Color">
-          <BackgroundColorExample />
+        <Section title="Visibility">
+          <HiddenExample />
         </Section>
-        <Section title="Border Color">
-          <BorderColorExample />
-        </Section>
-        <Section title="Position">
-          <PositionExample />
-        </Section>
-        <Section title="Behavior">
-          <BehaviorExample />
+        <Section title="Into Modal" row>
+          <ModalExample />
         </Section>
       </Page>
     </ScrollView>
@@ -71,89 +52,93 @@ NavigationBarScreen.navigationOptions = {
   title: 'Navigation Bar',
 };
 
-function VisibilityExample() {
-  const visibility = NavigationBar.useVisibility();
-  const nextVisibility = visibility === 'visible' ? 'hidden' : 'visible';
+const STYLES: NavigationBarStyle[] = ['auto', 'inverted', 'light', 'dark'];
+
+function StyleExample() {
+  const [style, setStyle] = React.useState<NavigationBarStyle>('auto');
+
+  React.useEffect(() => {
+    NavigationBar.setStyle('auto');
+    return () => NavigationBar.setStyle('auto');
+  }, []);
+
   return (
-    <Button
-      title={`Toggle Visibility: ${nextVisibility}`}
-      onPress={() => {
-        NavigationBar.setVisibilityAsync(nextVisibility);
-      }}
-    />
+    <View style={styles.section}>
+      <Text>
+        Current: <Text style={styles.currentValue}>{style}</Text>
+      </Text>
+
+      <View style={styles.buttonsRow}>
+        <Text>Toggle:</Text>
+
+        {STYLES.map((nextStyle) => (
+          <Button
+            key={`set-style-btn-${nextStyle}`}
+            title={nextStyle}
+            onPress={() => {
+              NavigationBar.setStyle(nextStyle);
+              setStyle(nextStyle);
+            }}
+          />
+        ))}
+      </View>
+    </View>
   );
 }
 
-function BackgroundColorExample() {
+function HiddenExample() {
+  const [hidden, setHidden] = React.useState(false);
+
+  React.useEffect(() => {
+    NavigationBar.setHidden(false);
+    return () => NavigationBar.setHidden(false);
+  }, []);
+
   return (
-    <Button
-      onPress={() => NavigationBar.setBackgroundColorAsync(getRandomColor())}
-      title="Set background color to random color"
-    />
+    <View style={styles.section}>
+      <Text>
+        Current: <Text style={styles.currentValue}>{String(hidden)}</Text>
+      </Text>
+
+      <View style={styles.buttonsRow}>
+        <Text>Toggle:</Text>
+
+        {[true, false].map((nextHidden) => (
+          <Button
+            key={`set-hidden-btn-${nextHidden}`}
+            title={String(nextHidden)}
+            onPress={() => {
+              NavigationBar.setHidden(nextHidden);
+              setHidden(nextHidden);
+            }}
+          />
+        ))}
+      </View>
+    </View>
   );
 }
 
-function BorderColorExample() {
-  return (
-    <Button
-      onPress={() => NavigationBar.setBorderColorAsync(getRandomColor())}
-      title="Set border color to random color"
-    />
-  );
-}
-
-function ButtonStyleExample() {
-  const [style, setStyle] = React.useState<NavigationBar.NavigationBarButtonStyle>('light');
-  const nextStyle = style === 'light' ? 'dark' : 'light';
-  return (
-    <Button
-      onPress={() => {
-        NavigationBar.setButtonStyleAsync(nextStyle);
-        setStyle(nextStyle);
-      }}
-      title={`Toggle bar style: ${nextStyle}`}
-    />
-  );
-}
-
-const NavigationBarBehaviors: NavigationBar.NavigationBarBehavior[] = [
-  'inset-swipe',
-  'inset-touch',
-  'overlay-swipe',
-];
-
-function PositionExample() {
-  const [position, setPosition] = usePosition();
-
-  const insets = useSafeAreaInsets();
-  const frame = useSafeAreaFrame();
+function ModalExample() {
+  const [modalVisible, setModalVisible] = React.useState(false);
 
   return (
-    <>
+    <View style={styles.section}>
       <Button
-        onPress={() => setPosition(position === 'absolute' ? 'relative' : 'absolute')}
-        title={`Position: ${position === 'absolute' ? 'relative' : 'absolute'}`}
+        title="Open example Modal"
+        onPress={() => {
+          setModalVisible(true);
+        }}
       />
-      <Text>insets: {JSON.stringify(insets)}</Text>
-      <Text>frame: {JSON.stringify(frame)}</Text>
-    </>
+
+      <Modal
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(false);
+        }}>
+        <View style={styles.modal}>
+          <Text>style and hidden are preserved</Text>
+        </View>
+      </Modal>
+    </View>
   );
-}
-
-function BehaviorExample() {
-  const [behavior, setBehavior] =
-    React.useState<NavigationBar.NavigationBarBehavior>('inset-swipe');
-
-  const nextNavigationBarBehavior = React.useMemo(() => {
-    const index = NavigationBarBehaviors.indexOf(behavior);
-    const newIndex = (index + 1) % NavigationBarBehaviors.length;
-    return NavigationBarBehaviors[newIndex];
-  }, [behavior]);
-
-  const onPressBehavior = React.useCallback(() => {
-    NavigationBar.setBehaviorAsync(nextNavigationBarBehavior);
-    setBehavior(nextNavigationBarBehavior);
-  }, [nextNavigationBarBehavior]);
-
-  return <Button onPress={onPressBehavior} title={`Behavior: ${nextNavigationBarBehavior}`} />;
 }

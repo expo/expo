@@ -8,9 +8,51 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+- Get the development server address from the loaded bundle. ([#48722](https://github.com/expo/expo/pull/48722) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
 - Fixed `wss://` support. ([#40893](https://github.com/expo/expo/pull/40893) by [@kudo](https://github.com/kudo))
 
-### 💡 Others
+## 0.1.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
 
 ## 0.1.7 — 2025-09-11
 

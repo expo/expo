@@ -3,7 +3,7 @@
  */
 import { screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import ExponentImagePicker from '../ExponentImagePicker';
 

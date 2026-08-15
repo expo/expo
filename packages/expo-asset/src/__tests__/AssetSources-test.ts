@@ -1,5 +1,7 @@
 import { Platform } from 'expo-modules-core';
 
+jest.mock('expo/internal/bundle-origin', () => ({ getBundleOrigin: jest.fn(() => null) }));
+
 const mockFontMetadata = {
   hash: 'cafecafecafecafecafecafecafecafe',
   name: 'test',
@@ -17,6 +19,7 @@ const mockFontMonorepoMetadata = {
 
 describe('selectAssetSource', () => {
   beforeEach(() => {
+    _mockDevServerUrl(null);
     _mockConstants({
       experienceUrl: 'https://example.com/app/expo-manifest.json',
       __unsafeNoWarnManifest2: {},
@@ -36,8 +39,9 @@ describe('selectAssetSource', () => {
   });
 
   if (Platform.OS !== 'web') {
-    it(`returns a manifest2 URI based on the bundle's URL in development`, () => {
+    it(`returns a manifest2 URI with http:// when experienceUrl uses http:// scheme`, () => {
       _mockConstants({
+        experienceUrl: 'http://127.0.0.1:8081/app',
         __unsafeNoWarnManifest2: {
           extra: {
             expoGo: {
@@ -55,6 +59,30 @@ describe('selectAssetSource', () => {
 
       expect(source.uri).toBe(
         `http://127.0.0.1:8081/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+      );
+      expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    });
+
+    it(`returns a manifest2 URI with https:// when experienceUrl uses exps:// scheme`, () => {
+      _mockConstants({
+        experienceUrl: 'exps://example.com/app',
+        __unsafeNoWarnManifest2: {
+          extra: {
+            expoGo: {
+              developer: {
+                tool: 'expo-cli',
+              },
+              debuggerHost: 'example.com:8081',
+            },
+          },
+        },
+      });
+
+      const AssetSources = require('../AssetSources');
+      const source = AssetSources.selectAssetSource(mockFontMetadata);
+
+      expect(source.uri).toBe(
+        `https://example.com:8081/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
       );
       expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
     });
@@ -123,8 +151,9 @@ describe('selectAssetSource', () => {
   });
 
   if (Platform.OS !== 'web') {
-    it(`returns a development URI using the asset file hash with non-standard path`, () => {
+    it(`returns a development URI with http:// using non-standard path`, () => {
       _mockConstants({
+        experienceUrl: 'http://127.0.0.1:8081/app',
         __unsafeNoWarnManifest2: {
           extra: {
             expoGo: {
@@ -144,6 +173,110 @@ describe('selectAssetSource', () => {
         `http://127.0.0.1:8081/assets/?unstable_path=.%2Ftest.ttf&platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
       );
       expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    });
+
+    it(`returns a development URI with https:// using non-standard path when experienceUrl uses exps://`, () => {
+      _mockConstants({
+        experienceUrl: 'exps://example.com/app',
+        __unsafeNoWarnManifest2: {
+          extra: {
+            expoGo: {
+              developer: {
+                tool: 'expo-cli',
+              },
+              debuggerHost: 'example.com:8081',
+            },
+          },
+        },
+      });
+
+      const AssetSources = require('../AssetSources');
+
+      const source = AssetSources.selectAssetSource(mockFontMonorepoMetadata);
+      expect(source.uri).toBe(
+        `https://example.com:8081/assets/?unstable_path=.%2Ftest.ttf&platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+      );
+      expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    });
+
+    it(`returns a development URI from the bundle URL rather than debuggerHost`, () => {
+      // The dev server may be reached through an address it can't observe itself, so the URL the
+      // bundle was loaded from wins over `debuggerHost`, which may name an unreachable address.
+      _mockConstants({
+        experienceUrl: 'https://proxy.test/app',
+        __unsafeNoWarnManifest2: {
+          extra: {
+            expoGo: {
+              developer: { tool: 'expo-cli' },
+              debuggerHost: '127.0.0.1:8081',
+            },
+          },
+        },
+      });
+      _mockDevServerUrl('https://proxy.test/');
+
+      const AssetSources = require('../AssetSources');
+      const source = AssetSources.selectAssetSource(mockFontMetadata);
+
+      expect(source.uri).toBe(
+        `https://proxy.test/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+      );
+    });
+
+    it(`keeps the bundle URL's port`, () => {
+      _mockConstants({
+        experienceUrl: 'http://proxy.test:4443/app',
+        __unsafeNoWarnManifest2: {
+          extra: {
+            expoGo: {
+              developer: { tool: 'expo-cli' },
+              debuggerHost: '127.0.0.1:8081',
+            },
+          },
+        },
+      });
+      _mockDevServerUrl('http://proxy.test:4443/');
+
+      const AssetSources = require('../AssetSources');
+
+      expect(AssetSources.selectAssetSource(mockFontMonorepoMetadata).uri).toBe(
+        `http://proxy.test:4443/assets/?unstable_path=.%2Ftest.ttf&platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+      );
+    });
+
+    it(`falls back to debuggerHost when the bundle wasn't loaded from a server`, () => {
+      _mockConstants({
+        experienceUrl: 'http://127.0.0.1:8081/app',
+        __unsafeNoWarnManifest2: {
+          extra: {
+            expoGo: {
+              developer: { tool: 'expo-cli' },
+              debuggerHost: '127.0.0.1:8081',
+            },
+          },
+        },
+      });
+      _mockDevServerUrl(null);
+
+      const AssetSources = require('../AssetSources');
+
+      expect(AssetSources.selectAssetSource(mockFontMetadata).uri).toBe(
+        `http://127.0.0.1:8081/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+      );
+    });
+
+    it(`ignores the bundle URL for a published app in Expo Go`, () => {
+      // Without a dev server in the manifest the bundle came from a CDN, and assets must not be
+      // resolved against it.
+      _mockConstants({
+        experienceUrl: 'https://exp.host/@test/test',
+        __unsafeNoWarnManifest2: { extra: {} },
+      });
+      _mockDevServerUrl('https://cdn.test/');
+
+      const AssetSources = require('../AssetSources');
+
+      expect(AssetSources.selectAssetSource(mockFontMetadata).uri).toBe('');
     });
   }
 });
@@ -226,4 +359,9 @@ function _mockConstants(constants: { [key: string]: any }): void {
       manifest: { ...Constants.manifest, ...constants.manifest },
     };
   });
+}
+
+/** Mock the origin the running bundle was loaded from. */
+function _mockDevServerUrl(origin: string | null): void {
+  jest.mocked(require('expo/internal/bundle-origin').getBundleOrigin).mockReturnValue(origin);
 }

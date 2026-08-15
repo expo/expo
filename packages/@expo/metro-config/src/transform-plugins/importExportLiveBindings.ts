@@ -247,7 +247,7 @@ export function importExportLiveBindingsPlugin({
         }
         let localId: string;
         // We purposefully don't check for `Identifier` or `MemberExpression` here
-        // `export default` values are assigne at the point they're declared. We don't want them to be mutated
+        // `export default` values are assigned at the point they're declared. We don't want them to be mutated
         if (t.isDeclaration(path.node.declaration)) {
           if (!path.node.declaration.id) {
             path.node.declaration.id = path.scope.generateUidIdentifierBasedOnNode(
@@ -436,13 +436,15 @@ export function importExportLiveBindingsPlugin({
                   : assignExportHelper;
               const exportBindings = t.getBindingIdentifiers(declaration, false, true);
               for (const exportName in exportBindings) {
-                state.exportDeclarations.push({
-                  statement: withLocation(
-                    exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)),
-                    exportStatement.loc
-                  ),
-                  local: undefined,
-                });
+                if (exportBindings[exportName] != null) {
+                  state.exportDeclarations.push({
+                    statement: withLocation(
+                      exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)),
+                      exportStatement.loc
+                    ),
+                    local: undefined,
+                  });
+                }
               }
             }
           }

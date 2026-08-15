@@ -2,90 +2,89 @@
 title: Get started with EAS Workflows
 sidebar_title: Get started
 description: Learn how to use EAS Workflows to automate your React Native CI/CD development and release processes.
-hasVideoLink: true
 searchRank: 10
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
-import { DownloadSlide } from '~/ui/components/DownloadSlide';
-import { FileTree } from '~/ui/components/FileTree';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-EAS Workflows allow you to automate your development and release processes. It's a React Native CI/CD service that can build and submit your biweekly app store releases, create preview updates for every commit, and more.
-
-<VideoBoxLink
-  videoId="OJ2u9tQCpr4"
-  title="Watch: Get Started with EAS Workflows"
-  description="Learn how to automate some of the most common processes that every app development team must tackle: creating development builds, publishing preview updates, and deploying to production."
-/>
-
-<br />
-<br />
-
-<Collapsible summary="How do workflows compare to other CI services?">
-
-EAS Workflows are designed to help you and your team release your app. It comes preconfigured with pre-packaged job types that can build, submit, update, run Maestro tests, and more. All job types run on EAS, so you'll only have to manage one set of YAML files, and all the artifacts from your job runs will appear on [expo.dev](https://expo.dev/).
-
-Other CI services, like CircleCI and GitHub Actions, are more generalized and have the ability to do more than workflows. However, those services also require you to understand more about the implementation of each job. While that is necessary in some cases, workflows help you get common tasks done quickly by pre-packaging the most essential types of jobs for app developers. In addition, workflows are designed to provide you with the fastest possible cloud machine for the task at hand, and we're constantly updating those for you.
-
-EAS Workflows are great for operations related to your Expo apps, while other CI/CD services will provide a better experience for other types of workflows.
-
-</Collapsible>
-
-<Collapsible summary="Considering Workflows? Share the following slide in your next team meeting">
-Share the following slide in your next team meeting to discuss what EAS Workflows are and how they can help your team:
-
-<DownloadSlide
-  title="EAS Workflows CI/CD sync slide"
-  description="Learn the benefits of using EAS Workflows to automate your CI/CD processes."
-  imageUrl="/static/images/eas-workflows/eas-worfklows-slide.png"
-/>
-</Collapsible>
+This page walks you through creating your first EAS Workflow: development builds of your app for Android emulators, iOS simulators, physical devices, and production builds for the app stores.
 
 ## Get started
 
-<Prerequisites numberOfRequirements={4}>
-  <Requirement number={1} title="Sign up for an Expo account">
+<Prerequisites>
+  <Requirement title="Sign up for an Expo account">
     You'll need to [sign up](https://expo.dev/signup) for an Expo account.
   </Requirement>
-  <Requirement number={2} title="Create a project">
+  <Requirement title="Create a project">
     You'll need to create a project with the following command:
 
-    <Terminal cmd={['$ npx create-expo-app@latest']} />
+    <Terminal
+      cmd={{
+        npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
+        yarn: ['$ yarn create expo-app --template default@sdk-57'],
+        pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
+        bun: ['$ bun create expo --template default@sdk-57'],
+      }}
+    />
 
   </Requirement>
-  <Requirement number={3} title="Sync the project with EAS">
-    You'll need to sync the project with EAS with the following command. This will create an EAS project and link it to your local project:
+  <Requirement title="Install EAS CLI">
+    You'll need to install EAS CLI to create and run workflows:
 
-    <Terminal cmd={['$ npx eas-cli@latest init']} />
-
-  </Requirement>
-  <Requirement number={4} title="Add eas.json">
-    You'll need to add an `eas.json` file to the root of your project if it doesn't already exist:
-
-    <Terminal cmd={['$ touch eas.json && echo "{}" > eas.json']} />
+    <Terminal cmd={['$ npm install -g eas-cli']} />
 
   </Requirement>
 </Prerequisites>
 
 <Step label="1">
-  Create a directory named **.eas/workflows** at the root of your project with a YAML file inside of
-  it. For example: **.eas/workflows/create-production-builds.yml**.
 
-  <FileTree
-  files={[
-    ['my-app/.eas/workflows/create-production-builds.yml', ''],
-    ['my-app/eas.json', ''],
-  ]}
-/>
+Run the following command to create a workflow that creates development builds for Android and iOS:
+
+<Terminal cmd={['$ eas workflow:create --template build']} />
+
+Then follow the prompts and the `[Action requested]` steps when they appear. The command generates a workflow file at **.eas/workflows/build.yml** and sets up your project for building on EAS.
+
 </Step>
 
 <Step label="2">
 
-Add the following YAML to the `create-production-builds.yml` file:
+Run the workflow with the following command:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/build.yml']} />
+
+Once you do, you can watch your workflow run on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows).
+
+</Step>
+
+<Step label="3">
+
+When the builds finish, you can install them on your physical devices via the website UI. You can also run the following commands to install the latest builds on your Android Emulator and iOS Simulator:
+
+<Terminal cmd={['$ eas build:run -p android --latest']} />
+
+<Terminal cmd={['$ eas build:run -p ios -e development-ios-simulator --latest']} />
+
+Then, start a development server so the development build can load your app:
+
+<Terminal cmd={['$ npx expo start']} />
+
+</Step>
+
+## Create production builds
+
+When you're ready to build for the app stores, generate a release workflow with the `deploy` template:
+
+<Terminal cmd={['$ eas workflow:create --template deploy']} />
+
+This sets up your project for automated deployment: it configures EAS Build and EAS Update and sets your app identifiers, then writes a complete release workflow to **.eas/workflows/deploy.yml**.
+
+When you run it, the workflow fingerprints your project, then builds and submits a new production build when there are native changes so they're ready for submission, or publishes an over-the-air update when a matching build already exists, which will be sent to your users immediately.
+
+For a walkthrough of the generated workflow, see the [Deploy to production example](/eas/workflows/examples/deploy-to-production).
+
+If you only need to create production builds, use a workflow with a `build` job for each platform:
 
 ```yaml .eas/workflows/create-production-builds.yml
 name: Create Production Builds
@@ -95,25 +94,23 @@ jobs:
     type: build # This job type creates a production build for Android
     params:
       platform: android
+      profile: production
   build_ios:
     type: build # This job type creates a production build for iOS
     params:
       platform: ios
+      profile: production
 ```
 
-The workflow above will create a production build for Android and iOS in parallel. To run this workflow successfully, you'll need to [set up and build your project using EAS CLI](/build/setup/) first.
+This workflow uses the `production` profile from your **eas.json**. Production builds require app signing credentials. Set them up for each platform with the following commands:
 
-</Step>
+<Terminal cmd={['$ eas credentials:configure-build -p android -e production']} />
 
-<Step label="3">
+<Terminal cmd={['$ eas credentials:configure-build -p ios -e production']} />
 
-Finally, run the workflow with the following command:
+Then, run the workflow:
 
-<Terminal cmd={['$ npx eas-cli@latest workflow:run create-production-builds.yml']} />
-
-Once you do, you can see your workflow running on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows).
-
-</Step>
+<Terminal cmd={['$ eas workflow:run .eas/workflows/create-production-builds.yml']} />
 
 ## More
 
@@ -136,14 +133,53 @@ on:
     branches: ['main']
   # @end #
 
-  jobs:
-    build_android:
-      type: build
-      params:
-        platform: android
-    build_ios:
-      type: build
+jobs:
+  build_android:
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    type: build
+    params:
+      platform: ios
+      profile: production
 ```
+
+### Trigger workflows from App Store Connect events
+
+You can also trigger workflows from App Store Connect events using [`on.app_store_connect`](/eas/workflows/syntax/#onapp_store_connect).
+
+Before using App Store Connect triggers, configure your App Store Connect connection in EAS dashboard:
+
+- Open EAS dashboard and select your project.
+- Navigate to **[Project settings > General > Connections](https://expo.dev/accounts/[account]/projects/[project]/settings)**.
+- Connect your App Store Connect app.
+
+Example workflow:
+
+```yaml .eas/workflows/app-store-connect-events.yml
+name: React to App Store Connect events
+
+# @info #
+on:
+  app_store_connect:
+    app_version:
+      states:
+        - ready_for_review
+        - waiting_for_review
+  # @end #
+
+jobs:
+  send_slack_notification:
+    type: slack
+    environment: production
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: 'App version is ready for review or waiting for review.'
+```
+
+The example reads the webhook URL from a `SLACK_WEBHOOK_URL` [environment variable](/eas/environment-variables/manage/#manage-environment-variables). [Create it](https://expo.dev/accounts/[account]/settings/environment-variables) in the `production` environment before running the workflow.
 
 ### VS Code extension
 

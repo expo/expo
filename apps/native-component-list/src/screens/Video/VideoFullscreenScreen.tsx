@@ -4,10 +4,11 @@ import { FullscreenOrientation } from 'expo-video/build/VideoView.types';
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 
-import { bigBuckBunnySource } from './videoSources';
-import { styles } from './videoStyles';
 import Button from '../../components/Button';
+import { E2EKeyValueBox } from '../../components/E2EKeyValueBox';
 import TitledSwitch from '../../components/TitledSwitch';
+import { starVideoSource } from './videoSources';
+import { styles } from './videoStyles';
 
 const orientations = ['default', 'portrait', 'landscape'];
 export default function VideoFullscreenScreen() {
@@ -16,8 +17,8 @@ export default function VideoFullscreenScreen() {
   const [allowFullscreen, setAllowFullscreen] = useState(true);
   const [autoExitOnRotate, setAutoExitOnRotate] = useState(true);
   const [lockIndex, setLockIndex] = useState(0);
-
-  const player = useVideoPlayer(bigBuckBunnySource, (player) => {
+  const [eventHistory, setEventHistory] = useState<Record<number, string>>({});
+  const player = useVideoPlayer(starVideoSource, (player) => {
     player.loop = true;
     player.muted = true;
     player.showNowPlayingNotification = false;
@@ -25,12 +26,24 @@ export default function VideoFullscreenScreen() {
   });
 
   const toggleFullscreen = useCallback(() => {
-    if (!isFullscreen) {
-      ref.current?.enterFullscreen();
+    const current = ref.current;
+    if (current) {
+      if (!isFullscreen) {
+        ref.current?.enterFullscreen().catch(addNewHistoryEntry);
+      } else {
+        ref.current?.exitFullscreen().catch(addNewHistoryEntry);
+      }
     } else {
-      ref.current?.exitFullscreen();
+      addNewHistoryEntry('current video ref was null!');
     }
   }, [player]);
+
+  const addNewHistoryEntry = (entry: string) => {
+    const newIdx = Object.keys(eventHistory).length;
+    const history = { ...eventHistory };
+    history[newIdx] = entry;
+    setEventHistory(history);
+  };
 
   return (
     <View style={styles.contentContainer}>
@@ -39,13 +52,14 @@ export default function VideoFullscreenScreen() {
         player={player}
         onFullscreenEnter={() => {
           console.log('Entered Fullscreen');
+          addNewHistoryEntry('onFullscreenEnter');
           setIsFullscreen(true);
         }}
         onFullscreenExit={() => {
           console.log('Exited Fullscreen');
+          addNewHistoryEntry('onFullscreenExit');
           setIsFullscreen(false);
         }}
-        allowsFullscreen={allowFullscreen}
         fullscreenOptions={{
           enable: allowFullscreen,
           orientation: orientations[lockIndex] as FullscreenOrientation,
@@ -77,6 +91,7 @@ export default function VideoFullscreenScreen() {
           selectedIndex={lockIndex}
           onValueChange={(value) => setLockIndex(orientations.indexOf(value))}
         />
+        <E2EKeyValueBox title="e2e event history" style={{ margin: 20 }} entries={eventHistory} />
       </ScrollView>
     </View>
   );

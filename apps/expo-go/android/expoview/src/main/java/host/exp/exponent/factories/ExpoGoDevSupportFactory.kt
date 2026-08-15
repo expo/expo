@@ -4,17 +4,20 @@ import android.content.Context
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.ReactInstanceDevHelper
-import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
-import com.facebook.react.devsupport.BridgelessDevSupportManager
+import host.exp.exponent.modules.perfmonitor.ExpoBridgelessDevSupportManager
 import versioned.host.exp.exponent.VersionedUtils
 
-class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDownloadListener?, private val minNumShakes: Int = 100) : DevSupportManagerFactory {
+class ExpoGoDevSupportFactory(
+  private val devBundleDownloadListener: DevBundleDownloadListener?,
+  private val minNumShakes: Int = 100,
+  private val devServerBundleUrl: String? = null
+) : DevSupportManagerFactory {
   override fun create(
     applicationContext: Context,
     reactInstanceManagerHelper: ReactInstanceDevHelper,
@@ -29,7 +32,7 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
   ): DevSupportManager {
     // This method was used only by legacy architecture and is stubbed here.
-    return ReleaseDevSupportManager()
+    return ExpoGoReleaseDevSupportManager()
   }
 
   override fun create(
@@ -47,14 +50,16 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
     useDevSupport: Boolean
   ): DevSupportManager {
     if (!useDevSupport) {
-      return ReleaseDevSupportManager()
+      return ExpoGoReleaseDevSupportManager()
     }
 
-    return BridgelessDevSupportManager(
+    // Dev support starts disabled so the dev server is in place before the packager connection
+    // opens. Enabling it is what connects, and it would otherwise use the default host.
+    return ExpoBridgelessDevSupportManager(
       applicationContext,
       reactInstanceManagerHelper,
       packagerPathForJSBundleName,
-      enableOnCreate,
+      false,
       redBoxHandler,
       this.devBundleDownloadListener,
       this.minNumShakes,
@@ -62,6 +67,9 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
       surfaceDelegateFactory,
       devLoadingViewManager,
       pausedInDebuggerOverlayManager
-    )
+    ).apply {
+      devServerBundleUrl?.let { setDevServer(it) }
+      devSupportEnabled = enableOnCreate
+    }
   }
 }

@@ -1,0 +1,58 @@
+---
+title: Battery
+description: A library that provides battery information for the physical device, as well as corresponding event listeners.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-battery'
+packageName: 'expo-battery'
+iconUrl: '/static/images/packages/expo-battery.png'
+platforms: ['android', 'ios*', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { SnackInline } from '~/ui/components/Snippet';
+
+`expo-battery` provides battery information for the physical device (such as battery level, whether or not the device is charging, and more) as well as corresponding event listeners.
+
+> **info** **Note:** On web, `expo-battery` relies on the [Battery Status API](https://developer.mozilla.org/en-US/docs/Web/API/Battery_Status_API), which is only implemented in Chromium-based browsers (Chrome, Edge, Opera). On unsupported browsers, [`getBatteryLevelAsync()`](#getbatterylevelasync) resolves to `-1` and [`getBatteryStateAsync()`](#getbatterystateasync) resolves to `BatteryState.UNKNOWN`.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<SnackInline label='Basic Battery Usage' dependencies={['expo-battery']}>
+
+```jsx
+import { useBatteryLevel } from 'expo-battery';
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function App() {
+  const batteryLevel = useBatteryLevel();
+
+  return (
+    <View style={styles.container}>
+      <Text>Current Battery Level: {batteryLevel}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+</SnackInline>
+
+## API
+
+```js
+import * as Battery from 'expo-battery';
+```
+
+<APISection packageName="expo-battery" />

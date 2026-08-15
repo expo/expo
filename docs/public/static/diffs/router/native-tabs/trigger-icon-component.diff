@@ -1,0 +1,13 @@
+diff --git a/app/_layout.tsx b/app/_layout.tsx
+index 0000000..1111111 100644
+--- a/app/_layout.tsx
++++ b/app/_layout.tsx
+@@ -1,5 +1,3 @@
+- <NativeTabs.Trigger name="index" options={{
+-   tabBarIcon: ({ color, size }) => (
+-     <Icon name="home" color={color} size={size} />
+-   ),
+- }}>
++ <NativeTabs.Trigger name="index">
++   <Icon sf="house" drawable="home_drawable" />
++ </NativeTabs.Trigger>

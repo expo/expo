@@ -2,16 +2,76 @@ import spawnAsync from '@expo/spawn-async';
 import { randomUUID } from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
-import rimraf from 'rimraf';
 
-import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import {
   createFingerprintAsync,
   createProjectHashAsync,
   diffFingerprintChangesAsync,
 } from '../../src/Fingerprint';
+import type { FingerprintSource } from '../../src/Fingerprint.types';
 import { normalizeOptionsAsync } from '../../src/Options';
 import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
+import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
+
+type HashSources = Awaited<ReturnType<typeof getHashSourcesAsync>>;
+type HashSource = HashSources[number];
+type FingerprintDiff = Awaited<ReturnType<typeof diffFingerprintChangesAsync>>;
+
+function normalizeAutolinkingSourceVersionsForSnapshot<T extends HashSource | FingerprintSource>(
+  source: T
+): T {
+  // SDK templates can resolve different patch releases over time.
+  // Keep snapshots focused on the source shape rather than resolved versions.
+  if (source.type === 'package') {
+    const normalizedSource = { ...source, version: '*' };
+    return (
+      'hash' in normalizedSource ? { ...normalizedSource, hash: '*' } : normalizedSource
+    ) as T;
+  }
+
+  if (source.type !== 'contents' || !source.id.includes('AutolinkingConfig:')) {
+    return source;
+  }
+
+  const normalizedSource = {
+    ...source,
+    contents: JSON.stringify(JSON.parse(source.contents.toString()), (key, value) =>
+      key === 'version' || key === 'packageVersion' ? '*' : value
+    ),
+  };
+
+  return ('hash' in normalizedSource ? { ...normalizedSource, hash: '*' } : normalizedSource) as T;
+}
+
+function normalizeAutolinkingVersionsForSnapshot(sources: HashSources): HashSources;
+function normalizeAutolinkingVersionsForSnapshot(diff: FingerprintDiff): FingerprintDiff;
+function normalizeAutolinkingVersionsForSnapshot(sourcesOrDiff: HashSources | FingerprintDiff) {
+  return sourcesOrDiff.map((item) => {
+    if (!('op' in item)) {
+      return normalizeAutolinkingSourceVersionsForSnapshot(item);
+    }
+
+    switch (item.op) {
+      case 'added':
+        return {
+          ...item,
+          addedSource: normalizeAutolinkingSourceVersionsForSnapshot(item.addedSource),
+        };
+      case 'removed':
+        return {
+          ...item,
+          removedSource: normalizeAutolinkingSourceVersionsForSnapshot(item.removedSource),
+        };
+      case 'changed':
+        return {
+          ...item,
+          beforeSource: normalizeAutolinkingSourceVersionsForSnapshot(item.beforeSource),
+          afterSource: normalizeAutolinkingSourceVersionsForSnapshot(item.afterSource),
+        };
+    }
+  });
+}
 
 jest.mock('../../src/ExpoConfigLoader', () => ({
   // Mock the getExpoConfigLoaderPath to use the built version rather than the typescript version from src
@@ -28,17 +88,21 @@ describe('managed project test', () => {
   let originalConfig: any;
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
-    // Pin the SDK version to prevent the latest version breaking snapshots
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-49', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await fs.rm(projectRoot, { force: true, recursive: true });
+
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `blank@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
 
     originalConfig = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf8'));
   });
@@ -48,7 +112,7 @@ describe('managed project test', () => {
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should have same hash after adding js only library', async () => {
@@ -143,44 +207,68 @@ describe('managed project test', () => {
 
   it('diffFingerprintChangesAsync - should return diff after adding native library', async () => {
     const fingerprint = await createFingerprintAsync(projectRoot);
-    await spawnAsync('bun', ['install', '--save', '@react-native-community/netinfo@9.3.7'], {
+    await spawnAsync('bun', ['install', '--save', '@react-native-community/netinfo@12.0.1'], {
       stdio: 'ignore',
       cwd: projectRoot,
     });
     const diff = await diffFingerprintChangesAsync(fingerprint, projectRoot);
-    expect(diff).toMatchInlineSnapshot(`
+    expect(normalizeAutolinkingVersionsForSnapshot(diff)).toMatchInlineSnapshot(`
       [
         {
-          "addedSource": {
-            "filePath": "node_modules/@react-native-community/netinfo",
-            "hash": "7a41febc80b298412c7dd08b77e243c7aadd5c4e",
-            "reasons": [
-              "rncoreAutolinking",
-            ],
-            "type": "dir",
-          },
-          "op": "added",
-        },
-        {
           "afterSource": {
-            "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"ios":{"podspecPath":"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
-            "hash": "ac75722bd87eb0189440be83faa2249079da5839",
-            "id": "rncoreAutolinkingConfig",
+            "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"android":{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"libraryName":"RNCNetInfoSpec","componentDescriptors":[],"cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
+            "hash": "*",
+            "id": "rncoreAutolinkingConfig:android",
             "reasons": [
-              "rncoreAutolinking",
+              "rncoreAutolinkingAndroid",
             ],
             "type": "contents",
           },
           "beforeSource": {
-            "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","configurations":[],"scriptPhases":[]},"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt"}}}}",
-            "hash": "8cf8a7370fa76cf34e817714399ddea233459943",
-            "id": "rncoreAutolinkingConfig",
+            "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
+            "hash": "*",
+            "id": "rncoreAutolinkingConfig:android",
             "reasons": [
-              "rncoreAutolinking",
+              "rncoreAutolinkingAndroid",
             ],
             "type": "contents",
           },
           "op": "changed",
+        },
+        {
+          "afterSource": {
+            "contents": "{"@react-native-community/netinfo":{"root":"node_modules/@react-native-community/netinfo","name":"@react-native-community/netinfo","platforms":{"ios":{"podspecPath":"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec","version":"*","configurations":[],"scriptPhases":[]}}},"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","version":"*","configurations":[],"scriptPhases":[]}}}}",
+            "hash": "*",
+            "id": "rncoreAutolinkingConfig:ios",
+            "reasons": [
+              "rncoreAutolinkingIos",
+            ],
+            "type": "contents",
+          },
+          "beforeSource": {
+            "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","version":"*","configurations":[],"scriptPhases":[]}}}}",
+            "hash": "*",
+            "id": "rncoreAutolinkingConfig:ios",
+            "reasons": [
+              "rncoreAutolinkingIos",
+            ],
+            "type": "contents",
+          },
+          "op": "changed",
+        },
+        {
+          "addedSource": {
+            "filePath": "node_modules/@react-native-community/netinfo/package.json",
+            "hash": "*",
+            "name": "@react-native-community/netinfo",
+            "reasons": [
+              "rncoreAutolinkingAndroid",
+              "rncoreAutolinkingIos",
+            ],
+            "type": "package",
+            "version": "*",
+          },
+          "op": "added",
         },
       ]
     `);
@@ -212,6 +300,35 @@ describe('managed project test', () => {
       await fs.rm(path.dirname(googleServicesPathNew), { recursive: true, force: true });
     }
   });
+
+  it('should change the fingerprint under the `strict` preset when the app version changes', async () => {
+    const configPath = path.join(projectRoot, 'app.json');
+    const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
+
+    const hash = await createProjectHashAsync(projectRoot, { preset: 'strict' });
+
+    config.expo.version = '2.0.0';
+    await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+    const hash2 = await createProjectHashAsync(projectRoot, { preset: 'strict' });
+
+    // `strict` hashes the whole ExpoConfig, so a version bump changes the fingerprint.
+    expect(hash).not.toBe(hash2);
+  });
+
+  it('should keep the same fingerprint under the `relaxed` preset when the app version and name change', async () => {
+    const configPath = path.join(projectRoot, 'app.json');
+    const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
+
+    const hash = await createProjectHashAsync(projectRoot, { preset: 'relaxed' });
+
+    config.expo.version = '2.0.0';
+    config.expo.name = 'renamed-app';
+    await fs.writeFile(configPath, JSON.stringify(config, null, 2));
+    const hash2 = await createProjectHashAsync(projectRoot, { preset: 'relaxed' });
+
+    // `relaxed` ignores the app version and name, so neither change affects the fingerprint.
+    expect(hash).toBe(hash2);
+  });
 });
 
 describe(`getHashSourcesAsync - managed project`, () => {
@@ -221,27 +338,25 @@ describe(`getHashSourcesAsync - managed project`, () => {
   const projectRoot = path.join(tmpDir, projectName);
 
   beforeAll(async () => {
-    rimraf.sync(projectRoot);
-    // Pin the SDK version to prevent the latest version breaking snapshots
-    await spawnAsync('bunx', ['create-expo-app', '-t', 'blank@sdk-49', projectName], {
-      stdio: 'inherit',
-      cwd: tmpDir,
-      env: {
-        ...process.env,
-        // Do not inherit the package manager from this repository
-        npm_config_user_agent: undefined,
-      },
-    });
+    await fs.rm(projectRoot, { force: true, recursive: true });
 
-    // Pin the `expo` package version to prevent the latest version breaking snapshots
-    await spawnAsync('bun', ['install', '--save', 'expo@49.0.16'], {
-      stdio: 'ignore',
-      cwd: projectRoot,
-    });
+    await spawnAsync(
+      'bunx',
+      ['create-expo-app', '-t', `blank@${E2E_TEMPLATE_SDK_VERSION}`, projectName],
+      {
+        stdio: 'inherit',
+        cwd: tmpDir,
+        env: {
+          ...process.env,
+          // Do not inherit the package manager from this repository
+          npm_config_user_agent: undefined,
+        },
+      }
+    );
   });
 
   afterAll(async () => {
-    rimraf.sync(projectRoot);
+    await fs.rm(projectRoot, { force: true, recursive: true });
   });
 
   it('should match snapshot', async () => {
@@ -249,6 +364,6 @@ describe(`getHashSourcesAsync - managed project`, () => {
       projectRoot,
       await normalizeOptionsAsync(projectRoot)
     );
-    expect(sources).toMatchSnapshot();
+    expect(normalizeAutolinkingVersionsForSnapshot(sources)).toMatchSnapshot();
   });
 });

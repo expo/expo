@@ -11,6 +11,7 @@ import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.common.build.ReactBuildConfig
+import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.defaults.DefaultComponentsRegistry
 import com.facebook.react.defaults.DefaultTurboModuleManagerDelegate
 import com.facebook.react.fabric.ComponentFactory
@@ -39,23 +40,23 @@ object ExpoReactHostFactory {
     private val hostHandlers: List<ReactNativeHostHandler>
   ) : ReactHostDelegate {
 
-    val hostDelegateJsBundleFilePath: String? by lazy {
-      hostHandlers.asSequence()
-        .mapNotNull { it.getJSBundleFile(useDevSupport) }
-        .firstOrNull() ?: jsBundleFilePath
-    }
+    val hostDelegateJsBundleFilePath: String?
+      get() =
+        hostHandlers.asSequence()
+          .mapNotNull { it.getJSBundleFile(useDevSupport) }
+          .firstOrNull() ?: jsBundleFilePath
 
-    val hostDelegateJSBundleAssetPath: String? by lazy {
-      hostHandlers.asSequence()
-        .mapNotNull { it.getBundleAssetName(useDevSupport) }
-        .firstOrNull() ?: jsBundleAssetPath
-    }
+    val hostDelegateJSBundleAssetPath: String?
+      get() =
+        hostHandlers.asSequence()
+          .mapNotNull { it.getBundleAssetName(useDevSupport) }
+          .firstOrNull() ?: jsBundleAssetPath
 
-    val hostDelegateUseDeveloperSupport: Boolean by lazy {
-      hostHandlers.asSequence()
-        .mapNotNull { it.useDeveloperSupport }
-        .firstOrNull() ?: useDevSupport
-    }
+    val hostDelegateUseDeveloperSupport: Boolean
+      get() =
+        hostHandlers.asSequence()
+          .mapNotNull { it.useDeveloperSupport }
+          .firstOrNull() ?: useDevSupport
 
     // Keeps this `_jsBundleLoader` backing property for DevLauncher to replace its internal value
     private var _jsBundleLoader: JSBundleLoader? = null
@@ -101,13 +102,14 @@ object ExpoReactHostFactory {
     jsMainModulePath: String = ".expo/.virtual-metro-entry",
     jsBundleAssetPath: String = "index.android.bundle",
     jsBundleFilePath: String? = null,
-    jsRuntimeFactory: JSRuntimeFactory? = null,
     useDevSupport: Boolean = ReactBuildConfig.DEBUG,
     bindingsInstaller: BindingsInstaller? = null
   ): ReactHost {
     if (reactHost == null) {
       val hostHandlers = ExpoModulesPackage.packageList
         .flatMap { it.createReactNativeHostHandlers(context) }
+
+      val devSupportManagerFactory = hostHandlers.firstNotNullOfOrNull { it.devSupportManagerFactory as? DevSupportManagerFactory }
 
       val reactHostDelegate = ExpoReactHostDelegate(
         WeakReference(context),
@@ -129,10 +131,11 @@ object ExpoReactHostFactory {
       val reactHostImpl =
         ReactHostImpl(
           context,
-          delegate = reactHostDelegate,
+          reactHostDelegate = reactHostDelegate,
           componentFactory = componentFactory,
           allowPackagerServerAccess = true,
-          useDevSupport = useDevSupport
+          useDevSupport = useDevSupport,
+          devSupportManagerFactory = devSupportManagerFactory
         )
 
       hostHandlers.forEach { handler ->

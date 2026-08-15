@@ -1,24 +1,16 @@
 // Entry file for a DOM Component.
 import '@expo/metro-runtime';
-
 import React from 'react';
 
-import { JSONValue } from './dom.types';
-import { addEventListener, getActionsObject } from './marshal';
 import registerRootComponent from '../launch/registerRootComponent';
+import type { JSONValue } from './dom.types';
+import { addEventListener, getActionsObject, notifyDOMReady } from './marshal';
 
-interface MarshalledProps {
+export interface MarshalledProps {
   names: string[];
   props: Record<string, JSONValue>;
   [key: string]: undefined | JSONValue;
 }
-
-interface WindowType {
-  $$EXPO_DOM_HOST_OS?: string;
-  $$EXPO_INITIAL_PROPS?: MarshalledProps;
-}
-
-declare let window: WindowType;
 
 const ACTIONS = getActionsObject!();
 
@@ -89,6 +81,8 @@ export function registerDOMComponent(AppModule: any) {
           setProps(msg.data as MarshalledProps);
         }
       });
+      // Must stay after `addEventListener`: props emitted before it existed were dropped.
+      notifyDOMReady();
       return () => {
         remove();
       };
@@ -98,11 +92,10 @@ export function registerDOMComponent(AppModule: any) {
       if (!marshalledProps.names) return {};
       // Create a named map { [name: string]: ProxyFunction }
       // TODO(@kitten): Unclear how this is typed or shaped
-      return Object.fromEntries(
-        marshalledProps.names.map((key: string) => {
-          return [key, ACTIONS[key]];
-        })
-      );
+      return marshalledProps.names.reduce((acc: Record<string, any>, key: string) => {
+        acc[key] = ACTIONS[key];
+        return acc;
+      }, {});
     }, [marshalledProps.names]);
 
     return <AppModule {...props} {...(marshalledProps.props || {})} {...proxyActions} />;

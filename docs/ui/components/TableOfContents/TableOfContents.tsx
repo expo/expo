@@ -14,6 +14,7 @@ import {
   useEffect,
   SyntheticEvent,
 } from 'react';
+import { useIntl } from 'react-intl';
 
 import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
 import { isVersionedPath } from '~/common/routes';
@@ -27,6 +28,7 @@ import { TableOfContentsLink } from './TableOfContentsLink';
 const UPPER_SCROLL_LIMIT_FACTOR = 1 / 4;
 const LOWER_SCROLL_LIMIT_FACTOR = 3 / 4;
 const ACTIVE_ITEM_OFFSET_FACTOR = 1 / 20;
+const TARGET_IN_VIEW_BUFFER = 48;
 
 export type TableOfContentsProps = PropsWithChildren<{
   maxNestingDepth?: number;
@@ -43,6 +45,7 @@ export const TableOfContents = forwardRef<
   HeadingManagerProps & TableOfContentsProps
 >(({ headingManager: { headings }, contentRef, selfRef, maxNestingDepth = 4 }, ref) => {
   const router = useRouter();
+  const intl = useIntl();
   const isVersioned = isVersionedPath(router?.pathname ?? '');
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeParentSlug, setActiveParentSlug] = useState<string | null>(null);
@@ -73,6 +76,23 @@ export const TableOfContents = forwardRef<
 
   useImperativeHandle(ref, () => ({ handleContentScroll }), []);
 
+  function getContentScrollElement() {
+    return contentRef?.current?.getScrollRef().current;
+  }
+
+  function getViewportHeight() {
+    return getContentScrollElement()?.clientHeight ?? window.innerHeight;
+  }
+
+  function getScrollMetrics() {
+    const scrollElement = getContentScrollElement();
+    const viewportHeight = getViewportHeight();
+    const scrollHeight = scrollElement?.scrollHeight ?? 0;
+    const activationOffset = viewportHeight * ACTIVE_ITEM_OFFSET_FACTOR;
+
+    return { scrollElement, viewportHeight, scrollHeight, activationOffset };
+  }
+
   function handleContentScroll(contentScrollPosition: number) {
     const showScrollTopValue = contentScrollPosition > 120;
 
@@ -80,51 +100,108 @@ export const TableOfContents = forwardRef<
       setShowScrollTop(showScrollTopValue);
     }
 
+    const { scrollElement, viewportHeight, scrollHeight, activationOffset } = getScrollMetrics();
+    const activationLine = contentScrollPosition + activationOffset;
+    const bottomThreshold = Math.min(200, viewportHeight * 0.1);
+
     if (slugScrollingTo.current) {
-      return;
+      const targetHeading = headings.find(h => h.slug === slugScrollingTo.current);
+      const targetTop = targetHeading?.ref?.current?.offsetTop;
+
+      if (targetTop != null) {
+        const targetInView =
+          targetTop >= activationLine - TARGET_IN_VIEW_BUFFER &&
+          targetTop <= activationLine + TARGET_IN_VIEW_BUFFER;
+
+        if (!targetInView) {
+          return;
+        }
+      } else {
+        slugScrollingTo.current = null;
+      }
+
+      slugScrollingTo.current = null;
     }
 
-    const viewportMiddle = contentScrollPosition + window.innerHeight / 2;
-    const viewportActiveOffset =
-      contentScrollPosition + window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR;
+    let nextActive: Heading | null = null;
 
-    for (const { ref, slug, level } of headings) {
-      if (!ref?.current) {
+    for (const heading of headings) {
+      if (!heading.ref?.current) {
         continue;
       }
 
-      const headingTop = ref.current.offsetTop;
+      const headingTop = heading.ref.current.offsetTop;
 
-      if (headingTop > viewportMiddle) {
+      if (headingTop <= activationLine) {
+        nextActive = heading;
+      } else {
         break;
       }
+    }
 
-      const isInView = headingTop >= viewportActiveOffset && headingTop <= viewportMiddle;
+    const isNearBottom =
+      scrollElement && scrollHeight
+        ? contentScrollPosition + viewportHeight >= scrollHeight - bottomThreshold
+        : false;
 
-      if (isInView) {
-        if (slug === activeSlug) {
-          return;
+    if (isNearBottom && headings.length > 0) {
+      const viewportTop = contentScrollPosition;
+      const viewportBottom = contentScrollPosition + viewportHeight;
+
+      let bestHeading: Heading | null = null;
+      let bestVisibleArea = 0;
+
+      for (let i = 0; i < headings.length; i++) {
+        const heading = headings[i];
+        if (!heading.ref?.current) {
+          continue;
         }
 
-        if (level > BASE_HEADING_LEVEL + 1 && isVersioned) {
-          const currentIndex = headings.findIndex(h => h.slug === slug);
-          for (let i = currentIndex; i >= 0; i--) {
-            const h = headings[i];
-            if (h.level === BASE_HEADING_LEVEL + 1) {
-              setActiveParentSlug(h.slug);
-              setActiveSlug(slug);
-              updateSelfScroll();
-              return;
-            }
-          }
-        }
+        const sectionStart = heading.ref.current.offsetTop;
+        const nextHeading = headings[i + 1];
+        const sectionEnd = nextHeading?.ref?.current?.offsetTop ?? scrollHeight;
 
-        setActiveParentSlug(null);
-        setActiveSlug(slug);
-        updateSelfScroll();
-        return;
+        const visibleStart = Math.max(sectionStart, viewportTop);
+        const visibleEnd = Math.min(sectionEnd, viewportBottom);
+        const visibleArea = Math.max(0, visibleEnd - visibleStart);
+
+        if (visibleArea >= bestVisibleArea) {
+          bestVisibleArea = visibleArea;
+          bestHeading = heading;
+        }
+      }
+
+      if (bestHeading && bestVisibleArea > 0) {
+        nextActive = bestHeading;
       }
     }
+
+    const activeHeading = nextActive ?? headings[0] ?? null;
+
+    if (!activeHeading) {
+      return;
+    }
+
+    if (activeHeading.slug === activeSlug) {
+      return;
+    }
+
+    if (activeHeading.level > BASE_HEADING_LEVEL + 1 && isVersioned) {
+      const currentIndex = headings.findIndex(h => h.slug === activeHeading.slug);
+      for (let i = currentIndex; i >= 0; i--) {
+        const h = headings[i];
+        if (h.level === BASE_HEADING_LEVEL + 1) {
+          setActiveParentSlug(h.slug);
+          setActiveSlug(activeHeading.slug);
+          updateSelfScroll();
+          return;
+        }
+      }
+    }
+
+    setActiveParentSlug(null);
+    setActiveSlug(activeHeading.slug);
+    updateSelfScroll();
   }
 
   function updateSelfScroll() {
@@ -211,11 +288,12 @@ export const TableOfContents = forwardRef<
 
     slugScrollingTo.current = slug;
 
+    const { activationOffset } = getScrollMetrics();
     const scrollOffset = type === 'inlineCode' ? 35 : 21;
 
     contentRef?.current?.getScrollRef().current?.scrollTo({
       behavior: reducedMotion ? 'instant' : 'smooth',
-      top: ref.current?.offsetTop - window.innerHeight * ACTIVE_ITEM_OFFSET_FACTOR - scrollOffset,
+      top: Math.max(0, (ref.current?.offsetTop ?? 0) - activationOffset + scrollOffset),
     });
 
     if (history?.replaceState) {
@@ -298,10 +376,11 @@ export const TableOfContents = forwardRef<
       return (
         <div
           key={heading.slug}
+          role="listitem"
           className={mergeClasses(
             'flex items-center',
             currentH3 && heading.level > BASE_HEADING_LEVEL + 2 && 'ml-0',
-            hasChildren && isVersioned && '-ml-2'
+            hasChildren && isVersioned && '-ml-6'
           )}>
           {hasChildren && isVersioned && (
             <ButtonBase
@@ -316,9 +395,10 @@ export const TableOfContents = forwardRef<
               }}
               aria-expanded={!collapsedH3s.has(heading.slug)}
               aria-controls={`toc-section-${heading.slug}`}
-              className="-mr-2 flex h-full cursor-pointer items-center justify-center self-start pt-0.5 hocus:opacity-75"
+              className="flex min-h-6 w-6 shrink-0 cursor-pointer items-center justify-center self-start hocus:opacity-75"
               aria-label={`${collapsedH3s.has(heading.slug) ? 'Expand' : 'Collapse'} section ${heading.title}`}>
               <ChevronDownIcon
+                aria-hidden="true"
                 className={mergeClasses(
                   'icon-sm text-icon-secondary transition-transform',
                   collapsedH3s.has(heading.slug) ? '-rotate-90' : 'rotate-0'
@@ -341,26 +421,27 @@ export const TableOfContents = forwardRef<
   };
 
   return (
-    <nav className="w-[280px] px-6 pb-10 pt-[52px]" data-toc>
+    <nav className="w-70 px-6 pt-13 pb-10" data-toc>
       <CALLOUT
         weight="medium"
         className={mergeClasses(
-          'absolute z-[100] -ml-6 -mt-[52px] flex min-h-[32px] w-[272px] select-none',
-          'items-center gap-2 bg-gradient-to-b from-default from-80% to-transparent py-3 pl-6'
+          'absolute z-100 -mt-13 -ml-6 flex min-h-8 w-68 select-none',
+          'items-center gap-2 bg-linear-to-b from-default from-80% to-transparent py-3 pl-6'
         )}>
-        <LayoutAlt03Icon className="icon-sm" /> On this page
+        <LayoutAlt03Icon aria-hidden="true" className="icon-sm" />{' '}
+        {intl.formatMessage({ id: 'onThisPage' })}
         <Button
           theme="quaternary"
           size="xs"
           className={mergeClasses(
-            'ml-auto mr-2 px-2 transition-opacity duration-300',
+            'mr-2 ml-auto px-2 transition-opacity duration-300',
             !showScrollTop && 'pointer-events-none opacity-0'
           )}
           onClick={handleTopClick}>
           <ArrowCircleUpIcon className="icon-sm text-icon-secondary" aria-label="Scroll to top" />
         </Button>
       </CALLOUT>
-      <div role="tree">{renderTOC()}</div>
+      <div role="list">{renderTOC()}</div>
     </nav>
   );
 });

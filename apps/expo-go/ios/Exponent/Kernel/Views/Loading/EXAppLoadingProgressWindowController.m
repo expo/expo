@@ -15,6 +15,17 @@
 
 @end
 
+// `SceneGeometry` in ExpoModulesCore is a Swift enum, so it isn't reachable from Objective-C.
+static UIWindowScene *EXForegroundActiveWindowScene(void)
+{
+  for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
+    if ([scene isKindOfClass:[UIWindowScene class]] && scene.activationState == UISceneActivationStateForegroundActive) {
+      return (UIWindowScene *)scene;
+    }
+  }
+  return nil;
+}
+
 @implementation EXAppLoadingProgressWindowController
 
 - (instancetype)initWithEnabled:(BOOL)enabled
@@ -36,13 +47,17 @@
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
     if (!self.window) {
-      CGSize screenSize = [UIScreen mainScreen].bounds.size;
+      UIWindowScene *windowScene = EXForegroundActiveWindowScene();
+      UIWindow *hostWindow = windowScene.keyWindow ?: windowScene.windows.firstObject;
+      CGSize windowSize = hostWindow.bounds.size;
+      CGFloat bottomInsets = hostWindow.safeAreaInsets.bottom;
 
-      int bottomInsets = EXSharedApplication().keyWindow.safeAreaInsets.bottom;
-      self.window = [[UIWindow alloc] initWithFrame:CGRectMake(0,
-                                                               screenSize.height - 36 - bottomInsets,
-                                                               screenSize.width,
-                                                               36 + bottomInsets)];
+      self.window = windowScene ? [[UIWindow alloc] initWithWindowScene:windowScene]
+                                : [[UIWindow alloc] initWithFrame:CGRectZero];
+      self.window.frame = CGRectMake(0,
+                                     windowSize.height - 36 - bottomInsets,
+                                     windowSize.width,
+                                     36 + bottomInsets);
       self.window.windowLevel = UIWindowLevelStatusBar + 1;
       self.window.rootViewController = [EXAppLoadingProgressWindowViewController new];
       self.window.backgroundColor = [EXUtil colorWithRGB:0xfafafa];
@@ -51,12 +66,12 @@
       [self.window addSubview:containerView];
 
       CALayer *topBorderLayer = [CALayer layer];
-      topBorderLayer.frame = CGRectMake(0, 0, screenSize.width, 1);
+      topBorderLayer.frame = CGRectMake(0, 0, windowSize.width, 1);
       topBorderLayer.backgroundColor = [EXUtil colorWithRGB:0xe3e3e3].CGColor;
       [containerView.layer addSublayer:topBorderLayer];
 
       self.textLabel = [UILabel new];
-      self.textLabel.frame = CGRectMake(10, 0, screenSize.width - 20, 36);
+      self.textLabel.frame = CGRectMake(10, 0, windowSize.width - 20, 36);
       self.textLabel.font = [UIFont monospacedDigitSystemFontOfSize:12 weight:(UIFontWeightRegular)];
       self.textLabel.textAlignment = NSTextAlignmentLeft;
       self.textLabel.textColor = [EXUtil colorWithRGB:0xa7a7a7];
@@ -98,7 +113,11 @@
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
     float progressPercent = ([progress.done floatValue] / [progress.total floatValue]);
-    self.textLabel.text = [NSString stringWithFormat:@"%@ %.2f%%", progress.status, progressPercent * 100];
+    NSString *status = progress.status;
+    if ([status caseInsensitiveCompare:@"Downloading"] == NSOrderedSame) {
+      status = @"Loading";
+    }
+    self.textLabel.text = [NSString stringWithFormat:@"%@ %.2f%%", status, progressPercent * 100];
     [self.textLabel setNeedsDisplay];
 
     // TODO: (@bbarthec) maybe it's better to show/hide this based on other thing than progress status reported by the fetcher?
@@ -130,9 +149,9 @@
 + (nullable NSString *)_loadingViewTextForStatus:(EXAppLoaderRemoteUpdateStatus)status
 {
   if (status == kEXAppLoaderRemoteUpdateStatusChecking) {
-    return @"Checking for new update...";
+    return @"Checking for latest version...";
   } else if (status == kEXAppLoaderRemoteUpdateStatusDownloading) {
-    return @"New update available, downloading...";
+    return @"Loading project...";
   } else {
     return nil;
   }

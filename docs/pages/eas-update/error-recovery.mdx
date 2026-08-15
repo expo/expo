@@ -37,7 +37,7 @@ If your app throws a fatal error when executing JS which is early enough in the 
 
 > If more than 10 seconds have elapsed between your app's first render and the time a fatal error is thrown, `expo-updates` will not catch this error at all and none of the error recovery code will be triggered. Therefore, we highly recommend that your app check for updates very shortly after launching, whether automatically or manually to ensure you can push out fixes in the event of a future error.
 
-If `expo-updates` catches a JS error, what will happen next depends on whether React Native has fired the native "content appeared" event (`ReactMarkerConstants.CONTENT_APPEARED` on Android or `RCTContentDidAppearNotification` on iOS) &mdash; approximately when your app's first view has been rendered on the screen, for this particular update, either on this launch or a previous one.
+If `expo-updates` catches a JS error, what will happen next depends on whether React Native has fired the native "content appeared" event (`ReactMarkerConstants.CONTENT_APPEARED` on Android or `RCTContentDidAppearNotification` on iOS) — approximately when your app's first view has been rendered on the screen, for this particular update, either on this launch or a previous one.
 
 > **Why this distinction?** In some cases `expo-updates` may try to automatically roll back to an older (working) update, but this can be dangerous if your new update has modified persistent state in a non-backwards compatible way. We assume that if the error occurs before the first view has rendered, no such code has been able to execute, and so rolling back is safe. After this point `expo-updates` will only fix forward and will not roll back.
 

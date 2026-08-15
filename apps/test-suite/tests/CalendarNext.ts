@@ -7,12 +7,14 @@ import {
   ExpoCalendarReminder,
   ExpoCalendarAttendee,
   EntityTypes,
-} from 'expo-calendar/next';
-import * as Calendar from 'expo-calendar/next';
-import { UnavailabilityError } from 'expo-modules-core';
+} from 'expo-calendar';
+import * as Calendar from 'expo-calendar';
+import { PermissionStatus, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
+import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'Calendar@next';
@@ -114,15 +116,19 @@ async function createTestAttendee(
 }
 
 async function getReminderCalendar() {
-  const calendars = getCalendars();
-  return (await calendars).find((c) => c.entityType === EntityTypes.REMINDER);
+  const calendars = await getCalendars();
+  const reminderCalendar = calendars.find((c) => c.entityType === EntityTypes.REMINDER);
+  if (!reminderCalendar) {
+    throw new Error('This device has no reminder calendar, so reminder specs cannot run.');
+  }
+  return reminderCalendar;
 }
 
-function reminderExists(reminders: ExpoCalendarReminder[], reminderId: string) {
-  return reminders.some((r) => r.id === reminderId);
+function reminderExists(reminders: ExpoCalendarReminder[], reminderId: string | undefined) {
+  return reminderId !== undefined && reminders.some((r) => r.id === reminderId);
 }
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   const shouldSkipTestsRequiringPermissions =
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
@@ -130,90 +136,198 @@ export async function test(t) {
   const shouldSkipUItest = true;
   const describeWithUiTest = shouldSkipUItest ? t.xdescribe : t.describe;
 
-  function testCalendarShape(calendar) {
-    t.expect(calendar).toBeDefined();
-    t.expect(typeof calendar.id).toBe('string');
-    t.expect(typeof calendar.title).toBe('string');
-    t.expect(typeof calendar.source).toBe('object');
+  function testCalendarShape(calendar: ExpoCalendar) {
+    t.expect(calendar).withContext('calendar should be defined').toBeDefined();
+    t.expect(typeof calendar.id)
+      .withContext('calendar.id should be a string')
+      .toBe('string');
+    t.expect(typeof calendar.title)
+      .withContext('calendar.title should be a string')
+      .toBe('string');
+    t.expect(typeof calendar.source)
+      .withContext('calendar.source should be an object')
+      .toBe('object');
     testCalendarSourceShape(calendar.source);
-    t.expect(typeof calendar.color).toBe('string');
-    t.expect(typeof calendar.allowsModifications).toBe('boolean');
 
-    t.expect(Array.isArray(calendar.allowedAvailabilities)).toBe(true);
+    if (calendar.color) {
+      t.expect(typeof calendar.color)
+        .withContext('calendar.color should be a string')
+        .toBe('string');
+    }
+
+    t.expect(typeof calendar.allowsModifications)
+      .withContext('calendar.allowsModifications should be a boolean')
+      .toBe('boolean');
+
+    t.expect(Array.isArray(calendar.allowedAvailabilities))
+      .withContext('calendar.allowedAvailabilities should be an array')
+      .toBe(true);
     calendar.allowedAvailabilities.forEach((availability) => {
-      t.expect(Object.values(Calendar.Availability)).toContain(availability);
+      t.expect(Object.values(Calendar.Availability))
+        .withContext('calendar availability should be a valid Availability value')
+        .toContain(availability);
     });
 
     if (Platform.OS === 'ios') {
-      t.expect(typeof calendar.entityType).toBe('string');
-      t.expect(Object.values(Calendar.EntityTypes)).toContain(calendar.entityType);
+      t.expect(typeof calendar.entityType)
+        .withContext('calendar.entityType should be a string')
+        .toBe('string');
+      t.expect(Object.values(Calendar.EntityTypes))
+        .withContext('calendar.entityType should be a valid EntityType')
+        .toContain(calendar.entityType);
 
-      t.expect(typeof calendar.type).toBe('string');
-      t.expect(Object.values(Calendar.CalendarType)).toContain(calendar.type);
+      t.expect(typeof calendar.type)
+        .withContext('calendar.type should be a string')
+        .toBe('string');
+      t.expect(Object.values(Calendar.CalendarType))
+        .withContext('calendar.type should be a valid CalendarType')
+        .toContain(calendar.type);
     }
   }
 
-  function testEventShape(event) {
-    t.expect(event).toBeDefined();
-    t.expect(typeof event.id).toBe('string');
-    t.expect(typeof event.calendarId).toBe('string');
-    t.expect(typeof event.title).toBe('string');
-    t.expect(typeof event.startDate).toBe('string');
-    t.expect(typeof event.endDate).toBe('string');
-    t.expect(typeof event.allDay).toBe('boolean');
-    t.expect(typeof event.location).toBe('string');
-    t.expect(typeof event.notes).toBe('string');
-    t.expect(Array.isArray(event.alarms)).toBe(true);
-    event.recurrenceRule && t.expect(typeof event.recurrenceRule).toBe('object');
-    t.expect(Object.values(Calendar.Availability)).toContain(event.availability);
-    event.timeZone && t.expect(typeof event.timeZone).toBe('string');
+  function testEventShape(event: ExpoCalendarEvent) {
+    t.expect(event).withContext('event should be defined').toBeDefined();
+    t.expect(typeof event.id)
+      .withContext('event.id should be a string')
+      .toBe('string');
+    t.expect(typeof event.calendarId)
+      .withContext('event.calendarId should be a string')
+      .toBe('string');
+    t.expect(typeof event.title)
+      .withContext('event.title should be a string')
+      .toBe('string');
+    t.expect(typeof event.startDate)
+      .withContext('event.startDate should be a string')
+      .toBe('string');
+    t.expect(typeof event.endDate)
+      .withContext('event.endDate should be a string')
+      .toBe('string');
+    t.expect(typeof event.allDay)
+      .withContext('event.allDay should be a boolean')
+      .toBe('boolean');
+    t.expect(typeof event.location)
+      .withContext('event.location should be a string')
+      .toBe('string');
+    t.expect(typeof event.notes)
+      .withContext('event.notes should be a string')
+      .toBe('string');
+    t.expect(Array.isArray(event.alarms)).withContext('event.alarms should be an array').toBe(true);
+    event.recurrenceRule &&
+      t
+        .expect(typeof event.recurrenceRule)
+        .withContext('event.recurrenceRule should be an object')
+        .toBe('object');
+    t.expect(Object.values(Calendar.Availability))
+      .withContext('event.availability should be a valid Availability value')
+      .toContain(event.availability);
+    event.timeZone &&
+      t
+        .expect(typeof event.timeZone)
+        .withContext('event.timeZone should be a string')
+        .toBe('string');
 
     if (Platform.OS === 'ios') {
-      event.url && t.expect(typeof event.url).toBe('string');
-      t.expect(typeof event.creationDate).toBe('string');
-      t.expect(typeof event.lastModifiedDate).toBe('string');
-      t.expect(typeof event.originalStartDate).toBe('string');
-      t.expect(typeof event.isDetached).toBe('boolean');
-      t.expect(Object.values(Calendar.EventStatus)).toContain(event.status);
+      event.url &&
+        t
+          .expect(typeof event.url)
+          .withContext('event.url should be a string')
+          .toBe('string');
+      t.expect(typeof event.creationDate)
+        .withContext('event.creationDate should be a string')
+        .toBe('string');
+      t.expect(typeof event.lastModifiedDate)
+        .withContext('event.lastModifiedDate should be a string')
+        .toBe('string');
+      t.expect(typeof event.originalStartDate)
+        .withContext('event.originalStartDate should be a string')
+        .toBe('string');
+      t.expect(typeof event.isDetached)
+        .withContext('event.isDetached should be a boolean')
+        .toBe('boolean');
+      t.expect(Object.values(Calendar.EventStatus))
+        .withContext('event.status should be a valid EventStatus')
+        .toContain(event.status);
 
       if (event.organizer) {
-        t.expect(typeof event.organizer).toBe('object');
-        testAttendeeShape(event.organizer);
+        t.expect(typeof event.organizer)
+          .withContext('event.organizer should be an object')
+          .toBe('object');
+        testAttendeeLikeShape(event.organizer);
       }
     }
   }
 
-  function testCalendarSourceShape(source) {
-    t.expect(source).toBeDefined();
-    t.expect(typeof source.type).toBe('string');
+  function testCalendarSourceShape(source: ExpoCalendar['source']) {
+    t.expect(source).withContext('source should be defined').toBeDefined();
+    t.expect(typeof source.type)
+      .withContext('source.type should be a string')
+      .toBe('string');
 
     if (source.name !== null) {
       // source.name can be null if it refers to the local (unnamed) calendar.
-      t.expect(typeof source.name).toBe('string');
+      t.expect(typeof source.name)
+        .withContext('source.name should be a string')
+        .toBe('string');
     }
 
     if (Platform.OS === 'ios') {
-      t.expect(typeof source.id).toBe('string');
+      t.expect(typeof source.id)
+        .withContext('source.id should be a string')
+        .toBe('string');
     }
   }
 
-  function testAttendeeShape(attendee) {
-    t.expect(attendee).toBeDefined();
-    t.expect(typeof attendee.name).toBe('string');
-    t.expect(typeof attendee.role).toBe('string');
-    t.expect(Object.values(Calendar.AttendeeRole)).toContain(attendee.role);
-    t.expect(typeof attendee.status).toBe('string');
-    t.expect(Object.values(Calendar.AttendeeStatus)).toContain(attendee.status);
-    t.expect(typeof attendee.type).toBe('string');
-    t.expect(Object.values(Calendar.AttendeeType)).toContain(attendee.type);
+  /**
+   * Assertions shared by attendees and organizers. An organizer only ever
+   * appears on iOS and carries no `id` or `email`, so the Android-only fields
+   * live in `testAttendeeShape` instead.
+   */
+  function testAttendeeLikeShape(
+    attendee: ExpoCalendarAttendee | NonNullable<ExpoCalendarEvent['organizer']>
+  ) {
+    t.expect(attendee).withContext('attendee should be defined').toBeDefined();
+    t.expect(typeof attendee.name)
+      .withContext('attendee.name should be a string')
+      .toBe('string');
+    t.expect(typeof attendee.role)
+      .withContext('attendee.role should be a string')
+      .toBe('string');
+    t.expect(Object.values(Calendar.AttendeeRole))
+      .withContext('attendee.role should be a valid AttendeeRole')
+      .toContain(attendee.role);
+    t.expect(typeof attendee.status)
+      .withContext('attendee.status should be a string')
+      .toBe('string');
+    t.expect(Object.values(Calendar.AttendeeStatus))
+      .withContext('attendee.status should be a valid AttendeeStatus')
+      .toContain(attendee.status);
+    t.expect(typeof attendee.type)
+      .withContext('attendee.type should be a string')
+      .toBe('string');
+    t.expect(Object.values(Calendar.AttendeeType))
+      .withContext('attendee.type should be a valid AttendeeType')
+      .toContain(attendee.type);
 
     if (Platform.OS === 'ios') {
-      t.expect(typeof attendee.url).toBe('string');
-      t.expect(typeof attendee.isCurrentUser).toBe('boolean');
+      t.expect(typeof attendee.url)
+        .withContext('attendee.url should be a string')
+        .toBe('string');
+      t.expect(typeof attendee.isCurrentUser)
+        .withContext('attendee.isCurrentUser should be a boolean')
+        .toBe('boolean');
     }
+  }
+
+  function testAttendeeShape(attendee: ExpoCalendarAttendee) {
+    testAttendeeLikeShape(attendee);
+
     if (Platform.OS === 'android') {
-      t.expect(typeof attendee.id).toBe('string');
-      t.expect(typeof attendee.email).toBe('string');
+      t.expect(typeof attendee.id)
+        .withContext('attendee.id should be a string')
+        .toBe('string');
+      t.expect(typeof attendee.email)
+        .withContext('attendee.email should be a string')
+        .toBe('string');
     }
   }
 
@@ -224,7 +338,7 @@ export async function test(t) {
           const results = await Calendar.requestCalendarPermissions();
 
           t.expect(results.granted).toBe(true);
-          t.expect(results.status).toBe('granted');
+          t.expect(results.status).toBe(PermissionStatus.GRANTED);
         });
       });
 
@@ -234,7 +348,7 @@ export async function test(t) {
             const results = await Calendar.requestRemindersPermissions();
 
             t.expect(results.granted).toBe(true);
-            t.expect(results.status).toBe('granted');
+            t.expect(results.status).toBe(PermissionStatus.GRANTED);
           });
         });
       }
@@ -387,7 +501,7 @@ export async function test(t) {
     });
 
     describeWithUiTest('Calendar UI Integration', () => {
-      let originalTimeout;
+      let originalTimeout: number;
       const dontStartNewTask = {
         startNewActivityTask: false,
       };
@@ -402,11 +516,14 @@ export async function test(t) {
       t.it('creates an event via UI', async () => {
         const eventData = createEventData();
         await alertAndWaitForResponse('Please confirm the event creation dialog.');
-        const result = await Calendar.createEventInCalendarAsync(eventData, dontStartNewTask);
+        const result = await calendar.addEventWithForm({
+          ...eventData,
+          ...dontStartNewTask,
+        });
         if (Platform.OS === 'ios') {
-          t.expect(result.action).toBe('saved');
+          t.expect(result.action).toBe(Calendar.CalendarDialogResultActions.saved);
           t.expect(typeof result.id).toBe('string');
-          const storedEvent = ExpoCalendarEvent.get(result.id);
+          const storedEvent = ExpoCalendarEvent.get(requireNotNull(result.id));
 
           t.expect(storedEvent).toEqual(
             t.jasmine.objectContaining({
@@ -429,7 +546,7 @@ export async function test(t) {
           allowsEditing: true,
           allowsCalendarPreview: true,
         });
-        t.expect(result).toEqual({ action: 'done' });
+        t.expect(result).toEqual({ action: Calendar.CalendarDialogResultActions.done });
       });
 
       t.it('can edit an event', async () => {
@@ -473,7 +590,7 @@ export async function test(t) {
           const calendars = await getCalendars();
           const fetchedCalendar = calendars.find((c) => c.id === calendar.id);
           t.expect(fetchedCalendar).toBeDefined();
-          t.expect(fetchedCalendar.id).toBe(calendar.id);
+          t.expect(fetchedCalendar?.id).toBe(calendar.id);
         });
 
         t.afterEach(async () => {
@@ -622,9 +739,9 @@ export async function test(t) {
           t.expect(event).toBeDefined();
           t.expect(typeof event.id).toBe('string');
           t.expect(event.recurrenceRule).not.toBeNull();
-          t.expect(event.recurrenceRule.frequency).toEqual(recurrenceRule.frequency);
-          t.expect(event.recurrenceRule.interval).toEqual(recurrenceRule.interval);
-          t.expect(event.recurrenceRule.endDate).toEqual(recurrenceRule.endDate);
+          t.expect(event.recurrenceRule?.frequency).toEqual(recurrenceRule.frequency);
+          t.expect(event.recurrenceRule?.interval).toEqual(recurrenceRule.interval);
+          t.expect(event.recurrenceRule?.endDate).toEqual(recurrenceRule.endDate);
         });
 
         if (Platform.OS === 'android') {
@@ -640,7 +757,7 @@ export async function test(t) {
 
         if (Platform.OS === 'ios') {
           t.it('rejects when time zone is invalid', async () => {
-            let error;
+            let error: unknown;
             try {
               await createTestEvent(calendar, { timeZone: '' });
             } catch (e) {
@@ -986,9 +1103,9 @@ export async function test(t) {
 
         t.it('keeps other properties unchanged when updating title', async () => {
           const event = await createTestEvent(calendar);
-          const updatedData: Partial<ExpoCalendarEvent> = {
+          const updatedData = {
             title: 'New title ' + new Date().toISOString(),
-          };
+          } satisfies Partial<ExpoCalendarEvent>;
           await event.update(updatedData);
 
           t.expect(event.title).toBe(updatedData.title);
@@ -1004,9 +1121,9 @@ export async function test(t) {
 
         t.it('keeps other properties unchanged when updating location', async () => {
           const event = await createTestEvent(calendar);
-          const updatedData: Partial<ExpoCalendarEvent> = {
+          const updatedData = {
             location: 'New location ' + new Date().toISOString(),
-          };
+          } satisfies Partial<ExpoCalendarEvent>;
           await event.update(updatedData);
 
           t.expect(event.location).toBe(updatedData.location);
@@ -1079,23 +1196,23 @@ export async function test(t) {
           const fetchedEvent = fetchedEvents.find((e) => e.id === event.id);
 
           t.expect(fetchedEvent).toBeDefined();
-          t.expect(fetchedEvent.id).toBe(event.id);
-          t.expect(fetchedEvent.title).toBe(updatedData.title);
-          t.expect(fetchedEvent.startDate).toBe(updatedData.startDate.toISOString());
-          t.expect(fetchedEvent.endDate).toBe(updatedData.endDate.toISOString());
-          t.expect(fetchedEvent.location).toBe(updatedData.location);
-          t.expect(fetchedEvent.notes).toBe(updatedData.notes);
-          t.expect(fetchedEvent.timeZone).toBe(updatedData.timeZone);
+          t.expect(fetchedEvent?.id).toBe(event.id);
+          t.expect(fetchedEvent?.title).toBe(updatedData.title);
+          t.expect(fetchedEvent?.startDate).toBe(updatedData.startDate.toISOString());
+          t.expect(fetchedEvent?.endDate).toBe(updatedData.endDate.toISOString());
+          t.expect(fetchedEvent?.location).toBe(updatedData.location);
+          t.expect(fetchedEvent?.notes).toBe(updatedData.notes);
+          t.expect(fetchedEvent?.timeZone).toBe(updatedData.timeZone);
 
           if (Platform.OS === 'ios') {
-            t.expect(fetchedEvent.url).toBe(updatedData.url);
+            t.expect(fetchedEvent?.url).toBe(updatedData.url);
           }
 
           if (Platform.OS === 'android') {
-            t.expect(fetchedEvent.endTimeZone).toBe(updatedData.endTimeZone);
-            t.expect(fetchedEvent.accessLevel).toBe(updatedData.accessLevel);
-            t.expect(fetchedEvent.guestsCanModify).toBe(updatedData.guestsCanModify);
-            t.expect(fetchedEvent.guestsCanInviteOthers).toBe(updatedData.guestsCanInviteOthers);
+            t.expect(fetchedEvent?.endTimeZone).toBe(updatedData.endTimeZone);
+            t.expect(fetchedEvent?.accessLevel).toBe(updatedData.accessLevel);
+            t.expect(fetchedEvent?.guestsCanModify).toBe(updatedData.guestsCanModify);
+            t.expect(fetchedEvent?.guestsCanInviteOthers).toBe(updatedData.guestsCanInviteOthers);
           }
         });
 
@@ -1177,10 +1294,10 @@ export async function test(t) {
             recurrenceRule: newRecurrenceRule,
           });
 
-          t.expect(event.recurrenceRule.frequency).toEqual(newRecurrenceRule.frequency);
-          t.expect(event.recurrenceRule.interval).toEqual(newRecurrenceRule.interval);
-          t.expect(event.recurrenceRule.occurrence).toEqual(newRecurrenceRule.occurrence);
-          t.expect(event.recurrenceRule.endDate).toBeNull();
+          t.expect(event.recurrenceRule?.frequency).toEqual(newRecurrenceRule.frequency);
+          t.expect(event.recurrenceRule?.interval).toEqual(newRecurrenceRule.interval);
+          t.expect(event.recurrenceRule?.occurrence).toEqual(newRecurrenceRule.occurrence);
+          t.expect(event.recurrenceRule?.endDate).toBeNull();
         });
 
         t.it('updates a recurrence rule with endDate', async () => {
@@ -1196,10 +1313,10 @@ export async function test(t) {
             recurrenceRule: newRecurrenceRule,
           });
 
-          t.expect(event.recurrenceRule.frequency).toEqual(newRecurrenceRule.frequency);
-          t.expect(event.recurrenceRule.interval).toEqual(newRecurrenceRule.interval);
-          t.expect(event.recurrenceRule.endDate).toEqual(newRecurrenceRule.endDate);
-          t.expect(event.recurrenceRule.occurrence).toBeNull();
+          t.expect(event.recurrenceRule?.frequency).toEqual(newRecurrenceRule.frequency);
+          t.expect(event.recurrenceRule?.interval).toEqual(newRecurrenceRule.interval);
+          t.expect(event.recurrenceRule?.endDate).toEqual(newRecurrenceRule.endDate);
+          t.expect(event.recurrenceRule?.occurrence).toBeNull();
         });
 
         t.it('endDate takes precedence over occurrence', async () => {
@@ -1216,11 +1333,11 @@ export async function test(t) {
             recurrenceRule: newRecurrenceRule,
           });
 
-          t.expect(event.recurrenceRule.frequency).toEqual(newRecurrenceRule.frequency);
-          t.expect(event.recurrenceRule.interval).toEqual(newRecurrenceRule.interval);
-          t.expect(event.recurrenceRule.endDate).toEqual(newRecurrenceRule.endDate);
+          t.expect(event.recurrenceRule?.frequency).toEqual(newRecurrenceRule.frequency);
+          t.expect(event.recurrenceRule?.interval).toEqual(newRecurrenceRule.interval);
+          t.expect(event.recurrenceRule?.endDate).toEqual(newRecurrenceRule.endDate);
           // The endDate takes precedence over the occurrence
-          t.expect(event.recurrenceRule.occurrence).toBeNull();
+          t.expect(event.recurrenceRule?.occurrence).toBeNull();
         });
 
         t.it('updates the all day property', async () => {
@@ -1248,7 +1365,9 @@ export async function test(t) {
         t.it('clears multiple fields when set to null', async () => {
           const event = await createTestEvent(calendar);
           await event.update({
+            // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             notes: null,
+            // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             url: null,
           });
           t.expect(event.title).toBe(defaultEventData.title);
@@ -1267,6 +1386,7 @@ export async function test(t) {
           t.expect(event.alarms.length).toBe(1);
           t.expect(event.alarms[0].relativeOffset).toEqual(-60);
           await event.update({
+            // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             alarms: null,
           });
 
@@ -1276,7 +1396,7 @@ export async function test(t) {
             defaultEventData.endDate,
             event.id
           );
-          t.expect(fetchedEvent.alarms).toEqual([]);
+          t.expect(fetchedEvent?.alarms).toEqual([]);
         });
 
         t.it('clears a recurrence rule when set to null', async () => {
@@ -1288,7 +1408,7 @@ export async function test(t) {
             },
           });
           t.expect(event.recurrenceRule).toBeDefined();
-          t.expect(event.recurrenceRule.frequency).toBe(Calendar.Frequency.DAILY);
+          t.expect(event.recurrenceRule?.frequency).toBe(Calendar.Frequency.DAILY);
           await event.update({
             recurrenceRule: null,
           });
@@ -1298,8 +1418,8 @@ export async function test(t) {
             defaultEventData.endDate,
             event.id
           );
-          t.expect(fetchedEvent.recurrenceRule).toBeNull();
-          t.expect(fetchedEvent.title).toBe(defaultEventData.title);
+          t.expect(fetchedEvent?.recurrenceRule).toBeNull();
+          t.expect(fetchedEvent?.title).toBe(defaultEventData.title);
         });
 
         t.it('distinguishes between null and undefined values', async () => {
@@ -1317,6 +1437,7 @@ export async function test(t) {
 
           // Update with null values (should clear fields)
           await event.update({
+            // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             notes: null,
           });
 
@@ -1591,7 +1712,7 @@ export async function test(t) {
           });
 
           t.it('returns a reminder by its ID', async () => {
-            const fetchedReminder = await ExpoCalendarReminder.get(reminder.id);
+            const fetchedReminder = await ExpoCalendarReminder.get(requireNotNull(reminder.id));
             t.expect(fetchedReminder).toBeDefined();
             t.expect(fetchedReminder).toEqual(reminder);
           });
@@ -1609,7 +1730,7 @@ export async function test(t) {
               title: 'New title',
             });
 
-            const fetchedReminder = await ExpoCalendarReminder.get(reminder.id);
+            const fetchedReminder = await ExpoCalendarReminder.get(requireNotNull(reminder.id));
             t.expect(fetchedReminder).toBeDefined();
             t.expect(fetchedReminder.title).toBe('New title');
           });
@@ -1673,13 +1794,13 @@ export async function test(t) {
             t.expect(found).toBeDefined();
 
             const newTitle = `New title ${new Date().toISOString()}`;
-            await found.update({
+            await requireNotNull(found).update({
               title: newTitle,
               dueDate: new Date(2025, 0, 5),
             });
 
-            t.expect(found.title).toBe(newTitle);
-            t.expect(found.dueDate).toBe(new Date(2025, 0, 5).toISOString());
+            t.expect(found?.title).toBe(newTitle);
+            t.expect(found?.dueDate).toBe(new Date(2025, 0, 5).toISOString());
           });
 
           t.it('marks a reminder as completed', async () => {
@@ -1739,7 +1860,9 @@ export async function test(t) {
             t.expect(reminder.url).toBe(url);
 
             await reminder.update({
+              // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
               notes: null,
+              // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
               url: null,
             });
 
@@ -1755,6 +1878,7 @@ export async function test(t) {
             t.expect(reminder.alarms).toEqual([{ relativeOffset: -60 }]);
 
             await reminder.update({
+              // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
               alarms: null,
             });
             t.expect(reminder.alarms).toBeNull();
@@ -1770,7 +1894,7 @@ export async function test(t) {
               dueDate: new Date(2025, 0, 2),
             });
             t.expect(reminder.recurrenceRule).toBeDefined();
-            t.expect(reminder.recurrenceRule.frequency).toBe(Calendar.Frequency.WEEKLY);
+            t.expect(reminder.recurrenceRule?.frequency).toBe(Calendar.Frequency.WEEKLY);
 
             await reminder.update({
               recurrenceRule: null,
@@ -1791,8 +1915,11 @@ export async function test(t) {
             t.expect(reminder.completionDate).toBe(new Date(2025, 0, 3).toISOString());
 
             await reminder.update({
+              // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
               startDate: null,
+              // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
               dueDate: null,
+              // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
               completionDate: null,
             });
 
@@ -1819,6 +1946,7 @@ export async function test(t) {
 
             // Update with null values (should clear fields)
             await reminder.update({
+              // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
               notes: null,
             });
 
@@ -1892,7 +2020,7 @@ export async function test(t) {
               error = e;
             }
             t.expect(error instanceof UnavailabilityError).toBe(true);
-            t.expect(error.message).toBe(
+            t.expect((error as UnavailabilityError).message).toBe(
               new UnavailabilityError('ExpoCalendarEvent', 'createAttendee').message
             );
           });
@@ -2003,6 +2131,7 @@ export async function test(t) {
         t.it('clears attendee email when set to null', async () => {
           const attendee = await createTestAttendee(event);
           await attendee.update({
+            // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             email: null,
           });
           t.expect(attendee.email).toBeNull();
@@ -2014,6 +2143,7 @@ export async function test(t) {
         t.it('clears attendee name when set to null', async () => {
           const attendee = await createTestAttendee(event);
           await attendee.update({
+            // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             name: null,
           });
           t.expect(attendee.name).toBeNull();
@@ -2022,6 +2152,7 @@ export async function test(t) {
         t.it('clears attendee role when set to null', async () => {
           const attendee = await createTestAttendee(event);
           await attendee.update({
+            // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             role: null,
           });
           t.expect(attendee.role).toBe(Calendar.AttendeeRole.NONE);
@@ -2030,6 +2161,7 @@ export async function test(t) {
         t.it('clears attendee status when set to null', async () => {
           const attendee = await createTestAttendee(event);
           await attendee.update({
+            // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             status: null,
           });
           t.expect(attendee.status).toBe(Calendar.AttendeeStatus.NONE);
@@ -2038,6 +2170,7 @@ export async function test(t) {
         t.it('clears attendee type when set to null', async () => {
           const attendee = await createTestAttendee(event);
           await attendee.update({
+            // @ts-expect-error `null` clears the field at runtime, but the update types do not allow it yet.
             type: null,
           });
           t.expect(attendee.type).toBe(Calendar.AttendeeType.NONE);

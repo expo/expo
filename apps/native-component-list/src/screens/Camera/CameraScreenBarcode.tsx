@@ -1,7 +1,9 @@
 import { CameraView, ScanningResult, ScanningOptions } from 'expo-camera';
 import Checkbox from 'expo-checkbox';
 import { useEffect, useState } from 'react';
-import { View, Button, Text, StyleSheet } from 'react-native';
+import { View, Button, StyleSheet } from 'react-native';
+
+import { BodyText } from '../../components/BodyText';
 
 export default function CameraScreenNextBarcode() {
   const [result, setResult] = useState<ScanningResult | null>(null);
@@ -38,7 +40,7 @@ export default function CameraScreenNextBarcode() {
       <View style={{ gap: 20 }}>
         <Button title="Launch Scanner" onPress={launchScanner} />
         <View style={styles.optionRow}>
-          <Text style={styles.optionsText}>Guidance Enabled</Text>
+          <BodyText style={styles.optionsText}>Guidance Enabled</BodyText>
           <Checkbox
             value={options.isGuidanceEnabled}
             onValueChange={() =>
@@ -47,7 +49,7 @@ export default function CameraScreenNextBarcode() {
           />
         </View>
         <View style={styles.optionRow}>
-          <Text style={styles.optionsText}>Highlight Enabled</Text>
+          <BodyText style={styles.optionsText}>Highlight Enabled</BodyText>
           <Checkbox
             value={options.isHighlightingEnabled}
             onValueChange={() =>
@@ -59,7 +61,7 @@ export default function CameraScreenNextBarcode() {
           />
         </View>
         <View style={styles.optionRow}>
-          <Text style={styles.optionsText}>Pinch to zoom Enabled</Text>
+          <BodyText style={styles.optionsText}>Pinch to zoom Enabled</BodyText>
           <Checkbox
             value={options.isPinchToZoomEnabled}
             onValueChange={() =>
@@ -71,7 +73,7 @@ export default function CameraScreenNextBarcode() {
           />
         </View>
         <View style={styles.optionRow}>
-          <Text style={styles.optionsText}>Only scan QR codes</Text>
+          <BodyText style={styles.optionsText}>Only scan QR codes</BodyText>
           <Checkbox
             value={options.barcodeTypes.includes('qr')}
             onValueChange={() =>
@@ -85,7 +87,7 @@ export default function CameraScreenNextBarcode() {
           />
         </View>
       </View>
-      {result && <Text>{JSON.stringify(result, null, 2)}</Text>}
+      {result && <BodyText>{JSON.stringify(result, null, 2)}</BodyText>}
     </View>
   );
 }

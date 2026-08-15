@@ -7,4 +7,7 @@ module.exports = {
   ios: {
     bundleIdentifier: 'com.example.minimal',
   },
+  experiments: {
+    autolinkingModuleResolution: true,
+  },
 };

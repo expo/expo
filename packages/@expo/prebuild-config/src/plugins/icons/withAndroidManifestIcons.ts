@@ -1,5 +1,6 @@
-import { AndroidConfig, ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { AndroidConfig, withAndroidManifest } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 
 export const withAndroidManifestIcons: ConfigPlugin = (config) =>
   withAndroidManifest(config, (config) => {

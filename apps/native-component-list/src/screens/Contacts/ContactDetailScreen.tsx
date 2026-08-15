@@ -1,17 +1,17 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import * as Contacts from 'expo-contacts';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import * as Contacts from 'expo-contacts/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import * as Linking from 'expo-linking';
 import * as React from 'react';
 import { Platform, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import ContactDetailList, { DetailListItem } from './ContactDetailList';
-import * as ContactUtils from './ContactUtils';
-import ContactsAvatar from './ContactsAvatar';
 import HeaderContainerRight from '../../components/HeaderContainerRight';
 import HeaderIconButton from '../../components/HeaderIconButton';
 import Colors from '../../constants/Colors';
 import usePermissions from '../../utilities/usePermissions';
+import ContactDetailList, { DetailListItem } from './ContactDetailList';
+import * as ContactUtils from './ContactUtils';
+import ContactsAvatar from './ContactsAvatar';
 
 const isIos = Platform.OS === 'ios';
 
@@ -94,8 +94,8 @@ function ContactDetailView({
     try {
       await Contacts.removeContactAsync(id);
       navigation.goBack();
-    } catch ({ message }) {
-      console.error(message);
+    } catch (error: any) {
+      console.error(error.message);
     }
   };
 
@@ -238,8 +238,8 @@ function ContactDetailView({
         [Contacts.Fields.ID]: id,
         [Contacts.Fields.Image]: { uri },
       });
-    } catch ({ message }) {
-      console.error(message);
+    } catch (error: any) {
+      console.error(error.message);
     }
 
     loadAsync();

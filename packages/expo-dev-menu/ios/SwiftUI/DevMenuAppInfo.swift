@@ -12,8 +12,6 @@ struct DevMenuAppInfo: View {
         .foregroundColor(.primary.opacity(0.6))
 
       VStack(spacing: 0) {
-        Divider()
-
         InfoRow(title: "Version", value: viewModel.appInfo?.appVersion ?? "Unknown")
 
         if let runtimeVersion = viewModel.appInfo?.runtimeVersion {
@@ -32,19 +30,20 @@ struct DevMenuAppInfo: View {
         label: {
           HStack {
             Text(viewModel.clipboardMessage ?? "Copy system info")
-              .foregroundColor(.blue)
+              .foregroundColor(.primary)
             Spacer()
-            Image(systemName: "document.on.clipboard")
+            Image(systemName: "doc.on.clipboard")
               .resizable()
+              .scaledToFit()
               .frame(width: 16, height: 16)
-              .opacity(0.6)
+              .foregroundColor(.secondary)
           }
           .padding(.vertical)
           .disabled(viewModel.clipboardMessage != nil)
         }
       }
-      .background(Color.expoSystemBackground)
-      .cornerRadius(18)
+      .padding(.horizontal)
+      .background(Color.expoSecondarySystemBackground, in: RoundedRectangle(cornerRadius: 18))
     }
   }
 }

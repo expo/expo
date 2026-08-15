@@ -12,16 +12,40 @@
 
 type MetroRequire = {
   (id: number): unknown;
-  importAll: <T>(id: number) => T;
+  importAll: <T>(id: number, moduleName?: string) => T;
 };
 
 type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
 
+declare const crossOriginIsolated: boolean | undefined;
 declare let __METRO_GLOBAL_PREFIX__: string;
 
+// Shim script that wraps around a given worker entrypoint and:
+// - Remaps `fetch` to the base URL given
+// - Remaps `importScripts` to the base URL given
+// This doesn't cover all cases and won't fix that:
+// - self.location will be set to a blob URL
+// - new URL won't relatively resolve
+// - XMLHttpRequest, WebSocket, etc won't relatively resolve
+function makeWorkerContent(url: string): string {
+  return `
+    const ASYNC_WORKER_BASE = ${JSON.stringify(url)};
+    const IMPORT_SCRIPTS = importScripts;
+    const FETCH = fetch;
+    const fromBaseURL = (input) => new URL(input, ASYNC_WORKER_BASE).href;
+    self.fetch = function(input, init) {
+      return FETCH(typeof input === 'string' ? fromBaseURL(input) : input, init);
+    };
+    self.importScripts = function(...urls) {
+      return IMPORT_SCRIPTS.apply(self, urls.map(fromBaseURL));
+    };
+    importScripts(ASYNC_WORKER_BASE);
+  `;
+}
+
 function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Promise<void> {
-  const loadBundle: (bundlePath: unknown) => Promise<void> = (global as any)[
-    `${__METRO_GLOBAL_PREFIX__}__loadBundleAsync`
+  const loadBundle: (bundlePath: unknown) => Promise<void> = (globalThis as any)[
+    `${__METRO_GLOBAL_PREFIX__ ?? ''}__loadBundleAsync`
   ];
 
   if (loadBundle != null) {
@@ -38,23 +62,54 @@ function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Pr
   return undefined;
 }
 
-function asyncRequireImpl<T>(moduleID: number, paths: DependencyMapPaths): Promise<T> | T {
-  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
-  const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID);
+function asyncRequireImpl<T>(
+  moduleID: number,
+  paths: DependencyMapPaths,
+  moduleName?: string
+): Promise<T> | T {
+  const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID, moduleName);
 
+  // NOTE(@hassankhan): We need to come back and improve this, ideally we shouldn't need to have a
+  // separate conditional specifically for web
+  // On web, split chunks may already be preloaded via `<script>` tags, so importing
+  // synchronously first prevents double-loading the script
+  if (process.env.EXPO_OS === 'web') {
+    try {
+      return importAll();
+    } catch (error) {
+      const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+      if (maybeLoadBundlePromise != null) {
+        return maybeLoadBundlePromise.then(importAll);
+      }
+      throw error;
+    }
+  }
+
+  // On native, requiring a missing module reports a fatal error via `global.ErrorUtils`
+  // instead of throwing, so the split bundle must be loaded before importing
+  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
   if (maybeLoadBundlePromise != null) {
     return maybeLoadBundlePromise.then(importAll);
   }
-
   return importAll();
 }
 
-async function asyncRequire<T>(
+type PromiseWithResult<T> = Promise<T> & {
+  _result?: T | Promise<T>;
+};
+
+function asyncRequire<T>(
   moduleID: number,
   paths: DependencyMapPaths,
-  moduleName?: string // unused
-): Promise<T> {
-  return asyncRequireImpl<T>(moduleID, paths);
+  moduleName?: string
+): PromiseWithResult<T> {
+  const ret = asyncRequireImpl<T>(moduleID, paths, moduleName);
+  // We return a Promise with an added `unstable_importMaybeSync`-like
+  // `_result` property to bypass this being force-converted to a promise
+  // for rehydration
+  const promise: PromiseWithResult<T> = Promise.resolve(ret);
+  promise._result = ret;
+  return promise;
 }
 
 // Synchronous version of asyncRequire, which can still return a promise
@@ -89,6 +144,26 @@ asyncRequire.unstable_resolve = function unstable_resolve(
     throw new Error('Worker import is missing from split bundle paths: ' + id);
   }
   return id;
+};
+
+// Wraps around `new Worker` and if `crossOriginIsolated` is truthy, indicating CORP/COEP is active,
+// instantiates the worker with an inline script instead, which works around the CORS error. This is
+// necessary if the worker script won't have the same CORP/COEP headers as the document
+asyncRequire.unstable_createWorker = function unstable_createWorker(
+  workerUrl: string,
+  workerOpts?: WorkerOptions
+) {
+  if (typeof crossOriginIsolated !== 'undefined' && crossOriginIsolated) {
+    try {
+      const content = makeWorkerContent(workerUrl);
+      workerUrl = URL.createObjectURL(new Blob([content], { type: 'text/javascript' }));
+      return new Worker(workerUrl, workerOpts);
+    } finally {
+      URL.revokeObjectURL(workerUrl);
+    }
+  } else {
+    return new Worker(workerUrl, workerOpts);
+  }
 };
 
 // TODO(@kitten): Missing metro type definitions

@@ -1,23 +1,23 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
+import nativeTabsStyles from '../../assets/native-tabs.module.css';
 import type { NativeTabOptions, NativeTabsViewProps } from './types';
-import nativeTabsStyles from '../../../assets/native-tabs.module.css';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { tabs, focusedIndex } = props;
-  const currentTab = tabs[focusedIndex];
+  const currentTab = tabs[focusedIndex]!;
   const defaultTab = useMemo(
     () => currentTab,
     // We don't specify currentTab here, as we don't want to change the default tab when focusedIndex changes
     []
   );
-  const value = currentTab.routeKey;
+  const value = currentTab.name;
 
   const items = tabs.map((tab) => (
     <TabItem
-      key={tab.routeKey}
-      routeKey={tab.routeKey}
+      key={tab.name}
+      name={tab.name}
       title={tab.options.title ?? tab.name}
       badgeValue={tab.options.badgeValue}
     />
@@ -25,8 +25,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   const children = tabs.map((tab) => {
     return (
       <TabsContent
-        key={tab.routeKey}
-        value={tab.routeKey}
+        key={tab.name}
+        value={tab.name}
         className={nativeTabsStyles.tabContent}
         forceMount>
         {tab.contentRenderer()}
@@ -37,10 +37,10 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   return (
     <Tabs
       className={nativeTabsStyles.nativeTabsContainer}
-      defaultValue={defaultTab.routeKey}
+      defaultValue={defaultTab.name}
       value={value}
       onValueChange={(value) => {
-        props.onTabChange(value);
+        props.onTabChange({ selectedKey: value, provenance: 0, isNativeAction: true });
       }}
       style={convertNativeTabsPropsToStyleVars(props, currentTab.options)}>
       <TabsList aria-label="Main" className={nativeTabsStyles.navigationMenuRoot}>
@@ -54,15 +54,15 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 interface TabItemProps {
   title: string;
   badgeValue?: string;
-  routeKey: string;
+  name: string;
 }
 
 function TabItem(props: TabItemProps) {
-  const { title, badgeValue, routeKey } = props;
+  const { title, badgeValue, name } = props;
   const isBadgeEmpty = badgeValue === ' ';
 
   return (
-    <TabsTrigger value={routeKey} className={nativeTabsStyles.navigationMenuTrigger}>
+    <TabsTrigger value={name} className={nativeTabsStyles.navigationMenuTrigger}>
       <span className={nativeTabsStyles.tabText}>{title}</span>
       {badgeValue && (
         <div

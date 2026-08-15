@@ -7,7 +7,7 @@ import SwiftUI
  Base view props for all SwiftUI view props in expo-ui.
  Contains common modifiers that are shared across most views.
  */
-public class UIBaseViewProps: ExpoSwiftUI.ViewProps {
+open class UIBaseViewProps: ExpoSwiftUI.ViewProps {
   @Field var testID: String?
   @Field var modifiers: ModifierArray?
 
@@ -18,5 +18,9 @@ public class UIBaseViewProps: ExpoSwiftUI.ViewProps {
 
   public required init() {
     super.init()
+  }
+
+  public required init(rawProps: [String: Any], context: AppContext) throws {
+    try super.init(rawProps: rawProps, context: context)
   }
 }

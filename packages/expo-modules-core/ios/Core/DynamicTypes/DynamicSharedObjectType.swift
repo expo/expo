@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A dynamic type representing the `SharedObject` type and its subclasses.
  */
@@ -39,7 +41,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       let nativeSharedObject = appContext.sharedObjectRegistry.get(sharedObjectId)?.native {
       return nativeSharedObject
     }
-    throw NativeSharedObjectNotFoundException()
+    throw SharedObject.NotFoundException()
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
@@ -47,7 +49,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       let sharedObjectId = jsValue.getInt() as SharedObjectId
 
       guard let nativeSharedObject = appContext.sharedObjectRegistry.get(sharedObjectId)?.native else {
-        throw NativeSharedObjectNotFoundException()
+        throw SharedObject.NotFoundException()
       }
       return nativeSharedObject
     }
@@ -55,31 +57,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       let nativeSharedObject = appContext.sharedObjectRegistry.toNativeObject(jsObject) {
       return nativeSharedObject
     }
-    throw NativeSharedObjectNotFoundException()
-  }
-
-  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
-    // Postpone object creation to execute on the JS thread.
-    JavaScriptObjectBinding.init {
-      // If the result is a native shared object, create its JS representation and add the pair to the registry of shared objects.
-      if let sharedObject = result as? SharedObject {
-        // If the JS object already exists, just return it.
-        if let jsObject = sharedObject.getJavaScriptObject() {
-          return jsObject
-        }
-        guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, nativeType: innerType)) else {
-          // Throwing is not possible here due to swift-objC interop.
-          log.warn("Unable to create a JS object for \(description)")
-          return JavaScriptObject()
-        }
-
-        // Add newly created objects to the registry.
-        appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject)
-
-        return jsObject
-      }
-      return JavaScriptObject()
-    }
+    throw SharedObject.NotFoundException()
   }
 
   var description: String {
@@ -87,25 +65,36 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
-    if let value = value as? JavaScriptObjectBinding {
-      return try JavaScriptValue.from(value.get(), runtime: appContext.runtime)
+    // If the result is a native shared object, create its JS representation and add the pair to the registry of shared objects.
+    if let sharedObject = value as? SharedObject {
+      // If the JS object already exists, just return it.
+      if let jsObject = sharedObject.getJavaScriptObject() {
+        return jsObject.asValue()
+      }
+      guard let jsObject = (try? appContext.newObject(nativeClassId: typeIdentifier)) ?? (try? newBaseSharedObject(appContext, nativeType: innerType)) else {
+        // Throwing is not possible here due to swift-objC interop.
+        log.warn("Unable to create a JS object for \(description)")
+        return JavaScriptValue.undefined
+      }
+
+      // Add newly created objects to the registry.
+      appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject)
+
+      return jsObject.asValue()
     }
-    throw NativeSharedObjectNotFoundException()
+    throw SharedObject.NotFoundException()
   }
 }
 
-private func getBaseSharedType(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject {
-  return try nativeType is AnySharedRef.Type ? appContext.runtime.getSharedRefClass() : appContext.runtime.getSharedObjectClass()
+private func getBaseSharedType(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptFunction {
+  let isSharedRef = nativeType is AnySharedRef.Type
+  return try JavaScriptActor.assumeIsolated {
+    return try isSharedRef ? appContext.runtime.getSharedRefClass() : appContext.runtime.getSharedObjectClass()
+  }
 }
 
 private func newBaseSharedObject(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject? {
   let jsClass = try getBaseSharedType(appContext, nativeType: nativeType)
-  let prototype = try jsClass.getProperty("prototype").asObject()
-  return try appContext.runtime.createObject(withPrototype: prototype)
-}
-
-internal final class NativeSharedObjectNotFoundException: Exception {
-  override var reason: String {
-    "Unable to find the native shared object associated with given JavaScript object"
-  }
+  let prototype = try jsClass.asObject().getPropertyAsObject("prototype")
+  return try appContext.runtime.createObject(prototype: prototype)
 }

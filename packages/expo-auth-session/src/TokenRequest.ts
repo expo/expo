@@ -2,12 +2,13 @@ import invariant from 'invariant';
 import { Platform } from 'react-native';
 
 import * as Base64 from './Base64';
-import * as ServiceConfig from './Discovery';
-import { ResponseErrorConfig, TokenError } from './Errors';
-import { Headers, requestAsync } from './Fetch';
-import {
+import type * as ServiceConfig from './Discovery';
+import type { ResponseErrorConfig } from './Errors';
+import { TokenError } from './Errors';
+import type { Headers } from './Fetch';
+import { requestAsync } from './Fetch';
+import type {
   AccessTokenRequestConfig,
-  GrantType,
   RefreshTokenRequestConfig,
   RevokeTokenRequestConfig,
   ServerTokenResponseConfig,
@@ -16,6 +17,7 @@ import {
   TokenType,
   TokenTypeHint,
 } from './TokenRequest.types';
+import { GrantType } from './TokenRequest.types';
 
 /**
  * Returns the current time in seconds.
@@ -157,6 +159,23 @@ export class Request<T, B> {
     throw new Error('getQueryBody must be extended');
   }
 }
+function sanitizeExtraHeaders(
+  extra: Record<string, string> | undefined,
+  hasClientSecret: boolean
+): Record<string, string> | undefined {
+  if (!extra) {
+    return undefined;
+  }
+  const extraHeaders = { ...extra };
+  delete extraHeaders['Content-Type'];
+  delete extraHeaders['content-type'];
+  if (hasClientSecret) {
+    // auth-session will set the Authorization header in this case
+    delete extraHeaders.authorization;
+    delete extraHeaders.Authorization;
+  }
+  return extraHeaders;
+}
 
 /**
  * A generic token request.
@@ -169,6 +188,7 @@ export class TokenRequest<T extends TokenRequestConfig>
   readonly clientSecret?: string;
   readonly scopes?: string[];
   readonly extraParams?: Record<string, string>;
+  readonly extraHeaders?: Record<string, string>;
 
   constructor(
     request: T,
@@ -179,10 +199,16 @@ export class TokenRequest<T extends TokenRequestConfig>
     this.clientSecret = request.clientSecret;
     this.extraParams = request.extraParams;
     this.scopes = request.scopes;
+    this.extraHeaders = sanitizeExtraHeaders(
+      request.extraHeaders,
+      typeof request.clientSecret !== 'undefined'
+    );
   }
 
   getHeaders(): Headers {
-    const headers: Headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+    const headers: Headers = Object.assign({}, this.extraHeaders, {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
     if (typeof this.clientSecret !== 'undefined') {
       // If client secret exists, it should be converted to base64
       // https://tools.ietf.org/html/rfc6749#section-2.3.1
@@ -247,7 +273,11 @@ export class TokenRequest<T extends TokenRequestConfig>
     if (this.extraParams) {
       for (const extra in this.extraParams) {
         if (extra in this.extraParams && !(extra in queryBody)) {
-          queryBody[extra] = this.extraParams[extra];
+          const param = this.extraParams[extra];
+
+          if (param != null) {
+            queryBody[extra] = param;
+          }
         }
       }
     }
@@ -309,6 +339,7 @@ export class AccessTokenRequest
       code: this.code,
       redirectUri: this.redirectUri,
       extraParams: this.extraParams,
+      extraHeaders: this.extraHeaders,
       scopes: this.scopes,
     };
   }
@@ -348,6 +379,7 @@ export class RefreshTokenRequest
       grantType: this.grantType,
       refreshToken: this.refreshToken,
       extraParams: this.extraParams,
+      extraHeaders: this.extraHeaders,
       scopes: this.scopes,
     };
   }
@@ -366,6 +398,7 @@ export class RevokeTokenRequest
   readonly clientSecret?: string;
   readonly token: string;
   readonly tokenTypeHint?: TokenTypeHint;
+  readonly extraHeaders?: Record<string, string>;
 
   constructor(request: RevokeTokenRequestConfig) {
     super(request);
@@ -374,10 +407,16 @@ export class RevokeTokenRequest
     this.clientSecret = request.clientSecret;
     this.token = request.token;
     this.tokenTypeHint = request.tokenTypeHint;
+    this.extraHeaders = sanitizeExtraHeaders(
+      request.extraHeaders,
+      typeof request.clientSecret !== 'undefined'
+    );
   }
 
   getHeaders(): Headers {
-    const headers: Headers = { 'Content-Type': 'application/x-www-form-urlencoded' };
+    const headers: Headers = Object.assign({}, this.extraHeaders, {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
     if (typeof this.clientSecret !== 'undefined' && this.clientId) {
       // If client secret exists, it should be converted to base64
       // https://tools.ietf.org/html/rfc6749#section-2.3.1
@@ -416,6 +455,7 @@ export class RevokeTokenRequest
       clientSecret: this.clientSecret,
       token: this.token,
       tokenTypeHint: this.tokenTypeHint,
+      extraHeaders: this.extraHeaders,
     };
   }
 

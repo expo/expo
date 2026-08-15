@@ -1,148 +1,74 @@
-/* eslint-env jest */
 import fs from 'node:fs';
 import path from 'node:path';
 
+import {
+  prepareServers,
+  setupServer,
+  RUNTIME_EXPO_SERVE,
+  RUNTIME_WORKERD,
+} from '../../utils/runtime';
 import { runExportSideEffects } from './export-side-effects';
-import { createExpoServe, executeExpoAsync } from '../../utils/expo';
-import { executeAsync, processFindPrefixedValue } from '../../utils/process';
-import { BackgroundServer, createBackgroundServer } from '../../utils/server';
-import { getRouterE2ERoot } from '../utils';
 
 runExportSideEffects();
 
-const EXPRESS_SERVER = 'expo serve server';
-const WORKERD_SERVER = 'workerd server';
-const inputDir = 'server-headers';
+const GLOBAL_HEADERS = {
+  'X-Powered-By': 'expo-server',
+  'X-Global': 'global',
+  'Set-Cookie': ['session=1', 'session=2'],
+  'Content-Type': 'application/pdf',
+};
 
-describe('export server with custom headers', () => {
-  const projectRoot = getRouterE2ERoot();
+const PAGE_HEADERS = [
+  { source: '/', headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' } },
+  {
+    source: '/api',
+    headers: { 'Set-Cookie': ['page=1'], 'Content-Type': 'text/should-not-apply' },
+  },
+  { source: '/blog', headers: { 'X-Page-Rule': 'blog' } },
+];
 
-  describe.each([
-    {
-      name: EXPRESS_SERVER,
-      prepareDist: async () => {
-        const outputName = `dist-${inputDir}-expo-serve`;
-        const outputDir = path.join(projectRoot, outputName);
+const EXPECTED_PAGE_HEADERS = [
+  {
+    namedRegex: '^/_expo/loaders/.+$',
+    headers: { 'Cache-Control': 'no-store' },
+  },
+  {
+    namedRegex: '^/(?:/)?$',
+    headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' },
+  },
+  {
+    namedRegex: '^/api(?:/)?$',
+    headers: { 'Set-Cookie': ['page=1'], 'Content-Type': 'text/should-not-apply' },
+  },
+  {
+    namedRegex: '^/blog(?:/)?$',
+    headers: { 'X-Page-Rule': 'blog' },
+  },
+];
 
-        await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
-          env: {
-            NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'server',
-            E2E_ROUTER_SRC: inputDir,
-            E2E_ROUTER_HEADERS: JSON.stringify({
-              'X-Powered-By': 'expo-server',
-              'Set-Cookie': ['hello=world', 'foo=bar'],
-              'Content-Type': 'application/pdf',
-            }),
-            E2E_ROUTER_REWRITES: JSON.stringify([
-              {
-                source: '/rewrite/api',
-                destination: '/api',
-              },
-            ]),
-          },
-        });
-
-        return [outputDir, outputName];
+describe('export server with headers', () => {
+  describe.each(
+    prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
+      fixtureName: 'server-headers',
+      export: {
+        env: {
+          E2E_ROUTER_HEADERS: JSON.stringify(GLOBAL_HEADERS),
+          E2E_ROUTER_REWRITES: JSON.stringify([{ source: '/rewrite/api', destination: '/api' }]),
+          E2E_ROUTER_PAGE_HEADERS: JSON.stringify(PAGE_HEADERS),
+          E2E_ROUTER_SERVER_LOADERS: 'true',
+          E2E_ROUTER_SERVER_RENDERING: 'true',
+        },
       },
-      createServer: () =>
-        createExpoServe({
-          cwd: projectRoot,
-          env: {
-            NODE_ENV: 'production',
-          },
-        }),
-    },
-    {
-      name: WORKERD_SERVER,
-      prepareDist: async () => {
-        const outputName = `dist-${inputDir}-workerd`;
-        const outputDir = path.join(projectRoot, outputName);
+    })
+  )('$name requests', (config) => {
+    const server = setupServer(config);
 
-        await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
-          env: {
-            NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'server',
-            E2E_ROUTER_SRC: inputDir,
-            E2E_ROUTER_HEADERS: JSON.stringify({
-              'X-Powered-By': 'expo-server',
-              'Set-Cookie': ['hello=world', 'foo=bar'],
-              'Content-Type': 'application/pdf',
-            }),
-            E2E_ROUTER_REWRITES: JSON.stringify([
-              {
-                source: '/rewrite/api',
-                destination: '/api',
-              },
-            ]),
-          },
-        });
-
-        await executeAsync(projectRoot, [
-          'node_modules/.bin/esbuild',
-          '--bundle',
-          '--format=esm',
-          '--platform=node',
-          `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
-          path.join(projectRoot, '__e2e__/server-headers/workerd/workerd.mjs'),
-        ]);
-        fs.copyFileSync(
-          path.join(projectRoot, '__e2e__/server-headers/workerd/config.capnp'),
-          path.join(outputDir, 'server/config.capnp')
-        );
-
-        return [outputDir];
-      },
-      createServer: () =>
-        createBackgroundServer({
-          command: [
-            'node_modules/.bin/workerd',
-            'serve',
-            path.join(
-              path.join(projectRoot, `dist-${inputDir}-workerd`),
-              'server/config.capnp'
-            ),
-          ],
-          host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
-          port: 8787,
-          cwd: projectRoot,
-        }),
-    },
-  ] as {
-    name: string;
-    createServer: () => BackgroundServer;
-    prepareDist: () => Promise<[string, string?]>;
-  }[])('$name requests', ({ name: _name, createServer, prepareDist }) => {
-    let outputDir: string | undefined;
-    let server: BackgroundServer;
-    beforeAll(async () => {
-      const [newOutputDir, outputName] = await prepareDist();
-      outputDir = newOutputDir;
-      server = createServer();
-      // Start a server instance that we can test against then kill it.
-      if (outputName) {
-        await server.startAsync([outputName]);
-      } else {
-        await server.startAsync();
-      }
-    });
-    afterAll(async () => {
-      await server.stopAsync();
-    });
-
-    const serverFetchAsync = (url: string, init?: RequestInit) => {
-      return server.fetchAsync(url, init, { attempts: 7 });
-    };
-
-    it('includes headers in routes.json manifest', () => {
+    it('includes `headers` and `pageHeaders` in the export manifest', () => {
       const routesJson = JSON.parse(
-        fs.readFileSync(path.resolve(outputDir!, 'server/_expo/routes.json'), 'utf8')
+        fs.readFileSync(path.resolve(server.outputDir, 'server/_expo/routes.json'), 'utf8')
       );
-      expect(routesJson.headers).toEqual({
-        'X-Powered-By': 'expo-server',
-        'Set-Cookie': ['hello=world', 'foo=bar'],
-        'Content-Type': 'application/pdf',
-      });
+      expect(routesJson.headers).toEqual(GLOBAL_HEADERS);
+      expect(routesJson.pageHeaders).toEqual(EXPECTED_PAGE_HEADERS);
     });
 
     it.each([
@@ -150,35 +76,64 @@ describe('export server with custom headers', () => {
         path: '/',
         status: 200,
         contentType: 'text/html',
+        poweredBy: 'page-override',
+        pageRule: 'index',
+        setCookie: 'session=1, session=2',
       },
       {
+        // API routes only apply global headers
         path: '/api',
         status: 200,
         contentType: 'application/json',
+        poweredBy: 'expo-server',
+        pageRule: null,
+        setCookie: 'session=1, session=2',
       },
       {
         path: '/rewrite/api',
         status: 200,
         contentType: 'application/json',
+        poweredBy: 'expo-server',
+        pageRule: null,
+        setCookie: 'session=1, session=2',
+      },
+      {
+        path: '/blog',
+        status: 200,
+        contentType: 'text/html',
+        poweredBy: 'expo-server',
+        pageRule: 'blog',
+        setCookie: 'session=1, session=2',
+      },
+      {
+        // Loader routes only apply global headers
+        path: '/_expo/loaders/blog',
+        status: 200,
+        contentType: 'application/json',
+        poweredBy: 'expo-server',
+        pageRule: null,
+        setCookie: 'session=1, session=2',
       },
       {
         path: '/not-a-route',
         status: 404,
         contentType: 'text/html',
+        poweredBy: 'expo-server',
+        pageRule: null,
+        setCookie: 'session=1, session=2',
       },
-    ])('applies custom headers to $path', async ({ path, status, contentType }) => {
-      const response = await serverFetchAsync(path);
+    ])(
+      'applies `headers` and matching `pageHeaders` to $path',
+      async ({ path, status, contentType, poweredBy, pageRule, setCookie }) => {
+        const response = await server.fetchAsync(path);
 
-      expect(response.status).toBe(status);
-
-      // Check that existing Content-Type header is not overridden
-      expect(response.headers.get('Content-Type')).toBe(contentType);
-
-      // Check single-value custom header
-      expect(response.headers.get('X-Powered-By')).toBe('expo-server');
-
-      // Check array-value custom headers
-      expect(response.headers.get('Set-Cookie')).toBe('hello=world, foo=bar');
-    });
+        expect(response.status).toBe(status);
+        expect(response.headers.get('Content-Type')).toBe(contentType);
+        expect(response.headers.get('X-Global')).toBe('global');
+        expect(response.headers.get('X-Powered-By')).toBe(poweredBy);
+        expect(response.headers.get('X-Page-Rule')).toBe(pageRule);
+        expect(response.headers.get('Set-Cookie')).toBe(setCookie);
+      }
+    );
   });
 });

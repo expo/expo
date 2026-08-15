@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
-import { Command } from '../../bin/cli';
+import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 
 export const expoServe: Command = async (argv) => {
@@ -37,7 +37,9 @@ export const expoServe: Command = async (argv) => {
     { logCmdError },
   ] = await Promise.all([import('./serveAsync.js'), import('../utils/errors.js')]);
 
-  return serveAsync(getProjectRoot(args), {
+  const projectRoot = getProjectRoot(args);
+
+  return serveAsync(projectRoot, {
     isDefaultDirectory: !args._[0],
     // Parsed options
     port: args['--port'],

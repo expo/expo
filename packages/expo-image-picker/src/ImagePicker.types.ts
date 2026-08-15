@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo';
 
 // @needsAudit
 /**
@@ -262,11 +262,11 @@ export type ImagePickerAsset = {
    */
   assetId?: string | null;
   /**
-   * Width of the image or video.
+   * Width of the image or video. Can be `0` if the system did not provide the width.
    */
   width: number;
   /**
-   * Height of the image or video.
+   * Height of the image or video. Can be `0` if the system did not provide the height.
    */
   height: number;
   /**
@@ -275,8 +275,9 @@ export type ImagePickerAsset = {
    * - `'video'` - for videos.
    * - `'livePhoto'` - for live photos. (iOS only)
    * - `'pairedVideo'` - for videos paired with photos, which can be combined to create a live photo. (iOS only)
+   * - `null` - when the type could not be determined. This is rare but can happen with some Android ContentProviders.
    */
-  type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo';
+  type?: 'image' | 'video' | 'livePhoto' | 'pairedVideo' | null;
   /**
    * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
    * or user gave limited permission to access the media library.
@@ -516,7 +517,7 @@ export type ImagePickerOptions = {
    * - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes.
    *   This limit is applied automatically, if `0` or no value is specified.
    * - **On Android**, effect of this option depends on support of installed camera app.
-   * - **On Web** this option has no effect - the limit is browser-dependant.
+   * - **On Web** this option has no effect - the limit is browser-dependent.
    */
   videoMaxDuration?: number;
   /**
@@ -551,8 +552,16 @@ export type ImagePickerOptions = {
    * When enabled, allows the picker to access and download media from iCloud or other remote sources
    * if the asset is not stored locally on the device.
    *
-   * For videos, this option applies only when [`videoExportPreset`](#videoexportpreset) is set to `Passthrough`.
-   * In all other cases, the video will be downloaded from iCloud automatically.
+   * This option gates the direct resource read that the picker attempts first. That read is used for
+   * Live Photos, and for videos when [`videoExportPreset`](#videoexportpreset) is set to `Passthrough`.
+   * In all other cases, the media will be downloaded from iCloud automatically.
+   *
+   * > Note: For videos, this option does not prevent a download. When it is disabled and the direct
+   * > read fails because the data is not stored locally, the picker falls back to a slower path that
+   * > fetches the asset from iCloud on its own. Enable this option to take the faster path for such videos.
+   *
+   * > Note: Live Photos also honor this option, and they have no fallback path. Enable it when
+   * > picking Live Photos that may not be stored locally.
    *
    * @platform ios
    * @default false

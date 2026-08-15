@@ -1,4 +1,4 @@
-import { SupportedPlatform } from '../types';
+import type { SupportedPlatform } from '../types';
 
 interface PlatformImplementations {
   ios: typeof import('./apple/apple');
@@ -51,3 +51,23 @@ function getLinkingImplementationForPlatform(
 }
 
 export { getLinkingImplementationForPlatform };
+
+export function getSupportPackageForPlatform(platform: SupportedPlatform): string | null {
+  switch (platform) {
+    case 'ios':
+    case 'android':
+      return 'react-native';
+    case 'tvos':
+      return 'react-native-tvos';
+    case 'macos':
+      return 'react-native-macos';
+    case 'windows':
+      return 'react-native-windows';
+    case 'apple':
+    case 'web':
+    case 'devtools':
+      return null;
+    default:
+      throw new Error(`No support package is known for platform "${platform}"`);
+  }
+}

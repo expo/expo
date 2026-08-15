@@ -1,10 +1,10 @@
 import assert from 'assert';
-import prompts, { Choice, Options, PromptObject } from 'prompts';
+import type { Choice, Options, PromptObject } from 'prompts';
+import prompts from 'prompts';
 
 import { AbortCommandError, CommandError } from './errors';
+import { event } from './events';
 import { isInteractive } from './interactive';
-
-const debug = require('debug')('expo:utils:prompts') as typeof console.log;
 
 export type Question<V extends string = string> = PromptObject<V> & {
   optionsPerPage?: number;
@@ -30,12 +30,12 @@ export default async function prompt(
   { nonInteractiveHelp, ...options }: PromptOptions = {}
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
-  if (!isInteractive() && questions.length !== 0) {
+  if (!isInteractive() && questions.length) {
     let message = `Input is required, but 'npx expo' is in non-interactive mode.\n`;
     if (nonInteractiveHelp) {
       message += nonInteractiveHelp;
     } else {
-      const question = questions[0];
+      const question = questions[0]!;
       const questionMessage =
         typeof question.message === 'function'
           ? question.message(undefined, {}, question)
@@ -119,15 +119,13 @@ export function removeInteractionListener(callback: InteractionCallback) {
 
 /** Notify all listeners that keypress observations must pause. */
 export function pauseInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
-  debug('Interaction observers paused');
   for (const listener of listeners) {
     listener({ pause: true, ...options });
   }
 }
 
-/** Notify all listeners that keypress observations can start.. */
+/** Notify all listeners that keypress observations can start. */
 export function resumeInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
-  debug('Interaction observers resumed');
   for (const listener of listeners) {
     listener({ pause: false, ...options });
   }
@@ -143,7 +141,7 @@ export function createSelectionFilter(): (input: any, choices: Choice[]) => Prom
       const regex = new RegExp(escapeRegex(input), 'i');
       return choices.filter((choice: any) => regex.test(choice.title));
     } catch (error: any) {
-      debug('Error filtering choices', error);
+      event('prompt_filter_error', { error: event.error(error as Error) });
       return [];
     }
   };

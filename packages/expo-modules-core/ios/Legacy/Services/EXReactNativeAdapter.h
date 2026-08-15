@@ -6,9 +6,8 @@
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXModuleRegistryConsumer.h>
 #import <ExpoModulesCore/EXJavaScriptContextProvider.h>
-#import <ExpoModulesCore/EXBridgeModule.h>
 
-@interface EXReactNativeAdapter : NSObject <EXInternalModule, EXBridgeModule, EXAppLifecycleService, EXUIManager, EXJavaScriptContextProvider, EXModuleRegistryConsumer>
+@interface EXReactNativeAdapter : NSObject <EXInternalModule, EXAppLifecycleService, EXUIManager, EXJavaScriptContextProvider, EXModuleRegistryConsumer>
 
 - (void)setBridge:(RCTBridge *)bridge;
 

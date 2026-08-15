@@ -4,9 +4,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.interfaces.taskManager.TaskServiceInterface
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.lang.ref.WeakReference
@@ -17,7 +17,7 @@ class TaskManagerModule : Module() {
   }
   private val taskService: TaskServiceInterface
     get() = _taskService
-      ?: throw ModuleNotFoundException(TaskServiceInterface::class.java.toString())
+      ?: throw Exceptions.ModuleNotFound(TaskManagerInterface::class)
 
   private val taskManagerInternal: TaskManagerInterface? by lazy {
     appContext.legacyModule()
@@ -48,7 +48,7 @@ class TaskManagerModule : Module() {
 
       // For compatibility reasons, we don't want to edit TaskManagerInterface, as it's in the expo-modules-core package.
       // There is only one usage of the TaskManagerInterface and it's the TaskManagerInternalModule, so we can safely cast
-      // to it and set it's emitEventWrapper.
+      // to it and set its emitEventWrapper.
       (appContext.legacyModule<TaskManagerInterface>() as? TaskManagerInternalModule)?.setEmitEventWrapper(emitEvent)
     }
 
@@ -94,6 +94,6 @@ class TaskManagerModule : Module() {
   private val appScopeKey: String
     get() = (
       taskManagerInternal
-        ?: throw ModuleNotFoundException(TaskManagerInterface::class.java.toString())
+        ?: throw Exceptions.ModuleNotFound(TaskManagerInterface::class)
       ).appScopeKey
 }

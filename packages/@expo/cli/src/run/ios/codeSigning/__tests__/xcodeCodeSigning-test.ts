@@ -26,30 +26,32 @@ describe(mutateXcodeProjectWithAutoCodeSigningInfo, () => {
       projectRoot
     );
 
-    const project = IOSConfig.XcodeUtils.resolvePathOrProject(projectRoot);
+    const project = IOSConfig.XcodeUtils.resolvePathOrProject(projectRoot)!;
 
     mutateXcodeProjectWithAutoCodeSigningInfo({
       project,
       appleTeamId: '12345',
     });
 
+    // `objects` is dynamically keyed; the typed view doesn't allow indexing/`delete`.
+    const objects = project.hash.project.objects as Record<string, any>;
+
     // PBXProject
     expect(
-      project.hash.project.objects.PBXProject['X00000000000000000000000'].attributes
-        .TargetAttributes['X00000000000000000000001'].DevelopmentTeam
+      objects.PBXProject['X00000000000000000000000'].attributes.TargetAttributes[
+        'X00000000000000000000001'
+      ].DevelopmentTeam
     ).toBe('"12345"');
-    delete project.hash.project.objects.PBXProject;
+    delete objects.PBXProject;
 
     // XCBuildConfiguration
     ['X00000000000000000000016', 'X00000000000000000000017'].forEach((key) => {
-      expect(
-        project.hash.project.objects.XCBuildConfiguration[key].buildSettings.DEVELOPMENT_TEAM
-      ).toBe('"12345"');
+      expect(objects.XCBuildConfiguration[key].buildSettings.DEVELOPMENT_TEAM).toBe('"12345"');
     });
-    delete project.hash.project.objects.XCBuildConfiguration;
+    delete objects.XCBuildConfiguration;
 
     // No other changes should have been made
-    expect(JSON.stringify(project.hash.project.objects)).not.toMatch(/12345/);
+    expect(JSON.stringify(objects)).not.toMatch(/12345/);
   });
 });
 

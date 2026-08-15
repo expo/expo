@@ -1,7 +1,7 @@
 import ExpoVideoThumbnails from './ExpoVideoThumbnails';
-import { VideoThumbnailsOptions, VideoThumbnailsResult } from './VideoThumbnailsTypes.types';
+import type { VideoThumbnailsOptions, VideoThumbnailsResult } from './VideoThumbnailsTypes.types';
 
-export { VideoThumbnailsOptions, VideoThumbnailsResult };
+export type { VideoThumbnailsOptions, VideoThumbnailsResult } from './VideoThumbnailsTypes.types';
 
 // @needsAudit
 /**

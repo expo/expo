@@ -15,3 +15,9 @@ internal class FetchAndroidContextLostException :
 
 internal class FetchRedirectException :
   CodedException("Redirect is not allowed when redirect mode is 'error'")
+
+internal class FetchBlobModuleUnavailableException :
+  CodedException(
+    "Unable to store the response body as a blob because React Native's BlobModule is not available. " +
+      "Make sure your app includes the React Native blob support or read the body with arrayBuffer() instead"
+  )

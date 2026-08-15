@@ -144,6 +144,13 @@ async function compareAndConfirmAsync(
     },
     {} as Record<string, NativeModule>
   );
+  const nextMap = next.reduce(
+    (acc, i) => {
+      acc[i.npmPackage] = i;
+      return acc;
+    },
+    {} as Record<string, NativeModule>
+  );
 
   logger.info('Changes:');
   let hasChanges = false;
@@ -155,6 +162,12 @@ async function compareAndConfirmAsync(
           currentMap[npmPackage]?.versionRange ?? '(none)'
         )} -> ${chalk.green(versionRange)}`
       );
+    }
+  }
+  for (const { npmPackage, versionRange } of current) {
+    if (!nextMap[npmPackage]) {
+      hasChanges = true;
+      logger.info(` - ${npmPackage}: ${chalk.red(versionRange)} -> ${chalk.green('(removed)')}`);
     }
   }
   if (!hasChanges) {

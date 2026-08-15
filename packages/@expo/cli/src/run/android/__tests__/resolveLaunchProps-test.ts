@@ -58,4 +58,26 @@ describe(resolveLaunchPropsAsync, () => {
       customAppId: 'dev.expo.test',
     });
   });
+
+  it(`resolves launch properties with fully qualified main activity`, async () => {
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        'android/app/src/main/AndroidManifest.xml': rnFixture[
+          'android/app/src/main/AndroidManifest.xml'
+        ].replace(
+          'android:name=".MainActivity"',
+          'android:name="com.reactnativeproject.MainActivity"'
+        ),
+      },
+      '/'
+    );
+
+    expect(await resolveLaunchPropsAsync('/', { appId: 'dev.expo.test' })).toEqual({
+      launchActivity: 'dev.expo.test/com.reactnativeproject.MainActivity',
+      mainActivity: 'com.reactnativeproject.MainActivity',
+      packageName: 'com.bacon.mydevicefamilyproject',
+      customAppId: 'dev.expo.test',
+    });
+  });
 });

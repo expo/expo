@@ -40,8 +40,8 @@ export function combinations<T, U>(
   b: U[]
 ): { [key: string]: T | U }[] {
   const result = [];
-  a.forEach(aValue => {
-    b.forEach(bValue => {
+  a.forEach((aValue) => {
+    b.forEach((bValue) => {
       result.push({
         [aKey]: aValue,
         [bKey]: bValue,

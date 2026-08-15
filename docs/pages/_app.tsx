@@ -1,27 +1,33 @@
 import { ThemeProvider } from '@expo/styleguide';
-import { KapaProvider } from '@kapaai/react-sdk';
+import { CookieConsentProvider } from '@expo/styleguide-cookie-consent';
 import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
 import { MotionConfig } from 'framer-motion';
 import { AppProps } from 'next/app';
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import { useRouter } from 'next/router';
+import { IntlProvider } from 'react-intl';
 
+import { getLocaleFromPath, messages } from '~/common/i18n';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/useNProgress';
 import { DocumentationPageWrapper } from '~/components/DocumentationPageWrapper';
-import { AnalyticsProvider } from '~/providers/Analytics';
+import { websiteSchema } from '~/constants/structured-data';
+import { useAnalyticsPageTracking } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
+import { ApiDataProvider } from '~/providers/api-data';
+import { HreflangAlternates } from '~/ui/components/HreflangAlternates';
 import { markdownComponents } from '~/ui/components/Markdown';
+import { CodeSelectionCopy } from '~/ui/components/Snippet/CodeSelectionCopy';
+import { StructuredData } from '~/ui/components/StructuredData';
 import * as Tooltip from '~/ui/components/Tooltip';
-
+import '~/common/suppress-trailing-slash-warning';
 import '~/styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
-import 'tippy.js/dist/tippy.css';
 
 const isDev = process.env.NODE_ENV === 'development';
-const KAPA_INTEGRATION_ID = '2063233f-1e70-45e8-b1b5-a872c9887afc';
 
 export const regularFont = Inter({
   display: 'swap',
@@ -43,7 +49,7 @@ Sentry.init({
     /https:\/\/expo\.nodejs\.cn/,
   ],
   integrations: [Sentry.browserTracingIntegration(), Sentry.extraErrorDataIntegration()],
-  tracesSampleRate: 0.0001,
+  tracesSampleRate: 0.00001,
   replaysSessionSampleRate: 0.000005,
   replaysOnErrorSampleRate: 0.002,
 });
@@ -60,10 +66,15 @@ const rootMarkdownComponents = {
 export { reportWebVitals } from '~/providers/Analytics';
 
 export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+  const locale = getLocaleFromPath(router.asPath);
   useNProgress();
+  useAnalyticsPageTracking();
   return (
     <>
-      {/* eslint-disable-next-line react/no-unknown-property */}
+      <StructuredData id="website" data={websiteSchema} />
+      <HreflangAlternates />
+      {/* oxlint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
         html,
         body,
@@ -81,23 +92,26 @@ export default function App({ Component, pageProps }: AppProps) {
           font-family: ${monospaceFont.style.fontFamily}, monospace;
         }
       `}</style>
-      <MotionConfig reducedMotion="user">
-        <AnalyticsProvider>
+      <IntlProvider locale={locale} messages={messages[locale]} defaultLocale="en">
+        <MotionConfig reducedMotion="user">
           <ThemeProvider>
-            <TutorialChapterCompletionProvider>
-              <CodeBlockSettingsProvider>
-                <MDXProvider components={rootMarkdownComponents}>
-                  <Tooltip.Provider>
-                    <KapaProvider integrationId={KAPA_INTEGRATION_ID} callbacks={{}}>
-                      <Component {...pageProps} />
-                    </KapaProvider>
-                  </Tooltip.Provider>
-                </MDXProvider>
-              </CodeBlockSettingsProvider>
-            </TutorialChapterCompletionProvider>
+            <CookieConsentProvider ga4Id="G-YKNPYCMLWY">
+              <TutorialChapterCompletionProvider>
+                <CodeBlockSettingsProvider>
+                  <MDXProvider components={rootMarkdownComponents}>
+                    <Tooltip.Provider>
+                      <ApiDataProvider data={pageProps.apiSectionData}>
+                        <Component {...pageProps} />
+                      </ApiDataProvider>
+                      <CodeSelectionCopy />
+                    </Tooltip.Provider>
+                  </MDXProvider>
+                </CodeBlockSettingsProvider>
+              </TutorialChapterCompletionProvider>
+            </CookieConsentProvider>
           </ThemeProvider>
-        </AnalyticsProvider>
-      </MotionConfig>
+        </MotionConfig>
+      </IntlProvider>
     </>
   );
 }

@@ -1,30 +1,30 @@
 'use client';
 
-import {
-  LinkingOptions,
-  NavigationAction,
-  StackRouter,
-  useNavigationBuilder,
-} from '@react-navigation/native';
-import React, { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
-import { StatusBar, useColorScheme, Platform } from 'react-native';
+import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
-import { ExpoLinkingOptions } from './getLinkingConfig';
+import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
-import { ServerContext, ServerContextType } from './global-state/serverLocationContext';
+import { RouterRegistryProvider } from './global-state/routerRegistry';
+import type { ServerContextType } from './global-state/serverLocationContext';
+import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
+import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
-import { RequireContext } from './types';
-import { canOverrideStatusBarBehavior } from './utils/statusbar';
+import type { LinkingOptions, NavigationAction } from './react-navigation/native';
+import { StackRouter, useNavigationBuilder } from './react-navigation/native';
+import { initScreensFeatureFlags } from './screensFeatureFlags';
+import type { RequireContext } from './types';
+import { parseUrlUsingCustomBase } from './utils/url';
+import { RootUnmatched } from './views/RootUnmatched';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
-import { Unmatched } from './views/Unmatched';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -58,6 +58,7 @@ const documentTitle = {
  * @hidden
  */
 export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRootProps) {
+  initScreensFeatureFlags();
   /*
    * Due to static rendering we need to wrap these top level views in second wrapper
    * View's like <SafeAreaProvider /> generate a <div> so if the parent wrapper
@@ -72,8 +73,6 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
               <SafeAreaProvider
                 // SSR support
                 initialMetrics={INITIAL_METRICS}>
-                {/* Users can override this by adding another StatusBar element anywhere higher in the component tree. */}
-                {canOverrideStatusBarBehavior && <AutoStatusBar />}
                 {children}
               </SafeAreaProvider>
             </LinkPreviewContextProvider>
@@ -86,14 +85,16 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
   return <ContextNavigator {...props} wrapper={wrapper} />;
 }
 
-function AutoStatusBar() {
-  return <StatusBar barStyle={useColorScheme() === 'light' ? 'dark-content' : 'light-content'} />;
-}
-
 const initialUrl =
   Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
+
+// TODO(@ubax): Refactor onReady logic and use listeners pattern
+function onNavigationReady() {
+  handleNavigationOnReady();
+  store.onReady();
+}
 
 function ContextNavigator({
   context,
@@ -107,20 +108,17 @@ function ContextNavigator({
   const serverContext = useMemo(() => {
     let contextType: ServerContextType = {};
 
-    if (initialLocation instanceof URL) {
-      contextType = {
-        location: {
-          pathname: initialLocation.pathname + initialLocation.hash,
-          search: initialLocation.search,
-        },
-      };
-    } else if (typeof initialLocation === 'string') {
-      // The initial location is a string, so we need to parse it into a URL.
-      const url = new URL(initialLocation, 'http://placeholder.base');
+    const url =
+      typeof initialLocation === 'string'
+        ? parseUrlUsingCustomBase(initialLocation)
+        : initialLocation;
+
+    if (url && url instanceof URL) {
       contextType = {
         location: {
           pathname: url.pathname,
           search: url.search,
+          hash: url.hash,
         },
       };
     }
@@ -133,7 +131,7 @@ function ContextNavigator({
    * e.g Static renders, units tests, etc
    */
   const serverUrl = serverContext.location
-    ? `${serverContext.location.pathname}${serverContext.location.search}`
+    ? `${serverContext.location.pathname}${serverContext.location.search}${serverContext.location.hash ?? ''}`
     : undefined;
 
   const store = useStore(context, linking, serverUrl);
@@ -157,31 +155,35 @@ function ContextNavigator({
 
   return (
     <StoreContext.Provider value={store}>
-      <UpstreamNavigationContainer
-        ref={store.navigationRef}
-        initialState={store.state}
-        linking={store.linking as LinkingOptions<any>}
-        onUnhandledAction={onUnhandledAction}
-        onStateChange={store.onStateChange}
-        documentTitle={documentTitle}
-        onReady={store.onReady}>
-        <ServerContext.Provider value={serverContext}>
-          <WrapperComponent>
-            <Content />
-          </WrapperComponent>
-        </ServerContext.Provider>
-      </UpstreamNavigationContainer>
+      <RouterRegistryProvider>
+        <UpstreamNavigationContainer
+          ref={store.navigationRef}
+          initialState={store.state}
+          linking={store.linking as LinkingOptions<any>}
+          onUnhandledAction={onUnhandledAction}
+          onStateChange={store.onStateChange}
+          documentTitle={documentTitle}
+          onReady={onNavigationReady}>
+          <ServerContext.Provider value={serverContext}>
+            <WrapperComponent>
+              <Content />
+            </WrapperComponent>
+          </ServerContext.Provider>
+        </UpstreamNavigationContainer>
+      </RouterRegistryProvider>
     </StoreContext.Provider>
   );
 }
 
 function Content() {
-  const children = [<Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />];
+  const children = [
+    <Screen key="SLOT" name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
+  ];
   if (shouldAppendNotFound()) {
-    children.push(<Screen name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
+    children.push(<Screen key="NOT-FOUND" name={NOT_FOUND_ROUTE_NAME} component={RootUnmatched} />);
   }
   if (shouldAppendSitemap()) {
-    children.push(<Screen name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
+    children.push(<Screen key="SITEMAP" name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
   }
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     children,
@@ -189,7 +191,7 @@ function Content() {
   });
 
   return (
-    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
   );
 }
 

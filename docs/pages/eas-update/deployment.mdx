@@ -6,13 +6,13 @@ description: Learn a simple but powerful process for safely deploying updates to
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-When you have an app with multiple binary versions in production (this is common &mdash; users do not always stay up to date with your latest store release), it's important to understand what code is running on which versions and to be able to specifically target a particular version with a hotfix.
+When you have an app with multiple binary versions in production (this is common — users do not always stay up to date with your latest store release), it's important to understand what code is running on which versions and to be able to specifically target a particular version with a hotfix.
 
 EAS Update provides "channels", "branches", and "runtime versions" to help you determine which app version to target, to help you with bookkeeping to understand the state of your deployments, and to support a variety of [deployment patterns](/eas-update/deployment-patterns/).
 
 <Collapsible summary="What if my preferred release process isn't supported by EAS Update?">
 
-Release management is a large topic in software engineering, and everyone has a slightly different take on how they would like to do it. EAS Update is designed to support [a variety of different workflows](/eas-update/deployment-patterns/), but this guide will focus on the simplest workflow that works for most apps. That said, there are some other workflows that may not work within the constraints of the EAS Update service. For example, each binary version must always point to a single channel, and you cannot dynamically update the channel.
+Release management is a large topic in software engineering, and everyone has a slightly different take on how they would like to do it. EAS Update is designed to support [a variety of different workflows](/eas-update/deployment-patterns/), but this guide will focus on the simplest workflow that works for most apps. That said, there are some other workflows that may not work within the constraints of the EAS Update service. For example, each binary version must always point to a single channel, and you cannot change the channel embedded in a build after you create it. However, on SDK 54 and later, [channel surfing](/eas-update/channel-surfing/) lets an installed release build request updates from a different channel at runtime.
 
 As an escape hatch, you can host your own update service that is compatible with the [Expo Updates Protocol](/technical-specs/expo-updates-1/) and point your `expo-updates` configuration to that service instead. The only concepts relevant to update selection that exist on the protocol level are "Runtime Version" and "Platform", and you are free to create your own concepts on top of those in the same way we built channels and branches. [Learn more about creating a custom expo-updates server](https://github.com/expo/custom-expo-updates-server).
 
@@ -26,7 +26,7 @@ In this guide, we'll describe a simple but powerful release process that uses **
 
 The most simple way to use EAS Update is to ignore the concept of "branches" and focus on "channels". Branches will still exist, but you will not have to interact with them directly to manage deployments. You can keep your channels pointed at a branch with the same name as the channel and think of them as a singular concept.
 
-EAS Update branches were meant to map to Git branches and enable teams to publish changes from a Git branch directly to an EAS Update branch of the same name. This can be helpful for [previewing updates](/eas-update/develop-faster/), but for many apps, this level of integration with Git is not required. Often, developers are only interested in being able to release hotfixes to a staging or production version of their app manually, and can run `eas update --channel staging` or `eas update --channel production`, when needed rather than managing branches to accomplish the same result.
+EAS Update branches were meant to map to Git branches and enable teams to publish changes from a Git branch directly to an EAS Update branch of the same name. This can be helpful for [previewing updates](/eas-update/preview/), but for many apps, this level of integration with Git is not required. Often, developers are only interested in being able to release hotfixes to a staging or production version of their app manually, and can run `eas update --channel staging` or `eas update --channel production`, when needed rather than managing branches to accomplish the same result.
 
 </Collapsible>
 
@@ -99,13 +99,13 @@ As explained above, preview builds will point to the "preview" channel. If you w
 
 ### Preview in development builds
 
-Development builds can load updates from any channel, provided the runtime version is compatible. Learn more about this in [Previewing updates](/eas-update/develop-faster/).
+Development builds can load updates from any channel, provided the runtime version is compatible. Learn more about this in [Previewing updates](/eas-update/preview/).
 
 ## Deploying to staging
 
 Run `eas update --channel staging` to publish an update to staging. This will make your hotfix immediately available to users of staging builds with the targeted runtime version.
 
-Your staging environment will be Google Play Beta or TestFlight &mdash; the "beta track" on respective app stores. You may alternatively use internal distribution, but deploying to a store beta track is generally recommended when you are staging code for a production release since users are able to access it without any knowledge of internal processes for distributing the app (while using internal distribution would require users to download the app from an expo.dev URL).
+Your staging environment will be Google Play Beta or TestFlight — the "beta track" on respective app stores. You may alternatively use internal distribution, but deploying to a store beta track is generally recommended when you are staging code for a production release since users are able to access it without any knowledge of internal processes for distributing the app (while using internal distribution would require users to download the app from an expo.dev URL).
 
 A common practice for creating staging builds is to always create one whenever you upload a production build to a store. This allows you to have a staging build with an identical runtime to the production build, which you can use to test your updates before rolling them out to production. With EAS Build, this means running `eas build --profile staging --auto-submit` every time you run `eas build --profile production --auto-submit`.
 
@@ -144,4 +144,4 @@ Learn more in [Rollbacks](/eas-update/rollbacks/).
 ## Next steps
 
 - [Learn more about the Persistent staging release process](/eas-update/deployment-patterns/#persistent-staging-flow), which is very similar to what is described here.
-- [Explore using preview updates in development builds](/eas-update/develop-faster/).
+- [Explore using preview updates in development builds](/eas-update/preview/).

@@ -1,6 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import Symbols
 
 enum ImageTransitionTiming: String, Enumerable {
   case easeInOut = "ease-in-out"
@@ -30,6 +31,20 @@ enum ImageTransitionEffect: String, Enumerable {
   case flipFromLeft = "flip-from-left"
   case curlUp = "curl-up"
   case curlDown = "curl-down"
+  // SF Symbol replace effects (iOS 17+)
+  case sfReplace = "sf:replace"
+  case sfDownUp = "sf:down-up"
+  case sfUpUp = "sf:up-up"
+  case sfOffUp = "sf:off-up"
+
+  var isSFReplaceEffect: Bool {
+    switch self {
+    case .sfReplace, .sfDownUp, .sfUpUp, .sfOffUp:
+      return true
+    default:
+      return false
+    }
+  }
 
   func toAnimationOption() -> UIView.AnimationOptions {
     switch self {
@@ -47,6 +62,25 @@ enum ImageTransitionEffect: String, Enumerable {
       return .transitionCurlUp
     case .curlDown:
       return .transitionCurlDown
+    default:
+      return .transitionCrossDissolve
+    }
+  }
+}
+
+enum ImageTransitionCacheSkip: String, Enumerable {
+  case none
+  case memory
+  case all
+
+  func skips(cacheType: ImageCacheType) -> Bool {
+    switch self {
+    case .none:
+      return false
+    case .memory:
+      return cacheType == .memory
+    case .all:
+      return cacheType == .memory || cacheType == .disk
     }
   }
 }
@@ -61,7 +95,17 @@ struct ImageTransition: Record {
   @Field
   var effect: ImageTransitionEffect = .crossDissolve
 
+  @Field
+  var skipOnCacheHit: ImageTransitionCacheSkip = .none
+
   func toAnimationOptions() -> UIView.AnimationOptions {
     return [timing.toAnimationOption(), effect.toAnimationOption()]
+  }
+
+  func shouldPlay(forCacheType cacheType: ImageCacheType, isInitialDisplay: Bool) -> Bool {
+    guard isInitialDisplay else {
+      return true
+    }
+    return !skipOnCacheHit.skips(cacheType: cacheType)
   }
 }

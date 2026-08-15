@@ -1,9 +1,10 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
-import { EmitterSubscription, Platform } from 'react-native';
+import type { EmitterSubscription } from 'react-native';
+import { Platform } from 'react-native';
 
 import ExpoLinking from './ExpoLinking';
-import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
+import type { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
 import RNLinking from './RNLinking';
 import { parse } from './createURL';
 import { validateURL } from './validateURL';
@@ -11,9 +12,9 @@ import { validateURL } from './validateURL';
 // @needsAudit
 /**
  * Add a handler to `Linking` changes by listening to the `url` event type and providing the handler.
- * It is recommended to use the [`useURL()`](#useurl) hook instead.
+ * It is recommended to use the [`useLinkingURL()`](#uselinkingurl) hook instead.
  * @param type The only valid type is `'url'`.
- * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
+ * @param handler An [`URLListener`](#urllistenerevent) function that takes an `event` object of the type
  * [`EventType`](#eventtype).
  * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native documentation on Linking](https://reactnative.dev/docs/linking#addeventlistener).
@@ -28,7 +29,7 @@ export function addEventListener(type: 'url', handler: URLListener): EmitterSubs
  * Parses the deep link information out of the URL used to open the experience initially.
  * If no link opened the app, all the fields will be `null`.
  * > On the web it parses the current window URL.
- * @return A promise that resolves with `ParsedURL` object.
+ * @return A promise that resolves with a `ParsedURL` object.
  */
 export async function parseInitialURLAsync(): Promise<ParsedURL> {
   const initialUrl = await RNLinking.getInitialURL();
@@ -60,7 +61,7 @@ export async function sendIntent(action: string, extras?: SendIntentExtras[]): P
 
 // @needsAudit
 /**
- * Open the operating system settings app and displays the app’s custom settings, if it has any.
+ * Open the operating system settings app and display the app’s custom settings, if it has any.
  */
 export async function openSettings(): Promise<void> {
   if (Platform.OS === 'web') {
@@ -89,12 +90,24 @@ export function getLinkingURL(): string | null {
   return ExpoLinking.getLinkingURL();
 }
 
+/**
+ * Clears the cached initial URL used to launch the app, subsequent
+ * calls to [`getLinkingURL()`] return `null` until a new deep link is received.
+ *
+ * On web this is a no-op.
+ * @platform android
+ * @platform ios
+ */
+export function clearInitialURL(): void {
+  ExpoLinking.clearInitialURL?.();
+}
+
 // @needsAudit
 /**
- * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
+ * Attempt to open the given URL with an installed app. See the [Linking guide](/linking/overview)
  * for more information.
  * @param url A URL for the operating system to open. For example: `tel:5555555`, `exp://`.
- * @return A `Promise` that is fulfilled with `true` if the link is opened operating system
+ * @return A `Promise` that is fulfilled with `true` if the link is opened by the operating system
  * automatically or the user confirms the prompt to open the link. The `Promise` rejects if there
  * are no applications registered for the URL or the user cancels the dialog.
  */
@@ -109,9 +122,9 @@ export async function openURL(url: string): Promise<true> {
  * On web this always returns `true` because there is no API for detecting what URLs can be opened.
  * @param url The URL that you want to test can be opened.
  * @return A `Promise` object that is fulfilled with `true` if the URL can be handled, otherwise it
- * `false` if not.
+ * is `false` if not.
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
- * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#linking-from-your-app).
+ * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/linking/into-other-apps/#custom-url-schemes).
  */
 export async function canOpenURL(url: string): Promise<boolean> {
   validateURL(url);

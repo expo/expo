@@ -1,9 +1,0 @@
-query Home_ViewerPrimaryAccountName {
-  meUserActor {
-    id
-    primaryAccount {
-      id
-      name
-    }
-  }
-}

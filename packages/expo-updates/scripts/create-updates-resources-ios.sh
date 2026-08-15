@@ -26,7 +26,7 @@ RCT_METRO_PORT=${RCT_METRO_PORT:=8081}
 # `$PROJECT_DIR` is passed by Xcode as the directory to the xcodeproj file.
 # in classic main project setup it is something like /path/to/app/ios
 # in new style pod project setup it is something like /path/to/app/ios/Pods
-PROJECT_DIR_BASENAME=$(basename $PROJECT_DIR)
+PROJECT_DIR_BASENAME=$(basename "$PROJECT_DIR")
 if [ "x$PROJECT_DIR_BASENAME" != "xPods" ]; then
   exit 0
 fi
@@ -41,6 +41,7 @@ PROJECT_ROOT="$(pwd -P)"
 
 if [ "$BUNDLE_FORMAT" == "shallow" ]; then
   RESOURCE_DEST="$DEST/$RESOURCE_BUNDLE_NAME"
+  mkdir -p "$RESOURCE_DEST"
 elif [ "$BUNDLE_FORMAT" == "deep" ]; then
   RESOURCE_DEST="$DEST/$RESOURCE_BUNDLE_NAME/Contents/Resources"
   mkdir -p "$RESOURCE_DEST"

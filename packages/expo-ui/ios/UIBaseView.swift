@@ -8,22 +8,24 @@ import SwiftUI
  */
 public struct UIBaseView<Props: UIBaseViewProps, Content: ExpoSwiftUI.View<Props>>: ExpoSwiftUI.View {
   @ObservedObject public var props: Props
+  let innerView: Content
 
   public init(props: Props) {
     self.props = props
+    self.innerView = Content(props: props)
   }
 
   public var body: some View {
-    Content(props: props)
+    innerView
       .applyAccessibilityIdentifier(props.testID)
       .applyModifiers(props.modifiers, appContext: props.appContext, globalEventDispatcher: props.globalEventDispatcher)
   }
 }
 
 /**
- Base view modifier in expo-ui
- This is useful for View with AsyncFunctions that cannot use the `ExpoUIView` builder.
+ Deprecated. Use `applyModifiers` method directly instead.
  */
+@available(*, deprecated, message: "Use applyModifiers method directly on the content view instead.")
 public struct UIBaseViewModifier<Props: UIBaseViewProps>: ViewModifier {
   @ObservedObject var props: Props
   var defaultFrameAlignment = Alignment.center
@@ -32,6 +34,21 @@ public struct UIBaseViewModifier<Props: UIBaseViewProps>: ViewModifier {
     content
       .applyAccessibilityIdentifier(props.testID)
       .applyModifiers(props.modifiers, appContext: props.appContext, globalEventDispatcher: props.globalEventDispatcher)
+  }
+}
+
+// MARK: - ViewWrapper
+
+extension UIBaseView: ExpoSwiftUI.ViewWrapper {
+  public func getWrappedView() -> Any {
+    return innerView
+  }
+}
+
+// MARK: - FocusableView forwarding
+extension UIBaseView: ExpoSwiftUI.FocusableView where Content: ExpoSwiftUI.FocusableView {
+  public func forceResignFirstResponder() {
+    innerView.forceResignFirstResponder()
   }
 }
 
@@ -48,4 +65,18 @@ public func ExpoUIView<Content: ExpoSwiftUI.View>(
   return View(wrappedType) {
     ViewName(contentName)
   }
+}
+
+/**
+ ExpoUIView overload that accepts a `@ViewDefinitionBuilder` closure for registering
+ AsyncFunctions and other view definition elements.
+ */
+public func ExpoUIView<Content: ExpoSwiftUI.View>(
+  _ contentType: Content.Type,
+  @ExpoSwiftUI.ViewDefinitionBuilder<Content> _ elements: @escaping () -> [AnyViewDefinitionElement]
+) -> ExpoSwiftUI.ViewDefinition<Content.Props, UIBaseView<Content.Props, Content>> where Content.Props: UIBaseViewProps {
+  let wrappedType = UIBaseView<Content.Props, Content>.self
+  let contentName = String(describing: contentType)
+
+  return ExpoSwiftUI.ViewDefinition(wrappedType, name: contentName, elements: elements())
 }

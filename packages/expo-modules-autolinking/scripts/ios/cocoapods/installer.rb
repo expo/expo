@@ -6,111 +6,89 @@
 # React Native Core headers in their public headers, which causes issues when
 # building them as dynamic frameworks with modular headers enabled.
 
+require_relative '../precompiled_modules'
+
 module Pod
   class Podfile
     public
 
     def framework_modules_to_patch
-      @framework_modules_to_patch ||= ['ExpoModulesCore', 'Expo', 'ReactAppDependencyProvider', 'expo-dev-menu']
+      @framework_modules_to_patch ||= ['ExpoModulesCore', 'ExpoModulesJSI', 'Expo', 'ReactAppDependencyProvider', 'expo-dev-menu']
     end
 
     def expo_add_modules_to_patch(modules)
       framework_modules_to_patch.concat(modules)
+    end
+
+    # Pod names of Expo modules registered by `use_expo_modules!`.
+    # Used at post-install time to reconcile their deployment targets
+    # with ExpoModulesCore's, so an adapter declaring a lower platform
+    # value in its podspec doesn't fail the Swift module-import check.
+    def expo_autolinked_pod_names
+      @expo_autolinked_pod_names ||= []
     end
   end
 
   class Installer
     private
 
-    _original_perform_post_install_actions = instance_method(:perform_post_install_actions)
     _original_run_podfile_pre_install_hooks = instance_method(:run_podfile_pre_install_hooks)
-    _script_phase_name = '[Expo Autolinking] Run Codegen with autolinking'
+    _original_perform_post_install_actions = instance_method(:perform_post_install_actions)
 
     public
 
     define_method(:perform_post_install_actions) do
-
       # Call original implementation first
       _original_perform_post_install_actions.bind(self).()
 
-      # Next we'll perform an Expo workaround for Codegen in React Native where it uses the wrong output path for
-      # the generated files. This can be remove when the following PR is merged and released upstream:
-      # https://github.com/facebook/react-native/pull/54066
-      # TODO: chrfalch - remove when RN PR is released
-      # Find the ReactCodegen pod target in the pods project
-      react_codegen_native_target = self.pods_project.targets.find { |target| target.name == 'ReactCodegen' }
-
-      if react_codegen_native_target
-        # Check if the build phase already exists
-        already_exists = react_codegen_native_target.build_phases.any? do |phase|
-          phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase) && phase.name == _script_phase_name
-        end
-
-        if !already_exists
-          Pod::UI.puts "[Expo] ".blue + "Adding '#{_script_phase_name}' build phase to ReactCodegen"
-
-          # Create the new shell script build phase
-          phase = react_codegen_native_target.new_shell_script_build_phase(_script_phase_name)
-          phase.shell_path = '/bin/sh'
-          phase.shell_script = <<~SH
-            # Remove this step when the fix is merged and released.
-            # See: https://github.com/facebook/react-native/pull/54066
-
-            # This re-runs Codegen without the broken "scripts/react_native_pods_utils/script_phases.sh" script, causing Codegen to run without autolinking.
-            # Instead of using "script_phases.sh" which always runs inside DerivedData, we run it in the normal "/ios" folder
-            # See: https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods_utils/script_phases.sh
-            pushd "$PODS_ROOT/../" > /dev/null
-              RCT_SCRIPT_POD_INSTALLATION_ROOT="$PODS_ROOT/.."
-            popd >/dev/null
-
-            export RCT_SCRIPT_RN_DIR="$REACT_NATIVE_PATH" # This is set by Expo
-            export RCT_SCRIPT_APP_PATH="$RCT_SCRIPT_POD_INSTALLATION_ROOT/.."
-            export RCT_SCRIPT_OUTPUT_DIR="$RCT_SCRIPT_POD_INSTALLATION_ROOT"
-            export RCT_SCRIPT_TYPE="withCodegenDiscovery"
-
-            # This is the broken script that runs inside DerivedData, meaning it can't find the autolinking result in `ios/build/generated/autolinking.json`.
-            # Resulting in Codegen running with it's own autolinking, not discovering transitive peer dependencies.
-            # export SCRIPT_PHASES_SCRIPT="$RCT_SCRIPT_RN_DIR/scripts/react_native_pods_utils/script_phases.sh"
-            export WITH_ENVIRONMENT="$RCT_SCRIPT_RN_DIR/scripts/xcode/with-environment.sh"
-
-            # Start of workaround code
-
-            # Load the $NODE_BINARY from the "with-environment.sh" script
-            source "$WITH_ENVIRONMENT"
-
-            # Run this script directly in the right folders:
-            # https://github.com/facebook/react-native/blob/3f7f9d8fb8beb41408d092870a7c7cac58029a4d/packages/react-native/scripts/react_native_pods_utils/script_phases.sh#L96-L101
-            pushd "$RCT_SCRIPT_RN_DIR" >/dev/null || exit 1
-              set -x
-              "$NODE_BINARY" "scripts/generate-codegen-artifacts.js" --path "$RCT_SCRIPT_APP_PATH" --outputPath "$RCT_SCRIPT_OUTPUT_DIR" --targetPlatform "ios"
-              set +x
-            popd >/dev/null || exit 1
-
-            # End of workaround code
-          SH
-
-          # Find the index of the "Compile Sources" phase (PBXSourcesBuildPhase)
-          compile_sources_index = react_codegen_native_target.build_phases.find_index do |p|
-            p.is_a?(Xcodeproj::Project::Object::PBXSourcesBuildPhase)
-          end
-
-          if compile_sources_index
-            # Remove the phase from its current position (it was added at the end)
-            react_codegen_native_target.build_phases.delete(phase)
-            # Insert it before the "Compile Sources" phase
-            react_codegen_native_target.build_phases.insert(compile_sources_index, phase)
-          else
-            Pod::UI.puts "[Expo] ".yellow + "Could not find 'Compile Sources' phase, build phase added at default position"
-          end
-        end
-      else
-        Pod::UI.puts "[Expo] ".yellow + "ReactCodegen target not found in pods project"
+      # CocoaPods overrides generate_available_uuid_list to use a fast sequential counter
+      # (Pod::Project#generate_available_uuid_list) that skips collision checks. After
+      # predictabilize_uuids reassigns all UUIDs to deterministic values, the counter resets
+      # and new sequential UUIDs can collide with existing ones, corrupting Pods.xcodeproj.
+      # Fix: replace the sequential generator with collision-safe random UUIDs for any
+      # objects created after predictabilize_uuids has run.
+      project = self.pods_project
+      existing_uuids = project.objects_by_uuid.keys.to_set
+      project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
+        new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
+        uniques = new_uuids.reject { |u| existing_uuids.include?(u) || @generated_uuids.include?(u) }
+        @generated_uuids += uniques
+        @available_uuids += uniques
       end
+
+      # Run all precompiled module post-install configuration
+      Expo::PrecompiledModules.perform_post_install(self)
+
+      # Raise every autolinked Expo module's deployment target to at least
+      # ExpoModulesCore's. CocoaPods + react_native_post_install only raise
+      # pods to RN's iOS floor, which can leave Expo adapters declaring a
+      # lower platform value below ExpoModulesCore's requirement, leading to
+      # "Compiling for iOS 15.1, but module 'ExpoModulesCore' has a minimum deployment target of iOS 16.4"
+      # type of message
+      reconcile_expo_module_deployment_targets()
+
+      # Raise each pod's resource bundle targets to the pod's effective
+      # deployment target. CocoaPods generates resource bundle targets with
+      # the deployment target declared by the pod's own podspec, and
+      # `react_native_post_install` raises only the pods' library targets,
+      # so a bundle can be left below the minimum supported by the Xcode SDK
+      # (e.g. ReachabilitySwift's privacy manifest bundle at iOS 12.0),
+      # which fails the build on Xcode 27. Runs after the reconciliation
+      # above so bundles of Expo modules pick up the reconciled values.
+      reconcile_resource_bundle_deployment_targets()
     end
 
     define_method(:run_podfile_pre_install_hooks) do
       # Call original implementation first
       _original_run_podfile_pre_install_hooks.bind(self).()
+
+      # ExpoModulesJSI needs a stub xcframework so CocoaPods generates the
+      # "[CP] Copy XCFrameworks" build phase. The stub is gitignored and may be
+      # absent after a fresh checkout or when CI restores a stale Pods/ cache.
+      ensure_expo_modules_jsi_stub_xcframework()
+
+      # Disable use_frameworks! for pods that can't be built as frameworks
+      Expo::PrecompiledModules.perform_pre_install(self)
 
       return unless should_disable_use_frameworks_for_core_expo_pods?()
 
@@ -131,6 +109,142 @@ module Pod
     end
 
     private
+
+    # See call site in perform_post_install_actions for rationale.
+    # This runs AFTER the user's `post_install` hook, so it will overwrite any
+    # deployment target a consumer set there for an Expo module. That is
+    # intentional — the bumped pod list is logged so the override is visible.
+    def reconcile_expo_module_deployment_targets
+      # Mapping from Pod::Platform symbol to the Xcode build setting key
+      # that stores its deployment target and a human-readable label.
+      deployment_targets = {
+        ios:  { key: 'IPHONEOS_DEPLOYMENT_TARGET', label: 'iOS'   },
+        osx:  { key: 'MACOSX_DEPLOYMENT_TARGET',   label: 'macOS' },
+        tvos: { key: 'TVOS_DEPLOYMENT_TARGET',     label: 'tvOS'  },
+      }
+
+      expo_pod_names = @podfile.expo_autolinked_pod_names.to_set
+      return if expo_pod_names.empty?
+
+      core_target = self.pod_targets.find { |t| t.pod_name == 'ExpoModulesCore' }
+      core_spec = core_target&.root_spec
+      return if core_spec.nil?
+
+      required = deployment_targets
+        .map { |platform, info| [info[:key], { label: info[:label], version: core_spec.deployment_target(platform) }] }
+        .reject { |_, info| info[:version].nil? || info[:version].empty? }
+        .to_h
+      return if required.empty?
+
+      bumped = {} # pod_name => Array of bumped platform labels
+      self.target_installation_results.pod_target_installation_results.each_value do |result|
+        # Keys in pod_target_installation_results are target names, which can
+        # differ from pod names under scoped targets — use pod_name explicitly.
+        pod_name = result.target.pod_name
+        next unless expo_pod_names.include?(pod_name)
+        next if pod_name == 'ExpoModulesCore'
+
+        bumped_platforms = []
+        result.native_target.build_configurations.each do |config|
+          required.each do |key, info|
+            current = config.build_settings[key]
+            # nil means the pod doesn't target this platform — don't create a setting for it.
+            # Empty string, an xcconfig reference (e.g. `$(inherited)`), or a malformed
+            # value written by another post_install hook means we can't compare versions,
+            # so leave it alone.
+            next if current.nil? || current.empty?
+            next unless Gem::Version.correct?(current)
+            next unless Gem::Version.new(current) < Gem::Version.new(info[:version])
+            config.build_settings[key] = info[:version]
+            bumped_platforms << info[:label] unless bumped_platforms.include?(info[:label])
+          end
+        end
+        bumped[pod_name] = bumped_platforms unless bumped_platforms.empty?
+      end
+
+      unless bumped.empty?
+        versions_by_label = required.values.map { |info| [info[:label], info[:version]] }.to_h
+        Pod::UI.puts "[Expo] ".blue + "Raised deployment target for Expo modules matching ExpoModulesCore:".yellow
+        bumped.each do |pod_name, platforms|
+          summary = platforms.map { |label| "#{label}=#{versions_by_label[label]}" }.join(' ')
+          Pod::UI.puts "  #{pod_name} (#{summary})".yellow
+        end
+        self.pods_project.save
+      end
+    end
+
+    # See call site in perform_post_install_actions for rationale.
+    # Bundle targets are only ever raised to their owning pod's library
+    # target value, never lowered, so a bundle already declaring a higher
+    # deployment target keeps it.
+    def reconcile_resource_bundle_deployment_targets
+      deployment_target_keys = [
+        'IPHONEOS_DEPLOYMENT_TARGET',
+        'MACOSX_DEPLOYMENT_TARGET',
+        'TVOS_DEPLOYMENT_TARGET',
+      ]
+
+      bumped = [] # names of bumped resource bundle targets
+      dirty_projects = Set.new
+      self.target_installation_results.pod_target_installation_results.each_value do |result|
+        library_settings_by_config = result.native_target.build_configurations
+          .map { |config| [config.name, config.build_settings] }
+          .to_h
+
+        result.resource_bundle_targets.each do |bundle_target|
+          bundle_target.build_configurations.each do |config|
+            library_settings = library_settings_by_config[config.name]
+            next if library_settings.nil?
+
+            deployment_target_keys.each do |key|
+              current = config.build_settings[key]
+              effective = library_settings[key]
+              # nil means the target doesn't build for that platform. Empty
+              # strings, xcconfig references (e.g. `$(inherited)`), and
+              # malformed values written by another post_install hook can't
+              # be compared as versions, so leave those alone.
+              next if current.nil? || current.empty? || effective.nil? || effective.empty?
+              next unless Gem::Version.correct?(current) && Gem::Version.correct?(effective)
+              next unless Gem::Version.new(current) < Gem::Version.new(effective)
+              config.build_settings[key] = effective
+              dirty_projects << bundle_target.project
+              bumped << bundle_target.name unless bumped.include?(bundle_target.name)
+            end
+          end
+        end
+      end
+
+      unless bumped.empty?
+        Pod::UI.puts "[Expo] ".blue + "Raised resource bundle deployment targets to match their pods: #{bumped.join(', ')}".yellow
+        # Save every project that owns a bumped bundle target; with the
+        # `generate_multiple_pod_projects` install option those are per-pod
+        # projects rather than `pods_project`.
+        dirty_projects.each(&:save)
+      end
+    end
+
+    # Ensures every slice declared by ExpoModulesJSI's podspec exists in
+    # `Products/ExpoModulesJSI.xcframework`. CocoaPods only runs
+    # prepare_command when a pod is freshly downloaded or its podspec
+    # changes, so CI cache hits skip it. This method runs on every pod
+    # install to guarantee every declared slice is present — an xcframework
+    # with only some slices (e.g. simulator-only after a prior Debug build)
+    # breaks the per-slice copy script CocoaPods generates from Info.plist,
+    # which then leaves XCFrameworkIntermediates empty for the missing slice
+    # and surfaces as `No such module 'ExpoModulesJSI'`.
+    #
+    # The script itself is idempotent and only stamps slices that are
+    # missing, so always invoking it is cheaper than maintaining a separate
+    # completeness check that would have to mirror the script's slice list.
+    def ensure_expo_modules_jsi_stub_xcframework
+      jsi_target = self.pod_targets.find { |t| t.name == 'ExpoModulesJSI' }
+      return if jsi_target.nil?
+
+      pod_dir = jsi_target.sandbox.pod_dir('ExpoModulesJSI')
+      return unless File.directory?(pod_dir)
+
+      system('./scripts/create-stub-xcframework.sh', chdir: pod_dir.to_s)
+    end
 
     # We should only disable USE_FRAMEWORKS for specific pods when:
     # - RCT_USE_PREBUILT_RNCORE is not '1'

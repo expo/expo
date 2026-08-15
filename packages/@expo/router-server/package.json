@@ -1,68 +1,80 @@
 {
   "name": "@expo/router-server",
-  "version": "0.1.0",
+  "version": "57.0.4",
   "description": "Expo Router is a file-based router for React Native and web applications.",
-  "author": "650 Industries, Inc.",
+  "keywords": [
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/routing/introduction/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
   "license": "MIT",
-  "main": "build/index",
-  "types": "build/index.d.ts",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/router-server"
+  },
   "files": [
     "build",
     "node"
   ],
-  "repository": {
-    "url": "https://github.com/expo/expo.git",
-    "type": "git",
-    "directory": "packages/@expo/router-server"
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "test:rsc": "jest --config jest-rsc.config.js",
-    "test:tsd": "EXPORT_ROUTER_JEST_TSD=true expo-module test",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "keywords": [
-    "react-native",
-    "expo"
-  ],
+  "dependencies": {
+    "debug": "^4.3.4"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.7",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "@types/react-dom": "^19.1.7",
+    "@typescript/vfs": "^1.6.4",
+    "expect-type": "^1.3.0",
+    "expo-module-scripts": "workspace:*",
+    "expo-router": "workspace:*",
+    "react-server-dom-webpack": "~19.0.8"
+  },
   "peerDependencies": {
-    "@expo/metro-runtime": "^6.1.2",
+    "@expo/metro-runtime": "workspace:^56.0.13",
+    "expo": "*",
+    "expo-constants": "workspace:^56.0.16",
+    "expo-font": "workspace:^56.0.5",
+    "expo-router": "*",
+    "expo-server": "workspace:^56.0.4",
     "react": "*",
     "react-dom": "*",
-    "expo": "*",
-    "expo-constants": "^18.0.9",
-    "expo-font": "*",
-    "expo-router": "*",
-    "expo-server": "*",
-    "react-server-dom-webpack": ">= 19.0.0"
+    "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
   },
   "peerDependenciesMeta": {
-    "react-dom": {
+    "@expo/metro-runtime": {
       "optional": true
     },
-    "react-native-web": {
+    "expo-router": {
+      "optional": true
+    },
+    "react-dom": {
       "optional": true
     },
     "react-server-dom-webpack": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "react-server-dom-webpack": "~19.0.0",
-    "tsd": "^0.28.1"
-  },
-  "dependencies": {
-    "debug": "^4.3.4"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

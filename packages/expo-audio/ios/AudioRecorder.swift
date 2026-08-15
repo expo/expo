@@ -20,12 +20,16 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var recordingSession = AVAudioSession.sharedInstance()
   var allowsRecording = false
   weak var owningRegistry: AudioComponentRegistry?
+  private var mediaServicesDidReset = false
+  private var currentOptions: RecordingOptions?
+  private var currentSessionOptions: AVAudioSession.CategoryOptions = []
 
   private var isPrepared: Bool {
     currentState == .prepared || currentState == .recording || currentState == .paused
   }
 
-  override init(_ ref: AVAudioRecorder) {
+  init(_ ref: AVAudioRecorder, options: RecordingOptions) {
+    currentOptions = options
     super.init(ref)
     recordingDelegate = RecordingDelegate(resultHandler: self)
     ref.delegate = recordingDelegate
@@ -36,15 +40,22 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   }
 
   var currentTime: Double {
-    ref.currentTime * 1000
+    let time = ref.currentTime * 1000
+    return time.isNaN ? 0 : time
   }
 
   var deviceCurrentTime: Int {
-    Int(ref.deviceCurrentTime * 1000)
+    let time = ref.deviceCurrentTime * 1000
+    return time.isNaN ? 0 : Int(time)
   }
 
   var uri: String {
     ref.url.absoluteString
+  }
+
+  var fileSize: Int64 {
+    let attributes = try? FileManager.default.attributesOfItem(atPath: ref.url.path(percentEncoded: false))
+    return (attributes?[.size] as? Int64) ?? 0
   }
 
   private var currentSessionDuration: Int {
@@ -70,6 +81,8 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       ref.stop()
     }
     resetDurationTracking()
+    mediaServicesDidReset = false
+
     let session = AVAudioSession.sharedInstance()
     do {
       try session.setCategory(.playAndRecord, mode: .default, options: sessionOptions)
@@ -79,9 +92,20 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
     }
 
-    if let options {
+    if let options = options ?? currentOptions {
+      let newRecorder: AVAudioRecorder
+      do {
+        newRecorder = try AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
+      } catch {
+        currentState = .error
+        try? session.setActive(false)
+        throw error
+      }
+
+      currentOptions = options
+      currentSessionOptions = sessionOptions
       ref.delegate = nil
-      ref = AudioUtils.createRecorder(directory: recordingDirectory, with: options)
+      ref = newRecorder
       ref.delegate = recordingDelegate
     }
 
@@ -154,7 +178,8 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "canRecord": isPrepared,
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
-      "mediaServicesDidReset": false,
+      "fileSize": fileSize,
+      "mediaServicesDidReset": mediaServicesDidReset,
       "url": ref.url.absoluteString
     ]
 
@@ -166,12 +191,42 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     return result
   }
 
+  func handleMediaServicesReset() {
+    mediaServicesDidReset = true
+    resetDurationTracking()
+
+    if let options = currentOptions {
+      do {
+        try prepare(options: options, sessionOptions: currentSessionOptions)
+        emit(event: recordingStatus, payload: [
+          "id": id,
+          "isFinished": true,
+          "hasError": false,
+          "error": nil,
+          "url": nil,
+          "mediaServicesDidReset": true
+        ])
+        return
+      } catch {}
+    }
+
+    currentState = .error
+    emit(event: recordingStatus, payload: [
+      "id": id,
+      "isFinished": true,
+      "hasError": true,
+      "error": "Media services were reset by the system",
+      "url": nil,
+      "mediaServicesDidReset": true
+    ])
+  }
+
   func didFinish(_ recorder: AVAudioRecorder, successfully flag: Bool) {
     // Update internal state when recording finishes automatically (e.g., from recordForDuration)
     currentState = .stopped
     resetDurationTracking()
 
-    emit(event: recordingStatus, arguments: [
+    emit(event: recordingStatus, payload: [
       "id": id,
       "isFinished": true,
       "hasError": false,
@@ -185,7 +240,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     currentState = .error
     resetDurationTracking()
 
-    emit(event: recordingStatus, arguments: [
+    emit(event: recordingStatus, payload: [
       "id": id,
       "isFinished": true,
       "hasError": true,
@@ -194,11 +249,12 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ])
   }
 
-  private var recordingDirectory: URL? {
-    guard let cachesDir = appContext?.fileSystem?.cachesDirectory else {
-      return nil
+  private func recordingDirectory(for options: RecordingOptions) throws -> URL {
+    guard let fileSystem = appContext?.fileSystem else {
+      throw Exceptions.AppContextLost()
     }
-    return URL(fileURLWithPath: cachesDir)
+    let path = (options.directory ?? .cache) == .document ? fileSystem.documentDirectory : fileSystem.cachesDirectory
+    return URL(fileURLWithPath: path)
   }
 
   override func sharedObjectWillRelease() {

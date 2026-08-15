@@ -6,8 +6,9 @@ export const name = 'Battery';
 
 export async function test({ describe, it, expect, jasmine }) {
   const isExpectedToSupport = Device.isDevice || Platform.OS === 'android';
+  const isAvailable = await Battery.isAvailableAsync();
 
-  describe('Battery', async () => {
+  describe('Battery', () => {
     describe(`isAvailableAsync`, () => {
       it(
         isExpectedToSupport
@@ -18,8 +19,6 @@ export async function test({ describe, it, expect, jasmine }) {
         }
       );
     });
-
-    const isAvailable = await Battery.isAvailableAsync();
 
     if (isAvailable) {
       describe(`getBatteryLevelAsync()`, () => {
@@ -38,6 +37,7 @@ export async function test({ describe, it, expect, jasmine }) {
               Battery.BatteryState.CHARGING,
               Battery.BatteryState.FULL,
               Battery.BatteryState.UNPLUGGED,
+              Battery.BatteryState.NOT_CHARGING,
             ].includes(batteryState)
           ).toBe(true);
         });

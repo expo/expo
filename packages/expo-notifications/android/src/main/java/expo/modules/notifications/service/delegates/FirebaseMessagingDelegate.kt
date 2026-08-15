@@ -15,24 +15,23 @@ import expo.modules.notifications.notifications.model.triggers.FirebaseNotificat
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
-import java.lang.ref.WeakReference
 import java.util.*
 
 open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseMessagingDelegate {
   companion object {
     // Unfortunately we cannot save state between instances of a service other way
-    // than by static properties. Fortunately, using weak references we can
-    // be somehow sure instances of PushTokenListeners won't be leaked by this component.
+    // than by static properties.
     /**
      * We store this value to be able to inform new listeners of last known token.
      */
     protected var sLastToken: String? = null
 
     /**
-     * A weak map of listeners -> reference. Used to check quickly whether given listener
+     * A Set of listeners. Used to check quickly whether given listener
      * is already registered and to iterate over when notifying of new token.
+     * If you register a listener, make sure to also un-register it
      */
-    protected val sTokenListenersReferences = WeakHashMap<FirebaseTokenListener, WeakReference<FirebaseTokenListener?>?>()
+    protected val sTokenListenersReferences = HashSet<FirebaseTokenListener>()
 
     /**
      * Used only by [FirebaseTokenListener] instances. If you look for a place to register
@@ -45,10 +44,10 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
      * @param listener A listener instance to be informed of new push device tokens.
      */
     @JvmStatic
-    fun addTokenListener(listener: FirebaseTokenListener) {
+    fun addTokenListener(listener: FirebaseTokenListener) = synchronized(sTokenListenersReferences) {
       // Checks whether this listener has already been registered
-      if (!sTokenListenersReferences.containsKey(listener)) {
-        sTokenListenersReferences[listener] = WeakReference(listener)
+      if (!sTokenListenersReferences.contains(listener)) {
+        sTokenListenersReferences.add(listener)
         // Since it's a new listener and we know of a last valid token, let's let them know.
         sLastToken?.let {
           listener.onNewToken(it)
@@ -56,26 +55,31 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
       }
     }
 
+    @JvmStatic
+    fun removeTokenListener(listener: FirebaseTokenListener) = synchronized(sTokenListenersReferences) {
+      sTokenListenersReferences.remove(listener)
+    }
+
     /**
-     * A weak map of task consumers -> reference. Used to check quickly whether given task
-     * is already registered and to iterate over when notifying of new notification received
+     * A set of background task consumers, notified when a notification is received
      * while the app is not in the foreground.
      */
-    protected var sBackgroundTaskConsumerReferences = WeakHashMap<BackgroundRemoteNotificationTaskConsumer, WeakReference<BackgroundRemoteNotificationTaskConsumer>>()
+    protected var sBackgroundTaskConsumers = mutableSetOf<BackgroundRemoteNotificationTaskConsumer>()
 
     /**
      * Background tasks are registered in [BackgroundRemoteNotificationTaskConsumer] instances.
      *
-     * @param taskConsumer A task instance to be executed when a notification is received while the * app is not in the foreground
+     * @param taskConsumer A task instance to be executed when a notification is received while the app is not in the foreground
      */
     fun addBackgroundTaskConsumer(taskConsumer: BackgroundRemoteNotificationTaskConsumer) {
-      if (sBackgroundTaskConsumerReferences.containsKey(taskConsumer)) {
-        return
-      }
-      sBackgroundTaskConsumerReferences[taskConsumer] = WeakReference(taskConsumer)
+      sBackgroundTaskConsumers.add(taskConsumer)
     }
 
-    fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
+    fun removeBackgroundTaskConsumer(taskConsumer: BackgroundRemoteNotificationTaskConsumer) {
+      sBackgroundTaskConsumers.remove(taskConsumer)
+    }
+
+    fun getBackgroundTasks(): List<BackgroundRemoteNotificationTaskConsumer> = sBackgroundTaskConsumers.toList()
 
     fun runTaskManagerTasks(applicationContext: Context, bundle: Bundle) {
       // getTaskServiceImpl() has a side effect:
@@ -94,8 +98,8 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
    * @param token New device push token.
    */
   override fun onNewToken(token: String) {
-    for (listenerReference in sTokenListenersReferences.values) {
-      listenerReference?.get()?.onNewToken(token)
+    for (listenerReference in sTokenListenersReferences) {
+      listenerReference.onNewToken(token)
     }
     sLastToken = token
   }

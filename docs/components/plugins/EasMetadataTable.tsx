@@ -31,7 +31,7 @@ export function MetadataTable({
   const id = useId();
 
   return (
-    <div className="mb-2 mt-1">
+    <div className="mt-1 mb-2">
       <Table headers={headers}>
         {children.map(property => (
           <TableRow key={`${id}-${property.name}`}>

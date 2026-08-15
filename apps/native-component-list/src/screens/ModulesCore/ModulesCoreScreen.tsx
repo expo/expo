@@ -18,6 +18,13 @@ export const ModulesCoreScreens = [
       return optionalRequire(() => require('./ExpoModulesScreen'));
     },
   },
+  {
+    name: 'Runtime teardown',
+    route: 'modulescore/runtime-teardown',
+    getComponent() {
+      return optionalRequire(() => require('./RuntimeTeardownScreen'));
+    },
+  },
 ];
 
 if (!isRunningInExpoGo()) {
@@ -25,7 +32,14 @@ if (!isRunningInExpoGo()) {
     name: 'Benchmarks',
     route: 'modulescore/benchmarks',
     getComponent() {
-      return optionalRequire(() => require('./ModulesBenchmarksScreen'));
+      return optionalRequire(() => require('./Benchmarks/ModulesBenchmarksScreen'));
+    },
+  });
+  ModulesCoreScreens.push({
+    name: 'Jest Mock Generator',
+    route: 'modulescore/jest-mock-generator',
+    getComponent() {
+      return optionalRequire(() => require('./JestMockGeneratorScreen'));
     },
   });
 }

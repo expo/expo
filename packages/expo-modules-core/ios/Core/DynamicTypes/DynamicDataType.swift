@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A dynamic type representing Swift `Data` or Objective-C `NSData` type and backing by JavaScript `Uint8Array`.
  */
@@ -18,10 +20,19 @@ internal struct DynamicDataType: AnyDynamicType {
    Converts JS typed array to its native representation.
    */
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    guard let jsTypedArray = jsValue.getTypedArray(), jsTypedArray.kind == TypedArrayKind.Uint8Array else {
-      throw Conversions.CastingException<Uint8Array>(jsValue)
+    guard jsValue.isTypedArray() else {
+      throw Conversions.CastingJSValueException<Uint8Array>(jsValue.kind)
     }
-    return Data(bytes: jsTypedArray.getUnsafeMutableRawPointer(), count: jsTypedArray.getProperty("byteLength").getInt())
+    let jsTypedArray = jsValue.getTypedArray()
+    guard jsTypedArray.kind == .Uint8Array else {
+      throw Conversions.CastingJSValueException<Uint8Array>(jsValue.kind)
+    }
+    return jsTypedArray.withUnsafeBytes { bytes in
+      if jsTypedArray.byteLength == 0 {
+        return Data()
+      }
+      return Data(bytes: bytes.baseAddress!, count: jsTypedArray.byteLength) as Any
+    }
   }
 
   var description: String {

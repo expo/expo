@@ -1,5 +1,5 @@
-import React from 'react';
 import { Link } from 'expo-router';
+import React from 'react';
 
 export default function SecondRoute() {
   // Test hooks to ensure they don't break the export.

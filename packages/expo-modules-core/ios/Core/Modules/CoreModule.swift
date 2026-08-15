@@ -1,7 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import React
+internal import React
 import Foundation
+import ExpoModulesJSI
 
 // The core module that describes the `global.expo` object.
 internal final class CoreModule: Module {
@@ -24,6 +25,53 @@ internal final class CoreModule: Module {
 
     Constant("documentsDir") {
       FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
+    }
+
+    Function("installOnUIRuntime") { (uiRuntimeHolder: JavaScriptValue) in
+      guard let appContext else {
+        throw Exceptions.AppContextLost()
+      }
+
+      // Check if was already installed
+      if appContext._uiRuntime != nil {
+        return
+      }
+
+      let runtime = try appContext.runtime
+      guard uiRuntimeHolder.isObject() else {
+        throw WorkletUIRuntimeException()
+      }
+
+      guard let factory = AppContext.uiRuntimeFactory else {
+        throw WorkletUIRuntimeException()
+      }
+
+      // Use a Sendable box to safely capture error across isolation boundaries
+      final class ErrorHolder: @unchecked Sendable {
+        var error: (any Error)?
+      }
+      let errorHolder = ErrorHolder()
+
+      let block = {
+        do {
+          let uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
+          appContext._uiRuntime = uiRuntime
+        } catch {
+          errorHolder.error = error
+        }
+      }
+
+      if Thread.isMainThread {
+        block()
+      } else {
+        DispatchQueue.main.sync {
+          block()
+        }
+      }
+
+      if let error = errorHolder.error {
+        throw error
+      }
     }
 
     // Expose some common classes and maybe even the `modules` host object in the future.
@@ -67,9 +115,7 @@ internal final class CoreModule: Module {
     }
 
     AsyncFunction("reloadAppAsync") { (reason: String) in
-      DispatchQueue.main.async {
-        RCTTriggerReloadCommandListeners(reason)
-      }
+      appContext?.reloadAppAsync(reason)
     }
   }
 
@@ -81,3 +127,10 @@ internal final class CoreModule: Module {
     return viewName
   }
 }
+
+internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Cannot find UI worklet runtime"
+  }
+}
+

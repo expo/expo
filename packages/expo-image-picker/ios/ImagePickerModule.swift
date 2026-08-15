@@ -75,8 +75,8 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
       return promise.reject(PermissionsModuleNotFoundException())
     }
     switch operationType {
-    case .get: permissions.getPermissionUsingRequesterClass(requesterClass, resolve: promise.resolver, reject: promise.legacyRejecter)
-    case .ask: permissions.askForPermission(usingRequesterClass: requesterClass, resolve: promise.resolver, reject: promise.legacyRejecter)
+    case .get: permissions.getPermissionUsingRequesterClass(requesterClass, resolve: promise.legacyResolver, reject: promise.legacyRejecter)
+    case .ask: permissions.askForPermission(usingRequesterClass: requesterClass, resolve: promise.legacyResolver, reject: promise.legacyRejecter)
     }
   }
 
@@ -102,15 +102,17 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     let options = pickingContext.options
 
     let picker = UIImagePickerController()
-    picker.fixCannotMoveEditingBox()
+
+    // Only the camera flow's edit screen needs this workaround. The library
+    // picker hosts its editor in a separate system process via `_UISceneHostingView`,
+    // so the fix is not applicable.
+    if sourceType == .camera && options.allowsEditing {
+      picker.fixCannotMoveEditingBox()
+    }
 
     if sourceType == .camera {
-#if targetEnvironment(simulator)
-      return pickingContext.promise.reject(CameraUnavailableOnSimulatorException())
-#else
       picker.sourceType = .camera
       picker.cameraDevice = options.cameraType == .front ? .front : .rear
-#endif
     }
 
     if sourceType == .photoLibrary {

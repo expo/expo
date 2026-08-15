@@ -1,8 +1,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import expo.modules.kotlin.RuntimeContext
-import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
@@ -16,6 +15,7 @@ import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import org.junit.Test
+import expo.modules.kotlin.types.OptimizedRecord
 
 class JSIFunctionsTest {
   enum class SimpleEnumClass : Enumerable {
@@ -203,6 +203,7 @@ class JSIFunctionsTest {
 
   @Test
   fun records_should_be_obtainable_as_function_argument() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       var x: Int = 0
@@ -523,7 +524,6 @@ class JSIFunctionsTest {
     }
   }
 
-  @OptIn(EitherType::class)
   @Test
   fun either_should_be_convertible() = withSingleModule({
     Function("eitherFirst") { either: Either<Int, String> ->
@@ -573,6 +573,7 @@ class JSIFunctionsTest {
 
   @Test
   fun complex_types_should_be_convertible() {
+    @OptimizedRecord
     data class InlineRecord(@Field var name: String = "") : Record
 
     withSingleModule({
@@ -593,12 +594,12 @@ class JSIFunctionsTest {
     }
   }
 
-  private class MySharedRef(value: Int, runtimeContext: RuntimeContext) : SharedRef<Int>(value, runtimeContext)
+  private class MySharedRef(value: Int, runtime: Runtime) : SharedRef<Int>(value, runtime)
 
   @Test
   fun shared_ref_should_be_convertible() = withSingleModule({
     Function("createRef") {
-      MySharedRef(123, module!!.runtimeContext)
+      MySharedRef(123, module!!.runtime)
     }
     Function("getRef") { ref: MySharedRef ->
       ref.ref

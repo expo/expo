@@ -104,6 +104,7 @@ export const useWebViewLogic = ({
   onLoadProgress,
   onLoadEnd,
   onError,
+  onLoadSubResourceError,
   onHttpErrorProp,
   onMessageProp,
   onOpenWindowProp,
@@ -120,6 +121,7 @@ export const useWebViewLogic = ({
   onLoadProgress?: (event: WebViewProgressEvent) => void;
   onLoadEnd?: (event: WebViewNavigationEvent | WebViewErrorEvent) => void;
   onError?: (event: WebViewErrorEvent) => void;
+  onLoadSubResourceError?: (event: WebViewErrorEvent) => void;
   onHttpErrorProp?: (event: WebViewHttpErrorEvent) => void;
   onMessageProp?: (event: WebViewMessageEvent) => void;
   onOpenWindowProp?: (event: WebViewOpenWindowEvent) => void;
@@ -176,6 +178,13 @@ export const useWebViewLogic = ({
       setLastErrorEvent(event.nativeEvent);
     },
     [onError, onLoadEnd]
+  );
+
+  const onLoadingSubResourceError = useCallback(
+    (event: WebViewErrorEvent) => {
+      onLoadSubResourceError?.(event);
+    },
+    [onLoadSubResourceError]
   );
 
   const onHttpError = useCallback(
@@ -270,6 +279,7 @@ export const useWebViewLogic = ({
     onLoadingStart,
     onLoadingProgress,
     onLoadingError,
+    onLoadingSubResourceError,
     onLoadingFinish,
     onHttpError,
     onRenderProcessGone,

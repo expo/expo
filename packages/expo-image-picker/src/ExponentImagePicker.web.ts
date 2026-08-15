@@ -1,13 +1,13 @@
-import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
 
-import {
-  CameraType,
+import type {
   ImagePickerAsset,
   ImagePickerOptions,
   ImagePickerResult,
   MediaType,
   OpenFileBrowserOptions,
 } from './ImagePicker.types';
+import { CameraType } from './ImagePicker.types';
 import { parseMediaTypes } from './utils';
 
 const MediaTypeInput: Record<MediaType, string> = {
@@ -23,7 +23,7 @@ export default {
     base64 = false,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     // SSR guard
-    if (!Platform.isDOMAvailable) {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
       return { canceled: true, assets: null };
     }
     return await openFileBrowserAsync({
@@ -40,7 +40,7 @@ export default {
     cameraType,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     // SSR guard
-    if (!Platform.isDOMAvailable) {
+    if (typeof window === 'undefined' || typeof document === 'undefined') {
       return { canceled: true, assets: null };
     }
     return await openFileBrowserAsync({
@@ -122,11 +122,17 @@ function openFileBrowserAsync({
     input.addEventListener('change', async () => {
       if (input.files?.length) {
         const files = allowsMultipleSelection ? input.files : [input.files[0]];
-        const assets: ImagePickerAsset[] = await Promise.all(
-          Array.from(files).map((file) => readFile(file, { base64 }))
-        );
 
-        resolve({ canceled: false, assets });
+        try {
+          const assets: ImagePickerAsset[] = await Promise.all(
+            Array.from(files)
+              .filter((file) => file != null)
+              .map((file) => readFile(file, { base64 }))
+          );
+          resolve({ canceled: false, assets });
+        } catch (error) {
+          resolve(Promise.reject(error));
+        }
       } else {
         resolve({ canceled: true, assets: null });
       }
@@ -196,7 +202,7 @@ async function readFileAsBase64(file: File): Promise<string> {
         return;
       }
       // Remove the data URL prefix to get just the base64 data
-      resolve(result.split(',')[1]);
+      resolve(result.split(',')?.[1] ?? '');
     };
     reader.readAsDataURL(file);
   });
@@ -210,37 +216,33 @@ async function readFile(targetFile: File, options: { base64: boolean }): Promise
   const mimeType = targetFile.type;
   const baseUri = URL.createObjectURL(targetFile);
 
-  try {
-    let metadata: { width: number; height: number; duration?: number };
-    let base64: string | undefined;
+  let metadata: { width: number; height: number; duration?: number };
+  let base64: string | undefined;
 
-    if (mimeType.startsWith('image/')) {
-      metadata = await getImageMetadata(baseUri);
-    } else if (mimeType.startsWith('video/')) {
-      metadata = await getVideoMetadata(baseUri);
-    } else {
-      throw new Error(`Unsupported file type: ${mimeType}. Only images and videos are supported.`);
-    }
-
-    if (options.base64) {
-      base64 = await readFileAsBase64(targetFile);
-    }
-
-    return {
-      uri: baseUri,
-      width: metadata.width,
-      height: metadata.height,
-      type: mimeType.startsWith('image/') ? 'image' : 'video',
-      mimeType,
-      fileName: targetFile.name,
-      fileSize: targetFile.size,
-      file: targetFile,
-      ...(metadata.duration !== undefined && { duration: metadata.duration }),
-      ...(base64 && { base64 }),
-    };
-  } catch (error) {
-    throw error;
+  if (mimeType.startsWith('image/')) {
+    metadata = await getImageMetadata(baseUri);
+  } else if (mimeType.startsWith('video/')) {
+    metadata = await getVideoMetadata(baseUri);
+  } else {
+    throw new Error(`Unsupported file type: ${mimeType}. Only images and videos are supported.`);
   }
+
+  if (options.base64) {
+    base64 = await readFileAsBase64(targetFile);
+  }
+
+  return {
+    uri: baseUri,
+    width: metadata.width,
+    height: metadata.height,
+    type: mimeType.startsWith('image/') ? 'image' : 'video',
+    mimeType,
+    fileName: targetFile.name,
+    fileSize: targetFile.size,
+    file: targetFile,
+    ...(metadata.duration !== undefined && { duration: metadata.duration }),
+    ...(base64 && { base64 }),
+  };
 }
 
 /**

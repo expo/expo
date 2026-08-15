@@ -3,6 +3,7 @@ import { renderMethod } from './APISectionMethods';
 
 type Props = {
   exposeInSidebar?: boolean;
+  baseNestingLevel?: number;
   name: string;
   sdkVersion: string;
   comment: string;
@@ -26,6 +27,7 @@ export function APIMethod({
   isProperty = false,
   isReturnTypeReference = false,
   exposeInSidebar = false,
+  baseNestingLevel,
   parameters = [],
   platforms = [],
 }: Props) {
@@ -59,6 +61,6 @@ export function APIMethod({
       ],
       kind: isProperty ? TypeDocKind.Property : TypeDocKind.Function,
     },
-    { sdkVersion, exposeInSidebar }
+    { sdkVersion, exposeInSidebar, baseNestingLevel }
   );
 }

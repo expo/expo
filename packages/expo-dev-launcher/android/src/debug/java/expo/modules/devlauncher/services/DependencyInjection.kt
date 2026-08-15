@@ -26,19 +26,22 @@ object DependencyInjection {
   var sessionService: SessionService? = null
     private set
 
-  var apolloClientService: ApolloClientService = ApolloClientService(httpClientService)
+  var graphQLService: GraphQLService = GraphQLService(httpClientService)
     private set
 
   var devLauncherController: DevLauncherController? = null
     private set
 
-  var packagerService: PackagerService = PackagerService(httpClientService)
+  var packagerService: PackagerService? = null
     private set
 
   var devMenuPreferences: DevMenuPreferences? = null
     private set
 
   var appService: AppService? = null
+    private set
+
+  var nsdPreferences: NsdPreferences? = null
     private set
 
   var errorRegistryService: ErrorRegistryService? = null
@@ -51,6 +54,7 @@ object DependencyInjection {
 
     val application = context.applicationContext as Application
     devMenuPreferences = DevMenuDefaultPreferences(application)
+    nsdPreferences = NsdPreferences(application)
     appService = AppService(application)
 
     this.devLauncherController = devLauncherController
@@ -62,11 +66,13 @@ object DependencyInjection {
 
     sessionService = SessionService(
       sessionStore = context.applicationContext.getSharedPreferences("expo.modules.devlauncher.session", Context.MODE_PRIVATE),
-      apolloClientService = apolloClientService,
+      graphQLService = graphQLService,
       httpClientService = httpClientService
     )
 
     errorRegistryService = ErrorRegistryService(context.applicationContext)
+
+    packagerService = PackagerService(application, httpClientService.httpClient)
 
     wasInitialized = true
   }
@@ -76,8 +82,9 @@ object DependencyInjection {
 internal inline fun <reified T> injectService(): T {
   return when (T::class) {
     DevMenuPreferences::class -> DependencyInjection.devMenuPreferences
+    NsdPreferences::class -> DependencyInjection.nsdPreferences
     SessionService::class -> DependencyInjection.sessionService
-    ApolloClientService::class -> DependencyInjection.apolloClientService
+    GraphQLService::class -> DependencyInjection.graphQLService
     ImageLoaderService::class -> DependencyInjection.imageLoaderService
     HttpClientService::class -> DependencyInjection.httpClientService
     DevLauncherController::class -> DependencyInjection.devLauncherController

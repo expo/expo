@@ -16,8 +16,8 @@ export function dedupSources(sources: HashSource[], projectRoot: string): HashSo
       source,
       projectRoot
     );
-    if (duplicatedItemIndex >= 0) {
-      const duplicatedItem = newSources[duplicatedItemIndex];
+    const duplicatedItem = newSources[duplicatedItemIndex];
+    if (duplicatedItem != null) {
       debug(`Skipping duplicated source: ${JSON.stringify(source)}`);
       if (shouldSwapSource) {
         newSources[duplicatedItemIndex] = {
@@ -58,15 +58,26 @@ function findDuplicatedSourceIndex(
       shouldSwapSource,
     ];
   }
+  if (source.type === 'package') {
+    const key = source.overrideHashKey ?? `${source.name}@${source.version}`;
+    return [
+      newSources.findIndex(
+        (item) =>
+          item.type === 'package' &&
+          (item.overrideHashKey ?? `${item.name}@${item.version}`) === key
+      ) ?? null,
+      shouldSwapSource,
+    ];
+  }
 
   for (const [index, existingSource] of newSources.entries()) {
-    if (existingSource.type === 'contents') {
+    if (existingSource.type === 'contents' || existingSource.type === 'package') {
       continue;
     }
     if (isDescendant(source, existingSource, projectRoot)) {
       return [index, shouldSwapSource];
     }
-    // If the new source is ancestor of existing source, replace swap the existing source with the new source
+    // If the new source is ancestor of existing source, swap the existing source with the new source
     if (isDescendant(existingSource, source, projectRoot)) {
       shouldSwapSource = true;
       return [index, shouldSwapSource];

@@ -2,10 +2,10 @@ import { resolve } from 'path';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as XML from '../../utils/XML';
+import type { AndroidManifest } from '../Manifest';
 import {
   addMetaDataItemToMainApplication,
   addUsesLibraryItemToMainApplication,
-  AndroidManifest,
   ensureToolsAvailable,
   findMetaDataItem,
   findUsesLibraryItem,
@@ -107,7 +107,6 @@ describe(prefixAndroidKeys, () => {
 describe(ensureToolsAvailable, () => {
   it(`ensures tools are available`, async () => {
     const manifest = await getFixtureManifestAsync();
-    expect(XML.format(manifest)).not.toMatch(/xmlns:tools="http:\/\/schemas\.android\.com\/tools"/);
 
     const firstFewLines = XML.format(ensureToolsAvailable(manifest))
       .split('\n')

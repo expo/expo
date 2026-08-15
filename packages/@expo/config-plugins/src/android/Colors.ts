@@ -1,12 +1,6 @@
 import { getResourceXMLPathAsync } from './Paths';
-import {
-  buildResourceItem,
-  getObjectAsResourceItems,
-  getResourceItemsAsObject,
-  ResourceItemXML,
-  ResourceKind,
-  ResourceXML,
-} from './Resources';
+import type { ResourceItemXML, ResourceKind, ResourceXML } from './Resources';
+import { buildResourceItem, getObjectAsResourceItems, getResourceItemsAsObject } from './Resources';
 
 export function getProjectColorsXMLPathAsync(
   projectRoot: string,

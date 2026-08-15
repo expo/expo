@@ -1,16 +1,22 @@
 import chalk from 'chalk';
 
-import * as SimControl from '../../../start/platforms/ios/simctl';
+import type { OSType, Device } from '../../../start/platforms/ios/simctl';
 import prompt from '../../../utils/prompts';
-import { ConnectedDevice } from '../appleDevice/AppleDevice';
+import type { ConnectedDevice } from '../appleDevice/AppleDevice';
 
-type AnyDevice = SimControl.Device | ConnectedDevice;
+interface AnyDevice {
+  name: string;
+  osType: OSType;
+  osVersion: string;
+  udid: string;
+  deviceType?: string;
+}
 
 function isConnectedDevice(item: AnyDevice): item is ConnectedDevice {
   return 'deviceType' in item;
 }
 
-function isSimControlDevice(item: AnyDevice): item is SimControl.Device {
+function isSimControlDevice(item: AnyDevice): item is Device {
   return 'state' in item;
 }
 
@@ -36,7 +42,7 @@ export function formatDeviceChoice(item: AnyDevice): { title: string; value: str
 }
 
 /** Prompt to select a device from a searchable list of devices. */
-export async function promptDeviceAsync(devices: AnyDevice[]): Promise<AnyDevice> {
+export async function promptDeviceAsync<T extends AnyDevice>(devices: T[]): Promise<T> {
   // --device with no props after
   const { value } = await prompt({
     type: 'autocomplete',

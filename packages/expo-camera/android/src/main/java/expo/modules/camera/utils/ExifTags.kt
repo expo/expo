@@ -2,12 +2,6 @@ package expo.modules.camera.utils
 
 import androidx.exifinterface.media.ExifInterface
 
-const val VIDEO_2160P = 0
-const val VIDEO_1080P = 1
-const val VIDEO_720P = 2
-const val VIDEO_480P = 3
-const val VIDEO_4x3 = 4
-
 val exifTags = arrayOf(
   arrayOf("string", ExifInterface.TAG_ARTIST),
   arrayOf("int", ExifInterface.TAG_BITS_PER_SAMPLE),
@@ -68,7 +62,9 @@ val exifTags = arrayOf(
   arrayOf("double", ExifInterface.TAG_FOCAL_PLANE_X_RESOLUTION),
   arrayOf("double", ExifInterface.TAG_FOCAL_PLANE_Y_RESOLUTION),
   arrayOf("int", ExifInterface.TAG_GAIN_CONTROL),
+  @Suppress("DEPRECATION") // Deprecated, but we keep it as it can still be present in EXIF data.
   arrayOf("int", ExifInterface.TAG_ISO_SPEED_RATINGS),
+  arrayOf("int", ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY),
   arrayOf("string", ExifInterface.TAG_IMAGE_UNIQUE_ID),
   arrayOf("int", ExifInterface.TAG_LIGHT_SOURCE),
   arrayOf("string", ExifInterface.TAG_MAKER_NOTE),

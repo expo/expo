@@ -7,5 +7,7 @@ public class EASClientModule: Module {
     Name("EASClient")
 
     Constant("clientID") { EASClientID.uuid().uuidString }
+
+    Constant("deterministicUniformValue") { EASClientID.deterministicUniformValue(EASClientID.uuid()) }
   }
 }

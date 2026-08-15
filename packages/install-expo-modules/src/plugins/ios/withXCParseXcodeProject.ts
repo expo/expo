@@ -1,4 +1,5 @@
-import { BaseMods, ConfigPlugin, IOSConfig, Mod, withMod } from '@expo/config-plugins';
+import type { ConfigPlugin, Mod } from '@expo/config-plugins';
+import { BaseMods, IOSConfig, withMod } from '@expo/config-plugins';
 import fs from 'fs';
 import { ISA, build as xcbuild, parse as xcparse } from 'xcparse';
 import type { BuildSettings, XCBuildConfiguration, XcodeProject } from 'xcparse';

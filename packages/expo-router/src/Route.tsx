@@ -1,11 +1,12 @@
 'use client';
 
+import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server';
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
 import { getContextKey } from './matchers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
-import { LoaderFunction } from './types';
-import { type ErrorBoundaryProps } from './views/Try';
+import type { SuspenseFallbackProps } from './views/SuspenseFallback';
+import type { ErrorBoundaryProps } from './views/Try';
 
 export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
 
@@ -13,11 +14,13 @@ type Params = Record<string, string | string[]>;
 
 export type LoadedRoute = {
   ErrorBoundary?: ComponentType<ErrorBoundaryProps>;
+  SuspenseFallback?: ComponentType<SuspenseFallbackProps>;
   default?: ComponentType<any>;
   unstable_settings?: Record<string, any>;
   getNavOptions?: (args: any) => any;
   generateStaticParams?: (props: { params?: Params }) => Params[];
   loader?: LoaderFunction;
+  generateMetadata?: GenerateMetadataFunction;
 };
 
 export type LoadedMiddleware = Pick<LoadedRoute, 'default' | 'unstable_settings'>;
@@ -33,14 +36,14 @@ export type RouteNode = {
   /** The type of RouteNode */
   type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
   /** Load a route into memory. Returns the exports from a route. */
-  loadRoute: () => Partial<LoadedRoute>;
+  loadRoute: () => LoadedRoute;
   /** Loaded initial route name. */
   initialRouteName?: string;
   /** Nested routes */
   children: RouteNode[];
   /** Is the route a dynamic path */
   dynamic: null | DynamicConvention[];
-  /** `index`, `error-boundary`, etc. */
+  /** `index`, `error-boundary`, etc. Relative to the nearest `_layout.tsx` */
   route: string;
   /** Context Module ID, used for matching children. */
   contextKey: string;
@@ -63,9 +66,11 @@ export type RouteNode = {
 };
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
-export const LocalRouteParamsContext = createContext<
-  Record<string, string | undefined> | undefined
->({});
+/** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */
+export const SuspenseFallbackContext = createContext<
+  ComponentType<SuspenseFallbackProps> | undefined
+>(undefined);
+export const LocalRouteParamsContext = createContext<object | undefined>({});
 
 if (process.env.NODE_ENV !== 'production') {
   CurrentRouteContext.displayName = 'RouteNode';
@@ -75,6 +80,42 @@ if (process.env.NODE_ENV !== 'production') {
 export function useRouteNode(): RouteNode | null {
   return use(CurrentRouteContext);
 }
+
+export function findRouteNodeByName(
+  children: RouteNode[] | undefined,
+  routeName: string | undefined
+): RouteNode | undefined {
+  if (!routeName) {
+    return undefined;
+  }
+  return children?.find(
+    (child) => child.route === routeName || child.route === `${routeName}/index`
+  );
+}
+
+export function getValidInitialRoute(
+  node: RouteNode | null,
+  initialRouteName = node?.initialRouteName,
+  groupName?: string
+): RouteNode | undefined {
+  if (!node || !initialRouteName) {
+    return undefined;
+  }
+  const route = findRouteNodeByName(node.children, initialRouteName);
+  if (!route) {
+    throw new Error(
+      `The initial route name "${initialRouteName}"${groupName ? ` for group "${groupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
+        `Available routes are: ${node.children.map(({ route }) => `"${route}"`).join(', ')}. ` +
+        'Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+    );
+  }
+  return route;
+}
+
+export const getValidInitialRouteName = (
+  node: RouteNode | null,
+  initialRouteName = node?.initialRouteName
+) => getValidInitialRoute(node, initialRouteName)?.route;
 
 export function useContextKey(): string {
   const node = useRouteNode();
@@ -86,13 +127,13 @@ export function useContextKey(): string {
 
 export type RouteProps = PropsWithChildren<{
   node: RouteNode;
-  route?: { params: Record<string, string | undefined> };
+  params: object | undefined;
 }>;
 
 /** Provides the matching routes and filename to the children. */
-export function Route({ children, node, route }: RouteProps) {
+export function Route({ children, node, params }: RouteProps) {
   return (
-    <LocalRouteParamsContext.Provider value={route?.params}>
+    <LocalRouteParamsContext.Provider value={params}>
       <CurrentRouteContext.Provider value={node}>{children}</CurrentRouteContext.Provider>
     </LocalRouteParamsContext.Provider>
   );

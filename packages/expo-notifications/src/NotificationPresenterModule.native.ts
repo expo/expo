@@ -1,5 +1,5 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 
-import { NotificationPresenterModule } from './NotificationPresenterModule.types';
+import type { NotificationPresenterModule } from './NotificationPresenterModule.types';
 
 export default requireNativeModule<NotificationPresenterModule>('ExpoNotificationPresenter');

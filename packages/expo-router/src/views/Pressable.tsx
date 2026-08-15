@@ -1,10 +1,10 @@
-import { ClassAttributes, ComponentProps, ComponentType } from 'react';
-import {
-  Pressable as NativePressable,
+import type { ClassAttributes, ComponentProps, ComponentType } from 'react';
+import type {
   StyleProp,
   ViewStyle,
   PressableStateCallbackType as NativePressableStateCallbackType,
 } from 'react-native';
+import { Pressable as NativePressable } from 'react-native';
 
 type NativePressableProps = ComponentProps<typeof NativePressable> &
   ClassAttributes<typeof NativePressable>;
