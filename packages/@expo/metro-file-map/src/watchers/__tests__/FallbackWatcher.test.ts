@@ -6,8 +6,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import FallbackWatcher from '../FallbackWatcher';
 import type { WatcherBackendChangeEvent } from '../../types';
+import FallbackWatcher from '../FallbackWatcher';
 
 // This suite drives a real `fs.watch`, so it opts out of the memfs mock that
 // `jest.setup.ts` installs. memfs cannot model the behaviour under test: its
