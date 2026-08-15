@@ -121,7 +121,6 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
 
         let data = messageBody["data"] as? [String: Any] ?? [:]
 
-        // Other message types from the DOM runtime are ignored on purpose.
         if (messageType == Constants.NATIVE_ACTION) {
             guard let actionId = data["actionId"] as? String,
                   let uid = data["uid"] as? String,
