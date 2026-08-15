@@ -9,7 +9,7 @@ import {
   resolveAgentsAsync,
 } from '../agents';
 import { discoverSkillsAsync } from '../discovery';
-import { cleanSkillLinksAsync, ensureGitIgnoreAsync, syncSkillLinksAsync } from '../linking';
+import { cleanSkillLinksAsync, syncSkillLinksAsync, updateGitIgnoreAsync } from '../linking';
 import {
   cleanSkillsAsync,
   listSkillsAsync,
@@ -30,7 +30,7 @@ jest.mock('../agents', () => ({
 jest.mock('../linking', () => ({
   syncSkillLinksAsync: jest.fn(),
   cleanSkillLinksAsync: jest.fn(),
-  ensureGitIgnoreAsync: jest.fn(),
+  updateGitIgnoreAsync: jest.fn(),
 }));
 
 const claudeAgent: SkillsAgent = {
@@ -53,8 +53,13 @@ const testSkill: DiscoveredSkill = {
   name: 'my-skill',
   path: '/root/node_modules/@acme/tool/skills/my-skill',
   packageName: '@acme/tool',
-  linkName: 'npm-acme-tool-my-skill',
+  linkName: 'my-skill',
 };
+
+beforeEach(() => {
+  // The sync refreshes the gitignore block for every known agent directory.
+  jest.mocked(getAllAgents).mockReturnValue([claudeAgent, cursorAgent, codexAgent]);
+});
 
 describe('syncSkillsAsync', () => {
   afterEach(() => vol.reset());
@@ -116,17 +121,22 @@ describe('syncSkillsAsync', () => {
     expect(persistAgentSelectionAsync).not.toHaveBeenCalled();
   });
 
-  it('should update the gitignore only when links were created', async () => {
-    jest.mocked(discoverSkillsAsync).mockResolvedValue([testSkill]);
-    jest.mocked(resolveAgentsAsync).mockResolvedValue({ agents: [claudeAgent], source: 'cache' });
-
+  it('should refresh the gitignore block for all known agent directories', async () => {
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
+      agents: [claudeAgent],
+      source: 'cache',
+    });
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent]);
     jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
-    await syncSkillsAsync('/root', { agents: [], dryRun: false });
-    expect(ensureGitIgnoreAsync).toHaveBeenCalledTimes(1);
 
-    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
     await syncSkillsAsync('/root', { agents: [], dryRun: false });
-    expect(ensureGitIgnoreAsync).toHaveBeenCalledTimes(1);
+
+    expect(updateGitIgnoreAsync).toHaveBeenCalledWith(
+      '/root',
+      ['.claude/skills', '.agents/skills'],
+      { dryRun: false }
+    );
   });
 
   it('should not persist agent selection during a dry run', async () => {
@@ -195,7 +205,7 @@ describe('listSkillsAsync with json output', () => {
   afterEach(() => vol.reset());
 
   it('should print machine readable skill metadata', async () => {
-    vol.fromJSON({ '/root/.claude/skills/npm-acme-tool-my-skill/SKILL.md': '# my-skill' });
+    vol.fromJSON({ '/root/.claude/skills/my-skill/SKILL.md': '# my-skill' });
     jest
       .mocked(discoverSkillsAsync)
       .mockResolvedValueOnce([{ ...testSkill, title: 'My skill', description: 'Does things' }]);
@@ -212,7 +222,7 @@ describe('listSkillsAsync with json output', () => {
         name: 'My skill',
         description: 'Does things',
         path: testSkill.path,
-        linkName: 'npm-acme-tool-my-skill',
+        linkName: 'my-skill',
         linkedIn: ['.claude/skills'],
       },
     ]);
@@ -253,7 +263,7 @@ describe('showSkillsAsync', () => {
       name: 'second-skill',
       path: '/root/node_modules/@acme/tool/skills/second-skill',
       packageName: '@acme/tool',
-      linkName: 'npm-acme-tool-second-skill',
+      linkName: 'second-skill',
     };
     vol.fromJSON({
       '/root/node_modules/@acme/tool/skills/my-skill/SKILL.md': 'First body',

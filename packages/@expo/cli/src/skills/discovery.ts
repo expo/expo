@@ -100,7 +100,7 @@ async function findPackageSkillsAsync(
       name,
       path: skillPath,
       packageName,
-      linkName: `npm-${sanitizePackageName(packageName)}-${name}`,
+      linkName: name,
       ...parseSkillFrontmatter(contents),
     });
   }
@@ -117,10 +117,6 @@ async function readFrontmatterChunkAsync(filePath: string): Promise<string> {
   } finally {
     await file.close();
   }
-}
-
-function sanitizePackageName(packageName: string): string {
-  return packageName.replace(/^@/, '').replace(/\//g, '-');
 }
 
 function unquote(value: string): string {

@@ -12,7 +12,7 @@ import {
   resolveAgentsAsync,
 } from './agents';
 import { discoverSkillsAsync } from './discovery';
-import { cleanSkillLinksAsync, ensureGitIgnoreAsync, syncSkillLinksAsync } from './linking';
+import { cleanSkillLinksAsync, syncSkillLinksAsync, updateGitIgnoreAsync } from './linking';
 import type { DiscoveredSkill, SkillsAgent, SkillsOptions } from './types';
 
 function uniqueSkillsDirs(agents: SkillsAgent[]): string[] {
@@ -51,9 +51,9 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
     uniqueSkillsDirs(agents),
     { dryRun: options.dryRun }
   );
-  if (created.length) {
-    await ensureGitIgnoreAsync(projectRoot, { dryRun: options.dryRun });
-  }
+  await updateGitIgnoreAsync(projectRoot, uniqueSkillsDirs(getAllAgents()), {
+    dryRun: options.dryRun,
+  });
 
   const prefix = options.dryRun ? chalk.dim('[dry-run] ') : '';
   if (created.length || pruned.length) {
@@ -160,11 +160,13 @@ export async function cleanSkillsAsync(
   projectRoot: string,
   options: Pick<SkillsOptions, 'dryRun'> & Partial<SkillsOptions>
 ): Promise<void> {
-  // The `npm-` prefix guard makes it safe to clean directories of agents the user never selected.
+  // Only symlinks into node_modules count as managed, so cleaning every known
+  // agent directory is safe, even for agents the user never selected.
   const skillsDirs = uniqueSkillsDirs(getAllAgents());
   const { pruned } = await cleanSkillLinksAsync(projectRoot, skillsDirs, {
     dryRun: options.dryRun,
   });
+  await updateGitIgnoreAsync(projectRoot, skillsDirs, { dryRun: options.dryRun });
   const prefix = options.dryRun ? chalk.dim('[dry-run] ') : '';
   for (const link of pruned) {
     Log.log(`${prefix}${chalk.red('-')} ${link}`);

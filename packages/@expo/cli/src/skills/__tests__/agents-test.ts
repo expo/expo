@@ -26,7 +26,7 @@ function createDirectories(...directories: string[]) {
 }
 
 function writeSkillsCache(json: object) {
-  vol.fromJSON({ [`${projectRoot}/.expo/agent-links.json`]: JSON.stringify(json, null, 2) });
+  vol.fromJSON({ [`${projectRoot}/.expo/agent-skill-links.json`]: JSON.stringify(json, null, 2) });
 }
 
 beforeEach(() => {
@@ -105,7 +105,7 @@ describe('Reading persisted agents', () => {
   it('should not create the cache file when reading', async () => {
     await getPersistedAgentIdsAsync(projectRoot);
 
-    expect(vol.existsSync(`${projectRoot}/.expo/agent-links.json`)).toBe(false);
+    expect(vol.existsSync(`${projectRoot}/.expo/agent-skill-links.json`)).toBe(false);
   });
 
   it('should warn about unknown ids but keep the known ones', async () => {
@@ -226,7 +226,7 @@ describe('Persisting the agent selection', () => {
     ]);
 
     expect(
-      JSON.parse(vol.readFileSync(`${projectRoot}/.expo/agent-links.json`, 'utf8') as string)
+      JSON.parse(vol.readFileSync(`${projectRoot}/.expo/agent-skill-links.json`, 'utf8') as string)
     ).toEqual({ agents: ['claude-code', 'cursor'] });
   });
 
