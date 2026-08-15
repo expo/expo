@@ -5,6 +5,7 @@ import { stripVTControlCharacters } from 'node:util';
 
 import type { loadEnvFiles } from '../';
 import {
+  consumeConfigEnvMode,
   getEnvFiles,
   getOriginalEnv,
   getOriginalEnvValue,
@@ -58,6 +59,24 @@ describe(setNodeEnv, () => {
       EXAMPLE: 'value',
     });
     expect(process.env.NODE_ENV).toBe('development');
+  });
+});
+
+describe(consumeConfigEnvMode, () => {
+  it('reads and removes EXPO_CONFIG_MODE', () => {
+    const systemEnv = { EXPO_CONFIG_MODE: 'production' };
+
+    expect(consumeConfigEnvMode({ systemEnv })).toBe('production');
+    expect(systemEnv.EXPO_CONFIG_MODE).toBeUndefined();
+  });
+
+  it('removes an invalid EXPO_CONFIG_MODE value', () => {
+    process.env.EXPO_CONFIG_MODE = 'staging';
+
+    expect(() => consumeConfigEnvMode()).toThrow(
+      'Invalid EXPO_CONFIG_MODE value: "staging". Use "development" or "production".'
+    );
+    expect(process.env.EXPO_CONFIG_MODE).toBeUndefined();
   });
 });
 
@@ -341,24 +360,6 @@ describe(loadProjectEnv, () => {
       loaded: ['FOO'],
     });
     expect(process.env.NODE_ENV).toBe('production');
-  });
-
-  it('removes EXPO_CONFIG_MODE after loading with a mode', () => {
-    const systemEnv: NodeJS.ProcessEnv = { EXPO_CONFIG_MODE: 'production' };
-    vol.fromJSON({ '.env.production': 'EXPO_CONFIG_MODE=development' }, '/');
-
-    loadProjectEnv('/', { mode: 'production', systemEnv });
-
-    expect(systemEnv.NODE_ENV).toBe('production');
-    expect(systemEnv.EXPO_CONFIG_MODE).toBeUndefined();
-  });
-
-  it('keeps EXPO_CONFIG_MODE when no mode is given', () => {
-    process.env.EXPO_CONFIG_MODE = 'production';
-
-    loadProjectEnv('/');
-
-    expect(process.env.EXPO_CONFIG_MODE).toBe('production');
   });
 
   it('parses .env file with mutating system environment variables', () => {
@@ -776,6 +777,12 @@ describe('isLocalEnvKey policy', () => {
 
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/NODE_OPTIONS/);
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/EXPO_UNSAFE_DOTENV_KEYS/);
+  });
+
+  it('blocks EXPO_CONFIG_MODE in env files', () => {
+    vol.fromJSON({ '.env': 'EXPO_CONFIG_MODE=production' }, '/');
+
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/EXPO_CONFIG_MODE/);
   });
 
   it('combines both violation classes into a single thrown error', () => {
