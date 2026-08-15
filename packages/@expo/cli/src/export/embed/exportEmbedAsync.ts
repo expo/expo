@@ -13,7 +13,6 @@ import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
 import type { BundleOptions } from '@expo/metro/metro/shared/types';
-import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
@@ -180,10 +179,14 @@ export async function exportEmbedBundleAndAssetsAsync(
     location: {},
     resetDevServer: options.resetCache,
     maxWorkers: options.maxWorkers,
+    // Honor an alternative native bundler (e.g. `rollipop`) for EAS / native builds.
+    bundlerOverride: options.bundler,
   });
 
   const devServer = devServerManager.getDefaultDevServer();
-  assert(devServer instanceof MetroBundlerDevServer);
+  // The RSC / DOM-component export paths below are Metro-only; for an
+  // alternative bundler (Rollipop) we skip them.
+  const isMetro = devServer instanceof MetroBundlerDevServer;
 
   const { exp, pkg } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const isHermes = isEnableHermesManaged(exp, options.platform);
@@ -196,7 +199,7 @@ export async function exportEmbedBundleAndAssetsAsync(
   const files: ExportAssetMap = new Map();
 
   try {
-    const bundles = await devServer.nativeExportBundleAsync(
+    const bundles = await (devServer as MetroBundlerDevServer).nativeExportBundleAsync(
       exp,
       {
         // TODO: Re-enable when we get bytecode chunk splitting working again.
@@ -223,8 +226,8 @@ export async function exportEmbedBundleAndAssetsAsync(
     // valid or to enable parallel deployment in the future (TBD). This is disabled using
     // the explicit `--skip-server` flag.
     const apiRoutesEnabled =
-      devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
-    if (!options.skipServer && apiRoutesEnabled) {
+      (isMetro && devServer.isReactServerComponentsEnabled) || exp.web?.output === 'server';
+    if (isMetro && !options.skipServer && apiRoutesEnabled) {
       await exportStandaloneServerAsync(projectRoot, devServer, {
         exp,
         pkg,
@@ -244,7 +247,7 @@ export async function exportEmbedBundleAndAssetsAsync(
           .flat()
       ),
     ];
-    if (expoDomComponentReferences.length > 0) {
+    if (expoDomComponentReferences.length > 0 && isMetro) {
       await Promise.all(
         // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
         expoDomComponentReferences.map(async (filePath) => {
@@ -252,7 +255,7 @@ export async function exportEmbedBundleAndAssetsAsync(
             filePath,
             projectRoot,
             dev: options.dev,
-            devServer,
+            devServer: devServer as MetroBundlerDevServer,
             isHermes,
             includeSourceMaps: !!sourceMapUrl,
             exp,

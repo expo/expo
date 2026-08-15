@@ -88,6 +88,9 @@ export interface BundlerStartOptions {
   /** Will the bundler be used for exporting. NOTE: This is an odd option to pass to the dev server. */
   isExporting?: boolean;
 
+  /** Override the native bundler (e.g. `rollipop`) instead of the one declared in app.json. */
+  bundlerOverride?: 'metro' | 'webpack' | 'rollipop';
+
   // Webpack options
   /** Should modify and create PWA icons. */
   isImageEditingEnabled?: boolean;

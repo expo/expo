@@ -67,6 +67,11 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
       ...(this.resolveRollipopNodeModules()
         ? { NODE_PATH: this.resolveRollipopNodeModules() as string }
         : {}),
+      // Hand Rollipop the resolved `@expo/metro-config` path (from this CLI's
+      // node_modules) so Expo compatibility works without a symlink.
+      ...(this.resolveExpoMetroConfigPath()
+        ? { ROLLIPOP_EXPO_METRO_CONFIG: this.resolveExpoMetroConfigPath() as string }
+        : {}),
     };
 
     Log.log(chalk`{gray Starting Rollipop dev server on port ${port}}`);
@@ -214,6 +219,11 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
           ...(this.resolveRollipopNodeModules()
             ? { NODE_PATH: this.resolveRollipopNodeModules() as string }
             : {}),
+          // Hand Rollipop the resolved `@expo/metro-config` path (from this CLI's
+          // node_modules) so Expo compatibility works without a symlink.
+          ...(this.resolveExpoMetroConfigPath()
+            ? { ROLLIPOP_EXPO_METRO_CONFIG: this.resolveExpoMetroConfigPath() as string }
+            : {}),
         },
         stdio: ['ignore', 'pipe', 'pipe'],
       });
@@ -291,6 +301,26 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
     try {
       fs.accessSync(nodeModules);
       return nodeModules;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Resolves the `@expo/metro-config` package path from THIS CLI's own
+   * `node_modules` (it's a direct dependency of `@expo/cli`). Rollipop's Expo
+   * compatibility mode needs `@expo/metro-config`; when the consuming app does
+   * not hoist it (pnpm strict mode), we hand Rollipop the resolved path via the
+   * `ROLLIPOP_EXPO_METRO_CONFIG` env var instead of requiring a symlink.
+   */
+  private resolveExpoMetroConfigPath(): string | undefined {
+    try {
+      // Anchor resolution at this module's directory; `@expo/metro-config` is a
+      // direct dependency of `@expo/cli` and is found by walking up through
+      // node_modules. (The CLI builds to CommonJS, so `__dirname` is used rather
+      // than `import.meta.url`.)
+      const selfRequire = createRequire(__dirname);
+      return selfRequire.resolve('@expo/metro-config');
     } catch {
       return undefined;
     }
