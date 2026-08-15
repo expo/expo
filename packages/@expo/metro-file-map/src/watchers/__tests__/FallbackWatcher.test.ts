@@ -69,9 +69,15 @@ class StubWatcher extends EventEmitter {
   }
 }
 
+// Resolve the temp directory to its canonical long form. `realpathSync.native`
+// also expands Windows 8.3 short names such as `C:\Users\RUNNER~1`, which the
+// JavaScript `realpathSync` keeps. A watch root with a short-name component
+// crashes Node on libuv 1.52.x (https://github.com/libuv/libuv/issues/5010).
+const TMP_DIR = fs.realpathSync.native(os.tmpdir());
+
 // `fs.symlinkSync` needs extra privileges on some Windows configurations.
 const symlinksSupported = (() => {
-  const probeDir = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'expo-symlink-probe-'));
+  const probeDir = fs.mkdtempSync(path.join(TMP_DIR, 'expo-symlink-probe-'));
   try {
     fs.symlinkSync(path.join(probeDir, 'target'), path.join(probeDir, 'link'));
     return true;
@@ -96,7 +102,7 @@ describe('FallbackWatcher', () => {
     tornDown = false;
     events = [];
     errors = [];
-    root = fs.mkdtempSync(path.join(fs.realpathSync(os.tmpdir()), 'expo-fallback-watcher-'));
+    root = fs.mkdtempSync(path.join(TMP_DIR, 'expo-fallback-watcher-'));
     fs.mkdirSync(path.join(root, 'node_modules'));
   });
 
