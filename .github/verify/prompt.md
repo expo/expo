@@ -95,6 +95,19 @@ Two shapes deserve their own treatment:
 
 5. **Write `.verify-out/pr.md`.** First line is the pull-request title (imperative, specific — "Fix `use_dev_client` detection in EXUpdates.podspec", not "Fix bug"). The rest is the body: what changed, why that is the cause, and how it was verified, citing your evidence. The server prepends a banner marking the pull request agent-authored and unreviewed, and links the run — do not write your own disclaimer.
 
+   **Record the options you weighed**, in a marker-wrapped section at the end of the body:
+
+   ```
+   <!-- expo-bot:options v1 -->
+   ## Options considered
+
+   1. **<the approach, one sentence.>** <its cost, in a checkable term>. Rejected: <why>.
+   2. **<the approach, one sentence.>** Chosen: <why it won>.
+   <!-- /expo-bot:options -->
+   ```
+
+   This is a record, not a new phase: you already form and discard approaches while establishing the cause, so write down the ones you actually considered — never invent an option to fill the list. One option is a common and valid answer: a missing null check has no design space, so write the single entry plus one line naming why no alternative existed. Every option must address the same failure mechanism you named — two options fixing different problems is a sign the cause is not established. Every cost must be checkable: files touched, behavior changed for apps that work today, a check it would fail, a platform it would not cover. "Less clean" and "more complex" are not costs. "Do nothing and document the behaviour" is a real candidate whenever the behaviour may be intentional. Mark exactly ONE option as chosen. Only the chosen option is built and verified — never describe an option you did not build as tested. At most FOUR options: if the honest set needs more, the change is a design decision, and those belong to a human (condition 3). Keep the markers, the heading, and the numbering exactly as shown — a maintainer command may later address an option by its number, so the block is a contract, not decoration.
+
    **Do not hard-wrap the prose.** This is a file, so the instinct is to format it like source and break lines at 80 or 90 columns. GitHub renders a pull-request body as GitHub-Flavored Markdown, where a single newline is a VISIBLE line break — a wrapped paragraph arrives as a column of ragged short lines. Write each paragraph as ONE line, however long it runs, and let the browser wrap it. Blank lines still separate paragraphs; code fences, tables and list items keep their own line structure.
 
    **Withdrawing is a first-class outcome.** If you tried a change and rejected it — it regressed something, you could not verify it, you decided it belongs to a human — make the FIRST LINE of `pr.md` say so: `No pull request should be created from this run.` The push step reads that line and opens nothing, and posts your reason to the thread instead. Note that you have no shell, so you cannot DELETE a file you created; emptying it is enough, because an addition with no lines in it no longer counts as a change. Say what you withdrew and why in the lines below, since that is what gets published.

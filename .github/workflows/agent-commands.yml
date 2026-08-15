@@ -1929,6 +1929,15 @@ jobs:
               echo ""
               printf '%s\n' "$related_prs_md"
             fi
+            # The prompt asks fix mode for a marker-wrapped "Options
+            # considered" block. When a run omits it, publish anyway and say
+            # so: rejecting here would throw away a verified fix at the last
+            # step over a missing paragraph, and an honest gap is itself
+            # information for the reviewer.
+            if ! grep -q 'expo-bot:options v1' .verify-out/pr.md 2>/dev/null; then
+              echo ""
+              echo "_This run recorded no option set: the fix was published without a record of the alternatives considered._"
+            fi
           } > "$RUNNER_TEMP/pr-body.md"
           # The branch is pushed at this point, so a failure here must not
           # vanish: the thread would otherwise keep the findings comment with
