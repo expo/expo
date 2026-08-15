@@ -42,15 +42,19 @@ export async function getInstalledFingerprintIosAsync(
   }
   const appId = appIdOverride ?? (await new AppleAppIdResolver(projectRoot).getAppIdAsync());
 
+  const settled = await Promise.allSettled(
+    simulators.map((simulator) => readSimulatorAsync(simulator, appId))
+  );
+
   const results: InstalledFingerprintResult[] = [];
   let lastError: unknown = null;
-  for (const simulator of simulators) {
-    try {
-      results.push(await readSimulatorAsync(simulator, appId));
-    } catch (error) {
+  for (const entry of settled) {
+    if (entry.status === 'fulfilled') {
+      results.push(entry.value);
+    } else {
       // One failing simulator (e.g. mid-shutdown) must not shadow a readable install on
       // another. Skip it; throw only when no simulator could be read at all.
-      lastError = error;
+      lastError = entry.reason;
     }
   }
   if (!results.length) {

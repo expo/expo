@@ -125,7 +125,7 @@ async function readDeviceAsync(
 /**
  * Extract the fingerprint asset by reading only the zip structures it needs: the tail of the
  * file (end-of-central-directory record), the central directory, and the entry itself —
- * a few hundred KB instead of the whole (often >100 MB) APK.
+ * a few hundred KB instead of the whole APK.
  */
 async function readFingerprintRangedAsync(
   attachedDevice: Device,
