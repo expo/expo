@@ -1,7 +1,9 @@
 import { events } from '2g';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
 
+import type { BundleAssetWithFileHashes, ExportAssetMap } from '../../export/saveAssets';
 import * as Log from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
@@ -359,17 +361,11 @@ export abstract class BundlerDevServer {
   public async nativeExportBundleAsync(
     _exp: any,
     _options: any,
-    _files: Map<string, any>
+    _files: ExportAssetMap
   ): Promise<{
-    artifacts: {
-      type: 'js';
-      originFilename: string;
-      filename: string;
-      source: string;
-      metadata: Record<string, any>;
-    }[];
-    assets: readonly any[];
-    files?: Map<string, any>;
+    artifacts: SerialAsset[];
+    assets: readonly BundleAssetWithFileHashes[];
+    files?: ExportAssetMap;
   }> {
     throw new CommandError(
       'BUNDLER_EXPORT',

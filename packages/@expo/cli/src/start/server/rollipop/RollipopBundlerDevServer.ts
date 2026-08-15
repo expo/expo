@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import chalk from 'chalk';
 import { spawn } from 'child_process';
 import type { ChildProcess } from 'child_process';
@@ -12,6 +13,7 @@ import { createRequire } from 'module';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import type { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -120,6 +122,12 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
       },
     };
 
+    // The base `startAsync` calls `getUrlCreator()` after `startImplementationAsync`
+    // returns, which asserts `this.urlCreator` is initialized. Metro sets this up
+    // inside its implementation; Rollipop must do the same so the dev server URL
+    // (and the export pipeline that depends on it) is available.
+    await this.initUrlCreator(options);
+
     return instance;
   }
 
@@ -136,17 +144,11 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
   public async nativeExportBundleAsync(
     _exp: any,
     options: any,
-    files: Map<string, any>
+    files: ExportAssetMap
   ): Promise<{
-    artifacts: {
-      type: 'js';
-      originFilename: string;
-      filename: string;
-      source: string;
-      metadata: Record<string, any>;
-    }[];
-    assets: readonly any[];
-    files?: Map<string, any>;
+    artifacts: SerialAsset[];
+    assets: readonly BundleAssetWithFileHashes[];
+    files?: ExportAssetMap;
   }> {
     const bundleOutput = path.join(
       this.projectRoot,
@@ -160,6 +162,17 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
 
     fs.mkdirSync(path.dirname(bundleOutput), { recursive: true });
 
+    // Resolve the entry file. Expo's `resolveRelativeEntryPoint` computes
+    // `mainModuleName` (e.g. the Expo Router entry). Rollipop resolves the
+    // entry differently from Metro and can fail on some project layouts where
+    // that computed path does not directly exist on disk. If the computed
+    // entry isn't resolvable, fall back to `index.js` — the app entry that
+    // re-exports Expo Router — which Rollipop bundles correctly.
+    const computedEntry = options.mainModuleName ?? 'index.js';
+    const resolvedEntry = fs.existsSync(path.resolve(this.projectRoot, computedEntry))
+      ? computedEntry
+      : 'index.js';
+
     const bin = this.resolveRollipopBin();
     const args = [
       'bundle',
@@ -172,7 +185,8 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
       '--bundle-output',
       bundleOutput,
       ...(sourcemapOutput ? ['--sourcemap-output', sourcemapOutput] : []),
-      ...(options.mainModuleName ? ['--entry-file', options.mainModuleName] : []),
+      '--entry-file',
+      resolvedEntry,
     ];
 
     Log.log(chalk`{gray Running Rollipop production bundle for ${options.platform}}`);
@@ -180,7 +194,16 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
     await new Promise<void>((resolve, reject) => {
       const child = spawn(bin, args, {
         cwd: this.projectRoot,
-        env: { ...process.env, EXPO_BUNDLER: 'rollipop' },
+        env: {
+          ...process.env,
+          EXPO_BUNDLER: 'rollipop',
+          // Propagate the React Native path so Rollipop's Expo compatibility mode
+          // can resolve `react-native` the same way `expo start --bundler rollipop`
+          // does. Without this, Rollipop fails to load `@expo/metro-config`.
+          ...(process.env.ROLLIPOP_REACT_NATIVE_PATH
+            ? { ROLLIPOP_REACT_NATIVE_PATH: process.env.ROLLIPOP_REACT_NATIVE_PATH }
+            : {}),
+        },
         stdio: ['ignore', 'pipe', 'pipe'],
       });
       child.stdout?.on('data', (chunk) => process.stdout.write(chunk));
@@ -230,7 +253,11 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
     // workspace/monorepo resolution from the project root.
     try {
       const projectRequire = createRequire(path.join(this.projectRoot, 'package.json'));
-      return projectRequire.resolve('rollipop/bin/index.js');
+      // rollipop's package.json `exports` map does not expose `./bin/index.js`,
+      // so resolve the package root (self-reference is always allowed) and
+      // append the bin path explicitly.
+      const pkgJson = projectRequire.resolve('rollipop/package.json');
+      return path.join(path.dirname(pkgJson), 'bin', 'index.js');
     } catch {
       return ROLLIPOP_BIN;
     }
