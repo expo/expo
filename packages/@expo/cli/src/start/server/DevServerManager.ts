@@ -194,7 +194,9 @@ export class DevServerManager {
 
     // Start all dev servers...
     for (const { type, options } of startOptions) {
-      const BundlerDevServerClass = await BUNDLERS[type]();
+      const BundlerDevServerClass = (await BUNDLERS[type]()) as new (
+        ...args: any[]
+      ) => BundlerDevServer;
       const server = new BundlerDevServerClass(this.projectRoot, platformBundlers, {
         devToolsPluginManager: this.devtoolsPluginManager,
         isDevClient: !!options?.devClient,

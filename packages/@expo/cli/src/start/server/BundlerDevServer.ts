@@ -342,6 +342,42 @@ export abstract class BundlerDevServer {
   }
 
   /**
+   * Whether this bundler is configured for React Server Components.
+   * Only Metro supports RSC; other bundlers (Rollipop, Webpack) leave this
+   * undefined/false. Declared as an optional property on the base so the
+   * export pipeline can read it uniformly across bundlers.
+   */
+  public isReactServerComponentsEnabled?: boolean;
+
+  /**
+   * Production export entry point used by `expo export`.
+   *
+   * Metro and Rollipop override this. The base implementation throws so that
+   * invoking export through an unsupported bundler fails loudly at runtime
+   * rather than type-checking silently.
+   */
+  public async nativeExportBundleAsync(
+    _exp: any,
+    _options: any,
+    _files: Map<string, any>
+  ): Promise<{
+    artifacts: {
+      type: 'js';
+      originFilename: string;
+      filename: string;
+      source: string;
+      metadata: Record<string, any>;
+    }[];
+    assets: readonly any[];
+    files?: Map<string, any>;
+  }> {
+    throw new CommandError(
+      'BUNDLER_EXPORT',
+      `The '${this.name}' bundler does not support production export. Use Metro or Rollipop.`
+    );
+  }
+
+  /**
    * Sends a message over web sockets to any connected device,
    * does nothing when the dev server is not running.
    *

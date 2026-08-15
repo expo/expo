@@ -135,15 +135,7 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
    */
   public async nativeExportBundleAsync(
     _exp: any,
-    options: {
-      platform: string;
-      dev?: boolean;
-      minify?: boolean;
-      mainModuleName?: string;
-      sourceMapUrl?: string;
-      serializerIncludeMaps?: boolean;
-      inlineSourceMap?: boolean;
-    },
+    options: any,
     files: Map<string, any>
   ): Promise<{
     artifacts: {

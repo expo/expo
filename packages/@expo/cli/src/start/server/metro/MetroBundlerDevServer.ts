@@ -176,7 +176,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
   private loaderGraphListeners: Map<string, () => void> = new Map();
   private pendingLoaderInvalidationChangeIds: Set<string> = new Set();
-  isReactServerComponentsEnabled?: boolean;
+  declare isReactServerComponentsEnabled?: boolean;
   isReactServerRoutesEnabled?: boolean;
 
   get name(): string {

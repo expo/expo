@@ -12,6 +12,7 @@ import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { BundlerDevServer } from '../start/server/BundlerDevServer';
 import { DevServerManager } from '../start/server/DevServerManager';
+import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
@@ -52,6 +53,7 @@ export async function exportAppAsync(
     maxWorkers,
     skipSSG,
     hostedNative,
+    bundler,
   }: Pick<
     Options,
     | 'dumpAssetmap'
@@ -244,12 +246,13 @@ export async function exportAppAsync(
           await Promise.all(
             // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
             expoDomComponentReferences.map(async (filePath) => {
+              const metroDevServer = devServer as MetroBundlerDevServer;
               const { bundle: platformDomComponentsBundle, htmlOutputName } =
                 await exportDomComponentAsync({
                   filePath,
                   projectRoot,
                   dev,
-                  devServer,
+                  devServer: metroDevServer,
                   isHermes,
                   includeSourceMaps: sourceMaps,
                   exp,
@@ -318,7 +321,7 @@ export async function exportAppAsync(
       if (devServer.isReactServerComponentsEnabled) {
         const isWeb = platforms.includes('web');
 
-        await exportApiRoutesStandaloneAsync(devServer, {
+        await exportApiRoutesStandaloneAsync(devServer as MetroBundlerDevServer, {
           files,
           platform: 'web',
           apiRoutesOnly: !isWeb,
@@ -373,7 +376,7 @@ export async function exportAppAsync(
 
       if (skipSSG) {
         Log.log('Skipping static site generation');
-        await exportApiRoutesStandaloneAsync(devServer, {
+        await exportApiRoutesStandaloneAsync(devServer as MetroBundlerDevServer, {
           files,
           platform: 'web',
           apiRoutesOnly: true,
@@ -392,7 +395,7 @@ export async function exportAppAsync(
         // TODO: Support static export with RSC.
         !devServer.isReactServerComponentsEnabled
       ) {
-        await exportFromServerAsync(projectRoot, devServer, {
+        await exportFromServerAsync(projectRoot, devServer as MetroBundlerDevServer, {
           mode,
           files,
           clear: !!clear,
