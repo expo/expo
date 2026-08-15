@@ -55,6 +55,44 @@ describe('discoverSkillsAsync', () => {
     ]);
   });
 
+  it('should parse frontmatter of a skill file with a large body', async () => {
+    vol.fromJSON({
+      '/project/node_modules/foo/skills/big/SKILL.md': [
+        '---',
+        'name: Big Skill',
+        'description: Ships a huge body',
+        '---',
+        '',
+        'x'.repeat(64 * 1024),
+      ].join('\n'),
+    });
+    mockResolutions([{ name: 'foo', path: '/project/node_modules/foo' }]);
+
+    await expect(discoverSkillsAsync('/project')).resolves.toEqual([
+      expect.objectContaining({
+        name: 'big',
+        title: 'Big Skill',
+        description: 'Ships a huge body',
+      }),
+    ]);
+  });
+
+  it('should ignore frontmatter that closes beyond the read limit', async () => {
+    vol.fromJSON({
+      '/project/node_modules/foo/skills/huge/SKILL.md': [
+        '---',
+        'name: Huge Skill',
+        `comment: ${'x'.repeat(16 * 1024)}`,
+        '---',
+      ].join('\n'),
+    });
+    mockResolutions([{ name: 'foo', path: '/project/node_modules/foo' }]);
+
+    const skills = await discoverSkillsAsync('/project');
+    expect(skills).toEqual([expect.objectContaining({ name: 'huge' })]);
+    expect(skills[0]?.title).toBeUndefined();
+  });
+
   it('should discover multiple skills from a single package', async () => {
     vol.fromJSON({
       '/project/node_modules/foo/skills/beta/SKILL.md': '# Beta',

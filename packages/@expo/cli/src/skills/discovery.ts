@@ -8,6 +8,9 @@ import type { DiscoveredSkill } from './types';
 const SKILL_FILE_NAME = 'SKILL.md';
 const SKILLS_DIR_NAME = 'skills';
 
+// Frontmatter sits at the top of the file, so cap the read instead of loading whole skill files.
+const FRONTMATTER_MAX_LENGTH = 8192;
+
 /** Finds every skill shipped by the packages in the project's dependency graph. */
 export async function discoverSkillsAsync(projectRoot: string): Promise<DiscoveredSkill[]> {
   const autolinking =
@@ -88,7 +91,7 @@ async function findPackageSkillsAsync(
 
     let contents: string;
     try {
-      contents = await fs.promises.readFile(path.join(skillPath, SKILL_FILE_NAME), 'utf8');
+      contents = await readFrontmatterChunkAsync(path.join(skillPath, SKILL_FILE_NAME));
     } catch {
       continue;
     }
@@ -103,6 +106,17 @@ async function findPackageSkillsAsync(
   }
 
   return skills;
+}
+
+async function readFrontmatterChunkAsync(filePath: string): Promise<string> {
+  const file = await fs.promises.open(filePath, 'r');
+  try {
+    const buffer = Buffer.alloc(FRONTMATTER_MAX_LENGTH);
+    const { bytesRead } = await file.read(buffer, 0, FRONTMATTER_MAX_LENGTH, 0);
+    return buffer.toString('utf8', 0, bytesRead);
+  } finally {
+    await file.close();
+  }
 }
 
 function sanitizePackageName(packageName: string): string {
