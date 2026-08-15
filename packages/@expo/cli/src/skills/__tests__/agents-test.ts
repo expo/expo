@@ -5,9 +5,9 @@ import { CommandError } from '../../utils/errors';
 import { isInteractive } from '../../utils/interactive';
 import { promptAsync } from '../../utils/prompts';
 import {
-  detectInstalledAgents,
+  detectInstalledAgentsAsync,
   getAllAgents,
-  getPersistedAgentIds,
+  getPersistedAgentIdsAsync,
   persistAgentSelectionAsync,
   resolveAgentsAsync,
 } from '../agents';
@@ -25,8 +25,8 @@ function createDirectories(...directories: string[]) {
   }
 }
 
-function writePackageJson(json: object) {
-  vol.fromJSON({ [`${projectRoot}/package.json`]: JSON.stringify(json, null, 2) });
+function writeSkillsCache(json: object) {
+  vol.fromJSON({ [`${projectRoot}/.expo/skills.json`]: JSON.stringify(json, null, 2) });
 }
 
 beforeEach(() => {
@@ -52,19 +52,18 @@ describe('Listing agents', () => {
 });
 
 describe('Detecting installed agents', () => {
-  it('should detect agents from project marker directories', () => {
+  it('should detect agents from project marker directories', async () => {
     createDirectories(`${projectRoot}/.claude`, `${projectRoot}/.cursor`);
 
-    expect(detectInstalledAgents(projectRoot).map((agent) => agent.id)).toEqual([
-      'claude-code',
-      'cursor',
-    ]);
+    const agents = await detectInstalledAgentsAsync(projectRoot);
+    expect(agents.map((agent) => agent.id)).toEqual(['claude-code', 'cursor']);
   });
 
-  it('should detect agents from home marker directories', () => {
+  it('should detect agents from home marker directories', async () => {
     createDirectories('/home/.codex', '/home/.config/opencode', '/home/.codeium', '/home/.gemini');
 
-    expect(detectInstalledAgents(projectRoot).map((agent) => agent.id)).toEqual([
+    const agents = await detectInstalledAgentsAsync(projectRoot);
+    expect(agents.map((agent) => agent.id)).toEqual([
       'codex',
       'opencode',
       'windsurf',
@@ -72,41 +71,41 @@ describe('Detecting installed agents', () => {
     ]);
   });
 
-  it('should return an empty array when no markers exist', () => {
-    expect(detectInstalledAgents(projectRoot)).toEqual([]);
+  it('should return an empty array when no markers exist', async () => {
+    await expect(detectInstalledAgentsAsync(projectRoot)).resolves.toEqual([]);
   });
 
-  it('should ignore markers that are files instead of directories', () => {
+  it('should ignore markers that are files instead of directories', async () => {
     vol.fromJSON({ [`${projectRoot}/.claude`]: 'not a directory' });
 
-    expect(detectInstalledAgents(projectRoot)).toEqual([]);
+    await expect(detectInstalledAgentsAsync(projectRoot)).resolves.toEqual([]);
   });
 });
 
 describe('Reading persisted agents', () => {
-  it('should return the persisted agent ids', () => {
-    writePackageJson({ name: 'app', expo: { skills: { agents: ['cursor', 'claude-code'] } } });
+  it('should return the persisted agent ids', async () => {
+    writeSkillsCache({ agents: ['cursor', 'claude-code'] });
 
-    expect(getPersistedAgentIds(projectRoot)).toEqual(['cursor', 'claude-code']);
+    await expect(getPersistedAgentIdsAsync(projectRoot)).resolves.toEqual([
+      'cursor',
+      'claude-code',
+    ]);
   });
 
-  it('should return null when the field is missing', () => {
-    writePackageJson({ name: 'app', expo: {} });
+  it('should return null when the field is missing', async () => {
+    writeSkillsCache({});
 
-    expect(getPersistedAgentIds(projectRoot)).toBeNull();
+    await expect(getPersistedAgentIdsAsync(projectRoot)).resolves.toBeNull();
   });
 
-  it('should return null when package.json does not exist', () => {
-    expect(getPersistedAgentIds(projectRoot)).toBeNull();
+  it('should return null when the cache file does not exist', async () => {
+    await expect(getPersistedAgentIdsAsync(projectRoot)).resolves.toBeNull();
   });
 
-  it('should warn about unknown ids but keep the known ones', () => {
-    writePackageJson({
-      name: 'app',
-      expo: { skills: { agents: ['claude-code', 'not-an-agent'] } },
-    });
+  it('should warn about unknown ids but keep the known ones', async () => {
+    writeSkillsCache({ agents: ['claude-code', 'not-an-agent'] });
 
-    expect(getPersistedAgentIds(projectRoot)).toEqual(['claude-code']);
+    await expect(getPersistedAgentIdsAsync(projectRoot)).resolves.toEqual(['claude-code']);
     expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('not-an-agent'));
   });
 });
@@ -114,7 +113,7 @@ describe('Reading persisted agents', () => {
 describe('Resolving agents', () => {
   it('should use the --agent ids over persisted config and detection', async () => {
     createDirectories(`${projectRoot}/.claude`);
-    writePackageJson({ name: 'app', expo: { skills: { agents: ['cursor'] } } });
+    writeSkillsCache({ agents: ['cursor'] });
 
     await expect(resolveAgentsAsync(projectRoot, { agents: ['codex'] })).resolves.toEqual({
       agents: [{ id: 'codex', displayName: 'Codex', skillsDir: '.agents/skills' }],
@@ -124,7 +123,7 @@ describe('Resolving agents', () => {
 
   it('should use the persisted config over the prompt', async () => {
     jest.mocked(isInteractive).mockReturnValue(true);
-    writePackageJson({ name: 'app', expo: { skills: { agents: ['cursor'] } } });
+    writeSkillsCache({ agents: ['cursor'] });
 
     await expect(resolveAgentsAsync(projectRoot, {})).resolves.toEqual({
       agents: [{ id: 'cursor', displayName: 'Cursor', skillsDir: '.agents/skills' }],
@@ -170,7 +169,7 @@ describe('Resolving agents', () => {
 
   it('should prompt when the persisted list only contains unknown ids', async () => {
     jest.mocked(isInteractive).mockReturnValue(true);
-    writePackageJson({ name: 'app', expo: { skills: { agents: ['not-an-agent'] } } });
+    writeSkillsCache({ agents: ['not-an-agent'] });
     jest
       .mocked(promptAsync)
       .mockImplementation(async (question: any) => ({ [question.name]: ['codex'] }) as any);
@@ -213,36 +212,35 @@ describe('Resolving agents', () => {
 });
 
 describe('Persisting the agent selection', () => {
-  it('should write sorted unique ids and preserve the rest of package.json', async () => {
-    writePackageJson({
-      name: 'app',
-      scripts: { start: 'expo start' },
-      expo: { install: { exclude: ['react'] } },
-    });
-
+  it('should write sorted unique ids to the .expo cache', async () => {
     await persistAgentSelectionAsync(projectRoot, [
       { id: 'cursor', displayName: 'Cursor', skillsDir: '.agents/skills' },
       { id: 'claude-code', displayName: 'Claude Code', skillsDir: '.claude/skills' },
       { id: 'cursor', displayName: 'Cursor', skillsDir: '.agents/skills' },
     ]);
 
-    expect(JSON.parse(vol.readFileSync(`${projectRoot}/package.json`, 'utf8') as string)).toEqual({
-      name: 'app',
-      scripts: { start: 'expo start' },
-      expo: {
-        install: { exclude: ['react'] },
-        skills: { agents: ['claude-code', 'cursor'] },
-      },
-    });
+    expect(
+      JSON.parse(vol.readFileSync(`${projectRoot}/.expo/skills.json`, 'utf8') as string)
+    ).toEqual({ agents: ['claude-code', 'cursor'] });
   });
 
-  it('should replace a previous selection', async () => {
-    writePackageJson({ name: 'app', expo: { skills: { agents: ['windsurf'] } } });
+  it('should not touch package.json', async () => {
+    vol.fromJSON({ [`${projectRoot}/package.json`]: '{"name":"app"}' });
 
     await persistAgentSelectionAsync(projectRoot, [
       { id: 'codex', displayName: 'Codex', skillsDir: '.agents/skills' },
     ]);
 
-    expect(getPersistedAgentIds(projectRoot)).toEqual(['codex']);
+    expect(vol.readFileSync(`${projectRoot}/package.json`, 'utf8')).toBe('{"name":"app"}');
+  });
+
+  it('should replace a previous selection', async () => {
+    writeSkillsCache({ agents: ['windsurf'] });
+
+    await persistAgentSelectionAsync(projectRoot, [
+      { id: 'codex', displayName: 'Codex', skillsDir: '.agents/skills' },
+    ]);
+
+    await expect(getPersistedAgentIdsAsync(projectRoot)).resolves.toEqual(['codex']);
   });
 });

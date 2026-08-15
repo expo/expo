@@ -5,9 +5,9 @@ import path from 'path';
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
 import {
-  detectInstalledAgents,
+  detectInstalledAgentsAsync,
   getAllAgents,
-  getPersistedAgentIds,
+  getPersistedAgentIdsAsync,
   persistAgentSelectionAsync,
   resolveAgentsAsync,
 } from './agents';
@@ -19,18 +19,22 @@ function uniqueSkillsDirs(agents: SkillsAgent[]): string[] {
   return [...new Set(agents.map((agent) => agent.skillsDir))];
 }
 
-/** Agents to target without prompting: the persisted selection, or the detected ones. */
-function getConfiguredAgents(projectRoot: string): SkillsAgent[] {
-  const persistedIds = getPersistedAgentIds(projectRoot);
+/** Agents to target without prompting: the cached selection, or the detected ones. */
+async function getConfiguredAgentsAsync(projectRoot: string): Promise<SkillsAgent[]> {
+  const persistedIds = await getPersistedAgentIdsAsync(projectRoot);
   if (persistedIds != null) {
     return getAllAgents().filter((agent) => persistedIds.includes(agent.id));
   }
-  return detectInstalledAgents(projectRoot);
+  return await detectInstalledAgentsAsync(projectRoot);
 }
 
 export async function syncSkillsAsync(projectRoot: string, options: SkillsOptions): Promise<void> {
   const skills = await discoverSkillsAsync(projectRoot);
-  if (!skills.length && !options.agents.length && getPersistedAgentIds(projectRoot) == null) {
+  if (
+    !skills.length &&
+    !options.agents.length &&
+    (await getPersistedAgentIdsAsync(projectRoot)) == null
+  ) {
     Log.log('No agent skills found in the project dependencies.');
     return;
   }
@@ -74,7 +78,7 @@ export async function listSkillsAsync(
   const skills = await discoverSkillsAsync(projectRoot);
 
   if (options.json) {
-    const skillsDirs = uniqueSkillsDirs(getConfiguredAgents(projectRoot));
+    const skillsDirs = uniqueSkillsDirs(await getConfiguredAgentsAsync(projectRoot));
     const entries = skills.map((skill) => ({
       package: skill.packageName,
       skill: skill.name,
@@ -95,7 +99,7 @@ export async function listSkillsAsync(
     return;
   }
 
-  const skillsDirs = uniqueSkillsDirs(getConfiguredAgents(projectRoot));
+  const skillsDirs = uniqueSkillsDirs(await getConfiguredAgentsAsync(projectRoot));
   const byPackage = new Map<string, DiscoveredSkill[]>();
   for (const skill of skills) {
     byPackage.set(skill.packageName, [...(byPackage.get(skill.packageName) ?? []), skill]);
