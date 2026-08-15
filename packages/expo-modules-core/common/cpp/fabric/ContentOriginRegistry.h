@@ -5,6 +5,7 @@
 #ifdef __cplusplus
 
 #include <mutex>
+#include <optional>
 #include <unordered_map>
 
 #include <react/renderer/core/ReactPrimitives.h>
@@ -24,10 +25,17 @@ public:
     storage().erase(tag);
   }
 
-  static facebook::react::Point get(facebook::react::Tag tag) {
+  /**
+   Returns nothing for a view no native layout system placed. A view placed at its host's origin
+   publishes `{0, 0}`, which is a real answer and not the same as having no answer.
+   */
+  static std::optional<facebook::react::Point> find(facebook::react::Tag tag) {
     std::lock_guard<std::mutex> lock(mutex());
     auto it = storage().find(tag);
-    return it == storage().end() ? facebook::react::Point{} : it->second;
+    if (it == storage().end()) {
+      return std::nullopt;
+    }
+    return it->second;
   }
 
 private:
