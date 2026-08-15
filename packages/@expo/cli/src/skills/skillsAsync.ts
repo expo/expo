@@ -1,4 +1,3 @@
-import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -177,8 +176,9 @@ export async function cleanSkillsAsync(
 }
 
 /**
- * Best-effort skill sync for `expo install` and `expo start`, enabled with
- * `expo.skills.autoSync: true` in package.json. Never prompts and never throws.
+ * Best-effort skill sync for `expo install` and `expo start`. Runs only for the
+ * agents cached in `.expo/agents.json` by a previous `npx expo skills` run, so it
+ * stays off until the user selects agents once. Never prompts and never throws.
  * With `packages` (the specs that were just installed), only the skills of those
  * packages are linked and nothing is pruned. Without it, a full sync runs.
  */
@@ -187,13 +187,8 @@ export async function autoSyncSkillsAsync(
   options: { packages?: string[] } = {}
 ): Promise<void> {
   try {
-    const pkg = JsonFile.read(path.join(projectRoot, 'package.json'));
-    const skillsConfig = (pkg.expo as undefined | { skills?: { autoSync?: boolean } })?.skills;
-    if (skillsConfig?.autoSync !== true) {
-      return;
-    }
-
-    const agents = await getConfiguredAgentsAsync(projectRoot);
+    const persistedIds = await getPersistedAgentIdsAsync(projectRoot);
+    const agents = getAllAgents().filter((agent) => persistedIds?.includes(agent.id));
     if (!agents.length) {
       debugEvent('auto_sync_skipped', { reason: 'no-agents' });
       return;
