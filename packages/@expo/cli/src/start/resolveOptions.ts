@@ -23,8 +23,6 @@ export type Options = {
   devClient: boolean;
   scheme: string | null;
   host: 'localhost' | 'lan' | 'tunnel';
-  /** Should link agent skills on start, set to false with --no-agent-skills */
-  agentSkills: boolean;
 };
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
@@ -81,7 +79,6 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
     scheme,
     host,
-    agentSkills: !args['--no-agent-skills'],
   };
 }
 
