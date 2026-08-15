@@ -36,6 +36,7 @@ describe(resolveArgsAsync, () => {
         bun: false,
         fix: false,
         dev: false,
+        agentSkills: true,
       },
       extras: [],
     });
@@ -54,6 +55,7 @@ describe(resolveArgsAsync, () => {
         bun: false,
         fix: false,
         dev: false,
+        agentSkills: true,
       },
       extras: ['--save-exact', '--ignore-scripts'],
     });
