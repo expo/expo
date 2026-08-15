@@ -288,6 +288,83 @@ describe('FallbackWatcher', () => {
     );
   });
 
+  test('keeps a watch that a concurrent walk verified when another walk fails to read', async () => {
+    const nmDir = path.join(root, 'node_modules');
+    const packageDir = path.join(nmDir, 'two-pkg');
+
+    // Stub the `node_modules` watch, so the test delivers its events by hand
+    // and controls exactly when each of the two walks starts.
+    const realWatch = fs.watch;
+    let nmListener: ((event: string, filename: string) => void) | null = null;
+    let packageWatchCount = 0;
+    let packageWatchClosed = false;
+    jest.spyOn(fs, 'watch').mockImplementation(((dir: any, ...rest: any[]) => {
+      if (dir === nmDir) {
+        nmListener = rest[rest.length - 1];
+        return new StubWatcher() as unknown as fs.FSWatcher;
+      }
+      const created = (realWatch as any)(dir, ...rest);
+      if (dir === packageDir) {
+        packageWatchCount++;
+        created.once('close', () => {
+          packageWatchClosed = true;
+        });
+      }
+      return created;
+    }) as typeof fs.watch);
+
+    // Hold walk A's read of the directory; let walk B's read pass through.
+    const realReaddir = fs.readdir;
+    let heldReaddirCallback: ((error: Error) => void) | null = null;
+    jest.spyOn(fs, 'readdir').mockImplementation(((dir: any, ...args: any[]) => {
+      if (dir === packageDir && heldReaddirCallback == null) {
+        heldReaddirCallback = args[args.length - 1];
+        return undefined;
+      }
+      return (realReaddir as any)(dir, ...args);
+    }) as typeof fs.readdir);
+
+    // Start inline: the probe in `startWatcher` needs real parent events.
+    watcher = new FallbackWatcher(root, { dot: true, globs: [], ignored: null });
+    watcher.onFileEvent((event) => {
+      events.push(event);
+    });
+    watcher.onError((error) => {
+      errors.push(error);
+    });
+    await watcher.startWatching();
+
+    fs.mkdirSync(packageDir);
+    fs.writeFileSync(path.join(packageDir, 'index.js'), 'module.exports = 1;\n');
+
+    // Walk A: starts the provisional watch, then stalls in its read.
+    nmListener!('rename', 'two-pkg');
+    await waitFor(
+      () => packageWatchCount === 1 && heldReaddirCallback != null,
+      'walk A to watch the directory and start its read'
+    );
+
+    // Walk B: sees the watched directory and reads it successfully.
+    nmListener!('rename', 'two-pkg');
+    await waitFor(
+      () => hasTouchEvent('node_modules/two-pkg/index.js'),
+      "walk B's touch event for node_modules/two-pkg/index.js"
+    );
+
+    // Walk A's read now fails. The rollback must not close the watch that
+    // walk B read the directory under.
+    heldReaddirCallback!(makeFsError('ENOENT', 'scandir', packageDir));
+    await new Promise((resolve) => setTimeout(resolve, 150));
+    expect(packageWatchClosed).toBe(false);
+    expect(packageWatchCount).toBe(1);
+
+    fs.writeFileSync(path.join(packageDir, 'package.json'), '{"name":"two-pkg"}');
+    await waitFor(
+      () => hasTouchEvent('node_modules/two-pkg/package.json'),
+      'a touch event through the surviving watch'
+    );
+  });
+
   test('stopWatching resolves when Node already closed an errored watcher', async () => {
     await startWatcher();
 

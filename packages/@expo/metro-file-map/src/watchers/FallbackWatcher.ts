@@ -43,18 +43,22 @@ export default class FallbackWatcher extends AbstractWatcher {
     [directory: string]: { [file: string]: true };
   } = Object.create(null);
   readonly #watched: { [key: string]: FSWatcher } = Object.create(null);
+  readonly #readUnderWatch: WeakSet<FSWatcher> = new WeakSet();
 
   async startWatching(): Promise<void> {
     this.#watchdir(this.root);
 
-    const provisionalDirs = new Set<string>();
+    const provisionalWatchers = new Map<string, FSWatcher>();
     await new Promise<void>((resolve) => {
       recReaddir(
         this.root,
         (dir) => {
           if (this.#watchdirDuringWalk(dir)) {
-            provisionalDirs.add(dir);
+            provisionalWatchers.set(dir, this.#watched[dir]!);
           }
+        },
+        (dir) => {
+          this.#recordCompletedRead(dir);
         },
         (filename) => {
           this.#register(filename, 'f');
@@ -66,8 +70,10 @@ export default class FallbackWatcher extends AbstractWatcher {
           resolve();
         },
         (error, entry) => {
-          if (entry != null && provisionalDirs.delete(entry)) {
-            this.#rollbackWalkWatch(entry);
+          const provisional = entry == null ? undefined : provisionalWatchers.get(entry);
+          if (entry != null && provisional != null) {
+            provisionalWatchers.delete(entry);
+            this.#rollbackWalkWatch(entry, provisional);
           }
           this.#checkedEmitError(error);
         },
@@ -221,10 +227,26 @@ export default class FallbackWatcher extends AbstractWatcher {
   }
 
   /**
-   * Roll back the watch that a walk started on a directory whose read failed,
-   * returning the directory to its unwatched, unregistered state.
+   * Record that a walk read a directory under its current watcher, so that a
+   * concurrent walk's failed read does not roll that watcher back.
    */
-  #rollbackWalkWatch(dir: string): void {
+  #recordCompletedRead(dir: string): void {
+    const watcher = this.#watched[dir];
+    if (watcher != null) {
+      this.#readUnderWatch.add(watcher);
+    }
+  }
+
+  /**
+   * Roll back the watch that a walk started on a directory whose read failed,
+   * returning the directory to its unwatched, unregistered state. A no-op
+   * when another watcher took over the path, or when a walk read the
+   * directory under this watcher and the watched state is coherent.
+   */
+  #rollbackWalkWatch(dir: string, watcher: FSWatcher): void {
+    if (this.#watched[dir] !== watcher || this.#readUnderWatch.has(watcher)) {
+      return;
+    }
     const key = TOUCH_EVENT + '-' + path.relative(this.root, dir);
     const pendingTouch = this.#changeTimers.get(key);
     if (pendingTouch != null) {
@@ -341,12 +363,12 @@ export default class FallbackWatcher extends AbstractWatcher {
         ) {
           return;
         }
-        const provisionalDirs = new Set<string>();
+        const provisionalWatchers = new Map<string, FSWatcher>();
         recReaddir(
           path.resolve(this.root, relativePath),
           (dir, stats) => {
             if (this.#watchdirDuringWalk(dir)) {
-              provisionalDirs.add(dir);
+              provisionalWatchers.set(dir, this.#watched[dir]!);
               this.#emitEvent({
                 event: TOUCH_EVENT,
                 relativePath: path.relative(this.root, dir),
@@ -357,6 +379,9 @@ export default class FallbackWatcher extends AbstractWatcher {
                 },
               });
             }
+          },
+          (dir) => {
+            this.#recordCompletedRead(dir);
           },
           (file, stats) => {
             if (this.#register(file, 'f')) {
@@ -387,8 +412,10 @@ export default class FallbackWatcher extends AbstractWatcher {
           },
           function endCallback() {},
           (error, entry) => {
-            if (entry != null && provisionalDirs.delete(entry)) {
-              this.#rollbackWalkWatch(entry);
+            const provisional = entry == null ? undefined : provisionalWatchers.get(entry);
+            if (entry != null && provisional != null) {
+              provisionalWatchers.delete(entry);
+              this.#rollbackWalkWatch(entry, provisional);
             }
             this.#checkedEmitError(error);
           },
@@ -485,6 +512,7 @@ function isIgnorableFileError(error: Error & { code?: string }) {
 function recReaddir(
   dir: string,
   beforeReaddirCallback: (dir: string, stats: Stats) => void,
+  afterReaddirCallback: (dir: string, stats: Stats) => void,
   fileCallback: (file: string, stats: Stats) => void,
   symlinkCallback: (symlink: string, stats: Stats) => void,
   endCallback: () => void,
@@ -502,6 +530,8 @@ function recReaddir(
     return true;
   });
   walk
+    // `walker` emits `dir` only after it reads a directory's entries.
+    .on('dir', normalizeProxy(afterReaddirCallback))
     .on('file', normalizeProxy(fileCallback))
     .on('symlink', normalizeProxy(symlinkCallback))
     // The entry is the path the walker failed on, e.g. an unreadable directory.
