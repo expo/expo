@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `toolbarColor` and `secondaryToolbarColor` when opening Custom Tabs. ([#48980](https://github.com/expo/expo/pull/48980) by [@LizunovSergey](https://github.com/LizunovSergey))
+
 ### 💡 Others
 
 ## 57.0.2 - 2026-07-22

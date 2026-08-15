@@ -104,20 +104,14 @@ class WebBrowserModule : Module() {
   private fun createCustomTabsIntent(options: OpenBrowserOptions): CustomTabsIntent {
     val builder = CustomTabsIntent.Builder()
 
-    val color = options.toolbarColor
-    if (color != null) {
-      val params = CustomTabColorSchemeParams.Builder()
-        .setSecondaryToolbarColor(color)
+    if (options.toolbarColor != null || options.secondaryToolbarColor != null) {
+      val colorSchemeParams = CustomTabColorSchemeParams.Builder()
+        .apply {
+          options.toolbarColor?.let { setToolbarColor(it) }
+          options.secondaryToolbarColor?.let { setSecondaryToolbarColor(it) }
+        }
         .build()
-      builder.setDefaultColorSchemeParams(params)
-    }
-
-    val secondaryColor = options.secondaryToolbarColor
-    if (secondaryColor != null) {
-      val params = CustomTabColorSchemeParams.Builder()
-        .setSecondaryToolbarColor(secondaryColor)
-        .build()
-      builder.setDefaultColorSchemeParams(params)
+      builder.setDefaultColorSchemeParams(colorSchemeParams)
     }
 
     builder.setShowTitle(options.showTitle)
