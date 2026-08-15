@@ -86,23 +86,22 @@ describe('skills actions', () => {
   it('links skills with `npx expo skills --agent claude-code`', async () => {
     const results = await executeExpoAsync(projectRoot, ['skills', '--agent', 'claude-code']);
 
-    expect(results.stdout).toContain(
-      `+ ${path.join('.claude', 'skills', 'npm-test-skills-alpha')}`
-    );
-    expect(results.stdout).toContain(`+ ${path.join('.claude', 'skills', 'npm-test-skills-beta')}`);
+    expect(results.stdout).toContain(`+ ${path.join('.claude', 'skills', 'alpha')}`);
+    expect(results.stdout).toContain(`+ ${path.join('.claude', 'skills', 'beta')}`);
     expect(results.stdout).toContain('2 skill(s) from 1 package(s) linked for: Claude Code');
 
-    expect(fs.lstatSync(linkPath('npm-test-skills-alpha')).isSymbolicLink()).toBe(true);
-    expect(
-      fs.readFileSync(path.join(linkPath('npm-test-skills-alpha'), 'SKILL.md'), 'utf8')
-    ).toContain('Body of alpha');
-    expect(fs.readFileSync(path.join(projectRoot, '.gitignore'), 'utf8')).toContain(
-      '**/skills/npm-*'
+    expect(fs.lstatSync(linkPath('alpha')).isSymbolicLink()).toBe(true);
+    expect(fs.readFileSync(path.join(linkPath('alpha'), 'SKILL.md'), 'utf8')).toContain(
+      'Body of alpha'
     );
+    const gitIgnore = fs.readFileSync(path.join(projectRoot, '.gitignore'), 'utf8');
+    expect(gitIgnore).toContain('# @generated expo skills start');
+    expect(gitIgnore).toContain('.claude/skills/alpha');
+    expect(gitIgnore).toContain('.claude/skills/beta');
 
     // The explicit --agent selection becomes the cache for later auto-syncs
     expect(
-      JSON.parse(fs.readFileSync(path.join(projectRoot, '.expo/agent-links.json'), 'utf8'))
+      JSON.parse(fs.readFileSync(path.join(projectRoot, '.expo/agent-skill-links.json'), 'utf8'))
     ).toEqual({ agents: ['claude-code'] });
   });
 
@@ -131,13 +130,13 @@ describe('skills actions', () => {
         skill: 'alpha',
         name: 'Skill alpha',
         description: 'Description for alpha',
-        linkName: 'npm-test-skills-alpha',
+        linkName: 'alpha',
         linkedIn: ['.claude/skills'],
       }),
       expect.objectContaining({
         package: 'test-skills',
         skill: 'beta',
-        linkName: 'npm-test-skills-beta',
+        linkName: 'beta',
         linkedIn: ['.claude/skills'],
       }),
     ]);
@@ -173,16 +172,16 @@ describe('skills actions', () => {
 
     const results = await executeExpoAsync(projectRoot, ['skills', '--agent', 'claude-code']);
 
-    expect(results.stdout).toContain(`- ${path.join('.claude', 'skills', 'npm-test-skills-beta')}`);
-    expect(fs.existsSync(linkPath('npm-test-skills-beta'))).toBe(false);
-    expect(fs.existsSync(linkPath('npm-test-skills-alpha'))).toBe(true);
+    expect(results.stdout).toContain(`- ${path.join('.claude', 'skills', 'beta')}`);
+    expect(fs.existsSync(linkPath('beta'))).toBe(false);
+    expect(fs.existsSync(linkPath('alpha'))).toBe(true);
   });
 
   it('previews changes with `npx expo skills clean --dry-run`', async () => {
     const results = await executeExpoAsync(projectRoot, ['skills', 'clean', '--dry-run']);
 
     expect(results.stdout).toContain('[dry-run]');
-    expect(fs.existsSync(linkPath('npm-test-skills-alpha'))).toBe(true);
+    expect(fs.existsSync(linkPath('alpha'))).toBe(true);
   });
 
   it('removes managed links with `npx expo skills clean`', async () => {
@@ -192,7 +191,10 @@ describe('skills actions', () => {
     const results = await executeExpoAsync(projectRoot, ['skills', 'clean']);
 
     expect(results.stdout).toContain('Removed 1 managed skill link(s)');
-    expect(fs.existsSync(linkPath('npm-test-skills-alpha'))).toBe(false);
+    expect(fs.existsSync(linkPath('alpha'))).toBe(false);
     expect(fs.existsSync(userSkillDir)).toBe(true);
+    expect(fs.readFileSync(path.join(projectRoot, '.gitignore'), 'utf8')).not.toContain(
+      '.claude/skills/alpha'
+    );
   });
 });

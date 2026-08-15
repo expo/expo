@@ -3,13 +3,11 @@ import path from 'path';
 
 import { Log } from '../log';
 import { directoryExistsAsync, ensureDirectoryAsync } from '../utils/dir';
+import { toPosixPath } from '../utils/filePath';
 import type { DiscoveredSkill } from './types';
 
-/** Marks a link as created by `expo skills`, so sync may safely remove it again. */
-export const MANAGED_LINK_PREFIX = 'npm-';
-
-/** Covers every agent directory, e.g. `.claude/skills` and `.agents/skills`. */
-const GIT_IGNORE_PATTERN = '**/skills/npm-*';
+const GIT_IGNORE_START = '# @generated expo skills start';
+const GIT_IGNORE_END = '# @generated expo skills end';
 
 interface WriteOptions {
   /** Compute the changes and report them without touching the file system. */
@@ -30,21 +28,22 @@ export async function syncSkillLinksAsync(
 ): Promise<{ created: string[]; pruned: string[] }> {
   const created: string[] = [];
   const pruned: string[] = [];
+  const wanted = dedupeByLinkName(skills);
 
   for (const agentDir of agentDirs) {
     const agentDirPath = path.join(projectRoot, agentDir);
 
-    if (skills.length && !options.dryRun) {
+    if (wanted.length && !options.dryRun) {
       await ensureDirectoryAsync(agentDirPath);
     }
 
     const linked = new Set<string>();
 
-    for (const skill of skills) {
+    for (const skill of wanted) {
       const linkPath = path.join(agentDirPath, skill.linkName);
       const stats = await lstatAsync(linkPath);
 
-      if (stats && !stats.isSymbolicLink()) {
+      if (stats && !(await isManagedLinkAsync(linkPath))) {
         Log.warn(
           `Skipped the "${skill.name}" skill from ${skill.packageName} because ${path.relative(projectRoot, linkPath)} already exists and was not created by Expo. Remove or rename it, then run the command again.`
         );
@@ -109,27 +108,77 @@ export async function cleanSkillLinksAsync(
   return { pruned };
 }
 
-/** Add the managed link pattern to `.gitignore`. Returns true when the file changed. */
-export async function ensureGitIgnoreAsync(
+/**
+ * Maintain a generated block in `.gitignore` that lists the currently managed links.
+ * Links are named after their skill, so a single ignore pattern cannot match them.
+ * Returns true when the file changed.
+ */
+export async function updateGitIgnoreAsync(
   projectRoot: string,
+  agentDirs: string[],
   options: WriteOptions = {}
 ): Promise<boolean> {
+  const links: string[] = [];
+  for (const agentDir of agentDirs) {
+    for (const linkName of await listManagedLinksAsync(path.join(projectRoot, agentDir))) {
+      links.push(toPosixPath(path.join(agentDir, linkName)));
+    }
+  }
+  links.sort();
+
   const gitIgnorePath = path.join(projectRoot, '.gitignore');
   const contents = await fs.promises.readFile(gitIgnorePath, 'utf8').catch(() => null);
+  if (contents == null && !links.length) {
+    return false;
+  }
 
-  if (contents?.split(/\r?\n/).some((line) => line.trim() === GIT_IGNORE_PATTERN)) {
+  const lines = contents?.length ? contents.split('\n') : [];
+  const blockLines = links.length ? [GIT_IGNORE_START, ...links, GIT_IGNORE_END] : [];
+  const start = lines.indexOf(GIT_IGNORE_START);
+
+  let nextLines: string[];
+  if (start >= 0) {
+    const end = lines.indexOf(GIT_IGNORE_END, start);
+    nextLines = [...lines];
+    nextLines.splice(start, (end >= 0 ? end : lines.length - 1) - start + 1, ...blockLines);
+  } else if (blockLines.length) {
+    nextLines = [...lines];
+    while (nextLines.at(-1) === '') {
+      nextLines.pop();
+    }
+    nextLines.push(...blockLines);
+  } else {
+    nextLines = lines;
+  }
+
+  let next = nextLines.join('\n');
+  if (next.length && !next.endsWith('\n')) {
+    next += '\n';
+  }
+  if (next === (contents ?? '')) {
     return false;
   }
 
   if (!options.dryRun) {
-    const separator = !contents || contents.endsWith('\n') ? '' : '\n';
-    await fs.promises.writeFile(
-      gitIgnorePath,
-      `${contents ?? ''}${separator}${GIT_IGNORE_PATTERN}\n`
-    );
+    await fs.promises.writeFile(gitIgnorePath, next);
   }
-
   return true;
+}
+
+/** Deduplicate same-named skills from different packages, the first package in sorted order wins. */
+function dedupeByLinkName(skills: DiscoveredSkill[]): DiscoveredSkill[] {
+  const byLinkName = new Map<string, DiscoveredSkill>();
+  for (const skill of skills) {
+    const existing = byLinkName.get(skill.linkName);
+    if (existing) {
+      Log.warn(
+        `Skipped the "${skill.name}" skill from ${skill.packageName} because ${existing.packageName} already provides a skill with the same name.`
+      );
+      continue;
+    }
+    byLinkName.set(skill.linkName, skill);
+  }
+  return [...byLinkName.values()];
 }
 
 /** Names of the managed links inside an agent directory, ignoring everything the user owns. */
@@ -140,14 +189,28 @@ async function listManagedLinksAsync(agentDirPath: string): Promise<string[]> {
 
   const names: string[] = [];
   for (const name of await fs.promises.readdir(agentDirPath)) {
-    if (!name.startsWith(MANAGED_LINK_PREFIX)) {
-      continue;
-    }
-    if ((await lstatAsync(path.join(agentDirPath, name)))?.isSymbolicLink()) {
+    if (await isManagedLinkAsync(path.join(agentDirPath, name))) {
       names.push(name);
     }
   }
   return names;
+}
+
+/**
+ * A managed entry is a symlink that points into a node_modules directory.
+ * This also holds for links whose package was uninstalled, since the link
+ * target is read without resolving it.
+ */
+async function isManagedLinkAsync(linkPath: string): Promise<boolean> {
+  if (!(await lstatAsync(linkPath))?.isSymbolicLink()) {
+    return false;
+  }
+  const target = await fs.promises.readlink(linkPath).catch(() => null);
+  if (target == null) {
+    return false;
+  }
+  const resolved = path.resolve(path.dirname(linkPath), target);
+  return resolved.split(path.sep).includes('node_modules');
 }
 
 async function createSymlinkAsync(skillPath: string, linkPath: string): Promise<void> {

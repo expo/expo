@@ -48,7 +48,7 @@ describe('discoverSkillsAsync', () => {
         name: 'my-skill',
         path: '/project/node_modules/foo/skills/my-skill',
         packageName: 'foo',
-        linkName: 'npm-foo-my-skill',
+        linkName: 'my-skill',
         title: 'My Skill',
         description: 'Does a thing',
       },
@@ -105,7 +105,7 @@ describe('discoverSkillsAsync', () => {
     expect(skills.map((skill) => skill.name)).toEqual(['alpha', 'beta']);
   });
 
-  it('should sanitize scoped package names in the link name', async () => {
+  it('should use the plain skill name as the link name', async () => {
     vol.fromJSON({
       '/project/node_modules/@expo/ui/skills/my-skill/SKILL.md': '# My Skill',
     });
@@ -113,7 +113,7 @@ describe('discoverSkillsAsync', () => {
 
     const skills = await discoverSkillsAsync('/project');
 
-    expect(skills[0]?.linkName).toBe('npm-expo-ui-my-skill');
+    expect(skills[0]?.linkName).toBe('my-skill');
   });
 
   it('should sort skills by package name and then skill name', async () => {
@@ -184,7 +184,7 @@ describe('discoverSkillsAsync', () => {
         name: 'my-skill',
         path: '/project/node_modules/foo/skills/my-skill',
         packageName: 'foo',
-        linkName: 'npm-foo-my-skill',
+        linkName: 'my-skill',
       },
     ]);
   });

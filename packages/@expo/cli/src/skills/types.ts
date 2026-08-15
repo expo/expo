@@ -6,8 +6,8 @@ export interface DiscoveredSkill {
   /** Name of the npm package that ships the skill. */
   packageName: string;
   /**
-   * Directory name for the managed link, e.g. `npm-expo-ui-my-skill`.
-   * The `npm-` prefix marks links created by this command so sync can prune them safely.
+   * Directory name for the managed link. It matches the skill name, because agents
+   * derive the invocable command name from the directory name.
    */
   linkName: string;
   /** Frontmatter `name` from SKILL.md, for display only. */

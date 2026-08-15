@@ -71,7 +71,7 @@ export function getAllAgents(): SkillsAgent[] {
 
 /** Per-machine cache in `.expo` remembering which agents were selected. */
 function getAgentsCachePath(projectRoot: string): string {
-  return path.join(projectRoot, '.expo', 'agent-links.json');
+  return path.join(projectRoot, '.expo', 'agent-skill-links.json');
 }
 
 /** Agents with a marker directory in the project or in the user home directory. */
@@ -90,7 +90,7 @@ export async function detectInstalledAgentsAsync(projectRoot: string): Promise<S
   return detected.filter((agent): agent is SkillsAgent => agent != null);
 }
 
-/** Agent ids selected in a previous run, from the `.expo/agent-links.json` cache, or `null` when unset. */
+/** Agent ids selected in a previous run, from the `.expo/agent-skill-links.json` cache, or `null` when unset. */
 export async function getPersistedAgentIdsAsync(projectRoot: string): Promise<string[] | null> {
   let ids: unknown;
   try {
@@ -107,7 +107,7 @@ export async function getPersistedAgentIdsAsync(projectRoot: string): Promise<st
   const unknownIds = ids.filter((id) => !knownIds.includes(id as string));
   if (unknownIds.length) {
     Log.warn(
-      `Ignoring unknown agents in the .expo/agent-links.json cache: ${unknownIds.join(', ')}. Valid agents: ${getAgentIds().join(', ')}.`
+      `Ignoring unknown agents in the .expo/agent-skill-links.json cache: ${unknownIds.join(', ')}. Valid agents: ${getAgentIds().join(', ')}.`
     );
   }
 
@@ -119,7 +119,7 @@ export type AgentSelectionSource = 'flags' | 'cache' | 'prompt' | 'detected';
 
 /**
  * Resolve which agents to link skills for, in order: `--agent` flags, the cached
- * selection in `.expo/agent-links.json`, an interactive prompt, then marker detection.
+ * selection in `.expo/agent-skill-links.json`, an interactive prompt, then marker detection.
  */
 export async function resolveAgentsAsync(
   projectRoot: string,
@@ -157,7 +157,7 @@ export async function resolveAgentsAsync(
   return { agents: detected, source: 'detected' };
 }
 
-/** Store the selected agent ids in the `.expo/agent-links.json` cache. */
+/** Store the selected agent ids in the `.expo/agent-skill-links.json` cache. */
 export async function persistAgentSelectionAsync(
   projectRoot: string,
   agents: SkillsAgent[]
