@@ -181,6 +181,7 @@ module Expo
         print_linking_summary
         disable_swift_interface_verification(installer)
         configure_use_frameworks(installer)
+        mirror_react_prebuilt_header_configuration(installer)
         requote_swift_compat_header_paths(installer)
         ensure_artifacts(installer)
         configure_header_search_paths(installer)
@@ -851,6 +852,40 @@ module Expo
         inject_isystem_flags(installer, target_support_dir)
 
         Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
+      end
+
+      # react-native's cocoapods integration adds the prebuilt ReactNativeHeaders search
+      # path and module-map activation flags to every pod target's xcconfig (see
+      # add_prebuilt_header_search_paths in rncore.rb). Its loop iterates
+      # `pod_target.build_settings`, which does NOT include test-spec targets
+      # (e.g. Expo-Unit-Tests) — their xcconfigs are separate files. A test bundle's
+      # dependency scan then can't see the ReactNativeHeaders module map and fails
+      # with "module 'React_RCTAppDelegate' not found" (or non-modular-include
+      # errors) while building its pod's clang module. Mirror react-native's exact
+      # treatment into every xcconfig that lacks it.
+      def mirror_react_prebuilt_header_configuration(installer)
+        return unless prebuilt_react_active?
+        return unless File.exist?(File.join(installer.sandbox.root, 'React-Core-prebuilt', 'Headers', 'module.modulemap'))
+
+        headers_search_path = ' "$(PODS_ROOT)/React-Core-prebuilt/Headers"'
+        module_map_flag = ' "-fmodule-map-file=$(PODS_ROOT)/React-Core-prebuilt/Headers/module.modulemap"'
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '*', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+
+          { 'HEADER_SEARCH_PATHS' => headers_search_path,
+            'OTHER_CFLAGS' => module_map_flag,
+            'OTHER_CPLUSPLUSFLAGS' => module_map_flag,
+            'OTHER_SWIFT_FLAGS' => " -Xcc#{module_map_flag}" }.each do |key, flag|
+            next if content =~ /^#{key}\s*=.*React-Core-prebuilt\/Headers/
+
+            if content =~ /^#{key}\s*=/
+              content = content.gsub(/^(#{key}\s*=\s*)(.*)$/) { "#{$1}#{$2}#{flag}" }
+            else
+              content << "#{key} = $(inherited)#{flag}\n"
+            end
+          end
+          File.write(xcconfig_path, content)
+        end
       end
 
       # CocoaPods shell-splits `pod_target_xcconfig` search paths, dropping the quotes
