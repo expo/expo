@@ -56,14 +56,19 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
 
     // Tell Rollipop to read the project's `@expo/metro-config` and activate its
     // Expo compatibility mode (aliases, asset extensions, Expo Router manifest).
+    const bin = this.resolveRollipopBin();
     const env: NodeJS.ProcessEnv = {
       ...process.env,
       EXPO_BUNDLER: 'rollipop',
       // Allow Rollipop to read the same environment files as Metro.
       ROLLIPOP_ENV_DIR: projectRoot,
+      // Expose Rollipop's own node_modules so its `@expo/metro-config` (a
+      // Rollipop dependency) resolves from the project root without a symlink.
+      ...(this.resolveRollipopNodeModules()
+        ? { NODE_PATH: this.resolveRollipopNodeModules() as string }
+        : {}),
     };
 
-    const bin = this.resolveRollipopBin();
     Log.log(chalk`{gray Starting Rollipop dev server on port ${port}}`);
 
     const child = spawn(
@@ -203,6 +208,12 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
           ...(process.env.ROLLIPOP_REACT_NATIVE_PATH
             ? { ROLLIPOP_REACT_NATIVE_PATH: process.env.ROLLIPOP_REACT_NATIVE_PATH }
             : {}),
+          // Expose Rollipop's own node_modules so its `@expo/metro-config`
+          // (a Rollipop dependency) resolves from the project root without a
+          // symlink inside the consuming app.
+          ...(this.resolveRollipopNodeModules()
+            ? { NODE_PATH: this.resolveRollipopNodeModules() as string }
+            : {}),
         },
         stdio: ['ignore', 'pipe', 'pipe'],
       });
@@ -249,8 +260,9 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
   }
 
   private resolveRollipopBin(): string {
-    // Prefer the locally-linked `rollipop` binary on PATH; fall back to a
-    // workspace/monorepo resolution from the project root.
+    // Explicit override for tests/CI or when `rollipop` is not a project
+    // dependency. Avoids relying on a hand-wired symlink in the app.
+    if (process.env.ROLLIPOP_BIN) return process.env.ROLLIPOP_BIN;
     try {
       const projectRequire = createRequire(path.join(this.projectRoot, 'package.json'));
       // rollipop's package.json `exports` map does not expose `./bin/index.js`,
@@ -260,6 +272,27 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
       return path.join(path.dirname(pkgJson), 'bin', 'index.js');
     } catch {
       return ROLLIPOP_BIN;
+    }
+  }
+
+  /**
+   * Returns the `node_modules` directory that belongs to the resolved Rollipop
+   * package. Rollipop's Expo compatibility mode needs `@expo/metro-config`
+   * (one of Rollipop's own dependencies) resolvable from the project root;
+   * pnpm only links it inside Rollipop's own `node_modules`. Exposing it via
+   * `NODE_PATH` lets the spawned Rollipop child find it without requiring a
+   * symlink inside the consuming app.
+   */
+  private resolveRollipopNodeModules(): string | undefined {
+    const bin = this.resolveRollipopBin();
+    // bin is `<pkg>/bin/index.js`; the package root is two levels up.
+    const pkgRoot = path.dirname(path.dirname(bin));
+    const nodeModules = path.join(pkgRoot, 'node_modules');
+    try {
+      fs.accessSync(nodeModules);
+      return nodeModules;
+    } catch {
+      return undefined;
     }
   }
 
