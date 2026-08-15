@@ -1,3 +1,4 @@
+import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -12,6 +13,7 @@ import {
   resolveAgentsAsync,
 } from './agents';
 import { discoverSkillsAsync } from './discovery';
+import { debugEvent } from './events';
 import { cleanSkillLinksAsync, syncSkillLinksAsync, updateGitIgnoreAsync } from './linking';
 import type { DiscoveredSkill, SkillsAgent, SkillsOptions } from './types';
 
@@ -172,4 +174,62 @@ export async function cleanSkillsAsync(
     Log.log(`${prefix}${chalk.red('-')} ${link}`);
   }
   Log.log(`${prefix}Removed ${pruned.length} managed skill link(s).`);
+}
+
+/**
+ * Best-effort skill sync for `expo install` and `expo start`, enabled with
+ * `expo.skills.autoSync: true` in package.json. Never prompts and never throws.
+ * With `packages` (the specs that were just installed), only the skills of those
+ * packages are linked and nothing is pruned. Without it, a full sync runs.
+ */
+export async function autoSyncSkillsAsync(
+  projectRoot: string,
+  options: { packages?: string[] } = {}
+): Promise<void> {
+  try {
+    const pkg = JsonFile.read(path.join(projectRoot, 'package.json'));
+    const skillsConfig = (pkg.expo as undefined | { skills?: { autoSync?: boolean } })?.skills;
+    if (skillsConfig?.autoSync !== true) {
+      return;
+    }
+
+    const agents = getConfiguredAgents(projectRoot);
+    if (!agents.length) {
+      debugEvent('auto_sync_skipped', { reason: 'no-agents' });
+      return;
+    }
+
+    const packageNames = options.packages?.map(parsePackageNameFromSpec);
+    let skills = await discoverSkillsAsync(projectRoot);
+    if (packageNames) {
+      skills = skills.filter((skill) => packageNames.includes(skill.packageName));
+    }
+
+    const { created, pruned } = await syncSkillLinksAsync(
+      projectRoot,
+      skills,
+      uniqueSkillsDirs(agents),
+      packageNames ? { prune: false } : {}
+    );
+    if (created.length || pruned.length) {
+      await updateGitIgnoreAsync(projectRoot, uniqueSkillsDirs(getAllAgents()), {});
+    }
+    if (created.length || pruned.length) {
+      Log.log(
+        chalk.gray(
+          `Synced agent skills: ${created.length} linked, ${pruned.length} removed. Run ${chalk.bold(
+            'npx expo skills list'
+          )} for details.`
+        )
+      );
+    }
+  } catch (error: any) {
+    Log.warn(`Skipping agent skills auto-sync: ${error.message}`);
+  }
+}
+
+/** Strip the version range from a package spec, e.g. `@expo/ui@~1.2.0` -> `@expo/ui`. */
+function parsePackageNameFromSpec(spec: string): string {
+  const versionIndex = spec.indexOf('@', 1);
+  return versionIndex > 0 ? spec.slice(0, versionIndex) : spec;
 }

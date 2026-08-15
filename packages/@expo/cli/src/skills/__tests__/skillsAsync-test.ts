@@ -11,6 +11,7 @@ import {
 import { discoverSkillsAsync } from '../discovery';
 import { cleanSkillLinksAsync, syncSkillLinksAsync, updateGitIgnoreAsync } from '../linking';
 import {
+  autoSyncSkillsAsync,
   cleanSkillsAsync,
   listSkillsAsync,
   showSkillsAsync,
@@ -310,5 +311,127 @@ describe('cleanSkillsAsync', () => {
       ['.claude/skills', '.agents/skills'],
       { dryRun: false }
     );
+  });
+});
+
+describe('autoSyncSkillsAsync', () => {
+  afterEach(() => vol.reset());
+
+  it('should do nothing when autoSync is not enabled', async () => {
+    vol.fromJSON({ '/root/package.json': JSON.stringify({ name: 'app' }) });
+
+    await autoSyncSkillsAsync('/root');
+
+    expect(discoverSkillsAsync).not.toHaveBeenCalled();
+    expect(syncSkillLinksAsync).not.toHaveBeenCalled();
+  });
+
+  it('should sync without prompting when autoSync is enabled', async () => {
+    vol.fromJSON({
+      '/root/package.json': JSON.stringify({
+        name: 'app',
+        expo: { skills: { autoSync: true, agents: ['claude-code'] } },
+      }),
+    });
+    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent, codexAgent]);
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
+
+    await autoSyncSkillsAsync('/root');
+
+    expect(resolveAgentsAsync).not.toHaveBeenCalled();
+    expect(syncSkillLinksAsync).toHaveBeenCalledWith('/root', [testSkill], ['.claude/skills'], {});
+  });
+
+  it('should only link skills from the given packages and skip pruning', async () => {
+    vol.fromJSON({
+      '/root/package.json': JSON.stringify({
+        name: 'app',
+        expo: { skills: { autoSync: true, agents: ['claude-code'] } },
+      }),
+    });
+    const otherSkill: DiscoveredSkill = {
+      name: 'other-skill',
+      path: '/root/node_modules/other/skills/other-skill',
+      packageName: 'other',
+      linkName: 'npm-other-other-skill',
+    };
+    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill, otherSkill]);
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+
+    await autoSyncSkillsAsync('/root', { packages: ['@acme/tool'] });
+
+    expect(syncSkillLinksAsync).toHaveBeenCalledWith('/root', [testSkill], ['.claude/skills'], {
+      prune: false,
+    });
+  });
+
+  it('should parse versioned package specs when scoping the sync', async () => {
+    vol.fromJSON({
+      '/root/package.json': JSON.stringify({
+        name: 'app',
+        expo: { skills: { autoSync: true, agents: ['claude-code'] } },
+      }),
+    });
+    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+
+    await autoSyncSkillsAsync('/root', { packages: ['@acme/tool@~1.2.0'] });
+
+    expect(syncSkillLinksAsync).toHaveBeenCalledWith('/root', [testSkill], ['.claude/skills'], {
+      prune: false,
+    });
+  });
+
+  it('should fall back to detected agents when none are persisted', async () => {
+    vol.fromJSON({
+      '/root/package.json': JSON.stringify({
+        name: 'app',
+        expo: { skills: { autoSync: true } },
+      }),
+    });
+    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(null);
+    jest.mocked(detectInstalledAgents).mockReturnValueOnce([cursorAgent]);
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+
+    await autoSyncSkillsAsync('/root');
+
+    expect(syncSkillLinksAsync).toHaveBeenCalledWith('/root', [testSkill], ['.agents/skills'], {});
+  });
+
+  it('should skip silently when no agents are persisted or detected', async () => {
+    vol.fromJSON({
+      '/root/package.json': JSON.stringify({
+        name: 'app',
+        expo: { skills: { autoSync: true } },
+      }),
+    });
+    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(null);
+    jest.mocked(detectInstalledAgents).mockReturnValueOnce([]);
+
+    await autoSyncSkillsAsync('/root');
+
+    expect(syncSkillLinksAsync).not.toHaveBeenCalled();
+  });
+
+  it('should warn instead of throwing when the sync fails', async () => {
+    vol.fromJSON({
+      '/root/package.json': JSON.stringify({
+        name: 'app',
+        expo: { skills: { autoSync: true, agents: ['claude-code'] } },
+      }),
+    });
+    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
+    jest.mocked(discoverSkillsAsync).mockRejectedValueOnce(new Error('boom'));
+
+    await expect(autoSyncSkillsAsync('/root')).resolves.toBeUndefined();
+    expect(syncSkillLinksAsync).not.toHaveBeenCalled();
   });
 });
