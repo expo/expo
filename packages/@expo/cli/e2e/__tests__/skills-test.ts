@@ -216,8 +216,15 @@ describeSkipWin('auto sync on `npx expo start`', () => {
 
     const pkgPath = path.join(projectRoot, 'package.json');
     const pkg = JSON.parse(await fs.promises.readFile(pkgPath, 'utf8'));
-    pkg.expo = { skills: { autoSync: true, agents: ['claude-code'] } };
+    pkg.expo = { skills: { autoSync: true } };
     await fs.promises.writeFile(pkgPath, JSON.stringify(pkg, null, 2));
+
+    // Cache the agent selection like a previous `expo skills` run would
+    await fs.promises.mkdir(path.join(projectRoot, '.expo'), { recursive: true });
+    await fs.promises.writeFile(
+      path.join(projectRoot, '.expo/skills.json'),
+      JSON.stringify({ agents: ['claude-code'] })
+    );
 
     linkPath = path.join(projectRoot, '.claude', 'skills', 'npm-test-skills-alpha');
   });
