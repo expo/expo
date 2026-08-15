@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Pick up files written into a new directory while `FallbackWatcher` starts to watch it, so a package installed while the dev server runs is resolvable. ([#48950](https://github.com/expo/expo/issues/48950))
+- Pick up files written into a new directory while `FallbackWatcher` starts to watch it, so a package installed while the dev server runs is resolvable (fixes [#48950](https://github.com/expo/expo/issues/48950)). ([#48954](https://github.com/expo/expo/pull/48954) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
 

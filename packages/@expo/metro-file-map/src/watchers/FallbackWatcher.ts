@@ -47,11 +47,14 @@ export default class FallbackWatcher extends AbstractWatcher {
   async startWatching(): Promise<void> {
     this.#watchdir(this.root);
 
+    const provisionalDirs = new Set<string>();
     await new Promise<void>((resolve) => {
       recReaddir(
         this.root,
         (dir) => {
-          this.#watchdirDuringWalk(dir);
+          if (this.#watchdirDuringWalk(dir)) {
+            provisionalDirs.add(dir);
+          }
         },
         (filename) => {
           this.#register(filename, 'f');
@@ -62,7 +65,12 @@ export default class FallbackWatcher extends AbstractWatcher {
         () => {
           resolve();
         },
-        this.#checkedEmitError,
+        (error, entry) => {
+          if (entry != null && provisionalDirs.delete(entry)) {
+            this.#rollbackWalkWatch(entry);
+          }
+          this.#checkedEmitError(error);
+        },
         this.ignored
       );
     });
@@ -170,7 +178,18 @@ export default class FallbackWatcher extends AbstractWatcher {
     );
     this.#watched[dir] = watcher;
 
-    watcher.on('error', this.#checkedEmitError);
+    watcher.on('error', (error) => {
+      // Node closes the native handle of an errored watcher without a `close`
+      // event, and `close()` on it is a no-op. Forget the watcher here, so
+      // that the path can be watched again and shutdown does not wait for a
+      // `close` event that never comes.
+      this.#forgetWatcher(dir, watcher);
+      watcher.close();
+      this.#checkedEmitError(error);
+    });
+    watcher.once('close', () => {
+      this.#forgetWatcher(dir, watcher);
+    });
 
     if (this.root !== dir) {
       this.#register(dir, 'd');
@@ -193,7 +212,9 @@ export default class FallbackWatcher extends AbstractWatcher {
    * reports every entry that exists before the watch starts, and the watch
    * reports every entry that appears after it, so no entry is lost.
    *
-   * Returns true if the directory was not watched before.
+   * Returns true if the directory was not watched before. Callers record a
+   * true return, so that they can roll the watch back when the read of that
+   * directory fails. See `#rollbackWalkWatch`.
    */
   #watchdirDuringWalk(dir: string): boolean {
     try {
@@ -206,17 +227,54 @@ export default class FallbackWatcher extends AbstractWatcher {
   }
 
   /**
-   * Stop watching a directory.
+   * Forget a watcher, unless another watcher already replaced it at the same
+   * path.
+   */
+  #forgetWatcher(dir: string, watcher: FSWatcher): void {
+    if (this.#watched[dir] === watcher) {
+      delete this.#watched[dir];
+    }
+  }
+
+  /**
+   * Roll back the watch that a walk started on a directory whose read failed.
+   * A failed read reports no entries, so this method returns the directory to
+   * its state from before the watch: not watched, not registered, and with no
+   * pending touch event. A later event on the parent directory reports the
+   * directory again if it still exists. See `#watchdirDuringWalk`.
+   */
+  #rollbackWalkWatch(dir: string): void {
+    const key = TOUCH_EVENT + '-' + path.relative(this.root, dir);
+    const pendingTouch = this.#changeTimers.get(key);
+    if (pendingTouch != null) {
+      clearTimeout(pendingTouch);
+      this.#changeTimers.delete(key);
+    }
+    this.#unregister(dir);
+    // The returned promise resolves after the watcher closes; it never
+    // rejects, so no handler is necessary here.
+    this.#stopWatching(dir);
+  }
+
+  /**
+   * Stop watching a directory. Idempotent: a watcher that already left
+   * `#watched`, through an earlier call or through its `error` or `close`
+   * handler, needs no further cleanup.
    */
   async #stopWatching(dir: string): Promise<void> {
     const watcher = this.#watched[dir];
-    if (watcher) {
-      await new Promise<void>((resolve) => {
-        watcher.once('close', () => process.nextTick(resolve));
-        watcher.close();
-        delete this.#watched[dir];
-      });
+    if (!watcher) {
+      return;
     }
+    // Forget the watcher before the wait, so that a concurrent call does not
+    // wait for a `close` event that only this call's `close()` produces.
+    this.#forgetWatcher(dir, watcher);
+    await new Promise<void>((resolve) => {
+      // A watcher that errors during the close emits `error` and no `close`.
+      watcher.once('close', () => process.nextTick(resolve));
+      watcher.once('error', () => process.nextTick(resolve));
+      watcher.close();
+    });
   }
 
   /**
@@ -308,10 +366,12 @@ export default class FallbackWatcher extends AbstractWatcher {
         ) {
           return;
         }
+        const provisionalDirs = new Set<string>();
         recReaddir(
           path.resolve(this.root, relativePath),
           (dir, stats) => {
             if (this.#watchdirDuringWalk(dir)) {
+              provisionalDirs.add(dir);
               this.#emitEvent({
                 event: TOUCH_EVENT,
                 relativePath: path.relative(this.root, dir),
@@ -338,7 +398,9 @@ export default class FallbackWatcher extends AbstractWatcher {
           },
           (symlink, stats) => {
             if (this.#register(symlink, 'l')) {
-              this.emitFileEvent({
+              // Debounce through #emitEvent like regular files, so a symlink
+              // that the watch also reports produces one touch event.
+              this.#emitEvent({
                 event: TOUCH_EVENT,
                 relativePath: path.relative(this.root, symlink),
                 metadata: {
@@ -350,7 +412,12 @@ export default class FallbackWatcher extends AbstractWatcher {
             }
           },
           function endCallback() {},
-          this.#checkedEmitError,
+          (error, entry) => {
+            if (entry != null && provisionalDirs.delete(entry)) {
+              this.#rollbackWalkWatch(entry);
+            }
+            this.#checkedEmitError(error);
+          },
           this.ignored
         );
       } else {
@@ -447,7 +514,7 @@ function recReaddir(
   fileCallback: (file: string, stats: Stats) => void,
   symlinkCallback: (symlink: string, stats: Stats) => void,
   endCallback: () => void,
-  errorCallback: (error: Error) => void,
+  errorCallback: (error: Error, entry?: string) => void,
   ignored: RegExp | undefined | null
 ) {
   const walk = walker(dir);
@@ -465,7 +532,11 @@ function recReaddir(
   walk
     .on('file', normalizeProxy(fileCallback))
     .on('symlink', normalizeProxy(symlinkCallback))
-    .on('error', errorCallback)
+    // `walker` reports the entry it failed on, e.g. the directory of a failed
+    // read. Callers use it to roll back the watch that `filterDir` started.
+    .on('error', (error: Error, entry?: string) =>
+      errorCallback(error, entry == null ? undefined : path.normalize(entry))
+    )
     .on('end', () => {
       if (platform === 'win32') {
         setTimeout(endCallback, 1000);
