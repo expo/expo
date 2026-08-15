@@ -217,7 +217,7 @@ describeSkipWin('auto sync on `npx expo start`', () => {
     // Cache the agent selection like a previous `expo skills` run would
     await fs.promises.mkdir(path.join(projectRoot, '.expo'), { recursive: true });
     await fs.promises.writeFile(
-      path.join(projectRoot, '.expo/agents.json'),
+      path.join(projectRoot, '.expo/agent-links.json'),
       JSON.stringify({ agents: ['claude-code'] })
     );
 
