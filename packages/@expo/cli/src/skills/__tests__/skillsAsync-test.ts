@@ -2,9 +2,9 @@ import { vol } from 'memfs';
 
 import * as Log from '../../log';
 import {
-  detectInstalledAgents,
+  detectInstalledAgentsAsync,
   getAllAgents,
-  getPersistedAgentIds,
+  getPersistedAgentIdsAsync,
   persistAgentSelectionAsync,
   resolveAgentsAsync,
 } from '../agents';
@@ -22,8 +22,8 @@ jest.mock('../../log');
 jest.mock('../discovery', () => ({ discoverSkillsAsync: jest.fn() }));
 jest.mock('../agents', () => ({
   getAllAgents: jest.fn(),
-  detectInstalledAgents: jest.fn(),
-  getPersistedAgentIds: jest.fn(),
+  detectInstalledAgentsAsync: jest.fn(),
+  getPersistedAgentIdsAsync: jest.fn(),
   resolveAgentsAsync: jest.fn(),
   persistAgentSelectionAsync: jest.fn(),
 }));
@@ -134,7 +134,7 @@ describe('syncSkillsAsync', () => {
 
   it('should return early when no skills exist and no agents are configured', async () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([]);
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(null);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(null);
 
     await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
@@ -144,7 +144,7 @@ describe('syncSkillsAsync', () => {
 
   it('should still prune stale links when no skills exist but agents are configured', async () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([]);
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
       agents: [claudeAgent],
       fromPrompt: false,
@@ -169,8 +169,8 @@ describe('listSkillsAsync', () => {
 
   it('should list discovered skills without prompting', async () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(null);
-    jest.mocked(detectInstalledAgents).mockReturnValueOnce([claudeAgent]);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(null);
+    jest.mocked(detectInstalledAgentsAsync).mockResolvedValueOnce([claudeAgent]);
 
     await listSkillsAsync('/root');
 
@@ -186,7 +186,7 @@ describe('listSkillsAsync with json output', () => {
     jest
       .mocked(discoverSkillsAsync)
       .mockResolvedValueOnce([{ ...testSkill, title: 'My skill', description: 'Does things' }]);
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
     jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
 
     await listSkillsAsync('/root', { json: true });
@@ -207,8 +207,8 @@ describe('listSkillsAsync with json output', () => {
 
   it('should print an empty json array when nothing is discovered', async () => {
     jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([]);
-    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(null);
-    jest.mocked(detectInstalledAgents).mockReturnValueOnce([]);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(null);
+    jest.mocked(detectInstalledAgentsAsync).mockResolvedValueOnce([]);
 
     await listSkillsAsync('/root', { json: true });
 

@@ -1,9 +1,9 @@
-import JsonFile, { type JSONObject } from '@expo/json-file';
-import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
 import * as Log from '../log';
+import { createTemporaryProjectFile } from '../start/project/dotExpo';
+import { directoryExistsAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { isInteractive } from '../utils/interactive';
 import { promptAsync } from '../utils/prompts';
@@ -16,6 +16,8 @@ interface AgentDefinition extends SkillsAgent {
   homeMarkers: string[];
 }
 
+// The skill directory conventions follow https://github.com/vercel-labs/skills
+// and https://github.com/antfu/skills-npm, so skills stay shared between tools.
 const AGENTS: AgentDefinition[] = [
   {
     id: 'claude-code',
@@ -66,25 +68,28 @@ export function getAllAgents(): SkillsAgent[] {
   return AGENTS.map(toPublicAgent);
 }
 
+/** Per-machine cache in `.expo` remembering which agents were selected. */
+const skillsCacheFile = createTemporaryProjectFile<{ agents?: string[] }>('skills.json', {});
+
 /** Agents with a marker directory in the project or in the user home directory. */
-export function detectInstalledAgents(projectRoot: string): SkillsAgent[] {
+export async function detectInstalledAgentsAsync(projectRoot: string): Promise<SkillsAgent[]> {
   const homeDir = os.homedir();
-  return AGENTS.filter(
-    (agent) =>
-      agent.projectMarkers.some((marker) => directoryExists(path.join(projectRoot, marker))) ||
-      agent.homeMarkers.some((marker) => directoryExists(path.join(homeDir, marker)))
-  ).map(toPublicAgent);
+  const detected = await Promise.all(
+    AGENTS.map(async (agent) => {
+      const markers = [
+        ...agent.projectMarkers.map((marker) => path.join(projectRoot, marker)),
+        ...agent.homeMarkers.map((marker) => path.join(homeDir, marker)),
+      ];
+      const results = await Promise.all(markers.map((marker) => directoryExistsAsync(marker)));
+      return results.some(Boolean) ? toPublicAgent(agent) : null;
+    })
+  );
+  return detected.filter((agent): agent is SkillsAgent => agent != null);
 }
 
-/** Agent ids from the `expo.skills.agents` field in package.json, or `null` when unset. */
-export function getPersistedAgentIds(projectRoot: string): string[] | null {
-  const packageJsonPath = path.join(projectRoot, 'package.json');
-  if (!fs.existsSync(packageJsonPath)) {
-    return null;
-  }
-
-  const packageJson = JsonFile.read(packageJsonPath, { json5: false });
-  const ids = getSkillsConfig(packageJson)?.agents;
+/** Agent ids selected in a previous run, from the `.expo/skills.json` cache, or `null` when unset. */
+export async function getPersistedAgentIdsAsync(projectRoot: string): Promise<string[] | null> {
+  const { agents: ids } = await skillsCacheFile.readAsync(projectRoot);
   if (!Array.isArray(ids)) {
     return null;
   }
@@ -93,7 +98,7 @@ export function getPersistedAgentIds(projectRoot: string): string[] | null {
   const unknownIds = ids.filter((id) => !knownIds.includes(id as string));
   if (unknownIds.length) {
     Log.warn(
-      `Ignoring unknown agents in the package.json "expo.skills.agents" field: ${unknownIds.join(', ')}. Valid agents: ${getAgentIds().join(', ')}.`
+      `Ignoring unknown agents in the .expo/skills.json cache: ${unknownIds.join(', ')}. Valid agents: ${getAgentIds().join(', ')}.`
     );
   }
 
@@ -101,8 +106,8 @@ export function getPersistedAgentIds(projectRoot: string): string[] | null {
 }
 
 /**
- * Resolve which agents to link skills for, in order: `--agent` flags, the persisted
- * `expo.skills.agents` field, an interactive prompt, then marker detection.
+ * Resolve which agents to link skills for, in order: `--agent` flags, the cached
+ * selection in `.expo/skills.json`, an interactive prompt, then marker detection.
  */
 export async function resolveAgentsAsync(
   projectRoot: string,
@@ -112,12 +117,12 @@ export async function resolveAgentsAsync(
     return { agents: options.agents.map(assertAgent), fromPrompt: false };
   }
 
-  const persistedIds = getPersistedAgentIds(projectRoot);
+  const persistedIds = await getPersistedAgentIdsAsync(projectRoot);
   if (persistedIds?.length) {
     return { agents: persistedIds.map(assertAgent), fromPrompt: false };
   }
 
-  const detected = detectInstalledAgents(projectRoot);
+  const detected = await detectInstalledAgentsAsync(projectRoot);
 
   if (isInteractive()) {
     const agents = await promptAgentsAsync(detected);
@@ -133,30 +138,20 @@ export async function resolveAgentsAsync(
   if (!detected.length) {
     throw new CommandError(
       'BAD_ARGS',
-      `No coding agent was found in this project and the terminal is non-interactive, so the agents cannot be selected. Pass the agents to link skills for, e.g. --agent claude-code, or add them to the package.json "expo.skills.agents" field. Valid agents: ${getAgentIds().join(', ')}.`
+      `No coding agent was found in this project and the terminal is non-interactive, so the agents cannot be selected. Pass the agents to link skills for, e.g. --agent claude-code, or run the command once in an interactive terminal to save a selection. Valid agents: ${getAgentIds().join(', ')}.`
     );
   }
 
   return { agents: detected, fromPrompt: false };
 }
 
-/** Store the selected agent ids in the `expo.skills.agents` field in package.json. */
+/** Store the selected agent ids in the `.expo/skills.json` cache. */
 export async function persistAgentSelectionAsync(
   projectRoot: string,
   agents: SkillsAgent[]
 ): Promise<void> {
-  const packageJsonPath = path.join(projectRoot, 'package.json');
-  const packageJson = await JsonFile.readAsync(packageJsonPath, { json5: false });
-  const expoConfig = getObject(packageJson.expo) ?? {};
-  const skillsConfig = getSkillsConfig(packageJson) ?? {};
   const ids = [...new Set(agents.map((agent) => agent.id))].sort();
-
-  await JsonFile.setAsync(
-    packageJsonPath,
-    'expo',
-    { ...expoConfig, skills: { ...skillsConfig, agents: ids } },
-    { json5: false }
-  );
+  await skillsCacheFile.setAsync(projectRoot, { agents: ids });
 }
 
 async function promptAgentsAsync(detected: SkillsAgent[]): Promise<SkillsAgent[]> {
@@ -199,19 +194,4 @@ function getAgentIds(): string[] {
 
 function toPublicAgent({ id, displayName, skillsDir }: AgentDefinition): SkillsAgent {
   return { id, displayName, skillsDir };
-}
-
-function getSkillsConfig(packageJson: JSONObject): JSONObject | null {
-  const expoConfig = getObject(packageJson.expo);
-  return expoConfig ? getObject(expoConfig.skills) : null;
-}
-
-function getObject(value: unknown): JSONObject | null {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-    ? (value as JSONObject)
-    : null;
-}
-
-function directoryExists(directory: string): boolean {
-  return !!fs.statSync(directory, { throwIfNoEntry: false })?.isDirectory();
 }
