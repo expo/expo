@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Prevent crashes when scheduling persisted TaskManager jobs without the required `RECEIVE_BOOT_COMPLETED` permission. ([#48979](https://github.com/expo/expo/pull/48979) by [@LizunovSergey](https://github.com/LizunovSergey))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10
