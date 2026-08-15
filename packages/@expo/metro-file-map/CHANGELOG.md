@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent a Node crash on Windows when a watched path contains an 8.3 short name, by watching through the long form of the root ([#48978](https://github.com/expo/expo/pull/48978) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
