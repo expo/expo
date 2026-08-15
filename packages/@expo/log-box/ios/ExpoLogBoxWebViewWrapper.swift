@@ -144,8 +144,6 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
             } catch {
                 sendReturn(error: error, uid: uid, actionId: actionId)
             }
-        } else {
-            print("Unknown message type: \(messageType)")
         }
     }
 
