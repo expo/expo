@@ -61,6 +61,7 @@ patchedDependencies:
   react-native-reanimated: patches/react-native-reanimated.patch
   react-native-safe-area-context@5.7.0: patches/react-native-safe-area-context@5.7.0.patch
   react-native-view-shot: patches/react-native-view-shot.patch
+  react-native-web: patches/react-native-web.patch
   react-native-worklets: patches/react-native-worklets.patch
   react-server-dom-webpack: patches/react-server-dom-webpack.patch
 
