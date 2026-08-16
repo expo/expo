@@ -3,7 +3,7 @@
 // EXECUTES without crashing (real runtime, not just "file exists"), the dev
 // server serves a runtime-valid bundle over HTTP, and HMR is live.
 //
-// Run from the example-app dir so node_modules resolves:
+// Run from the rollipop-expo-example app dir so node_modules resolves:
 //   node e2e-rollipop.cjs
 const { execFileSync, spawn } = require('node:child_process');
 const fs = require('node:fs');
@@ -15,7 +15,7 @@ const http = require('node:http');
 const ROOT = '/Users/adm/Documents/Repos/rollipop-expo-integration';
 const EXPO_CLI = path.join(ROOT, 'packages/expo/packages/@expo/cli/bin/cli.js');
 const ROLLIPOP = path.join(ROOT, 'packages/rollipop/packages/rollipop');
-const APP = path.join(ROOT, 'packages/example-app');
+const APP = path.join(ROOT, 'apps/rollipop-expo-example');
 const RN = path.join(APP, 'node_modules/react-native');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'rollipop-e2e-'));
 

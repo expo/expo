@@ -9,7 +9,7 @@ set -u
 ROOT=/Users/adm/Documents/Repos/rollipop-expo-integration
 EXPO_CLI=$ROOT/packages/expo/packages/@expo/cli/bin/cli.js
 ROLLIPOP=$ROOT/packages/rollipop/packages/rollipop
-APP=$ROOT/packages/example-app
+APP=$ROOT/apps/rollipop-expo-example
 RN=$APP/node_modules/react-native
 SIM=27088715-6C8B-436A-AC66-B2DA978A2944
 PORT=8081

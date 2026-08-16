@@ -440,7 +440,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/expo
 
-  apps/example-app:
+  apps/rollipop-expo-example:
     dependencies:
       expo:
         specifier: workspace:*

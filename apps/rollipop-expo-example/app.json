@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "example-app",
-    "slug": "example-app",
+    "name": "rollipop-expo-example",
+    "slug": "rollipop-expo-example",
     "version": "0.0.1",
     "orientation": "portrait",
     "scheme": "exampleapp",

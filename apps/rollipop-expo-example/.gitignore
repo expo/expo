@@ -1,5 +1,5 @@
-# rollipop bundle cache
-.rollipop/
+# rollipop bundle cache (anywhere)
+**/.rollipop/
 # deps (install via pnpm)
 node_modules/
 # example build output
