@@ -18,7 +18,13 @@
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
+      ]
     ]
   }
 }

@@ -14,11 +14,12 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import ws from 'ws';
 
 import type { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
-import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import type { BundlerStartOptions, DevServerInstance, MessageSocket } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
 import DevToolsPluginManager from '../DevToolsPluginManager';
 import type { PlatformBundlers } from '../platformBundlers';
@@ -69,12 +70,14 @@ export function resolveAnnouncedHost(bindHost: string): string {
  * Dev Client launches keep working. This is the `expo start --bundler rollipop`
  * integration point.
  *
- * Known follow-ups (tracked separately from this wiring):
- * - Relay the runtime <-> CLI message socket (`reload`, `devMenu`) by proxying
- *   Rollipop's `/message` websocket. For now `broadcastMessage` is a no-op
- *   because Rollipop owns the socket; HMR push comes from Rollipop directly.
- * - TypeScript services (`startTypeScriptServices`) are Metro-only; Rollipop
- *   does not implement that protocol.
+ * The CLI <-> runtime message socket (`reload`, `devMenu`, `sendDevCommand`) is
+ * relayed by proxying Rollipop's `/message` websocket: this server opens a
+ * `ws` client to Rollipop and forwards CLI-originated commands to the runtime,
+ * so `expo start`'s interactive reload / dev-menu actions keep working under the
+ * rollipop bundler. HMR push itself still comes from Rollipop directly.
+ *
+ * TypeScript services (`startTypeScriptServices`) are Metro-only; Rollipop
+ * does not implement that protocol.
  */
 export class RollipopBundlerDevServer extends BundlerDevServer {
   get name(): string {
@@ -87,20 +90,27 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
     options?: { devToolsPluginManager?: DevToolsPluginManager }
   ) {
     super(projectRoot, platformBundlers, options);
-    // Rollipop is deny-by-default: it does not implement React Server Components,
-    // Expo Router DOM components, or Metro's TypeScript services. Its message
-    // socket is owned by the child process and not relayed to the CLI, so we
-    // report `messageSocket: false` (the instance's broadcast is a no-op).
+    // Rollipop is deny-by-default: it does not implement React Server Components
+    // or Expo Router DOM components. Its message socket is now relayed (see
+    // `connectMessageSocket`), so `messageSocket` is enabled; TypeScript
+    // services remain Metro-only and are not implemented by Rollipop.
     this.capabilities = {
       reactServerComponents: false,
       domComponents: false,
-      messageSocket: false,
+      messageSocket: true,
       typeScriptServices: false,
     };
   }
 
   /** The spawned `rollipop start` process, if running. */
   private child: ChildProcess | null = null;
+
+  /**
+   * WebSocket client that proxies Rollipop's `/message` endpoint. `null` until
+   * (and unless) the relay connects. CLI-originated `reload`/`devMenu` commands
+   * are forwarded over this socket to the runtime.
+   */
+  private messageSocketClient: ws.WebSocket | null = null;
 
   protected async startImplementationAsync(
     options: BundlerStartOptions
@@ -183,14 +193,22 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
         host,
       },
       middleware: {},
-      // Message socket is owned by the Rollipop child process. HMR / reload
-      // events are pushed by Rollipop directly to the runtime; CLI-originated
-      // `reload`/`devMenu` relay is a tracked follow-up (see class doc).
-      messageSocket: {
-        broadcast: () => {},
-        getClientCount: () => 0,
-      },
+      // Relay the message socket by proxying Rollipop's `/message` websocket
+      // (see `connectMessageSocket`). The relay connects asynchronously after
+      // Rollipop is up; until then `broadcast` is a safe no-op so an early
+      // interactive `reload` before the socket is open is a silent no-op rather
+      // than a crash.
+      messageSocket: this.createMessageSocket(),
     };
+
+    // Connect the message-socket relay to Rollipop (best-effort, retries until
+    // Rollipop's server is accepting connections). Failures are logged but do
+    // not abort the dev server.
+    this.connectMessageSocket(announcedHost, port).catch((error) => {
+      Log.warn(
+        chalk`{yellow Rollipop message-socket relay failed to connect: ${error instanceof Error ? error.message : String(error)}}`
+      );
+    });
 
     // The base `startAsync` calls `getUrlCreator()` after `startImplementationAsync`
     // returns, which asserts `this.urlCreator` is initialized. Metro sets this up
@@ -199,6 +217,91 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
     await this.initUrlCreator(options);
 
     return instance;
+  }
+
+  /**
+   * Build the `MessageSocket` the base `BundlerDevServer` exposes to the CLI.
+   * `broadcast` forwards CLI-originated commands to the runtime over the
+   * Rollipop proxy socket using the React Native community message protocol
+   * (`{ type, data }`), matching what `@react-native-community/cli-server-api`
+   * expects. `getClientCount` reflects the live relay connection.
+   */
+  private createMessageSocket(): MessageSocket {
+    return {
+      broadcast: (method: string, params?: Record<string, any>) => {
+        const client = this.messageSocketClient;
+        if (!client || client.readyState !== ws.WebSocket.OPEN) {
+          return;
+        }
+        client.send(JSON.stringify({ type: method, data: params ?? {} }));
+      },
+      getClientCount: () => (this.messageSocketClient?.readyState === ws.WebSocket.OPEN ? 1 : 0),
+    };
+  }
+
+  /**
+   * Open (and keep open) a `ws` client to Rollipop's `/message` endpoint so the
+   * CLI can relay `reload`/`devMenu`/`sendDevCommand` to the runtime. Retries on
+   * connection failure (Rollipop may not be listening yet) with a bounded backoff,
+   * and auto-reconnects if the socket drops. Swallows errors so the dev server
+   * lifecycle is never blocked by the relay.
+   */
+  private async connectMessageSocket(host: string, port: number): Promise<void> {
+    const url = `ws://${host}:${port}/message`;
+    const maxAttempts = 30;
+    const baseDelayMs = 500;
+
+    const attempt = async (attemptsLeft: number): Promise<void> => {
+      try {
+        await this.openMessageSocket(url);
+      } catch (error) {
+        if (attemptsLeft <= 0) {
+          throw error;
+        }
+        await new Promise((resolve) => setTimeout(resolve, baseDelayMs));
+        return attempt(attemptsLeft - 1);
+      }
+    };
+
+    await attempt(maxAttempts);
+  }
+
+  private openMessageSocket(url: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      const client = new ws.WebSocket(url);
+
+      const onOpen = () => {
+        cleanup();
+        this.messageSocketClient = client;
+        resolve();
+      };
+      const onError = (error: Error) => {
+        cleanup();
+        client.terminate();
+        reject(error);
+      };
+      const cleanup = () => {
+        client.off('open', onOpen);
+        client.off('error', onError);
+      };
+
+      client.on('open', onOpen);
+      client.on('error', onError);
+      // Auto-reconnect on a dropped connection so the relay stays alive for the
+      // dev server's lifetime. We don't await this — it just keeps the client
+      // refreshed in the background.
+      client.on('close', () => {
+        if (this.messageSocketClient === client) {
+          this.messageSocketClient = null;
+        }
+        // Attempt a single reconnect shortly after a drop.
+        setTimeout(() => {
+          if (this.messageSocketClient === null) {
+            this.openMessageSocket(url).catch(() => {});
+          }
+        }, 2000);
+      });
+    });
   }
 
   /**
@@ -390,6 +493,10 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
 
   public async stopAsync() {
     this.stopChild();
+    if (this.messageSocketClient) {
+      this.messageSocketClient.close();
+      this.messageSocketClient = null;
+    }
     await super.stopAsync();
   }
 

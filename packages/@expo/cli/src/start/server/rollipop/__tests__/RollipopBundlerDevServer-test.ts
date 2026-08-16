@@ -1,7 +1,7 @@
 import os from 'node:os';
 
 import { getPlatformBundlers } from '../../platformBundlers';
-import { resolveAnnouncedHost } from '../RollipopBundlerDevServer';
+import { resolveAnnouncedHost, RollipopBundlerDevServer } from '../RollipopBundlerDevServer';
 
 // Real (unmocked) behavior of the platform-bundler mapping and the dev-server
 // host resolution. These encode the integration's correctness contracts:
@@ -102,5 +102,60 @@ describe(resolveAnnouncedHost, () => {
       ],
     });
     expect(resolveAnnouncedHost('0.0.0.0')).toBe('localhost');
+  });
+});
+
+describe('message-socket relay', () => {
+  const WebSocketServer = require('ws').WebSocketServer;
+
+  it('forwards CLI-originated commands to Rollipop over the /message ws', async () => {
+    const wss = new WebSocketServer({ port: 0 });
+    const received: any[] = [];
+    wss.on('connection', (socket: any) => {
+      socket.on('message', (data: any) => received.push(JSON.parse(data.toString())));
+    });
+
+    const port: number = await new Promise((resolve) => {
+      wss.on('listening', () => resolve((wss.address() as any).port));
+    });
+    const host = '127.0.0.1';
+
+    // The relay methods are private; exercise them through a typed cast.
+    const server = new RollipopBundlerDevServer('/', {
+      ios: 'rollipop',
+      android: 'rollipop',
+      web: 'webpack',
+      tvos: 'metro',
+      macos: 'metro',
+    } as any) as any;
+    await server.connectMessageSocket(host, port);
+    expect(server.messageSocketClient).not.toBeNull();
+
+    const socket = server.createMessageSocket();
+    socket.broadcast('reload', { foo: 'bar' });
+    socket.broadcast('devMenu');
+
+    // Give the ws a tick to deliver.
+    await new Promise((r) => setTimeout(r, 50));
+
+    expect(received).toContainEqual({ type: 'reload', data: { foo: 'bar' } });
+    expect(received).toContainEqual({ type: 'devMenu', data: {} });
+    expect(socket.getClientCount()).toBe(1);
+
+    server.messageSocketClient?.close();
+    wss.close();
+  });
+
+  it('broadcast is a safe no-op when the relay is not connected', () => {
+    const server = new RollipopBundlerDevServer('/', {
+      ios: 'rollipop',
+      android: 'rollipop',
+      web: 'webpack',
+      tvos: 'metro',
+      macos: 'metro',
+    } as any) as any;
+    const socket = server.createMessageSocket();
+    expect(() => socket.broadcast('reload')).not.toThrow();
+    expect(socket.getClientCount()).toBe(0);
   });
 });

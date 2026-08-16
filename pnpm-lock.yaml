@@ -1427,6 +1427,9 @@ importers:
       expo-dev-client:
         specifier: 57.0.12
         version: 57.0.12(expo@packages+expo)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))
+      expo-glass-effect:
+        specifier: workspace:*
+        version: link:../../packages/expo-glass-effect
       expo-linking:
         specifier: workspace:*
         version: link:../../packages/expo-linking

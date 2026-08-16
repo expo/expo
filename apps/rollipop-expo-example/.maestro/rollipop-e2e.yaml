@@ -1,22 +1,37 @@
 # Real end-to-end test for the rollipop + Expo Router integration on a real
 # iOS simulator. The JS bundle is served by `rollipop` (not Metro).
 #
-# NOTE: on a cold launch the simulator dev client occasionally surfaces a
-# transient "[runtime not ready]: NativeModule ... is null" RedBox while native
-# modules finish initializing. It is a dev-client race (the bundle does not even
-# import the module in question) and is cleared by a reload. The retry block
-# below relaunches on failure so a single flaky cold start does not fail the gate.
+# The simulator bridges `localhost` to the host's localhost, so
+# `localhost:8081` reaches the host rollipop dev server. mDNS discovery does
+# not work with rollipop the way it does with Metro, so we enter the URL
+# manually on a fresh client. The Expo dev client shows its Developer Menu on
+# first connect; "Continue" dismisses the welcome modal and the gear icon
+# (resource-id `gearshape.fill`) toggles the full menu closed to reveal the app.
 appId: com.example.app
-env:
-  BUNDLER_URL: "http://localhost:8081"
 ---
 - retry:
-    maxRetries: 3
+    maxRetries: 1
     commands:
       - launchApp
-      # Cold-launch settle: Hermes + bundle eval can take a moment on first run.
       - waitForAnimationToEnd:
           timeout: 15000
+      - tapOn: "Enter URL manually"
+      - waitForAnimationToEnd:
+          timeout: 5000
+      - tapOn: "http://"
+      - inputText: "localhost:8081"
+      - tapOn: "Connect"
+      - waitForAnimationToEnd:
+          timeout: 10000
+      # Dismiss the Developer Menu: "Continue" closes the welcome modal, then
+      # "Reload" reloads the bundle and closes the full menu to reveal the app.
+      - tapOn: "Continue"
+      - waitForAnimationToEnd:
+          timeout: 5000
+      - tapOn: "Reload"
+      # Cold-launch settle: Hermes + bundle eval can take a moment on first run.
+      - waitForAnimationToEnd:
+          timeout: 20000
       - assertVisible: "Rollipop + Expo Router"
       - tapOn: "Push About"
       - waitForAnimationToEnd:
