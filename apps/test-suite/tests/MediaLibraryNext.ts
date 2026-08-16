@@ -6,6 +6,7 @@ import {
   Query,
   MediaType,
   AssetField,
+  AssetUriVersion,
   addListener,
   removeAllListeners,
 } from 'expo-media-library';
@@ -494,6 +495,16 @@ export async function test(t: any) {
       t.expect(uri.toLowerCase()).toMatch(/\.png/);
     });
 
+    // the fixture has no edits, so both renditions exist. Their paths are not compared:
+    // PhotoKit may back identical content with different files.
+    t.it('resolves both uri versions', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
+      const current = await asset.getUri({ version: AssetUriVersion.CURRENT });
+      const original = await asset.getUri({ version: AssetUriVersion.ORIGINAL });
+      t.expect(current.toLowerCase()).toMatch(/\.png/);
+      t.expect(original.toLowerCase()).toMatch(/\.png/);
+    });
+
     t.it('returns positive width', async () => {
       const asset = await createImageAsset(pngFileLocalUri);
       const width = await asset.getWidth();
@@ -588,6 +599,15 @@ export async function test(t: any) {
     t.it('returns a uri ending with .mp4', async () => {
       const uri = await videoAsset.getUri();
       t.expect(uri.toLowerCase()).toMatch(/\.mp4/);
+    });
+
+    // an unedited video resolves to the same file either way. Whether an edited one resolves
+    // to its edited render can only be checked by hand, since a test cannot edit in Photos.
+    t.it('resolves both uri versions', async () => {
+      const current = await videoAsset.getUri({ version: AssetUriVersion.CURRENT });
+      const original = await videoAsset.getUri({ version: AssetUriVersion.ORIGINAL });
+      t.expect(current.toLowerCase()).toMatch(/\.mp4/);
+      t.expect(original.toLowerCase()).toMatch(/\.mp4/);
     });
 
     t.it('returns positive width', async () => {
