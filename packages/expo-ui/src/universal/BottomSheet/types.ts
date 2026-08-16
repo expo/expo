@@ -56,6 +56,15 @@ export interface BottomSheetProps {
   testID?: string;
 
   /**
+   * Whether pressing the Android hardware back button (or back gesture) dismisses the bottom sheet.
+   * When `false`, the back press does not dismiss the sheet (note: the press still does not reach
+   * React Native's `BackHandler`).
+   * @default true
+   * @platform android
+   */
+  dismissOnBackPress?: boolean;
+
+  /**
    * Platform-specific modifier escape hatch. Pass an array of modifier configs
    * from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
    */

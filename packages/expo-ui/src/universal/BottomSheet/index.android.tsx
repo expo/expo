@@ -38,6 +38,7 @@ export function BottomSheet({
   snapPoints,
   testID,
   modifiers,
+  dismissOnBackPress = true,
 }: BottomSheetProps) {
   const sheetRef = useRef<ModalBottomSheetRef>(null);
   const [mount, setMount] = useState(isPresented);
@@ -71,6 +72,7 @@ export function BottomSheet({
         onDismissRequest={onDismiss}
         showDragHandle={showDragIndicator}
         skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
+        properties={{ shouldDismissOnBackPress: dismissOnBackPress }}
         modifiers={modifiers}>
         {/* When the drag handle is hidden, add top padding so content doesn't crop against the top edge of the sheet. */}
         <Column modifiers={contentModifiers}>{children}</Column>
