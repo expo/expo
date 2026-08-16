@@ -93,7 +93,7 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
     objectRef.current = lifecycleRef.current.factory();
   }
 
-  const object = useMemo(() => {
+  const object = (() => {
     let newObject = objectRef.current;
     const context = {
       previousDependencies: previousDependencies.current,
@@ -117,9 +117,7 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
       previousDependencies.current = dependencies;
     }
     return newObject;
-    // This generic hook forwards the caller-provided dependency list, which cannot be an array literal.
-    // oxlint-disable-next-line react/use-memo
-  }, dependencies);
+  })();
 
   function releaseObject(obj: TSharedObject) {
     (lifecycleRef.current.release ?? ((o: TSharedObject) => o.release()))(obj);
@@ -172,6 +170,7 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
       // This will be called on every fast refresh and on unmount, but we only want to release the object on unmount.
       if (!isFastRefresh.current && objectRef.current) {
         const obj = objectRef.current;
+        objectRef.current = null;
         const doRelease = () => releaseObject(obj);
         if (pendingUpdatePromiseRef.current) {
           pendingUpdatePromiseRef.current.then(doRelease, doRelease);
