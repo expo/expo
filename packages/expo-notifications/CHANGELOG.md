@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [tvos] Write the plugin's generated files into `tvos/` instead of `ios/` when prebuilding for tvOS. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
 - [Android] Prevented `onUserLeaveHint` from firing when a notification tap opens the app, which made picture-in-picture implementations enter PiP unexpectedly. ([#48471](https://github.com/expo/expo/pull/48471) by [@stareezy-1](https://github.com/stareezy-1))
 - [iOS] Avoid warning when an aborted push token registration request rejects with a native fetch cancellation error. ([#48547](https://github.com/expo/expo/pull/48547) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
 - [Android] Prevent a crash on notification tap when `getLaunchIntentForPackage` throws on some OEM ROMs. ([#47889](https://github.com/expo/expo/pull/47889) by [@nunocaseiro](https://github.com/nunocaseiro))

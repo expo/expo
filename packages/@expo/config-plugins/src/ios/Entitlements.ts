@@ -2,9 +2,11 @@ import type { ExpoConfig } from '@expo/config-types';
 import type { JSONObject } from '@expo/json-file';
 import fs from 'fs';
 import path from 'path';
-import type { XCBuildConfiguration } from 'xcode';
+import type { XCBuildConfiguration, XcodeProject } from 'xcode';
 
 import { createEntitlementsPlugin } from '../plugins/ios-plugins';
+// Type-only so this doesn't add a runtime cycle — `Paths` already imports this module.
+import type * as Paths from './Paths';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
 import {
   getBuildConfigurationsForListId,
@@ -38,9 +40,14 @@ export function getEntitlementsPath(
   {
     targetName,
     buildConfiguration = 'Release',
-  }: { targetName?: string; buildConfiguration?: string } = {}
+    platform,
+  }: {
+    targetName?: string;
+    buildConfiguration?: string;
+    platform?: Paths.ApplePlatform;
+  } = {}
 ): string | null {
-  const project = getPbxproj(projectRoot);
+  const project = getPbxproj(projectRoot, platform);
   const xcBuildConfiguration = getXCBuildConfigurationFromPbxproj(project, {
     targetName,
     buildConfiguration,
@@ -49,30 +56,42 @@ export function getEntitlementsPath(
     return null;
   }
   const entitlementsPath = getEntitlementsPathFromBuildConfiguration(
-    projectRoot,
+    getPlatformProjectRoot(project),
     xcBuildConfiguration
   );
   return entitlementsPath && fs.existsSync(entitlementsPath) ? entitlementsPath : null;
 }
 
+/**
+ * `CODE_SIGN_ENTITLEMENTS` is relative to the directory holding the `.xcodeproj`, which is
+ * `<projectRoot>/ios` for an iOS project and `<projectRoot>/tvos` for a tvOS one.
+ */
+function getPlatformProjectRoot(project: XcodeProject): string {
+  return path.dirname(path.dirname(project.filepath));
+}
+
 function getEntitlementsPathFromBuildConfiguration(
-  projectRoot: string,
+  platformProjectRoot: string,
   xcBuildConfiguration: XCBuildConfiguration
 ): string | null {
   const entitlementsPathRaw = xcBuildConfiguration?.buildSettings?.CODE_SIGN_ENTITLEMENTS as
     | string
     | undefined;
   if (entitlementsPathRaw) {
-    return path.normalize(path.join(projectRoot, 'ios', trimQuotes(entitlementsPathRaw)));
+    return path.normalize(path.join(platformProjectRoot, trimQuotes(entitlementsPathRaw)));
   } else {
     return null;
   }
 }
 
-export function ensureApplicationTargetEntitlementsFileConfigured(projectRoot: string): void {
-  const project = getPbxproj(projectRoot);
-  const projectName = getProjectName(projectRoot);
+export function ensureApplicationTargetEntitlementsFileConfigured(
+  projectRoot: string,
+  platform?: Paths.ApplePlatform
+): void {
+  const project = getPbxproj(projectRoot, platform);
+  const projectName = getProjectName(projectRoot, platform);
   const productName = getProductName(project);
+  const platformProjectRoot = getPlatformProjectRoot(project);
 
   const [, applicationTarget] = findFirstNativeTarget(project);
   const buildConfigurations = getBuildConfigurationsForListId(
@@ -82,7 +101,7 @@ export function ensureApplicationTargetEntitlementsFileConfigured(projectRoot: s
   let hasChangesToWrite = false;
   for (const [, xcBuildConfiguration] of buildConfigurations) {
     const oldEntitlementPath = getEntitlementsPathFromBuildConfiguration(
-      projectRoot,
+      platformProjectRoot,
       xcBuildConfiguration
     );
     if (oldEntitlementPath && fs.existsSync(oldEntitlementPath)) {
@@ -93,7 +112,7 @@ export function ensureApplicationTargetEntitlementsFileConfigured(projectRoot: s
     const entitlementsRelativePath = path
       .join(projectName, `${productName}.entitlements`)
       .replace(/\\/g, '/');
-    const entitlementsPath = path.resolve(projectRoot, 'ios', entitlementsRelativePath);
+    const entitlementsPath = path.resolve(platformProjectRoot, entitlementsRelativePath);
     fs.mkdirSync(path.dirname(entitlementsPath), { recursive: true });
     if (!fs.existsSync(entitlementsPath)) {
       fs.writeFileSync(entitlementsPath, ENTITLEMENTS_TEMPLATE);

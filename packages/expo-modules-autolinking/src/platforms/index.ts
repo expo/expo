@@ -52,6 +52,24 @@ function getLinkingImplementationForPlatform(
 
 export { getLinkingImplementationForPlatform };
 
+/**
+ * Every react-native host package. A host is a platform's react-native distribution rather than a
+ * linkable module, so none of them may be autolinked — not even the hosts belonging to other
+ * platforms, which a project installs alongside its own (e.g. `react-native` and
+ * `react-native-tvos` are both dependencies of an app that builds for iOS and tvOS).
+ */
+const REACT_NATIVE_HOST_PACKAGES = new Set([
+  'react-native',
+  'react-native-tvos',
+  'react-native-macos',
+  'react-native-windows',
+]);
+
+/** Whether the package is a react-native host for any platform, and so must not be autolinked. */
+export function isReactNativeHostPackage(packageName: string): boolean {
+  return REACT_NATIVE_HOST_PACKAGES.has(packageName);
+}
+
 export function getSupportPackageForPlatform(platform: SupportedPlatform): string | null {
   switch (platform) {
     case 'ios':

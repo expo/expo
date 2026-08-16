@@ -12,7 +12,7 @@ import {
   scanDependenciesInSearchPath,
   scanDependenciesRecursively,
 } from '../dependencies';
-import { getSupportPackageForPlatform } from '../platforms';
+import { getSupportPackageForPlatform, isReactNativeHostPackage } from '../platforms';
 import type { SupportedPlatform } from '../types';
 import {
   findGradleAndManifestAsync,
@@ -68,16 +68,15 @@ export async function resolveReactNativeModule(
   platform: SupportedPlatform,
   excludeNames: Set<string>
 ): Promise<RNConfigDependency | null> {
-  // The platform's support package is the react-native host (e.g. react-native-macos for macos,
-  // react-native-tvos for tvos), not a linkable module — filter it out alongside react-native.
-  // This is null for platforms without a host (web, apple), so only react-native is filtered.
-  const supportPackage = getSupportPackageForPlatform(platform);
   if (excludeNames.has(resolution.name)) {
     return null;
-  } else if (resolution.name === 'react-native' || resolution.name === supportPackage) {
+  } else if (isReactNativeHostPackage(resolution.name)) {
     // Starting from version 0.76, the `react-native` package only defines platforms
     // when @react-native-community/cli-platform-android/ios is installed.
-    // Therefore, we need to manually filter it (and the platform's support package) out.
+    // Therefore, we need to manually filter it out — along with every other platform's host
+    // package, which is installed next to it in a project that builds for more than one Apple
+    // platform. Linking `react-native-tvos` into an iOS build (or `react-native` into a tvOS
+    // build) makes CocoaPods treat the host as a third-party codegen-enabled library.
     // NOTE(@kitten): `loadConfigAsync` is skipped too, because react-native's config is too slow
     return null;
   }
