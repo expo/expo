@@ -27,7 +27,7 @@ class AudioPlaylist(
 ) : BaseAudioPlayer(
   player = ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
-    .setAudioAttributes(AudioAttributes.DEFAULT, false)
+    .setAudioAttributes(AudioAttributes.DEFAULT, true)
     .setHandleAudioBecomingNoisy(true)
     .setMediaSourceFactory(DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory))
     .build(),
