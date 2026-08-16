@@ -10,6 +10,7 @@ import chalk from 'chalk';
 import { spawn } from 'child_process';
 import type { ChildProcess } from 'child_process';
 import { createRequire } from 'module';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -36,7 +37,7 @@ const ROLLIPOP_BIN = 'rollipop';
  *   3. `localhost` as a last resort (works for `expo start` on the same host
  *      when the client is not a simulator).
  */
-function resolveAnnouncedHost(bindHost: string): string {
+export function resolveAnnouncedHost(bindHost: string): string {
   // When bound to all interfaces, loopback is unreachable from the simulator.
   if (bindHost !== '0.0.0.0') {
     return bindHost;
@@ -237,6 +238,14 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
     // that computed path does not directly exist on disk. If the computed
     // entry isn't resolvable, fall back to `index.js` — the app entry that
     // re-exports Expo Router — which Rollipop bundles correctly.
+    const assetsDest = path.join(
+      this.projectRoot,
+      'dist',
+      'rollipop-temp',
+      `${options.platform}-assets`
+    );
+    fs.mkdirSync(assetsDest, { recursive: true });
+
     const computedEntry = options.mainModuleName ?? 'index.js';
     const resolvedEntry = fs.existsSync(path.resolve(this.projectRoot, computedEntry))
       ? computedEntry
@@ -254,6 +263,8 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
       '--bundle-output',
       bundleOutput,
       ...(sourcemapOutput ? ['--sourcemap-output', sourcemapOutput] : []),
+      '--assets-dest',
+      assetsDest,
       '--entry-file',
       resolvedEntry,
     ];
@@ -301,6 +312,14 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
     const source = fs.readFileSync(bundleOutput, 'utf8');
     const filename = 'index.js';
 
+    // Collect the native assets Rollipop copied into `assetsDest` during the
+    // bundle. Previously this returned `assets: []`, which meant
+    // `expo export --bundler rollipop` (and EAS Build) shipped a JS bundle with
+    // NO assets — every image/font was missing at runtime. Rollipop emits the
+    // same layout Metro's asset copier produces, so we walk `assetsDest` and
+    // build the `BundleAssetWithFileHashes` records the export pipeline expects.
+    const assets = this.collectRollipopAssets(assetsDest, options.platform);
+
     return {
       artifacts: [
         {
@@ -311,9 +330,62 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
           metadata: {},
         },
       ],
-      assets: [],
+      assets,
       files,
     };
+  }
+
+  /**
+   * Walk the directory Rollipop copied native assets into and produce
+   * `BundleAssetWithFileHashes` records. Each file on disk becomes one asset
+   * entry; `fileHashes` is the md5 of the file contents (matching Metro's
+   * `hashAssets` asset plugins), and `files` points at the emitted path so the
+   * export pipeline can copy it into the final bundle output.
+   */
+  private collectRollipopAssets(assetsDest: string, platform: string): BundleAssetWithFileHashes[] {
+    const result: BundleAssetWithFileHashes[] = [];
+    if (!fs.existsSync(assetsDest)) {
+      return result;
+    }
+
+    const walk = (dir: string): string[] => {
+      const out: string[] = [];
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const abs = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          out.push(...walk(abs));
+        } else {
+          out.push(abs);
+        }
+      }
+      return out;
+    };
+
+    for (const file of walk(assetsDest)) {
+      const rel = path.relative(assetsDest, file);
+      const ext = path.extname(file).slice(1);
+      const baseName = path.basename(file, `.${ext}`);
+      const fileContents = fs.readFileSync(file);
+      const hash = crypto.createHash('md5').update(fileContents).digest('hex');
+
+      // Mirrors the `AssetData` shape Metro's asset serializer produces. Only
+      // the fields the export pipeline actually reads (`files`,
+      // `httpServerLocation`, `name`, `type`, plus `fileHashes`) are required;
+      // image dimensions are intentionally omitted (optional).
+      result.push({
+        __packager_asset: true,
+        fileSystemLocation: path.dirname(file),
+        httpServerLocation: `/assets/${path.dirname(rel)}`,
+        hash,
+        name: baseName,
+        type: ext,
+        scales: [1],
+        files: [rel],
+        fileHashes: [hash],
+      });
+    }
+
+    return result;
   }
 
   public async stopAsync() {

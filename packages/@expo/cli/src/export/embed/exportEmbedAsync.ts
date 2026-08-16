@@ -189,8 +189,11 @@ export async function exportEmbedBundleAndAssetsAsync(
 
   const devServer = devServerManager.getDefaultDevServer();
   // The RSC / DOM-component export paths below are Metro-only; for an
-  // alternative bundler (Rollipop) we skip them.
-  const isMetro = devServer.capabilities.domComponents;
+  // alternative bundler (Rollipop) we skip them. Use the dev server's own
+  // `name` (set to `'metro'` or `'rollipop'`) as the discriminator rather than
+  // overloading `capabilities.domComponents`, which is a capability flag, not a
+  // bundler identity.
+  const isMetro = devServer.name === 'metro';
 
   const { exp, pkg } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const isHermes = isEnableHermesManaged(exp, options.platform);

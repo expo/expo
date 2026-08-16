@@ -12,7 +12,7 @@ export function getPlatformBundlers(
   projectRoot: string,
   exp: Partial<ExpoConfig>,
   /** CLI override from `expo start --bundler ...`, applied to native platforms. */
-  bundlerOverride?: 'metro' | 'webpack' | 'rollipop',
+  bundlerOverride?: 'metro' | 'webpack' | 'rollipop'
 ): PlatformBundlers {
   /**
    * SDK 50+: The web bundler is dynamic based upon the presence of the `@expo/webpack-config` package.
@@ -23,13 +23,17 @@ export function getPlatformBundlers(
     web = resolved ? 'webpack' : 'metro';
   }
 
-  const native: 'metro' | 'webpack' | 'rollipop' = bundlerOverride ?? 'metro';
-
   return {
     ios: bundlerOverride ?? (exp.ios as WithBundlerConfig)?.bundler ?? 'metro',
     android: bundlerOverride ?? (exp.android as WithBundlerConfig)?.bundler ?? 'metro',
     web,
-    tvos: native,
-    macos: native,
+    // tvOS and macOS are Xcode-built targets, not rollipop bundling targets.
+    // Applying a global `--bundler` override (e.g. `expo start --bundler
+    // rollipop`) must not misconfigure them — keep them on metro so their
+    // native builds continue to work. Per-platform `ios.bundler` /
+    // `android.bundler` in app.json still select rollipop for the mobile
+    // platforms only.
+    tvos: 'metro',
+    macos: 'metro',
   };
 }
