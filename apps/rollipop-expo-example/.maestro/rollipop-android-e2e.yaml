@@ -1,0 +1,34 @@
+# Android e2e for the rollipop + Expo Router example app.
+# Boots the app (Expo Dev Client), connects to the rollipop dev server
+# discovered via mDNS, and verifies the home screen renders.
+appId: com.example.app
+---
+- launchApp:
+    clearState: false
+    stopApp: true
+- waitForAnimationToEnd:
+    timeout: 15000
+# The Expo Dev Client shows a list of discovered dev servers. The server row
+# is the clickable container; tap its center to load the bundle.
+- tapOn:
+    point: "401,560"
+    optional: true
+- waitForAnimationToEnd:
+    timeout: 30000
+# Assert the home screen content (covers both: server list still shown OR app loaded).
+- assertVisible:
+    text: "Rollipop + Expo Router"
+- tapOn:
+    text: "About"
+- assertVisible:
+    text: "Static screen"
+- tapOn:
+    text: "Back"
+- tapOn:
+    text: "User 42"
+- assertVisible:
+    text: "u/42"
+- tapOn:
+    text: "Back"
+- assertVisible:
+    text: "Rollipop + Expo Router"
