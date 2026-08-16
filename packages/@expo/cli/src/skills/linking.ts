@@ -4,6 +4,7 @@ import path from 'path';
 import { Log } from '../log';
 import { directoryExistsAsync, ensureDirectoryAsync } from '../utils/dir';
 import { toPosixPath } from '../utils/filePath';
+import { debugEvent } from './events';
 import type { DiscoveredSkill } from './types';
 
 const GIT_IGNORE_START = '# @generated expo skills start';
@@ -109,9 +110,8 @@ export async function cleanSkillLinksAsync(
 }
 
 /**
- * Maintain a generated block in `.gitignore` that lists the currently managed links.
- * Links are named after their skill, so a single ignore pattern cannot match them.
- * Returns true when the file changed.
+ * Maintain a generated `.gitignore` block listing the managed links, since no
+ * single pattern matches links named after their skill. Returns true on change.
  */
 export async function updateGitIgnoreAsync(
   projectRoot: string,
@@ -171,6 +171,11 @@ function dedupeByLinkName(skills: DiscoveredSkill[]): DiscoveredSkill[] {
   for (const skill of skills) {
     const existing = byLinkName.get(skill.linkName);
     if (existing) {
+      debugEvent('skipped_skill', {
+        package: skill.packageName,
+        skill: skill.name,
+        reason: 'duplicate-name',
+      });
       Log.warn(
         `Skipped the "${skill.name}" skill from ${skill.packageName} because ${existing.packageName} already provides a skill with the same name.`
       );
@@ -196,11 +201,7 @@ async function listManagedLinksAsync(agentDirPath: string): Promise<string[]> {
   return names;
 }
 
-/**
- * A managed entry is a symlink that points into a node_modules directory.
- * This also holds for links whose package was uninstalled, since the link
- * target is read without resolving it.
- */
+/** A managed entry is a symlink into node_modules, even when its target no longer exists. */
 async function isManagedLinkAsync(linkPath: string): Promise<boolean> {
   if (!(await lstatAsync(linkPath))?.isSymbolicLink()) {
     return false;
@@ -214,10 +215,9 @@ async function isManagedLinkAsync(linkPath: string): Promise<boolean> {
 }
 
 async function createSymlinkAsync(skillPath: string, linkPath: string): Promise<void> {
-  // A relative target keeps the links working after the project directory moves.
+  // Relative targets survive moving the project. Windows turns them absolute,
+  // since junctions are the only directory link that needs no admin rights.
   const target = path.relative(path.dirname(linkPath), skillPath);
-  // Junctions are the only directory link Windows creates without developer mode or admin rights.
-  // Node resolves a junction target to an absolute path, so relative targets are Unix-only in practice.
   await fs.promises.symlink(target, linkPath, process.platform === 'win32' ? 'junction' : 'dir');
 }
 
