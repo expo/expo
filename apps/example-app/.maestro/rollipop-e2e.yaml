@@ -1,0 +1,15 @@
+# Real end-to-end test for the rollipop + Expo Router integration on a real
+# iOS simulator. The JS bundle is served by `rollipop` (not Metro).
+appId: com.example.app
+env:
+  BUNDLER_URL: "http://localhost:8081"
+---
+- launchApp
+- waitForAnimationToEnd
+- assertVisible: "Rollipop + Expo Router"
+- tapOn: "Push About"
+- waitForAnimationToEnd
+- assertVisible: "About"
+- tapOn: "Go to User 42"
+- waitForAnimationToEnd
+- assertVisible: "User 42"

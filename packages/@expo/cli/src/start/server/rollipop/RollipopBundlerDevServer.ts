@@ -11,6 +11,7 @@ import { spawn } from 'child_process';
 import type { ChildProcess } from 'child_process';
 import { createRequire } from 'module';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 import type { BundleAssetWithFileHashes, ExportAssetMap } from '../../../export/saveAssets';
@@ -20,6 +21,23 @@ import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer
 import { BundlerDevServer } from '../BundlerDevServer';
 
 const ROLLIPOP_BIN = 'rollipop';
+
+/**
+ * Best-effort lookup of a non-internal IPv4 address for this machine. Used to
+ * announce a dev-server URL the iOS Simulator can actually reach (its loopback
+ * is isolated from the host, so `localhost` does not work from the simulator).
+ */
+function getLanIp(): string {
+  const ifaces = os.networkInterfaces();
+  for (const list of Object.values(ifaces)) {
+    for (const ni of list ?? []) {
+      if (ni.family === 'IPv4' && !ni.internal) {
+        return ni.address;
+      }
+    }
+  }
+  return 'localhost';
+}
 
 /**
  * A `BundlerDevServer` that delegates bundling to Rollipop (the Rolldown-based
@@ -106,7 +124,11 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
 
     this.child = child;
 
-    const serverUrl = `http://${host === '0.0.0.0' ? 'localhost' : host}:${port}`;
+    // When bound to all interfaces (0.0.0.0) the loopback `localhost` is not
+    // reachable from the iOS Simulator (its loopback namespace is isolated from
+    // the host). Announce the LAN address so the simulator/dev client can connect.
+    const announcedHost = host === '0.0.0.0' ? getLanIp() : host;
+    const serverUrl = `http://${announcedHost}:${port}`;
 
     const instance: DevServerInstance = {
       server: {

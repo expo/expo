@@ -1,0 +1,7 @@
+# rollipop bundle cache
+.rollipop/
+# deps (install via pnpm)
+node_modules/
+# example build output
+out.bundle
+dist/

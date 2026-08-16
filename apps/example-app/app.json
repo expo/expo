@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "example-app",
+    "slug": "example-app",
+    "version": "0.0.1",
+    "orientation": "portrait",
+    "scheme": "exampleapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example.app"
+    },
+    "android": {
+      "package": "com.example.app"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
