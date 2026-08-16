@@ -45,6 +45,9 @@ import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
+import android.view.MotionEvent
+import android.view.ViewParent
+import com.facebook.react.uimanager.RootView
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.OptimizedComposeProps
 import expo.modules.ui.colors.isDynamicColorSupported
@@ -98,6 +101,39 @@ internal enum class ExpoColorScheme(val value: String) : Enumerable {
 @SuppressLint("ViewConstructor")
 internal class HostView(context: Context, appContext: AppContext) :
   ExpoComposeView<HostProps>(context, appContext, withHostingView = true) {
+
+  /** Set by a hosted view below when Compose routes a gesture's first touch into it. */
+  private var hostedViewOwnsGesture = false
+
+  internal fun onHostedGestureStart() {
+    hostedViewOwnsGesture = true
+  }
+
+  /**
+   * React Native dispatches this subtree's touches speculatively: the surface root hands every touch
+   * to JavaScript and separately lets native children have it, then resolves its own target by
+   * walking Android views. Jetpack Compose content is not made of Android views, so that walk cannot
+   * see it — a floating action button drawn over a hosted list is invisible to it, and the row
+   * underneath takes the press as well.
+   *
+   * Compose settles this correctly inside [super.dispatchTouchEvent]: it either routes the touch to
+   * a hosted view, which says so above, or keeps it. When Compose kept it, announce that a native
+   * child owns the gesture, which is what a React Native `ScrollView` does when it starts to scroll.
+   */
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      hostedViewOwnsGesture = false
+    }
+    val consumed = super.dispatchTouchEvent(ev)
+    if (ev.actionMasked == MotionEvent.ACTION_DOWN && consumed && !hostedViewOwnsGesture) {
+      var current: ViewParent? = parent
+      while (current != null) {
+        (current as? RootView)?.onChildStartedNativeGesture(this, ev)
+        current = current.parent
+      }
+    }
+    return consumed
+  }
   override val props = HostProps()
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
   private var lastDispatchedContentSize: IntSize? = null
