@@ -35,7 +35,7 @@ class AudioPlayer(
 ) : BaseAudioPlayer(
   player = ExoPlayer.Builder(context)
     .setLooper(context.mainLooper)
-    .setAudioAttributes(AudioAttributes.DEFAULT, false)
+    .setAudioAttributes(AudioAttributes.DEFAULT, true)
     .setHandleAudioBecomingNoisy(true)
     .setSeekForwardIncrementMs(SEEK_JUMP_INTERVAL_MS)
     .setSeekBackIncrementMs(SEEK_JUMP_INTERVAL_MS)
