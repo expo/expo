@@ -171,22 +171,26 @@ export async function exportEmbedBundleAndAssetsAsync(
   assets: readonly BundleAssetWithFileHashes[];
   files: ExportAssetMap;
 }> {
-  const devServerManager = await DevServerManager.startMetroAsync(projectRoot, {
-    minify: options.minify,
-    mode: options.dev ? 'development' : 'production',
-    port: 8081,
-    isExporting: true,
-    location: {},
-    resetDevServer: options.resetCache,
-    maxWorkers: options.maxWorkers,
+  const devServerManager = await DevServerManager.startMetroAsync(
+    projectRoot,
+    {
+      minify: options.minify,
+      mode: options.dev ? 'development' : 'production',
+      port: 8081,
+      isExporting: true,
+      location: {},
+      resetDevServer: options.resetCache,
+      maxWorkers: options.maxWorkers,
+    },
     // Honor an alternative native bundler (e.g. `rollipop`) for EAS / native builds.
-    bundlerOverride: options.bundler,
-  });
+    // This is a positional parameter of `startMetroAsync`, not a field of `BundlerStartOptions`.
+    options.bundler
+  );
 
   const devServer = devServerManager.getDefaultDevServer();
   // The RSC / DOM-component export paths below are Metro-only; for an
   // alternative bundler (Rollipop) we skip them.
-  const isMetro = devServer instanceof MetroBundlerDevServer;
+  const isMetro = devServer.capabilities.domComponents;
 
   const { exp, pkg } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const isHermes = isEnableHermesManaged(exp, options.platform);
@@ -228,7 +232,7 @@ export async function exportEmbedBundleAndAssetsAsync(
     const apiRoutesEnabled =
       (isMetro && devServer.isReactServerComponentsEnabled) || exp.web?.output === 'server';
     if (isMetro && !options.skipServer && apiRoutesEnabled) {
-      await exportStandaloneServerAsync(projectRoot, devServer, {
+      await exportStandaloneServerAsync(projectRoot, devServer as MetroBundlerDevServer, {
         exp,
         pkg,
         files,

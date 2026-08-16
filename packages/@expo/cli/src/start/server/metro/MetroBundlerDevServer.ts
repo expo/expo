@@ -1255,6 +1255,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       !exp.experiments?.reactServerComponentRoutes && !!exp.experiments?.reactServerFunctions;
     this.isReactServerComponentsEnabled = isReactServerComponentsEnabled;
     this.isReactServerRoutesEnabled = !!exp.experiments?.reactServerComponentRoutes;
+    // Keep the declarative capability set in sync with RSC detection so the
+    // export pipeline can gate on `capabilities` instead of the bundler name.
+    this.capabilities.reactServerComponents = isReactServerComponentsEnabled;
+    this.capabilities.domComponents = true;
 
     const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
     const hasApiRoutes = isReactServerComponentsEnabled || exp.web?.output === 'server';

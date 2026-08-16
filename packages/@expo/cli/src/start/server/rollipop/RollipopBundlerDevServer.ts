@@ -19,15 +19,34 @@ import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
+import DevToolsPluginManager from '../DevToolsPluginManager';
+import type { PlatformBundlers } from '../platformBundlers';
 
 const ROLLIPOP_BIN = 'rollipop';
 
 /**
- * Best-effort lookup of a non-internal IPv4 address for this machine. Used to
- * announce a dev-server URL the iOS Simulator can actually reach (its loopback
- * is isolated from the host, so `localhost` does not work from the simulator).
+ * Resolve the host the iOS Simulator / dev client should connect to.
+ *
+ * The simulator's loopback namespace is isolated from the host, so `localhost`
+ * does not work from the simulator — we must announce a host-reachable address.
+ * Precedence:
+ *   1. `ROLLIPOP_DEV_HOST` env var (explicit override for VMs / custom networks).
+ *   2. A non-internal IPv4 chosen deterministically (first interface whose
+ *      address is reachable from outside the machine).
+ *   3. `localhost` as a last resort (works for `expo start` on the same host
+ *      when the client is not a simulator).
  */
-function getLanIp(): string {
+function resolveAnnouncedHost(bindHost: string): string {
+  // When bound to all interfaces, loopback is unreachable from the simulator.
+  if (bindHost !== '0.0.0.0') {
+    return bindHost;
+  }
+
+  const explicit = process.env.ROLLIPOP_DEV_HOST;
+  if (explicit) {
+    return explicit;
+  }
+
   const ifaces = os.networkInterfaces();
   for (const list of Object.values(ifaces)) {
     for (const ni of list ?? []) {
@@ -59,6 +78,24 @@ function getLanIp(): string {
 export class RollipopBundlerDevServer extends BundlerDevServer {
   get name(): string {
     return 'rollipop';
+  }
+
+  constructor(
+    projectRoot: string,
+    platformBundlers: PlatformBundlers,
+    options?: { devToolsPluginManager?: DevToolsPluginManager }
+  ) {
+    super(projectRoot, platformBundlers, options);
+    // Rollipop is deny-by-default: it does not implement React Server Components,
+    // Expo Router DOM components, or Metro's TypeScript services. Its message
+    // socket is owned by the child process and not relayed to the CLI, so we
+    // report `messageSocket: false` (the instance's broadcast is a no-op).
+    this.capabilities = {
+      reactServerComponents: false,
+      domComponents: false,
+      messageSocket: false,
+      typeScriptServices: false,
+    };
   }
 
   /** The spawned `rollipop start` process, if running. */
@@ -127,7 +164,7 @@ export class RollipopBundlerDevServer extends BundlerDevServer {
     // When bound to all interfaces (0.0.0.0) the loopback `localhost` is not
     // reachable from the iOS Simulator (its loopback namespace is isolated from
     // the host). Announce the LAN address so the simulator/dev client can connect.
-    const announcedHost = host === '0.0.0.0' ? getLanIp() : host;
+    const announcedHost = resolveAnnouncedHost(host);
     const serverUrl = `http://${announcedHost}:${port}`;
 
     const instance: DevServerInstance = {

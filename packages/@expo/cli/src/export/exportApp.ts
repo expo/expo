@@ -145,10 +145,8 @@ export async function exportAppAsync(
       ? platforms.filter((platform) => platform !== 'web')
       : platforms;
 
-  const isMetro = devServer.name === 'metro';
-
   try {
-    if (isMetro && devServer.isReactServerComponentsEnabled) {
+    if (devServer.capabilities.reactServerComponents && devServer.isReactServerComponentsEnabled) {
       // In RSC mode, we only need these to be in the client dir.
       // TODO: Merge back with other copy after we add SSR.
       try {
@@ -230,7 +228,7 @@ export async function exportAppAsync(
             isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
           });
 
-          const expoDomComponentReferences = isMetro
+          const expoDomComponentReferences = devServer.capabilities.domComponents
             ? [
                 ...new Set(
                   bundle.artifacts
@@ -366,7 +364,11 @@ export async function exportAppAsync(
 
     // Additional web-only steps...
 
-    if (isMetro && platforms.includes('web') && useServerRendering) {
+    if (
+      devServer.capabilities.reactServerComponents &&
+      platforms.includes('web') &&
+      useServerRendering
+    ) {
       const exportServer = exp.web?.output === 'server';
 
       if (exportServer) {

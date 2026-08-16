@@ -1,4 +1,5 @@
 import { events } from '2g';
+import type { ExpoConfig } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import resolveFrom from 'resolve-from';
@@ -20,6 +21,7 @@ import { DevelopmentSession } from './DevelopmentSession';
 import type { CreateURLOptions } from './UrlCreator';
 import { UrlCreator } from './UrlCreator';
 import { debugEvent } from './events';
+import type { ExpoMetroOptions } from './middleware/metroOptions';
 import type { PlatformBundlers } from './platformBundlers';
 
 declare module '2g' {
@@ -116,6 +118,23 @@ type PlatformDevice<Platform extends keyof PlatformManagers> =
 
 type PlatformLaunchProps<Platform extends keyof PlatformManagers> =
   PlatformManagers[Platform] extends PlatformManager<any, infer LaunchProps> ? LaunchProps : never;
+
+/**
+ * Declarative feature set advertised by a `BundlerDevServer`. The export
+ * pipeline and dev server consult these flags rather than special-casing a
+ * bundler by name, so adding a new bundler is deny-by-default: it gets none of
+ * Metro's features until it opts in here.
+ */
+export interface BundlerCapabilities {
+  /** React Server Components / server rendering (Metro-only today). */
+  reactServerComponents: boolean;
+  /** Expo Router DOM components (`use dom`). */
+  domComponents: boolean;
+  /** Owns the runtime <-> CLI message socket (HMR reload / dev menu). */
+  messageSocket: boolean;
+  /** Provides the Metro TypeScript symbolication service. */
+  typeScriptServices: boolean;
+}
 
 export abstract class BundlerDevServer {
   /** Name of the bundler. */
@@ -347,10 +366,27 @@ export abstract class BundlerDevServer {
   }
 
   /**
+   * Declarative set of features this bundler supports. The export pipeline reads
+   * these capabilities instead of checking `devServer.name === 'metro'`, so a new
+   * bundler starts from a *deny-by-default* baseline and must opt INTO each Metro
+   * feature explicitly. This avoids the trap of "every bundler inherits all of
+   * Metro's RSC/DOM assumptions and silently runs them" that a name-based check
+   * creates.
+   */
+  public capabilities: BundlerCapabilities = {
+    reactServerComponents: false,
+    domComponents: false,
+    // The message socket (HMR reload / dev menu relay) is owned by the bundler.
+    // Metro owns it; Rollipop owns its own and we proxy it. Default true so the
+    // base class asserts a socket exists unless a bundler opts out.
+    messageSocket: true,
+    typeScriptServices: false,
+  };
+
+  /**
    * Whether this bundler is configured for React Server Components.
-   * Only Metro supports RSC; other bundlers (Rollipop, Webpack) leave this
-   * undefined/false. Declared as an optional property on the base so the
-   * export pipeline can read it uniformly across bundlers.
+   * Mirrors `capabilities.reactServerComponents` for backward compatibility with
+   * existing call sites; prefer reading `capabilities` in new code.
    */
   public isReactServerComponentsEnabled?: boolean;
 
@@ -362,8 +398,11 @@ export abstract class BundlerDevServer {
    * rather than type-checking silently.
    */
   public async nativeExportBundleAsync(
-    _exp: any,
-    _options: any,
+    _exp: ExpoConfig,
+    _options: Omit<
+      ExpoMetroOptions,
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+    >,
     _files: ExportAssetMap
   ): Promise<{
     artifacts: SerialAsset[];
