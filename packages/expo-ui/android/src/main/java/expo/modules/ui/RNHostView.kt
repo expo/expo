@@ -297,6 +297,14 @@ private class TouchDispatchingRootViewGroup(
   }
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked == MotionEvent.ACTION_CANCEL && !dispatchesTouchesToJS) {
+      // Compose cancels this subtree when a gesture detector above it — a pager, a scrollable —
+      // claims the gesture. The ancestor React root never sees that cancel: it dispatches this
+      // subtree's touches itself and keeps streaming moves, so a `Pressable` still fires on release
+      // even though the finger went to a page swipe. Tell the root a native child took the gesture,
+      // which is the same signal a React Native `ScrollView` sends when it starts scrolling.
+      notifyAncestorRootViews { it.onChildStartedNativeGesture(this, ev) }
+    }
     if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
       // Ancestor React roots (the surface root, outer hosts) also see this gesture and dispatch a
       // duplicate JS touch stream in their own coordinate space. Their moves land outside the

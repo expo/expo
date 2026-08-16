@@ -34,6 +34,7 @@
 - [Android] Fix hosted React Native views receiving no touches inside `AlertDialog`, `DropdownMenu` and `ExposedDropdownMenu`. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix a crash when `RNHostView` uses `matchContents`, where the view was sized from its content while Yoga stretched it to its parent. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix a hosted `Pressable` in a `PagerView` ignoring presses on pages after the first, where a re-parented host kept the bounds of the holder it left and answered for a screen area it no longer occupied. ([#46386](https://github.com/expo/expo/issues/46386) by [@TomCorvus](https://github.com/TomCorvus)) ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix a hosted `Pressable` firing after a Jetpack Compose pager or scrollable had already claimed the gesture, so a swipe that started on a button counted as a press. ([#48970](https://github.com/expo/expo/pull/48970) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
