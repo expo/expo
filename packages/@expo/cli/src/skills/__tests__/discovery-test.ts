@@ -213,6 +213,19 @@ describe('discoverSkillsAsync', () => {
     expect(skills.map((skill) => skill.name)).toEqual(['safe']);
   });
 
+  it('should skip skill entries with unsafe directory names', async () => {
+    vol.fromJSON({
+      '/project/node_modules/foo/skills/my.cool_skill-2/SKILL.md': '# Fine',
+      // A directory name with a newline could inject lines into files that list link names.
+      '/project/node_modules/foo/skills/evil\n!.env/SKILL.md': '# Evil',
+    });
+    mockResolutions([{ name: 'foo', path: '/project/node_modules/foo' }]);
+
+    const skills = await discoverSkillsAsync('/project');
+
+    expect(skills.map((skill) => skill.name)).toEqual(['my.cool_skill-2']);
+  });
+
   it('should skip packages that cannot be read', async () => {
     vol.fromJSON({
       '/project/node_modules/foo/skills/my-skill/SKILL.md': '# My Skill',
