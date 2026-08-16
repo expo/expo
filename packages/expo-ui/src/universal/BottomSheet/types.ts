@@ -1,3 +1,5 @@
+import type { ColorValue } from 'react-native';
+
 import type { ModifierConfig } from '../../types';
 
 /**
@@ -54,6 +56,21 @@ export interface BottomSheetProps {
    * Identifier used to locate the component in end-to-end tests.
    */
   testID?: string;
+
+  /**
+   * Whether tapping the backdrop (scrim) dismisses the bottom sheet.
+   * When `false`, the sheet stays open until the user explicitly closes it (e.g. via a button).
+   * @default true
+   * @platform android
+   */
+  shouldDismissOnClickOutside?: boolean;
+
+  /**
+   * The color of the scrim overlay rendered behind the bottom sheet.
+   * Pass `'transparent'` to make the backdrop invisible while still blocking touches.
+   * @platform android
+   */
+  scrimColor?: ColorValue;
 
   /**
    * Platform-specific modifier escape hatch. Pass an array of modifier configs
