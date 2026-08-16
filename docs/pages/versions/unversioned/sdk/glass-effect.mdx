@@ -255,7 +255,7 @@ export default function GlassOpacityAnimationExample() {
   const fadeOpacity = useSharedValue(0);
 
   const glassViewProps = useAnimatedProps(() => {
-    const glassEffectStyle = fadeOpacity.value > 0.01 ? 'regular' : 'none';
+    const glassEffectStyle = fadeOpacity.value > 0.02 ? 'regular' : 'none';
     return {
       glassEffectStyle,
       style: {
