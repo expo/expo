@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Tooltip matches the official Jetpack Compose [Tooltip](https://developer.android.com/develop/ui/compose/components/tooltip) API. `TooltipBox` wraps anchor content and displays a tooltip. The tooltip content is provided via the `TooltipBox.PlainTooltip` or `TooltipBox.RichTooltip` compound components, which match [`PlainTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-plain) and [`RichTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-rich) respectively. Tooltips can be triggered by long-press or shown programmatically via `ref`.
@@ -30,7 +31,13 @@ Expo UI Tooltip matches the official Jetpack Compose [Tooltip](https://developer
 
 Long-press the anchor content to display the tooltip.
 
-```tsx PlainTooltipExample.tsx
+<ComponentExample
+  title="PlainTooltipExample.tsx"
+  src="/static/images/expo-ui/examples/tooltip-plain-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tooltip-plain-android-dark.webp"
+  alt="A plain tooltip reading Add to favorites above a Favorite button">
+
+```tsx
 import { Host, TooltipBox, Button, Text } from '@expo/ui/jetpack-compose';
 
 export default function PlainTooltipExample() {
@@ -49,11 +56,19 @@ export default function PlainTooltipExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Rich tooltip with title and body
 
 Use `TooltipBox.RichTooltip` with `Title` and `Text` compound component pattern for more detailed contextual information.
 
-```tsx RichTooltipExample.tsx
+<ComponentExample
+  title="RichTooltipExample.tsx"
+  src="/static/images/expo-ui/examples/tooltip-rich-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tooltip-rich-android-dark.webp"
+  alt="A rich tooltip with a Camera title and body text above an Open Camera button">
+
+```tsx
 import { Host, TooltipBox, Button, Text } from '@expo/ui/jetpack-compose';
 
 export default function RichTooltipExample() {
@@ -77,11 +92,19 @@ export default function RichTooltipExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Rich tooltip with action
 
 Add an interactive action with `TooltipBox.RichTooltip.Action`. Use `isPersistent` so the tooltip stays visible for the user to tap it. `hasAction` is automatically derived when an action slot is present.
 
-```tsx RichTooltipActionExample.tsx
+<ComponentExample
+  title="RichTooltipActionExample.tsx"
+  src="/static/images/expo-ui/examples/tooltip-rich-action-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tooltip-rich-action-android-dark.webp"
+  alt="A persistent rich tooltip with a title, body text, and a Learn more action above a Record video button">
+
+```tsx
 import { Host, TooltipBox, Button, TextButton, Text } from '@expo/ui/jetpack-compose';
 
 export default function RichTooltipActionExample() {
@@ -110,39 +133,59 @@ export default function RichTooltipActionExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Programmatic show and dismiss
 
 Use a `ref` to imperatively `show()` or `dismiss()` the tooltip without requiring a long-press.
 
-```tsx ProgrammaticTooltipExample.tsx
+<ComponentExample
+  title="ProgrammaticTooltipExample.tsx"
+  src="/static/images/expo-ui/examples/tooltip-programmatic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tooltip-programmatic-android-dark.webp"
+  alt="A tooltip reading Shown programmatically above an Anchor button, with Show and Dismiss buttons below">
+
+```tsx
 import { useRef } from 'react';
-import { Host, TooltipBox, type TooltipBoxRef, Button, Text, Row } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  TooltipBox,
+  type TooltipBoxRef,
+  Button,
+  Text,
+  Column,
+  Row,
+} from '@expo/ui/jetpack-compose';
 
 export default function ProgrammaticTooltipExample() {
   const tooltipRef = useRef<TooltipBoxRef>(null);
 
   return (
     <Host matchContents>
-      <TooltipBox ref={tooltipRef} isPersistent>
-        <TooltipBox.PlainTooltip>
-          <Text>Shown programmatically!</Text>
-        </TooltipBox.PlainTooltip>
-        <Button onClick={() => {}}>
-          <Text>Anchor</Text>
-        </Button>
-      </TooltipBox>
-      <Row horizontalArrangement={{ spacedBy: 8 }}>
-        <Button onClick={() => tooltipRef.current?.show()}>
-          <Text>Show</Text>
-        </Button>
-        <Button onClick={() => tooltipRef.current?.dismiss()}>
-          <Text>Dismiss</Text>
-        </Button>
-      </Row>
+      <Column verticalArrangement={{ spacedBy: 8 }}>
+        <TooltipBox ref={tooltipRef} isPersistent>
+          <TooltipBox.PlainTooltip>
+            <Text>Shown programmatically!</Text>
+          </TooltipBox.PlainTooltip>
+          <Button onClick={() => {}}>
+            <Text>Anchor</Text>
+          </Button>
+        </TooltipBox>
+        <Row horizontalArrangement={{ spacedBy: 8 }}>
+          <Button onClick={() => tooltipRef.current?.show()}>
+            <Text>Show</Text>
+          </Button>
+          <Button onClick={() => tooltipRef.current?.dismiss()}>
+            <Text>Dismiss</Text>
+          </Button>
+        </Row>
+      </Column>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
