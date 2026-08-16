@@ -8,6 +8,10 @@ import type { DiscoveredSkill } from './types';
 const SKILL_FILE_NAME = 'SKILL.md';
 const SKILLS_DIR_NAME = 'skills';
 
+// A skill directory name becomes a symlink name and is listed verbatim in .gitignore, so restrict
+// it to a safe charset. This blocks a package from injecting newlines or path separators.
+const SAFE_SKILL_NAME = /^[A-Za-z0-9._-]+$/;
+
 // Frontmatter sits at the top of the file, so cap the read instead of loading whole skill files.
 const FRONTMATTER_MAX_LENGTH = 8192;
 
@@ -78,6 +82,11 @@ async function findPackageSkillsAsync(
 
   const skills: DiscoveredSkill[] = [];
   for (const name of entries) {
+    if (!SAFE_SKILL_NAME.test(name)) {
+      debugEvent('skipped_skill', { package: packageName, skill: name, reason: 'unsafe-name' });
+      continue;
+    }
+
     // Resolve symlinks so a skill entry cannot point at files outside of the package it ships with.
     const skillPath = maybeRealpathSync(path.join(skillsRoot, name));
     if (!skillPath || !isPathInside(skillPath, packageRoot)) {
