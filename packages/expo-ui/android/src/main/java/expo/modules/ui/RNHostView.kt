@@ -145,13 +145,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
       AndroidView(
         factory = {
-          (wrapper.parent as? ViewGroup)?.removeView(wrapper)
-          // This wrapper outlives the holder Compose creates for it, and a detached view keeps the
-          // bounds its old holder gave it. React Native's touch walk descends by child index without
-          // consulting the parent's size or draw order, so between re-parenting and the next layout
-          // pass a stale wrapper answers for a screen rect it no longer occupies — and swallows
-          // presses meant for the page actually on screen. Collapse it until Compose places it.
-          wrapper.layout(0, 0, 0, 0)
+          detachForReuse(wrapper)
           wrapper
         },
         modifier = modifiers
@@ -229,6 +223,20 @@ internal class RNHostView(context: Context, appContext: AppContext) :
  * DialogRootViewGroup in ReactModalHostView.
  * Implements NestedScrollingChild3 to forward scroll events up to the parent Compose view, because Compose only listens for NestedScrollingChild3 nested-scroll events.
  */
+/**
+ * Detaches [wrapper] from the holder it is in, ready to be adopted by the next one.
+ *
+ * The wrapper outlives the holder Compose creates for it, and a detached view keeps the bounds its
+ * old holder gave it. React Native's touch walk descends by child index without consulting the
+ * parent's size or draw order, so between re-parenting and the next layout pass a stale wrapper
+ * answers for a screen area it no longer occupies, and swallows presses meant for the content
+ * actually on screen. Collapsing it keeps it out of that walk until Compose places it again.
+ */
+internal fun detachForReuse(wrapper: View) {
+  (wrapper.parent as? ViewGroup)?.removeView(wrapper)
+  wrapper.layout(0, 0, 0, 0)
+}
+
 private class TouchDispatchingRootViewGroup(
   context: Context
 ) : FrameLayout(context), RootView, NestedScrollingChild3 {

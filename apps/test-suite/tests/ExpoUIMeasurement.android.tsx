@@ -1,3 +1,4 @@
+import PagerView from '@expo/ui/community/pager-view';
 import { Box, Column, Host, ModalBottomSheet, RNHostView, Row } from '@expo/ui/jetpack-compose';
 import { padding, paddingAll, size } from '@expo/ui/jetpack-compose/modifiers';
 import React from 'react';
@@ -28,6 +29,9 @@ const SPACER = 80;
 const SCROLL_LEAD = 80;
 const SCROLL_TAIL = 2000;
 const SCROLL_BY = 60;
+// Tall enough that a page's Yoga box is nowhere near the pager's origin, so reporting the wrong one
+// cannot pass by accident.
+const PAGER_HEIGHT = 300;
 
 type Measurement = {
   x: number;
@@ -343,6 +347,52 @@ export async function test(
         SCROLL_LEAD + PADDING - SCROLL_BY,
         0
       );
+    });
+
+    // A real component built on hosted views, and the case a synthetic tree cannot produce: the page
+    // you are on is drawn at the pager's origin, so it publishes `(0, 0)` — a true position that is
+    // indistinguishable from "nothing published" unless the registry answers presence rather than a
+    // value. Yoga meanwhile stacks that page a full page below. Reporting the Yoga box here is the
+    // shape of #46386, where a hosted `Pressable` stopped responding on every page after the first.
+    it('measures a PagerView page where Compose drew it, after paging to it', async () => {
+      const pagerWrapperRef = React.createRef<View>();
+      const pagerRef = React.createRef<any>();
+      const firstRef = React.createRef<View>();
+      const secondRef = React.createRef<View>();
+
+      let onSelected: ((position: number) => void) | null = null;
+      const selected = new Promise<number>((resolve) => {
+        onSelected = resolve;
+      });
+
+      setPortalChild(
+        <View ref={pagerWrapperRef} collapsable={false} style={{ height: PAGER_HEIGHT }}>
+          <PagerView
+            ref={pagerRef}
+            style={{ flex: 1 }}
+            onPageSelected={(event: any) => onSelected?.(event.nativeEvent.position)}>
+            <View key="first">
+              <View ref={firstRef} style={{ width: BOX, height: BOX }} />
+            </View>
+            <View key="second">
+              <View ref={secondRef} style={{ width: BOX, height: BOX }} />
+            </View>
+          </PagerView>
+        </View>
+      );
+
+      const before = await measureWhenSettled({ pager: pagerWrapperRef, first: firstRef });
+      expect(before.first.pageX - before.pager.pageX).toBeCloseTo(0, 0);
+      expect(before.first.pageY - before.pager.pageY).toBeCloseTo(0, 0);
+
+      pagerRef.current?.setPageWithoutAnimation(1);
+      // Waiting for the pager to report the change, rather than polling until the numbers look
+      // right: a wrong position settles too, and polling for the expected answer would hide it.
+      await Promise.race([selected, delay(3000)]);
+
+      const after = await measureWhenSettled({ pager: pagerWrapperRef, second: secondRef });
+      expect(after.second.pageX - after.pager.pageX).toBeCloseTo(0, 0);
+      expect(after.second.pageY - after.pager.pageY).toBeCloseTo(0, 0);
     });
 
     // A modal bottom sheet is a separate window with no React root above it, so the hosted view
