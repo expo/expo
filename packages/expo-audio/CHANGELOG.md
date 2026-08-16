@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Let the player handle audio focus so playback yields to other apps. ([#PRNUM](https://github.com/expo/expo/pull/PRNUM) by [@eznix86](https://github.com/eznix86))
+
 - [Android] Pause audio players and playlists when headphones or Bluetooth audio devices disconnect. ([#48151](https://github.com/expo/expo/pull/48151) by [@vivekjm](https://github.com/vivekjm))
 - [Android] Give the lock-screen `MediaSession` instances a unique ID so concurrent active players (and the basic session) no longer collide on the empty default. ([#47101](https://github.com/expo/expo/issues/47101) by [@tsushanth](https://github.com/tsushanth))
 - [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
