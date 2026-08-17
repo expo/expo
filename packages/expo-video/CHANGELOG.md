@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Deactivate the audio session after video playback stops so interrupted background audio can resume. ([#49030](https://github.com/expo/expo/pull/49030) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fix races between overlapping source loads and player release. ([#47967](https://github.com/expo/expo/pull/47967) by [@behenate](https://github.com/behenate))
 - [iOS] Set the default `audioMixingMode` to `auto`, [as documented](https://docs.expo.dev/versions/latest/sdk/video/#audiomixingmode); was `doNotMix`. ([#47363](https://github.com/expo/expo/issues/47363) by [@andymatuschak](https://github.com/andymatuschak))
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))
