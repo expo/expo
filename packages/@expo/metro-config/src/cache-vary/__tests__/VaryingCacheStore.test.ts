@@ -1,8 +1,8 @@
 import crypto from 'crypto';
 import { vol } from 'memfs';
 
-import { VaryingCacheStore } from '../VaryingCacheStore';
 import { FileStore } from '../../binary-file-store';
+import { VaryingCacheStore } from '../VaryingCacheStore';
 
 const ROOT = '/cache';
 

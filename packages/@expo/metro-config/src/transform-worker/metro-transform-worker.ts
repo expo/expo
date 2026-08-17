@@ -786,6 +786,7 @@ async function completeFullNoxcturnalTransform(
   context: TransformationContext,
   fullNoxcturnal: Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }>
 ): Promise<TransformResponse> {
+  const cacheVary = fullNoxcturnal.result.metadata.cacheVary as readonly CacheVaryDim[] | undefined;
   if (String(context.options.customTransformOptions?.optimize) === 'true') {
     return transformJS(
       {
@@ -817,6 +818,7 @@ async function completeFullNoxcturnalTransform(
             ? fullNoxcturnal.result.metadata.loaderReference
             : file.loaderReference,
         functionMap: fullNoxcturnal.result.functionMap ?? file.functionMap,
+        cacheVary,
       },
       context
     );
@@ -881,6 +883,7 @@ async function completeFullNoxcturnalTransform(
             typeof fullNoxcturnal.result.metadata.loaderReference === 'string'
               ? fullNoxcturnal.result.metadata.loaderReference
               : file.loaderReference,
+          expoCacheVary: await embedCurrentFingerprints(cacheVary),
         },
       },
     ],
