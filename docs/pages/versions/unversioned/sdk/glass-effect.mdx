@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
 
 ### Opacity animation workaround
 
-[Apple does not recommend](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value) `opacity` values below `1` on `GlassView` or its parent views, and the glass effect does not render at very low opacity. To animate opacity anyway, use Reanimated to animate a wrapper view's opacity while toggling the `glassEffectStyle` between the desired style and `'none'`.
+Apple does not recommend `opacity` values below `1` on `GlassView` or its parent views, as described in [Set the correct alpha value](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value). At very low opacity, the glass effect does not render. To animate opacity anyway, use Reanimated to animate a wrapper view's opacity while toggling the `glassEffectStyle` between the desired style and `'none'`.
 
 <SnackInline label='Glass effect opacity animation workaround' dependencies={['expo-glass-effect', 'react-native-reanimated']} platforms={['ios']}>
 
