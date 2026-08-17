@@ -348,6 +348,12 @@ const MyWidget = () => {
 export default createWidget('MyWidget', MyWidget);
 ```
 
+For a widget that draws its own artwork edge to edge, pass the `clear` color to opt out of any background:
+
+```tsx
+containerBackground('clear', 'widget');
+```
+
 #### Responsive widget
 
 Use the `environment` argument to adapt the layout to the current widget size and rendering context.
