@@ -26,7 +26,7 @@ import { openPlatformsAsync } from './server/openPlatforms';
 import type { PlatformBundlers } from './server/platformBundlers';
 import { getPlatformBundlers } from './server/platformBundlers';
 
-// Wait for startup to settle before the background agent-skills sync.
+// How long to wait after startup before syncing skills in the background.
 const SKILLS_SYNC_IDLE_DELAY_MS = 3000;
 
 /** Exported for testing. `startAsync` is the entry point. */
@@ -176,14 +176,15 @@ export async function startAsync(
     }`
   );
 
-  // Sync agent skills after startup settles, so the scan never competes with the first bundle.
+  // Sync skills a few seconds after the app starts, so the scan doesn't slow the first bundle.
   if (options.agentSkills !== false) {
     const timer = setTimeout(() => {
       const { autoSyncSkillsAsync } =
         require('../skills/skillsAsync') as typeof import('../skills/skillsAsync');
       autoSyncSkillsAsync(projectRoot).catch(() => {});
     }, SKILLS_SYNC_IDLE_DELAY_MS) as unknown as NodeJS.Timeout;
-    // unref so a pending sync never blocks exit; the RN global setTimeout type lacks it.
+    // Don't let a slow sync hold the CLI open.
+    // RN's setTimeout type is missing unref, so we cast above to reach it.
     timer.unref();
   }
 }
