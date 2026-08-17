@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Checkbox`](../universal/checkbox) — it renders the appropriate native component per platform.
@@ -30,7 +31,13 @@ Expo UI Checkbox matches the official Jetpack Compose [Checkbox](https://develop
 
 ### Basic checkbox
 
-```tsx CheckboxExample.tsx
+<ComponentExample
+  title="CheckboxExample.tsx"
+  src="/static/images/expo-ui/examples/checkbox-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/checkbox-basic-android-dark.webp"
+  alt="A checked Material 3 checkbox">
+
+```tsx
 import { useState } from 'react';
 import { Host, Checkbox } from '@expo/ui/jetpack-compose';
 
@@ -45,9 +52,17 @@ export default function CheckboxExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom colors
 
-```tsx CustomColorsExample.tsx
+<ComponentExample
+  title="CustomColorsExample.tsx"
+  src="/static/images/expo-ui/examples/checkbox-custom-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/checkbox-custom-colors-android-dark.webp"
+  alt="A checked checkbox filled purple with a white checkmark">
+
+```tsx
 import { useState } from 'react';
 import { Host, Checkbox } from '@expo/ui/jetpack-compose';
 
@@ -69,13 +84,21 @@ export default function CustomColorsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Select all (TriStateCheckbox)
 
 Use `TriStateCheckbox` for a parent checkbox that reflects the state of its children. It supports three states: `'on'`, `'off'`, and `'indeterminate'`.
 
 Apply the `toggleable` modifier to each `Row` to make the entire row (checkbox + label) tappable with correct accessibility semantics. When using `toggleable` on the row, omit `onCheckedChange`/`onClick` from the checkbox itself to avoid double-handling.
 
-```tsx SelectAllExample.tsx
+<ComponentExample
+  title="SelectAllExample.tsx"
+  src="/static/images/expo-ui/examples/checkbox-select-all-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/checkbox-select-all-android-dark.webp"
+  alt="A Select all row showing the indeterminate dash above one checked and two unchecked options">
+
+```tsx
 import { useState } from 'react';
 import { Host, Checkbox, TriStateCheckbox, Row, Column, Text } from '@expo/ui/jetpack-compose';
 import { toggleable } from '@expo/ui/jetpack-compose/modifiers';
@@ -131,6 +154,8 @@ export default function SelectAllExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
