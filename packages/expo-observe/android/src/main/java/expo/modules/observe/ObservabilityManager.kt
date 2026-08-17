@@ -189,9 +189,6 @@ class BaseObservabilityManager(
         val result = eventDispatcher.dispatch(events)
         metricsRetryGate = nextGate(metricsRetryGate, result)
         val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
-        if (DispatchUtils.shouldRemovePending(result)) {
-          pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
-        }
         when (result) {
           is DispatchResult.PartialSuccess ->
             Log.w(
@@ -207,7 +204,12 @@ class BaseObservabilityManager(
             )
           is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
         }
-        if (result is DispatchResult.RetryableFailure) {
+        if (!DispatchUtils.shouldRemovePending(result)) {
+          break
+        }
+        pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
+        // A non-retryable rejection is likely systematic, so leave the rest for the next dispatch run.
+        if (result is DispatchResult.NonRetryableFailure) {
           break
         }
       }
@@ -260,9 +262,6 @@ class BaseObservabilityManager(
         val result = eventDispatcher.dispatchLogs(events)
         logsRetryGate = nextGate(logsRetryGate, result)
         val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
-        if (DispatchUtils.shouldRemovePending(result)) {
-          pendingLogsManager.removePendingLogs(dispatchedLogIds)
-        }
         when (result) {
           is DispatchResult.PartialSuccess ->
             Log.w(
@@ -278,11 +277,15 @@ class BaseObservabilityManager(
             )
           is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
         }
-        if (result is DispatchResult.RetryableFailure) {
+        if (!DispatchUtils.shouldRemovePending(result)) {
+          break
+        }
+        pendingLogsManager.removePendingLogs(dispatchedLogIds)
+        // A non-retryable rejection is likely systematic, so leave the rest for the next dispatch run.
+        if (result is DispatchResult.NonRetryableFailure) {
           break
         }
       }
-
     }
   }
 

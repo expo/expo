@@ -11,6 +11,8 @@ import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
+// TODO: Draining large backlogs from both pending tables reruns `ORDER BY addedAt`
+// for every chunk. Consider `Index("addedAt")` and a version bump if this matters in practice.
 @Entity(tableName = "pending_metrics")
 data class PendingMetric(
   @PrimaryKey val metricId: String,

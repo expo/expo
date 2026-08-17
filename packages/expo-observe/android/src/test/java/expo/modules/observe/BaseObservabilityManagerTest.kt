@@ -802,7 +802,7 @@ class BaseObservabilityManagerTest {
     }
 
   @Test
-  fun `dispatchUnsentMetrics drops a non-retryable chunk and continues`() =
+  fun `dispatchUnsentMetrics drops a non-retryable chunk and stops`() =
     runTest {
       val removedChunks = mutableListOf<List<String>>()
       coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } returnsMany
@@ -822,11 +822,9 @@ class BaseObservabilityManagerTest {
 
       createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
 
-      assertEquals(
-        listOf(listOf("metric-1", "metric-2"), listOf("metric-3")),
-        removedChunks
-      )
-      coVerify(exactly = 2) { mockEventDispatcher.dispatch(any()) }
+      assertEquals(listOf(listOf("metric-1", "metric-2")), removedChunks)
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 1) { mockPendingMetricsManager.getPendingMetricIds(2) }
     }
 
   @Test
@@ -913,7 +911,7 @@ class BaseObservabilityManagerTest {
     }
 
   @Test
-  fun `dispatchUnsentLogs drops a non-retryable chunk and continues`() =
+  fun `dispatchUnsentLogs drops a non-retryable chunk and stops`() =
     runTest {
       val removedChunks = mutableListOf<List<String>>()
       coEvery { mockPendingLogsManager.getPendingLogIds(2) } returnsMany
@@ -933,8 +931,9 @@ class BaseObservabilityManagerTest {
 
       createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
 
-      assertEquals(listOf(listOf("log-1", "log-2"), listOf("log-3")), removedChunks)
-      coVerify(exactly = 2) { mockEventDispatcher.dispatchLogs(any()) }
+      assertEquals(listOf(listOf("log-1", "log-2")), removedChunks)
+      coVerify(exactly = 1) { mockEventDispatcher.dispatchLogs(any()) }
+      coVerify(exactly = 1) { mockPendingLogsManager.getPendingLogIds(2) }
     }
 
   @Test
