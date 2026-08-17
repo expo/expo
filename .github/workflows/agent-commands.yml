@@ -24,8 +24,12 @@
 #     review, dismiss, undismiss, help (handled by other workflows).
 #
 # The agent is headless Claude Code connected to the expo-sandbox-mcp server
-# (hosted E2B Linux sandboxes, GHA Windows VMs for Windows-specific checks,
-# proxied EAS builds, hosted iOS simulators). It
+# (hosted E2B Linux sandboxes, GHA VMs for image-specific checks — Windows
+# Server, macOS 15, Ubuntu CI — proxied EAS builds, hosted iOS simulators).
+# Linux E2B + the hosted simulator stay the default. A GHA VM is the
+# exception: same image as GitHub Actions, not a pauseable sandbox and not
+# EAS Simulator. An Expo app on that VM can still be shown on the hosted
+# simulator via Metro --tunnel (see .github/verify/prompt.md). It
 # reproduces the report where the hosted simulator can exhibit it, runs
 # cold-launch censuses / behavioral checks / crash loops as the issue
 # demands, and posts ONE findings comment whose evidence sections
@@ -955,9 +959,11 @@ jobs:
               # phase, after a reviewer has attacked the draft, and are added
               # to this list only by "Revise and post".
               "mcp__sandbox__create_sandbox"
-              # Windows (GHA) VM for Windows-specific behavior only — file
-              # watching, path semantics, EPERM-on-delete. Linux stays the
-              # default; the prompts carry the policy and the cmd.exe recipe.
+              # GHA VM (create_gha_sandbox runsOn windows-2025 | macos-15 |
+              # ubuntu-24.04) for behavior that only that CI image can
+              # exhibit. Linux E2B stays the default. The prompts carry
+              # the policy, the empty-VM recipe, and how to load a GHA
+              # Metro --tunnel URL into the hosted EAS simulator.
               "mcp__sandbox__create_gha_sandbox"
               "mcp__sandbox__list_sandboxes"
               "mcp__sandbox__get_session_info"
