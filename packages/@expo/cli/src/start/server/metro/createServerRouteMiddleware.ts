@@ -214,16 +214,6 @@ export function createRouteHandlerMiddleware(
       async getMiddleware(route) {
         const { exp } = options.config;
 
-        if (!options.unstable_useServerMiddleware) {
-          return {
-            default: () => {
-              throw new CommandError(
-                'Server middleware is not enabled. Add unstable_useServerMiddleware: true to your `expo-router` plugin config.'
-              );
-            },
-          };
-        }
-
         if (exp.web?.output !== 'server') {
           warnInvalidMiddlewareOutput();
           return {

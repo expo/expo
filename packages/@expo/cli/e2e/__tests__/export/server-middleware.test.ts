@@ -1,14 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExpoAsync } from '../../utils/expo';
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
   RUNTIME_WORKERD,
   setupServer,
 } from '../../utils/runtime';
-import { findProjectFiles, getHtml, getRouterE2ERoot } from '../utils';
+import { findProjectFiles, getHtml } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
@@ -23,7 +22,6 @@ describe('exports middleware', () => {
             { source: '/redirect', destination: 'https://expo.dev' },
           ]),
           E2E_ROUTER_REWRITES: JSON.stringify([{ source: '/rewrite', destination: '/second' }]),
-          E2E_ROUTER_SERVER_MIDDLEWARE: 'true',
         },
         cliFlags: ['--source-maps'],
       },
@@ -157,36 +155,5 @@ describe('exports middleware', () => {
       );
       expect(sourceMap.sources).toContain('__e2e__/server-middleware-async/app/+middleware.ts');
     });
-  });
-});
-
-describe('skips middleware when flag is disabled', () => {
-  const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-server-middleware-disabled';
-  const outputDir = path.join(projectRoot, outputName);
-
-  it('does not export middleware when unstable_useServerMiddleware is not enabled', async () => {
-    const results = await executeExpoAsync(
-      projectRoot,
-      ['export', '-p', 'web', '--output-dir', outputName],
-      {
-        env: {
-          NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'server',
-          E2E_ROUTER_SRC: 'server-middleware-async',
-        },
-      }
-    );
-
-    expect(results.stderr).toContain('Server middleware is not enabled.');
-
-    const files = findProjectFiles(outputDir);
-
-    // Middleware should not be bundled or referenced in routes.json
-    expect(files).not.toContain('server/_expo/functions/+middleware.js');
-    const routesJson = JSON.parse(
-      fs.readFileSync(path.join(outputDir, 'server/_expo/routes.json'), 'utf8')
-    );
-    expect(routesJson.middleware).not.toBeDefined();
   });
 });
