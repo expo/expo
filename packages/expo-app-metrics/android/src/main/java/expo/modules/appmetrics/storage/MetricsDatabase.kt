@@ -12,6 +12,8 @@ import androidx.room.Query
 import androidx.room.ForeignKey
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.room.Embedded
 import androidx.room.Relation
 import androidx.room.Transaction
@@ -22,9 +24,31 @@ object MetricsConstants {
   const val SECONDS_TO_REMOVE_OLD_METRICS: Long = 7 * 24 * 60 * 60 // 7 days in seconds
 }
 
+/**
+ * v16 -> v17: adds the `spans` table. Hand-written because schema export is off (so Room's
+ * auto-migrations aren't available); the DDL is copied verbatim from the KSP-generated
+ * `MetricsDatabase_Impl.createAllTables`, and Room validates the migrated schema against the
+ * entities on open, so any drift between this SQL and the `Span` entity fails fast instead of
+ * corrupting silently. Registered so existing installs keep their sessions, metrics, and logs
+ * on upgrade instead of hitting the destructive fallback.
+ */
+internal val MIGRATION_16_17 = object : Migration(16, 17) {
+  override fun migrate(db: SupportSQLiteDatabase) {
+    db.execSQL(
+      "CREATE TABLE IF NOT EXISTS `spans` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+        "`sessionId` TEXT NOT NULL, `traceId` TEXT NOT NULL, `spanId` TEXT NOT NULL, " +
+        "`parentSpanId` TEXT, `name` TEXT NOT NULL, `kind` INTEGER NOT NULL, " +
+        "`startTimestampMs` INTEGER NOT NULL, `endTimestampMs` INTEGER NOT NULL, " +
+        "`statusCode` INTEGER, `statusMessage` TEXT, `attributes` TEXT, `events` TEXT, " +
+        "FOREIGN KEY(`sessionId`) REFERENCES `sessions`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )"
+    )
+    db.execSQL("CREATE INDEX IF NOT EXISTS `index_spans_sessionId` ON `spans` (`sessionId`)")
+  }
+}
+
 @Database(
-  entities = [Metric::class, LogRecord::class, Session::class, CrashReportEntity::class],
-  version = 16,
+  entities = [Metric::class, LogRecord::class, Session::class, CrashReportEntity::class, Span::class],
+  version = 17,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
@@ -35,6 +59,8 @@ abstract class MetricsDatabase : RoomDatabase() {
   abstract fun sessionDao(): SessionDao
 
   abstract fun crashReportDao(): CrashReportDao
+
+  abstract fun spanDao(): SpanDao
 
   companion object {
     @Volatile
@@ -48,7 +74,9 @@ abstract class MetricsDatabase : RoomDatabase() {
             MetricsDatabase::class.java,
             "app_metrics"
           )
-          // Allow destructive migration for schema changes during development. Replace with proper Migration if desired.
+          .addMigrations(MIGRATION_16_17)
+          // Destructive fallback for version jumps without a registered migration (pre-16
+          // installs, downgrades). Upgrades covered by a migration above keep their data.
           .fallbackToDestructiveMigration(false)
           .build()
         INSTANCE = instance

@@ -166,6 +166,9 @@ class SessionManager(
   suspend fun getMetricsForSession(sessionId: String): List<Metric> =
     database.metricDao().getMetricsForSession(sessionId)
 
+  suspend fun getSpansForSession(sessionId: String): List<Span> =
+    database.spanDao().getSpansForSession(sessionId)
+
   suspend fun getLogsForSession(sessionId: String): List<LogRecord> =
     database.logDao().getLogsForSession(sessionId)
 
