@@ -72,7 +72,7 @@ To show a GHA-hosted Expo app on the hosted EAS Simulator, keep Linux E2B as the
 
 ### Tier 3 — application runtime behavior
 
-Keep the repository sandbox for authoring and package checks. Create the second sandbox only for the smallest app that can exercise the installed change. Use Expo Go or an existing compatible development build when faithful. Start a hosted simulator only when the claim is visible or interactive, then capture before and after from the same procedure. A screenshot is evidence only when it supports a claim you make.
+Keep the repository sandbox for authoring and package checks. Create the second sandbox only for the smallest app that can exercise the installed change. Use Expo Go or an existing compatible development build when faithful. Start a hosted simulator only when the claim is visible or interactive, then capture before and after from the same procedure. An interactive pan, pinch, or drag is `simulator_gesture`, not `simulator_scroll`. The hosted sim can drive one or two pointers; it cannot fire a 3-finger long-press. A screenshot is evidence only when it supports a claim you make.
 
 ### Tier 4 — native, release-only, or build-time behavior
 
