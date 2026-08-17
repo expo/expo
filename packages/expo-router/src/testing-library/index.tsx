@@ -76,11 +76,16 @@ export async function renderRouter(
 ): Promise<RenderRouterResult> {
   // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
   const systemTime = Date.now();
-  jest.useFakeTimers();
-  try {
-    jest.setSystemTime(systemTime);
-  } catch {
-    // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
+  // Only Jest's timers are driven from here, the same way
+  // @testing-library/react-native detects them. Under another runner the render
+  // uses real timers; that runner's own fake timers can be set up beforehand.
+  if (typeof jest !== 'undefined') {
+    jest.useFakeTimers();
+    try {
+      jest.setSystemTime(systemTime);
+    } catch {
+      // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
+    }
   }
 
   const mockContext = getMockContext(context);
