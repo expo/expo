@@ -52,12 +52,12 @@ export function setNodeEnv(mode: EnvironmentMode) {
 
 export function getConfigEnvMode(): EnvironmentMode {
   try {
-    // Older EAS Build versions do not pass EXPO_CONFIG_MODE.
+    // Older EAS Build versions do not pass __EXPO_CONFIG_MODE.
     return env.consumeConfigEnvMode() ?? (cliEnv.EAS_BUILD ? 'production' : 'development');
   } catch (error) {
     throw new CommandError(
       'BAD_ARGS',
-      error instanceof Error ? error.message : 'Invalid EXPO_CONFIG_MODE value.'
+      error instanceof Error ? error.message : 'Invalid __EXPO_CONFIG_MODE value.'
     );
   }
 }
