@@ -152,7 +152,8 @@ it('prints installed skills on `npx expo install` when a coding agent is detecte
     ['install', 'test-skills@file:./test-skills'],
     { env }
   );
-  expect(results.stdout).toContain('--- test-skills/skills/alpha/SKILL.md ---');
+  expect(results.stdout).toContain('test-skills skill:');
+  expect(results.stdout).toContain(path.join('test-skills', 'skills', 'alpha'));
   expect(results.stdout).toContain('Body of alpha');
 
   // `--no-skill-context` skips the output

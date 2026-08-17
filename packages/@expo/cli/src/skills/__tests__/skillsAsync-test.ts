@@ -420,7 +420,8 @@ describe('printSkillsForAgentAsync', () => {
     await printSkillsForAgentAsync('/root', { packages: ['@acme/tool@~1.2.0'] });
 
     const output = jest.mocked(Log.log).mock.calls.flat().join('\n');
-    expect(output).toContain('--- @acme/tool/skills/my-skill/SKILL.md ---');
+    // The skill directory is shown so relative `references/*` links in SKILL.md resolve.
+    expect(output).toContain(testSkill.path);
     expect(output).toContain('# Skill body');
     expect(output).not.toContain('other-skill');
   });

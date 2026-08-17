@@ -248,7 +248,8 @@ export async function printSkillsForAgentAsync(
 
     Log.log(chalk.bold('The installed packages ship agent skills. Read them before use:'));
     for (const skill of skills) {
-      Log.log(chalk.dim(`--- ${skill.packageName}/skills/${skill.name}/SKILL.md ---`));
+      // Show the skill directory so relative `references/*` links in SKILL.md resolve.
+      Log.log(chalk.dim(`--- ${skill.packageName} skill: ${skill.path} ---`));
       Log.log(await fs.promises.readFile(path.join(skill.path, 'SKILL.md'), 'utf8'));
     }
   } catch (error: any) {
