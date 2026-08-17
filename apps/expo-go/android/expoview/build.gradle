@@ -12,18 +12,18 @@ buildscript {
 
   dependencies {
     classpath(expoLibs.apollo.gradle)
+    classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${safeExtGet('kspVersion', '2.3.10')}"
   }
 }
 
 plugins {
   alias libs.plugins.android.library
-  alias libs.plugins.kotlin.android
   alias libs.plugins.download
   id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
   id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21" // Use your Kotlin version
   id 'expo-module-gradle-plugin'
 }
-apply plugin: 'kotlin-kapt'
+apply plugin: 'com.google.devtools.ksp'
 apply from: new File(rootDir, "versioning_linking.gradle")
 apply plugin: 'com.apollographql.apollo'
 
@@ -285,10 +285,9 @@ dependencies {
   implementation "com.google.android.play:review:2.0.1"
   implementation "com.google.android.play:review-ktx:2.0.0"
 
-  //dbflow
-  kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  implementation "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
-  implementation "com.github.Raizlabs.DBFlow:dbflow:${safeExtGet('dbFlowVersion', '4.2.4')}"
+  // room (replaced DBFlow, whose kapt-only processor is incompatible with AGP 9's built-in Kotlin)
+  implementation "androidx.room:room-runtime:2.6.1"
+  ksp "androidx.room:room-compiler:2.6.1"
 
   implementation 'com.cronutils:cron-utils:4.1.3'
 

@@ -1,0 +1,23 @@
+diff --git a/android/build.gradle b/android/build.gradle
+index a0dc14ff6c6600fea355b82d85c4646d5ff7eb95..5a9539535f3d15e7d065eb68e01b0b259d5b2896 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -26,7 +26,17 @@ def isNewArchitectureEnabled() {
+ }
+ 
+ apply plugin: 'com.android.library'
+-apply plugin: 'kotlin-android'
++// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
++// Only apply it when built-in Kotlin is unavailable or explicitly disabled with
++// android.builtInKotlin=false.
++// Note: Groovy's ?: operates on truthiness, so a plain `?.toBoolean() ?: true` would
++// coerce an explicit `false` back to true. Check for null explicitly instead.
++def expoBuiltInKotlinProp = findProperty('android.builtInKotlin')
++def expoAgpBuiltInKotlin = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger() >= 9 &&
++    (expoBuiltInKotlinProp == null || expoBuiltInKotlinProp.toString().toBoolean())
++if (!expoAgpBuiltInKotlin) {
++  apply plugin: 'kotlin-android'
++}
+ 
+ if (isNewArchitectureEnabled()) {
+     apply plugin: 'com.facebook.react'

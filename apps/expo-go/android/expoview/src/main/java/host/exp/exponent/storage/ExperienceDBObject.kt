@@ -1,14 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.storage
 
-import com.raizlabs.android.dbflow.annotation.Column
-import com.raizlabs.android.dbflow.annotation.PrimaryKey
-import com.raizlabs.android.dbflow.annotation.Table
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-@Table(database = ExponentDB::class)
+@Entity(tableName = "ExperienceDBObject")
 class ExperienceDBObject(
-  @PrimaryKey @Column(name = "id") var scopeKey: String? = null,
-  @Column var manifestUrl: String? = null,
-  @Column var bundleUrl: String? = null,
-  @Column var manifest: String? = null
+  @PrimaryKey @ColumnInfo(name = "id") var scopeKey: String = "",
+  @ColumnInfo var manifestUrl: String? = null,
+  @ColumnInfo var bundleUrl: String? = null,
+  @ColumnInfo var manifest: String? = null
 )
