@@ -59,10 +59,14 @@
     "ws": "^8.18.0"
   },
   "peerDependencies": {
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   },
   "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    },
     "react": {
       "optional": true
     },

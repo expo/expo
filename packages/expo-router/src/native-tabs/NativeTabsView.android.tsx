@@ -37,11 +37,10 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
   const children = tabs.map((tab, index) => (
     <Screen
-      key={tab.routeKey}
-      routeKey={tab.routeKey}
+      key={tab.name}
       name={tab.name}
       options={tab.options}
-      isFocused={selectedScreenKey === tab.routeKey}
+      isFocused={selectedScreenKey === tab.name}
       androidAppearance={androidAppearances[index]!}
       contentRenderer={tab.contentRenderer}
       tabBarHidden={props.hidden}

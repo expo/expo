@@ -239,7 +239,7 @@ You can use Expo Router's [built-in deep linking](/router/basics/core-concepts/#
 ```tsx app/_layout.tsx
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import { router } from 'expo-router';
+import { Slot, router } from 'expo-router';
 
 function useNotificationObserver() {
   useEffect(() => {
@@ -485,7 +485,7 @@ To handle notifications while the app is in the background or not running, you n
 Then send a push notification which:
 
 - Contains only the `data` key (no `title`, `body`)
-- Has `_contentAvailable: true` set for iOS — see the [Expo push notification service payload format](/push-notifications/sending-notifications/#message-request-format)
+- Has `contentAvailable: true` set for iOS — see the [Expo push notification service payload format](/push-notifications/sending-notifications/#message-request-format)
 
 ### Background notification configuration&ensp;<PlatformTags platforms={["ios"]} />
 

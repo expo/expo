@@ -81,8 +81,8 @@ describe('planFontCopies', () => {
     );
 
     expect([...copies]).toEqual([
-      ['/res/font/Inter[wght].ttf', '/p/Inter[wght].ttf'],
-      ['/res/font/Other.ttf', '/p/Other.ttf'],
+      [path.join(dir, 'Inter[wght].ttf'), '/p/Inter[wght].ttf'],
+      [path.join(dir, 'Other.ttf'), '/p/Other.ttf'],
     ]);
   });
 
@@ -97,13 +97,13 @@ describe('planFontCopies', () => {
   it('should apply the filename processor to the destination', () => {
     const copies = planFontCopies(['/p/SpaceMono-Regular.ttf'], dir, asResourceName);
 
-    expect([...copies.keys()]).toEqual(['/res/font/space_mono_regular.ttf']);
+    expect([...copies.keys()]).toEqual([path.join(dir, 'space_mono_regular.ttf')]);
   });
 
   it('should skip files that are not fonts', () => {
     const copies = planFontCopies(['/p/a.ttf', '/p/b.woff2', '/p/c.otf'], dir, (it) => it);
 
-    expect([...copies.keys()]).toEqual(['/res/font/a.ttf', '/res/font/c.otf']);
+    expect([...copies.keys()]).toEqual([path.join(dir, 'a.ttf'), path.join(dir, 'c.otf')]);
   });
 });
 

@@ -213,7 +213,7 @@ jobs:
           fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
           fingerprint-db-cache-path: .fingerprint.db
       - name: 🏗️ Build/Repack iOS project (bare-expo)
-        uses: expo/actions/repack-app-artifact@150c682164cec02a2d43347b70906d234d33f575 # main
+        uses: expo/actions/repack-app-artifact@79ae40f3ccaa24e0d8ef3fa742bae68968f0ab16 # main
         timeout-minutes: 55
         env:
           EXPO_DEBUG: 1
@@ -234,6 +234,7 @@ jobs:
             ./scripts/start-ios-e2e-test.ts --build
           build-output: apps/bare-expo/ios/build/BareExpo.app
           artifact-name: bare-expo-ios-builds
+          include-hidden-files: true # Upload "assets/__node_modules/.pnpm/"
       - name: Show ccache stats
         run: ccache -s -v
       - name: 🔔 Notify on Slack
@@ -422,7 +423,7 @@ jobs:
           fingerprint-state-output-file: ${{ runner.temp }}/fingerprint-state.json
           fingerprint-db-cache-path: .fingerprint.db
       - name: 🏗️ Build/Repack Android project (bare-expo)
-        uses: expo/actions/repack-app-artifact@150c682164cec02a2d43347b70906d234d33f575 # main
+        uses: expo/actions/repack-app-artifact@79ae40f3ccaa24e0d8ef3fa742bae68968f0ab16 # main
         timeout-minutes: 35
         env:
           EXPO_DEBUG: 1

@@ -59,7 +59,8 @@ enum OTAnyValue: Codable, Sendable {
       self = .kvlist(value.values)
     } else {
       throw DecodingError.dataCorruptedError(
-        forKey: .stringValue, in: container,
+        forKey: .stringValue,
+        in: container,
         debugDescription: "OTAnyValue has no recognized variant"
       )
     }

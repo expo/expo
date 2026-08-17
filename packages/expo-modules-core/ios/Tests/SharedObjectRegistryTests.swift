@@ -5,11 +5,6 @@ import Testing
 
 @testable import ExpoModulesCore
 
-/**
- New Swift Testing-based suite for `SharedObjectRegistry`. Coexists with
- `SharedObjectRegistrySpec` (Quick/Nimble) until the rest of the spec is
- migrated.
- */
 @Suite("SharedObjectRegistry")
 @JavaScriptActor
 struct SharedObjectRegistryTests {

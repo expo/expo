@@ -1,5 +1,5 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics from 'expo-app-metrics';
+import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
 
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
@@ -14,6 +14,10 @@ const Observe: ObserveModule = new Proxy(native, {
   get(target, prop, receiver) {
     if (prop === 'configure') {
       return (config: ObserveConfig) => {
+        // The handler is already installed at this point (it installs on import), so this only
+        // toggles whether it records anything.
+        setErrorHandlerEnabled(config.errorHandlingEnabled ?? true);
+
         const routerEnabled = !!config.integrations?.['expo-router'];
         const reactNavigationEnabled = !!config.integrations?.['react-navigation'];
 

@@ -74,14 +74,6 @@ export function getNavigateAction(
    */
   const rootPayload = getPayloadFromStateRoute(actionStateRoute || {});
 
-  if (type === 'PUSH' && navigationState.type !== 'stack') {
-    type = 'NAVIGATE';
-  } else if (navigationState.type === 'expo-tab') {
-    type = 'JUMP_TO';
-  } else if (type === 'REPLACE' && navigationState.type === 'drawer') {
-    type = 'JUMP_TO';
-  }
-
   if (withAnchor) {
     if (rootPayload.params.initial) {
       if (process.env.NODE_ENV !== 'production') {

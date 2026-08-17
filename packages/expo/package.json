@@ -96,6 +96,14 @@
       "expo-source": "./src/winter/installGlobal.ts",
       "default": "./build/winter/installGlobal.js"
     },
+    "./internal/bundle-origin": {
+      "types": {
+        "expo-source": "./src/utils/getBundleOrigin.ts",
+        "default": "./build/utils/getBundleOrigin.d.ts"
+      },
+      "expo-source": "./src/utils/getBundleOrigin.ts",
+      "default": "./build/utils/getBundleOrigin.js"
+    },
     "./internal/*": {
       "types": "./internal/*.d.ts",
       "default": "./internal/*.js"

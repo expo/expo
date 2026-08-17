@@ -480,7 +480,7 @@ jobs:
 
 ### `jobs.<job_id>.hooks`
 
-The following pre-packaged jobs support hooks to run additional steps before or after the main job action: `build`, `deploy`, `fingerprint`, `maestro`, `maestro-cloud`, `repack`, `submit`, `testflight`, and `update`. Hook names are job-specific. See the job's documentation for the available hook keys. To set default hooks for all jobs in the workflow, use [`defaults.hooks`](#defaultshooks).
+The following pre-packaged jobs support hooks to run additional steps before or after the main job action: `build`, `deploy`, `fingerprint`, `maestro`, `maestro-cloud`, `repack`, `submit`, `testflight`, and `update`. Hook names are job-specific. See the job's documentation for the available hook keys. To set default hooks for all jobs in the workflow, use [`defaults.hooks`](#defaultshooks). Hook steps can call [custom functions](/eas/workflows/custom-functions/) just as job steps can.
 
 ```yaml
 jobs:
@@ -520,7 +520,7 @@ Parameters to use as defaults for all jobs defined in the workflow configuration
 
 ### `defaults.hooks`
 
-Default [hooks](#jobsjob_idhooks) for all jobs in the workflow. Each job runs the hook keys that apply to it and ignores the rest. A job-level hook key overrides the same key from `defaults.hooks`. To opt a single job out of a default hook, set the key to an empty array.
+Default [hooks](#jobsjob_idhooks) for all jobs in the workflow. Each job runs the hook keys that apply to it and ignores the rest. A job-level hook key overrides the same key from `defaults.hooks`. To opt a single job out of a default hook, set the key to an empty array. Default hook steps can also call [custom functions](/eas/workflows/custom-functions/).
 
 ```yaml
 defaults:
@@ -1823,6 +1823,8 @@ jobs:
       # @end #
 ```
 
+You can define reusable step sequences in your project and call them with a path that starts with `./` or `../`, such as `./.eas/functions/setup`. See the [custom function schema](#custom-functions) and the guide to [using custom functions in EAS Workflows](/eas/workflows/custom-functions/).
+
 Below is a list of built-in functions you can use in your workflow steps.
 
 #### `eas/checkout`
@@ -1837,6 +1839,29 @@ jobs:
       - uses: eas/checkout
         # @end #
 ```
+
+For jobs with Git-based project sources, the step uses the job's recorded commit by default. Use `ref` to check out a different branch, tag, or commit:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/checkout
+        with:
+          ref: feature/add-icon
+        # @end #
+```
+
+`ref` accepts:
+
+- A branch, as a bare name such as `feature/add-icon` or a qualified ref such as `refs/heads/feature/add-icon`. The repository ends up on that branch.
+- A tag, as a qualified ref such as `refs/tags/v1.2.3`. The repository ends up on a detached `HEAD`.
+- A full commit SHA. The repository ends up on a detached `HEAD`.
+
+The step runs a shallow fetch (`--depth 1`) from the source repository's `origin`, so the ref must be reachable there.
+
+`ref` only works when your project sources come from a Git repository, for example a job triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Set `ref` on the job's first `eas/checkout` step. Setting it on a later step fails, because the project is already checked out.
 
 <EASFunctionDescription name="checkout" />
 
@@ -2235,6 +2260,91 @@ jobs:
 ##### Properties
 
 <EASFunctionDescription name="posthog_upload_sourcemaps" />
+
+## Custom functions
+
+Define reusable step sequences in your project and call them with a relative path through [`uses`](#jobsjob_idstepsstepuses). The path must be a static, literal string. It cannot contain `${{ }}` interpolation or backslashes. Custom function calls accept the same fields as built-in function calls: `id`, `name`, `with`, `if`, and `env`. Do not set `working_directory` on the call step. Set it on the function's inner steps instead. Store each custom function in a directory that contains a **function.yml** or **function.yaml** file. Steps inside a custom function use the same format as [custom job steps](#jobsjob_idsteps). For details about organizing files, nesting functions, and calling functions from jobs or hooks, see [Custom functions in EAS Workflows](/eas/workflows/custom-functions/).
+
+Your **function.yml** file supports the following top-level properties: `name`, `description`, `inputs`, `outputs`, and `runs`. EAS Workflows rejects unknown top-level properties.
+
+### Function `name`
+
+An optional display name for the custom function that appears in job logs.
+
+```yaml
+name: Greet
+```
+
+### Function `description`
+
+An optional description of what the custom function does.
+
+```yaml
+description: Prints a greeting for the given name.
+```
+
+### Function `inputs`
+
+Input values a caller can pass to the custom function with `with:`. You can declare inputs two ways.
+
+The shorthand form is a list of names. Each input becomes an optional string input with no default value:
+
+```yaml
+inputs:
+  - who
+```
+
+The full form is a list of objects with the following properties:
+
+| Property         | Type      | Required    | Description                                                                     |
+| ---------------- | --------- | ----------- | ------------------------------------------------------------------------------- |
+| `name`           | `string`  | <YesIcon /> | The input's name. Use it to access the input as `${{ inputs.<name> }}`.         |
+| `type`           | `string`  | <NoIcon />  | The input type: `string`, `boolean`, `number`, or `json`. Defaults to `string`. |
+| `default_value`  | varies    | <NoIcon />  | The value EAS Workflows uses when you do not provide one. Must match `type`.    |
+| `allowed_values` | array     | <NoIcon />  | The values you can pass for this input.                                         |
+| `required`       | `boolean` | <NoIcon />  | Whether you must provide this input. Defaults to `false`.                       |
+
+```yaml
+inputs:
+  - name: who
+    type: string
+    default_value: world
+  - name: platform
+    type: string
+    allowed_values: [android, ios]
+    required: true
+```
+
+Inside the custom function's steps, read an input with `${{ inputs.<name> }}`.
+
+### Function `outputs`
+
+Declare the output values that the custom function exposes to its caller as a map keyed by output name:
+
+| Property      | Required    | Description                                                                                    |
+| ------------- | ----------- | ---------------------------------------------------------------------------------------------- |
+| `value`       | <YesIcon /> | An expression that resolves to the output's value, such as `${{ steps.<id>.outputs.<name> }}`. |
+| `description` | <NoIcon />  | A description of the output.                                                                   |
+
+```yaml
+outputs:
+  message:
+    value: '${{ steps.make.outputs.message }}'
+    description: The rendered greeting.
+```
+
+EAS Workflows exposes each output as a string. Read the output as `${{ steps.<call_id>.outputs.<name> }}`. Use the `id` from the call step. The caller cannot reference the function's internal step identifiers.
+
+### Function `runs.steps`
+
+`runs.steps` is required and must contain at least one step. Steps use the same format as [custom job steps](#jobsjob_idsteps), including `id`, `run`, `uses`, `if`, and `working_directory`. Currently, custom functions cannot call `eas/build` or `eas/maestro_test`.
+
+```yaml
+runs:
+  steps:
+    - id: make
+      run: set-output message "Hello, ${{ inputs.who }}!"
+```
 
 ## Built-in shell functions
 

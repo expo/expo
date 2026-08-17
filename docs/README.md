@@ -233,7 +233,7 @@ If you need to link from one MDX file to another, use the static/full path to th
 - From: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
 - From: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
-Validate all current links by running `pnpm lint-links` script.
+Validate all current links by running the `pnpm check-internal-links` script after a build (it scans the exported site in **out**).
 
 ### Update latest version of API reference docs
 
@@ -466,7 +466,7 @@ Code blocks are a great way to add code snippets to our docs. We leverage the us
 
 ### Code block variables
 
-Fenced code blocks support dynamic variable substitution using `{{variableName}}` syntax. Variables are replaced with values from `sdk-versions.json` at render time, before syntax highlighting runs. This keeps version numbers in code examples accurate without manual updates each SDK release.
+Fenced code blocks support dynamic variable substitution using `{{variableName}}` syntax. Variables are replaced with values from the shared SDK compatibility registry at render time, before syntax highlighting runs. This keeps version numbers in code examples accurate without manual updates each SDK release.
 
 **Available variables:**
 
@@ -499,7 +499,7 @@ Fenced code blocks support dynamic variable substitution using `{{variableName}}
 
 The rendered output will show the resolved values (for example, `"expo": "~55.0.0"`). The copy button also copies the resolved values.
 
-All variables are defined in `common/code-utilities.ts` and sourced from the first (latest) entry in `ui/components/SDKTables/sdk-versions.json`. To add a new variable, add an entry to the `CODE_BLOCK_VARIABLES` map in that file.
+All variables are defined in `common/code-utilities.ts` and sourced from `sdkVersionValues` in `ui/components/SDKTables/utils.ts`, which reads `@expo/sdk-compatibility/data`. To add a new variable, add a new key to the object returned by `buildVariablesForSdk` in `common/code-utilities.ts`.
 
 > [!NOTE]
 > These variables only work inside fenced code blocks. For dynamic values in prose text, import `latestSdkVersionValues` from `~/ui/components/SDKTables` and use JSX expressions directly.

@@ -2,12 +2,12 @@
 import * as React from 'react';
 import { use, useMemo } from 'react';
 
+import { getValidInitialRouteName, useRouteNode } from '../../Route';
 import {
   CompositionContext,
   mergeOptions,
   useCompositionRegistry,
 } from '../../fork/native-stack/composition-options';
-import type { NativeStackDescriptorMap } from '../../fork/native-stack/descriptors-context';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -32,7 +32,6 @@ import type {
 
 function ExperimentalStackNavigator({
   id,
-  initialRouteName,
   children,
   layout,
   screenListeners,
@@ -41,6 +40,7 @@ function ExperimentalStackNavigator({
   UNSTABLE_router,
   ...rest
 }: ExperimentalStackNavigatorProps) {
+  const routeNode = useRouteNode();
   const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
@@ -49,7 +49,7 @@ function ExperimentalStackNavigator({
     ExperimentalStackNavigationEventMap
   >(StackRouter, {
     id,
-    initialRouteName,
+    initialRouteName: getValidInitialRouteName(routeNode),
     children,
     layout,
     screenListeners,
@@ -61,8 +61,7 @@ function ExperimentalStackNavigator({
   const { registry, contextValue } = useCompositionRegistry();
 
   const mergedDescriptors = useMemo(
-    // TODO(@ubax): implement properly when more stack options are available
-    () => mergeOptions(descriptors as NativeStackDescriptorMap, registry, state),
+    () => mergeOptions(descriptors, registry, state),
     [descriptors, registry, state]
   );
 

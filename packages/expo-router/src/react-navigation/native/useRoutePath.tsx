@@ -2,7 +2,8 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import { getPathFromState, useStateForPath } from '../core';
+import { getPathFromState } from '../../fork/getPathFromState';
+import { useStateForPath } from '../core';
 import { LinkingContext } from './LinkingContext';
 
 /**

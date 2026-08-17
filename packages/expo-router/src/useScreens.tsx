@@ -3,7 +3,14 @@
 import React, { use, useEffect } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
-import { SuspenseFallbackContext, Route, sortRoutesWithInitial, useRouteNode } from './Route';
+import {
+  findRouteNodeByName,
+  getValidInitialRouteName,
+  SuspenseFallbackContext,
+  Route,
+  sortRoutesWithInitial,
+  useRouteNode,
+} from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
@@ -23,6 +30,7 @@ import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
   useStateForPath,
+  type DescriptorRouteProp,
   type EventConsumer,
   type EventMapBase,
   type NavigationProp,
@@ -54,15 +62,9 @@ export type ScreenProps<
 > = {
   /** Name is required when used inside a Layout component. */
   name?: string;
-  /**
-   * Redirect to the nearest sibling route.
-   * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
-   */
-  redirect?: boolean;
-  initialParams?: Record<string, any>;
   options?:
     | TOptions
-    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
+    | ((prop: { route: DescriptorRouteProp<ParamListBase, string>; navigation: any }) => TOptions);
 
   listeners?:
     | ScreenListeners<TState, TEventMap>
@@ -80,11 +82,19 @@ export type SingularOptions =
   | boolean
   | ((name: string, params: UnknownOutputParams) => string | undefined);
 
-function getSortedChildren(
+function getSortedChildren<
+  TOptions extends object,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
+>(
   children: RouteNode[],
-  order: ScreenProps[] = [],
+  order: ScreenProps<TOptions, TState, TEventMap>[] = [],
   initialRouteName?: string
-): { route: RouteNode; props: Partial<ScreenProps>; routeSource: RouteSource }[] {
+): {
+  route: RouteNode;
+  props: Partial<ScreenProps<TOptions, TState, TEventMap>>;
+  routeSource: RouteSource;
+}[] {
   if (!order?.length) {
     return children
       .sort(sortRoutesWithInitial(initialRouteName))
@@ -93,75 +103,50 @@ function getSortedChildren(
   const entries = [...children];
 
   const ordered = order
-    .map(
-      ({
-        name,
-        redirect,
-        initialParams,
-        listeners,
-        options,
-        getId,
-        dangerouslySingular: singular,
-      }) => {
-        if (!entries.length) {
-          console.warn(
-            `[Layout children]: Too many screens defined. Route "${name}" is extraneous.`
-          );
-          return null;
-        }
-        const matchIndex = entries.findIndex(
-          (child) => child.route === name || child.route === `${name}/index`
-        );
-        if (matchIndex === -1) {
-          console.warn(
-            `[Layout children]: No route named "${name}" exists in nested children:`,
-            children.map(({ route }) => route)
-          );
-          return null;
-        } else {
-          // Get match and remove from entries
-          const match = entries[matchIndex];
-          entries.splice(matchIndex, 1);
-
-          // Ensure to return null after removing from entries.
-          if (redirect) {
-            if (typeof redirect === 'string') {
-              throw new Error(`Redirecting to a specific route is not supported yet.`);
-            }
-            return null;
-          }
-
-          if (getId) {
-            console.warn(
-              `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
-            );
-            if (singular) {
-              console.warn(
-                `Screen ${name} cannot use both getId and dangerouslySingular together.`
-              );
-            }
-          } else if (singular) {
-            // If singular is set, use it as the getId function.
-            if (typeof singular === 'string') {
-              getId = () => singular;
-            } else if (typeof singular === 'function' && name) {
-              getId = (options) => singular(name, options.params || {});
-            } else if (singular === true && name) {
-              getId = (options) => getSingularId(name, options);
-            }
-          }
-
-          return {
-            route: match,
-            props: { initialParams, listeners, options, getId },
-            routeSource: 'layout' as const,
-          };
-        }
+    .map(({ name, listeners, options, getId, dangerouslySingular: singular }) => {
+      if (!entries.length) {
+        console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
+        return null;
       }
-    )
+      const match = findRouteNodeByName(entries, name);
+      if (!match) {
+        console.warn(
+          `[Layout children]: No route named "${name}" exists in nested children:`,
+          children.map(({ route }) => route)
+        );
+        return null;
+      } else {
+        // Get match and remove from entries
+        entries.splice(entries.indexOf(match), 1);
+
+        if (getId) {
+          console.warn(
+            `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
+          );
+          if (singular) {
+            console.warn(`Screen ${name} cannot use both getId and dangerouslySingular together.`);
+          }
+        } else if (singular) {
+          // If singular is set, use it as the getId function.
+          if (typeof singular === 'string') {
+            getId = () => singular;
+          } else if (typeof singular === 'function' && name) {
+            getId = (options) => singular(name, options.params || {});
+          } else if (singular === true && name) {
+            getId = (options) => getSingularId(name, options);
+          }
+        }
+
+        return {
+          route: match,
+          props: { listeners, options, getId },
+          routeSource: 'layout' as const,
+        };
+      }
+    })
     .filter(Boolean) as {
     route: RouteNode;
-    props: Partial<ScreenProps>;
+    props: Partial<ScreenProps<TOptions, TState, TEventMap>>;
     routeSource: RouteSource;
   }[];
 
@@ -178,14 +163,20 @@ function getSortedChildren(
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-export function useSortedScreens(
-  order: ScreenProps[],
+export function useSortedScreens<
+  TOptions extends object,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
+>(
+  order: ScreenProps<TOptions, TState, TEventMap>[],
   guardedRedirects: GuardedRedirects = new Map()
 ): React.ReactNode[] {
   const node = useRouteNode();
 
   const children = node?.children ?? [];
-  const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
+  const sorted = children.length
+    ? getSortedChildren(children, order, getValidInitialRouteName(node))
+    : [];
   return React.useMemo(() => {
     const screensWithGuarded = sorted.map((value) => {
       const route = value.route.route;
@@ -522,10 +513,8 @@ export function screenOptionsFactory(
 
     // Prevent generated screens from showing up in the tab bar.
     if (route.internal || isGuarded) {
-      output.tabBarItemStyle = { display: 'none' };
-      output.tabBarButton = () => null;
-      // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
-      output.drawerItemStyle = { height: 0, display: 'none' };
+      // TODO(@ubax): Document migrating withLayoutContext navigators to standard navigation,
+      // where processScreens can map hidden to navigator-specific options.
       output.hidden = true;
     }
 
@@ -534,9 +523,13 @@ export function screenOptionsFactory(
 }
 
 // TODO: Refactor to take a single named-args object instead of positional params.
-export function routeToScreen(
+export function routeToScreen<
+  TOptions extends object,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
+>(
   route: RouteNode,
-  { options, getId, ...props }: Partial<ScreenProps> = {},
+  { options, getId, ...props }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
   isGuarded?: boolean,
   routeSource?: RouteSource
 ) {

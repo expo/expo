@@ -1,0 +1,200 @@
+---
+title: チームにプレビューを共有する
+sidebar_title: プレビューを共有する
+description: EAS Update を使って OTA（アプリストアを介さない）アップデートを配信し、チームにプレビューを共有する方法を学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+OTA（Over-The-Air）アップデートは通常、アプリストアのリリースとリリースの間で、小さなバグ修正や小さな変更を配信するために使います。JavaScript コード、スタイル、画像といった、サンプルアプリのネイティブでない部分を更新できます。
+
+この章では、[EAS Update](/eas-update/introduction/) を使ってチームに変更を共有します。これにより [自分とチームで素早くプレビューを共有](/review/overview/) できるようになります。
+
+<VideoBoxLink
+  videoId="vPKh-tNm-yI"
+  title="視聴：チームにプレビューを共有する方法"
+  description="アプリストアのリリースの合間に、アプリのプレビュー版をチームへ共有できるよう EAS Update を設定します。"
+/>
+
+---
+
+<Step label="1">
+
+## expo-updates ライブラリをインストールする
+
+プロジェクトを初期化してアップデートを配信するには、[`expo-updates`](/versions/latest/sdk/updates/) ライブラリが必要です。次のコマンドでインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-updates'],
+    yarn: ['$ yarn expo install expo-updates'],
+    pnpm: ['$ pnpm expo install expo-updates'],
+    bun: ['$ bun expo install expo-updates'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+## EAS Update を設定する
+
+EAS Update でプロジェクトを初期化するには、次の手順に従います。
+
+- アプリの設定に動的な **app.config.js** を使っているため、プロジェクトを EAS Update に対応させるには [`updates`](/versions/latest/config/app/#updates) と [`runtimeVersion`](/eas-update/runtime-versions/#setting-runtimeversion) のプロパティを追加する必要があります。次のコマンドを実行して EAS からこれらのプロパティと値を取得し、手動で **app.config.js** にコピーします。
+
+<Terminal cmd={['$ eas update:configure']} />
+
+<Collapsible summary="app.json を使う（動的でない）プロジェクトの場合は？">
+
+プロジェクトが動的な app config を使っていない場合（**app.config.js** ではなく **app.json** を使っている場合）、上のコマンドはアプリを EAS Update に対応させ、**app.json** と **eas.json** に適切なプロパティを追加してくれます。
+
+</Collapsible>
+
+- セットアップを続けるため、`eas update:configure` をもう一度実行します。**eas.json** のすべてのビルドプロファイルに [`channel`](/eas/json/#channel) が追加されるはずです。
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "build": {
+    "development": {
+      /* @hide ... */ /* @end */
+      /* @info */
+      "channel": "development"
+      /* @end */
+    },
+    "ios-simulator": {
+      /* @hide ... */ /* @end */
+    },
+    "preview": {
+      /* @hide ... */ /* @end */
+      /* @info */
+      "channel": "preview"
+      /* @end */
+    },
+    "production": {
+      /* @hide ... */ /* @end */
+      /* @info */
+      "channel": "production"
+      /* @end */
+    }
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+> **info** `eas update:configure` コマンドは **eas.json** のすべてのビルドプロファイルに `channel` を追加します。ただし `ios-simulator` プロファイルは `development` プロファイルを継承しているので、別の `channel` を持たせる意味はありません。上の設定から `ios-simulator.channel` は安全に削除できます。
+
+<Collapsible summary="channel とは？">
+
+[チャンネル](/eas-update/how-it-works/#conceptual-overview) は、ビルドをグループ化するために使います。Android と iOS のビルドが両方ともアプリストアにあるなら、どちらにも production チャンネルを与えられます。あとから EAS Update に production チャンネルを対象にするよう指示すれば、production チャンネルを持つすべてのビルドにアップデートが届きます。
+
+</Collapsible>
+
+</Step>
+
+<Step label="3">
+
+## 開発ビルドを作成する
+
+直近のビルドには `expo-updates` ライブラリが含まれていないため、新しい開発ビルドを作成する必要があります。次のコマンドを実行しましょう。
+
+<Terminal cmd={['$ eas build --platform android --profile development']} />
+
+> ここではアップデートの動作を示すために Android 実機向けの開発ビルドを使っています。`--platform all` や `--platform ios` を使えば、両方のプラットフォーム向け、あるいは iOS だけのビルドも作成できます。
+
+新しいバージョンの開発ビルドができたら、必ずデバイスにインストールしてください。
+
+</Step>
+
+<Step label="4">
+
+## アプリの JavaScript コードを変更する
+
+サンプルアプリの JavaScript コードを変更してみましょう。[Sticker Smash アプリ](/ja/tutorial/eas/introduction/#prerequisites) を使っていない場合は、自分のコードの好きな部分を変更してアプリでの変化を確認してください。
+
+ここでは、サンプルアプリの最初のボタンのテキストを **Choose a photo** から **Select a photo** に変更します。
+
+```tsx app/(tabs)/index.tsx
+<Button theme="primary" label="Select a photo" onPress={pickImageAsync} />
+```
+
+</Step>
+
+<Step label="5">
+
+## アップデートを公開する
+
+この変更をチームにテストしてもらうために新しいビルドを作るのではなく、アップデートを公開しましょう。
+
+<Terminal cmd={['$ eas update --channel development --message "Change first button label"']} />
+
+上のコマンドでは `development` チャンネルを使いました。すべてのアップデートは [チャンネル名](/eas-update/how-it-works/#publishing-an-update) に紐づきます。git のコミットが必ず git ブランチに紐づくのと似ています。
+
+つまり、ビルドプロファイルで `development` チャンネルを使い、そのうえでアップデートを公開することで、`development` チャンネルを持つビルドにこのアップデートを届けるよう EAS に依頼していることになります。EAS Update のチャンネルを作ると、同じ名前のブランチに自動的にマッピングされます。
+
+アップデートが公開されると、CLI がその情報を表示します。
+
+<ContentSpotlight
+  alt="EAS Update published successfully with CLI prompt"
+  src="/static/images/tutorial/eas/update-01.png"
+/>
+
+**Website link** をクリックすると、EAS ダッシュボードの **Over-the-air updates** > **Update groups** でアップデートを確認できます。
+
+<ContentSpotlight
+  alt="EAS dashboard shows the latest published update for the development build"
+  src="/static/images/tutorial/eas/update-02.png"
+  className="max-w-[800px]"
+/>
+
+</Step>
+
+<Step label="6">
+
+## 開発ビルドでアップデートをその場でプレビューする
+
+開発ビルドでアップデートをその場でプレビューするには、次のようにします。
+
+- 開発ビルド内で Expo アカウントにログインします。
+- **Extensions** タブを開きます。
+- **EAS Update** の下にある **Branch: development** を探します。
+- **Open** をタップしてアップデートを開きます。
+
+</Step>
+
+<Step label="7">
+
+## Preview や production のビルドに変更を共有する
+
+開発ビルド以外（preview や production）のアップデートは、アプリの起動時に新しいアップデートを問い合わせ、自動的にデバイスへダウンロードされます。
+
+preview や production のビルドを使っているチームメンバーには、該当ブランチに配信した変更がアップデートとして届きます。
+
+たとえば `preview` ビルド向けには、次のように実行します。
+
+<Terminal cmd={['$ eas update --channel preview --message "Change first button label"']} />
+
+以下は `preview` ビルド向けにアップデートを公開した例です。アップデートをテストするには、アプリを強制終了して 2 回開き直すと、変更がダウンロードされて表示されます。
+
+<ContentSpotlight file="tutorial/eas/running-update-on-dev.mp4" />
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  name="EAS_TUTORIAL"
+  currentChapterSlug="/tutorial/eas/team-development"
+  chapterTitle="第 10 章：チームにプレビューを共有する"
+  summary="EAS Update を設定してプラットフォームをまたいで OTA アップデートを管理・公開し、レビュー用にアップデートを取得する方法を確認しました。"
+  nextChapterDescription="次の章では、GitHub リポジトリからビルドをトリガーする流れを学びます。"
+  nextChapterTitle="GitHub リポジトリからビルドをトリガーする"
+  nextChapterLink="/ja/tutorial/eas/using-github/"
+/>
