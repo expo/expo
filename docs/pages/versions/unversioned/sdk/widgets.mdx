@@ -329,14 +329,14 @@ MyWidget.reload();
 
 On iOS 17 and later, WidgetKit expects widgets to declare a container background. When your layout doesn't declare one, `expo-widgets` applies a default system fill so the widget still renders.
 
-To use a custom background, apply the `containerBackground` modifier from [`expo/ui`](/versions/latest/sdk/ui/swift-ui/) to any view in the layout.
+To use a custom background, apply the `containerBackground` modifier from [`@expo/ui`](/versions/latest/sdk/ui/swift-ui/) to any view in the layout.
 
 ```tsx
 import { Text, VStack } from '@expo/ui/swift-ui';
 import { containerBackground } from '@expo/ui/swift-ui/modifiers';
 import { createWidget } from 'expo-widgets';
 
-const MyWidget = () => {
+const BackgroundWidget = () => {
   'widget';
   return (
     <VStack modifiers={[containerBackground('#1e293b', 'widget')]}>
@@ -345,7 +345,7 @@ const MyWidget = () => {
   );
 };
 
-export default createWidget('MyWidget', MyWidget);
+export default createWidget('BackgroundWidget', BackgroundWidget);
 ```
 
 For a widget that draws its own artwork edge to edge, pass the `clear` color to opt out of any background:
