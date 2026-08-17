@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
+
 ### 💡 Others
 
 ## 57.0.3 — 2026-07-22
