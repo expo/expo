@@ -12,15 +12,22 @@ final class LiveActivity: SharedObject {
     super.init()
   }
 
-  func update(props: String?, staleDate: Date?) async throws {
+  func update(props: String?, staleDate: Date?, contentDate: Date?) async throws {
     guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
 
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
 
-    let newState = LiveActivityAttributes.ContentState(name: name, props: props)
-    await activity.update(ActivityContent(state: newState, staleDate: staleDate))
+    let content = ActivityContent(
+      state: LiveActivityAttributes.ContentState(name: name, props: props),
+      staleDate: staleDate
+    )
+    guard let contentDate, #available(iOS 17.2, *) else {
+      return await activity.update(content)
+    }
+
+    await activity.update(content, timestamp: contentDate)
   }
 
   func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {
