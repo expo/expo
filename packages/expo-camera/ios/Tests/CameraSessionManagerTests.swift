@@ -6,7 +6,7 @@ import ExpoModulesCore
 @testable import ExpoCamera
 
 /// Mirrors `CameraView`'s arrangement: the view's backing layer is the preview layer.
-private final class PreviewHostView: UIView {
+private class PreviewHostView: UIView {
   override class var layerClass: AnyClass {
     AVCaptureVideoPreviewLayer.self
   }
@@ -60,5 +60,34 @@ struct CameraSessionManagerTests {
     manager.updateCameraIsActive()
 
     #expect(manager.session.isRunning == false)
+  }
+
+  // The guard above does not help when a capture device *is* present but the graph still
+  // cannot start, which is what https://github.com/expo/expo/issues/48780 reports. In that
+  // case teardown has to stop the session before anything detaches from it: the preview
+  // layer otherwise detaches from a running session inside `dealloc`, on the main thread.
+  // Starting a session that cannot run reproduces the same state here.
+  @Test(.enabled(if: AVCaptureDevice.default(for: .video) == nil))
+  func `stops a running session before the preview layer detaches from it`() {
+    let delegate = MockCameraViewDelegate()
+    let manager = CameraSessionManager(delegate: delegate)
+    var view: PreviewHostView? = PreviewHostView()
+    view?.previewLayer.session = manager.session
+
+    manager.session.startRunning()
+    #expect(manager.session.isRunning, "the session must be running for this to test anything")
+
+    manager.stopSession()
+    #expect(manager.session.isRunning == false)
+
+    // Releasing the view runs `AVCaptureVideoPreviewLayer.dealloc` here on the main
+    // thread. Against a stopped session that is immediate; against a running one it
+    // blocks for seconds per view.
+    let started = CFAbsoluteTimeGetCurrent()
+    view = nil
+    RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+    let blockedMs = (CFAbsoluteTimeGetCurrent() - started) * 1000
+
+    #expect(blockedMs < 1000, "main thread blocked for \(Int(blockedMs))ms while releasing the preview layer")
   }
 }
