@@ -120,7 +120,9 @@ const styles = StyleSheet.create({
 
 ## Testing age signals on Android
 
-Google Play only reports age signals to accounts it has enabled, so your test accounts may not have the age range you need. Use [`setFakeAgeSignals`](#agerangesetfakeagesignalsfake) to fake them instead, through Google Play's [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api). Do not call it in production builds.
+Google Play only reports age signals to accounts it has enabled, so your test accounts may not have the age range you need. Use [`setFakeAgeSignals`](#agerangesetfakeagesignalsfake) to fake them instead, through Google Play's [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api).
+
+Only debuggable builds can fake signals, because faked signals would let any code in the app bypass your age gating. Passing anything other than `null` in a build that is not debuggable throws `ERR_AGE_RANGE_FAKE_SIGNALS_NOT_DEBUGGABLE`.
 
 Your requests do not change, only what they report:
 
@@ -171,3 +173,4 @@ Available in the `code` property of any error thrown by the native module. For A
 | `ERR_AGE_RANGE_INVALID_REQUEST`       | <PlatformTags platforms={['ios']} />     | The provided params were invalid. The age ranges need to be minimum 2 years apart.                                 |
 | `ERR_AGE_RANGE_TASK_CANCELLED`        | <PlatformTags platforms={['android']} /> | The user dismissed the Play Age Signals age sharing consent screen.                                                |
 | `ERR_AGE_RANGE_FAKE_SIGNALS_CONFLICT` | <PlatformTags platforms={['android']} /> | `setFakeAgeSignals` was passed both an `errorCode` and age signals.                                                |
+| `ERR_AGE_RANGE_FAKE_SIGNALS_NOT_DEBUGGABLE` | <PlatformTags platforms={['android']} /> | `setFakeAgeSignals` was asked to fake signals in a build that is not debuggable.                                    |
