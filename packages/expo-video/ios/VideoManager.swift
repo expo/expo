@@ -14,6 +14,9 @@ class VideoManager {
   private var mediaServicesResetObserver: NSObjectProtocol?
   private var videoViews = NSHashTable<VideoView>.weakObjects()
   private let videoPlayers = SynchronizedHashTable<VideoPlayer>(weakObjects: true)
+  private var pendingAudioSessionDeactivation: DispatchWorkItem?
+  private var pictureInPictureVideoViews = Set<ObjectIdentifier>()
+  private var audioSessionIsActive = false
 
   var hasRegisteredPlayers: Bool {
     return !videoPlayers.allObjects.isEmpty
@@ -44,6 +47,7 @@ class VideoManager {
 
   func unregister(videoPlayer: VideoPlayer) {
     videoPlayers.remove(videoPlayer)
+    setAppropriateAudioSessionOrWarn()
   }
 
   func register(videoView: VideoView) {
@@ -52,6 +56,22 @@ class VideoManager {
 
   func unregister(videoView: VideoView) {
     videoViews.remove(videoView)
+    setPictureInPictureActive(videoView, active: false)
+  }
+
+  func setPictureInPictureActive(_ videoView: VideoView, active: Bool) {
+    let identifier = ObjectIdentifier(videoView)
+    Self.managerQueue.async { [weak self] in
+      guard let self else {
+        return
+      }
+      if active {
+        self.pictureInPictureVideoViews.insert(identifier)
+      } else {
+        self.pictureInPictureVideoViews.remove(identifier)
+      }
+      self.setAudioSession()
+    }
   }
 
   func onAppForegrounded() {
@@ -106,6 +126,9 @@ class VideoManager {
   }
 
   private func setAudioSession() {
+    pendingAudioSessionDeactivation?.cancel()
+    pendingAudioSessionDeactivation = nil
+
     let audioSession = AVAudioSession.sharedInstance()
     let audioMixingMode = findAudioMixingMode()
     var audioSessionCategoryOptions: AVAudioSession.CategoryOptions = audioSession.categoryOptions
@@ -149,10 +172,49 @@ class VideoManager {
     if isOutputtingAudio || doNotMixOverride {
       do {
         try audioSession.setActive(true)
+        audioSessionIsActive = true
       } catch {
         log.warn("[expo-video] Failed to activate the audio session. This might cause issues with audio playback. \(error.localizedDescription)")
       }
+    } else if audioSessionIsActive && !isAudioSessionInUse {
+      scheduleAudioSessionDeactivation()
     }
+  }
+
+  private var isAudioSessionInUse: Bool {
+    // Muting only silences AVPlayer's output; its audio pipeline remains active. Wait until every
+    // player is actually paused to avoid AVAudioSession.ErrorCode.isBusy during deactivation.
+    let hasActivePlayer = videoPlayers.allObjects.contains { player in
+      player.ref.timeControlStatus != .paused
+    }
+    let hasNowPlayingPlayer = videoPlayers.allObjects.contains { player in
+      player.showNowPlayingNotification
+    }
+    return hasActivePlayer || hasNowPlayingPlayer || !pictureInPictureVideoViews.isEmpty
+  }
+
+  private func scheduleAudioSessionDeactivation() {
+    let workItem = DispatchWorkItem { [weak self] in
+      guard let self else {
+        return
+      }
+      self.pendingAudioSessionDeactivation = nil
+      guard self.audioSessionIsActive, !self.isAudioSessionInUse else {
+        return
+      }
+
+      do {
+        defer {
+          self.audioSessionIsActive = false
+        }
+        try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+      } catch {
+        log.warn("[expo-video] Failed to deactivate the audio session. Background audio may not resume. \(error.localizedDescription)")
+      }
+    }
+    pendingAudioSessionDeactivation = workItem
+    // Coalesce transient player state changes and give AVPlayer time to stop its audio pipeline.
+    Self.managerQueue.asyncAfter(deadline: .now() + .milliseconds(100), execute: workItem)
   }
 
   private func findAudioMixingMode() -> AudioMixingMode? {
