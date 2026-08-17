@@ -219,6 +219,9 @@ interface MetricDao {
   @Delete
   suspend fun delete(metrics: List<Metric>)
 
+  @Query("SELECT * FROM metrics WHERE metricId IN (:metricIds)")
+  suspend fun getByIds(metricIds: List<String>): List<Metric>
+
   @Query("SELECT * FROM metrics WHERE sessionId = :sessionId ORDER BY timestamp ASC")
   suspend fun getMetricsForSession(sessionId: String): List<Metric>
 }
@@ -230,6 +233,9 @@ interface LogDao {
 
   @Delete
   suspend fun delete(logs: List<LogRecord>)
+
+  @Query("SELECT * FROM logs WHERE logId IN (:logIds)")
+  suspend fun getByIds(logIds: List<String>): List<LogRecord>
 
   @Query("DELETE FROM logs WHERE timestamp < :cutoffTimestamp")
   suspend fun deleteLogsOlderThan(cutoffTimestamp: String)
@@ -268,6 +274,9 @@ interface SessionDao {
 
   @Query("SELECT * FROM sessions WHERE id = :id")
   suspend fun getById(id: String): Session?
+
+  @Query("SELECT * FROM sessions WHERE id IN (:ids)")
+  suspend fun getByIds(ids: List<String>): List<Session>
 
   // The most recent session other than `:currentSessionId` (null matches all
   // rows, so it returns the latest of any).
@@ -316,12 +325,4 @@ interface SessionDao {
   @Transaction
   @Query("SELECT * FROM sessions WHERE id = :id")
   suspend fun getSessionWithMetricsBySessionId(id: String): SessionWithMetrics?
-
-  @Transaction
-  @Query("SELECT DISTINCT s.* FROM sessions s INNER JOIN metrics m ON s.id = m.sessionId WHERE m.metricId IN (:metricIds)")
-  suspend fun getSessionsWithMetricsByMetricIds(metricIds: List<String>): List<SessionWithMetrics>
-
-  @Transaction
-  @Query("SELECT DISTINCT s.* FROM sessions s INNER JOIN logs l ON s.id = l.sessionId WHERE l.logId IN (:logIds)")
-  suspend fun getSessionsWithLogsByLogIds(logIds: List<String>): List<SessionWithLogs>
 }

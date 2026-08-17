@@ -434,30 +434,7 @@ class SessionManagerTest {
     }
 
   @Test
-  fun `getSessionsWithMetrics deduplicates sessions spanning multiple chunks`() =
-    runTest {
-      // Arrange - one session with metrics that will land in different chunks
-      val sessionId = "session-1"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-
-      // Insert 1100 metrics into the same session
-      val allMetricIds = (1..1100).map { "metric-$it" }
-      allMetricIds.chunked(500).forEach { chunk ->
-        val metrics = chunk.map { createMetric(it, sessionId) }
-        database.metricDao().insertAll(metrics)
-      }
-
-      // Act - query all 1100 metric IDs
-      val result = sessionManager.getSessionsWithMetrics(allMetricIds)
-
-      // Assert - session should appear exactly once with all 1100 metrics
-      assertEquals(1, result.size)
-      assertEquals(sessionId, result[0].session.id)
-      assertEquals(1100, result[0].metrics.size)
-    }
-
-  @Test
-  fun `getSessionsWithMetrics filters correctly across chunk boundaries`() =
+  fun `getSessionsWithMetrics returns only requested metrics across query chunks`() =
     runTest {
       // Arrange - session has 1200 metrics, but we only request 1100 of them
       val sessionId = "session-1"
@@ -484,7 +461,7 @@ class SessionManagerTest {
     }
 
   @Test
-  fun `getSessionsWithMetrics merges multiple sessions across chunks`() =
+  fun `getSessionsWithMetrics groups multiple sessions across query chunks`() =
     runTest {
       // Arrange - two sessions, each with metrics spanning chunk boundaries
       val session1Id = "session-1"
@@ -517,29 +494,58 @@ class SessionManagerTest {
     }
 
   @Test
-  fun `getSessionsWithMetrics yields empty logs from the chunked merger path`() =
+  fun `getSessionsWithMetrics does not load logs`() =
     runTest {
-      // Arrange — the chunked-merger branch in `getSessionsWithMetrics`
-      // constructs `SessionWithMetrics(...)` without passing logs and relies on
-      // the `= emptyList()` default. The session DOES have logs in storage,
-      // but the merger projects metrics-only. This test fails loudly if the
-      // default is removed or the merger ever needs to surface logs too.
       val sessionId = "session-with-logs"
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-
-      val metricIds = (1..1100).map { "metric-$it" }
-      metricIds.chunked(500).forEach { chunk ->
-        database.metricDao().insertAll(chunk.map { createMetric(it, sessionId) })
-      }
-      // Also insert logs so an accidental relation-load would surface them.
+      database.metricDao().insertAll(listOf(createMetric("metric-1", sessionId)))
       database.logDao().insertAll(listOf(createLog("log-a", sessionId)))
 
-      // Act — 1100 IDs forces the chunked path
-      val result = sessionManager.getSessionsWithMetrics(metricIds)
+      val result = sessionManager.getSessionsWithMetrics(listOf("metric-1"))
 
-      // Assert
       assertEquals(1, result.size)
       assertEquals(emptyList<LogRecord>(), result[0].logs)
+    }
+
+  // endregion
+
+  // region getSessionsWithLogs Tests
+
+  @Test
+  fun `getSessionsWithLogs returns only requested logs`() =
+    runTest {
+      val sessionId = "session-1"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      database.logDao().insertAll(
+        listOf(
+          createLog("log-1", sessionId),
+          createLog("log-2", sessionId),
+          createLog("log-3", sessionId)
+        )
+      )
+
+      val result = sessionManager.getSessionsWithLogs(listOf("log-1", "log-3"))
+
+      assertEquals(1, result.size)
+      assertEquals(sessionId, result[0].session.id)
+      assertEquals(setOf("log-1", "log-3"), result[0].logs.map { it.logId }.toSet())
+    }
+
+  @Test
+  fun `getSessionsWithLogs groups requested logs spanning multiple query chunks`() =
+    runTest {
+      val sessionId = "session-1"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      val logIds = (1..1100).map { "log-$it" }
+      logIds.chunked(500).forEach { chunk ->
+        database.logDao().insertAll(chunk.map { createLog(it, sessionId) })
+      }
+
+      val result = sessionManager.getSessionsWithLogs(logIds)
+
+      assertEquals(1, result.size)
+      assertEquals(sessionId, result[0].session.id)
+      assertEquals(logIds.toSet(), result[0].logs.map { it.logId }.toSet())
     }
 
   // endregion
