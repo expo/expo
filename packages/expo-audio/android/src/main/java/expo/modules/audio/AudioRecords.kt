@@ -56,7 +56,7 @@ class Metadata(
   @Field val title: String?,
   @Field val artist: String?,
   @Field val albumTitle: String?,
-  @Field val artworkUrl: URL?
+  @Field val artworkUrl: String?
 ) : Record
 
 enum class AndroidOutputFormat(val value: String) : Enumerable {
