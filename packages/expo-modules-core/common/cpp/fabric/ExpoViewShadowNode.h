@@ -53,17 +53,13 @@ public:
   }
 
   /**
-   Reports where this view's contents were actually drawn, for views laid out by SwiftUI or Compose
-   instead of Yoga. Without it `measure()` returns this node's Yoga box, which is not where the
-   hosted content ended up. This is used by `RNHostView`.
+   Used by `RNHostView`. Reports where this view's contents were actually drawn, for views laid
+   out by SwiftUI or Compose instead of Yoga. Without it `measure()` returns this node's Yoga box,
+   which is not where the hosted content ended up.
    */
   facebook::react::Point getContentOriginOffset(bool includeTransform) const override {
-    // `includeTransform` means "apply this node's transform", and `ScrollViewShadowNode` is the only
-    // class that reads it. Exactly two callers pass `false`: `getScrollPosition`, behind
-    // `scrollLeft`/`scrollTop`, which reads the result as a scroll offset and would report a phantom
-    // one for a view that never scrolls; and `findNodeAtPoint`, behind the element inspector, which
-    // in exchange misses hosted content drawn away from its Yoga box. Touch dispatch is unaffected —
-    // UIKit and Android hit-test the real views.
+    // A `false` caller is asking for a scroll offset, which this view never has. Only the layout
+    // path passes `true`, and that is the one this override is for.
     if (!includeTransform) {
       return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
     }
@@ -73,8 +69,9 @@ public:
       return ConcreteViewShadowNode::getContentOriginOffset(includeTransform);
     }
 
-    // `computeRelativeLayoutMetrics` adds this node's own Yoga origin before consulting us, so
-    // returning the raw offset would count it twice. Publish only the part Yoga cannot see: where
+    // `computeRelativeLayoutMetrics` adds this node's own Yoga origin before consulting us, 
+    // so subtract them as we only want content origin to be considered. 
+    // Publish only the part Yoga cannot see: where
     // the native layout system placed the content inside its host.
     auto ownOrigin = this->getLayoutMetrics().frame.origin;
     return {.x = contentOrigin->x - ownOrigin.x, .y = contentOrigin->y - ownOrigin.y};
