@@ -4,6 +4,13 @@ import type { ServerRequest } from './server.types';
 export interface ForwardedRequestInfo {
   authority: string | undefined;
   protocol: 'http' | 'https' | undefined;
+  /**
+   * Whether the authority was reported via the RFC 7239 `Forwarded` header rather than the
+   * `X-Forwarded-Host` header. Expo clients send `Forwarded` themselves and resolve relative
+   * manifest URLs, while proxies typically only add `X-Forwarded-*` headers for clients that may
+   * not support relative URLs.
+   */
+  viaForwardedHeader: boolean;
 }
 
 function splitOutsideQuotes(value: string, separator: string): string[] {
@@ -85,11 +92,13 @@ export function parseForwardedRequestInfo(req: ServerRequest): ForwardedRequestI
   const headers = req.headers ?? {};
   const forwardedStr = firstHeaderValue(headers['forwarded']);
   const forwarded = forwardedStr ? parseForwardedHeader(forwardedStr) : null;
-  const authority = coerceAuthority(
-    forwarded?.host ?? firstHeaderValue(headers['x-forwarded-host'])
-  );
+  const forwardedAuthority = coerceAuthority(forwarded?.host);
+  const authority =
+    forwardedAuthority ?? coerceAuthority(firstHeaderValue(headers['x-forwarded-host']));
   const protocol = coerceProtocol(
     forwarded?.proto ?? firstHeaderValue(headers['x-forwarded-proto'])
   );
-  return authority || protocol ? { authority, protocol } : null;
+  return authority || protocol
+    ? { authority, protocol, viaForwardedHeader: forwardedAuthority != null }
+    : null;
 }
