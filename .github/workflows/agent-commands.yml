@@ -1909,6 +1909,40 @@ jobs:
               related_prs_md=$(jq -r '.[0:5][] | "- \(.url) (\(.title)) — shared files: \(.shared | join(", "))"' "$RUNNER_TEMP/pr-overlaps.json")
             fi
           fi
+          # The prompt asks fix mode for a marker-wrapped "Options considered"
+          # block, and the markers are a parsing interface, not decoration. So
+          # the published body must carry either a well-formed block or no
+          # markers at all: one unmatched or duplicated marker leaves the block
+          # open, and a reader that scans by marker then treats the rest of the
+          # body as options.
+          #
+          # Never reject over it. Throwing away a verified fix at the last step
+          # over a missing paragraph is the worse outcome, and an honest gap is
+          # itself information for the reviewer. A malformed block is stripped
+          # back to marker-free text, and the notice says which case happened.
+          desc="$RUNNER_TEMP/pr-desc.md"
+          tail -n +2 .verify-out/pr.md 2>/dev/null > "$desc" || true
+          [ -s "$desc" ] || echo "_No description was provided by the run._" > "$desc"
+          opt_start='<!-- expo-bot:fix-options v1 -->'
+          opt_end='<!-- /expo-bot:fix-options -->'
+          opt_note=""
+          sc=$(grep -cF "$opt_start" "$desc" || true)
+          ec=$(grep -cF "$opt_end" "$desc" || true)
+          s_line=$(grep -nF "$opt_start" "$desc" 2>/dev/null | head -n1 | cut -d: -f1 || true)
+          e_line=$(grep -nF "$opt_end" "$desc" 2>/dev/null | head -n1 | cut -d: -f1 || true)
+          if [ "$sc" -ne 1 ] || [ "$ec" -ne 1 ] || [ "${s_line:-0}" -ge "${e_line:-0}" ]; then
+            # Match the marker NAME, not the exact strings: a mistyped or
+            # re-spaced marker must be removed too, or it survives as a
+            # half-open block for the next reader.
+            stray=$(grep -c 'expo-bot:fix-options' "$desc" || true)
+            grep -v 'expo-bot:fix-options' "$desc" > "$RUNNER_TEMP/pr-desc-clean.md" || true
+            mv "$RUNNER_TEMP/pr-desc-clean.md" "$desc"
+            if [ "$stray" -eq 0 ]; then
+              opt_note="_This run recorded no option set: the fix was published without a record of the alternatives considered._"
+            else
+              opt_note="_This run wrote a malformed \`Options considered\` block: $sc start marker(s), $ec end marker(s), $stray marker line(s) in total. The markers were removed so nothing can misread the body. The fix itself is unaffected._"
+            fi
+          fi
           {
             # ONE LINE PER PARAGRAPH, however long. GitHub renders a newline
             # inside a comment or pull-request body as a hard <br>, unlike a
@@ -1922,21 +1956,16 @@ jobs:
             echo ""
             echo "Requested by @$TRIGGER_ACTOR · [$run_name]($RUN_URL) · refs #$ISSUE_NUMBER"
             echo ""
-            tail -n +2 .verify-out/pr.md 2>/dev/null || echo "_No description was provided by the run._"
+            cat "$desc"
             if [ -n "$related_prs_md" ]; then
               echo ""
               echo "**Open pull requests touching the same files** (from the publish-time duplicate check — confirm they are distinct before merging both):"
               echo ""
               printf '%s\n' "$related_prs_md"
             fi
-            # The prompt asks fix mode for a marker-wrapped "Options
-            # considered" block. When a run omits it, publish anyway and say
-            # so: rejecting here would throw away a verified fix at the last
-            # step over a missing paragraph, and an honest gap is itself
-            # information for the reviewer.
-            if ! grep -q 'expo-bot:options v1' .verify-out/pr.md 2>/dev/null; then
+            if [ -n "$opt_note" ]; then
               echo ""
-              echo "_This run recorded no option set: the fix was published without a record of the alternatives considered._"
+              echo "$opt_note"
             fi
           } > "$RUNNER_TEMP/pr-body.md"
           # The branch is pushed at this point, so a failure here must not

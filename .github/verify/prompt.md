@@ -98,15 +98,25 @@ Two shapes deserve their own treatment:
    **Record the options you weighed**, in a marker-wrapped section at the end of the body:
 
    ```
-   <!-- expo-bot:options v1 -->
+   <!-- expo-bot:fix-options v1 -->
    ## Options considered
 
    1. **<the approach, one sentence.>** <its cost, in a checkable term>. Rejected: <why>.
    2. **<the approach, one sentence.>** Chosen: <why it won>.
-   <!-- /expo-bot:options -->
+   <!-- /expo-bot:fix-options -->
    ```
 
-   This is a record, not a new phase: you already form and discard approaches while establishing the cause, so write down the ones you actually considered — never invent an option to fill the list. One option is a common and valid answer: a missing null check has no design space, so write the single entry plus one line naming why no alternative existed. Every option must address the same failure mechanism you named — two options fixing different problems is a sign the cause is not established. Every cost must be checkable: files touched, behavior changed for apps that work today, a check it would fail, a platform it would not cover. "Less clean" and "more complex" are not costs. "Do nothing and document the behaviour" is a real candidate whenever the behaviour may be intentional. Mark exactly ONE option as chosen. Only the chosen option is built and verified — never describe an option you did not build as tested. At most FOUR options: if the honest set needs more, the change is a design decision, and those belong to a human (condition 3). Keep the markers, the heading, and the numbering exactly as shown — a maintainer command may later address an option by its number, so the block is a contract, not decoration.
+   This is a record, not a new phase. You already form and discard approaches while you establish the cause. Write down the ones you actually considered:
+
+   - **Never invent an option.** A filler entry is worse than a short list.
+   - **One option is a valid answer.** A missing null check has no design space. Write the single entry, then one line that says why no alternative existed.
+   - **Every option must address the failure mechanism you named.** Two options that fix different problems mean the cause is not established.
+   - **Every cost must be checkable.** Name the files touched, the behaviour that changes for apps that work today, a check the option would fail, or a platform it would not cover. "Less clean" and "more complex" are not costs.
+   - **Treat "do nothing" as a real candidate** whenever the behaviour may be intentional. Write it as "Do nothing and document the behaviour".
+   - **Mark exactly ONE option chosen.** Write the literal token `Chosen:` on that entry, and on no other line of the block. A later command counts that token to find the live option. The ordinary word "chosen" elsewhere in the prose is fine; a second `Chosen:` is not.
+   - **Only the chosen option is built and verified.** Never describe an option you did not build as tested.
+   - **At most FOUR options.** If the honest set needs more, the change is a design decision, and those belong to a human (condition 3).
+   - **Keep the markers, the heading, and the numbering exactly as shown.** Write both markers, once each, start before end. A maintainer command addresses an option by its number, so the numbers are an interface, not decoration.
 
    **Do not hard-wrap the prose.** This is a file, so the instinct is to format it like source and break lines at 80 or 90 columns. GitHub renders a pull-request body as GitHub-Flavored Markdown, where a single newline is a VISIBLE line break — a wrapped paragraph arrives as a column of ragged short lines. Write each paragraph as ONE line, however long it runs, and let the browser wrap it. Blank lines still separate paragraphs; code fences, tables and list items keep their own line structure.
 
