@@ -24,6 +24,8 @@ struct HomeTabView: View {
 
           UpgradeWarningView()
 
+          NetworkPermissionBanner(serverService: viewModel.serverService)
+
           DevServersSection()
 
           if !viewModel.recentlyOpenedApps.isEmpty {
