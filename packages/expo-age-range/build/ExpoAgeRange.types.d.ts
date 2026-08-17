@@ -94,6 +94,39 @@ export type AgeRangeResponse = {
  */
 export type AgeSignalsStatus = 'SHARED' | 'NOT_SHARED' | 'VERIFICATION_REQUIRED';
 /**
+ * Fake age signals for [`setFakeAgeSignals`](#agerangesetfakeagesignalsfake): either a response or
+ * an error, never both.
+ *
+ * The response fields match [`AgeRangeResponse`](#agerangeresponse), with `ageSignalsStatus` for
+ * [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync). Omitted fields are
+ * reported as `null`.
+ *
+ * @platform android
+ */
+export type FakeAgeSignals = {
+    lowerBound?: number | null;
+    upperBound?: number | null;
+    installId?: string | null;
+    ageRangeSource?: 'TIER_A' | 'TIER_B' | 'TIER_C' | 'TIER_D' | null;
+    significantChangeStatus?: 'APPROVED' | 'PENDING' | 'DECLINED' | null;
+    significantChangeApprovalDate?: number | null;
+    ageSignalsStatus?: AgeSignalsStatus | null;
+    errorCode?: never;
+} | {
+    /**
+     * The [Google Play Age Signals error code](https://developer.android.com/google/play/age-signals/handle-errors)
+     * to fail both requests with.
+     */
+    errorCode: number;
+    lowerBound?: never;
+    upperBound?: never;
+    installId?: never;
+    ageRangeSource?: never;
+    significantChangeStatus?: never;
+    significantChangeApprovalDate?: never;
+    ageSignalsStatus?: never;
+};
+/**
  * A regulatory feature that your app may need to support for the current user.
  *
  * Mirrors [`AgeRangeService.RegulatoryFeature`](https://developer.apple.com/documentation/declaredagerange/agerangeservice/regulatoryfeature).
@@ -107,5 +140,6 @@ export interface ExpoAgeRangeModule extends NativeModule {
     showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
     getRequiredRegulatoryFeaturesAsync(): Promise<AgeRangeRegulatoryFeature[] | null>;
     requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus | null>;
+    setFakeAgeSignals(fake: FakeAgeSignals | null): void;
 }
 //# sourceMappingURL=ExpoAgeRange.types.d.ts.map

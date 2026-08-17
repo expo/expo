@@ -13,4 +13,7 @@ export async function getRequiredRegulatoryFeaturesAsync() {
 export async function requestAgeSignalsAccessAsync() {
     return null;
 }
+export function setFakeAgeSignals(_fake) {
+    // no-op on web
+}
 //# sourceMappingURL=AgeRange.web.js.map
