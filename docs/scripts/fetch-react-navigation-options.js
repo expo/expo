@@ -93,17 +93,17 @@ function parseOptionsFromMarkdown(markdown, config) {
       continue;
     }
 
+    let platform = 'Both';
+    if (content.includes('Only supported on iOS')) {
+      platform = 'iOS only';
+    } else if (content.includes('Only supported on Android')) {
+      platform = 'Android only';
+    }
+
     let rawContent = content;
 
     if (typeof config.preprocessOptionContent === 'function') {
       rawContent = config.preprocessOptionContent(optionName, rawContent, optionsSection);
-    }
-
-    let platform = 'Both';
-    if (rawContent.includes('Only supported on iOS')) {
-      platform = 'iOS only';
-    } else if (rawContent.includes('Only supported on Android')) {
-      platform = 'Android only';
     }
 
     let description = rawContent
