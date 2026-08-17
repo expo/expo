@@ -81,7 +81,8 @@ class BaseObservabilityManager(
   private val deterministicUniformValueProvider: () -> Double = {
     EASClientID.deterministicUniformValue(EASClientID(context).uuid)
   },
-  private val currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() }
+  private val currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() },
+  private val dispatchChunkSize: Int = DISPATCH_CHUNK_SIZE
 ) {
   private val eventDispatcher = EventDispatcher(
     context = context,
@@ -149,8 +150,7 @@ class BaseObservabilityManager(
   )
 
   suspend fun dispatchUnsentMetrics(): Unit = metricsDispatchMutex.withLock {
-    val pendingIds = pendingMetricsManager.getAllPendingMetricIds()
-    if (pendingIds.isEmpty()) {
+    if (!pendingMetricsManager.hasPendingMetrics()) {
       return
     }
 
@@ -159,50 +159,58 @@ class BaseObservabilityManager(
     }
 
     if (!shouldDispatch()) {
-      pendingMetricsManager.removePendingMetrics(pendingIds)
+      pendingMetricsManager.removeAllPendingMetrics()
       return
     }
 
-    val sessionsWithPendingMetrics = sessionManager.getSessionsWithMetrics(pendingIds)
+    while (true) {
+      val pendingIds = pendingMetricsManager.getPendingMetricIds(dispatchChunkSize)
+      if (pendingIds.isEmpty()) {
+        break
+      }
 
-    // Clean up orphaned pending IDs (metrics deleted from MetricsDatabase but still in pending table)
-    val resolvedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }.toSet()
-    val orphanedIds = pendingIds.filter { it !in resolvedMetricIds }
-    if (orphanedIds.isNotEmpty()) {
-      pendingMetricsManager.removePendingMetrics(orphanedIds)
-    }
+      val sessionsWithPendingMetrics = sessionManager.getSessionsWithMetrics(pendingIds)
 
-    if (sessionsWithPendingMetrics.isEmpty()) {
-      return
-    }
+      // Clean up orphaned pending IDs (metrics deleted from MetricsDatabase but still in pending table)
+      val resolvedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }.toSet()
+      val orphanedIds = pendingIds.filter { it !in resolvedMetricIds }
+      if (orphanedIds.isNotEmpty()) {
+        pendingMetricsManager.removePendingMetrics(orphanedIds)
+      }
 
-    val events = sessionsWithPendingMetrics.map { sessionWithMetrics ->
-      Event(
-        metadata = Metadata.fromSessionMetadata(sessionWithMetrics.session),
-        metrics = sessionWithMetrics.metrics.map { EASMetric.fromMetric(it) }
-      )
-    }
+      if (sessionsWithPendingMetrics.isNotEmpty()) {
+        val events = sessionsWithPendingMetrics.map { sessionWithMetrics ->
+          Event(
+            metadata = Metadata.fromSessionMetadata(sessionWithMetrics.session),
+            metrics = sessionWithMetrics.metrics.map { EASMetric.fromMetric(it) }
+          )
+        }
 
-    val result = eventDispatcher.dispatch(events)
-    metricsRetryGate = nextGate(metricsRetryGate, result)
-    val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
-    if (DispatchUtils.shouldRemovePending(result)) {
-      pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
-    }
-    when (result) {
-      is DispatchResult.PartialSuccess ->
-        Log.w(
-          OBSERVE_TAG,
-          "Partial success on batch of ${dispatchedMetricIds.size} metric event(s): " +
-            "server rejected ${result.partial.rejectedCount} " +
-            "(${result.partial.errorMessage ?: "no error message"})"
-        )
-      is DispatchResult.NonRetryableFailure ->
-        Log.w(
-          OBSERVE_TAG,
-          "Dropping batch of ${dispatchedMetricIds.size} metric event(s): ${result.reason}"
-        )
-      is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+        val result = eventDispatcher.dispatch(events)
+        metricsRetryGate = nextGate(metricsRetryGate, result)
+        val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
+        if (DispatchUtils.shouldRemovePending(result)) {
+          pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
+        }
+        when (result) {
+          is DispatchResult.PartialSuccess ->
+            Log.w(
+              OBSERVE_TAG,
+              "Partial success on batch of ${dispatchedMetricIds.size} metric event(s): " +
+                "server rejected ${result.partial.rejectedCount} " +
+                "(${result.partial.errorMessage ?: "no error message"})"
+            )
+          is DispatchResult.NonRetryableFailure ->
+            Log.w(
+              OBSERVE_TAG,
+              "Dropping batch of ${dispatchedMetricIds.size} metric event(s): ${result.reason}"
+            )
+          is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+        }
+        if (result is DispatchResult.RetryableFailure) {
+          break
+        }
+      }
     }
   }
 
@@ -211,8 +219,7 @@ class BaseObservabilityManager(
    * a logs failure doesn't affect the metrics pending table and vice versa.
    */
   suspend fun dispatchUnsentLogs(): Unit = logsDispatchMutex.withLock {
-    val pendingIds = pendingLogsManager.getAllPendingLogIds()
-    if (pendingIds.isEmpty()) {
+    if (!pendingLogsManager.hasPendingLogs()) {
       return
     }
 
@@ -221,52 +228,61 @@ class BaseObservabilityManager(
     }
 
     if (!shouldDispatch()) {
-      pendingLogsManager.removePendingLogs(pendingIds)
+      pendingLogsManager.removeAllPendingLogs()
       return
     }
 
-    val sessionsWithPendingLogs = sessionManager.getSessionsWithLogs(pendingIds)
+    while (true) {
+      val pendingIds = pendingLogsManager.getPendingLogIds(dispatchChunkSize)
+      if (pendingIds.isEmpty()) {
+        break
+      }
 
-    // Clean up orphaned pending IDs (logs deleted from the `logs` table but
-    // still tracked in `pending_logs`).
-    val resolvedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }.toSet()
-    val orphanedIds = pendingIds.filter { it !in resolvedLogIds }
-    if (orphanedIds.isNotEmpty()) {
-      pendingLogsManager.removePendingLogs(orphanedIds)
-    }
+      val sessionsWithPendingLogs = sessionManager.getSessionsWithLogs(pendingIds)
 
-    if (sessionsWithPendingLogs.isEmpty()) {
-      return
-    }
+      // Clean up orphaned pending IDs (logs deleted from the `logs` table but
+      // still tracked in `pending_logs`).
+      val resolvedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }.toSet()
+      val orphanedIds = pendingIds.filter { it !in resolvedLogIds }
+      if (orphanedIds.isNotEmpty()) {
+        pendingLogsManager.removePendingLogs(orphanedIds)
+      }
 
-    val events = sessionsWithPendingLogs.map { sessionWithLogs ->
-      Event(
-        metadata = Metadata.fromSessionMetadata(sessionWithLogs.session),
-        metrics = emptyList(),
-        logs = sessionWithLogs.logs.map { LogEvent.fromLogRecord(it) }
-      )
-    }
+      if (sessionsWithPendingLogs.isNotEmpty()) {
+        val events = sessionsWithPendingLogs.map { sessionWithLogs ->
+          Event(
+            metadata = Metadata.fromSessionMetadata(sessionWithLogs.session),
+            metrics = emptyList(),
+            logs = sessionWithLogs.logs.map { LogEvent.fromLogRecord(it) }
+          )
+        }
 
-    val result = eventDispatcher.dispatchLogs(events)
-    logsRetryGate = nextGate(logsRetryGate, result)
-    val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
-    if (DispatchUtils.shouldRemovePending(result)) {
-      pendingLogsManager.removePendingLogs(dispatchedLogIds)
-    }
-    when (result) {
-      is DispatchResult.PartialSuccess ->
-        Log.w(
-          OBSERVE_TAG,
-          "Partial success on batch of ${dispatchedLogIds.size} log event(s): " +
-            "server rejected ${result.partial.rejectedCount} " +
-            "(${result.partial.errorMessage ?: "no error message"})"
-        )
-      is DispatchResult.NonRetryableFailure ->
-        Log.w(
-          OBSERVE_TAG,
-          "Dropping batch of ${dispatchedLogIds.size} log event(s): ${result.reason}"
-        )
-      is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+        val result = eventDispatcher.dispatchLogs(events)
+        logsRetryGate = nextGate(logsRetryGate, result)
+        val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
+        if (DispatchUtils.shouldRemovePending(result)) {
+          pendingLogsManager.removePendingLogs(dispatchedLogIds)
+        }
+        when (result) {
+          is DispatchResult.PartialSuccess ->
+            Log.w(
+              OBSERVE_TAG,
+              "Partial success on batch of ${dispatchedLogIds.size} log event(s): " +
+                "server rejected ${result.partial.rejectedCount} " +
+                "(${result.partial.errorMessage ?: "no error message"})"
+            )
+          is DispatchResult.NonRetryableFailure ->
+            Log.w(
+              OBSERVE_TAG,
+              "Dropping batch of ${dispatchedLogIds.size} log event(s): ${result.reason}"
+            )
+          is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+        }
+        if (result is DispatchResult.RetryableFailure) {
+          break
+        }
+      }
+
     }
   }
 

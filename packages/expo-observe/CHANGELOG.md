@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- [Android] Dispatch pending metrics and logs in bounded, oldest-first chunks.
 - Mark the `AppMetrics` export as deprecated in favor of `Observe`. ([#48901](https://github.com/expo/expo/pull/48901) by [@kadikraman](https://github.com/kadikraman))
 
 ## 57.0.9 — 2026-07-29

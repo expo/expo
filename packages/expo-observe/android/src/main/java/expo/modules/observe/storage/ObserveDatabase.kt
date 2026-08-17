@@ -30,8 +30,14 @@ interface PendingMetricDao {
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   suspend fun insertAll(metrics: List<PendingMetric>)
 
-  @Query("SELECT metricId FROM pending_metrics")
-  suspend fun getAllMetricIds(): List<String>
+  @Query("SELECT metricId FROM pending_metrics ORDER BY addedAt ASC LIMIT :limit")
+  suspend fun getMetricIds(limit: Int): List<String>
+
+  @Query("SELECT EXISTS(SELECT 1 FROM pending_metrics)")
+  suspend fun hasMetricIds(): Boolean
+
+  @Query("DELETE FROM pending_metrics")
+  suspend fun deleteAll()
 
   @Query("DELETE FROM pending_metrics WHERE metricId IN (:metricIds)")
   suspend fun deleteByIds(metricIds: List<String>)
@@ -45,8 +51,14 @@ interface PendingLogDao {
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   suspend fun insertAll(logs: List<PendingLog>)
 
-  @Query("SELECT logId FROM pending_logs")
-  suspend fun getAllLogIds(): List<String>
+  @Query("SELECT logId FROM pending_logs ORDER BY addedAt ASC LIMIT :limit")
+  suspend fun getLogIds(limit: Int): List<String>
+
+  @Query("SELECT EXISTS(SELECT 1 FROM pending_logs)")
+  suspend fun hasLogIds(): Boolean
+
+  @Query("DELETE FROM pending_logs")
+  suspend fun deleteAll()
 
   @Query("DELETE FROM pending_logs WHERE logId IN (:logIds)")
   suspend fun deleteByIds(logIds: List<String>)
