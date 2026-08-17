@@ -18,6 +18,9 @@ object SplashScreenManager {
   var preventAutoHideCalled: Boolean = false
   private lateinit var splashScreen: SplashScreen
 
+  // Whether the main activity is currently stopped, see configureSplashScreen.
+  private var mainActivityStopped = false
+
   private val contentAppearedListener = ReactMarker.MarkerListener { name, _, _ ->
     if (name == ReactMarkerConstants.CONTENT_APPEARED) {
       if (!preventAutoHideCalled) {
@@ -37,18 +40,31 @@ object SplashScreenManager {
 
     splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
       val splashScreenView = splashScreenViewProvider.view
+
+      fun removeSplashScreenView() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+          splashScreenViewProvider.remove()
+        } else {
+          // Avoid calling applyThemesSystemBarAppearance
+          (splashScreenView as SplashScreenView).remove()
+        }
+      }
+
+      if (mainActivityStopped) {
+        // Animating while stopped can crash on API 31-33
+        // (https://issuetracker.google.com/issues/242118185), but the view
+        // still has to be removed or the splash stays on screen forever.
+        removeSplashScreenView()
+        return@setOnExitAnimationListener
+      }
+
       splashScreenView
         .animate()
         .setDuration(duration)
         .alpha(0.0f)
         .setInterpolator(AccelerateInterpolator())
         .withEndAction {
-          if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            splashScreenViewProvider.remove()
-          } else {
-            // Avoid calling applyThemesSystemBarAppearance
-            (splashScreenView as SplashScreenView).remove()
-          }
+          removeSplashScreenView()
         }.start()
     }
   }
@@ -73,28 +89,35 @@ object SplashScreenManager {
 
     configureSplashScreen()
 
-    // Mitigate race where splash exit listener may fire after activity stop,
-    // causing SurfaceControl.checkNotReleased() crash on API 31-33
-    // https://issuetracker.google.com/issues/242118185
-    if (Build.VERSION.SDK_INT in Build.VERSION_CODES.S..Build.VERSION_CODES.TIRAMISU) {
-      val application = mainActivity.application
+    // We used to clear the exit animation listener on the first stop to avoid
+    // the SurfaceControl crash on API 31-33. With no listener left, a splash
+    // dismissed after a stop was never removed and stayed visible forever.
+    // Track the stopped state instead and skip only the animation.
+    val application = mainActivity.application
+    application.registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+      override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+      override fun onActivityPaused(activity: Activity) {}
+      override fun onActivityResumed(activity: Activity) {}
+      override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
 
-      application.registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-        override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-        override fun onActivityDestroyed(activity: Activity) {}
-        override fun onActivityPaused(activity: Activity) {}
-        override fun onActivityResumed(activity: Activity) {}
-        override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-        override fun onActivityStarted(activity: Activity) {}
-
-        override fun onActivityStopped(activity: Activity) {
-          if (activity == mainActivity) {
-            runCatching { mainActivity.splashScreen.clearOnExitAnimationListener() }
-            application.unregisterActivityLifecycleCallbacks(this)
-          }
+      override fun onActivityStarted(activity: Activity) {
+        if (activity == mainActivity) {
+          mainActivityStopped = false
         }
-      })
-    }
+      }
+
+      override fun onActivityStopped(activity: Activity) {
+        if (activity == mainActivity) {
+          mainActivityStopped = true
+        }
+      }
+
+      override fun onActivityDestroyed(activity: Activity) {
+        if (activity == mainActivity) {
+          application.unregisterActivityLifecycleCallbacks(this)
+        }
+      }
+    })
   }
 
   fun hide() {
