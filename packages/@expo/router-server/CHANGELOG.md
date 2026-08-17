@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Compile `pageHeaders` rules into the routes manifest ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
