@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Remove the manual packager socket reconnect now that the bundle configuration resolves the dev server host. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 56.0.22 — 2026-08-17
+
+### 🐛 Bug fixes
+
+- [iOS] Remove the manual packager socket reconnect now that the bundle configuration resolves the dev server host. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.21 — 2026-07-23
 

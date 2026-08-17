@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [iOS] Add `IOSConfig.DevServer.withMetroPort` to write the `RCTMetroPort` Info.plist key from the `RCT_METRO_PORT` build setting. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.15 — 2026-08-17
+
+### 🎉 New features
+
+- [iOS] Add `IOSConfig.DevServer.withMetroPort` to write the `RCTMetroPort` Info.plist key from the `RCT_METRO_PORT` build setting. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.14 — 2026-07-23
 

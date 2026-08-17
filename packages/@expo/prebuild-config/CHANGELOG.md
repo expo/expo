@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Write the `RCTMetroPort` Info.plist key so bare dev builds resolve their own Metro port instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 56.0.22 — 2026-08-17
+
+### 🐛 Bug fixes
+
+- [iOS] Write the `RCTMetroPort` Info.plist key so bare dev builds resolve their own Metro port instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.21 — 2026-07-23
 

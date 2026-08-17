@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.19.11 — 2026-08-17
+
+### 🎉 New features
+
 - Warn projects using Expo SDKs affected by the Hermes v1 memory regression ([#48887](https://github.com/expo/expo/pull/48887) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
 - [Internal] Prevent `ncc` from removing dynamic requires where we need them ([#48887](https://github.com/expo/expo/pull/48887) by [@kitten](https://github.com/kitten))
-
-### 💡 Others
 
 ## 1.19.10 — 2026-06-10
 

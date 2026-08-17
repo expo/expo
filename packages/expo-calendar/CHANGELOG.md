@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [ios] Fix a crash when reading `calendarId` on an event or reminder whose `EKCalendarItem.calendar` is nil. The property is `null_unspecified` in the EventKit headers, so the bare access was an implicit force-unwrap that trapped the JS thread. ([#48445](https://github.com/expo/expo/pull/48445) by [@cvburgess](https://github.com/cvburgess))
-
 ### 💡 Others
+
+## 56.0.10 — 2026-08-17
+
+### 🐛 Bug fixes
+
+- [ios] Fix a crash when reading `calendarId` on an event or reminder whose `EKCalendarItem.calendar` is nil. The property is `null_unspecified` in the EventKit headers, so the bare access was an implicit force-unwrap that trapped the JS thread. ([#48445](https://github.com/expo/expo/pull/48445) by [@cvburgess](https://github.com/cvburgess))
 
 ## 56.0.9 — 2026-07-01
 

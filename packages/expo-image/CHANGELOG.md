@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [web] Fixed Expo Image's internal `dataSet` marker being overwritten by a user-provided `dataSet`. ([#48821](https://github.com/expo/expo/pull/48821) by [@Brentlok](https://github.com/Brentlok))
-
 ### 💡 Others
+
+## 56.0.12 — 2026-08-17
+
+### 🐛 Bug fixes
+
+- [web] Fixed Expo Image's internal `dataSet` marker being overwritten by a user-provided `dataSet`. ([#48821](https://github.com/expo/expo/pull/48821) by [@Brentlok](https://github.com/Brentlok))
 
 ## 56.0.11 — 2026-06-10
 

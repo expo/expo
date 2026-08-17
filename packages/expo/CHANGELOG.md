@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.20 — 2026-08-17
+
+### 🐛 Bug fixes
+
 - [iOS] Add ExpoBundleConfiguration to derive RCTBundleConfiguration from the normalized bundle URL instead of default shared settings singleton ([#48010](https://github.com/expo/expo/pull/48010) by [@kitten](https://github.com/kitten))
 - [iOS] Resolve the dev server port from the `RCTMetroPort` Info.plist key at runtime so bare projects without expo-dev-client connect to their own Metro instance instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 - [macOS] Fix build by guarding the `bundleConfiguration` override, which requires react-native 0.84+. ([#48494](https://github.com/expo/expo/pull/48494) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
