@@ -3,16 +3,20 @@ package expo.modules.filesystem.legacy
 import android.util.Base64
 import java.io.InputStream
 
+// `encoding` is nullable because the record converter leaves fields absent from the JS options
+// object null instead of applying the `ReadingOptions` default. Anything that is not base64 is
+// read as UTF-8, which is what the module did before this function existed.
 internal fun readInputStreamAsString(
   inputStream: InputStream,
-  encoding: EncodingType,
+  encoding: EncodingType?,
   options: ReadingOptions
 ): String {
   val bytes = inputStream.readBytes(options)
 
-  return when (encoding) {
-    EncodingType.BASE64 -> Base64.encodeToString(bytes, Base64.NO_WRAP)
-    EncodingType.UTF8 -> String(bytes, Charsets.UTF_8)
+  return if (encoding == EncodingType.BASE64) {
+    Base64.encodeToString(bytes, Base64.NO_WRAP)
+  } else {
+    String(bytes, Charsets.UTF_8)
   }
 }
 

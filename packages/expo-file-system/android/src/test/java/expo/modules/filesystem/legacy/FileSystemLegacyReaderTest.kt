@@ -45,6 +45,19 @@ class FileSystemLegacyReaderTest {
   }
 
   @Test
+  fun readsUtf8WhenEncodingIsMissing() {
+    // `ReadingOptions` is built by the Expo modules record converter, which leaves fields absent
+    // from the JS object null instead of applying the Kotlin default, so `encoding` can be null.
+    val result = readInputStreamAsString(
+      inputStream = ByteArrayInputStream("alpha beta".toByteArray(Charsets.UTF_8)),
+      encoding = null,
+      options = ReadingOptions(encoding = EncodingType.UTF8, position = null, length = null)
+    )
+
+    assertEquals("alpha beta", result)
+  }
+
+  @Test
   fun returnsEmptyStringWhenByteRangeStartsAfterEndOfStream() {
     val result = readInputStreamAsString(
       inputStream = ByteArrayInputStream("alpha".toByteArray(Charsets.UTF_8)),
