@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 29.0.20 — 2026-08-17
+
+### 🐛 Bug fixes
+
 - [iOS] Set `always_out_of_date` on the `Generate updates resources for expo-updates` script_phase to silence the Xcode "run script phase will run on every build" dependency-analysis warning. ([#47622](https://github.com/expo/expo/pull/47622) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Reject updates whose asset key or file extension contains a path separator, which previously let a manifest write and delete files outside the updates directory. ([#48762](https://github.com/expo/expo/pull/48762), [#48763](https://github.com/expo/expo/pull/48763) by [@alanjhughes](https://github.com/alanjhughes))
 

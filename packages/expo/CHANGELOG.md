@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.37 — 2026-08-17
+
+### 🐛 Bug fixes
+
 - [Android] Fixed expo-fetch race condition causing out-of-order delivery of initial chunks ([#42161](https://github.com/expo/expo/pull/42161) by [@matthieugicquel](https://github.com/matthieugicquel))
 
 ### 💡 Others

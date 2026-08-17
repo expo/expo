@@ -8,11 +8,15 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 54.0.27 — 2026-08-17
+
+### 🐛 Bug fixes
+
 - Ignore simulators reported by `devicectl` and support json version 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
 - Fix wirelessly connected iOS 16 and older devices being omitted from `expo run:ios --device` selection. ([#48127](https://github.com/expo/expo/pull/48127) by [@davellanedam](https://github.com/davellanedam))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing. ([#48631](https://github.com/expo/expo/pull/48631) by [@gwdp](https://github.com/gwdp))
-
-### 💡 Others
 
 ## 54.0.26 — 2026-07-15
 

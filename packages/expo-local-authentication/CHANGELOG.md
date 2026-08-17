@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Ensure concurrent `authenticateAsync` calls don't resolve the active prompt's promise ([#45954](https://github.com/expo/expo/pull/45954) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 17.0.9 — 2026-08-17
+
+### 🐛 Bug fixes
+
+- [Android] Ensure concurrent `authenticateAsync` calls don't resolve the active prompt's promise ([#45954](https://github.com/expo/expo/pull/45954) by [@kitten](https://github.com/kitten))
 
 ## 17.0.8 — 2025-12-05
 

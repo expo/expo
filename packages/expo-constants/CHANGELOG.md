@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 18.0.14 — 2026-08-17
+
+_This version does not introduce any user-facing changes._
+
 ## 18.0.13 — 2026-01-06
 
 _This version does not introduce any user-facing changes._
