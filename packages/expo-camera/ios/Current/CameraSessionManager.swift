@@ -109,7 +109,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       return
     }
     if delegate.active {
-      if !self.session.isRunning {
+      if hasAvailableCameraDevice && !self.session.isRunning {
         self.session.startRunning()
       }
     } else {
