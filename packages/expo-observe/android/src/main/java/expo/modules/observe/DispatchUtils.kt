@@ -98,14 +98,16 @@ object DispatchUtils {
    *   permanently, so retrying would produce the same answer; removing them drops the batch
    *   so it can't wedge subsequent rounds. This is the acceptance-criterion behavior: a
    *   400/403 must not be re-sent on the next cycle.
-   * - `RetryableFailure` and `PayloadTooLarge` keep them so they can be retried.
+   * - `PayloadTooLarge` removes the pending ID because multi-record batches are retried with
+   *   smaller chunks before this check, so reaching it means a single record exceeded the limit.
+   * - `RetryableFailure` keeps them so they can be retried.
    */
   fun shouldRemovePending(result: DispatchResult): Boolean = when (result) {
     is DispatchResult.Success,
     is DispatchResult.PartialSuccess,
-    is DispatchResult.NonRetryableFailure -> true
-    is DispatchResult.RetryableFailure,
-    is DispatchResult.PayloadTooLarge -> false
+    is DispatchResult.NonRetryableFailure,
+    is DispatchResult.PayloadTooLarge -> true
+    is DispatchResult.RetryableFailure -> false
   }
 
   /**

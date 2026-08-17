@@ -265,17 +265,19 @@ class DispatchUtilsShouldRemovePendingTest {
     assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.Success))
   }
 
+  // Multi-record payloads are retried in smaller chunks before this check, so a 413 here
+  // represents a single oversized record that must not wedge the queue.
+  @Test
+  fun `PayloadTooLarge removes pending IDs`() {
+    assertTrue(DispatchUtils.shouldRemovePending(DispatchResult.PayloadTooLarge))
+  }
+
   // `Retryable` is the "leave them alone" case — the next dispatch round picks the same
   // rows up again. This is what keeps an in-flight outage from losing telemetry.
   @Test
   fun `Retryable keeps pending IDs`() {
     assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure()))
     assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure(retryAfterMs = 30_000L)))
-  }
-
-  @Test
-  fun `PayloadTooLarge keeps pending IDs`() {
-    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.PayloadTooLarge))
   }
 
   // `PartialSuccess` removes pending IDs like `Success` does: the bytes landed on the

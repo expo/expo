@@ -209,25 +209,23 @@ class BaseObservabilityManager(
               OBSERVE_TAG,
               "Dropping batch of ${dispatchedMetricIds.size} metric event(s): ${result.reason}"
             )
-          is DispatchResult.PayloadTooLarge -> {
-            if (dispatchedMetricIds.size > 1) {
-              chunkSize = dispatchedMetricIds.size / 2
-            } else {
-              // A single record can't realistically exceed the server's payload limit, so drop
-              // it as a last-resort safety valve and stop this dispatch round.
+          is DispatchResult.PayloadTooLarge ->
+            if (dispatchedMetricIds.size == 1) {
               Log.w(OBSERVE_TAG, "Dropping metric event that exceeds the server's payload limit")
-              pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
-              break
             }
-          }
           is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+        }
+        if (result is DispatchResult.PayloadTooLarge && dispatchedMetricIds.size > 1) {
+          chunkSize = dispatchedMetricIds.size / 2
+          // Keep the pending metrics, but retry immediately with a smaller chunk.
+          continue
         }
         if (!DispatchUtils.shouldRemovePending(result)) {
           break
         }
         pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
-        // A non-retryable rejection is likely systematic, so leave the rest for the next dispatch run.
-        if (result is DispatchResult.NonRetryableFailure) {
+        // A systematic rejection or an oversized record: leave the rest for the next run.
+        if (result is DispatchResult.NonRetryableFailure || result is DispatchResult.PayloadTooLarge) {
           break
         }
       }
@@ -298,25 +296,23 @@ class BaseObservabilityManager(
               OBSERVE_TAG,
               "Dropping batch of ${dispatchedLogIds.size} log event(s): ${result.reason}"
             )
-          is DispatchResult.PayloadTooLarge -> {
-            if (dispatchedLogIds.size > 1) {
-              chunkSize = dispatchedLogIds.size / 2
-            } else {
-              // A single record can't realistically exceed the server's payload limit, so drop
-              // it as a last-resort safety valve and stop this dispatch round.
+          is DispatchResult.PayloadTooLarge ->
+            if (dispatchedLogIds.size == 1) {
               Log.w(OBSERVE_TAG, "Dropping log event that exceeds the server's payload limit")
-              pendingLogsManager.removePendingLogs(dispatchedLogIds)
-              break
             }
-          }
           is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+        }
+        if (result is DispatchResult.PayloadTooLarge && dispatchedLogIds.size > 1) {
+          chunkSize = dispatchedLogIds.size / 2
+          // Keep the pending logs, but retry immediately with a smaller chunk.
+          continue
         }
         if (!DispatchUtils.shouldRemovePending(result)) {
           break
         }
         pendingLogsManager.removePendingLogs(dispatchedLogIds)
-        // A non-retryable rejection is likely systematic, so leave the rest for the next dispatch run.
-        if (result is DispatchResult.NonRetryableFailure) {
+        // A systematic rejection or an oversized record: leave the rest for the next run.
+        if (result is DispatchResult.NonRetryableFailure || result is DispatchResult.PayloadTooLarge) {
           break
         }
       }
