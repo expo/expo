@@ -110,6 +110,52 @@ it('embeds current fingerprints for env vars inlined in production', async () =>
   expect(typeof output.data.expoCacheVary![0]!.fp).toBe('string');
 });
 
+it('embeds current fingerprints with the noxcturnal transform worker', async () => {
+  process.env.EXPO_PUBLIC_TEST = 'native-test-value';
+
+  const result = await Transformer.transform(
+    { ...baseConfig, unstable_noxcturnalTransformWorker: true } as JsTransformerConfig & {
+      unstable_noxcturnalTransformWorker: boolean;
+    },
+    '/root',
+    'local/file.js',
+    Buffer.from('console.log(process.env.EXPO_PUBLIC_TEST);', 'utf8'),
+    { ...baseTransformOptions, dev: false }
+  );
+
+  const output = result.output[0] as ExpoJsOutput;
+  expect(output.data.expoCacheVary).toEqual([
+    {
+      scheme: 'env',
+      name: 'EXPO_PUBLIC_TEST',
+      fp: sha1(JSON.stringify('native-test-value')),
+    },
+  ]);
+});
+
+it('embeds current fingerprints for noxcturnal defines in node_modules', async () => {
+  process.env.EXPO_PUBLIC_USE_RN_FETCH = '1';
+
+  const result = await Transformer.transform(
+    { ...baseConfig, unstable_noxcturnalTransformWorker: true } as JsTransformerConfig & {
+      unstable_noxcturnalTransformWorker: boolean;
+    },
+    '/root',
+    'node_modules/example/index.js',
+    Buffer.from('console.log(process.env.EXPO_PUBLIC_USE_RN_FETCH);', 'utf8'),
+    { ...baseTransformOptions, dev: false }
+  );
+
+  const output = result.output[0] as ExpoJsOutput;
+  expect(output.data.expoCacheVary).toEqual([
+    {
+      scheme: 'env',
+      name: 'EXPO_PUBLIC_USE_RN_FETCH',
+      fp: sha1(JSON.stringify('1')),
+    },
+  ]);
+});
+
 it('embeds no expoCacheVary in development', async () => {
   process.env.EXPO_PUBLIC_TEST = 'test-value';
 
