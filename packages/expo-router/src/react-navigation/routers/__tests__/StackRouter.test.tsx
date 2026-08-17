@@ -1,4 +1,4 @@
-import { expect, jest, test } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 
 import {
   CommonActions,
@@ -11,6 +11,73 @@ import {
 import { createInitialState } from '../../core/createInitialState';
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
+
+describe('state without router type', () => {
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: { bar: ({ params }) => params?.id },
+  };
+  const createState = (index = 1): StackNavigationState<ParamListBase> => ({
+    stale: false,
+    key: 'root',
+    index,
+    routeNames: options.routeNames,
+    routes: [
+      { key: 'bar', name: 'bar', params: { id: 'one' } },
+      { key: 'baz', name: 'baz' },
+    ],
+  });
+
+  test.each([
+    StackActions.push('bar'),
+    CommonActions.navigate('bar'),
+    CommonActions.goBack(),
+    CommonActions.preload('bar', { id: 'one' }),
+    CommonActions.preload('baz', { id: 'new' }),
+    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: options.routeNames } } as const,
+  ])('$type returns stack state', (action) => {
+    expect(StackRouter({}).getStateForAction(createState(), action, options)?.type).toBe(
+      'stack'
+    );
+  });
+
+  test('stamps stack state on route focus', () => {
+    expect(StackRouter({}).getStateForRouteFocus(createState(0), 'baz').type).toBe('stack');
+  });
+
+  test('stamps complete RESET state', () => {
+    const state = createState();
+    const result = StackRouter({}).getStateForAction(
+      state,
+      CommonActions.reset({ ...state, index: 0, routes: [state.routes[0]!] }),
+      options
+    );
+
+    expect(result?.type).toBe('stack');
+  });
+
+  test('preserves the type from complete RESET state', () => {
+    const state = createState();
+    const result = StackRouter({}).getStateForAction(
+      state,
+      CommonActions.reset({ ...state, type: 'stack' }),
+      options
+    );
+
+    expect(result?.type).toBe('stack');
+  });
+
+  test('passes partial RESET state through unchanged', () => {
+    const partialState = { routes: [{ name: 'bar' }] };
+    const result = StackRouter({}).getStateForAction(
+      createState(),
+      CommonActions.reset(partialState),
+      options
+    );
+
+    expect(result).toBe(partialState);
+  });
+});
 
 test('gets rehydrated state from partial state', () => {
   const router = StackRouter({});
@@ -265,11 +332,14 @@ test('gets state on route names change with initialRouteName', () => {
   });
 });
 
-test('returns the same stack state when route names already match', () => {
+test('returns the same complete stack state when route names already match', () => {
   const router = StackRouter({});
-  const state = createInitialState<StackNavigationState<ParamListBase>>({
-    routeNames: ['bar', 'baz'],
-  });
+  const state = {
+    ...createInitialState<StackNavigationState<ParamListBase>>({
+      routeNames: ['bar', 'baz'],
+    }),
+    type: 'stack' as const,
+  };
 
   expect(
     router.getStateForAction(
@@ -333,6 +403,7 @@ test('handles navigate action', () => {
     )
   ).toEqual({
     stale: false,
+    type: 'stack',
     key: 'root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
