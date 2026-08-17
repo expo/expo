@@ -24,7 +24,12 @@
 #     review, dismiss, undismiss, help (handled by other workflows).
 #
 # The agent is headless Claude Code connected to the expo-sandbox-mcp server
-# (hosted E2B sandboxes, proxied EAS builds, hosted iOS simulators). It
+# (hosted E2B Linux sandboxes, GHA VMs for image-specific checks — Windows
+# Server, macOS 15, Ubuntu CI — proxied EAS builds, hosted iOS simulators).
+# Linux E2B + the hosted simulator stay the default. A GHA VM is the
+# exception: same image as GitHub Actions, not a pauseable sandbox and not
+# EAS Simulator. An Expo app on that VM can still be shown on the hosted
+# simulator via Metro --tunnel (see .github/verify/prompt.md). It
 # reproduces the report where the hosted simulator can exhibit it, runs
 # cold-launch censuses / behavioral checks / crash loops as the issue
 # demands, and posts ONE findings comment whose evidence sections
@@ -804,9 +809,9 @@ jobs:
       # whole run: the first time this step's push was ever reached it died on
       # "could not read Username", after twelve minutes, a sandbox and two EAS
       # builds, with a findings comment already posted claiming a pull request
-      # that did not exist. `--dry-run` performs the real connection, the real
-      # authentication and the real ref negotiation, and writes nothing — so
-      # this answers "can we push?" in seconds, before anything is spent.
+      # that did not exist. Check API write + `git ls-remote` here — not a
+      # dry-run push of this checkout, which is often behind main and would
+      # look like a workflow-file update (PAT has no `workflow` scope).
       #
       # Its own step on purpose: "Run agent command" holds NO GitHub token, and
       # that is a property worth keeping.
@@ -838,38 +843,24 @@ jobs:
               echo "::error::Could not resolve or create the bot fork $fork; fix mode refuses to use a secret-bearing same-repository branch."
               exit 1
             fi
-            fork_default=$(gh api "repos/$fork" --jq .default_branch)
-            # The dedicated sync-expo-bot-fork workflow (DO_NOT_USE_EXPO_BOT_FORK_SYNC_TOKEN)
-            # is what is allowed to move workflow files. This token is not.
-            # Retry a few times: a verify that starts on the same push as a
-            # workflow change can land before that job finishes. Keep the API
-            # body — 422 is workflow scope, 404 is "cannot write this repo".
-            synced=
-            for attempt in 1 2 3 4; do
-              if sync_out=$(gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" 2>&1); then
-                synced=1
-                printf '%s\n' "$sync_out"
-                break
-              fi
-              echo "merge-upstream attempt $attempt failed:"
-              printf '%s\n' "$sync_out"
-              [ "$attempt" -eq 4 ] && break
-              sleep 20
-            done
-            if [ -z "$synced" ]; then
-              echo "::error::Could not synchronize $fork with upstream; refusing a push that may include stale workflow commits."
+            # Do not merge-upstream here. EXPO_BOT_GITHUB_TOKEN has no
+            # `workflow` scope; moving workflow files is the dedicated
+            # sync-expo-bot-fork job on every expo/expo main land. A dry-run
+            # push of this (possibly stale) checkout would false-fail the
+            # same way #33857 did. Check API write + git auth only.
+            can_push=$(gh api "repos/$fork" --jq '.permissions.push // false')
+            if [ "$can_push" != "true" ]; then
+              echo "::error::EXPO_BOT_GITHUB_TOKEN cannot push to the bot fork $fork, so fix mode could not open a pull request."
               exit 1
             fi
             gh auth setup-git
-            # No pipe here: `git ... | tail` would report tail's exit status and
-            # the check would pass no matter what git did.
-            if ! git push --dry-run "https://github.com/$fork.git" "HEAD:refs/heads/agent-preflight-$GITHUB_RUN_ID"; then
-              echo "::error::EXPO_BOT_GITHUB_TOKEN cannot push to the bot fork $fork, so fix mode could not open a pull request."
+            if ! git ls-remote "https://github.com/$fork.git" HEAD >/dev/null; then
+              echo "::error::git cannot authenticate to $fork with EXPO_BOT_GITHUB_TOKEN."
               exit 1
             fi
             echo "BOT_FORK_OWNER=$fork_owner" >> "$GITHUB_ENV"
             echo "BOT_FORK=$fork" >> "$GITHUB_ENV"
-            echo "preflight: push credentials work for $fork; fix mode can open a fork pull request"
+            echo "preflight: bot token can push to $fork; fix mode can open a fork pull request"
           fi
 
       - name: Run agent command
@@ -954,6 +945,12 @@ jobs:
               # phase, after a reviewer has attacked the draft, and are added
               # to this list only by "Revise and post".
               "mcp__sandbox__create_sandbox"
+              # GHA VM (create_gha_sandbox runsOn windows-2025 | macos-15 |
+              # ubuntu-24.04) for behavior that only that CI image can
+              # exhibit. Linux E2B stays the default. The prompts carry
+              # the policy, the empty-VM recipe, and how to load a GHA
+              # Metro --tunnel URL into the hosted EAS simulator.
+              "mcp__sandbox__create_gha_sandbox"
               "mcp__sandbox__list_sandboxes"
               "mcp__sandbox__get_session_info"
               "mcp__sandbox__sandbox_exec"
@@ -974,8 +971,11 @@ jobs:
               "mcp__sandbox__simulator_ui"
               "mcp__sandbox__simulator_tap"
               "mcp__sandbox__simulator_type"
+              "mcp__sandbox__simulator_long_press"
               "mcp__sandbox__simulator_wait"
               "mcp__sandbox__simulator_scroll"
+              "mcp__sandbox__simulator_gesture"
+              "mcp__sandbox__simulator_navigate"
               "mcp__sandbox__simulator_query"
               "mcp__sandbox__simulator_open"
               "mcp__sandbox__simulator_boot_app"
@@ -1681,39 +1681,128 @@ jobs:
           # agent-authored change with repository secrets available.
           fork_owner=${BOT_FORK_OWNER:-}
           fork=${BOT_FORK:-}
-          # SYNC THE FORK FIRST. A branch pushed to a stale fork introduces
-          # every upstream commit between the fork's tip and this checkout —
-          # including any that touch .github/workflows/** — and a classic PAT
-          # carrying public_repo (which deliberately excludes `workflow`) is
-          # refused outright. Observed on run 31540508035:
-          #
-          #   ! [remote rejected] HEAD -> verify/48804-31540508035 (refusing to
-          #     allow a Personal Access Token to create or update workflow
-          #     `.github/workflows/verify-command.yml` without `workflow` scope)
-          #
-          # The path denylist above already refuses an agent patch that touches
-          # .github/**, so once the fork is level with upstream the push carries
-          # only the agent's own commit and there is no workflow file in it.
-          # Note this gets WORSE the staler the fork is, so it is not optional.
-          if [ -n "$fork" ]; then
-            fork_default=$(gh api "repos/$fork" --jq .default_branch 2>/dev/null || echo main)
-            if ! sync_out=$(gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" 2>&1); then
-              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not synchronize the bot fork. It refused to push a branch that might include stale workflow commits, and refused the secret-bearing same-repository fallback. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
-              echo "::error::could not sync $fork with upstream; refusing to push."
-              printf '%s\n' "$sync_out"
-              exit 1
-            fi
-            echo "synced $fork ($fork_default) with upstream before pushing"
-          fi
+          # Do not merge-upstream here. EXPO_BOT_GITHUB_TOKEN has no
+          # `workflow` scope; sync-expo-bot-fork on every expo/expo main
+          # land is what fast-forwards expo-bot/expo. This step:
+          #   1. replays the publish commit onto current origin/main
+          #      (denylist already forbids the agent from editing .github/**);
+          #   2. compares HEAD:.github/workflows to the fork default — that
+          #      is what GitHub checks, not full commit SHA equality;
+          #   3. pushes when those trees match. If they do not, wait for the
+          #      sync job (only needed when main moved a workflow file).
+          # Observed without this: run 31988056108 / #33857, and the
+          # earlier 31540508035 stale-fork reject.
           if [ -z "$fork" ]; then
             gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not resolve or create the bot fork. It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
             echo "::error::could not resolve or create the bot fork; refusing unsafe same-repository fallback."
             exit 1
           fi
-          if ! git push -q "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
-            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not push it to the bot fork. It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
-            echo "::error::push to fork $fork failed; refusing unsafe same-repository fallback."
+          replay_onto_origin_main() {
+            git fetch --depth=1 origin main
+            base=$(git rev-parse HEAD~1)
+            tip=$(git rev-parse origin/main)
+            if [ "$base" = "$tip" ]; then
+              echo "publish commit already sits on origin/main"
+              return 0
+            fi
+            agent=$(git rev-parse HEAD)
+            echo "origin/main moved under the run (${base:0:12} -> ${tip:0:12}); replaying ${agent:0:12} onto it"
+            git checkout --detach origin/main
+            if ! git cherry-pick "$agent"; then
+              conflicted=$(git diff --name-only --diff-filter=U | tr '\n' ' ')
+              git cherry-pick --abort >/dev/null 2>&1 || true
+              echo "::error::could not replay the publish commit onto origin/main (conflict: ${conflicted:-unknown})."
+              return 1
+            fi
+            return 0
+          }
+          local_workflows_tree() {
+            git rev-parse HEAD:.github/workflows 2>/dev/null || echo ""
+          }
+          fork_workflows_tree() {
+            default=$(gh api "repos/$fork" --jq .default_branch)
+            sha=$(gh api "repos/$fork/git/ref/heads/${default}" --jq .object.sha)
+            root=$(gh api "repos/$fork/git/commits/${sha}" --jq .tree.sha)
+            gh_dir=$(gh api "repos/$fork/git/trees/${root}" --jq '.tree[] | select(.path==".github") | .sha')
+            if [ -z "$gh_dir" ]; then
+              echo ""
+              return 0
+            fi
+            gh api "repos/$fork/git/trees/${gh_dir}" --jq '.tree[] | select(.path=="workflows") | .sha'
+          }
+          sync_job_inflight() {
+            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/sync-expo-bot-fork.yml/runs?per_page=5" \
+              --jq '[.workflow_runs[] | select(.status=="in_progress" or .status=="queued")] | length'
+          }
+          # Replay onto main, then push once HEAD's workflow tree matches
+          # the fork default. Wait only when those trees differ.
+          align_workflows_with_fork() {
+            rm -f "$RUNNER_TEMP/align.env"
+            deadline=$(( $(date +%s) + 420 ))
+            saw_inflight=0
+            first_mismatch_at=
+            while [ "$(date +%s)" -lt "$deadline" ]; do
+              if ! replay_onto_origin_main; then
+                return 1
+              fi
+              local_wf=$(local_workflows_tree)
+              fork_wf=$(fork_workflows_tree)
+              if [ "$local_wf" = "$fork_wf" ]; then
+                echo "workflow trees match (${local_wf:0:12})"
+                return 0
+              fi
+              inflight=$(sync_job_inflight)
+              echo "workflow trees differ local=${local_wf:0:12} fork=${fork_wf:0:12} sync_inflight=$inflight"
+              if [ "${inflight:-0}" -gt 0 ]; then
+                saw_inflight=1
+                first_mismatch_at=
+              elif [ "$saw_inflight" = 0 ]; then
+                # Grace: a main land from seconds ago may not have a
+                # queued run in the API yet. After 45s with no sync,
+                # the fork is stale and nothing will heal it.
+                if [ -z "$first_mismatch_at" ]; then
+                  first_mismatch_at=$(date +%s)
+                elif [ $(( $(date +%s) - first_mismatch_at )) -ge 45 ]; then
+                  echo "ALIGN_FAIL=stale_fork" >> "$RUNNER_TEMP/align.env"
+                  echo "::error::fork $fork workflow tree differs from this commit and sync-expo-bot-fork is not running."
+                  return 1
+                fi
+              fi
+              sleep 15
+            done
+            echo "ALIGN_FAIL=timeout" >> "$RUNNER_TEMP/align.env"
+            echo "::error::timed out waiting for $fork .github/workflows to match origin/main."
+            return 1
+          }
+          rm -f "$RUNNER_TEMP/align.env"
+          if ! align_workflows_with_fork; then
+            fail_kind=$(grep '^ALIGN_FAIL=' "$RUNNER_TEMP/align.env" 2>/dev/null | cut -d= -f2 || true)
+            if [ "$fail_kind" = "stale_fork" ]; then
+              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but the bot fork's workflow files do not match current \`main\`, and the dedicated sync job is not running. Land on \`main\` (or re-run \`sync-expo-bot-fork\`) and re-trigger. The outcome comment still stands. [Run log]($RUN_URL)"
+              echo "::error::stale fork with no in-flight sync; refusing to push."
+            else
+              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not line its workflow files up with the bot fork in time (the dedicated sync job on \`expo/expo\` main is what fast-forwards the fork). Re-run once that job has finished. The outcome comment still stands. [Run log]($RUN_URL)"
+              echo "::error::could not match $fork .github/workflows to this commit; refusing to push."
+            fi
             exit 1
+          fi
+          push_err="$RUNNER_TEMP/fork-push.err"
+          if ! git push "https://github.com/$fork.git" "HEAD:refs/heads/$branch" >"$push_err" 2>&1; then
+            cat "$push_err"
+            if grep -q 'workflow scope' "$push_err"; then
+              echo "push rejected for workflow scope; re-comparing workflow trees and retrying once"
+              if align_workflows_with_fork && git push "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
+                echo "push succeeded after workflow trees matched"
+              else
+                gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not push it to the bot fork (workflow-scope reject after waiting for the fork workflows to match). It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
+                echo "::error::push to fork $fork failed after workflow-tree wait; refusing unsafe same-repository fallback."
+                exit 1
+              fi
+            else
+              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not push it to the bot fork. It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
+              echo "::error::push to fork $fork failed; refusing unsafe same-repository fallback."
+              exit 1
+            fi
           fi
           head_ref="$fork_owner:$branch"
           {
