@@ -27,13 +27,22 @@ export function getPlatformBundlers(
     ios: bundlerOverride ?? (exp.ios as WithBundlerConfig)?.bundler ?? 'metro',
     android: bundlerOverride ?? (exp.android as WithBundlerConfig)?.bundler ?? 'metro',
     web,
-    // tvOS and macOS are Xcode-built targets, not rollipop bundling targets.
-    // Applying a global `--bundler` override (e.g. `expo start --bundler
-    // rollipop`) must not misconfigure them — keep them on metro so their
-    // native builds continue to work. Per-platform `ios.bundler` /
-    // `android.bundler` in app.json still select rollipop for the mobile
-    // platforms only.
-    tvos: 'metro',
-    macos: 'metro',
+    // tvOS and macOS are native RN targets that consume the same iOS-style
+    // native bundle as iOS (macOS reuses iOS's `Platform.OS`). Rollipop builds
+    // them through its native pipeline, so they are first-class rotatable
+    // bundler targets — a global `--bundler` override (e.g. `expo export
+    // --bundler rollipop`) or per-platform `tvos.bundler` / `macos.bundler` in
+    // app.json selects rollipop for them, exactly like ios/android. They are
+    // excluded from the *dev-server* rotation (Expo has no tvOS/macOS dev
+    // server; they build via `expo run:ios`), but production exports must be
+    // able to rotate to rollipop.
+    tvos:
+      bundlerOverride ??
+      (exp as Partial<Record<string, WithBundlerConfig>>).tvos?.bundler ??
+      'metro',
+    macos:
+      bundlerOverride ??
+      (exp as Partial<Record<string, WithBundlerConfig>>).macos?.bundler ??
+      'metro',
   };
 }
