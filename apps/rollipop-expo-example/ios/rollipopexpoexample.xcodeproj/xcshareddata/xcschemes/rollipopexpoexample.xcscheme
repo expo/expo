@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "exampleapp.app"
-               BlueprintName = "exampleapp"
-               ReferencedContainer = "container:exampleapp.xcodeproj">
+               BuildableName = "rollipopexpoexample.app"
+               BlueprintName = "rollipopexpoexample"
+               ReferencedContainer = "container:rollipopexpoexample.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "exampleappTests.xctest"
-               BlueprintName = "exampleappTests"
-               ReferencedContainer = "container:exampleapp.xcodeproj">
+               BuildableName = "rollipopexpoexampleTests.xctest"
+               BlueprintName = "rollipopexpoexampleTests"
+               ReferencedContainer = "container:rollipopexpoexample.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "exampleapp.app"
-            BlueprintName = "exampleapp"
-            ReferencedContainer = "container:exampleapp.xcodeproj">
+            BuildableName = "rollipopexpoexample.app"
+            BlueprintName = "rollipopexpoexample"
+            ReferencedContainer = "container:rollipopexpoexample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "exampleapp.app"
-            BlueprintName = "exampleapp"
-            ReferencedContainer = "container:exampleapp.xcodeproj">
+            BuildableName = "rollipopexpoexample.app"
+            BlueprintName = "rollipopexpoexample"
+            ReferencedContainer = "container:rollipopexpoexample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
