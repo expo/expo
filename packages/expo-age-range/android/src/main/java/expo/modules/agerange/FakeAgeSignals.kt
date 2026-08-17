@@ -71,9 +71,9 @@ internal class FakeAgeSignals(options: FakeAgeSignalsOptions) {
     .build()
 
   /**
-   * `setNext*` call influences all future responses.
+   * One manager serves every request, because a `setNext*` call influences all future responses.
    */
-  fun manager(): AgeSignalsManager = FakeAgeSignalsManager().apply {
+  val manager: AgeSignalsManager = FakeAgeSignalsManager().apply {
     if (exception != null) {
       setNextAgeSignalsException(exception)
       setNextRequestAgeSignalsAccessException(exception)

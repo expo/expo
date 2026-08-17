@@ -34,7 +34,7 @@ class AgeRangeModule : Module() {
    * the app has set fake signals, and the real manager otherwise.
    */
   private val currentAgeSignalsManager: AgeSignalsManager
-    get() = fakeAgeSignals?.manager() ?: ageSignalsManager
+    get() = fakeAgeSignals?.manager ?: ageSignalsManager
 
   override fun definition() = ModuleDefinition {
     Name("ExpoAgeRange")

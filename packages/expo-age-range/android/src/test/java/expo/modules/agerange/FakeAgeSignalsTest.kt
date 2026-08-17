@@ -26,7 +26,7 @@ class FakeAgeSignalsTest {
 
     var result: AgeRangeResult? = null
     requestAgeRange(
-      ageSignalsManager = fake.manager(),
+      ageSignalsManager = fake.manager,
       onSuccess = { result = it },
       onError = { throw AssertionError("Unexpected error: $it") },
       onCancelled = { throw AssertionError("Unexpected cancellation") }
