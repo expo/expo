@@ -74,8 +74,11 @@ class DispatchUtilsRetryGateTest {
     assertEquals(state.dispatchAfterMs, next.dispatchAfterMs)
   }
 
+  // `PayloadTooLarge` is a definitive answer from a reachable server, so the counter resets
+  // like it does for `NonRetryableFailure`; the gate stays where it is because chunk-size
+  // retries are immediate.
   @Test
-  fun `PayloadTooLarge leaves the retry gate unchanged`() {
+  fun `PayloadTooLarge resets the counter and leaves the gate alone`() {
     val state = DispatchUtils.RetryGateState(
       dispatchAfterMs = now + 60_000L,
       consecutiveRetryableFailures = 2
@@ -87,7 +90,8 @@ class DispatchUtilsRetryGateTest {
       backoff = stubbedBackoff
     )
 
-    assertEquals(state, next)
+    assertEquals(0, next.consecutiveRetryableFailures)
+    assertEquals(state.dispatchAfterMs, next.dispatchAfterMs)
   }
 
   // First retryable failure (from `.initial`): counter goes to 1, gate is `now + backoff(1)`.

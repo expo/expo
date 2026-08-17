@@ -220,7 +220,8 @@ object DispatchUtils {
    *   server-side) doesn't introduce a new pause.
    * - `NonRetryableFailure` also resets the counter. A permanent drop isn't a sign that the
    *   server is unhealthy and shouldn't pause subsequent rounds.
-   * - `PayloadTooLarge` leaves both fields untouched because chunk-size retries are immediate.
+   * - `PayloadTooLarge` also resets the counter because a reachable server returned a definitive
+   *   response, and leaves the gate alone because chunk-size retries are immediate.
    * - `RetryableFailure` increments the counter and sets the gate to `now + delay`, where
    *   `delay` is the server-supplied `retryAfterMs` if present, otherwise `backoff(nextCount)`.
    *
@@ -235,9 +236,9 @@ object DispatchUtils {
   ): RetryGateState = when (result) {
     is DispatchResult.Success,
     is DispatchResult.PartialSuccess,
-    is DispatchResult.NonRetryableFailure ->
+    is DispatchResult.NonRetryableFailure,
+    is DispatchResult.PayloadTooLarge ->
       currentState.copy(consecutiveRetryableFailures = 0)
-    is DispatchResult.PayloadTooLarge -> currentState
     is DispatchResult.RetryableFailure -> {
       val nextCount = currentState.consecutiveRetryableFailures + 1
       val delay = result.retryAfterMs ?: backoff(nextCount)

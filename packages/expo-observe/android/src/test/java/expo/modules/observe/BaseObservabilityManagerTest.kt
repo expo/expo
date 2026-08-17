@@ -895,7 +895,7 @@ class BaseObservabilityManagerTest {
       createManager(dispatchChunkSize = 4).dispatchUnsentMetrics()
 
       coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("metric-1")) }
-      coVerify(exactly = 2) { mockPendingMetricsManager.getPendingMetricIds(4) }
+      coVerify(exactly = 1) { mockPendingMetricsManager.getPendingMetricIds(4) }
     }
 
   @Test
@@ -922,7 +922,7 @@ class BaseObservabilityManagerTest {
 
       createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
 
-      assertEquals(listOf(2, 1, 2), requestedLimits)
+      assertEquals(listOf(2, 1), requestedLimits)
       coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("metric-1")) }
     }
 
@@ -930,7 +930,7 @@ class BaseObservabilityManagerTest {
   fun `dispatchUnsentMetrics does not set the retry gate after 413`() =
     runTest {
       coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } returnsMany
-        listOf(listOf("metric-1"), emptyList(), listOf("metric-2"), emptyList())
+        listOf(listOf("metric-1"), listOf("metric-2"), emptyList())
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
         firstArg<List<String>>().map { id ->
           createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
@@ -1144,7 +1144,93 @@ class BaseObservabilityManagerTest {
       createManager(dispatchChunkSize = 4).dispatchUnsentLogs()
 
       coVerify(exactly = 1) { mockPendingLogsManager.removePendingLogs(listOf("log-1")) }
-      coVerify(exactly = 2) { mockPendingLogsManager.getPendingLogIds(4) }
+      coVerify(exactly = 1) { mockPendingLogsManager.getPendingLogIds(4) }
+    }
+
+  @Test
+  fun `dispatchUnsentLogs halves the dispatched count after removing orphans`() =
+    runTest {
+      val requestedLimits = mutableListOf<Int>()
+      val defaultChunks = ArrayDeque(
+        listOf(
+          listOf("log-1", "log-2", "orphan-1", "orphan-2"),
+          emptyList()
+        )
+      )
+      coEvery { mockPendingLogsManager.getPendingLogIds(4) } answers {
+        requestedLimits.add(4)
+        defaultChunks.removeFirst()
+      }
+      coEvery { mockPendingLogsManager.getPendingLogIds(1) } answers {
+        requestedLimits.add(1)
+        listOf("log-1")
+      }
+      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
+        firstArg<List<String>>().filter { it.startsWith("log-") }.map { id ->
+          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
+        }
+      }
+      coEvery { mockEventDispatcher.dispatchLogs(any()) } returnsMany listOf(
+        DispatchResult.PayloadTooLarge,
+        DispatchResult.Success
+      )
+
+      createManager(dispatchChunkSize = 4).dispatchUnsentLogs()
+
+      assertEquals(listOf(4, 1, 4), requestedLimits)
+    }
+
+  @Test
+  fun `dispatchUnsentLogs halves to one then drops the oversized log`() =
+    runTest {
+      val requestedLimits = mutableListOf<Int>()
+      val defaultChunks = ArrayDeque(
+        listOf(listOf("log-1", "log-2"), emptyList())
+      )
+      coEvery { mockPendingLogsManager.getPendingLogIds(2) } answers {
+        requestedLimits.add(2)
+        defaultChunks.removeFirst()
+      }
+      coEvery { mockPendingLogsManager.getPendingLogIds(1) } answers {
+        requestedLimits.add(1)
+        listOf("log-1")
+      }
+      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
+        firstArg<List<String>>().map { id ->
+          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
+        }
+      }
+      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.PayloadTooLarge
+
+      createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
+
+      assertEquals(listOf(2, 1), requestedLimits)
+      coVerify(exactly = 1) { mockPendingLogsManager.removePendingLogs(listOf("log-1")) }
+    }
+
+  @Test
+  fun `dispatchUnsentLogs does not set the retry gate after 413`() =
+    runTest {
+      coEvery { mockPendingLogsManager.getPendingLogIds(2) } returnsMany
+        listOf(listOf("log-1"), listOf("log-2"), emptyList())
+      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
+        firstArg<List<String>>().map { id ->
+          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
+        }
+      }
+      coEvery { mockEventDispatcher.dispatchLogs(any()) } returnsMany listOf(
+        DispatchResult.PayloadTooLarge,
+        DispatchResult.Success
+      )
+      val manager = createManager(
+        currentTimeMs = { 1_700_000_000_000L },
+        dispatchChunkSize = 2
+      )
+
+      manager.dispatchUnsentLogs()
+      manager.dispatchUnsentLogs()
+
+      coVerify(exactly = 2) { mockEventDispatcher.dispatchLogs(any()) }
     }
 
   @Test
