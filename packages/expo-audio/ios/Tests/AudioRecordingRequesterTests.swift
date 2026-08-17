@@ -11,7 +11,7 @@ struct AudioRecordingRequesterTests {
   func `reports denied when the usage description is missing`() {
     let permissions = AudioRecordingRequester.permissions(systemStatus: .granted, usageDescription: nil)
 
-    #expect(permissions["status"] as? Int == EXPermissionStatusDenied.rawValue)
+    #expect(permissions["status"] as? UInt32 == EXPermissionStatusDenied.rawValue)
   }
 
   @Test(arguments: [
@@ -28,7 +28,7 @@ struct AudioRecordingRequesterTests {
       usageDescription: "Allow $(PRODUCT_NAME) to access your microphone"
     )
 
-    #expect(permissions["status"] as? Int == expected.rawValue)
+    #expect(permissions["status"] as? UInt32 == expected.rawValue)
   }
 }
 #endif
