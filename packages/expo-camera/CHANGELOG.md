@@ -13,7 +13,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix repeatedly mounting and unmounting `CameraView` freezing the UI when the capture session cannot start, such as on a simulator. The session is now stopped before it is torn down and before the preview layer detaches from it, and it is no longer started at all when no capture device is available.
+- [iOS] Fix repeatedly mounting and unmounting `CameraView` freezing the UI when the capture session cannot start, such as on a simulator. The session is now stopped before it is torn down and before the preview layer detaches from it, and it is no longer started at all when no capture device is available. ([#49028](https://github.com/expo/expo/pull/49028) by [@barthap](https://github.com/barthap))
 - [Android] Use the selected camera to determine video stabilization support. ([#45896](https://github.com/expo/expo/pull/45896) by [@vivekjm](https://github.com/vivekjm))
 - Fix iOS captures being saved above their native resolution due to orientation normalization rendering at the screen scale. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
 - [iOS] Fix the ZXing barcode fallback scanner returning raw AVFoundation type strings (e.g. `org.iso.PDF417`) instead of short expo `BarcodeType` values (e.g. `pdf417`) for `pdf417`, `code39`, and `codabar`, restoring the fix from [#44726](https://github.com/expo/expo/pull/44726) that was reverted by the `ExpoCameraBarcodeScanning` pod extraction in [#44766](https://github.com/expo/expo/pull/44766). ([#47613](https://github.com/expo/expo/pull/47613) by [@jensdev](https://github.com/jensdev))
