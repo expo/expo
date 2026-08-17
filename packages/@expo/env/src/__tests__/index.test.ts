@@ -63,20 +63,20 @@ describe(setNodeEnv, () => {
 });
 
 describe(consumeConfigEnvMode, () => {
-  it('reads and removes EXPO_CONFIG_MODE', () => {
-    const systemEnv = { EXPO_CONFIG_MODE: 'production' };
+  it('reads and removes __EXPO_CONFIG_MODE', () => {
+    const systemEnv = { __EXPO_CONFIG_MODE: 'production' };
 
     expect(consumeConfigEnvMode({ systemEnv })).toBe('production');
-    expect(systemEnv.EXPO_CONFIG_MODE).toBeUndefined();
+    expect(systemEnv.__EXPO_CONFIG_MODE).toBeUndefined();
   });
 
-  it('removes an invalid EXPO_CONFIG_MODE value', () => {
-    process.env.EXPO_CONFIG_MODE = 'staging';
+  it('removes an invalid __EXPO_CONFIG_MODE value', () => {
+    process.env.__EXPO_CONFIG_MODE = 'staging';
 
     expect(() => consumeConfigEnvMode()).toThrow(
-      'Invalid EXPO_CONFIG_MODE value: "staging". Use "development" or "production".'
+      'Invalid __EXPO_CONFIG_MODE value: "staging". Use "development" or "production".'
     );
-    expect(process.env.EXPO_CONFIG_MODE).toBeUndefined();
+    expect(process.env.__EXPO_CONFIG_MODE).toBeUndefined();
   });
 });
 
@@ -517,6 +517,28 @@ describe(getOriginalEnv, () => {
     expect(getOriginalEnv()[LOADED_ENV_NAME]).toBeUndefined();
   });
 
+  it('removes dotenv values inherited from a parent process', () => {
+    const inheritedEnv = {
+      FOO: 'from-parent-dotenv',
+      PRE_EXISTING: 'original',
+      [LOADED_ENV_NAME]: JSON.stringify(['FOO']),
+    };
+
+    expect(getOriginalEnv(inheritedEnv)).toEqual({ PRE_EXISTING: 'original' });
+  });
+
+  it('removes inherited dotenv values after a forced local load', () => {
+    const inheritedEnv = {
+      FOO: 'from-parent-dotenv',
+      [LOADED_ENV_NAME]: JSON.stringify(['FOO']),
+    };
+    vol.fromJSON({ '.env': 'BAR=from-current-dotenv' }, '/');
+
+    loadProjectEnv('/', { force: true, systemEnv: inheritedEnv });
+
+    expect(getOriginalEnv(inheritedEnv)).toEqual({});
+  });
+
   it('preserves the pre-load value when loadProjectEnv skipped the assignment', () => {
     process.env.FOO = 'shell-provided';
     vol.fromJSON({ '.env': 'FOO=from-env' }, '/');
@@ -612,6 +634,18 @@ describe(getOriginalEnvValue, () => {
     expect(process.env.FOO).toBe('bar');
 
     expect(getOriginalEnvValue('FOO')).toBeUndefined();
+  });
+
+  it('returns undefined for a dotenv value inherited from a parent process', () => {
+    const inheritedEnv = {
+      FOO: 'from-parent-dotenv',
+      PRE_EXISTING: 'original',
+      [LOADED_ENV_NAME]: JSON.stringify(['FOO']),
+    };
+
+    expect(getOriginalEnvValue('FOO', inheritedEnv)).toBeUndefined();
+    expect(getOriginalEnvValue('PRE_EXISTING', inheritedEnv)).toBe('original');
+    expect(getOriginalEnvValue(LOADED_ENV_NAME, inheritedEnv)).toBeUndefined();
   });
 
   it('falls through to systemEnv for keys @expo/env never touched', () => {
@@ -779,10 +813,10 @@ describe('isLocalEnvKey policy', () => {
     expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/EXPO_UNSAFE_DOTENV_KEYS/);
   });
 
-  it('blocks EXPO_CONFIG_MODE in env files', () => {
-    vol.fromJSON({ '.env': 'EXPO_CONFIG_MODE=production' }, '/');
+  it('blocks __EXPO_CONFIG_MODE in env files', () => {
+    vol.fromJSON({ '.env': '__EXPO_CONFIG_MODE=production' }, '/');
 
-    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/EXPO_CONFIG_MODE/);
+    expect(() => parseProjectEnv('/', { systemEnv: {} })).toThrow(/__EXPO_CONFIG_MODE/);
   });
 
   it('combines both violation classes into a single thrown error', () => {
