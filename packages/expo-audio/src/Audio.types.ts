@@ -696,11 +696,27 @@ export type RecordingSource =
   | 'voice_performance'
   | 'voice_recognition';
 
-// @docsMissing
 export type AudioMetadata = {
+  /** The title of the audio track to display on the lock screen. */
   title?: string;
+  /** The artist name to display on the lock screen. */
   artist?: string;
+  /** The album title to display on the lock screen. */
   albumTitle?: string;
+  /**
+   * URL or local asset for the lock screen artwork image.
+   *
+   * Accepts remote HTTP/HTTPS URLs (for example, `'https://example.com/artwork.jpg'`),
+   * local `file://` URIs, or local assets obtained via `require()`.
+   *
+   * @example
+   * ```tsx
+   * player.setActiveForLockScreen(true, {
+   *   title: 'My Track',
+   *   artworkUrl: 'https://example.com/artwork.jpg',
+   * });
+   * ```
+   */
   artworkUrl?: string;
 };
 
