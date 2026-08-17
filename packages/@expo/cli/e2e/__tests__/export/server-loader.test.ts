@@ -56,6 +56,7 @@ describe.each(
     expect(files).not.toContain('posts/[postId].html');
     expect(files).not.toContain('posts/static-post-1.html');
     expect(files).not.toContain('posts/static-post-2.html');
+    expect(files).not.toContain('platform/alpha/beta.html');
 
     // Loader bundles should exist
     expect(files).toContain('_expo/loaders/index.js');
@@ -69,6 +70,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/nullish/[value].js');
     expect(files).toContain('_expo/loaders/posts/[postId].js');
     expect(files).toContain('_expo/loaders/(group)/index.js');
+    expect(files).toContain('_expo/loaders/(group)/platform/[...slug].js');
     expect(files).toContain('_expo/loaders/static-helper.js');
     expect(files).toContain('_expo/loaders/server-helper.js');
   });
@@ -126,6 +128,17 @@ describe.each(
 
       const data = await getData(response);
       expect(data).toEqual({ data: 'grouped-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/(group)/platform/alpha/beta'))(
+    'can access platform-specific catch-all data for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'platform-catch-all' });
     }
   );
 
