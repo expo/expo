@@ -104,8 +104,8 @@ public final class WidgetsModule: Module {
         instance.id
       }
 
-      AsyncFunction("update") { (instance: LiveActivity, props: String?, staleDate: Date?) in
-        try await instance.update(props: props, staleDate: staleDate)
+      AsyncFunction("update") { (instance: LiveActivity, props: String?, staleDate: Date?, contentDate: Date?) in
+        try await instance.update(props: props, staleDate: staleDate, contentDate: contentDate)
       }
 
       AsyncFunction("end") { (instance: LiveActivity, dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) in
