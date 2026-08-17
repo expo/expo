@@ -1,4 +1,4 @@
-import { getSingularId } from '../useScreens';
+import { getSingularId } from '../utils/getSingularId';
 
 describe(getSingularId, () => {
   it(`returns the context string when the route is not dynamic and there are no search params`, () => {
