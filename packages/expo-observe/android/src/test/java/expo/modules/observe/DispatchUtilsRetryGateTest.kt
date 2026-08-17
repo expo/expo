@@ -74,6 +74,22 @@ class DispatchUtilsRetryGateTest {
     assertEquals(state.dispatchAfterMs, next.dispatchAfterMs)
   }
 
+  @Test
+  fun `PayloadTooLarge leaves the retry gate unchanged`() {
+    val state = DispatchUtils.RetryGateState(
+      dispatchAfterMs = now + 60_000L,
+      consecutiveRetryableFailures = 2
+    )
+    val next = DispatchUtils.nextRetryGateState(
+      result = DispatchResult.PayloadTooLarge,
+      currentState = state,
+      now = now,
+      backoff = stubbedBackoff
+    )
+
+    assertEquals(state, next)
+  }
+
   // First retryable failure (from `.initial`): counter goes to 1, gate is `now + backoff(1)`.
   // `retryAfterMs` is `null`, so we fall through to `computeBackoffDelay` (the stubbed value
   // of 10 here).

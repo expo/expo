@@ -162,6 +162,19 @@ class DispatchUtilsClassifyResponseTest {
     }
   }
 
+  @Test
+  fun `413 returns PayloadTooLarge with or without Retry-After`() {
+    for (retryAfter in listOf(null, "120")) {
+      val result = DispatchUtils.classifyResponse(
+        statusCode = 413,
+        retryAfterHeader = retryAfter,
+        responseBody = null
+      )
+
+      assertEquals(DispatchResult.PayloadTooLarge, result)
+    }
+  }
+
   // MARK: -- Non-retryable 4xx / other 5xx
 
   @Test
@@ -258,6 +271,11 @@ class DispatchUtilsShouldRemovePendingTest {
   fun `Retryable keeps pending IDs`() {
     assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure()))
     assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.RetryableFailure(retryAfterMs = 30_000L)))
+  }
+
+  @Test
+  fun `PayloadTooLarge keeps pending IDs`() {
+    assertTrue(!DispatchUtils.shouldRemovePending(DispatchResult.PayloadTooLarge))
   }
 
   // `PartialSuccess` removes pending IDs like `Success` does: the bytes landed on the

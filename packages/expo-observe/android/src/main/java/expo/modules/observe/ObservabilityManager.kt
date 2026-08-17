@@ -165,8 +165,11 @@ class BaseObservabilityManager(
       return
     }
 
+    var chunkSize = dispatchChunkSize
     while (currentCoroutineContext().isActive) {
-      val pendingIds = pendingMetricsManager.getPendingMetricIds(dispatchChunkSize)
+      val pendingIds = pendingMetricsManager.getPendingMetricIds(chunkSize)
+      // Use the default for the next batch unless a 413 below overrides it.
+      chunkSize = dispatchChunkSize
       if (pendingIds.isEmpty()) {
         break
       }
@@ -204,6 +207,14 @@ class BaseObservabilityManager(
               OBSERVE_TAG,
               "Dropping batch of ${dispatchedMetricIds.size} metric event(s): ${result.reason}"
             )
+          is DispatchResult.PayloadTooLarge -> {
+            if (dispatchedMetricIds.size > 1) {
+              chunkSize = dispatchedMetricIds.size / 2
+            } else {
+              Log.w(OBSERVE_TAG, "Dropping metric event that exceeds the server's payload limit")
+              pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
+            }
+          }
           is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
         }
         if (!DispatchUtils.shouldRemovePending(result)) {
@@ -236,8 +247,11 @@ class BaseObservabilityManager(
       return
     }
 
+    var chunkSize = dispatchChunkSize
     while (currentCoroutineContext().isActive) {
-      val pendingIds = pendingLogsManager.getPendingLogIds(dispatchChunkSize)
+      val pendingIds = pendingLogsManager.getPendingLogIds(chunkSize)
+      // Use the default for the next batch unless a 413 below overrides it.
+      chunkSize = dispatchChunkSize
       if (pendingIds.isEmpty()) {
         break
       }
@@ -277,6 +291,14 @@ class BaseObservabilityManager(
               OBSERVE_TAG,
               "Dropping batch of ${dispatchedLogIds.size} log event(s): ${result.reason}"
             )
+          is DispatchResult.PayloadTooLarge -> {
+            if (dispatchedLogIds.size > 1) {
+              chunkSize = dispatchedLogIds.size / 2
+            } else {
+              Log.w(OBSERVE_TAG, "Dropping log event that exceeds the server's payload limit")
+              pendingLogsManager.removePendingLogs(dispatchedLogIds)
+            }
+          }
           is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
         }
         if (!DispatchUtils.shouldRemovePending(result)) {
