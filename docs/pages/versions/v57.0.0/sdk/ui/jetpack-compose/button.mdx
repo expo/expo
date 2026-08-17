@@ -188,7 +188,12 @@ import { Host, Button, Text } from '@expo/ui/jetpack-compose';
 export default function CustomColorsExample() {
   return (
     <Host matchContents>
-      <Button onClick={() => {}} colors={{ containerColor: '#6200EE', contentColor: '#FFFFFF' }}>
+      <Button
+        onClick={() => {}}
+        colors={{
+          containerColor: '#6200EE',
+          contentColor: '#FFFFFF',
+        }}>
         <Text>Purple Button</Text>
       </Button>
     </Host>
@@ -207,14 +212,21 @@ export default function CustomColorsExample() {
   alt="A button with rounded top start and bottom end corners and square opposite corners">
 
 ```tsx
-import { Host, Button, Shape, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Button,
+  Shape,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function CustomShapeExample() {
   return (
     <Host matchContents>
       <Button
         onClick={() => {}}
-        shape={Shape.RoundedCorner({ cornerRadii: { topStart: 16, bottomEnd: 16 } })}>
+        shape={Shape.RoundedCorner({
+          cornerRadii: { topStart: 16, bottomEnd: 16 },
+        })}>
         <Text>Custom Shape</Text>
       </Button>
     </Host>
@@ -236,4 +248,7 @@ import {
 } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/button" apiName="Button" />
+<APISection
+  packageName="expo-ui/jetpack-compose/button"
+  apiName="Button"
+/>

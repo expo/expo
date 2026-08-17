@@ -48,7 +48,12 @@ import {
   Text,
   useMaterialColors,
 } from '@expo/ui/jetpack-compose';
-import { background, fillMaxSize, fillMaxWidth, height } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  background,
+  fillMaxSize,
+  fillMaxWidth,
+  height,
+} from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
 
 export default function UncontrolledPagerExample() {
@@ -57,9 +62,15 @@ export default function UncontrolledPagerExample() {
   const [settledPage, setSettledPage] = useState(1);
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
-      <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[fillMaxWidth()]}>
-        <Text style={{ typography: 'titleLarge' }} color={colors.onBackground}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Column
+        verticalArrangement={{ spacedBy: 12 }}
+        modifiers={[fillMaxWidth()]}>
+        <Text
+          style={{ typography: 'titleLarge' }}
+          color={colors.onBackground}>
           currentPage: {currentPage} · settledPage: {settledPage}
         </Text>
         <HorizontalPager
@@ -78,7 +89,9 @@ export default function UncontrolledPagerExample() {
 
 function Page({ label, color }: { label: string; color: string }) {
   return (
-    <Box modifiers={[fillMaxSize(), background(color)]} contentAlignment="center">
+    <Box
+      modifiers={[fillMaxSize(), background(color)]}
+      contentAlignment="center">
       <Text color="#FFFFFF" style={{ typography: 'headlineLarge' }}>
         {label}
       </Text>
@@ -111,7 +124,12 @@ import {
   Text,
   useMaterialColors,
 } from '@expo/ui/jetpack-compose';
-import { background, fillMaxSize, fillMaxWidth, height } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  background,
+  fillMaxSize,
+  fillMaxWidth,
+  height,
+} from '@expo/ui/jetpack-compose/modifiers';
 import { useRef, useState } from 'react';
 
 const PAGE_COUNT = 5;
@@ -122,9 +140,15 @@ export default function ProgrammaticPagerExample() {
   const [page, setPage] = useState(0);
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
-      <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[fillMaxWidth()]}>
-        <Text style={{ typography: 'titleLarge' }} color={colors.onBackground}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Column
+        verticalArrangement={{ spacedBy: 12 }}
+        modifiers={[fillMaxWidth()]}>
+        <Text
+          style={{ typography: 'titleLarge' }}
+          color={colors.onBackground}>
           Page {page + 1} / {PAGE_COUNT}
         </Text>
         <HorizontalPager
@@ -132,16 +156,27 @@ export default function ProgrammaticPagerExample() {
           onSettledPageChange={setPage}
           modifiers={[fillMaxWidth(), height(200)]}>
           {Array.from({ length: PAGE_COUNT }).map((_, i) => (
-            <Page key={i} label={`Page ${i + 1}`} color={COLORS[i]} />
+            <Page
+              key={i}
+              label={`Page ${i + 1}`}
+              color={COLORS[i]}
+            />
           ))}
         </HorizontalPager>
         <Row horizontalArrangement={{ spacedBy: 8 }}>
-          <Button onClick={() => pagerRef.current?.animateScrollToPage(Math.max(0, page - 1))}>
+          <Button
+            onClick={() =>
+              pagerRef.current?.animateScrollToPage(
+                Math.max(0, page - 1)
+              )
+            }>
             <Text>Prev</Text>
           </Button>
           <Button
             onClick={() =>
-              pagerRef.current?.animateScrollToPage(Math.min(PAGE_COUNT - 1, page + 1))
+              pagerRef.current?.animateScrollToPage(
+                Math.min(PAGE_COUNT - 1, page + 1)
+              )
             }>
             <Text>Next</Text>
           </Button>
@@ -154,11 +189,19 @@ export default function ProgrammaticPagerExample() {
   );
 }
 
-const COLORS = ['#6200EE', '#03DAC5', '#FF5722', '#4CAF50', '#2196F3'];
+const COLORS = [
+  '#6200EE',
+  '#03DAC5',
+  '#FF5722',
+  '#4CAF50',
+  '#2196F3',
+];
 
 function Page({ label, color }: { label: string; color: string }) {
   return (
-    <Box modifiers={[fillMaxSize(), background(color)]} contentAlignment="center">
+    <Box
+      modifiers={[fillMaxSize(), background(color)]}
+      contentAlignment="center">
       <Text color="#FFFFFF" style={{ typography: 'headlineLarge' }}>
         {label}
       </Text>
@@ -180,12 +223,24 @@ Use `pageSpacing` to add a gap between pages (visible during swipe) and `content
   alt="A pager page inset from the screen edges with the next page peeking on the right">
 
 ```tsx
-import { Box, Host, HorizontalPager, Text } from '@expo/ui/jetpack-compose';
-import { background, fillMaxSize, fillMaxWidth, height } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Box,
+  Host,
+  HorizontalPager,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import {
+  background,
+  fillMaxSize,
+  fillMaxWidth,
+  height,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function PagerLayoutExample() {
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <HorizontalPager
         pageSpacing={12}
         contentPadding={{ start: 32, end: 32 }}
@@ -200,7 +255,9 @@ export default function PagerLayoutExample() {
 
 function Page({ label, color }: { label: string; color: string }) {
   return (
-    <Box modifiers={[fillMaxSize(), background(color)]} contentAlignment="center">
+    <Box
+      modifiers={[fillMaxSize(), background(color)]}
+      contentAlignment="center">
       <Text color="#FFFFFF" style={{ typography: 'headlineLarge' }}>
         {label}
       </Text>
@@ -217,4 +274,7 @@ function Page({ label, color }: { label: string; color: string }) {
 import { HorizontalPager } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/horizontalpager" apiName="HorizontalPager" />
+<APISection
+  packageName="expo-ui/jetpack-compose/horizontalpager"
+  apiName="HorizontalPager"
+/>

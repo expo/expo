@@ -45,7 +45,11 @@ Import any icon directly from its own subpath of `@expo/material-symbols` — ea
   alt="A house outline icon at the default size">
 
 ```tsx
-import { Host, Icon, useMaterialColors } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Icon,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import Home from '@expo/material-symbols/home.xml';
 
 export default function BasicIcon() {
@@ -53,7 +57,11 @@ export default function BasicIcon() {
 
   return (
     <Host matchContents>
-      <Icon source={Home} tint={colors.onBackground} contentDescription="Home" />
+      <Icon
+        source={Home}
+        tint={colors.onBackground}
+        contentDescription="Home"
+      />
     </Host>
   );
 }
@@ -78,7 +86,11 @@ import Favorite from '@expo/material-symbols/favorite.xml';
 export default function TintedIcon() {
   return (
     <Host matchContents>
-      <Icon source={Favorite} tint="#6200ee" contentDescription="Favorite" />
+      <Icon
+        source={Favorite}
+        tint="#6200ee"
+        contentDescription="Favorite"
+      />
     </Host>
   );
 }
@@ -97,7 +109,11 @@ Specify a custom size in dp using the `size` prop.
   alt="A gear icon drawn at 48 density independent pixels">
 
 ```tsx
-import { Host, Icon, useMaterialColors } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Icon,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import Settings from '@expo/material-symbols/settings.xml';
 
 export default function SizedIcon() {
@@ -105,7 +121,12 @@ export default function SizedIcon() {
 
   return (
     <Host matchContents>
-      <Icon source={Settings} size={48} tint={colors.onBackground} contentDescription="Settings" />
+      <Icon
+        source={Settings}
+        size={48}
+        tint={colors.onBackground}
+        contentDescription="Settings"
+      />
     </Host>
   );
 }
@@ -151,7 +172,11 @@ The CLI writes ready-to-use XML vector drawables into your project. Load them wi
   alt="A rounded star outline icon downloaded with the material symbols command line tool">
 
 ```tsx
-import { Host, Icon, useMaterialColors } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Icon,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 
 export default function CustomIcon() {
   const colors = useMaterialColors();
@@ -177,4 +202,7 @@ export default function CustomIcon() {
 import { Icon } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/icon" apiName="Icon" />
+<APISection
+  packageName="expo-ui/jetpack-compose/icon"
+  apiName="Icon"
+/>

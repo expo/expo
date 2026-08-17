@@ -46,7 +46,12 @@ Bind a [`useNativeState`](usenativestate) observable to `value`. The field track
   alt="A filled Material 3 text field labelled Username">
 
 ```tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function UncontrolledTextFieldExample() {
   const text = useNativeState('');
@@ -78,7 +83,12 @@ Pass a [`useNativeState`](usenativestate) observable as `value` and an `onValueC
   alt="A text field labelled Name containing ADA LOVELACE, uppercased as it was typed">
 
 ```tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 import { useCallback } from 'react';
 
 export default function ControlledTextFieldExample() {
@@ -117,7 +127,12 @@ Use `OutlinedTextField` for a text field with a border outline instead of a fill
   alt="A focused outlined text field with the Email label in the border notch and a placeholder">
 
 ```tsx
-import { Host, OutlinedTextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  OutlinedTextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function OutlinedTextFieldExample() {
   const text = useNativeState('');
@@ -150,7 +165,13 @@ export default function OutlinedTextFieldExample() {
   alt="An unstyled text field drawn as a full-width rounded grey pill with a Search placeholder">
 
 ```tsx
-import { Host, BasicTextField, Box, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  BasicTextField,
+  Box,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 import {
   background,
   clip,
@@ -163,7 +184,9 @@ export default function BasicTextFieldExample() {
   const value = useNativeState('');
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <BasicTextField
         cursorColor="#7c3aed"
         value={value}
@@ -200,7 +223,12 @@ Both `TextField` and `OutlinedTextField` support 7 composable slots that match t
   alt="A focused text field showing a money icon, Price label, dollar prefix, placeholder, USD suffix, and supporting text">
 
 ```tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function TextFieldSlotsExample() {
   const text = useNativeState('');
@@ -245,7 +273,12 @@ Use the `keyboardOptions` prop to configure the keyboard type, capitalization, a
   alt="A focused email field above the email keyboard, which shows a dedicated at-sign key and a done action">
 
 ```tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function KeyboardOptionsExample() {
   const text = useNativeState('');
@@ -283,7 +316,12 @@ Use the `keyboardActions` prop to handle IME action button presses. The triggere
   alt="A focused search field above a keyboard whose action key is a magnifying glass">
 
 ```tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 
 export default function KeyboardActionsExample() {
   const text = useNativeState('');
@@ -344,8 +382,11 @@ export default function ImperativeRefExample() {
             <Text>Name</Text>
           </TextField.Label>
         </TextField>
-        <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
-          <Button onClick={() => ref.current?.setText('Hello world')}>
+        <Row
+          horizontalArrangement={{ spacedBy: 8 }}
+          modifiers={[padding(8, 0, 0, 0)]}>
+          <Button
+            onClick={() => ref.current?.setText('Hello world')}>
             <Text>Set text</Text>
           </Button>
           <Button onClick={() => ref.current?.clear()}>
@@ -355,7 +396,9 @@ export default function ImperativeRefExample() {
             <Text>Select first word</Text>
           </Button>
         </Row>
-        <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
+        <Row
+          horizontalArrangement={{ spacedBy: 8 }}
+          modifiers={[padding(8, 0, 0, 0)]}>
           <Button onClick={() => ref.current?.focus()}>
             <Text>Focus</Text>
           </Button>
@@ -384,7 +427,12 @@ When `onValueChange` is marked with the `'worklet'` directive, it runs synchrono
   alt="A full-width text field showing 2125559876 masked as a formatted phone number">
 
 ```tsx
-import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  TextField,
+  Text,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
 import { useCallback } from 'react';
 
@@ -405,14 +453,19 @@ export default function WorkletPhoneMaskExample() {
       if (formatted !== v) {
         phone.value = formatted;
         // Snaps to end for demo. Real masks need smarter cursor handling.
-        selection.value = { start: formatted.length, end: formatted.length };
+        selection.value = {
+          start: formatted.length,
+          end: formatted.length,
+        };
       }
     },
     [phone, selection]
   );
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <TextField
         value={phone}
         selection={selection}
@@ -433,7 +486,14 @@ export default function WorkletPhoneMaskExample() {
 ## API
 
 ```tsx
-import { TextField, OutlinedTextField, BasicTextField } from '@expo/ui/jetpack-compose';
+import {
+  TextField,
+  OutlinedTextField,
+  BasicTextField,
+} from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/textfield" apiName="TextField" />
+<APISection
+  packageName="expo-ui/jetpack-compose/textfield"
+  apiName="TextField"
+/>

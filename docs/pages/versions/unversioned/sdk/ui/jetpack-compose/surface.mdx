@@ -43,7 +43,9 @@ export default function BasicSurfaceExample() {
   return (
     <Host matchContents>
       <Surface>
-        <Text modifiers={[paddingAll(16)]}>Content on a surface</Text>
+        <Text modifiers={[paddingAll(16)]}>
+          Content on a surface
+        </Text>
       </Surface>
     </Host>
   );
@@ -63,13 +65,20 @@ Use `tonalElevation` and `shadowElevation` to control the visual depth of the su
   alt="Two stacked surfaces, the lower one casting a larger shadow than the upper one">
 
 ```tsx
-import { Host, Surface, Column, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Surface,
+  Column,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SurfaceElevationExample() {
   return (
     <Host matchContents>
-      <Column verticalArrangement={{ spacedBy: 16 }} modifiers={[paddingAll(16)]}>
+      <Column
+        verticalArrangement={{ spacedBy: 16 }}
+        modifiers={[paddingAll(16)]}>
         <Surface tonalElevation={1} shadowElevation={2}>
           <Text modifiers={[paddingAll(16)]}>Low elevation</Text>
         </Surface>
@@ -101,7 +110,10 @@ import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 export default function SurfaceCustomColorsExample() {
   return (
     <Host matchContents>
-      <Surface color="#1E3A5F" contentColor="#FFFFFF" tonalElevation={2}>
+      <Surface
+        color="#1E3A5F"
+        contentColor="#FFFFFF"
+        tonalElevation={2}>
         <Text color="#FFFFFF" modifiers={[paddingAll(16)]}>
           Custom colored surface
         </Text>
@@ -124,7 +136,12 @@ Use the `shape` prop to clip content and `border` to draw a stroke around the su
   alt="A surface with 16dp rounded corners outlined by a purple two-pixel border">
 
 ```tsx
-import { Host, Surface, Shape, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Surface,
+  Shape,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SurfaceShapeBorderExample() {
@@ -132,10 +149,17 @@ export default function SurfaceShapeBorderExample() {
     <Host matchContents>
       <Surface
         shape={Shape.RoundedCorner({
-          cornerRadii: { topStart: 16, topEnd: 16, bottomStart: 16, bottomEnd: 16 },
+          cornerRadii: {
+            topStart: 16,
+            topEnd: 16,
+            bottomStart: 16,
+            bottomEnd: 16,
+          },
         })}
         border={{ width: 2, color: '#6200EE' }}>
-        <Text modifiers={[paddingAll(16)]}>Rounded surface with border</Text>
+        <Text modifiers={[paddingAll(16)]}>
+          Rounded surface with border
+        </Text>
       </Surface>
     </Host>
   );
@@ -150,4 +174,7 @@ export default function SurfaceShapeBorderExample() {
 import { Surface } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/surface" apiName="Surface" />
+<APISection
+  packageName="expo-ui/jetpack-compose/surface"
+  apiName="Surface"
+/>

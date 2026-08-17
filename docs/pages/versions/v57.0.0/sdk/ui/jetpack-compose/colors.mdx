@@ -61,7 +61,13 @@ Call [`useMaterialColors()`](#usematerialcolorsoptions) without arguments inside
   alt="A surface panel printing the current primary and surface hex values">
 
 ```tsx
-import { Column, Host, Surface, Text, useMaterialColors } from '@expo/ui/jetpack-compose';
+import {
+  Column,
+  Host,
+  Surface,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { padding } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function MaterialColorsExample() {
@@ -77,7 +83,9 @@ export default function MaterialColorsExample() {
 function PaletteInspector() {
   const colors = useMaterialColors();
   return (
-    <Column modifiers={[padding(16, 16, 16, 16)]} verticalArrangement={{ spacedBy: 8 }}>
+    <Column
+      modifiers={[padding(16, 16, 16, 16)]}
+      verticalArrangement={{ spacedBy: 8 }}>
       <Text>Primary: {colors.primary}</Text>
       <Text>Surface: {colors.surface}</Text>
     </Column>
@@ -98,18 +106,29 @@ Pass arguments to [`useMaterialColors()`](#usematerialcolorsoptions) to compute 
   alt="A surface panel printing three primary hex values for the dark, branded, and branded dark palettes">
 
 ```tsx
-import { Column, Host, Surface, Text, useMaterialColors } from '@expo/ui/jetpack-compose';
+import {
+  Column,
+  Host,
+  Surface,
+  Text,
+  useMaterialColors,
+} from '@expo/ui/jetpack-compose';
 import { padding } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function UseMaterialColorsExample() {
   const dark = useMaterialColors({ colorScheme: 'dark' });
   const brand = useMaterialColors({ seedColor: '#8E24AA' });
-  const brandedDark = useMaterialColors({ colorScheme: 'dark', seedColor: '#8E24AA' });
+  const brandedDark = useMaterialColors({
+    colorScheme: 'dark',
+    seedColor: '#8E24AA',
+  });
 
   return (
     <Host style={{ flex: 1 }}>
       <Surface>
-        <Column modifiers={[padding(16, 16, 16, 16)]} verticalArrangement={{ spacedBy: 8 }}>
+        <Column
+          modifiers={[padding(16, 16, 16, 16)]}
+          verticalArrangement={{ spacedBy: 8 }}>
           <Text>Dark primary: {dark.primary}</Text>
           <Text>Brand primary: {brand.primary}</Text>
           <Text>Branded dark primary: {brandedDark.primary}</Text>
@@ -125,12 +144,23 @@ export default function UseMaterialColorsExample() {
 ### Reading colors outside React components
 
 ```tsx GetMaterialColorsExample.tsx
-import { getMaterialColors, isDynamicColorAvailable } from '@expo/ui/jetpack-compose';
+import {
+  getMaterialColors,
+  isDynamicColorAvailable,
+} from '@expo/ui/jetpack-compose';
 
 const palette = getMaterialColors({ seedColor: '#8E24AA' });
-console.log('available:', isDynamicColorAvailable, 'primary:', palette.primary);
+console.log(
+  'available:',
+  isDynamicColorAvailable,
+  'primary:',
+  palette.primary
+);
 ```
 
 ## API
 
-<APISection packageName="expo-ui/jetpack-compose/colors" apiName="MaterialColors" />
+<APISection
+  packageName="expo-ui/jetpack-compose/colors"
+  apiName="MaterialColors"
+/>

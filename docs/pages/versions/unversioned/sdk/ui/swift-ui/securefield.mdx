@@ -45,7 +45,10 @@ export default function BasicSecureFieldExample() {
   // A secure field stretches to the width it is given, so give the host a size.
   return (
     <Host style={{ flex: 1 }}>
-      <SecureField placeholder="Password" onTextChange={setPassword} />
+      <SecureField
+        placeholder="Password"
+        onTextChange={setPassword}
+      />
     </Host>
   );
 }
@@ -76,7 +79,10 @@ export default function SecureFieldSubmitExample() {
       <SecureField
         placeholder="Password"
         onTextChange={setPassword}
-        modifiers={[submitLabel('done'), onSubmit(() => console.log('Login submitted'))]}
+        modifiers={[
+          submitLabel('done'),
+          onSubmit(() => console.log('Login submitted')),
+        ]}
       />
     </Host>
   );
@@ -97,7 +103,14 @@ Use a ref to imperatively set text, focus, or blur the secure field.
 
 ```tsx
 import { useRef } from 'react';
-import { Host, SecureField, SecureFieldRef, Button, HStack, VStack } from '@expo/ui/swift-ui';
+import {
+  Host,
+  SecureField,
+  SecureFieldRef,
+  Button,
+  HStack,
+  VStack,
+} from '@expo/ui/swift-ui';
 import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function ImperativeSecureFieldExample() {
@@ -138,4 +151,7 @@ export default function ImperativeSecureFieldExample() {
 import { SecureField } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/securefield" apiName="SecureField" />
+<APISection
+  packageName="expo-ui/swift-ui/securefield"
+  apiName="SecureField"
+/>

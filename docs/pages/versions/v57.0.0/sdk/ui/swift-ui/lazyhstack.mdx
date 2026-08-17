@@ -24,7 +24,12 @@ Expo UI LazyHStack matches the official SwiftUI [LazyHStack API](https://develop
 LazyHStack should be used inside a `ScrollView` with `axes="horizontal"` to enable lazy rendering.
 
 ```tsx BasicLazyHStackExample.tsx
-import { Host, ScrollView, LazyHStack, Text } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ScrollView,
+  LazyHStack,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function BasicLazyHStackExample() {
   return (
@@ -46,7 +51,12 @@ export default function BasicLazyHStackExample() {
 The `alignment` prop controls vertical alignment of children. Available options are: `top`, `center`, `bottom`, `firstTextBaseline`, and `lastTextBaseline`.
 
 ```tsx LazyHStackAlignmentExample.tsx
-import { Host, ScrollView, LazyHStack, Rectangle } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ScrollView,
+  LazyHStack,
+  Rectangle,
+} from '@expo/ui/swift-ui';
 import { frame } from '@expo/ui/swift-ui/modifiers';
 
 export default function LazyHStackAlignmentExample() {
@@ -54,9 +64,15 @@ export default function LazyHStackAlignmentExample() {
     <Host style={{ flex: 1 }}>
       <ScrollView axes="horizontal">
         <LazyHStack spacing={12} alignment="top">
-          <Rectangle modifiers={[frame({ width: 50, height: 50 })]} />
-          <Rectangle modifiers={[frame({ width: 50, height: 100 })]} />
-          <Rectangle modifiers={[frame({ width: 50, height: 75 })]} />
+          <Rectangle
+            modifiers={[frame({ width: 50, height: 50 })]}
+          />
+          <Rectangle
+            modifiers={[frame({ width: 50, height: 100 })]}
+          />
+          <Rectangle
+            modifiers={[frame({ width: 50, height: 75 })]}
+          />
         </LazyHStack>
       </ScrollView>
     </Host>
@@ -70,4 +86,7 @@ export default function LazyHStackAlignmentExample() {
 import { LazyHStack } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/lazyhstack" apiName="LazyHStack" />
+<APISection
+  packageName="expo-ui/swift-ui/lazyhstack"
+  apiName="LazyHStack"
+/>

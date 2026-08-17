@@ -52,7 +52,9 @@ export default function BasicDropdownMenuExample() {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <Host matchContents>
-      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+      <DropdownMenu
+        expanded={isExpanded}
+        onDismissRequest={() => setIsExpanded(false)}>
         <DropdownMenu.Trigger>
           <OutlinedButton onClick={() => setIsExpanded(true)}>
             <Text>Show menu</Text>
@@ -105,7 +107,9 @@ export default function RNTriggerDropdownMenuExample() {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <Host matchContents>
-      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+      <DropdownMenu
+        expanded={isExpanded}
+        onDismissRequest={() => setIsExpanded(false)}>
         <DropdownMenu.Trigger>
           <RNHostView matchContents>
             <Pressable
@@ -117,7 +121,9 @@ export default function RNTriggerDropdownMenuExample() {
                 borderRadius: 8,
                 backgroundColor: '#9B59B6',
               }}>
-              <Text style={{ color: 'white', fontWeight: '600' }}>RN Pressable Trigger</Text>
+              <Text style={{ color: 'white', fontWeight: '600' }}>
+                RN Pressable Trigger
+              </Text>
             </Pressable>
           </RNHostView>
         </DropdownMenu.Trigger>
@@ -152,15 +158,25 @@ Jetpack Compose has no dedicated long-press menu primitive — you compose one f
   alt="A menu opened by long press, holding Copy and a red Delete item">
 
 ```tsx
-import { Host, DropdownMenu, DropdownMenuItem, Text } from '@expo/ui/jetpack-compose';
-import { background, combinedClickable } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  DropdownMenu,
+  DropdownMenuItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import {
+  background,
+  combinedClickable,
+} from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
 
 export default function LongPressDropdownMenuExample() {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <Host matchContents>
-      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+      <DropdownMenu
+        expanded={isExpanded}
+        onDismissRequest={() => setIsExpanded(false)}>
         <DropdownMenu.Trigger>
           <Text
             modifiers={[
@@ -201,4 +217,7 @@ export default function LongPressDropdownMenuExample() {
 import { DropdownMenu } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/dropdownmenu" apiName="DropdownMenu" />
+<APISection
+  packageName="expo-ui/jetpack-compose/dropdownmenu"
+  apiName="DropdownMenu"
+/>

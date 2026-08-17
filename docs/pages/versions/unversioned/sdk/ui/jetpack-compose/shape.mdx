@@ -43,11 +43,27 @@ import { size } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function BasicShapesExample() {
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
-      <Row horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
-        <Shape.Star radius={1} innerRadius={0.5} color="#FFD700" modifiers={[size(80, 80)]} />
-        <Shape.Circle radius={1} color="#4285F4" modifiers={[size(80, 80)]} />
-        <Shape.Rectangle color="#34A853" modifiers={[size(80, 80)]} />
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Row
+        horizontalArrangement={{ spacedBy: 16 }}
+        verticalAlignment="center">
+        <Shape.Star
+          radius={1}
+          innerRadius={0.5}
+          color="#FFD700"
+          modifiers={[size(80, 80)]}
+        />
+        <Shape.Circle
+          radius={1}
+          color="#4285F4"
+          modifiers={[size(80, 80)]}
+        />
+        <Shape.Rectangle
+          color="#34A853"
+          modifiers={[size(80, 80)]}
+        />
         <Shape.Pill color="#EA4335" modifiers={[size(100, 50)]} />
       </Row>
     </Host>
@@ -73,8 +89,12 @@ import { size } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function RoundedShapesExample() {
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
-      <Row horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Row
+        horizontalArrangement={{ spacedBy: 16 }}
+        verticalAlignment="center">
         <Shape.Rectangle
           cornerRounding={0.2}
           smoothing={0.5}
@@ -82,7 +102,12 @@ export default function RoundedShapesExample() {
           modifiers={[size(100, 80)]}
         />
         <Shape.RoundedCorner
-          cornerRadii={{ topStart: 20, topEnd: 20, bottomStart: 0, bottomEnd: 0 }}
+          cornerRadii={{
+            topStart: 20,
+            topEnd: 20,
+            bottomStart: 0,
+            bottomEnd: 0,
+          }}
           color="#FF5722"
           modifiers={[size(100, 80)]}
         />
@@ -110,8 +135,12 @@ import { size } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function PolygonShapesExample() {
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
-      <Row horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Row
+        horizontalArrangement={{ spacedBy: 16 }}
+        verticalAlignment="center">
         <Shape.Polygon
           verticesCount={6}
           cornerRounding={0.05}
@@ -146,4 +175,7 @@ export default function PolygonShapesExample() {
 import { Shape } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/shape" apiName="Shape" />
+<APISection
+  packageName="expo-ui/jetpack-compose/shape"
+  apiName="Shape"
+/>

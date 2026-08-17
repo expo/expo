@@ -45,7 +45,9 @@ export default function BasicSliderExample() {
   const [value, setValue] = useState(0.5);
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Slider value={value} onValueChange={setValue} />
     </Host>
   );
@@ -72,8 +74,15 @@ export default function CustomRangeSliderExample() {
   const [value, setValue] = useState(50);
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
-      <Slider value={value} min={0} max={100} onValueChange={setValue} />
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Slider
+        value={value}
+        min={0}
+        max={100}
+        onValueChange={setValue}
+      />
     </Host>
   );
 }
@@ -99,8 +108,16 @@ export default function SteppedSliderExample() {
   const [value, setValue] = useState(0);
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
-      <Slider value={value} min={0} max={100} steps={10} onValueChange={setValue} />
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Slider
+        value={value}
+        min={0}
+        max={100}
+        steps={10}
+        onValueChange={setValue}
+      />
     </Host>
   );
 }
@@ -126,7 +143,9 @@ export default function CustomColorsSliderExample() {
   const [value, setValue] = useState(0.5);
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Slider
         value={value}
         colors={{
@@ -155,7 +174,13 @@ Use both `Slider.Thumb` and `Slider.Track` slots for a fully custom slider appea
 
 ```tsx
 import { useState } from 'react';
-import { Host, Slider, Shape, Row, Box } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Slider,
+  Shape,
+  Row,
+  Box,
+} from '@expo/ui/jetpack-compose';
 import {
   fillMaxWidth,
   height,
@@ -170,10 +195,18 @@ export default function FullyCustomSliderExample() {
   const [value, setValue] = useState(0.5);
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Slider value={value} onValueChange={setValue}>
         <Slider.Thumb>
-          <Box modifiers={[size(24, 24), clip(Shapes.Circle), background('#6200EE')]} />
+          <Box
+            modifiers={[
+              size(24, 24),
+              clip(Shapes.Circle),
+              background('#6200EE'),
+            ]}
+          />
         </Slider.Thumb>
         <Slider.Track>
           <Row modifiers={[fillMaxWidth(), height(8)]}>
@@ -185,7 +218,10 @@ export default function FullyCustomSliderExample() {
             <Shape.RoundedCorner
               color="#BDBDBD"
               cornerRadii={{ topEnd: 4, bottomEnd: 4 }}
-              modifiers={[weight(Math.max(1 - value, 0.01)), height(8)]}
+              modifiers={[
+                weight(Math.max(1 - value, 0.01)),
+                height(8),
+              ]}
             />
           </Row>
         </Slider.Track>
@@ -203,4 +239,7 @@ export default function FullyCustomSliderExample() {
 import { Slider } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/slider" apiName="Slider" />
+<APISection
+  packageName="expo-ui/jetpack-compose/slider"
+  apiName="Slider"
+/>

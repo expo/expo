@@ -102,7 +102,12 @@ Use `Switch.ThumbContent` to render a custom element inside the thumb. `Switch.D
 ```tsx
 import { useState } from 'react';
 import { Host, Switch, Box } from '@expo/ui/jetpack-compose';
-import { size, clip, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  size,
+  clip,
+  background,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function ThumbContentExample() {
   const [checked, setChecked] = useState(false);
@@ -144,4 +149,7 @@ export default function ThumbContentExample() {
 import { Switch } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/switch" apiName="Switch" />
+<APISection
+  packageName="expo-ui/jetpack-compose/switch"
+  apiName="Switch"
+/>

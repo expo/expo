@@ -38,14 +38,22 @@ A standard icon button with no background, typically used for toolbar actions.
   alt="A gear icon button with no background">
 
 ```tsx
-import { Host, IconButton, Icon, Surface } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  IconButton,
+  Icon,
+  Surface,
+} from '@expo/ui/jetpack-compose';
 
 export default function BasicIconButtonExample() {
   return (
     <Host matchContents>
       <Surface>
         <IconButton onClick={() => alert('Pressed!')}>
-          <Icon source={require('./assets/settings.xml')} size={24} />
+          <Icon
+            source={require('./assets/settings.xml')}
+            size={24}
+          />
         </IconButton>
       </Surface>
     </Host>
@@ -114,4 +122,7 @@ import {
 } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/iconbutton" apiName="IconButton" />
+<APISection
+  packageName="expo-ui/jetpack-compose/iconbutton"
+  apiName="IconButton"
+/>

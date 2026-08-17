@@ -100,7 +100,14 @@ Apply the `toggleable` modifier to each `Row` to make the entire row (checkbox +
 
 ```tsx
 import { useState } from 'react';
-import { Host, Checkbox, TriStateCheckbox, Row, Column, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Checkbox,
+  TriStateCheckbox,
+  Row,
+  Column,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import { toggleable } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SelectAllExample() {
@@ -109,7 +116,11 @@ export default function SelectAllExample() {
   const [child3, setChild3] = useState(false);
 
   const parentState =
-    child1 && child2 && child3 ? 'on' : !child1 && !child2 && !child3 ? 'off' : 'indeterminate';
+    child1 && child2 && child3
+      ? 'on'
+      : !child1 && !child2 && !child3
+        ? 'off'
+        : 'indeterminate';
 
   return (
     <Host matchContents>
@@ -133,19 +144,31 @@ export default function SelectAllExample() {
         </Row>
         <Row
           verticalAlignment="center"
-          modifiers={[toggleable(child1, () => setChild1(!child1), { role: 'checkbox' })]}>
+          modifiers={[
+            toggleable(child1, () => setChild1(!child1), {
+              role: 'checkbox',
+            }),
+          ]}>
           <Checkbox value={child1} />
           <Text>Option 1</Text>
         </Row>
         <Row
           verticalAlignment="center"
-          modifiers={[toggleable(child2, () => setChild2(!child2), { role: 'checkbox' })]}>
+          modifiers={[
+            toggleable(child2, () => setChild2(!child2), {
+              role: 'checkbox',
+            }),
+          ]}>
           <Checkbox value={child2} />
           <Text>Option 2</Text>
         </Row>
         <Row
           verticalAlignment="center"
-          modifiers={[toggleable(child3, () => setChild3(!child3), { role: 'checkbox' })]}>
+          modifiers={[
+            toggleable(child3, () => setChild3(!child3), {
+              role: 'checkbox',
+            }),
+          ]}>
           <Checkbox value={child3} />
           <Text>Option 3</Text>
         </Row>
@@ -160,7 +183,13 @@ export default function SelectAllExample() {
 ## API
 
 ```tsx
-import { Checkbox, TriStateCheckbox } from '@expo/ui/jetpack-compose';
+import {
+  Checkbox,
+  TriStateCheckbox,
+} from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/checkbox" apiName="Checkbox" />
+<APISection
+  packageName="expo-ui/jetpack-compose/checkbox"
+  apiName="Checkbox"
+/>

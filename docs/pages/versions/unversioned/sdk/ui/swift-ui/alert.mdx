@@ -48,12 +48,21 @@ export default function BasicAlertExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Alert title="Saved" isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+      <Alert
+        title="Saved"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}>
         <Alert.Trigger>
-          <Button label="Show alert" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Show alert"
+            onPress={() => setIsPresented(true)}
+          />
         </Alert.Trigger>
         <Alert.Actions>
-          <Button label="OK" onPress={() => setIsPresented(false)} />
+          <Button
+            label="OK"
+            onPress={() => setIsPresented(false)}
+          />
         </Alert.Actions>
       </Alert>
     </Host>
@@ -82,16 +91,27 @@ export default function CancelConfirmAlertExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Alert title="Sign out?" isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+      <Alert
+        title="Sign out?"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}>
         <Alert.Trigger>
-          <Button label="Sign out" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Sign out"
+            onPress={() => setIsPresented(true)}
+          />
         </Alert.Trigger>
         <Alert.Actions>
-          <Button label="Sign out" onPress={() => console.log('Signed out')} />
+          <Button
+            label="Sign out"
+            onPress={() => console.log('Signed out')}
+          />
           <Button label="Cancel" role="cancel" />
         </Alert.Actions>
         <Alert.Message>
-          <Text>You will need to sign in again to access your account.</Text>
+          <Text>
+            You will need to sign in again to access your account.
+          </Text>
         </Alert.Message>
       </Alert>
     </Host>
@@ -120,9 +140,16 @@ export default function DestructiveAlertExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Alert title="Delete account?" isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+      <Alert
+        title="Delete account?"
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}>
         <Alert.Trigger>
-          <Button label="Delete account" role="destructive" onPress={() => setIsPresented(true)} />
+          <Button
+            label="Delete account"
+            role="destructive"
+            onPress={() => setIsPresented(true)}
+          />
         </Alert.Trigger>
         <Alert.Actions>
           <Button
@@ -136,7 +163,10 @@ export default function DestructiveAlertExample() {
           <Button label="Cancel" role="cancel" />
         </Alert.Actions>
         <Alert.Message>
-          <Text>This permanently deletes your account and all data. This cannot be undone.</Text>
+          <Text>
+            This permanently deletes your account and all data. This
+            cannot be undone.
+          </Text>
         </Alert.Message>
       </Alert>
     </Host>

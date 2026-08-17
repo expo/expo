@@ -39,7 +39,13 @@ Expo UI DisclosureGroup matches the official SwiftUI [DisclosureGroup API](https
 
 ```tsx
 import { useState } from 'react';
-import { DisclosureGroup, Form, Host, Section, Text } from '@expo/ui/swift-ui';
+import {
+  DisclosureGroup,
+  Form,
+  Host,
+  Section,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function BasicDisclosureGroupExample() {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -84,7 +90,10 @@ export default function InitiallyExpandedExample() {
   // A disclosure group fills the width it is given, so `matchContents` collapses it.
   return (
     <Host style={{ flex: 1 }}>
-      <DisclosureGroup label="Details" isExpanded={isExpanded} onIsExpandedChange={setIsExpanded}>
+      <DisclosureGroup
+        label="Details"
+        isExpanded={isExpanded}
+        onIsExpandedChange={setIsExpanded}>
         <Text>This content is visible by default.</Text>
       </DisclosureGroup>
     </Host>
@@ -106,7 +115,13 @@ Use `DisclosureGroup.Label` when the label needs custom SwiftUI content or modif
 
 ```tsx
 import { useState } from 'react';
-import { DisclosureGroup, Form, Host, Section, Text } from '@expo/ui/swift-ui';
+import {
+  DisclosureGroup,
+  Form,
+  Host,
+  Section,
+  Text,
+} from '@expo/ui/swift-ui';
 import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function CustomLabelDisclosureGroupExample() {
@@ -116,9 +131,15 @@ export default function CustomLabelDisclosureGroupExample() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section>
-          <DisclosureGroup isExpanded={isExpanded} onIsExpandedChange={setIsExpanded}>
+          <DisclosureGroup
+            isExpanded={isExpanded}
+            onIsExpandedChange={setIsExpanded}>
             <DisclosureGroup.Label>
-              <Text modifiers={[font({ weight: 'semibold' }), foregroundStyle('#0a7ea4')]}>
+              <Text
+                modifiers={[
+                  font({ weight: 'semibold' }),
+                  foregroundStyle('#0a7ea4'),
+                ]}>
                 Network options
               </Text>
             </DisclosureGroup.Label>
@@ -141,4 +162,7 @@ export default function CustomLabelDisclosureGroupExample() {
 import { DisclosureGroup } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/disclosuregroup" apiName="DisclosureGroup" />
+<APISection
+  packageName="expo-ui/swift-ui/disclosuregroup"
+  apiName="DisclosureGroup"
+/>

@@ -41,7 +41,13 @@ Wrap scrollable content in a `PullToRefreshBox` to add pull-to-refresh behavior.
 
 ```tsx
 import { useState, useCallback } from 'react';
-import { Host, PullToRefreshBox, LazyColumn, ListItem, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  PullToRefreshBox,
+  LazyColumn,
+  ListItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function BasicPullToRefresh() {
   const [refreshing, setRefreshing] = useState(false);
@@ -55,7 +61,9 @@ export default function BasicPullToRefresh() {
 
   return (
     <Host style={{ height: 400 }}>
-      <PullToRefreshBox isRefreshing={refreshing} onRefresh={onRefresh}>
+      <PullToRefreshBox
+        isRefreshing={refreshing}
+        onRefresh={onRefresh}>
         <LazyColumn>
           <ListItem>
             <ListItem.HeadlineContent>
@@ -103,7 +111,13 @@ Use the `indicator` prop to customize the spinner and container colors.
 
 ```tsx
 import { useState, useCallback } from 'react';
-import { Host, PullToRefreshBox, LazyColumn, ListItem, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  PullToRefreshBox,
+  LazyColumn,
+  ListItem,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function CustomIndicatorColors() {
   const [refreshing, setRefreshing] = useState(false);
@@ -152,4 +166,7 @@ export default function CustomIndicatorColors() {
 import { PullToRefreshBox } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/pulltorefreshbox" apiName="PullToRefreshBox" />
+<APISection
+  packageName="expo-ui/jetpack-compose/pulltorefreshbox"
+  apiName="PullToRefreshBox"
+/>

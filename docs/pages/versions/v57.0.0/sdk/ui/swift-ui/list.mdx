@@ -81,8 +81,14 @@ export default function ListWithLabelsExample() {
       <List>
         <Section title="Settings">
           <Label title="Wi-Fi" systemImage="wifi" />
-          <Label title="Bluetooth" systemImage="antenna.radiowaves.left.and.right" />
-          <Label title="Cellular" systemImage="antenna.radiowaves.left.and.right.circle" />
+          <Label
+            title="Bluetooth"
+            systemImage="antenna.radiowaves.left.and.right"
+          />
+          <Label
+            title="Cellular"
+            systemImage="antenna.radiowaves.left.and.right.circle"
+          />
         </Section>
       </List>
     </Host>
@@ -106,10 +112,27 @@ Use the [`listStyle`](modifiers/#liststylestyle) modifier to change the list's a
 
 ```tsx
 import { useState } from 'react';
-import { Host, List, Text, Section, Picker } from '@expo/ui/swift-ui';
-import { listStyle, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import {
+  Host,
+  List,
+  Text,
+  Section,
+  Picker,
+} from '@expo/ui/swift-ui';
+import {
+  listStyle,
+  pickerStyle,
+  tag,
+} from '@expo/ui/swift-ui/modifiers';
 
-const styles = ['automatic', 'plain', 'inset', 'insetGrouped', 'grouped', 'sidebar'] as const;
+const styles = [
+  'automatic',
+  'plain',
+  'inset',
+  'insetGrouped',
+  'grouped',
+  'sidebar',
+] as const;
 
 export default function ListStylesExample() {
   const [styleIndex, setStyleIndex] = useState(0);
@@ -160,7 +183,14 @@ Enable selection, deletion, and reordering of list items using the [`List.ForEac
 
 ```tsx
 import { useState } from 'react';
-import { Host, List, Label, Section, Button, Toggle } from '@expo/ui/swift-ui';
+import {
+  Host,
+  List,
+  Label,
+  Section,
+  Button,
+  Toggle,
+} from '@expo/ui/swift-ui';
 import { environment, tag } from '@expo/ui/swift-ui/modifiers';
 
 type Task = { id: string; title: string };
@@ -181,11 +211,17 @@ export default function EditableListExample() {
     setTasks(prev => prev.filter((_, i) => !indices.includes(i)));
   };
 
-  const handleMove = (sourceIndices: number[], destination: number) => {
+  const handleMove = (
+    sourceIndices: number[],
+    destination: number
+  ) => {
     setTasks(prev => {
       const newTasks = [...prev];
       const [removed] = newTasks.splice(sourceIndices[0], 1);
-      const adjustedDest = sourceIndices[0] < destination ? destination - 1 : destination;
+      const adjustedDest =
+        sourceIndices[0] < destination
+          ? destination - 1
+          : destination;
       newTasks.splice(adjustedDest, 0, removed);
       return newTasks;
     });
@@ -196,14 +232,24 @@ export default function EditableListExample() {
       <List
         selection={selectedIds}
         onSelectionChange={ids => setSelectedIds(ids.map(String))}
-        modifiers={[environment('editMode', editMode ? 'active' : 'inactive')]}>
+        modifiers={[
+          environment('editMode', editMode ? 'active' : 'inactive'),
+        ]}>
         <Section title="Settings">
-          <Toggle label="Edit mode" isOn={editMode} onIsOnChange={setEditMode} />
+          <Toggle
+            label="Edit mode"
+            isOn={editMode}
+            onIsOnChange={setEditMode}
+          />
         </Section>
         <Section title="Tasks">
           <List.ForEach onDelete={handleDelete} onMove={handleMove}>
             {tasks.map(task => (
-              <Label key={task.id} title={task.title} modifiers={[tag(task.id)]} />
+              <Label
+                key={task.id}
+                title={task.title}
+                modifiers={[tag(task.id)]}
+              />
             ))}
           </List.ForEach>
         </Section>
@@ -244,7 +290,11 @@ export default function RefreshableListExample() {
       <List modifiers={[refreshable(handleRefresh)]}>
         <Section title="Data">
           <Text>Pull down to refresh</Text>
-          {lastRefresh && <Text>Last refresh: {lastRefresh.toLocaleTimeString()}</Text>}
+          {lastRefresh && (
+            <Text>
+              Last refresh: {lastRefresh.toLocaleTimeString()}
+            </Text>
+          )}
         </Section>
       </List>
     </Host>
@@ -272,11 +322,24 @@ export default function RowStylingExample() {
     <Host style={{ flex: 1 }}>
       <List>
         <Section title="Styled Rows">
-          <Text modifiers={[listRowBackground('blue')]}>Blue background</Text>
-          <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
-          <Text modifiers={[listRowSeparatorTint('red')]}>Red separator</Text>
-          <Text modifiers={[listRowInsets({ leading: 40 })]}>Extra leading inset</Text>
-          <Text modifiers={[listRowInsets({ leading: 0, trailing: 0 })]}>No horizontal insets</Text>
+          <Text modifiers={[listRowBackground('blue')]}>
+            Blue background
+          </Text>
+          <Text modifiers={[listRowSeparator('hidden')]}>
+            Hidden separator
+          </Text>
+          <Text modifiers={[listRowSeparatorTint('red')]}>
+            Red separator
+          </Text>
+          <Text modifiers={[listRowInsets({ leading: 40 })]}>
+            Extra leading inset
+          </Text>
+          <Text
+            modifiers={[
+              listRowInsets({ leading: 0, trailing: 0 }),
+            ]}>
+            No horizontal insets
+          </Text>
         </Section>
       </List>
     </Host>

@@ -85,7 +85,11 @@ export default function ControlledTextFieldExample() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <TextField placeholder="Name" text={text} onTextChange={handleTextChange} />
+      <TextField
+        placeholder="Name"
+        text={text}
+        onTextChange={handleTextChange}
+      />
     </Host>
   );
 }
@@ -116,7 +120,10 @@ export default function MultilineTextFieldExample() {
         axis="vertical"
         text={textState}
         placeholder="Tell us about yourself..."
-        modifiers={[lineLimit(5), fixedSize({ horizontal: false, vertical: true })]}
+        modifiers={[
+          lineLimit(5),
+          fixedSize({ horizontal: false, vertical: true }),
+        ]}
       />
     </Host>
   );
@@ -137,7 +144,10 @@ Use the [`keyboardType`](modifiers/#keyboardtypekeyboardtype) modifier to displa
 
 ```tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
-import { keyboardType, autocorrectionDisabled } from '@expo/ui/swift-ui/modifiers';
+import {
+  keyboardType,
+  autocorrectionDisabled,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function KeyboardTypeExample() {
   const textState = useNativeState('');
@@ -147,7 +157,10 @@ export default function KeyboardTypeExample() {
       <TextField
         placeholder="Email"
         text={textState}
-        modifiers={[keyboardType('email-address'), autocorrectionDisabled()]}
+        modifiers={[
+          keyboardType('email-address'),
+          autocorrectionDisabled(),
+        ]}
       />
     </Host>
   );
@@ -180,7 +193,9 @@ export default function SubmitHandlingExample() {
         text={textState}
         modifiers={[
           submitLabel('search'),
-          onSubmit(() => console.log('Submitted:', textState.value)),
+          onSubmit(() =>
+            console.log('Submitted:', textState.value)
+          ),
         ]}
       />
     </Host>
@@ -222,7 +237,11 @@ export default function ImperativeRefExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack spacing={12}>
-        <TextField ref={ref} text={textState} placeholder="Imperative field" />
+        <TextField
+          ref={ref}
+          text={textState}
+          placeholder="Imperative field"
+        />
         <HStack spacing={12}>
           <Button
             modifiers={[buttonStyle('bordered')]}
@@ -293,7 +312,10 @@ export default function WorkletPhoneMaskExample() {
     if (formatted !== v) {
       phone.value = formatted;
       // Snaps to end for demo. Real masks need smarter cursor handling.
-      selection.value = { start: formatted.length, end: formatted.length };
+      selection.value = {
+        start: formatted.length,
+        end: formatted.length,
+      };
     }
   });
 
@@ -319,4 +341,7 @@ export default function WorkletPhoneMaskExample() {
 import { TextField } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/textfield" apiName="TextField" />
+<APISection
+  packageName="expo-ui/swift-ui/textfield"
+  apiName="TextField"
+/>

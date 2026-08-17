@@ -64,7 +64,12 @@ Use compound components for rich content in each position.
   alt="A list row with a bell icon, an ACCOUNT overline, a Notifications headline, supporting text, and a trailing chevron">
 
 ```tsx
-import { Host, ListItem, Icon, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ListItem,
+  Icon,
+  Text,
+} from '@expo/ui/jetpack-compose';
 
 export default function ListItemWithSlots() {
   return (
@@ -110,7 +115,8 @@ import { clickable } from '@expo/ui/jetpack-compose/modifiers';
 export default function ClickableListItem() {
   return (
     <Host matchContents>
-      <ListItem modifiers={[clickable(() => console.log('Tapped!'))]}>
+      <ListItem
+        modifiers={[clickable(() => console.log('Tapped!'))]}>
         <ListItem.HeadlineContent>
           <Text>Tap me</Text>
         </ListItem.HeadlineContent>
@@ -133,14 +139,22 @@ Use `ListItem.HeadlineContent` for composable headline content like rows with ic
   alt="A list row whose headline pairs the text Premium Feature with a star icon">
 
 ```tsx
-import { Host, ListItem, Text, Row, Icon } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ListItem,
+  Text,
+  Row,
+  Icon,
+} from '@expo/ui/jetpack-compose';
 
 export default function ListItemCustomHeadline() {
   return (
     <Host matchContents>
       <ListItem>
         <ListItem.HeadlineContent>
-          <Row horizontalArrangement={{ spacedBy: 8 }} verticalAlignment="center">
+          <Row
+            horizontalArrangement={{ spacedBy: 8 }}
+            verticalAlignment="center">
             <Text>Premium Feature</Text>
             <Icon source={require('./assets/star.xml')} size={16} />
           </Row>
@@ -159,4 +173,7 @@ export default function ListItemCustomHeadline() {
 import { ListItem } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/listitem" apiName="ListItem" />
+<APISection
+  packageName="expo-ui/jetpack-compose/listitem"
+  apiName="ListItem"
+/>

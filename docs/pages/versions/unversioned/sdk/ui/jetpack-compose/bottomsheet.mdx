@@ -41,7 +41,13 @@ Use `ref.hide()` to programmatically dismiss the sheet with an animation before 
 
 ```tsx
 import { useRef, useState } from 'react';
-import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ModalBottomSheet,
+  Button,
+  Column,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -60,8 +66,12 @@ export default function BasicBottomSheetExample() {
         <Text>Open sheet</Text>
       </Button>
       {visible && (
-        <ModalBottomSheet ref={sheetRef} onDismissRequest={() => setVisible(false)}>
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
+        <ModalBottomSheet
+          ref={sheetRef}
+          onDismissRequest={() => setVisible(false)}>
+          <Column
+            verticalArrangement={{ spacedBy: 12 }}
+            modifiers={[paddingAll(24)]}>
             <Text>Hello from bottom sheet!</Text>
             <Text>You can add more content here.</Text>
             <Button onClick={hideSheet}>
@@ -89,9 +99,18 @@ When `skipPartiallyExpanded` is set, the sheet opens directly in the fully expan
 
 ```tsx
 import { useRef, useState } from 'react';
-import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ModalBottomSheet,
+  Button,
+  Column,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
-import { paddingAll, height } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  paddingAll,
+  height,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function SkipPartiallyExpandedExample() {
   const [visible, setVisible] = useState(false);
@@ -112,9 +131,15 @@ export default function SkipPartiallyExpandedExample() {
           ref={sheetRef}
           onDismissRequest={() => setVisible(false)}
           skipPartiallyExpanded>
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24), height(600)]}>
-            <Text>This sheet skips the partially expanded state.</Text>
-            <Text>It opens directly in the fully expanded position.</Text>
+          <Column
+            verticalArrangement={{ spacedBy: 12 }}
+            modifiers={[paddingAll(24), height(600)]}>
+            <Text>
+              This sheet skips the partially expanded state.
+            </Text>
+            <Text>
+              It opens directly in the fully expanded position.
+            </Text>
             <Button onClick={hideSheet}>
               <Text>Close</Text>
             </Button>
@@ -140,7 +165,13 @@ When `initialFullyExpanded` is `true`, the sheet opens directly in the fully exp
 
 ```tsx
 import { useRef, useState } from 'react';
-import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ModalBottomSheet,
+  Button,
+  Column,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -163,10 +194,15 @@ export default function InitialFullyExpandedExample() {
           ref={sheetRef}
           onDismissRequest={() => setVisible(false)}
           initialFullyExpanded>
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
+          <Column
+            verticalArrangement={{ spacedBy: 12 }}
+            modifiers={[paddingAll(24)]}>
             <Text>This sheet opened fully expanded.</Text>
-            <Text>You can still drag it down to the partial state.</Text>
-            <Button onClick={() => sheetRef.current?.partialExpand()}>
+            <Text>
+              You can still drag it down to the partial state.
+            </Text>
+            <Button
+              onClick={() => sheetRef.current?.partialExpand()}>
               <Text>Collapse to partial</Text>
             </Button>
             <Button onClick={hideSheet}>
@@ -194,7 +230,13 @@ Use `containerColor`, `contentColor`, and `scrimColor` to customize the sheet's 
 
 ```tsx
 import { useRef, useState } from 'react';
-import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ModalBottomSheet,
+  Button,
+  Column,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -219,7 +261,9 @@ export default function CustomColorsExample() {
           containerColor="#1a1a2e"
           contentColor="#e0e0e0"
           scrimColor="#6200EE80">
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
+          <Column
+            verticalArrangement={{ spacedBy: 12 }}
+            modifiers={[paddingAll(24)]}>
             <Text>Custom styled bottom sheet.</Text>
             <Text>Dark container with a purple scrim overlay.</Text>
             <Button onClick={hideSheet}>
@@ -247,7 +291,14 @@ Use `ModalBottomSheet.DragHandle` slot to provide a custom drag handle, or set `
 
 ```tsx
 import { useRef, useState } from 'react';
-import { Host, ModalBottomSheet, Button, Column, Box, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ModalBottomSheet,
+  Button,
+  Column,
+  Box,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import {
   background,
@@ -274,13 +325,26 @@ export default function CustomDragHandleExample() {
         <Text>Open custom handle sheet</Text>
       </Button>
       {visible && (
-        <ModalBottomSheet ref={sheetRef} onDismissRequest={() => setVisible(false)}>
+        <ModalBottomSheet
+          ref={sheetRef}
+          onDismissRequest={() => setVisible(false)}>
           <ModalBottomSheet.DragHandle>
-            <Column horizontalAlignment="center" modifiers={[fillMaxWidth(), padding(0, 12, 0, 8)]}>
-              <Box modifiers={[width(60), height(6), clip(Shapes.Circle), background('#6200EE')]} />
+            <Column
+              horizontalAlignment="center"
+              modifiers={[fillMaxWidth(), padding(0, 12, 0, 8)]}>
+              <Box
+                modifiers={[
+                  width(60),
+                  height(6),
+                  clip(Shapes.Circle),
+                  background('#6200EE'),
+                ]}
+              />
             </Column>
           </ModalBottomSheet.DragHandle>
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+          <Column
+            verticalArrangement={{ spacedBy: 12 }}
+            modifiers={[padding(16, 16, 16, 16)]}>
             <Button onClick={hideSheet}>
               <Text>Close</Text>
             </Button>
@@ -339,7 +403,9 @@ export default function RNContentBottomSheetExample() {
           ref={sheetRef}
           onDismissRequest={() => setVisible(false)}
           skipPartiallyExpanded={false}>
-          <Column verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+          <Column
+            verticalArrangement={{ spacedBy: 16 }}
+            modifiers={[padding(16, 16, 16, 16)]}>
             <Text>Mixing Compose + RN in a Bottom Sheet</Text>
             <RNHostView>
               <View>
@@ -360,7 +426,10 @@ export default function RNContentBottomSheetExample() {
                     alignItems: 'center',
                   }}
                   onPress={hideSheet}>
-                  <RNText style={{ color: 'white', fontWeight: '600' }}>Close</RNText>
+                  <RNText
+                    style={{ color: 'white', fontWeight: '600' }}>
+                    Close
+                  </RNText>
                 </Pressable>
               </View>
             </RNHostView>
@@ -386,9 +455,19 @@ Use `RNHostView` without `matchContents` to let the RN view fill the remaining s
 
 ```tsx
 import { useRef, useState } from 'react';
-import { Host, ModalBottomSheet, Button, Column, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ModalBottomSheet,
+  Button,
+  Column,
+  RNHostView,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
-import { height, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  height,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 import { Text as RNText, View } from 'react-native';
 
 export default function FlexRNContentExample() {
@@ -410,10 +489,16 @@ export default function FlexRNContentExample() {
           ref={sheetRef}
           onDismissRequest={() => setVisible(false)}
           skipPartiallyExpanded>
-          <Column modifiers={[height(400), padding(16, 16, 16, 16)]}>
+          <Column
+            modifiers={[height(400), padding(16, 16, 16, 16)]}>
             <Text>RN View with flex: 1</Text>
             <RNHostView>
-              <View style={{ flex: 1, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: '#9B59B6',
+                  borderRadius: 10,
+                }}>
                 <RNText
                   style={{
                     color: 'white',
@@ -456,7 +541,10 @@ import {
   Text,
   useMaterialColors,
 } from '@expo/ui/jetpack-compose';
-import { fillMaxHeight, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  fillMaxHeight,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 import { FlatList, Text as RNText } from 'react-native';
 
 const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
@@ -471,8 +559,10 @@ export default function ScrollableContentBottomSheetExample() {
         <Text>Open scrollable sheet</Text>
       </Button>
       {visible && (
-        <ModalBottomSheet onDismissRequest={() => setVisible(false)}>
-          <Column modifiers={[fillMaxHeight(), padding(16, 16, 16, 16)]}>
+        <ModalBottomSheet
+          onDismissRequest={() => setVisible(false)}>
+          <Column
+            modifiers={[fillMaxHeight(), padding(16, 16, 16, 16)]}>
             <RNHostView>
               <FlatList
                 nestedScrollEnabled
@@ -480,7 +570,13 @@ export default function ScrollableContentBottomSheetExample() {
                 data={DATA}
                 keyExtractor={item => item}
                 renderItem={({ item }) => (
-                  <RNText style={{ paddingVertical: 16, color: colors.onSurface }}>{item}</RNText>
+                  <RNText
+                    style={{
+                      paddingVertical: 16,
+                      color: colors.onSurface,
+                    }}>
+                    {item}
+                  </RNText>
                 )}
               />
             </RNHostView>
@@ -506,7 +602,13 @@ Combine `properties`, `sheetGesturesEnabled` to create a sheet that can only be 
 
 ```tsx
 import { useRef, useState } from 'react';
-import { Host, ModalBottomSheet, Button, Column, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ModalBottomSheet,
+  Button,
+  Column,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
 import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 
@@ -533,8 +635,13 @@ export default function NonDismissibleExample() {
             shouldDismissOnBackPress: false,
             shouldDismissOnClickOutside: false,
           }}>
-          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[paddingAll(24)]}>
-            <Text>This sheet cannot be dismissed by swiping, back press, or tapping outside.</Text>
+          <Column
+            verticalArrangement={{ spacedBy: 12 }}
+            modifiers={[paddingAll(24)]}>
+            <Text>
+              This sheet cannot be dismissed by swiping, back press,
+              or tapping outside.
+            </Text>
             <Text>Only the button below will close it.</Text>
             <Button onClick={hideSheet}>
               <Text>Close</Text>
@@ -555,4 +662,7 @@ export default function NonDismissibleExample() {
 import { ModalBottomSheet } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/bottomsheet" apiName="BottomSheet" />
+<APISection
+  packageName="expo-ui/jetpack-compose/bottomsheet"
+  apiName="BottomSheet"
+/>

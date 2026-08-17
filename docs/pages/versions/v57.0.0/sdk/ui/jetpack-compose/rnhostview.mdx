@@ -36,18 +36,34 @@ Use `matchContents` when you want the Jetpack Compose parent to size itself base
 ```tsx
 import { useState } from 'react';
 import { Pressable, Text as RNText } from 'react-native';
-import { Host, Card, Column, Row, RNHostView, Text } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  Card,
+  Column,
+  Row,
+  RNHostView,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import {
+  fillMaxWidth,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function RNHostViewCounterExample() {
   const [counter, setCounter] = useState(0);
 
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Card modifiers={[fillMaxWidth()]}>
-        <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+        <Column
+          verticalArrangement={{ spacedBy: 12 }}
+          modifiers={[padding(16, 16, 16, 16)]}>
           <Text>Mixing RN Components with Compose</Text>
-          <Row horizontalArrangement={{ spacedBy: 24 }} verticalAlignment="center">
+          <Row
+            horizontalArrangement={{ spacedBy: 24 }}
+            verticalAlignment="center">
             <RNHostView matchContents>
               <Pressable
                 onPress={() => setCounter(prev => prev - 1)}
@@ -59,7 +75,9 @@ export default function RNHostViewCounterExample() {
                   alignItems: 'center',
                   backgroundColor: '#9B59B6',
                 }}>
-                <RNText style={{ color: 'white', fontSize: 24 }}>-</RNText>
+                <RNText style={{ color: 'white', fontSize: 24 }}>
+                  -
+                </RNText>
               </Pressable>
             </RNHostView>
             <Text>{counter}</Text>
@@ -74,7 +92,9 @@ export default function RNHostViewCounterExample() {
                   alignItems: 'center',
                   backgroundColor: '#9B59B6',
                 }}>
-                <RNText style={{ color: 'white', fontSize: 24 }}>+</RNText>
+                <RNText style={{ color: 'white', fontSize: 24 }}>
+                  +
+                </RNText>
               </Pressable>
             </RNHostView>
           </Row>
@@ -99,16 +119,33 @@ When using `flex: 1` in your React Native content, omit the `matchContents` prop
 
 ```tsx
 import { View } from 'react-native';
-import { Host, Card, Column, Row, RNHostView, Text } from '@expo/ui/jetpack-compose';
-import { fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  Host,
+  Card,
+  Column,
+  Row,
+  RNHostView,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import {
+  fillMaxWidth,
+  padding,
+  size,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function RNHostViewFlexExample() {
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Card modifiers={[fillMaxWidth()]}>
-        <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+        <Column
+          verticalArrangement={{ spacedBy: 12 }}
+          modifiers={[padding(16, 16, 16, 16)]}>
           <Text>RN components with flex: 1 children</Text>
-          <Row horizontalArrangement={{ spacedBy: 20 }} modifiers={[size(100, 100)]}>
+          <Row
+            horizontalArrangement={{ spacedBy: 20 }}
+            modifiers={[size(100, 100)]}>
             <RNHostView>
               <View
                 style={{
@@ -169,8 +206,12 @@ export default function RNHostViewSheetExample() {
         <Text>Open sheet</Text>
       </Button>
       {visible && (
-        <ModalBottomSheet ref={sheetRef} onDismissRequest={() => setVisible(false)}>
-          <Column verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+        <ModalBottomSheet
+          ref={sheetRef}
+          onDismissRequest={() => setVisible(false)}>
+          <Column
+            verticalArrangement={{ spacedBy: 16 }}
+            modifiers={[padding(16, 16, 16, 16)]}>
             <Text>Mixing Compose + RN in a Bottom Sheet</Text>
             <RNHostView matchContents>
               <View>
@@ -191,7 +232,10 @@ export default function RNHostViewSheetExample() {
                     alignItems: 'center',
                   }}
                   onPress={hideSheet}>
-                  <RNText style={{ color: 'white', fontWeight: '600' }}>Close</RNText>
+                  <RNText
+                    style={{ color: 'white', fontWeight: '600' }}>
+                    Close
+                  </RNText>
                 </Pressable>
               </View>
             </RNHostView>
@@ -218,9 +262,19 @@ Use `RNHostView` without `matchContents` to let the React Native view fill the r
 ```tsx
 import { useRef, useState } from 'react';
 import { Text as RNText, View } from 'react-native';
-import { Host, ModalBottomSheet, Button, Column, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  ModalBottomSheet,
+  Button,
+  Column,
+  RNHostView,
+  Text,
+} from '@expo/ui/jetpack-compose';
 import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
-import { height, padding } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  height,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 export default function RNHostViewFlexSheetExample() {
   const [visible, setVisible] = useState(false);
@@ -236,9 +290,15 @@ export default function RNHostViewFlexSheetExample() {
           ref={sheetRef}
           onDismissRequest={() => setVisible(false)}
           skipPartiallyExpanded>
-          <Column modifiers={[height(400), padding(16, 16, 16, 16)]}>
+          <Column
+            modifiers={[height(400), padding(16, 16, 16, 16)]}>
             <RNHostView>
-              <View style={{ flex: 1, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: '#9B59B6',
+                  borderRadius: 10,
+                }}>
                 <RNText
                   style={{
                     color: 'white',
@@ -266,4 +326,7 @@ export default function RNHostViewFlexSheetExample() {
 import { RNHostView } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/rnhostview" apiName="RNHostView" />
+<APISection
+  packageName="expo-ui/jetpack-compose/rnhostview"
+  apiName="RNHostView"
+/>

@@ -43,8 +43,15 @@ export default function BasicContextMenuExample() {
     <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Edit" onPress={() => console.log('Edit')} />
-          <Button label="Delete" role="destructive" onPress={() => console.log('Delete')} />
+          <Button
+            label="Edit"
+            onPress={() => console.log('Edit')}
+          />
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => console.log('Delete')}
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>
@@ -78,7 +85,11 @@ export default function ContextMenuWithImagesExample() {
             systemImage="square.and.arrow.up"
             onPress={() => console.log('Share')}
           />
-          <Button label="Favorite" systemImage="heart" onPress={() => console.log('Favorite')} />
+          <Button
+            label="Favorite"
+            systemImage="heart"
+            onPress={() => console.log('Favorite')}
+          />
           <Button
             label="Delete"
             systemImage="trash"
@@ -109,22 +120,41 @@ Use `ContextMenu.Preview` to show a custom preview above the menu when opened.
 
 ```tsx
 import { View, Text as RNText } from 'react-native';
-import { Host, ContextMenu, Button, RNHostView, Text } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ContextMenu,
+  Button,
+  RNHostView,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function ContextMenuWithPreviewExample() {
   return (
     <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Edit" onPress={() => console.log('Edit')} />
-          <Button label="Delete" role="destructive" onPress={() => console.log('Delete')} />
+          <Button
+            label="Edit"
+            onPress={() => console.log('Edit')}
+          />
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => console.log('Delete')}
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>
         </ContextMenu.Trigger>
         <ContextMenu.Preview>
           <RNHostView matchContents>
-            <View style={{ width: 200, height: 100, backgroundColor: '#f0f0f0', padding: 16 }}>
+            <View
+              style={{
+                width: 200,
+                height: 100,
+                backgroundColor: '#f0f0f0',
+                padding: 16,
+              }}>
               <RNText>Preview content</RNText>
             </View>
           </RNHostView>
@@ -147,17 +177,28 @@ export default function ContextMenuWithPreviewExample() {
 
 ```tsx
 import { useState } from 'react';
-import { Host, ContextMenu, Button, Text, Picker } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ContextMenu,
+  Button,
+  Text,
+  Picker,
+} from '@expo/ui/swift-ui';
 import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 
 export default function ContextMenuWithPickerExample() {
-  const [selectedIndex, setSelectedIndex] = useState<number | undefined>(0);
+  const [selectedIndex, setSelectedIndex] = useState<
+    number | undefined
+  >(0);
 
   return (
     <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Action" onPress={() => console.log('Action')} />
+          <Button
+            label="Action"
+            onPress={() => console.log('Action')}
+          />
           <Picker
             label="Size"
             modifiers={[pickerStyle('menu')]}
@@ -192,7 +233,14 @@ Use `Section` and `Divider` components to organize menu items.
   alt="A context menu with an Actions section holding Edit and Duplicate, a divider, and Delete">
 
 ```tsx
-import { Host, ContextMenu, Button, Text, Section, Divider } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ContextMenu,
+  Button,
+  Text,
+  Section,
+  Divider,
+} from '@expo/ui/swift-ui';
 
 export default function ContextMenuWithSectionsExample() {
   return (
@@ -200,11 +248,21 @@ export default function ContextMenuWithSectionsExample() {
       <ContextMenu>
         <ContextMenu.Items>
           <Section title="Actions">
-            <Button label="Edit" onPress={() => console.log('Edit')} />
-            <Button label="Duplicate" onPress={() => console.log('Duplicate')} />
+            <Button
+              label="Edit"
+              onPress={() => console.log('Edit')}
+            />
+            <Button
+              label="Duplicate"
+              onPress={() => console.log('Duplicate')}
+            />
           </Section>
           <Divider />
-          <Button label="Delete" role="destructive" onPress={() => console.log('Delete')} />
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => console.log('Delete')}
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>
@@ -236,7 +294,10 @@ export default function DisabledContextMenuItemExample() {
     <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Edit" onPress={() => console.log('Edit')} />
+          <Button
+            label="Edit"
+            onPress={() => console.log('Edit')}
+          />
           <Button
             label="Locked"
             systemImage="lock"
@@ -276,7 +337,12 @@ export default function CheckmarkContextMenuItemExample() {
     <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Toggle isOn={pinned} label="Pin" systemImage="pin" onIsOnChange={setPinned} />
+          <Toggle
+            isOn={pinned}
+            label="Pin"
+            systemImage="pin"
+            onIsOnChange={setPinned}
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>
@@ -307,11 +373,20 @@ export default function NestedContextMenuExample() {
     <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Action" onPress={() => console.log('Action')} />
+          <Button
+            label="Action"
+            onPress={() => console.log('Action')}
+          />
           <ContextMenu>
             <ContextMenu.Items>
-              <Button label="Sub Action 1" onPress={() => console.log('Sub 1')} />
-              <Button label="Sub Action 2" onPress={() => console.log('Sub 2')} />
+              <Button
+                label="Sub Action 1"
+                onPress={() => console.log('Sub 1')}
+              />
+              <Button
+                label="Sub Action 2"
+                onPress={() => console.log('Sub 2')}
+              />
             </ContextMenu.Items>
             <ContextMenu.Trigger>
               <Button label="More Options" />
@@ -335,4 +410,7 @@ export default function NestedContextMenuExample() {
 import { ContextMenu } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/contextmenu" apiName="ContextMenu" />
+<APISection
+  packageName="expo-ui/swift-ui/contextmenu"
+  apiName="ContextMenu"
+/>

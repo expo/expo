@@ -50,14 +50,23 @@ import {
   ListItem,
   Text,
 } from '@expo/ui/jetpack-compose';
-import { align, fillMaxSize, offset } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  align,
+  fillMaxSize,
+  offset,
+} from '@expo/ui/jetpack-compose/modifiers';
 
-const ITEMS = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
+const ITEMS = Array.from(
+  { length: 20 },
+  (_, index) => `Item ${index + 1}`
+);
 
 export default function FloatingToolbarExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Box modifiers={[fillMaxSize()]} floatingToolbarExitAlwaysScrollBehavior="bottom">
+      <Box
+        modifiers={[fillMaxSize()]}
+        floatingToolbarExitAlwaysScrollBehavior="bottom">
         <LazyColumn modifiers={[fillMaxSize()]}>
           {ITEMS.map(item => (
             <ListItem key={item}>
@@ -98,20 +107,35 @@ Use `IconButton` as direct children for toolbar items, and `HorizontalFloatingTo
   alt="A pill shaped toolbar holding edit and share buttons, beside a separate add button">
 
 ```tsx
-import { Host, HorizontalFloatingToolbar, IconButton, Icon } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  HorizontalFloatingToolbar,
+  IconButton,
+  Icon,
+} from '@expo/ui/jetpack-compose';
 
 export default function ToolbarWithFABExample() {
   return (
     <Host matchContents>
       <HorizontalFloatingToolbar>
         <IconButton onClick={() => console.log('Edit pressed')}>
-          <Icon source={require('./assets/edit.xml')} contentDescription="Edit" />
+          <Icon
+            source={require('./assets/edit.xml')}
+            contentDescription="Edit"
+          />
         </IconButton>
         <IconButton onClick={() => console.log('Share pressed')}>
-          <Icon source={require('./assets/share.xml')} contentDescription="Share" />
+          <Icon
+            source={require('./assets/share.xml')}
+            contentDescription="Share"
+          />
         </IconButton>
-        <HorizontalFloatingToolbar.FloatingActionButton onPress={() => console.log('Add pressed')}>
-          <Icon source={require('./assets/add.xml')} contentDescription="Add" />
+        <HorizontalFloatingToolbar.FloatingActionButton
+          onPress={() => console.log('Add pressed')}>
+          <Icon
+            source={require('./assets/add.xml')}
+            contentDescription="Add"
+          />
         </HorizontalFloatingToolbar.FloatingActionButton>
       </HorizontalFloatingToolbar>
     </Host>

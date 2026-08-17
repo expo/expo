@@ -45,7 +45,11 @@ export default function ColorPickerExample() {
   // A color picker fills the width it is given, so `matchContents` collapses it.
   return (
     <Host style={{ flex: 1 }}>
-      <ColorPicker label="Select a color" selection={color} onSelectionChange={setColor} />
+      <ColorPicker
+        label="Select a color"
+        selection={color}
+        onSelectionChange={setColor}
+      />
     </Host>
   );
 }
@@ -91,4 +95,7 @@ export default function ColorPickerOpacityExample() {
 import { ColorPicker } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/colorpicker" apiName="ColorPicker" />
+<APISection
+  packageName="expo-ui/swift-ui/colorpicker"
+  apiName="ColorPicker"
+/>

@@ -64,9 +64,17 @@ export default function BasicExposedDropdownMenuBoxExample() {
 
   return (
     <Host matchContents>
-      <ExposedDropdownMenuBox expanded={expanded} onExpandedChange={setExpanded}>
-        <TextField value={selectedLabel} readOnly modifiers={[menuAnchor()]} />
-        <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
+      <ExposedDropdownMenuBox
+        expanded={expanded}
+        onExpandedChange={setExpanded}>
+        <TextField
+          value={selectedLabel}
+          readOnly
+          modifiers={[menuAnchor()]}
+        />
+        <ExposedDropdownMenu
+          expanded={expanded}
+          onDismissRequest={() => setExpanded(false)}>
           {LANGUAGES.map(lang => (
             <DropdownMenuItem
               key={lang.value}

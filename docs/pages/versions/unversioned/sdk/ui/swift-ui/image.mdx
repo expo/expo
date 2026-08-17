@@ -110,9 +110,21 @@ export default function ImageVariableExample() {
   return (
     <Host style={{ flex: 1 }}>
       <HStack spacing={16}>
-        <Image systemName="chart.bar.fill" size={32} variableValue={0.3} />
-        <Image systemName="chart.bar.fill" size={32} variableValue={0.6} />
-        <Image systemName="chart.bar.fill" size={32} variableValue={1.0} />
+        <Image
+          systemName="chart.bar.fill"
+          size={32}
+          variableValue={0.3}
+        />
+        <Image
+          systemName="chart.bar.fill"
+          size={32}
+          variableValue={0.6}
+        />
+        <Image
+          systemName="chart.bar.fill"
+          size={32}
+          variableValue={1.0}
+        />
       </HStack>
     </Host>
   );
@@ -166,7 +178,13 @@ The following example uses `value` to play `bounce` on each button press. Write 
   alt="An orange bell SF Symbol above a Bounce button">
 
 ```tsx
-import { Button, Host, Image, useNativeState, VStack } from '@expo/ui/swift-ui';
+import {
+  Button,
+  Host,
+  Image,
+  useNativeState,
+  VStack,
+} from '@expo/ui/swift-ui';
 import { symbolEffect } from '@expo/ui/swift-ui/modifiers';
 import { scheduleOnUI } from 'react-native-worklets';
 
@@ -180,7 +198,12 @@ export default function ImageSymbolEffectValueExample() {
           systemName="bell.fill"
           size={48}
           color="orange"
-          modifiers={[symbolEffect({ effect: 'bounce', direction: 'up' }, { value: trigger })]}
+          modifiers={[
+            symbolEffect(
+              { effect: 'bounce', direction: 'up' },
+              { value: trigger }
+            ),
+          ]}
         />
         <Button
           label="Bounce"
@@ -208,7 +231,13 @@ The following example uses `isActive` to toggle a continuous `breathe` animation
   alt="A cyan cloud SF Symbol above a Breathe toggle that is turned on">
 
 ```tsx
-import { Host, Image, SyncToggle, useNativeState, VStack } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Image,
+  SyncToggle,
+  useNativeState,
+  VStack,
+} from '@expo/ui/swift-ui';
 import { symbolEffect } from '@expo/ui/swift-ui/modifiers';
 
 export default function ImageSymbolEffectIsActiveExample() {
@@ -221,7 +250,9 @@ export default function ImageSymbolEffectIsActiveExample() {
           systemName="cloud.fill"
           size={48}
           color="cyan"
-          modifiers={[symbolEffect({ effect: 'breathe' }, { isActive })]}
+          modifiers={[
+            symbolEffect({ effect: 'breathe' }, { isActive }),
+          ]}
         />
         <SyncToggle label="Breathe" isOn={isActive} />
       </VStack>
