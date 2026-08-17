@@ -49,6 +49,22 @@ data class NetworkRequest(
   val errorDescription: String?,
 
   /**
+   * Whether the request ended because the caller cancelled it (`Call.isCanceled()` at capture
+   * time). Cancellations are recorded as spans but are not errors, per the OTel conventions —
+   * RN apps abort requests routinely (`AbortController`, prefetch aborts).
+   */
+  val cancelled: Boolean = false,
+
+  /**
+   * Fully qualified class name of the completion exception (e.g. `java.net.UnknownHostException`),
+   * or `null` when the request completed without one. Unlike `errorDescription`, which is
+   * localized free text, this stays constant across locales, so telemetry can group failures by
+   * it — it feeds the low-cardinality `error.type` attribute of OpenTelemetry's semantic
+   * conventions. Mirrors the iOS `errorType` (`domain:code` there).
+   */
+  val errorType: String? = null,
+
+  /**
    * Ordered list of redirect hops that preceded the final response. Empty when the request landed
    * directly. Each entry's `fromUrl` is the URL that returned the redirect, `toUrl` is where the
    * redirect pointed, and `statusCode` is the 3xx code that caused the hop.

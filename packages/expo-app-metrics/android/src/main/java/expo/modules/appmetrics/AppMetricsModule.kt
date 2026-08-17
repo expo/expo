@@ -13,7 +13,9 @@ import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
 import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
+import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
+import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateDisplayName
@@ -22,6 +24,7 @@ import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.logevents.withDisplayNameAttribute
 import expo.modules.appmetrics.memory.MemoryMetricsManager
 import expo.modules.appmetrics.storage.JsDebugSession
+import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.JsLogRecord
 import expo.modules.appmetrics.storage.JsMetric
 import expo.modules.appmetrics.storage.LogRecord
@@ -64,6 +67,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   lateinit var sessionManager: SessionManager
 
   lateinit var mainSession: SessionSharedObject
+
+  /**
+   * The span producer installed on the monitor in `OnCreate`, kept so `OnDestroy` can
+   * uninstall it when the module is torn down (a JS reload).
+   */
+  private var networkRequestPersistence: NetworkRequestPersistence? = null
 
   // Lazy-initialized metadata - created once when first needed
   private val metadata: AppMetadata? by lazy {
@@ -152,6 +161,20 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         // a racing write triggers (and joins) the same single start job.
         scope.launch { mainSession.awaitSessionPersisted() }
 
+        // From here on every completed request is written to the `spans` table, attributed to
+        // the main session. Awaiting the session row first keeps the FK satisfied for every
+        // span insert; installation also drains requests buffered since process start.
+        scope.launch {
+          mainSession.awaitSessionPersisted()
+          val persistence = NetworkRequestPersistence(
+            database = MetricsDatabase.getDatabase(context),
+            scope = scope,
+            sessionId = mainSession.sessionId
+          )
+          networkRequestPersistence = persistence
+          NetworkRequestMonitor.shared.installPersistence(persistence)
+        }
+
         // Sweep sessions orphaned by a previous process. The cutoff equals this
         // session's start and the comparison is strict (`<`), so this session
         // survives while older ones are swept — order vs the INSERT doesn't
@@ -215,6 +238,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnDestroy {
+        // Stop persisting spans for this module's session. Without this, a JS reload leaves
+        // the old instance on the process-wide monitor, writing rows attributed to the
+        // torn-down session until the next OnCreate replaces it.
+        networkRequestPersistence?.let { NetworkRequestMonitor.shared.uninstallPersistence(it) }
         // `modulesQueue` is cancelled immediately after this hook returns, so
         // run the UPDATE on the calling thread to make sure the end timestamp
         // is persisted before teardown. `stop` awaits the session-start job

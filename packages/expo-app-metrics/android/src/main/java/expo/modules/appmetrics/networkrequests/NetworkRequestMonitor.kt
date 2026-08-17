@@ -42,6 +42,65 @@ class NetworkRequestMonitor internal constructor() {
   private val delegates = mutableListOf<WeakReference<NetworkRequestObserverDelegate>>()
 
   /**
+   * Persists each recorded completion into the metrics database. Held strongly — unlike
+   * delegates, persistence is part of the pipeline, not an observer of it. `null` until the
+   * module installs it (and in tests that don't exercise persistence).
+   */
+  private var persistence: NetworkRequestPersistence? = null
+
+  /**
+   * Whether the startup backfill already ran in this process. The module reinstalls
+   * persistence on every JS reload; only the first install may drain the ring buffer, or every
+   * reload would re-write the buffered requests under a fresh session id.
+   */
+  private var hasDrainedBackfill = false
+
+  /**
+   * Installs the persistence hook and, on the first install of the process, drains the ring
+   * buffer through it. The interceptor installs at `Application.onCreate`, but persistence can
+   * only start once the module created the main session — requests observed in between sit in
+   * the buffer, so draining it here keeps startup traffic. The swap and the snapshot happen
+   * under the same lock as `record`, so a concurrent completion is either in the drained
+   * snapshot or persisted by `record`, never both.
+   */
+  fun installPersistence(persistence: NetworkRequestPersistence) {
+    val buffered = synchronized(lock) {
+      this.persistence = persistence
+      if (hasDrainedBackfill) {
+        emptyList()
+      } else {
+        recentRequests.toList()
+      }
+    }
+    if (buffered.isEmpty()) {
+      return
+    }
+    // At-least-once: the flag flips only after the batch coroutine finished writing. A JS
+    // reload cancels the module scope the batch runs on, and a flag set eagerly would turn
+    // that cancellation into silent, permanent loss of the buffered startup requests. The
+    // cost is rare duplicate rows when a reload lands exactly between the drain and the
+    // completion callback — preferred over losing the rows, since spans tolerate duplicates
+    // (distinct ids) but nothing recovers a dropped buffer.
+    persistence.persistBuffered(buffered) {
+      synchronized(lock) {
+        hasDrainedBackfill = true
+      }
+    }
+  }
+
+  /**
+   * Uninstalls `persistence` if it is still the installed instance. Called from the module's
+   * `OnDestroy` so a JS reload doesn't leave the torn-down module's instance writing rows
+   * attributed to a stale session while the next module instance spins up. The identity check
+   * keeps a late-arriving destroy from removing the replacement.
+   */
+  fun uninstallPersistence(persistence: NetworkRequestPersistence) = synchronized(lock) {
+    if (this.persistence === persistence) {
+      this.persistence = null
+    }
+  }
+
+  /**
    * Most recently observed completed requests, oldest first. Bounded by `recentCapacity`.
    * Intended for debug surfaces and the TTI summary; not for the dispatch path.
    */
@@ -77,16 +136,17 @@ class NetworkRequestMonitor internal constructor() {
     }
   }
 
-  /** Records a completed request: appends to the ring buffer and fans out. */
+  /** Records a completed request: appends to the ring buffer, persists it, and fans out. */
   fun record(request: NetworkRequest) {
-    val snapshot = synchronized(lock) {
+    val (persistence, snapshot) = synchronized(lock) {
       recentRequests.addLast(request)
       while (recentRequests.size > recentCapacity) {
         recentRequests.removeFirst()
       }
       delegates.removeAll { it.get() == null }
-      delegates.mapNotNull { it.get() }
+      persistence to delegates.mapNotNull { it.get() }
     }
+    persistence?.persist(request)
     for (delegate in snapshot) {
       if (delegate.shouldObserveRequest(request.url, request.method)) {
         delegate.onNetworkRequestCompleted(request)
