@@ -54,6 +54,18 @@ public func widgetConfigurationOptions(
   return parsedOptions.isEmpty ? fallback : parsedOptions
 }
 
+func flattenChildNodes(_ children: [Any]) -> [[String: Any]] {
+  return children.flatMap { child -> [[String: Any]] in
+    if let node = child as? [String: Any] {
+      return [node]
+    }
+    if let nested = child as? [Any] {
+      return flattenChildNodes(nested)
+    }
+    return []
+  }
+}
+
 public func createRedBox(message: String, stack: String? = nil) -> [String: Any] {
   var props: [String: Any] = ["message": message]
   if let stack {
