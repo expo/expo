@@ -91,14 +91,6 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
     currentFocusRequest = null
   }
 
-  fun setIsAudioActive(active: Boolean) {
-    if (active) {
-      updateAudioFocus()
-    } else {
-      abandonAudioFocus()
-    }
-  }
-
   fun registerPlayer(player: VideoPlayer) {
     players.find { it.get() == player } ?: run {
       players.add(WeakReference(player))
