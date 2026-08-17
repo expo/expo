@@ -1,0 +1,200 @@
+---
+title: Android App Links
+description: 標準的な web URL から Expo アプリを開くために Android App Links を設定する方法を学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+アプリで Android App Links を設定するには、次のことを行う必要があります。
+
+- プロジェクトの app config に `intentFilters` を追加し、`autoVerify` を true に設定する
+- web サイトとネイティブアプリを検証するために双方向の関連付けを設定する
+
+<VideoBoxLink
+  videoId="kNbEEYlFIPs"
+  time={399}
+  title="視聴：Expo Router で Android App Links を設定する"
+  description="autoVerify を使って intent filters を設定し、web サイトとアプリの間で双方向の関連付けを設定して、Android App Links を検証します。"
+/>
+
+## app config に `intentFilters` を追加する
+
+`android.intentFilters` プロパティを追加し、`autoVerify` 属性を `true` に設定することで、app config を構成します。Android App Links が正しく機能するには、`autoVerify` の指定が必須です。
+
+次の例は、`webapp.io` ドメインへのリンクを処理するオプションとして、標準の Android ダイアログにアプリが表示されるようにする基本的な設定を示しています。また、[Android App Links](/ja/linking/overview/#android-app-links) は [標準的なディープリンク](/ja/linking/into-other-apps/) とは異なるため、通常の `https` スキームを使用します。
+
+```json app.json|collapseHeight=454
+{
+  "expo": {
+    "android": {
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          /* @info アプリリンクを有効にするため、app config のインテントフィルターに `autoVerify` プロパティを追加します。*/
+          "autoVerify": true,
+          /* @end */
+          "data": [
+            {
+              "scheme": "https",
+              "host": "*.webapp.io",
+              "pathPrefix": "/records"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    }
+  }
+}
+```
+
+## 双方向の関連付けを設定する
+
+web サイトと Android アプリの間で **双方向の関連付け** を設定するには、以下が必要です。
+
+- **web サイトの検証：** **/.well-known** ディレクトリ内に **assetlinks.json** ファイルを作成し、対象の web サイトでホストする必要があります。このファイルは、あるリンクから開かれたアプリが正しいアプリであることを検証するために使用されます。
+- **ネイティブアプリの検証：** 対象の web サイトのドメイン（URL）を参照する何らかのコード署名が必要です。
+
+### assetlinks.json ファイルを作成する
+
+<Step label="1">
+
+web サイトの検証用に、**/.well-known/assetlinks.json** に **assetlinks.json** ファイル（[digital asset links](https://developers.google.com/digital-asset-links/v1/getting-started) ファイルとも呼ばれます）を作成します。このファイルは、あるリンクに対して開かれたアプリを検証するために使用されます。
+
+Expo Router で web サイトを構築している場合（または Remix、Next.js などその他のモダンな React フレームワークを使用している場合）は、**public/.well-known/assetlinks.json** に **assetlinks.json** を作成します。レガシーな Expo webpack プロジェクトの場合は、**web/.well-known/assetlinks.json** にファイルを作成します。
+
+</Step>
+
+<Step label="2">
+
+app config の `android.package` から `package_name` の値を取得します。
+
+</Step>
+
+<Step label="3">
+
+アプリの署名証明書から `sha256_cert_fingerprints` の値を取得します。[EAS Build](/build/setup/) を使って Android アプリをビルドしている場合は、ビルドを作成した後に:
+
+- `eas credentials -p android` コマンドを実行し、ビルドプロファイルを選択してフィンガープリントの値を取得します。
+- `SHA256 Fingerprint` の下に表示されているフィンガープリントの値をコピーします。
+
+<Collapsible summary="Google Play Console から SHA256 証明書のフィンガープリントを取得する別の方法">
+
+EAS でコード署名を管理していない場合は、アプリを手動でビルドして [Google Play Console](https://play.google.com/console/) に提出することで、**sha256_cert_fingerprints** を確認できます。
+
+- Google Play Console のダッシュボード内で、**Release > Setup > App Signing** に移動します。
+- アプリに対応する正しい **Digital Asset Links JSON** スニペットを見つけます。
+- `14:6D:E9:83...` のような値をコピーし、**public/.well-known/assetlinks.json** ファイルの `sha256_cert_fingerprints` に貼り付けます。
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+
+**assetlinks.json** ファイルに `package_name` と `sha256_cert_fingerprints` を追加します。
+
+```json public/.well-known/assetlinks.json
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      /* @info `com.example` をアプリのパッケージ名に置き換えます。 */
+      "package_name": "com.example",
+      /* @end */
+      "sha256_cert_fingerprints": [
+        // Supports multiple fingerprints for different apps and keys
+        /* @info `14:6D:E9:83...` をアプリの SHA256 証明書のフィンガープリントに置き換えます。 */
+        "14:6D:E9:83:51:7F:66:01:84:93:4F:2F:5E:E0:8F:3A:D6:F4:CA:41:1A:CF:45:BF:8D:10:76:76:CD"
+        /* @end */
+      ]
+    }
+  }
+]
+```
+
+> **info** アプリのさまざまなバリアントに対応するため、`sha256_cert_fingerprints` 配列には複数のフィンガープリントを追加できます。詳細については、[web サイトとの関連付けを宣言する方法に関する Android のドキュメント](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) を参照してください。
+
+</Step>
+
+### assetlinks.json ファイルをホストする
+
+自分のドメインを使う web サーバーで **assetlinks.json** ファイルをホストします。このファイルは content-type `application/json` で配信され、HTTPS 接続でアクセスできる必要があります。アドレスバーに完全な URL を入力して、ブラウザからこのファイルにアクセスできることを確認してください。
+
+### ネイティブアプリの検証
+
+アプリを Android デバイスにインストールして、[Android アプリの検証](https://developer.android.com/training/app-links/verify-android-applinks#web-assoc) プロセスを実行します。
+
+アプリを開いたら、受信リンクを処理してユーザーがリクエストしたコンテンツを表示する方法について詳しくは、[アプリへのリンクを処理する](/ja/linking/into-your-app/#url-を処理する) を参照してください。
+
+## デバッグ
+
+Expo CLI を使うと、web サイトをデプロイしなくても Android App Links をテストできます。[`--tunnel`](/more/expo-cli/#tunneling) 機能を利用すると、開発サーバーを公開された HTTPS URL に転送できます。
+
+<Step label="1">
+
+環境変数 `EXPO_TUNNEL_SUBDOMAIN=my-custom-domain` を設定します。ここで `my-custom-domain` は開発中に使用する一意の文字列です。これにより、開発サーバーを再起動してもトンネルの URL が一定に保たれます。
+
+</Step>
+
+<Step label="2">
+
+[前述のとおり](#app-config-に-intentfilters-を追加する) app config に `intentFilters` を追加します。`host` の値を Ngrok の URL である `my-custom-domain.ngrok.io` に置き換えます。
+
+</Step>
+
+<Step label="3">
+
+`--tunnel` フラグを付けて開発サーバーを起動します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --tunnel'],
+    yarn: ['$ yarn expo start --tunnel'],
+    pnpm: ['$ pnpm expo start --tunnel'],
+    bun: ['$ bun expo start --tunnel'],
+  }}
+/>
+
+</Step>
+
+<Step label="4">
+
+デバイス上で開発ビルドをコンパイルします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
+
+</Step>
+
+<Step label="5">
+
+次の `adb` コマンドを使って intent アクティビティを起動し、アプリでリンクを開くか、デバイスの web ブラウザにカスタムドメインのリンクを入力します。
+
+<Terminal
+  cmd={[
+    '$ adb shell am start -a android.intent.action.VIEW  -c android.intent.category.BROWSABLE -d "https://my-custom-domain.ngrok.io/" <your-package-name>',
+  ]}
+/>
+
+</Step>
+
+## トラブルシューティング
+
+Android App Links を実装する際のトラブルシューティングに役立つ、よくあるヒントをいくつか紹介します。
+
+- web サイトが HTTPS で、かつ content-type `application/json` で配信されていることを確認してください
+- [Android app links を検証する](https://developer.android.com/training/app-links/verify-android-applinks)
+- Android の検証が反映されるまでに 20 秒以上かかる場合があるため、完了するまで必ず待ってください。
+- web ファイルを更新した場合は、ネイティブアプリを再ビルドして、ベンダー側（Google）でサーバーの更新をトリガーしてください

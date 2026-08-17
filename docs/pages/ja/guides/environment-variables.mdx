@@ -1,0 +1,158 @@
+---
+title: Expo での環境変数
+sidebar_title: 環境変数
+description: Expo プロジェクトで環境変数を使う方法を学びます。
+searchRank: 10
+---
+
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+環境変数とは、ソースコードの外部で設定されるキーと値のペアで、環境に応じてアプリの動作を変えられるようにするものです。たとえば、アプリのテストバージョンをビルドするときに特定の機能を有効・無効にしたり、本番用にビルドするときに異なる API エンドポイントに切り替えたりできます。
+
+Expo CLI は、`npx expo start` を実行してローカル開発モードでアプリを起動するときなど、Expo CLI を使うたびに、**.env** ファイルから `EXPO_PUBLIC_` プレフィックスの付いた環境変数を自動的に読み込み、JavaScript コード内で使えるようにします。
+
+## 環境変数を .env ファイルから読み込む
+
+プロジェクトディレクトリのルートに **.env** ファイルを作成し、環境固有の変数を `EXPO_PUBLIC_[NAME]=VALUE` の形式で改行区切りに追加します。
+
+```bash .env
+EXPO_PUBLIC_API_URL=https://staging.example.com
+EXPO_PUBLIC_API_KEY=abc123
+```
+
+これで、ソースコード内で環境変数を直接使えるようになります。
+
+```tsx
+import { Button } from 'react-native';
+
+function Post() {
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+
+  async function onPress() {
+    await fetch(apiUrl, { ... })
+  }
+
+  return <Button onPress={onPress} title="Post" />;
+}
+```
+
+`npx expo start` を実行すると、アプリバンドル内の `process.env.EXPO_PUBLIC_API_URL` は `https://staging.example.com` に置き換えられます。変数は、Expo CLI を再起動したりキャッシュをクリアしたりしなくても、コードを編集するときに更新できます。更新後の値を確認するには、完全なリロード（たとえば、Expo Go や開発ビルドでシェイクジェスチャーをしてから Reload）を行う必要があります。
+
+> **warning** 秘密鍵などの機密情報を `EXPO_PUBLIC_` 変数に保存しないでください。これらの変数は、コンパイルされたアプリケーション内に平文で表示されます。
+
+### 変数の読み込み方
+
+Expo CLI は [標準的な .env ファイルの解決方法](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use) に従って **.env** ファイルを読み込み、コード内の `process.env.EXPO_PUBLIC_[VARNAME]` への参照をすべて、**.env** ファイルで設定された対応する値に置き換えます。セキュリティ上の理由から、**node_modules** 内のコードは対象外です。
+
+### 環境変数の読み取り方
+
+- <YesIcon small /> **インライン化されるには、すべての環境変数が JavaScript のドット記法を使って
+  `process.env` のプロパティとして静的に参照されている必要があります。** たとえば、
+  `process.env.EXPO_PUBLIC_KEY` という式は有効で、インライン化されます。
+
+- <NoIcon small /> **この式の別の書き方はサポートされていません**。たとえば、
+  `process.env['EXPO_PUBLIC_KEY']` や `const {EXPO_PUBLIC_X} = process.env` は無効で、
+  インライン化されません。
+
+### 複数の .env ファイルを使って環境を分ける
+
+[標準的な .env ファイル](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use) のいずれも定義できるので、**.env** と **.env.local** を別々のファイルとして持つことができ、標準の優先順位に従って読み込まれます。
+
+デフォルトの **.env** ファイルやその他の標準的な設定はコミットしてもかまいませんが、**.env.local** ファイルは一般に **.gitignore** に追加するべきです。ローカルサーバーへのリクエストが必要な場合のネットワーク IP アドレスなど、自分のローカルマシン固有の環境設定を指定するために使われるからです。
+
+```bash .gitignore
+.env*.local
+```
+
+#### 環境変数と `NODE_ENV`
+
+`NODE_ENV` は、コードがどのモード（通常は `development`、`production`、`test` のいずれか）で実行されているかを識別する標準的な Node.js の変数です。モジュールリゾルバー、バンドラー、テストランナーなどのツールがこれを読み取り、コードをどうビルド・インストール・実行するかを決定します。
+
+`NODE_ENV` を使って（**.env.test** や **.env.production** のような）**.env** ファイルを切り替えることはおすすめしません。技術的には可能です（`NODE_ENV=test npx expo start` は **.env.test** を読み込みます）が、期待どおりに動作しない場合があります。たとえば `npx expo export` は常に `NODE_ENV` を `production` に強制するため、`NODE_ENV=test npx expo export` を実行しても、実際には `NODE_ENV` が `test` に設定された状態でコマンドが実行されるわけではありません。
+
+Expo CLI のコマンドを利用する他のツールも同様の挙動を示します。たとえば `eas update` は内部で `npx expo export` を呼び出すため、`NODE_ENV=test eas update` を実行しても同様に `NODE_ENV` が `test` に設定された状態では実行されません（`production` になります）。`NODE_ENV` という環境変数は多くのツールでさまざまな用途に使われており（たとえば `NODE_ENV=production npm install` を実行すると `devDependencies` はインストールされません）、React Native プロジェクトにおいては、この用途のためにさらに意味を重ねない方がよいと私たちは考えています。
+
+EAS を使っている場合は、代わりに `eas env:pull` の利用を検討してください。これは `NODE_ENV` に依存する代わりに、選択した環境で **.env.local** を入れ替えます。EAS を使わなくても、作業したい環境に応じた適切な内容で **.env.local** や **.env** を上書きするスクリプトを書くことで、同様の挙動を実現できます。
+
+### 環境変数を無効にする
+
+Expo CLI における環境変数には 2 つの側面があり、どちらも無効にできます。
+
+1. Expo CLI は **.env** ファイルをグローバルプロセスに自動的に読み込みます。この挙動を無効にするには、Expo CLI のコマンドを実行する前に環境変数 `EXPO_NO_DOTENV` を `1` に設定します：`EXPO_NO_DOTENV=1`。
+2. Expo の Metro 設定には、クライアントの JavaScript バンドル内で環境変数をインラインでシリアライズする処理が含まれています。この挙動を無効にするには `EXPO_NO_CLIENT_ENV_VARS=1` を使えます。
+
+環境変数に関する問題が発生している場合は、これらの機能の一方または両方を無効にしてみてください。
+
+## Expo Application Services における環境変数
+
+### EAS Build
+
+[EAS Build](/build/introduction/) は、アプリのバイナリに組み込む JavaScript バンドルのビルドに Metro Bundler を使うため、ビルドジョブと一緒にアップロードされた **.env** ファイルを使って `EXPO_PUBLIC_` 変数をコードにインライン化します。EAS Build では、**eas.json** のビルドプロファイル内や EAS Secrets を通じて環境変数を定義することもできます。詳しくは、[環境変数とビルドシークレット](/eas/environment-variables) に関する EAS Build のドキュメントを確認してください。
+
+### EAS Update
+
+[EAS Update](/eas-update/introduction) は、ローカル環境や CI 上で Metro Bundler を使ってアプリバンドルをビルドするため、利用可能な **.env** ファイルを使って `EXPO_PUBLIC_` 変数をコードにインライン化します。詳しくは、[環境変数](/eas/environment-variables/usage/#using-environment-variables-with-eas-update) に関する EAS Update のドキュメントを確認してください。
+
+## Expo の環境変数への移行
+
+### react-native-config からの移行
+
+JavaScript コード内で使う変数に `EXPO_PUBLIC_` のプレフィックスを付けるように、**.env** ファイルを更新します。
+
+```diff .env
+- API_URL=https://myapi.com
++ EXPO_PUBLIC_API_URL=https://myapi.com
+```
+
+> 標準的でない **.env** ファイル（たとえば **.env.staging**）がある場合は、それらを [標準的な .env ファイル](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use) のいずれかに移行する必要があります。
+
+次に、`process.env.EXPO_PUBLIC_[VARNAME]` を使うようにコードを更新します。
+
+```diff
+- import Config from 'react-native-config';
+
+- const apiUrl = Config.API_URL;
++ const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+```
+
+### babel-plugin-transform-inline-environment-variables からの移行
+
+コード内の環境変数の参照を変換するために Babel プラグインを使うのは、Expo の環境変数の仕組みと似ています。**.env** ファイル内に変数を設定し、変数名が `EXPO_PUBLIC_` プレフィックスを使うように更新します。
+
+```diff
+- const apiUrl = process.env.API_URL;
++ const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+```
+
+その後、[Babel の設定](/versions/latest/config/babel/) からプラグインを削除できます。
+
+```diff babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+--    plugins: ['transform-inline-environment-variables'],
+  };
+};
+```
+
+Babel の設定ファイルを更新したら、必ず `npx expo start --clear` でキャッシュをクリアしてください。
+
+### direnv からの移行
+
+JavaScript で使っている環境変数を **.envrc** ファイルから **.env** ファイルに移し、`EXPO_PUBLIC_` プレフィックスを付けます。
+
+以前 `direnv` を使う場合は、[`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env) から読み取る [dynamic app config](/ja/workflow/configuration/#動的な設定) を使って `extra` フィールドに環境変数を設定し、[`expo-constants`](/versions/latest/sdk/constants) 経由で JavaScript コード内で使えるようにする必要がありました。それらの参照を、`EXPO_PUBLIC_` プレフィックスを付けてコードに直接移してください。
+
+```diff
+- import Constants from 'expo-constants';
+
+- const apiUrl = Constants.expoConfig.extra.apiUrl;
++ const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+```
+
+> [`direnv`](https://direnv.net/) は、現在のディレクトリに応じてシェル内の環境変数を自動的に読み込んだり解除したりします。つまり、Expo CLI に限らず、そのディレクトリで実行されるあらゆるプロセスの環境に影響を与える可能性があります。JavaScript コードで使わないその他の環境変数については、引き続き `direnv` を使い続けたいと思うでしょう。
+
+## セキュリティに関する考慮事項
+
+`EXPO_PUBLIC_` プレフィックスの付いた環境変数に、機密情報を保存しないでください。エンドユーザーがアプリを実行すると、アプリ内のすべてのコードと埋め込まれた環境変数にアクセスできてしまいます。[機密情報の保存](https://reactnative.dev/docs/security#storing-sensitive-info) について詳しく確認してください。

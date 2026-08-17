@@ -1,0 +1,106 @@
+---
+title: プリコンパイル済み Expo Modules
+description: プリコンパイル済みの Expo Modules が Android と iOS でネイティブビルド時間をどのように短縮するかについて学びます。
+hideTOC: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+ネイティブのビルド時間は、開発ワークフローの速度を低下させることがあります。Expo は最も複雑なモジュールのプリコンパイル済みバージョンを提供しており、プロジェクトはビルドのたびにソースから再コンパイルする代わりに、プリコンパイル済みのバイナリをリンクします。Android では、これらのバイナリは Gradle を通じてリンクされる **.aar** ファイルとして提供されます。iOS では、CocoaPods を通じてリンクされる `XCFrameworks` として提供されます。どちらも通常の Expo の npm パッケージに同梱されており、まだプリコンパイルされていないパッケージは自動的にソースからのビルドにフォールバックします — プリコンパイル済みのモジュールとソースからビルドされるモジュールは、同じプロジェクト内で共存します。
+
+**ほとんどのプロジェクトでは何も対応する必要はありません** — サポートされている SDK バージョンを使用している新規および既存のプロジェクトでは、プリコンパイル済みの Expo Modules が自動的に有効になります。
+
+- **Android**：SDK 53 以降、デフォルトで有効です。
+- **iOS**：SDK 56 以降でデフォルトで有効です。SDK 55 では EAS Build 上でのみデフォルトで有効になります。ローカルビルドで有効にするには、シェルで `EXPO_USE_PRECOMPILED_MODULES=1` を設定してください。
+
+<Collapsible summary="iOS で無効にする">
+
+iOS のすべての Expo Module をソースからビルドするには、[`expo-build-properties`](/versions/latest/sdk/build-properties/) config plugin の `ios.usePrecompiledModules` プロパティを `false` に設定します。これはローカルビルドと EAS Build の両方に適用され、次回 `npx expo prebuild` を実行したときに反映されます。
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "usePrecompiledModules": false
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+別の方法として、`pod install` の実行時に読み込まれる環境変数 `EXPO_USE_PRECOMPILED_MODULES` で直接制御することもできます。ローカルビルドの場合は、`pod install`（または `npx expo run:ios`）を実行する前に、シェルでこれをエクスポートしてください。
+
+<Terminal cmd={['$ export EXPO_USE_PRECOMPILED_MODULES=0']} />
+
+EAS Build の場合は、[EAS 環境変数](/eas/environment-variables/manage/) を作成してください。
+
+<Terminal
+  cmd={['$ eas env:set --name EXPO_USE_PRECOMPILED_MODULES --value 0 --visibility plaintext']}
+/>
+
+CLI から、その変数を適用する環境（`development`、`preview`、`production`）を選択するよう求められます。
+
+</Collapsible>
+
+<Collapsible summary="Expo Autolinking で特定のモジュールを無効にする">
+
+**package.json** で `buildFromSource` を使って Expo Autolinking を設定します。すべてのプリコンパイル済みモジュールを対象外にするには `".*"` を使用するか、特定のパッケージ名を列挙してください。同じ設定は `android` と `ios` の両方で利用できます。
+
+{/* prettier-ignore */}
+```json package.json
+{
+  "name": "your-app-name",
+  "expo": {
+    "autolinking": {
+      "android": {
+        "buildFromSource": [".*"]
+      },
+      "ios": {
+        "buildFromSource": [".*"]
+      }
+    }
+  }
+}
+```
+
+これが必要になるのは通常、モジュールのソースコードを自分で変更する場合や、ネイティブのコンパイルを制御する config plugin のオプションを使用する場合に限られます。プリコンパイル済みのアーティファクトは各モジュールのデフォルトのビルドオプションを使ってビルドされているため、ネイティブの依存関係を追加・削除するオプション（Android における `expo-camera` の [`barcodeScannerEnabled`](/versions/latest/sdk/camera/#configuration-in-app-config) など）は、モジュールがソースからビルドされる場合にのみ有効になります。
+
+</Collapsible>
+
+<Collapsible summary="EAS Build のトラブルシューティング">
+
+### iOS
+
+EAS Build 上では、`react-native-reanimated` や `react-native-worklets` のようなサードパーティのライブラリが、プリコンパイル済みの XCFrameworks として自動的にダウンロードされます。ローカルの `pod install` では、デフォルトでこれらは取得されません。これらのパッケージはローカルではソースからビルドされ、`staticFeatureFlags` の上書き設定を自動的に反映するため、フラグやバージョンの不一致は主に EAS Build 上で表面化します。ローカルビルドでサードパーティのプリコンパイル済みダウンロードを有効にすることは避け、このパスは EAS に限定してください。
+
+#### `react-native-reanimated` と `react-native-worklets`
+
+これら 2 つのパッケージは密接に結合しています。`react-native-reanimated` はネイティブレベルで `react-native-worklets` をリンクします。
+
+**両方をまとめて対象外にしてください。** どちらかのパッケージでソースビルドが必要な場合（たとえばパッチを適用したり、ネイティブコードを変更したりする場合）は、両方を `buildFromSource` に列挙してください。片方だけをソースビルドすると、プリコンパイル済みとソースビルドが混在したリンク状態になり、実行時に対応するフレームワークの解決に失敗します。
+
+{/* prettier-ignore */}
+```json package.json
+{
+  "expo": {
+    "autolinking": {
+      "ios": {
+        "buildFromSource": ["react-native-reanimated", "react-native-worklets"]
+      }
+    }
+  }
+}
+```
+
+**カスタムのフィーチャーフラグにはソースビルドが必要です。** フィーチャーフラグの値はビルド時にプリコンパイル済みのバイナリへ焼き込まれるため、**package.json** 内の `worklets.staticFeatureFlags` や `reanimated.staticFeatureFlags` の上書き設定は無視されます。これらを適用するには、`EXPO_USE_PRECOMPILED_MODULES=0` を設定してプリコンパイル済みモジュールを無効にしてください。
+
+**このセクションを参照すべきとき。** EAS Build 上でのみ（ローカルでは発生せず）`Unable to recognize flag: <NAME>` のようなランタイムエラーが発生する場合は、プリコンパイル済みアーティファクトのフラグ一覧が、固定しているパッケージバージョンと一致していないことを意味します。上記の `buildFromSource` を使用し、[GitHub で issue を作成してください](https://github.com/expo/expo/issues)。
+
+</Collapsible>

@@ -1,0 +1,119 @@
+---
+title: リンク、ディープリンク、Android App Links、iOS Universal Links の概要
+sidebar_title: 概要
+description: Expo アプリでリンクとディープリンクを実装するために利用できるリソースの概要。
+hasVideoLink: true
+---
+
+import { AndroidIcon } from '@expo/styleguide-icons/custom/AndroidIcon';
+import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+## リンク
+
+リンクを使うと、アプリは受信および送信 URL とやり取りできるようになります。この過程で、ユーザーはアプリを開くよう誘導されるだけでなく、アプリ内の特定の画面（ルート）に案内されます。
+
+<VideoBoxLink
+  videoId="kNbEEYlFIPs"
+  title="視聴：Expo でリンクを設定する"
+  description="Expo アプリでディープリンク、ユニバーサルリンク、アプリリンクを設定し、受信および送信 URL を処理します。"
+/>
+
+### リンクの戦略
+
+Expo アプリで扱えるリンクの戦略にはいくつかの種類があります。
+
+- web ドメインのリンクを使ってアプリにリンクする（`https` または `http` スキームを使う [ユニバーサルリンク](#ユニバーサルリンク)）
+- カスタムスキームを使って他のアプリや web サイトからアプリにリンクする（ディープリンク）
+- アプリから他のアプリにリンクする（送信リンク）
+
+> **info** **ヒント：** Expo Go での受信リンクのサポートは限定的です。アプリのリンク戦略をテストするには [開発ビルド](/develop/development-builds/introduction/) の使用をおすすめします。
+
+## ユニバーサルリンク
+
+Android と iOS はともに、アプリがインストールされている場合に web URL をそのアプリへルーティングする独自の仕組みを実装しています。Android ではこの仕組みは App Links と呼ばれ、iOS では Universal Links と呼ばれます。どちらの仕組みでも、ドメインを所有していることを検証するファイルをホストできる web ドメインを持っていることが前提条件になります。
+
+### Android App Links
+
+Android App Links は通常の HTTP および HTTPS スキームを使い、Android デバイス専用である点で [標準的なディープリンク](#他のアプリや-web-サイトからアプリにリンクする) とは異なります。
+
+このリンクタイプを使うと、ユーザーがリンクをクリックしたときに、デバイス上に表示されるダイアログでブラウザや他のハンドラーを選ぶ代わりに、常にアプリが開くようになります。ユーザーがアプリをインストールしていない場合、リンクは関連付けられた web サイトへ遷移します。
+
+<BoxLink
+  title="Android App Links を設定する"
+  description={
+    <>
+      <CODE>intentFilters</CODE> を設定し、標準的な web URL
+      から双方向の関連付けを設定する方法を学びます。
+    </>
+  }
+  href="/ja/linking/android-app-links/"
+  Icon={AndroidIcon}
+/>
+
+### iOS Universal Links
+
+iOS Universal Links は通常の HTTP および HTTPS スキームを使い、iOS デバイス専用である点で [標準的なディープリンク](#他のアプリや-web-サイトからアプリにリンクする) とは異なります。
+
+このリンクタイプを使うと、ユーザーが web ドメインを指す HTTP(S) リンクをクリックしたときにアプリが開くようになります。ユーザーがアプリをインストールしていない場合、リンクは関連付けられた web サイトへ遷移します。[Apple Smart Banner](/ja/linking/ios-universal-links/#apple-smart-banner) を使ってユーザーがアプリを開けるようバナーを表示することで、web サイトをさらに設定できます。
+
+<BoxLink
+  title="iOS Universal Links を設定する"
+  description={
+    <>
+      <CODE>associatedDomains</CODE> を設定し、双方向の関連付けを設定する方法を学びます。
+    </>
+  }
+  href="/ja/linking/ios-universal-links/"
+  Icon={AppleIcon}
+/>
+
+## 他のアプリや web サイトからアプリにリンクする
+
+[ディープリンク](https://en.wikipedia.org/wiki/Deep_linking) とは、アプリや web サイト内の特定の URL ベースのコンテンツへのリンクです。
+
+例えば、商品広告をクリックすると、ユーザーのデバイスでアプリが開き、その商品の詳細を見られるようになります。ユーザーがクリックしたこの商品のリンクは、次のようになります（あるいは JavaScript で `window.location.href` を設定して呼び出されることもあります）。
+
+```html
+<a href="myapp://web-app.com/product">View product</a>
+```
+
+このリンクは 3 つの部分で構成されています。
+
+- **スキーム**: URL を開くべきアプリを識別する URL スキーム（例: `myapp://`）。非標準のディープリンクでは `https` や `http` にすることもできます。http(s) ベースのディープリンクには [ユニバーサルリンク](#ユニバーサルリンク) を推奨します。
+- **ホスト**: URL を開くべきアプリのドメイン名（例: `web-app.com`）。
+- **パス**: 開くべき画面へのパス（例: `/product`）。パスが指定されていない場合、ユーザーはアプリのホーム画面に移動します。
+
+<BoxLink
+  title="アプリへのリンク"
+  description="カスタム URL スキームを設定してアプリのディープリンクを作成する方法を学びます。"
+  href="/ja/linking/into-your-app/"
+  Icon={BookOpen02Icon}
+/>
+
+### Expo Router を使ってディープリンクを処理する
+
+上記のリンク戦略のいずれかを実装するには、**[Expo Router](/router/introduction/) を使うことをおすすめします**。アプリのすべての画面でディープリンクが自動的に有効になるためです。
+
+**メリット:**
+
+- Expo Router の `Link` コンポーネントを使って、[他のアプリへの URL スキームを処理](/ja/linking/into-other-apps/#expo-router-の-link-コンポーネントを使う) できます。
+- Android App Links と iOS Universal Links では、アプリ内のリンクに対して JavaScript でランタイムのルーティングを設定する必要があります。Expo Router を使えば、すべてのルートでディープリンクが自動的に有効になるため、ランタイムのルーティングを別途設定する必要はありません。
+- サードパーティのディープリンクについては、デフォルトのリンク動作をオーバーライドして受信リンクを処理し、ナビゲーションイベントを送信できます。詳しくは [リンクのカスタマイズ](/router/advanced/native-intent) を参照してください。
+
+## アプリから他のアプリへリンクする
+
+アプリから他のアプリへリンクするには、対象アプリの URL スキームに基づく URL を使います。この **URL スキーム** を使うと、そのネイティブアプリ内のリソースを参照できます。
+
+アプリでは、`https` や `http`（Chrome や Safari などの web ブラウザでよく使われる）を含め、デフォルトアプリ向けの [共通の URL スキーム](/ja/linking/into-other-apps/#一般的な-url-スキーム) を使えます。また JavaScript を使って、対応するネイティブアプリを起動する URL を呼び出せます。
+
+<BoxLink
+  title="他のアプリへのリンク"
+  description="共通の URL スキームとカスタム URL スキームを処理して、アプリから他のアプリにリンクする方法を学びます。"
+  href="/ja/linking/into-other-apps/"
+  Icon={BookOpen02Icon}
+/>

@@ -1,0 +1,119 @@
+---
+title: React Server Components をテストする
+sidebar_title: RSC のテスト
+description: Expo での React Server Components 向けのユニットテストの書き方について学びます。
+platforms: ['android', 'ios', 'web']
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** このガイドは、まだ開発中の [experimental](/more/release-statuses/#experimental) 機能である React Server Components について説明しています。
+
+React Server Components（RSC）は、サーバーでレンダリングされ、クライアントでハイドレートできるコンポーネントを構築できる、React の新機能です。このガイドでは、プロジェクトで RSC のユニットテストを書く方法について説明します。
+
+## Jest でのテスト
+
+React Server Components は Node.js 上で動作します。つまり Jest 単体でサーバーサイドレンダリング環境に近い形をエミュレートできます。これは、Node.js と web ブラウザ間の通信のために Jest プリセットを必要とするクライアントベースのテストとは対照的です。
+
+### セットアップ
+
+標準的なサーバーレンダリングは web 専用ですが、Expo のユニバーサル RSC は各プラットフォーム向けにカスタムのサーバーレンダラーをバンドルします。そのため、プラットフォーム固有のファイル拡張子がサポートされます。たとえば iOS アプリ向けにサーバーコンポーネントを書く場合、**\*.ios.js** や **\*.native.ts** のようなプラットフォーム固有の拡張子が解決されます。
+
+`jest-expo` は、サーバーコンポーネントをテストするためのいくつかの異なるプリセットを提供します。
+
+| ランナー                | 説明                                                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------------------------------- |
+| `jest-expo/rsc/android` | RSC 用の Android 専用ランナーです。**\*.android.js**、**\*.native.js**、**\*.js** ファイルを使用します。 |
+| `jest-expo/rsc/ios`     | RSC 用の iOS 専用ランナーです。**\*.ios.js**、**\*.native.js**、**\*.js** ファイルを使用します。         |
+| `jest-expo/rsc/web`     | RSC 用の web 専用ランナーです。**\*.web.js** と **\*.js** ファイルを使用します。                         |
+| `jest-expo/rsc`         | 上記のランナーを組み合わせたマルチランナーです。                                                         |
+
+RSC 用に Jest を設定するには、プロジェクトのルートに **jest-rsc.config.js** ファイルを作成します。
+
+```js jest-rsc.config.js
+module.exports = require('jest-expo/rsc/jest-preset');
+```
+
+続いて、**package.json** に `test:rsc` のようなスクリプトを追加できます。
+
+```json package.json
+{
+  "scripts": {
+    "test:rsc": "jest --config jest-rsc.config.js"
+  }
+}
+```
+
+### テストを書く
+
+Jest がクライアントのテストをサーバー上で実行してしまわないように、テストは **\_\_rsc_tests\_\_** ディレクトリに書く必要があります。
+
+```tsx __rsc_tests__/my-component.test.ts
+/// <reference types="jest-expo/rsc/expect" />
+
+import { LinearGradient } from 'expo-linear-gradient';
+
+it(`renders to RSC`, async () => {
+  const jsx = (
+    <LinearGradient
+      colors={['cyan', '#ff00ff', 'rgba(0,0,0,0)', 'rgba(0,255,255,0.5)']}
+      testID="gradient"
+    />
+  );
+
+  await expect(jsx).toMatchFlight(`1:I["src/LinearGradient.tsx",[],"LinearGradient"]
+0:["$","$L1",null,{"colors":["cyan","#ff00ff","rgba(0,0,0,0)","rgba(0,255,255,0.5)"],"testID":"gradient"},null]`);
+});
+```
+
+テストファイルでインポートしたコードはすべてサーバー環境で実行されます。`react-server` や `server-only` のようなサーバー専用モジュールをインポートできます。これは、ライブラリが RSC と互換性があるかどうかを判断する際に役立ちます。
+
+### カスタム expect マッチャー
+
+RSC 用の `jest-expo` は、Jest の `expect` にいくつかのカスタムマッチャーを追加します。
+
+- `toMatchFlight`: Expo CLI 内のレンダリングの疑似実装を使って JSX 要素をレンダリングし、flight 文字列と比較します。
+- `toMatchFlightSnapshot`: `toMatchFlight` と同じですが、flight 文字列をスナップショットファイルに保存します。
+
+これらのメソッドは、内部で RSC のレンダリングに必要なフレームワークの動作の一部を処理しています。コンポーネントのレンダーストリームは文字列にバッファリングされ、まとめて比較されます。代わりに手動でストリーミングし、レンダリングの進行状況を確認することもできます。
+
+コンポーネントのレンダリングに失敗すると、マッチャーはエラーをスローしてテストを失敗させます。実際には、サーバーレンダラーが `E:` 行を生成し、それがクライアントに送信されてユーザーのローカルでスローされます。
+
+### テストを実行する
+
+`test:rsc` スクリプトでテストを実行できます。
+
+<Terminal cmd={['$ yarn test:rsc --watch']} />
+
+マルチランナーを使っている場合、`--selectProjects` フラグで特定のプロジェクトを選択できます。次の例では web プラットフォームのみを実行します。
+
+<Terminal cmd={['$ yarn test:rsc --watch --selectProjects rsc/web']} />
+
+### 環境
+
+RSC のバンドリング環境では、次のようなファイルをインポートできます
+
+## ヒント
+
+`server-only` と `client-only` モジュールを使うと、モジュールをクライアントまたはサーバーでインポートすべきでないことをアサートできます。
+
+```js my-module.js
+import 'server-only';
+```
+
+RSC はデフォルトで package exports をサポートします。`react-server` コンディションを使うと、モジュールからインポートされるファイルを変更できます。
+
+```json package.json
+{
+  "exports": {
+    ".": {
+      "react-server": "./index.react-server.js",
+      "default": "./index.js"
+    }
+  }
+}
+```
+
+RSC 用にバンドルする場合、すべてのモジュールは React Server モードでバンドルされ、`"use client"` ディレクティブを使うとそれから除外できます。`"use client"` が見つかると、そのモジュールはクライアントモジュールへの非同期参照になります。
+
+`"use server"` は `"use client"` の対義語ではありません。代わりに、React Server Functions ファイルを定義するために使われます。

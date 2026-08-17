@@ -45,6 +45,60 @@ const CICD_TUTORIAL_PAGES = [
   '/tutorial/cicd/next-steps',
 ];
 
+const DEVELOPMENT_PROCESS_PAGES = [
+  '/guides/overview',
+  '/workflow/overview',
+  '/workflow/configuration',
+  '/workflow/continuous-native-generation',
+  '/workflow/using-libraries',
+  '/guides/apple-privacy',
+  '/guides/permissions',
+  '/guides/environment-variables',
+  '/linking/overview',
+  '/linking/into-other-apps',
+  '/linking/into-your-app',
+  '/linking/android-app-links',
+  '/linking/ios-universal-links',
+  '/workflow/customizing',
+  '/guides/adopting-prebuild',
+  '/guides/local-app-overview',
+  '/guides/local-app-development',
+  '/guides/local-app-production',
+  '/guides/cache-builds-remotely',
+  '/guides/prebuilt-expo-modules',
+  '/workflow/web',
+  '/guides/publishing-websites',
+  '/guides/dom-components',
+  '/guides/server-components',
+  '/guides/testing-rsc',
+  '/guides/progressive-web-apps',
+  '/guides/tailwind',
+  '/guides/local-https-development',
+  '/guides/customizing-metro',
+  '/guides/analyzing-bundles',
+  '/guides/tree-shaking',
+  '/guides/minify',
+  '/guides/why-metro',
+  '/bare/overview',
+  '/bare/installing-expo-modules',
+  '/bare/using-expo-cli',
+  '/bare/installing-updates',
+  '/bare/install-dev-builds-in-bare',
+  '/bare/upgrade',
+  '/brownfield/overview',
+  '/brownfield/isolated-approach',
+  '/brownfield/integrated-approach',
+  '/brownfield/lifecycle-listeners',
+  '/guides/monorepos',
+  '/workflow/logging',
+  '/workflow/development-mode',
+  '/workflow/common-development-errors',
+  '/workflow/android-studio-emulator',
+  '/workflow/ios-simulator',
+  '/guides/new-architecture',
+  '/guides/react-compiler',
+];
+
 describe('hasJapaneseTranslation', () => {
   it('covers the Expo tutorial', () => {
     expect(hasJapaneseTranslation('/tutorial/overview')).toBe(true);
@@ -72,6 +126,13 @@ describe('hasJapaneseTranslation', () => {
     }
   });
 
+  it('covers the translated part of the Development process section', () => {
+    for (const path of DEVELOPMENT_PROCESS_PAGES) {
+      expect(hasJapaneseTranslation(path)).toBe(true);
+      expect(hasJapaneseTranslation(`/ja${path}`)).toBe(true);
+    }
+  });
+
   it('excludes sections that are not translated yet', () => {
     expect(hasJapaneseTranslation('/eas/workflows/introduction')).toBe(false);
     expect(hasJapaneseTranslation('/get-started/create-a-project')).toBe(false);
@@ -84,6 +145,7 @@ describe('isTranslatableSection', () => {
       ...BUILD_WITH_AI_PAGES,
       ...EAS_TUTORIAL_PAGES,
       ...CICD_TUTORIAL_PAGES,
+      ...DEVELOPMENT_PROCESS_PAGES,
       '/tutorial/overview',
       '/eas/workflows/introduction',
     ]) {

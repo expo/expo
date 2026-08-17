@@ -1,0 +1,345 @@
+---
+title: Tailwind CSS
+description: Expo プロジェクトで Tailwind CSS を設定して使用する方法を学びます。
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { FileTree } from '~/ui/components/FileTree';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+> **info** 標準の Tailwind CSS は web プラットフォームのみをサポートしています。ユニバーサル対応が必要な場合は、[NativeWind](https://www.nativewind.dev/) や [Uniwind](https://uniwind.dev/) などのライブラリを使用してください。これらを使うと、Tailwind CSS でスタイル付けされた React Native コンポーネントを作成できます。
+
+[Tailwind CSS](https://tailwindcss.com/) はユーティリティファーストの CSS フレームワークで、web プロジェクトでは Metro と組み合わせて使用できます。このガイドでは、このフレームワークを使用するように Expo プロジェクトを設定する方法を説明します。
+
+<Prerequisites>
+  <Requirement title="web 用に Metro を使用しているプロジェクト">
+    プロジェクトが web 用に Metro を使用していることを確認してください。**app.json** で `web.bundler` が `metro` に設定されていることを確認します。
+
+    ```json app.json
+    {
+      "expo": {
+        "web": {
+          "bundler": "metro"
+        }
+      }
+    }
+    ```
+
+  </Requirement>
+</Prerequisites>
+
+Tailwind CSS の設定を行うために、以下のファイルが変更されます。
+
+<FileTree files={['app.json', 'package.json', 'global.css', 'index.js']} />
+
+## 設定
+
+[Tailwind PostCSS のドキュメント](https://tailwindcss.com/docs/installation/using-postcss) に従って、Expo プロジェクトで Tailwind CSS を設定します。
+
+<Tabs>
+
+<Tab label="v3">
+
+<Step label="1">
+
+`tailwindcss` とその必須の peer dependency をインストールします。次に、初期化コマンドを実行して、プロジェクトのルートに **tailwind.config.js** と **post.config.js** ファイルを作成します。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Install Tailwind and its peer dependencies',
+      '$ npx expo install tailwindcss@3 postcss autoprefixer --dev',
+      '',
+      '# Create a Tailwind config file',
+      '$ npx tailwindcss init -p',
+    ],
+    yarn: [
+      '# Install Tailwind and its peer dependencies',
+      '$ yarn expo install tailwindcss@3 postcss autoprefixer --dev',
+      '',
+      '# Create a Tailwind config file',
+      '$ yarn dlx tailwindcss init -p',
+    ],
+    pnpm: [
+      '# Install Tailwind and its peer dependencies',
+      '$ pnpm expo install tailwindcss@3 postcss autoprefixer --dev',
+      '',
+      '# Create a Tailwind config file',
+      '$ pnpm dlx tailwindcss init -p',
+    ],
+    bun: [
+      '# Install Tailwind and its peer dependencies',
+      '$ bun expo install tailwindcss@3 postcss autoprefixer --dev',
+      '',
+      '# Create a Tailwind config file',
+      '$ bunx tailwindcss init -p',
+    ],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+**tailwind.config.js** の中に、あなたのすべてのテンプレートファイルへのパスを追加します。
+
+```js tailwind.config.js
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    // Ensure this points to your source code
+    './src/app/**/*.{js,tsx,ts,jsx}',
+    // If you use a `src` directory, add: './src/**/*.{js,tsx,ts,jsx}'
+    // Do the same with `components`, `hooks`, `styles`, or any other top-level directories
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+```
+
+> Expo Router を使用している場合は、このステップを簡略化するためにルートの **src** ディレクトリを使うことを検討してください。[トップレベルの src ディレクトリ](/router/reference/src-directory/) について詳しく確認してください。
+
+</Step>
+
+<Step label="3">
+
+プロジェクトのルートに **global.css** ファイルを作成し、Tailwind の各レイヤーに対応するディレクティブを記述します。
+
+```css global.css
+/* This file adds the requisite utility classes for Tailwind to work. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+</Step>
+
+<Step label="4">
+
+**src/app/\_layout.tsx**（Expo Router を使用している場合）または **index.js** ファイルに **global.css** ファイルをインポートします。
+
+<CodeBlocksTable tabs={['src/app/_layout.tsx', 'index.js']}>
+
+```tsx
+import '../../global.css';
+```
+
+```tsx
+// Import the global.css file in the index.js file:
+import './global.css';
+```
+
+</CodeBlocksTable>
+
+> **info** [DOM コンポーネント](/ja/guides/dom-components) を使用している場合、これらはグローバルを共有しないため、`"use dom"` ディレクティブを使用する各モジュールにこのファイルのインポートを追加してください。
+
+> **warning** グローバル CSS は必ずルートの **\_layout.tsx** でインポートし、ネストされたレイアウトではインポートしないでください。Expo Router はルートレイアウトを起点に依存関係グラフをたどります。ネストされたレイアウト（たとえば **app/blog/\_layout.tsx**）で CSS をインポートすると、カスタムスタイルより先に **node_modules** の CSS が読み込まれてしまい、意図したスタイルの順序が崩れることがあります。
+
+</Step>
+
+<Step label="5">
+
+これでプロジェクトを起動し、コンポーネント内で Tailwind CSS のクラスを使用できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+</Step>
+
+</Tab>
+
+<Tab label="v4">
+
+<Step label="1">
+
+`tailwindcss` とその必須の peer dependency をインストールします。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Install Tailwind and its peer dependencies',
+      '$ npx expo install tailwindcss @tailwindcss/postcss postcss --dev',
+    ],
+    yarn: [
+      '# Install Tailwind and its peer dependencies',
+      '$ yarn expo install tailwindcss @tailwindcss/postcss postcss --dev',
+    ],
+    pnpm: [
+      '# Install Tailwind and its peer dependencies',
+      '$ pnpm expo install tailwindcss @tailwindcss/postcss postcss --dev',
+    ],
+    bun: [
+      '# Install Tailwind and its peer dependencies',
+      '$ bun expo install tailwindcss @tailwindcss/postcss postcss --dev',
+    ],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+PostCSS の設定に Tailwind を追加します。
+
+```js postcss.config.mjs
+export default {
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
+};
+```
+
+</Step>
+
+<Step label="3">
+
+Tailwind CSS をインポートするグローバル CSS ファイルを作成します。
+
+このファイルの名前は自由に選べますが、**global.css** という名前を使うのが一般的です。
+
+```css global.css
+@import 'tailwindcss';
+```
+
+</Step>
+
+<Step label="4">
+
+**src/app/\_layout.tsx**（Expo Router を使用している場合）または **index.js** ファイルに CSS ファイルをインポートします。
+
+<CodeBlocksTable tabs={['src/app/_layout.tsx', 'index.js']}>
+
+```tsx
+// If using Expo Router, import your CSS file in the src/app/_layout.tsx file
+import '../../global.css';
+```
+
+```tsx
+// Otherwise import your CSS file in the index.js file:
+import './global.css';
+```
+
+</CodeBlocksTable>
+
+> **info** [DOM コンポーネント](/ja/guides/dom-components) を使用している場合、これらはグローバルを共有しないため、`"use dom"` ディレクティブを使用する各モジュールにこのファイルのインポートを追加してください。
+
+> **warning** グローバル CSS は必ずルートの **\_layout.tsx** でインポートし、ネストされたレイアウトではインポートしないでください。Expo Router はルートレイアウトを起点に依存関係グラフをたどります。ネストされたレイアウト（たとえば **app/blog/\_layout.tsx**）で CSS をインポートすると、カスタムスタイルより先に **node_modules** の CSS が読み込まれてしまい、意図したスタイルの順序が崩れることがあります。
+
+</Step>
+
+<Step label="5">
+
+これでプロジェクトを起動し、コンポーネント内で Tailwind CSS のクラスを使用できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+</Step>
+
+</Tab>
+
+</Tabs>
+
+## 使用方法
+
+React DOM 要素では、Tailwind をそのまま使用できます。
+
+{/* prettier-ignore */}
+```tsx src/app/index.tsx
+export default function Index() {
+  return (
+    <div className="bg-slate-100 rounded-xl">
+      <p className="text-lg font-medium">Welcome to Tailwind</p>
+    </div>
+  );
+}
+```
+
+`{ $$css: true }` という構文を使うと、React Native web の要素で Tailwind を使用できます。
+
+```tsx src/app/index.tsx
+import { View, Text } from 'react-native';
+
+export default function Index() {
+  return (
+    <View style={{ $$css: true, _: 'bg-slate-100 rounded-xl' }}>
+      <Text style={{ $$css: true, _: 'text-lg font-medium' }}>Welcome to Tailwind</Text>
+    </View>
+  );
+}
+```
+
+## Android と iOS 向けの Tailwind
+
+Tailwind は Android と iOS のプラットフォームをサポートしていません。ユニバーサル対応が必要な場合は、[NativeWind](https://www.nativewind.dev/) や [Uniwind](https://uniwind.dev/) などの互換ライブラリを使用できます。
+
+### AI エージェント向けの Expo Skills
+
+AI エージェントを使用している場合は、[Expo Skills](/skills/) をインストールして、ユニバーサルな Tailwind CSS のセットアップ方法を学習させましょう。
+
+<RelatedSkills names={['expo-tailwind-setup']} />
+
+## Android と iOS 向けの代替手段
+
+代わりに、[DOM コンポーネント](/ja/guides/dom-components) を使用して、Tailwind の web コードをネイティブの `WebView` 内でレンダリングすることもできます。
+
+{/* prettier-ignore */}
+```tsx src/app/index.tsx
+'use dom';
+
+// Remember to import the global.css file in each DOM component.
+import '../../global.css';
+
+export default function Page() {
+  return (
+    <div className="bg-slate-100 rounded-xl">
+      <p className="text-lg font-medium">Welcome to Tailwind</p>
+    </div>
+  );
+}
+```
+
+## トラブルシューティング
+
+**metro.config.js** にカスタムの `config.cacheStores` がある場合は、`FileStore` の Expo スーパークラスを拡張する必要があります。
+
+```js metro.config.js
+// Import the Expo superclass which has support for PostCSS.
+const { FileStore } = require('@expo/metro-config/file-store');
+
+config.cacheStores = [
+  new FileStore({
+    root: '/path/to/custom/cache',
+  }),
+];
+
+module.exports = config;
+```
+
+**metro.config.js** で CSS が無効化されていないことを確認してください。
+
+```js metro.config.js
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname, {
+  // Do not disable CSS support when using Tailwind.
+  isCSSEnabled: true,
+});
+```

@@ -1,0 +1,124 @@
+---
+title: 既存の React Native プロジェクトに expo-dev-client をインストールする
+sidebar_title: expo-dev-client をインストールする
+description: 既存の React Native プロジェクトに expo-dev-client をインストールして設定する方法について学びます。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+このガイドでは、既存の React Native プロジェクトに `expo-dev-client` をインストールして設定する方法について説明します。
+
+<Collapsible summary="新しいプロジェクトを作成する必要がありますか？">
+
+新しいプロジェクトから始める場合は、`with-dev-client` テンプレートを使ってプロジェクトを作成してください。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app -e with-dev-client'],
+    yarn: ['$ yarn create expo-app -e with-dev-client'],
+    pnpm: ['$ pnpm create expo-app -e with-dev-client'],
+    bun: ['$ bun create expo -e with-dev-client'],
+  }}
+/>
+
+</Collapsible>
+
+<Collapsible summary="プロジェクトで Continuous Native Generation（CNG）を使用していますか？">
+
+[CNG](/ja/workflow/continuous-native-generation/) を使用しているプロジェクトで `expo-dev-client` を使うには、[開発ビルドを作成する](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build) を参照してください。
+
+</Collapsible>
+
+<Prerequisites>
+  <Requirement title="expo パッケージをインストールして設定する">
+    プロジェクトを `npx @react-native-community/cli@latest init` で作成し、他の Expo
+    ライブラリをまだインストールしていない場合は、続行する前に [Expo
+    モジュールをインストール](/ja/bare/installing-expo-modules) する必要があります。
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+## expo-dev-client をインストールする
+
+`expo-dev-client` ライブラリを **package.json** に追加します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
+
+プロジェクトのディスク上に **ios** ディレクトリがある場合は、次のコマンドを実行して `expo-dev-client` のネイティブコードを完全にインストールしてください。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx pod-install'],
+    yarn: ['$ yarn dlx pod-install'],
+    pnpm: ['$ pnpm dlx pod-install'],
+    bun: ['$ bunx pod-install'],
+  }}
+/>
+
+プロジェクトに **ios** ディレクトリが無い場合は、この手順をスキップできます。
+
+</Step>
+
+<Step label="2">
+
+## ディープリンクを設定する
+
+Expo CLI はプロジェクトを起動するためにディープリンクを使用します。また、プロジェクトにカスタムのディープリンクスキームを追加している場合は、[expo-dev-client をプレビューアップデートの起動に使用する](/eas-update/getting-started/) 際にも役立ちます。
+
+ディープリンクに対応するための `scheme` をまだアプリに設定していない場合は、`uri-scheme` ライブラリを使って設定してください。
+
+<Terminal
+  cmd={{
+    npm: [
+      "# List your project's schemes",
+      '$ npx uri-scheme list',
+      '',
+      '# Add a scheme to your project',
+      '$ npx uri-scheme add your-scheme',
+    ],
+    yarn: [
+      "# List your project's schemes",
+      '$ yarn dlx uri-scheme list',
+      '',
+      '# Add a scheme to your project',
+      '$ yarn dlx uri-scheme add your-scheme',
+    ],
+    pnpm: [
+      "# List your project's schemes",
+      '$ pnpm dlx uri-scheme list',
+      '',
+      '# Add a scheme to your project',
+      '$ pnpm dlx uri-scheme add your-scheme',
+    ],
+    bun: [
+      "# List your project's schemes",
+      '$ bunx uri-scheme list',
+      '',
+      '# Add a scheme to your project',
+      '$ bunx uri-scheme add your-scheme',
+    ],
+  }}
+/>
+
+詳しくは [`uri-scheme` ライブラリ](https://www.npmjs.com/package/uri-scheme) を参照してください。
+
+</Step>
+
+<Step label="3">
+
+## アプリをビルドしてインストールする
+
+任意のツールを使ってアプリのデバッグビルドを作成します。たとえば、[Expo CLI を使ってローカルで](/ja/guides/local-app-development/) 作成することも、[EAS Build を使ってクラウド上で](/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build) 作成することもできます。
+
+</Step>

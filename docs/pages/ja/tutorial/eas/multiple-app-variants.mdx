@@ -44,7 +44,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## 動的な設定のために app.config.js を追加する
 
-**app.json** はアプリ関連の設定を JSON ファイルに持ちます。これは静的なので、[一部のプロパティに動的な値を使いたい](/workflow/configuration/#dynamic-configuration) 場合には向きません。ここでは [環境変数](/workflow/configuration/#switching-configuration-based-on-the-environment) に基づいて、すべてのビルドプロファイルごとに異なる Android Application ID と iOS Bundle Identifier を設定します。
+**app.json** はアプリ関連の設定を JSON ファイルに持ちます。これは静的なので、[一部のプロパティに動的な値を使いたい](/ja/workflow/configuration/#動的な設定) 場合には向きません。ここでは [環境変数](/ja/workflow/configuration/#環境に応じて設定を切り替える) に基づいて、すべてのビルドプロファイルごとに異なる Android Application ID と iOS Bundle Identifier を設定します。
 
 - プロジェクトのルートに **app.config.js** という新しいファイルを作成します。
 - **app.config.js** で、`config` を引数に取る関数をデフォルトエクスポートします。そして `config` を分割代入して、**app.json** の既存プロパティをすべてコピーします。

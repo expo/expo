@@ -1,0 +1,55 @@
+---
+title: ログを見る
+description: Expo CLI 使用時のログ、Android Studio と Xcode でのネイティブログ、システムログの表示方法について学びます。
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+React Native アプリでのログ出力は、web ブラウザでの動作とよく似ています。`console.log`、`console.warn`、`console.error` を使えます。ただし、アプリで何が起きているかについてより詳しい情報を得るために、深く掘り下げたい場合もあります。そのようなときは、**ネイティブログ**と**システムログ**を使えます。
+
+## コンソールログ
+
+`npx expo start` を実行してデバイスを接続すると、コンソールログがターミナルのプロセスに表示されます。これらのログはランタイムから web ソケット経由で Expo CLI に送信されるため、dev tools をエンジンに直接接続する場合よりも忠実度が低くなります。
+
+[Hermes](/guides/using-hermes) を使った開発ビルドを作成し、[インスペクターを接続する](/guides/using-hermes#javascript-debugger) ことで、**高忠実度**のログを確認したり、`console.table` のような高度なロギング関数を使ったりできます。
+
+### 本番モードでコンソールログを表示する
+
+[`npx expo start --no-dev`](/ja/workflow/development-mode/#本番モード) でアプリを起動すると、コンソールログは Expo CLI のターミナルに表示されません。ログを Expo CLI に転送するランタイムコードは、開発モードでのみ実行されます。本番モードでは再度有効にすることはできません。ただし `console.log` は、デバイス上のネイティブログには引き続き書き込まれます。これらのログを表示するには、Android では `adb logcat`、iOS では Console アプリを使います。手順の詳細は [ネイティブログを表示する](/debugging/runtime-issues/#viewing-native-logs) を参照してください。
+
+## ネイティブログ
+
+ネイティブアプリをローカルでコンパイルすることで、Android Studio と Xcode でネイティブランタイムのログを確認できます。詳しくは [ネイティブデバッグ](/debugging/runtime-issues/#native-debugging) を参照してください。
+
+## システムログ
+
+通常は必要ありませんが、他のアプリや OS のログなど、デバイス上で起きているすべてのログを確認したい場合は、次のコマンドを使えます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Show system logs for an Android device with adb logcat',
+      '$ npx react-native log-android',
+      '# Show system logs for an iOS device',
+      '$ npx react-native log-ios',
+    ],
+    yarn: [
+      '# Show system logs for an Android device with adb logcat',
+      '$ yarn dlx react-native log-android',
+      '# Show system logs for an iOS device',
+      '$ yarn dlx react-native log-ios',
+    ],
+    pnpm: [
+      '# Show system logs for an Android device with adb logcat',
+      '$ pnpm dlx react-native log-android',
+      '# Show system logs for an iOS device',
+      '$ pnpm dlx react-native log-ios',
+    ],
+    bun: [
+      '# Show system logs for an Android device with adb logcat',
+      '$ bunx react-native log-android',
+      '# Show system logs for an iOS device',
+      '$ bunx react-native log-ios',
+    ],
+  }}
+/>

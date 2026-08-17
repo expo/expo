@@ -1,0 +1,86 @@
+---
+title: 既存のネイティブアプリへの Expo ツールの統合
+sidebar_title: 概要
+hideTOC: true
+description: Expo のツールを既存のネイティブアプリ（「brownfield」アプリ）に統合する方法の概要です。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
+
+別の技術で構築された既存のネイティブアプリで、メインのエントリーポイントが React Native のビューでは*ない*ものは、一般的に「brownfield」アプリと呼ばれます。たとえば、アプリが UIKit と Swift で構築されていて、1 つの画面だけに React Native を使いたい場合、それは「既存のネイティブアプリ」であり「brownfield」とみなされます。
+
+対照的に、「greenfield」アプリは最初から Expo または React Native を使って作成されるか、React Native がエントリーポイントとなり、他のすべての UI がそこから分岐します。
+
+これらの定義に基づくと、Android または iOS 向けの「既存のネイティブアプリ」をお持ちで、プロジェクトで Expo と React Native を使う方法を学びたい場合（1 つの画面や 1 つの機能に対してだけでも）、このガイドはあなたのためのものです。
+
+## 既存のネイティブアプリとの互換性
+
+> **info** Expo モジュールを既存のネイティブプロジェクトに統合するためのサポートは [alpha](/more/release-statuses/#alpha) です。問題が発生した場合は、[GitHub で issue を作成してください](https://github.com/expo/expo/issues)。以下のツールやサービスのすべての機能が、既存のネイティブアプリのコンテキストで利用できるわけではありません。
+
+Expo は主に greenfield アプリを念頭に構築されていますが、brownfield のシナリオへの投資を徐々に増やしています。すべての Expo ツールやサービスが既存のネイティブプロジェクトと互換性があるわけではまだありません。さらに、brownfield 統合に関する包括的なドキュメントはまだ用意されていない場合があり、関連する他のドキュメントを自分のコンテキストに合わせて適応させる必要があるかもしれません。
+
+| ツール/サービス                                                                                             | brownfield をサポート？ |
+| ----------------------------------------------------------------------------------------------------------- | ----------------------- |
+| [Expo SDK](/versions/latest/) - React Native のための拡張標準ライブラリ                                     | <YesIcon />             |
+| [Expo Modules API](/modules/overview/) - イディオマティックな Swift/Kotlin API を使ってネイティブ拡張を構築 | <YesIcon />             |
+| [Expo Router](/router/introduction/) - ファイルベースのルーティングとナビゲーション                         | <YesIcon />             |
+| [Expo CLI](/more/expo-cli/) - ターミナルからアプリを実行・開発するためのツール                              | <YesIcon />             |
+| [Expo Dev Client](/versions/latest/sdk/dev-client/) - デバッグビルドにアプリ内の開発者ツールを追加          | <NoIcon />              |
+| [EAS Build](/build/introduction/) - Expo/React Native のために特別に構築された CI/CD サービス               | <YesIcon />             |
+| [EAS Submit](/deploy/submit-to-app-stores/) - アプリをストアにアップロードするホスト型サービス              | <YesIcon />             |
+| [EAS Update](/eas-update/introduction/) - アプリの JavaScript とアセットの即時アップデート                  | <YesIcon />             |
+
+## 統合アプローチと分離アプローチ
+
+React Native を既存のネイティブアプリに統合する際には、統合アプローチと分離アプローチという 2 つの主要なアプローチから選べます。どちらのアプローチが最適かは、プロジェクトの構造、チームのワークフロー、長期的な目標によって決まります。
+
+### 統合アプローチ
+
+統合アプローチでは、React Native のコードは既存のネイティブプロジェクトの内部に存在します。これにより、React Native とネイティブコードの間で密な結合が可能になります。
+
+たとえば、既存の Android や iOS のネイティブプロジェクトを、React Native プロジェクトのサブディレクトリに追加することがあります。これは、React Native から開発を始めて、あとからネイティブコードを追加したプロジェクトによく見られる構成ですが、既存のネイティブアプリにも使えます。React Native のコードに標準の `android` と `ios` サブディレクトリを使えない場合は、シンプルな monorepo 構成で、React Native のコード用にカスタムのルートフォルダーを設定できます。
+
+**次の場合はこのアプローチを選んでください：**
+
+- ネイティブと React Native の両方のコードを、一緒に頻繁にイテレーションする必要がある。
+- ネイティブと React Native の両方の開発を管理する単一のチームがある。
+- プロジェクトの構造上、React Native プロジェクトを直接追加できる。
+
+### 分離アプローチ
+
+分離アプローチでは、React Native のコードはネイティブプロジェクトとは別に開発・保守され、別のリポジトリまたは monorepo で管理できます。
+
+このアプローチでは、React Native アプリをネイティブライブラリとしてパッケージ化します（Android には AAR、iOS には XCFramework を使用）。そして、他のネイティブ依存関係と同じように、このライブラリをネイティブアプリに統合します。
+
+この分離によって、ネイティブ開発者は Node.js 環境を構築したり、React Native のビルド依存関係を扱ったりする必要がなくなるため、ワークフローが簡素化されます。アプリの React Native 部分を、ビルド済みのアーティファクトとして利用するだけで済みます。
+
+**次の場合はこのアプローチを選んでください：**
+
+- ネイティブと React Native の開発に別々のチームがある。
+- 既存のネイティブビルドプロセスへの、React Native 追加による影響を最小限に抑えたい。
+- アプリの React Native 部分を自己完結したモジュールとして扱いたい。
+
+## AI エージェント向けの Expo Skills
+
+AI エージェントを使用している場合は、[Expo Skills](/skills/) をインストールして、2 つの brownfield 統合アプローチの両方をエージェントに教えましょう。
+
+<RelatedSkills names={['expo-brownfield']} />
+
+## 次のステップ
+
+<BoxLink
+  title="分離アプローチ：Expo をネイティブライブラリとしてパッケージ化する"
+  description="React Native のコードを AAR/XCFramework のアーティファクトとしてビルドし、任意のネイティブアプリに統合します。"
+  href="/ja/brownfield/isolated-approach/"
+  Icon={BookOpen02Icon}
+/>
+<BoxLink
+  title="統合アプローチ：既存のネイティブプロジェクトに Expo を直接追加する"
+  description="既存のネイティブプロジェクトを、React Native と Expo を直接使うように設定します。"
+  href="/ja/brownfield/integrated-approach/"
+  Icon={BookOpen02Icon}
+/>

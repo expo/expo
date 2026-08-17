@@ -1,0 +1,98 @@
+---
+title: Android Studio Emulator
+description: 仮想 Android デバイスでアプリをテストするために、Android Emulator をセットアップする方法を学びます。
+---
+
+import AndroidEmulatorInstructions from '~/scenes/get-started/set-up-your-environment/instructions/_androidEmulatorInstructions.mdx';
+import AndroidStudioEnvironmentInstructions from '~/scenes/get-started/set-up-your-environment/instructions/_androidStudioEnvironmentInstructions.mdx';
+import AndroidStudioInstructions from '~/scenes/get-started/set-up-your-environment/instructions/_androidStudioInstructions.mdx';
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+テストに使用できる Android デバイスがない場合は、Android Studio に付属するデフォルトのエミュレーターを使うことをお勧めします。セットアップで問題が発生した場合は、このガイドの手順に従ってください。
+
+<AndroidStudioEnvironmentInstructions />
+
+<AndroidStudioInstructions />
+
+<AndroidEmulatorInstructions />
+
+## トラブルシューティング
+
+### 複数の `adb` バージョン
+
+システムに複数の `adb` バージョンがあると、次のようなエラーが発生することがあります。
+
+<Terminal cmd={["$ adb server version (xx) doesn't match this client (xx); killing..."]} />
+
+これは、システム上の `adb` バージョンが Android SDK の platform-tools にある `adb` バージョンと異なるために発生します。
+
+<Step label="1">
+ターミナルを開き、システムの `adb` バージョンを確認します。
+
+<Terminal cmd={['$ adb version']} />
+</Step>
+
+<Step label="2">
+続けて、Android SDK の platform-tools ディレクトリから確認します。
+
+<Terminal cmd={[
+  '$ cd ~/Library/Android/sdk/platform-tools',
+  '$ ./adb version'
+]} cmdCopy="cd ~/Library/Android/sdk/platform-tools && ./adb version" />
+</Step>
+
+<Step label="3">
+Android SDK ディレクトリから `usr/bin` ディレクトリに `adb` をコピーします。
+
+<Terminal cmd={['$ sudo cp ~/Library/Android/sdk/platform-tools/adb /usr/bin']} />
+</Step>
+
+### 特定バージョンの Expo Go をインストールするには？
+
+目的の SDK バージョンでプロジェクトを作成し、シミュレーターで開くことで、対応するバージョンの Expo Go をインストールできます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Bootstrap an SDK 57 project',
+      '$ npx create-expo-app --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ npx expo start --android',
+    ],
+    yarn: [
+      '# Bootstrap an SDK 57 project',
+      '$ yarn create expo-app --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ yarn expo start --android',
+    ],
+    pnpm: [
+      '# Bootstrap an SDK 57 project',
+      '$ pnpm create expo-app --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ pnpm expo start --android',
+    ],
+    bun: [
+      '# Bootstrap an SDK 57 project',
+      '$ bun create expo --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ bun expo start --android',
+    ],
+  }}
+/>
+
+また、[`expo-go` CLI](https://www.npmjs.com/package/expo-go) を使って SDK バージョンを指定し、特定バージョンの Expo Go をダウンロードすることもできます。最新の SDK バージョンには `latest` を使用します。このコマンドは、Expo Go アプリを現在のディレクトリにダウンロードし、**~/.expo** の下にキャッシュします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-go download android latest'],
+    yarn: ['$ yarn dlx expo-go download android latest'],
+    pnpm: ['$ pnpm dlx expo-go download android latest'],
+    bun: ['$ bunx expo-go download android latest'],
+  }}
+/>

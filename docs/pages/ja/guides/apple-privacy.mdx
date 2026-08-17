@@ -1,0 +1,67 @@
+---
+title: プライバシーマニフェスト
+description: モバイルアプリの iOS プライバシーマニフェストを設定する方法について学びます。
+---
+
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
+
+「restricted reason」API を使用するネイティブ iOS ライブラリを使っている場合は、それらの API を呼び出すネイティブコードを含める理由を宣言するために、iOS プライバシーマニフェストを設定する必要があります。
+
+詳細情報と「required reason」API の一覧は、[Apple Developer Documentation](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files) で確認できます。
+
+> **info** このガイドに含まれる情報と手順は現在も開発中であり、この目的のために構築される新しいツールや Apple からの新しい要件によって変更される可能性があります。
+
+## プライバシーマニフェストとは？
+
+プライバシーマニフェストは、iOS ネイティブプロジェクトに含まれる **PrivacyInfo.xcprivacy** という名前のファイルです。このファイルは、Apple がセンシティブとみなす特定の API を呼び出すネイティブコードをアプリに含める理由を宣言するために使用されます。
+
+これらの API には現在、UserDefaults へのアクセス、ファイルのタイムスタンプ、システムの起動時刻、ディスク容量、アクティブなキーボードへのアクセスが含まれます。Apple はこれをオープンなリストとみなしており、将来的に拡張される可能性があります。
+
+## app config での設定
+
+app config の `expo.ios` 配下にある `privacyManifests` フィールドを使うことで、iOS プライバシーマニフェストを含めることができます。
+
+```json app.json
+{
+  "expo": {
+    "name": "My App",
+    "slug": "my-app",
+    /* @hide ... */ /* @end */
+    "ios": {
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+`npx expo install --fix` を使って、使用している SDK バージョンに対応する最新バージョンに Expo SDK ライブラリを更新済みであることを確認してください。
+
+<ConfigReactNative>
+
+[既存の React Native プロジェクト](/ja/bare/overview/) に iOS プライバシーマニフェストを含めるには、Xcode で **PrivacyInfo.xcprivacy** ファイルを作成し、iOS アプリターゲットに追加します。
+**PrivacyInfo.xcprivacy** ファイルを作成する手順については、[Apple の Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files) ガイドを参照してください。
+
+</ConfigReactNative>
+
+`NSPrivacyAccessedAPITypes` と `NSPrivacyAccessedAPITypeReasons` の値は、[Apple Developer documentation](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files/describing_use_of_required_reason_api) を参照して特定できます。
+
+### Expo SDK パッケージやその他のサードパーティライブラリの required reason を含める
+
+現時点では、Apple は static CocoaPods の依存関係（Expo SDK パッケージやその他のエコシステムのライブラリなど）に含まれるすべての **PrivacyInfo** ファイルを正しく解析するわけではありません。そのため、それらの依存関係が使用する API の required reason を、アプリの **PrivacyInfo.xcprivacy** ファイルまたは **app.json** の設定に含める必要がある場合があります。
+
+「required reason」API を使用するすべての Expo SDK パッケージには、パッケージディレクトリに **PrivacyInfo** ファイルが含まれています。`expo-application` ライブラリに含まれる[サンプルファイル](https://github.com/expo/expo/blob/main/packages/expo-application/ios/PrivacyInfo.xcprivacy)を参考にしてください。
+
+他のサードパーティライブラリが使用する API の required reason は、通常、使用する予定のライブラリの **node_modules/package_name/ios** ディレクトリに **PrivacyInfo.xcprivacy** ファイルがあるかどうかを確認することで特定できます。ファイルがある場合は、そのファイル内の `NSPrivacyAccessedAPITypes` と `NSPrivacyAccessedAPITypeReasons` の値を確認し、その値を自分の設定にコピーしてください。
+
+別の方法として、プライバシーマニフェストファイルや特定の理由が不足したビルドを提出すると、Apple が開発者に通知します。Apple から通知メールが届くのを待ち、メールに記載されている required reason を、（[CNG](/ja/workflow/continuous-native-generation/) を使用していない場合は）アプリの **PrivacyInfo.xcprivacy** ファイルに、または **app.json** ファイルの設定に含めることができます。
+
+## プライバシーマニフェストをテストする
+
+プライバシーマニフェストをテストするには、アプリをビルドして、App Store の審査プロセスまたは TestFlight の外部レビューのいずれかに提出します。使用している API に必要な required reason が不足している場合、提出から数分以内に Apple からメールが届きます。

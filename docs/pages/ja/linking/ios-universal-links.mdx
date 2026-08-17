@@ -1,0 +1,269 @@
+---
+title: iOS Universal Links
+description: 標準的な web URL から Expo アプリを開けるように iOS Universal Links を設定する方法を学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+アプリに iOS Universal Links を設定するには、あなたの web サイトとネイティブアプリを検証するために **双方向の関連付け** を設定する必要があります。
+
+<VideoBoxLink
+  videoId="kNbEEYlFIPs"
+  time={68}
+  title="視聴：Expo Router で iOS Universal Links を設定する"
+  description="標準的な web URL から Expo アプリが開くように iOS Universal Links を設定する方法を学びます。"
+/>
+
+## 双方向の関連付けを設定する
+
+iOS で web サイトとアプリの間に **双方向の関連付け** を設定するには、次の手順を行う必要があります。
+
+- **web サイトの検証：** これには、**/.well-known** ディレクトリ内に **apple-app-site-association（AASA）** ファイルを作成し、対象の web サイトでホストする必要があります。このファイルは、あるリンクから開かれたアプリが正しいアプリであることを検証するために使われます。
+- **ネイティブアプリの検証：** これには、対象の web サイトのドメイン（URL）を参照する何らかのコード署名が必要です。
+
+### AASA ファイルを作成する
+
+web サイトの検証のために、**/.well-known** ディレクトリ内に **apple-app-site-association** ファイルを作成します。このファイルには、あなたの Apple Developer Team ID、バンドル識別子、そしてネイティブアプリへリダイレクトする対応パスの一覧を指定します。
+
+> **info** プロジェクト内で [experimental](/more/release-statuses/#experimental) な CLI コマンド `npx setup-safari` を実行すると、バンドル識別子を Apple アカウントに自動登録し、その ID に entitlements を割り当て、ストアに iTunes アプリのエントリを作成できます。ローカルのセットアップ内容が出力されるので、以降の手順の大部分を省略できます。これは iOS で Universal Links を使い始めるいちばん簡単な方法です。
+
+Expo Router（または Remix、Next.js などその他のモダンな React フレームワーク）で web サイトを構築している場合は、**public/.well-known/apple-app-site-association** に AASA ファイルを作成します。レガシーな Expo webpack プロジェクトの場合は、**web/.well-known/apple-app-site-association** にファイルを作成します。
+
+```json public/.well-known/apple-app-site-association
+{
+  // This section enables Universal Links
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        // Syntax: "<APPLE_TEAM_ID>.<BUNDLE_ID>"
+        /* @info `QQ57RJ5UTD.com.example.myapp` を、あなた自身の Apple Team ID とバンドル識別子に置き換えてください。 */
+        "appID": "QQ57RJ5UTD.com.example.myapp",
+        /* @end */
+        // All paths that should support redirecting.
+        /* @info `/records/*` を、あなた自身のパスに置き換えてください。 */
+        "paths": ["/records/*"]
+        /* @end */
+      }
+    ]
+  },
+  // This section enables Apple Handoff
+  "activitycontinuation": {
+    "apps": ["<APPLE_TEAM_ID>.<BUNDLE_ID>"]
+  },
+  // This section enable Shared Web Credentials
+  "webcredentials": {
+    "apps": ["<APPLE_TEAM_ID>.<BUNDLE_ID>"]
+  }
+}
+```
+
+上記の例では：
+
+- `https://www.myapp.io/records/*` へのリンク（レコード ID はワイルドカードでマッチします）はすべて、iOS デバイス上でバンドル識別子が一致するアプリによって直接開かれるべきです。これは [Apple Team ID](https://expo.fyi/apple-team) とバンドル識別子を組み合わせたものです。
+- `*` ワイルドカードは、ドメインやパスの区切り文字（ピリオドとスラッシュ）には **一致しません**。
+- `activitycontinuation` と `webcredentials` オブジェクトは省略可能ですが、指定することをおすすめします。
+
+> AASA のフォーマットの詳細については [Apple のドキュメント](https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/UniversalLinks.html) を参照してください。Branch は [AASA validator](https://branch.io/resources/aasa-validator/) を提供しており、AASA が正しくデプロイされ、有効なフォーマットになっていることを確認するのに役立ちます。
+
+### `details` フォーマットのサポート
+
+[`details` フォーマットのサポート](https://developer.apple.com/documentation/xcode/supporting-associated-domains) は iOS 13 以降で利用できます。これにより、次のものを指定できます。
+
+- `appID` の代わりに `appIDs`：同じ設定で複数のアプリを関連付けやすくなります
+- `components` の配列：フラグメントの指定、特定パスの除外、コメントの追加ができます
+
+<Collapsible summary="Apple のドキュメントにある AASA JSON の例">
+
+```json public/.well-known/apple-app-site-association
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["ABCDE12345.com.example.app", "ABCDE12345.com.example.app2"],
+        "components": [
+          {
+            "#": "no_universal_links",
+            "exclude": true,
+            "comment": "Matches any URL whose fragment equals no_universal_links and instructs the system not to open it as a universal link"
+          },
+          {
+            "/": "/buy/*",
+            "comment": "Matches any URL whose path starts with /buy/"
+          },
+          {
+            "/": "/help/website/*",
+            "exclude": true,
+            "comment": "Matches any URL whose path starts with /help/website/ and instructs the system not to open it as a universal link"
+          },
+          {
+            "/": "/help/*",
+            "?": {
+              "articleNumber": "????"
+            },
+            "comment": "Matches any URL whose path starts with /help/ and which has a query item with name 'articleNumber' and a value of exactly 4 characters"
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+</Collapsible>
+
+すべての iOS バージョンをサポートするには、`details` キーに上記両方のフォーマットを指定できますが、より新しい iOS バージョン向けの設定を先に置くことをおすすめします。
+
+### AASA ファイルをホストする
+
+**apple-app-site-association** ファイルを、あなたのドメインの web サーバーでホストします。このファイルは HTTPS 接続で配信される必要があります。ブラウザからこのファイルにアクセスできることを確認してください。
+
+AASA ファイルを設定したら、HTTPS に対応したサーバー（ほとんどのモダンな web ホストが対応しています）に web サイトをデプロイします。
+
+### ネイティブアプリの設定
+
+**apple-app-site-association**（AASA）ファイルをデプロイしたら、[`ios.associatedDomains`](/versions/latest/config/app/#associateddomains) を [app config](/ja/workflow/configuration/) に追加して、関連ドメインを使うようにアプリを設定します。[Apple が指定するフォーマット](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains) に従い、URL にプロトコル（`https`）を **含めない** ようにしてください。これはよくある間違いで、Universal Links が動作しない原因になります。
+
+たとえば、関連する web サイトが `https://expo.dev/` の場合、`applinks` は次のようになります。
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "associatedDomains": ["applinks:expo.dev"]
+    }
+  }
+}
+```
+
+[EAS Build](/build/setup/) を使って iOS アプリをビルドすると、entitlement が Apple に自動的に登録されます。
+
+<Collapsible summary="手動でのネイティブ設定">
+
+EAS や [Continuous Native Generation](/ja/workflow/continuous-native-generation/)（`npx expo prebuild`）を使っていない場合は、バンドル識別子に対して **Associated Domains** 機能を [手動で設定](/build-reference/ios-capabilities#manual-setup) する必要があります。
+
+[Apple Developer Console](/build-reference/ios-capabilities#apple-developer-console) から有効にする場合は、**ios/[app]/[app].entitlements** ファイルに次の entitlements を追加してください。
+
+```xml
+<key>com.apple.developer.associated-domains</key>
+<array>
+  <string>applinks:expo.dev</string>
+</array>
+```
+
+</Collapsible>
+
+### ネイティブアプリの検証
+
+アプリを iOS デバイスにインストールして、検証プロセスを開始させます。モバイルデバイス上で web サイトへのリンクを開くと、アプリが開くはずです。開かない場合は、これまでの手順を再確認し、AASA が有効であること、AASA に指定したパスが正しいこと、そして [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list) で App ID が正しく設定されていることを確認してください。
+
+アプリが開いたら、受信したリンクを処理してユーザーがリクエストしたコンテンツを表示する方法について詳しくは [アプリ内でのリンクの処理](/ja/linking/into-your-app/#url-を処理する) を参照してください。
+
+> iOS は、アプリが最初にインストールされたとき、または App Store からアップデートがインストールされたときに AASA をダウンロードします。それ以降、OS が頻繁に再取得することはありません。本番アプリの AASA でパスを変更したい場合は、App Store 経由で完全なアップデートを配信し、すべてのユーザーのアプリが AASA を再取得して新しいパスを認識できるようにする必要があります。
+
+## Apple Smart Banner
+
+ユーザーがアプリをインストールしていない場合、web サイトへ誘導されます。[Apple Smart Banner](https://developer.apple.com/documentation/webkit/promoting_apps_with_smart_app_banners) を使うと、ページ上部にバナーを表示して、ユーザーにアプリのインストールを促せます。このバナーは、ユーザーがモバイルデバイスを使っていて、かつアプリをインストールしていない場合にのみ表示されます。
+
+バナーを有効にするには、`<ITUNES_ID>` をあなたのアプリの iTunes ID に置き換えたうえで、次の meta タグを web サイトの `<head>` に追加します。
+
+```html
+<meta name="apple-itunes-app" content="app-id=<ITUNES_ID>" />
+```
+
+バナーの設定でうまくいかない場合は、次のコマンドを実行すると、プロジェクト用の meta タグを自動生成できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx setup-safari'],
+    yarn: ['$ yarn dlx setup-safari'],
+    pnpm: ['$ pnpm dlx setup-safari'],
+    bun: ['$ bunx setup-safari'],
+  }}
+/>
+
+### 静的にレンダリングされた web サイトに meta タグを追加する
+
+[Expo Router で静的にレンダリングされた web サイト](/router/web/static-rendering) を構築している場合は、[**src/app/+html.js** ファイル](/router/web/static-rendering#root-html) 内の `<head>` コンポーネントに HTML タグを追加します。
+
+```tsx src/app/+html.tsx
+import { type PropsWithChildren } from 'react';
+
+export default function Root({ children }: PropsWithChildren) {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        /* @info <CODE><ITUNES_ID></CODE> を、あなたのアプリの iTunes ID に置き換えてください。 */
+        <meta name="apple-itunes-app" content="app-id=<ITUNES_ID>" />
+        /* @end */
+        {/* Other head elements... */}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+## デバッグ
+
+Expo CLI を使うと、web サイトをデプロイしなくても iOS Universal Links をテストできます。[`--tunnel`](/more/expo-cli/#tunneling) 機能を使うと、開発サーバーを公開の HTTPS URL に転送できます。
+
+<Step label="1">
+
+環境変数 `EXPO_TUNNEL_SUBDOMAIN=my-custom-domain` を設定します。`my-custom-domain` には、開発中に使う一意の文字列を指定します。これにより、開発サーバーを再起動してもトンネルの URL が一定に保たれます。
+
+</Step>
+
+<Step label="2">
+
+[前述のとおり](#ネイティブアプリの設定) `associatedDomains` を app config に追加します。ドメインの値は Ngrok の URL（`my-custom-domain.ngrok.io`）に置き換えます。
+
+</Step>
+
+<Step label="3">
+
+`--tunnel` フラグを付けて開発サーバーを起動します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --tunnel'],
+    yarn: ['$ yarn expo start --tunnel'],
+    pnpm: ['$ pnpm expo start --tunnel'],
+    bun: ['$ bun expo start --tunnel'],
+  }}
+/>
+
+</Step>
+
+<Step label="4">
+
+デバイス上で開発ビルドをコンパイルします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
+
+</Step>
+
+これで、デバイスの web ブラウザにカスタムドメインのリンクを入力すると、アプリが開くようになります。
+
+## トラブルシューティング
+
+iOS Universal Links を実装する際のトラブルシューティングに役立つ、よくあるヒントを紹介します。
+
+- [universal links のデバッグ](https://developer.apple.com/documentation/technotes/tn3155-debugging-universal-links) についての Apple の公式ドキュメントを読む
+- [validator tool](https://branch.io/resources/aasa-validator/) を使って、apple app site association ファイルが有効であることを確認する
+- 圧縮していない `apple-app-site-association` ファイルは [128kb を超えることはできません](https://developer.apple.com/library/archive/documentation/General/Conceptual/AppSearch/UniversalLinks.html)
+- web サイトが HTTPS で配信されていることを確認する
+- web ファイルを更新した場合は、ネイティブアプリを再ビルドして、ベンダー側（Apple）でのサーバー更新をトリガーする

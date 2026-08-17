@@ -1,0 +1,185 @@
+---
+title: app config で設定する
+description: app.json/app.config.js/app.config.ts ファイルとは何か、それらをどのようにカスタマイズし、動的に利用できるかを学びます。
+---
+
+import { DocsLogo } from '@expo/styleguide';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import PossibleRedirectNotification from '~/ui/components/PossibleRedirectNotification';
+import { Terminal } from '~/ui/components/Snippet';
+
+<PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
+
+app config（**app.json**、**app.config.js**、**app.config.ts**）は、[Expo Prebuild](/more/glossary-of-terms/#prebuild) の生成、プロジェクトが [Expo Go](/get-started/set-up-your-environment/) でどのように読み込まれるか、そして OTA アップデートマニフェストを設定するために使われます。
+
+プロジェクトのルート、**package.json** の隣に配置する必要があります。最小限の例を次に示します。
+
+```json app.json
+{
+  "name": "My app",
+  "slug": "my-app"
+}
+```
+
+Expo config がトップレベルに `expo: {}` オブジェクトを持つ場合、これがルートオブジェクトの代わりに使われ、他のすべてのキーは無視されます。
+
+<BoxLink
+  title="App config スキーマリファレンス"
+  description="app config（app.json/app.config.js）の完全なスキーマを確認します。"
+  href="/versions/latest/config/app/"
+  Icon={DocsLogo}
+/>
+
+## プロパティ
+
+app config では、アプリ名、アイコン、スプラッシュスクリーン、ディープリンクのスキーム、一部のサービスで使う API キーなど、多くの項目を設定できます。利用可能なプロパティの完全な一覧については、[app.json/app.config.js/app.config.ts リファレンス](/versions/latest/config/app/) を参照してください。
+
+> **info** Visual Studio Code を使っていますか？ その場合は、[Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) 拡張機能をインストールすることをおすすめします。**app.json** ファイルのプロパティの自動補完が使えるようになります。
+
+## アプリ内で設定値を読み取る
+
+app config のほとんどの設定は、[`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants) を使って JavaScript コードからランタイムでアクセスできます。app config に機密情報を含めては**いけません**（ただし、以下で説明するとおり除外されるいくつかのフィールドは例外です）。
+
+`npx expo config --type public` を実行すると、どの設定がビルドやアップデートに埋め込まれ、ランタイムで利用できるかを確認できます。
+
+<Collapsible summary="公開される app config から除外されるフィールドはどれですか？">
+
+以下のフィールドは公開される app config から除外されており、`Constants.expoConfig` オブジェクトを通じてもアクセスできません。
+
+- [`ios.config`](/versions/latest/config/app/#config)
+- [`android.config`](/versions/latest/config/app/#config-1)
+- [`updates.codeSigningCertificate`](/versions/latest/config/app/#codesigningcertificate)
+- [`updates.codeSigningMetadata`](/versions/latest/config/app/#codesigningmetadata)
+
+</Collapsible>
+
+> **warning** JavaScript コードで **app.json** や **app.config.js** を直接 import することも避けてください。処理済みのバージョンではなく、ファイル全体を import することになるためです。代わりに、設定にアクセスするには [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants) を使ってください。
+
+## 設定を拡張する
+
+ライブラリの作者は、[Expo の config plugin](/config-plugins/introduction/) を使って app config を拡張できます。
+
+> **info** Config plugin は主に [`npx expo prebuild`](/more/glossary-of-terms/#prebuild) コマンドの設定に使われます。
+
+## 動的な設定
+
+さらにカスタマイズしたい場合は、JavaScript（**app.config.js**）または [TypeScript](#設定に-typescript-を使うappconfigjs-の代わりに-appconfigts-を使う)（**app.config.ts**）を使えます。これらの設定には次のような特徴があります。
+
+- コメント、変数、シングルクォートが使えます。
+- **app.config.js** と **app.config.ts** の両方で ESM の `import` 構文が使え、他の JavaScript ファイルの import にも対応しています。
+- TypeScript（**app.config.ts**）に対応しており、nullish coalescing や optional chaining が使えます。他の TypeScript ファイルを import したり、言語機能をカスタマイズしたりするには [`tsx`](/guides/typescript/#appconfigjs) が必要です。
+- Metro バンドラーがリロードされるたびに更新されます。
+- アプリに環境情報を提供できます。
+- Promise には対応していません。
+
+> **info** **注：** **app.config.mts**、**app.config.cts**、**app.config.mjs**、**app.config.cjs** ファイルも検出されます。デフォルトでは設定は CommonJS にトランスパイルされ、`.js` と `.ts` のどちらのファイルでも ESM と CommonJS の構文を混在させられます。この混在が原因で import や require の問題が起きる場合は、明示的な拡張子のいずれかを使って設定のモジュール形式を 1 つに固定してください。
+
+たとえば、オブジェクトを export してカスタム設定を定義できます。
+
+```js app.config.js
+const myValue = 'My App';
+
+module.exports = {
+  name: myValue,
+  version: process.env.MY_CUSTOM_PROJECT_VERSION || '1.0.0',
+  // All values in extra will be passed to your app.
+  extra: {
+    fact: 'kittens are cool',
+  },
+};
+```
+
+`"extra"` キーを使うと、任意の設定データをアプリに渡せます。このキーの値には [`expo-constants`](/versions/latest/sdk/constants/) を使ってアクセスします。
+
+```js App.js
+import Constants from 'expo-constants';
+
+Constants.expoConfig.extra.fact === 'kittens are cool';
+```
+
+オブジェクトを返す関数を export することで、渡ってきた設定値にアクセスしたり変更したりできます。これは、プロジェクトに **app.json** もある場合に便利です。デフォルトでは、Expo CLI はまず **app.json** を読み込み、正規化された結果を **app.config.js** に渡します。
+
+たとえば、**app.json** は次のようになります。
+
+```json app.json
+{
+  "name": "My App"
+}
+```
+
+そして **app.config.js** では、export した関数の引数としてその設定が渡されます。
+
+```js app.config.js
+module.exports = ({ config }) => {
+  console.log(config.name); // prints 'My App'
+  return {
+    ...config,
+  };
+};
+```
+
+### 環境に応じて設定を切り替える
+
+開発、ステージング、本番の各環境で異なる設定を使ったり、ホワイトラベル化のために設定をまるごと差し替えたりするのはよくあることです。これを実現するには、**app.config.js** を環境変数と組み合わせて使います。
+
+```js app.config.js
+module.exports = () => {
+  if (process.env.MY_ENVIRONMENT === 'production') {
+    return {
+      /* your production config */
+    };
+  } else {
+    return {
+      /* your development config */
+    };
+  }
+};
+```
+
+この設定を Expo CLI コマンドで使うには、特定のコマンド用に環境変数を設定するか、シェルのプロファイルで設定します。特定のコマンド用に環境変数を設定するには、次の例のようにコマンドの前に変数と値を付けます。
+
+<Terminal cmd={['$ MY_ENVIRONMENT=production eas update']} />
+
+これは Expo CLI 特有のものではありません。Windows では、上記のコマンドを次のようにして近い形で実行できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx cross-env MY_ENVIRONMENT=production eas update'],
+    yarn: ['$ yarn dlx cross-env MY_ENVIRONMENT=production eas update'],
+    pnpm: ['$ pnpm dlx cross-env MY_ENVIRONMENT=production eas update'],
+    bun: ['$ bunx cross-env MY_ENVIRONMENT=production eas update'],
+  }}
+/>
+
+その他、環境変数を扱うのに使い慣れた任意の方法を使ってもかまいません。
+
+### 設定に TypeScript を使う：app.config.js の代わりに app.config.ts を使う
+
+TypeScript で Expo config を書くと、自動補完やドキュメントブロックが使えます。次の内容で **app.config.ts** を作成してください。
+
+```ts app.config.ts
+import { ExpoConfig, ConfigContext } from 'expo/config';
+
+export default ({ config }: ConfigContext): ExpoConfig => ({
+  ...config,
+  slug: 'my-app',
+  name: 'My App',
+});
+```
+
+他の TypeScript ファイルを **app.config.ts** に import したり、言語機能をカスタマイズしたりするには、[`tsx`](/guides/typescript/#appconfigjs) を使うことをおすすめします。`tsx` を使うと、**app.config.ts** から import されるどのファイルでも `import` 構文が使えるようになります。つまり、ローカルの [config plugin](/config-plugins/introduction/) を TypeScript のフル言語機能を使って書けるということです。
+
+### 設定の解決ルール
+
+設定には静的（**app.config.json**、**app.json**）と動的（**app.config.js**、**app.config.ts**）の 2 種類があります。静的な設定は CLI ツールで自動的に更新できますが、動的な設定は開発者が手動で更新する必要があります。
+
+1. **app.config.json** が存在する場合は静的な設定が読み込まれます（存在しない場合は **app.json** にフォールバックします）。静的な設定がどちらも存在しない場合は、**package.json** と依存関係からデフォルト値が推測されます。
+2. **app.config.ts** または **app.config.js** のいずれかが存在する場合は動的な設定が読み込まれます。両方存在する場合は TypeScript の設定が使われます。
+3. 動的な設定が関数を返す場合、その関数には `({ config }) => ({})` という形で静的な設定が渡されます。この関数は静的な設定の値を変更できます。静的な設定に対するミドルウェアのようなものだと考えてください。
+4. 動的な設定の戻り値が最終的な設定として使われます。この戻り値に Promise を含めることはできません。
+5. 設定内のすべての関数は、Expo エコシステムのいずれかのツールで使われる前に評価され、シリアライズされます。ホストされる際、設定は JSON マニフェストである必要があります。
+6. 最終的な設定オブジェクトがトップレベルに `expo: {}` オブジェクトを持つ場合、これがルートオブジェクトの代わりに使われ、他のすべてのキーは無視されます。
+
+`npx expo config` を実行すると、解決処理のあとに Expo CLI で使われる最終的な設定が表示されます。

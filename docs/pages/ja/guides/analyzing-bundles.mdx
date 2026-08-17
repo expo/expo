@@ -1,0 +1,265 @@
+---
+title: Expo Atlas と Lighthouse で JavaScript バンドルを分析する
+sidebar_title: JavaScript バンドルを分析する
+description: Expo Atlas と Lighthouse を使って、Expo アプリと web サイトの本番用 JavaScript バンドルサイズを改善する方法を学びます。
+searchRank: 90
+searchPosition: 1
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+バンドルのパフォーマンスはプラットフォームによって異なります。たとえば、web ブラウザはプリコンパイルされたバイトコードをサポートしていないため、起動時間とパフォーマンスを向上させるには JavaScript バンドルサイズが重要です。バンドルが小さいほど、ダウンロードとパースが速くなります。
+
+## Expo Atlas でバンドルサイズを分析する
+
+<ContentSpotlight alt="Expo Atlas overview page." src="/static/images/atlas/atlas-overview.avif" />
+
+プロジェクトで使用しているライブラリは、本番用 JavaScript バンドルのサイズに影響します。[Expo Atlas](https://github.com/expo/expo-atlas#readme) を使うと、本番用バンドルを可視化し、どのライブラリがバンドルサイズに影響しているかを特定できます。
+
+### `npx expo start` で Atlas を使う
+
+Expo Atlas はローカル開発サーバーと一緒に使用できます。この方法では、プロジェクトのコードを変更するたびに Atlas が更新されます。
+
+アプリが Android、iOS、web のいずれかでローカル開発サーバーを使って実行されたら、<kbd>Shift</kbd> + <kbd>M</kbd> を使って [開発ツールプラグインメニュー](/debugging/devtools-plugins/#using-a-dev-tools-plugin) から Atlas を開けます。
+
+<Terminal
+  cmd={{
+    npm: ['# Start the local development server with Atlas', '$ EXPO_ATLAS=true npx expo start'],
+    yarn: ['# Start the local development server with Atlas', '$ EXPO_ATLAS=true yarn expo start'],
+    pnpm: ['# Start the local development server with Atlas', '$ EXPO_ATLAS=true pnpm expo start'],
+    bun: ['# Start the local development server with Atlas', '$ EXPO_ATLAS=true bun expo start'],
+  }}
+/>
+
+#### 開発モードから本番モードへ切り替える
+
+デフォルトでは、Expo はローカル開発サーバーを [開発モード](/ja/workflow/development-mode/#開発モード) で起動します。開発モードでは、[本番モード](/ja/workflow/development-mode/#本番モード) で有効になっているいくつかの最適化が無効になっています。本番用バンドルサイズをより正確に把握するために、ローカル開発サーバーを本番モードで起動することもできます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Run the local development server in production mode',
+      '$ EXPO_ATLAS=true npx expo start --no-dev',
+    ],
+    yarn: [
+      '# Run the local development server in production mode',
+      '$ EXPO_ATLAS=true yarn expo start --no-dev',
+    ],
+    pnpm: [
+      '# Run the local development server in production mode',
+      '$ EXPO_ATLAS=true pnpm expo start --no-dev',
+    ],
+    bun: [
+      '# Run the local development server in production mode',
+      '$ EXPO_ATLAS=true bun expo start --no-dev',
+    ],
+  }}
+/>
+
+### `npx expo export` で Expo Atlas を使う
+
+アプリや EAS Update 用に本番用バンドルを生成する際にも、Expo Atlas を使用できます。Atlas はエクスポート時に **.expo/atlas.jsonl** ファイルを生成し、プロジェクトへのアクセス権がなくてもこのファイルを共有して開くことができます。このファイルには、インライン化された [`EXPO_PUBLIC_` 環境変数](/ja/guides/environment-variables/) の値を含む、バンドルされたすべてのモジュールの元のソースコードと変換後のソースコードが含まれます。ソースコードと同様に扱い、信頼できる人にのみ共有してください。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Export your app for all platforms',
+      '$ EXPO_ATLAS=true npx expo export',
+      '',
+      '# Open the generated Expo Atlas file',
+      '$ npx expo-atlas .expo/atlas.jsonl',
+    ],
+    yarn: [
+      '# Export your app for all platforms',
+      '$ EXPO_ATLAS=true yarn expo export',
+      '',
+      '# Open the generated Expo Atlas file',
+      '$ yarn dlx expo-atlas .expo/atlas.jsonl',
+    ],
+    pnpm: [
+      '# Export your app for all platforms',
+      '$ EXPO_ATLAS=true pnpm expo export',
+      '',
+      '# Open the generated Expo Atlas file',
+      '$ pnpm dlx expo-atlas .expo/atlas.jsonl',
+    ],
+    bun: [
+      '# Export your app for all platforms',
+      '$ EXPO_ATLAS=true bun expo export',
+      '',
+      '# Open the generated Expo Atlas file',
+      '$ bunx expo-atlas .expo/atlas.jsonl',
+    ],
+  }}
+/>
+
+`--platform` オプションを使って、分析したいプラットフォームを指定することもできます。Expo Atlas は、エクスポートされたプラットフォームのデータのみを収集します。
+
+### 変換されたモジュールを分析する
+
+<ContentSpotlight alt="Expo Atlas module page." src="/static/images/atlas/atlas-module.avif" />
+
+Atlas 内では、<kbd>⌘ Cmd</kbd> を押しながらグラフのノードをクリックすると、変換されたモジュールの詳細を確認できます。この機能を使うと、モジュールが Babel によってどのように変換されたか、そのモジュールがどのモジュールをインポートしているか、どのモジュールからインポートされているかを把握できます。これは、依存関係グラフ全体でモジュールの由来をたどるのに利用できます。
+
+## source-map-explorer でバンドルサイズを分析する
+
+> **SDK 50 以前** の代替方法です。
+
+SDK 50 以下を使用している場合は、[`source-map-explorer`](https://www.npmjs.com/package/source-map-explorer) ライブラリを使って、本番用 JavaScript バンドルを可視化・分析できます。
+
+<Step label="1">
+
+source map explorer を使うには、次のコマンドを実行してインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev source-map-explorer'],
+    yarn: ['$ yarn add --dev source-map-explorer'],
+    pnpm: ['$ pnpm add --save-dev source-map-explorer'],
+    bun: ['$ bun add --dev source-map-explorer'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+実行するには、**package.json** にスクリプトを追加します。使用しているプラットフォームや SDK によっては、入力パスを調整する必要があるかもしれません。簡潔にするため、以下の例ではプロジェクトが Expo SDK 50 であり、Expo Router の `server` 出力を使用していないことを前提としています。
+
+```json package.json
+{
+  "scripts": {
+    "analyze:web": "source-map-explorer 'dist/_expo/static/js/web/*.js' 'dist/_expo/static/js/web/*.js.map'",
+    "analyze:ios": "source-map-explorer 'dist/_expo/static/js/ios/*.js' 'dist/_expo/static/js/ios/*.js.map'",
+    "analyze:android": "source-map-explorer 'dist/_expo/static/js/android/*.js' 'dist/_expo/static/js/android/*.js.map'"
+  }
+}
+```
+
+web 向けに SDK 50 の `server` 出力を使用している場合は、次のコマンドを使って web バンドルをマッピングします。
+
+<Terminal
+  cmd={{
+    npm: [
+      "$ npx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'",
+    ],
+    yarn: [
+      "$ yarn dlx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'",
+    ],
+    pnpm: [
+      "$ pnpm dlx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'",
+    ],
+    bun: [
+      "$ bunx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'",
+    ],
+  }}
+/>
+
+web バンドルは、サーバーコードがクライアントに露出しないように、**dist/client** サブディレクトリに出力されます。
+
+</Step>
+
+<Step label="3">
+
+本番用 JavaScript バンドルをエクスポートする際は、source map explorer がソースマップを読み込めるように `--source-maps` フラグを指定します。Hermes を使用しているネイティブアプリでは、`--no-bytecode` オプションを使ってバイトコードの生成を無効にできます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx expo export --source-maps --platform web',
+      '',
+      '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+      '$ npx expo export --source-maps --platform ios --no-bytecode',
+    ],
+    yarn: [
+      '$ yarn expo export --source-maps --platform web',
+      '',
+      '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+      '$ yarn expo export --source-maps --platform ios --no-bytecode',
+    ],
+    pnpm: [
+      '$ pnpm expo export --source-maps --platform web',
+      '',
+      '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+      '$ pnpm expo export --source-maps --platform ios --no-bytecode',
+    ],
+    bun: [
+      '$ bun expo export --source-maps --platform web',
+      '',
+      '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+      '$ bun expo export --source-maps --platform ios --no-bytecode',
+    ],
+  }}
+/>
+
+このコマンドを実行すると、出力に JavaScript バンドルとソースマップのパスが表示されます。次のステップでは、これらのパスを source map explorer に渡します。
+
+> ソースマップを本番環境に公開することは避けてください。セキュリティ上の問題とパフォーマンス上の問題（ブラウザが大きなマップをダウンロードすることになる）の両方を引き起こす可能性があります。
+
+</Step>
+
+<Step label="4">
+
+スクリプトを実行して、バンドルを分析します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm run analyze:web'],
+    yarn: ['$ yarn run analyze:web'],
+    pnpm: ['$ pnpm run analyze:web'],
+    bun: ['$ bun run analyze:web'],
+  }}
+/>
+
+このコマンドを実行すると、次のようなエラーが表示されることがあります。
+
+```text
+You must provide the URL of lib/mappings.wasm by calling SourceMapConsumer.initialize({ 'lib/mappings.wasm': ... }) before using SourceMapConsumer
+```
+
+これはおそらく、Node.js 18 以降における `source-map-explorer` の [既知の問題](https://github.com/danvk/source-map-explorer/issues/247) が原因です。これを解決するには、analyze スクリプトを実行する前に環境変数 `NODE_OPTIONS=--no-experimental-fetch` を設定してください。
+
+</Step>
+
+`Unable to map 809/13787 bytes (5.87%)` のような警告が表示されることがあります。これは、ソースマップがバンドラーのランタイム定義（たとえば `__d(() => {}, [])`）を除外することが多いために発生します。この値は一定であり、心配する必要はありません。
+
+## Lighthouse
+
+Lighthouse は、あなたの web サイトがどれだけ高速で、アクセシブルで、パフォーマンスが良いかを確認するのに最適な方法です。Chrome の **Audit** タブ、または [Lighthouse CLI](https://github.com/GoogleChrome/lighthouse#using-the-node-cli) を使ってプロジェクトをテストできます。
+
+`npx expo export -p web` で本番用ビルドを作成し、（`npx serve dist`、本番デプロイ、カスタムサーバーのいずれかを使って）配信したら、サイトがホストされている URL に対して Lighthouse を実行します。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Install the lighthouse CLI',
+      '$ npm install --global lighthouse',
+      '',
+      '# Run the lighthouse CLI for your site',
+      '$ npx lighthouse <url> --view',
+    ],
+    yarn: [
+      '# Install the lighthouse CLI',
+      '$ yarn global add lighthouse',
+      '',
+      '# Run the lighthouse CLI for your site',
+      '$ yarn dlx lighthouse <url> --view',
+    ],
+    pnpm: [
+      '# Install the lighthouse CLI',
+      '$ pnpm add --global lighthouse',
+      '',
+      '# Run the lighthouse CLI for your site',
+      '$ pnpm dlx lighthouse <url> --view',
+    ],
+    bun: [
+      '# Install the lighthouse CLI',
+      '$ bun add --global lighthouse',
+      '',
+      '# Run the lighthouse CLI for your site',
+      '$ bunx lighthouse <url> --view',
+    ],
+  }}
+/>

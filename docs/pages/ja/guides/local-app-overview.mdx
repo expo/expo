@@ -1,0 +1,82 @@
+---
+title: 'ローカルでビルドする：概要'
+sidebar_title: 概要
+description: Expo プロジェクトで、自分のマシンを使ってアプリをローカルでビルドする方法の概要です。
+searchRank: 90
+searchPosition: 1
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+
+Android Studio と Xcode を使えば、ローカルの開発環境を活用してアプリをローカルでビルドできます。このビルドプロセスは、デバッグビルドとリリースビルドのどちらでも行えます。このページでは、自分のマシンを使ってアプリをローカルでビルドするさまざまな方法の概要と、このワークフローで必要になりそうな他のガイドへの参照を紹介します。
+
+## アプリをローカルでビルドするタイミング
+
+開発者用マシンでアプリをビルドしたくなる場面には、次のようにさまざまなものがあります。
+
+- ネイティブコードの変更を素早く反復したい場合や、デバッグビルドでプラットフォーム固有の変更をテストしたい場合
+- デバッグビルドをテストするために、手動でネイティブコードを生成したい場合
+- ネットワークへのアクセスが制限された環境内でビルドを作成する必要がある場合
+- アップロードキーなど、自分の認証情報をローカルで管理したい場合
+- 独自のカスタムビルドキャッシュプロバイダーをテストまたは統合したい場合
+- Android 向けのプリコンパイル済み Expo Modules を使わず、一度ローカルでソースからコンパイルしたい場合
+
+> **注：** アプリをローカルでビルドすることは、EAS Build を補完するものです。クラウドの自動化にはビルドサービスを使い続け、開発時にはローカルビルドにフォールバックできます。
+
+<Prerequisites>
+  <Requirement title="Android Studio">
+    ローカルマシンで Android プロジェクトをコンパイル・実行するために、[Android Studio
+    をセットアップします](/get-started/set-up-your-environment/?platform=android&device=physical&mode=development-build&buildEnv=local#set-up-an-android-device-with-a-development-build)。
+  </Requirement>
+  <Requirement title="Xcode">
+    ローカルマシンで iOS プロジェクトをコンパイル・実行するために、[Xcode
+    をセットアップします](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-an-ios-device-with-a-development-build)。
+  </Requirement>
+</Prerequisites>
+
+## デバッグビルドをローカルで作成する
+
+デバッグビルドを素早くビルドして反復するには、Expo CLI の `npx expo run:[android|ios]` コマンドを使えます。このコマンドは、ローカルにインストールされた Android SDK または Xcode を使ってプロジェクトをコンパイルし、アプリのデバッグビルドを作成します。
+
+<BoxLink
+  title="デバッグビルドをローカルで作成する"
+  description="Expo アプリのデバッグビルドをローカルで作成する方法を学びます。"
+  href="/ja/guides/local-app-development/"
+  Icon={BookOpen02Icon}
+/>
+
+## リリースビルドをローカルで作成する
+
+アプリのリリースビルド（本番ビルドとも呼ばれます）を作成するには、Android Studio と Xcode が提供するツールを使って署名用の認証情報を生成します。そのあと、リリースビルドを生成し、Google Play Store または Apple App Store へ手動でアプリを提出する手順に従います。
+
+<BoxLink
+  title="リリースビルドをローカルで作成する"
+  description="署名済みの Android App Bundle を生成し、Xcode で iOS ビルドをアーカイブして、アプリストアへ手動で提出します。"
+  href="/ja/guides/local-app-production/"
+  Icon={BookOpen02Icon}
+/>
+
+## プロバイダーの過去のビルドを再利用する
+
+プロバイダーからビルドをキャッシュして再利用することで、ローカル開発を高速化できます。ビルドプロバイダーには EAS を使うことも、独自のカスタムプロバイダーを作成することもできます。
+
+<BoxLink
+  title="ビルドキャッシュプロバイダーを使う"
+  description="EAS のビルドキャッシュを有効にするか、カスタムプロバイダーを導入して、ローカルビルドの時間を短縮します。"
+  href="/ja/guides/cache-builds-remotely/"
+  Icon={BookOpen02Icon}
+/>
+
+## Android 向けのプリコンパイル済み Expo Modules
+
+Expo は、ビルドのたびに Gradle が行う作業を減らす、Android 向けのプリコンパイル済み Expo Modules を提供しています。デフォルトのまま使い続けることも、モジュールのソースコードを変更する必要があるときに選択的にオプトアウトすることもできます。
+
+<BoxLink
+  title="Android 向けのプリコンパイル済み Expo Modules"
+  description="プリコンパイル済みモジュールの仕組みを理解し、全体またはパッケージ単位でオプトアウトする方法を学びます。"
+  href="/ja/guides/prebuilt-expo-modules/"
+  Icon={BookOpen02Icon}
+/>

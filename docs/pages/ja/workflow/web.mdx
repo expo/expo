@@ -1,0 +1,158 @@
+---
+title: Expo で web サイトを開発する
+sidebar_title: web サイトを開発する
+description: ユニバーサルアプリを構築できるように、web 向けにアプリを開発する方法を学びます。
+hideTOC: true
+---
+
+import { RouterLogo } from '@expo/styleguide';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
+
+Expo は、React でフルスタックな web サイトを構築するための第一級のサポートを提供します。Expo の web サイトは、SEO やパフォーマンスのために [静的レンダリング](/router/web/static-rendering) することも、ブラウザでよりアプリらしい体験を実現するためにクライアントレンダリングすることもできます。
+
+<Tabs>
+
+<Tab label="Universal">
+
+    [React Native for web](https://github.com/necolas/react-native-web) の `<Text>` コンポーネントを使うと、どのプラットフォームでもテキストをレンダリングできます。
+
+    ```jsx app/index.js
+    import { Text } from 'react-native';
+
+    export default function Page() {
+      return <Text>Home page</Text>;
+    }
+    ```
+
+    React Native for web（RNW）は、`<View>` や `<Text>` などのコンポーネントライブラリの集合で、`<div>`、`<p>`、`<img>` といった `react-dom` のプリミティブをラップします。web 向けに開発する場合、React DOM を直接使うこともできるため RNW は任意ですが、複数プラットフォームにまたがって構築する際はコードの再利用を最大化できるため、使うことをよく推奨しています。
+
+    > React Native for web は、[X](https://x.com/) の web サイト全体を支えるために使われています。
+
+</Tab>
+
+<Tab label="Web-only">
+
+    代わりに、`<div>`、`<p>` など web 専用の React DOM コンポーネントを記述することもできますが、これらのコンポーネントはネイティブプラットフォームではレンダリングされません。
+
+    ```jsx app/index.js
+    export default function Page() {
+      return <p>Home page</p>;
+    }
+    ```
+
+    web 専用のコンポーネントを構築することは Expo で完全にサポートされていますが、web とネイティブの両方のプラットフォーム向けに同時に構築することをよりよくサポートできるよう、コードを整理したい場合もあるでしょう。詳しくは [プラットフォーム固有のモジュール](/router/advanced/platform-specific-modules) を参照してください。
+
+</Tab>
+
+</Tabs>
+
+Expo SDK に含まれるすべてのライブラリは、（該当する場合は）ブラウザとサーバーの両方のレンダリング環境をサポートするように構築されています。ライブラリは、対象とする個々のプラットフォーム向けにも最適化されています。
+
+Fast Refresh、デバッグ、環境変数、[バンドル](/ja/guides/customizing-metro) といった開発機能もすべて完全にユニバーサルであり、統一された開発体験を実現します。本番用にビルドする際、Expo CLI は [プラットフォームシェイキング](/ja/guides/tree-shaking#プラットフォームシェイキング) のような手法を使って、個々のプラットフォーム向けに **コードを自動的に最適化します**。
+
+## はじめに
+
+### web の依存関係をインストールする
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-dom react-native-web @expo/metro-runtime'],
+    yarn: ['$ yarn expo install react-dom react-native-web @expo/metro-runtime'],
+    pnpm: ['$ pnpm expo install react-dom react-native-web @expo/metro-runtime'],
+    bun: ['$ bun expo install react-dom react-native-web @expo/metro-runtime'],
+  }}
+/>
+
+<Collapsible summary={<>まだアプリで <CODE>expo</CODE> パッケージを使っていませんか？</>}>
+
+まだ React Native アプリに Expo を追加していない場合は、[Expo モジュールをインストールする](/ja/bare/installing-expo-modules/)（推奨）か、`expo` パッケージだけをインストールしてアプリのエントリーファイルを設定できます。これにより web をターゲットにできるようになりますが、Expo SDK のサポートは含まれません。
+
+1. プロジェクトに [Expo CLI](/more/expo-cli/) をインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install expo'],
+    yarn: ['$ yarn add expo'],
+    pnpm: ['$ pnpm add expo'],
+    bun: ['$ bun add expo'],
+  }}
+/>
+
+2. エントリーファイルを変更し、`AppRegistry.registerComponent` の代わりに [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) を使用するようにします。
+
+<DiffBlock
+  raw={`diff --git a/index.js b/index.js
+--- a/index.js
++++ b/index.js
+@@ -1,5 +1,4 @@
+-import {AppRegistry} from 'react-native';
+-import {name as appName} from './app.json';
++import {registerRootComponent} from 'expo';
+import App from './App';
+
+-AppRegistry.registerComponent(appName, () => App);
++registerRootComponent(App);`}
+/>
+
+</Collapsible>
+
+### 開発サーバーを起動する
+
+これで、次のコマンドで開発サーバーを起動し、ブラウザで開発できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --web'],
+    yarn: ['$ yarn expo start --web'],
+    pnpm: ['$ pnpm expo start --web'],
+    bun: ['$ bun expo start --web'],
+  }}
+/>
+
+アプリは、次のコマンドで本番用の web サイトとしてエクスポートできます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
+
+## 次のステップ
+
+<BoxLink
+  title="ファイルベースのルーティング"
+  description="Expo Router でルートとナビゲーションを構築します。"
+  href="/router/introduction"
+  Icon={RouterLogo}
+/>
+
+<BoxLink
+  title="静的レンダリングと SEO"
+  description="SEO とパフォーマンスを向上させるため、Expo Router で web サイトを静的 HTML としてレンダリングします。"
+  href="/router/web/static-rendering"
+  Icon={RouterLogo}
+/>
+
+<BoxLink
+  title="EAS Hosting で即座にデプロイする"
+  description="EAS Hosting は、カスタムドメインや SSL などをサポートし、Expo Router と React Native web のアプリをデプロイするための最良の方法です。"
+  href="/eas/hosting/get-started"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
+  title="JavaScript バンドラーをカスタマイズする"
+  description="プロジェクト向けに Metro バンドラーをカスタマイズします。"
+  href="/ja/guides/customizing-metro"
+  Icon={BookOpen02Icon}
+/>

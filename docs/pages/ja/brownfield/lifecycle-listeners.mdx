@@ -1,0 +1,106 @@
+---
+title: Lifecycle listeners を設定する
+sidebar_title: Lifecycle listeners
+description: Expo Modules API がアプリのライフサイクルにフックできる仕組みについて学びます。
+---
+
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
+import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
+
+一部の Expo ライブラリは、ディープリンク、プッシュ通知、設定変更などのシステムイベントを、`Activity`/`Application` または `AppDelegate` のライフサイクルコールバックを実装することで処理する必要があります。
+
+Expo Modules API は、こうしたコールバックを管理するための簡単な方法を提供します。
+
+- <PlatformTag platform="android" /> `ApplicationLifecycleDispatcher` と `ReactActivityHandler`
+  は、`Application` と `Activity`
+  のライフサイクルイベントを登録済みのリスナーに転送します。モジュールは `Package` クラスを通じて
+  `ReactActivityLifecycleListener` と `ApplicationLifecycleListener`
+  の実装を提供し、コールバックを登録できます。
+- <PlatformTag platform="ios" /> `ExpoAppDelegate` は `AppDelegate` の呼び出しを登録済みの
+  subscriber に転送します。モジュールは `ExpoAppDelegateSubscriber` の実装を提供することで、
+  コールバックを登録できます。
+
+こうした仕組みを使うことで、モジュールはネイティブのエントリーポイントを何度も編集することなく、振る舞いを登録できます。
+
+## ネイティブプロジェクトを設定する
+
+### Android
+
+Android で `Application` の lifecycle listener を統合するには、`Application` クラスの `onCreate()` と `onConfigurationChanged()` の呼び出しを `ApplicationLifecycleDispatcher` に転送します。
+
+<DiffBlock source="/static/diffs/brownfield/lifecycle-listeners/application-lifecycle-dispatcher.diff" />
+
+### iOS
+
+iOS で `AppDelegate` subscriber を統合するには、既存の `AppDelegate` の実装内で関連する呼び出しを `ExpoAppDelegateSubscriberManager` に転送し、subscriber がそれらに応答できるようにします。
+
+<DiffBlock source="/static/diffs/brownfield/lifecycle-listeners/expo-app-delegate-subscriber-manager.diff" />
+
+あるいは、`AppDelegate` がまだ他のクラスを継承していない場合は、`ExpoAppDelegate` を継承することでセットアップを簡略化できます。この場合、転送は自動的に処理されます。
+
+<DiffBlock source="/static/diffs/brownfield/lifecycle-listeners/expo-app-delegate.diff" />
+
+> **注：** 重大な副作用を引き起こす可能性のある `UIApplicationDelegate` のメソッドすべてがサポートされているわけではありません。特定のデリゲートに依存する必要がある場合は、転送されるメソッドの全リストについて Expo のソース（**ExpoAppDelegate.swift**）を参照してください。
+
+## 統合をテストする
+
+コールバックが正しく動作しているかテストするには、それらに依存するモジュールをインストールします。ディープリンクの処理に lifecycle listener を使用する `expo-linking` をインストールしましょう。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-linking'],
+    yarn: ['$ yarn expo install expo-linking'],
+    pnpm: ['$ pnpm expo install expo-linking'],
+    bun: ['$ bun expo install expo-linking'],
+  }}
+/>
+
+コードにディープリンク用のリスナーを追加し、ディープリンクを開いたときにコンソールを確認します。
+
+```jsx
+import * as Linking from 'expo-linking';
+import { useEffect } from 'react';
+
+useEffect(() => {
+  const listener = Linking.addEventListener('url', ({ url }) => {
+    console.log('Received deep link:', url);
+  });
+
+  return listener.remove;
+}, []);
+```
+
+以下のコマンドを実行して、アプリへのディープリンクを開きます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ npx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ npx uri-scheme open myapp://somepath/details --ios',
+    ],
+    yarn: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ yarn dlx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ yarn dlx uri-scheme open myapp://somepath/details --ios',
+    ],
+    pnpm: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ pnpm dlx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ pnpm dlx uri-scheme open myapp://somepath/details --ios',
+    ],
+    bun: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ bunx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ bunx uri-scheme open myapp://somepath/details --ios',
+    ],
+  }}
+/>

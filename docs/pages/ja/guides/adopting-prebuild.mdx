@@ -1,0 +1,181 @@
+---
+title: Prebuild を導入する
+description: React Native CLI でブートストラップされたプロジェクトに Expo Prebuild を導入する方法について学びます。
+---
+
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
+
+[Expo Prebuild][prebuild] を使って[ネイティブプロジェクトを継続的に生成する](/ja/workflow/continuous-native-generation)ことには、[多くの利点があります](/ja/workflow/continuous-native-generation)。このガイドでは、`npx @react-native-community/cli@latest init` でブートストラップされたプロジェクトに Expo Prebuild を導入する方法を紹介します。プロジェクトの変換にかかる時間は、Android と iOS のネイティブプロジェクトに加えた独自のネイティブ変更の量によって異なります。真新しいプロジェクトであれば 1、2 分程度で済むこともありますが、大規模なプロジェクトではもっと長くかかります。
+
+Prebuild を導入すると、`expo-modules-core` をネイティブにリンクすることで、[Expo ネイティブモジュール API][expo-modules-core] を使ったモジュール開発のサポートが自動的に追加されます。また、プロジェクトで [Expo CLI][cli] の任意のコマンドを使用できるようになります。
+
+> **warning** [`react-native` のすべてのバージョンが明示的にサポートされているわけではありません](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version)。対応する Expo SDK バージョンが存在する `react-native` のバージョンを必ず使用してください。
+
+## `expo` パッケージをインストールする
+
+`expo` パッケージには [`npx expo prebuild`](/more/expo-cli/#prebuild) コマンドが含まれており、どの [prebuild テンプレート](/ja/workflow/continuous-native-generation#テンプレート) を使用するかを示します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install expo'],
+    yarn: ['$ yarn add expo'],
+    pnpm: ['$ pnpm add expo'],
+    bun: ['$ bun add expo'],
+  }}
+/>
+
+現在インストールされている [`react-native` のバージョン](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) に対応する `expo` のバージョンを必ずインストールしてください。
+
+## エントリーファイルを更新する
+
+エントリーファイルを変更し、`AppRegistry.registerComponent` の代わりに [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) を使用するようにします。
+
+<DiffBlock
+  raw={`diff --git a/index.js b/index.js
+index 0000000..1111111 100644
+--- a/index.js
++++ b/index.js
+@@ -1,5 +1,4 @@
+-import {AppRegistry} from 'react-native';
+-import {name as appName} from './app.json';
++import {registerRootComponent} from 'expo';
+ import App from './App';
+-
+-AppRegistry.registerComponent(appName, () => App);
++registerRootComponent(App);`}
+/>
+
+> [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) について詳しく知る。
+
+## Prebuild
+
+> **warning** 元に戻したい場合に備えて、変更をコミットしておいてください。コマンド実行時にもこの点についての警告が表示されます。
+
+既存のプロジェクトを移行する場合は、先に [**ネイティブのカスタマイズを移行する**](#ネイティブのカスタマイズを移行する) を参照するとよいでしょう。
+
+次のコマンドを実行すると、app config（**app.json/app.config.js**）の設定に基づいて **android** ディレクトリと **ios** ディレクトリを再生成できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --clean'],
+    yarn: ['$ yarn expo prebuild --clean'],
+    pnpm: ['$ pnpm expo prebuild --clean'],
+    bun: ['$ bun expo prebuild --clean'],
+  }}
+/>
+
+プロジェクトをローカルでビルドすることで、すべてが正しく機能したことを確認できます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Build your native Android project',
+      '$ npx expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Build your native Android project',
+      '$ yarn expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Build your native Android project',
+      '$ pnpm expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Build your native Android project',
+      '$ bun expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ bun expo run:ios',
+    ],
+  }}
+/>
+
+> [ネイティブアプリのコンパイル](/more/expo-cli/#compiling) について詳しく知る。
+
+## 追加の変更
+
+以下の変更は任意ですが、推奨されます。
+
+**.gitignore**
+
+**.gitignore** に **.expo** を追加すると、Expo CLI によって生成された値がコミットされないようにできます。これらの[値はプロジェクト固有のもの](/more/expo-cli/#expo-directory)で、ローカルコンピューター上に存在します。
+
+**android** ディレクトリと **ios** ディレクトリは、新しいプロジェクトを作成すると自動的に **.gitignore** に追加されるため、prebuild の間にコミットされることはありません。
+
+**app.json**
+
+トップレベルの `expo` オブジェクトの外側にあるフィールドは `npx expo prebuild` では使用されないため、すべて削除してください。
+
+<DiffBlock
+  raw={`diff --git a/app.json b/app.json
+index 0000000..1111111 100644
+--- a/app.json
++++ b/app.json
+@@
+-  "name": "myapp",
+-  "displayName": "myapp"
++  "expo": {
++    "name": "myapp"
++  }
+ }`}
+/>
+
+**metro.config.js**
+
+[Metro のカスタマイズ](/ja/guides/customizing-metro/) を参照してください。
+
+**package.json**
+
+[Expo CLI](/more/expo-cli/#compiling) の run コマンドを使うように scripts を変更するとよいでしょう。
+
+<DiffBlock
+  raw={`diff --git a/package.json b/package.json
+index 0000000..1111111 100644
+--- a/package.json
++++ b/package.json
+@@
+   "scripts": {
+     "start": "expo start",
+-    "android": "react-native run-android",
+-    "ios": "react-native run-ios",
++    "android": "expo run:android",
++    "ios": "expo run:ios",
+   },`}
+/>
+
+これらのコマンドはログ出力が優れているほか、自動コード署名やシミュレーターのより良い取り扱いに対応しており、ファイルを配信するために確実に `npx expo start` を実行するようにします。
+
+## ネイティブのカスタマイズを移行する
+
+プロジェクトに何らかのネイティブの変更（アプリアイコンの設定やスプラッシュスクリーンなど、**android** ディレクトリまたは **ios** ディレクトリへの変更）が加えられている場合は、それらのネイティブの変更を反映するように app config（**app.json**）を設定する必要があります。
+
+- 加えた変更が組み込みの [app config フィールド](/versions/latest/config/app/) と重複していないか確認してください。たとえばアプリアイコンを設定している場合は、**app.json** で `expo.icon` として必ず定義してから `npx expo prebuild` を再実行してください。
+- 使用しているパッケージの中に [Expo config plugin][config-plugins] を必要とするものがないか確認してください。プロジェクト内のパッケージが **android** ディレクトリまたは **ios** ディレクトリ内部への追加の変更を必要とする場合、おそらく Config Plugin が必要になります。一部のプラグインは、**package.json** の依存関係にあるすべてのパッケージに対して `npx expo install` を実行することで自動的に追加できます。パッケージがプラグインを必要とするのにそれを提供していない場合は、[`expo/config-plugins`](https://github.com/expo/config-plugins) にあるコミュニティプラグインを確認し、すでに存在していないか調べてみてください。
+- [VS Code Expo 拡張機能][vs-code-expo] を使うと、変更内容を調べたり、prebuild が期待どおりのネイティブコードを生成しているかをデバッグしたりできます。<kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> を押して "Expo: Preview Modifier" と入力し、調べたいネイティブファイルを選択するだけです。
+- また、必要に応じてローカルの config plugin を独自に開発することもできます。[config plugin の開発方法](/config-plugins/development-and-debugging/#plugin-development) を参照してください。
+
+## その他の機能を追加する
+
+Prebuild は自動化の氷山の一角にすぎません。次に導入できる機能をいくつか紹介します。
+
+- [EAS Build](/build/setup): コード署名とクラウドビルド。
+- [EAS Update](/build/updates): over-the-air アップデートを即座に配信します。
+- [web 向けの Expo](/ja/workflow/web): ブラウザ上でアプリを実行します。
+- [Expo Dev Client][dev-client]: ネイティブランタイムを取り巻く、独自の「Expo Go」のようなアプリを作成します。
+- [Expo ネイティブモジュール API][expo-modules-core]: Swift と Kotlin でモジュールを記述します。`npx expo prebuild` を使用すると自動的にサポートされます。
+
+[vs-code-expo]: https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools
+[expo-modules-core]: /modules/module-api/
+[dev-client]: /develop/development-builds/introduction/
+[config-plugins]: /config-plugins/introduction/
+[prebuild]: /ja/workflow/continuous-native-generation
+[cli]: /more/expo-cli/

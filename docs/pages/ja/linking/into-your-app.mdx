@@ -1,0 +1,153 @@
+---
+title: 自分のアプリへのリンク
+sidebar_title: 自分のアプリへのリンク
+description: React Native と Expo のアプリでディープリンクを作成し、受信した URL を処理する方法を学びます。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+このガイドでは、カスタムスキームを追加することで、プロジェクトに標準的な **ディープリンク** を設定する手順を説明します。
+
+> **info** ほとんどのアプリでは、このガイドで説明するディープリンクの代わりに、あるいはそれに加えて、[Android App/iOS Universal Links](/ja/linking/overview/#ユニバーサルリンク) を設定することをおすすめします。
+
+## app config でカスタムスキームを追加する
+
+アプリへのリンクを提供するには、[app config](/ja/workflow/configuration/) の [`scheme`](/versions/latest/config/app/#scheme) プロパティにカスタム文字列を追加します。
+
+```json app.json
+{
+  "expo": {
+    /* @info `scheme` プロパティを使うと、アプリにカスタムスキームを追加できます。 */
+    "scheme": "myapp"
+    /* @end */
+  }
+}
+```
+
+アプリにカスタムスキームを追加したら、[新しい開発ビルドを作成](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build) する必要があります。アプリをデバイスにインストールすると、`myapp://` を使ってアプリ内のリンクを開けるようになります。
+
+**カスタムスキームが定義されていない** 場合、アプリは開発ビルドと本番ビルドの両方でデフォルトのスキームとして `android.package` と `ios.bundleIdentifier` を使用します。これは [Expo Prebuild](/more/glossary-of-terms/#prebuild) が、これらのプロパティを Android と iOS のカスタムスキームとして自動的に追加するためです。
+
+## ディープリンクをテストする
+
+アプリを開くリンクは、URI スキームの操作とテストを行うためのコマンドラインユーティリティである [`npx uri-scheme`](https://github.com/expo/expo/tree/main/packages/uri-scheme#readme) を使ってテストできます。
+
+たとえば、アプリに `/details` という画面があり、ユーザーが（別のアプリや web ブラウザ経由で）リンクをタップしたときにその画面を開きたい場合、次のコマンドを実行してこの動作をテストできます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ npx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ npx uri-scheme open myapp://somepath/details --ios',
+    ],
+    yarn: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ yarn dlx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ yarn dlx uri-scheme open myapp://somepath/details --ios',
+    ],
+    pnpm: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ pnpm dlx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ pnpm dlx uri-scheme open myapp://somepath/details --ios',
+    ],
+    bun: [
+      '# If you have `android.package` or `ios.bundleIdentifier` defined in your app.json',
+      '$ bunx uri-scheme open com.example.app://somepath/details --android',
+      '',
+      '# If you have a `scheme` defined in your app.json',
+      '$ bunx uri-scheme open myapp://somepath/details --ios',
+    ],
+  }}
+/>
+
+上記のコマンドを実行すると：
+
+- アプリの `/details` 画面を開きます
+- `android` または `ios` オプションは、リンクを Android と iOS のどちらで開くかを指定します
+- また、デバイスの web ブラウザで `<a href="scheme://">Click me</a>` のようなリンクをクリックして開くことも試せます。アドレスバーにリンクを入力しても期待どおりに動作しないことがある点に注意してください。その機能を実装するには [universal linking](/ja/linking/overview/#ユニバーサルリンク) を使えます。
+
+<Collapsible summary="Expo Go を使ってリンクをテストする">
+
+デフォルトでは、[Expo Go](https://expo.dev/go) は `exp://` スキームを使用します。`exp://` の後に URL アドレスを指定せずにリンクした場合、アプリはホーム画面を開きます。開発時のアプリの完全な URL は `exp://127.0.0.1:8081` のようになります。
+
+Expo Go でテストしながら `/details` 画面を開くには、`npx uri-scheme` を使えます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios'],
+    yarn: [
+      '$ yarn dlx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios',
+    ],
+    pnpm: [
+      '$ pnpm dlx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios',
+    ],
+    bun: ['$ bunx uri-scheme open exp://127.0.0.1:8081/--/somepath/into/app?hello=world --ios'],
+  }}
+/>
+
+Expo Go では、パスが指定されるとその URL に `/--/` が追加されます。これは、それ以降の部分文字列がディープリンクのパスに対応し、アプリ自体へのパスの一部ではないことを Expo Go に伝えるものです。
+
+デフォルトでは、Expo Go で URL を開くとき `exp://` は `http://` に置き換えられます。`https://` の URL を開くには `exps://` を使うこともできます。ただし `exps://` は現時点で、安全でない TLS 証明書を使うサイトの読み込みに対応していません。
+
+</Collapsible>
+
+## URL を処理する
+
+> **info** [Expo Router](/ja/linking/overview/#expo-router-を使ってディープリンクを処理する) を使用している場合は、このセクションを無視して構いません。
+
+[`expo-linking`](/versions/latest/sdk/linking/) の [`Linking.useLinkingURL()`](/versions/latest/sdk/linking/#uselinkingurl) フックを使うと、アプリを起動したリンクを監視できます。
+
+```tsx index.tsx
+import * as Linking from 'expo-linking';
+
+export default function Home() {
+  const url = Linking.useLinkingURL();
+
+  return <Text>URL: {url}</Text>;
+}
+```
+
+`Linking.useLinkingURL()` フックは、裏側で次の命令的なメソッドに従って動作します。
+
+- アプリを起動したリンクは、最初に [`Linking.getInitialURL()`](/versions/latest/sdk/linking/#linkinggetinitialurl) を使って返されます
+- アプリがすでに開いているときにトリガーされた新しいリンクは、[`Linking.addEventListener('url', callback)`](/versions/latest/sdk/linking/#linkingaddeventlistenertype-handler) で監視されます
+
+## URL を解析する
+
+URL から **パス**、**ホスト名**、**クエリパラメーター** を解析するには、[`Linking.parse()`](/versions/latest/sdk/linking/#linkingparseurl) メソッドを使えます。このメソッドはディープリンクの情報を抽出し、標準的でない実装も考慮します。
+
+```tsx index.tsx|collapseHeight=440
+import * as Linking from 'expo-linking';
+
+export default function Home() {
+  const url = Linking.useLinkingURL();
+
+  if (url) {
+    const { hostname, path, queryParams } = Linking.parse(url);
+
+    console.log(
+      `Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
+        queryParams
+      )}`
+    );
+  }
+
+  return (
+    /* @hide ここに React コンポーネントを記述します。 */ /* @end */
+  )
+}
+```
+
+## 制限事項
+
+ユーザーがアプリをインストールしていない場合、アプリへのディープリンクは機能しません。[Branch](https://www.branch.io/deep-linking/) のようなアトリビューションサービスは、アプリや web ページへ条件付きでリンクするソリューションを提供しています。
+
+Android App/iOS Universal Links も、こうしたケースに対応するために使えるもう 1 つのソリューションです。このタイプのリンクを使うと、ユーザーが web ドメインを指す HTTP(S) リンクをクリックしたときにアプリを開けるようになります。ユーザーがアプリをインストールしていない場合、そのリンクはユーザーを web サイトへ導きます。詳細は [universal linking](/ja/linking/overview/#ユニバーサルリンク) を参照してください。

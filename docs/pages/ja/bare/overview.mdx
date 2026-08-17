@@ -1,0 +1,216 @@
+---
+title: 既存の React Native アプリで Expo を使う概要
+sidebar_title: 概要
+description: 既存の React Native アプリで Expo のツールやサービスを使う方法を学びます。
+---
+
+import { DocsLogo, RouterLogo } from '@expo/styleguide';
+import { BuildArtifactIcon } from '@expo/styleguide-icons/custom/BuildArtifactIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { ChevronUpDoubleIcon } from '@expo/styleguide-icons/outline/ChevronUpDoubleIcon';
+import { Lightbulb01Icon } from '@expo/styleguide-icons/outline/Lightbulb01Icon';
+import { RefreshCw02Icon } from '@expo/styleguide-icons/outline/RefreshCw02Icon';
+import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { CODE } from '~/ui/components/Text';
+
+Expo のツールを何も使っていない React Native アプリをお持ちなら、Expo が何を提供してくれるのか、なぜ Expo のツールやサービスを使いたくなるのか、どうやって始めればよいのか、疑問に思っているかもしれません。
+
+**Expo が提供するすべてのツールとサービスは、あらゆる React Native アプリでうまく機能します**。
+
+アプリのビルド、レビュー、デプロイ、アップデートのためのプロフェッショナルな CI/CD ワークフローをすばやく整えるには、[EAS](/eas) を使えます。[Expo CLI](/more/expo-cli/) は、React Native を扱うための最良のコマンドラインの体験を提供します。[Expo SDK](/versions/latest/) は React Native のための拡張標準ライブラリです。開発者に、学びやすく使いやすい一貫した API 規約を採用した高品質でよく保守されたネイティブライブラリを提供します。
+
+React Native 用のネイティブモジュールを書いたことがあるなら、[Expo Modules API](/modules/overview/) が提供するイディオマティックな Swift と Kotlin の DSL を使うことで、モジュールの構築と保守がどれほど簡単になるかに驚くはずです。
+
+他にも探求できることがたくさんあります。以下のリンクは、利用できる選択肢を探るのに役立ちます。
+
+## 段階的な導入ステップ
+
+以下は、段階的な導入の 4 つのおすすめフェーズです。これらのフェーズは、一般的に開発者体験を改善する手早い変更から、より大きなワークフローとコードベースの最適化へと進んでいきます。
+
+他のフェーズに必要なのは最初のフェーズ（前提条件）だけです。その手順に従ったあとは、Expo の導入における自分の目標に最も関連するツールやサービスへ進んで構いません。
+
+{/* Note: This "Prerequisites" heading intentionally does not use the <Prerequisites> component. It is a phase label in the "Incremental adoption steps" sequence (alongside "Quick wins", "New workflows", "New mindsets") and its body is navigational BoxLinks, not a checklist of requirements to complete before reading the page. */}
+
+### 前提条件
+
+後で Expo のツールやサービスを導入するために必要な、最初のステップです。
+
+<BoxLink
+  title="Expo モジュールをインストールする"
+  Icon={Rocket02Icon}
+  description={
+    <>
+      Expo の機能を使えるようにするには、既存の React Native プロジェクトに <CODE>expo</CODE>{' '}
+      パッケージをインストールする必要があります。このガイドでは、自動インストールと手動インストールの両方の手順を説明します。
+    </>
+  }
+  href="/ja/bare/installing-expo-modules"
+/>
+
+<BoxLink
+  title="Expo CLI を使う"
+  Icon={BookOpen02Icon}
+  description={
+    <>
+      Expo CLI への移行は <CODE>@react-native-community/cli</CODE>{' '}
+      のドロップイン置き換えです。すべての Expo
+      のツールやサービスとの完全な互換性を提供します。このガイドでは、そのメリットを説明し、
+      <CODE>expo</CODE>{' '}
+      パッケージをインストールしたあとに開発サーバーを起動するためのコンパイルコマンドを示します。
+    </>
+  }
+  href="/ja/bare/using-expo-cli/"
+/>
+
+### 手早い成果
+
+以下は開発体験の改善に役立ち、設定が必要です。
+
+<BoxLink
+  title="Expo SDK を使う"
+  description="ネイティブ API へのアクセスを提供する広範なライブラリ群である Expo SDK が提供する、数多くのライブラリの中から 1 つを使います。"
+  Icon={DocsLogo}
+  href="/versions/"
+/>
+
+<BoxLink
+  title="expo-dev-client をインストールする"
+  description={
+    <>
+      <CODE>expo-dev-client</CODE> は、デバッグ用のアプリバリアントに Expo Go
+      スタイルのアプリランチャーインターフェースへのアクセスを提供します。既存の React Native
+      プロジェクトへのインストールと設定の方法を学びます。
+    </>
+  }
+  Icon={BookOpen02Icon}
+  href="/ja/bare/install-dev-builds-in-bare/"
+/>
+
+<BoxLink
+  title="ネイティブモジュールを書く"
+  description="Expo Modules API を使って、Swift と Kotlin でネイティブモジュールを書きます。"
+  Icon={Lightbulb01Icon}
+  href="/modules/overview/"
+/>
+
+<BoxLink
+  title="ネイティブプロジェクトのアップグレードヘルパー"
+  Icon={ChevronUpDoubleIcon}
+  description="ネイティブプロジェクトを次の Expo SDK と React Native のバージョンにアップグレードするために必要なすべての変更を、ファイルごとの diff で確認できます。"
+  href="/ja/bare/upgrade/"
+/>
+
+### 新しいワークフロー
+
+アプリに `expo` パッケージをインストールすれば、単一のコマンドでアプリをアプリストアに提出したり、`expo-updates` ライブラリを設定してアプリのコードへのリモートアップデートを管理したりできます。
+
+<BoxLink
+  title="アプリの配布"
+  Icon={BuildArtifactIcon}
+  description="単一のコマンドで、アプリのビルドとアプリストアへの提出ができます。"
+  href="/distribution/introduction"
+/>
+
+<BoxLink
+  title="expo-updates をインストールする"
+  Icon={BuildArtifactIcon}
+  description={
+    <>
+      リモートアップデートを管理し、PR プレビューを有効にするために <CODE>expo-updates</CODE>{' '}
+      をインストールして設定する方法を学びます。
+    </>
+  }
+  href="/ja/bare/installing-updates/"
+/>
+
+### 新しいマインドセット
+
+以下は、プロジェクトの長期的な保守性、ネイティブコードのメンテナンス、そしてアップグレードの容易化に役立ちます。
+
+<BoxLink
+  title="Prebuild を導入する"
+  Icon={RefreshCw02Icon}
+  description="設定からオンデマンドでネイティブプロジェクトを生成することで、その保守をシンプルにする方法を学びます。"
+  href="/ja/guides/adopting-prebuild/"
+/>
+
+<BoxLink
+  title="Expo Router"
+  Icon={RouterLogo}
+  description="Expo Router は、整理されたナビゲーション階層、自動ディープリンクサポートなどの利点を提供するファイルベースのルーティングライブラリです。"
+  href="/router/introduction/"
+/>
+
+## よくある質問
+
+<FAQ>
+
+<Collapsible summary="既存の React Native プロジェクトに Expo を導入するにはどのくらい時間がかかりますか？">
+
+Expo の導入を 1 つのステップで終える必要はありません。まず _手早い成果_ から始めて、より複雑な部分へ進むことができます。また、プロジェクトにとって最も役立つ機能を選んで導入することもできます。
+
+</Collapsible>
+
+<Collapsible summary="React Native アプリで Expo を使うと何が得られますか？">
+
+既存の React Native アプリに Expo のツールを導入すると、[Expo SDK](/versions/latest/) でより速く開発したり、[CNG](/ja/workflow/continuous-native-generation/) でネイティブコードの保守とアップグレードを効率化したり、[EAS Update](/eas-update/introduction/) でより速くデプロイしたりできるようになります。
+
+</Collapsible>
+
+<Collapsible summary="誰が Expo を使っていますか？">
+
+Expo は、何百万人ものエンドユーザーにサービスを提供する世界中のトップ企業に使われています。詳しくは [Expo showcase](https://expo.dev/customers) を参照してください。
+
+</Collapsible>
+
+<Collapsible summary="Expo を導入すると、アプリのサイズにどのような影響がありますか？">
+
+`expo` パッケージは、あらゆるアプリで必要となる最小限のモジュールセットと、autolinking の仕組み、組み込みのその他の Expo SDK ライブラリしか含まないため、フットプリントは小さく抑えられています。アプリの実際のサイズを調べる方法については、[アプリサイズを理解する](/distribution/app-size/) を参照してください。
+
+</Collapsible>
+
+<Collapsible summary="なぜ React Native は Expo の利用を推奨したのですか？">
+
+ほとんどの React Native 開発者は、アプリを構築する際に、ナビゲーションの実装、ネイティブ API へのアクセス、新しいバージョンへのアップグレードなど、よくある問題を解決しています。これには、アプリを構築・保守するための特定のツールとライブラリのセットを使う必要があり、つまり自分自身のフレームワークを作っていることになります。
+
+Expo は、一連のプリミティブを提供し、開発者であるあなたがアプリの構築に集中できるようにすることで、これらの問題を解決します。また、開発をより速く反復するためのツールも提供します。詳しくは [なぜ React Native はフレームワークの利用を推奨するのか](https://reactnative.dev/blog/2024/06/25/use-a-framework-to-build-react-native-apps) を参照してください。
+
+</Collapsible>
+
+<Collapsible summary="Expo を使うために、ネイティブプロジェクトを取り除く必要がありますか？">
+
+デフォルトでは、`create-expo-app` で作成された Expo プロジェクトは [Continuous Native Generation（CNG）](/ja/workflow/continuous-native-generation/) を使用し、**android** と **ios** のネイティブディレクトリを含みません。既存の React Native アプリに Expo を段階的に導入する場合、これらのディレクトリを削除する必要はありません。ネイティブプロジェクトの設定を保ったままローカルでアプリをコンパイルするために、`@react-native-community/cli` が提供するコマンドの代わりに `npx expo run:[android|ios]` を使えます。
+
+</Collapsible>
+
+<Collapsible summary="CodePush を使っています。Expo と一緒に使い続けられますか？">
+
+CodePush は 2025 年 3 月に廃止予定であり、React Native の New Architecture とは互換性がないため、長期的にはアプリのコードのリモートアップデートを管理するために EAS Update への切り替えをおすすめします。ただし、Expo SDK、Expo CLI、EAS Build などを含む Expo のツールは、CodePush が有効なアプリでも今日から使い始められます。
+
+</Collapsible>
+
+<Collapsible summary="EAS でビルドしなければなりませんか？">
+
+[Expo Application Services（EAS）](/eas/) は、Expo と React Native のアプリのために深く統合されたクラウドサービスで、アプリのビルド、テスト、デプロイのためのツールを提供します。
+
+チームメイトとのスムーズなコラボレーションと迅速な配布のために EAS を使うことをおすすめしますが、アプリはローカルで、CI 上で、あるいは好みの方法でコンパイルすることもできます。
+
+</Collapsible>
+
+<Collapsible summary="コードにサードパーティのネイティブライブラリをインストールできますか？">
+
+はい、ネイティブプロジェクト（**android** と **ios**）の設定を必要とする、あるいは [開発ビルド](/ja/workflow/overview/#開発ビルド) を伴う [config plugin](/config-plugins/introduction/) を提供するサードパーティライブラリを、インストールして使うことができます。詳しくは [サードパーティライブラリを使う](/ja/workflow/using-libraries/#サードパーティライブラリ) を参照してください。
+
+</Collapsible>
+
+<Collapsible summary="React Navigation を使っています。Expo Router を使わなければなりませんか？">
+
+プロジェクトでは、どのようなナビゲーションライブラリも使い続けられます。ただし、[こちらで説明されている](/router/introduction) すべてのメリットのために、Expo Router の利用をおすすめします。
+
+</Collapsible>
+
+</FAQ>

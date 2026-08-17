@@ -1,0 +1,222 @@
+---
+title: React Compiler
+description: Expo アプリで React Compiler を有効にして使用する方法を学びます。
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+新しい [React Compiler](https://react.dev/learn/react-compiler) は、コンポーネントとフックを自動的にメモ化し、きめ細かなリアクティビティを実現します。これにより、アプリのパフォーマンスが大幅に向上する可能性があります。以下の手順に従って、アプリで有効にできます。
+
+## React Compiler を有効にする
+
+<Step label="1">
+
+プロジェクトが React Compiler にどの程度対応しているか [確認します](https://react.dev/learn/react-compiler#checking-compatibility)。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx react-compiler-healthcheck@latest'],
+    yarn: ['$ yarn dlx react-compiler-healthcheck@latest'],
+    pnpm: ['$ pnpm dlx react-compiler-healthcheck@latest'],
+    bun: ['$ bunx react-compiler-healthcheck@latest'],
+  }}
+/>
+
+これにより、アプリが [**Rules of React**](https://react.dev/reference/rules) に従っているかどうかを大まかに検証できます。
+
+</Step>
+
+<Step label="2">
+
+プロジェクトに `babel-plugin-react-compiler` と React compiler ランタイムをインストールします。
+
+<Tabs tabs={['SDK 54 and later', 'SDK 53', 'SDK 52 and earlier']}>
+  <Tab>
+
+    Expo SDK 54 以降では、Babel は自動的に設定されます。
+
+  </Tab>
+  <Tab>
+    <Terminal
+      cmd={{
+        npm: ['$ npx expo install babel-plugin-react-compiler@beta'],
+        yarn: ['$ yarn expo install babel-plugin-react-compiler@beta'],
+        pnpm: ['$ pnpm expo install babel-plugin-react-compiler@beta'],
+        bun: ['$ bun expo install babel-plugin-react-compiler@beta'],
+      }}
+    />
+  </Tab>
+  <Tab>
+    <Terminal
+      cmd={{
+        npm: ['$ npx expo install babel-plugin-react-compiler@beta react-compiler-runtime@beta'],
+        yarn: ['$ yarn expo install babel-plugin-react-compiler@beta react-compiler-runtime@beta'],
+        pnpm: ['$ pnpm expo install babel-plugin-react-compiler@beta react-compiler-runtime@beta'],
+        bun: ['$ bun expo install babel-plugin-react-compiler@beta react-compiler-runtime@beta'],
+      }}
+    />
+  </Tab>
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+app config ファイルで React Compiler の実験的機能を有効にします。
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "reactCompiler": true
+    }
+  }
+}
+```
+
+</Step>
+
+### リンターを有効にする
+
+アプリで ESLint をセットアップするには [`npx expo lint`](/guides/using-eslint/#eslint) を実行し、SDK バージョンに応じた手順に従います。
+
+<Tabs tabs={['SDK 55 and later', 'SDK 54 and earlier']}>
+  <Tab>
+
+    SDK 55 以降では、React Compiler の lint ルールがデフォルトで `eslint-config-expo` に含まれています。
+
+    以前に `eslint-plugin-react-compiler` をインストールしていた場合は、アンインストールして ESLint の設定から削除できます。
+
+  </Tab>
+  <Tab>
+
+    React Compiler 用の ESLint プラグインをインストールします。
+
+    <Terminal
+      cmd={{
+        npm: ['$ npx expo install eslint-plugin-react-compiler -- -D'],
+        yarn: ['$ yarn expo install eslint-plugin-react-compiler -- -D'],
+        pnpm: ['$ pnpm expo install eslint-plugin-react-compiler -- -D'],
+        bun: ['$ bun expo install eslint-plugin-react-compiler -- -D'],
+      }}
+    />
+
+    プラグインを含めるように [ESLint の設定](/guides/using-eslint/) を更新します。
+
+    ```js eslint.config.js
+    // https://docs.expo.dev/guides/using-eslint/
+    const { defineConfig } = require('eslint/config');
+    const expoConfig = require('eslint-config-expo/flat');
+    const reactCompiler = require('eslint-plugin-react-compiler');
+
+    module.exports = defineConfig([
+      expoConfig,
+      reactCompiler.configs.recommended,
+      {
+        ignores: ['dist/*'],
+      },
+    ]);
+    ```
+
+  </Tab>
+</Tabs>
+
+## 段階的な導入
+
+いくつかの戦略を使って、アプリに React Compiler を段階的に導入できます。
+
+<Step label="1">
+
+特定のファイルやコンポーネントに対してのみ実行されるように、Babel プラグインを設定します。手順は次のとおりです。
+
+1. プロジェクトに [**babel.config.js**](/versions/latest/config/babel/) が無い場合は、`npx expo customize babel.config.js` を実行して作成します。
+2. **babel.config.js** に次の設定を追加します。
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+
+  return {
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          'react-compiler': {
+            sources: filename => {
+              // Match file names to include in the React Compiler.
+              return filename.includes('src/path/to/dir');
+            },
+          },
+        },
+      ],
+    ],
+  };
+};
+```
+
+**babel.config.js** ファイルを変更した場合は、変更を反映するために Metro バンドラーを再起動する必要があります。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --clear'],
+    yarn: ['$ yarn expo start --clear'],
+    pnpm: ['$ pnpm expo start --clear'],
+    bun: ['$ bun expo start --clear'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+特定のコンポーネントやファイルで React Compiler を無効にするには、`"use no memo"` ディレクティブを使用します。
+
+```jsx
+function MyComponent() {
+  'use no memo';
+
+  return <Text>Will not be optimized</Text>;
+}
+```
+
+</Step>
+
+## 使用方法
+
+> React Compiler の動作をより深く理解するには、[React Playground](https://playground.react.dev/) を確認してください。
+
+改善は主に自動で行われます。自動メモ化を利用することで、`useCallback`、`useMemo`、`React.memo` の使用箇所を削除できます。クラスコンポーネントは最適化されません。代わりに、関数コンポーネントへ移行してください。
+
+Expo における React Compiler の実装は、アプリケーションコードに対してのみ（node modules を除く）、かつクライアント向けにバンドルする場合にのみ実行されます（サーバーレンダリングでは無効です）。
+
+## 設定
+
+Babel の設定内で `react-compiler` オブジェクトを使用することで、React Compiler の Babel プラグインに追加の設定を渡せます。
+
+```js babel.config.js
+module.exports = function (api) {
+  api.cache(true);
+
+  return {
+    presets: [
+      [
+        'babel-preset-expo',
+        {
+          'react-compiler': {
+            // Passed directly to the React Compiler Babel plugin.
+            compilationMode: 'all',
+            panicThreshold: 'all_errors',
+          },
+          web: {
+            'react-compiler': {
+              // Web-only settings...
+            },
+          },
+        },
+      ],
+    ],
+  };
+};
+```

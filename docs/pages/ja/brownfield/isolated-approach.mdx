@@ -1,0 +1,432 @@
+---
+title: 分離アプローチを使ってネイティブアプリに Expo を追加する方法
+sidebar_title: 分離アプローチ
+description: 分離アプローチを使って、Expo と React Native をネイティブライブラリとして追加し、既存の（brownfield）ネイティブアプリに統合するためのガイドです。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FileTree } from '~/ui/components/FileTree';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+分離アプローチでは、React Native のコードをネイティブプロジェクトとは別に開発・保守します。Android では AAR、iOS では XCFramework としてネイティブライブラリにパッケージ化し、他の依存関係と同様にネイティブアプリへ統合します。
+
+このアプローチは、既存のネイティブビルドプロセスへの React Native の影響を最小限に抑えたい場合や、ネイティブと React Native の開発チームが分かれている場合に最適です。このアプローチを使うと、ネイティブ開発者は Node.js や Yarn、React Native のビルドツールを必要とせず、ビルド済みのアーティファクトを利用するだけで済みます。
+
+> **info** React Native をネイティブプロジェクトに直接統合する代替のアプローチについては、[統合アプローチのガイド](/ja/brownfield/integrated-approach/)を参照してください。
+
+<Prerequisites>
+  <Requirement title="Node.js (LTS)">
+    JavaScript コードと Expo CLI を実行するために [Node.js](https://nodejs.org/en/)
+    をインストールします。
+  </Requirement>
+  <Requirement title="Yarn">
+    JavaScript の依存関係のパッケージマネージャーとして [Yarn](https://yarnpkg.com/)
+    をインストールします。
+  </Requirement>
+</Prerequisites>
+
+詳しくは[環境構築ガイド](/get-started/set-up-your-environment/)を参照してください。
+
+## Expo プロジェクトをセットアップする
+
+<Step label="1">
+
+### 新しい Expo プロジェクトを作成する
+
+以下のコマンドを実行すると、新しい Expo プロジェクトを含む **my-project** という名前の新しいディレクトリが作成されます。プロジェクト名は自由に付けられますが、このガイドでは一貫性のために **my-project** を使用します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest my-project --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app my-project --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app my-project --template default@sdk-57'],
+    bun: ['$ bun create expo my-project --template default@sdk-57'],
+  }}
+/>
+
+**my-project** は既存のネイティブアプリの中に置く必要はなく、別のリポジトリやモノレポに作成できます。新しいプロジェクトには、開始をサポートするサンプルの TypeScript アプリケーションが含まれています。
+
+</Step>
+
+<Step label="2">
+### expo-brownfield をインストールする
+
+新しい Expo プロジェクトに移動し、React Native のコードをネイティブライブラリとしてビルドし、既存のネイティブアプリに統合するためのツールを提供する `expo-brownfield` ライブラリをインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-brownfield'],
+    yarn: ['$ yarn expo install expo-brownfield'],
+    pnpm: ['$ pnpm expo install expo-brownfield'],
+    bun: ['$ bun expo install expo-brownfield'],
+  }}
+/>
+
+</Step>
+
+<Step label="3">
+### config plugin を調整する（オプション）
+
+`expo-brownfield` は、**app.json** の `plugins` 配列に自動的にエントリを追加します。デフォルト設定はほとんどのプロジェクトで十分です。
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-brownfield"]
+  }
+}
+```
+
+デフォルト値は app config から導出されます（たとえば、ターゲット名はアプリの scheme や slug に基づきます）。ターゲット名、バンドル識別子、公開設定をカスタマイズするオプションを渡すこともできます。
+
+<Collapsible summary="カスタムの expo-brownfield 設定">
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-brownfield",
+        {
+          "ios": {
+            "targetName": "MyBrownfield",
+            "bundleIdentifier": "com.example.mybrownfield"
+          },
+          "android": {
+            "libraryName": "mybrownfield",
+            "group": "com.example",
+            "package": "com.example.mybrownfield",
+            "version": "1.0.0"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+</Collapsible>
+
+利用可能なすべてのオプションの詳細については、[`expo-brownfield` API リファレンス](/versions/latest/sdk/brownfield/)を参照してください。
+
+</Step>
+
+## Expo プロジェクトをネイティブライブラリとしてエクスポートする
+
+Expo プロジェクトのセットアップが完了したら、`expo-brownfield` CLI を使って React Native のコードを Android 用の AAR、iOS 用の XCFramework としてビルドします。
+
+<Tabs>
+<Tab label="Android">
+
+Expo プロジェクトのディレクトリから、以下を実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-brownfield build:android'],
+    yarn: ['$ yarn dlx expo-brownfield build:android'],
+    pnpm: ['$ pnpm dlx expo-brownfield build:android'],
+    bun: ['$ bunx expo-brownfield build:android'],
+  }}
+/>
+
+これにより AAR がビルドされ、Maven リポジトリに公開されます。デフォルトではローカルの Maven リポジトリ（`~/.m2`）に公開されますが、リモートリポジトリに公開するよう設定することもできます。
+生成されるアーティファクト名は config plugin の設定によって決まり、この場合は `com.username.myproject:brownfield:1.0.0` になります。
+
+デバッグまたはリリースのみをビルドする、カスタムの出力ディレクトリを指定するなど、ビルドオプションの詳細については [API リファレンス](/versions/latest/sdk/brownfield/)を参照してください。
+
+</Tab>
+<Tab label="iOS">
+
+Expo プロジェクトのディレクトリから、以下を実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-brownfield build:ios'],
+    yarn: ['$ yarn dlx expo-brownfield build:ios'],
+    pnpm: ['$ pnpm dlx expo-brownfield build:ios'],
+    bun: ['$ bunx expo-brownfield build:ios'],
+  }}
+/>
+
+これにより XCFramework のアーティファクトがビルドされます。デバイスとシミュレーターの両方のアーキテクチャ向けにフレームワークターゲットをコンパイルし、XCFramework にパッケージ化し、Hermes エンジンのフレームワークをコピーします。
+
+ビルドプロセスが完了すると、出力は **./artifacts** ディレクトリに配置され、以下が含まれます。
+
+- **\{TargetName\}.xcframework** - ネイティブライブラリとしての Expo プロジェクト
+- **hermesvm.xcframework** - Hermes JavaScript エンジン
+
+デバッグまたはリリースのみをビルドする、カスタムの出力ディレクトリを指定するなど、ビルドオプションの詳細については [`expo-brownfield` API リファレンス](/versions/latest/sdk/brownfield/)を参照してください。
+
+### アーティファクトを Swift Package として出力する
+
+`--package [name]` フラグを渡すと、個別の **.xcframework** ディレクトリの代わりに、ビルド出力を自己完結型の Swift Package としてまとめられます。これにより、フレームワークを手動でプロジェクトにドラッグする代わりに、Xcode でホストアプリにローカル依存関係として追加できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-brownfield build:ios --release --package MyAppPackage'],
+    yarn: ['$ yarn dlx expo-brownfield build:ios --release --package MyAppPackage'],
+    pnpm: ['$ pnpm dlx expo-brownfield build:ios --release --package MyAppPackage'],
+    bun: ['$ bunx expo-brownfield build:ios --release --package MyAppPackage'],
+  }}
+/>
+
+このフラグは任意の名前を受け付けます。省略した場合、パッケージ名はデフォルトで **\{TargetName\}Artifacts** になります。生成されるディレクトリは、以下のレイアウトを持つ完全な Swift Package です。
+
+<FileTree
+  files={[
+    ['artifacts/MyAppPackage/Package.swift', ''],
+    ['artifacts/MyAppPackage/xcframeworks/MyAppPackage.xcframework', ''],
+    ['artifacts/MyAppPackage/xcframeworks/hermesvm.xcframework', ''],
+    ['artifacts/MyAppPackage/xcframeworks/React.xcframework', ''],
+    ['artifacts/MyAppPackage/xcframeworks/ReactNativeDependencies.xcframework', ''],
+  ]}
+/>
+
+</Tab>
+</Tabs>
+
+<Collapsible summary="ネイティブターゲットをデバッグする">
+
+Expo プロジェクトターゲットのネイティブコードをデバッグする必要がある場合は、`npx expo prebuild` を実行すると、**android** と **ios`** ディレクトリ内に brownfield ライブラリターゲットを含むネイティブプロジェクトが生成されます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild'],
+    yarn: ['$ yarn expo prebuild'],
+    pnpm: ['$ pnpm expo prebuild'],
+    bun: ['$ bun expo prebuild'],
+  }}
+/>
+
+上記のコマンドは、以下を生成します。
+
+- **Android**: `ReactNativeHostManager`、`BrownfieldActivity`、`ReactNativeFragment`、`ReactNativeViewFactory`、`BrownfieldMessaging` を含む独立したライブラリモジュール。
+- **iOS**: `ReactNativeHostManager`、`ReactNativeViewController`、`ReactNativeView`（SwiftUI）、`BrownfieldMessaging`、`ReactNativeDelegate` を含む独立した Xcode フレームワークターゲット。
+
+</Collapsible >
+
+## ネイティブアプリに統合する
+
+アーティファクトのビルドが完了したら、それらを既存のネイティブアプリに統合できます。具体的な手順はプロジェクトの構成やビルドシステムによって異なりますが、一般的なプロセスは、ビルド済みのアーティファクトを依存関係として追加し、React Native ホストを初期化することです。
+
+<Tabs>
+<Tab label="Android">
+
+<Step label="1">
+### Maven の依存関係を追加する
+
+まず、アプリの **build.gradle.kts** に依存関係を追加します。group、アーティファクト名、バージョンは config plugin の設定と一致させる必要があります。
+
+```kotlin app/build.gradle.kts
+dependencies {
+  implementation("com.username.myproject:brownfield:1.0.0")
+}
+```
+
+ライブラリがローカルの Maven に公開されている場合は、リポジトリ設定に `mavenLocal()` を必ず追加してください。
+
+```kotlin settings.gradle.kts
+dependencyResolutionManagement {
+  repositories {
+    google()
+    mavenCentral()
+    mavenLocal()
+  }
+}
+```
+
+</Step>
+
+<Step label="2">
+### React Native の画面を表示する
+
+`BrownfieldActivity` を継承した activity を作成し、`showReactNativeFragment()` 拡張関数を使用します。
+
+```kotlin ExpoActivity.kt
+import android.os.Bundle
+import com.example.brownfield.BrownfieldActivity
+import com.example.brownfield.showReactNativeFragment
+
+class ExpoActivity : BrownfieldActivity() {
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    showReactNativeFragment()
+  }
+}
+```
+
+**AndroidManifest.xml** に、ActionBar を使用しないテーマでこの activity を追加します。
+
+```xml AndroidManifest.xml
+<activity
+  android:name=".ExpoActivity"
+  android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+  android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode"
+/>
+```
+
+その後、アプリ内のどこからでもこれを起動できます。
+
+```kotlin
+startActivity(Intent(this, ExpoActivity::class.java))
+```
+
+`BrownfieldActivity` は `AppCompatActivity` を継承しており、設定変更を Expo モジュールに転送する処理を行います。`showReactNativeFragment()` 拡張関数は、ネイティブの戻るボタンの処理も自動的に設定します。
+
+</Step>
+
+</Tab>
+<Tab label="iOS">
+
+<Step label="1">
+### アーティファクトをプロジェクトに追加する
+
+統合手順は、XCFramework をビルドしたか Swift Package をビルドしたかによって異なります。
+
+<Tabs>
+<Tab label="XCFrameworks (default)">
+
+両方の XCFramework ファイル（\{TargetName\}**.xcframework** と **hermesvm.xcframework**）を Xcode のプロジェクトナビゲーターにドラッグします。表示されるダイアログで、以下を行います。
+
+- **Copy items if needed** にチェックを入れる
+- アプリターゲットに追加する
+
+{/* vale off */}
+
+次に、ターゲットの **General** タブの **Frameworks, Libraries, and Embedded Content** で、両方のフレームワークが **Embed & Sign** に設定されていることを確認します。
+
+{/* vale on */}
+
+</Tab>
+<Tab label="Swift Package">
+
+`build:ios` が Swift Package を生成した場合（たとえば **./artifacts/MyAppPackage-release**）、Xcode でホストアプリにローカル依存関係として追加し、パッケージのディレクトリを選択します。Xcode は、集約ライブラリプロダクトを通じて、バンドルされた **.xcframework** ファイルを自動的にリンクします。
+
+`--debug` と `--release` の両方をサポートするには、各ビルド構成に対応するパッケージをホストアプリに指定してください。
+
+</Tab>
+</Tabs>
+
+</Step>
+
+<Step label="2">
+### React Native を初期化する
+
+アプリのライフサイクルの早い段階で `ReactNativeHostManager.shared.initialize()` を呼び出します。`AppDelegate` はその呼び出し場所として適しています。
+
+```swift AppDelegate.swift
+import UIKit
+import MyAppBrownfield // Replace with your target name
+
+@main
+class AppDelegate: UIResponder, UIApplicationDelegate {
+  func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+    ReactNativeHostManager.shared.initialize()
+    return true
+  }
+}
+```
+
+</Step>
+
+<Step label="3">
+### React Native のビューを表示する
+
+<Tabs>
+<Tab label="UIKit">
+
+```swift ViewController.swift
+import UIKit
+import MyAppBrownfield
+
+class ViewController: UIViewController {
+  @IBAction func openReactNative(_ sender: Any) {
+    let rnViewController = ReactNativeViewController(moduleName: "main")
+    navigationController?.pushViewController(rnViewController, animated: true)
+  }
+}
+```
+
+`ReactNativeViewController` は、任意の `initialProps` と `launchOptions` パラメーターも受け付けます。
+
+```swift
+let rnViewController = ReactNativeViewController(
+  moduleName: "main",
+  initialProps: ["userId": "123"],
+  launchOptions: [:]
+)
+```
+
+</Tab>
+<Tab label="SwiftUI">
+
+```swift ContentView.swift
+import SwiftUI
+import MyAppBrownfield
+
+struct ContentView: View {
+  @State private var showReactNative = false
+
+  var body: some View {
+    Button("Open React Native") {
+      showReactNative = true
+    }
+    .fullScreenCover(isPresented: $showReactNative) {
+      ReactNativeView(moduleName: "main")
+    }
+  }
+}
+```
+
+</Tab>
+</Tabs>
+
+</Step>
+
+</Tab>
+</Tabs>
+
+## 統合をテストする
+
+これで、React Native をアプリケーションに統合するための基本的な手順はすべて完了しました。次は実際にテストしてみましょう。具体的な手順は、デバッグビルドとリリースビルドのどちらを実行するかによって異なります。
+
+### 開発（デバッグビルド）
+
+React Native のディレクトリで以下のコマンドを実行し、[Metro バンドラー](https://metrobundler.dev/)を起動します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+その後、Android Studio または Xcode からネイティブアプリをビルドして実行します。React Native の画面に遷移すると、ホットリロードに対応した Metro 開発サーバーから読み込まれます。
+
+### 本番（リリースビルド）
+
+リリースビルドでは、JavaScript バンドルがアーティファクト（AAR または XCFramework）に埋め込まれるため、Metro サーバーは不要です。ネイティブアプリを Release 構成でビルドし、React Native の画面が正しく読み込まれることを確認します。
+
+## 次のステップ
+
+<BoxLink
+  title="ライフサイクルリスナー"
+  description="Expo モジュールとのより深い統合のために、アプリケーションのライフサイクルリスナーを設定します。"
+  href="/ja/brownfield/lifecycle-listeners/"
+  Icon={BookOpen02Icon}
+/>
+<BoxLink
+  title="expo-brownfield API リファレンス"
+  description="通信、ナビゲーションなどのための、JavaScript API の全体を確認できます。"
+  href="/versions/latest/sdk/brownfield/"
+  Icon={BookOpen02Icon}
+/>

@@ -1,0 +1,145 @@
+---
+title: 既存の React Native プロジェクトに expo-updates をインストールする
+sidebar_title: expo-updates をインストールする
+description: 既存の React Native プロジェクトに expo-updates をインストールして設定する方法について学びます。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal, DiffBlock } from '~/ui/components/Snippet';
+
+`expo-updates` はアプリケーションコードへのリモートアップデートを管理できるようにするライブラリです。設定されたリモートアップデートサービスと通信し、利用可能なアップデートに関する情報を取得します。このガイドでは、`expo-updates` ライブラリのインストールと設定を簡略化するツールを含む、ホスト型のリモートアップデートサービスである [EAS Update](/eas-update/introduction) を使用するために、既存の React Native プロジェクトをセットアップする方法を説明します。
+
+<Collapsible summary="プロジェクトで Continuous Native Generation（CNG）を使用していますか？">
+
+このガイドは求めているものと異なるかもしれません。[CNG](/ja/workflow/continuous-native-generation/) を使用するプロジェクトで `expo-updates` を使用するには、[EAS Update の「Get started」](/eas-update/getting-started/) を参照してください。
+
+</Collapsible>
+
+<Prerequisites>
+  <Requirement title="expo パッケージをインストールして設定する">
+    `npx @react-native-community/cli@latest init` でプロジェクトを作成し、他の Expo
+    ライブラリをインストールしていない場合は、先に [Expo
+    モジュールをインストール](/ja/bare/installing-expo-modules) する必要があります。
+  </Requirement>
+</Prerequisites>
+
+## インストール
+
+はじめに、`expo-updates` をインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-updates'],
+    yarn: ['$ yarn expo install expo-updates'],
+    pnpm: ['$ pnpm expo install expo-updates'],
+    bun: ['$ bun expo install expo-updates'],
+  }}
+/>
+
+次に、iOS 用の pod をインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx pod-install'],
+    yarn: ['$ yarn dlx pod-install'],
+    pnpm: ['$ pnpm dlx pod-install'],
+    bun: ['$ bunx pod-install'],
+  }}
+/>
+
+## expo-updates ライブラリを設定する
+
+以下の各セクションの diff から変更を適用して、プロジェクトで `expo-updates` を設定します。
+
+### JavaScript と JSON
+
+`eas update:configure` を実行して、**app.json** に `updates` の URL と `projectId` を設定します。
+
+<Terminal cmd={['$ eas update:configure']} />
+
+**app.json** の `expo` セクションを変更します。`npx @react-native-community/cli@latest init` を使ってプロジェクトを作成した場合は、[`updates` の URL](/versions/latest/config/app/#url) を含む以下の変更を追加する必要があります。
+
+> 以下に示す `updates` の URL と `projectId` の例は、EAS Update で使用されるものです。EAS CLI は `eas update:configure` を実行すると、EAS Update サービス用にこの URL を正しく設定します。
+
+<DiffBlock source="/static/diffs/expo-updates-app-json.diff" />
+
+代わりに [カスタム `expo-updates` サーバー](https://github.com/expo/custom-expo-updates-server) をセットアップする場合は、**app.json** の `updates.url` に URL を追加してください。
+
+<DiffBlock
+  raw={`diff --git a/app.json b/app.json
+index 0000000..1111111 100644
+--- a/app.json
++++ b/app.json
+@@ -1,7 +1,7 @@
+   "expo": {
+     "name": "MyApp",
+-    "updates": {
+-      "url": "https://u.expo.dev/[your-project-id]"
+-    }
++    "updates": {
++      "url": "http://localhost:3000/api/manifest"
++    }
+   }
+ }`}
+/>
+
+### Android
+
+**android/app/build.gradle** を変更して、Expo ファイル内の JS エンジン設定（JSC または Hermes）を確認します。
+
+<DiffBlock source="/static/diffs/expo-updates-android-build-gradle.diff" />
+
+**android/app/src/main/AndroidManifest.xml** を変更して、**app.json** の内容と一致するように `expo-updates` の設定 XML を追加します。
+
+<DiffBlock source="/static/diffs/expo-updates-android-manifest.diff" />
+
+アップデートサーバーの URL（同じマシン上で動作するカスタムの非 HTTPS アップデートサーバー）を使用する場合は、**android/app/src/main/AndroidManifest.xml** を変更して、アップデートサーバーの URL を追加し `usesCleartextTraffic` を有効にする必要があります。
+
+<DiffBlock source="/static/diffs/expo-updates-android-manifest-cleartext.diff" />
+
+**android/app/src/main/res/values/strings.xml** に Expo のランタイムバージョンの文字列キーを追加します。
+
+<DiffBlock source="/static/diffs/expo-updates-strings-xml.diff" />
+
+### iOS
+
+**ios** ディレクトリに **Podfile.properties.json** ファイルを追加します。
+
+```json ios/Podfile.properties.json
+{
+  "expo.jsEngine": "hermes"
+}
+```
+
+**ios/Podfile** を変更して、Expo ファイル内の JS エンジン設定（JSC または Hermes）を確認します。
+
+<DiffBlock source="/static/diffs/expo-updates-ios-podfile.diff" />
+
+Xcode を使って、**app.json** の内容と一致する以下の内容の **Expo.plist** ファイルを **ios/your-project/Supporting** に追加します。
+
+```xml Expo.plist
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>EXUpdatesCheckOnLaunch</key>
+    <string>ALWAYS</string>
+    <key>EXUpdatesEnabled</key>
+    <true/>
+    <key>EXUpdatesLaunchWaitMs</key>
+    <integer>0</integer>
+    <key>EXUpdatesRuntimeVersion</key>
+    <string>1.0.0</string>
+    <key>EXUpdatesURL</key>
+    <string>http://localhost:3000/api/manifest</string>
+  </dict>
+</plist>
+```
+
+## 次のステップ
+
+- EAS Build で EAS Update を使い始めるには、EAS Update の [Get started](/eas-update/getting-started/) を参照してください。
+- ライブラリの使い方の詳細については、[`expo-updates` の API リファレンス](/versions/latest/sdk/updates/) を参照してください。
+- [EAS Update をローカルビルドで直接使用する方法](/eas-update/standalone-service/) を参照してください。
+- [Expo Updates プロトコル](/technical-specs/expo-updates-1/) を実装したカスタムサーバーで `expo-updates` を使用することも可能です。詳しくは [`custom-expo-updates-server` の README](https://github.com/expo/custom-expo-updates-server#readme) を参照してください。

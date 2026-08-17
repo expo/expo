@@ -1,0 +1,106 @@
+---
+title: パーミッション
+description: app config ファイルでパーミッションを設定・追加する方法について学びます。
+---
+
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
+
+ユーザーのデバイス上の位置情報や連絡先など、機密性の高い可能性がある情報へのアクセスを必要とするネイティブアプリを開発する場合、アプリは最初にユーザーに許可を求める必要があります。たとえば、ユーザーのメディアライブラリにアクセスするには、アプリで [`MediaLibrary.requestPermissionsAsync()`](/versions/latest/sdk/media-library#medialibraryrequestpermissionsasyncwriteonly-granularpermissions) を実行する必要があります。
+
+スタンドアロンアプリと [開発ビルド](/develop/development-builds/introduction/) におけるパーミッションは、ランタイムの JavaScript コードでリクエストする前に、ネイティブのビルド時設定が必要です。[Expo Go](https://expo.dev/go) アプリでプロジェクトをテストする場合、この設定は必要ありません。
+
+> ネイティブのパーミッションを適切に設定・説明しないと、**アプリがストアで却下されたり削除されたりする可能性があります**。
+
+## Android
+
+パーミッションは、[app config](/ja/workflow/configuration/) の [`android.permissions`](/versions/latest/config/app/#permissions) キーと [`android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) キーで設定します。
+
+ほとんどのパーミッションは、アプリで使用しているライブラリによって、[config plugin](/config-plugins/plugins/#creating-a-config-plugin) を使うか、パッケージレベルの **AndroidManifest.xml** を使うかのどちらかで自動的に追加されます。ライブラリにデフォルトで含まれていないパーミッションを追加したい場合にのみ、`android.permissions` を使う必要があります。
+
+```json app.json
+{
+  "android": {
+    "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
+  }
+}
+```
+
+パッケージレベルの **AndroidManifest.xml** ファイルによって追加されたパーミッションを削除する唯一の方法は、[`android.blockedPermissions`](/versions/latest/config/app/#blockedpermissions) プロパティでブロックすることです。これを行うには、**パーミッションのフルネーム** を指定します。たとえば、`expo-camera` によって追加される録音のパーミッションを削除したい場合は、次のようにします。
+
+```json app.json
+{
+  "android": {
+    "blockedPermissions": ["android.permission.RECORD_AUDIO"]
+  }
+}
+```
+
+- デフォルトの [prebuild テンプレート](/ja/workflow/continuous-native-generation#テンプレート) にどのパーミッションが含まれているかについては、[`android.permissions`](/versions/latest/config/app/#permissions) を参照してください。
+- 正当な理由なく _dangerous_ や _signature_ のパーミッションを使用しているアプリは、**Google によって却下される可能性があります**。アプリを申請する際は [Android のパーミッションに関するベストプラクティス](https://developer.android.com/training/permissions/usage-notes) に従ってください。
+- [利用可能なすべての Android `Manifest.permissions`](https://developer.android.com/reference/android/Manifest.permission)。
+
+<ConfigReactNative>
+
+特定のパーミッションを除外するには **AndroidManifest.xml** を変更します。`<use-permission>` タグに `tools:node="remove"` 属性を追加すると、そのパーミッションがライブラリの **AndroidManifest.xml** に含まれていても確実に削除されます。
+
+```xml
+<manifest xmlns:tools="http://schemas.android.com/tools">
+  <uses-permission tools:node="remove" android:name="android.permission.ACCESS_FINE_LOCATION" />
+</manifest>
+```
+
+> `tools:node` 属性をパーミッションに使用する前に、`<manifest>` に `xmlns:tools` 属性を定義しておく必要があります。
+
+</ConfigReactNative>
+
+## iOS
+
+iOS アプリでは、ユーザーにシステムのパーミッションを要求できます。たとえば、デバイスのカメラを使ったり写真にアクセスしたりするには、そのデータをアプリがどのように利用するかについて Apple が説明を要求します。ほとんどのパッケージは、[config plugin](/config-plugins/introduction/) によって特定のパーミッションに対する定型的な理由を自動的に提供します。これらのデフォルトのメッセージは、アプリが App Store に受理されるためには、多くの場合、自分のアプリのユースケースに合わせて調整する必要があります。
+
+パーミッションのメッセージを設定するには、[app config](/ja/workflow/configuration/) の [`ios.infoPlist`](/versions/latest/config/app/#infoplist) キーを使います。たとえば次のとおりです。
+
+```json app.json
+{
+  "ios": {
+    "infoPlist": {
+      "NSCameraUsageDescription": "This app uses the camera to scan barcodes on event tickets."
+    }
+  }
+}
+```
+
+これらのプロパティの多くは、それを追加するライブラリに関連付けられた [config plugin](/config-plugins/introduction/) のプロパティを使って直接設定することもできます。たとえば [`expo-media-library`](/versions/latest/sdk/media-library) では、次のように写真のパーミッションメッセージを設定できます。
+
+```json app.json
+{
+  "plugins": [
+    [
+      "expo-media-library",
+      {
+        "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+        "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos."
+      }
+    ]
+  ]
+}
+```
+
+- **Info.plist** への変更は over-the-air アップデートで更新できません。新しいネイティブバイナリを提出したときにのみ反映されます。たとえば [`eas build`](/build/introduction) を使った場合です。
+- Apple 公式の [パーミッションメッセージの推奨事項](https://developer.apple.com/design/human-interface-guidelines/privacy#Requesting-permission)。
+- [利用可能なすべての **Info.plist** プロパティ](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html)。
+
+<ConfigReactNative>
+
+**Info.plist** ファイル内のパーミッションメッセージの値を直接追加・変更します。オートコンプリートを利用できるため、Xcode で直接行うことをおすすめします。
+
+</ConfigReactNative>
+
+## Web
+
+web では、`Camera` や `Location` のようなパーミッションは [secure context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts#When_is_a_context_considered_secure) からのみリクエストできます。たとえば `https://` や `http://localhost` を使う場合です。この制限は Android のマニフェストパーミッションや iOS の **Info.plist** の使用目的メッセージと似ており、プライバシーを高めるために課されています。
+
+## パーミッションをリセットする
+
+多くの場合、ユーザーがパーミッションを拒否したときにアプリがどう振る舞うかをテストして、適切に対応できることを確認したいはずです。Android と iOS の両方には OS レベルの制限があり、アプリは同じパーミッションを複数回リクエストすることができません（一度拒否したあとに何度も同じパーミッションを要求されたら、ユーザーにとってどれほど煩わしいか想像できるでしょう）。開発中にパーミッションに関わるさまざまなフローをテストするには、ネイティブアプリをアンインストールして再インストールする必要がある場合があります。
+
+[Expo Go](https://expo.dev/go) でテストする場合は、`npx expo start` を実行して [Expo CLI](/more/expo-cli/) のターミナル UI で <kbd>I</kbd> または <kbd>A</kbd> を押すことで、アプリを削除して再インストールできます。

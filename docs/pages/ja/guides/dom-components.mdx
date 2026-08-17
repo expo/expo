@@ -1,0 +1,646 @@
+---
+title: Expo のネイティブアプリで React DOM を使う
+sidebar_title: DOM コンポーネント
+description: Expo のネイティブアプリで 'use dom' ディレクティブを使い、React DOM コンポーネントをレンダリングする方法について学びます。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+Expo は `'use dom'` ディレクティブを使って、モダンな web コードをネイティブアプリの中で直接扱うための新しいアプローチを提供します。これにより、コンポーネント単位で移行することで、web サイト全体をユニバーサルアプリへ段階的に移行できます。
+
+Expo のネイティブランタイムは通常、`<div>` や `<img>` のような要素をサポートしていませんが、web コンポーネントをすばやく組み込みたい場面もあるでしょう。そのような場合、DOM コンポーネントが便利な解決策になります。
+
+<Prerequisites>
+  <Requirement title="Expo SDK 55 以前：react-native-webview">
+    <Tabs>
+      <Tab label="SDK 56 and later">
+        DOM コンポーネントはデフォルトで [`@expo/dom-webview`](https://www.npmjs.com/package/@expo/dom-webview) を使用するため、追加のインストールは不要です。
+
+        <Collapsible summary="@expo/dom-webview を使わずに react-native-webview を使うにはどうすればよいですか？">
+        代わりに `react-native-webview` を使いたい場合は、それをインストールしたうえで `dom` prop を使ってオプトアウトします。
+
+        <Terminal
+          cmd={{
+            npm: ['$ npx expo install react-native-webview'],
+            yarn: ['$ yarn expo install react-native-webview'],
+            pnpm: ['$ pnpm expo install react-native-webview'],
+            bun: ['$ bun expo install react-native-webview'],
+          }}
+        />
+
+        ```tsx App.tsx (native)
+        import DOMComponent from './my-component';
+
+        export default function App() {
+          return <DOMComponent dom={{ useExpoDOMWebView: false }} />;
+        }
+        ```
+        </Collapsible>
+
+      </Tab>
+      <Tab label="SDK 55 and earlier">
+        プロジェクトに `react-native-webview` をインストールします。
+        <Terminal
+          cmd={{
+            npm: ['$ npx expo install react-native-webview'],
+            yarn: ['$ yarn expo install react-native-webview'],
+            pnpm: ['$ pnpm expo install react-native-webview'],
+            bun: ['$ bun expo install react-native-webview'],
+          }}
+        />
+      </Tab>
+    </Tabs>
+
+  </Requirement>
+  <Requirement title="Expo CLI と Expo Metro Config">
+    すでに `npx expo [command]` でプロジェクトを実行している場合（たとえば `npx create-expo-app` で作成した場合）は、準備完了です。
+
+    プロジェクトにまだ `expo` パッケージが無い場合は、以下のコマンドを実行してインストールし、[Expo CLI と Metro Config を使うようオプトインして](/ja/bare/installing-expo-modules/#android-と-ios-でのバンドルに-expo-cli-を設定する)ください。
+
+    <Terminal
+      cmd={{
+        npm: ['$ npx install-expo-modules@latest'],
+        yarn: ['$ yarn dlx install-expo-modules@latest'],
+        pnpm: ['$ pnpm dlx install-expo-modules@latest'],
+        bun: ['$ bunx install-expo-modules@latest'],
+      }}
+    />
+
+    コマンドが失敗する場合は、[Expo モジュールのインストール](/ja/bare/installing-expo-modules/#手動インストール) ガイドを参照してください。
+
+  </Requirement>
+  <Requirement title="Expo Metro Runtime、React DOM、React Native Web">
+    Expo Router と Expo Web を使用している場合は、この手順を省略できます。それ以外の場合は、以下のパッケージをインストールしてください。
+
+    <Terminal
+      cmd={{
+        npm: ['$ npx expo install @expo/metro-runtime react-dom react-native-web'],
+        yarn: ['$ yarn expo install @expo/metro-runtime react-dom react-native-web'],
+        pnpm: ['$ pnpm expo install @expo/metro-runtime react-dom react-native-web'],
+        bun: ['$ bun expo install @expo/metro-runtime react-dom react-native-web'],
+      }}
+    />
+
+  </Requirement>
+</Prerequisites>
+
+## 使い方
+
+React コンポーネントを DOM としてレンダリングするには、web コンポーネントファイルの先頭に `'use dom'` ディレクティブを追加します。
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent({ name }: { name: string }) {
+  return (
+    <div>
+      <h1>Hello, {name}</h1>
+    </div>
+  );
+}
+```
+
+ネイティブコンポーネントファイルの中で、web コンポーネントをインポートして使用します。
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component.tsx';
+
+export default function App() {
+  return (
+    // This is a DOM component. It re-exports a wrapped `react-native-webview` behind the scenes.
+    <DOMComponent name="Europa" />
+  );
+}
+```
+
+## AI エージェント向けの Expo Skills
+
+AI エージェントを使用している場合は、[Expo Skills](/skills/) をインストールすると、DOM コンポーネントをいつ使うべきか、web コードをネイティブに移行する方法をエージェントに教えられます。
+
+<RelatedSkills names={['expo-dom', 'expo-web-to-native']} />
+
+## 機能
+
+- web、ネイティブ、DOM コンポーネントの間でバンドラー設定を共有します。
+- DOM コンポーネントでは、React、TypeScript、CSS、その他すべての Metro の機能が有効になります。
+- ターミナルでのロギングと、Safari/Chrome でのデバッグ。
+- Fast Refresh と HMR。
+- オフラインサポートのための埋め込みエクスポート。
+- web とネイティブの間でアセットが統一されます。
+- DOM コンポーネントのバンドルは、デバッグのために [Expo Atlas](/ja/guides/analyzing-bundles/#expo-atlas-でバンドルサイズを分析する) で検査できます。
+- ネイティブの再ビルドを必要とせずに、あらゆる web の機能にアクセスできます。
+- 開発時のランタイムエラーオーバーレイ。
+- Expo Go をサポートします。
+
+## WebView の props
+
+基盤となるネイティブの **WebView** に props を渡すには、コンポーネントの `dom` prop を使用します。この prop はすべての DOM コンポーネントに組み込まれており、変更したい [`WebView` の props](https://github.com/react-native-webview/react-native-webview/blob/master/docs/Reference.md) を含むオブジェクトを受け取ります。
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function App() {
+  return (
+    <DOMComponent
+      dom={{
+        scrollEnabled: false,
+      }}
+    />
+  );
+}
+```
+
+DOM コンポーネント側では、TypeScript に認識させるために `dom` prop を追加します。
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent({}: { dom: import('expo/dom').DOMProps }) {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+    </div>
+  );
+}
+```
+
+## マーシャリングされた props
+
+シリアライズ可能な props（`number`、`string`、`boolean`、`null`、`undefined`、`Array`、`Object`）を通じて、DOM コンポーネントにデータを送ることができます。たとえば、ネイティブコンポーネントファイルの中から、DOM コンポーネントに prop を渡せます。
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function App() {
+  return <DOMComponent hello={'world'} />;
+}
+```
+
+web コンポーネントファイルの中では、以下の例のように prop を受け取れます。
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function DOMComponent({ hello }: { hello: string }) {
+  return <p>Hello, {hello}</p>;
+}
+```
+
+props は非同期のブリッジ経由で送られるため、同期的には更新されません。props は React のルートコンポーネントに渡されるので、React ツリー全体が再レンダリングされます。
+
+## ネイティブアクション
+
+DOM コンポーネントに対して、非同期関数をトップレベルの props として渡すことで、型安全なネイティブ関数を送ることができます。
+
+```tsx App.tsx (native)
+import DomComponent from './my-component';
+
+export default function App() {
+  return (
+    <DomComponent
+      hello={(data: string) => {
+        console.log('Hello', data);
+      }}
+    />
+  );
+}
+```
+
+```tsx my-component.tsx (web)
+'use dom';
+
+export default function MyComponent({ hello }: { hello: (data: string) => Promise<void> }) {
+  return <p onClick={() => hello('world')}>Click me</p>;
+}
+```
+
+> DOM コンポーネントに対して、ネストした props として関数を渡すことはできません。関数は必ずトップレベルの prop である必要があります。
+
+データは DOM コンポーネントの JavaScript エンジンへブリッジ経由で送信されるため、ネイティブアクションは常に非同期であり、シリアライズ可能な引数（つまり関数を含まない引数）しか受け取れません。
+
+ネイティブアクションは DOM コンポーネントにシリアライズ可能なデータを返すことができ、これはネイティブ側からデータを取得するのに便利です。
+
+```tsx
+getDeviceName(): Promise<string> {
+  return DeviceInfo.getDeviceName();
+}
+```
+
+これらの関数は、React Server Functions のようなものだと考えてください。ただしサーバー上に存在するのではなく、ネイティブアプリ内にローカルに存在し、DOM コンポーネントと通信します。このアプローチは、DOM コンポーネントに真にネイティブな機能を追加する強力な方法を提供します。
+
+## ref を渡す
+
+DOM コンポーネントの内部で `useDOMImperativeHandle` フックを使うと、ネイティブ側からの ref 呼び出しを受け取れます。このフックは React の [`useImperativeHandle`](https://react.dev/reference/react/useImperativeHandle) フックと似ていますが、ref オブジェクトを渡す必要がありません。
+
+```tsx App.tsx (native)
+import { useRef } from 'react';
+import { Button, View } from 'react-native';
+
+import MyComponent, { type DOMRef } from './my-component';
+
+export default function App() {
+  const ref = useRef<DOMRef>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <MyComponent ref={ref} />
+      <Button
+        title="focus"
+        onPress={() => {
+          ref.current?.focus();
+        }}
+      />
+    </View>
+  );
+}
+```
+
+<Tabs>
+
+<Tab label="SDK 53 and later">
+
+Expo SDK 53 以降では React 19 を使用しています。これは `ref` prop がコンポーネントに prop として渡されることを意味し、コンポーネント内で直接使用できます。
+
+```tsx my-component.tsx (web)
+'use dom';
+
+import { useDOMImperativeHandle, type DOMImperativeFactory } from 'expo/dom';
+import { Ref, useRef } from 'react';
+
+export interface DOMRef extends DOMImperativeFactory {
+  focus: () => void;
+}
+
+export default function MyComponent(props: {
+  ref: Ref<DOMRef>;
+  dom?: import('expo/dom').DOMProps;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useDOMImperativeHandle(
+    props.ref,
+    () => ({
+      focus: () => {
+        inputRef.current?.focus();
+      },
+    }),
+    []
+  );
+
+  return <input ref={inputRef} />;
+}
+```
+
+</Tab>
+
+<Tab label="SDK 52 and earlier">
+
+Expo SDK 52 以前（React 18）では、`ref` ハンドルにアクセスするために、レガシーな `forwardRef` 関数を使用します。
+
+```tsx my-component.tsx (web)
+'use dom';
+
+import { useDOMImperativeHandle, type DOMImperativeFactory } from 'expo/dom';
+import { forwardRef, useRef } from 'react';
+
+export interface MyRef extends DOMImperativeFactory {
+  focus: () => void;
+}
+
+export default forwardRef<MyRef, object>(function MyComponent(props, ref) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useDOMImperativeHandle(
+    ref,
+    () => ({
+      focus: () => {
+        inputRef.current?.focus();
+      },
+    }),
+    []
+  );
+
+  return <input ref={inputRef} />;
+});
+```
+
+</Tab>
+
+</Tabs>
+
+React は本来、一方向のデータフローを持つように作られているため、コールバックを使ってツリーを遡る手法はイディオマティックではありません。この挙動は不安定になりやすく、今後の新しい React のバージョンで段階的に廃止される可能性もあると考えておいてください。データをツリーの上へ返す際に好ましい方法は、ネイティブアクションを使うことです。ネイティブアクションは状態を更新してから、それを DOM コンポーネントに渡し返します。
+
+## 機能検出
+
+DOM コンポーネントは web サイトを実行するために使われるため、特定のライブラリをよりよくサポートするために追加の判定が必要になることがあります。以下のコードで、コンポーネントが DOM コンポーネント内で実行されているかどうかを検出できます。
+
+```ts
+import { IS_DOM } from 'expo/dom';
+```
+
+`process.env.EXPO_OS` は DOM コンポーネント内では常に web になりますが、_トップの_ プラットフォームは `process.env.EXPO_DOM_HOST_OS` で検出できます。これは、最上位のネイティブプラットフォームの OS に応じて `ios` または `android` のいずれかになり、web 上では `undefined` になります。
+
+## 公開アセット
+
+> **warning** 公開アセットは EAS Update ではサポートされていません。代わりにローカルアセットを読み込むには `require()` を使用してください。
+
+ルートの **public** ディレクトリの中身は、DOM コンポーネントで公開アセットを使えるようにするために、ネイティブアプリのバイナリにコピーされます。これらの公開アセットはローカルのファイルシステムから配信されるため、正しいパスを参照するには `process.env.EXPO_BASE_URL` プレフィックスを使用してください。たとえば次のようになります。
+
+```tsx
+<img src={`${process.env.EXPO_BASE_URL}img.png`} />
+```
+
+## デバッグ
+
+デフォルトでは、`console.log` メソッドはすべて WebView 内で拡張され、ログをターミナルへ転送します。これにより、DOM コンポーネント内で何が起きているかを手早く簡単に確認できます。
+
+Expo は開発モードでバンドルする際に、WebView のインスペクションとデバッグも有効にします。**Safari** > **Develop** > **Simulator** > **MyComponent.tsx** を開くと、WebView のコンソールを確認したり、要素をインスペクトしたりできます。
+
+## 手動での WebView
+
+`react-native-webview` の `WebView` コンポーネントを使って、手動で WebView を作成できます。これは、リモートサーバーから web サイトをレンダリングしたい場合に便利です。
+
+```tsx App.tsx (native)
+import { WebView } from 'react-native-webview';
+
+export default function App() {
+  return <WebView source={{ html: '<h1>Hello, world!</h1>' }} />;
+}
+```
+
+## ルーティング
+
+`<Link />` や `useRouter` といった Expo Router の API は、DOM コンポーネント内でルート間のナビゲーションに使用できます。
+
+```tsx my-component.tsx (web)
+'use dom';
+import Link from 'expo-router/link';
+
+export default function DOMComponent() {
+  return (
+    <div>
+      <h1>Hello, world!</h1>
+      <Link href="/about">About</Link>
+    </div>
+  );
+}
+```
+
+`useLocalSearchParams()`、`useGlobalSearchParams()`、`usePathname()`、`useSegments()`、`useRootNavigation()`、`useRootNavigationState()` のように、ルーティング情報を同期的に返す API は自動的にはサポートされません。代わりに、DOM コンポーネントの外側でこれらの値を読み取り、props として渡してください。
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+import { usePathname } from 'expo-router';
+
+export default function App() {
+  const pathname = usePathname();
+  return <DOMComponent pathname={pathname} />;
+}
+```
+
+`router.canGoBack()` と `router.canDismiss()` の関数もサポートされておらず、手動でのマーシャリングが必要です。これにより、余計なレンダリングサイクルが発生しないようになっています。
+
+DOM コンポーネントの起点をユーザーが後から戻れなくなるような形で変えてしまうため、ナビゲーションに標準的な web の `<a />` アンカー要素を使うのは避けてください。外部の web サイトを表示したい場合は、`WebBrowser` を起動する方法を優先してください。
+
+DOM コンポーネントはネイティブの子要素をレンダリングできないため、レイアウトルート（`_layout`）が DOM コンポーネントになることは決してありません。レイアウトルートから DOM コンポーネントをレンダリングしてヘッダーや背景などを作ることはできますが、レイアウトルート自体は常にネイティブである必要があります。
+
+## DOM コンポーネントのサイズを測定する
+
+DOM コンポーネントのサイズを測定して、それをネイティブ側に報告したい場合があります（たとえばネイティブのスクロールのため）。これは `matchContents` prop を使うか、手動のネイティブアクションを使うことで実現できます。
+
+### `matchContents` prop で自動的に測定する
+
+`dom={{ matchContents: true }}` prop を使うと、DOM コンポーネントのサイズを自動的に測定してネイティブビューのサイズを変更できます。これは、コンポーネントが親ビューの中央に配置されている場合など、DOM コンポーネントが表示のために本来のサイズを持っている必要があるレイアウトで特に役立ちます。
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function Route() {
+  return <DOMComponent dom={{ matchContents: true }} />;
+}
+```
+
+### サイズを指定して手動で測定する
+
+`dom` prop を通して `WebView` の `style` prop にサイズを渡すことで、手動でサイズを指定することもできます。
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function Route() {
+  return (
+    <DOMComponent
+      dom={{
+        style: { width, height },
+      }}
+    />
+  );
+}
+```
+
+### サイズの変化を監視する
+
+DOM コンポーネントのサイズの変化をネイティブ側に報告したい場合は、サイズが変わるたびに呼び出されるネイティブアクションを DOM コンポーネントに追加できます。
+
+```tsx my-component.tsx (web)
+'use dom';
+
+import { useEffect } from 'react';
+
+function useSize(callback: (size: { width: number; height: number }) => void) {
+  useEffect(() => {
+    // Observe window size changes
+    const observer = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        callback({ width, height });
+      }
+    });
+
+    observer.observe(document.body);
+
+    callback({
+      width: document.body.clientWidth,
+      height: document.body.clientHeight,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [callback]);
+}
+
+export default function DOMComponent({
+  onDOMLayout,
+}: {
+  dom?: import('expo/dom').DOMProps;
+  onDOMLayout: (size: { width: number; height: number }) => void;
+}) {
+  useSize(onDOMLayout);
+
+  return <div style={{ width: 500, height: 500, background: 'blue' }} />;
+}
+```
+
+続いて、DOM コンポーネントがサイズの変化を報告するたびに、その状態にサイズを反映するようにネイティブコードを更新します。
+
+```tsx App.tsx (native)
+import DOMComponent from '@/components/my-component';
+import { useState } from 'react';
+import { View, ScrollView } from 'react-native';
+
+export default function App() {
+  const [containerSize, setContainerSize] = useState<{
+    width: number;
+    height: number;
+  } | null>(null);
+  return (
+    <View style={{ flex: 1 }}>
+      <ScrollView>
+        <DOMComponent
+          onDOMLayout={async ({ width, height }) => {
+            if (containerSize?.width !== width || containerSize?.height !== height) {
+              setContainerSize({ width, height });
+            }
+          }}
+          dom={{
+            containerStyle:
+              containerSize != null
+                ? { width: containerSize.width, height: containerSize.height }
+                : null,
+          }}
+        />
+      </ScrollView>
+    </View>
+  );
+}
+```
+
+## アーキテクチャ
+
+組み込みの DOM サポートは、web サイトをシングルページアプリケーション（SSR や SSG は無し）としてのみレンダリングします。これは、埋め込まれた JS コードに検索エンジン最適化やインデックス登録が不要なためです。
+
+モジュールが `'use dom'` でマークされると、それは実行時にインポートされるプロキシ参照に置き換えられます。この機能は主に、一連のバンドラーおよび CLI の技術によって実現されています。
+
+必要であれば、標準的な方法で生の HTML を `WebView` コンポーネントに渡して WebView を使うこともできます。
+
+web サイトや他の DOM コンポーネントの中でレンダリングされた DOM コンポーネントは、通常のコンポーネントと同じように振る舞い、`dom` prop は無視されます。これは、web コンテンツがそのまま素通しされ、`iframe` にラップされないためです。
+
+全体として、このシステムは Expo の React Server Components 実装と多くの共通点があります。
+
+## 考慮事項
+
+`View`、`Image`、`Text` のようなユニバーサルプリミティブを使って、真にネイティブなアプリを構築することをおすすめします。DOM コンポーネントは標準的な JavaScript しかサポートしておらず、最適化された Hermes バイトコードよりもパースと起動が遅くなります。
+
+DOM コンポーネントとネイティブコンポーネントの間でデータを送れるのは、非同期の JSON トランスポートシステムを通してのみです。DOM コンポーネントは Expo Router との完全な reconciliation を現時点でサポートしていないため、JS エンジンをまたいだデータへの依存や、DOM コンポーネント内のネストされた URL へのディープリンクは避けてください。
+
+DOM コンポーネントは Expo Router に限定されたものではありませんが、Expo Router アプリで使ったときに最良の体験を提供できるよう、Expo Router アプリを対象に開発・テストされています。
+
+データ共有のためのグローバルな状態を持っている場合、それは JS エンジンをまたいではアクセスできません。
+
+Expo SDK のネイティブモジュールは DOM コンポーネントをサポートするために最適化できますが、この最適化はまだ実装されていません。ネイティブの機能を DOM コンポーネントと共有するには、ネイティブアクションと props を使用してください。
+
+DOM コンポーネントや web コンテンツ全般はネイティブビューほど最適ではありませんが、それでも妥当な用途はいくつかあります。たとえば、リッチテキストや markdown をレンダリングするうえで、web は概念的に最良の方法です。web は WebGL のサポートも非常に優れていますが、低電力モードのデバイスでは、バッテリーを温存するために web のフレームレートがしばしば制限される点に注意してください。
+
+多くの大規模なアプリでも、ブログ記事、リッチテキスト（たとえば X の長文投稿）、設定ページ、ヘルプページといった、訪問頻度の低い補助的なルートには web コンテンツが使われています。
+
+## サーバーコンポーネント
+
+DOM コンポーネントは現在、シングルページアプリケーションとしてのレンダリングのみをサポートしており、静的レンダリングや React Server Components（RSC）はサポートしていません。プロジェクトが React Server Components を使用している場合、プラットフォームに関わらず `'use dom'` は `'use client'` と同じように動作します。RSC ペイロードは DOM コンポーネントにプロパティとして渡すことができます。ただし、ネイティブプラットフォーム上ではネイティブランタイム向けにレンダリングされるため、正しくハイドレートすることはできません。
+
+## 制限事項
+
+- server components とは異なり、DOM コンポーネントに `children` を渡すことはできません。
+- DOM コンポーネントは独立しており、異なるインスタンス間でデータを自動的に共有しません。
+- DOM コンポーネントにネイティブビューを追加することはできません。ネイティブビューを DOM コンポーネントの上に浮かせることを試みることはできますが、このアプローチはユーザー体験を損ないます。
+- 関数の prop は同期的に値を返せません。必ず非同期である必要があります。
+- DOM コンポーネントは現在、組み込みでのみ使用でき、OTA アップデートをサポートしていません。この機能は、将来 React Server Components の一部として追加される可能性があります。
+
+結局のところ、ユニバーサルアーキテクチャこそが最もわくわくする種類のものです。これほど複雑で価値のある機能を提供できるのは、ひとえに Expo CLI の広範なユニバーサルツールがあるからです。
+
+DOM コンポーネントは移行とスピーディーな開発の助けになりますが、可能な限り真にネイティブなビューを使うことをおすすめします。
+
+## よくある質問
+
+<FAQ>
+
+<Collapsible summary="DOM コンポーネントで secure context を取得するにはどうすればよいですか？">
+
+一部の Web API は、正しく機能するために [Secure Context](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts) を必要とします。たとえば [Clipboard API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API) は secure context でのみ利用できます。secure context とは、リモートリソースが HTTPS 経由で配信されている必要があることを意味します。[secure context に限定される機能について詳しく学ぶ](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts/features_restricted_to_secure_contexts)。
+
+DOM コンポーネントが secure context の中で実行されるようにするには、以下のガイドラインに従ってください。
+
+- **本番ビルド**: `file://` スキームで配信される DOM コンポーネントには、デフォルトで secure context が提供されます。
+- **デバッグビルド**: 開発サーバー（デフォルトでは `http://` プロトコル）を使用する場合、[トンネリング](/more/expo-cli/#tunneling) を使って DOM コンポーネントを HTTPS 経由で配信できます。
+
+**DOM コンポーネントを HTTPS 経由でトンネリングするコマンドの例：**
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Install expo-dev-client to enable connection to the remote development server:',
+      '$ npx expo install expo-dev-client',
+      '',
+      '# Run the app on Android:',
+      '$ npx expo run:android',
+      '# Press Ctrl + C to stop the server',
+      '$ npx expo start --tunnel -d -a',
+      '',
+      '# Run the app on iOS:',
+      '$ npx expo run:ios',
+      '# Press Ctrl + C to stop the server',
+      '$ npx expo start --tunnel -d -i',
+    ],
+    yarn: [
+      '# Install expo-dev-client to enable connection to the remote development server:',
+      '$ yarn expo install expo-dev-client',
+      '',
+      '# Run the app on Android:',
+      '$ yarn expo run:android',
+      '# Press Ctrl + C to stop the server',
+      '$ yarn expo start --tunnel -d -a',
+      '',
+      '# Run the app on iOS:',
+      '$ yarn expo run:ios',
+      '# Press Ctrl + C to stop the server',
+      '$ yarn expo start --tunnel -d -i',
+    ],
+    pnpm: [
+      '# Install expo-dev-client to enable connection to the remote development server:',
+      '$ pnpm expo install expo-dev-client',
+      '',
+      '# Run the app on Android:',
+      '$ pnpm expo run:android',
+      '# Press Ctrl + C to stop the server',
+      '$ pnpm expo start --tunnel -d -a',
+      '',
+      '# Run the app on iOS:',
+      '$ pnpm expo run:ios',
+      '# Press Ctrl + C to stop the server',
+      '$ pnpm expo start --tunnel -d -i',
+    ],
+    bun: [
+      '# Install expo-dev-client to enable connection to the remote development server:',
+      '$ bun expo install expo-dev-client',
+      '',
+      '# Run the app on Android:',
+      '$ bun expo run:android',
+      '# Press Ctrl + C to stop the server',
+      '$ bun expo start --tunnel -d -a',
+      '',
+      '# Run the app on iOS:',
+      '$ bun expo run:ios',
+      '# Press Ctrl + C to stop the server',
+      '$ bun expo start --tunnel -d -i',
+    ],
+  }}
+/>
+
+</Collapsible>
+
+</FAQ>

@@ -1,0 +1,220 @@
+---
+title: Metro バンドラー
+sidebar_title: Metro でバンドルする
+maxHeadingDepth: 4
+description: カスタマイズ可能な様々な Metro バンドラーの設定について学びます。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+
+Expo CLI は、[`npx expo start`](/more/expo-cli/#develop) と [`npx expo export`](/more/expo-cli/#exporting) の実行時に [Metro](https://metrobundler.dev/) を使って、JavaScript コードとアセットをバンドルします。Metro は React Native 向けに構築・最適化されており、Facebook や Instagram のような大規模なアプリケーションで使用されています。
+
+## カスタマイズ
+
+プロジェクトのルートに **metro.config.js** ファイルを作成することで、Metro バンドラーをカスタマイズできます。このファイルは、[`expo/metro-config`](https://github.com/expo/expo/tree/main/packages/@expo/metro-config) を拡張した [Metro の設定](https://metrobundler.dev/docs/configuration/) をエクスポートする必要があります。バージョンの一貫性を保つため、`@expo/metro-config` ではなく `expo/metro-config` をインポートしてください。
+
+次のコマンドを実行して、テンプレートファイルを生成します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo customize metro.config.js'],
+    yarn: ['$ yarn expo customize metro.config.js'],
+    pnpm: ['$ pnpm expo customize metro.config.js'],
+    bun: ['$ bun expo customize metro.config.js'],
+  }}
+/>
+
+**metro.config.js** ファイルは以下のようになります。
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+module.exports = config;
+```
+
+詳しくは [**metro.config.js** のドキュメント](/versions/latest/config/metro) を参照してください。
+
+> **info** プロジェクトが壊れるのを防ぐため、Expo は一部の Metro 設定オプションをロックしています。upstream の Metro が受け付けるすべてのオプションをカスタマイズしたりサポートしたりできるわけではありません。また、Expo は YAML ファイルからの Metro 設定の読み込み（upstream では非推奨）や、リポジトリの外部にある Metro 設定もサポートしていません。
+
+## アセット
+
+Metro は、ファイルをソースコードかアセットのいずれかとして解決します。ソースコードとは、アプリケーションで使用される JavaScript、TypeScript、JSON、その他のファイルです。[アセット](/develop/user-interface/assets/) とは、画像やフォントなど、Metro によって変換されるべきではないその他のファイルです。大規模なコードベースに対応するため、Metro はバンドラーを起動する前に、ソースコードとアセットの両方についてすべての拡張子を明示的に定義しておくことを要求します。これは、Metro の設定に `resolver.sourceExts` と `resolver.assetExts` のオプションを追加することで行います。デフォルトでは、以下の拡張子が含まれています。
+
+- [`resolver.assetExts`](https://github.com/facebook/metro/blob/7028b7f51074f9ceef22258a8643d0f90de2388b/packages/metro-config/src/defaults/defaults.js#L15)
+- [`resolver.sourceExts`](https://github.com/facebook/metro/blob/7028b7f51074f9ceef22258a8643d0f90de2388b/packages/metro-config/src/defaults/defaults.js#L53)
+
+### `assetExts` にファイル拡張子を追加する
+
+最も一般的なカスタマイズは、Metro に追加のアセット拡張子を含めることです。
+
+**metro.config.js** ファイルで、ファイル拡張子（先頭の `.` を除く）を `resolver.assetExts` 配列に追加します。
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.resolver.assetExts.push(
+  // Adds support for `.db` files for SQLite databases
+  'db'
+);
+
+module.exports = config;
+```
+
+## エイリアス
+
+あるモジュールの import を別のモジュールやファイルにリダイレクトしたい場合があります。これはエイリアスと呼ばれます。Metro は複数のプラットフォーム向けに同時にバンドルするという性質上、エイリアスの処理にはカスタムリゾルバーを使用することをお勧めします。
+
+次の例では、`old-module` から `new-module` へのエイリアスを追加します。
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname);
+
+const ALIASES = {
+  'old-module': 'new-module',
+};
+
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  // Ensure you call the default resolver.
+  return context.resolveRequest(
+    context,
+    // Use an alias if one exists.
+    ALIASES[moduleName] ?? moduleName,
+    platform
+  );
+};
+
+module.exports = config;
+```
+
+特定のプラットフォームでのみエイリアスを適用したい場合は、`platform` 引数をチェックできます。
+
+```js metro.config.js
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (platform === 'web') {
+    // The alias will only be used when bundling for the web.
+    return context.resolveRequest(context, ALIASES[moduleName] ?? moduleName, platform);
+  }
+  // Ensure you call the default resolver.
+  return context.resolveRequest(context, moduleName, platform);
+};
+```
+
+変更は、次回開発サーバーを再起動したときに反映されます。解決結果はキャッシュされないため、更新するのに `--clear` フラグは必要ありません。`babel-plugin-module-resolver` のようなトランスフォームベースのシステムを使用している場合は、変更を反映させるためにキャッシュをクリアする必要があります。
+
+<BoxLink
+  title="Metro のリゾルバーをカスタマイズする"
+  description="プロジェクトにおける Metro の高度な名前解決について詳しく学びます。"
+  href="/versions/latest/config/metro/#custom-resolving"
+  Icon={BookOpen02Icon}
+/>
+
+## ファイルの監視とクロール
+
+**SDK 56** から、Expo のファイルマップはオンデマンドでのファイルシステムアクセスをサポートするようになりました。実際には、これは `watchFolders` にアプリがバンドルするすべてのモジュールを含める必要がなくなったことを意味し、プロジェクトルートの外部にある依存関係にシンボリックリンクしているプロジェクトも正しく解決されるようになります。
+
+オンデマンドファイルシステムは、[app config](/ja/workflow/configuration/) 内の [`experiments.onDemandFilesystem`](/versions/v56.0.0/config/app/#ondemandfilesystem) フラグによって制御され、デフォルトで有効になっています。
+
+<BoxLink
+  title="オンデマンドファイルシステム"
+  description="Expo のファイルマップがソースファイルを検出・監視し、遅延解決する仕組みについて学びます。"
+  href="/versions/v56.0.0/config/metro/#on-demand-filesystem"
+  Icon={BookOpen02Icon}
+/>
+
+## バンドル分割
+
+Expo CLI は非同期 import に基づいてバンドルを自動的に分割します（web 専用）。
+
+この手法は Expo Router と組み合わせて使用でき、**app** ディレクトリ内のルートファイルに基づいてバンドルを自動的に分割します。現在のルートに必要なコードだけを読み込み、ユーザーが別のページに移動するまで追加の JavaScript の読み込みを遅らせます。詳しくは [Async Routes](/router/web/async-routes) を参照してください。
+
+## ツリーシェイキング
+
+<BoxLink
+  title="ツリーシェイキング"
+  description="本番用の JavaScript バンドルを Expo CLI がどのように最適化するかについて学びます。"
+  href="/ja/guides/tree-shaking/"
+  Icon={BookOpen02Icon}
+/>
+
+## 圧縮
+
+<BoxLink
+  title="JavaScript を圧縮する"
+  description="Expo CLI で Metro バンドラーを使った JavaScript の圧縮（minification）プロセスをカスタマイズする方法を学びます。"
+  href="/ja/guides/minify/"
+  Icon={BookOpen02Icon}
+/>
+
+## web サポート
+
+Expo CLI は、Metro を使って web サイトをバンドルする機能をサポートしています。これはネイティブアプリで使用されるものと同じバンドラーであり、プラットフォームをまたいでユニバーサルに動作するよう設計されています。web プロジェクトに推奨されるバンドラーです。
+
+### Expo webpack と Expo Metro の比較
+
+非推奨の `@expo/webpack-adapter` を使って以前 web サイトを記述していた場合は、[移行ガイド](/router/migrate/from-expo-webpack) と [比較表](/router/migrate/from-expo-webpack#expo-cli) を参照してください。
+
+### Metro に web サポートを追加する
+
+この機能を有効にするには、`expo.web.bundler` フィールドを使って [app config](/ja/workflow/configuration) を変更します。
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
+```
+
+#### 開発
+
+開発サーバーを起動するには、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --web'],
+    yarn: ['$ yarn expo start --web'],
+    pnpm: ['$ pnpm expo start --web'],
+    bun: ['$ bun expo start --web'],
+  }}
+/>
+
+あるいは、Expo CLI のターミナル UI で <kbd>W</kbd> キーを押します。
+
+#### 静的ファイル
+
+Expo の Metro 実装は、ルートの **public/** ディレクトリにファイルを配置することで、開発サーバーから静的ファイルをホストする機能をサポートしています。これは他の多くの web フレームワークと似ています。
+
+`npx expo export` でエクスポートすると、**public** ディレクトリの内容が **dist/** ディレクトリにコピーされます。つまり、アプリはホスト URL からの相対パスでこれらのアセットを取得できます。最もよくある例は、web サイトがタブアイコンをレンダリングするために使用する **public/favicon.ico** です。
+
+プロジェクトに **public/index.html** ファイルを作成することで、Metro web のデフォルトの **index.html** を上書きできます。
+
+将来的には、これは EAS Update ホスティングによってプラットフォームをまたいでユニバーサルに動作するようになります。現時点では、この機能はネイティブアプリで使用される静的ホストに基づいて web 専用であり、たとえばレガシーな Expo サービスのアップデートはこの機能をサポートしていません。
+
+> **warning** `/assets` などの一部のパスは Metro によって予約されています。**public/assets/** などの予約されたパスにファイルを配置しないでください。完全な一覧は [予約済みパス](/router/reference/reserved-paths/) を参照してください。
+
+## TypeScript
+
+Expo の Metro 設定は、プロジェクトの **tsconfig.json**（または **jsconfig.json**）ファイル内の `compilerOptions.paths` と `compilerOptions.baseUrl` フィールドをサポートしています。これにより、プロジェクトで絶対パスによる import やエイリアスを使用できるようになります。詳しくは [TypeScript](/guides/typescript) ガイドを参照してください。
+
+この機能を使うには、[既存の React Native プロジェクト](/ja/bare/overview/) で追加のセットアップが必要です。詳しくは [Metro セットアップガイド](/versions/latest/config/metro#existing-react-native-apps) を参照してください。
+
+## CSS
+
+<BoxLink
+  title="Metro web CSS ガイド"
+  description="Expo CLI と Metro バンドラーでバンドルされた web サイトで CSS を使う方法を学びます。"
+  href="/versions/latest/config/metro#css"
+  Icon={BookOpen02Icon}
+/>

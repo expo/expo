@@ -1,0 +1,261 @@
+---
+title: 他のアプリへのリンク
+sidebar_title: 他のアプリへのリンク
+description: 他のアプリの URL スキームに基づいて、アプリから URL を処理して開く方法を学びます。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { SnackInline } from '~/ui/components/Snippet';
+
+アプリから他のアプリへのリンクを扱うには、対象アプリの URL を使います。アプリからこのような URL を開くには、次の 2 つの方法があります。
+
+- [`expo-linking`](/versions/latest/sdk/linking) API を使う
+- Expo Router の [`Link` コンポーネント](/develop/app-navigation/) を使う
+
+## expo-linking API を使う
+
+[`expo-linking`](/versions/latest/sdk/linking) API は、（web での `window.history` のような）ネイティブのリンク API に対する汎用的な抽象化を提供し、アプリが他のインストール済みアプリと連携するためのユーティリティを提供します。
+
+以下の例は、[`Linking.openURL`](/versions/latest/sdk/linking/#linkingopenurlurl) を使って、[一般的な URL スキーム](#一般的な-url-スキーム) を OS のデフォルトブラウザで開きます。
+
+```tsx index.tsx|collapseHeight=240
+import { Button, View, StyleSheet } from 'react-native';
+import * as Linking from 'expo-linking';
+
+export default function Home() {
+  return (
+    <View style={styles.container}>
+      <Button title="Open a URL" onPress={() => Linking.openURL('https://expo.dev/')} />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+## Expo Router の `Link` コンポーネントを使う
+
+プロジェクトが [Expo Router](/router/introduction/) を使っている場合は、`Link` コンポーネントを使って URL を開けます。これはネイティブプラットフォームでは `<Text>` コンポーネントを、web では `<a>` 要素をラップします。また URL スキームの処理には `expo-linking` API を使います。
+
+以下の例は、[一般的な URL スキーム](#一般的な-url-スキーム)（HTTPS）を OS のデフォルトブラウザで開きます。
+
+```tsx index.tsx|collapseHeight=240
+import { Button, View, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+
+export default function Home() {
+  return (
+    <View style={styles.container}>
+      <Link href="https://expo.dev">Open a URL</Link>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+## 一般的な URL スキーム
+
+すべてのプラットフォームでコア機能へのアクセスを提供する組み込みの URL スキームがあります。よく使われるスキームの一覧は次のとおりです。
+
+| スキーム         | 説明                           | 例                        |
+| ---------------- | ------------------------------ | ------------------------- |
+| `https` / `http` | web ブラウザアプリを開きます。 | `https://expo.dev`        |
+| `mailto`         | メールアプリを開きます。       | `mailto:support@expo.dev` |
+| `tel`            | 電話アプリを開きます。         | `tel:+123456789`          |
+| `sms`            | SMS アプリを開きます。         | `sms:+123456789`          |
+
+<Collapsible summary="一般的な URL スキームを処理するための Android インテントを指定する">
+
+Android 11（API レベル 30）以降では、アプリが処理するインテントを **AndroidManifest.xml** ファイルで指定する必要があります。これは [config plugin を作成する](/config-plugins/plugins/#creating-a-config-plugin) ことで実現できます。
+
+次の config plugin の例は、インテントを定義することでメールアプリと電話アプリへのリンクを可能にします。
+
+```ts my-plugin.ts|collapseHeight=300
+import { withAndroidManifest, ConfigPlugin } from 'expo/config-plugins';
+
+const withAndroidQueries: ConfigPlugin = config => {
+  return withAndroidManifest(config, config => {
+    config.modResults.manifest.queries = [
+      {
+        intent: [
+          {
+            action: [{ $: { 'android:name': 'android.intent.action.SENDTO' } }],
+            data: [{ $: { 'android:scheme': 'mailto' } }],
+          },
+          {
+            action: [{ $: { 'android:name': 'android.intent.action.DIAL' } }],
+          },
+        ],
+      },
+    ];
+
+    return config;
+  });
+};
+
+module.exports = withAndroidQueries;
+```
+
+config plugin を作成したら、`plugins` プロパティの下で [カスタム config plugin をインポート](/config-plugins/plugins/#call-the-config-plugin-from-your-dynamic-app-config) します。
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      "./my-plugin.ts"
+      /* @hide ... */ /* @end */
+    ]
+  }
+}
+```
+
+> **info** **ヒント：** Android では、`expo-intent-launcher` を使ってデバイス上の **特定の設定画面** を開けます。利用可能なインテントの一覧については [`expo-intent-launcher` API リファレンス](/versions/latest/sdk/intent-launcher/#enums) を参照してください。
+
+</Collapsible>
+
+## カスタム URL スキーム
+
+> 開きたいアプリのカスタムスキームがわかっている場合は、次のいずれかの方法でリンクできます。[`expo-linking` API を使う](#expo-linking-api-を使う) または [Expo Router の `Link` を使う](#expo-router-の-link-コンポーネントを使う)。
+
+一部のサービスは、自社アプリのカスタム URL スキームの使い方についてドキュメントを提供しています。たとえば [Uber のディープリンクドキュメント](https://developer.uber.com/docs/riders/ride-requests/tutorials/deep-links/introduction#standard-deep-links) では、特定の乗車地と目的地に直接リンクする方法が説明されています。
+
+```shell
+uber://?client_id=<CLIENT_ID>&action=setPickup&pickup[latitude]=37.775818&pickup[longitude]=-122.418028&pickup[nickname]=UberHQ&pickup[formatted_address]=1455%20Market%20St%2C%20San%20Francisco%2C%20CA%2094103&dropoff[latitude]=37.802374&dropoff[longitude]=-122.405818&dropoff[nickname]=Coit%20Tower&dropoff[formatted_address]=1%20Telegraph%20Hill%20Blvd%2C%20San%20Francisco%2C%20CA%2094133&product_id=a1111c8c-c720-46c3-8534-2fcdd730040d&link_text=View%20team%20roster&partner_deeplink=partner%3A%2F%2Fteam%2F9383
+```
+
+上の例で、ユーザーのデバイスに Uber アプリがインストールされていない場合、アプリはユーザーを Google Play ストアや Apple App Store に誘導してインストールさせることができます。このようなシナリオの処理には [`react-native-app-link`](https://github.com/FiberJW/react-native-app-link) ライブラリの利用をおすすめします。
+
+<Collapsible summary="iOS 用のカスタムスキームを指定する">
+
+iOS では、[`Linking.canOpenURL`](/versions/latest/sdk/linking/#linkingcanopenurlurl) を使って他のアプリのリンクスキームを問い合わせるには、**InfoPlist** で追加の設定が必要です。app config の [`ios.infoPlist`](/versions/latest/config/app/#infoplist) プロパティを使って、アプリが問い合わせを許可するスキームの一覧を指定できます。例:
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": ["uber"]
+      }
+    }
+  }
+}
+```
+
+この一覧を指定しない場合、対象アプリがデバイスにインストールされていても `Linking.canOpenURL` が `false` を返すことがあります。
+
+> **info** **ヒント：** 上記の設定を iOS デバイスからテストするには、[開発ビルドを使用](/develop/development-builds/introduction/) してください。Expo Go ではテストできません。
+
+</Collapsible>
+
+## URL を作成する
+
+[`Linking.createURL`](/versions/latest/sdk/linking/#linkingcreateurlpath-namedparameters) を使うと、アプリを開いたりアプリへリダイレクトして戻ったりするために使える URL を作成できます。このメソッドは次のように解決されます。
+
+- **本番ビルドと開発ビルド：** `myapp://`（`myapp` は app config で定義されている [カスタムスキーム](/ja/linking/into-your-app/#app-config-でカスタムスキームを追加する)）
+- **Expo Go での開発：** `exp://127.0.0.1:8081`
+
+`Linking.createURL` を使うと、URL のハードコーディングを避けられます。このメソッドにオプションのパラメーターを渡すことで、返される URL を変更できます。
+
+アプリにデータを渡すには、URL にパスまたはクエリ文字列として追加できます。`Linking.createURL` が動作する URL を自動的に構築します。例:
+
+```tsx Example
+const redirectUrl = Linking.createURL('path/into/app', {
+  queryParams: { hello: 'world' },
+});
+```
+
+これは、環境に応じて次のように解決されます。
+
+- **本番ビルドと開発ビルド：** `myapp://path/into/app?hello=world`
+- **Expo Go での開発：** `exp://127.0.0.1:8081/--/path/into/app?hello=world`
+
+<Collapsible summary="テストに Expo Go を使う場合は？">
+
+安定した URL が必要なアプリ（たとえば認証プロバイダーのリダイレクトなど）では、Expo Go を使う代わりに、カスタムスキームを使った開発ビルドを使用してください。カスタムスキームの作成とテストの詳細については、[自分のアプリへのリンク](/ja/linking/into-your-app/) を参照してください。
+
+</Collapsible>
+
+## アプリ内ブラウザ
+
+`expo-linking` API を使うと、OS のデフォルト web ブラウザアプリで URL を開けます。アプリ内ブラウザで URL を開くには [`expo-web-browser`](/versions/latest/sdk/webbrowser) ライブラリを使えます。たとえば、アプリ内ブラウザは安全な [認証](/guides/authentication) に役立ちます。
+
+<Collapsible summary="アプリ内ブラウザで URL を開く例">
+
+以下の例は、`expo-web-browser` を使ってアプリ内ブラウザで URL を開く動作と、`expo-linking` を使ってデフォルトまたは優先の web ブラウザで開く動作をシミュレートします。
+
+<SnackInline label="WebBrowser compared to Linking" dependencies={["expo-web-browser", "expo-linking"]}>
+
+```tsx
+import { Button, View, StyleSheet } from 'react-native';
+import * as Linking from 'expo-linking';
+import * as WebBrowser from 'expo-web-browser';
+
+export default function Home() {
+  return (
+    <View style={styles.container}>
+      <Button
+        title="Open URL with the system browser"
+        onPress={() => Linking.openURL('https://expo.dev')}
+        style={styles.button}
+      />
+      <Button
+        title="Open URL with an in-app browser"
+        onPress={() => WebBrowser.openBrowserAsync('https://expo.dev')}
+        style={styles.button}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    marginVertical: 10,
+  },
+});
+```
+
+</SnackInline>
+
+</Collapsible>
+
+## web での追加のリンク機能
+
+右クリックでコピーやホバーでプレビューなど、web で追加のリンク機能を提供するには、[`expo-router`](/router/introduction/) ライブラリの `Link` コンポーネントを使えます。
+
+```tsx index.tsx
+import { Link } from 'expo-router';
+
+export default function Home() {
+  return <Link href="https://expo.dev">Go to Expo</Link>;
+}
+```
+
+他の方法として、[`@expo/html-elements`](https://www.npmjs.com/package/@expo/html-elements) ライブラリを使って、汎用的な `<A>` 要素を使うこともできます。
+
+```tsx index.tsx
+import { A } from '@expo/html-elements';
+
+export default function Home() {
+  return <A href="https://expo.dev">Go to Expo</A>;
+}
+```
+
+`<A>` コンポーネントは、web では `<a>` を、ネイティブプラットフォームでは `expo-linking` API を使うインタラクティブな `<Text>` をレンダリングします。

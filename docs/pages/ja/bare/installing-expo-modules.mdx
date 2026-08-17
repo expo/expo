@@ -1,0 +1,192 @@
+---
+title: 既存の React Native プロジェクトに Expo モジュールをインストールする
+sidebar_title: Expo モジュールをインストールする
+description: 既存の React Native プロジェクトで Expo モジュールをインストールして使用するための準備方法について学びます。
+---
+
+import InstallSection from '~/components/plugins/InstallSection';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { DiffBlock } from '~/ui/components/Snippet';
+
+アプリで Expo モジュールを使用するには、`expo` パッケージをインストールして設定する必要があります。
+
+`expo` パッケージはフットプリントが小さく、ほぼすべてのアプリで必要となる最小限のパッケージ群と、他の Expo SDK パッケージが構築の基盤とするモジュールおよび autolinking のインフラのみを含みます。プロジェクトに `expo` パッケージがインストールされ設定されると、`npx expo install` を使って SDK から他の Expo モジュールを追加できるようになります。
+
+プロジェクトを[どのように初期化したか](/ja/bare/overview/)によって、Expo モジュールをインストールする方法は 2 通りあります。[自動的に](#自動インストール)インストールする方法と、[手動で](#手動インストール)インストールする方法です。
+
+## 自動インストール
+
+Expo モジュールをインストールして使用する最も簡単な方法は、`install-expo-modules` コマンドを使うことです。
+
+<InstallSection
+  packageName="expo"
+  cmd={[
+    '# Install and configure the expo package automatically',
+    '$ npx install-expo-modules@latest',
+  ]}
+  hideBareInstructions
+/>
+
+- <YesIcon small /> **コマンドが成功した場合**、アプリに任意の Expo
+  モジュールを追加できるようになります！ 詳しくは[使用方法](#使用方法)を参照してください。
+
+- <NoIcon small />
+  **コマンドが失敗した場合**は、手動インストールの手順に従ってください。コードをプログラムで更新するのは
+  扱いが難しい場合があり、プロジェクトがデフォルトの React Native
+  プロジェクトから大きく逸脱している場合は、手動インス
+  トールを実行し、ここでの手順を自分のコードベースに合わせて調整する必要があります。
+
+## 手動インストール
+
+以下の手順は、React Native 0.86 に最新バージョンの Expo モジュールをインストールする場合に適用されます。それより前のバージョンについては、[ネイティブアップグレードヘルパー](/ja/bare/upgrade)でこれらのファイルがどのようにカスタマイズされているかを確認してください。
+
+<InstallSection packageName="expo" cmd={['$ npm install expo']} hideBareInstructions />
+
+インストールが完了したら、以下の diff の変更を適用してプロジェクトで Expo モジュールを設定します。これには 5 分程度かかる見込みですが、プロジェクトのカスタマイズの程度によっては多少の調整が必要になる場合があります。
+
+### Android の設定
+
+<DiffBlock source="/static/diffs/expo-android.diff" />
+
+### iOS の設定
+
+<DiffBlock source="/static/diffs/expo-ios.diff" />
+
+任意で、**AppDelegate.swift** に追加のデリゲートメソッドを加えることもできます。一部のライブラリではこれらが必要になる場合があるため、除外する十分な理由がない限り追加することをおすすめします。[AppDelegate.swift のデリゲートメソッドを見る](https://github.com/expo/expo/blob/sdk-57/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift#L34-L51)。
+
+変更をすべて保存し、Xcode で iOS Deployment Target を <code>iOS 16.4</code> に更新します。
+
+- Xcode で **your-project-name.xcworkspace** を開き、左サイドバーでプロジェクトを選択します。
+- **Targets** > **your-project-name** > **Build Settings** > **iOS Deployment Target** を選択し、<code>iOS 16.4</code> に設定されていることを確認します。
+
+最後のステップとして、**Podfile** に追加した `use_expo_modules!` ディレクティブによって検出される Expo モジュールを取り込むために、プロジェクトの CocoaPods を再度インストールします。
+
+<InstallSection
+  packageName="expo"
+  cmd={[
+    '# Install pods',
+    '$ npx pod-install',
+    '',
+    '# Alternatively, the run command will install them for you',
+    '$ npx expo run:ios',
+  ]}
+  hideBareInstructions
+/>
+
+### Android と iOS でのバンドルに Expo CLI を設定する
+
+アプリの JavaScript コードとアセットをバンドルするには、Expo CLI と関連するツール設定の使用をおすすめします。これにより、**package.json** の `"main"` フィールドを使って [Expo Router](/router/introduction/) ライブラリを利用できるようになります。バンドルに Expo CLI を使用しない場合、予期しない動作が発生する可能性があります。[Expo CLI について詳しく知る](/ja/bare/using-expo-cli/)。
+
+<Collapsible summary="babel.config.js で babel-preset-expo を使用する">
+  <DiffBlock source="/static/diffs/babel-config.diff" />
+</Collapsible>
+
+<Collapsible summary="metro.config.js で expo/metro-config を拡張する">
+  <DiffBlock source="/static/diffs/metro-config.diff" />
+</Collapsible>
+
+<Collapsible summary="Expo CLI でバンドルするように Android プロジェクトを設定する">
+  <DiffBlock source="/static/diffs/expo-cli-android.diff" />
+</Collapsible>
+
+<Collapsible summary="Expo CLI でバンドルするように iOS プロジェクトを設定する">
+
+Xcode の **Build Phases** > **Bundle React Native code and images** にあるシェルスクリプトを、以下の内容に置き換えます。
+
+```sh /bin/sh
+if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then
+  source "$PODS_ROOT/../.xcode.env"
+fi
+if [[ -f "$PODS_ROOT/../.xcode.env.local" ]]; then
+  source "$PODS_ROOT/../.xcode.env.local"
+fi
+
+# The project root by default is one level up from the ios directory
+export PROJECT_ROOT="$PROJECT_DIR"/..
+
+if [[ "$CONFIGURATION" = *Debug* ]]; then
+  export SKIP_BUNDLING=1
+fi
+if [[ -z "$ENTRY_FILE" ]]; then
+  # Set the entry JS file using the bundler's entry resolution.
+  export ENTRY_FILE="$("$NODE_BINARY" -e "require('expo/scripts/resolveAppEntry')" "$PROJECT_ROOT" ios relative | tail -n 1)"
+fi
+
+if [[ -z "$CLI_PATH" ]]; then
+  # Use Expo CLI
+  export CLI_PATH="$("$NODE_BINARY" --print "require.resolve('@expo/cli')")"
+fi
+if [[ -z "$BUNDLE_COMMAND" ]]; then
+  # Default Expo CLI command for bundling
+  export BUNDLE_COMMAND="export:embed"
+fi
+
+`"$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'"`
+```
+
+また、次のように **AppDelegate.swift** を変更して、**package.json** の `"main"` フィールドのサポートを追加します。
+
+<DiffBlock
+  raw={`diff --git a/ios/AppDelegate.swift b/ios/AppDelegate.swift
+index 0000000..1111111 100644
+--- a/ios/AppDelegate.swift
++++ b/ios/AppDelegate.swift
+@@ -1,7 +1,7 @@
+   override func bundleURL() -> URL? {
+ #if DEBUG
+-    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
++    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+ #else
+     Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+ #endif
+   }`}
+/>
+
+</Collapsible>
+
+## 使用方法
+
+### インストールを確認する
+
+[`expo-constants`](/versions/latest/sdk/constants) から値をログ出力することで、インストールが成功したことを確認できます。
+
+- `npx expo install expo-constants` を実行します。
+- 次に、`npx expo run` を実行し、以下のコードを追加するようにアプリの JavaScript コードを変更します。
+
+```tsx
+import Constants from 'expo-constants';
+console.log(Constants.systemFonts);
+```
+
+### Expo SDK パッケージを使用する
+
+プロジェクトに `expo` パッケージがインストールされ設定されると、`npx expo install` を使って SDK から他の Expo モジュールを追加できます。詳しくは[ライブラリを使う](/ja/workflow/using-libraries)を参照してください。
+
+### `expo` パッケージに含まれる Expo モジュール
+
+以下の Expo モジュールが `expo` パッケージの依存関係として導入されます。
+
+- [`expo-asset`](/versions/latest/sdk/asset) - `expo-file-system` を基盤に構築された JavaScript のみのパッケージで、すべての Expo モジュールにわたるアセットの共通基盤を提供します。
+- [`expo-constants`](/versions/latest/sdk/constants) - マニフェストへのアクセスを提供します。
+- [`expo-file-system`](/versions/latest/sdk/filesystem) - デバイスのファイルシステムを操作します。`expo-asset` や他の多くの Expo モジュールで使用されます。アプリケーションコード内で開発者が直接使用することもよくあります。
+- [`expo-font`](/versions/latest/sdk/font) - 実行時にフォントを読み込みます。このモジュールは任意で、安全に削除できます。ただし、開発に `expo-dev-client` を使用する場合は推奨されており、`@expo/vector-icons` には必須です。
+- [`expo-keep-awake`](/versions/latest/sdk/keep-awake) - アプリの開発中にデバイスがスリープ状態になるのを防ぎます。このモジュールは任意で、安全に削除できます。
+
+これらのモジュールを除外するには、以下の[autolinking からモジュールを除外する](#特定のモジュールを-autolinking-から除外する)ガイドを参照してください。
+
+### 特定のモジュールを autolinking から除外する
+
+使用していないものの他の依存関係によってインストールされた Expo モジュールから、ネイティブコードを除外する必要がある場合は、**package.json** の [`expo.autolinking.exclude`](/modules/autolinking/#exclude) プロパティを使用できます。
+
+```json package.json
+{
+  "name": "...",
+  "dependencies": {},
+  "expo": {
+    "autolinking": {
+      "exclude": ["expo-keep-awake"]
+    }
+  }
+}
+```

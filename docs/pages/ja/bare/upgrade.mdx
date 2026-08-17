@@ -1,0 +1,20 @@
+---
+title: ネイティブプロジェクトのアップグレードヘルパー
+description: 次の Expo SDK バージョンにアップグレードするためにネイティブプロジェクトに加える必要のあるすべての変更について、ファイルごとの diff を確認できます。
+---
+
+import { TemplateBareMinimumDiffViewer } from '~/ui/components/TemplateBareMinimumDiffViewer';
+
+ネイティブプロジェクト（**android** ディレクトリと **ios** ディレクトリ）を自分で管理している場合、[最新の Expo SDK にアップグレードする](/workflow/upgrading-expo-sdk-walkthrough/)には、ネイティブプロジェクトに変更を加える必要があります。どのネイティブファイルが変更されるのか、どのファイルの何を更新すればよいのかを特定するのは、複雑な作業になり得ます。
+
+以下のガイドでは、プロジェクトの現在の SDK バージョンとアップグレード先の SDK バージョンとの間でネイティブプロジェクトのファイルを比較する diff を提供します。これらを使うと、プロジェクトが使用している `expo` パッケージのバージョンに応じて、プロジェクトに変更を加えることができます。このページのツールは [React Native Upgrade Helper](https://react-native-community.github.io/upgrade-helper/) に似ていますが、Expo モジュールおよび関連ツールを使用するプロジェクト向けに作られています。
+
+> ネイティブコードのアップグレードを完全に避けたいですか？[Continuous Native Generation（CNG）](/ja/workflow/continuous-native-generation/) を参照すると、ビルド前に Expo Prebuild がネイティブプロジェクトを生成する仕組みを学べます。
+
+## ネイティブプロジェクトのファイルをアップグレードする
+
+[Expo SDK バージョンと関連する依存関係をアップグレード](/workflow/upgrading-expo-sdk-walkthrough/#how-to-upgrade-to-the-latest-sdk-version)したら、以下の diff ツールを使って、ネイティブプロジェクトに加える必要のある変更を確認し、現在の Expo SDK バージョンに対応させましょう。
+
+**移行元の SDK バージョン** と **移行先の SDK バージョン** を選択すると、生成された diff が表示されます。その後、コピーして貼り付けるか、プロジェクトのファイルを手動で編集して、それらの変更をネイティブプロジェクトに適用してください。
+
+<TemplateBareMinimumDiffViewer />

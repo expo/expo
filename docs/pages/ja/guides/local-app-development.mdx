@@ -1,0 +1,184 @@
+---
+title: デバッグビルドをローカルで作成する
+sidebar_title: 開発
+description: Expo アプリのデバッグビルドをローカルで作成する方法について学びます。
+---
+
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { CODE } from '~/ui/components/Text';
+
+プロジェクトを自分のマシン上でローカルにアプリとしてビルドするには、デバッグビルドをテストしたり、アプリストアに提出するための本番ビルドを作成したりする前に、ネイティブコードを手動で生成する必要があります。アプリをローカルでビルドする方法は 2 つあります。このガイドでは、両方の方法を簡単に紹介し、このワークフローを構築するために必要なその他のガイドを参照します。
+
+<Prerequisites>
+  <Requirement title="Android Studio">
+    Android プロジェクトを自分のマシン上でコンパイル・実行するために、[Android Studio
+    をセットアップ](/get-started/set-up-your-environment/?platform=android&device=physical&mode=development-build&buildEnv=local#set-up-an-android-device-with-a-development-build)します。
+  </Requirement>
+  <Requirement title="Xcode">
+    iOS プロジェクトを自分のマシン上でコンパイル・実行するために、[Xcode
+    をセットアップ](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-an-ios-device-with-a-development-build)します。
+  </Requirement>
+</Prerequisites>
+
+## ローカルでのアプリコンパイル
+
+プロジェクトをローカルでビルドするには、Expo CLI のコンパイルコマンドを使えます。これにより **android** ディレクトリと **ios** ディレクトリが生成されます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Build native Android project',
+      '$ npx expo run:android',
+      '# Build native iOS project',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Build native Android project',
+      '$ yarn expo run:android',
+      '# Build native iOS project',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Build native Android project',
+      '$ pnpm expo run:android',
+      '# Build native iOS project',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Build native Android project',
+      '$ bun expo run:android',
+      '# Build native iOS project',
+      '$ bun expo run:ios',
+    ],
+  }}
+/>
+
+上記のコマンドは、ローカルにインストールされた Android SDK または Xcode を使って、プロジェクトをアプリのデバッグビルドにコンパイルします。各コマンドは 2 つのステップを実行します。デバイスやエミュレーターにネイティブバイナリをコンパイル・インストールしたあと、Metro バンドラーを起動して JavaScript や TypeScript のコードを配信します。
+
+- これらのコンパイルコマンドは、ビルドの前にまず `npx expo prebuild` を実行し、ネイティブディレクトリ（**android** と **ios**）がまだ存在しない場合は生成します。すでに存在する場合はこのステップはスキップされます。
+- また `--device` フラグを追加すると、アプリを実行するデバイスを選択できます。物理的に接続されたデバイスまたはエミュレーター/シミュレーターを選べます。
+- `--variant release`（Android）や `--configuration Release`（iOS）を渡すと、[アプリの本番ビルド](/deploy/build-project/#release-builds-locally) をビルドできます。これらのビルドは署名されておらず、アプリストアに提出できない点に注意してください。本番ビルドに署名するには、[ローカルでのアプリ本番ビルド](/ja/guides/local-app-production/) を参照してください。
+- **Android のみ**：SDK 54 以降では、開発イテレーションを高速化するために `--variant debugOptimized` バリアントを渡せます。詳しくは [Expo CLI リファレンスの Android のコンパイル](/more/expo-cli/#compiling-android) を参照してください。
+
+### 初回ビルド後：`npx expo start` を使う
+
+アプリがデバイスやエミュレーターにコンパイル・インストールされたら、変更するたびに再ビルドする必要はありません。JavaScript や TypeScript のコードだけを変更している場合は、Metro バンドラー単体を起動できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+その後、ターミナルで Android の場合は <kbd>A</kbd>、iOS の場合は <kbd>I</kbd> を押すと、すでにインストール済みのアプリが起動します。Metro はネイティブコードを再コンパイルすることなく更新済みの JavaScript バンドルを配信するため、アプリは数分ではなく数秒で読み込まれます。
+
+| コマンド                                    | 内容                                                                         | 使うタイミング                                                                          |
+| ------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `npx expo run:android` / `npx expo run:ios` | ネイティブコードをコンパイルし、アプリをインストールし、Metro を起動します。 | 初回ビルド時、ネイティブライブラリを追加したとき、または config plugin を変更したとき。 |
+| `npx expo start`                            | Metro バンドラーのみを起動します。                                           | JavaScript や TypeScript のコードだけを変更する日常的な開発時。                         |
+
+初回ビルド後にプロジェクトの設定やネイティブコードを変更するには、`npx expo run:android|ios` を使ってプロジェクトを再ビルドする必要があります。`npx expo prebuild` を再実行すると、変更は既存のファイルの上に重ねられます。またビルド後に異なる結果になることもあります。
+
+これを避けるため、新しいプロジェクトを作成すると、ネイティブディレクトリは自動的にプロジェクトの **.gitignore** に追加され、`npx expo prebuild --clean` コマンドを使えます。これによりプロジェクトは常に管理された状態になり、[`--clean` フラグ](/ja/workflow/continuous-native-generation/#クリーン) は既存のディレクトリを再生成する前に削除します。ネイティブディレクトリ内のプロジェクトの設定やコードを変更するには、[app config](/ja/workflow/configuration/) を使うか、[config plugin](/config-plugins/introduction/) を作成できます。
+
+コンパイルと prebuild の仕組みについて詳しくは、以下のガイドを参照してください。
+
+<BoxLink
+  title="Expo CLI でコンパイルする"
+  description={
+    <>
+      Expo CLI が <CODE>run</CODE> コマンドを使ってアプリをローカルでコンパイルする方法、CLI
+      に渡せる引数などについて学びます。
+    </>
+  }
+  href="/more/expo-cli/#compiling"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Prebuild"
+  description="Expo CLI がコンパイル前にプロジェクトのネイティブコードを生成する方法を学びます。"
+  href="/ja/workflow/continuous-native-generation"
+  Icon={BookOpen02Icon}
+/>
+
+## `expo-dev-client` を使ったローカルビルド
+
+プロジェクトに [`expo-dev-client`](/develop/development-builds/introduction/) をインストールすると、プロジェクトのデバッグビルドに `expo-dev-client` の UI とツールが含まれるようになります。これを開発ビルドと呼びます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
+
+開発ビルドを作成するには、[ローカルでのアプリコンパイル](#ローカルでのアプリコンパイル) コマンド（`npx expo run:[android|ios]`）を使えます。これによりデバッグビルドが作成され、開発サーバーが起動します。
+
+## Android のプロダクトフレーバーを使ったローカルビルド
+
+異なるアプリケーション ID を使う複数のプロダクトフレーバーを持つカスタム Android プロジェクトがある場合、正しいフレーバーとビルドタイプを使うように `npx expo run:android` を設定できます。Expo はビルドと起動の挙動をカスタマイズするために `--variant` と `--app-id` の両方をサポートしています。
+
+`--variant` フラグを使うと、Android のビルドタイプを **debug** から **release** に切り替えられます。このフラグは camelCase 形式で書くことで、プロダクトフレーバーとビルドタイプを設定することもできます。たとえば [**free** と **paid** の両方のプロダクトフレーバー](https://developer.android.com/build/build-variants#change-app-id) がある場合、次のようにしてアプリの開発版をビルドできます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx expo run:android --variant freeDebug',
+      '',
+      '$ npx expo run:android --variant paidDebug',
+    ],
+    yarn: [
+      '$ yarn expo run:android --variant freeDebug',
+      '',
+      '$ yarn expo run:android --variant paidDebug',
+    ],
+    pnpm: [
+      '$ pnpm expo run:android --variant freeDebug',
+      '',
+      '$ pnpm expo run:android --variant paidDebug',
+    ],
+    bun: [
+      '$ bun expo run:android --variant freeDebug',
+      '',
+      '$ bun expo run:android --variant paidDebug',
+    ],
+  }}
+/>
+
+`--app-id` フラグを使うと、ビルド後にカスタマイズしたアプリケーション ID を使ってアプリを起動できます。たとえば、プロダクトフレーバー **free** が `applicationIdSuffix ".free"` または `applicationId "dev.expo.myapp.free"` を使っている場合、次のようにしてビルドとアプリの起動を実行できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android --variant freeDebug --app-id dev.expo.myapp.free'],
+    yarn: ['$ yarn expo run:android --variant freeDebug --app-id dev.expo.myapp.free'],
+    pnpm: ['$ pnpm expo run:android --variant freeDebug --app-id dev.expo.myapp.free'],
+    bun: ['$ bun expo run:android --variant freeDebug --app-id dev.expo.myapp.free'],
+  }}
+/>
+
+> **info** Android のビルドタイプをカスタマイズすることも可能ですが、それはビルドタイプ **release** が本番用に使われるという Expo の前提を崩すことになります。**release** の代わりに別のビルドタイプを使うと、最適化されていないコードでアプリをビルドしてしまう可能性があります。
+
+## EAS を使ったローカルビルド
+
+<BoxLink
+  title="自前のインフラでビルドを実行する"
+  description={
+    <>
+      <CODE>--local</CODE> フラグを使って、EAS Build
+      を自前のカスタムインフラや自分のマシン上でローカルに実行する方法を学びます。
+    </>
+  }
+  href="/build-reference/local-builds"
+  Icon={BuildIcon}
+/>

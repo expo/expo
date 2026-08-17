@@ -1,0 +1,355 @@
+---
+title: プログレッシブ web アプリ
+description: Expo の web サイトにプログレッシブ web アプリのサポートを追加する方法について学びます。
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs, TabsGroup } from '~/ui/components/Tabs';
+
+<TabsGroup>
+
+プログレッシブ web アプリ（略して PWA）とは、ユーザーのデバイスにインストールでき、オフラインでも使える web サイトです。オフラインサポートが最も充実しているという理由から、可能な限りネイティブアプリを構築することをおすすめしますが、PWA はデスクトップユーザーにとって優れた選択肢です。
+
+## ファビコン
+
+Expo CLI は **app.json** の `web.favicon` フィールドをもとに **favicon.ico** ファイルを自動生成します。
+
+```json
+{
+  "web": {
+    "favicon": "./assets/favicon.png"
+  }
+}
+```
+
+あるいは、**public** ディレクトリに **favicon.ico** ファイルを作成して、アイコンを手動で指定することもできます。
+
+## マニフェストファイル
+
+PWA は、アプリの名前やアイコン、その他のメタデータを記述する [マニフェストファイルで設定](https://developer.mozilla.org/en-US/docs/Web/Manifest) できます。
+
+<Step label="1">
+
+**public/manifest.json** に PWA マニフェストを作成します。
+
+```json
+{
+  "short_name": "Expo App",
+  "name": "Expo Router Sample",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
+```
+
+</Step>
+
+<Step label="2">
+
+**logo192.png** と **logo512.png** は、アプリがユーザーのデバイスにインストールされたときに使用されるアイコンです。これらも **public** ディレクトリに追加する必要があります。
+
+<FileTree
+  files={[
+    ['public/manifest.json', 'PWA マニフェスト'],
+    ['public/logo192.png', '192x192 のアイコン'],
+    ['public/logo512.png', '512x512 のアイコン'],
+  ]}
+/>
+
+</Step>
+
+<Step label="3">
+
+次に、HTML ファイルにマニフェストをリンクします。ここでの方法は、web サイトの出力モード（**app.json** の `web.output` で示され、デフォルトは `single`）によって異なります。
+
+<Tabs>
+
+<Tab label="single">
+
+シングルページアプリを使っている場合、まず **public/index.html** にテンプレート HTML を作成することで、HTML ファイルにマニフェストをリンクできます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo customize public/index.html'],
+    yarn: ['$ yarn expo customize public/index.html'],
+    pnpm: ['$ pnpm expo customize public/index.html'],
+    bun: ['$ bun expo customize public/index.html'],
+  }}
+/>
+
+続いて `<head>` タグにマニフェストを追加します。
+
+```html
+<link rel="manifest" href="/manifest.json" />
+```
+
+</Tab>
+
+<Tab label="static & server">
+
+static または server レンダリングを使っている場合、HTML エントリーは **src/app/+html.tsx** で動的に作成できます。ここでは `<head>` コンポーネントに `<link>` タグを追加してマニフェストをリンクします。
+
+```tsx src/app/+html.tsx
+import { ScrollViewStyleReset } from 'expo-router/html';
+import type { PropsWithChildren } from 'react';
+
+// This file is web-only and used to configure the root HTML for every
+// web page during static rendering.
+// The contents of this function only run in Node.js environments and
+// do not have access to the DOM or browser APIs.
+export default function Root({ children }: PropsWithChildren) {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        {/* Link the PWA manifest file. */}
+        <link rel="manifest" href="/manifest.json" />
+
+        {/*
+          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
+          However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
+        */}
+        <ScrollViewStyleReset />
+
+        {/* Add any additional <head> elements that you want globally available on web... */}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+## サービスワーカー
+
+サービスワーカーは主に web サイトにオフラインサポートを追加するために使われます。web サイトにサービスワーカーを追加する最良の方法は、Google の Workbox です。[Workbox CLI の使い方](https://developer.chrome.com/docs/workbox/modules/workbox-cli/) のガイドに従ってください。「ビルドスクリプト」と書かれている箇所は、代わりに `npx expo export -p web` を使ってください。
+
+> **警告** サービスワーカーは web で予期しない挙動を引き起こすことが知られているため、追加する際は注意してください。web サイトを積極的にキャッシュするサービスワーカーを誤って配信してしまうと、ユーザーが簡単にはアップデートを取得できなくなります。最良のオフラインモバイル体験を求めるなら、Expo でネイティブアプリを作成してください。サービスワーカーを使う web サイトとは異なり、ネイティブアプリはアプリストア経由でアップデートでき、キャッシュされた体験をクリアできます。これは、ユーザーのネイティブブラウザをリセットする（サービスワーカーが十分に積極的であれば、ユーザーがそうせざるを得なくなることがあります）のと似ています。詳しくは [サービスワーカーが最適でない理由](https://github.com/facebook/create-react-app/issues/2398) を参照してください。
+
+たとえば、Workbox をセットアップする流れは次のようになります。
+
+<Step label="1">
+
+次のコマンドで新しいプロジェクトを作成します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm create expo -t tabs my-app', '', '$ cd my-app'],
+    yarn: ['$ yarn create expo -t tabs my-app', '', '$ cd my-app'],
+    pnpm: ['$ pnpm create expo -t tabs my-app', '', '$ cd my-app'],
+    bun: ['$ bun create expo -t tabs my-app', '', '$ cd my-app'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+次に、HTML ファイルにサービスワーカーを登録します。ここでの方法は、web サイトの出力モード（**app.json** の `web.output` で示され、デフォルトは `single`）によって異なります。
+
+<Tabs>
+
+<Tab label="single">
+
+続いて、ルートの **index.html** にサービスワーカーの登録スクリプトを追加します。
+
+まだ存在しない場合は、**public/index.html** にテンプレート HTML を作成します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo customize public/index.html'],
+    yarn: ['$ yarn expo customize public/index.html'],
+    pnpm: ['$ pnpm expo customize public/index.html'],
+    bun: ['$ bun expo customize public/index.html'],
+  }}
+/>
+
+続いて `<head>` タグにサービスワーカーの登録スクリプトを作成します。
+
+```html
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then(registration => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch(error => {
+          console.error('Service Worker registration failed:', error);
+        });
+    });
+  }
+</script>
+```
+
+</Tab>
+
+<Tab label="static & server">
+
+次に、アプリ用のルート HTML ファイルを作成し、サービスワーカーの登録スクリプトを追加します。
+
+```tsx src/app/+html.tsx
+import { ScrollViewStyleReset } from 'expo-router/html';
+import type { PropsWithChildren } from 'react';
+
+// This file is web-only and used to configure the root HTML for every
+// web page during static rendering.
+// The contents of this function only run in Node.js environments and
+// do not have access to the DOM or browser APIs.
+export default function Root({ children }: PropsWithChildren) {
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+        {/* Bootstrap the service worker. */}
+        <script dangerouslySetInnerHTML={{ __html: sw }} />
+
+        {/*
+          Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.
+          However, body scrolling is often nice to have for mobile web. If you want to enable it, remove this line.
+        */}
+        <ScrollViewStyleReset />
+
+        {/* Add any additional <head> elements that you want globally available on web... */}
+      </head>
+      <body>{children}</body>
+    </html>
+  );
+}
+
+const sw = `
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('Service Worker registered with scope:', registration.scope);
+        }).catch(error => {
+            console.error('Service Worker registration failed:', error);
+        });
+    });
+}
+`;
+```
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+<Step label="3">
+
+ウィザードを実行する前に、web サイトをビルドします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export -p web'],
+    yarn: ['$ yarn expo export -p web'],
+    pnpm: ['$ pnpm expo export -p web'],
+    bun: ['$ bun expo export -p web'],
+  }}
+/>
+
+</Step>
+
+<Step label="4">
+
+ウィザードコマンドを実行し、アプリのルートとして `dist` を選択し、他はすべてデフォルトのままにします。
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+    yarn: [
+      '$ yarn dlx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+    pnpm: [
+      '$ pnpm dlx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+    bun: [
+      '$ bunx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+  }}
+/>
+
+</Step>
+
+<Step label="5">
+
+最後に、`npx workbox-cli generateSW workbox-config.js` を実行してサービスワーカーの設定を生成します。
+
+これ以降は、**package.json** にビルドスクリプトを追加して、2 つのスクリプトを正しい順序でまとめて実行できます。
+
+```json package.json
+{
+  "scripts": {
+    "build:web": "expo export -p web && npx workbox-cli generateSW workbox-config.js"
+  }
+}
+```
+
+</Step>
+
+<Step label="6">
+
+web サイトをホストして Chrome で表示すれば、Chrome DevTools の **Application > Service Workers** でサービスワーカーを確認できます。
+
+</Step>
+
+</TabsGroup>

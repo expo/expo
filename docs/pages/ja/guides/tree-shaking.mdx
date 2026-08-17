@@ -1,0 +1,442 @@
+---
+title: ツリーシェイキングとコード削除
+sidebar_title: ツリーシェイキング
+description: Expo CLI が本番用の JavaScript バンドルを最適化する方法について学びます。
+platforms: ['android', 'ios', 'web', 'tvos']
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+ツリーシェイキング（_デッドコード除去_ とも呼ばれます）は、本番用バンドルから未使用のコードを削除する手法です。Expo CLI は、未使用のコードを削除して起動時間を改善するために、[圧縮](/ja/guides/minify) を含むさまざまな手法を採用しています。
+
+## プラットフォームシェイキング
+
+Expo CLI は、アプリのバンドル処理に **プラットフォームシェイキング** と呼ばれる手法を採用しており、プラットフォーム（Android、iOS、web）ごとに別々のバンドルを作成します。これにより、あるプラットフォームでしか使われないコードが、他のプラットフォームからは確実に削除されます。
+
+`react-native` の `Platform` モジュールに基づいて条件付きで使われるコードは、他のプラットフォームからは削除されます。ただし、この除外処理は、各ファイルで `Platform.select` と `Platform.OS` が react-native から直接 import されている場合にのみ適用されます。これらが別のモジュールを介して re-export されている場合は、プラットフォームごとのバンドル処理の際に削除されません。
+
+たとえば、次の変換前の入力を考えてみましょう。
+
+```js Input
+import { Platform } from 'react-native';
+
+if (Platform.OS === 'ios') {
+  console.log('Hello on iOS');
+}
+```
+
+本番用バンドルでは、プラットフォームに基づいて条件分岐が削除されます。
+
+```js Output (Android)
+/* @hide Empty on Android */
+```
+
+```js Output (iOS)
+console.log('Hello on iOS');
+```
+
+この最適化は本番用ビルドでのみ行われ、ファイル単位で実行されます。`Platform.OS` を別のモジュールから re-export すると、本番用バンドルから削除されません。
+
+`process.env.EXPO_OS` を使うと、JavaScript がどのプラットフォーム向けにバンドルされたかを検出できます（実行時に変更することはできません）。Metro は依存解決の後にコードを圧縮する仕組み上、この値ではプラットフォームシェイキングによる import の削除はサポートされません。
+
+## 開発専用コードを削除する
+
+プロジェクトの中には、開発プロセスを助けるために書かれたコードが含まれることがあります。こうしたコードは本番用バンドルから除外する必要があります。このようなケースに対応するには、`process.env.NODE_ENV `環境変数、または非標準のグローバル真偽値 `__DEV__` を使います。
+
+<Step label="1">
+
+たとえば、次のコードスニペットは本番用バンドルから削除されます。
+
+```js Input
+if (process.env.NODE_ENV === 'development') {
+  console.log('Hello in development');
+}
+
+if (__DEV__) {
+  console.log('Another development-only conditional...');
+}
+```
+
+</Step>
+
+<Step label="2">
+
+_定数畳み込み_ が行われたあと、条件分岐は静的に評価できるようになります。
+
+```js Post constants folding
+if ('production' === 'development') {
+  console.log('Hello in development');
+}
+
+if (false) {
+  console.log('Another development-only conditional...');
+}
+```
+
+</Step>
+
+<Step label="3">
+
+到達不可能な条件分岐は、[圧縮](/ja/guides/minify) の際に削除されます。
+
+```js Output (production)
+/* @hide Empty file */
+```
+
+</Step>
+
+速度を向上させるため、Expo CLI は本番用ビルドでのみコード除去を行います。上記のコードスニペットにある条件分岐は、開発ビルドではそのまま残ります。
+
+## カスタムコード削除
+
+`EXPO_PUBLIC_` 環境変数は、圧縮処理の前にインライン化されます。つまり、これらを使って本番用バンドルからコードを削除できます。たとえば次のとおりです。
+
+<Step label="1">
+
+{/* prettier-ignore */}
+```js .env
+EXPO_PUBLIC_DISABLE_FEATURE=true;
+```
+
+```js Input
+if (!process.env.EXPO_PUBLIC_DISABLE_FEATURE) {
+  console.log('Hello from the feature!');
+}
+```
+
+</Step>
+
+<Step label="2">
+
+上記の入力コードスニペットは、`babel-preset-expo` の処理後、次のように変換されます。
+
+```js Post babel-preset-expo
+if (!'true') {
+  console.log('Hello from the feature!');
+}
+```
+
+</Step>
+
+<Step label="3">
+上記のコードスニペットはその後圧縮され、未使用の条件分岐が削除されます。
+
+```js Post minifier
+// Empty file
+```
+
+</Step>
+
+- サーバー用バンドルでは環境変数がインライン化されないため、この仕組みはサーバーコードには適用されません。
+- `EXPO_PUBLIC_` 環境変数はセキュリティ上の理由からアプリケーションコード内でのみ動作するため、ライブラリの作者はこれを使うべきではありません。
+
+## サーバーコードを削除する
+
+サーバー環境とクライアント環境向けにコードを条件付きで有効・無効にするために、`typeof window === 'undefined'` を使うのが一般的です。
+
+`babel-preset-expo` は、サーバー環境向けにバンドルする際、`typeof window === 'undefined'` を `true` に変換します。デフォルトでは、web クライアント環境向けにバンドルする場合、このチェックは変更されません。この変換は開発と本番の両方で実行されますが、条件付きの require の削除は本番でのみ行われます。
+
+`{ minifyTypeofWindow: true }` を渡すことで、`babel-preset-expo` を設定してこの変換を有効にできます。
+デフォルトでは、web ワーカーには `window` グローバルが存在しないため、web 環境であってもこの変換は無効のままです。
+
+<Step label="1">
+
+```js Input
+if (typeof window === 'undefined') {
+  console.log('Hello on the server!');
+}
+```
+
+</Step>
+
+<Step label="2">
+
+前のステップの入力コードは、サーバー環境（API routes、サーバーレンダリング）向けにバンドルする際、`babel-preset-expo` の処理後、次のコードスニペットに変換されます。
+
+```js Post babel-preset-expo (bundling for server)
+if (true) {
+  console.log('Hello on the server!');
+}
+```
+
+web またはネイティブアプリ向けにクライアントコードをバンドルする場合、`minifyTypeOfWindow: true` を設定しない限り `typeof window` は置き換えられません。
+
+```js Post babel-preset-expo
+if (typeof window === 'undefined') {
+  console.log('Hello on the server!');
+}
+```
+
+</Step>
+
+<Step label="3">
+
+サーバー環境では、上記のコードスニペットはその後圧縮され、未使用の条件分岐が削除されます。
+
+```js Post minifier (server)
+console.log('Hello on the server!');
+```
+
+```js Post minifier (client)
+if (typeof window === 'undefined') {
+  console.log('Hello on the server!');
+}
+// Empty file
+```
+
+</Step>
+
+## React Native web のインポート
+
+`babel-preset-expo` は、`react-native-web` のバレルファイル向けに組み込みの最適化を提供します。ESM を使って `react-native` を直接インポートすると、そのバレルファイルは本番用バンドルから削除されます。
+
+<Tabs>
+<Tab label="ESM">
+
+静的な `import` 構文を使って `react-native` をインポートすると、バレルファイルは削除されます。
+
+```js Input
+import { View, Image } from 'react-native';
+```
+
+```js Output (web)
+import View from 'react-native-web/dist/exports/View';
+import Image from 'react-native-web/dist/exports/Image';
+```
+
+</Tab>
+
+<Tab label="CJS">
+
+`require()` を使って `react-native` をインポートすると、バレルファイルは本番用バンドルにそのまま残ります。
+
+```js Input
+const { View, Image } = require('react-native');
+```
+
+```js Output (web)
+const { View, Image } = require('react-native-web');
+```
+
+</Tab>
+
+</Tabs>
+
+## 未使用のインポートとエクスポートを削除する
+
+> SDK 52 以降で [experimental](/more/release-statuses/#experimental) に利用できます。
+
+モジュール間で未使用のインポートとエクスポートを自動的に削除する機能を、実験的に有効にできます。これは、ネイティブの OTA ダウンロードを高速化したり、標準的な JavaScript エンジンで JavaScript をパース・実行する必要がある web のパフォーマンスを最適化したりするのに役立ちます。
+
+次のサンプルコードを考えてみましょう。
+
+```js index.js
+import { ArrowUp } from './icons';
+
+export default function Home() {
+  return <ArrowUp />;
+}
+```
+
+```js icons.js
+export function ArrowUp() {
+  /* ... */
+}
+
+export function ArrowDown() {
+  /* ... */
+}
+
+export function ArrowRight() {
+  /* ... */
+}
+
+export function ArrowLeft() {
+  /* ... */
+}
+```
+
+`index.js` では `ArrowUp` しか使われていないため、本番用バンドルでは `icons.js` の他のすべてのコンポーネントが削除されます。
+
+```js icons.js (Output)
+export function ArrowUp() {
+  /* ... */
+}
+```
+
+この仕組みはスケールし、アプリ内のすべてのプラットフォームにわたって、すべての `import` と `export` 構文を自動的に最適化します。これによりバンドルは小さくなりますが、JS の処理には依然として時間とコンピューターのメモリを要するため、何百万ものモジュールをインポートすることは避けてください。
+
+- ツリーシェイキングは本番用バンドルでのみ実行され、`import` と `export` 構文を使うモジュールに対してのみ実行できます。`module.exports` と `require` を使うファイルはツリーシェイキングされません。
+- `import`/`export` 構文を CJS に変換する `@babel/plugin-transform-modules-commonjs` のような Babel プラグインの追加は避けてください。プロジェクト全体でツリーシェイキングが壊れてしまいます。
+- 副作用としてマークされたモジュールは、グラフから削除されません。
+- `export * from "..."` は、export が `module.exports` または `exports` を使っていない限り、展開されて最適化されます。
+- Expo SDK 内のすべてのモジュールは ESM として配布されており、余すことなくツリーシェイキングできます。
+
+## ツリーシェイキングを有効にする
+
+> SDK 52 以降で [experimental](/more/release-statuses/#experimental) に利用できます。
+
+<Step label="1">
+
+`experimentalImportSupport` が有効になっていることを確認し、アプリが期待どおりにビルド・実行されることを確認します。
+
+> **info** **注：** SDK 54 以降ではデフォルトで有効です。
+
+<Collapsible summary="古い SDK バージョンで import サポートを有効にするには？">
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.getTransformOptions = async () => ({
+  transform: {
+    experimentalImportSupport: true,
+  },
+});
+
+module.exports = config;
+```
+
+実験的な import サポートは、`@babel/plugin-transform-modules-commonjs` プラグインのカスタムバージョンを使用します。これにより解決処理の数が大幅に減り、出力バンドルがシンプルになります。この機能は `inlineRequires` と組み合わせて使うことで、バンドルをさらに実験的に最適化できます。
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+環境変数 `EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH=1` を有効にすると、グラフ全体が作成されるまでモジュールが保持されます。先に進む前に、この機能を有効にした状態でアプリが本番環境で期待どおりにビルド・実行されることを確認してください。
+
+```sh .env
+EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH=1
+```
+
+これは本番モードでのみ使用されます。
+
+</Step>
+
+<Step label="3">
+
+この機能を有効にするには、環境変数 `EXPO_UNSTABLE_TREE_SHAKING=1` を有効にします。
+
+```sh .env
+EXPO_UNSTABLE_TREE_SHAKING=1
+```
+
+これは本番モードでのみ使用されます。
+
+</Step>
+
+<Step label="4">
+
+ツリーシェイキングの効果を確認するために、アプリを本番モードでバンドルします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export'],
+    yarn: ['$ yarn expo export'],
+    pnpm: ['$ pnpm expo export'],
+    bun: ['$ bun expo export'],
+  }}
+/>
+
+</Step>
+
+この機能は、Metro がコードをバンドルする基本的な構造を変更するため、非常に実験的です。デフォルトでは、Metro は可能な限り速い開発体験を実現するために、すべてをオンデマンドかつ遅延的にバンドルします。それに対してツリーシェイキングでは、バンドル全体が作成されるまで一部の変換を遅らせる必要があります。つまりキャッシュできるコードが減りますが、ツリーシェイキングは本番専用の機能であり、本番用バンドルでは変換キャッシュを使わないことが多いため、これは基本的に問題ありません。
+
+## バレルファイル
+
+> SDK 52 以降で [experimental](/more/release-statuses/#experimental) に利用できます。
+
+Expo のツリーシェイキングでは、star export は使用状況に基づいて自動的に展開・シェイキングされます。たとえば、次のコードスニペットを考えてみましょう。
+
+```js Input
+export * from './icons';
+```
+
+最適化パスは `./icons` を巡回し、その export を現在のモジュールに追加します。それらの export が未使用の場合、本番用バンドルから削除されます。
+
+```js Expanded
+export { ArrowRight, ArrowLeft } from './icons';
+```
+
+これは標準的なツリーシェイキングのルールに従ってシェイキングされます。`ArrowRight` だけをインポートする場合、`ArrowLeft` は本番用バンドルから削除されます。
+
+star export が `module.exports.ArrowUp` や `exports.ArrowDown` のような曖昧な export を取り込んでいる場合、最適化パスは star export を展開せず、バレルファイルから export は一切削除されません。展開された export を調べるには、[Expo Atlas](/ja/guides/analyzing-bundles/#expo-atlas-でバンドルサイズを分析する) を使用できます。
+
+この方法は `lucide-react` のようなライブラリと組み合わせて使うことで、アプリで使われていないすべてのアイコンを削除できます。
+
+## 再帰的な最適化
+
+> SDK 52 以降で [experimental](/more/release-statuses/#experimental) に利用できます。
+
+Expo は、グラフを徹底的に再帰しながら未使用のインポートを見つけることで、モジュールを最適化します。次のコードスニペットを考えてみましょう。
+
+```js Input
+export function foo() {
+  // Because bar is used here, it cannot be removed.
+  bar();
+}
+
+export function bar() {}
+```
+
+この場合、`bar` は `foo` の中で使われているため削除できません。しかし、`foo` がアプリのどこでも使われていない場合、`foo` は削除され、`bar` も削除できるかどうかを確認するためにモジュールが再度スキャンされます。このプロセスは、パフォーマンス上の理由から処理を打ち切るまでに、あるモジュールに対して 5 回まで再帰します。
+
+## 副作用
+
+Expo CLI は、[Webpack のシステム](https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free) に従ってモジュールの副作用を尊重します。副作用は一般的に、グローバル変数の定義（`console.log`）やプロトタイプの変更（これは避けるべきです）に使われます。
+
+モジュールに副作用があるかどうかは、**package.json** でマークできます。
+
+```json package.json
+{
+  "name": "library",
+  "sideEffects": ["./src/*.js"]
+}
+```
+
+副作用があると、未使用モジュールの削除が妨げられ、JS コードが期待どおりの順序で実行されるようにモジュールのインライン化が無効になります。副作用が空である場合や、コメントとディレクティブ（`"use strict"`、`"use client"` など）しか含まない場合は削除されます。
+
+Expo のツリーシェイキングを有効にすると、本番用バンドルの **metro.config.js** で `inlineRequires` を安全に有効化できます。これにより、モジュールは評価されるタイミングで遅延読み込みされるようになり、起動時間が速くなります。この機能は、モジュールを移動させることで副作用の実行順序を変えてしまうことがあるため、Expo のツリーシェイキングなしで使うのは避けてください。
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.getTransformOptions = async () => ({
+  transform: {
+    experimentalImportSupport: true,
+    inlineRequires: true,
+  },
+});
+
+module.exports = config;
+```
+
+## ツリーシェイキングのために最適化する
+
+Expo のツリーシェイキングが登場する以前、React Native のライブラリは、次のような条件分岐ブロックでラップすることでインポートを削除していました。
+
+```js
+if (process.env.NODE_ENV === 'development') {
+  require('./dev-only').doSomething();
+}
+```
+
+これには問題があります。正確な TypeScript サポートが得られないうえ、コードを静的に解析できないためグラフが曖昧になってしまうからです。Expo のツリーシェイキングを有効にすると、このコードを ESM のインポートを使うように再構成できます。
+
+```js Input
+import { doSomething } from './dev-only';
+
+if (process.env.NODE_ENV === 'development') {
+  doSomething();
+}
+```
+
+どちらの場合も、本番用バンドルではモジュール全体が空になります。

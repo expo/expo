@@ -1,0 +1,139 @@
+---
+title: リリースビルドをローカルで作成する
+sidebar_title: リリース
+description: Expo アプリのリリース（本番）ビルドをローカルで作成する方法を学びます。
+---
+
+import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
+import { GoogleAppStoreIcon } from '@expo/styleguide-icons/custom/GoogleAppStoreIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+アプリのリリースビルド（本番ビルドとも呼ばれます）をローカルで作成するには、お使いのコンピューター上で個別の手順に従い、あらゆるネイティブアプリの作成に必要なツールを使う必要があります。このガイドでは、Android と iOS それぞれに必要な手順を説明します。
+
+## Android
+
+Android 向けにリリースビルドをローカルで作成するには、[アップロードキー](https://developer.android.com/studio/publish/app-signing#certificates-keystores) で署名し、Android Application Bundle（**.aab**）を生成する必要があります。以下の手順に従ってください。
+
+<Prerequisites>
+  <Requirement title="OpenJDK のインストール">
+    [OpenJDK
+    ディストリビューション](/get-started/set-up-your-environment/?mode=development-build&buildEnv=local#install-jdk)
+    をインストールして `keytool` コマンドを使えるようにします。
+  </Requirement>
+  <Requirement title="android ディレクトリの生成">
+    [Continuous Native Generation (CNG)](/ja/workflow/continuous-native-generation/)
+    を使用している場合は、 `npx expo prebuild` を実行して生成します。
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+### アップロードキーを作成する
+
+<Collapsible summary="EAS Build を使ってすでにビルドを作成済みですか？ 認証情報をダウンロードして次の手順に進んでください。">
+
+EAS Build を使ってすでにビルドを作成している場合は、以下の手順に従って認証情報をダウンロードしてください。認証情報には、アップロードキーとそのパスワード、キーエイリアス、キーパスワードが含まれています。
+
+1. ターミナルで `eas credentials -p android` を実行し、ビルドプロファイルを選択します。
+2. **credentials.json** > **Download credentials from EAS to credentials.json** を選択します。
+3. ダウンロードした **keystore.jks** ファイルを **android/app** ディレクトリに移動します。
+4. 次の手順で必要になるので、**credentials.json** からアップロードキーストアのパスワード、キーエイリアス、キーパスワードの値をコピーしておきます。
+
+</Collapsible>
+
+Expo プロジェクトのディレクトリ内で、以下の `keytool` コマンドを実行してアップロードキーを作成します。
+
+<Terminal
+  cmd={[
+    '$ sudo keytool -genkey -v -keystore my-upload-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000',
+  ]}
+/>
+
+このコマンドを実行すると、キーストアのパスワードの入力を求められます。このパスワードはアップロードキーを保護します。次の手順で必要になるため、ここで入力したパスワードを覚えておいてください。
+
+このコマンドはまた、プロジェクトディレクトリ内に **my-upload-key.keystore** という名前のキーストアファイルを生成します。これを **android/app** ディレクトリに移動します。
+
+> **warning** **android** ディレクトリを Git などのバージョン管理システムにコミットする場合、このキーストアファイルはコミットしないでください。アップロードキーが含まれているため、非公開にしておく必要があります。
+
+</Step>
+
+<Step label="2">
+
+### gradle の変数を更新する
+
+**android/gradle.properties** ファイルを開き、ファイルの末尾に以下の gradle 変数を追加します。`*****` の部分は、前の手順で設定したキーストアとキーのパスワードに置き換えてください。
+
+これらの変数には、アップロードキーに関する情報が含まれています。
+
+```ruby android/gradle.properties
+# If you've downloaded the credentials from `eas credentials` command, see comments below for each value.
+
+# Path to the "keystore" file
+MYAPP_UPLOAD_STORE_FILE=my-upload-key.keystore
+# Replace with value of the `keystore.keyAlias` field in the credentials.json file
+MYAPP_UPLOAD_KEY_ALIAS=my-key-alias
+# Replace with value of the `keystore.password` field in the credentials.json file
+MYAPP_UPLOAD_STORE_PASSWORD=*****
+# Replace with value of the `keystore.keyPassword` field in the credentials.json file
+MYAPP_UPLOAD_KEY_PASSWORD=*****
+```
+
+> **warning** **android** ディレクトリを Git などのバージョン管理システムにコミットする場合、上記の情報はコミットしないでください。代わりに、お使いのコンピューター上に **~/.gradle/gradle.properties** ファイルを作成し、上記の変数をそのファイルに追加してください。
+
+</Step>
+
+<Step label="3">
+
+### build.gradle に署名の設定を追加する
+
+**android/app/build.gradle** ファイルを開き、以下の設定を追加します。
+
+<DiffBlock source="/static/diffs/android-release-build.diff" />
+
+</Step>
+
+<Step label="4">
+
+### リリース用の Android Application Bundle（aab）を生成する
+
+**android** ディレクトリに移動し、Gradle の `bundleRelease` コマンドを実行して **.aab** 形式のリリースビルドを作成します。
+
+<Terminal
+  cmd={['$ cd android', '', '$ ./gradlew app:bundleRelease']}
+  cmdCopy="cd android && ./gradlew app:bundleRelease"
+/>
+
+このコマンドは、**android/app/build/outputs/bundle/release** ディレクトリ内に app-release.aab を生成します。
+
+</Step>
+
+<Step label="5">
+
+### アプリを Google Play Console に提出する
+
+**.aab** ファイルを提出するには、Google Play Console から手動でアップロードします。あるいは、[EAS Submit](/deploy/submit-to-app-stores/#can-i-submit-builds-that-were-not) はローカルでビルドしたバイナリも受け付けており、`eas submit --platform android --path ./my-app.aab` で提出できます。
+
+<BoxLink
+  title="Android アプリの手動提出"
+  description="Google Play ストアへ初めてアプリを手動で提出する際の、ステップバイステップガイドに従ってください。"
+  href="/submit/android-manual/"
+  Icon={GoogleAppStoreIcon}
+/>
+
+</Step>
+
+## iOS
+
+iOS のリリースビルドをローカルで作成するには、署名と App Store Connect へのアップロードを担う Xcode を使用します。リリーススキームの設定からアプリのアーカイブ、アップロードまでの一連の流れについては、手動提出ガイドを参照してください。
+
+<BoxLink
+  title="Xcode で iOS アプリを手動提出する"
+  description="署名を設定し、Xcode でアプリをアーカイブして、App Store Connect にアップロードします。"
+  href="/submit/ios-manual/"
+  Icon={AppleAppStoreIcon}
+/>

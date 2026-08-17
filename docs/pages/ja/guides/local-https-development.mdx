@@ -1,0 +1,138 @@
+---
+title: ローカル HTTPS 開発を使う
+sidebar_title: ローカル HTTPS 開発
+description: Expo の web アプリ向けにローカル HTTPS をセットアップする方法を学びます。
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+
+Expo の web アプリをローカルで開発するときは、セキュアなブラウザ API をテストするために、ローカルの開発環境で HTTPS を使う必要がある場合があります。このガイドでは、Expo の web アプリ向けにローカル HTTPS をセットアップする方法を説明します。
+
+<Prerequisites>
+  <Requirement
+    title={
+      <>
+        <CODE>mkcert</CODE> のインストール
+      </>
+    }>
+    `mkcert` は開発用証明書を作成するためのツールです。インストール手順については、 [`mkcert` の
+    GitHub リポジトリ](https://github.com/FiloSottile/mkcert#installation) を参照してください。
+  </Requirement>
+</Prerequisites>
+
+## メリット
+
+- **チームでのスケーラビリティ**：同じセットアップを全員が使えます
+- **認証のサポート**：HTTP-Only Cookie とセキュアコンテキスト
+- **本番環境との整合性**：本番の HTTPS 環境に合わせられます
+- **共有のしやすさ**：チーム全体で一貫した開発 URL
+
+## プロジェクトをセットアップする
+
+<Step label="1">
+
+Expo プロジェクトを作成するか、既存のプロジェクトに移動します。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Create a new project (if needed)',
+      '$ npx create-expo-app@latest example-app --template default@sdk-57',
+      '$ cd example-app',
+      '',
+      '# Or navigate to existing project',
+      '$ cd your-expo-project',
+    ],
+    yarn: [
+      '# Create a new project (if needed)',
+      '$ yarn create expo-app example-app --template default@sdk-57',
+      '$ cd example-app',
+      '',
+      '# Or navigate to existing project',
+      '$ cd your-expo-project',
+    ],
+    pnpm: [
+      '# Create a new project (if needed)',
+      '$ pnpm create expo-app example-app --template default@sdk-57',
+      '$ cd example-app',
+      '',
+      '# Or navigate to existing project',
+      '$ cd your-expo-project',
+    ],
+    bun: [
+      '# Create a new project (if needed)',
+      '$ bun create expo example-app --template default@sdk-57',
+      '$ cd example-app',
+      '',
+      '# Or navigate to existing project',
+      '$ cd your-expo-project',
+    ],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+Expo の開発サーバーを起動します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --web'],
+    yarn: ['$ yarn expo start --web'],
+    pnpm: ['$ pnpm expo start --web'],
+    bun: ['$ bun expo start --web'],
+  }}
+/>
+
+アプリは `http://localhost:8081` で動作します。このターミナルウィンドウは開いたままにしておきます。
+
+</Step>
+
+<Step label="3">
+
+`mkcert` を使って localhost 用の証明書を生成します。プロジェクトのルートディレクトリで、新しいターミナルウィンドウから次のコマンドを実行します。
+
+<Terminal cmd={['$ mkcert localhost']} />
+
+> **info** **ヒント：** `mkcert` をインストールしたあとは、必ず `mkcert -install` を実行してローカル認証局（CA）をインストールしてください。
+
+これにより、プロジェクトのルートディレクトリ内に、署名済みの証明書ファイルが 2 つ生成されます。`localhost.pem`（証明書）と `localhost-key.pem`（秘密鍵）です。
+
+</Step>
+
+<Step label="4">
+
+プロジェクトのルートディレクトリで、次のコマンドを実行してプロキシを起動します。
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
+    ],
+    yarn: [
+      '$ yarn dlx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
+    ],
+    pnpm: [
+      '$ pnpm dlx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
+    ],
+    bun: [
+      '$ bunx local-ssl-proxy --source 443 --target 8081 --cert localhost.pem --key localhost-key.pem',
+    ],
+  }}
+/>
+
+> **info** **ヒント：** [`local-ssl-proxy`](https://github.com/cameronhunter/local-ssl-proxy) は、ポート 443 の HTTPS トラフィックをポート 8081 の Expo 開発サーバーへ転送するプロキシサーバーを作成するツールです。
+
+これにより、ポート 443 の HTTPS トラフィックをポート 8081 の Expo 開発サーバーへ転送するプロキシが作成されます。
+
+</Step>
+
+<Step label="5">
+
+ブラウザで `https://localhost` を開いてアプリにアクセスします。これで Expo アプリが HTTPS で動作するようになりました。
+
+</Step>

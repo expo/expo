@@ -1,0 +1,262 @@
+---
+title: Expo でアプリを開発する
+description: Expo アプリを構築する開発プロセスの概要。コアとなる開発ループのメンタルモデルを組み立てるのに役立ちます。
+---
+
+import { DocsLogo } from '@expo/styleguide';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Diagram } from '~/ui/components/Diagram';
+import { Terminal } from '~/ui/components/Snippet';
+
+Expo と React Native を使い始めたばかりの方も、このエコシステムに長く関わってきた方も、このドキュメントは Expo アプリを構築する開発プロセスをより深く理解するのに役立ちます。コアとなる開発ループと、そこに Expo のツールがどう組み込まれるかというメンタルモデルを組み立てられます。
+
+## 主要な概念
+
+以下の概念を理解しておくと役に立ちます。このガイドの続きを読むときにも、Expo のツールを使うときにも、これらの定義に立ち返ることをおすすめします。
+
+<Collapsible summary="「Expo アプリ」とは何ですか？">
+
+これは _Expo のツールを使う React Native アプリ_ を表すために私たちが使っている略称です。「Expo アプリ」は、Expo SDK のパッケージを 1 つだけ使っていても、Expo Router や Expo CLI、Continuous Native Generation を使っていても、それらの組み合わせでも、その他の Expo ツールを使っていても構いません。
+
+「Expo アプリ」と呼ぶのは、_Expo のツールを使う React Native アプリ_ という言い方が、何度も書いたり口に出したりするにはあまりにも不便だからです。
+
+<Collapsible summary={<>「Expo アプリ」と「Expo のツールを<span><i>使わない</i></span> React Native アプリ」とで開発プロセスは違いますか？</>}>
+
+Expo はそれぞれ独立して導入できるさまざまなツールとサービスを提供しているため、答えはどのツールを選ぶかによって変わります。Expo が提供するものの大半については、Meta が提供する React Native のツールに相当するものはありません。
+
+</Collapsible>
+
+</Collapsible>
+
+<Collapsible summary="「Expo」と「Expo Application Services（EAS）」の違いは何ですか？">
+
+Expo は、あらゆる規模の React Native アプリを構築・保守するための強力なツールを開発者に提供するオープンソースプロジェクトです。たとえば Expo CLI、Expo Router、Expo SDK のパッケージなどです。Expo のオープンソースツールはすべて完全に無料で、MIT ライセンスで提供されています。
+
+Expo Application Services（EAS）は、Expo および React Native のプロジェクトで次のことを行うために使えるホスティング型サービス群です。
+
+- アプリのビルド、提出、アップデート
+- これらのプロセス全体の自動化
+- チームでのコラボレーション
+
+EAS は、over-the-air アップデートを配信するためのアプリケーションサーバーや CDN、ビルドを実行する物理サーバーなど、物理的なリソースを必要とする一連の課題を解決します。EAS には、学生や趣味のプロジェクトの多くで十分に使える充実した [無料プラン](https://expo.dev/pricing#get-started) があります。
+
+git を使うのに GitHub を使う必要はありませんが、多くの場面で GitHub があると確実に役立ちます。EAS と Expo の関係も同じです。
+
+<Collapsible summary="Expo のオープンソースツールを使う場合、EAS も使わなければいけませんか？">
+
+いいえ！ あなたの Expo プロジェクトはただの React Native アプリであり、それはただのネイティブアプリです。Fastlane でも、好きなネイティブのビルド・アップデートなどのツールでも使えます。
+
+EAS のサービスの大半は自前のインフラで動かすこともでき、その方法も案内しています。たとえば [アップデートのセルフホスティング](/versions/latest/sdk/updates/)（EAS Update を使う代わり）や、[ローカルでのビルド実行](/ja/guides/local-app-development/)、[自前の CI](/build/building-on-ci/) での実行（EAS Build のワーカー群を使う代わり）などです。
+
+ほとんどのチームにとっては、他のインフラでサービスを調達・構築・保守するエンジニアリングの時間とリソースを費やすよりも、EAS を使う方が理にかなっています。さらに EAS は、アプリバージョンの普及状況を監視したり、特定のビルドにアップデートを割り当てたり、そのアップデートを段階的にロールアウトしたりできるデプロイページなど、サービス間の深い連携を提供します。これは [EAS Insights](/eas-insights/introduction/) による監視にもつながっています。
+
+</Collapsible>
+
+<Collapsible summary="Expo のオープンソースツールを使っていなくても EAS は使えますか？">
+
+はい！ EAS はどんな React Native プロジェクトにもよく合うと考えています。
+
+</Collapsible>
+
+</Collapsible>
+
+<Collapsible summary="Expo Go: 学ぶ人のためのプレイグラウンド">
+
+[Expo Go](https://expo.dev/go) は React Native を始める最速の方法で、特に [Snack](https://snack.expo.dev/) と組み合わせると効果的です。学生や学習者が基本を理解するのに最適です。
+
+ただし、**Expo Go は制約のあるプレイグラウンドであり、本番品質のプロジェクトを構築する用途には向いていません**。**アプリをストアに配信する予定があるなら、[開発ビルド](#開発ビルド) の方が柔軟で信頼性が高く、完成度の高い開発環境を提供します。** このガイドで Expo Go について詳しく説明することはなく、Expo Go に触れるのはこのセクションだけです。
+
+</Collapsible>
+
+<Collapsible summary="開発ビルド">
+
+開発ビルドとは、`expo-dev-client` ライブラリを含むアプリのデバッグビルドです。できる限り速く反復できるようにし、Expo Go よりも柔軟で信頼性が高く、完成度の高い開発環境を提供します。任意のネイティブライブラリをインストールでき、[app config](/ja/workflow/configuration/) や [config plugin](/config-plugins/introduction/) の作成によって [ネイティブプロジェクト](#android-と-ios-のネイティブプロジェクト) を設定・変更できます。開発ビルドは [ローカル](/ja/guides/local-app-development/#expo-dev-client-を使ったローカルビルド) で作成することも、[EAS Build](/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build) を使ってクラウドで作成することもできます。
+
+</Collapsible>
+
+<Collapsible summary="Android と iOS のネイティブプロジェクト">
+
+モバイルプラットフォーム向けの React Native アプリは、相互に結びついた 2 つの部分でできています。
+
+<Collapsible summary="1. アプリの JavaScript">
+
+React コンポーネントと、アプリケーションロジックのほとんど（すべてではないにしても）が含まれます。React の web サイトにおけるアプリの JavaScript とおおむね同じ役割です。
+
+</Collapsible>
+
+<Collapsible summary="2. ネイティブプロジェクト">
+
+JavaScript アプリをバンドルする Android プロジェクトと Xcode プロジェクトで、各プラットフォームで JavaScript アプリを起動する土台になります。またネイティブコンポーネントの描画を担い、プラットフォーム固有の機能へのアクセス手段を提供し、インストール済みのネイティブライブラリと連携します。名前（ホーム画面に表示されるもの）、アイコン、必要なパーミッション、関連ドメイン、対応する画面の向きといったアプリの設定は、ネイティブプロジェクトで構成されます。
+
+</Collapsible>
+
+他のモバイルアプリと同じく、ユーザーに配布されるアプリケーションは Android Studio または Xcode のプロジェクトをコンパイル（「ビルド」）することで作られます。
+
+`npx create-expo-app` で新しいアプリを初期化しても、**android** や **ios** ディレクトリは見当たりません。[`npx expo prebuild` を実行してネイティブプロジェクトを生成](/ja/workflow/continuous-native-generation/) できます。このコマンドはネイティブプロジェクトを初期化し、プロジェクトの Expo app config（**app.json/app.config.js**）をそこへ適用します。
+
+クラウドベースの開発ワークフローを使う場合は、prebuild を実行したり Android Studio や Xcode を自分のマシンにインストールしたりする必要は一度もないかもしれません（とはいえ、あると便利だと感じることはあるでしょう）。これについては後述の [クラウドベースとローカルの開発ワークフロー](#クラウドベースとローカルの開発ワークフロー) で説明します。
+
+<Collapsible summary="create-expo-app でプロジェクトを初期化したとき、ネイティブプロジェクトがデフォルトで作成されないのはなぜですか？">
+
+このデフォルトの挙動は、必要になったときにネイティブプロジェクトを生成する [Continuous Native Generation](/ja/workflow/continuous-native-generation/)（CNG）の利用を促すものです。CNG を使うと、アップグレードやプロジェクトの保守が大幅に楽になります。
+次の 3 つのコマンドは、おおむね同じプロジェクトを生成します。
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx create-expo-app@latest --template default@sdk-57 MyApp && cd MyApp && npx expo prebuild',
+      '',
+      '$ npx create-expo-app --template bare-minimum',
+      '',
+      '$ npx @react-native-community/cli@latest init MyApp && cd MyApp && npx install-expo-modules',
+    ],
+    yarn: [
+      '$ yarn create expo-app --template default@sdk-57 MyApp && cd MyApp && yarn expo prebuild',
+      '',
+      '$ yarn create expo-app --template bare-minimum',
+      '',
+      '$ yarn dlx @react-native-community/cli@latest init MyApp && cd MyApp && yarn dlx install-expo-modules',
+    ],
+    pnpm: [
+      '$ pnpm create expo-app --template default@sdk-57 MyApp && cd MyApp && pnpm expo prebuild',
+      '',
+      '$ pnpm create expo-app --template bare-minimum',
+      '',
+      '$ pnpm dlx @react-native-community/cli@latest init MyApp && cd MyApp && pnpm dlx install-expo-modules',
+    ],
+    bun: [
+      '$ bun create expo --template default@sdk-57 MyApp && cd MyApp && bun expo prebuild',
+      '',
+      '$ bun create expo --template bare-minimum',
+      '',
+      '$ bunx @react-native-community/cli@latest init MyApp && cd MyApp && bunx install-expo-modules',
+    ],
+  }}
+/>
+
+</Collapsible>
+
+</Collapsible>
+
+<Collapsible summary="Continuous Native Generation (CNG)">
+
+Continuous Native Generation（CNG）は、[ネイティブプロジェクト](#android-と-ios-のネイティブプロジェクト) を **app.json** と **package.json** から必要に応じて生成する、Expo アプリの構築プロセスです。**node_modules** が **package.json** から生成されるのと似ています。
+
+[ネイティブプロジェクト](#android-と-ios-のネイティブプロジェクト) のディレクトリ（**android** と **ios**）は、新しいプロジェクトを作成すると自動的に **.gitignore** に追加されます。いつでも削除でき、必要になったら `npx expo prebuild` で Expo app config から再生成できます。クラウドベースの開発ワークフローを使うなら、自分の開発マシンで prebuild を実行することは一度もないかもしれません。
+
+CNG を使うと、新しいバージョンの React Native へのアップグレードがずっと簡単になります。プロジェクトの保守を単純にし、[App Clips](https://github.com/bndkt/react-native-app-clip)、[share extension](https://github.com/timedtext/expo-config-plugin-ios-share-extension)、[エラーレポート](https://github.com/getsentry/sentry-react-native) といった複雑な機能のセットアップも容易にします。これらはすべて [config plugin](/config-plugins/introduction/) によって可能になっています。[CNG](/ja/workflow/continuous-native-generation/) の詳細を確認してください。
+
+<Collapsible summary="prebuild でプロジェクトを生成するのではなく、Android Studio や Xcode でネイティブプロジェクトの設定を編集したい場合はどうすればよいですか？">
+
+CNG は多くのチームにとって有用であることが実証されています。しかし、あなたのプロジェクトに最適とは限りません。そして多くの場合、それはまったく妥当な Expo ツールの使い方です。
+
+プロジェクトで `npx expo prebuild` を実行したうえで、Expo app config を使う代わりに **android** と **ios** のディレクトリを直接変更できます。そうすると決めた場合は、以降 prebuild でプロジェクトを再生成できなくなることに注意してください。ネイティブの変更を直接加えたあとに prebuild を実行すると、その変更はすべて上書きされます。
+
+なお、ネイティブプロジェクトを直接変更しなくても [config plugin](/config-plugins/introduction/) を使ってネイティブプロジェクトの設定を変更でき、後から CNG に戻したくなった場合にも役立ちます。
+
+</Collapsible>
+
+<Collapsible summary="prebuild を再実行する必要があるかどうかは、どう判断しますか？">
+
+プロジェクトに新しいネイティブ依存関係を追加したり、Expo app config（**app.json/app.config.js**）でプロジェクトの設定を変更したりした場合は、`npx expo prebuild --clean` を実行してネイティブプロジェクトのディレクトリを再生成できます。
+
+新しい依存関係がネイティブコードの変更を必要とするかどうかを判断する方法については、[サードパーティライブラリの互換性を判断する](/ja/workflow/using-libraries/#サードパーティライブラリの互換性を判断する) を参照してください。
+
+</Collapsible>
+
+</Collapsible>
+
+<Collapsible summary="クラウドベースとローカルの開発ワークフロー">
+
+クラウドベースとローカルのどちらを選ぶかで、開発ループが大きく変わることはありません。違いは、JavaScript コードを動かす対象となるアプリのバイナリをどう作り、どう配布するかという点です。クラウドベースかローカルかは、新しいネイティブビルドを実行するたびに選び直せます。
+
+EAS Build を使ってクラウドでアプリをコンパイルするのは、コマンドを 1 つ実行するだけで済み、Android Studio や Xcode をインストールする必要はありません。クラウドビルドはチームメイトやステークホルダーとアプリを共有するのも容易で、[その他にも利点があります](/build/introduction/)。
+
+ローカルでアプリをコンパイルするには、Android Studio と Xcode をマシンにインストールする必要があります。そのうえで、それらのツールからビルドを実行するか、`npx expo run:[android|ios]` を使います。これは、ネイティブのデバッグツールを使って実機やエミュレーター/シミュレーターでアプリをデバッグしたいときに特に役立ちます。
+
+[EAS Build によるクラウドベースのワークフロー](/build/introduction/) と [ローカル開発](/ja/guides/local-app-development/) の詳細を確認してください。
+
+</Collapsible>
+
+## プロジェクトを初期化して実行する
+
+新しいプロジェクトを作る最も簡単な方法は [`create-expo-app` を使うこと](/get-started/create-a-project/) です。プロジェクトを作成したら、実機やエミュレーター/シミュレーターの Expo Go ですぐに起動でき、試しに触ったり手早くプロトタイプを作ったりできます。
+
+ほとんどの場合は、プロジェクトの開発ビルドを作成して使うことになります。[`expo-dev-client`](/develop/development-builds/introduction/) ライブラリをインストールします。開発ビルドは EAS Build でも、自分のマシン上のローカルでも作成できます。
+
+<BoxLink
+  title="EAS を使って開発ビルドを作成する"
+  description="EAS を使ってプロジェクトの開発ビルドを作成する方法を学びます。"
+  href="/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build"
+  Icon={DocsLogo}
+/>
+
+<BoxLink
+  title="ローカルで開発ビルドを作成する"
+  description="自分のマシンと Android Studio、Xcode を使ってローカルでアプリをコンパイルする方法を学びます。"
+  href="/ja/guides/local-app-development/#expo-dev-client-を使ったローカルビルド"
+  Icon={DocsLogo}
+/>
+
+## コアとなる開発ループ
+
+<Diagram
+  source="/static/images/guides/core-development-loop-light.png"
+  darkSource="/static/images/guides/core-development-loop-dark.png"
+  alt="Core development loop diagram"
+  disableSrcSet
+/>
+
+上の図で説明しているコアとなる開発ループは、アプリを開発するときに通常たどる 4 つの主な活動のサイクルです。
+
+- #### JavaScript のコードを書いて実行する
+
+  コンポーネントの作成、ビジネスロジックの記述、ネイティブコードの変更を必要としないライブラリの npm からのインストールなどが含まれます。ここでの変更は、アプリのネイティブ側に一切触れることなくアプリに反映されます。
+
+- #### アプリの設定を更新する
+
+  app config ファイル（**app.json** または **app.config.js**）を使ってアプリの設定を変更することを指します。アプリの名前、アイコン、スプラッシュスクリーンなどのプロパティの更新が含まれます。これらの変更がすべてネイティブプロジェクトに直接影響するわけではありません。ただし、ネイティブプロジェクトに影響する変更を行う場合は、[app config](/ja/workflow/configuration/) を使ってネイティブプロジェクトの設定を変更するか、[config plugin](/config-plugins/introduction/) を作成または利用できます。app config ファイルで使えるプロパティの一覧については [app config リファレンス](/versions/latest/config/app/) を参照してください。
+
+- #### ネイティブコードを書く、またはネイティブプロジェクトの設定を変更する
+
+  ネイティブコードを直接書いたり、ネイティブコードの設定を変更したりすることが含まれます。これらの変更を行うにはネイティブコードのプロジェクトディレクトリにアクセスするか、[ローカルの Expo Module](/modules/get-started/#add-a-new-module-to-an-existing-application) としてネイティブコードを書く必要があります。
+
+- #### ネイティブコードの変更を必要とするライブラリをインストールする
+
+  ライブラリがネイティブコードのプロジェクト設定の変更を必要とする場合が含まれます。ライブラリが config plugin を提供しているか、app config を更新する手順が示されているかのどちらかです。前の活動と同じく、これも開発ビルドの作成を必要とします。
+
+[開発ビルド](#開発ビルド) を作成するときは、2 つの選択肢があります。[EAS Build](/build/setup/) を使ってクラウドでビルドするか、ローカルで行うかです。ローカルで行う場合は、[CNG](#continuous-native-generation-cng) と [`npx expo prebuild --clean`](#prebuild-を再実行する必要があるかどうかはどう判断しますか) を使うか、[`npx expo run android|ios` や Android Studio と Xcode](/ja/guides/local-app-development/#ローカルでのアプリコンパイル) で開発ビルドを作成できます。
+
+> **注：** ローカルで開発ビルドを作成する場合、`npx expo run` コマンドはアプリをビルドする前にネイティブディレクトリを生成します。最初のビルドのあとにプロジェクトの設定やネイティブコードを変更した場合は、プロジェクトを再ビルドする必要があります。`npx expo prebuild` を再実行すると、変更は既存のファイルの上に重ねられます。またビルド後に異なる結果になることもあります。これを避けるには、ネイティブディレクトリをプロジェクトの **.gitignore** に追加し、`npx expo prebuild --clean` コマンドを使ってください。
+
+アプリの開発ループでは、[異なるバリアント（development、preview、production）](/build-reference/variants/) を同じデバイスにインストールすることもできます。
+
+開発ループのもう 1 つの重要な要素がデバッグです。アプリのデバッグについては [ランタイムの問題をデバッグする](/debugging/runtime-issues/) を参照し、利用できるさまざまな [デバッグツール](/debugging/tools/) について学んでください。
+
+## テスターとアプリを共有する
+
+アプリ開発の次のステップは、チームやベータテスターとアプリを共有したり、複数のテスト用デバイスで実行したりすることです。従来のやり方は、アプリのバイナリを Google Play Beta（Android）や TestFlight（iOS）にアップロードするというものです。これは時間がかかるうえ、（たとえば TestFlight の場合）一度に有効なビルドは 1 つだけという制限があります。
+
+EAS Build を使っている場合は、[内部配布](/build/internal-distribution/) を読んでテスト用にアプリを共有する方法を確認することをおすすめします。
+
+ローカルでアプリをコンパイルする場合は、[ローカルで本番ビルドを作成](/ja/guides/local-app-production/) できます。
+
+## アプリをストアにリリースする
+
+アプリをアプリストアにリリースするには、[EAS Submit](/deploy/submit-to-app-stores/) を使えます。EAS Submit の使い方の詳細については、[Google Play Store への提出](/submit/android/) と [Apple App Store への提出](/submit/ios/) を参照してください。
+
+ローカルで本番ビルドを作成するには、[そのガイド](/ja/guides/local-app-production/) を参照したうえで、アプリストアのガイドに従ってアプリを提出してください。
+
+## 本番アプリを監視する
+
+本番アプリを監視する方法は 2 つあります。クラッシュレポートとアナリティクスです。クラッシュレポートは、ユーザーがアプリの利用中に遭遇した例外やエラーを把握するのに役立ちます。クラッシュレポートを有効にするには [Sentry](/guides/using-sentry/) や [BugSnag](https://docs.bugsnag.com/platforms/react-native/expo/) が使えます。
+
+アナリティクスを使うと、ユーザーがアプリをどう操作しているかを追跡できます。Expo と React Native のエコシステムで利用できるサービスについては [アナリティクスの概要](/guides/using-analytics/) を参照してください。
+
+## アプリをアップデートする
+
+`expo-updates` ライブラリを使うと、本番アプリに対してアプリの JavaScript の即時アップデートをプログラムから配信できます。
+
+React Native アプリでの即時アップデートを第一級でサポートする [EAS Update](/eas-update/introduction/) が使えます。EAS Update はグローバル CDN のエッジからアップデートを配信し、対応しているクライアントには HTTP/3 などの最新のネットワークプロトコルを使います。また EAS Build を使う [開発者向けに最適化](/eas-update/preview/) されています。[ローカル](/eas-update/standalone-service/) で作成したビルドにも使えます。

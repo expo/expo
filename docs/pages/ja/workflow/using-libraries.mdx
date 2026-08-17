@@ -1,0 +1,151 @@
+---
+title: Expo SDK、React Native、サードパーティライブラリを使う
+sidebar_title: ライブラリを使う
+description: プロジェクトで Expo SDK、React Native のライブラリ、その他のサードパーティ npm パッケージを使う方法を学びます。
+---
+
+import InstallSection from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal, SnackInline } from '~/ui/components/Snippet';
+
+どんなアプリも、いずれはサードパーティライブラリを使うことになります。そのため、ライブラリがプロジェクトと互換性があるかどうかを判断する方法を理解しておくことが重要です。
+
+## React Native のコアライブラリ
+
+React Native は、ほとんどの開発者がアプリで必要とする組み込みのプリミティブ一式を提供しています。これには `<ActivityIndicator>`、`<TextInput>`、`<Text>`、`<ScrollView>`、`<View>` といったコンポーネントが含まれます。これらは React Native ドキュメントの [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) に一覧があります。また、[使っている Expo SDK バージョンに対応する React Native のバージョン](/versions/latest) も確認できます。
+
+プロジェクトで React Native のコンポーネントや API を使うには、コード内で `react-native` パッケージからインポートします。
+
+<SnackInline>
+
+```tsx
+import { Text, View } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Hello, world!</Text>
+    </View>
+  );
+}
+```
+
+</SnackInline>
+
+## Expo SDK のライブラリ
+
+Expo SDK は、React Native のコアライブラリではカバーされない部分を引き継ぎます。オーディオ、バーコードスキャン、カメラ、カレンダー、連絡先、動画など、多くのデバイスおよびシステム機能へのアクセスを提供します。さらに、アップデート、マップ、OAuth 認証ツールなど、その他の強力なライブラリも追加します。詳しくは、[Expo SDK に何を含めるかの決め方](https://expo.fyi/whats-in-the-sdk) をご覧ください。
+
+Expo SDK のライブラリを使うには、[API リファレンス](/versions/latest/) で探しているものを見つけるか、ドキュメント検索を使います。
+
+<ConfigReactNative>
+
+`npx @react-native-community/cli@latest init` を使ってアプリを初期化していて、まだ `expo` パッケージをインストールしていない場合は、詳しくは [Expo モジュールのインストールガイド](/ja/bare/installing-expo-modules) を参照してください。
+
+</ConfigReactNative>
+
+各 API リファレンスの先頭には、プラットフォーム互換性タグが表示されます。これは、ライブラリがどのプラットフォームおよび環境と互換性があるかを示します。たとえば、[`expo-device`](/versions/latest/sdk/device/) ライブラリのプラットフォームタグは次のようになります。
+
+<ContentSpotlight
+  alt="Platform compatibility tags for expo-device library on its API reference."
+  src="/static/images/guides/platform-tags.png"
+  className="max-w-[480px]"
+/>
+
+プラットフォーム互換性テーブルのあとには、ライブラリの説明と、そのインストール手順を示すセクションが続きます。例:
+
+<InstallSection packageName="expo-device" hideBareInstructions />
+
+`npx expo install` コマンドは、プロジェクトと互換性のあるライブラリのバージョンを選び、（npm などの）JavaScript パッケージマネージャーを使ってインストールします。
+
+続いて、典型的な API リファレンスには次が含まれます。
+
+- ライブラリが config plugin を必要とする場合、その使用方法の情報。
+- ライブラリの使い方を示すコード例。
+- ライブラリのインポート方法を示す API セクション。続けて、ライブラリが提供するフック、props、型、メソッド、クラスの一覧。
+
+> **注：** TypeScript を使っている場合、API セクションに含まれる情報は、TypeScript に対応したコードエディタ（VS Code など）でオートコンプリートとして確認できます。
+
+## サードパーティライブラリ
+
+### サードパーティライブラリを見つける
+
+[React Native Directory](https://reactnative.directory) は、React Native 専用に作られたライブラリを検索できるデータベースです。探しているライブラリが React Native や Expo SDK で提供されていない場合、アプリ用のライブラリを探すときにまず最初に見るべき場所です。
+
+React Native Directory の次に良い選択肢は [npm レジストリ](https://www.npmjs.com/) です。npm レジストリは JavaScript ライブラリの決定的なソースですが、そこに掲載されているライブラリのすべてが React Native と互換性があるとは限りません。React Native は、Node.js、web ブラウザ、Electron など、数ある JavaScript プログラミング環境の 1 つであり、npm にはこれらすべての環境向けに動作するライブラリが含まれています。React Native と互換性のあるライブラリは、[開発ビルド](/ja/workflow/overview/#開発ビルド) を作成すれば Expo プロジェクトとも互換性があります。ただし、[Expo Go](https://expo.dev/go) アプリとは互換性がない場合があります。
+
+### サードパーティライブラリの互換性を判断する
+
+本番品質のアプリを構築するには Expo の [開発ビルド](/ja/workflow/overview/#開発ビルド) を使います。開発ビルドには、プロジェクトの実行に必要なネイティブコードがすべて含まれています。これは、App Store や Google Play に公開する前にアプリをテストする優れた方法です。ネイティブプロジェクト（**android** と **ios** ディレクトリ）の設定を必要とするライブラリも含められます。
+
+Expo Go は、学生や学習者が React Native をすばやく試せるプレイグラウンドです。すべてのライブラリをサポートするために必要なネイティブコードがすべて含まれているわけではないため、制約があり、本番品質のプロジェクトを構築するには向いていません。**React Native Directory** の web サイトにアクセスして「✔️ Expo Go」タグが付いているかを確認すれば、Expo Go と互換性のあるライブラリを見つけられます。[Expo Go でフィルタリング](https://reactnative.directory/?expoGo=true) を有効にすることもできます。
+
+新しい依存関係がネイティブプロジェクトのディレクトリを変更するかどうかを判断するには、以下を確認します。
+
+- ライブラリに **android** または **ios** ディレクトリが含まれていますか？
+- ライブラリの README に linking についての記載がありますか？
+- プロジェクトの設定を変更するために、ライブラリが **android/app/src/main/AndroidManifest.xml** や **ios/Podfile**、**ios/Info.plist** の変更を必要としますか？
+- ライブラリに [config plugin](/config-plugins/introduction/) がありますか？
+
+**これらの質問のいずれかに「はい」と答えた場合は、** プロジェクトでそのライブラリを使うために [開発ビルドを作成](/develop/development-builds/introduction/) する必要があります。
+
+**ディレクトリに掲載されていない場合は？** プロジェクトを GitHub で見つけられます。簡単な方法は `npx npm-home --github <package-name>` を使うことです。たとえば、`react-native-localize` の GitHub ページを開くには、次を実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx npm-home --github react-native-localize'],
+    yarn: ['$ yarn dlx npm-home --github react-native-localize'],
+    pnpm: ['$ pnpm dlx npm-home --github react-native-localize'],
+    bun: ['$ bunx npm-home --github react-native-localize'],
+  }}
+/>
+
+> ライブラリの互換性を判断するのに助けが必要な場合は、[React Native Directory リポジトリで issue を作成](https://github.com/react-native-community/directory/issues/new/choose) してお知らせください。これはあなたの助けになるだけでなく、将来ほかの開発者がすぐに答えを得られるようにもなります！
+
+### サードパーティライブラリをインストールする
+
+> `npm install` や `yarn add` を直接使うのではなく、常に `npx expo install` を使うことをおすすめします。これにより、可能な場合は [Expo CLI](/more/expo-cli/) がライブラリの互換性のあるバージョンを選び、既知の非互換性についても警告してくれます。
+
+ライブラリが React Native と互換性があるかを判断できたら、[Expo CLI](/more/expo-cli/) を使ってパッケージをインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @react-navigation/native'],
+    yarn: ['$ yarn expo install @react-navigation/native'],
+    pnpm: ['$ pnpm expo install @react-navigation/native'],
+    bun: ['$ bun expo install @react-navigation/native'],
+  }}
+/>
+
+追加の設定や使用方法については、必ずプロジェクトの web サイトや README に従ってください。次のコマンドを使うと README にすぐアクセスできます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx npm-home @react-navigation/native'],
+    yarn: ['$ yarn dlx npm-home @react-navigation/native'],
+    pnpm: ['$ pnpm dlx npm-home @react-navigation/native'],
+    bun: ['$ bunx npm-home @react-navigation/native'],
+  }}
+/>
+
+モジュールに追加のネイティブ設定が必要な場合は、[config plugin](/config-plugins/introduction/) を使って行えます。パッケージによっては config plugin が必要でもまだ用意されていないことがあり、その場合は [out-of-tree config plugin](https://github.com/expo/config-plugins/) の一覧を参照できます。
+
+<ConfigReactNative>
+
+プロジェクトが [Expo Prebuild](/ja/workflow/continuous-native-generation) をサポートしていない場合、[config plugin](/config-plugins/introduction/) は使えません。その場合は [Expo Prebuild を導入する](/ja/guides/adopting-prebuild) か、各モジュールの web サイトや README にある追加のセットアップガイドに従って、各ライブラリを手動でセットアップ・設定してください。
+
+</ConfigReactNative>
+
+モジュールが [Expo Go](https://expo.dev/go) でサポートされていない場合は、[開発ビルド](/develop/development-builds/introduction/) を作成できます。
+
+<BoxLink
+  title="カスタムネイティブコードを追加する"
+  description="Expo プロジェクトにカスタムネイティブコードを追加する方法を学びます。"
+  href="/ja/workflow/customizing/"
+/>
+
+### サードパーティライブラリをバージョンチェックから除外する
+
+特定のバージョンのサードパーティライブラリをインストールしていて、それを `npx expo install`、`npx expo-doctor`、`npx expo start` が行うバージョンチェックから除外したい場合は、**package.json** ファイルの [`expo.install.exclude`](/versions/latest/config/package-json/#installexclude) プロパティを使います。

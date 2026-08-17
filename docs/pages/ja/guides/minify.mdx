@@ -1,0 +1,169 @@
+---
+title: JavaScript を圧縮する
+sidebar_title: 圧縮
+description: Expo CLI で Metro バンドラーを使った JavaScript の圧縮（minification）プロセスをカスタマイズする方法を学びます。
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+圧縮（minification）は最適化のビルドステップです。空白の折りたたみ、コメントの削除、静的な演算の短縮など、ソースコードから不要な文字を取り除きます。このプロセスにより、最終的なサイズが小さくなり、ロード時間が改善されます。
+
+## Expo CLI での圧縮
+
+Expo CLI では、本番用エクスポート（`npx expo export`、`npx expo export:embed`、`eas build` などのコマンドを実行したとき）の際に、JavaScript ファイルに対して圧縮が行われます。
+
+たとえば、プロジェクト内の次のコードスニペットを考えてみましょう。
+
+```js Input
+// This comment will be stripped
+console.log('a' + ' ' + 'long' + ' string' + ' to ' + 'collapse');
+```
+
+これは Expo CLI によって次のように圧縮されます。
+
+```js Output
+console.log('a long string to collapse');
+```
+
+> **info** **ヒント：** `/** @preserve */` ディレクティブを使うことで、コメントを残すことができます。
+
+Expo CLI のデフォルトの圧縮は、ほとんどのプロジェクトにとって十分です。ただし、速度を最適化したり、ログのような追加の機能を取り除いたりするために、圧縮ツールをカスタマイズすることもできます。
+
+## コンソールログを削除する
+
+本番ビルドからコンソールログを削除できます。Terser 圧縮ツールの設定で `drop_console` オプションを使用してください。
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierConfig = {
+  compress: {
+    // The option below removes all console logs statements in production.
+    drop_console: true,
+  },
+};
+
+module.exports = config;
+```
+
+特定のログを残したい場合は、削除する console の種類を配列で渡すこともできます。たとえば、`drop_console: ['log', 'info']` とすると `console.log` と `console.info` は削除されますが、`console.warn` と `console.error` は残ります。
+
+## 圧縮ツールをカスタマイズする
+
+圧縮ツールにはそれぞれ、速度と圧縮率の間にトレードオフがあります。プロジェクトの **metro.config.js** ファイルを変更することで、Expo CLI が使う圧縮ツールをカスタマイズできます。
+
+### Terser
+
+> [`terser`](https://github.com/terser/terser) がデフォルトの圧縮ツールです（[Metro@0.73.0 の変更履歴](https://github.com/facebook/metro/releases/tag/v0.73.0)）。
+
+<Step label="1">
+
+プロジェクトに Terser をインストールするには、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev metro-minify-terser'],
+    yarn: ['$ yarn add --dev metro-minify-terser'],
+    pnpm: ['$ pnpm add --save-dev metro-minify-terser'],
+    bun: ['$ bun add --dev metro-minify-terser'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+`transformer.minifierPath` で Terser を圧縮ツールとして設定し、[`terser` のオプション](https://github.com/terser/terser#compress-options) を `transformer.minifierConfig` に渡します。
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierPath = 'metro-minify-terser';
+config.transformer.minifierConfig = {
+  // Terser options...
+};
+
+module.exports = config;
+```
+
+</Step>
+
+### Terser の unsafe オプション
+
+すべての JavaScript エンジンでは動作しない可能性がある、より高度な圧縮を行うには、[`unsafe` の `compress` オプション](https://terser.org/docs/miscellaneous/#the-unsafe-compress-option) を有効にします。
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierPath = 'metro-minify-terser';
+
+config.transformer.minifierConfig = {
+  compress: {
+    // Enable all unsafe optimizations.
+    unsafe: true,
+    unsafe_arrows: true,
+    unsafe_comps: true,
+    unsafe_Function: true,
+    unsafe_math: true,
+    unsafe_symbols: true,
+    unsafe_methods: true,
+    unsafe_proto: true,
+    unsafe_regexp: true,
+    unsafe_undefined: true,
+    unused: true,
+  },
+};
+
+module.exports = config;
+```
+
+### esbuild
+
+[`esbuild`](https://esbuild.github.io/) を使うと、`uglify-es` や `terser` よりも指数関数的に高速に圧縮できます。詳しくは [`metro-minify-esbuild`](https://github.com/EvanBacon/metro-minify-esbuild#usage) の使い方を参照してください。
+
+### Uglify
+
+以下の手順に従って [`uglify-es`](https://github.com/mishoo/UglifyJS) を使うこともできます。
+
+<Step label="1">
+
+プロジェクトに Uglify をインストールするには、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev metro-minify-uglify'],
+    yarn: ['$ yarn add --dev metro-minify-uglify'],
+    pnpm: ['$ pnpm add --save-dev metro-minify-uglify'],
+    bun: ['$ bun add --dev metro-minify-uglify'],
+  }}
+/>
+
+> `metro-minify-uglify` のバージョンが、プロジェクトの `metro` のバージョンと一致していることを確認してください。
+
+</Step>
+
+<Step label="2">
+
+`transformer.minifierPath` で Uglify を圧縮ツールとして設定し、[オプション](https://github.com/mishoo/UglifyJS#compress-options) を `transformer.minifierConfig` に渡します。
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierPath = 'metro-minify-uglify';
+config.transformer.minifierConfig = {
+  // Options: https://github.com/mishoo/UglifyJS#compress-options
+};
+
+module.exports = config;
+```
+
+</Step>

@@ -1,0 +1,41 @@
+---
+title: よくある開発時のエラー
+description: Expo を使う開発者がよく遭遇する開発エラーの一覧です。
+---
+
+このページでは、Expo を使う開発者がよく遭遇するエラーの一覧を紹介します。各エラーについて、最初の箇条書きでエラーが発生する理由を説明し、2 つ目の箇条書きでデバッグの提案を示します。ここに追加すべきだと思うエラーがあれば、ぜひ [PR を作成](https://github.com/expo/expo/pulls) してください。
+
+### Metro bundler ECONNREFUSED 127.0.0.1:19001
+
+- ローカルの開発サーバーへの接続がエラーによって妨げられています。
+- `rm -rf .expo` を実行してローカルの状態をクリアしてください。現在接続しているネットワークに影響するファイアウォールや [プロキシ](/troubleshooting/proxies/) がないか確認してください。
+
+### Module AppRegistry is not a registered callable module (calling runApplication)
+
+- コード内のエラーが原因で、起動時に JavaScript バンドルが実行できません。
+- `npx expo start --no-dev --minify` を実行して、本番の JS バンドルをローカルで再現してみてください。可能であれば、デバイスを接続して Android Studio や Xcode からデバイスログにアクセスしてください。デバイスログには、より詳細なスタックトレースと情報が含まれています。Babel の設定に変更やエラーがないか確認してください。まれに、この問題は Metro の JavaScript minifier とアプリ内の特定のコードとの非互換性が原因で発生することがあります。
+
+### npm ERR! No git binary found in \$PATH
+
+- git がインストールされていないか、`$PATH` に正しく設定されていません。
+- まだの場合は [git をインストール](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) してください。すでにインストール済みの場合は、使っている OS に応じて `$PATH` への設定方法を確認してください。
+
+### XX.X.X is not a valid SDK version
+
+- 実行している SDK バージョンは非推奨になっており、もうサポートされていません。
+- サポートされている SDK バージョンに [プロジェクトをアップグレード](/workflow/upgrading-expo-sdk-walkthrough) してください。すでにサポートされているバージョンを使っていてこのメッセージが表示される場合は、Expo Go アプリを更新する必要があります。
+
+### React Native version mismatch
+
+- ターミナルで実行している開発サーバーが、デバイスやシミュレーター上のアプリとは異なるバージョンの React Native をバンドルしています。
+- **app.json** と **package.json** のバージョンを確認して、[react-native のバージョンを揃えて](/troubleshooting/react-native-version-mismatch) ください。
+
+### Application has not been registered
+
+- アプリのネイティブ側と JS 側で登録されている AppKey が一致していません。
+- プロジェクトのネイティブ側と [AppKey を揃えて](/troubleshooting/application-has-not-been-registered/) ください。
+
+### Application not behaving as expected
+
+- キャッシュが原因で、アプリケーションの現在の状態が反映されていない可能性があります。
+- [Unix 系](/troubleshooting/clear-cache-macos-linux/) または [Windows](/troubleshooting/clear-cache-windows/) システムで、プロジェクトに関連するすべてのキャッシュをクリアしてください。

@@ -1,0 +1,137 @@
+---
+title: iOS Simulator
+description: Mac に iOS Simulator をインストールしてアプリを開発する方法を学びます。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import XcodeInstructions from '~/scenes/get-started/set-up-your-environment/instructions/_xcodeInstructions.mdx';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+コンピューター上で直接アプリを開発する方が、常に iPhone や iPad とやり取りするよりも便利な場合があります。特にネットワーク状況が悪い場合や、LAN の制限により[トンネル接続](/more/expo-cli/#tunneling)が必要な場合はなおさらです。
+
+このガイドでは、アプリ開発のために Mac に iOS Simulator をインストールする方法を説明します。iOS Simulator は macOS 上にのみインストールできる点に注意してください。Windows や Linux マシンで iOS アプリを開発している場合は、物理的な iOS デバイスが必要です。
+
+## Xcode と Watchman をセットアップする
+
+<XcodeInstructions />
+
+<Step label="4">
+
+### 試してみる
+
+`npx expo start` でアプリを実行し、コマンドラインで <kbd>I</kbd> を押します。
+
+Xcode のライセンスに同意する必要があるという警告が表示されることがあります。表示されたコマンドを実行してください。もう一度アプリを開いて成功したか確認します。うまくいかない場合は、下記の[トラブルシューティング](#トラブルシューティング)のヒントを確認してください。
+
+<ContentSpotlight file="open-in-ios-simulator.mp4" />
+
+Expo CLI で <kbd>Shift</kbd> + <kbd>I</kbd> を押すと、開くシミュレーターをインタラクティブに選択することもできます。
+
+<ContentSpotlight
+  alt="List of iOS Simulators in the Expo CLI UI."
+  src="/static/images/ios-simulator/simulators-list.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+## Expo Orbit
+
+Expo Orbit アプリを使うと、macOS のメニューバーからワンクリックでビルドの起動やシミュレーターの管理ができます。
+
+<BoxLink
+  title="Expo Orbit を使う"
+  description="Expo Orbit の使い方について詳しく学びます。"
+  href="/build/orbit/"
+  Icon={BookOpen02Icon}
+/>
+
+## 制限事項
+
+iOS Simulator は素早い開発に適していますが、いくつかの制限があります。以下に、Expo の API に影響する主な違いをいくつか挙げます。詳細については、[Apple のドキュメント](https://help.apple.com/simulator/mac/current/#/devb0244142d)を参照してください。
+
+シミュレーターでは、次のハードウェアは使用できません。
+
+- オーディオ入力
+- 気圧計
+- カメラ
+- モーションサポート（加速度計とジャイロスコープ）
+
+また、シミュレーターは iOS 11 以降でバックグラウンドのアプリやプロセスを一時停止します。
+
+## トラブルシューティング
+
+### シミュレーターを開く際に CLI が固まったように見える
+
+iOS Simulator が open コマンドに応答しないことがあります。このプロンプトで固まったように見える場合は、手動で iOS Simulator を開き（`open -a Simulator`）、macOS のツールバーで **File** &gt; **Open Simulator** を選択して、開きたい iOS バージョンとデバイスを選んでください。
+
+<ContentSpotlight
+  alt="Opening a simulator manually from the macOS toolbar."
+  src="/static/images/ios-simulator/open-simulator-manually.webp"
+/>
+
+このメニューを使って、任意のバージョンのシミュレーターを開けます。複数のシミュレーターを同時に開くこともできますが、Expo CLI は常に最後に開いたシミュレーターを対象にします。
+
+### シミュレーターは開いたが、その中で Expo Go アプリが開かない
+
+シミュレーターに初めてアプリをインストールすると、iOS は Expo Go アプリを開くかどうか尋ねてきます。このプロンプトを表示させるには、シミュレーターを操作する（クリックしたり何かをドラッグしたりする）必要がある場合があります。その後 **OK** を押してください。
+
+### 特定バージョンの Expo Go をインストールするには？
+
+目的の SDK バージョンでプロジェクトを作成し、シミュレーターで開くことで、対応するバージョンの Expo Go をインストールできます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Bootstrap an SDK 57 project',
+      '$ npx create-expo-app --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ npx expo start --ios',
+    ],
+    yarn: [
+      '# Bootstrap an SDK 57 project',
+      '$ yarn create expo-app --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ yarn expo start --ios',
+    ],
+    pnpm: [
+      '# Bootstrap an SDK 57 project',
+      '$ pnpm create expo-app --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ pnpm expo start --ios',
+    ],
+    bun: [
+      '# Bootstrap an SDK 57 project',
+      '$ bun create expo --template blank@57',
+      '',
+      '# Open the app on a simulator to install the required Expo Go app',
+      '$ bun expo start --ios',
+    ],
+  }}
+/>
+
+また、[`expo-go` CLI](https://www.npmjs.com/package/expo-go) を使って SDK バージョンを指定し、特定バージョンの Expo Go をダウンロードすることもできます。最新の SDK バージョンには `latest` を使用します。このコマンドは、Expo Go アプリを現在のディレクトリにダウンロードし、**~/.expo** の下にキャッシュします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-go download ios latest'],
+    yarn: ['$ yarn dlx expo-go download ios latest'],
+    pnpm: ['$ pnpm dlx expo-go download ios latest'],
+    bun: ['$ bunx expo-go download ios latest'],
+  }}
+/>
+
+### Expo CLI が `xcrun` に関するエラーメッセージを出力しています。どうすればよいですか？
+
+その他のエラーについては、次を試してください。
+
+- シミュレーター上の Expo Go を手動でアンインストールし、Expo CLI のターミナル UI で <kbd>Shift</kbd> + <kbd>I</kbd> を押して目的のシミュレーターを選択し、再インストールします。
+- それでも解決しない場合は、シミュレーターのウィンドウにフォーカスし、Mac のツールバーで **Device** &gt; **Erase All Content and Settings...** を選択します。<br/>
+  これにより、シミュレーターが空の状態から再初期化されます。これは、コンピューターのメモリが不足していて、シミュレーターが内部ファイルの一部を保存できずデバイスが破損した状態になってしまった場合などに役立ちます。

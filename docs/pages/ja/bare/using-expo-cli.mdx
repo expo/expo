@@ -1,0 +1,155 @@
+---
+title: React Native CLI から Expo CLI への移行
+sidebar_title: Expo CLI へ移行する
+description: 任意の React Native プロジェクトで、React Native CLI（@react-native-community/cli）から Expo CLI へ移行する方法を学びます。
+---
+
+import { DocsLogo, RouterLogo } from '@expo/styleguide';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal } from '~/ui/components/Snippet';
+import { DEMI } from '~/ui/components/Text';
+
+React Native CLI（`npx @react-native-community/cli@latest init`）から Expo CLI へ移行するには、Expo Modules API と Expo CLI を含む `expo` パッケージをインストールする必要があります。このガイドでは、インストール手順、Expo CLI を使用する利点、そして Expo CLI への移行後にプロジェクトをコンパイルして実行する方法について説明します。
+
+他の Expo ツールを使用する場合は、Expo CLI の使用を強くおすすめします。EAS Update、Expo Router、expo-dev-client など多くのツールで Expo CLI が必要であり、それ以外の機能も Expo CLI なしではうまく動作しない場合があります。
+
+## `expo` パッケージをインストールする
+
+ほとんどの場合、プロジェクトディレクトリで次のコマンドを実行してパッケージをインストールするだけで完了します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx install-expo-modules@latest'],
+    yarn: ['$ yarn dlx install-expo-modules@latest'],
+    pnpm: ['$ pnpm dlx install-expo-modules@latest'],
+    bun: ['$ bunx install-expo-modules@latest'],
+  }}
+/>
+
+詳しいインストールガイドについては、[Expo モジュールのインストール](/ja/bare/installing-expo-modules) を参照してください。
+
+> **info** `expo` パッケージをインストールしたら、プロジェクトが Expo CLI を使用するように設定する必要があります。これには、Metro の設定、Babel プリセット、ネイティブプロジェクトの設定が含まれます。設定手順の詳細については、[Android と iOS でのバンドルのための Expo CLI の設定](/ja/bare/installing-expo-modules/#android-と-ios-でのバンドルに-expo-cli-を設定する) セクションを参照してください。
+
+## React Native CLI ではなく Expo CLI を使う理由
+
+Expo CLI のコマンドには、`@react-native-community/cli` の同等のコマンドに比べていくつかの利点があります。次のような点が挙げられます。
+
+- <kbd>J</kbd> キーを押すだけで Hermes デバッガーにすぐアクセスできます。
+- このデバッガーには [React Native DevTools](/debugging/tools/#debugging-with-react-native-devtools) が同梱されています。
+- アップグレード、ホワイトラベル化、サードパーティパッケージの簡単なセットアップ、そして（サーフェスエリアを減らすことによる）コードベースの保守性向上のための [Continuous Native Generation（CNG）](/ja/workflow/continuous-native-generation/) を [`expo prebuild`](/more/glossary-of-terms/#prebuild) でサポートします。
+- [`expo-router`](/router/introduction/) によるファイルベースルーティングのサポート。
+  - 開発時の [非同期バンドリング](/router/web/async-routes)。
+- 組み込みの [環境変数のサポート](/ja/guides/environment-variables) と **.env** ファイルとの統合。
+- JavaScript のログと一緒に、ネイティブログをターミナルで直接確認できます。
+- React Native アプリ専用に構築された Expo CLI の `xcpretty` スタイルのツールにより、ネイティブビルドのログ整形が改善されています。たとえば、Pod をコンパイルする際に、どの Node モジュールがそれを含めたのかを確認できます。
+- [TypeScript の第一級サポート](/guides/typescript)。
+- `paths` と `baseUrl` を使った **tsconfig.json** のエイリアスを [Metro に組み込みでサポート](/guides/typescript/#path-aliases-optional)。
+- Metro による [web サポート](/ja/guides/customizing-metro/#metro-に-web-サポートを追加する)。React Native Web に完全対応した型定義があります。
+- Tailwind、PostCSS、CSS Modules、SASS などに対応した最新の [CSS サポート](/versions/latest/config/metro#css)。
+- Expo Router と Metro web による静的サイト生成。
+- そのままの状態で使える [モノレポのサポート](/ja/guides/monorepos)。
+- [`expo-dev-client`](/develop/development-builds/introduction)、[Expo Updates プロトコル](/technical-specs/expo-updates-1)、[EAS Update](/eas-update/introduction) など、Expo のツールをサポートします。
+- `npx expo run:ios` を使用する際に `pod install` が自動的に実行されます。
+- `npx expo install` は、よく知られたパッケージに対して互換性のある依存関係のバージョンを選択します。
+- `npx expo run:[android|ios]` および `npx expo start` の実行時に、ポートが自動的に検出されます。デフォルトのポートで別のアプリが実行されている場合は、別のポートが使用されます。
+- 対話式プロンプトから <kbd>Shift</kbd> + <kbd>A</kbd> または <kbd>Shift</kbd> + <kbd>I</kbd> を使って、Android または iOS デバイスの起動選択ショートカットを利用できます。
+- [ngrok トンネル](/develop/development-builds/development-workflows/#tunnel-urls) 経由でアプリを配信するための組み込みサポート。
+- 任意のポート、任意のエントリー JavaScript ファイルで開発できます。
+
+Android、iOS、web のいずれか（または複数）をターゲットとするほとんどの React Native プロジェクトには、Expo CLI をおすすめします。Windows や macOS といった、代表的な out-of-tree プラットフォームへの組み込みサポートはまだありません。これらのプラットフォーム向けにビルドする場合は、サポートされているプラットフォームには Expo CLI を、それ以外には `@react-native-community/cli` を利用できます。
+
+## アプリをコンパイルして実行する
+
+`expo` パッケージをインストールしたら、`npx react-native run-android` と `npx react-native run-ios` の代わりとなる次のコマンドを使用できます。
+
+<Terminal
+  cmd={{
+    npm: ['# for Android', '$ npx expo run:android', '', '# for iOS', '$ npx expo run:ios'],
+    yarn: ['# for Android', '$ yarn expo run:android', '', '# for iOS', '$ yarn expo run:ios'],
+    pnpm: ['# for Android', '$ pnpm expo run:android', '', '# for iOS', '$ pnpm expo run:ios'],
+    bun: ['# for Android', '$ bun expo run:android', '', '# for iOS', '$ bun expo run:ios'],
+  }}
+/>
+
+プロジェクトをビルドする際、`--device` フラグを使ってデバイスまたはシミュレーターを選択できます。これは、コンピューターに接続されている iOS デバイスにも当てはまります。
+
+## バンドラーを個別に起動する
+
+`npx expo run:[android|ios]` は、バンドラー/開発サーバーを自動的に起動します。`npx expo start` コマンドでバンドラーを個別に起動したい場合は、`npx expo run:[android|ios]` コマンドに `--no-bundler` を渡してください。
+
+## よくある質問
+
+<FAQ>
+
+<Collapsible summary="Expo Modules API をインストールせずに Expo CLI を使用できますか？">
+
+`npx install-expo-modules` を使って `expo` パッケージをインストールすると、Expo Modules API も同時にインストールされます。今のところ Expo Modules API をインストールせずに Expo CLI を試したい場合は、`npm install` で `expo` パッケージをインストールしたうえで、**react-native.config.js** を設定してこのパッケージを autolinking の対象から除外してください。
+
+```js react-native.config.js
+module.exports = {
+  dependencies: {
+    expo: {
+      platforms: {
+        android: null,
+        ios: null,
+        macos: null,
+      },
+    },
+  },
+};
+```
+
+> **注：** Expo API Modules をインストールしていない場合、`expo-dev-client` や `expo-router` などの一部の機能は利用できません。
+
+</Collapsible>
+
+<Collapsible summary="macOS や Windows のような out-of-tree プラットフォームでも prebuild を使用できますか？">
+
+はい。詳しくは [Customized Prebuild Example リポジトリ](https://github.com/byCedric/custom-prebuild-example) を参照してください。
+
+</Collapsible>
+
+</FAQ>
+
+## 次のステップ
+
+`expo` パッケージがプロジェクトにインストール・設定できたので、Expo CLI と SDK のすべての機能を使い始められます。以下は、さらに深く学ぶためにおすすめの次のステップです。
+
+<BoxLink
+  title="Expo CLI リファレンス"
+  description="Expo CLI で使用できるコマンドとフラグについて学びます。"
+  href="/more/expo-cli"
+  Icon={BookOpen02Icon}
+/>
+<BoxLink
+  title="Metro のカスタマイズ"
+  description="プロジェクトの Metro バンドラーの設定をカスタマイズする方法を学びます。"
+  href="/ja/guides/customizing-metro"
+  Icon={BookOpen02Icon}
+/>
+<BoxLink
+  title="Prebuild を導入する"
+  description={
+    <>
+      <DEMI>app.json</DEMI> を使ってネイティブディレクトリを自動化します。
+    </>
+  }
+  href="/ja/guides/adopting-prebuild"
+  Icon={BookOpen02Icon}
+/>
+<BoxLink
+  title="Expo SDK を使用する"
+  description="Expo SDK のライブラリをアプリで試します。"
+  href="/versions/"
+  Icon={DocsLogo}
+/>
+<BoxLink
+  title="Expo Router"
+  description="Expo Router は、web の優れたルーティングの考え方をネイティブの Android・iOS アプリにもたらします。"
+  href="/router/introduction/"
+  Icon={RouterLogo}
+/>

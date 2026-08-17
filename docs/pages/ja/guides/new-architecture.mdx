@@ -1,0 +1,293 @@
+---
+title: React Native の New Architecture
+sidebar_title: New Architecture
+description: React Native の「New Architecture」について、移行する方法や理由を学びます。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+> **info** **SDK 55 以降は完全に New Architecture 上で動作します。** New Architecture は常に有効になっており、無効にすることはできません。レガシーアーキテクチャを使用する必要がある場合は、SDK 54 以前を使用してください。
+
+New Architecture とは、React Native の内部を全面的にリファクタリングした仕組みを指す呼称です。これは、Meta をはじめとする各社が本番環境で長年 React Native を使用する中で見つかった、従来のアーキテクチャの限界を解決するためのものでもあります。
+
+このガイドでは、現在の Expo プロジェクトで New Architecture を使用する方法について説明します。
+
+<BoxLink
+  title="New Architecture の登場"
+  description="New Architecture の機能概要と、それを構築した動機について、Meta の React Native チームが解説するブログ記事です。"
+  href="https://reactnative.dev/blog/2024/10/23/the-new-architecture-is-here"
+  Icon={BookOpen02Icon}
+/>
+<BoxLink
+  title="React Native 0.82 - 新しい時代へ"
+  description="React Native 0.82 は、完全に New Architecture 上で動作する最初のバージョンです。SDK 55 が使用する React Native 0.83 も、この挙動を引き継いでいます。"
+  href="https://reactnative.dev/blog/2025/10/08/react-native-0.82"
+  Icon={BookOpen02Icon}
+/>
+
+<Collapsible summary="なぜ New Architecture に移行するべきなのか？">
+
+**New Architecture は、React Native の現在であり未来でもあります**。React Native 0.82 以降、New Architecture は常に有効になっており、無効にすることはできません。SDK 55 が使用する React Native 0.83 も、この挙動を引き継いでいます。[レガシーアーキテクチャは 2025 年 6 月に凍結され](https://github.com/reactwg/react-native-new-architecture/discussions/290)、新機能やバグ修正が今後開発されることはありません。
+
+**新しい React および React Native の機能は、New Architecture にのみ提供されます**。たとえば New Architecture には、レガシーアーキテクチャには実装されていない [Suspense の完全サポート](https://reactnative.dev/blog/2024/10/23/the-new-architecture-is-here#full-support-for-suspense) や [新しいスタイリング機能](https://reactnative.dev/blog/2025/01/21/version-0.77#new-css-features-for-better-layouts-sizing-and-blending) が含まれています。人気のライブラリの多くも、現在では New Architecture のみをサポートしています。
+
+**SDK 54 以前を使用している場合**は、`newArchEnabled` を `false` に設定することで、引き続きレガシーアーキテクチャを使用できます。ただし、SDK 55 以降にアップグレードする前に New Architecture への移行が必要です。
+
+</Collapsible>
+
+## Expo ツールと New Architecture
+
+SDK 53 の時点で、[Expo SDK](/versions/latest/) に含まれるすべての `expo-*` パッケージが（[ブリッジレス](https://github.com/reactwg/react-native-new-architecture/discussions/154) を含めて）New Architecture をサポートしています。[既知の問題について詳しく見る](#expo-ライブラリの既知の問題)。
+
+さらに、[Expo Modules API](/modules/overview/) を使って書かれたすべてのモジュールは、デフォルトで New Architecture をサポートしています。そのため、この API を使って独自のネイティブモジュールを構築している場合、New Architecture で使用するために追加の作業は必要ありません。
+
+**2026 年 1 月時点で、[EAS Build](/build/introduction/) でビルドされた SDK 54 プロジェクトの約 83% が New Architecture を使用しています**。
+
+## サードパーティライブラリと New Architecture
+
+多くの人気ライブラリの互換性状況は、[React Native Directory](https://reactnative.directory/)（[サードパーティライブラリの既知の問題について詳しく見る](#サードパーティライブラリの既知の問題)）で追跡されています。私たちは、依存関係の検証に役立つよう React Native Directory と連携する仕組みを Expo Doctor に組み込みました。これにより、どのライブラリがメンテナンスされておらず、どのライブラリが New Architecture と非互換または未検証であるかをすばやく知ることができます。
+
+### React Native Directory で依存関係を検証する
+
+`npx expo-doctor` を実行すると、React Native Directory のデータに基づいて依存関係をチェックできます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-doctor@latest'],
+    yarn: ['$ yarn dlx expo-doctor@latest'],
+    pnpm: ['$ pnpm dlx expo-doctor@latest'],
+    bun: ['$ bunx expo-doctor@latest'],
+  }}
+/>
+
+React Native Directory のチェックは **package.json** ファイルで設定できます。たとえば、あるパッケージを検証から除外したい場合は、次のようにします。
+
+```json package.json
+{
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": ["react-redux"]
+      }
+    }
+  }
+}
+```
+
+<Collapsible summary="利用可能なオプションをすべて見る">
+
+- **enabled**: `true` の場合、React Native Directory に存在しないパッケージがあると警告が表示されます。この挙動を無効にするには `false` を設定してください。SDK 52 以降ではデフォルトで `true` に、それ以前はデフォルトで `false` に設定されています。この設定は環境変数 `EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK`（0 が `false`、1 が `true`）で上書きすることもできます。
+- **exclude**: チェックから除外したいパッケージを列挙します。完全なパッケージ名と正規表現パターンの両方をサポートしています。例: `["exact-package", "/or-a-regex-.*/"]`。
+- **listUnknownPackages**: デフォルトでは、React Native Directory に存在しないパッケージがあると警告が表示されます。この挙動を無効にするには false を設定してください。
+
+</Collapsible>
+
+## New Architecture で新規プロジェクトを初期化する
+
+**SDK 52 の時点で**、すべての新規プロジェクトはデフォルトで New Architecture が有効な状態で初期化されます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
+    bun: ['$ bun create expo --template default@sdk-57'],
+  }}
+/>
+
+## 既存プロジェクトで New Architecture を有効にする
+
+<Tabs>
+  <Tab label="SDK 55 and later">
+    **SDK 55 以降では New Architecture が常に有効になっています**。無効にするオプションはありません。SDK 55 は React Native 0.83 を使用しています。[React Native 0.82 は New Architecture を無効にするオプションを削除した最初のバージョンであり](https://reactnative.dev/blog/2025/10/08/react-native-0.82)、これは以降のすべてのバージョンにも当てはまります。
+
+    以前 app config で `newArchEnabled: false` を使用していた場合、この設定は無視されます。混乱を避けるため、設定から削除してください。
+
+  </Tab>
+
+  <Tab label="SDK 53 and SDK 54">
+    **SDK 53 と SDK 54 では、New Architecture はデフォルトで有効になっています**。明示的に無効化している場合は、その設定を削除すると有効になります。
+
+    > **info** New Architecture を無効化できる最後の SDK バージョンは SDK 54 です。
+
+  </Tab>
+
+  <Tab label="SDK 52">
+    ライブラリや React Native 自体に関する New Architecture 関連の最新の修正・改善をすべて活用できるよう、SDK 53 へのアップグレードをおすすめします。まず SDK 52 で試したい場合は、以下の手順に従ってください。
+
+    <Step label="1">
+
+    Android と iOS の両方で有効にするには、app config の `expo` オブジェクトのルートで `newArchEnabled` を使用します。たとえば `"android": { "newArchEnabled": true }` のように設定することで、特定のプラットフォームのみで選択的に有効化することもできます。
+
+    ```json app.json
+    {
+      "expo": {
+        "newArchEnabled": true
+      }
+    }
+    ```
+    </Step>
+
+    <Step label="2">
+      新しいビルドを作成します。
+
+      <Tabs tabs={['Android', 'iOS']}>
+        <Tab>
+          <Terminal
+            cmd={{
+              npm: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ npx expo prebuild --clean && npx expo run:android',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p android',
+              ],
+              yarn: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ yarn expo prebuild --clean && yarn expo run:android',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p android',
+              ],
+              pnpm: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ pnpm expo prebuild --clean && pnpm expo run:android',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p android',
+              ],
+              bun: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ bun expo prebuild --clean && bun expo run:android',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p android',
+              ],
+            }}
+          />
+        </Tab>
+        <Tab>
+          <Terminal
+            cmd={{
+              npm: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ npx expo prebuild --clean && npx expo run:ios',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p ios',
+              ],
+              yarn: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ yarn expo prebuild --clean && yarn expo run:ios',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p ios',
+              ],
+              pnpm: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ pnpm expo prebuild --clean && pnpm expo run:ios',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p ios',
+              ],
+              bun: [
+                '# Run a clean prebuild and start a local build, if you like',
+                '$ bun expo prebuild --clean && bun expo run:ios',
+                '# Run a build with EAS if you prefer',
+                '$ eas build -p ios',
+              ],
+            }}
+          />
+        </Tab>
+      </Tabs>
+
+      ビルドが成功すれば、これで New Architecture でアプリを実行できるようになります。使用しているネイティブモジュールによっては、アプリがすぐに正常に動作することもあります。
+
+      あとはアプリをひととおり操作して動作を確認してみましょう。ある程度複雑なアプリのほとんどでは、New Architecture 向けにまだ実装されていないネイティブビューが見つからないなど、何らかの問題に遭遇する可能性があります。遭遇する問題の多くは対処可能で、設定やコードの変更によって解決できます。詳しくは、以下の[トラブルシューティング](#トラブルシューティング)セクションを参照することをおすすめします。
+    </Step>
+
+  </Tab>
+
+  <Tab label="SDK 51 and earlier">
+    SDK 54 または SDK 55 へのアップグレードをおすすめします。SDK 51 は大幅に古くなっており、[レガシーアーキテクチャは凍結されているため](https://github.com/reactwg/react-native-new-architecture/discussions/290)、新機能やバグ修正が提供されることはありません。SDK 51 でも New Architecture を有効にすることは可能ですが、より新しいリリースではすでに解決されているさまざまな問題に遭遇する可能性が高いです。有効にするには、[`expo-build-properties` プラグインをインストール](/versions/latest/sdk/build-properties/#installation)し、対象プラットフォームで `newArchEnabled` を設定する必要があります。
+  </Tab>
+</Tabs>
+
+<Collapsible summary="既存の React Native プロジェクトで New Architecture を有効化しますか？">
+
+Expo SDK 53 以降を使用している場合、New Architecture はデフォルトで有効になっています。SDK 55 以降では、New Architecture は常に有効であり、無効にすることはできません。以下の手順は SDK 52 以前のプロジェクトに適用されます。
+
+- **Android**: **gradle.properties** ファイルで `newArchEnabled=true` を設定します。
+- **iOS**: プロジェクトに **Podfile.properties.json** ファイル（`npx create-expo-app` または `npx expo prebuild` によって作成されます）がある場合は、**Podfile.properties.json** ファイル内の `newArchEnabled` プロパティを `"true"` に設定することで New Architecture を有効にできます。それ以外の場合は、React Native New Architecture ワーキンググループの [「Enable the New Architecture for Apps」](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) セクションを参照してください。
+
+</Collapsible>
+
+## 既存プロジェクトで New Architecture を無効にする
+
+> **warning** **SDK 55 以降は New Architecture の無効化をサポートしていません。** SDK 55 は React Native 0.83 を使用しています。[React Native 0.82 で New Architecture を無効にするオプションが削除されて以降](https://reactnative.dev/blog/2025/10/08/react-native-0.82)、`newArchEnabled` を `false` に設定しても効果はありません。レガシーアーキテクチャを使用する必要がある場合は、SDK 54 以前を使用してください。
+
+> **info** Expo Go は New Architecture のみをサポートしています。
+
+**SDK 54 以前**では、app config で `newArchEnabled` プロパティを `false` に設定し、[開発ビルド](/develop/development-builds/introduction/)を作成することで New Architecture を無効化できます。
+
+```json app.json
+{
+  "expo": {
+    "newArchEnabled": false
+  }
+}
+```
+
+<Collapsible summary="既存の React Native プロジェクトで New Architecture を無効化しますか？（SDK 54 以前）">
+
+- **Android**: **gradle.properties** ファイルで `newArchEnabled=false` を設定します。
+- **iOS**: プロジェクトに **Podfile.properties.json** ファイル（`npx create-expo-app` または `npx expo prebuild` によって作成されます）がある場合は、**Podfile.properties.json** ファイル内の `newArchEnabled` プロパティを `"false"` に設定することで New Architecture を無効にできます。それ以外の場合は、React Native New Architecture ワーキンググループの [「Enable the New Architecture for Apps」](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/enable-apps.md) セクションを参照してください。
+
+</Collapsible>
+
+## トラブルシューティング
+
+Meta と Expo は、New Architecture をすべての新規アプリのデフォルトにし、既存アプリの移行をできる限り簡単にするための取り組みを進めています。ただし New Architecture は単なる名称ではありません — React Native の内部の多くが、ゼロから再設計・再構築されています。そのため、アプリで New Architecture を有効にすると問題が発生することがあります。以下は、これらの問題をトラブルシューティングするためのアドバイスです。
+
+<Collapsible summary="使用しているライブラリの一部が対応していなくても、New Architecture を試すことはできますか？">
+
+使用しているライブラリの一部が対応していない場合でも、それらを一時的に削除すれば、アプリで New Architecture を試せることがあります。リポジトリに新しいブランチを作成し、アプリが動作するようになるまで非互換のライブラリを削除してみてください。これにより、New Architecture へ完全に移行する前にどのライブラリの対応が必要かを把握できます。それらのライブラリのリポジトリに issue やプルリクエストを作成し、New Architecture への対応を後押しすることをおすすめします。あるいは、New Architecture に対応した他のライブラリに切り替えるという方法もあります。対応ライブラリを探すには [React Native Directory](https://reactnative.directory/) を参照してください。
+
+</Collapsible>
+<Collapsible summary="React Native の既知の問題">
+
+React Native の GitHub リポジトリにある、[「Type: New Architecture」ラベルが付いた issue](https://github.com/facebook/react-native/issues?q=is%3Aopen+is%3Aissue+label%3A%22Type%3A+New+Architecture%22) を参照してください。
+
+</Collapsible>
+
+<Collapsible summary="Expo ライブラリの既知の問題">
+
+Expo ライブラリには、New Architecture に固有の既知の問題はありません。
+
+</Collapsible>
+
+<Collapsible summary="サードパーティライブラリの既知の問題">
+
+React Native 0.74 以降、さまざまな相互運用レイヤーがデフォルトで有効になっています。これにより、旧アーキテクチャ向けに構築された多くのライブラリが、変更なしで New Architecture 上でも動作します。ただし、この相互運用は完璧ではなく、更新が必要になるライブラリもあります。更新が必要になる可能性が最も高いのは、サードパーティのネイティブコードを同梱または依存しているライブラリです。[New Architecture におけるライブラリサポートについて詳しく見る](https://github.com/reactwg/react-native-new-architecture/discussions/167)。
+
+ライブラリとその New Architecture との互換性について、より完全な一覧は [React Native Directory](https://reactnative.directory/) を参照してください。Expo アプリで人気があり、非互換であることが判明している以下のライブラリがあります。
+
+以下は、Expo アプリで人気のあるライブラリに関する既知の問題です。
+
+- **react-native-maps**: SDK 53 のデフォルトである 1.20.x 系のバージョンは、相互運用レイヤーを使って New Architecture をサポートしており、ほとんどの機能で問題なく動作します。New Architecture ファーストのバージョンはバージョン 1.21.0 で利用できますが、まだ安定化の途上にあります。アプリでこれを試し、見つかった問題を報告して、[GitHub 上のディスカッションを追う](https://github.com/react-native-maps/react-native-maps/discussions/5355)ことをおすすめします。私たちは、モジュールを書き直すのではなく[相互運用レイヤー](https://github.com/reactwg/react-native-new-architecture/discussions/175)を活用することで、よりスムーズな移行パスを提供できる可能性のある別のアプローチも検討しています。なお、アプリで iOS の最低バージョンを 17 に強制できる場合や、iOS でマップをサポートする必要がない場合は、代わりに [`expo-maps`](/versions/latest/sdk/maps/) の使用を検討できます。
+- **@stripe/react-native**: New Architecture は、SDK 53 のデフォルトであるバージョン 0.45.0 以降でサポートされています。
+- **@react-native-community/masked-view**: 代わりに `@react-native-masked-view/masked-view` を使用してください。
+- **@react-native-community/clipboard**: 代わりに `@react-native-clipboard/clipboard` を使用してください。
+- **rn-fetch-blob**: 代わりに `react-native-blob-util` を使用してください。
+- **react-native-fs**: 代わりに `expo-file-system` または [react-native-fs のフォーク](https://github.com/birdofpreyru/react-native-fs) を使用してください。
+- **react-native-geolocation-service**: 代わりに `expo-location` を使用してください。
+- **react-native-datepicker**: 代わりに `react-native-date-picker` または `@react-native-community/datetimepicker` を使用してください。
+
+</Collapsible>
+
+<Collapsible summary="New Architecture を有効にした後にビルドが失敗する">
+
+これは決して珍しいことではありません。まだすべてのライブラリが対応しているわけではなく、対応がごく最近追加されたケースもあるため、ライブラリを最新バージョンに更新しておくとよいでしょう。ログを読んで、どのライブラリが非互換であるかを特定してください。また、`npx expo-doctor@latest` を実行して、React Native Directory のデータに基づいて依存関係をチェックしてください。
+
+ライブラリの最新バージョンを使用していても非互換である場合は、遭遇した問題をそのライブラリの GitHub リポジトリに報告してください。[最小限の再現可能な例](https://stackoverflow.com/help/minimal-reproducible-example)を作成し、その問題をライブラリの作者に報告します。問題がライブラリではなく React Native 自体に起因すると思われる場合は、（同様に最小限の再現可能な例を添えて）React Native チームに報告してください。
+
+</Collapsible>

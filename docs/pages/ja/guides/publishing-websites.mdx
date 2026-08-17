@@ -1,0 +1,448 @@
+---
+title: web サイトを公開する
+description: 本番用に Expo の web サイトをデプロイする方法を学びます。
+---
+
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Expo の web アプリは、本番の挙動をテストするためにローカルで配信することも、ホスティングサービスにデプロイすることもできます。最良の機能サポートを得るには [EAS Hosting](/eas/hosting) へのデプロイをおすすめします。セルフホストやサードパーティのサービスを使うこともできます。
+
+<BoxLink
+  title="EAS を使ってすぐにデプロイする"
+  description="EAS Hosting は、カスタムドメインや SSL などをサポートした、web アプリをデプロイする最良の方法です。"
+  href="/eas/hosting/get-started"
+  Icon={Cloud01Icon}
+/>
+
+> SDK 49 以前をお使いの場合は、[`webpack` ビルドを公開するガイド](/archive/publishing-websites-webpack/) が必要になることがあります。
+
+## 出力ターゲット
+
+web アプリのエクスポート方法を設定するには、[app config](/ja/workflow/configuration/) で [`web.output`](/versions/latest/config/app/#output) ターゲットを設定します。
+
+```json app.json
+{
+  "expo": {
+    "web": {
+      "output": "server",
+      "bundler": "metro"
+    }
+  }
+}
+```
+
+Expo Router は、web アプリ向けに 3 つの出力ターゲットをサポートしています。
+
+| 出力                   | Expo Router | API ルート  | 説明                                                                                                                                                                                                                     |
+| ---------------------- | ----------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `single`（デフォルト） | <YesIcon /> | <NoIcon />  | 出力ディレクトリに単一の **index.html** を持つシングルページアプリケーション（SPA）を出力します。静的にインデックス可能な HTML はありません。                                                                            |
+| `server`               | <YesIcon /> | <YesIcon /> | **client** と **server** ディレクトリを作成します。クライアントファイルは個別の HTML ファイルとして出力されます。API ルートは、カスタム Node.js サーバーでホストするための個別の JavaScript ファイルとして出力されます。 |
+| `static`               | <YesIcon /> | <NoIcon />  | **app** ディレクトリ内のすべてのルートに対して、個別の HTML ファイルを出力します。                                                                                                                                       |
+
+> **info** **注：** `static` と `server` の出力モードでは、`expo-router` プラグインを介してすべてのルートのレスポンスに適用される [グローバル HTTP ヘッダー](/router/web/server-headers) を設定できます。
+
+## ビルドを作成する
+
+プロジェクトのビルドを作成することが、web アプリを公開するための最初のステップです。ローカルで配信する場合でも、ホスティングサービスにデプロイする場合でも、プロジェクトのすべての JavaScript とアセットをエクスポートする必要があります。これは静的バンドルと呼ばれます。次のコマンドを実行してエクスポートできます。
+
+web 向けにプロジェクトをコンパイルするために、汎用のエクスポートコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export -p web'],
+    yarn: ['$ yarn expo export -p web'],
+    pnpm: ['$ pnpm expo export -p web'],
+    bun: ['$ bun expo export -p web'],
+  }}
+/>
+
+生成されたプロジェクトファイルは **dist** ディレクトリに置かれます。**public** ディレクトリ内のファイルも **dist** ディレクトリにコピーされます。
+
+> **warning** `/assets` などの一部のパスは Metro によって予約されています。**public/assets/** などの予約されたパスにファイルを配置しないでください。完全な一覧は [予約済みパス](/router/reference/reserved-paths/) を参照してください。
+
+## ローカルで配信する
+
+`npx expo serve` を使うと、本番でどのように web サイトがホストされるかをローカルで手早くテストできます。次のコマンドを実行して静的バンドルを配信します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo serve'],
+    yarn: ['$ yarn expo serve'],
+    pnpm: ['$ pnpm expo serve'],
+    bun: ['$ bun expo serve'],
+  }}
+/>
+
+[`http://localhost:8081`](http://localhost:8081) を開くと、実際に動作しているプロジェクトを確認できます。これは **HTTP のみ** であるため、パーミッション、カメラ、位置情報など、多くのセキュアな機能が期待どおりに動作しない場合があります。
+
+## EAS でホストする
+
+本番環境に移行する準備ができたら、EAS CLI を使って web サイトを即座にデプロイできます。
+
+<BoxLink
+  title="EAS を使ってすぐにデプロイする"
+  description="EAS Hosting は、カスタムドメインや SSL などをサポートした、web アプリをデプロイする最良の方法です。"
+  href="/eas/hosting/get-started"
+  Icon={Cloud01Icon}
+/>
+
+## サードパーティサービスでホストする
+
+### Netlify
+
+[Netlify](https://www.netlify.com/) は、web アプリをデプロイするための特定のやり方に縛られないプラットフォームです。フレームワークについての前提が少ないため、Expo の web アプリとの互換性が最も高くなっています。
+
+#### Netlify CDN での手動デプロイ
+
+<Step label="1">
+
+次のコマンドを実行して、Netlify CLI をインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global netlify-cli'],
+    yarn: ['$ yarn global add netlify-cli'],
+    pnpm: ['$ pnpm add --global netlify-cli'],
+    bun: ['$ bun add --global netlify-cli'],
+  }}
+/>
+
+</Step>
+
+<Step label="2">
+
+シングルページアプリケーション向けにリダイレクトを設定します。
+
+> アプリが [静的レンダリング](/router/web/static-rendering) を使用している場合は、この手順をスキップできます。
+
+`expo.web.output: 'single'` はシングルページアプリケーションを生成します。つまり **dist/index.html** ファイルが 1 つだけ存在し、すべてのリクエストをそこにリダイレクトする必要があります。Netlify では、**./public/\_redirects** ファイルを作成してすべてのリクエストを **/index.html** にリダイレクトすることで、これを実現できます。
+
+```sh public/_redirects
+/*    /index.html   200
+```
+
+このファイルを変更した場合は、`npx expo export -p web` でプロジェクトを再ビルドして、**dist** ディレクトリに正しくコピーされるようにする必要があります。
+
+</Step>
+
+<Step label="3">
+
+次のコマンドを実行して、web のビルドディレクトリをデプロイします。
+
+<Terminal cmd={['$ netlify deploy --dir dist']} />
+
+オンラインでプロジェクトを閲覧できる URL が表示されます。
+
+</Step>
+
+#### 継続的デリバリー
+
+Netlify では、git へのプッシュや新しいプルリクエストのオープンをトリガーにビルド・デプロイを行うこともできます。
+
+- [新しい Netlify プロジェクトを開始します](https://app.netlify.com/signup)。
+- Git ホスティングサービスを選び、リポジトリを選択します。
+- **Build your site** をクリックします。
+
+### Vercel
+
+[Vercel](https://vercel.com/) は、単一のコマンドでデプロイできるフローを備えています。
+
+<Step label="1">
+
+[Vercel CLI](https://vercel.com/docs/cli) をインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global vercel@latest'],
+    yarn: ['$ yarn global add vercel@latest'],
+    pnpm: ['$ pnpm add --global vercel@latest'],
+    bun: ['$ bun add --global vercel@latest'],
+  }}
+/>
+
+</Step>
+<Step label="2">
+  シングルページアプリケーション向けにリダイレクトを設定します。
+
+アプリのルートに **vercel.json** ファイルを作成し、次の設定を追加します。
+
+```json vercel.json
+{
+  "buildCommand": "expo export -p web",
+  "outputDirectory": "dist",
+  "devCommand": "expo",
+  "cleanUrls": true,
+  "framework": null,
+  "rewrites": [
+    {
+      "source": "/:path*",
+      "destination": "/"
+    }
+  ]
+}
+```
+
+アプリが [静的レンダリング](/router/web/static-rendering) を使用している場合は、[動的ルートの追加設定](/router/web/static-rendering#dynamic-routes) が必要になることがあります。
+
+</Step>
+
+<Step label="3">
+  web サイトをデプロイします。
+
+{' '}
+
+<Terminal cmd={['$ vercel']} />
+
+オンラインでプロジェクトを閲覧できる URL が表示されます。ビルドが完了したら、その URL をブラウザに貼り付けると、デプロイされたアプリを確認できます。
+
+</Step>
+
+### AWS Amplify Console
+
+[AWS Amplify Console](https://console.amplify.aws) は、フルスタックのサーバーレス web アプリを継続的にデプロイ・ホストするための Git ベースのワークフローを提供します。Amplify は、コンピューターからではなくリポジトリから PWA をデプロイします。このガイドでは GitHub リポジトリを使用します。始める前に、[GitHub で新しいリポジトリを作成してください](https://github.com/new)。
+
+<Step label="1">
+
+リポジトリのルートに [**amplify-explicit.yml**](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) ファイルを追加します。生成される **dist** ディレクトリを **.gitignore** ファイルから削除し、その変更をコミットしたことを確認してください。
+
+</Step>
+
+<Step label="2">
+
+ローカルの Expo プロジェクトを GitHub リポジトリにプッシュします。まだ GitHub にプッシュしていない場合は、[既存のプロジェクトを GitHub に追加する GitHub のガイド](https://docs.github.com/en/get-started/importing-your-projects-to-github/importing-source-code-to-github/adding-locally-hosted-code-to-github) に従ってください。
+
+</Step>
+
+<Step label="3">
+
+[Amplify Console](https://console.aws.amazon.com/amplify/home) にログインし、既存のアプリを選択するか新しいアプリを作成します。GitHub アカウント、またはリポジトリを所有する組織からの読み取りを Amplify に許可します。
+
+</Step>
+
+<Step label="4">
+
+リポジトリを追加し、ブランチを選択したうえで、**Connecting a monorepo?** を選択してアプリの **dist** ディレクトリへのパスを入力し、**Next** を選びます。
+
+Amplify Console がプロジェクト内の **amplify.yml** ファイルを検出します。**Allow AWS Amplify to automatically deploy all files hosted in your project root directory** を選択し、**Next** を選びます。
+
+</Step>
+
+<Step label="5">
+
+設定を確認し、**Save and deploy** を選びます。これでアプリが `https://branchname.xxxxxx.amplifyapp.com` という URL にデプロイされます。web アプリにアクセスしたり、別のブランチをデプロイしたり、Expo のモバイルアプリと web アプリ間で統一されたバックエンド環境を追加したりできるようになります。
+
+**Learn how to get the most out of Amplify Hosting** のドロップダウンにある手順に従うと、**Add a custom domain with a free SSL certificate** など、詳しい情報を確認できます。
+
+</Step>
+
+### Firebase hosting
+
+[Firebase Hosting](https://console.firebase.google.com/) は、web プロジェクト向けの本番グレードの web コンテンツホスティングです。
+
+<Step label="1">
+
+[Firebase Console](https://console.firebase.google.com) で firebase プロジェクトを作成し、[こちらの手順](https://firebase.google.com/docs/hosting) に従って Firebase CLI をインストールします。
+
+</Step>
+
+<Step label="2">
+
+CLI を使って、次のコマンドを実行し Firebase アカウントにログインします。
+
+<Terminal cmd={['$ firebase login']} />
+
+</Step>
+
+<Step label="3">
+
+次に、次のコマンドを実行して firebase プロジェクトをホスティング用に初期化します。
+
+<Terminal cmd={['$ firebase init']} />
+
+設定は、Expo の web サイトをどのようにビルドしたかによって異なります。
+
+1. public のパスを聞かれたら、必ず **dist** ディレクトリを指定してください。
+2. **Configure as a single-page app (rewrite all urls to /index.html)** と聞かれたら、`web.output: "single"`（デフォルト）を使用している場合のみ **Yes** を選択してください。それ以外の場合は **No** を選択してください。
+
+</Step>
+
+<Step label="4">
+
+**package.json** の既存の `scripts` プロパティに、`predeploy` と `deploy` のプロパティを追加します。それぞれ次の値を設定します。
+
+{/* prettier-ignore */}
+```json package.json
+"scripts": {
+  /* @hide ... */ /* @end */
+  "predeploy": "expo export -p web",
+  "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
+}
+```
+
+</Step>
+
+<Step label="5">
+
+デプロイするには、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm run deploy-hosting'],
+    yarn: ['$ yarn run deploy-hosting'],
+    pnpm: ['$ pnpm run deploy-hosting'],
+    bun: ['$ bun run deploy-hosting'],
+  }}
+/>
+
+コンソールの出力に表示された URL を開いて、デプロイを確認します。例：`https://project-name.firebaseapp.com`。
+
+ホスティングのヘッダーを変更したい場合は、**firebase.json** の `hosting` セクションに次の設定を追加します。
+
+{/* prettier-ignore */}
+```json firebase.json
+  "hosting": [
+    {
+      /* @hide ... */ /* @end */
+      "headers": [
+        {
+          "source": "/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(jpg|jpeg|gif|png|svg|webp|js|css|eot|otf|ttf|ttc|woff|woff2|font.css)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "max-age=604800"
+            }
+          ]
+        }
+      ],
+    }
+  ]
+```
+
+</Step>
+
+### GitHub Pages
+
+[GitHub Pages](https://pages.github.com/) を使うと、GitHub リポジトリから直接 web サイトを公開できます。
+
+<Step label="1">
+
+まず、プロジェクトで新しい git リポジトリを初期化し、GitHub リポジトリへプッシュできるように設定します。すでに GitHub リポジトリと変更を同期している場合は、この手順をスキップしてください。
+
+GitHub の web サイトでリポジトリを作成します。次に、プロジェクトのルートディレクトリで次のコマンドを実行します。
+
+<Terminal
+  cmd={['$ git init', '', '$ git remote add origin https://github.com/username/expo-gh-pages.git']}
+/>
+
+上記のコマンドは、新しい Git リポジトリを初期化し、指定した GitHub リポジトリにソースコードをプッシュするよう設定します。
+
+</Step>
+
+<Step label="2">
+
+プロジェクトに開発依存関係として `gh-pages` パッケージをインストールします。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev gh-pages'],
+    yarn: ['$ yarn add -D gh-pages'],
+    pnpm: ['$ pnpm add -D gh-pages'],
+    bun: ['$ bun add -D gh-pages'],
+  }}
+/>
+
+</Step>
+
+<Step label="3">
+
+プロジェクトをデプロイするには、[app config](/ja/workflow/configuration/) の [`baseUrl`](/versions/latest/config/app/#baseurl) プロパティでサブドメインを設定します。値には文字列 `/repo-name` を設定します。
+
+たとえば GitHub リポジトリが `expo-gh-pages` の場合、[実験的な `baseUrl` プロパティ](/more/expo-cli/#hosting-with-sub-paths) の値は次のようになります。
+
+{/* prettier-ignore */}
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "baseUrl": "/expo-gh-pages"
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="4">
+
+**package.json** ファイルの `scripts` に `predeploy` と `deploy` のスクリプトを追加して変更します。それぞれ次の値を設定します。
+
+{/* prettier-ignore */}
+```json package.json
+"scripts": {
+ /* @hide ... */ /* @end */
+  "deploy": "gh-pages --nojekyll -d dist",
+  "predeploy": "expo export -p web"
+}
+```
+
+Expo は生成されるファイルにアンダースコアを使用するため、`--nojekyll` フラグで Jekyll を無効にする必要があります。
+
+</Step>
+
+<Step label="5">
+
+web アプリの本番ビルドを生成して GitHub Pages にデプロイするには、次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm run deploy'],
+    yarn: ['$ yarn run deploy'],
+    pnpm: ['$ pnpm run deploy'],
+    bun: ['$ bun run deploy'],
+  }}
+/>
+
+これにより、web アプリのビルドが GitHub リポジトリの `gh-pages` ブランチに公開されます。このブランチには **dist** ディレクトリのビルドアーティファクトと、`gh-pages` によって生成される **.nojekyll** ファイルのみが含まれます。開発用のソースコードは含まれません。
+
+</Step>
+
+<Step label="6">
+
+web アプリが `gh-pages` ブランチに公開されたので、そのブランチからアプリを配信するように GitHub Pages を設定します。
+
+- GitHub リポジトリの **Settings** タブに移動します。
+- 下にスクロールして **Pages** セクションを開きます。
+- **Source** が **Deploy from a branch** に設定されていることを確認します。
+- **Branch** セクションで **gh-pages** と **root** ディレクトリを選択します。
+- **Save** をクリックします。
+
+<ContentSpotlight
+  alt="GitHub Pages configuration in repository settings"
+  src="/static/images/distribution/publishing-websites-github-pages-config.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="7">
+
+web アプリが公開され GitHub Pages の設定が完了すると、GitHub Action が web サイトをデプロイします。リポジトリの **Actions** タブに移動すると、進行状況を確認できます。完了すると、web アプリは `http://username-on-github.github.io/repo-name` という URL で利用できるようになります。
+
+以降のデプロイや更新では、`deploy` コマンドを実行すると GitHub Action が自動的に起動し、web アプリを更新します。
+
+</Step>

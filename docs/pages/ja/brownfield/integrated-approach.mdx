@@ -1,0 +1,527 @@
+---
+title: 統合アプローチを使って既存のネイティブアプリに Expo を追加する方法
+sidebar_title: 統合アプローチ
+description: 統合アプローチを使って、既存のネイティブ（brownfield）アプリに Expo と React Native を追加するためのガイドです。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal, DiffBlock } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
+
+React Native と Expo は柔軟性が高く、1 つの画面（あるいは 1 つのビューだけ）単位で段階的に導入できます。この方法で Expo を使うことが自分のアプリケーションに最適だと気づくこともあれば、アプリのより多くの部分に少しずつ導入していくことになる場合もあります。いずれにしても、この柔軟性のおかげで、開発者は完全な書き直しというリスクを冒すことなく、モダンでクロスプラットフォームなツールを既存のネイティブアプリにすぐに導入できます。
+
+このガイドでは、既存のネイティブアプリに React Native のビューを追加する手順を説明します。ここで取り上げるアプローチは、他のライブラリと同じように React Native と Expo を統合することから、私たちが「統合アプローチ」と呼んでいるものです。
+
+> **info** もう一つのよく使われる手法として、私たちが「分離アプローチ」と呼んでいるものがあります。この方法では、Expo アプリはライブラリとしてパッケージ化され、既存のメインアプリケーションからはブラックボックスとして扱われます。詳しくは[分離アプローチガイド](/ja/brownfield/isolated-approach/)を参照してください。
+
+<Prerequisites>
+  <Requirement title="Node.js (LTS)">
+    JavaScript コードと Expo CLI を実行するために [Node.js](https://nodejs.org/en/)
+    をインストールしてください。
+  </Requirement>
+  <Requirement title="Yarn">
+    JavaScript の依存関係のパッケージマネージャーとして [Yarn](https://yarnpkg.com/)
+    をインストールしてください。
+  </Requirement>
+  <Requirement
+    title={
+      <>
+        CocoaPods <PlatformTag platform="ios" />
+      </>
+    }>
+    [CocoaPods](https://cocoapods.org/) をインストールしてください。これは iOS
+    向けの依存関係管理システムの 1 つです。CocoaPods は Ruby の
+    [gem](https://en.wikipedia.org/wiki/RubyGems) であり、最新版の macOS に同梱されている
+    バージョンの Ruby を使ってインストールできます。
+  </Requirement>
+</Prerequisites>
+
+詳しくは[環境構築ガイド](/get-started/set-up-your-environment/)を参照してください。
+
+## Expo プロジェクトを作成する
+
+まず、既存のネイティブプロジェクトのルートディレクトリ内に Expo プロジェクトを作成します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest my-project --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app my-project --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app my-project --template default@sdk-57'],
+    bun: ['$ bun create expo my-project --template default@sdk-57'],
+  }}
+/>
+
+このコマンドは、新しい Expo プロジェクトを含む **my-project** という名前の新しいディレクトリを作成します。プロジェクト名は自由に付けられますが、このガイドでは一貫性のために **my-project** を使用します。新しいプロジェクトには、始めるのに役立つ TypeScript のサンプルアプリケーションが含まれています。
+
+## プロジェクト構造を設定する
+
+標準的な React Native プロジェクトでは、ネイティブコードを **android** ディレクトリと **ios** ディレクトリに配置します。具体的な方法はプロジェクトによって異なりますが、単純にディレクトリを作成して既存のプロジェクトをそこに移動するだけで済むこともあります。たとえば次のようにします。
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal
+  cmd={['$ mkdir my-project/android', '$ mv /path/to/your/android-project my-project/android/']}
+/>
+
+</Tab>
+<Tab label="iOS">
+
+<Terminal cmd={['$ mkdir my-project/ios', '$ mv /path/to/your/ios-project my-project/ios/']} />
+
+</Tab>
+</Tabs>
+
+<Collapsible summary="ネイティブプロジェクトを android ディレクトリと ios ディレクトリに移動できませんか？">
+
+### monorepo を設定する
+
+monorepo（「モノリシックリポジトリ」）とは、複数のアプリやパッケージを含む単一のリポジトリのことです。[monorepo の扱い方を見る](/ja/guides/monorepos/)を参照してください。
+
+monorepo を設定すると、カスタムのフォルダー構造を使っている場合でも、Android と iOS のスクリプトから Node のライブラリのコマンドを呼び出せるようになります。Yarn の monorepo を設定するには、プロジェクトのルートに **package.json** ファイルを作成し、次の内容を追加します。
+
+```json package.json
+{
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["my-project"]
+}
+```
+
+その後、`yarn install` を実行して依存関係をインストールします。これにより、プロジェクトのルートに **node_modules** がインストールされ、ネイティブスクリプトが React Native のコードとやり取りできるようになります。`["my-project"]` は、前の手順で作成した Expo プロジェクトの名前に必ず変更してください。
+
+> **info** monorepo を選ぶ場合は、Gradle/CocoaPods でカスタムのプロジェクトルートを設定する必要があります。これについては次のセクションで説明します。
+
+</Collapsible>
+
+## ネイティブプロジェクトを設定する
+
+<Tabs tabs={["Configuring Android", "Configuring iOS"]}>
+<Tab>
+
+Android で React Native を統合するには、以下のファイルを変更してネイティブプロジェクトを設定する必要があります。
+
+- **Gradle ファイル**: **settings.gradle**、トップレベルの **build.gradle**、**app/build.gradle**、**gradle.properties** に、React Native Gradle Plugin（RNGP）などのプロパティを追加します。
+- **AndroidManifest.xml**: 必要なパーミッションを追加します。（[詳しく見る](#マニフェストを設定する)）
+- **MainActivity**: React Native アプリケーションを読み込みます。
+
+### Gradle を設定する
+
+<Step label="1">
+まず、**settings.gradle** ファイルを編集し、以下の行を追加します（参考として [bare minimum テンプレート](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/settings.gradle)を使用してください）。
+
+```groovy settings.gradle
+// Configures the React Native Gradle Settings plugin used for autolinking
+pluginManagement {
+  def reactNativeGradlePlugin = new File(
+    providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })")
+    }.standardOutput.asText.get().trim()
+  ).getParentFile().absolutePath
+  includeBuild(reactNativeGradlePlugin)
+
+  def expoPluginsPath = new File(
+    providers.exec {
+      workingDir(rootDir)
+      commandLine("node", "--print", "require.resolve('expo-modules-autolinking/package.json', { paths: [require.resolve('expo/package.json')] })")
+    }.standardOutput.asText.get().trim(),
+    "../android/expo-gradle-plugin"
+  ).absolutePath
+  includeBuild(expoPluginsPath)
+}
+
+plugins {
+  id("com.facebook.react.settings")
+  id("expo-autolinking-settings")
+}
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+  ex.autolinkLibrariesFromCommand(expoAutolinking.rnConfigCommand)
+}
+expoAutolinking.useExpoModules()
+
+// rootProject.name = 'HelloWorld'
+
+expoAutolinking.useExpoVersionCatalog()
+
+includeBuild(expoAutolinking.reactNativeGradlePlugin)
+// Include your existing Gradle modules here.
+// include(":app")
+```
+
+<Collapsible summary="カスタムのフォルダー構造を使っていますか？">
+
+カスタムのフォルダー構造を使っている場合は、autolinking を機能させるために **settings.gradle** でプロジェクトルートを明示的に設定する必要があります。以下の行を変更してください。
+
+<DiffBlock source="/static/diffs/brownfield/android/settings-gradle-custom-root.diff" />
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+次に、トップレベルの **build.gradle** を開き、この行を追加します（[bare minimum テンプレート](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/build.gradle)で提案されているとおりです）。
+
+<DiffBlock source="/static/diffs/brownfield/android/build-gradle.diff" />
+
+これにより、React Native Gradle と Expo のプラグインがプロジェクト内で利用可能になり、適用されるようになります。
+
+</Step>
+
+<Step label="3">
+アプリの **build.gradle** ファイル（通常は **app/build.gradle**。参考として [bare minimum テンプレートファイル](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/build.gradle)を使用できます）に、以下の行を追加します。
+
+<DiffBlock source="/static/diffs/brownfield/android/app-build-gradle.diff" />
+
+<Collapsible summary="カスタムのフォルダー構造を使っていますか？">
+
+カスタムのフォルダー構造を使っている場合は、**app/build.gradle** で `projectRoot` の値を Expo プロジェクトのルートを指すように調整する必要があります。以下の行を変更してください。
+
+<DiffBlock source="/static/diffs/brownfield/android/app-build-gradle-custom-root.diff" />
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+最後に、アプリの **gradle.properties** ファイルを開き、以下の行を追加します（参考として [bare minimum テンプレートファイル](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/gradle.properties)を使用してください）。
+
+```properties gradle.properties
+reactNativeArchitectures=armeabi-v7a,arm64-v8a,x86,x86_64
+newArchEnabled=true
+hermesEnabled=true
+```
+
+</Step>
+
+### マニフェストを設定する
+
+<Step label="1">
+まず、**AndroidManifest.xml** に `INTERNET` パーミッションがあることを確認してください。
+
+<DiffBlock source="/static/diffs/brownfield/android/android-manifest-internet-permission.diff" />
+
+</Step>
+
+<Step label="2">
+次に、**debug** の **AndroidManifest.xml** で、[cleartext traffic](https://developer.android.com/training/articles/security-config#CleartextTrafficPermitted) を有効にします。
+
+<DiffBlock source="/static/diffs/brownfield/android/android-manifest-cleartext-traffic.diff" />
+
+これは、アプリがローカルの [Metro バンドラー](https://metrobundler.dev/)と HTTP 経由で通信するために必要です。参考として、bare minimum テンプレートの **AndroidManifest.xml** ファイルを使用できます。[main](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml) と [debug](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/debug/AndroidManifest.xml)
+
+</Step>
+
+### コードと統合する
+
+次に、React Native ランタイムを起動し、React コンポーネントをレンダリングするよう指示するネイティブコードを追加する必要があります。
+
+#### `Application` クラスを更新する
+
+まず、`Application` クラスを更新して React Native を初期化します。参考として、[bare minimum テンプレート](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainApplication.kt)の **MainApplication.kt** を使用できます。
+
+<DiffBlock source="/static/diffs/brownfield/android/main-application.diff" />
+
+#### `ReactActivity` を作成する
+
+`ReactActivity` を拡張し、React Native のコードをホストする新しい `Activity` を作成します。この Activity は、React Native ランタイムを起動して React コンポーネントをレンダリングする役割を担います。参考として、[bare minimum テンプレートの **MainActivity.kt**](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/java/com/helloworld/MainActivity.kt)を使用できます。
+
+```kotlin MyReactActivity.kt
+// package <your-package-here>
+
+import android.os.Build
+
+import com.facebook.react.ReactActivity
+import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
+import com.facebook.react.defaults.DefaultReactActivityDelegate
+
+import expo.modules.ReactActivityDelegateWrapper
+
+class MyReactActivity : ReactActivity() {
+
+  /**
+   * Returns the name of the main component registered from JavaScript. This is used to schedule
+   * rendering of the component.
+   */
+  override fun getMainComponentName(): String = "main"
+
+  /**
+   * Returns the instance of the [ReactActivityDelegate]. We use [DefaultReactActivityDelegate]
+   * which allows you to enable New Architecture with a single boolean flags [fabricEnabled]
+   */
+  override fun createReactActivityDelegate(): ReactActivityDelegate {
+    return ReactActivityDelegateWrapper(
+          this,
+          BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
+          object : DefaultReactActivityDelegate(
+              this,
+              mainComponentName,
+              fabricEnabled
+          ){})
+  }
+}
+```
+
+新しい Activity を **AndroidManifest.xml** ファイルに追加します。React Native の画面の上に `ActionBar` が表示されないよう、`MyReactActivity` のテーマを `Theme.AppCompat.Light.NoActionBar`（または ActionBar を使わない任意のテーマ）に必ず設定してください。
+
+<DiffBlock source="/static/diffs/brownfield/android/android-manifest-add-activity.diff" />
+
+これで、Activity が JavaScript コードを実行する準備が整いました。
+
+</Tab>
+<Tab>
+
+iOS で React Native を統合するには、以下のファイルを変更してネイティブの iOS プロジェクトを設定する必要があります。
+
+- **Podfile**: React Native の依存関係を追加します。
+- **Xcode プロジェクト**: JavaScript コードをバンドルするためのビルドフェーズを追加します。
+- **Info.plist**: React Native に必要なアプリの設定を行います。
+
+### CocoaPods を設定する
+
+プロジェクトに **Podfile** がない場合は、参考として [bare minimum テンプレート](https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/ios/Podfile)を使って作成できます。
+
+```rb Podfile
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
+
+require 'json'
+
+platform :ios, '16.4'
+install! 'cocoapods',
+  :deterministic_uuids => false
+
+prepare_react_native_project!
+
+target 'HelloWorld' do
+  use_expo_modules!
+
+  config_command = [
+    'npx',
+    'expo-modules-autolinking',
+    'react-native-config',
+    '--json',
+    '--platform',
+    'ios'
+  ]
+  config = use_native_modules!(config_command)
+
+  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => true,
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    :privacy_file_aggregation_enabled => true,
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false,
+    )
+  end
+end
+```
+
+すでに **Podfile** がある場合は、React Native の依存関係を既存の **Podfile** に手動でマージする必要があります。
+
+<Collapsible summary="カスタムのフォルダー構造を使っていますか？">
+
+カスタムのフォルダー構造を使っている場合は、autolinking を機能させるために **Podfile** でプロジェクトルートを明示的に設定する必要があります。**Podfile** の以下の行を変更してください。
+
+<DiffBlock source="/static/diffs/brownfield/ios/podfile-custom-root.diff" />
+
+</Collapsible>
+
+次に、以下のコマンドを実行します。
+
+<Terminal cmd={['$ pod install']} />
+
+`pod` コマンドを実行すると、React Native のコードがアプリに統合され、iOS のファイルから React Native のヘッダーを import できるようになります。
+
+### Xcode プロジェクトを設定する
+
+<Step label="1">
+`pod install` コマンドの実行後、CocoaPods が Xcode ワークスペース **\{Project\}.xcworkspace** を作成します。従来の **xcodeproj** プロジェクトではなく、**xcworkspace** プロジェクトを開く必要があります。あるいは、次のコマンドを使ってプロジェクトを開くこともできます。
+
+<Terminal cmd={['$ xed my-project/ios']} />
+
+Xcode のプロジェクトナビゲーターで、プロジェクトを選択し、`TARGETS` の下にあるアプリのターゲットを選択します。**Build Settings** で検索バーを使い、
+`ENABLE_USER_SCRIPT_SANDBOXING` を検索します。まだ設定されていなければ、値を `No` に設定します。これは、React Native に同梱されている
+[Hermes エンジン](https://github.com/facebook/hermes/blob/main/README.md)の Debug バージョンと Release バージョンを正しく切り替えるために必要です。
+
+  <ContentSpotlight
+    alt="Xcode Build Settings"
+    src="/static/images/brownfield/user-script-sandboxing.webp"
+  />
+</Step>
+
+<Step label="2">
+
+次に、**Build Phases** タブに切り替え、`[CP] Embed Pods Frameworks` フェーズの前に新しい `Run Script Phase` を追加します。このスクリプトは、JavaScript コードとアセットを iOS アプリケーションにバンドルします。
+
+<ContentSpotlight alt="Xcode build phases" src="/static/images/brownfield/run-script-phase.webp" />
+
+```sh Build React Native code and image
+if [[ -f "$PODS_ROOT/../.xcode.env" ]]; then
+  source "$PODS_ROOT/../.xcode.env"
+fi
+if [[ -f "$PODS_ROOT/../.xcode.env.local" ]]; then
+  source "$PODS_ROOT/../.xcode.env.local"
+fi
+
+# The project root by default is one level up from the ios directory
+export PROJECT_ROOT="$PROJECT_DIR"/..
+
+if [[ "$CONFIGURATION" = *Debug* ]]; then
+  export SKIP_BUNDLING=1
+fi
+if [[ -z "$ENTRY_FILE" ]]; then
+  # Set the entry JS file using the bundler's entry resolution.
+  export ENTRY_FILE="$("$NODE_BINARY" -e "require('expo/scripts/resolveAppEntry')" "$PROJECT_ROOT" ios absolute | tail -n 1)"
+fi
+
+if [[ -z "$CLI_PATH" ]]; then
+  # Use Expo CLI
+  export CLI_PATH="$("$NODE_BINARY" --print "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })")"
+fi
+if [[ -z "$BUNDLE_COMMAND" ]]; then
+  # Default Expo CLI command for bundling
+  export BUNDLE_COMMAND="export:embed"
+fi
+
+# Source .xcode.env.updates if it exists to allow
+# SKIP_BUNDLING to be unset if needed
+if [[ -f "$PODS_ROOT/../.xcode.env.updates" ]]; then
+  source "$PODS_ROOT/../.xcode.env.updates"
+fi
+# Source local changes to allow overrides
+# if needed
+if [[ -f "$PODS_ROOT/../.xcode.env.local" ]]; then
+  source "$PODS_ROOT/../.xcode.env.local"
+fi
+
+`"$NODE_BINARY" --print "require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'"`
+```
+
+次回、アプリを Release 用にビルドすると、React Native のコードは Expo CLI を使ってバンドルされ、アプリに埋め込まれます。
+
+</Step>
+
+<Step label="3">
+**Info.plist** ファイルを編集し、`UIViewControllerBasedStatusBarAppearance` キーを値 `NO` で必ず追加してください。これは、ステータスバーが React Native によって正しく管理されるようにするために必要です。
+
+<DiffBlock source="/static/diffs/brownfield/ios/info-plist.diff" />
+
+</Step>
+
+### コードと統合する
+
+次に、React Native ランタイムを起動し、React コンポーネントをレンダリングするよう指示するネイティブコードを追加する必要があります。
+
+#### ReactViewController を作成する
+
+**ReactViewController.swift** という新しいファイルを作成します。これは、React Native のビューを `view` として読み込む `ViewController` になります。
+
+```swift ReactViewController.swift
+import UIKit
+import React
+import React_RCTAppDelegate
+import ReactAppDependencyProvider
+
+class ReactNativeViewController: UIViewController {
+  var reactNativeFactory: RCTReactNativeFactory?
+  var reactNativeFactoryDelegate: RCTReactNativeFactoryDelegate?
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    reactNativeFactoryDelegate = ReactNativeDelegate()
+    reactNativeFactoryDelegate!.dependencyProvider = RCTAppDependencyProvider()
+    reactNativeFactory = RCTReactNativeFactory(delegate: reactNativeFactoryDelegate!)
+    view = reactNativeFactory!.rootViewFactory.view(withModuleName: "HelloWorld")
+
+  }
+}
+
+class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
+    override func sourceURL(for bridge: RCTBridge) -> URL? {
+      self.bundleURL()
+    }
+
+    override func bundleURL() -> URL? {
+      #if DEBUG
+      RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: ".expo/.virtual-metro-entry")
+      #else
+      Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+      #endif
+    }
+
+}
+```
+
+#### rootViewController で React Native ビューを表示する
+
+最後に、React Native のビューを表示します。そのためには、JS コンテンツを読み込めるビューをホストする新しい View Controller が必要です。すでに最初の `ViewController` があるので、それに `ReactViewController` を表示させることができます。方法はアプリによっていくつか考えられますが、この例では React Native をモーダルで表示するボタンがあるとします。
+
+```swift ViewController.swift
+import UIKit
+
+class ViewController: UIViewController {
+
+  var reactViewController: ReactViewController?
+
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    // Do any additional setup after loading the view.
+    self.view.backgroundColor = .systemBackground
+
+    let button = UIButton()
+    button.setTitle("Open React Native", for: .normal)
+    button.setTitleColor(.systemBlue, for: .normal)
+    button.setTitleColor(.blue, for: .highlighted)
+    button.addAction(UIAction { [weak self] _ in
+      guard let self else { return }
+      if reactViewController == nil {
+       reactViewController = ReactViewController()
+      }
+      present(reactViewController!, animated: true)
+    }, for: .touchUpInside)
+    self.view.addSubview(button)
+
+    button.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      button.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+      button.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+      button.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+      button.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+    ])
+  }
+}
+```
+
+</Tab>
+</Tabs>
+## 統合をテストする
+
+これで、アプリケーションと React Native を統合するための基本的な手順がすべて完了しました。React Native ディレクトリで次のコマンドを実行し、[Metro バンドラー](https://metrobundler.dev/)を起動します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm run start'],
+    yarn: ['$ yarn run start'],
+    pnpm: ['$ pnpm run start'],
+    bun: ['$ bun run start'],
+  }}
+/>
+
+Metro は TypeScript のアプリケーションコードをバンドルにビルドし、HTTP サーバー経由でそれを配信し、開発環境の `localhost` からシミュレーター/デバイスへバンドルを共有することで、[hot reloading](https://reactnative.dev/blog/2016/03/24/introducing-hot-reloading) を可能にします。あとは、通常どおりアプリをビルドして実行できます。アプリ内の React で動作する Activity にたどり着くと、開発サーバーから JavaScript コードが読み込まれるはずです。

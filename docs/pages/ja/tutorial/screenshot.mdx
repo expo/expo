@@ -41,11 +41,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <Step label="2">
 
-## 権限を要求する
+## パーミッションを要求する
 
-デバイスのメディアライブラリへのアクセスのような機密性の高い情報を必要とするアプリでは、アクセスを許可または拒否するための権限を要求する必要があります。`expo-image-picker` の `useMediaLibraryPermissions()` フックを使うと、`permissionResponse` と `requestPermission()` メソッドを利用してアクセスを要求できます。このフックは読み取りと書き込みの両方の権限を要求するため、ライブラリからの画像選択とスクリーンショットの保存の両方に対応します。
+デバイスのメディアライブラリへのアクセスのような機密性の高い情報を必要とするアプリでは、アクセスを許可または拒否するためのパーミッションを要求する必要があります。`expo-image-picker` の `useMediaLibraryPermissions()` フックを使うと、`permissionResponse` と `requestPermission()` メソッドを利用してアクセスを要求できます。このフックは読み取りと書き込みの両方のパーミッションを要求するため、ライブラリからの画像選択とスクリーンショットの保存の両方に対応します。
 
-アプリが初めて起動され、権限のステータスが許可も拒否もされていない場合、`permissionResponse` の値は `null` になります。権限を要求されると、ユーザーは権限を許可するか拒否するかを選択できます。許可されていない場合に判定する条件を追加します。許可されていない場合は、`requestPermission()` メソッドを呼び出します。アクセスが得られると、`permissionResponse` の値は `granted` に変わります。
+アプリが初めて起動され、パーミッションのステータスが許可も拒否もされていない場合、`permissionResponse` の値は `null` になります。パーミッションを要求されると、ユーザーはそれを許可するか拒否するかを選択できます。許可されていない場合に判定する条件を追加します。許可されていない場合は、`requestPermission()` メソッドを呼び出します。アクセスが得られると、`permissionResponse` の値は `granted` に変わります。
 
 次のコードスニペットを **src/app/(tabs)/index.tsx** の中に追加します。
 
@@ -57,10 +57,10 @@ import * as ImagePicker from 'expo-image-picker';
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo フックから権限のレスポンスと `requestPermission()` メソッドをインポートするため、この文を追加します。 */const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();/* @end */
+  /* @tutinfo フックからパーミッションのレスポンスと `requestPermission()` メソッドをインポートするため、この文を追加します。 */const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();/* @end */
   // ...rest of the code remains same
 
-  /* @tutinfo 権限の状態を確認するため、if 文を追加します。requestPermission() メソッドは、ユーザーが権限を許可または拒否するためのダイアログを表示します。 */
+  /* @tutinfo パーミッションの状態を確認するため、if 文を追加します。requestPermission() メソッドは、ユーザーがパーミッションを許可または拒否するためのダイアログを表示します。 */
   useEffect(() => {
     if (!permissionResponse?.granted) {
       requestPermission();

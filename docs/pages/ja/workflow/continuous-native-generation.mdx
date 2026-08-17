@@ -1,0 +1,321 @@
+---
+title: Continuous Native Generation (CNG)
+description: Continuous Native Generation（CNG）と Prebuild を使ってネイティブプロジェクトを管理する方法について学びます。
+sidebar_title: Continuous Native Generation
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+import { Terminal, DiffBlock } from '~/ui/components/Snippet';
+
+単一のネイティブプロジェクトだけでも、保守・スケール・アップデートは複雑です。クロスプラットフォームアプリでは複数のネイティブプロジェクトを抱えることになり、サードパーティの依存関係から大きく遅れを取らないようにするため、それらを保守し、最新の OS リリースに追従させ続ける必要があります。
+
+ネイティブプロジェクトが大きくなるにつれて、サードパーティの依存関係による複雑さが増し、アップグレードが難しくなって開発者の勢いが失われていきます。これにより高度なネイティブ機能の追加が敬遠され、パワーに欠けるアプリになりがちです。クロスプラットフォームアプリでは、この複雑さが各プラットフォームぶん倍増します。
+
+この課題に対処するため、私たちは **Continuous Native Generation** という概念を導入しました。ネイティブプロジェクトを一度だけ作成し、コードベースの寿命が尽きるまでそのカスタマイズを保守し続けるのではなく、デバッグ時やビルド時など必要なときにだけ、短命なネイティブプロジェクトを生成します。これらのプロジェクトは、標準テンプレートと、そのテンプレートをどうカスタマイズすべきかを定義する設定またはカスタムコードから生成されます。その結果、開発者が望む任意のカスタマイズを施したネイティブアプリへとコンパイルできるネイティブプロジェクトが得られます。ただし開発者が保守する責任を負うのは、ネイティブプロジェクトのコードすべてではなく、カスタマイズの定義だけです。
+
+## React Native アプリにおける CNG
+
+React Native アプリは、アップグレードの自動化、ライブラリのインストール・アンインストール、ホワイトラベルのカスタマイズの適用、複数アプリ間での設定の共有、[孤立したコード](#prebuild-は孤立したコードにどう役立ちますか)の削減などのために [Prebuild](#使用方法) を使うことで、**CNG** を利用できます。
+
+**フレームワークとしての Expo** は、次のツールを組み合わせることで CNG を実現します。
+
+1. [app config](/ja/workflow/configuration/) ファイル。
+2. `npx expo prebuild` コマンドに渡される引数。
+3. プロジェクトにインストールされている `expo` のバージョンと、それに対応する [prebuild テンプレート](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum)。
+4. **package.json** 内で見つかった [ネイティブモジュール](/more/glossary-of-terms/#native-module) をリンクするための [Autolinking](/more/glossary-of-terms#autolinking)。
+5. **MainApplication** や **AppDelegate** といったエントリーポイントのファイルにおけるネイティブコードの副作用を減らすための、ネイティブ subscriber。
+6. 追加のターゲットや entitlement にコード署名するための EAS Credentials。
+
+最終的な結果として、開発者が app config によってあらゆるネイティブアプリケーションを表現し、`npx expo prebuild` を実行することでそのプロジェクトを継続的に生成できるワークフローが得られます。
+
+## 使用方法
+
+Prebuild は次のコマンドを実行すると使用できます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild'],
+    yarn: ['$ yarn expo prebuild'],
+    pnpm: ['$ pnpm expo prebuild'],
+    bun: ['$ bun expo prebuild'],
+  }}
+/>
+
+これにより、React のコードを実行するための **android** ディレクトリと **ios** ディレクトリが作成されます。生成されたディレクトリを手動で変更すると、次に `npx expo prebuild --clean` を実行したときにその変更が失われるおそれがあります。代わりに、prebuild 実行時にネイティブプロジェクトへの変更を行う関数である [config plugins](/config-plugins/introduction/) を使用してください。
+
+[よくある質問](#prebuild) セクションに挙げた理由から Prebuild の使用を強くおすすめしますが、この仕組みは[完全にオプション](#オプションであること)であり、いつでも使用をやめられます。
+
+### EAS Build での使用
+
+プロジェクトに **android** ディレクトリと **ios** ディレクトリが含まれていない場合、EAS Build はコンパイルの前に Prebuild を実行してこれらのネイティブディレクトリを生成します。これは `npx create-expo-app` を使って作成したプロジェクトのデフォルトの挙動です。
+
+**android** ディレクトリと **ios** ディレクトリを持つプロジェクトの場合、EAS Build はネイティブディレクトリに加えた変更を上書きしないよう、Prebuild を実行しません。
+
+[ローカルでコンパイル](/ja/guides/local-app-development/#ローカルでのアプリコンパイル) して（`npx expo prebuild` や `npx expo run:android`、`npx expo run:ios` を実行して）アプリのトラブルシューティングを行う場合でも、ビルドプロセス中に新しいネイティブディレクトリを生成するために EAS Build で Prebuild を使い続けられます。**android** ディレクトリと **ios** ディレクトリは、新しいプロジェクトを作成すると自動的に **.gitignore** に追加されますが、手動で追加する必要がある場合は、**.gitignore** または [**.easignore**](/build-reference/easignore/) ファイルに追加できます。
+
+<DiffBlock
+  raw={`diff --git a/.gitignore b/.gitignore
+--- a/.gitignore
++++ b/.gitignore
+@@ -0,0 +1,2 @@
++/android
++/ios
+`}
+/>
+
+### Expo CLI の run コマンドでの使用
+
+次のコマンドを実行すると、ローカルでネイティブビルドを実行できます。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Build your native Android project',
+      '$ npx expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Build your native Android project',
+      '$ yarn expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Build your native Android project',
+      '$ pnpm expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Build your native Android project',
+      '$ bun expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ bun expo run:ios',
+    ],
+  }}
+/>
+
+ネイティブディレクトリが存在しない場合、`npx expo prebuild` はその特定のプラットフォーム向けに一度だけ実行されます。これらの `run` コマンドをその後も使う場合は、ネイティブコードをローカルの設定と確実に同期させるために、手動で `npx expo prebuild --clean` を実行してください。
+
+## プラットフォームサポート
+
+Prebuild は現在、Android と iOS をサポートしています。web 向けに生成すべきネイティブプロジェクトは存在せず、web アプリは web ブラウザ上で動作するため、web のサポートは不要です。個々のプラットフォームに対して prebuild を実行するには、`--platform` オプションを使用します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --platform ios'],
+    yarn: ['$ yarn expo prebuild --platform ios'],
+    pnpm: ['$ pnpm expo prebuild --platform ios'],
+    bun: ['$ bun expo prebuild --platform ios'],
+  }}
+/>
+
+## 依存関係
+
+Prebuild は、各 Expo SDK バージョンに対応するテンプレートから新しいネイティブプロジェクトを初期化することから始まります。これは特定の React と React Native のバージョンとも対応しています。プロジェクトの React と React Native のバージョンが、[テンプレートの **package.json**](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum) の `dependencies` フィールドで指定された期待バージョンと異なる場合、`npx expo prebuild` を実行すると警告が表示されます。
+
+`--skip-dependency-update` オプションを使うと、npm パッケージのバージョン変更をスキップできます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --skip-dependency-update react-native,react'],
+    yarn: ['$ yarn expo prebuild --skip-dependency-update react-native,react'],
+    pnpm: ['$ pnpm expo prebuild --skip-dependency-update react-native,react'],
+    bun: ['$ bun expo prebuild --skip-dependency-update react-native,react'],
+  }}
+/>
+
+## パッケージマネージャー
+
+[依存関係](#依存関係)が変更されると、Prebuild はプロジェクトで現在使用されているパッケージマネージャー（これはロックファイルから推測されます）を使ってライブラリを再インストールします。`--npm`、`--yarn`、`--pnpm` のいずれかを指定することで、特定のパッケージマネージャーを強制的に使用できます。
+
+`--no-install` コマンドを渡すと、すべてのインストールをスキップできます。これは生成を素早くテストする際に便利です。
+
+## クリーン
+
+`--clean` オプションは、生成前に既存のネイティブディレクトリを削除します。`--clean` オプションなしで `npx expo prebuild` を再実行すると、既存のファイルの上に変更が重ねられます。これは高速ですが、場合によっては同じ結果にならないことがあります。
+
+たとえば、一部の config plugin は冪等ではありません。プロジェクトが複数の「dangerous modifier」を使ってアプリのコードに正規表現による変更を加えている場合、予期しない挙動につながることがあります。そのため `--clean` オプションを使うことが prebuild コマンドを使う上で最も安全な方法であり、ほとんどの場合に一般的に推奨されます。
+
+### `--clean` オプションを使う
+
+`--clean` オプションはネイティブプロジェクトのファイルをすべて削除して再作成するため、これを使用する際に git コードリポジトリにコミットされていない変更があると警告が表示されます。このプロンプトは任意で、CI 上で発生した場合はスキップされます。環境変数 `EXPO_NO_GIT_STATUS=1` を有効にすると、このチェックを無効にできます。
+
+開発者がワークフローを頻繁に切り替えたい場合もあります。たとえば、Android Studio や Xcode でカスタム機能をネイティブに構築してから、その機能をローカルの config plugin に移したいことがあるでしょう。
+
+## テンプレート
+
+[config plugins](/config-plugins/introduction) を使うと、ネイティブディレクトリの生成方法をカスタマイズできます。すでに多くの変更に対応した config plugin が数多く存在しており、コミュニティのライブラリが独自の config plugin を同梱していることもよくあります。詳しくは [人気のあるプラグインの一覧](https://github.com/expo/config-plugins) を参照してください。
+
+Prebuild はテンプレートファイルから開始し、それを config plugin で変更します。テンプレートファイルは Expo SDK のバージョンに基づいており、npm パッケージの [`expo-template-bare-minimum`](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum) から取得されます。`npx expo prebuild` コマンドに `--template /path/to/template.tgz` を渡すことで、使用するテンプレートを変更できます。ただし `@expo/prebuild-config` のベースとなる modifier はテンプレートファイルについて文書化されていない前提を置いているため、これは一般的にはおすすめしません。カスタムテンプレートの保守が難しくなる可能性があります。
+
+> **注：** すべてのパッケージがプライベートレジストリからダウンロードされ、npm のパブリックレジストリへのアクセスがブロックされているネットワーク環境では、ローカルで利用できるテンプレートを prebuild コマンドに渡す必要があります。[デフォルトテンプレートのローカル版を使う方法について詳しく知る](https://expo.fyi/prebuild-without-npm-access)。
+
+## 副作用
+
+`npx expo prebuild` は **android** ディレクトリと **ios** ディレクトリの生成以外にも、いくつかの副作用を発生させます。これらの副作用をなくすための作業が進行中です — 理想的には、`npx expo prebuild` を実行すると Android プロジェクトと iOS プロジェクトが生成され、プロジェクトの他の部分には一切手を加えないようにしたいと考えています。
+
+ネイティブディレクトリを生成することに加えて、prebuild は次の変更も行います。
+
+- **package.json** の `scripts` フィールドを変更し、`expo start --android` と `expo start --ios` を `expo run:android` と `expo run:ios` に置き換える
+- **package.json** の `dependencies` フィールドを変更する
+
+`scripts` フィールドへの便宜的な変更は、prebuild の前後で開発者がアプリに取り組む方法を変える唯一の副作用です。それ以外の変更はそのままにして git にコミットしておけば、prebuild 実行時の差分を最小限に抑えられます。
+
+## オプションであること
+
+Prebuild は任意で、Expo のあらゆるツールやサービスとシームレスに連携します。ネイティブプロジェクトを手動で管理している[既存の React Native プロジェクト](/ja/bare/overview/)では、手動のカスタマイズを上書きしてしまうおそれがあるため `npx expo prebuild` を使用しないでください。開発者は他の Expo ツールやワークフローを採用しつつ、（[ネイティブプロジェクトへの直接的な変更](/more/glossary-of-terms/#bare-workflow)）を続けることができます。その後、手動のカスタマイズを app config や config plugin に移行し、CNG を採用することもできます。
+
+[EAS](/eas/)、Expo CLI、Expo SDK 内のライブラリを含む Expo が提供するすべてのものは、既存の React Native プロジェクトを**完全にサポート**するように作られています。これは `npx expo prebuild` を使うプロジェクトをサポートするための最低条件だからです。唯一の例外は [Expo Go](https://expo.dev/go) アプリで、Expo Go ランタイムに存在しないネイティブコードに対する JavaScript のフォールバックが含まれている場合に限り、任意の React Native プロジェクトを読み込めます。
+
+## よくある質問
+
+<FAQ>
+
+### CNG
+
+<Collapsible summary="CNG はプロジェクトのアップグレードにどう役立ちますか？">
+
+**Continuous Native Generation** を使用していない React Native 開発者は、アプリを最新バージョンの React Native にアップグレードすることが、このライブラリの最大の弱点だと報告しています。[React Native Survey (2022)](https://results.2022.stateofreactnative.com/opinions/#opinions_pain_points) より。
+
+CNG を使用する場合、アップグレードのプロセスは単に npm の依存関係と app config をアップグレードし、`npx expo prebuild --clean` を再実行するだけです。
+
+</Collapsible>
+
+<Collapsible summary="React Native ライブラリの作者はどのように CNG を採用できますか？">
+
+React Native ライブラリの作者は、いくつかの方法で CNG を採用できます。それはライブラリの複雑さによって異なります。いくつかのシナリオを紹介します。
+
+- **ネイティブコードや設定の副作用がない場合**: `react-native-blurhash` のように、ネイティブコードや設定の副作用がないライブラリは、`npx expo prebuild` とシームレスに統合できます。追加の設定を必要とせず、Node Module Resolution に頼ることができます。
+
+- **インストール後に追加のセットアップが不要なネイティブコード**: ネイティブコードを持つライブラリの多くは、ネイティブアプリのビルド前に実行される [Expo Autolinking](/more/glossary-of-terms#autolinking) によって、自動的にインストール・リンクできます。
+
+- **追加の設定の副作用とセットアップが必要な場合**: 追加の設定の副作用を必要とするライブラリは、そのライブラリ向けに [Expo config plugin](/config-plugins/introduction/) を作成することで CNG を採用できます。この方法により、ライブラリの作者は **Info.plist** へのパーミッションメッセージの追加や、Xcode プロジェクトへのターゲットの注入といった値の追加を自動化できます。
+
+- **ネイティブランタイムのフックに依存するライブラリ**: `AppDelegate`、`MainActivity`、`MainApplication` などを介した初回起動 URL のインターセプトのような、特定のネイティブランタイムのフックに依存するライブラリは、Expo Modules API の [**Lifecycle listener**](/modules/android-lifecycle-listeners/) を利用できます。これらの lifecycle listener を使うと、これらの標準的なネイティブプロジェクトファイルを変更する代わりに、Expo Autolinking を介してこれらのランタイムフックを適用でき、config plugin が不要になります。
+
+[MapBox](https://github.com/rnmapbox/maps)、[Sentry](https://github.com/getsentry/sentry-react-native)、[Stripe](https://github.com/stripe/stripe-react-native)、[React Native Firebase](https://rnfirebase.io/#installation-for-expo-projects) など、すでに Expo Prebuild を通じて CNG をサポートしている複雑なライブラリやサービスは数多くあります。
+
+ライブラリの作者が CNG を採用していることは、`npx expo prebuild` を使うための必須条件ではありません。ライブラリの作者が CNG を採用していない場合でも、開発者はローカルの [Config Plugin](https://github.com/expo/config-plugins/) を作成してネイティブ生成パイプラインを変更することで、`npx expo prebuild` を引き続き使用できます。この柔軟性により、CNG は React Native コミュニティのすべての開発者にとって利用しやすく、有益なものになっています。
+
+</Collapsible>
+
+<Collapsible summary="CNG は React Native プロジェクトに限定されますか？">
+
+いいえ、CNG はどんなネイティブプロジェクトにも適用できる汎用的なパターンです。Expo Prebuild は React Native プロジェクト向けに CNG を実装するツールですが、その概念自体はこのフレームワークに限定されません。
+
+</Collapsible>
+
+<Collapsible summary="コミュニティは CNG をどのように使っていますか？">
+
+困難なネイティブ機能をシンプルな設定ファイルに変換した、コミュニティのいくつかの事例を紹介します。これにより開発者は、反復のスピードを犠牲にすることなく、よりパワフルなアプリを構築できるようになりました。
+
+- [iOS Safari Extensions](https://github.com/andrew-levy/react-native-safari-extension): 実装が非常に難しいことで知られる iOS 向け Safari Extension の作成プロセスを、わずか数行の JSON にまで削減しています。
+
+- [iMessage Sticker App](https://github.com/expo/config-plugins/tree/main/packages/ios-stickers): この Expo config plugin は、JSON オブジェクトから iMessage Sticker App 全体を生成できます。
+
+- [Firebase スイート全体](https://rnfirebase.io/): 複数の IDE にまたがる多段階のネイティブ設定プロセスだったネイティブ Firebase スイート全体が、基本的な JSON 設定にまで削減されているのがわかります。
+
+- [クロスプラットフォームのホーム画面ウィジェット](https://github.com/gaishimo/eas-widget-example): この Expo config plugin は、Android と iOS 向けのホーム画面ウィジェットを生成できます。
+
+- [Apple App Clips](https://github.com/bndkt/react-native-app-clip): この Expo config plugin は、複数のターゲットにまたがる多段階のプロセスだった Apple App Clip の生成を、`["react-native-app-clip", { "name": "My App Clip" }]` という 1 行にまで削減します。
+
+これらの機能は、いつでも副作用なく簡単に追加・削除できます。CNG を使うと、開発者は長期的な保守コストやプロジェクト内に孤立したコードが生じる可能性を気にすることなく、複雑な機能を試し、素早く反復できます。
+
+</Collapsible>
+
+<Collapsible summary="CNG は Android と iOS 以外の OS でも使用できますか？">
+
+もちろんです！ CNG はあらゆる OS に適用できる抽象的な概念です。Expo Prebuild は公式には Android と iOS 向けに CNG を実装していますが、開発者が他のプラットフォーム向けの実装を作成できるよう、抽象的なプラットフォームサポートも提供しています。
+
+</Collapsible>
+
+<Collapsible summary="CNG を使うには Expo の使用が必須ですか？">
+
+まったくそんなことはありません。CNG はどんなコミュニティでも採用できるオープンなパターンです。私たちはこのパターンを抽象的に定義することで、他のコミュニティが自分たちのプロジェクトに CNG をどう採用できるかを理解する助けになるようにしています。
+
+</Collapsible>
+
+<Collapsible summary="CNG は Static Site Generation（SSG）のような web 開発のパターンとどう比較できますか？">
+
+CNG は、一連の入力からプロジェクトを生成するという点で SSG と似ています。しかし CNG は、その出力の点で SSG と異なります。静的な web サイトのコードではなく、ネイティブランタイムのコードを生成します。つまりネイティブプロジェクトはオンデマンドで生成され、生成されたソースコードと設定は、ネイティブプロジェクトがネイティブアプリにコンパイルされた時点で破棄されます。
+
+</Collapsible>
+
+<Collapsible summary="既存の brownfield プロジェクトで CNG を使うことはできますか？">
+
+CNG は、ネイティブプロジェクトの状態全体を継続的に管理するよう設計されています。そのため、既存の brownfield プロジェクトでの使用は想定されていません。ただし CNG を使って新しいネイティブプロジェクトを生成し、それを既存の brownfield プロジェクトに統合することはできます。
+
+</Collapsible>
+
+### Prebuild
+
+Expo Prebuild は CNG の処理を効率化します。ここでは、Prebuild が対処する React Native の開発サイクルにおけるいくつかの課題を紹介します。
+
+<Collapsible summary="Prebuild は健全なプロジェクトのアップグレードにどう役立ちますか？">
+
+ネイティブコードを構築するには、プラットフォームのツールに精通している必要があり、学習曲線が急になります。この課題は、複数のプラットフォームを扱うクロスプラットフォーム開発でさらに深刻になります。多くの機能をプラットフォーム固有のネイティブコードで実装しなければならない場合、クロスプラットフォームのツールは役に立ちません。
+
+ネイティブアプリをブートストラップする際には、理解していないかもしれない初期のコードや設定があります。とはいえ、それを保守する責任を負うわけではありません。最終的には、アプリを安全にアップグレードするためにこのコードを理解する必要が出てきます。この課題により、開発者は誤ったアップグレードをしてしまったり、既存のソースコードをコピーして新しいアプリを始めてしまったりすることがよくあります。
+
+**Prebuild を使うと**、アップグレードは純粋な JavaScript アプリケーションのアップグレードにずっと近くなります。**package.json** のバージョンを上げ、ネイティブプロジェクトを再生成すれば、開発を続ける準備が整うはずです。
+
+</Collapsible>
+
+<Collapsible summary="Prebuild はクロスプラットフォームの設定をどう簡略化しますか？">
+
+アプリアイコン、名前、スプラッシュスクリーンなどのクロスプラットフォームの設定は、ネイティブコードで手動で実装する必要があります。これらの実装は、プラットフォームごとにかなり異なることがよくあります。
+
+**Prebuild を使うと**、クロスプラットフォームの設定は config plugin のレベルで処理されるため、開発者は `"icon": "./icon.png"` のような値を 1 つ設定するだけで、アイコン生成のすべてが処理されます。
+
+</Collapsible>
+
+<Collapsible summary="Prebuild で依存関係の副作用をどう管理できますか？">
+
+複雑なネイティブパッケージの多くは、インストールと [autolinking](/more/glossary-of-terms#autolinking) 以上の追加のセットアップを必要とします。たとえばカメラライブラリは、Android では **AndroidManifest.xml** に、iOS では **Info.plist** にパーミッションの設定を追加する必要があります。この追加のセットアップは、パッケージの設定の副作用と考えることができます。必要な副作用のコードをプロジェクトのネイティブファイルに貼り付けると、対処が難しいネイティブのコンパイルエラーにつながる可能性があり、しかもそれはあなたが所有し保守することになるコードでもあります。
+
+**Prebuild を使うと**、誰よりも自分のライブラリの設定方法を知っているライブラリの作者が、[config plugin](/config-plugins/introduction/) と呼ばれるテスト可能でバージョン管理されたスクリプトを作成し、そのライブラリに必要な設定の副作用の追加を自動化できます。これにより、ライブラリの副作用をより表現力豊かで、強力かつ安定したものにできます。ネイティブコードの副作用については、デフォルトの [prebuild テンプレート](#テンプレート) に標準で含まれている [Android Lifecycle Listener](/modules/android-lifecycle-listeners) と [AppDelegate Subscriber](/modules/appdelegate-subscribers) も提供しています。
+
+</Collapsible>
+
+<Collapsible summary="Prebuild は孤立したコードにどう役立ちますか？">
+
+パッケージをアンインストールする際は、そのパッケージを動作させるために必要だったすべての副作用を確実に取り除く必要があります。何か見落とすと、特定のパッケージまでたどれない孤立したコードが生まれ、このコードが積み重なってプロジェクトを理解しにくく、保守しにくいものにしてしまいます。
+
+**Prebuild を使うと**、唯一の副作用はプロジェクトの Expo config（**app.json**）内にある [config plugin](/config-plugins/introduction/) だけになります。これは対応する node module がアンインストールされるとエラーをスローするため、孤立した設定が大幅に減ります。
+
+</Collapsible>
+
+<Collapsible summary="Prebuild がプロジェクトに適さないことがあるのはどんなときですか">
+
+Expo Prebuild が特定のプロジェクトに適さない**可能性がある**理由をいくつか紹介します。
+
+#### プラットフォームの互換性
+
+Prebuild は、Expo SDK がサポートするネイティブプラットフォームでのみ使用できます。これは今のところ Android と iOS を意味します。web は独自のネイティブランタイムの代わりにブラウザを使うため `npx expo prebuild` を必要とせず、この対象から除かれます。
+
+#### モジュール化・自動化するより直接変更する方が速い場合
+
+すべてのネイティブの変更は、ネイティブモジュール（React Native 組み込みの Native Module API または Expo Modules API を使用）と config plugin を使って追加する必要があります。つまり、実験のためにプロジェクトへ素早くネイティブファイルを追加したい場合は、prebuild を実行してからファイルを手動で追加し、[monorepo](/ja/guides/monorepos) を使ってこの仕組みに戻していく方がよいかもしれません。私たちは、ネイティブディレクトリの外にあるネイティブプロジェクトファイルを見つけ、ビルド前にそれらをリンクする機能を [Expo Autolinking](/more/glossary-of-terms#expo-autolinking) に追加することで、このプロセスを高速化する予定です。
+
+**gradle.properties** ファイルのような設定を変更したい場合は、プラグインを書く必要があります（[例](https://github.com/expo/expo/blob/1c994bb042ad47fbf6878e3b5793d4545f2d1208/apps/native-component-list/app.config.js#L21-L28)）。これはヘルパーとなるプラグインライブラリを使えば簡単に自動化できますが、頻繁に行う必要がある場合は少し手間がかかります。
+
+#### コミュニティにおける config plugin のサポート
+
+まだすべてのパッケージが _Expo Prebuild_ をサポートしているわけではありません。インストール後に追加のセットアップを必要とするのに、まだ config plugin を持っていないライブラリを見つけたら、メンテナーがその機能リクエストに気づけるよう、プルリクエストや issue を作成することをおすすめします。
+
+[`react-native-blurhash`](https://github.com/mrousavy/react-native-blurhash) のような多くのパッケージは、[autolinking](/more/glossary-of-terms#autolinking) が処理する範囲を超えた追加のネイティブ設定を必要としないため、config plugin は不要です。
+
+一方で [`react-native-ble-plx`](https://github.com/Polidea/react-native-ble-plx) のような他のパッケージは追加のセットアップを必要とするため、`npx expo prebuild` と一緒に使うには config plugin が必要です（この場合は [`@config-plugins/react-native-ble-plx`](https://github.com/expo/config-plugins/tree/main/packages/react-native-ble-plx) という外部プラグインが存在します）。
+
+また、まだこの仕組みを採用していない人気パッケージ向けにプラグインを提供する [out-of-tree config plugin](https://github.com/expo/config-plugins) 用のリポジトリもあります。これは TypeScript における [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) のようなものだと考えてください。パッケージが独自の config plugin を同梱することが望ましいですが、まだこの仕組みを採用していない場合、コミュニティはこのリポジトリに掲載されているパッケージを利用できます。
+
+</Collapsible>
+
+</FAQ>

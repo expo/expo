@@ -1,0 +1,596 @@
+---
+title: Expo Router アプリで React Server Components を使う
+sidebar_title: React Server Components
+description: Expo でサーバー上に React コンポーネントをレンダリングする方法について学びます。
+---
+
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** [experimental](/more/release-statuses/#experimental) に利用できます。これは [beta](/more/release-statuses/#beta) リリースであり、破壊的変更が入る可能性があります。
+
+React Server Components を使うと、次のような多くのわくわくする機能が実現できます。
+
+- 非同期コンポーネントと React Suspense によるデータフェッチ
+- シークレットやサーバーサイド API の利用
+- SEO やパフォーマンスのためのサーバーサイドレンダリング（SSR）
+- 未使用の JS コードを取り除くビルド時レンダリング
+
+Expo Router はすべてのプラットフォームで [React Server Components](https://react.dev/reference/rsc/server-components) のサポートを有効にします。これは、Expo Router でデフォルトで有効になる予定の機能の初期の [プレビュー](/more/release-statuses/#preview) です。
+
+<Prerequisites>
+  <Requirement title="Expo Router を使うプロジェクト">
+    まだ持っていない場合は [Expo Router のインストール](/router/installation/) を参照してください。
+  </Requirement>
+  <Requirement title="React Native New Architecture">
+    React Native New Architecture が必要で、SDK 52 からデフォルトで有効になっています。
+  </Requirement>
+</Prerequisites>
+
+## 使い方
+
+Expo アプリで React Server Components を使うには、次のことが必要です。
+
+1. 必要な RSC の依存関係をインストールします。
+
+   <Terminal cmd={['$ npx expo install react-server-dom-webpack']} />
+
+2. **package.json** のエントリーモジュールが `expo-router/entry`（デフォルト）になっていることを確認します。
+3. プロジェクトの app config でフラグを有効にします。
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "reactServerFunctions": true
+    }
+  }
+}
+```
+
+4. app config のどこにも `"origin"` が真偽値に設定されていないことを確認します。
+5. 最初のルート **app/index.tsx** を作成します。
+
+```tsx app/index.tsx (クライアントコンポーネント)
+/// <reference types="react/canary" />
+
+import React from 'react';
+import { ActivityIndicator } from 'react-native';
+import renderInfo from '../actions/render-info';
+
+export default function Index() {
+  return (
+    <React.Suspense
+      fallback={
+        // The view that will render while the Server Function is awaiting data.
+        <ActivityIndicator />
+      }>
+      {renderInfo({ name: 'World' })}
+    </React.Suspense>
+  );
+}
+```
+
+4. サーバー関数 **actions/render-info.tsx** を作成します。
+
+```tsx actions/render-info.tsx (サーバー関数)
+'use server';
+
+import { Text } from 'react-native';
+
+export default async function renderInfo({ name }) {
+  // Securely fetch data from an API, and read environment variables...
+  return <Text>Hello, {name}!</Text>;
+}
+```
+
+サーバー関数の戻り値であるビューは React Server Component のペイロードであり、クライアントへストリーミングされます。
+
+> developer preview の間、app config で `web.output` は `single` である必要があります。より多くの出力モードへの対応は近日中に提供予定です。
+
+## サーバーコンポーネント
+
+サーバーコンポーネントはサーバー上で実行されるため、サーバー API や（ローカルで実行している場合は）Node.js の組み込み機能にアクセスできます。また非同期コンポーネントも使用できます。
+
+データをフェッチしてレンダリングする、次のコンポーネントを考えてみましょう。
+
+```tsx components/pokemon.tsx
+import 'server-only';
+
+import { Image, Text, View } from 'react-native';
+
+export async function Pokemon() {
+  const res = await fetch('https://pokeapi.co/api/v2/pokemon/2');
+  const json = await res.json();
+  return (
+    <View style={{ padding: 8, borderWidth: 1 }}>
+      <Text style={{ fontWeight: 'bold', fontSize: 24 }}>{json.name}</Text>
+      <Image source={{ uri: json.sprites.front_default }} style={{ width: 100, height: 100 }} />
+
+      {json.abilities.map(ability => (
+        <Text key={ability.ability.name}>- {ability.ability.name}</Text>
+      ))}
+    </View>
+  );
+}
+```
+
+これをサーバーコンポーネントとしてレンダリングするには、サーバー関数からこれを返す必要があります。
+
+### 重要なポイント
+
+- サーバーコンポーネントでは `useState`、`useEffect`、`useContext` のようなフックは使用できません。
+- サーバーコンポーネントではブラウザ API やネイティブ API は使用できません。
+- `"use server"` はファイルをサーバーコンポーネントとしてマークするためのものではありません。そのファイルから React Server Functions がエクスポートされていることを示すために使われます。
+- サーバーコンポーネントはクライアントから切り離されて安全に実行されるため、すべての環境変数にアクセスできます。
+
+## クライアントコンポーネント
+
+サーバーコンポーネントはネイティブ API や React Context にアクセスできないため、これらの機能を使うためにクライアントコンポーネントを作成できます。クライアントコンポーネントは、ファイルの先頭に `"use client"` ディレクティブを付けることで作成します。
+
+```tsx components/button.tsx
+'use client';
+import { Text } from 'react-native';
+
+export default function Button({ title }) {
+  return <Text onPress={() => {}}>{title}</Text>;
+}
+```
+
+このモジュールはサーバー関数やサーバーコンポーネントの中でインポートして使用できます。
+
+### 重要なポイント
+
+サーバーコンポーネントには関数を props として渡すことはできません。シリアライズ可能なデータのみを渡せます。
+
+## React Server Functions
+
+サーバー関数はサーバー上で実行され、クライアントコンポーネントから呼び出せる関数です。書きやすい、完全に型付けされた API ルートのようなものだと考えてください。
+
+サーバー関数は常に非同期関数でなければならず、関数の先頭に `"use server"` を付けてマークします。
+
+```tsx app/index.tsx
+export default function Index() {
+  return (
+    <Button
+      title="Press me"
+      onPress={async () => {
+        'use server';
+        // This code runs on the server.
+        console.log('Button pressed');
+        return '...';
+      }}
+    />
+  );
+}
+```
+
+サーバー関数を呼び出すクライアントコンポーネントを作成できます。
+
+```tsx components/button.tsx
+'use client';
+import { Text } from 'react-native';
+
+export default function Button({ title, onPress }) {
+  return <Text onPress={() => onPress()}>{title}</Text>;
+}
+```
+
+サーバー関数は（先頭に `"use server"` を付けて）単独のファイルで定義し、クライアントコンポーネントからインポートすることもできます。
+
+```tsx components/server-actions.tsx
+'use server';
+
+export async function callAction() {
+  // ...
+}
+```
+
+これはクライアントコンポーネントの中で次のように使用できます。
+
+```tsx components/button.tsx
+import { Text } from 'react-native';
+import { callAction } from './server-actions';
+
+export default function Button({ title }) {
+  return <Text onPress={() => callAction()}>{title}</Text>;
+}
+```
+
+### 重要なポイント
+
+- サーバー関数には引数としてシリアライズ可能なデータのみを渡せます。
+- サーバー関数はシリアライズ可能なデータのみを返せます。
+- サーバー関数はサーバー上で実行されるため、クライアントに公開すべきでないロジックを置くのに適しています。
+- サーバー関数は現時点では DOM コンポーネントの内部で使用できません。
+
+### サーバー関数内でのレンダリング
+
+Expo Router の React Server Functions は、サーバー上で React コンポーネントをレンダリングし、クライアントでのレンダリング用に **RSC ペイロード**（React チームが保守しているカスタムの JSON ライクなフォーマット）をストリーミングして返せます。これは web でのサーバーサイドレンダリング（SSR）に似ています。
+
+たとえば、次のサーバー関数はテキストをレンダリングします。
+
+```tsx components/server-actions.tsx
+'use server';
+
+// Optional: Import "server-only" for sanity.
+import 'server-only';
+
+import { View, Image, Text } from 'react-native';
+
+export async function renderProfile({
+  username,
+  accessToken,
+}: {
+  username: string;
+  accessToken: string;
+}) {
+  // NOTE: Rate limits, GDPR, and other server-side operations can be done here.
+
+  // Fetch some data securely from an API.
+  const { name, image } = await fetch(`https://api.example.com/profile/${username}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      // Use secret environment variables securely as this code will live on the server.
+      // The EXPO_PUBLIC_ prefix is not required here.
+      'X-Secret': process.env.SECRET,
+    },
+  }).then(res => res.json());
+
+  // Render
+  return (
+    <View>
+      <Image source={{ uri: image }} />
+      <Text>{name}</Text>
+    </View>
+  );
+}
+```
+
+このサーバー関数はクライアントコンポーネントから呼び出すことができ、その内容はクライアントへストリーミングされて返されます。
+
+```tsx components/profile.tsx
+'use client';
+
+import { useLocalSearchParams } from 'expo-router';
+import * as React from 'react';
+import { Text } from 'react-native';
+
+import { renderProfile } from '@/components/server-actions';
+
+// Loading state that renders while data is being fetched.
+function Fallback() {
+  return <Text>Loading...</Text>;
+}
+
+export default function Profile() {
+  const { username } = useLocalSearchParams();
+  const { accessToken } = useCustomAuthProvider();
+
+  // Call the Server Function with the username and access token.
+  const profile = React.useMemo(
+    () => renderProfile({ username, accessToken }),
+    [username, accessToken]
+  );
+
+  // Render the profile asynchronously with React Suspense and a custom loading state.
+  return <React.Suspense fallback={<Fallback />}>{profile}</React.Suspense>;
+}
+```
+
+## ライブラリの互換性
+
+すべてのライブラリが React Server Components に最適化されているわけではまだありません。ファイルをクライアントコンポーネントとしてマークし、サーバーコンポーネントの中で使用するために `"use client"` ディレクティブを使えます。これを使って互換性の問題を一時的に回避できます。
+
+たとえば、まだ `"use client"` ディレクティブを同梱していない `react-native-unoptimized` というライブラリがあるとします。モジュールを作成して各モジュールを再エクスポートすることで、これを回避できます。
+
+```tsx lib/react-native-unoptimized.tsx
+// This directive opts the module into client-side rendering.
+'use client';
+
+// Re-exporting the imports from the library.
+export { One, Two, Three } from 'react-native-unoptimized';
+```
+
+`export * from '...'` の使用は避けてください。サーバーとクライアント間の相互運用の内部処理の一部を壊してしまいます。
+
+`"use client"` でマークされたモジュールは、サーバーコンポーネントからドットアクセスできません。つまり `StyleSheet.create` や `Platform.OS` のような操作は、`react-native` パッケージ側でさらなる最適化が行われるまで、サーバー上では動作しません。
+
+## Suspense
+
+React Suspense を使うと、データの読み込みを待つ間もサーバーから部分的な UI をストリーミングして返せます。
+
+次の例では、`Loading...` というテキストがクライアント上で即座に返され、1 秒後に `<MediumTask>` のレンダリングが完了すると、そのテキストが `Medium task done!` に置き換わります。`<ExpensiveTask>` は読み込みに 3 秒かかり、完了すると `Expensive task done!` に置き換わります。
+
+```tsx app/index.tsx (クライアントコンポーネント)
+import { Suspense } from 'react';
+import { renderMediumTask, renderExpensiveTask } from '@/actions/tasks';
+
+export default function App() {
+  return <Suspense fallback={<Text>Loading...</Text>}>{renderTasks()}</Suspense>;
+}
+```
+
+```tsx actions/tasks.tsx (サーバー関数)
+'use server';
+
+export async function renderTasks() {
+  return (
+    <Suspense fallback={<Text>Loading...</Text>}>
+      <>
+        <MediumTask />
+        <Suspense fallback={<Text>Loading...</Text>}>
+          <ExpensiveTask />
+        </Suspense>
+      </>
+    </Suspense>
+  );
+}
+
+async function MediumTask() {
+  // Wait one second before resolving.
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  return <Text>Medium task done!</Text>;
+}
+
+async function ExpensiveTask() {
+  // Wait three seconds before resolving.
+  await new Promise(resolve => setTimeout(resolve, 3000));
+  return <Text>Expensive task done!</Text>;
+}
+```
+
+`<ExpensiveTask>` を囲む `Suspense` を取り除くと、`Loading...` が両方のコンポーネントのレンダリング完了を待ってから UI を更新するようになります。これにより、ローディング状態を段階的に制御できます。すべてを一度に読み込み終えるまで待つのが理にかなっている場合もあれば（多くの場合はこちらです）、（ChatGPT のテキスト応答のように）できたところから UI をストリーミングして返す方が有益な場合もあります。
+
+## シークレット
+
+サーバーコンポーネントはシークレットやサーバーサイド API にアクセスできます。環境変数へのアクセスには `process.env` オブジェクトを使えます。プロジェクトで `server-only` モジュールをインポートすることで、あるモジュールが決してクライアント上で実行されないようにできます。
+
+```tsx actions/renderData.tsx
+// This will assert if the module runs on the client.
+import 'server-only';
+
+import { Text } from 'react-native';
+
+export async function renderData() {
+  // This code only runs on the server.
+  const data = await fetch('https://my-endpoint/', {
+    headers: {
+      Authorization: `Bearer ${process.env.SECRET}`,
+    },
+  });
+
+  // ...
+  return <div />;
+}
+```
+
+**.env** ファイルでシークレットを定義できます。
+
+```text .env
+SECRET=123
+```
+
+> 環境変数を更新するために開発サーバーを再起動する必要はありません。リクエストのたびに自動的に再読み込みされます。
+
+## プラットフォームの検出
+
+コードがどのプラットフォーム向けにバンドルされているかを検出するには、`process.env.EXPO_OS` 環境変数を使います。たとえば `process.env.EXPO_OS === 'ios'` のようにします。`react-native` はまだ React Server Components に完全には最適化されておらず、期待どおりに動作しないため、`Platform.OS` よりもこちらを優先してください。
+
+コードがサーバー上で実行されているかどうかは、`typeof window === 'undefined'` のチェックで検出できます。これはクライアントデバイス上では常に `true` を、サーバー上では常に `false` を返します。
+
+## jest でのテスト
+
+ライブラリの作者は、`jest-expo` を使ってモジュールがサーバーコンポーネントをサポートしているかどうかをテストできます。詳しくは [React Server Components をテストする](/ja/guides/testing-rsc/) ガイドを参照してください。
+
+## メタデータ
+
+React Server Components は React 19 の機能です。これを有効にするために、Expo CLI はすべてのプラットフォームで特別な React の canary ビルドを自動的に使用します。将来、React Native で React 19 がデフォルトで有効になった際には取り除かれる予定です。
+
+その結果、アプリの好きな場所に `<meta>` タグを配置する（web のみ）といった React 19 の機能を使用できます。
+
+```tsx app/index.tsx
+export default function Index() {
+  return (
+    <>
+      {process.env.EXPO_OS === 'web' && (
+        <>
+          <meta name="description" content="Hello, world!" />
+          <meta property="og:image" content="/og-image.png" />
+        </>
+      )}
+      <MyComponent />
+    </>
+  );
+}
+```
+
+`expo-router/head` の `Head` コンポーネントの代わりにこれを使用できますが、今のところ web でのみ動作します。
+
+## リクエストヘッダー
+
+`expo-router/rsc/headers` モジュールを使うと、サーバーコンポーネントへのリクエストで使われたリクエストヘッダーにアクセスできます。
+
+```tsx actions/renderHome.tsx
+import { unstable_headers } from 'expo-router/rsc/headers';
+
+export async function renderHome() {
+  const authorization = (await unstable_headers()).get('authorization');
+
+  return <Text>{authorization}</Text>;
+}
+```
+
+`unstable_headers` 関数は、読み取り専用の `Headers` オブジェクトに解決される Promise を返します。
+
+### 重要なポイント
+
+- このヘッダーはリクエストに応じて動的に変化するため、この API はビルド時レンダリング（`render: 'static'`）と一緒には使用できません。将来、この API は出力モードが `static` の場合にアサートするようになる予定です。
+- `unstable_headers` はサーバー専用であり、クライアントでは使用できません。
+
+## Full React Server Components モード
+
+> **important** このモードは [experimental](/more/release-statuses/#experimental) です。
+
+Full React Server Components サポートを有効にすると、さらに多くの機能を活用できます。このモードでは、ルートのデフォルトのレンダリングモードがクライアントコンポーネントではなくサーバーコンポーネントになります。Router と React Navigation が並行処理をサポートするために書き直される必要があるため、これはまだ開発中です。
+
+Full React Server Components モードを有効にするには、app config で `reactServerComponentRoutes` フラグを有効にする必要があります。
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "reactServerFunctions": true,
+      "reactServerComponentRoutes": true
+    }
+  }
+}
+```
+
+これを有効にすると、すべてのルートがデフォルトでサーバーコンポーネントとしてレンダリングされます。将来、これによりサーバー/クライアント間のウォーターフォールが減り、ビルド時レンダリングによってオフラインサポートが向上する予定です。
+
+- 現時点ではスタックルーティングはありません。カスタムレイアウトの `Stack`、`Tabs`、`Drawer` は、まだサーバーコンポーネントをサポートしていません。
+- ほとんどの `Link` コンポーネントの props はまだサポートされていません。
+
+### サーバーコンポーネントの再読み込み
+
+> これは Full React Server Components モードに限られます。
+
+開発時、サーバーコンポーネントはリクエストのたびに再読み込みされます。つまり、サーバーコンポーネントに変更を加えると、クライアントランタイムに即座に反映されるということです。データを再フェッチしたりコンポーネントを再レンダリングしたりするために、再読み込みイベントを手動でプログラムから発火させたい場合もあるでしょう。これは `useRouter` フックの `router.reload()` 関数を使って行えます。
+
+```tsx components/button.tsx
+'use client';
+import { useRouter } from 'expo-router';
+import { Text } from 'react-native';
+
+export function Button() {
+  const router = useRouter();
+  return (
+    <Text
+      onPress={() => {
+        // Reload the current route.
+        router.reload();
+      }}>
+      Reload current route
+    </Text>
+  );
+}
+```
+
+ルートがビルド時にレンダリングされていた場合、それはクライアント上で再レンダリングされません。これは、レンダリングコードが本番サーバーに含まれていないためです。
+
+### ビルド時レンダリング
+
+> これは Full React Server Components モードに限られます。
+
+Expo Router はサーバーコンポーネントのレンダリングモードとして、ビルド時レンダリングとリクエスト時レンダリングという 2 つの異なるモードをサポートしています。これらのモードは `unstable_settings` エクスポートを使って、ルートごとに指定できます。
+
+```tsx app/index.tsx
+import { Text, View } from 'react-native';
+
+export const unstable_settings = {
+  // This component will be rendered at build-time and never re-rendered in production.
+  render: 'static',
+};
+
+export default function Index() {
+  return (
+    <View>
+      <Text>Hello, world!</Text>
+    </View>
+  );
+}
+```
+
+- `render: 'static'` はコンポーネントをビルド時にレンダリングし、本番では二度と再レンダリングしません。これは従来の静的サイトジェネレーターの動作に似ています。
+- `render: 'dynamic'` はコンポーネントをリクエスト時にレンダリングし、リクエストのたびに再レンダリングします。これはサーバーサイドレンダリングの動作に似ています。
+
+クライアントサイドレンダリングにしたい場合は、データフェッチをクライアントコンポーネントに移動し、レンダリングをローカルで制御してください。
+
+`static` 出力でマークされたルートはビルド時にレンダリングされ、ネイティブバイナリに埋め込まれます。これにより、サーバーへのリクエストを行わずにルートをレンダリングできます（サーバーへのリクエストはアプリのダウンロード時に行われているため）。
+
+現在のデフォルトは `dynamic` レンダリングです。将来、キャッシュと最適化はよりスマートかつ自動的なものに変わる予定です。
+
+`generateStaticParams` 関数を使うと、ビルド時に静的ページを生成できます。これは、ビルド時にのみ実行され、サーバー上では実行されるべきでないコンポーネントに便利です。
+
+```tsx app/shapes/[shape].tsx
+import { Text } from 'react-native';
+
+// Adding `unstable_settings.render: 'static'` will prevent this component from running on the server.
+export const unstable_settings = {
+  render: 'static',
+};
+
+// This function will generate static pages for each shape.
+export async function generateStaticParams() {
+  return [{ shape: 'square' }];
+}
+
+export default function ShapeRoute({ shape }) {
+  return <Text>{shape}</Text>;
+}
+```
+
+### CSS
+
+> これは Full React Server Components モードに限られます。
+
+Expo Router はサーバーコンポーネントでのグローバル CSS と CSS モジュールのインポートをサポートしています。
+
+```tsx app/index.tsx
+import './styles.css';
+import styles from './styles.module.css';
+
+export default function Index() {
+  return <div className={styles.container}>Hello, world!</div>;
+}
+```
+
+この CSS はサーバーからクライアントバンドルへ引き上げられます。
+
+## デプロイ
+
+> ユニバーサルな React Server Components はまだ [beta](/more/release-statuses/#beta) です。
+
+### web
+
+まず、web プロジェクトをビルドします。
+
+<Terminal cmd={['$ npx expo export -p web']} />
+
+その後、`npx expo serve` でローカルにホストするか、クラウドにデプロイできます。
+
+<BoxLink
+  title="EAS で即座にデプロイする"
+  description="EAS Hosting は Expo API ルートとサーバーをデプロイする最良の方法です。"
+  href="/eas/hosting/get-started"
+  Icon={Cloud01Icon}
+/>
+
+### ネイティブ
+
+サーバーデプロイガイドに従うことで、ネイティブの React Server Components をデプロイできます。
+
+<BoxLink
+  title="ネイティブサーバーを EAS にデプロイする"
+  description="バージョン管理されたサーバーを本番のネイティブアプリにデプロイしてリンクします。"
+  href="/router/web/api-routes#native-deployment"
+  Icon={Cloud01Icon}
+/>
+
+## 既知の制限事項
+
+> これは私たちが現在活発に開発を進めている、非常に初期の技術プレビューです。
+
+- Expo Snack はサーバーコンポーネントのバンドルをサポートしていません。
+- EAS Update はまだサーバーコンポーネントに対応していません。
+- DOM コンポーネントは本番環境ではまだ React Server Functions を使用できません。
+- 本番環境へのデプロイは制限されており、まだ推奨されません。
+- RSC ペイロードを HTML にサーバーレンダリングすることはまだサポートされていません。つまり static と server の出力はまだ完全には動作しません。
+- [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) は Full React Server Components モードでは部分的にしかサポートされていません。
+- サーバー関数と HTML `form` の連携はまだサポートされていません（一部は自動的に動作しますが、データは暗号化されません）。
+- `StyleSheet.create` と `Platform.OS` はネイティブではサポートされていません。スタイルには通常のオブジェクトを、プラットフォームの検出には `process.env.EXPO_OS` を使用してください。
+- 他のサーバー関数を呼び出す React Server Functions は、Hermes ランタイムの制約により Hermes ではサポートされていません。これは Static Hermes で解決される可能性があります。

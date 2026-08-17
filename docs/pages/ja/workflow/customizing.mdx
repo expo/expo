@@ -1,0 +1,121 @@
+---
+title: カスタムネイティブコードを追加する
+description: Expo プロジェクトにカスタムネイティブコードを追加する方法を学びます。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+次のいずれか、または両方のアプローチを使ってカスタムネイティブコードを追加できます。
+
+- [ネイティブコードを含むライブラリを使う](#ネイティブコードを含むライブラリを使う)
+- [ネイティブコードを書く](#ネイティブコードを書く)
+
+## ネイティブコードを含むライブラリを使う
+
+Expo と React Native の開発者は通常、JavaScript コードを書くことと、[`expo-camera`](/versions/latest/sdk/camera/) や [`react-native-safe-area-context`](/versions/latest/sdk/safe-area-context/)、`react-native` 自体などのライブラリを通じて利用できるネイティブ API やコンポーネントを使うことに、大半の時間を費やします。これらのライブラリを使うと、開発者は JavaScript コードからデバイスの機能にアクセスして利用できます。また、ネイティブコードで実装されたサードパーティサービスの SDK（たとえば Android と iOS 向けの Sentry ネイティブ SDK へのバインディングを提供する [`@sentry/react-native`](/guides/using-sentry/) など）へのアクセスを提供することもあります。
+
+<Collapsible summary="Expo Go を使っていますか？">
+
+[Expo Go](https://expo.dev/go) を使っている場合、[Expo SDK に含まれるネイティブライブラリ](/versions/latest/sdk/third-party-overview/)か、カスタムネイティブコードを一切含まないライブラリ（[サードパーティライブラリについて詳しく学ぶ](/ja/workflow/using-libraries/#サードパーティライブラリ)）にしかアクセスできません。[開発ビルドを作成する](/develop/development-builds/introduction/)と、他のネイティブアプリと同じようにネイティブコードや設定を変更できるようになります。
+
+</Collapsible>
+
+### 開発ビルドでカスタムネイティブコードを含むライブラリをインストールする
+
+[開発ビルド](/develop/development-builds/introduction/)を使う場合、カスタムネイティブコードを含むライブラリを使うのは簡単です。
+
+- npm でライブラリをインストールします。たとえば: `npx expo install react-native-localize`
+- ライブラリが [config plugin](/config-plugins/introduction/) を含んでいる場合、app config で好みの設定を指定できます。
+- 新しい開発ビルドを作成します（[ローカル](/ja/guides/local-app-development/)または [EAS](/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build) を使用）。
+
+これで、アプリケーションのコードでこのライブラリを使えるようになりました。
+
+<Collapsible summary="主要な概念と開発ワークフロー">
+
+[開発の概要](/ja/workflow/overview/)では、Expo でアプリを開発する際の主要な概念や、コアとなる開発ループの流れについて詳しく説明しています。
+
+</Collapsible>
+
+## ネイティブコードを書く
+
+[Expo Modules API](/modules/overview/) を使うと、Swift や Kotlin のコードを書き、ネイティブモジュールやビューによってアプリに新しい機能を追加できます。ネイティブモジュールを構築するために使える他のツールもありますが、私たちは Expo Modules API を使うことで、ほとんどあらゆる種類の React Native モジュールの構築と保守が、できる限り簡単になると考えています。アプリ向けにネイティブモジュールを構築するほとんどの開発者にとって、Expo Modules API が最良の選択肢だと私たちは考えています。
+
+<Collapsible summary="ネイティブコードを書くことを検討すべきなのはどんなときですか？">
+
+ライブラリが必要なことを完全には満たしてくれない状況に出くわすのはよくあることです。たとえば、そのライブラリが特定のプラットフォーム機能へのアクセスを提供していなかったり、サードパーティサービスが React Native 向けのバインディングを提供していなかったりする場合です。
+
+</Collapsible>
+
+<Collapsible summary="主に C++ でモジュールを書くことを検討していますか？">
+
+主に C++ でネイティブモジュールを書くつもりなら、React Native が提供する [Turbo Modules API](https://github.com/reactwg/react-native-new-architecture/blob/main/docs/turbo-modules.md) を検討するとよいでしょう。
+
+</Collapsible>
+
+### Expo Modules API を使う
+
+<BoxLink
+  title="Expo Modules API：概要"
+  description="Expo が提供する、ネイティブモジュールを開発するための API とユーティリティの概要です。"
+  href="/modules/overview/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="チュートリアル：ネイティブモジュールを作成する"
+  description="Expo Modules API を使って設定を永続化するネイティブモジュールを作成するチュートリアルです。"
+  href="/modules/native-module-tutorial/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="チュートリアル：ネイティブビューを作成する"
+  description="Expo Modules API を使ってネイティブの WebView コンポーネントを描画するネイティブビューを作成するチュートリアルです。"
+  href="/modules/native-view-tutorial/"
+  Icon={BookOpen02Icon}
+/>
+
+### ローカルモジュールを作成する
+
+ネイティブモジュールを 1 つのアプリだけで使うつもりなら（この方針はあとでいつでも変更できます）、カスタムネイティブコードを書くために [「ローカル」な Expo モジュールを使うこと](/modules/get-started/#create-the-local-expo-module) をおすすめします。ローカル Expo モジュールは、ライブラリ開発者や `expo-camera` のような Expo SDK 内で使われている [Expo モジュール](/modules/overview) と同様に機能しますが、npm には公開されません。代わりに、プロジェクトの内部に直接作成します。
+
+ローカルモジュールを作成すると、プロジェクトの `modules` ディレクトリ内に Swift と Kotlin のモジュールがスキャフォールドされ、これらのモジュールは自動的にアプリにリンクされます。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module@latest --local', '$ npx expo run'],
+    yarn: ['$ yarn create expo-module --local', '$ yarn expo run'],
+    pnpm: ['$ pnpm create expo-module --local', '$ pnpm expo run'],
+    bun: ['$ bun create expo-module --local', '$ bun expo run'],
+  }}
+/>
+
+### 複数のアプリでモジュールを共有する
+
+ネイティブモジュールを複数のアプリで使うつもりなら、`npx create-expo-module@latest,` を使い、`--local` フラグを付けずに、[スタンドアロンモジュールを作成](/modules/use-standalone-expo-module-in-your-project/)します。パッケージを npm に公開することも、[monorepo](/ja/guides/monorepos/)（お使いの場合）内の packages ディレクトリに置いて、[ローカルモジュールと似た方法で](/modules/use-standalone-expo-module-in-your-project/)使うこともできます。
+
+## Continuous Native Generation（CNG）を使う際の注意点
+
+以下の提案は [CNG](/ja/workflow/continuous-native-generation/) を使う場合に特に重要ですが、使っていない場合でも良いガイドラインになります。
+
+<Collapsible summary="最高のデバッグ体験と素早いフィードバックを得るにはローカルでビルドする">
+
+デフォルトでは、`create-expo-app` で作成された Expo プロジェクトは CNG を使用し、プロジェクトで `npx expo prebuild` コマンドを実行するまでは **android** や **ios** のネイティブディレクトリを含みません。CNG を使う場合、開発者は通常 **android** と **ios** のディレクトリをソース管理にコミットせず、ローカルでも生成しません。ビルドプロセス中に EAS Build が自動的に生成してくれるからです。とはいえ、カスタムネイティブコードを書くときは、素早いフィードバックループを得て Android Studio / Xcode のネイティブデバッグツールに完全にアクセスできるようにするため、ネイティブディレクトリを生成して `npx expo run` でローカルにビルドすることもよくあります。
+
+</Collapsible>
+
+<Collapsible summary="ネイティブプロジェクトの設定には config plugin を使う">
+
+ネイティブコードのために、プロジェクトの **AndroidManifest.xml** や **Info.plist** の変更のようなプロジェクト設定への変更が必要な場合は、**android** と **ios** のディレクトリ内のファイルを直接変更するのではなく、[config plugin を通じてこれらの変更を適用する](/modules/config-plugin-and-native-module-tutorial/) べきです。CNG を使っている場合、ネイティブプロジェクトのディレクトリを直接変更すると、次に prebuild を実行したときにその変更が失われることを覚えておいてください。
+
+</Collapsible>
+
+<Collapsible summary="アプリのライフサイクルイベントへのフックには event subscriber を使う">
+
+Android のライフサイクルイベントや `AppDelegate` のメソッドにフックする必要がある場合は、ネイティブプロジェクトディレクトリのソースファイルを直接変更したり、他のプラグインとの組み合わせがうまくいかない config plugin を使ってコードを追加したりするのではなく、[Android](/modules/android-lifecycle-listeners/) と [iOS](/modules/appdelegate-subscribers/) 向けに Expo Modules が提供する API を使ってこれを行ってください。
+
+</Collapsible>
