@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add `canUseDeviceCredentialsAuthentication` to the `ExpoSecureStore` mock. ([#41409](https://github.com/expo/expo/pull/41409) by [@JakubKorytko](https://github.com/JakubKorytko))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
