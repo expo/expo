@@ -1,4 +1,4 @@
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
 import { type NativeStackNavigationOptions } from 'expo-router';
 import * as React from 'react';
 import { View } from 'react-native';

@@ -8,6 +8,7 @@
 
 - Add an optional `displayName` to `logEvent` ([#47289](https://github.com/expo/expo/pull/47289) by [@Ubax](https://github.com/Ubax))
 - Capture React render-phase errors via `AppMetricsErrorBoundary`. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
+- Describe the network a launch ran on: connection cost, request throughput, and a `slowest.*` group replacing `expo.network.requests.slowestDuration` and `slowestHost`. ([#48518](https://github.com/expo/expo/pull/48518) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 

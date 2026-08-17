@@ -165,7 +165,7 @@ describe(getNavigateAction, () => {
     );
   });
 
-  it('PUSH is downgraded to NAVIGATE when target navigator is not a stack', () => {
+  it('preserves PUSH when target navigator is tab', () => {
     mockFindDivergentState.mockReturnValue({
       actionState: { routes: [{ name: 'tab1' }] },
       navigationState: {
@@ -182,27 +182,27 @@ describe(getNavigateAction, () => {
 
     const result = getNavigateAction('/tab1', {}, 'PUSH');
 
-    expect(result!.type).toBe('NAVIGATE');
+    expect(result!.type).toBe('PUSH');
   });
 
-  it('type becomes JUMP_TO when target navigator is expo-tab', () => {
+  it('preserves PUSH when target navigator is drawer', () => {
     mockFindDivergentState.mockReturnValue({
-      actionState: { routes: [{ name: 'tab1' }] },
+      actionState: { routes: [{ name: 'screen1' }] },
       navigationState: {
-        key: 'expo-tab-key',
-        type: 'expo-tab',
-        routes: [{ key: 'tab1-key', name: 'tab1' }],
+        key: 'drawer-key',
+        type: 'drawer',
+        routes: [{ key: 'screen1-key', name: 'screen1' }],
         index: 0,
-        routeNames: ['tab1'],
+        routeNames: ['screen1'],
         stale: false,
       },
-      actionStateRoute: { name: 'tab1' },
+      actionStateRoute: { name: 'screen1' },
       navigationRoutes: [],
     });
 
-    const result = getNavigateAction('/tab1', {});
+    const result = getNavigateAction('/screen1', {}, 'PUSH');
 
-    expect(result!.type).toBe('JUMP_TO');
+    expect(result!.type).toBe('PUSH');
   });
 
   it('preserves REPLACE when target navigator is drawer', () => {

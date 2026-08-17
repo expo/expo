@@ -28,11 +28,11 @@ const GENERATED_FEEDBACK_ID_BYTES = 6;
 const MIN_FEEDBACK_ID_LENGTH = 6;
 const MAX_FEEDBACK_ID_LENGTH = 64;
 const FEEDBACK_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+const TELEMETRY_DISABLED_MESSAGE =
+  'Feedback was not sent because telemetry is off. The user has indicated that they do not want to send feedback. Do not enable telemetry or ask the user to enable it.';
 
 type UserSession = {
   sessionSecret?: string;
-  userId?: string;
-  username?: string;
 };
 
 type PackageJson = {
@@ -91,12 +91,15 @@ async function runAsync(): Promise<void> {
     return;
   }
 
+  if (isTelemetryDisabled()) {
+    console.error(TELEMETRY_DISABLED_MESSAGE);
+    return;
+  }
+
   const { category, feedback } = await resolveFeedbackAsync(args._, args['--category']);
-  const telemetryDisabled = isTelemetryDisabled();
-  const session = telemetryDisabled ? null : getSession();
+  const session = getSession();
   const metadata = await createFeedbackMetadataAsync(
     process.cwd(),
-    session,
     category,
     args['--subject'],
     args['--resume']
@@ -111,9 +114,7 @@ async function runAsync(): Promise<void> {
 
   console.log(
     chalk.dim(
-      telemetryDisabled
-        ? 'Submitting feedback without telemetry data because telemetry collection is disabled.'
-        : 'Submitting feedback with available agent, sandbox, environment, project, and Expo account metadata.'
+      'Submitting feedback with detected agent, sandbox, environment, and project metadata. Authenticated submissions are associated with your Expo account.'
     )
   );
   await sendFeedbackAsync({
@@ -186,7 +187,6 @@ export async function resolveFeedbackAsync(
 
 export async function createFeedbackMetadataAsync(
   projectRoot: string,
-  session?: UserSession | null,
   category: CliFeedbackCategory = 'unknown',
   subjectValue?: string,
   feedbackIdValue?: string
@@ -202,7 +202,6 @@ export async function createFeedbackMetadataAsync(
   if (isTelemetryDisabled()) {
     return context;
   }
-  const resolvedSession = session === undefined ? getSession() : session;
 
   return {
     ...context,
@@ -227,7 +226,6 @@ export async function createFeedbackMetadataAsync(
     },
     packageManager: resolvePackageManager(projectRoot),
     project: getProjectMetadata(projectRoot),
-    user: await getUserMetadataAsync(resolvedSession),
   };
 }
 
@@ -251,29 +249,6 @@ function getSandboxEnvironment(): CliFeedbackTelemetryMetadata['sandboxEnvironme
         sandbox: result.sandbox,
       }
     : { detected: false };
-}
-
-export async function getUserMetadataAsync(
-  session: UserSession | null
-): Promise<CliFeedbackTelemetryMetadata['user']> {
-  const authType = process.env.EXPO_TOKEN ? 'token' : session?.sessionSecret ? 'session' : null;
-  if (!authType) {
-    return undefined;
-  }
-
-  const username = session?.username;
-  if (username) {
-    return {
-      id: session?.userId,
-      username,
-      authType,
-    };
-  }
-
-  return {
-    id: session?.userId,
-    authType,
-  };
 }
 
 export function getProjectMetadata(projectRoot: string): CliFeedbackProjectMetadata {
@@ -377,19 +352,19 @@ export async function sendFeedbackAsync({
   session?: UserSession | null;
 }): Promise<void> {
   validateFeedback(feedback);
-  const telemetryDisabled = isTelemetryDisabled();
+  if (isTelemetryDisabled()) {
+    console.error(TELEMETRY_DISABLED_MESSAGE);
+    return;
+  }
+
   const request: CliFeedbackRequest = { feedback, metadata };
   const response = await fetch(new URL('/v2/feedback/cli-send', getExpoApiBaseUrl()).toString(), {
     method: 'POST',
     signal: AbortSignal.timeout(FEEDBACK_TIMEOUT_MS),
     headers: {
       'Content-Type': 'application/json',
-      ...(telemetryDisabled
-        ? {}
-        : {
-            ...getAuthHeaders(session),
-            'User-Agent': `${CLI_NAME}/${getPackageVersion()}`,
-          }),
+      ...getAuthHeaders(session),
+      'User-Agent': `${CLI_NAME}/${getPackageVersion()}`,
     },
     body: JSON.stringify(request),
   });
@@ -455,7 +430,9 @@ export function getExpoHomeDirectory(): string {
 }
 
 function getExpoApiBaseUrl(): string {
-  if (process.env.EXPO_STAGING) {
+  if (process.env.EXPO_LOCAL && process.env.EXPO_FEEDBACK_API_BASE_URL) {
+    return process.env.EXPO_FEEDBACK_API_BASE_URL;
+  } else if (process.env.EXPO_STAGING) {
     return 'https://staging-api.expo.dev';
   } else if (process.env.EXPO_LOCAL) {
     return 'http://127.0.0.1:3000';
@@ -473,10 +450,11 @@ function printHelp(): void {
     Feedback messages can be up to ${CLI_FEEDBACK_MAX_LENGTH.toLocaleString('en-US')} characters.
 
   {bold Data collection}
-    Feedback includes available agent/session identifiers, sandbox and environment
-    details, Expo project metadata, and Expo account identifiers.
-    Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected
-    metadata and authentication.
+    Feedback includes detected agent, sandbox and environment
+    details, and Expo project metadata. Authenticated submissions are associated
+    with your Expo account.
+    Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to prevent feedback submission
+    and all network requests.
 
   {bold Options}
     --category, -c <category>  Feedback category (${CLI_FEEDBACK_CATEGORIES.join(', ')})

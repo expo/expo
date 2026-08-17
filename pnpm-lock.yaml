@@ -802,6 +802,12 @@ importers:
       '@react-native-segmented-control/segmented-control':
         specifier: 2.5.7
         version: 2.5.7(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@react-native-vector-icons/ionicons':
+        specifier: ^13.1.2
+        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@react-native-vector-icons/material-design-icons':
+        specifier: ^13.1.2
+        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       '@shopify/flash-list':
         specifier: 2.0.2
         version: 2.0.2(@babel/runtime@7.29.7)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -1564,12 +1570,12 @@ importers:
       '@expo/styleguide-base':
         specifier: ^1.0.1
         version: 1.0.1(react@19.2.3)
-      '@expo/vector-icons':
-        specifier: ^15.0.2
-        version: 15.1.1(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       '@react-native-async-storage/async-storage':
         specifier: ^2.2.0
         version: 2.2.0(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))
+      '@react-native-vector-icons/material-design-icons':
+        specifier: ^13.1.2
+        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       async-retry:
         specifier: ^1.1.4
         version: 1.3.3
@@ -1760,6 +1766,9 @@ importers:
         specifier: ^7.7.4
         version: 7.8.5
     devDependencies:
+      '@types/async-retry':
+        specifier: ^1.4.5
+        version: 1.4.9
       '@types/getenv':
         specifier: ^1.0.0
         version: 1.0.3
@@ -1769,6 +1778,12 @@ importers:
       '@types/jasmine':
         specifier: ^5.1.15
         version: 5.1.15
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/lodash':
+        specifier: ^4.14.184
+        version: 4.17.24
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
@@ -1905,8 +1920,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1
       multitars:
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.0.2
+        version: 1.0.2
       node-forge:
         specifier: ^1.3.3
         version: 1.3.3
@@ -1934,6 +1949,9 @@ importers:
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0
+      sandbox-cli-detector:
+        specifier: ^0.2.0
+        version: 0.2.0
       semver:
         specifier: ^7.6.0
         version: 7.8.5
@@ -2246,6 +2264,9 @@ importers:
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
+      expo:
+        specifier: '*'
+        version: link:../../expo
       react:
         specifier: '*'
         version: 19.2.3
@@ -2630,6 +2651,9 @@ importers:
       lightningcss:
         specifier: ^1.30.1
         version: 1.32.0
+      noxcturnal:
+        specifier: 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
+        version: 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
       picomatch:
         specifier: ^4.0.4
         version: 4.0.4
@@ -2640,6 +2664,15 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
+      '@babel/plugin-transform-explicit-resource-management':
+        specifier: ^7.28.6
+        version: 7.29.7(@babel/core@7.29.7)
+      '@babel/plugin-transform-exponentiation-operator':
+        specifier: ^7.28.6
+        version: 7.29.7(@babel/core@7.29.7)
+      '@babel/plugin-transform-sticky-regex':
+        specifier: ^7.27.1
+        version: 7.29.7(@babel/core@7.29.7)
       '@jridgewell/trace-mapping':
         specifier: ^0.3.31
         version: 0.3.31
@@ -3020,6 +3053,22 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
 
+  packages/@expo/sdk-compatibility:
+    dependencies:
+      semver:
+        specifier: ^7.7.4
+        version: 7.8.5
+    devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/semver':
+        specifier: ^7.7.0
+        version: 7.7.1
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../../expo-module-scripts
+
   packages/babel-preset-expo:
     dependencies:
       '@babel/generator':
@@ -3264,8 +3313,8 @@ importers:
         specifier: ^3.2.0
         version: 3.6.0
       multitars:
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.0.2
+        version: 1.0.2
       nock:
         specifier: ^14.0.10
         version: 14.0.11
@@ -3345,8 +3394,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       multitars:
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.0.2
+        version: 1.0.2
       ora:
         specifier: ^5.4.1
         version: 5.4.1
@@ -4334,6 +4383,9 @@ importers:
       '@expo/schemer':
         specifier: workspace:*
         version: link:../@expo/schemer
+      '@expo/sdk-compatibility':
+        specifier: workspace:*
+        version: link:../@expo/sdk-compatibility
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
@@ -8063,6 +8115,58 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    resolution: {integrity: sha512-jxiuwa80/CjzlMcWsXyvMiP17M0/F00v+fl3pbF5oPB5kc8oyB3B9cC9jdq1zEpkwl//EgceNMOybD49nhYbyA==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    resolution: {integrity: sha512-lPEt5SnKC+A0sKpMTQ0VdDKk7tXSqteewasAiJJuuNvcdt7OWz+wYjy2Q5IVhpWNhSYKKiTLoBQhynX0bI9xzA==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    resolution: {integrity: sha512-sP7c5EDnCSRw5McqZVfmEd+zbULbZby0Bm/OwGUp0oTYMjYFHzn7DVrRCKDFk69JpKphV78THF9GpIM7zAMMcg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    resolution: {integrity: sha512-WgxQaZWZ2xAJB3vri3T7H+2lggLlmesjQ2b+JugRmWHmeDRgnm8+bO9pTTkdUYiwgJjtxgRbZsAdg96jXOyMXA==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    resolution: {integrity: sha512-dEraHw0g9OHoqsROD6XZhZkr1bUA0nbwMXdovwo3xbtkAYc/ZuRofoz8+eM6g3wULphe0LauI8wDe8qPRGi7gA==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    resolution: {integrity: sha512-CqYPb/cSb3P+DxP7nuZ/MhH5Ta16QhR0+YqMpyeeRj1hkeDEF+xNtodvZJb9t1xw7JzWk/rfTg3DuzUzWsVE3g==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    resolution: {integrity: sha512-3VNTWxkFMu8+s4vWdFjWQIdcwEIo9/EJKcDPSNulKM5zOrMe35H883ht5KqUhAXnPaQ7/KGwdzd4l/bxxl45UA==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    resolution: {integrity: sha512-lZhOmUPSdekQ6lnzOAQeC7O1aKpr2vco2RKUz+aDAUmRXZgzpirdK1jri1cpgWemb278Za5FXXZq+O0v0aYVTQ==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [win32]
+
   '@octokit/auth-token@3.0.4':
     resolution: {integrity: sha512-TWFX7cZF2LXoCvdmJWY7XVPi74aSY0+FfBZNSXEXFkMpjcqsQwDSYVv5FhRFaI0V1ECnwbz4j59T/G+rXNWaIQ==}
     engines: {node: '>= 14'}
@@ -8140,6 +8244,9 @@ packages:
 
   '@open-draft/until@2.1.0':
     resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
+
+  '@oxc-project/types@0.141.0':
+    resolution: {integrity: sha512-S4as7z0j0xQkXcJlyY5ehntwK8/wRkQb9Cyqw+J/N2rkWGQGK0SxD6X6DhQTc7qsxVTBxXbxZtBJh3mr3PtIzQ==}
 
   '@oxfmt/binding-android-arm-eabi@0.55.0':
     resolution: {integrity: sha512-+rFDOqQe5LOWgxrAJaZgLRudr6GQm0wGI6gtu7vVkrdLGjNMUSGbAlaCr8j7F2H2Er97vYQCU8WDb30onqMM1g==}
@@ -8774,6 +8881,46 @@ packages:
       react: '>=16.0'
       react-native: 0.86.0
 
+  '@react-native-vector-icons/common@13.0.1':
+    resolution: {integrity: sha512-UPC6L3tW5rXCjBn4kgw9RPURUILIg8tFpEY2uaYwU8aCjEHkywNCMcAO8+PvMCDkR6aICPeHYA0OXvMgrjsF4g==}
+    engines: {node: '>=20.19.0 <21.0.0 || >=22.0.0'}
+    hasBin: true
+    peerDependencies:
+      '@react-native-vector-icons/get-image': ^13.0.0
+      '@react-native/assets-registry': '*'
+      expo-font: '*'
+      react: '*'
+      react-native: 0.86.0
+    peerDependenciesMeta:
+      '@react-native-vector-icons/get-image':
+        optional: true
+      '@react-native/assets-registry':
+        optional: true
+      expo-font:
+        optional: true
+
+  '@react-native-vector-icons/ionicons@13.1.2':
+    resolution: {integrity: sha512-8TaXKw41MgKADeesrrbUpA3FR81JNy96ogiGRjWgtE1djSEevDsOKMij7Jq/3TfiGaE0prEshU0TcW5qwsf0Ug==}
+    engines: {node: '>= 18.0.0'}
+    peerDependencies:
+      '@expo/config-plugins': '>=10.0.0'
+      react: '*'
+      react-native: 0.86.0
+    peerDependenciesMeta:
+      '@expo/config-plugins':
+        optional: true
+
+  '@react-native-vector-icons/material-design-icons@13.1.2':
+    resolution: {integrity: sha512-Qc8IQCxbnHOk8CvTAb+dLzYgRMbJOLiZ8Up7TRsNixY6EqwPx9/W3DeK5niKtNQ4dIfbALeYz41yyvDM7w7mag==}
+    engines: {node: '>= 18.0.0'}
+    peerDependencies:
+      '@expo/config-plugins': '>=10.0.0'
+      react: '*'
+      react-native: 0.86.0
+    peerDependenciesMeta:
+      '@expo/config-plugins':
+        optional: true
+
   '@react-native/assets-registry@0.86.0':
     resolution: {integrity: sha512-nIaXbm2jX1OTYp0qbviJ3O6KZivoE8z3BnhUQ2LsqfZSWRoOK/n1qsiAr6oALiNKWnXY3j2KPwtYORnZzp8xew==}
     engines: {node: ^20.19.4 || ^22.13.0 || ^24.3.0 || >= 25.0.0}
@@ -9164,6 +9311,9 @@ packages:
   '@types/aria-query@5.0.4':
     resolution: {integrity: sha512-rfT93uj5s0PRL7EzccGMs3brplhcrghnDoV26NqKhCAS1hVo+WdNsPvE/yb6ilfr5hi2MEk6d5EWJTKdxg8jVw==}
 
+  '@types/async-retry@1.4.9':
+    resolution: {integrity: sha512-s1ciZQJzRh3708X/m3vPExr5KJlzlZJvXsKpbtE2luqNcbROr64qU+3KpJsYHqWMeaxI839OvXf9PrUSw1Xtyg==}
+
   '@types/babel__code-frame@7.27.0':
     resolution: {integrity: sha512-Dwlo+LrxDx/0SpfmJ/BKveHf7QXWvLBLc+x03l5sbzykj3oB9nHygCpSECF1a+s+QIxbghe+KHqC90vGtxLRAA==}
 
@@ -9444,6 +9594,9 @@ packages:
 
   '@types/responselike@1.0.3':
     resolution: {integrity: sha512-H/+L+UkTV33uf49PH5pCAUBVPNj2nDBXTN+qS1dOwyyg24l3CcicicCA7ca+HMvJBZcFgl5r8e+RR6elsb4Lyw==}
+
+  '@types/retry@0.12.5':
+    resolution: {integrity: sha512-3xSjTp3v03X/lSQLkczaN9UIEwJMoMCA1+Nb5HfbJEQWogdeQIyVtTvxPXDQjZ5zws8rFQfVfRdz03ARihPJgw==}
 
   '@types/rtl-detect@1.0.3':
     resolution: {integrity: sha512-qpstuHivwg/HoXxRrBo5/r/OVx5M2SkqJpVu2haasdLctt+jMGHWjqdbI0LL7Rk2wRmN/UHdHK4JZg9RUMcvKA==}
@@ -11306,6 +11459,10 @@ packages:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
 
+  find-up@8.0.0:
+    resolution: {integrity: sha512-JGG8pvDi2C+JxidYdIwQDyS/CgcrIdh18cvgxcBge3wSHRQOrooMD3GlFBcmMJAN9M42SAZjDp5zv1dglJjwww==}
+    engines: {node: '>=20'}
+
   flat-cache@3.2.0:
     resolution: {integrity: sha512-CYcENa+FtcUKLmhhqyctpclsq7QF38pKjZHsGNiSQF5r4FtoKDWabFDl3hzaEQMvT1LHEysw5twgLvpYYb4vbw==}
     engines: {node: ^10.12.0 || >=12.0.0}
@@ -12422,6 +12579,10 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
+  locate-path@8.0.0:
+    resolution: {integrity: sha512-XT9ewWAC43tiAV7xDAPflMkG0qOPn2QjHqlgX8FOqmWa/rxnyYDulF9T0F7tRy1u+TVTmK/M//6VIOye+2zDXg==}
+    engines: {node: '>=20'}
+
   lodash._baseflatten@3.1.4:
     resolution: {integrity: sha512-fESngZd+X4k+GbTxdMutf8ohQa0s3sJEHIcwtu4/LsIQ2JTDzdRxDCMQjW+ezzwRitLmHnacVVmosCbxifefbw==}
 
@@ -12787,8 +12948,8 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
-  multitars@1.0.0:
-    resolution: {integrity: sha512-H/J4fMLedtudftaYMOg7ajzLYgT3/rwbWVJbqr/iUgB8DQztn38ys5HOqI1CzSxx8QhXXwOOnnBvd4v3jG5+Mg==}
+  multitars@1.0.2:
+    resolution: {integrity: sha512-6GwVw5eLi9sThdtlS4PKwC7yRLaf45pYhIEzKBHdKxi+YOXGKFX8acIniH+Uh/+k9mS2lQOupTccjoe5r0/1IQ==}
 
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
@@ -12873,6 +13034,10 @@ packages:
   normalize-url@6.1.0:
     resolution: {integrity: sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==}
     engines: {node: '>=10'}
+
+  noxcturnal@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc:
+    resolution: {integrity: sha512-kR6JyVKbh4wVjll329UI+jA2OBoTeCX65I0wejTFX+KAP1poW6XR5+r+TcO6PbbyASTWNThc4UFqTM2dv1ee2A==}
+    engines: {node: '>=18'}
 
   npm-bundled@2.0.1:
     resolution: {integrity: sha512-gZLxXdjEzE/+mOstGDqR6b0EkhJ+kM6fxM6vUuckuctuVPh80Q6pw/rSZj9s4Gex9GxWtIicO1pc8DB9KZWudw==}
@@ -13053,6 +13218,10 @@ packages:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
 
+  p-limit@4.0.0:
+    resolution: {integrity: sha512-5b0R4txpzjPWVw/cXXUResoD4hb6U/x9BH08L7nw+GN1sezDzPdxeRvpc9c433fZhBan/wusjbCsqwqm4EIBIQ==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   p-locate@3.0.0:
     resolution: {integrity: sha512-x+12w/To+4GFfgJhBEpiDcLozRJGegY+Ei7/z0tSLkMmxGZNybVMSfWj9aJn8Z5Fc7dBUNJOOVgPv2H7IwulSQ==}
     engines: {node: '>=6'}
@@ -13064,6 +13233,10 @@ packages:
   p-locate@5.0.0:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
+
+  p-locate@6.0.0:
+    resolution: {integrity: sha512-wPrq66Llhl7/4AGC6I+cqxT07LhXvWL08LNXz1fENOw0Ap4sRZZ/gZpTTJ5jpurzzzfS2W/Ge9BY3LgLjCShcw==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   p-try@2.2.0:
     resolution: {integrity: sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==}
@@ -14539,6 +14712,10 @@ packages:
     resolution: {integrity: sha512-hpbDzxUY9BFwX+UeBnxv3Sh1q7HFxj48DTmXchNgRa46lO8uj3/1iEn3MiNUYTg1g9ctIqXCCERn8gYZhHC5lQ==}
     engines: {node: '>=4'}
 
+  unicorn-magic@0.3.0:
+    resolution: {integrity: sha512-+QBBXBCvifc56fsbuxZQ6Sic3wqqc3WWaqxs58gvJrcOuN83HGTCwz3oS5phzU9LthRNE9VrJCFCLUgHeeFnfA==}
+    engines: {node: '>=18'}
+
   unique-string@2.0.0:
     resolution: {integrity: sha512-uNaeirEPvpZWSgzwsPGtU2zVSTrn/8L5q/IexZmH0eH6SA73CmAA5U4GwORTxQAZs95TAXLNqeLoPPNO5gZfWg==}
     engines: {node: '>=8'}
@@ -15075,6 +15252,10 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
+  yocto-queue@1.2.2:
+    resolution: {integrity: sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ==}
+    engines: {node: '>=12.20'}
+
   zod-to-json-schema@3.25.2:
     resolution: {integrity: sha512-O/PgfnpT1xKSDeQYSCfRI5Gy3hPf91mKVDuYLUHZJMiDFptvP41MSnWofm8dnCm0256ZNfZIM7DSzuSMAFnjHA==}
     peerDependencies:
@@ -15563,13 +15744,11 @@ snapshots:
       '@babel/plugin-transform-destructuring': 7.29.7(@babel/core@7.29.7)
     transitivePeerDependencies:
       - supports-color
-    optional: true
 
   '@babel/plugin-transform-exponentiation-operator@7.29.7(@babel/core@7.29.7)':
     dependencies:
       '@babel/core': 7.29.7
       '@babel/helper-plugin-utils': 7.29.7
-    optional: true
 
   '@babel/plugin-transform-export-namespace-from@7.29.7(@babel/core@7.29.7)':
     dependencies:
@@ -15831,7 +16010,6 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.7
       '@babel/helper-plugin-utils': 7.29.7
-    optional: true
 
   '@babel/plugin-transform-template-literals@7.29.7(@babel/core@7.29.7)':
     dependencies:
@@ -16856,6 +17034,30 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    optional: true
+
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    optional: true
+
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    optional: true
+
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    optional: true
+
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    optional: true
+
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    optional: true
+
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    optional: true
+
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc':
+    optional: true
+
   '@octokit/auth-token@3.0.4': {}
 
   '@octokit/core@4.2.4(encoding@0.1.13)':
@@ -16957,6 +17159,8 @@ snapshots:
       outvariant: 1.4.3
 
   '@open-draft/until@2.1.0': {}
+
+  '@oxc-project/types@0.141.0': {}
 
   '@oxfmt/binding-android-arm-eabi@0.55.0':
     optional: true
@@ -17386,6 +17590,41 @@ snapshots:
     dependencies:
       react: 19.2.3
       react-native: 0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
+
+  '@react-native-vector-icons/common@13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      find-up: 8.0.0
+      picocolors: 1.1.1
+      plist: 3.1.0
+      react: 19.2.3
+      react-native: 0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
+    optionalDependencies:
+      '@react-native/assets-registry': 0.86.0
+      expo-font: link:packages/expo-font
+
+  '@react-native-vector-icons/ionicons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+      react-native: 0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
+    optionalDependencies:
+      '@expo/config-plugins': link:packages/@expo/config-plugins
+    transitivePeerDependencies:
+      - '@react-native-vector-icons/get-image'
+      - '@react-native/assets-registry'
+      - expo-font
+
+  '@react-native-vector-icons/material-design-icons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react: 19.2.3
+      react-native: 0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3)
+    optionalDependencies:
+      '@expo/config-plugins': link:packages/@expo/config-plugins
+    transitivePeerDependencies:
+      - '@react-native-vector-icons/get-image'
+      - '@react-native/assets-registry'
+      - expo-font
 
   '@react-native/assets-registry@0.86.0': {}
 
@@ -17827,6 +18066,10 @@ snapshots:
 
   '@types/aria-query@5.0.4': {}
 
+  '@types/async-retry@1.4.9':
+    dependencies:
+      '@types/retry': 0.12.5
+
   '@types/babel__code-frame@7.27.0': {}
 
   '@types/babel__core@7.20.5':
@@ -18144,6 +18387,8 @@ snapshots:
   '@types/responselike@1.0.3':
     dependencies:
       '@types/node': 22.20.1
+
+  '@types/retry@0.12.5': {}
 
   '@types/rtl-detect@1.0.3': {}
 
@@ -20362,6 +20607,11 @@ snapshots:
       locate-path: 6.0.0
       path-exists: 4.0.0
 
+  find-up@8.0.0:
+    dependencies:
+      locate-path: 8.0.0
+      unicorn-magic: 0.3.0
+
   flat-cache@3.2.0:
     dependencies:
       flatted: 3.4.2
@@ -21686,6 +21936,10 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
+  locate-path@8.0.0:
+    dependencies:
+      p-locate: 6.0.0
+
   lodash._baseflatten@3.1.4:
     dependencies:
       lodash.isarguments: 3.1.0
@@ -22112,7 +22366,7 @@ snapshots:
 
   ms@2.1.3: {}
 
-  multitars@1.0.0: {}
+  multitars@1.0.2: {}
 
   mute-stream@0.0.8: {}
 
@@ -22185,6 +22439,20 @@ snapshots:
   normalize-path@3.0.0: {}
 
   normalize-url@6.1.0: {}
+
+  noxcturnal@0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc:
+    dependencies:
+      '@babel/code-frame': 7.29.7
+      '@oxc-project/types': 0.141.0
+    optionalDependencies:
+      '@noxcturnal/noxcturnal-darwin-arm64': 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
+      '@noxcturnal/noxcturnal-darwin-x64': 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
+      '@noxcturnal/noxcturnal-linux-arm64-gnu': 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
+      '@noxcturnal/noxcturnal-linux-arm64-musl': 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
+      '@noxcturnal/noxcturnal-linux-x64-gnu': 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
+      '@noxcturnal/noxcturnal-linux-x64-musl': 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
+      '@noxcturnal/noxcturnal-win32-arm64-msvc': 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
+      '@noxcturnal/noxcturnal-win32-x64-msvc': 0.1.1-canary-5e28645fa13a4dee3b1814eac789f79b8e7259bc
 
   npm-bundled@2.0.1:
     dependencies:
@@ -22421,6 +22689,10 @@ snapshots:
     dependencies:
       yocto-queue: 0.1.0
 
+  p-limit@4.0.0:
+    dependencies:
+      yocto-queue: 1.2.2
+
   p-locate@3.0.0:
     dependencies:
       p-limit: 2.3.0
@@ -22432,6 +22704,10 @@ snapshots:
   p-locate@5.0.0:
     dependencies:
       p-limit: 3.1.0
+
+  p-locate@6.0.0:
+    dependencies:
+      p-limit: 4.0.0
 
   p-try@2.2.0: {}
 
@@ -23995,6 +24271,8 @@ snapshots:
 
   unicode-property-aliases-ecmascript@2.2.0: {}
 
+  unicorn-magic@0.3.0: {}
+
   unique-string@2.0.0:
     dependencies:
       crypto-random-string: 2.0.0
@@ -24642,6 +24920,8 @@ snapshots:
   yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  yocto-queue@1.2.2: {}
 
   zod-to-json-schema@3.25.2(zod@3.25.76):
     dependencies:

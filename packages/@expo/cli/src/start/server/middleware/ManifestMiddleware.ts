@@ -1,9 +1,8 @@
 import type { ExpoConfig, ExpoGoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { respond } from 'expo-server/adapter/http';
 import { posix } from 'node:path';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
 import { resolve } from 'url';
 
 import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
@@ -405,18 +404,6 @@ export abstract class ManifestMiddleware<
     const options = this.getParsedHeaders(req);
 
     const response = await this._getManifestResponseAsync(options);
-    // Convert `Response` to node:http response
-    if (typeof res.setHeaders === 'function') {
-      res.setHeaders(response.headers);
-    } else {
-      for (const [key, value] of response.headers.entries()) {
-        res.appendHeader(key, value);
-      }
-    }
-    if (response.body) {
-      await pipeline(Readable.fromWeb(response.body as any), res);
-    } else {
-      res.end();
-    }
+    await respond(res, response);
   }
 }

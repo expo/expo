@@ -52,16 +52,6 @@ export type CliFeedbackProjectMetadata =
       expoRouterPackageVersion?: string;
     };
 
-/**
- * Expo account identifiers. Consumers must treat these fields as personal data and remove them
- * before storing metadata with external processors.
- */
-export type CliFeedbackUserMetadata = {
-  id?: string;
-  username?: string;
-  authType: 'token' | 'session';
-};
-
 export type CliFeedbackTelemetryMetadata = {
   cli: {
     name: 'submit-expo-feedback';
@@ -82,7 +72,6 @@ export type CliFeedbackTelemetryMetadata = {
   };
   packageManager: string | null;
   project: CliFeedbackProjectMetadata;
-  user?: CliFeedbackUserMetadata;
 };
 
 export type CliFeedbackMetadata =

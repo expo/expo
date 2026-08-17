@@ -1,0 +1,262 @@
+---
+title: Querying with EAS CLI
+sidebar_title: EAS CLI
+description: Query EAS Observe metrics, events, and sessions from the terminal with the eas observe commands.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+
+Everything the [EAS Observe dashboard](/eas/observe/dashboard/) shows is also available from the terminal. Use the `eas observe` commands to compare releases, investigate slow sessions, and pipe results into scripts.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="The EAS CLI">
+    Follow the [instructions for installing the CLI](/eas/cli#installation).
+  </Requirement>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build.
+  </Requirement>
+  <Requirement title="Authentication to the EAS CLI from your project directory">
+    Log in with `eas login`. By default, each command reads the project ID from the app config in
+    the current directory. Pass `--project-id` to query a project from anywhere, using an account
+    that has access to it:
+    <Terminal cmd={['$ eas observe:metrics-summary --project-id <project-id>']} />
+  </Requirement>
+</Prerequisites>
+
+## EAS CLI help
+
+Run any command with `--help` to see the flags supported by your installed EAS CLI version.
+
+Some data is available only on certain plans. When your account's plan does not include what a command asks for, the command fails with an upgrade message that links to your billing page. Session timelines are checked before the interactive picker runs, so a blocked plan is reported immediately. See [Pricing](https://expo.dev/pricing) for what each plan includes.
+
+## Commands
+
+| Command                       | What it shows                                                       |
+| ----------------------------- | ------------------------------------------------------------------- |
+| `eas observe:metrics-summary` | Aggregated statistics per app version, such as median, p90, and p99 |
+| `eas observe:metrics`         | Individual metric samples, ordered by value or time                 |
+| `eas observe:routes`          | Navigation metrics grouped by route name                            |
+| `eas observe:session`         | The full event timeline for one session                             |
+| `eas observe:events`          | User-defined events logged with `Observe.logEvent`                  |
+| `eas observe:versions`        | App versions with their build numbers and update IDs                |
+
+Every command accepts these flags:
+
+- `--platform android` or `--platform ios`: filter by platform. Both are included by default. Not available on `observe:session`, which already targets one session.
+- `--days <number>`: show data from the last N days.
+- `--start <ISO date>` and `--end <ISO date>`: set an explicit time range. Mutually exclusive with `--days`.
+- `--project-id <id>`: query a project without running inside its directory.
+- `--json`: machine-readable output. Implies `--non-interactive`.
+- `--non-interactive`: fail instead of prompting.
+
+When no time range is given, commands return the last 60 days.
+
+## Metric names
+
+Startup metrics are collected automatically once the app is instrumented. See the [Metrics reference](/eas/observe/reference/metrics/) for what each one measures.
+
+| Name              | Metric                                               |
+| ----------------- | ---------------------------------------------------- |
+| `tti`             | Time to interactive                                  |
+| `ttr`             | Time to first render                                 |
+| `cold_launch`     | Cold launch time                                     |
+| `warm_launch`     | Warm launch time                                     |
+| `bundle_load`     | Bundle load time                                     |
+| `update_download` | [EAS Update download time](/eas/observe/eas-update/) |
+
+Navigation metrics are per route. They require SDK 56 or later and one of the navigation integrations, either [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/).
+
+| Name           | Metric                        |
+| -------------- | ----------------------------- |
+| `nav_cold_ttr` | Per-route first render        |
+| `nav_warm_ttr` | Per-route warm render         |
+| `nav_tti`      | Per-route time to interactive |
+
+`observe:metrics` and `observe:metrics-summary` accept all nine names. `observe:routes` accepts the three navigation names.
+
+## `eas observe:metrics-summary`
+
+Shows aggregated statistics grouped by app version, with a separate table per platform. Use it to compare startup performance across releases.
+
+<Terminal
+  cmd={[
+    '# All metrics, last 60 days, both platforms',
+    '$ eas observe:metrics-summary',
+    '',
+    '# One metric, last 14 days, iOS only',
+    '$ eas observe:metrics-summary --metric tti --days 14 --platform ios',
+    '',
+    '# Several metrics, each in its own table',
+    '$ eas observe:metrics-summary --metric tti --metric cold_launch',
+    '',
+    '# Choose which statistics to display',
+    '$ eas observe:metrics-summary --metric tti --stat median --stat p90',
+  ]}
+/>
+
+Command flags:
+
+- `--metric <name>`: metric to display. Repeat the flag for several metrics.
+- `--stat <name>`: statistic to display per metric. One of `min`, `median`, `max`, `average`, `p80`, `p90`, `p99`, or `eventCount`.
+
+The table shows `median` and `eventCount` by default, and merges them into one cell, such as `0.45s (150)`. The App version column includes the build number in parentheses. Update IDs are omitted from the table to keep it readable, but `--json` returns them as an array per version.
+
+## `eas observe:metrics`
+
+Shows individual samples rather than aggregates. Use it to investigate outliers and to find the session behind a slow launch.
+
+<Terminal
+  cmd={[
+    '# Slowest time to interactive this week',
+    '$ eas observe:metrics tti --sort slowest --days 7 --limit 20',
+    '',
+    '# Samples from one release',
+    '$ eas observe:metrics tti --app-version 1.2.0',
+    '',
+    '# Next page of results',
+    '$ eas observe:metrics tti --after <cursor>',
+  ]}
+/>
+
+The metric is a positional argument. Omitting it prompts for a choice, and fails in non-interactive mode.
+
+Command flags:
+
+- `--sort <order>`: one of `oldest` (default), `newest`, `slowest`, or `fastest`.
+- `--limit <number>`: samples per page. Defaults to 10, capped at 100.
+- `--after <cursor>`: the `endCursor` from a previous run.
+- `--app-version <version>`: filter by app version.
+- `--update-id <id>`: filter by EAS Update ID.
+
+When more results are available, the command prints the flag needed to fetch the next page. JSON output adds `sessionId`, `easClientId`, and any custom params attached to the sample.
+
+## `eas observe:routes`
+
+Shows navigation metrics grouped by route name, with a separate section per platform. Use it to find the screens that are slowest to reach.
+
+<Terminal
+  cmd={[
+    '# All navigation metrics, last 7 days',
+    '$ eas observe:routes --days 7',
+    '',
+    '# Time to interactive per route, with percentiles',
+    '$ eas observe:routes --metric nav_tti --stat median --stat p90',
+    '',
+    '# Only the routes you care about',
+    '$ eas observe:routes --route-name /home --route-name /checkout',
+  ]}
+/>
+
+Command flags:
+
+- `--metric <name>`: one of `nav_cold_ttr`, `nav_warm_ttr`, or `nav_tti`. Repeat the flag for several metrics. Defaults to all three.
+- `--stat <name>`: one of `median`, `p90`, or `count`.
+- `--route-name <name>`: filter by route name. Repeat the flag for several routes.
+- `--app-version <version>` and `--build-number <number>`: filter to one release.
+- `--update-id <id>`: filter by EAS Update ID.
+- `--limit <number>`: routes per page. Defaults to 50, capped at 200.
+- `--after <cursor>`: the `endCursor` from a previous run.
+
+Route names are patterns, such as `/(tabs)/sessions/[sessionId]`, so distinct parameter values group together. Each platform paginates separately, so the next-page hint names the platform it applies to.
+
+## `eas observe:session`
+
+Shows every metric and log event recorded during one session, in order. Use it after `observe:metrics` surfaces a slow sample, to see what else happened during that launch.
+
+<Terminal
+  cmd={[
+    '# Inspect a known session',
+    '$ eas observe:session <session-id>',
+    '',
+    '# Pick a session from the slowest time to interactive events',
+    '$ eas observe:session --event-name tti --sort slowest --days 7',
+  ]}
+/>
+
+The session ID is a positional argument. Omitting it in interactive mode prompts you to pick from a list of candidate sessions. In non-interactive mode, including under `--json`, the session ID is required. Session IDs are also included in the `--json` output of `observe:metrics` and `observe:events`.
+
+Command flags:
+
+- `--event-name <name>`: the metric or user-defined event used to build the candidate list, such as `tti` or `onboarding.completed`.
+- `--sort <order>`: orders the candidate events. One of `slowest`, `fastest`, `newest`, or `oldest`.
+
+> **info** The flags that build the candidate list — `--event-name`, `--sort`, `--days`, `--start`, and `--end` — describe how to _find_ a session, so they cannot be combined with a session ID. Pass the ID on its own to inspect a session you already have.
+
+## `eas observe:events`
+
+Shows [user-defined events](/eas/observe/events/) logged with `Observe.logEvent`. With no arguments, it lists event names and their counts.
+
+<Terminal
+  cmd={[
+    '# Which events is the app emitting',
+    '$ eas observe:events',
+    '',
+    '# Individual events with one name',
+    '$ eas observe:events report.exported --limit 50',
+    '',
+    '# Every event across all names',
+    '$ eas observe:events --all-events --days 7',
+    '',
+    '# Events from a single session',
+    '$ eas observe:events --all-events --session-id <session-id>',
+  ]}
+/>
+
+Command flags:
+
+- `--all-events`: list every event instead of the name summary. Cannot be combined with an event name.
+- `--session-id <id>`: filter to one session. For the full timeline, including metrics, use `observe:session`.
+- `--app-version <version>`: filter by app version.
+- `--update-id <id>`: filter by EAS Update ID.
+- `--limit <number>` and `--after <cursor>`: paginate the results.
+
+Querying a name that has no events prints the available names for the same time range, which makes typos easy to spot.
+
+## `eas observe:versions`
+
+Lists the app versions in the field with their build numbers, update IDs, and event counts. Use it to find the identifiers that the other commands filter by.
+
+<Terminal
+  cmd={[
+    '# Both platforms, last 60 days',
+    '$ eas observe:versions',
+    '',
+    '# iOS only, last 14 days',
+    '$ eas observe:versions --days 14 --platform ios',
+  ]}
+/>
+
+The table shows app version, first seen, events, users, builds, and updates. JSON output returns the full hierarchy, with EAS Build and update details nested under each version.
+
+## Common workflows
+
+**Compare the current release against the previous one:**
+
+<Terminal cmd={['$ eas observe:metrics-summary --days 7 --stat median --stat p90']} />
+
+**Find and investigate the slowest launches:**
+
+<Terminal
+  cmd={[
+    '$ eas observe:metrics tti --sort slowest --days 7 --json',
+    '',
+    '# Then inspect one of the sessions returned above',
+    '$ eas observe:session <session-id>',
+  ]}
+/>
+
+**Check which screens are slowest to become interactive:**
+
+<Terminal cmd={['$ eas observe:routes --metric nav_tti --stat median --stat p90 --days 7']} />
+
+**Check how over-the-air updates download in the field:**
+
+<Terminal cmd={['$ eas observe:metrics-summary --metric update_download --days 7']} />
+
+**Gate a script or CI job on a metric:**
+
+<Terminal cmd={['$ eas observe:metrics-summary --metric tti --json --non-interactive']} />
