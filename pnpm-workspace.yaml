@@ -65,3 +65,12 @@ minimumReleaseAgeExclude:
   - 'babel-preset-expo'
   - 'jest-expo'
   - '2g'
+
+allowBuilds:
+  '@parcel/watcher': true
+  '@shopify/react-native-skia': true
+  '@swc/core': true
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+  workerd: true
