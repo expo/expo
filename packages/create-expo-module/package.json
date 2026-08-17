@@ -1,6 +1,6 @@
 {
   "name": "create-expo-module",
-  "version": "2.1.8",
+  "version": "2.1.9",
   "description": "The script to create the Expo module",
   "keywords": [
     "expo",
