@@ -22,6 +22,7 @@
 - Fix `player.replace(null)` throwing due to a mismatch between native and TypeScript types. ([#48219](https://github.com/expo/expo/pull/48219) by [@zoontek](https://github.com/zoontek))
 - [iOS] Activate the audio session once and keep it active instead of toggling. ([#48588](https://github.com/expo/expo/pull/48588) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix `createAudioPlayer`/`useAudioPlayer` throwing "Received 5 arguments, but 4 was expected" due to the native `AudioPlayer` constructor missing the iOS-only `allowsExternalPlayback` parameter. ([#48655](https://github.com/expo/expo/pull/48655) by [@RasmusKard](https://github.com/RasmusKard))
+- [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
 
 ### 💡 Others
 
