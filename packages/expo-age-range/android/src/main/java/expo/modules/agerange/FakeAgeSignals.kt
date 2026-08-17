@@ -71,7 +71,7 @@ internal class FakeAgeSignals(options: FakeAgeSignalsOptions) {
     .build()
 
   /**
-   * A manager per request, because each `setNext*` call configures a single response.
+   * `setNext*` call influences all future responses.
    */
   fun manager(): AgeSignalsManager = FakeAgeSignalsManager().apply {
     if (exception != null) {

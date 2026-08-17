@@ -99,7 +99,7 @@ fun requestAgeSignalsAccess(
       onError(processAgeSignalsError(exception))
     }
     .addOnSuccessListener { accessResult ->
-      onSuccess(ageSignalsStatusToString(accessResult.ageSignalsStatus()))
+      onSuccess(AgeSignalsStatusValue.fromPlayValue(accessResult.ageSignalsStatus())?.value)
     }
 }
 
