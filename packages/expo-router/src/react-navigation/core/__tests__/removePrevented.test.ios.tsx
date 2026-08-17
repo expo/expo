@@ -1,12 +1,13 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
 import { type ParamListBase, StackActions, StackRouter } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { usePreventRemove } from '../usePreventRemove';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 
 jest.mock('nanoid/non-secure', () => {
   const m = { nanoid: () => String(++m.__key), __key: 0 };
@@ -101,7 +102,8 @@ test('blocks synchronous redispatch from removePrevented without re-emitting', (
           <Screen name="foo">{() => null}</Screen>
           <Screen name="bar" component={TestScreen} />
         </TestNavigator>
-      </BaseNavigationContainer>
+      </BaseNavigationContainer>,
+      { wrapper: RouterRegistryProvider }
     );
 
     act(() => ref.current?.navigate('bar'));

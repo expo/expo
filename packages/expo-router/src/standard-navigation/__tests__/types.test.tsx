@@ -89,9 +89,6 @@ const TypelessRouter: RouterFactory<
   NavigationAction,
   DefaultRouterOptions
 > = () => ({
-  getInitialState: () => {
-    throw new Error('Type test only');
-  },
   getRehydratedState: () => {
     throw new Error('Type test only');
   },
@@ -103,14 +100,13 @@ const TypelessRouter: RouterFactory<
 
 unstable_createStandardRouterNavigator(Content, TypelessRouter);
 
-// A router may omit `type` only when its state has none. A router whose state declares a literal
-// type must still declare the same literal, otherwise every state it produces would be rejected
-// by the rehydration check and replaced with a fresh initial state.
+// A router may omit `type` only when its state has none. Otherwise initialization accepts the
+// typeless state, rehydration adds a type, and `isStateValid` rejects it in a loop.
 export type _BaseRouterTypeIsOptional = Expect<
   Equal<Pick<Router<NavigationState, NavigationAction>, 'type'>, { type?: string }>
 >;
-export type _TypedRouterTypeIsRequired = Expect<
-  Equal<Pick<Router<TabNavigationState<ParamListBase>, NavigationAction>, 'type'>, { type: 'tab' }>
+export type _TypedRouterTypeIsOptional = Expect<
+  Equal<Pick<Router<TabNavigationState<ParamListBase>, NavigationAction>, 'type'>, { type?: 'tab' }>
 >;
 
 export type _HasScreen = Expect<Equal<typeof Nav extends { Screen: unknown } ? true : false, true>>;

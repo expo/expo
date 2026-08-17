@@ -1,8 +1,5 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import FoundationIcons from '@expo/vector-icons/Foundation';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import MaterialCommunityIcons from '@react-native-vector-icons/material-design-icons';
 import { useTheme } from 'ThemeProvider';
 import * as Font from 'expo-font';
 import { RenderToImageResult } from 'expo-font';
@@ -12,20 +9,13 @@ import { Platform, ScrollView, StyleSheet, View, Image as CoreImage } from 'reac
 
 import { BodyText } from '../components/BodyText';
 import { Page, Section } from '../components/Page';
+import { ExpoVectorIconsCompatibilitySection } from './ExpoVectorIconsCompatibilitySection';
 
 const round = (num: number) => Math.round(num * 100) / 100;
 
 export default function FontScreen() {
   const { theme } = useTheme();
   const color = theme.text.default;
-
-  const renderedFontAwesomeImage = useLoadIcon(() =>
-    Font.renderToImageAsync(String.fromCodePoint(62491), {
-      fontFamily: 'FontAwesome5Free-Brand',
-      color: '#61dafb',
-      size: 172,
-    })
-  );
 
   const renderedFontAsImage = useLoadIcon(() =>
     Font.renderToImageAsync('ÅBÇD', {
@@ -101,32 +91,25 @@ export default function FontScreen() {
             <Ionicons name="alarm" size={25} color={color} />
           </View>
         </Section>
-        <Section title="FontAwesome5">
+        <Section title="Material Design Icons">
           <View style={styles.vectorIconsRow}>
-            <FontAwesome5 name="laugh-wink" size={25} color={color} />
-            <FontAwesome5 name="smile-beam" size={25} color={color} />
-            <FontAwesome5 name="map" size={25} color={color} />
-            <FontAwesome5 name="bacon" size={25} color={color} />
-            <FontAwesome5 name="basketball-ball" size={25} color={color} />
-            <FontAwesome5 name="biking" size={25} color={color} />
+            <MaterialCommunityIcons name="emoticon-wink" size={25} color={color} />
+            <MaterialCommunityIcons name="map" size={25} color={color} />
+            <MaterialCommunityIcons name="food-drumstick" size={25} color={color} />
+            <MaterialCommunityIcons name="basketball" size={25} color={color} />
+            <MaterialCommunityIcons name="bike" size={25} color={color} />
+            <MaterialCommunityIcons name="home" size={25} color={color} />
           </View>
           <View style={styles.vectorIconsRow}>
-            <FontAwesome5 name="home" size={25} color={color} />
-            <FontAwesome5 name="paw" size={25} color={color} />
-            <FontAwesome5 name="map" size={25} solid color={color} />
-            <FontAwesome5 name="camera" size={25} color={color} />
-            <FontAwesome5 name="cat" size={25} color={color} />
-            <FontAwesome5 name="horse" size={25} color={color} />
-          </View>
-          <View style={styles.vectorIconsRow}>
-            <FontAwesome5 name="react" size={25} color={color} />
-            <FontAwesome5 name="aws" size={25} color={color} />
-            <FontAwesome5 name="swift" size={25} color={color} />
-            <FontAwesome5 name="facebook" size={25} color={color} />
-            <FontAwesome5 name="twitter" size={25} color={color} />
-            <FontAwesome5 name="apple" size={25} color={color} />
+            <MaterialCommunityIcons name="paw" size={25} color={color} />
+            <MaterialCommunityIcons name="camera" size={25} color={color} />
+            <MaterialCommunityIcons name="cat" size={25} color={color} />
+            <MaterialCommunityIcons name="horse" size={25} color={color} />
+            <MaterialCommunityIcons name="react" size={25} color={color} />
+            <MaterialCommunityIcons name="apple" size={25} color={color} />
           </View>
         </Section>
+        <ExpoVectorIconsCompatibilitySection color={color} />
         <Section title="Custom Fonts">
           <View style={styles.customFonts}>
             <View style={{ flex: 1 }}>
@@ -180,23 +163,6 @@ export default function FontScreen() {
         <VectorIconSection />
 
         <Section title="renderToImageAsync" gap={5}>
-          {renderedFontAwesomeImage && (
-            <>
-              <BodyText>
-                FontAwesome5Free rendered to image
-                {round(renderedFontAwesomeImage.width)}x{round(renderedFontAwesomeImage.height)}
-              </BodyText>
-              <Image
-                source={{ uri: renderedFontAwesomeImage.uri }}
-                style={{
-                  height: renderedFontAwesomeImage.height,
-                  width: renderedFontAwesomeImage.width,
-                  backgroundColor: 'grey',
-                }}
-                contentFit="cover"
-              />
-            </>
-          )}
           {renderedFontAsImage && (
             <>
               <BodyText>
@@ -323,10 +289,8 @@ function useLoadIcon(getImage: () => Promise<RenderToImageResult | null>) {
 
 function VectorIconSection() {
   const icons = [
-    useLoadIcon(() => MaterialIcons.getImageSource('camera', size, 'yellow')),
-    useLoadIcon(() => FontAwesome.getImageSource('book', size, 'yellow')),
+    useLoadIcon(() => MaterialCommunityIcons.getImageSource('camera', size, 'yellow')),
     useLoadIcon(() => Ionicons.getImageSource('camera', size, 'yellow')),
-    useLoadIcon(() => FoundationIcons.getImageSource('book', size, 'yellow')),
   ];
 
   return (

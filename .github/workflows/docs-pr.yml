@@ -10,6 +10,7 @@ on:
   pull_request:
     paths:
       - 'docs/**'
+      - 'packages/@expo/sdk-compatibility/**'
       - '.github/workflows/docs-pr.yml'
     types:
       - opened

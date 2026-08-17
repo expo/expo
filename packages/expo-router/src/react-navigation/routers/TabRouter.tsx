@@ -62,7 +62,7 @@ export type TabNavigationState<ParamList extends ParamListBase> = Omit<
   /**
    * Type of the router, in this case, it's tab.
    */
-  type: 'tab';
+  type?: 'tab';
   /**
    * List of previously visited route keys.
    */
@@ -107,7 +107,6 @@ const TYPE_ROUTE = 'route' as const;
 const addFallbackRouteIfEmpty = (
   routes: Route<string>[],
   routeNames: string[],
-  routeParamList: ParamListBase | undefined,
   initialRouteName: string | undefined
 ) => {
   if (routes.length > 0 || routeNames.length === 0) {
@@ -118,7 +117,7 @@ const addFallbackRouteIfEmpty = (
     initialRouteName !== undefined && routeNames.includes(initialRouteName)
       ? initialRouteName
       : routeNames[0]!;
-  return [{ name, key: `${name}-${nanoid()}`, params: routeParamList?.[name] }];
+  return [{ name, key: `${name}-${nanoid()}` }];
 };
 
 const addRouteIfMissing = (
@@ -305,23 +304,7 @@ export function TabRouter({
 
     type: 'tab',
 
-    getInitialState({ routeNames, routeParamList }) {
-      const routes = addFallbackRouteIfEmpty([], routeNames, routeParamList, initialRouteName);
-      const index = routes.length === 0 ? -1 : 0;
-      const history = getRouteHistory(routes, index, backBehavior, initialRouteName);
-
-      return {
-        stale: false,
-        type: 'tab',
-        key: `tab-${nanoid()}`,
-        index,
-        routeNames,
-        history,
-        routes,
-      };
-    },
-
-    getRehydratedState(partialState, { routeNames, routeParamList }) {
+    getRehydratedState(partialState, { routeNames }) {
       const state = partialState;
 
       if (state.stale === false) {
@@ -334,20 +317,8 @@ export function TabRouter({
         .map((route) => ({
           ...route,
           key: route.key || `${route.name}-${nanoid()}`,
-          params:
-            routeParamList[route.name] !== undefined
-              ? {
-                  ...routeParamList[route.name],
-                  ...route.params,
-                }
-              : route.params,
         }));
-      const routes = addFallbackRouteIfEmpty(
-        filteredRoutes,
-        routeNames,
-        routeParamList,
-        initialRouteName
-      );
+      const routes = addFallbackRouteIfEmpty(filteredRoutes, routeNames, initialRouteName);
 
       const focusedName = state.routes[state.index ?? 0]?.name;
       const focusedIndex = routes.findIndex((route) => route.name === focusedName);
@@ -402,8 +373,6 @@ export function TabRouter({
           const routes = addFallbackRouteIfEmpty(
             state.routes.filter((route) => routeNames.includes(route.name)),
             routeNames,
-            // Actions don't receive configured route params.
-            undefined,
             initialRouteName
           );
 

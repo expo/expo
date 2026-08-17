@@ -29,6 +29,7 @@ module.exports = {
   jsEngine: process.env.E2E_ROUTER_JS_ENGINE ?? (process.env.E2E_ROUTER_SRC ? 'jsc' : 'hermes'),
   newArchEnabled: true,
   experiments: {
+    noxcturnalTransformWorker: true,
     autolinkingModuleResolution: true,
     baseUrl: process.env.EXPO_E2E_BASE_PATH || undefined,
     tsconfigPaths: process.env.EXPO_USE_PATH_ALIASES,
