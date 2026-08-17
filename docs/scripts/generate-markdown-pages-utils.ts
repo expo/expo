@@ -816,7 +816,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     // - Trim leading ". " at cell start
     // - Remove orphan "-" after periods (upstream renders a bare dash for empty descriptions)
     const blocks: string[] = [];
-    let cellHtml = $cell.html()!.replace(/<(code|pre)\b[^>]*>[\s\S]*?<\/\1>/gi, match => {
+    let cellHtml = $cell.html()!.replace(/<(code|pre)\b[^>]*>[\S\s]*?<\/\1>/gi, match => {
       blocks.push(match);
       return `%%MD_CODE_${blocks.length - 1}%%`;
     });
