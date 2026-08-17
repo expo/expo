@@ -200,10 +200,7 @@ describe('skills actions', () => {
   });
 });
 
-// Due to change in `expo` package the tests suit will fail on Windows, as npm pack fails to execute `expo` prepare on Windows.
-const describeSkipWin = process.platform === 'win32' ? describe.skip : describe;
-
-describeSkipWin('auto sync on `npx expo start`', () => {
+describe('auto sync on `npx expo start`', () => {
   let projectRoot: string;
   let linkPath: string;
 
