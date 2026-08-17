@@ -4,7 +4,7 @@ import SwiftUI
 import ExpoModulesCore
 
 /// Coordinate space anchored at the `Host`, so hosted React Native views can report where SwiftUI
-/// actually placed them. Yoga only knows their box inside the `Host`, not SwiftUI's placement.
+/// actually placed them.
 internal let expoHostCoordinateSpace = "expo.ui.host"
 
 internal enum ExpoColorScheme: String, Enumerable {

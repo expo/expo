@@ -25,10 +25,6 @@ public:
     storage().erase(tag);
   }
 
-  /**
-   Returns nothing for a view no native layout system placed. A view placed at its host's origin
-   publishes `{0, 0}`, which is a real answer and not the same as having no answer.
-   */
   static std::optional<facebook::react::Point> find(facebook::react::Tag tag) {
     std::lock_guard<std::mutex> lock(mutex());
     auto it = storage().find(tag);

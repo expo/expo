@@ -3,8 +3,9 @@ import { padding } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 
+// Tests actual placement of UI matches return returned by RN's measure API.
+// UI is placed by Compose and not Yoga, so these tests test that correct placement is reported to RN so Pressability can work correctly.
 export const name = 'ExpoUIMeasurement';
-
 const PADDING = 24;
 const BOX = 40;
 const WIDE = 200;
@@ -14,18 +15,14 @@ const SCROLL_TAIL = 2000;
 const SCROLL_BY = 60;
 
 type Measurement = {
-  /** Origin relative to the parent, not the surface. */
   x: number;
   y: number;
   width: number;
   height: number;
-  /** Origin relative to the surface root — what `Pressability` builds its responder region from. */
   pageX: number;
   pageY: number;
 };
 
-// Deliberately `measure` rather than `measureInWindow`: `Pressability` uses this one, and compares
-// `pageX`/`pageY` against the touch, so this is the path a hosted press actually depends on.
 function measureAsync(ref: React.RefObject<View | null>, label = 'view'): Promise<Measurement> {
   return new Promise((resolve, reject) => {
     const node = ref.current;
@@ -297,11 +294,7 @@ export async function test(
       expect(hostedAfter.pageY - viewport.pageY).toBe(SCROLL_LEAD + PADDING - SCROLL_BY);
     });
 
-    // A sheet presents its content in its own view controller, so that content is not a descendant
-    // of the React Native surface: nothing above it dispatches touches, and a surface-relative
-    // position would describe somewhere the content never occupies. A hosted view there dispatches
-    // its own touches and is measured from itself instead, which is what the `layoutRoot` prop turns
-    // on. Every other test in this file reports surface coordinates; this one must report zero.
+    // A sheet content uses RootNodeKind trait so measurement happens relative to the RNHostView and not the RN's root surface.
     it('measures a hosted view in a sheet relative to itself', async () => {
       const hostedRef = React.createRef<View>();
 
