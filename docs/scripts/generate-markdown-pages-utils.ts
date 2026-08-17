@@ -650,6 +650,11 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
+  // Escape before re-injecting as HTML: cheerio would otherwise parse a generic
+  // like Promise<PermissionResponse> as a tag and lowercase the type name.
+  const escapeHtml = (value: string) =>
+    value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
   // Convert API returns sections to inline "Returns: type" text.
   main.find('[data-md="api-returns"]').each((_, el) => {
     const $el = $(el);
@@ -657,14 +662,14 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const typeText =
       codeEl.length > 0 ? codeEl.text().trim() : $el.text().replace('Returns:', '').trim();
     if (typeText) {
-      $el.replaceWith('<p>Returns: <code>' + typeText + '</code></p>');
+      $el.replaceWith('<p>Returns: <code>' + escapeHtml(typeText) + '</code></p>');
     }
   });
 
   // Convert API parameter name spans to <code> for backtick formatting.
   main.find('[data-md="api-param-name"]').each((_, el) => {
     const $el = $(el);
-    $el.replaceWith('<code>' + $el.text() + '</code>');
+    $el.replaceWith('<code>' + escapeHtml($el.text()) + '</code>');
   });
 
   // Preserve angle brackets around unknown HTML elements in type signatures.

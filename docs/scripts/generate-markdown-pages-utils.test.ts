@@ -1251,6 +1251,26 @@ describe('API returns section', () => {
     expect(md).toContain('Returns:');
     expect(md).toMatch(/Returns: .?Promise.?/);
   });
+
+  it('preserves the casing of generic type arguments', () => {
+    const html = [
+      '<main><h3>getPermissionsAsync()</h3>',
+      '<div data-md="api-returns" class="flex flex-row items-start gap-2">',
+      '<div class="flex flex-row items-center gap-2">',
+      '<span class="text-sm">Returns:</span>',
+      '</div>',
+      '<code>',
+      '<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">Promise</a>',
+      '<span class="text-quaternary">&lt;</span>',
+      '<span>PermissionResponse</span>',
+      '<span class="text-quaternary">&gt;</span>',
+      '</code>',
+      '</div></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Promise<PermissionResponse>');
+    expect(md).not.toContain('permissionresponse');
+  });
 });
 
 describe('API parameter names', () => {
