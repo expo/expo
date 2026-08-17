@@ -548,8 +548,6 @@ const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
 export default function BottomSheetWithScrollableContentExample() {
   const [isPresented, setIsPresented] = useState(false);
 
-  // `matchContents` sizes the host to the anchor instead of filling the space.
-  // The anchor then sits at the leading edge.
   return (
     <Host style={{ flex: 1 }}>
       <VStack>

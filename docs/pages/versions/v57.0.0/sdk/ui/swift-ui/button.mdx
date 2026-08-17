@@ -41,8 +41,6 @@ Expo UI Button matches the official SwiftUI [Button API](https://developer.apple
 import { Host, Button } from '@expo/ui/swift-ui';
 
 export default function BasicButtonExample() {
-  // `matchContents` sizes the host to the button instead of filling the space.
-  // The button then sits at the leading edge.
   return (
     <Host style={{ flex: 1 }}>
       <Button label="Press me" onPress={() => alert('Pressed!')} />

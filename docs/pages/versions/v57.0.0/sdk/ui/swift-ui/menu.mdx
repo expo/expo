@@ -41,8 +41,6 @@ Expo UI Menu matches the official SwiftUI [Menu API](https://developer.apple.com
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
 
 export default function SimpleMenuExample() {
-  // `matchContents` sizes the host to the trigger instead of filling the space.
-  // The trigger then sits at the leading edge.
   return (
     <Host style={{ flex: 1 }}>
       <Menu label="Options">
@@ -448,7 +446,7 @@ Use the `labelStyle('iconOnly')` modifier to display only the icon without the l
   title="IconOnlyMenuExample.tsx"
   src="/static/images/expo-ui/examples/menu-icon-only-ios-light.webp"
   darkSrc="/static/images/expo-ui/examples/menu-icon-only-ios-dark.webp"
-  alt="A menu trigger showing only a gear icon">
+  alt="A menu trigger showing only a circled ellipsis icon">
 
 ```tsx
 import { Host, Menu, Button } from '@expo/ui/swift-ui';
@@ -457,7 +455,7 @@ import { labelStyle } from '@expo/ui/swift-ui/modifiers';
 export default function IconOnlyMenuExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <Menu label="Icon Only Button" systemImage="gear" modifiers={[labelStyle('iconOnly')]}>
+      <Menu label="More options" systemImage="ellipsis.circle" modifiers={[labelStyle('iconOnly')]}>
         <Button label="Menu Item 1" onPress={() => console.log('Menu Item 1')} />
         <Button label="Menu Item 2" onPress={() => console.log('Menu Item 2')} />
         <Button label="Menu Item 3" onPress={() => console.log('Menu Item 3')} />

@@ -45,7 +45,6 @@ const options = ['Apple', 'Banana', 'Orange'];
 export default function SegmentedPickerExample() {
   const [selectedTag, setSelectedTag] = useState(options[0]);
 
-  // `matchContents` sizes the host to the picker instead of filling the space.
   // Segmented and wheel pickers stretch to the width they are given, so they
   // collapse under `matchContents`.
   return (

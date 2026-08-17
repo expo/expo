@@ -44,7 +44,6 @@ import { Host, Toggle } from '@expo/ui/swift-ui';
 export default function BasicToggleExample() {
   const [isOn, setIsOn] = useState(false);
 
-  // `matchContents` sizes the host to its content instead of filling the space.
   // A toggle row stretches to the width it is given, so give the host a size.
   return (
     <Host style={{ flex: 1 }}>
@@ -104,7 +103,7 @@ import { Host, Toggle, VStack } from '@expo/ui/swift-ui';
 import { toggleStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function ToggleStylesExample() {
-  const [isOn, setIsOn] = useState(false);
+  const [isOn, setIsOn] = useState(true);
 
   return (
     <Host style={{ flex: 1 }}>

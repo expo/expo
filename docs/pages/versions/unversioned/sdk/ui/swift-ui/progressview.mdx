@@ -85,16 +85,21 @@ Use the [`progressViewStyle`](modifiers/#progressviewstylestyle) modifier to cha
   title="ProgressViewStylesExample.tsx"
   src="/static/images/expo-ui/examples/progressview-styles-ios-light.webp"
   darkSrc="/static/images/expo-ui/examples/progressview-styles-ios-dark.webp"
-  alt="A progress bar using the linear style, filled to the halfway point">
+  alt="A half-filled linear progress bar labelled Linear, above a circular spinner labelled Circular">
 
 ```tsx
-import { Host, ProgressView, VStack } from '@expo/ui/swift-ui';
+import { Host, ProgressView, Text, VStack } from '@expo/ui/swift-ui';
 import { progressViewStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function ProgressViewStylesExample() {
   return (
     <Host style={{ flex: 1 }}>
-      <ProgressView value={0.5} modifiers={[progressViewStyle('linear')]} />
+      <VStack spacing={16}>
+        <Text>Linear</Text>
+        <ProgressView value={0.5} modifiers={[progressViewStyle('linear')]} />
+        <Text>Circular</Text>
+        <ProgressView value={0.5} modifiers={[progressViewStyle('circular')]} />
+      </VStack>
     </Host>
   );
 }

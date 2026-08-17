@@ -62,14 +62,14 @@ export default function BasicSliderExample() {
   title="CustomRangeSliderExample.tsx"
   src="/static/images/expo-ui/examples/slider-custom-range-ios-light.webp"
   darkSrc="/static/images/expo-ui/examples/slider-custom-range-ios-dark.webp"
-  alt="A slider over a range of 0 to 100 with its thumb at the midpoint">
+  alt="A slider over a range of 0 to 100 with its thumb three quarters of the way along">
 
 ```tsx
 import { useState } from 'react';
 import { Host, Slider } from '@expo/ui/swift-ui';
 
 export default function CustomRangeSliderExample() {
-  const [value, setValue] = useState(50);
+  const [value, setValue] = useState(75);
 
   return (
     <Host style={{ flex: 1 }}>
