@@ -559,6 +559,73 @@ final class MetricsDatabase: Sendable {
     try statement.run()
   }
 
+  // MARK: - Spans
+
+  /// Maximum number of rows retained in `spans`. Span producers (network requests especially)
+  /// can outnumber metrics and logs by orders of magnitude, and when nothing consumes the rows
+  /// (`expo-observe` not installed, or dispatch disabled) the session-retention prune alone
+  /// would let a busy app accumulate a week of traffic. Inserts prune anything older than the cap.
+  static let spanCap = 2_000
+
+  /// Inserts a single span and returns its rowid (the auto-incremented `id`). Also prunes rows
+  /// older than `spanCap` — ids are monotonic, so "older" is simply everything at least
+  /// `spanCap` ids behind the row just inserted. Insert and prune share one transaction, so the
+  /// per-span hot path pays a single commit.
+  @AppMetricsActor
+  @discardableResult
+  func insert(span: SpanRow) throws -> Int64 {
+    return try database.transaction {
+      let statement = try database.prepare(
+        """
+        INSERT INTO spans (
+          sessionId, traceId, spanId, parentSpanId, name, kind,
+          startTimestampMs, endTimestampMs, statusCode, statusMessage, attributes, events
+        ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)
+        """
+      )
+      try statement.bindAll([
+        span.sessionId, span.traceId, span.spanId, span.parentSpanId, span.name, span.kind,
+        span.startTimestampMs, span.endTimestampMs, span.statusCode, span.statusMessage,
+        span.attributes, span.events,
+      ])
+      try statement.run()
+      let insertedId = database.lastInsertRowid()
+      try deleteSpans(upToId: insertedId - Int64(Self.spanCap))
+      return insertedId
+    }
+  }
+
+  /// Returns span rows whose `id` is greater than `cursor`, in ascending id order.
+  @AppMetricsActor
+  func getSpans(afterId cursor: Int64) throws -> [SpanRow] {
+    let statement = try database.prepare(
+      """
+      SELECT \(spanColumns) FROM spans WHERE id > ?1 ORDER BY id ASC
+      """
+    )
+    try statement.bindAll([cursor])
+    var rows: [SpanRow] = []
+    try statement.forEachRow { row in
+      rows.append(SpanRow(row: row))
+    }
+    return rows
+  }
+
+  @AppMetricsActor
+  func getMaxSpanId() throws -> Int64? {
+    return try selectMaxId(table: "spans")
+  }
+
+  /// Deletes rows with `id <= upToId`. Called after a dispatch consumed (or deliberately
+  /// dropped) a batch: unlike metrics and logs, no per-session API reads spans back, so
+  /// dispatched rows are dead weight.
+  @AppMetricsActor
+  func deleteSpans(upToId: Int64) throws {
+    let statement = try database.prepare("DELETE FROM spans WHERE id <= ?1")
+    try statement.bindAll([upToId])
+    try statement.run()
+  }
+
   // MARK: - Schema
 
   /// Creates the schema (tables, indexes, version row) atomically. Wrapping the whole bootstrap in a
@@ -575,14 +642,20 @@ final class MetricsDatabase: Sendable {
     }
   }
 
-  /// Creates the four data tables plus `schema_version`. Relationships:
+  /// Creates the five data tables plus `schema_version`. Relationships:
   ///
   /// - `sessions` is the root. Every other table keys off `sessions.id` (a UUID string).
-  /// - `metrics` and `logs` each have a `sessionId` FK with `ON DELETE CASCADE`. Their `id` is
-  /// `INTEGER PRIMARY KEY AUTOINCREMENT` so `expo-observe` can dispatch with a monotonic cursor.
+  /// - `metrics`, `logs` and `spans` each have a `sessionId` FK with `ON DELETE CASCADE`. Their
+  /// `id` is `INTEGER PRIMARY KEY AUTOINCREMENT` so `expo-observe` can dispatch with a monotonic
+  /// cursor.
   /// - `crash_reports` is keyed by `sessionId`. There's no FK constraint; the relationship is
   /// informational, and deletes cascade manually (see `deleteSession`, `deleteAllSessions`,
   /// `cleanupSessions`).
+  ///
+  /// Because this runs with `IF NOT EXISTS` on every open, a table added in a newer build appears
+  /// in an existing database without a schema-version bump — older data is preserved. Bump
+  /// `currentSchemaVersion` only for changes an older or newer build couldn't operate on (altered
+  /// columns, changed semantics).
   private func createSchemaTables() throws {
     try database.execute(
       """
@@ -642,6 +715,23 @@ final class MetricsDatabase: Sendable {
         sessionId TEXT PRIMARY KEY NOT NULL,
         payload TEXT NOT NULL
       );
+
+      CREATE TABLE IF NOT EXISTS spans (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sessionId TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,
+        traceId TEXT NOT NULL,
+        spanId TEXT NOT NULL,
+        parentSpanId TEXT,
+        name TEXT NOT NULL,
+        kind INTEGER NOT NULL,
+        startTimestampMs INTEGER NOT NULL,
+        endTimestampMs INTEGER NOT NULL,
+        statusCode INTEGER,
+        statusMessage TEXT,
+        attributes TEXT,
+        events TEXT
+      );
+      CREATE INDEX IF NOT EXISTS idx_spans_sessionId ON spans(sessionId);
       """
     )
   }
@@ -683,5 +773,10 @@ final class MetricsDatabase: Sendable {
     appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
     deviceOs, deviceOsVersion, deviceModel, deviceName,
     expoSdkVersion, reactNativeVersion, clientVersion, languageTag
+    """
+
+  private let spanColumns = """
+    id, sessionId, traceId, spanId, parentSpanId, name, kind,
+    startTimestampMs, endTimestampMs, statusCode, statusMessage, attributes, events
     """
 }
