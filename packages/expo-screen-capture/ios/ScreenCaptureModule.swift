@@ -11,7 +11,9 @@ public final class ScreenCaptureModule: Module {
   private var blurEffectView: AnimatedBlurEffectView?
   private var blurIntensity: CGFloat = 0.5
   private var keyWindow: UIWindow? {
-    return SceneGeometry.keyWindow()
+    return UIApplication.shared.connectedScenes
+      .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
+      .last { $0.isKeyWindow }
   }
 
   public func definition() -> ModuleDefinition {
