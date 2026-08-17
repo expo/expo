@@ -1208,6 +1208,70 @@ it('captures a lexical binding that shadows a same-named Program binding', async
   expect(result.result.code).toMatch(/\(\) => \[_?value\]/);
 });
 
+it('composes a nested server action hoist without overlapping its declaration replacement', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/app/index.tsx',
+    projectRoot: '/app',
+    source: `export default function Screen() {
+      const prefix = 'hello';
+      const action = renderNativeViews;
+      return <View action={action} />;
+      async function renderNativeViews(name: string) {
+        "use server";
+        return <Text>{prefix + name}</Text>;
+      }
+    }`,
+    options: options({
+      customTransformOptions: { engine: 'hermes', environment: 'react-server' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).not.toContain('"use server"');
+  expect(result.result.code).toMatch(/var \[prefix\] = .+\.value/);
+  expect(result.result.code).toMatch(
+    /var renderNativeViews = _?\$\$INLINE_ACTION\.bind\(null, _?wrapBoundArgs/
+  );
+  expect(result.result.code.indexOf('var renderNativeViews')).toBeLessThan(
+    result.result.code.indexOf('const action = renderNativeViews')
+  );
+});
+
+it('hoists a nested server action declaration without captures', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/app/index.tsx',
+    projectRoot: '/app',
+    source: `export default function Screen() {
+      "use strict";
+      const action = submit;
+      return action;
+      async function submit(value: string) {
+        "use server";
+        return value;
+      }
+    }`,
+    options: options({
+      customTransformOptions: { engine: 'hermes', environment: 'react-server' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toMatch(/var submit = _?\$\$INLINE_ACTION;/);
+  expect(result.result.code).not.toContain('.bind(null');
+  expect(result.result.code.indexOf('"use strict"')).toBeLessThan(
+    result.result.code.indexOf('var submit')
+  );
+  expect(result.result.code.indexOf('var submit')).toBeLessThan(
+    result.result.code.indexOf('const action = submit')
+  );
+});
+
 it("matches Babel's module-level React Server action registrations", async () => {
   const candidate = '/app/actions/server.ts';
   const source = `"use server";
