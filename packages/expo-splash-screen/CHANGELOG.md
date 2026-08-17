@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix the splash screen staying visible forever when the activity is stopped before the splash exit hand-off. ([#49048](https://github.com/expo/expo/pull/49048) by [@celadari](https://github.com/celadari))
+
 ### 💡 Others
 
 ## 57.0.5 - 2026-07-22
