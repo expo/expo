@@ -2,6 +2,8 @@ package expo.modules.ui.icon
 
 import android.content.Context
 import android.util.Xml
+import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.vector.VectorPath
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.runBlocking
@@ -143,6 +145,36 @@ class VectorIconLoaderTest {
     val imageVector = loader.parseXmlToImageVector(xml.toByteArray())
 
     assertThat(imageVector).isNotNull()
+  }
+
+  @Test
+  fun `should preserve vector path fill types`() {
+    val xml = """
+      <vector xmlns:android="http://schemas.android.com/apk/res/android"
+          android:width="24dp"
+          android:height="24dp"
+          android:viewportWidth="24"
+          android:viewportHeight="24">
+        <path
+            android:fillColor="#000000"
+            android:fillType="evenOdd"
+            android:pathData="M0,0L24,0L24,24L0,24ZM6,6L6,18L18,18L18,6Z"/>
+        <path
+            android:fillColor="#000000"
+            android:fillType="1"
+            android:pathData="M0,0L24,0L24,24L0,24ZM6,6L6,18L18,18L18,6Z"/>
+        <path
+            android:fillColor="#000000"
+            android:pathData="M0,0L24,24"/>
+      </vector>
+    """.trimIndent()
+
+    val imageVector = loader.parseXmlToImageVector(xml.toByteArray())
+
+    assertThat(imageVector).isNotNull()
+    assertThat((imageVector!!.root[0] as VectorPath).pathFillType).isEqualTo(PathFillType.EvenOdd)
+    assertThat((imageVector.root[1] as VectorPath).pathFillType).isEqualTo(PathFillType.EvenOdd)
+    assertThat((imageVector.root[2] as VectorPath).pathFillType).isEqualTo(PathFillType.NonZero)
   }
 
   // ========== URI Loading Tests ==========

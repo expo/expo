@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Preserve vector drawable `fillType` values when loading images so even-odd paths render correctly. ([#49049](https://github.com/expo/expo/pull/49049) by [@aonan-brex](https://github.com/aonan-brex))
+
 ### 💡 Others
 
 ## 57.0.11 — 2026-08-14
