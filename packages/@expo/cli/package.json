@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "57.0.15",
+  "version": "57.0.16",
   "description": "The Expo CLI",
   "main": "main.js",
   "bin": {
@@ -49,14 +49,14 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
   "dependencies": {
     "@expo/code-signing-certificates": "^0.0.6",
-    "@expo/config": "workspace:~57.0.7",
+    "@expo/config": "workspace:~57.0.8",
     "@expo/config-plugins": "workspace:~57.0.8",
     "@expo/devcert": "^1.2.1",
     "@expo/env": "workspace:~2.4.2",
     "@expo/image-utils": "workspace:^0.11.4",
-    "@expo/inline-modules": "workspace:^0.1.5",
+    "@expo/inline-modules": "workspace:^0.1.6",
     "@expo/json-file": "workspace:^11.0.1",
-    "@expo/log-box": "workspace:^57.0.2",
+    "@expo/log-box": "workspace:^57.0.3",
     "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:~57.0.8",
     "@expo/metro-file-map": "workspace:^57.0.1",

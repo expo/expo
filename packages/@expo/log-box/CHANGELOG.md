@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Stop the iOS webview wrapper printing `Unknown message type` for DOM runtime messages that LogBox does not handle, matching Android. ([#48813](https://github.com/expo/expo/pull/48813) by [@kudo](https://github.com/Kudo))
-
 ### 💡 Others
+
+## 57.0.3 — 2026-08-17
+
+### 🐛 Bug fixes
+
+- Stop the iOS webview wrapper printing `Unknown message type` for DOM runtime messages that LogBox does not handle, matching Android. ([#48813](https://github.com/expo/expo/pull/48813) by [@kudo](https://github.com/Kudo))
 
 ## 57.0.2 — 2026-07-29
 
