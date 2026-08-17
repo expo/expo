@@ -24,7 +24,8 @@
 #     review, dismiss, undismiss, help (handled by other workflows).
 #
 # The agent is headless Claude Code connected to the expo-sandbox-mcp server
-# (hosted E2B sandboxes, proxied EAS builds, hosted iOS simulators). It
+# (hosted E2B Linux sandboxes, GHA Windows VMs for Windows-specific checks,
+# proxied EAS builds, hosted iOS simulators). It
 # reproduces the report where the hosted simulator can exhibit it, runs
 # cold-launch censuses / behavioral checks / crash loops as the issue
 # demands, and posts ONE findings comment whose evidence sections
@@ -954,6 +955,10 @@ jobs:
               # phase, after a reviewer has attacked the draft, and are added
               # to this list only by "Revise and post".
               "mcp__sandbox__create_sandbox"
+              # Windows (GHA) VM for Windows-specific behavior only — file
+              # watching, path semantics, EPERM-on-delete. Linux stays the
+              # default; the prompts carry the policy and the cmd.exe recipe.
+              "mcp__sandbox__create_gha_sandbox"
               "mcp__sandbox__list_sandboxes"
               "mcp__sandbox__get_session_info"
               "mcp__sandbox__sandbox_exec"
