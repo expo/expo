@@ -8,7 +8,10 @@
 
 import type { ConfigAPI, PluginObj, PluginPass, NodePath, types as t } from '@babel/core';
 
+import { addCacheVary } from '../cache-vary';
+
 const TYPEOF_PREFIX = 'typeof ';
+const PROCESS_ENV_PREFIX = 'process.env.';
 
 interface ProcessedReplacements {
   /** Identifier name -> replacement value (e.g., "__DEV__" -> false) */
@@ -111,6 +114,12 @@ function definePlugin({
         // Check against patterns
         for (const [pattern, replacement] of memberPatterns) {
           if (nodePath.matchesPattern(pattern)) {
+            if (pattern.startsWith(PROCESS_ENV_PREFIX + 'EXPO_PUBLIC_')) {
+              addCacheVary(state, {
+                scheme: 'env',
+                name: pattern.slice(PROCESS_ENV_PREFIX.length),
+              });
+            }
             replaceAndEvaluateNode(nodePath, replacement);
             return;
           }
