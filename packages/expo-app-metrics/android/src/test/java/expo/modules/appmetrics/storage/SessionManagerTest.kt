@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.BuildConfig
+import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -393,6 +394,26 @@ class SessionManagerTest {
     }
 
   @Test
+  fun `getSessionsWithMetrics returns unique metrics in chronological order`() =
+    runTest {
+      val sessionId = "session-1"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      database.metricDao().insertAll(
+        listOf(
+          createMetric("metric-z", sessionId, timestamp = "2025-01-01T00:00:02.000Z"),
+          createMetric("metric-a", sessionId, timestamp = "2025-01-01T00:00:01.000Z")
+        )
+      )
+      val metricIds = listOf("metric-z") +
+        (1 until SQLITE_MAX_BIND_VARIABLES).map { "missing-$it" } +
+        listOf("metric-a", "metric-z")
+
+      val result = sessionManager.getSessionsWithMetrics(metricIds)
+
+      assertEquals(listOf("metric-a", "metric-z"), result.single().metrics.map { it.metricId })
+    }
+
+  @Test
   fun `getSessionsWithMetrics returns empty when no metrics match`() =
     runTest {
       // Arrange
@@ -529,6 +550,26 @@ class SessionManagerTest {
       assertEquals(1, result.size)
       assertEquals(sessionId, result[0].session.id)
       assertEquals(setOf("log-1", "log-3"), result[0].logs.map { it.logId }.toSet())
+    }
+
+  @Test
+  fun `getSessionsWithLogs returns unique logs in chronological order`() =
+    runTest {
+      val sessionId = "session-1"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      database.logDao().insertAll(
+        listOf(
+          createLog("log-z", sessionId, timestamp = "2025-01-01T00:00:02.000Z"),
+          createLog("log-a", sessionId, timestamp = "2025-01-01T00:00:01.000Z")
+        )
+      )
+      val logIds = listOf("log-z") +
+        (1 until SQLITE_MAX_BIND_VARIABLES).map { "missing-$it" } +
+        listOf("log-a", "log-z")
+
+      val result = sessionManager.getSessionsWithLogs(logIds)
+
+      assertEquals(listOf("log-a", "log-z"), result.single().logs.map { it.logId })
     }
 
   @Test
@@ -766,12 +807,13 @@ class SessionManagerTest {
     sessionId: String,
     name: String = "test-metric",
     category: String = "test",
-    value: Double = 123.45
+    value: Double = 123.45,
+    timestamp: String = "2025-01-01T00:00:00.000Z"
   ): Metric =
     Metric(
       metricId = metricId,
       sessionId = sessionId,
-      timestamp = "2025-01-01T00:00:00.000Z",
+      timestamp = timestamp,
       category = category,
       name = name,
       value = value,
@@ -784,12 +826,13 @@ class SessionManagerTest {
     sessionId: String,
     name: String = "test.event",
     severity: String = "info",
-    attributes: String? = null
+    attributes: String? = null,
+    timestamp: String = "2025-01-01T00:00:00.000Z"
   ): LogRecord =
     LogRecord(
       logId = logId,
       sessionId = sessionId,
-      timestamp = "2025-01-01T00:00:00.000Z",
+      timestamp = timestamp,
       name = name,
       body = null,
       severity = severity,

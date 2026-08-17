@@ -224,8 +224,10 @@ class SessionManager(
 
   suspend fun getSessionsWithMetrics(metricIds: List<String>): List<SessionWithMetrics> {
     val metricsBySessionId = metricIds
+      .distinct()
       .chunked(SQLITE_MAX_BIND_VARIABLES)
       .flatMap { database.metricDao().getByIds(it) }
+      .sortedBy { it.timestamp }
       .groupBy { it.sessionId }
     val sessionsById = getSessionsByIds(metricsBySessionId.keys).associateBy { it.id }
 
@@ -238,8 +240,10 @@ class SessionManager(
 
   suspend fun getSessionsWithLogs(logIds: List<String>): List<SessionWithLogs> {
     val logsBySessionId = logIds
+      .distinct()
       .chunked(SQLITE_MAX_BIND_VARIABLES)
       .flatMap { database.logDao().getByIds(it) }
+      .sortedBy { it.timestamp }
       .groupBy { it.sessionId }
     val sessionsById = getSessionsByIds(logsBySessionId.keys).associateBy { it.id }
 
