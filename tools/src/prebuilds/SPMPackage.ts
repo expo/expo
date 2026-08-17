@@ -9,13 +9,13 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
+import { getPrecompileDir } from '../Directories';
+import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
-import { getPrecompileDir } from '../Directories';
-import { getPackageByName } from '../Packages';
 import {
   ObjcTarget,
   SwiftTarget,
@@ -893,6 +893,11 @@ export function buildSwiftSettings(
   // Define RCT_NEW_ARCH_ENABLED for Fabric support
   settings.push('.define("RCT_NEW_ARCH_ENABLED")');
 
+  // The precompiled React-Core ships without the legacy architecture, and the
+  // CocoaPods build defines this accordingly. Libraries guard removed-API usage
+  // (e.g. RCTCxxBridge) behind it, so the prebuild must match.
+  settings.push('.define("RCT_REMOVE_LEGACY_ARCH")');
+
   // Common C++ flags (not path-dependent)
   // Note: -fcxx-modules is intentionally omitted (see buildCSettings comment).
   const commonCxxFlags: string[] = ['-Xcc', '-fmodules'];
@@ -1021,6 +1026,12 @@ function buildCSettings(
   // Must define with value "1" for C/C++/ObjC targets
   cSettings.push('.define("RCT_NEW_ARCH_ENABLED", to: "1")');
   cxxSettings.push('.define("RCT_NEW_ARCH_ENABLED", to: "1")');
+
+  // The precompiled React-Core ships without the legacy architecture, and the
+  // CocoaPods build defines this accordingly. Libraries guard removed-API usage
+  // (e.g. RCTCxxBridge in react-native-skia) behind it, so the prebuild must match.
+  cSettings.push('.define("RCT_REMOVE_LEGACY_ARCH", to: "1")');
+  cxxSettings.push('.define("RCT_REMOVE_LEGACY_ARCH", to: "1")');
 
   // Enable Clang modules for ObjC/React module maps (VFS overlays).
   // Note: -fcxx-modules is intentionally omitted — it enforces strict C++ standard library

@@ -33,6 +33,7 @@
 - [iOS] Fix Expo DevTools Network response bodies for JSON content types with parameters. ([#46336](https://github.com/expo/expo/pull/46336) by [@SJvaca30](https://github.com/SJvaca30))
 - [iOS] Resolve the key window from the foregrounded scene in `currentViewController()` so it keeps working with multiple scenes, and expose `Utilities.keyWindow()` for modules to reuse. ([#46956](https://github.com/expo/expo/pull/46956) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fixed a stack overflow crash when converting to JavaScript a `Convertible` value that keeps the default `convertResult` implementation, such as `CMTime`. The value now converts to `undefined` and logs a warning. ([#48266](https://github.com/expo/expo/pull/48266) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -2158,8 +2159,6 @@ _This version does not introduce any user-facing changes._
 ## 0.6.5 — 2022-02-01
 
 ### 🐛 Bug fixes
-
-- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 0.6.4 — 2022-01-05
 

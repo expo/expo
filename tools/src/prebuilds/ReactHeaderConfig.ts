@@ -131,6 +131,14 @@ export const PodspecExceptions: Record<string, PodSpecConfiguration | { disabled
         headerDir: 'react/renderer/scheduler',
       },
       {
+        // New React-Fabric subspec in React Native 0.87; Scheduler.h includes its
+        // ViewTransitionModule.h, and the Debug ReactNativeHeaders artifact doesn't
+        // ship it, so it must be staged from source.
+        name: 'viewtransition',
+        headerPatterns: ['react/renderer/viewtransition/**/*.h'],
+        headerDir: 'react/renderer/viewtransition',
+      },
+      {
         name: 'imagemanager',
         headerPatterns: ['react/renderer/imagemanager/*.h'],
         headerDir: 'react/renderer/imagemanager',

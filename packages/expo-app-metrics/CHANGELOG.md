@@ -14,6 +14,7 @@
 
 - [android] Fix `UnsupportedOperationException` and `NoSuchMethodError` on Android 7.x ([#48577](https://github.com/expo/expo/pull/48577) by [@Ubax](https://github.com/Ubax))
 - [iOS] Fix a crash on FirebaseAuth's first token refresh. GTMSessionFetcher branches on the class of `session.delegate`, so our network-observing delegate proxy now answers class and protocol checks for the delegate it wraps. ([#48360](https://github.com/expo/expo/pull/48360) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

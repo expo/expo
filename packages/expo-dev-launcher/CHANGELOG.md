@@ -23,6 +23,8 @@
 - [iOS] Point at the Local Network setting when a local dev server URL can't be reached, and log instead of silently dropping discovered servers that fail to resolve. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Reload the recently opened apps list when the launcher appears so it no longer shows up empty or stale. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
 - Exclude the manifest parser requests from app metrics, so the bundler reachability check no longer skews the observed network summary. ([#48616](https://github.com/expo/expo/pull/48616) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Remove an unused `RCTRootContentView.h` import. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
@@ -419,8 +421,6 @@ _This version does not introduce any user-facing changes._
 ## 6.0.19 - 2025-12-04
 
 ### 🐛 Bug fixes
-
-- Restore config plugin `launchMode` support ([#41363](https://github.com/expo/expo/pull/41363) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 6.0.18 - 2025-11-17
 
@@ -1101,8 +1101,6 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378), [#24502](https://github.com/expo/expo/pull/24502) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ## 3.2.1 — 2023-09-18
 
 _This version does not introduce any user-facing changes._
@@ -1126,9 +1124,6 @@ _This version does not introduce any user-facing changes._
 ## 3.2.0 — 2023-09-15
 
 ### 💡 Others
-
-- Update dev sessions default ports to check. ([#24380](https://github.com/expo/expo/pull/24380) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Fetch dev sessions whenever navigating to the launcher home screen. ([#24378](https://github.com/expo/expo/pull/24378) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 3.1.0 — 2023-09-04
 
@@ -1585,8 +1580,6 @@ _This version does not introduce any user-facing changes._
 ## 0.8.2 — 2021-10-15
 
 ### 🐛 Bug fixes
-
-- Fix `No native splash screen registered for given view controller` error happening when project is using both `expo-dev-client` and `expo-splash-screen` packages. ([#14745](https://github.com/expo/expo/pull/14745) by [@kudo](https://github.com/kudo))
 
 ## 0.8.1 — 2021-10-07
 

@@ -22,6 +22,7 @@
 - [iOS] Resolve the dev server port from the `RCTMetroPort` Info.plist key at runtime so bare projects without expo-dev-client connect to their own Metro instance instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix async imports (`import(...)`) via `asyncRequireModule` not a thenable instead of a full promise shape ([#48550](https://github.com/expo/expo/pull/48550) by [@kitten](https://github.com/kitten))
 - Fix DOM components dropping prop updates that are emitted while the WebView is still loading. ([#47683](https://github.com/expo/expo/issues/47683)) ([#48813](https://github.com/expo/expo/pull/48813) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Remove a duplicated `ExpoModulesCore-Swift.h` import block in `ExpoReactNativeFactory.mm` whose `#else` branch imported the header unconditionally, breaking builds where neither form is on the header search path. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

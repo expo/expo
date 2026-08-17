@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Fix OTel date conversion ([#48161](https://github.com/expo/expo/pull/48161) by [@Ubax](https://github.com/Ubax))
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

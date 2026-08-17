@@ -181,6 +181,8 @@ module Expo
         print_linking_summary
         disable_swift_interface_verification(installer)
         configure_use_frameworks(installer)
+        mirror_react_prebuilt_header_configuration(installer)
+        requote_swift_compat_header_paths(installer)
         ensure_artifacts(installer)
         configure_header_search_paths(installer)
         configure_codegen_for_prebuilt_modules(installer)
@@ -834,6 +836,14 @@ module Expo
         xcframework_path = File.join(react_prebuilt_dir, 'React.xcframework')
         return unless File.exist?(xcframework_path)
 
+        # This workaround rewires the xcframework-root Headers/ layout that react-native
+        # shipped up to 0.86. react-native 0.87 dropped that layout (headers are extracted
+        # to a Pods/React-Core-prebuilt/Headers sidecar with its own modulemap instead),
+        # so applying it there would point the React module at a missing umbrella header
+        # and break every React module build. Skip when the expected layout is absent.
+        umbrella_header = File.join(xcframework_path, 'Headers', 'React_Core', 'React_Core-umbrella.h')
+        return unless File.exist?(umbrella_header)
+
         target_support_dir = File.join(installer.sandbox.root, 'Target Support Files', 'React-Core-prebuilt')
         FileUtils.mkdir_p(target_support_dir)
 
@@ -842,6 +852,55 @@ module Expo
         inject_isystem_flags(installer, target_support_dir)
 
         Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
+      end
+
+      # react-native's cocoapods integration adds the prebuilt ReactNativeHeaders search
+      # path and module-map activation flags to every pod target's xcconfig (see
+      # add_prebuilt_header_search_paths in rncore.rb). Its loop iterates
+      # `pod_target.build_settings`, which does NOT include test-spec targets
+      # (e.g. Expo-Unit-Tests) — their xcconfigs are separate files. A test bundle's
+      # dependency scan then can't see the ReactNativeHeaders module map and fails
+      # with "module 'React_RCTAppDelegate' not found" (or non-modular-include
+      # errors) while building its pod's clang module. Mirror react-native's exact
+      # treatment into every xcconfig that lacks it.
+      def mirror_react_prebuilt_header_configuration(installer)
+        return unless prebuilt_react_active?
+        return unless File.exist?(File.join(installer.sandbox.root, 'React-Core-prebuilt', 'Headers', 'module.modulemap'))
+
+        headers_search_path = ' "$(PODS_ROOT)/React-Core-prebuilt/Headers"'
+        module_map_flag = ' "-fmodule-map-file=$(PODS_ROOT)/React-Core-prebuilt/Headers/module.modulemap"'
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '*', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+
+          { 'HEADER_SEARCH_PATHS' => headers_search_path,
+            'OTHER_CFLAGS' => module_map_flag,
+            'OTHER_CPLUSPLUSFLAGS' => module_map_flag,
+            'OTHER_SWIFT_FLAGS' => " -Xcc#{module_map_flag}" }.each do |key, flag|
+            next if content =~ /^#{key}\s*=.*React-Core-prebuilt\/Headers/
+
+            if content =~ /^#{key}\s*=/
+              content = content.gsub(/^(#{key}\s*=\s*)(.*)$/) { "#{$1}#{$2}#{flag}" }
+            else
+              content << "#{key} = $(inherited)#{flag}\n"
+            end
+          end
+          File.write(xcconfig_path, content)
+        end
+      end
+
+      # CocoaPods shell-splits `pod_target_xcconfig` search paths, dropping the quotes
+      # around entries that contain spaces. `.../Swift Compatibility Header` then lands
+      # in the generated pod xcconfigs as three broken -I flags, so a source-built Swift
+      # pod's dependents can't find its generated ObjC compatibility header (e.g. the
+      # Expo pod importing ExpoModulesCore-Swift.h). Re-quote those entries after
+      # CocoaPods writes the xcconfigs. Aggregate (user-target) xcconfigs keep their
+      # quotes and are left untouched by the negative-lookaround guards.
+      def requote_swift_compat_header_paths(installer)
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+          fixed = content.gsub(%r{(?<!")(\$[({]PODS_CONFIGURATION_BUILD_DIR[)}]/[^ "\n]+/Swift Compatibility Header)(?!")}, '"\1"')
+          File.write(xcconfig_path, fixed) if fixed != content
+        end
       end
 
       # TODO(ExpoModulesJSI-xcframework): Remove this method when ExpoModulesJSI.xcframework
