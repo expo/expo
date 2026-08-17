@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Render gradients on the GPU with `CAGradientLayer` instead of CPU-rasterizing bitmaps on the main thread — fixes multi-second main-thread hangs on gradient-heavy screens, the `UIGraphics` invalid-size crash, and a division by zero with single-color gradients. ([#47554](https://github.com/expo/expo/pull/47554) by [@Eduard-R-Code](https://github.com/Eduard-R-Code))
+
 ### 💡 Others
 
 ## 57.0.1 - 2026-07-15
