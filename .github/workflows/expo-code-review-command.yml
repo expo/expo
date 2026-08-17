@@ -259,10 +259,8 @@ jobs:
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
           AGENTS: ${{ steps.cmd.outputs.agents }}
           ROUTE: ${{ steps.cmd.outputs.route }}
-          # Manual dispatch has no PR number in its event payload; the CLI's
-          # documented fallback reads it from GITHUB_REF (refs/pull/<n>/…).
-          GITHUB_REF: ${{ github.event_name == 'workflow_dispatch' && format('refs/pull/{0}/merge', inputs.pr) || github.ref }}
           DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
+          PR_NUMBER: ${{ inputs.pr }}
           CONFIG_FROM_CHECKOUT: ${{ inputs.config-from-checkout }}
         # NOTE: running via `issue_comment` makes this a manual review command, which
         # the CLI detects (GITHUB_EVENT_NAME=issue_comment) and treats as a trigger-gate bypass
@@ -280,6 +278,14 @@ jobs:
             ARGS=(--route)
           fi
           if [ "$DISPATCH" = "true" ]; then
+            # A dispatch's event payload has no PR number for the CLI to read, and
+            # the runner forbids overriding GITHUB_* defaults via step `env:` — so
+            # export the CLI's documented GITHUB_REF fallback from inside the
+            # script, where the runner can't overwrite it.
+            case "$PR_NUMBER" in
+              ''|*[!0-9]*) echo "invalid pr input: $PR_NUMBER" >&2; exit 1 ;;
+            esac
+            export GITHUB_REF="refs/pull/${PR_NUMBER}/merge"
             # A dispatch is a manual command like /review, but the CLI only
             # infers the trigger-gate bypass from GITHUB_EVENT_NAME=issue_comment,
             # so pass --force explicitly.
