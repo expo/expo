@@ -28,6 +28,7 @@ public:
   int sqlite3_finalize();
   int sqlite3_reset();
   int sqlite3_step();
+  bool isNoop();
 
   // helpers
   int bindStatementParam(int index, jni::alias_ref<jni::JObject> param);

@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
+- Fix crashes on comment-only or empty SQL statements. ([#44623](https://github.com/expo/expo/pull/44623) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
