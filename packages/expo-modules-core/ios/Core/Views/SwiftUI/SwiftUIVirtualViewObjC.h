@@ -25,8 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setStyleSize:(nullable NSNumber *)width height:(nullable NSNumber *)height;
 
 /**
- Publishes where the native layout system drew this view's contents, relative to its host, so
- `measure()` matches what is on screen. Pass `CGPointZero`-equivalent by calling `clearContentOrigin`.
+ Publishes where SwiftUI drew this view's contents, relative to its host, so `measure()` matches
+ what is on screen. Pass `CGPointZero`-equivalent by calling `clearContentOrigin`.
  */
 - (void)setContentOrigin:(CGPoint)contentOrigin;
 
