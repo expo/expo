@@ -26,6 +26,9 @@ import { openPlatformsAsync } from './server/openPlatforms';
 import type { PlatformBundlers } from './server/platformBundlers';
 import { getPlatformBundlers } from './server/platformBundlers';
 
+// Wait for startup to settle before the background agent-skills sync.
+const SKILLS_SYNC_IDLE_DELAY_MS = 3000;
+
 /** Exported for testing. `startAsync` is the entry point. */
 export async function _getMultiBundlerStartOptions(
   projectRoot: string,
@@ -83,14 +86,6 @@ export async function startAsync(
   }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
-
-  if (options.agentSkills !== false) {
-    const { autoSyncSkillsAsync } =
-      require('../skills/skillsAsync') as typeof import('../skills/skillsAsync');
-    autoSyncSkillsAsync(projectRoot).catch(() => {
-      // noop -- autoSyncSkillsAsync handles its own errors.
-    });
-  }
 
   // Start dependency version check in the background as early as possible (non-blocking).
   // The result will be displayed in the TUI once it resolves.
@@ -180,4 +175,19 @@ export async function startAsync(
       isInteractive() ? chalk.dim(` Press Ctrl+C to exit.`) : ''
     }`
   );
+
+  // Sync agent skills last, once startup has settled, so the dependency scan never competes
+  // with the first bundle. Deferred to an idle tick; runs in the background and never throws.
+  if (options.agentSkills !== false) {
+    // setTimeout uses the global React Native definitions, which lack Node's `unref`.
+    const timer = setTimeout(() => {
+      const { autoSyncSkillsAsync } =
+        require('../skills/skillsAsync') as typeof import('../skills/skillsAsync');
+      autoSyncSkillsAsync(projectRoot).catch(() => {
+        // noop -- autoSyncSkillsAsync handles its own errors.
+      });
+    }, SKILLS_SYNC_IDLE_DELAY_MS) as unknown as NodeJS.Timeout;
+    // Never let a pending sync hold the process open during shutdown.
+    timer.unref();
+  }
 }
