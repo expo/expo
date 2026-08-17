@@ -23,8 +23,8 @@ object MetricsConstants {
 }
 
 @Database(
-  entities = [Metric::class, LogRecord::class, Session::class, CrashReportEntity::class],
-  version = 17,
+  entities = [Metric::class, LogRecord::class, Session::class, CrashReportEntity::class, Span::class],
+  version = 18,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
@@ -35,6 +35,8 @@ abstract class MetricsDatabase : RoomDatabase() {
   abstract fun sessionDao(): SessionDao
 
   abstract fun crashReportDao(): CrashReportDao
+
+  abstract fun spanDao(): SpanDao
 
   companion object {
     @Volatile
@@ -48,7 +50,8 @@ abstract class MetricsDatabase : RoomDatabase() {
             MetricsDatabase::class.java,
             "app_metrics"
           )
-          // Allow destructive migration for schema changes during development. Replace with proper Migration if desired.
+          // Version bumps drop the data instead of migrating: maintaining migrations costs more
+          // than losing local telemetry that is dispatched frequently anyway.
           .fallbackToDestructiveMigration(false)
           .build()
         INSTANCE = instance
