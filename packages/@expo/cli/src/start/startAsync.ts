@@ -176,18 +176,14 @@ export async function startAsync(
     }`
   );
 
-  // Sync agent skills last, once startup has settled, so the dependency scan never competes
-  // with the first bundle. Deferred to an idle tick; runs in the background and never throws.
+  // Sync agent skills after startup settles, so the scan never competes with the first bundle.
   if (options.agentSkills !== false) {
-    // setTimeout uses the global React Native definitions, which lack Node's `unref`.
     const timer = setTimeout(() => {
       const { autoSyncSkillsAsync } =
         require('../skills/skillsAsync') as typeof import('../skills/skillsAsync');
-      autoSyncSkillsAsync(projectRoot).catch(() => {
-        // noop -- autoSyncSkillsAsync handles its own errors.
-      });
+      autoSyncSkillsAsync(projectRoot).catch(() => {});
     }, SKILLS_SYNC_IDLE_DELAY_MS) as unknown as NodeJS.Timeout;
-    // Never let a pending sync hold the process open during shutdown.
+    // unref so a pending sync never blocks exit; the RN global setTimeout type lacks it.
     timer.unref();
   }
 }
