@@ -155,7 +155,7 @@ test("doesn't handle REPLACE_PARAMS if source key isn't present", () => {
   expect(result).toBeNull();
 });
 
-test('resets state to new state with RESET', () => {
+test('resets to a complete state with RESET', () => {
   const routes = [
     { key: 'foo', name: 'foo' },
     { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
@@ -166,22 +166,20 @@ test('resets state to new state with RESET', () => {
   const result = BaseRouter.getStateForAction(
     STATE,
     CommonActions.reset({
+      ...STATE,
       index: 0,
       routes,
     })
   );
 
-  expect(result?.state).toEqual({ index: 0, routes });
+  expect(result?.state).toEqual({ ...STATE, index: 0, routes });
   expect(result?.affectedRouteKey).toBe('foo');
 });
 
-test('returns no route key when a partial RESET has no index', () => {
-  const result = BaseRouter.getStateForAction(
-    STATE,
-    CommonActions.reset({ routes: [{ name: 'foo' }] })
-  );
-
-  expect(result?.affectedRouteKey).toBeUndefined();
+test('throws for a partial RESET state', () => {
+  expect(() =>
+    BaseRouter.getStateForAction(STATE, CommonActions.reset({ routes: [{ name: 'foo' }] }))
+  ).toThrow('The RESET action payload must contain a complete navigation state.');
 });
 
 test('adds keys to routes missing keys during RESET', () => {

@@ -102,11 +102,10 @@ export const BaseRouter = {
           };
         }
 
-        return {
-          state: nextState,
-          affectedRouteKey:
-            nextState.index === undefined ? undefined : nextState.routes[nextState.index]?.key,
-        };
+        // TODO: support completing partial reset payloads at dispatch (follow-up PR).
+        throw new Error(
+          'The RESET action payload must contain a complete navigation state. Partial states can no longer be completed during render. Include `key`, `index`, `routeNames`, and `stale: false` when resetting.'
+        );
       }
 
       default:

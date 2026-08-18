@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import {
   ensureStateHistory,
   type TabActionHelpers,
@@ -10,7 +8,7 @@ import {
   type TabRouterOptions,
 } from './TabRouter';
 import { ensureStateType } from './ensureStateType';
-import type { CommonNavigationAction, ParamListBase, PartialState, Router } from './types';
+import type { CommonNavigationAction, ParamListBase, Router } from './types';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -95,9 +93,8 @@ export function DrawerRouter({
       initialRouteName
     ) as unknown as DrawerNavigationState<ParamListBase>;
 
-  const isDrawerInHistory = (
-    state: DrawerNavigationState<ParamListBase> | PartialState<DrawerNavigationState<ParamListBase>>
-  ) => Boolean(state.history?.some((it) => it.type === 'drawer'));
+  const isDrawerInHistory = (state: DrawerNavigationState<ParamListBase>) =>
+    Boolean(state.history?.some((it) => it.type === 'drawer'));
 
   const addDrawerToHistory = (
     state: DrawerNavigationState<ParamListBase>
@@ -155,29 +152,6 @@ export function DrawerRouter({
     ...router,
 
     type: 'drawer',
-
-    getRehydratedState(partialState, { routeNames, routeGetIdList }) {
-      if (partialState.stale === false) {
-        return partialState;
-      }
-
-      let state = router.getRehydratedState(partialState, {
-        routeNames,
-        routeGetIdList,
-      });
-
-      if (isDrawerInHistory(partialState)) {
-        // Re-sync the drawer entry in history to correct it if it was wrong
-        state = removeDrawerFromHistory(state);
-        state = addDrawerToHistory(state);
-      }
-
-      return {
-        ...state,
-        type: 'drawer',
-        key: `drawer-${nanoid()}`,
-      };
-    },
 
     getStateForRouteFocus(state, key) {
       const result = router.getStateForRouteFocus(ensureDrawerStateOptionalProperties(state), key);

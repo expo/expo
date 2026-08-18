@@ -25,8 +25,8 @@ export function createInitialState<State extends NavigationState = NavigationSta
     });
   }
 
-  // TODO(@ubax): Improve these typings by distinguishing initial state from hydrated state types.
-  // Router state types may narrow the shared metadata added later by rehydration and actions.
+  // TODO(@ubax): Improve these typings by distinguishing initial state from complete state types.
+  // Router state types may narrow the shared metadata added later by actions.
   return {
     stale: false,
     key: `navigator-${nanoid()}`,

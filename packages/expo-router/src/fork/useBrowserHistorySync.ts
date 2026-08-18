@@ -1,6 +1,10 @@
 import isEqual from 'fast-deep-equal';
 import { type RefObject, useEffect, useRef, useState } from 'react';
 
+import {
+  completeParsedState,
+  createSeededRootState,
+} from '../global-state/createSeededNavigationState';
 import { routingQueue, type RoutingIntent } from '../global-state/routingQueue';
 import { useExpoRouterStore } from '../global-state/storeContext';
 import { getRootStackRouteNames } from '../global-state/utils';
@@ -141,12 +145,18 @@ export function useBrowserHistorySync({
         return;
       }
 
-      const state = getStateFromPathRef.current(path, configRef.current);
-      if (state) {
+      const parsedState = getStateFromPathRef.current(path, configRef.current);
+      if (parsedState) {
         onUnhandledLinking(path);
         // Expo Router's root navigator contains only the internal slot route.
         const routeNames = getRootStackRouteNames();
-        if (state.routes.some((route) => !routeNames.includes(route.name))) {
+        if (parsedState.routes.some((route) => !routeNames.includes(route.name))) {
+          return;
+        }
+        const state = store.routeNode
+          ? createSeededRootState(parsedState, store.routeNode)
+          : completeParsedState(parsedState);
+        if (!state) {
           return;
         }
 

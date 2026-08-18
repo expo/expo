@@ -231,7 +231,7 @@ test('handle dispatching with ref', () => {
   });
 });
 
-test('handle resetting state with ref', () => {
+test('handles resetting to a complete state with ref', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -274,12 +274,18 @@ test('handle resetting state with ref', () => {
   render(element).update(element);
 
   const state = {
+    stale: false as const,
+    type: 'test',
+    key: 'navigator-3',
     index: 1,
+    routeNames: ['foo', 'foo2', 'bar', 'baz'],
     routes: [
       {
         key: 'baz',
         name: 'baz',
         state: {
+          stale: false as const,
+          type: 'test',
           index: 0,
           key: '4',
           routeNames: ['qux2', 'lex2'],
@@ -299,30 +305,29 @@ test('handle resetting state with ref', () => {
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
+    stale: false,
+    type: 'test',
     index: 1,
-    key: '0',
+    key: 'navigator-3',
     routeNames: ['foo', 'foo2', 'bar', 'baz'],
     routes: [
       {
         key: 'baz',
         name: 'baz',
-        params: undefined,
         state: {
-          index: 0,
-          key: '1',
-          routeNames: ['qux2', 'lex2'],
-          routes: [
-            { key: 'qux2', name: 'qux2', params: undefined },
-            { key: 'lex2', name: 'lex2', params: undefined },
-          ],
           stale: false,
           type: 'test',
+          index: 0,
+          key: '4',
+          routeNames: ['qux2', 'lex2'],
+          routes: [
+            { key: 'qux2', name: 'qux2' },
+            { key: 'lex2', name: 'lex2' },
+          ],
         },
       },
-      { key: 'bar', name: 'bar', params: undefined },
+      { key: 'bar', name: 'bar' },
     ],
-    stale: false,
-    type: 'test',
   });
 });
 
@@ -488,6 +493,7 @@ test('emits state events when the state changes', () => {
   expect(listener).toHaveBeenCalledTimes(1);
   expect(listener.mock.calls[0]![0].data.state).toEqual({
     stale: false,
+    type: 'test',
     index: 1,
     key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
@@ -504,6 +510,7 @@ test('emits state events when the state changes', () => {
   expect(listener).toHaveBeenCalledTimes(2);
   expect(listener.mock.calls[1]![0].data.state).toEqual({
     stale: false,
+    type: 'test',
     index: 2,
     key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
@@ -938,6 +945,7 @@ test('works with state change events in a sibling root container', () => {
       { key: 'lex-0', name: 'lex', params: undefined },
     ],
     stale: false,
+    type: 'test',
   });
 
   expect(ref.current?.getRootState()).toEqual({
@@ -949,6 +957,7 @@ test('works with state change events in a sibling root container', () => {
       { key: 'lex-0', name: 'lex', params: undefined },
     ],
     stale: false,
+    type: 'test',
   });
 });
 

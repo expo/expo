@@ -3,7 +3,6 @@ import {
   type CommonNavigationAction,
   type DefaultRouterOptions,
   type NavigationState,
-  type Route,
   type Router,
 } from '../../../routers';
 
@@ -28,51 +27,6 @@ export function MockRouter(_options: DefaultRouterOptions) {
 
     getStateForDeclaredRoutes: BaseRouter.getStateForDeclaredRoutes,
 
-    getRehydratedState(partialState, { routeNames }) {
-      const state = partialState;
-
-      if (state.stale === false) {
-        return state as NavigationState;
-      }
-
-      const routes = state.routes
-        .filter((route) => routeNames.includes(route.name))
-        .map(
-          (route) =>
-            ({
-              ...route,
-              key: route.key || `${route.name}-${MockRouterKey.current++}`,
-            }) as Route<string>
-        );
-
-      if (routes.length === 0) {
-        routes.push({
-          name: routeNames[0]!,
-          key: `${routeNames[0]}-${MockRouterKey.current++}`,
-        });
-      }
-
-      const previousIndex = state.index;
-      const index = Math.min(
-        Math.max(
-          previousIndex != null
-            ? routes.findIndex((route) => route.name === state.routes[previousIndex]?.name)
-            : 0,
-          0
-        ),
-        routes.length - 1
-      );
-
-      return {
-        stale: false,
-        type: 'test',
-        key: String(MockRouterKey.current++),
-        index,
-        routeNames,
-        routes,
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 
@@ -84,6 +38,8 @@ export function MockRouter(_options: DefaultRouterOptions) {
     },
 
     getStateForAction(state, action) {
+      state = state.type === 'test' ? state : { ...state, type: 'test' };
+
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
           const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
@@ -174,8 +130,12 @@ export function MockRouter(_options: DefaultRouterOptions) {
           };
         }
 
-        default:
-          return BaseRouter.getStateForAction(state, action);
+        default: {
+          const result = BaseRouter.getStateForAction(state, action);
+          return result === null
+            ? null
+            : { ...result, state: { ...result.state, type: 'test' } };
+        }
       }
     },
 

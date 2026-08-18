@@ -152,7 +152,7 @@ export function getPathWithConventionsCollapsed({
         }
         return '';
       }
-      // Preserve dynamic syntax for rehydration
+      // Preserve dynamic syntax so the path can be parsed back into state
       return shouldEncodeURISegment ? encodeURISegment(p, { preserveBrackets: true }) : p;
     })
     .map((v) => v ?? '')

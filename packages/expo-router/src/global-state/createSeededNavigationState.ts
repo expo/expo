@@ -16,7 +16,7 @@ type SeedState = NavigationState | PartialState<NavigationState>;
 
 /**
  * Completes the partial state parsed from the initial URL by `getStateFromPath` with keys,
- * route names, anchor routes, and `stale: false` so navigators adopt it without rehydration.
+ * route names, anchor routes, and `stale: false` so navigators can adopt it directly.
  *
  * @param targetState The partial state the app should start in, parsed from the initial URL by
  * `getStateFromPath`.
