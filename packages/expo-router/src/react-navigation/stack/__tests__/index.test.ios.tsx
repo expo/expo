@@ -1,10 +1,10 @@
 import 'react-native-gesture-handler/jestSetup';
-import { expect, jest, test } from '@jest/globals';
+import { afterEach, beforeEach, expect, jest, test } from '@jest/globals';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import * as React from 'react';
 import { Button, View } from 'react-native';
 
-import { NavigationContainer } from '../../../fork/NavigationContainer';
+import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
 import { Text } from '../../elements';
 import { createNavigationContainerRef, useFocusEffect, useIsFocused } from '../../native';
 import { createStackNavigator, type StackScreenProps } from '../index';
@@ -19,6 +19,22 @@ type NestedStackParamList = {
 };
 
 jest.useFakeTimers();
+
+const interactionManagerWarning =
+  "InteractionManager has been deprecated and will be removed in a future release. Please refactor long tasks into smaller ones, and  use 'requestIdleCallback' instead.";
+
+let warn: jest.SpiedFunction<typeof console.warn>;
+
+beforeEach(() => {
+  warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  expect(warn.mock.calls).toEqual(
+    warn.mock.calls.filter(([message]) => message === interactionManagerWarning)
+  );
+  warn.mockRestore();
+});
 
 test('renders a stack navigator with screens', async () => {
   const Test = ({ route, navigation }: StackScreenProps<StackParamList>) => (

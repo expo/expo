@@ -1,8 +1,8 @@
-import { afterEach, describe, expect, jest, test } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { act, fireEvent, isHiddenFromAccessibility, render } from '@testing-library/react-native';
 import { Button, Platform, View } from 'react-native';
 
-import { NavigationContainer } from '../../../fork/NavigationContainer';
+import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
 import { Text, useHeaderHeight } from '../../elements';
 import { createNativeStackNavigator, type NativeStackScreenProps } from '../index';
 
@@ -18,7 +18,14 @@ type NestedStackParamList = {
   C: undefined;
 };
 
+let warn: jest.SpiedFunction<typeof console.warn>;
+
+beforeEach(() => {
+  warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
 afterEach(() => {
+  expect(warn).not.toHaveBeenCalled();
   jest.restoreAllMocks();
 });
 

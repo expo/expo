@@ -281,6 +281,41 @@ describe('routingQueue', () => {
     warn.mockRestore();
   });
 
+  it('run() does not warn when two actions target different routes in the same navigator', () => {
+    const ref = makeRef();
+    mockGetNavigateAction
+      .mockReturnValueOnce({
+        status: 'action',
+        action: {
+          type: 'PRELOAD',
+          target: 'root',
+          payload: { name: 'first', state: { routes: [{ name: 'child' }] } },
+        },
+      })
+      .mockReturnValueOnce({
+        status: 'action',
+        action: {
+          type: 'PRELOAD',
+          target: 'root',
+          payload: { name: 'second', state: { routes: [{ name: 'child' }] } },
+        },
+      });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    routingQueue.add({
+      type: 'NAVIGATE_TO_HREF',
+      payload: { href: '/first', options: {} },
+    });
+    routingQueue.add({
+      type: 'NAVIGATE_TO_HREF',
+      payload: { href: '/second', options: {} },
+    });
+
+    routingQueue.run(ref);
+
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
   it('run() continues after an item throws during conversion', () => {
     const ref = makeRef();
     const nextAction = { type: 'NAVIGATE', payload: { name: 'next' } };

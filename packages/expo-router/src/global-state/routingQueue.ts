@@ -106,13 +106,19 @@ export const routingQueue = {
 
         const target = dispatchAction.target;
         if (target && dispatchAction.payload && 'state' in dispatchAction.payload) {
-          if (stateTargets.has(target)) {
+          // Sub-trees only conflict when they target the same route in the same navigator.
+          const name =
+            'name' in dispatchAction.payload && typeof dispatchAction.payload.name === 'string'
+              ? dispatchAction.payload.name
+              : '';
+          const stateTarget = `${target}\0${name}`;
+          if (stateTargets.has(stateTarget)) {
             // TODO: Remove this warning once queued actions are reduced sequentially against global state.
             console.warn(
               `Multiple navigation actions in the same queue drain carry a sub-tree for the same navigator '${target}'.`
             );
           }
-          stateTargets.add(target);
+          stateTargets.add(stateTarget);
         }
 
         intent.onDispatch?.(intent.metadata);

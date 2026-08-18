@@ -10,9 +10,9 @@ import {
   StackRouter,
   TabRouter,
 } from '../../routers';
+import { BaseNavigationContainer as RawBaseNavigationContainer } from '../BaseNavigationContainer';
 import { NavigationStateContext } from '../NavigationStateContext';
 import { Screen } from '../Screen';
-import { BaseNavigationContainer as RawBaseNavigationContainer } from '../BaseNavigationContainer';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import type { EventListenerCallback, NavigationContainerEventMap } from '../types';
 import { useNavigationBuilder } from '../useNavigationBuilder';
@@ -86,9 +86,7 @@ test('rejects a partial initial state', () => {
 
   expect(() =>
     render(
-      <RawBaseNavigationContainer initialState={initialState}>
-        {null}
-      </RawBaseNavigationContainer>
+      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>
     )
   ).toThrow('The `initialState` prop must contain a complete navigation state.');
 });
@@ -112,9 +110,7 @@ test('rejects a partial nested initial state', () => {
 
   expect(() =>
     render(
-      <RawBaseNavigationContainer initialState={initialState}>
-        {null}
-      </RawBaseNavigationContainer>
+      <RawBaseNavigationContainer initialState={initialState}>{null}</RawBaseNavigationContainer>
     )
   ).toThrow('The `initialState` prop must contain a complete navigation state.');
 });
@@ -144,7 +140,8 @@ test('preserves a complete initial state by identity', () => {
       <Stack>
         <Screen name="home">{() => null}</Screen>
       </Stack>
-    </RawBaseNavigationContainer>
+    </RawBaseNavigationContainer>,
+    { wrapper: RouterRegistryProvider }
   );
 
   expect(ref.current?.getRootState()).toBe(initialState);
