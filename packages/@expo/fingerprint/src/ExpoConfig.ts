@@ -74,7 +74,7 @@ async function spawnConfigLoaderAsync(
     args.push('--skipPlugins');
   }
   const childEnv = setNodeEnv(FINGERPRINT_ENV_MODE, { systemEnv: getOriginalEnv() });
-  delete childEnv.EXPO_CONFIG_MODE;
+  childEnv.__EXPO_CONFIG_MODE = FINGERPRINT_ENV_MODE;
   const { message } = await spawnWithIpcAsync('node', args, { cwd: projectRoot, env: childEnv });
   return JSON.parse(message);
 }

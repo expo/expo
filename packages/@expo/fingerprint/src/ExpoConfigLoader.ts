@@ -2,7 +2,7 @@
  * A helper script to load the Expo config and loaded plugins from a project
  */
 
-import { loadProjectEnv } from '@expo/env';
+import { consumeConfigEnvMode, loadProjectEnv } from '@expo/env';
 import fs from 'fs/promises';
 import module from 'module';
 import process from 'node:process';
@@ -11,6 +11,10 @@ import resolveFrom from 'resolve-from';
 
 import { DEFAULT_IGNORE_PATHS } from './Options';
 import { buildPathMatchObjects, isIgnoredPathWithMatchObjects, toPosixPath } from './utils/Path';
+
+declare namespace globalThis {
+  let __DEV__: boolean | undefined;
+}
 
 async function runAsync(programName: string, args: string[] = []) {
   if (args[0] == null) {
@@ -30,11 +34,9 @@ async function runAsync(programName: string, args: string[] = []) {
   if (mode !== 'development' && mode !== 'production') {
     throw new Error(`Unsupported Expo config mode: ${mode}`);
   }
-  try {
-    loadProjectEnv(projectRoot, { mode });
-  } finally {
-    delete process.env.EXPO_CONFIG_MODE;
-  }
+  consumeConfigEnvMode();
+  globalThis.__DEV__ = mode === 'development';
+  loadProjectEnv(projectRoot, { mode });
 
   const { getCapturedModules, uninstall } = installModuleCaptureHook();
   let config;
