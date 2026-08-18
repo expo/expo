@@ -1,5 +1,5 @@
 import { expect, jest, test } from '@jest/globals';
-import { render, type RenderAPI } from '@testing-library/react-native';
+import { render, renderHook, type RenderAPI } from '@testing-library/react-native';
 
 import { routingQueue } from '../../global-state/routingQueue';
 import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
@@ -53,6 +53,27 @@ test('queues an incoming deep link using its extracted app path', () => {
       },
     },
   ]);
+});
+
+test('normalizes the path from an async initial URL', async () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const initialState = { routes: [{ name: 'home' }] };
+  const getStateFromPath = jest.fn(() => initialState);
+
+  const { result } = renderHook(() =>
+    useLinking(
+      ref,
+      {
+        prefixes: ['example://'],
+        getInitialURL: () => Promise.resolve('example://home/42'),
+        getStateFromPath,
+      },
+      () => {}
+    )
+  );
+
+  await expect(result.current.getInitialState()).resolves.toBe(initialState);
+  expect(getStateFromPath).toHaveBeenCalledWith('/home/42', undefined);
 });
 
 test('throws if multiple instances of useLinking are used', () => {
