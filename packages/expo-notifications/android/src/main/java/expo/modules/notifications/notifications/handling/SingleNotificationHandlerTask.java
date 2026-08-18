@@ -111,13 +111,16 @@ public class SingleNotificationHandlerTask {
   /**
    * Callback called by {@link #mTimeoutRunnable} after timeout time elapses.
    * <p>
-   * Sends a timeout event to the app.
+   * Sends a timeout event to the app and presents the notification the way the system does
+   * when the app is in the background, because the app didn't ask for another behavior.
    */
   private void handleTimeout() {
     Bundle eventBody = new Bundle();
     eventBody.putString("id", getIdentifier());
     eventBody.putBundle("notification", NotificationSerializer.toBundle(mNotification));
     mEventEmitter.emit(HANDLE_NOTIFICATION_TIMEOUT_EVENT_NAME, eventBody);
+
+    NotificationsService.Companion.present(mContext, mNotification, null, null);
 
     finish();
   }

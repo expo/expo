@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Show notifications that arrive while the app is in the foreground, unless the app asks for another behavior with `setNotificationHandler`. A handler that doesn't answer within 3 seconds no longer drops the notification. `setNotificationHandler(null)` still stops `expo-notifications` from showing a notification. ([#49072](https://github.com/expo/expo/pull/49072) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 - [ios] Forward notification center calls to a `UNUserNotificationCenterDelegate` that another library set, so that both libraries keep working. ([#48313](https://github.com/expo/expo/pull/48313) by [@vonovak](https://github.com/vonovak))
