@@ -248,8 +248,15 @@ module Pod
         pods_root_from_srcroot = File.join('$(SRCROOT)', self.sandbox.root.relative_path_from(project.path.dirname).to_s)
         changed = false
         project.build_configurations.each do |config|
-          ccache_in_use = ['CC', 'LD', 'CXX', 'LDPLUSPLUS'].any? do |key|
-            config.build_settings[key].is_a?(String) && config.build_settings[key].include?('ccache-clang')
+          react_native_ccache_settings = {
+            'CC' => '$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh',
+            'LD' => '$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang.sh',
+            'CXX' => '$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang++.sh',
+            'LDPLUSPLUS' => '$(REACT_NATIVE_PATH)/scripts/xcode/ccache-clang++.sh',
+          }
+
+          ccache_in_use = react_native_ccache_settings.any? do |key, expected|
+            config.build_settings[key] == expected
           end
           next unless ccache_in_use
 
