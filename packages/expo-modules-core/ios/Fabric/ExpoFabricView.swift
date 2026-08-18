@@ -209,7 +209,16 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     // The default initializer for native views. It will be called by Fabric.
     let newBlock: @convention(block) () -> Any = {[weak appContext] in
       guard let appContext, let moduleHolder = appContext.moduleRegistry.get(moduleHolderForName: moduleName) else {
-        fatalError(Exceptions.AppContextLost().reason)
+        // The view classes are cached in `viewClassesRegistry` for the whole process lifetime, so
+        // they outlive the app context they were created with. On a reload Fabric can ask a cached
+        // class for a view after the previous context has been released but before
+        // `registerNativeViews` has run again on the main actor — there is simply no context left
+        // to build from. The surface being mounted is the one going away, so hand back an inert
+        // view instead of aborting the process.
+        log.error("Cannot create a view '\(viewName)' from module '\(moduleName)': \(Exceptions.AppContextLost().reason)")
+        let view = (viewClass as? ExpoFabricView.Type ?? ExpoFabricView.self).init(appContext: nil)
+        _ = Unmanaged.passRetained(view) // retain the view given this is an initializer
+        return view
       }
       guard let view = moduleHolder.definition.views[viewName]?.createView(appContext: appContext) else {
         fatalError("Cannot create a view '\(viewName)' from module '\(moduleName)'")
