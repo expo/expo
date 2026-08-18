@@ -8,6 +8,7 @@ import {
 import { useEffect, useRef, useState } from 'react';
 
 import type { BottomSheetProps, SnapPoint } from './types';
+import { resolveContentPadding } from './utils';
 
 // M3 `ModalBottomSheet` only has partial/expanded states.
 // Only allow the partial state when the consumer requested a partial-friendly snap point.
@@ -39,6 +40,7 @@ export function BottomSheet({
   testID,
   modifiers,
   shouldDismissOnBackPress = true,
+  contentPadding,
 }: BottomSheetProps) {
   const sheetRef = useRef<ModalBottomSheetRef>(null);
   const [mount, setMount] = useState(isPresented);
@@ -61,7 +63,15 @@ export function BottomSheet({
     return null;
   }
 
-  const contentModifiers: ModifierConfig[] = [padding(16, showDragIndicator ? 0 : 16, 16, 0)];
+  // When the drag handle is hidden, the default inset adds top padding so content doesn't crop
+  // against the top edge of the sheet.
+  const { top, bottom, left, right } = resolveContentPadding(contentPadding, {
+    top: showDragIndicator ? 0 : 16,
+    bottom: 0,
+    left: 16,
+    right: 16,
+  });
+  const contentModifiers: ModifierConfig[] = [padding(left, top, right, bottom)];
   if (shouldFillMaxHeight(snapPoints)) contentModifiers.push(fillMaxHeight());
   if (testID) contentModifiers.push(testIDModifier(testID));
 
@@ -74,7 +84,6 @@ export function BottomSheet({
         skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
         properties={{ shouldDismissOnBackPress }}
         modifiers={modifiers}>
-        {/* When the drag handle is hidden, add top padding so content doesn't crop against the top edge of the sheet. */}
         <Column modifiers={contentModifiers}>{children}</Column>
       </ModalBottomSheet>
     </Host>
