@@ -8,9 +8,14 @@ import { isNetworkError } from './utils/errors';
 import { getProjectConfigAsync } from './utils/getProjectConfig';
 import { isInteractive } from './utils/interactive';
 import { Log } from './utils/log';
+import { getConfigEnvMode } from './utils/nodeEnv';
 import { logNewSection } from './utils/ora';
 import { endTimer, formatMilliseconds, startTimer } from './utils/timer';
 import { ltSdkVersion } from './utils/versions';
+
+declare namespace globalThis {
+  let __DEV__: boolean | undefined;
+}
 
 interface DoctorCheckRunnerJob {
   check: DoctorCheck;
@@ -128,8 +133,6 @@ function maybeLoadEnv(projectRoot: string, mode: EnvMode) {
   } catch {
     // NOTE(@kitten): It's unclear why we load env files here in expo-doctor, and it's likely optional, even with us loading the project config
     // If this fails, e.g. because the Node.js version is too out of date, ignore the error
-  } finally {
-    delete process.env.EXPO_CONFIG_MODE;
   }
 }
 
@@ -137,14 +140,11 @@ function maybeLoadEnv(projectRoot: string, mode: EnvMode) {
  * Run the expo-doctor checks on the project.
  * @param projectRoot The root of the project to check.
  * @param showVerboseTestResults if true, show passes and failures; otherwise show number of tests passed and failure details only
- * @param mode The mode to use for .env files and Expo config.
  */
-export async function actionAsync(
-  projectRoot: string,
-  showVerboseTestResults: boolean,
-  mode: EnvMode
-) {
+export async function actionAsync(projectRoot: string, showVerboseTestResults: boolean) {
   try {
+    const mode = getConfigEnvMode();
+    globalThis.__DEV__ = mode === 'development';
     maybeLoadEnv(projectRoot, mode);
 
     const projectConfig = await getProjectConfigAsync(projectRoot, mode);

@@ -6,7 +6,6 @@ import { boolish } from 'getenv';
 import path from 'path';
 
 import { actionAsync } from './doctor';
-import { getConfigEnvMode } from './utils/nodeEnv';
 
 // Check Node.js version and issue a loud warning if it's too outdated
 // This is sent to stderr (console.error) so it doesn't interfere with programmatic commands
@@ -65,7 +64,7 @@ async function run() {
   if (showVerboseTestResults) {
     console.log(`expo-doctor: v${packageJson().version}`);
   }
-  await actionAsync(projectRoot, showVerboseTestResults, getConfigEnvMode());
+  await actionAsync(projectRoot, showVerboseTestResults);
 }
 
 function logVersionAndExit() {
