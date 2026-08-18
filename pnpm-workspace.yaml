@@ -5,6 +5,7 @@ packages:
   - tools
   - apps/brownfield-tester/expo-app
   - apps/bare-expo/e2e/image-comparison
+  - packages/expo-sqlite/dev-plugin-webui
 
 ignoreWorkspaceCycles: true
 
@@ -44,10 +45,12 @@ minimumReleaseAge: 1440
 
 minimumReleaseAgeExclude:
   - '@expo/*'
+  - '@noxcturnal/*'
   - '@react-native/*'
   - '@turbo/*'
   - 'react-native'
   - multitars
+  - noxcturnal
   - 'react-native-gesture-handler'
   - 'react-native-reanimated'
   - 'react-native-screens'

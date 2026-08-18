@@ -325,6 +325,12 @@ export const LIVE_STREAMS = [
     uploadDate: '2025-11-21',
   },
   {
+    title: 'Introducing Expo Router v6: link previews, native tabs, and more for modern apps',
+    event: 'Expo Live Stream',
+    videoId: 'bO7ZoQWa9ic',
+    uploadDate: '2025-09-24',
+  },
+  {
     title: "What's new in Expo SDK 54?",
     event: 'Expo Live Stream',
     videoId: 'KBlbkjqxNbM',
@@ -478,13 +484,32 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'From React Web to React Native in 60 Seconds',
+    event: 'Expo Tutorials',
+    videoId: '8ExmJ7gqVaw',
+    uploadDate: '2026-08-08',
+  },
+  {
+    title: 'Fable 5 vs GPT 5.6: I spent $2,000 to find out',
+    event: 'Expo Tutorials',
+    description: 'Rami Maalouf',
+    videoId: 'SLWl53sizHs',
+    uploadDate: '2026-08-05',
+  },
+  {
+    title: 'Solo dev highlight: How to build and ship an app as a one person company',
+    event: 'Expo Tutorials',
+    videoId: 'NvCk0e89Hsc',
+    uploadDate: '2026-08-04',
+  },
+  {
     title: 'How to build an iOS widget',
     event: 'Expo Tutorials',
     videoId: '3r_OHePTCcI',
     uploadDate: '2026-07-27',
   },
   {
-    title: 'The 3 tools you need to build mobile apps with AI',
+    title: 'How to Build Real Mobile Apps with AI in 2026 (Not Another No-Code Toy)',
     event: 'Expo Tutorials',
     videoId: 'WLGAuwagI8o',
     uploadDate: '2026-07-13',

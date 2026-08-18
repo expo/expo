@@ -92,7 +92,6 @@ class SnacksListViewModel: ObservableObject {
 
   func refresh() async {
     currentOffset = 0
-    snacks = []
     await fetchSnacks()
   }
 
@@ -126,6 +125,9 @@ class SnacksListViewModel: ObservableObject {
 
       hasMore = newSnacks.count >= pageSize
     } catch {
+      if (error as? APIError)?.isCancellation == true {
+        return
+      }
       self.error = error
       self.showingError = true
     }

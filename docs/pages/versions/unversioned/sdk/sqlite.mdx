@@ -75,12 +75,6 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
       default: 'false',
     },
     {
-      name: 'useLibSQL',
-      description:
-        'Use [libSQL](https://github.com/tursodatabase/libsql) rather than the default SQLite.',
-      default: 'false',
-    },
-    {
       name: 'withSQLiteVecExtension',
       description:
         'Include the [sqlite-vec](https://github.com/asg017/sqlite-vec) extension to [`bundledExtensions`](#sqlitebundledextensions).',
@@ -285,7 +279,7 @@ export function Header() {
       const result = await db.getFirstAsync<{ 'sqlite_version()': string }>(
         'SELECT sqlite_version()'
       );
-      setVersion(result['sqlite_version()']);
+      setVersion(result?.['sqlite_version()'] ?? '');
     }
     setup();
   }, []);
@@ -326,9 +320,8 @@ export function Content() {
 
 async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const DATABASE_VERSION = 1;
-  let { user_version: currentDbVersion } = await db.getFirstAsync<{ user_version: number }>(
-    'PRAGMA user_version'
-  );
+  const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  let currentDbVersion = result?.user_version ?? 0;
   if (currentDbVersion >= DATABASE_VERSION) {
     return;
   }

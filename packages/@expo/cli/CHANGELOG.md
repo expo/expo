@@ -19,6 +19,7 @@
 - Use default loader `Cache-Control` header value of `no-store` for loader responses in development ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
 - Use default `Cache-Control` header value of `public, max-age=0, must-revalidate` for SSG loader files and their pages ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
 - Use default `Cache-Control` header value of `no-store` for SSR loader responses ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
+- Add `experiments.noxcturnalTransformWorker` with native transformer experiment ([#48443](https://github.com/expo/expo/pull/48443) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
@@ -33,9 +34,11 @@
 - Resolve the signed-in username for partner provisioned actors so Expo Go can verify the account match ([#48354](https://github.com/expo/expo/pull/48354) by [@davidko604](https://github.com/davidko604))
 - Switch `ManifestMiddleware` to `expo-server`'s response helpers to avoid cancellations being surfaced as exceptions ([#48700](https://github.com/expo/expo/pull/48700) by [@kitten](https://github.com/kitten))
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
+- Fix wirelessly connected iOS 16 and older devices being omitted from `expo run:ios --device` selection. ([#48127](https://github.com/expo/expo/pull/48127) by [@davellanedam](https://github.com/davellanedam))
 
 ### 💡 Others
 
+- [Internal] Use `@expo/env` to read the EAS config mode and keep older EAS Build versions in production mode. ([#48938](https://github.com/expo/expo/pull/48938) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Add sandbox detection to telemetry context ([#47928](https://github.com/expo/expo/pull/47928) by [@davidmokos](https://github.com/davidmokos))
 - [Internal] Remove the unreachable port fallbacks and increase consistency in port selection logic ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
 - Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
@@ -49,6 +52,7 @@
 - Re-enable sextant QR code for Zed ([#48382](https://github.com/expo/expo/pull/48382) by [@mchisolm0](https://github.com/mchisolm0))
 - Bump to `multitars@1.0.2` to address symlink and unicode bugs ([#48833](https://github.com/expo/expo/pull/48833) by [@kitten](https://github.com/kitten))
 - [Internal] Move static HTML asset injection into `getStaticContent()`. ([#47006](https://github.com/expo/expo/pull/47006) by [@hassankhan](https://github.com/hassankhan))
+- Prewarm Metro transform workers while waiting for the first development bundle request ([#48836](https://github.com/expo/expo/pull/48836) by [@kitten](https://github.com/kitten))
 
 ## 57.0.11 - 2026-07-29
 

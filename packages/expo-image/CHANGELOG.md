@@ -15,9 +15,12 @@
 - [web] Fixed Expo Image's internal `dataSet` marker being overwritten by a user-provided `dataSet`. ([#48821](https://github.com/expo/expo/pull/48821) by [@Brentlok](https://github.com/Brentlok))
 - [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Replaced the deprecated RenderScript-based `blurRadius` blur with a software stack blur to fix a use-after-free crash under concurrent image loads (aborts under GrapheneOS hardened_malloc). ([#PR](https://github.com/expo/expo/pull/PR) by [@DimitrisTzimikas](https://github.com/DimitrisTzimikas))
+- [Web] Use `textContent` instead of `innerHTML` when injecting image styles, so the style tag is not a Trusted Types sink. ([#48649](https://github.com/expo/expo/pull/48649) by [@VoulgarisLeoni](https://github.com/VoulgarisLeoni))
 - [iOS] Fixed `generateBlurhashAsync` and `generateThumbhashAsync` never settling when the image could not be downloaded. ([#PR](https://github.com/expo/expo/pull/PR) ([#48894](https://github.com/expo/expo/pull/48894) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others
+
+- [iOS] Documented that slow animated WebP decoding is a known reason to set `useAppleWebpCodec` to `false`. ([#PR](https://github.com/expo/expo/pull/PR) by [@expo-bot](https://github.com/expo-bot)) ([#48847](https://github.com/expo/expo/pull/48847) by [@expo-bot](https://github.com/expo-bot))
 
 ## 57.0.1 - 2026-07-15
 
@@ -58,6 +61,7 @@ _This version does not introduce any user-facing changes._
 
 - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 - [Android] Fixed `useImage` crashing on SVG sources, and made `maxWidth`/`maxHeight` preserve the SVG's aspect ratio. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Support the `accessibilityElementsHidden` prop. ([#46105](https://github.com/expo/expo/pull/46105) by [@marcshilling](https://github.com/marcshilling))
 
 ## 56.0.7 — 2026-05-21
 

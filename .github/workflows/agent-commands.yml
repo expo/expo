@@ -8,13 +8,28 @@
 #   @expo-bot verify --fix   same as /verify --fix.
 #   /verify --no-fix         report only, never open a pull request.
 #   @expo-bot verify --no-fix  same as /verify --no-fix.
+#   ... --model <name>       run on a different model (fable/opus/sonnet/haiku or a
+#                            full claude-* id). --fable / --opus / --sonnet / --haiku
+#                            are shorthands. Works on any command form and on the
+#                            workflow_dispatch `model` input; default is the
+#                            VERIFY_MODEL repo variable, else claude-opus-5.
+#   @expo-bot check          verify + review from one comment. This workflow runs the
+#                            verify half (--fix / --no-fix apply, issues and PRs);
+#                            expo-code-review-command.yml picks up the review half
+#                            from the same comment (PRs only). On an issue, check is
+#                            just verify.
 #   @expo-bot <task>         on an open PR authored by expo-bot, carry out a concrete
 #                            follow-up task and push the checked commit to that PR.
-#   Reserved verbs (handled by other workflows, never work mode):
-#     review, dismiss, undismiss, help.
+#   Reserved verbs, never work mode: check (runs here as verify);
+#     review, dismiss, undismiss, help (handled by other workflows).
 #
 # The agent is headless Claude Code connected to the expo-sandbox-mcp server
-# (hosted E2B sandboxes, proxied EAS builds, hosted iOS simulators). It
+# (hosted E2B Linux sandboxes, GHA VMs for image-specific checks — Windows
+# Server, macOS 15, Ubuntu CI — proxied EAS builds, hosted iOS simulators).
+# Linux E2B + the hosted simulator stay the default. A GHA VM is the
+# exception: same image as GitHub Actions, not a pauseable sandbox and not
+# EAS Simulator. An Expo app on that VM can still be shown on the hosted
+# simulator via Metro --tunnel (see .github/verify/prompt.md). It
 # reproduces the report where the hosted simulator can exhibit it, runs
 # cold-launch censuses / behavioral checks / crash loops as the issue
 # demands, and posts ONE findings comment whose evidence sections
@@ -101,6 +116,10 @@ on:
         type: choice
         options: ["auto", "yes", "no"]
         default: "auto"
+      model:
+        description: "Override the agent model for this run (a full claude-* id, e.g. claude-fable-5). Empty = the VERIFY_MODEL repo variable, else claude-opus-5. Comment-path runs never set this."
+        required: false
+        type: string
 
 # Scopes the automatic workflow token, which is what the AGENT step gets:
 # issue comments yes, repository contents never. The agent therefore cannot
@@ -112,20 +131,23 @@ permissions:
   pull-requests: read
 
 jobs:
-  # Assigns the run to one of VERIFY_SLOTS queues. Actions has no "at most N
-  # concurrent" primitive — a concurrency group runs exactly one job at a
-  # time — so N queues, keyed by target number modulo N, is how you get N.
-  # Expressions cannot do modulo, hence a job: `concurrency` accepts the
-  # `needs` context, so the slot has to be computed before the job that uses
-  # it. Its `if:` must be a SUPERSET of verify's: a skipped `needs` skips the
+  # Announces the run's target early. A run does not advertise its target
+  # anywhere cheap — issue_comment runs carry the issue TITLE, dispatch runs
+  # the workflow name — so this job echoes "target <n> -> slot <k>" within
+  # seconds of run creation, and `verify ls` in expo-sandbox-mcp resolves
+  # targets from this job's log for the whole life of the run.
+  #
+  # The modulo "slot" is a legacy LABEL kept only for that log contract.
+  # Capacity is no longer per-slot concurrency groups — a group holds at
+  # most ONE pending run, so bursts cancelled queued work instead of
+  # delaying it. Capacity now lives in the verify job's admission step,
+  # which waits; same-target serialisation is a per-target group there.
+  #
+  # Its `if:` must be a SUPERSET of verify's: a skipped `needs` skips the
   # dependent job outright, so a command shape this gate misses NEVER runs —
   # which is why the @expo-bot form appears here too. It still filters to
   # command-shaped maintainer comments, or every unrelated comment on the
   # repository would spin up a runner.
-  #
-  # Same-target runs still serialise: one number always maps to one slot, so
-  # a second /verify on an issue still queues behind the first rather than
-  # racing it for the same sandboxes.
   slot:
     # Display name, NOT a key rename: the key `slot` anchors `needs:` and the
     # concurrency group, while this name is what the run graph and the jobs
@@ -138,6 +160,8 @@ jobs:
       startsWith(github.event.comment.body, '/verify ') ||
       github.event.comment.body == '@expo-bot verify' ||
       startsWith(github.event.comment.body, '@expo-bot verify ') ||
+      github.event.comment.body == '@expo-bot check' ||
+      startsWith(github.event.comment.body, '@expo-bot check ') ||
       (startsWith(github.event.comment.body, '@expo-bot ') &&
       github.event.comment.body != '@expo-bot review' &&
       !startsWith(github.event.comment.body, '@expo-bot review ') &&
@@ -185,18 +209,20 @@ jobs:
     # Job-level, NOT workflow-level: a workflow-level group is claimed at run
     # creation — before the `if:` below skips the job — so any unrelated
     # comment on this issue would cancel an in-flight verification and strand
-    # its sandboxes and EAS builds. cancel-in-progress:false queues a second
-    # /verify instead of killing the first.
+    # its sandboxes and EAS builds.
     #
-    # KNOWN LIMIT, and it is GitHub's, not a choice here: a concurrency group
-    # holds at most ONE pending run. A third arrival into a busy slot cancels
-    # the one already waiting there. So this bounds concurrency at 4 and
-    # queues one deep per slot — it is not an unbounded queue, and under a
-    # burst some runs are dropped rather than delayed. The maintainer can
-    # re-trigger; nothing is spent, because a cancelled pending run never
-    # started.
+    # The group serialises the SAME target only: two commands on one issue
+    # must not race each other for the same sandboxes. Global capacity is
+    # NOT a concurrency group — a group holds at most ONE pending run, and a
+    # third arrival cancels the one already waiting (run 31760888967 was
+    # dropped exactly that way when commands on different PRs shared a
+    # modulo slot). Capacity is the FIFO admission step below, which waits
+    # instead of cancelling. Within one target, cancel-in-progress:false
+    # queues a second command behind the first; a THIRD command on the same
+    # target still replaces the queued second — those are duplicates of the
+    # same work, not independent runs.
     concurrency:
-      group: verify-slot-${{ needs.slot.outputs.slot }}
+      group: verify-target-${{ github.event.issue.number || inputs.target }}
       cancel-in-progress: false
     # Commands must begin the comment: incidental mentions do not launch work.
     # The work form is `@expo-bot <task>` with a SPACE — expression literals
@@ -205,6 +231,9 @@ jobs:
     # on `@expo-bot!` and similar asides, and each false fire ends in a
     # public parse-failure comment.
     # `@expo-bot verify` is /verify, so it must run on issues as well as PRs.
+    # `@expo-bot check` is verify plus a one-shot review; its verify half runs
+    # on issues too, so it sits beside verify here (the review half's own
+    # workflow gates itself to PRs).
     # Other `@expo-bot …` forms stay PR-only (work mode), except reserved
     # verbs (review, dismiss, undismiss, help) which other workflows own.
     # Help is excluded as a prefix (`@expo-bot help…`, plus the two-space
@@ -219,6 +248,8 @@ jobs:
       startsWith(github.event.comment.body, '/verify ') ||
       github.event.comment.body == '@expo-bot verify' ||
       startsWith(github.event.comment.body, '@expo-bot verify ') ||
+      github.event.comment.body == '@expo-bot check' ||
+      startsWith(github.event.comment.body, '@expo-bot check ') ||
       (github.event.issue.pull_request != null &&
       startsWith(github.event.comment.body, '@expo-bot ') &&
       github.event.comment.body != '@expo-bot review' &&
@@ -232,8 +263,11 @@ jobs:
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     # ONE budget, in one place, and the ordering is the point:
-    #   scoped-token TTL (180m) > job timeout (150m) > sum of the phase
-    #   timeouts (90 + 15 + 30 = 135m) + setup.
+    #   scoped-token TTL (180m) > post-admission work (150m: phase timeouts
+    #   90 + 15 + 30 = 135m, plus setup) — every credential is minted AFTER
+    #   the admission wait, so queue time never eats TTL.
+    #   job timeout (350m) = max admission wait (200m, the wait step's own
+    #   bound) + post-admission work (150m).
     # Get it backwards and the credential dies mid-run — which is exactly what
     # happened when the phases were split in three against an unchanged
     # 70-minute token: up to 140 minutes of agent time on it, and the phase
@@ -250,7 +284,7 @@ jobs:
     # build wall-clock alone can approach 100 minutes. 90m covers a realistic
     # four-build run. A genuine five-build matrix is still at risk, and the
     # honest answer there is fewer arms, not more clock.
-    timeout-minutes: 150
+    timeout-minutes: 350
     continue-on-error: true
     # Resolved once, for both trigger paths, so no step has to know which
     # event it is running under.
@@ -298,6 +332,7 @@ jobs:
           IS_PR: ${{ github.event.issue.pull_request != null }}
           INPUT_FIX: ${{ inputs.fix }}
           INPUT_MODE: ${{ inputs.mode }}
+          INPUT_MODEL: ${{ inputs.model }}
           REQUEST: ${{ github.event.comment.body || inputs.request }}
         run: |
           if [ "$QUIET" = "true" ]; then
@@ -324,6 +359,11 @@ jobs:
               @expo-bot)
                 case "$second" in
                   verify) mode=verify ;;
+                  # check = verify + review from one comment. This workflow
+                  # runs the verify half (flags apply as with verify);
+                  # expo-code-review-command.yml picks up the review half
+                  # from the same comment and gates itself to PRs.
+                  check) mode=verify ;;
                   review|dismiss|undismiss|help)
                     echo "This mention is handled by another workflow."
                     exit 0
@@ -336,7 +376,10 @@ jobs:
                   # covers `@expo-bot  helpful` (double space), which the
                   # job `if:` cannot exclude — `startsWith('@expo-bot help')`
                   # is false there, and help.yml may not have started.
-                  reviewers|reviewing|reviewed|dismissing|dismissed|dismissal|dismissals|verified|verifying|helpful|helping|helper|helpers|undismissed|undismissing|verify-*|help*)
+                  # `checks`/`checking`/`checked` are prose like the other
+                  # inflections; `check-*` is a mangled check (`check-fix`).
+                  # `checkout` and `checklist` stay work — both are real tasks.
+                  reviewers|reviewing|reviewed|dismissing|dismissed|dismissal|dismissals|verified|verifying|helpful|helping|helper|helpers|undismissed|undismissing|checks|checking|checked|check-*|verify-*|help*)
                     echo "'$second' is a reserved-verb inflection, not a command; treating the comment as prose."
                     exit 0
                     ;;
@@ -413,11 +456,48 @@ jobs:
               case " $line " in *" --no-fix "*) fix=false ;; esac
             fi
           fi
+          # Per-run model override. Sources: the dispatch `model` input, a
+          # `--model <name>` flag, or a per-model shorthand (--fable). The
+          # value comes from write-gated text but still flows into a shell
+          # env, so it is validated to a strict shape and everything else is
+          # rejected loudly — a typo silently falling back to Opus would
+          # misreport which model produced the findings.
+          model=""
+          if [ "$QUIET" = "true" ]; then
+            model=$INPUT_MODEL
+          else
+            model=$(printf '%s\n' "$line" | sed -n 's/.*--model[= ][[:space:]]*\([A-Za-z0-9._-]*\).*/\1/p')
+            case " $line " in *" --fable "*)  model=fable ;; esac
+            case " $line " in *" --opus "*)   model=opus ;; esac
+            case " $line " in *" --sonnet "*) model=sonnet ;; esac
+            case " $line " in *" --haiku "*)  model=haiku ;; esac
+          fi
+          case "$model" in
+            fable)  model=claude-fable-5 ;;
+            opus)   model=claude-opus-5 ;;
+            sonnet) model=claude-sonnet-5 ;;
+            haiku)  model=claude-haiku-4-5-20251001 ;;
+          esac
+          if [ -n "$model" ]; then
+            case "$model" in
+              claude-*)
+                if [ -n "$(printf '%s' "$model" | tr -d 'A-Za-z0-9._-')" ]; then
+                  echo "::error::Invalid model override: $model"
+                  exit 1
+                fi
+                ;;
+              *)
+                echo "::error::Unknown model override '$model' (use fable/opus/sonnet/haiku or a full claude-* id)."
+                exit 1
+                ;;
+            esac
+          fi
           {
             echo "fix=$fix"
             echo "is_pr=$IS_PR"
+            echo "model=$model"
           } >> "$GITHUB_OUTPUT"
-          echo "mode: $mode; fix mode: $fix (target is $([ "$IS_PR" = true ] && echo 'a pull request' || echo 'an issue'))"
+          echo "mode: $mode; fix mode: $fix; model: ${model:-default} (target is $([ "$IS_PR" = true ] && echo 'a pull request' || echo 'an issue'))"
 
       - name: Acknowledge
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && env.QUIET != 'true'
@@ -440,6 +520,73 @@ jobs:
             body="🔍 \`/verify\` started for @$TRIGGER_ACTOR — [watch the investigation run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Findings will be posted here when it completes."
           fi
           gh issue comment "$TARGET_NUMBER" -R "${{ github.repository }}" --body "$body"
+
+      # Admission control, and it WAITS — it never cancels. GitHub
+      # concurrency cannot express "at most N concurrent, queue the rest":
+      # a group holds one running job plus ONE pending run, and a third
+      # arrival cancels the waiter, which dropped real verifications under
+      # bursts. So capacity is enforced by polling: proceed when this run
+      # is among the CAP oldest live runs of this workflow. Waiting runs
+      # are in_progress too, so ordering by (created_at, id) IS the queue;
+      # admission by global position keeps the executing count at CAP even
+      # when several waiters poll at once. Runs pending on the per-target
+      # group are not in_progress and hold no capacity. The announce above
+      # already posted the watch link, so the queue wait is visible from
+      # the thread.
+      - name: Wait for a free verification slot
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
+        env:
+          # The bot PAT, like the neighboring steps — NOT the automatic
+          # workflow token, which the agent step inherits and which must not
+          # grow an actions:read scope just for this listing.
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          RUN_ID: ${{ github.run_id }}
+          # Four concurrent verifications is eight sandboxes against a
+          # 20-sandbox E2B account — the same constraint the slot count
+          # encoded. Keep in step with VERIFY_SLOTS above.
+          CAP: 4
+          POLL_SECONDS: 30
+          # Job timeout (350m) minus the post-admission budget (150m).
+          MAX_WAIT_MINUTES: 200
+        run: |
+          deadline=$(( $(date +%s) + MAX_WAIT_MINUTES * 60 ))
+          misses=0
+          while :; do
+            queue=$(gh api "repos/${{ github.repository }}/actions/workflows/agent-commands.yml/runs?status=in_progress&per_page=100" \
+              --jq '[.workflow_runs[] | {id, created_at}] | sort_by(.created_at, .id) | map(.id)' 2>/dev/null) || queue=""
+            if [ -z "$queue" ]; then
+              # The listing call failed (network, rate limit). Keep waiting —
+              # the deadline still bounds us, and proceeding blind would
+              # break the capacity cap. Not a ghost-miss: that counter is
+              # for a listing that answers but never contains this run.
+              echo "run listing unavailable; retrying in ${POLL_SECONDS}s"
+            else
+              pos=$(printf '%s' "$queue" | jq --argjson me "$RUN_ID" 'index($me) // -1')
+              total=$(printf '%s' "$queue" | jq 'length')
+              if [ "$pos" -ge 0 ] && [ "$pos" -lt "$CAP" ]; then
+                echo "admitted at queue position $pos of $total (capacity $CAP)"
+                break
+              fi
+              if [ "$pos" -lt 0 ]; then
+                # The listing has not caught up with this run yet. Transient,
+                # but if it never appears the count is broken — proceed loudly
+                # rather than deadlock the whole queue behind a ghost.
+                misses=$(( misses + 1 ))
+                if [ "$misses" -ge 10 ]; then
+                  echo "::warning::this run never appeared in the in_progress listing; proceeding without a queue position"
+                  break
+                fi
+              else
+                misses=0
+                echo "queue position $pos of $total (capacity $CAP); polling again in ${POLL_SECONDS}s"
+              fi
+            fi
+            if [ "$(date +%s)" -ge "$deadline" ]; then
+              echo "::error::no verification slot freed in ${MAX_WAIT_MINUTES} minutes; re-run the command."
+              exit 1
+            fi
+            sleep "$POLL_SECONDS"
+          done
 
       # Base ref only — the prompt file must come from the trusted branch,
       # and no PR-head code may ever run on this runner.
@@ -487,7 +634,7 @@ jobs:
           c4: ${{ secrets.ECR_4 }}
           c5: ${{ secrets.ECR_5 }}
           fallback: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
-          model: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          model: ${{ steps.cmd.outputs.model || vars.VERIFY_MODEL || 'claude-opus-5' }}
 
       # The agent gets ZERO shell access (see the allowlist below), so its
       # view of the target arrives as files it can Read. This is what lets the
@@ -544,6 +691,34 @@ jobs:
               cat "$RUNNER_TEMP/cut-target.json"
             } > target.json
           fi
+          # Duplicate-target context. Two /verify --fix runs opened #48747
+          # and #49055 with identical hunks because each run saw only its
+          # own issue (#48705 and #49046 report the same bug). This search
+          # is the sideways view: issues and pull requests in this
+          # repository whose text matches the target title, duplicates
+          # first among them. Search hits are CANDIDATES the agent judges
+          # by mechanism, not verdicts — and their titles and excerpts are
+          # reporter-controlled data under the same rules as the thread.
+          # A failed search degrades to an empty list: it must not kill
+          # the run, and the publish step's file-overlap guard backstops
+          # a duplicate this word-match misses.
+          target_title=$(jq -r '.title // empty' "$RUNNER_TEMP/full-target.json")
+          # The search API treats brackets and colons as qualifiers or
+          # noise; keep word characters so "[expo-constants]" still
+          # matches as the word expo-constants. Cap well under the API's
+          # 256-char query limit.
+          terms=$(printf '%s' "$target_title" | tr -c 'A-Za-z0-9.-' ' ' | tr -s ' ' | cut -c1-180)
+          if [ -n "$(printf '%s' "$terms" | tr -d ' ')" ] && \
+            gh api -X GET search/issues -f q="repo:${{ github.repository }} $terms" -f per_page=15 \
+              > "$RUNNER_TEMP/related-search.json" 2>/dev/null; then
+            jq --argjson me "$TARGET_NUMBER" \
+              '[.items[] | select(.number != $me) | {number, title, state, isPullRequest: (.pull_request != null), createdAt: .created_at, url: .html_url, excerpt: ((.body // "") | .[0:800])}]' \
+              "$RUNNER_TEMP/related-search.json" > related.json \
+              || echo '[]' > related.json
+          else
+            echo '[]' > related.json
+          fi
+          echo "related.json: $(jq length related.json) search hits for possible duplicates"
           if [ "$IS_PR" = "true" ]; then
             # headRefOid/baseRefOid PIN the revision. Without them the diff
             # below and the checkout the agent makes later are two different
@@ -662,9 +837,9 @@ jobs:
       # whole run: the first time this step's push was ever reached it died on
       # "could not read Username", after twelve minutes, a sandbox and two EAS
       # builds, with a findings comment already posted claiming a pull request
-      # that did not exist. `--dry-run` performs the real connection, the real
-      # authentication and the real ref negotiation, and writes nothing — so
-      # this answers "can we push?" in seconds, before anything is spent.
+      # that did not exist. Check API write + `git ls-remote` here — not a
+      # dry-run push of this checkout, which is often behind main and would
+      # look like a workflow-file update (PAT has no `workflow` scope).
       #
       # Its own step on purpose: "Run agent command" holds NO GitHub token, and
       # that is a property worth keeping.
@@ -696,38 +871,24 @@ jobs:
               echo "::error::Could not resolve or create the bot fork $fork; fix mode refuses to use a secret-bearing same-repository branch."
               exit 1
             fi
-            fork_default=$(gh api "repos/$fork" --jq .default_branch)
-            # The dedicated sync-expo-bot-fork workflow (DO_NOT_USE_EXPO_BOT_FORK_SYNC_TOKEN)
-            # is what is allowed to move workflow files. This token is not.
-            # Retry a few times: a verify that starts on the same push as a
-            # workflow change can land before that job finishes. Keep the API
-            # body — 422 is workflow scope, 404 is "cannot write this repo".
-            synced=
-            for attempt in 1 2 3 4; do
-              if sync_out=$(gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" 2>&1); then
-                synced=1
-                printf '%s\n' "$sync_out"
-                break
-              fi
-              echo "merge-upstream attempt $attempt failed:"
-              printf '%s\n' "$sync_out"
-              [ "$attempt" -eq 4 ] && break
-              sleep 20
-            done
-            if [ -z "$synced" ]; then
-              echo "::error::Could not synchronize $fork with upstream; refusing a push that may include stale workflow commits."
+            # Do not merge-upstream here. EXPO_BOT_GITHUB_TOKEN has no
+            # `workflow` scope; moving workflow files is the dedicated
+            # sync-expo-bot-fork job on every expo/expo main land. A dry-run
+            # push of this (possibly stale) checkout would false-fail the
+            # same way #33857 did. Check API write + git auth only.
+            can_push=$(gh api "repos/$fork" --jq '.permissions.push // false')
+            if [ "$can_push" != "true" ]; then
+              echo "::error::EXPO_BOT_GITHUB_TOKEN cannot push to the bot fork $fork, so fix mode could not open a pull request."
               exit 1
             fi
             gh auth setup-git
-            # No pipe here: `git ... | tail` would report tail's exit status and
-            # the check would pass no matter what git did.
-            if ! git push --dry-run "https://github.com/$fork.git" "HEAD:refs/heads/agent-preflight-$GITHUB_RUN_ID"; then
-              echo "::error::EXPO_BOT_GITHUB_TOKEN cannot push to the bot fork $fork, so fix mode could not open a pull request."
+            if ! git ls-remote "https://github.com/$fork.git" HEAD >/dev/null; then
+              echo "::error::git cannot authenticate to $fork with EXPO_BOT_GITHUB_TOKEN."
               exit 1
             fi
             echo "BOT_FORK_OWNER=$fork_owner" >> "$GITHUB_ENV"
             echo "BOT_FORK=$fork" >> "$GITHUB_ENV"
-            echo "preflight: push credentials work for $fork; fix mode can open a fork pull request"
+            echo "preflight: bot token can push to $fork; fix mode can open a fork pull request"
           fi
 
       - name: Run agent command
@@ -743,9 +904,13 @@ jobs:
           ISSUE_NUMBER: ${{ env.TARGET_NUMBER }}
           ISSUE_KIND: ${{ steps.cmd.outputs.is_pr == 'true' && 'pull request' || 'issue' }}
           REPO: ${{ github.repository }}
-          # Pinned to Opus explicitly; override with a VERIFY_MODEL repo
-          # variable (mirrors the code-review workflows' REVIEWER_MODEL).
-          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          # Pinned to Opus explicitly; override per-run with the `model`
+          # dispatch input (scripts/verify.ts --model in expo-sandbox-mcp) or
+          # a --model/--fable/--opus/--sonnet/--haiku comment flag, both
+          # resolved and validated by the parse step; or repo-wide with a
+          # VERIFY_MODEL repo variable (mirrors the code-review workflows'
+          # REVIEWER_MODEL).
+          VERIFY_MODEL: ${{ steps.cmd.outputs.model || vars.VERIFY_MODEL || 'claude-opus-5' }}
           FIX_MODE: ${{ steps.cmd.outputs.fix }}
           MODE: ${{ steps.cmd.outputs.mode }}
           WORK_HEAD_SHA: ${{ steps.cmd.outputs.work_head_sha }}
@@ -808,6 +973,12 @@ jobs:
               # phase, after a reviewer has attacked the draft, and are added
               # to this list only by "Revise and post".
               "mcp__sandbox__create_sandbox"
+              # GHA VM (create_gha_sandbox runsOn windows-2025 | macos-15 |
+              # ubuntu-24.04) for behavior that only that CI image can
+              # exhibit. Linux E2B stays the default. The prompts carry
+              # the policy, the empty-VM recipe, and how to load a GHA
+              # Metro --tunnel URL into the hosted EAS simulator.
+              "mcp__sandbox__create_gha_sandbox"
               "mcp__sandbox__list_sandboxes"
               "mcp__sandbox__get_session_info"
               "mcp__sandbox__sandbox_exec"
@@ -828,8 +999,11 @@ jobs:
               "mcp__sandbox__simulator_ui"
               "mcp__sandbox__simulator_tap"
               "mcp__sandbox__simulator_type"
+              "mcp__sandbox__simulator_long_press"
               "mcp__sandbox__simulator_wait"
               "mcp__sandbox__simulator_scroll"
+              "mcp__sandbox__simulator_gesture"
+              "mcp__sandbox__simulator_navigate"
               "mcp__sandbox__simulator_query"
               "mcp__sandbox__simulator_open"
               "mcp__sandbox__simulator_boot_app"
@@ -904,8 +1078,18 @@ jobs:
           # printed as a diagnosis. That guess sent a maintainer to debug path
           # rules that were correct. Report the symptom, show the output, let
           # the reader conclude.
-          mkdir -p .verify-out && rm -f .verify-out/.permcheck
-          claude -p "Write the single word ok to .verify-out/.permcheck. Say nothing else." \
+          # When the checkout-wide Edit grant is in play, the canary probes it
+          # too — with a second file at the checkout root, OUTSIDE .verify-out.
+          # The narrow .verify-out/** rule is unconditional, so a canary that
+          # only writes there passes even when the broad rule is broken, and
+          # the breakage surfaces at mirror time, a full investigation later.
+          mkdir -p .verify-out && rm -f .verify-out/.permcheck .permcheck-checkout
+          if [ "$FIX_MODE" = "true" ]; then
+            canary_prompt="Write the single word ok to .verify-out/.permcheck, and write the single word ok to .permcheck-checkout. Say nothing else."
+          else
+            canary_prompt="Write the single word ok to .verify-out/.permcheck. Say nothing else."
+          fi
+          claude -p "$canary_prompt" \
             --model "$VERIFY_MODEL" \
             --disallowedTools "$DENIED" --strict-mcp-config \
             --allowedTools "$ALLOWED" > "$RUNNER_TEMP/permcheck.log" 2>&1 || true
@@ -915,7 +1099,13 @@ jobs:
             echo "::error::--allowedTools was: $ALLOWED"
             exit 1
           fi
-          rm -f .verify-out/.permcheck
+          if [ "$FIX_MODE" = "true" ] && [ ! -f .permcheck-checkout ]; then
+            echo "::error::Preflight canary wrote .verify-out but not the checkout root, so the checkout-wide Edit rule is not matching — the agent would do its work and then fail to mirror it. Stopped before spending a sandbox. The CLI output:"
+            sed -n '1,40p' "$RUNNER_TEMP/permcheck.log" || true
+            echo "::error::--allowedTools was: $ALLOWED"
+            exit 1
+          fi
+          rm -f .verify-out/.permcheck .permcheck-checkout
           echo "preflight: .verify-out is writable${FIX_MODE:+, fix mode = $FIX_MODE}"
           # The renderer is COSMETIC and must never decide the step's fate.
           # It has now failed a completed investigation twice with
@@ -969,12 +1159,66 @@ jobs:
           # A silently un-writable checkout is the failure mode this whole
           # feature had on its first run: fix mode was on, the agent did the
           # work, every Edit was refused, and the step still exited 0 with an
-          # empty diff. Refused writes are never acceptable — fail the run so
-          # the cause is visible instead of looking like "the agent chose not
-          # to propose a change".
-          if grep -q 'requested permissions to write' "$RUNNER_TEMP/verify-run.jsonl"; then
-            echo "::error::Writes were denied during the agent run — the --allowedTools file rules are not matching."
-            exit 1
+          # empty diff. Fail the run when writes the rules were SUPPOSED to
+          # allow were refused, so the cause is visible instead of looking
+          # like "the agent chose not to propose a change".
+          #
+          # But only those. The deny side of the same rules exists to refuse
+          # writes outside the checkout (and under .git/ and .verify-context/),
+          # and treating every refusal as "the rules are broken" once turned a
+          # finished 38-minute run — findings written, fix validated — into a
+          # failure because the agent had poked one scratch file at
+          # /tmp/index.tsx. A refusal the rules intend is the permission
+          # system succeeding: warn so it stays visible, and keep the verdict
+          # for paths the allow rules should have matched.
+          # What counts as "supposed to allow" depends on the grants above:
+          # .verify-out/** is granted in every mode, so a refusal there always
+          # means a broken rule; the rest of the checkout is granted only when
+          # FIX_MODE=true, so outside fix mode a refused checkout write is the
+          # gate holding, not the gate broken.
+          #
+          # Two sources, unioned. The transcript's final result event carries
+          # structured permission_denials with the exact tool_input.file_path —
+          # wording-independent, and it covers Edit and NotebookEdit denials,
+          # which the error-message grep never matched (it only says "write
+          # to"). The grep stays as the fallback for the one case with no
+          # result event: a run the timeout killed mid-flight.
+          denied_paths=$( {
+            jq -r 'select(.type=="result") | .permission_denials[]? | .tool_input.file_path // empty' \
+              "$RUNNER_TEMP/verify-run.jsonl" 2>/dev/null || true
+            grep -o 'requested permissions to write to [^,"]*' "$RUNNER_TEMP/verify-run.jsonl" 2>/dev/null \
+              | sed 's/^requested permissions to write to //' || true
+          } | sort -u)
+          denied_in_grant=""
+          while IFS= read -r p; do
+            [ -n "$p" ] || continue
+            case "$p" in
+              "$GITHUB_WORKSPACE"/.git/*|"$GITHUB_WORKSPACE"/.verify-context/*)
+                echo "::warning::A write to $p was refused — that path is deny-listed, so the rules worked as intended." ;;
+              "$GITHUB_WORKSPACE"/.verify-out/*)
+                denied_in_grant="$denied_in_grant $p" ;;
+              "$GITHUB_WORKSPACE"/*)
+                if [ "$FIX_MODE" = "true" ]; then
+                  denied_in_grant="$denied_in_grant $p"
+                else
+                  echo "::warning::A checkout write was refused ($p) — fix mode is off, so checkout writes are refused by design."
+                fi ;;
+              *)
+                echo "::warning::A write outside the checkout was refused ($p) — the deny rules worked; scratch files belong in the sandbox." ;;
+            esac
+          done <<< "$denied_paths"
+          # Fail LATE, not here. The findings draft is already on disk, and
+          # the critic and revise phases can still review and post it — a
+          # posted report with a withheld fix beats a dead run whose complete,
+          # validated report nobody sees. This is the same record-and-continue
+          # treatment the agent's own exit code gets above. The flag gates the
+          # publish step, which refuses loudly, fails the job, and triggers
+          # the failure report — all AFTER the findings are public.
+          if [ -n "$denied_in_grant" ]; then
+            echo "::error::Writes the file rules should allow were denied during the agent run — the --allowedTools rules are not matching:$denied_in_grant. Continuing so the findings can still post; the publish step will refuse."
+            echo "writes_denied=true" >> "$GITHUB_OUTPUT"
+            echo "denied_write_paths=$denied_in_grant" >> "$GITHUB_OUTPUT"
+            printf 'Writes the file rules should allow were refused during the run:%s\n' "$denied_in_grant" > .verify-out/denied-writes.txt
           fi
           if [ ! -s .verify-out/findings.md ]; then
             echo "::error::The agent wrote no .verify-out/findings.md, so there is nothing to review or post."
@@ -1023,7 +1267,7 @@ jobs:
           ISSUE_NUMBER: ${{ env.TARGET_NUMBER }}
           ISSUE_KIND: ${{ steps.cmd.outputs.is_pr == 'true' && 'pull request' || 'issue' }}
           REPO: ${{ github.repository }}
-          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          VERIFY_MODEL: ${{ steps.cmd.outputs.model || vars.VERIFY_MODEL || 'claude-opus-5' }}
           MODE: ${{ steps.cmd.outputs.mode }}
         run: |
           set -o pipefail
@@ -1052,13 +1296,15 @@ jobs:
       # tear the sandbox down — both capabilities are added here and nowhere
       # else.
       - name: Revise and post
+        id: revise
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
-          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          VERIFY_MODEL: ${{ steps.cmd.outputs.model || vars.VERIFY_MODEL || 'claude-opus-5' }}
           # Via env, never inline ${{ }} — the same discipline the comment body
           # follows two steps down, applied to every value that reaches a shell.
           SESSION_ID: ${{ steps.investigate.outputs.session_id }}
           CUT_SHORT: ${{ steps.investigate.outputs.cut_short }}
+          WRITES_DENIED: ${{ steps.investigate.outputs.writes_denied }}
           MODE: ${{ steps.cmd.outputs.mode }}
         run: |
           set -o pipefail
@@ -1072,10 +1318,18 @@ jobs:
           else
             cut_short=""
           fi
+          # The publish step will refuse this run's handoff, so the posted
+          # outcome must not promise a pull request or commit that will never
+          # arrive — the agent has to be told before it writes the comment.
+          if [ "$WRITES_DENIED" = "true" ]; then
+            writes_denied="SOME OF YOUR FILE WRITES WERE REFUSED during the run by a workflow permissions misconfiguration — see .verify-out/denied-writes.txt; this is a workflow bug, not your error. The publish step will refuse to open a pull request or push a commit from this run. Do not promise either in your outcome: describe the change and how it was verified instead, and say the handoff was blocked by a workflow permissions problem a maintainer must fix before a re-trigger can publish it. "
+          else
+            writes_denied=""
+          fi
           set +o pipefail
           rc_file="$RUNNER_TEMP/revise.rc"
           { timeout 1800 claude -p --resume "$SESSION_ID" \
-            "${cut_short}A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the outcome with your reason rather than silently ignoring it. Any sandbox you created is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
+            "${cut_short}${writes_denied}A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the outcome with your reason rather than silently ignoring it. Any sandbox you created is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
 
           Then, and only then: post the outcome with mcp__sandbox__github_comment_issue; keep or withdraw .verify-out/pr.md and, in work mode, .verify-out/changes.json as the command mode requires; and destroy EVERY sandbox you created with mcp__sandbox__destroy_sandbox before you finish. Destroy them even if posting fails.
 
@@ -1136,9 +1390,20 @@ jobs:
           WORK_HEAD_REF: ${{ steps.cmd.outputs.work_head_ref }}
           WORK_HEAD_REPO: ${{ steps.cmd.outputs.work_head_repo }}
           BOT_LOGIN: ${{ steps.cmd.outputs.bot_login }}
+          WRITES_DENIED: ${{ steps.investigate.outputs.writes_denied }}
+          DENIED_WRITE_PATHS: ${{ steps.investigate.outputs.denied_write_paths }}
         run: |
           set -o pipefail
           cd "$GITHUB_WORKSPACE"
+          # Fail-late rendezvous for the investigate step's denied-writes
+          # flag: the findings are posted by now, so refusing here loses
+          # nothing — but the handoff in this checkout cannot be trusted as
+          # complete when writes into it were refused, and publishing it
+          # could open a PR missing half its change.
+          if [ "$WRITES_DENIED" = "true" ]; then
+            echo "::error::Refusing to publish: the file rules refused writes during the run ($DENIED_WRITE_PATHS), so the mirrored handoff may be incomplete. Fix the --allowedTools rules, then re-trigger to produce the publishable change."
+            exit 1
+          fi
           if [ "$MODE" = "work" ]; then
             command_name="@expo-bot"
             commit_footer="Completed by @expo-bot for #$ISSUE_NUMBER. Run: $RUN_URL"
@@ -1444,41 +1709,240 @@ jobs:
           # agent-authored change with repository secrets available.
           fork_owner=${BOT_FORK_OWNER:-}
           fork=${BOT_FORK:-}
-          # SYNC THE FORK FIRST. A branch pushed to a stale fork introduces
-          # every upstream commit between the fork's tip and this checkout —
-          # including any that touch .github/workflows/** — and a classic PAT
-          # carrying public_repo (which deliberately excludes `workflow`) is
-          # refused outright. Observed on run 31540508035:
-          #
-          #   ! [remote rejected] HEAD -> verify/48804-31540508035 (refusing to
-          #     allow a Personal Access Token to create or update workflow
-          #     `.github/workflows/verify-command.yml` without `workflow` scope)
-          #
-          # The path denylist above already refuses an agent patch that touches
-          # .github/**, so once the fork is level with upstream the push carries
-          # only the agent's own commit and there is no workflow file in it.
-          # Note this gets WORSE the staler the fork is, so it is not optional.
-          if [ -n "$fork" ]; then
-            fork_default=$(gh api "repos/$fork" --jq .default_branch 2>/dev/null || echo main)
-            if ! sync_out=$(gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" 2>&1); then
-              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not synchronize the bot fork. It refused to push a branch that might include stale workflow commits, and refused the secret-bearing same-repository fallback. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
-              echo "::error::could not sync $fork with upstream; refusing to push."
-              printf '%s\n' "$sync_out"
-              exit 1
-            fi
-            echo "synced $fork ($fork_default) with upstream before pushing"
-          fi
+          # Do not merge-upstream here. EXPO_BOT_GITHUB_TOKEN has no
+          # `workflow` scope; sync-expo-bot-fork on every expo/expo main
+          # land is what fast-forwards expo-bot/expo. This step:
+          #   1. replays the publish commit onto current origin/main
+          #      (denylist already forbids the agent from editing .github/**);
+          #   2. compares HEAD:.github/workflows to the fork default — that
+          #      is what GitHub checks, not full commit SHA equality;
+          #   3. pushes when those trees match. If they do not, wait for the
+          #      sync job (only needed when main moved a workflow file).
+          # Observed without this: run 31988056108 / #33857, and the
+          # earlier 31540508035 stale-fork reject.
           if [ -z "$fork" ]; then
             gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not resolve or create the bot fork. It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
             echo "::error::could not resolve or create the bot fork; refusing unsafe same-repository fallback."
             exit 1
           fi
-          if ! git push -q "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
-            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not push it to the bot fork. It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
-            echo "::error::push to fork $fork failed; refusing unsafe same-repository fallback."
+          replay_onto_origin_main() {
+            git fetch --depth=1 origin main
+            base=$(git rev-parse HEAD~1)
+            tip=$(git rev-parse origin/main)
+            if [ "$base" = "$tip" ]; then
+              echo "publish commit already sits on origin/main"
+              return 0
+            fi
+            agent=$(git rev-parse HEAD)
+            echo "origin/main moved under the run (${base:0:12} -> ${tip:0:12}); replaying ${agent:0:12} onto it"
+            git checkout --detach origin/main
+            if ! git cherry-pick "$agent"; then
+              conflicted=$(git diff --name-only --diff-filter=U | tr '\n' ' ')
+              git cherry-pick --abort >/dev/null 2>&1 || true
+              echo "::error::could not replay the publish commit onto origin/main (conflict: ${conflicted:-unknown})."
+              return 1
+            fi
+            return 0
+          }
+          local_workflows_tree() {
+            git rev-parse HEAD:.github/workflows 2>/dev/null || echo ""
+          }
+          fork_workflows_tree() {
+            default=$(gh api "repos/$fork" --jq .default_branch)
+            sha=$(gh api "repos/$fork/git/ref/heads/${default}" --jq .object.sha)
+            root=$(gh api "repos/$fork/git/commits/${sha}" --jq .tree.sha)
+            gh_dir=$(gh api "repos/$fork/git/trees/${root}" --jq '.tree[] | select(.path==".github") | .sha')
+            if [ -z "$gh_dir" ]; then
+              echo ""
+              return 0
+            fi
+            gh api "repos/$fork/git/trees/${gh_dir}" --jq '.tree[] | select(.path=="workflows") | .sha'
+          }
+          sync_job_inflight() {
+            gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/sync-expo-bot-fork.yml/runs?per_page=5" \
+              --jq '[.workflow_runs[] | select(.status=="in_progress" or .status=="queued")] | length'
+          }
+          # Replay onto main, then push once HEAD's workflow tree matches
+          # the fork default. Wait only when those trees differ.
+          align_workflows_with_fork() {
+            rm -f "$RUNNER_TEMP/align.env"
+            deadline=$(( $(date +%s) + 420 ))
+            saw_inflight=0
+            first_mismatch_at=
+            while [ "$(date +%s)" -lt "$deadline" ]; do
+              if ! replay_onto_origin_main; then
+                return 1
+              fi
+              local_wf=$(local_workflows_tree)
+              fork_wf=$(fork_workflows_tree)
+              if [ "$local_wf" = "$fork_wf" ]; then
+                echo "workflow trees match (${local_wf:0:12})"
+                return 0
+              fi
+              inflight=$(sync_job_inflight)
+              echo "workflow trees differ local=${local_wf:0:12} fork=${fork_wf:0:12} sync_inflight=$inflight"
+              if [ "${inflight:-0}" -gt 0 ]; then
+                saw_inflight=1
+                first_mismatch_at=
+              elif [ "$saw_inflight" = 0 ]; then
+                # Grace: a main land from seconds ago may not have a
+                # queued run in the API yet. After 45s with no sync,
+                # the fork is stale and nothing will heal it.
+                if [ -z "$first_mismatch_at" ]; then
+                  first_mismatch_at=$(date +%s)
+                elif [ $(( $(date +%s) - first_mismatch_at )) -ge 45 ]; then
+                  echo "ALIGN_FAIL=stale_fork" >> "$RUNNER_TEMP/align.env"
+                  echo "::error::fork $fork workflow tree differs from this commit and sync-expo-bot-fork is not running."
+                  return 1
+                fi
+              fi
+              sleep 15
+            done
+            echo "ALIGN_FAIL=timeout" >> "$RUNNER_TEMP/align.env"
+            echo "::error::timed out waiting for $fork .github/workflows to match origin/main."
+            return 1
+          }
+          rm -f "$RUNNER_TEMP/align.env"
+          if ! align_workflows_with_fork; then
+            fail_kind=$(grep '^ALIGN_FAIL=' "$RUNNER_TEMP/align.env" 2>/dev/null | cut -d= -f2 || true)
+            if [ "$fail_kind" = "stale_fork" ]; then
+              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but the bot fork's workflow files do not match current \`main\`, and the dedicated sync job is not running. Land on \`main\` (or re-run \`sync-expo-bot-fork\`) and re-trigger. The outcome comment still stands. [Run log]($RUN_URL)"
+              echo "::error::stale fork with no in-flight sync; refusing to push."
+            else
+              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not line its workflow files up with the bot fork in time (the dedicated sync job on \`expo/expo\` main is what fast-forwards the fork). Re-run once that job has finished. The outcome comment still stands. [Run log]($RUN_URL)"
+              echo "::error::could not match $fork .github/workflows to this commit; refusing to push."
+            fi
             exit 1
           fi
+          push_err="$RUNNER_TEMP/fork-push.err"
+          if ! git push "https://github.com/$fork.git" "HEAD:refs/heads/$branch" >"$push_err" 2>&1; then
+            cat "$push_err"
+            if grep -q 'workflow scope' "$push_err"; then
+              echo "push rejected for workflow scope; re-comparing workflow trees and retrying once"
+              if align_workflows_with_fork && git push "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
+                echo "push succeeded after workflow trees matched"
+              else
+                gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not push it to the bot fork (workflow-scope reject after waiting for the fork workflows to match). It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
+                echo "::error::push to fork $fork failed after workflow-tree wait; refusing unsafe same-repository fallback."
+                exit 1
+              fi
+            else
+              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not push it to the bot fork. It refused to use a same-repository branch because that would run agent-authored code with CI secrets. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
+              echo "::error::push to fork $fork failed; refusing unsafe same-repository fallback."
+              exit 1
+            fi
+          fi
           head_ref="$fork_owner:$branch"
+          # DUPLICATE-PR GUARD. Two /verify --fix runs opened #48747 and
+          # #49055 with identical hunks: each run saw only its own issue,
+          # and nothing in this pipeline looked sideways. The agent-side
+          # duplicate check (related.json) matches words, so it misses a
+          # differently-worded duplicate; this guard compares FILES, which
+          # do not depend on wording. It checks open pull requests from
+          # ANY author — scoping to expo-bot verify branches would miss a
+          # contributor's fix for the same bug. CHANGELOG.md files collide
+          # on almost every pair of pull requests, so they never count as
+          # overlap.
+          #   - Every non-changelog changed file already touched by ONE
+          #     open pull request -> likely duplicate: keep the pushed
+          #     branch, open NO pull request, and post the candidates so a
+          #     maintainer can open it by hand when it is not a duplicate.
+          #     Fail-safe by construction: nothing is lost, one click
+          #     recovers a false positive.
+          #   - Partial overlap -> open the pull request and list the
+          #     overlapping ones in its body for the reviewer.
+          #   - The listing itself failing degrades to opening the pull
+          #     request with a warning in the log: a duplicate is a
+          #     nuisance, a lost verified fix is worse.
+          related_prs_md=""
+          # `|| true`: a changelog-only change leaves grep with no match,
+          # and its exit 1 under pipefail would kill the publisher here.
+          ours_list=$(printf '%s\n' "$changed" | grep -Ev '(^|/)CHANGELOG\.md$' || true)
+          ours_json=$(printf '%s\n' "$ours_list" | jq -R . | jq -s 'map(select(length > 0))')
+          if [ "$(printf '%s' "$ours_json" | jq 'length')" -gt 0 ]; then
+            : > "$RUNNER_TEMP/open-pr-files.jsonl"
+            # GraphQL, not REST: list-files costs one call per pull
+            # request; this reads paths for 100 pull requests per call.
+            # Caps, logged so they are never silent: the 300 most recently
+            # updated open pull requests, first 100 files each.
+            # GraphQL variable markers are literal here.
+            # shellcheck disable=SC2016
+            files_query='query($q:String!, $cursor:String) { search(query:$q, type:ISSUE, first:100, after:$cursor) { pageInfo { hasNextPage endCursor } nodes { ... on PullRequest { number title url files(first:100) { nodes { path } } } } } }'
+            cursor=null
+            pages=0
+            while [ "$pages" -lt 3 ]; do
+              jq -n --arg query "$files_query" --arg q "repo:$GITHUB_REPOSITORY is:pr is:open sort:updated-desc" --argjson cursor "$cursor" \
+                '{query:$query, variables:{q:$q, cursor:$cursor}}' > "$RUNNER_TEMP/pr-files-query.json"
+              if ! page=$(gh api graphql --input "$RUNNER_TEMP/pr-files-query.json"); then
+                echo "::warning::open-PR file listing failed on page $((pages+1)); the duplicate-PR check ran on a partial listing."
+                break
+              fi
+              printf '%s\n' "$page" | jq -c '.data.search.nodes[] | select(.number != null)' >> "$RUNNER_TEMP/open-pr-files.jsonl"
+              [ "$(printf '%s' "$page" | jq -r '.data.search.pageInfo.hasNextPage')" = "true" ] || break
+              cursor=$(printf '%s' "$page" | jq '.data.search.pageInfo.endCursor')
+              pages=$((pages+1))
+            done
+            pr_count=$(wc -l < "$RUNNER_TEMP/open-pr-files.jsonl" | tr -d ' ')
+            echo "duplicate-PR check: compared the change against $pr_count open pull requests (most recently updated first, cap 300, first 100 files each)"
+            # jq variable markers are literal here.
+            # shellcheck disable=SC2016
+            jq -s --argjson ours "$ours_json" --argjson me "$ISSUE_NUMBER" '
+              [ .[]
+                | select(.number != $me)
+                | (.files.nodes | map(.path) | map(select(test("(^|/)CHANGELOG\\.md$") | not))) as $theirs
+                | {number, title, url, shared: [$ours[] | select(. as $f | ($theirs | index($f)) != null)]}
+                | select((.shared | length) > 0)
+                | . + {covers: ((.shared | length) == ($ours | length))} ]
+              | sort_by(-(.shared | length))' \
+              "$RUNNER_TEMP/open-pr-files.jsonl" > "$RUNNER_TEMP/pr-overlaps.json" || echo '[]' > "$RUNNER_TEMP/pr-overlaps.json"
+            covering=$(jq '[.[] | select(.covers)] | length' "$RUNNER_TEMP/pr-overlaps.json")
+            if [ "${covering:-0}" -gt 0 ]; then
+              dup_list=$(jq -r '[.[] | select(.covers)][0:5][] | "- \(.url) (\(.title)) — already touches every non-changelog file this change touches"' "$RUNNER_TEMP/pr-overlaps.json")
+              # Backticks in the printf format are Markdown delimiters.
+              # shellcheck disable=SC2016
+              gh issue comment "$ISSUE_NUMBER" --body "$(printf '⚠️ `%s` pushed the %s to `%s` but did NOT open a pull request: every non-changelog file it changes is already touched by an open pull request, so it is likely a duplicate of:\n\n%s\n\nIf it is not a duplicate, a maintainer can open the pull request from that branch by hand. [Run log](%s)' "$command_name" "$change_name" "$head_ref" "$dup_list" "$RUN_URL")"
+              echo "::notice::skipped pull-request creation: full non-changelog file overlap with an open pull request."
+              jq . "$RUNNER_TEMP/pr-overlaps.json"
+              exit 0
+            fi
+            if [ "$(jq 'length' "$RUNNER_TEMP/pr-overlaps.json")" -gt 0 ]; then
+              related_prs_md=$(jq -r '.[0:5][] | "- \(.url) (\(.title)) — shared files: \(.shared | join(", "))"' "$RUNNER_TEMP/pr-overlaps.json")
+            fi
+          fi
+          # The prompt asks fix mode for a marker-wrapped "Options considered"
+          # block, and the markers are a parsing interface, not decoration. So
+          # the published body must carry either a well-formed block or no
+          # markers at all: one unmatched or duplicated marker leaves the block
+          # open, and a reader that scans by marker then treats the rest of the
+          # body as options.
+          #
+          # Never reject over it. Throwing away a verified fix at the last step
+          # over a missing paragraph is the worse outcome, and an honest gap is
+          # itself information for the reviewer. A malformed block is stripped
+          # back to marker-free text, and the notice says which case happened.
+          desc="$RUNNER_TEMP/pr-desc.md"
+          tail -n +2 .verify-out/pr.md 2>/dev/null > "$desc" || true
+          [ -s "$desc" ] || echo "_No description was provided by the run._" > "$desc"
+          opt_start='<!-- expo-bot:fix-options v1 -->'
+          opt_end='<!-- /expo-bot:fix-options -->'
+          opt_note=""
+          sc=$(grep -cF "$opt_start" "$desc" || true)
+          ec=$(grep -cF "$opt_end" "$desc" || true)
+          s_line=$(grep -nF "$opt_start" "$desc" 2>/dev/null | head -n1 | cut -d: -f1 || true)
+          e_line=$(grep -nF "$opt_end" "$desc" 2>/dev/null | head -n1 | cut -d: -f1 || true)
+          if [ "$sc" -ne 1 ] || [ "$ec" -ne 1 ] || [ "${s_line:-0}" -ge "${e_line:-0}" ]; then
+            # Match the marker NAME, not the exact strings: a mistyped or
+            # re-spaced marker must be removed too, or it survives as a
+            # half-open block for the next reader.
+            stray=$(grep -c 'expo-bot:fix-options' "$desc" || true)
+            grep -v 'expo-bot:fix-options' "$desc" > "$RUNNER_TEMP/pr-desc-clean.md" || true
+            mv "$RUNNER_TEMP/pr-desc-clean.md" "$desc"
+            if [ "$stray" -eq 0 ]; then
+              opt_note="_This run recorded no option set: the fix was published without a record of the alternatives considered._"
+            else
+              opt_note="_This run wrote a malformed \`Options considered\` block: $sc start marker(s), $ec end marker(s), $stray marker line(s) in total. The markers were removed so nothing can misread the body. The fix itself is unaffected._"
+            fi
+          fi
           {
             # ONE LINE PER PARAGRAPH, however long. GitHub renders a newline
             # inside a comment or pull-request body as a hard <br>, unlike a
@@ -1492,7 +1956,17 @@ jobs:
             echo ""
             echo "Requested by @$TRIGGER_ACTOR · [$run_name]($RUN_URL) · refs #$ISSUE_NUMBER"
             echo ""
-            tail -n +2 .verify-out/pr.md 2>/dev/null || echo "_No description was provided by the run._"
+            cat "$desc"
+            if [ -n "$related_prs_md" ]; then
+              echo ""
+              echo "**Open pull requests touching the same files** (from the publish-time duplicate check — confirm they are distinct before merging both):"
+              echo ""
+              printf '%s\n' "$related_prs_md"
+            fi
+            if [ -n "$opt_note" ]; then
+              echo ""
+              echo "$opt_note"
+            fi
           } > "$RUNNER_TEMP/pr-body.md"
           # The branch is pushed at this point, so a failure here must not
           # vanish: the thread would otherwise keep the findings comment with
@@ -1571,6 +2045,7 @@ jobs:
             .verify-out/findings.md
             .verify-out/review.md
             .verify-out/partial-findings.md
+            .verify-out/denied-writes.txt
           if-no-files-found: ignore
           retention-days: 14
 
@@ -1619,6 +2094,8 @@ jobs:
           SALVAGED: ${{ steps.salvage.outputs.salvaged }}
           MODE: ${{ steps.cmd.outputs.mode }}
           MODEL_ENV: ${{ steps.model-env.outcome }}
+          WRITES_DENIED: ${{ steps.investigate.outputs.writes_denied }}
+          REVISE_OUTCOME: ${{ steps.revise.outcome }}
         run: |
           case "$JOB_STATUS" in
             cancelled) outcome="was cancelled" ;;
@@ -1649,5 +2126,14 @@ jobs:
             command_name="/verify"
             unfinished="before it could post findings — nothing here is a verdict on the report"
             retry="re-trigger \`/verify\`"
+          fi
+          # Denied writes fail late: the outcome comment is already posted by
+          # the time the publish step refuses, so "failed before it could post"
+          # would be false. Tell the maintainer what actually happened — the
+          # findings stand, the change was withheld, and the workflow's file
+          # rules are the thing to fix.
+          if [ "$WRITES_DENIED" = "true" ] && [ "$REVISE_OUTCOME" = "success" ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`$command_name\` posted its outcome above, but no pull request or commit was published: the workflow's file-permission rules refused writes the run needed, so the change handoff could not be trusted as complete. A maintainer needs to fix the workflow's \`--allowedTools\` rules; after that, $retry to produce the publishable change. [Run log]($RUN_URL)"
+            exit 0
           fi
           gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`$command_name\` $outcome $unfinished.$cause$extra [Run log]($RUN_URL) has the details; $retry to try again."
