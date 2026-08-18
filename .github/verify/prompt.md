@@ -99,10 +99,12 @@ Two shapes deserve their own treatment:
 
    ```
    <!-- expo-bot:fix-options v1 -->
-   ## Options considered
+   <details><summary>Options considered</summary>
 
    1. **<the approach, one sentence.>** <its cost, in a checkable term>. Rejected: <why>.
    2. **<the approach, one sentence.>** Chosen: <why it won>.
+
+   </details>
    <!-- /expo-bot:fix-options -->
    ```
 
@@ -116,7 +118,7 @@ Two shapes deserve their own treatment:
    - **Mark exactly ONE option chosen.** Write the literal token `Chosen:` on that entry, and on no other line of the block. A later command counts that token to find the live option. The ordinary word "chosen" elsewhere in the prose is fine; a second `Chosen:` is not.
    - **Only the chosen option is built and verified.** Never describe an option you did not build as tested.
    - **At most FOUR options.** If the honest set needs more, the change is a design decision, and those belong to a human (condition 3).
-   - **Keep the markers, the heading, and the numbering exactly as shown.** Write both markers, once each, start before end. A maintainer command addresses an option by its number, so the numbers are an interface, not decoration.
+   - **Keep the markers, the `<details>` wrapper, and the numbering exactly as shown.** Write both markers, once each, start before end. The list collapses behind the `<summary>` triangle so the pull-request body stays scannable — the same shape the findings comment uses. Leave the BLANK LINE after the `<summary>` line and before `</details>`, or the list inside will not render as markdown. A maintainer command addresses an option by its number, so the numbers are an interface, not decoration.
 
    **Do not hard-wrap the prose.** This is a file, so the instinct is to format it like source and break lines at 80 or 90 columns. GitHub renders a pull-request body as GitHub-Flavored Markdown, where a single newline is a VISIBLE line break — a wrapped paragraph arrives as a column of ragged short lines. Write each paragraph as ONE line, however long it runs, and let the browser wrap it. Blank lines still separate paragraphs; code fences, tables and list items keep their own line structure.
 
