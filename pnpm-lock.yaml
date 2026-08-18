@@ -6215,8 +6215,8 @@ importers:
         specifier: ^0.38.3
         version: 0.38.4
       agent-cli-detector:
-        specifier: ^0.1.2
-        version: 0.1.2
+        specifier: 0.1.6
+        version: 0.1.6
       arg:
         specifier: ^5.0.2
         version: 5.0.2
