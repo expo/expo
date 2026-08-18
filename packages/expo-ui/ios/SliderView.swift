@@ -6,8 +6,7 @@ import ExpoModulesCore
 struct SliderView: ExpoSwiftUI.View {
   @ObservedObject var props: SliderProps
   @State var value: Float = 0.0
-  @State var isEditing: Bool = false
-  
+
   init(props: SliderProps) {
     self.props = props
   }
@@ -19,7 +18,6 @@ struct SliderView: ExpoSwiftUI.View {
         value = clamp(props.value ?? 0.0)
       }
       .onChange(of: props.value) { newValue in
-        guard !isEditing else { return }
         value = clamp(newValue ?? 0.0)
       }
       .onChange(of: value) { newValue in
@@ -56,7 +54,6 @@ struct SliderView: ExpoSwiftUI.View {
     let hasAnyLabel = label != nil || minimumValueLabel != nil || maximumValueLabel != nil
 
     let handleEditingChanged: (Bool) -> Void = { isEditing in
-      self.isEditing = isEditing
       props.onEditingChanged(["isEditing": isEditing])
     }
 
