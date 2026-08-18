@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix wrong permissions for text() and bytes(). ([#42422](https://github.com/expo/expo/pull/42422)) by [@simoneldevig](https://github.com/simoneldevig))
 - Fixed `copyAsync` on iOS copying the unedited original when a `ph://` asset has edits applied in Photos. ([#48248](https://github.com/expo/expo/pull/48248) by [@CoffeeFlux](https://github.com/CoffeeFlux))
 - Fixed iOS file previews rejecting a new preview while the previous Quick Look dismissal animation is still finishing. ([#47947](https://github.com/expo/expo/pull/47947) by [@eliotgevers](https://github.com/eliotgevers))
 - Added `./next` subpath to package `exports` field to resolve Metro bundler warning. ([#44793](https://github.com/expo/expo/pull/44793) by [@chang-in](https://github.com/chang-in))
