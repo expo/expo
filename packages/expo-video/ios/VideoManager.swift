@@ -204,10 +204,8 @@ class VideoManager {
       }
 
       do {
-        defer {
-          self.audioSessionIsActive = false
-        }
         try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+        self.audioSessionIsActive = false
       } catch {
         log.warn("[expo-video] Failed to deactivate the audio session. Background audio may not resume. \(error.localizedDescription)")
       }
