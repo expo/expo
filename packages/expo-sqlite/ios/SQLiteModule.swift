@@ -381,6 +381,11 @@ public final class SQLiteModule: Module {
     if exsqlite3_prepare_v2(database.pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
       throw SQLiteErrorException(convertSqlLiteErrorToString(database))
     }
+    // SQLite reports success with a null statement when the source has nothing to run.
+    // Every statement API below would then get a null pointer, and clear_bindings() crashes on one.
+    if statement.pointer == nil {
+      throw EmptyStatementException()
+    }
   }
 
   // swiftlint:disable line_length

@@ -428,7 +428,13 @@ async function prepare(
   const asyncIterator = asyncIterable[Symbol.asyncIterator]();
   const { value: statementPointer } = await asyncIterator.next();
   asyncIterator.return?.();
-  if (!statementPointer) throw new Error('Failed to prepare statement');
+  // The generator throws on a real prepare error, so no statement here means the source had
+  // nothing to run. Native reports the same case as ERR_SQLITE_EMPTY_STATEMENT.
+  if (!statementPointer) {
+    throw new SQLiteErrorException(
+      "Cannot prepare an empty SQL statement. SQLite found no statement to run in the given string because it is empty, whitespace-only, or comment-only. To run a .sql file, pass the whole file to execAsync() instead of splitting it on ';'."
+    );
+  }
   statementIdMap.set(nativeStatementId, { pointer: statementPointer });
 }
 

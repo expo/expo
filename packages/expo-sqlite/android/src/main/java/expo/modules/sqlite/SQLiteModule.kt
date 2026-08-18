@@ -363,6 +363,11 @@ class SQLiteModule : Module() {
     if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
+    // SQLite reports success with a null statement when the source has nothing to run.
+    // Every statement API below would then get a null pointer, and clear_bindings() crashes on one.
+    if (statement.ref.isNullStatement()) {
+      throw EmptyStatementException()
+    }
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)

@@ -132,6 +132,18 @@ class NativeStatement {
 
   prepare(nodeDb: DatabaseSync, source: string) {
     const stmt = nodeDb.prepare(source);
+    // node:sqlite accepts source with nothing to run, then throws ERR_INVALID_STATE from every
+    // method on the statement. Native rejects it at prepare, so ask node and fail here instead.
+    try {
+      stmt.columns();
+    } catch (e: any) {
+      if (e?.code === 'ERR_INVALID_STATE') {
+        throw new Error(
+          "Cannot prepare an empty SQL statement. SQLite found no statement to run in the given string because it is empty, whitespace-only, or comment-only. To run a .sql file, pass the whole file to execAsync() instead of splitting it on ';'."
+        );
+      }
+      throw e;
+    }
     // The native module strips the `:@$` prefixes from named parameters.
     stmt.setAllowBareNamedParameters(true);
     // The JS layer expects rows as value arrays.

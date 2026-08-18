@@ -67,6 +67,24 @@ describe('Database', () => {
     expect(result.changes).toBe(1);
   });
 
+  it('execAsync should run a whole script with comments and a trailing semicolon', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await db.execAsync(`
+-- set up the table
+CREATE TABLE test (id INTEGER PRIMARY KEY NOT NULL, intValue INTEGER);
+/* seed it */
+INSERT INTO test (intValue) VALUES (123);
+-- done
+`);
+    const rows = await db.getAllAsync('SELECT * FROM test');
+    expect(rows).toHaveLength(1);
+  });
+
+  it('runAsync should throw for a whitespace-only statement', async () => {
+    db = await openDatabaseAsync(':memory:');
+    await expect(db.runAsync('\n')).rejects.toThrow(/Cannot prepare an empty SQL statement/);
+  });
+
   it('getFirstAsync should return a row', async () => {
     db = await openDatabaseAsync(':memory:');
     await db.execAsync(
@@ -279,6 +297,11 @@ describe('Database - Synchronous calls', () => {
     const result = db.getFirstSync<TestEntity>('SELECT * FROM test');
     expect(result?.value).toBe('test');
     expect(result?.intValue).toBe(123);
+  });
+
+  it('runSync should throw for a whitespace-only statement', () => {
+    db = openDatabaseSync(':memory:');
+    expect(() => db.runSync('\n')).toThrow(/Cannot prepare an empty SQL statement/);
   });
 
   it('getEachSync should return iterable', () => {
