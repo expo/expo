@@ -27,6 +27,17 @@ export type ExpoImageIntegrationConfig = {
    * @default 1.5
    */
   oversizeThreshold?: number;
+  /**
+   * Whether reported events include the image URL's query string and fragment. By default the URL
+   * is truncated at them before it leaves the device, because query parameters often carry
+   * sensitive values such as signing tokens or API keys. Enable this only when your image URLs
+   * are safe to send off-device in full. Regardless of this setting, basic-auth credentials are
+   * always removed from the URL, and only `http(s)`, `file`, and `android.resource` URLs are
+   * reported (other schemes, such as `data:` or `ph://`, never leave the device).
+   *
+   * @default false
+   */
+  includeUrlParams?: boolean;
 };
 
 const DEFAULT_OVERSIZE_THRESHOLD = 1.5;
@@ -38,7 +49,9 @@ let initialized = false;
 export type IntegrationState = {
   enabled: boolean;
   threshold: number;
-  // URLs already reported under the current configuration. Only oversized images are added.
+  includeUrlParams: boolean;
+  // URLs already reported under the current configuration, as they were reported (so without
+  // query and fragment unless `includeUrlParams` is set). Only oversized images are added.
   reported: Set<string>;
   // Subscription to the native `imageLoaded` event, held only while the integration is enabled.
   subscription: { remove: () => void } | null;
@@ -61,15 +74,42 @@ export type LoadedImage = {
   pixelRatio: number;
 };
 
+// Truncates a URL at its query string and fragment (unless `includeUrlParams` opts in) and always
+// removes userinfo credentials from the authority, so values like signing tokens, API keys, or
+// basic-auth passwords never leave the device.
+function sanitizeUrl(url: string, includeUrlParams: boolean): string {
+  let sanitized = url;
+  if (!includeUrlParams) {
+    const paramsStart = sanitized.search(/[?#]/);
+    if (paramsStart !== -1) {
+      sanitized = sanitized.slice(0, paramsStart);
+    }
+  }
+  // Userinfo ends at the last `@` before the authority ends (matching WHATWG parsing, so an
+  // unencoded `@` inside a password is consumed too), while `/`, `?`, and `#` bound the match, so
+  // an `@` later in the path or query never matches.
+  return sanitized.replace(/^([^:/?#]+:\/\/)[^/?#]*@/, '$1');
+}
+
 // Exported for testing purposes only.
 export function reportIfOversized(state: IntegrationState, image: LoadedImage): void {
   if (!state.enabled || !state.appMetrics) {
     return;
   }
-  const { url, width, height, screenWidth, screenHeight, pixelRatio } = image;
-  if (!url || !(width > 0) || !(height > 0)) {
+  const { width, height, screenWidth, screenHeight, pixelRatio } = image;
+  if (!image.url || !(width > 0) || !(height > 0)) {
     return;
   }
+  // Only remote images, local files, and bundled Android resources are reported: those URLs
+  // identify developer-owned content that the developer can act on. Every other scheme fails safe
+  // regardless of `includeUrlParams`, because it carries device-local or user-library content (the
+  // whole payload for `data:`, a stable personal-photo identifier for `ph://` and `content://`).
+  if (!/^(https?|file|android\.resource):/i.test(image.url)) {
+    return;
+  }
+  // Deduping on the reported form also collapses variants of one image that differ only in their
+  // query parameters (such as rotating signed URLs) into a single event.
+  const url = sanitizeUrl(image.url, state.includeUrlParams);
   if (state.reported.has(url)) {
     return;
   }
@@ -122,11 +162,10 @@ export function activate(
   handle = handleImageLoaded
 ): void {
   const config = integrations['expo-image'];
+  const configObject = typeof config === 'object' && config !== null ? config : {};
   state.enabled = !!config;
-  state.threshold =
-    typeof config === 'object' && config !== null
-      ? (config.oversizeThreshold ?? DEFAULT_OVERSIZE_THRESHOLD)
-      : DEFAULT_OVERSIZE_THRESHOLD;
+  state.threshold = configObject.oversizeThreshold ?? DEFAULT_OVERSIZE_THRESHOLD;
+  state.includeUrlParams = configObject.includeUrlParams ?? false;
   // A new configure may change the threshold (or enable the integration), so start a fresh dedup
   // set: images already reported under the previous settings become eligible to report again.
   state.reported = new Set<string>();
@@ -151,6 +190,7 @@ export function initObserveIntegrationIfNeededImpl(
   const state: IntegrationState = {
     enabled: false,
     threshold: DEFAULT_OVERSIZE_THRESHOLD,
+    includeUrlParams: false,
     reported: new Set<string>(),
     subscription: null,
     appMetrics: requireOptionalNativeModule<ExpoAppMetricsModuleType>('ExpoAppMetrics'),
