@@ -1,5 +1,5 @@
 import 'abort-controller/polyfill';
-import { UnavailabilityError } from 'expo';
+import { isRunningInExpoGo, Platform, UnavailabilityError } from 'expo';
 
 import ServerRegistrationModule from './ServerRegistrationModule';
 import { addPushTokenListener } from './TokenEmitter';
@@ -98,7 +98,10 @@ export async function __handlePersistedRegistrationInfoAsync(
   }
 }
 
-if (ServerRegistrationModule.getRegistrationInfoAsync) {
+if (isRunningInExpoGo() && Platform.OS === 'android') {
+  // Push tokens are unavailable in Expo Go on Android since SDK 53;
+  // addPushTokenListener would throw and make the import fatal.
+} else if (ServerRegistrationModule.getRegistrationInfoAsync) {
   // A global scope (to get all the updates) device push token
   // subscription, never cleared.
   addPushTokenListener(async (token) => {
