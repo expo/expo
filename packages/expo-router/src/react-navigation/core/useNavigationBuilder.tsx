@@ -333,8 +333,15 @@ export function useNavigationBuilder<
   );
 
   const isStateInitialized = React.useCallback(
-    <T extends NavigationState>(state: T | PartialState<T> | undefined): state is T =>
-      state !== undefined && state.stale === false && isStateValid(state),
+    <T extends NavigationState>(state: T | PartialState<T> | undefined): state is T => {
+      if (process.env.NODE_ENV !== 'production' && state?.stale === true) {
+        throw new Error(
+          'Navigation state must be complete before it reaches a navigator. Partial state can no longer be completed during render.'
+        );
+      }
+
+      return state !== undefined && isStateValid(state);
+    },
     [isStateValid]
   );
 
@@ -370,48 +377,34 @@ export function useNavigationBuilder<
     // It likely got cleaned up due to `<Activity mode="hidden">`
     // We should reuse this state to avoid remounting screens
     if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
-      const state: State = isStateInitialized(lastStateRef.current)
-        ? lastStateRef.current
-        : router.getRehydratedState(lastStateRef.current, {
-            routeNames,
-            routeGetIdList,
-          });
-
-      return state;
+      // State producers guarantee the stored state is complete.
+      return lastStateRef.current as State;
     }
 
-    // If the current state isn't initialized on first render, we initialize it
-    // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
-    // Otherwise assume that the state was provided as initial state
-    // So we need to rehydrate it to make it usable
+    // Initialize when there is no state or the state belongs to a different router.
     if (currentState === undefined || !isStateValid(currentState)) {
       return createInitialState<State>({
         routeNames,
         initialRouteName: rest.initialRouteName,
       });
     } else {
-      // The context state belongs to this navigator when its router type matches.
-      return router.getRehydratedState(currentState as State | PartialState<State>, {
-        routeNames,
-        routeGetIdList,
-      });
+      // The producer contract guarantees valid context state is complete.
+      return currentState as State;
     }
     // Route configuration changes are reconciled below instead of forcing initialization.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentState, router, isStateValid]);
 
-  let state =
-    // If the state isn't initialized, or stale, use the state we initialized instead
+  const uncommittedState =
+    // If the state isn't initialized, use the state we initialized instead
     // The state won't update until there's a change needed in the state we have initialized locally
-    // So it'll be `undefined` or stale until the first navigation event happens
+    // So it'll be `undefined` until the first navigation event happens
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
-
-  const uncommittedState = state;
 
   // Keep render consumers safe without committing a state outside the action pipeline. The router
   // decides which survivor takes focus, so the interim render agrees with the state that
   // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
-  state = router.getStateForDeclaredRoutes(state, routeNames);
+  const state = router.getStateForDeclaredRoutes(uncommittedState, routeNames);
 
   // TODO(@ubax): find a better way to implement this then ref approach
   const registryConfigRef = React.useRef({ routeNames, routeGetIdList });

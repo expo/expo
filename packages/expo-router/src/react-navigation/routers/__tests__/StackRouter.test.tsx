@@ -67,170 +67,31 @@ describe('state without router type', () => {
     expect(result?.state.type).toBe('stack');
   });
 
-  test('passes partial RESET state through unchanged', () => {
-    const partialState = { routes: [{ name: 'bar' }] };
-    const result = StackRouter({}).getStateForAction(
-      createState(),
-      CommonActions.reset(partialState),
-      options
-    );
-
-    expect(result?.state).toBe(partialState);
+  test('throws for partial RESET state', () => {
+    expect(() =>
+      StackRouter({}).getStateForAction(
+        createState(),
+        CommonActions.reset({ routes: [{ name: 'bar' }] }),
+        options
+      )
+    ).toThrow('The RESET action payload must contain a complete navigation state.');
   });
 });
 
-test('gets rehydrated state from partial state', () => {
-  const router = StackRouter({});
-
-  const options: RouterConfigOptions = {
-    routeNames: ['bar', 'baz', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 1,
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'qux-1', name: 'qux' },
-          { name: 'baz', key: 'baz-test' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 1,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'qux-1', name: 'qux' },
-      { name: 'baz', key: 'baz-test' },
-    ],
-    stale: false,
-    type: 'stack',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-1', name: 'baz' },
-          { key: 'qux-2', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 2,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-1', name: 'baz' },
-      { key: 'qux-2', name: 'qux' },
-    ],
-    stale: false,
-    type: 'stack',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 4,
-        routes: [],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
-    stale: false,
-    type: 'stack',
-  });
-});
-
-test('treats all routes as active when rehydrating state without an index', () => {
-  const router = StackRouter({});
-
-  expect(
-    router.getRehydratedState(
-      {
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          {
-            key: 'baz-1',
-            name: 'baz',
-            params: { id: '42' },
-            path: '/42',
-            state: { routes: [{ name: 'qux' }] },
-          },
-        ],
-      },
-      {
-        routeNames: ['bar', 'baz'],
-        routeGetIdList: {},
-      }
-    )
-  ).toEqual({
-    index: 1,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      {
-        key: 'baz-1',
-        name: 'baz',
-        params: { id: '42' },
-        path: '/42',
-        state: { routes: [{ name: 'qux' }] },
-      },
-    ],
-    stale: false,
-    type: 'stack',
-  });
-});
-
-test("doesn't rehydrate state if it's not stale", () => {
-  const router = StackRouter({});
-
+test('getStateForDeclaredRoutes keeps focus when an earlier active route is removed', () => {
   const state = {
-    index: 0,
-    key: 'stack-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
     stale: false as const,
     type: 'stack' as const,
+    key: 'stack-test',
+    index: 1,
+    routeNames: ['removed', 'focused', 'preloaded'],
+    routes: [
+      { key: 'removed', name: 'removed' },
+      { key: 'focused', name: 'focused' },
+      { key: 'preloaded', name: 'preloaded' },
+    ],
   };
-
-  expect(
-    router.getRehydratedState(state, {
-      routeNames: [],
-      routeGetIdList: {},
-    })
-  ).toBe(state);
-});
-
-test('keeps the focused route when rehydration filters an earlier active route', () => {
-  const result = StackRouter({}).getRehydratedState(
-    {
-      index: 1,
-      routes: [
-        { key: 'removed', name: 'removed' },
-        { key: 'focused', name: 'focused' },
-        { key: 'preloaded', name: 'preloaded' },
-      ],
-    },
-    {
-      routeNames: ['focused', 'preloaded'],
-      routeGetIdList: {},
-    }
-  );
+  const result = StackRouter({}).getStateForDeclaredRoutes(state, ['focused', 'preloaded']);
 
   expect(result.index).toBe(0);
   expect(result.routes.map((route) => route.key)).toEqual(['focused', 'preloaded']);

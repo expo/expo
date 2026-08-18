@@ -10,17 +10,27 @@ beforeEach(() => {
   MockRouterKey.current = 0;
 });
 
-// `MockRouter` with `type` dropped from every state it produces.
+// `MockRouter` with `type` dropped from action results.
 function StateWithoutTypeRouter(options: DefaultRouterOptions) {
-  const { getRehydratedState, ...router } = MockRouter(options);
+  const router = MockRouter(options);
+  const getStateForAction = router.getStateForAction;
 
-  // `MockRouter` always sets a type, so the result is only a `NavigationState` because `type` is optional.
+  // `MockRouter` adds `type`, but this fixture intentionally models state without router metadata.
   const omitType = ({ type: _stateType, ...state }: NavigationState) => state as NavigationState;
 
   return {
     ...router,
-    getRehydratedState: (...args: Parameters<typeof getRehydratedState>) =>
-      omitType(getRehydratedState(...args)),
+    getStateForAction: (...args: Parameters<typeof getStateForAction>) => {
+      const result = getStateForAction(...args);
+
+      return result === null
+        ? null
+        : {
+            ...result,
+            // MockRouter only returns complete states.
+            state: omitType(result.state as NavigationState),
+          };
+    },
   };
 }
 

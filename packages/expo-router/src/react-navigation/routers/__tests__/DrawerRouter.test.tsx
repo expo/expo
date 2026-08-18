@@ -61,8 +61,7 @@ test('route focus returns drawer metadata for state without router metadata', ()
   });
 });
 
-test('passes partial RESET state through unchanged', () => {
-  const partialState = { routes: [{ name: 'bar' }] };
+test('throws for partial RESET state', () => {
   const state: DrawerNavigationState<ParamListBase> = {
     stale: false,
     key: 'root',
@@ -70,12 +69,12 @@ test('passes partial RESET state through unchanged', () => {
     routeNames: ['bar'],
     routes: [{ key: 'bar', name: 'bar' }],
   };
-  const result = DrawerRouter({}).getStateForAction(state, CommonActions.reset(partialState), {
-    routeNames: ['bar'],
-    routeGetIdList: {},
-  });
-
-  expect(result?.state).toBe(partialState);
+  expect(() =>
+    DrawerRouter({}).getStateForAction(state, CommonActions.reset({ routes: [{ name: 'bar' }] }), {
+      routeNames: ['bar'],
+      routeGetIdList: {},
+    })
+  ).toThrow('The RESET action payload must contain a complete navigation state.');
 });
 
 type DrawerHistory = NonNullable<DrawerNavigationState<ParamListBase>['history']>;
@@ -280,10 +279,14 @@ test('PRELOAD rebuilds route history without dropping drawer status', () => {
     routeNames: ['bar', 'baz', 'qux'],
     routeGetIdList: {},
   };
-  const focusedState = router.getRehydratedState(
-    { routes: [{ key: 'qux-key', name: 'qux' }] },
-    options
-  ) as DrawerNavigationState<ParamListBase>;
+  const focusedState: DrawerNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'drawer',
+    key: 'drawer-test',
+    index: 0,
+    routeNames: options.routeNames,
+    routes: [{ key: 'qux-key', name: 'qux' }],
+  };
   const openState = router.getStateForAction(
     focusedState,
     DrawerActions.openDrawer(),
@@ -301,157 +304,6 @@ test('PRELOAD rebuilds route history without dropping drawer status', () => {
     { type: 'route', key: 'qux-key' },
     { type: 'drawer', status: 'open' },
   ]);
-});
-
-test('gets rehydrated state from partial state', () => {
-  const router = DrawerRouter({});
-
-  const options: RouterConfigOptions = {
-    routeNames: ['bar', 'baz', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'qux-1', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'qux-1', name: 'qux' },
-    ],
-    history: [{ type: 'route', key: 'bar-0' }],
-    stale: false,
-    type: 'drawer',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        routes: [{ key: 'baz-0', name: 'baz' }],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'baz-0', name: 'baz' }],
-    history: [{ type: 'route', key: 'baz-0' }],
-    stale: false,
-    type: 'drawer',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-1', name: 'baz' },
-          { key: 'qux-2', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 2,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-1', name: 'baz' },
-      { key: 'qux-2', name: 'qux' },
-    ],
-    history: [
-      { type: 'route', key: 'bar-0' },
-      { type: 'route', key: 'qux-2' },
-    ],
-    stale: false,
-    type: 'drawer',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 4,
-        routes: [],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
-    history: [{ type: 'route', key: 'bar-test' }],
-    stale: false,
-    type: 'drawer',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 1,
-        history: [
-          { type: 'route', key: 'bar-test' },
-          { type: 'route', key: 'qux-test' },
-          { type: 'route', key: 'foo-test' },
-          { type: 'drawer', status: 'open' },
-        ],
-        routes: [],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
-    history: [
-      { type: 'route', key: 'bar-test' },
-      { type: 'drawer', status: 'open' },
-    ],
-    stale: false,
-    type: 'drawer',
-  });
-});
-
-test("doesn't rehydrate state if it's not stale", () => {
-  const router = DrawerRouter({});
-
-  const state: DrawerNavigationState<ParamListBase> = {
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-    ],
-    history: [
-      { type: 'route', key: 'bar-test' },
-      { type: 'drawer', status: 'open' },
-    ],
-    stale: false as const,
-    type: 'drawer' as const,
-  };
-
-  expect(
-    router.getRehydratedState(state, {
-      routeNames: [],
-      routeGetIdList: {},
-    })
-  ).toBe(state);
 });
 
 test('handles navigate action', () => {

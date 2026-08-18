@@ -231,9 +231,8 @@ export function useTriggersToScreens(
 
     if (config.type === 'internal') {
       // TODO(https://github.com/expo/expo/pull/48756): Resolved internal-trigger href params need
-      // to flow through ExpoTabRouter to placeholder and fallback routes, action-recreated routes,
-      // and stale-state rehydration without restoring Screen.initialParams. Explicit action params
-      // must override these defaults.
+      // to flow through ExpoTabRouter to placeholder, fallback, and action-recreated routes without
+      // restoring Screen.initialParams. Explicit action params must override these defaults.
       screenProps.push({ name: config.routeNode.route });
     }
   }

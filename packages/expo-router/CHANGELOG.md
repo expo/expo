@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Require complete state in `CommonActions.reset` and `resetRoot`, and remove `Router.getRehydratedState` from `expo-router/react-navigation`.
 - Remove `NavigatorScreenParams`, `getActionFromState`, and `LinkingOptions.getActionFromState` from `expo-router/react-navigation`.
 - Represent nested navigation only as navigation state. The `screen`, `params`, and `initial` params are now ordinary user params
 - Remove the deprecated `Link` and `useLinkProps` exports from `expo-router/react-navigation`. Use `Link` from `expo-router` with an `href` instead. ([#48895](https://github.com/expo/expo/pull/48895) by [@Ubax](https://github.com/Ubax))
