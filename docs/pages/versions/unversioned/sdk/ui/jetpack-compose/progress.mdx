@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Progress Indicators match the official Jetpack Compose [Progress Indicator API](https://developer.android.com/develop/ui/compose/components/progress).
@@ -30,8 +31,17 @@ Expo UI Progress Indicators match the official Jetpack Compose [Progress Indicat
 
 A horizontal bar that fills to indicate progress. Provide a `progress` value between `0` and `1` for determinate mode.
 
-```tsx LinearExample.tsx
-import { Host, LinearProgressIndicator } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="LinearExample.tsx"
+  src="/static/images/expo-ui/examples/progress-linear-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progress-linear-android-dark.webp"
+  alt="A horizontal progress bar filled to half its track">
+
+```tsx
+import {
+  Host,
+  LinearProgressIndicator,
+} from '@expo/ui/jetpack-compose';
 
 export default function LinearExample() {
   return (
@@ -42,12 +52,23 @@ export default function LinearExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Circular progress
 
 A spinning circle whose stroke grows to indicate progress.
 
-```tsx CircularExample.tsx
-import { Host, CircularProgressIndicator } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="CircularExample.tsx"
+  src="/static/images/expo-ui/examples/progress-circular-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progress-circular-android-dark.webp"
+  alt="A circular progress ring drawn three quarters of the way round">
+
+```tsx
+import {
+  Host,
+  CircularProgressIndicator,
+} from '@expo/ui/jetpack-compose';
 
 export default function CircularExample() {
   return (
@@ -58,11 +79,19 @@ export default function CircularExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Indeterminate
 
 Omit the `progress` prop to animate continuously without indicating a specific completion level.
 
-```tsx IndeterminateExample.tsx
+<ComponentExample
+  title="IndeterminateExample.tsx"
+  src="/static/images/expo-ui/examples/progress-indeterminate-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progress-indeterminate-android-dark.webp"
+  alt="Linear, circular, wavy circular, and wavy linear indicators animating without a set value">
+
+```tsx
 import {
   CircularProgressIndicator,
   CircularWavyProgressIndicator,
@@ -86,27 +115,50 @@ export default function IndeterminateExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom colors
 
 Use `color` for the indicator and `trackColor` for the background track.
 
-```tsx ColorsExample.tsx
-import { Host, CircularProgressIndicator } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="ColorsExample.tsx"
+  src="/static/images/expo-ui/examples/progress-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progress-colors-android-dark.webp"
+  alt="A circular progress ring drawn in red over a grey track">
+
+```tsx
+import {
+  Host,
+  CircularProgressIndicator,
+} from '@expo/ui/jetpack-compose';
 
 export default function ColorsExample() {
   return (
     <Host matchContents>
-      <CircularProgressIndicator progress={0.6} color="red" trackColor="#cccccc" />
+      <CircularProgressIndicator
+        progress={0.6}
+        color="red"
+        trackColor="#cccccc"
+      />
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Wavy variants
 
 `LinearWavyProgressIndicator` and `CircularWavyProgressIndicator` add an expressive wave animation from Material 3 Expressive.
 
-```tsx WavyExample.tsx
+<ComponentExample
+  title="WavyExample.tsx"
+  src="/static/images/expo-ui/examples/progress-wavy-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/progress-wavy-android-dark.webp"
+  alt="A wavy linear bar and a wavy circular ring, each at sixty percent">
+
+```tsx
 import {
   Host,
   LinearWavyProgressIndicator,
@@ -125,6 +177,8 @@ export default function WavyExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

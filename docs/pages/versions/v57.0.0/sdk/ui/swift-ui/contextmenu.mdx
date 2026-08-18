@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI ContextMenu matches the official SwiftUI [contextMenu API](<https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:)>) and displays a menu when long-pressed. For single-tap menu interactions, use [`Menu`](menu) instead.
@@ -28,16 +29,29 @@ Expo UI ContextMenu matches the official SwiftUI [contextMenu API](<https://deve
 
 ### Basic context menu
 
-```tsx BasicContextMenuExample.tsx
+<ComponentExample
+  title="BasicContextMenuExample.tsx"
+  src="/static/images/expo-ui/examples/contextmenu-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/contextmenu-basic-ios-dark.webp"
+  alt="A context menu open under the lifted trigger, listing Edit and a red Delete">
+
+```tsx
 import { Host, ContextMenu, Button, Text } from '@expo/ui/swift-ui';
 
 export default function BasicContextMenuExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Edit" onPress={() => console.log('Edit')} />
-          <Button label="Delete" role="destructive" onPress={() => console.log('Delete')} />
+          <Button
+            label="Edit"
+            onPress={() => console.log('Edit')}
+          />
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => console.log('Delete')}
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>
@@ -48,14 +62,22 @@ export default function BasicContextMenuExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Context menu with system images
 
-```tsx ContextMenuWithImagesExample.tsx
+<ComponentExample
+  title="ContextMenuWithImagesExample.tsx"
+  src="/static/images/expo-ui/examples/contextmenu-with-images-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/contextmenu-with-images-ios-dark.webp"
+  alt="A context menu listing Share, Favorite, and a red Delete, each with an SF Symbol">
+
+```tsx
 import { Host, ContextMenu, Button, Text } from '@expo/ui/swift-ui';
 
 export default function ContextMenuWithImagesExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
           <Button
@@ -63,7 +85,11 @@ export default function ContextMenuWithImagesExample() {
             systemImage="square.and.arrow.up"
             onPress={() => console.log('Share')}
           />
-          <Button label="Favorite" systemImage="heart" onPress={() => console.log('Favorite')} />
+          <Button
+            label="Favorite"
+            systemImage="heart"
+            onPress={() => console.log('Favorite')}
+          />
           <Button
             label="Delete"
             systemImage="trash"
@@ -80,29 +106,58 @@ export default function ContextMenuWithImagesExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Context menu with preview
 
 Use `ContextMenu.Preview` to show a custom preview above the menu when opened.
 
-```tsx ContextMenuWithPreviewExample.tsx
+<ComponentExample
+  title="ContextMenuWithPreviewExample.tsx"
+  src="/static/images/expo-ui/examples/contextmenu-with-preview-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/contextmenu-with-preview-ios-dark.webp"
+  alt="A context menu with a Preview content card above the Edit and Delete items">
+
+```tsx
 import { View, Text as RNText } from 'react-native';
-import { Host, ContextMenu, Button, Text } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ContextMenu,
+  Button,
+  RNHostView,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function ContextMenuWithPreviewExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Edit" onPress={() => console.log('Edit')} />
-          <Button label="Delete" role="destructive" onPress={() => console.log('Delete')} />
+          <Button
+            label="Edit"
+            onPress={() => console.log('Edit')}
+          />
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => console.log('Delete')}
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>
         </ContextMenu.Trigger>
         <ContextMenu.Preview>
-          <View style={{ width: 200, height: 100, backgroundColor: '#f0f0f0', padding: 16 }}>
-            <RNText>Preview content</RNText>
-          </View>
+          <RNHostView matchContents>
+            <View
+              style={{
+                width: 200,
+                height: 100,
+                backgroundColor: '#f0f0f0',
+                padding: 16,
+              }}>
+              <RNText>Preview content</RNText>
+            </View>
+          </RNHostView>
         </ContextMenu.Preview>
       </ContextMenu>
     </Host>
@@ -110,21 +165,40 @@ export default function ContextMenuWithPreviewExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Context menu with picker
 
-```tsx ContextMenuWithPickerExample.tsx
+<ComponentExample
+  title="ContextMenuWithPickerExample.tsx"
+  src="/static/images/expo-ui/examples/contextmenu-with-picker-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/contextmenu-with-picker-ios-dark.webp"
+  alt="A context menu listing Action and a Size row with a submenu chevron">
+
+```tsx
 import { useState } from 'react';
-import { Host, ContextMenu, Button, Text, Picker } from '@expo/ui/swift-ui';
+import {
+  Host,
+  ContextMenu,
+  Button,
+  Text,
+  Picker,
+} from '@expo/ui/swift-ui';
 import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 
 export default function ContextMenuWithPickerExample() {
-  const [selectedIndex, setSelectedIndex] = useState<number | undefined>(0);
+  const [selectedIndex, setSelectedIndex] = useState<
+    number | undefined
+  >(0);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Action" onPress={() => console.log('Action')} />
+          <Button
+            label="Action"
+            onPress={() => console.log('Action')}
+          />
           <Picker
             label="Size"
             modifiers={[pickerStyle('menu')]}
@@ -146,24 +220,49 @@ export default function ContextMenuWithPickerExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Context menu with sections
 
 Use `Section` and `Divider` components to organize menu items.
 
-```tsx ContextMenuWithSectionsExample.tsx
-import { Host, ContextMenu, Button, Text, Section, Divider } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="ContextMenuWithSectionsExample.tsx"
+  src="/static/images/expo-ui/examples/contextmenu-with-sections-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/contextmenu-with-sections-ios-dark.webp"
+  alt="A context menu with an Actions section holding Edit and Duplicate, a divider, and Delete">
+
+```tsx
+import {
+  Host,
+  ContextMenu,
+  Button,
+  Text,
+  Section,
+  Divider,
+} from '@expo/ui/swift-ui';
 
 export default function ContextMenuWithSectionsExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
           <Section title="Actions">
-            <Button label="Edit" onPress={() => console.log('Edit')} />
-            <Button label="Duplicate" onPress={() => console.log('Duplicate')} />
+            <Button
+              label="Edit"
+              onPress={() => console.log('Edit')}
+            />
+            <Button
+              label="Duplicate"
+              onPress={() => console.log('Duplicate')}
+            />
           </Section>
           <Divider />
-          <Button label="Delete" role="destructive" onPress={() => console.log('Delete')} />
+          <Button
+            label="Delete"
+            role="destructive"
+            onPress={() => console.log('Delete')}
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>
@@ -174,20 +273,31 @@ export default function ContextMenuWithSectionsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Disabled items
 
 Use the [`disabled(true)`](modifiers/#disableddisabled) modifier on a menu `Button` to render it greyed-out and non-interactive.
 
-```tsx DisabledContextMenuItemExample.tsx
+<ComponentExample
+  title="DisabledContextMenuItemExample.tsx"
+  src="/static/images/expo-ui/examples/contextmenu-disabled-item-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/contextmenu-disabled-item-ios-dark.webp"
+  alt="A context menu listing Edit and a greyed out Locked item with a lock icon">
+
+```tsx
 import { Host, ContextMenu, Button, Text } from '@expo/ui/swift-ui';
 import { disabled } from '@expo/ui/swift-ui/modifiers';
 
 export default function DisabledContextMenuItemExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Edit" onPress={() => console.log('Edit')} />
+          <Button
+            label="Edit"
+            onPress={() => console.log('Edit')}
+          />
           <Button
             label="Locked"
             systemImage="lock"
@@ -204,11 +314,19 @@ export default function DisabledContextMenuItemExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Selectable items (checkmarks)
 
 A SwiftUI [`Toggle`](toggle) inside `ContextMenu.Items` automatically renders as a row with a leading SF Symbol and a trailing checkmark when `isOn` is `true`.
 
-```tsx CheckmarkContextMenuItemExample.tsx
+<ComponentExample
+  title="CheckmarkContextMenuItemExample.tsx"
+  src="/static/images/expo-ui/examples/contextmenu-checkmark-item-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/contextmenu-checkmark-item-ios-dark.webp"
+  alt="A context menu row labelled Pin with a pin icon and a leading checkmark">
+
+```tsx
 import { Host, ContextMenu, Toggle, Text } from '@expo/ui/swift-ui';
 import { useState } from 'react';
 
@@ -216,10 +334,15 @@ export default function CheckmarkContextMenuItemExample() {
   const [pinned, setPinned] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Toggle isOn={pinned} label="Pin" systemImage="pin" onIsOnChange={setPinned} />
+          <Toggle
+            isOn={pinned}
+            label="Pin"
+            systemImage="pin"
+            onIsOnChange={setPinned}
+          />
         </ContextMenu.Items>
         <ContextMenu.Trigger>
           <Text>Long press me</Text>
@@ -230,23 +353,40 @@ export default function CheckmarkContextMenuItemExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Nested context menus
 
 Use nested `ContextMenu` components to create submenus.
 
-```tsx NestedContextMenuExample.tsx
+<ComponentExample
+  title="NestedContextMenuExample.tsx"
+  src="/static/images/expo-ui/examples/contextmenu-nested-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/contextmenu-nested-ios-dark.webp"
+  alt="A context menu listing Action and More Options">
+
+```tsx
 import { Host, ContextMenu, Button, Text } from '@expo/ui/swift-ui';
 
 export default function NestedContextMenuExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ContextMenu>
         <ContextMenu.Items>
-          <Button label="Action" onPress={() => console.log('Action')} />
+          <Button
+            label="Action"
+            onPress={() => console.log('Action')}
+          />
           <ContextMenu>
             <ContextMenu.Items>
-              <Button label="Sub Action 1" onPress={() => console.log('Sub 1')} />
-              <Button label="Sub Action 2" onPress={() => console.log('Sub 2')} />
+              <Button
+                label="Sub Action 1"
+                onPress={() => console.log('Sub 1')}
+              />
+              <Button
+                label="Sub Action 2"
+                onPress={() => console.log('Sub 2')}
+              />
             </ContextMenu.Items>
             <ContextMenu.Trigger>
               <Button label="More Options" />
@@ -262,10 +402,15 @@ export default function NestedContextMenuExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { ContextMenu } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/contextmenu" apiName="ContextMenu" />
+<APISection
+  packageName="expo-ui/swift-ui/contextmenu"
+  apiName="ContextMenu"
+/>
