@@ -61,30 +61,51 @@ class MockUnexpectedThrowCheck implements DoctorCheck {
 }
 
 describe(actionAsync, () => {
+  const devGlobal = globalThis as typeof globalThis & { __DEV__?: boolean };
+  const originalDev = devGlobal.__DEV__;
+  const originalConfigMode = process.env.__EXPO_CONFIG_MODE;
+
   afterEach(() => {
-    delete process.env.EXPO_CONFIG_MODE;
+    devGlobal.__DEV__ = originalDev;
+    if (originalConfigMode === undefined) {
+      delete process.env.__EXPO_CONFIG_MODE;
+    } else {
+      process.env.__EXPO_CONFIG_MODE = originalConfigMode;
+    }
     jest.mocked(loadProjectEnv).mockReset();
+    jest.mocked(Log.exception).mockReset();
     jest.restoreAllMocks();
   });
 
-  it('removes EXPO_CONFIG_MODE loaded from .env before Expo config runs', async () => {
-    let configModeAtConfig: string | undefined;
-
-    jest.mocked(loadProjectEnv).mockImplementation(() => {
-      process.env.EXPO_CONFIG_MODE = 'development';
-      return { result: 'skipped', loaded: [] };
-    });
-    jest.spyOn(ProjectConfig, 'getProjectConfigAsync').mockImplementation(async () => {
-      configModeAtConfig = process.env.EXPO_CONFIG_MODE;
-      return additionalProjectProps;
-    });
+  it('uses the same mode for env files and Expo config', async () => {
+    process.env.__EXPO_CONFIG_MODE = 'production';
+    jest.spyOn(ProjectConfig, 'getProjectConfigAsync').mockResolvedValue(additionalProjectProps);
     jest.spyOn(CheckResolver, 'resolveChecksInScope').mockReturnValue([]);
 
-    await actionAsync('/app', false, 'production');
+    await actionAsync('/app', false);
 
     expect(loadProjectEnv).toHaveBeenCalledWith('/app', { mode: 'production' });
     expect(ProjectConfig.getProjectConfigAsync).toHaveBeenCalledWith('/app', 'production');
-    expect(configModeAtConfig).toBeUndefined();
+    expect(devGlobal.__DEV__).toBe(false);
+    expect(process.env.__EXPO_CONFIG_MODE).toBeUndefined();
+  });
+
+  it('reports an invalid config mode', async () => {
+    process.env.__EXPO_CONFIG_MODE = 'staging';
+    const getProjectConfigSpy = jest
+      .spyOn(ProjectConfig, 'getProjectConfigAsync')
+      .mockResolvedValue(additionalProjectProps);
+
+    await actionAsync('/app', false);
+
+    expect(Log.exception).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: 'Invalid __EXPO_CONFIG_MODE value: "staging". Use "development" or "production".',
+      })
+    );
+    expect(loadProjectEnv).not.toHaveBeenCalled();
+    expect(getProjectConfigSpy).not.toHaveBeenCalled();
+    expect(process.env.__EXPO_CONFIG_MODE).toBeUndefined();
   });
 });
 

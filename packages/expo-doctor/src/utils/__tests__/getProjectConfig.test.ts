@@ -39,7 +39,7 @@ describe(getProjectConfigAsync, () => {
 
     expect(mockSpawnExpoCLI).toHaveBeenCalledWith('/project', ['config', '--json', '--full'], {
       stdio: 'pipe',
-      env: { EXPO_CONFIG_MODE: 'production', EXPO_DEBUG: '0' },
+      env: { __EXPO_CONFIG_MODE: 'production', EXPO_DEBUG: '0' },
     });
   });
 
