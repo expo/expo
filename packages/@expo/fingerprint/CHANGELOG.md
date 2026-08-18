@@ -14,8 +14,11 @@
 - Added a `package` source type that hashes a dependency by its `package.json` name and version. ([#47667](https://github.com/expo/expo/pull/47667) by [@kudo](https://github.com/kudo))
 - Added fingerprint presets (`strict`, `balanced`, `relaxed`), selectable via `preset` in **fingerprint.config.js** or the `--preset` CLI flag. ([#47668](https://github.com/expo/expo/pull/47668) by [@kudo](https://github.com/kudo))
 - Added `SourceSkips.EasJson` and `SourceSkips.Easignore` to exclude `eas.json` and `.easignore` from fingerprints. ([#48586](https://github.com/expo/expo/pull/48586) by [@kudo](https://github.com/kudo))
+- Hash the font file an `expo-font` Android family declares once for all of its definitions, as done with variable fonts. ([#48737](https://github.com/expo/expo/pull/48737) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
+
+- Set development mode before loading Expo config and `.env` files. ([#48839](https://github.com/expo/expo/pull/48839) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 

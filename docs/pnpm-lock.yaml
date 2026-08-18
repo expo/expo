@@ -16,6 +16,9 @@ importers:
 
   .:
     dependencies:
+      '@expo/sdk-compatibility':
+        specifier: link:../packages/@expo/sdk-compatibility
+        version: link:../packages/@expo/sdk-compatibility
       '@expo/styleguide':
         specifier: ^14.2.1
         version: 14.2.1(next@16.2.11(patch_hash=423eaa79c801dbfda09aef892b3236e0194d49baf618fb3c7a89ec95d486eaeb)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)(tailwindcss@4.3.3)

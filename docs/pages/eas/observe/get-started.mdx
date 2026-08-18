@@ -233,9 +233,13 @@ You can also query metrics from the terminal using the EAS CLI:
 - `eas observe:versions`: Lists app versions along with their build IDs, update group IDs, and release dates. Useful for finding the version identifiers needed to filter the other commands.
 - `eas observe:metrics-summary`: Shows aggregated performance metric statistics (such as median, p75, and p95 values) grouped by app version. Use this to compare overall startup performance across releases.
 - `eas observe:metrics`: Shows individual performance metric events ordered by value, including session and device metadata. Use this to investigate specific slow sessions or outliers.
+- `eas observe:routes`: Shows navigation metrics (cold and warm time to first render, and time to interactive) grouped by route name. Requires the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/) integration.
+- `eas observe:session`: Shows the full event timeline for a single session.
 - `eas observe:events`: Shows individual events emitted by your app via `Observe.logEvent`. See [User-defined events](/eas/observe/events/) for details.
 
-Run any of these commands with `--help` to see the available flags and arguments.
+Run any of these commands with `--help` to see the available flags and arguments. For flags, metric names, and common workflows, see [Querying with EAS CLI](/eas/observe/eas-cli/).
+
+For the full library API, including configuration options and all available methods, see the [`expo-observe` API reference](/versions/latest/sdk/observe/).
 
 </Step>
 

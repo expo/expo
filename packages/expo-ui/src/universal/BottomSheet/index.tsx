@@ -2,6 +2,7 @@ import { useColorScheme } from 'react-native';
 import { Drawer } from 'vaul';
 
 import type { BottomSheetProps, SnapPoint } from './types';
+import { resolveContentPadding } from './utils';
 
 // Visually-hidden style for the screen-reader-only Drawer.Title.
 const visuallyHiddenStyle: React.CSSProperties = {
@@ -33,8 +34,15 @@ export function BottomSheet({
   showDragIndicator = true,
   snapPoints,
   testID,
+  contentPadding,
 }: BottomSheetProps) {
   const isDark = useColorScheme() === 'dark';
+  const { top, bottom, left, right } = resolveContentPadding(contentPadding, {
+    top: 16,
+    bottom: 16,
+    left: 16,
+    right: 16,
+  });
   const vaulSnapPoints = snapPoints?.length ? snapPoints.map(snapPointToVaul) : undefined;
   const hasSnapPoints = vaulSnapPoints != null;
 
@@ -60,7 +68,15 @@ export function BottomSheet({
           {/* Radix Dialog requires a title for a11y; render visually-hidden. */}
           <Drawer.Title style={visuallyHiddenStyle}>Bottom sheet</Drawer.Title>
           {showDragIndicator && <Drawer.Handle />}
-          <div style={innerStyle} data-testid={testID}>
+          <div
+            style={{
+              ...innerStyle,
+              paddingTop: top,
+              paddingBottom: bottom,
+              paddingLeft: left,
+              paddingRight: right,
+            }}
+            data-testid={testID}>
             {children}
           </div>
         </Drawer.Content>
@@ -99,7 +115,6 @@ const noSnapPointContentStyle: React.CSSProperties = {
 };
 
 const innerStyle: React.CSSProperties = {
-  padding: 16,
   overflow: 'auto',
 };
 
