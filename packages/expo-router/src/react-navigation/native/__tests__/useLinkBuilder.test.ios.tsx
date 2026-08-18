@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react-native';
 
-import { NavigationContainer } from '../../../fork/NavigationContainer';
 import { NavigationRouteContext } from '../../core';
+import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
 import { createStackNavigator } from '../__stubs__/createStackNavigator';
 import { useLinkBuilder } from '../useLinkBuilder';
 
@@ -22,8 +22,19 @@ const config = {
   },
 };
 
+let warn: jest.SpiedFunction<typeof console.warn>;
+
+beforeEach(() => {
+  warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  expect(warn).not.toHaveBeenCalled();
+  warn.mockRestore();
+});
+
 test('builds href outside of a navigator', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Root = () => {
     const { buildHref } = useLinkBuilder();
@@ -43,7 +54,7 @@ test('builds href outside of a navigator', () => {
 });
 
 test('builds href in navigator layout', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = ({ children }: { children: React.ReactNode }) => {
     const { buildHref } = useLinkBuilder();
@@ -67,7 +78,7 @@ test('builds href in navigator layout', () => {
 });
 
 test('builds href in route context', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildHref } = useLinkBuilder();
@@ -96,7 +107,7 @@ test('builds href in route context', () => {
 });
 
 test('builds href in stack navigator screen', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildHref } = useLinkBuilder();
@@ -120,7 +131,7 @@ test('builds href in stack navigator screen', () => {
 });
 
 test('builds href in nested navigator layout', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = ({ children }: { children: React.ReactNode }) => {
     const { buildHref } = useLinkBuilder();
@@ -151,7 +162,7 @@ test('builds href in nested navigator layout', () => {
 });
 
 test('builds href in nested route context', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildHref } = useLinkBuilder();
@@ -187,7 +198,7 @@ test('builds href in nested route context', () => {
 });
 
 test('builds href in nested navigator screen', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildHref } = useLinkBuilder();
@@ -218,7 +229,7 @@ test('builds href in nested navigator screen', () => {
 });
 
 test('builds action from href outside of a navigator', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildAction } = useLinkBuilder();
@@ -241,7 +252,7 @@ test('builds action from href outside of a navigator', () => {
 });
 
 test('builds action from href in navigator screen', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildAction } = useLinkBuilder();
@@ -268,7 +279,7 @@ test('builds action from href in navigator screen', () => {
 });
 
 test('builds action from href in nested navigator', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildAction } = useLinkBuilder();

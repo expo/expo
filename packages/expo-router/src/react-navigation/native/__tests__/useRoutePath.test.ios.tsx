@@ -1,8 +1,8 @@
 import { act, render, screen } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { NavigationContainer } from '../../../fork/NavigationContainer';
 import { createNavigationContainerRef, NavigationRouteContext, useNavigation } from '../../core';
+import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
 import type { StackNavigationProp } from '../../stack';
 import { createStackNavigator } from '../__stubs__/createStackNavigator';
 import { useRoutePath } from '../useRoutePath';
@@ -28,6 +28,17 @@ const config = {
     return null;
   },
 };
+
+let warn: jest.SpiedFunction<typeof console.warn>;
+
+beforeEach(() => {
+  warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  expect(warn).not.toHaveBeenCalled();
+  warn.mockRestore();
+});
 
 const Test = () => {
   const route = React.useContext(NavigationRouteContext);
