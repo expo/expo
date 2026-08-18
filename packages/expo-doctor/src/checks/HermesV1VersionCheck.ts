@@ -2,9 +2,9 @@ import JsonFile from '@expo/json-file';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { loadBabelConfigPlugins } from '../utils/babelConfigLoader';
 import { getHermesVersion } from '../utils/hermesVersion';
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 const FIXED_EXPO_VERSION = '57.0.9';
 const AFFECTED_HERMES_VERSION_PREFIX = '250829098.';

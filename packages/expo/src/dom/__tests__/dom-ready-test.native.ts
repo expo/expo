@@ -50,7 +50,7 @@ describe('notifyDOMReady', () => {
 describe('$$dom_ready', () => {
   beforeEach(() => {
     jest.resetModules();
-    jest.doMock('../../utils/getDevServer', () => ({
+    jest.doMock('react-native/Libraries/Core/Devtools/getDevServer', () => ({
       __esModule: true,
       default: () => ({ url: 'http://localhost:8081' }),
     }));
