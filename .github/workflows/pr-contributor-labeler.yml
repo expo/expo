@@ -1,10 +1,14 @@
-name: PR Contributor Labeler
+name: Contributor Labeler
 
 on:
   # pull_request_target is required so fork PRs get a write token to add labels.
   # Safe because the only checkout is a sparse, base-branch read of
   # .github/partner-allowlist.json — no fork code is fetched or executed.
   pull_request_target:
+    types: [opened, reopened]
+  # Issues need no _target equivalent: an issue has no head repository and no
+  # code, so the ordinary event already runs in base-repo context.
+  issues:
     types: [opened, reopened]
 
 permissions:
@@ -16,7 +20,7 @@ jobs:
     if: github.repository == 'expo/expo'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           sparse-checkout: |
             .github/partner-allowlist.json
@@ -41,10 +45,21 @@ jobs:
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
-            const pr = context.payload.pull_request;
-            const username = pr.user.login;
+            // Both events, one shape. An issue payload has the same
+            // user/author_association/number fields a pull request does.
+            const item = context.payload.pull_request ?? context.payload.issue;
+            const username = item.user.login;
 
-            if (pr.user.type === 'Bot') {
+            // Bots that are ours are internal, and this has to be decided
+            // BEFORE the bot skip below or their pull requests come out
+            // unlabelled — which is exactly what happened to expo-tuft.
+            const INTERNAL_BOTS = new Set(['expo-tuft[bot]']);
+            if (INTERNAL_BOTS.has(username)) {
+              await labelInternal('known internal bot');
+              return;
+            }
+
+            if (item.user.type === 'Bot') {
               core.info(`Skipping bot author: ${username}`);
               return;
             }
@@ -73,7 +88,7 @@ jobs:
               await github.rest.issues.addLabels({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: pr.number,
+                issue_number: item.number,
                 labels: [name],
               });
             }
@@ -87,8 +102,8 @@ jobs:
             // Prefer author_association from the webhook payload — GitHub
             // itself attests to the relationship, no token dependency.
             const INTERNAL = new Set(['MEMBER', 'OWNER', 'COLLABORATOR']);
-            if (INTERNAL.has(pr.author_association)) {
-              await labelInternal(pr.author_association);
+            if (INTERNAL.has(item.author_association)) {
+              await labelInternal(item.author_association);
               return;
             }
 
@@ -104,6 +119,10 @@ jobs:
 
             await applyLabel('contributor: external', 'ededed',
               'PR author is not a member of the expo GitHub org');
+
+            // Partner labels stay a pull-request notion: they describe who
+            // authored a change, and an issue is a report, not a contribution.
+            if (!context.payload.pull_request) return;
 
             const affiliations = process.env.AFFILIATIONS
               .split('\n')

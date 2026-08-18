@@ -13,6 +13,15 @@ public final class BlurhashGenerationException: Exception {
 }
 
 /**
+ An exception to throw when it is not possible to generate a thumbhash for a given URL.
+ */
+public final class ThumbhashGenerationException: Exception {
+  override public var reason: String {
+    "Unable to generate thumbhash, make sure the image exists at the given URL"
+  }
+}
+
+/**
  An exception thrown when `writeToCacheAsync` is given a source that is neither a local file URI nor an image reference.
  */
 internal final class WriteToCacheSourceException: Exception, @unchecked Sendable {

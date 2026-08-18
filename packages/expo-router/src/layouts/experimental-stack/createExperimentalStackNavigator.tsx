@@ -2,12 +2,12 @@
 import * as React from 'react';
 import { use, useMemo } from 'react';
 
+import { getValidInitialRouteName, useRouteNode } from '../../Route';
 import {
   CompositionContext,
   mergeOptions,
   useCompositionRegistry,
 } from '../../fork/native-stack/composition-options';
-import type { NativeStackDescriptorMap } from '../../fork/native-stack/descriptors-context';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -19,7 +19,6 @@ import {
   type StackNavigationState,
   StackRouter,
   type StackRouterOptions,
-  type StaticConfig,
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../react-navigation/native';
@@ -33,8 +32,6 @@ import type {
 
 function ExperimentalStackNavigator({
   id,
-  initialRouteName,
-  UNSTABLE_routeNamesChangeBehavior,
   children,
   layout,
   screenListeners,
@@ -43,7 +40,8 @@ function ExperimentalStackNavigator({
   UNSTABLE_router,
   ...rest
 }: ExperimentalStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const routeNode = useRouteNode();
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -51,8 +49,7 @@ function ExperimentalStackNavigator({
     ExperimentalStackNavigationEventMap
   >(StackRouter, {
     id,
-    initialRouteName,
-    UNSTABLE_routeNamesChangeBehavior,
+    initialRouteName: getValidInitialRouteName(routeNode),
     children,
     layout,
     screenListeners,
@@ -64,8 +61,7 @@ function ExperimentalStackNavigator({
   const { registry, contextValue } = useCompositionRegistry();
 
   const mergedDescriptors = useMemo(
-    // TODO(@ubax): implement properly when more stack options are available
-    () => mergeOptions(descriptors as NativeStackDescriptorMap, registry, state),
+    () => mergeOptions(descriptors, registry, state),
     [descriptors, registry, state]
   );
 
@@ -100,7 +96,6 @@ function ExperimentalStackNavigator({
           state={state}
           navigation={navigation}
           descriptors={mergedDescriptors}
-          describe={describe}
         />
       </CompositionContext>
     </NavigationContent>
@@ -125,7 +120,6 @@ export function createExperimentalStackNavigator<
     };
     Navigator: typeof ExperimentalStackNavigator;
   },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(ExperimentalStackNavigator)(config);
+>(): TypedNavigator<TypeBag> {
+  return createNavigatorFactory(ExperimentalStackNavigator)();
 }

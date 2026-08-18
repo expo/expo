@@ -9,8 +9,53 @@
 ### 🐛 Bug fixes
 
 - Warn when an asset is missing from the local asset map instead of silently resolving to an empty URI. ([#48262](https://github.com/expo/expo/pull/48262) by [@ClasherCr](https://github.com/ClasherCr))
+- Resolve development asset URLs from the bundle URL instead of the manifest's `debuggerHost` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+## 57.0.8 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.7 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.17 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 - 2026-06-05
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.15 — 2026-05-26
 

@@ -334,7 +334,8 @@ struct OpenTelemetryTests {
     )
     let otMetric = metric.toOTMetric()
     let attrs = Dictionary(
-      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) }
+    )
 
     #expect(attrs["expo.route_name"] == "/home")
   }
@@ -354,7 +355,8 @@ struct OpenTelemetryTests {
     )
     let otMetric = metric.toOTMetric()
     let attrs = Dictionary(
-      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) }
+    )
 
     #expect(otMetric.name == "expo.updates.download_time")
     #expect(attrs["expo.update_id"] == "abc123-def456")
@@ -394,7 +396,8 @@ struct OpenTelemetryTests {
     )
     let otMetric = metric.toOTMetric()
     let attrs = Dictionary(
-      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) }
+    )
 
     let jsonString = try #require(attrs["expo.custom_params"] ?? nil)
     let parsed = try! JSONSerialization.jsonObject(with: jsonString.data(using: .utf8)!) as! [String: String]

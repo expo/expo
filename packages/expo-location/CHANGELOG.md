@@ -12,10 +12,59 @@
 
 - [Android] Fix `timeInterval` and `distanceInterval` being ignored for background location updates. ([#46788](https://github.com/expo/expo/issues/46788) by [@doshisunny](https://github.com/doshisunny))
 - [iOS] Fix incorrect default value for `pausesUpdatesAutomatically` to match docs. ([#47008](https://github.com/expo/expo/pull/47008) by [@Ignigena](https://github.com/Ignigena))
+- [Android] Fix leaking watches ([#48294](https://github.com/expo/expo/pull/48294) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 
 - Simplify re-export of `LocationEventEmitter` ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
+
+## 57.0.7 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.18 - 2026-06-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.17 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 - 2026-06-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.15 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.14 — 2026-05-26
 

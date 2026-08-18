@@ -48,7 +48,7 @@ Debugging performance in React Native has traditionally been limited to developm
   }}
 />
 
-Wrap your root layout with the `AppMetricsRoot` component (SDK 55) or the `ObserveRoot` component (SDK 56 and later) and call `markInteractive()` when your app is ready for user input. See [Get started](/eas/observe/get-started/) for the full setup guide.
+Wrap your root layout with the `ObserveRoot` component (or the `AppMetricsRoot` component on SDK 55) and call `markInteractive()` when your app is ready for user input. See [Get started](/eas/observe/get-started/) for the full setup guide.
 
 ### Expo Skills for AI agents
 
@@ -66,9 +66,11 @@ If you use an AI agent, install [Expo Skills](/skills/) to teach it how to set u
 
 Traditional development-time profiling tools show how your app performs on your machine. EAS Observe shows how it performs for real users:
 
-- **Production performance data**: Track startup times, render performance, and bundle load times from real user sessions across a range of devices
+- **Production performance data**: Track startup times, render performance, bundle load times, and EAS Update download times from real user sessions across a range of devices
 - **Release comparison**: See how metrics change between app versions and OTA updates to catch regressions early
+- **Per-route navigation metrics**: Compare render and interactive timings by route with the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/) integration
 - **Session investigation**: Drill into individual user sessions to understand why certain devices or conditions lead to slower performance
+- **User-defined events**: Log custom signals from your app with `Observe.logEvent` and analyze them alongside performance data
 - **CLI and dashboard access**: Query metrics from the terminal with `eas observe:` commands or view them in the EAS dashboard
 
 ## When to use EAS Observe
@@ -78,16 +80,16 @@ Traditional development-time profiling tools show how your app performs on your 
 | Monitor app startup performance in production       | <YesIcon />    |
 | Compare performance across releases and OTA updates | <YesIcon />    |
 | Investigate slow sessions on specific devices       | <YesIcon />    |
+| Compare navigation performance across routes        | <YesIcon />    |
+| Track EAS Update download times                     | <YesIcon />    |
 | Query performance metrics from the CLI              | <YesIcon />    |
+| Track user-defined events from your app             | <YesIcon />    |
 | Development-time profiling and debugging            | <NoIcon />     |
 | Crash reporting and error tracking                  | <NoIcon />     |
-| Custom analytics and event tracking                 | <NoIcon />     |
 
 **Development-time profiling and debugging**: Use [React Native DevTools](/debugging/tools/#debugging-with-react-native-devtools) for debugging and [Expo Atlas](/guides/analyzing-bundles/) for bundle inspection.
 
-**Crash reporting and error tracking**: This is a planned addition for EAS Observe in the future. In the interim we suggest a crash reporting service such as [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/).
-
-**Custom analytics and event tracking**: This is a planned addition for EAS Observe in the future. In the interim, choose an analytics provider from the [React Native analytics guide](/guides/using-analytics/), for example PostHog, Amplitude, or Firebase Analytics.
+**Crash reporting and error tracking**: On SDK 57 and later, the [`expo-observe`](/versions/latest/sdk/observe/) library can record JavaScript errors with `ObserveErrorBoundary` and `reportError`. However, the EAS Observe dashboard and the EAS CLI do not display these errors yet. Until they do, we suggest a crash reporting service such as [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/).
 
 ## Frequently asked questions (FAQ)
 
@@ -95,13 +97,13 @@ Traditional development-time profiling tools show how your app performs on your 
 
 <Collapsible summary="What metrics does EAS Observe track?">
 
-EAS Observe focuses on startup metrics: cold launch time, warm launch time, time to first render, time to interactive, and bundle load time. See the [Metrics reference](/eas/observe/reference/metrics/) for detailed descriptions of each metric.
+EAS Observe tracks startup metrics (cold launch time, warm launch time, time to first render, time to interactive, and bundle load time) and [EAS Update download time](/eas/observe/eas-update/). On SDK 56 and later, the [navigation integrations](/eas/observe/integrations/expo-router/) add per-route render and interactive timings. See the [Metrics reference](/eas/observe/reference/metrics/) for detailed descriptions of each metric. You can also log your own signals as [user-defined events](/eas/observe/events/).
 
 </Collapsible>
 
 <Collapsible summary="Which platforms are supported?">
 
-EAS Observe supports Android and iOS. Metrics are collected from production builds and can be filtered by platform in both the dashboard and CLI.
+EAS Observe supports Android, iOS, and tvOS. Metrics are collected from production builds and can be filtered by platform in both the dashboard and CLI.
 
 </Collapsible>
 
@@ -125,7 +127,7 @@ Metrics collected while offline are stored locally on the device. They are autom
 
 <Collapsible summary="Can I test metrics during development?">
 
-By default, metrics collected from debug builds are not dispatched. You can dispatch them anyway for testing by setting `dispatchInDebug` to `true` via [`configure()`](/eas/observe/configuration/#configure). See [Configuration](/eas/observe/configuration/#enable-metrics-in-development) for details.
+By default, metrics collected from debug builds are not dispatched. You can dispatch them anyway for testing by setting `dispatchInDebug` to `true` via [`configure()`](/versions/latest/sdk/observe/#configureconfig). See [Configuration](/eas/observe/configuration/#enable-metrics-in-development) for details.
 
 </Collapsible>
 
@@ -154,6 +156,13 @@ Metric data is retained for a minimum of 60 days.
 />
 
 <BoxLink
+  title="User-defined events"
+  description="Log named events from your app and view them in the dashboard or query them from the CLI."
+  href="/eas/observe/events"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
   title="Configuration"
   description="Control environments, dispatching, and development mode settings."
   href="/eas/observe/configuration"
@@ -164,5 +173,12 @@ Metric data is retained for a minimum of 60 days.
   title="Metrics reference"
   description="Detailed descriptions of each metric, concepts, and data handling."
   href="/eas/observe/reference/metrics"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="API reference"
+  description="Full reference for the expo-observe library API."
+  href="/versions/latest/sdk/observe"
   Icon={ActivityIcon}
 />

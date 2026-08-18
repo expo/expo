@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
-import { pageCollectErrors } from '../page';
+import { pageCollectErrors, trackLoaderNetworkStatuses } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -12,6 +12,8 @@ const projectRoot = getRouterE2ERoot();
 const outputDir = 'dist-server-loader-playwright';
 
 test.describe('server loaders in production', () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -61,7 +63,7 @@ test.describe('server loaders in production', () => {
     expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
   });
 
-  test('caches loader data for subsequent navigations', async ({ page }) => {
+  test('refetches headerless loader data on every fresh mount', async ({ page }) => {
     const loaderRequests: string[] = [];
     page.on('request', (request) => {
       if (request.url().includes('/_expo/loaders/')) {
@@ -84,8 +86,50 @@ test.describe('server loaders in production', () => {
     await page.click('a[href="/posts/static-post-1"]');
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    // Should not make additional requests for cached static-post-1
-    expect(loaderRequests.length).toBe(2);
+    expect(loaderRequests).toEqual([
+      expect.stringContaining('/_expo/loaders/posts/static-post-1'),
+      expect.stringContaining('/_expo/loaders/index'),
+      expect.stringContaining('/_expo/loaders/posts/static-post-2'),
+      expect.stringContaining('/_expo/loaders/index'),
+      expect.stringContaining('/_expo/loaders/posts/static-post-1'),
+    ]);
+  });
+
+  test('the initial max-age seed fetches once, then primes the HTTP cache', async ({ page }) => {
+    const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/response');
+    const responseUrl = new URL('/response', expoServe.url.href).toString();
+
+    await page.goto(responseUrl);
+    expect(statuses).toEqual([]);
+
+    // The first revisit hits the network — the hydration seed never primes the HTTP cache.
+    await page.click('a[href="/"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await page.click('a[href="/response"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await expect.poll(() => statuses).toEqual([200]);
+
+    await page.click('a[href="/"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await page.click('a[href="/response"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+
+    // A second render-driven fetch occurs, but max-age lets Chromium answer it locally.
+    await expect.poll(() => statuses).toEqual([200]);
+  });
+
+  test('a declared no-store loader reaches the network on every mount', async ({ page }) => {
+    const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/second');
+
+    await page.goto(expoServe.url.href);
+    await page.click('a[href="/second"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await page.click('a[href="/"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await page.click('a[href="/second"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+
+    await expect.poll(() => statuses).toEqual([200, 200]);
   });
 
   test('handles loader module fetch errors gracefully', async ({ page }) => {

@@ -92,7 +92,7 @@ export function EASHostingShoutoutBanner() {
             'gap-1.5 border-success text-icon-success hocus:bg-palette-green2',
             'dark:border-palette-green8 dark:bg-palette-green4 dark:text-default dark:hocus:bg-palette-green5'
           )}>
-          Learn More
+          Learn more
         </Button>
         <Button
           size="xs"

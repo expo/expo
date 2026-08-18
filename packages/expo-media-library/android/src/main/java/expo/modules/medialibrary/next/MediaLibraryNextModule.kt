@@ -16,6 +16,7 @@ import expo.modules.medialibrary.next.objects.album.AlbumQuery
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
 import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
+import expo.modules.medialibrary.next.objects.asset.AssetDimensionsResolver
 import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetLegacyDeleter
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetModernDeleter
@@ -30,6 +31,7 @@ import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
 import expo.modules.medialibrary.next.permissions.enums.GranularPermission
 import expo.modules.medialibrary.next.records.AssetField
+import expo.modules.medialibrary.next.records.AssetUriOptions
 import expo.modules.medialibrary.next.observers.MediaStoreObserverManager
 import expo.modules.medialibrary.next.records.SortDescriptor
 
@@ -78,14 +80,18 @@ class MediaLibraryNextModule : Module() {
   }
 
   private val assetMapper by lazy {
-    AssetMapper(context.contentResolver)
+    AssetMapper()
+  }
+
+  private val assetDimensionsResolver by lazy {
+    AssetDimensionsResolver()
   }
 
   private val assetFactory by lazy {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      AssetModernFactory(assetDeleter, assetMover, assetMapper, mediaStorePermissionsDelegate, context)
+      AssetModernFactory(assetDeleter, assetMover, assetMapper, assetDimensionsResolver, mediaStorePermissionsDelegate, context)
     } else {
-      AssetLegacyFactory(assetDeleter, assetMover, assetMapper, systemPermissionsDelegate, context)
+      AssetLegacyFactory(assetDeleter, assetMover, assetMapper, assetDimensionsResolver, systemPermissionsDelegate, context)
     }
   }
 
@@ -163,7 +169,7 @@ class MediaLibraryNextModule : Module() {
         self.getShape()
       }
 
-      AsyncFunction("getUri") Coroutine { self: Asset ->
+      AsyncFunction("getUri") Coroutine { self: Asset, _: AssetUriOptions? ->
         self.getUri()
       }
 

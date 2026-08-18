@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
 
 ### `useSQLiteContext()` hook with `React.Suspense`
 
-As with the [`useSQLiteContext()`](#usesqlitecontext-hook) hook, you can also integrate the [`SQLiteProvider`](#sqlitesqliteprovider) with [`React.Suspense`](https://react.dev/reference/react/Suspense) to show a fallback component until the database is ready. To enable the integration, pass the `useSuspense` prop to the `SQLiteProvider` component.
+As with the [`useSQLiteContext()`](#usesqlitecontext-hook) hook, you can also integrate the [`SQLiteProvider`](#sqliteprovider) with [`React.Suspense`](https://react.dev/reference/react/Suspense) to show a fallback component until the database is ready. To enable the integration, pass the `useSuspense` prop to the `SQLiteProvider` component.
 
 ```tsx useSQLiteContext() hook with React.Suspense
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
@@ -362,7 +362,7 @@ await db.execAsync('PRAGMA foreign_keys = ON');
 
 ### Import an existing database
 
-To open a new SQLite database using an existing **.db** file you already have, you can use the [`SQLiteProvider`](#sqlitesqliteprovider) with [`assetSource`](#assetsource).
+To open a new SQLite database using an existing **.db** file you already have, you can use the [`SQLiteProvider`](#sqliteprovider) with [`assetSource`](#assetsource).
 
 ```tsx useSQLiteContext() with existing database
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';

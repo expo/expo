@@ -9,7 +9,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { DEFAULT_IGNORE_PATHS } from './Options';
-import { isIgnoredPath, toPosixPath } from './utils/Path';
+import { buildPathMatchObjects, isIgnoredPathWithMatchObjects, toPosixPath } from './utils/Path';
 
 async function runAsync(programName: string, args: string[] = []) {
   if (args[0] == null) {
@@ -159,6 +159,7 @@ export async function resolveLoadedModuleSourcesAsync(
   ignoredPaths: string[]
 ): Promise<LoadedModuleSource[]> {
   const seen = new Set<string>();
+  const ignoredPathMatchObjects = buildPathMatchObjects(ignoredPaths);
   const candidates = capturedModules
     .map(({ filename, content }) => ({
       relativePath: toPosixPath(path.relative(projectRoot, filename)),
@@ -166,7 +167,10 @@ export async function resolveLoadedModuleSourcesAsync(
       content,
     }))
     .filter(({ relativePath }) => {
-      if (seen.has(relativePath) || isIgnoredPath(relativePath, ignoredPaths)) {
+      if (
+        seen.has(relativePath) ||
+        isIgnoredPathWithMatchObjects(relativePath, ignoredPathMatchObjects)
+      ) {
         return false;
       }
       seen.add(relativePath);

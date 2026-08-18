@@ -17,6 +17,7 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  DescriptorRouteProp,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -79,7 +80,8 @@ export type NativeStackOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = NativeStackScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<NativeStackScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
@@ -1214,6 +1216,30 @@ export type NativeStackHeaderItem =
   | NativeStackHeaderItemMenu
   | NativeStackHeaderItemSpacing
   | NativeStackHeaderItemCustom;
+
+export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
+
+export type NativeStackViewEmit = (
+  event:
+    | {
+        type: 'transitionStart' | 'transitionEnd';
+        target?: string;
+        data: { closing: boolean };
+      }
+    | { type: 'gestureCancel'; target?: string; data?: undefined }
+    | {
+        type: 'sheetDetentChange';
+        target?: string;
+        data: { index: number; stable: boolean };
+      }
+) => void;
+
+/**
+ * The navigator-level state consumed by `NativeStackView`.
+ *
+ * Routes after `index` are preloaded and rendered natively-detached.
+ */
+export type NativeStackViewState = Pick<StackNavigationState<ParamListBase>, 'index' | 'routes'>;
 
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,

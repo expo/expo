@@ -287,7 +287,7 @@ export function Header() {
       const result = await db.getFirstAsync<{ 'sqlite_version()': string }>(
         'SELECT sqlite_version()'
       );
-      setVersion(result['sqlite_version()']);
+      setVersion(result?.['sqlite_version()'] ?? '');
     }
     setup();
   }, []);
@@ -328,9 +328,8 @@ export function Content() {
 
 async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const DATABASE_VERSION = 1;
-  let { user_version: currentDbVersion } = await db.getFirstAsync<{ user_version: number }>(
-    'PRAGMA user_version'
-  );
+  const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  let currentDbVersion = result?.user_version ?? 0;
   if (currentDbVersion >= DATABASE_VERSION) {
     return;
   }
@@ -616,7 +615,7 @@ await db.execAsync(`PRAGMA key = 'password'`);
 
 The following table summarizes the common API for [`SQLiteDatabase`](#sqlitedatabase) and [`SQLiteStatement`](#sqlitestatement) classes:
 
-| [`SQLiteDatabase`](#sqlitedatabase) methods      | [`SQLiteStatement`](#sqlitestatement) methods                                 | Description                                                                                                                                                            | Use Case                                                                                                                                                                                   |
+| [`SQLiteDatabase`](#sqlitedatabase) methods      | [`SQLiteStatement`](#sqlitestatement) methods                                 | Description                                                                                                                                                            | Use case                                                                                                                                                                                   |
 | ------------------------------------------------ | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [`runAsync()`](#runasyncsource-params)           | [`executeAsync()`](#executeasyncparams)                                       | Executes a SQL query, returning information on the changes made.                                                                                                       | Ideal for SQL write operations such as `INSERT`, `UPDATE`, `DELETE`.                                                                                                                       |
 | [`getFirstAsync()`](#getfirstasyncsource-params) | [`executeAsync()`](#executeasyncparams) + [`getFirstAsync()`](#getfirstasync) | Retrieves the first row from the query result.                                                                                                                         | Suitable for fetching a single row from the database. For example: `getFirstAsync('SELECT * FROM Users WHERE id = ?', userId)`.                                                            |

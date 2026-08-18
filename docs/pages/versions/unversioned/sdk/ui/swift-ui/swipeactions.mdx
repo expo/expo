@@ -18,7 +18,14 @@ Expo UI SwipeActions matches the official SwiftUI [swipeActions](<https://develo
 ## Usage
 
 ```tsx SwipeActionsExample.tsx
-import { Button, Host, List, Section, SwipeActions, Text } from '@expo/ui/swift-ui';
+import {
+  Button,
+  Host,
+  List,
+  Section,
+  SwipeActions,
+  Text,
+} from '@expo/ui/swift-ui';
 
 export default function SwipeActionsExample() {
   return (
@@ -28,12 +35,23 @@ export default function SwipeActionsExample() {
           <SwipeActions>
             <Text>Message from Expo</Text>
 
-            <SwipeActions.Actions edge="leading" allowsFullSwipe={false}>
-              <Button label="Pin" systemImage="pin" onPress={() => {}} />
+            <SwipeActions.Actions
+              edge="leading"
+              allowsFullSwipe={false}>
+              <Button
+                label="Pin"
+                systemImage="pin"
+                onPress={() => {}}
+              />
             </SwipeActions.Actions>
 
             <SwipeActions.Actions edge="trailing">
-              <Button label="Delete" systemImage="trash" role="destructive" onPress={() => {}} />
+              <Button
+                label="Delete"
+                systemImage="trash"
+                role="destructive"
+                onPress={() => {}}
+              />
             </SwipeActions.Actions>
           </SwipeActions>
         </Section>
@@ -49,4 +67,7 @@ export default function SwipeActionsExample() {
 import { SwipeActions } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/swipeactions" apiName="SwipeActions" />
+<APISection
+  packageName="expo-ui/swift-ui/swipeactions"
+  apiName="SwipeActions"
+/>

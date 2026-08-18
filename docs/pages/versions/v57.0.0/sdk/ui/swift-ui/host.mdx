@@ -36,9 +36,9 @@ export default function MatchContentsExample() {
       <Button
         onPress={() => {
           console.log('Pressed');
-        }}>
-        Click
-      </Button>
+        }}
+        label="Click"
+      />
     </Host>
   );
 }
@@ -51,7 +51,9 @@ import { Host, HStack, ScrollView, Text } from '@expo/ui/swift-ui';
 
 export default function ScrollViewMatchContents() {
   return (
-    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <ScrollView axes="horizontal">
         <HStack spacing={12}>
           {Array.from({ length: 20 }).map((_, i) => (
@@ -79,9 +81,9 @@ export default function ExplicitSizingExample() {
         <Button
           onPress={() => {
             console.log('Pressed');
-          }}>
-          Click
-        </Button>
+          }}
+          label="Click"
+        />
       </VStack>
     </Host>
   );
@@ -94,7 +96,10 @@ Use `ignoreSafeArea="keyboard"` when React Native is already handling keyboard a
 
 ```tsx IgnoreKeyboardExample.tsx
 import { Host, TextField } from '@expo/ui/swift-ui';
-import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
+import {
+  KeyboardProvider,
+  KeyboardStickyView,
+} from 'react-native-keyboard-controller';
 import { View } from 'react-native';
 
 export default function IgnoreKeyboardExample() {
@@ -110,7 +115,10 @@ export default function IgnoreKeyboardExample() {
             padding: 16,
             backgroundColor: 'green',
           }}>
-          <Host matchContents ignoreSafeArea="keyboard" style={{ backgroundColor: 'red' }}>
+          <Host
+            matchContents
+            ignoreSafeArea="keyboard"
+            style={{ backgroundColor: 'red' }}>
             <TextField placeholder="Enter text" axis="vertical" />
           </Host>
         </KeyboardStickyView>
@@ -137,7 +145,11 @@ export default function IgnoreContainerSafeAreaExample() {
       matchContents={{ vertical: true }}
       ignoreSafeArea="container">
       <HStack>
-        <Button systemImage="chevron.backward" label="Back" modifiers={[labelStyle('iconOnly')]} />
+        <Button
+          systemImage="chevron.backward"
+          label="Back"
+          modifiers={[labelStyle('iconOnly')]}
+        />
         <Spacer />
         <Button
           systemImage="square.and.arrow.up"
@@ -161,9 +173,18 @@ export default function IgnoreAllSafeAreasExample() {
   return (
     <Host
       ignoreSafeArea="all"
-      style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+      }}>
       <VStack>
-        <Text>This content extends behind the status bar and home indicator.</Text>
+        <Text>
+          This content extends behind the status bar and home
+          indicator.
+        </Text>
       </VStack>
     </Host>
   );

@@ -9,6 +9,7 @@ import { useDomComponentNavigation } from './domComponents/useDomComponentNaviga
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
+import { RouterRegistryProvider } from './global-state/routerRegistry';
 import type { ServerContextType } from './global-state/serverLocationContext';
 import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
@@ -21,9 +22,9 @@ import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
 import type { RequireContext } from './types';
 import { parseUrlUsingCustomBase } from './utils/url';
+import { RootUnmatched } from './views/RootUnmatched';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
-import { Unmatched } from './views/Unmatched';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -154,20 +155,22 @@ function ContextNavigator({
 
   return (
     <StoreContext.Provider value={store}>
-      <UpstreamNavigationContainer
-        ref={store.navigationRef}
-        initialState={store.state}
-        linking={store.linking as LinkingOptions<any>}
-        onUnhandledAction={onUnhandledAction}
-        onStateChange={store.onStateChange}
-        documentTitle={documentTitle}
-        onReady={onNavigationReady}>
-        <ServerContext.Provider value={serverContext}>
-          <WrapperComponent>
-            <Content />
-          </WrapperComponent>
-        </ServerContext.Provider>
-      </UpstreamNavigationContainer>
+      <RouterRegistryProvider>
+        <UpstreamNavigationContainer
+          ref={store.navigationRef}
+          initialState={store.state}
+          linking={store.linking as LinkingOptions<any>}
+          onUnhandledAction={onUnhandledAction}
+          onStateChange={store.onStateChange}
+          documentTitle={documentTitle}
+          onReady={onNavigationReady}>
+          <ServerContext.Provider value={serverContext}>
+            <WrapperComponent>
+              <Content />
+            </WrapperComponent>
+          </ServerContext.Provider>
+        </UpstreamNavigationContainer>
+      </RouterRegistryProvider>
     </StoreContext.Provider>
   );
 }
@@ -177,7 +180,7 @@ function Content() {
     <Screen key="SLOT" name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
   ];
   if (shouldAppendNotFound()) {
-    children.push(<Screen key="NOT-FOUND" name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
+    children.push(<Screen key="NOT-FOUND" name={NOT_FOUND_ROUTE_NAME} component={RootUnmatched} />);
   }
   if (shouldAppendSitemap()) {
     children.push(<Screen key="SITEMAP" name={SITEMAP_ROUTE_NAME} component={Sitemap} />);

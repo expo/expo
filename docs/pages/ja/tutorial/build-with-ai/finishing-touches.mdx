@@ -1,0 +1,140 @@
+---
+title: 仕上げ
+description: この章では、AI エージェントに指示して、ステータスバー・スプラッシュスクリーン・アプリアイコンを整え、ビルダーとしての次のステップに進みます。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+
+アプリはすでに動いています。あとは仕上げるだけです。この章では、ユーザーが意識せずとも気づく細部、ステータスバー・スプラッシュスクリーン・アプリアイコンを整えます。
+
+<Step label="1">
+
+## ステータスバーを直す
+
+アプリの一番上を見てください。時計とバッテリーのアイコンが濃い色になっていて、暗い背景の上では読みづらくなっています。次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+スマートフォンのステータスバー（画面上部の時計とバッテリーのアイコン）が、暗い背景の上で読みづらいです。expo-status-bar ライブラリを使って、すべての画面でステータスバーの文字を明るい色にして。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+The phone's status bar (the clock and battery icons at the top of the screen) is hard to read against our dark background. Use the expo-status-bar library to make the status bar text light on every screen.
+```
+
+</Collapsible>
+
+**表示されるもの**: 画面上部の時計・バッテリー・電波のアイコンが明るい色になり、読みやすくなります。
+
+<ContentSpotlight
+  alt="暗いアプリの背景の上に明るい文字のステータスバーが表示されている"
+  src="/static/images/tutorial/statusbar-example.webp"
+  className="max-w-[480px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+## アプリアイコンとスプラッシュスクリーンを設定する
+
+前に取得したアセットパックには、アプリアイコンとスプラッシュスクリーンの画像も含まれています。次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+アプリのアイコンを assets/images/icon.png に設定して。そして expo-splash-screen の config プラグインを使って、Android・iOS・web で assets/images/splash-icon.png を #25292e の背景の中央に表示するスプラッシュスクリーンを設定して。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Set the app's icon to assets/images/icon.png, and configure the splash screen using the expo-splash-screen config plugin so it shows assets/images/splash-icon.png centered on a #25292e background on Android, iOS, and web.
+```
+
+</Collapsible>
+
+**表示されるもの**: これらの設定はアプリの設定ファイルに書き込まれるため、反映するには開発サーバーを再起動します。ターミナルで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押し、`npx expo start` をもう一度実行して、Expo Go からアプリを開き直してください。プロジェクトの読み込み中、一瞬スプラッシュスクリーンが表示されます。
+
+1 つ注意点があります。ホーム画面上のアプリアイコンは変わりません。いま実行しているのは Expo Go というアプリの中であり、Expo Go 自身のアイコンを使っているためです。自分のアイコンが使われるのは、アプリのスタンドアロンビルドを作成したときです。その段階に進む準備ができたら、[開発ビルド](/develop/development-builds/introduction/)を参照してください。
+
+</Step>
+
+> 結果が期待どおりにならない場合は、見えているものをそのままエージェントに伝えてください。[うまくいかないとき](/ja/tutorial/build-with-ai/create-your-first-app/#うまくいかないとき) に対処法があります。
+
+## アプリを作り上げました
+
+ここで少し立ち止まって、ここまでにやったことを振り返ってみましょう。開発環境をゼロから整え、AI エージェントに指示して、ナビゲーション・写真の選択・ジェスチャーで操作するステッカー・保存機能（Android・iOS・web すべてで動作）を備えた本物のアプリを、コードを 1 行も書かずに作り上げました。
+
+さらに重要なのは、このループを学んだことです。プロンプトを送る、ビルドする、確認する、また指示を出す。このループは、このチュートリアルで終わりではありません。自分のアイデアで、今すぐ試してみてください。
+
+```text プロンプト|wrap
+写真に複数のステッカーを置けるようにして。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Let me place more than one sticker on the photo.
+```
+
+</Collapsible>
+
+```text プロンプト|wrap
+共有ボタンを追加して。タップするとシステムの共有シートが開いて、作った画像を友だちに送れるようにして。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Add a share button that opens the system share sheet so I can send my creation to friends.
+```
+
+</Collapsible>
+
+```text プロンプト|wrap
+About 画面の中身を作って。このアプリが何をするものなのかを説明して、制作者として私をクレジットして。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Fill in the About screen: explain what the app does and credit me as the builder.
+```
+
+</Collapsible>
+
+## 次のステップ
+
+<BoxLink
+  title="Expo Skills"
+  Icon={BookOpen02Icon}
+  description="エージェントが使えるスキルの一覧と、それぞれのプロンプト例を確認できます。"
+  href="/skills/"
+/>
+
+<BoxLink
+  title="Expo MCP サーバー"
+  Icon={BookOpen02Icon}
+  description="ビルドのトリガーやクラッシュレポートの読み取りなど、Expo のツールでエージェントができることをすべて確認できます。"
+  href="/mcp/"
+/>
+
+助けが必要な場合や、作ったものを見せたい場合は、[Discord](https://chat.expo.dev/) の Expo コミュニティに参加してください。
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/build-with-ai/finishing-touches"
+  name="BUILD_WITH_AI"
+  chapterTitle="第 6 章：仕上げ"
+  summary="おめでとうございます。AI エージェントに指示して StickerSmash をゼロから作り上げ、ステータスバー・スプラッシュスクリーン・アプリアイコンで仕上げました。"
+  nextChapterDescription="エージェントが実際に書いたコードが気になりますか？ Expo チュートリアルでは同じアプリを、コードを 1 ステップずつ説明しながら構築します。"
+  nextChapterTitle="Expo チュートリアル"
+  nextChapterLink="/ja/tutorial/introduction"
+/>

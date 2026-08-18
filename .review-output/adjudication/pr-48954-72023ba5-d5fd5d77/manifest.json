@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "run_id": "pr-48954-72023ba5-d5fd5d77",
+  "repository": "expo/expo",
+  "pull_request": 48954,
+  "base_sha": "a91ec7344096cccdf0d6030e281572ba747c004e",
+  "reviewed_head_sha": "72023ba5f8f1e982b2d2ef115d4e5931aee77c33",
+  "current_head_at_finalize": "da5657155c4a589756c3feb9dabaf7d90d9fa559",
+  "current_head_delta": {
+    "semantic_change": false,
+    "description": "Import-order-only formatting fix in FallbackWatcher.test.ts",
+    "check_packages": "success"
+  },
+  "finalized_at": "2026-08-15T16:53:21Z",
+  "inputs": [
+    {
+      "source_id": "source-a",
+      "reviewer": "fable",
+      "path": ".review-output/fable-findings.md",
+      "size": 10456,
+      "mtime_epoch": 1786811128,
+      "sha256": "3bba56c8025128720512e102598c00156f636b15d64f249916c51a48749a2b79"
+    },
+    {
+      "source_id": "source-b",
+      "reviewer": "grok",
+      "path": ".review-output/grok-findings.md",
+      "size": 15668,
+      "mtime_epoch": 1786811358,
+      "sha256": "aeb87f35965b76ff0dd4507c78b216a157ed8815dca79df4596469f81e0d035c"
+    },
+    {
+      "source_id": "source-c",
+      "reviewer": "codex",
+      "path": ".review-output/codex-findings.md",
+      "size": 15259,
+      "mtime_epoch": 1786811664,
+      "sha256": "d5fd5d77e82493bc5a4493ff4df9b65c53de7fbdd0462e527e01d45e8a537fe1"
+    }
+  ],
+  "notes": [
+    "Reviewer identities and vote counts were hidden during candidate adjudication.",
+    "The Codex input changed after the initial stability window; normalization was invalidated and rerun against the final hash above.",
+    "The PR head advanced after all reviews completed. The one-commit delta was independently verified as formatting-only before applying the semantic verdicts to the current head."
+  ]
+}
