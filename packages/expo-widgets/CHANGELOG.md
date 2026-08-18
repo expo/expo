@@ -31,6 +31,7 @@
 - [iOS][plugin] Only add the `aps-environment` entitlement when `enablePushNotifications` is enabled, and keep a pre-existing value. ([#47645](https://github.com/expo/expo/pull/47645) by [@kadikraman](https://github.com/kadikraman))
 - [Android] Fix modifiers type cast. ([#47616](https://github.com/expo/expo/pull/47721) by [@jakex7](https://github.com/jakex7))
 - Fix blank widget when JSX children mix a `.map()` array with sibling elements. ([#47888](https://github.com/expo/expo/pull/47888) by [@jakex7](https://github.com/jakex7))
+- [iOS] Fix Live Activity `colorScheme` and `isLuminanceReduced` always reporting default values by reading the environment from a view rather than the widget. ([#49050](https://github.com/expo/expo/pull/49050) by [@liaugust](https://github.com/liaugust))
 
 ### 💡 Others
 
