@@ -1754,12 +1754,27 @@ jobs:
             agent=$(git rev-parse HEAD)
             echo "origin/main moved under the run (${base:0:12} -> ${tip:0:12}); replaying ${agent:0:12} onto it"
             git checkout --detach origin/main
-            if ! git cherry-pick "$agent"; then
+            # cherry-pick CREATES a commit, so it needs the same committer
+            # identity the publish commit got — without it, git dies with
+            # "empty ident name" and the first moved-main replay in the
+            # wild was misreported as "conflict: unknown" (run 32167073927).
+            if ! pick_out=$(git -c user.name='expo-bot' -c user.email='expo-bot@users.noreply.github.com' \
+                cherry-pick "$agent" 2>&1); then
               conflicted=$(git diff --name-only --diff-filter=U | tr '\n' ' ')
               git cherry-pick --abort >/dev/null 2>&1 || true
-              echo "::error::could not replay the publish commit onto origin/main (conflict: ${conflicted:-unknown})."
+              echo "ALIGN_FAIL=replay" >> "$RUNNER_TEMP/align.env"
+              # Only a failure with unmerged paths is a conflict. Anything
+              # else is git refusing for its own reasons — show its words
+              # instead of diagnosing a conflict that did not happen.
+              if [ -n "$conflicted" ]; then
+                echo "::error::could not replay the publish commit onto origin/main (conflict: $conflicted)."
+              else
+                echo "::error::could not replay the publish commit onto origin/main (not a content conflict — git said):"
+                printf '%s\n' "$pick_out"
+              fi
               return 1
             fi
+            printf '%s\n' "$pick_out"
             return 0
           }
           local_workflows_tree() {
@@ -1826,6 +1841,12 @@ jobs:
             if [ "$fail_kind" = "stale_fork" ]; then
               gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but the bot fork's workflow files do not match current \`main\`, and the dedicated sync job is not running. Land on \`main\` (or re-run \`sync-expo-bot-fork\`) and re-trigger. The outcome comment still stands. [Run log]($RUN_URL)"
               echo "::error::stale fork with no in-flight sync; refusing to push."
+            elif [ "$fail_kind" = "replay" ]; then
+              # Without its own branch this fell through to the workflow-tree
+              # message below, which told the thread a fork-sync story about
+              # a replay failure (run 32167073927).
+              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name, but \`main\` moved under the run and the change could not be replayed onto the new tip. Re-trigger \`$command_name\` to regenerate it against current \`main\`. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
+              echo "::error::replay onto moved origin/main failed; refusing to push."
             else
               gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not line its workflow files up with the bot fork in time (the dedicated sync job on \`expo/expo\` main is what fast-forwards the fork). Re-run once that job has finished. The outcome comment still stands. [Run log]($RUN_URL)"
               echo "::error::could not match $fork .github/workflows to this commit; refusing to push."
