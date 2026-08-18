@@ -124,7 +124,6 @@ function AlertDialogIcon(props: { children: React.ReactNode }) {
  */
 function AlertDialogComponent(props: AlertDialogProps) {
   const { children, ...restProps } = props;
-  // Every slot is inside the dialog's own window — there is no anchor left behind in the surface.
   return (
     <AlertDialogNativeView {...transformProps(restProps)}>
       <PresentedContent>{children}</PresentedContent>

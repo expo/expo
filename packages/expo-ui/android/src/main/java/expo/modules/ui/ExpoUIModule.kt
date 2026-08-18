@@ -176,7 +176,7 @@ class ExpoUIModule : Module() {
       // Also consumed by `ExpoViewShadowNode` in C++, which marks the shadow node with the
       // `RootNodeKind` trait so `measure()` reports positions relative to this view. Kotlin reads
       // the same prop to decide whether this view dispatches its subtree's touches, so the
-      // coordinate space and the dispatcher can never disagree.
+      // position in `measure()` and the dispatcher can never disagree.
       Prop("layoutRoot") { view: RNHostView, layoutRoot: Boolean ->
         view.setLayoutRoot(layoutRoot)
       }

@@ -30,8 +30,7 @@ class ShadowNodeProxy(expoView: ExpoView) {
 
   /**
    * Reports where the native layout system drew this view inside its `Host`, in dp relative to the
-   * `Host`'s origin. Unlike the size updates above this bypasses `scheduleFlush` entirely: it writes
-   * a plain value read at measure time, so it needs no commit and can be published every frame.
+   * `Host`'s origin.
    */
   fun setContentOrigin(x: Double, y: Double) {
     val view = weakExpoView.get() ?: return

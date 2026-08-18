@@ -27,8 +27,7 @@ class NativeStatePropsGetter {
   /**
    * Publishes where the native layout system placed a hosted view inside its `Host`, keyed by the
    * view's tag. Read while measuring, so `measure()` reports the position the content occupies
-   * rather than its Yoga box. Written directly rather than through state: Compose re-places content
-   * on every scroll frame and a commit per frame would be far too expensive.
+   * rather than its Yoga box.
    */
   fun setContentOrigin(tag: Int, x: Double, y: Double) {
     setContentOriginImpl(tag, x, y)

@@ -46,10 +46,11 @@ function transformProps(props: RNHostProps, layoutRoot: boolean): NativeRNHostPr
   };
 }
 
-// `matchContents` sizes this view from its content, so the view must not take its own width from
-// its parent: a stretched box makes the content measure the container instead of itself, and the
-// two then size each other. Compose reports the result straight into `requiredSize`, where an
-// unresolvable width raises `Can't represent a width of … in Constraints` and takes the app down.
+// `matchContents` reads the hosted content's Yoga size, so this view must not stretch to its
+// own parent on the cross axis. A stretched box makes the content measure the container instead of
+// itself, and under a `matchContents` `Host` that feeds back into the size it came from: the
+// content grows by the surrounding chrome on every pass and layout never settles.
+// https://github.com/expo/expo/pull/48059
 const hugCrossAxis = { alignSelf: 'flex-start' } as const;
 
 export function RNHostView(props: RNHostProps) {

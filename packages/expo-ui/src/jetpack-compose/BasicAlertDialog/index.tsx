@@ -53,7 +53,6 @@ function transformProps(props: BasicAlertDialogProps): NativeBasicAlertDialogPro
  */
 export function BasicAlertDialog(props: BasicAlertDialogProps) {
   const { children, ...rest } = props;
-  // A blank container for arbitrary content, presented in its own window.
   return (
     <BasicAlertDialogNativeView {...transformProps(rest as BasicAlertDialogProps)}>
       <PresentedContent>{children}</PresentedContent>

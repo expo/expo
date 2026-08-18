@@ -37,10 +37,6 @@ public:
   );
 
   // Publishes where Compose actually placed a hosted view inside its `Host`, which Yoga cannot see.
-  // `ExpoViewShadowNode::getContentOriginOffset` reads it so `measure()` reports the position the
-  // content occupies rather than the Yoga box, and a `Pressable` keeps its press when the finger
-  // moves. Deliberately not a state update: Compose re-places content on every scroll frame, and a
-  // commit per frame would be far too expensive.
   static void setContentOrigin(
     jni::alias_ref<NativeStatePropsGetter::javaobject> self,
     jint tag,

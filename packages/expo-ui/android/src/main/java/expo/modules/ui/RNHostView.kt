@@ -58,8 +58,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
   /**
    * Whether this view owns its subtree's touches. False everywhere except content presented in its
-   * own window, where no React root sits above us to dispatch. Props and children can arrive in
-   * either order, so this is applied both here and when the wrapper is created.
+   * own window, where no React root sits above us to dispatch.
    */
   private var layoutRoot = false
 
@@ -174,14 +173,11 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   /**
    * Publishes where Compose placed this view inside its `Host`, which Yoga has no way to know:
    * Yoga puts the box at the `Host`'s origin while Compose may draw it anywhere inside. Without
-   * this, `measure()` reports the Yoga box, the responder region sits away from the content, and a
-   * `Pressable` drops its press as soon as the finger moves.
-   *
-   * Only while an ancestor React root owns dispatch. As a `layoutRoot` the measure walk stops at
-   * this node, so there is no ancestor chain left to correct and publishing would offset it twice.
+   * this, `measure()` reports the Yoga box, this makes Pressable cancel its press when the finger moves.
    */
   @Composable
   private fun publishContentOriginModifier(): Modifier {
+    // When layoutRoot is true, we don't set content origin because view acts like root and measure uses the view's origin as the origin.
     if (layoutRoot) {
       return Modifier
     }
@@ -191,7 +187,6 @@ internal class RNHostView(context: Context, appContext: AppContext) :
       with(density) {
         val x = position.x.toDp().value.toDouble()
         val y = position.y.toDp().value.toDouble()
-        // Compose re-positions content on every scroll frame; only publish real movement.
         if (x != lastContentOriginX || y != lastContentOriginY) {
           lastContentOriginX = x
           lastContentOriginY = y
@@ -224,13 +219,14 @@ internal class RNHostView(context: Context, appContext: AppContext) :
  * Implements NestedScrollingChild3 to forward scroll events up to the parent Compose view, because Compose only listens for NestedScrollingChild3 nested-scroll events.
  */
 /**
- * Detaches [wrapper] from the holder it is in, ready to be adopted by the next one.
+ * Removes [wrapper] from the view that currently contains it, and clears its bounds.
  *
- * The wrapper outlives the holder Compose creates for it, and a detached view keeps the bounds its
- * old holder gave it. React Native's touch walk descends by child index without consulting the
- * parent's size or draw order, so between re-parenting and the next layout pass a stale wrapper
- * answers for a screen area it no longer occupies, and swallows presses meant for the content
- * actually on screen. Collapsing it keeps it out of that walk until Compose places it again.
+ * `AndroidView` hands back this same wrapper every time Compose rebuilds it, but Compose puts it
+ * inside a brand new container each time, so it has to leave the old one first. A removed view keeps
+ * the bounds that container gave it, and React Native finds touch targets by bounds — so until
+ * Compose lays the wrapper out again it would claim a screen area it no longer occupies and swallow
+ * presses meant for whatever is really there. Clearing the bounds keeps it out of the way.
+ * This causes https://github.com/expo/expo/issues/46386
  */
 internal fun detachForReuse(wrapper: View) {
   (wrapper.parent as? ViewGroup)?.removeView(wrapper)
