@@ -130,6 +130,38 @@ webTest('queues forward history and restores saved, parsed, and initial state', 
   });
 });
 
+webTest('uses getInitialURL to derive the initial state', async () => {
+  const Details = jest.fn(() => null);
+  const Stack = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  render(
+    <RouterRegistryProvider>
+      <NavigationContainer
+        documentTitle={{ enabled: false }}
+        linking={{
+          prefixes: [],
+          config: { screens: { home: 'home', details: 'details' } },
+          getInitialURL: () => 'http://localhost/details',
+        }}>
+        <Stack>
+          <Screen name="home" component={EmptyScreen} />
+          <Screen name="details">{Details}</Screen>
+        </Stack>
+      </NavigationContainer>
+    </RouterRegistryProvider>
+  );
+
+  await waitFor(() => expect(Details).toHaveBeenCalled());
+});
+
 afterEach(() => {
   if (locationDescriptor) {
     Object.defineProperty(globalThis, 'location', locationDescriptor);

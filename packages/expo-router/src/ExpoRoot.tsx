@@ -10,8 +10,6 @@ import { NavigationContainer as UpstreamNavigationContainer } from './fork/Navig
 import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
 import { RouterRegistryProvider } from './global-state/routerRegistry';
-import type { ServerContextType } from './global-state/serverLocationContext';
-import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
@@ -105,34 +103,18 @@ function ContextNavigator({
   // location and linking.getInitialURL are both used to initialize the router state
   //  - location is used on web and during static rendering
   //  - linking.getInitialURL is used on native
-  const serverContext = useMemo(() => {
-    let contextType: ServerContextType = {};
-
+  const serverUrl = useMemo(() => {
     const url =
       typeof initialLocation === 'string'
         ? parseUrlUsingCustomBase(initialLocation)
         : initialLocation;
 
     if (url && url instanceof URL) {
-      contextType = {
-        location: {
-          pathname: url.pathname,
-          search: url.search,
-          hash: url.hash,
-        },
-      };
+      return `${url.pathname}${url.search}${url.hash}`;
     }
 
-    return contextType;
+    return undefined;
   }, []);
-
-  /*
-   * The serverUrl is an initial URL used in server rendering environments.
-   * e.g Static renders, units tests, etc
-   */
-  const serverUrl = serverContext.location
-    ? `${serverContext.location.pathname}${serverContext.location.search}${serverContext.location.hash ?? ''}`
-    : undefined;
 
   const store = useStore(context, linking, serverUrl);
 
@@ -158,17 +140,14 @@ function ContextNavigator({
       <RouterRegistryProvider>
         <UpstreamNavigationContainer
           ref={store.navigationRef}
-          initialState={store.state}
           linking={store.linking as LinkingOptions<any>}
           onUnhandledAction={onUnhandledAction}
           onStateChange={store.onStateChange}
           documentTitle={documentTitle}
           onReady={onNavigationReady}>
-          <ServerContext.Provider value={serverContext}>
-            <WrapperComponent>
-              <Content />
-            </WrapperComponent>
-          </ServerContext.Provider>
+          <WrapperComponent>
+            <Content />
+          </WrapperComponent>
         </UpstreamNavigationContainer>
       </RouterRegistryProvider>
     </StoreContext.Provider>

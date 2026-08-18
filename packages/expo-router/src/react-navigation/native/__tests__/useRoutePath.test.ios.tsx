@@ -98,15 +98,7 @@ test('gets path for route in nested navigator screen', () => {
   render(
     <NavigationContainer
       ref={navigation}
-      linking={config}
-      initialState={{
-        routes: [
-          {
-            name: 'a',
-            state: { routes: [{ name: 'b', params: { id: 'apple' } }] },
-          },
-        ],
-      }}>
+      linking={{ ...config, getInitialURL: () => 'https://example.com/foo/bar/apple' }}>
       <StackA.Navigator>
         <StackA.Screen name="a">
           {() => (

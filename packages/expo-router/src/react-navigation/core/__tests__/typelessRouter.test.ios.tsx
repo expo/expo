@@ -1,16 +1,7 @@
-import { render, screen } from '@testing-library/react-native';
-import { use } from 'react';
-import { Text } from 'react-native';
+import { render } from '@testing-library/react-native';
 
-import type {
-  DefaultRouterOptions,
-  InitialState,
-  NavigationState,
-  ParamListBase,
-} from '../../routers';
-import { NavigatorTypeContext } from '../NavigatorTypeContext';
+import type { DefaultRouterOptions, NavigationState } from '../../routers';
 import { Screen } from '../Screen';
-import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
@@ -49,22 +40,6 @@ function TestNavigator({ createRouter = TypelessRouter, ...props }: any): any {
   );
 }
 
-/** Renders a navigator backed by `TypelessRouter` and returns the state it settles on. */
-function renderWithInitialState(initialState: InitialState) {
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  render(
-    <BaseNavigationContainer ref={ref} initialState={initialState}>
-      <TestNavigator>
-        <Screen name="first">{() => null}</Screen>
-        <Screen name="second">{() => null}</Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  return ref.current!.getRootState();
-}
-
 /** A persisted state focusing the second route, so a discarded state is visible as `index: 0`. */
 const persistedState = {
   stale: false,
@@ -77,36 +52,15 @@ const persistedState = {
   ],
 };
 
-test('a persisted state without a type is accepted by a typeless router', () => {
-  const state = renderWithInitialState(persistedState);
-
-  expect(state.index).toBe(1);
-  expect(state).not.toHaveProperty('type');
-});
-
-test('a persisted state with a type is discarded by a typeless router', () => {
-  const state = renderWithInitialState({ ...persistedState, type: 'test' });
-
-  expect(state.index).toBe(0);
-  expect(state).not.toHaveProperty('type');
-});
-
-test('provides the router type when an accepted persisted state has no type', () => {
-  function RouterType() {
-    return <Text>{use(NavigatorTypeContext)}</Text>;
-  }
-
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  render(
-    <BaseNavigationContainer ref={ref} initialState={persistedState}>
-      <TestNavigator createRouter={StateWithoutTypeRouter}>
-        <Screen name="first" component={RouterType} />
-        <Screen name="second" component={RouterType} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(ref.current!.getRootState().index).toBe(1);
-  expect(screen.getAllByText('test')).toHaveLength(2);
+test('rejects a persisted state before a typeless router can rehydrate it', () => {
+  expect(() =>
+    render(
+      <BaseNavigationContainer initialState={persistedState}>
+        <TestNavigator>
+          <Screen name="first">{() => null}</Screen>
+          <Screen name="second">{() => null}</Screen>
+        </TestNavigator>
+      </BaseNavigationContainer>
+    )
+  ).toThrow('The `initialState` prop must contain a partial navigation state.');
 });

@@ -78,8 +78,6 @@ test("lets parent handle the action if child didn't", () => {
       initialState={{
         type: 'test',
         index: 2,
-        key: '0',
-        routeNames: ['foo', 'bar', 'baz'],
         routes: [
           { name: 'foo' },
           { name: 'bar' },
@@ -88,8 +86,6 @@ test("lets parent handle the action if child didn't", () => {
             state: {
               type: 'test',
               index: 0,
-              key: '1',
-              routeNames: ['qux'],
               routes: [{ name: 'qux' }],
             },
           },
@@ -265,21 +261,15 @@ test('action goes to correct parent navigator if target is specified', () => {
   };
 
   const initialState = {
-    stale: false,
     type: 'test',
     index: 1,
-    key: '0',
-    routeNames: ['foo', 'bar', 'baz'],
     routes: [
       {
         key: 'baz',
         name: 'baz',
         state: {
-          stale: false,
           type: 'test',
           index: 0,
-          key: '1',
-          routeNames: ['qux', 'lex'],
           routes: [
             { key: 'lex', name: 'lex' },
             { key: 'qux', name: 'qux' },
@@ -380,11 +370,8 @@ test('action goes to correct child navigator if target is specified', () => {
   };
 
   const initialState = {
-    stale: false,
     type: 'test',
     index: 0,
-    key: '0',
-    routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo', name: 'foo' },
       { key: 'bar', name: 'bar' },
@@ -392,11 +379,8 @@ test('action goes to correct child navigator if target is specified', () => {
         key: 'baz',
         name: 'baz',
         state: {
-          stale: false,
           type: 'test',
           index: 0,
-          key: '1',
-          routeNames: ['qux', 'lex'],
           routes: [
             { key: 'qux', name: 'qux' },
             { key: 'lex', name: 'lex' },
@@ -578,8 +562,6 @@ test('logs error if no navigator handled the action', () => {
         name: 'baz',
         state: {
           index: 0,
-          key: '4',
-          routeNames: ['qux', 'lex'],
           routes: [
             { key: 'qux', name: 'qux' },
             { key: 'lex', name: 'lex' },
