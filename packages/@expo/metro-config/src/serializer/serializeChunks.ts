@@ -760,7 +760,16 @@ function extractCommonChunk(
   while (toCompare.length) {
     const chunk = toCompare.shift()!;
     for (const chunk2 of toCompare) {
-      if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
+      // Worker chunks are marked `isEntry` and run in their own global scope with their own
+      // module registry, so they can never load the common chunk. Keep their copy of a shared
+      // module instead of hoisting it out, the same way the other two passes skip them.
+      if (
+        chunk !== chunk2 &&
+        chunk.isAsync &&
+        chunk2.isAsync &&
+        !chunk.isEntry &&
+        !chunk2.isEntry
+      ) {
         const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
 
         for (const dep of commonDeps) {

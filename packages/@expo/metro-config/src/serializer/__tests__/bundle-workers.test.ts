@@ -1,5 +1,7 @@
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 
+import type { SerialAsset } from '../serializerAssets';
+
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
 
 jest.mock('../exportHermes', () => {
@@ -187,4 +189,46 @@ it(`supports worker bundle with shared deps`, async () => {
   expect(artifacts[1].source).toMatch('runtime');
   expect(artifacts[1].source).toMatch('TEST_RUN_MODULE');
   expect(artifacts[1].source).toMatch('function add(a, b) {}');
+});
+
+it(`keeps worker chunk deps that overlap another async chunk`, async () => {
+  const [, artifacts] = await serializeShakingAsync(
+    {
+      'index.js': `
+        const other = import('./other');
+        const lib = import('./lib');
+        console.log('keep', other, lib);
+        `,
+      'lib.js': `
+        const worker = require.unstable_resolveWorker('./worker');
+        console.log('keep', worker);
+        `,
+      'worker.js': `
+        import { shared } from './shared';
+        console.log('keep', shared);
+        `,
+      'other.js': `
+        import { shared } from './shared';
+        console.log('keep', shared);
+        `,
+      'shared.js': `
+        export const shared = 'shared-module-value';
+        `,
+    },
+    {
+      splitChunks: true,
+      mockRuntime: true,
+    }
+  );
+
+  // A worker has its own global scope and its own module registry, so it can never load the
+  // common chunk. The shared module must stay inside the worker chunk.
+  const workerChunk = (artifacts as SerialAsset[]).find((artifact) =>
+    artifact.filename.includes('/worker-')
+  );
+  expect(workerChunk?.metadata.modulePaths).toEqual(['/app/worker.js', '/app/shared.js']);
+
+  expect((artifacts as SerialAsset[]).map((artifact) => artifact.filename)).not.toContainEqual(
+    expect.stringContaining('__common-')
+  );
 });
