@@ -77,6 +77,7 @@ export function useVisibleTabsWithRedirect<
 
   useEffect(() => {
     // TODO(@ubax): Consider throwing in __DEV__ instead of warning.
+    // TODO: Skip this during HMR while placeholder descriptors lack `routeSource`.
     if (__DEV__ && visibleRoutes.length === 0 && guardRedirect === undefined) {
       const undeclaredRoutes = routes
         .filter((route) => !isDeclaredInLayout(descriptors[route.key]))

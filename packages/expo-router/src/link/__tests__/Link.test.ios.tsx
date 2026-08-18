@@ -1053,6 +1053,17 @@ describe('Preview', () => {
     };
   });
   describe('multiple preloaded paths with the same name', () => {
+    let warn: jest.SpiedFunction<typeof console.warn>;
+
+    beforeEach(() => {
+      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+
     it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
