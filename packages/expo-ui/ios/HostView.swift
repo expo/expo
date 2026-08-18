@@ -3,6 +3,10 @@
 import SwiftUI
 import ExpoModulesCore
 
+/// Coordinate space anchored at the `Host`, so hosted React Native views can report where SwiftUI
+/// actually placed them.
+internal let expoHostCoordinateSpace = "expo.ui.host"
+
 internal enum ExpoColorScheme: String, Enumerable {
   case light
   case dark
@@ -60,6 +64,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       HostLayout {
         Children()
       }
+      .coordinateSpace(name: expoHostCoordinateSpace)
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
@@ -75,6 +80,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       ZStack(alignment: alignment) {
         Children()
       }
+      .coordinateSpace(name: expoHostCoordinateSpace)
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))

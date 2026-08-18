@@ -28,6 +28,9 @@
 - [iOS] Fix `community/bottom-sheet` close callbacks firing before the sheet finished dismissing. ([#48389](https://github.com/expo/expo/issues/48389) by [@nicklamont](https://github.com/nicklamont)) ([#48436](https://github.com/expo/expo/pull/48436) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed viewport size measurement reading the main screen instead of the scene the view is in. ([#48170](https://github.com/expo/expo/pull/48170) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix a hosted `Pressable` dropping its press when the finger moves, by measuring hosted React Native views where SwiftUI placed them. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix hosted React Native views receiving no touches inside a `BottomSheet` or `Popover`. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `RNHostView` with `matchContents` stretching to its parent on the cross axis, which left its size with no fixed point and could spin at 100% CPU. ([#48969](https://github.com/expo/expo/pull/48969) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
