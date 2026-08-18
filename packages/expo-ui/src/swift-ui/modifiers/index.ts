@@ -157,18 +157,26 @@ export const containerRelativeFrame = (params: {
 
 /**
  * Sets padding on a view.
- * Supports individual edges or shorthand properties.
+ * Supports individual edges or shorthand properties. Every edge accepts a length in points or
+ * `'default'` to apply the system default padding to that edge. Edges set by a specific property
+ * take precedence over the shorthand ones, and unspecified edges get no padding.
+ * Calling it without parameters applies the system default padding to all edges.
  * @param params - The padding parameters: `top`, `bottom`, `leading`, `trailing`, `horizontal`, `vertical` and `all`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/padding(_:_:)).
+ * @example
+ * ```tsx
+ * // The system default padding on top, 12 points on the sides, nothing at the bottom.
+ * <Text modifiers={[padding({ top: 'default', horizontal: 12 })]}>Hello</Text>
+ * ```
  */
 export const padding = (params?: {
-  top?: number;
-  bottom?: number;
-  leading?: number;
-  trailing?: number;
-  horizontal?: number;
-  vertical?: number;
-  all?: number;
+  top?: number | 'default';
+  bottom?: number | 'default';
+  leading?: number | 'default';
+  trailing?: number | 'default';
+  horizontal?: number | 'default';
+  vertical?: number | 'default';
+  all?: number | 'default';
 }) => createModifier('padding', params);
 
 /**

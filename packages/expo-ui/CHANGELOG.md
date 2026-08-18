@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added `'default'` as a value for every edge of the `padding` modifier, so a single edge can use the system default padding while the other edges use explicit lengths. ([#48903](https://github.com/expo/expo/pull/48903) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [android] Added `maskClip` modifier, exposing Compose's `CarouselItemScope.maskClip` so carousel items keep their shape while the carousel masks them. ([#48852](https://github.com/expo/expo/pull/48852) by [@SchroederNathan](https://github.com/SchroederNathan))
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
 - [iOS] Added `menuStyle` and `menuIndicator` SwiftUI modifiers, which together with `buttonStyle('plain')` keep a `Menu`'s custom label as its entire trigger on Mac Catalyst. ([#48447](https://github.com/expo/expo/issues/48447) by [@cvburgess](https://github.com/cvburgess)) ([#48448](https://github.com/expo/expo/pull/48448) by [@cvburgess](https://github.com/cvburgess))
