@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Android] Dispatch pending metrics and logs in bounded, oldest-first chunks without replacing active background work. ([#49012](https://github.com/expo/expo/pull/49012) by [@Ubax](https://github.com/Ubax))
+
 ## 57.0.14 — 2026-08-17
 
 _This version does not introduce any user-facing changes._
