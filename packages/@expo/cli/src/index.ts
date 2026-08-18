@@ -36,6 +36,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   add: () => import('../src/install/index.js').then((i) => i.expoInstall),
   customize: () => import('../src/customize/index.js').then((i) => i.expoCustomize),
   lint: () => import('../src/lint/index.js').then((i) => i.expoLint),
+  skills: () => import('../src/skills/index.js').then((i) => i.expoSkills),
 
   // Auth
   login: () => import('../src/login/index.js').then((i) => i.expoLogin),
@@ -119,6 +120,7 @@ if (!isSubcommand && args['--help']) {
     prebuild,
     'run:ios': runIos,
     'run:android': runAndroid,
+    skills,
     // NOTE(EvanBacon): Don't document this command as it's a temporary
     // workaround until we can use `expo export` for all production bundling.
     // https://github.com/expo/expo/pull/21396/files#r1121025873
@@ -141,7 +143,7 @@ if (!isSubcommand && args['--help']) {
   {bold Commands}
     ${Object.keys({ start, export: _export, ...others }).join(', ')}
     ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
-    ${Object.keys({ install, customize, config, serve }).join(', ')}
+    ${Object.keys({ install, customize, config, serve, skills }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
   {bold Options}
