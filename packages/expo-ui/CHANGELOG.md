@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Preserve vector drawable `fillType` values when loading images so even-odd paths render correctly. ([#49049](https://github.com/expo/expo/pull/49049) by [@aonan-brex](https://github.com/aonan-brex))
+- [iOS] Fixed `Overlay`, `Alert`, `ConfirmationDialog` and `Popover` silently ignoring the `modifiers` prop, which never reached the native view. ([#48949](https://github.com/expo/expo/pull/48949) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 💡 Others
 
