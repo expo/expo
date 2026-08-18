@@ -3,6 +3,7 @@ package expo.modules.appmetrics.networkrequests
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.Session
 import expo.modules.appmetrics.storage.Span
@@ -329,8 +330,7 @@ class NetworkRequestPersistenceTest {
   fun `drops every request while recording is disabled`() = runTest(testDispatcher) {
     insertSession("s")
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       initialConfiguration = NetworkSpansConfiguration(enabled = false),
       sessionId = "s"
     )
@@ -343,8 +343,7 @@ class NetworkRequestPersistenceTest {
   fun `records only requests matching the configured filter`() = runTest(testDispatcher) {
     insertSession("s")
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       initialConfiguration = NetworkSpansConfiguration(enabled = true, hosts = listOf("API.myapp.com")),
       sessionId = "s"
     )
@@ -362,8 +361,7 @@ class NetworkRequestPersistenceTest {
     // "Applies forward": rows persisted before the change stay in the table and still dispatch.
     insertSession("s")
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       sessionId = "s"
     )
     persistence.persist(makeRequest())
@@ -378,8 +376,7 @@ class NetworkRequestPersistenceTest {
   fun `persists a completed request as a span attributed to the provided session`() = runTest(testDispatcher) {
     insertSession("main-session")
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       sessionId = "main-session"
     )
     persistence.persist(makeRequest())
@@ -399,8 +396,7 @@ class NetworkRequestPersistenceTest {
     val monitor = NetworkRequestMonitor()
     monitor.record(makeRequest(method = "GET"))
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       sessionId = "main-session"
     )
     monitor.installPersistence(persistence)
@@ -418,16 +414,14 @@ class NetworkRequestPersistenceTest {
     val monitor = NetworkRequestMonitor()
     monitor.record(makeRequest(method = "GET"))
     val first = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       sessionId = "s"
     )
     monitor.installPersistence(first)
     testScheduler.advanceUntilIdle()
     monitor.uninstallPersistence(first)
     val second = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       sessionId = "s"
     )
     monitor.installPersistence(second)
@@ -468,8 +462,7 @@ class NetworkRequestPersistenceTest {
     insertSession("s")
     val monitor = NetworkRequestMonitor()
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       sessionId = "s"
     )
     monitor.installPersistence(persistence)
@@ -486,14 +479,12 @@ class NetworkRequestPersistenceTest {
     insertSession("s")
     val monitor = NetworkRequestMonitor()
     val stale = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       sessionId = "s"
     )
     monitor.installPersistence(stale)
     val replacement = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       sessionId = "s"
     )
     monitor.installPersistence(replacement)
@@ -508,8 +499,7 @@ class NetworkRequestPersistenceTest {
     // The sessions FK protects referential integrity; persistence must degrade to a dropped
     // row rather than throw into the monitor's record path.
     val persistence = NetworkRequestPersistence(
-      database = database,
-      scope = this,
+      writer = SpanWriter(database = database, scope = this),
       sessionId = "never-inserted"
     )
     persistence.persist(makeRequest())
