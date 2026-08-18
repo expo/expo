@@ -360,13 +360,12 @@ class SQLiteModule : Module() {
   private fun prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
-      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
-    }
-    // SQLite reports success with a null statement when the source has nothing to run.
-    // Every statement API below would then get a null pointer, and clear_bindings() crashes on one.
-    if (statement.ref.isNullStatement()) {
+    val ret = database.ref.sqlite3_prepare_v2(source, statement.ref)
+    if (ret == NativeDatabaseBinding.NULL_STATEMENT) {
       throw EmptyStatementException()
+    }
+    if (ret != NativeDatabaseBinding.SQLITE_OK) {
+      throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
   }
 

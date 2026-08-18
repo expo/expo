@@ -120,8 +120,14 @@ int NativeDatabaseBinding::sqlite3_prepare_v2(
     const std::string &source,
     jni::alias_ref<NativeStatementBinding::javaobject> statement) {
   NativeStatementBinding *cStatement = cthis(statement);
-  return ::exsqlite3_prepare_v2(db, source.c_str(), source.size(),
-                                &cStatement->stmt, nullptr);
+  int ret = ::exsqlite3_prepare_v2(db, source.c_str(), source.size(),
+                                   &cStatement->stmt, nullptr);
+  // SQLite reports success with a null statement when the source has nothing to
+  // run. The pointer lives here, so flag it for Kotlin rather than exposing it.
+  if (ret == SQLITE_OK && cStatement->stmt == nullptr) {
+    return kNullStatement;
+  }
+  return ret;
 }
 
 jni::local_ref<jni::JArrayByte>

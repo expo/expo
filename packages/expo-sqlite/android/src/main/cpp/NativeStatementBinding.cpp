@@ -32,8 +32,6 @@ void NativeStatementBinding::registerNatives() {
                        NativeStatementBinding::sqlite3_finalize),
       makeNativeMethod("sqlite3_reset", NativeStatementBinding::sqlite3_reset),
       makeNativeMethod("sqlite3_step", NativeStatementBinding::sqlite3_step),
-      makeNativeMethod("isNullStatement",
-                       NativeStatementBinding::isNullStatement),
       makeNativeMethod("bindStatementParam",
                        NativeStatementBinding::bindStatementParam),
       makeNativeMethod("getColumnNames",
@@ -67,8 +65,6 @@ int NativeStatementBinding::sqlite3_finalize() {
 int NativeStatementBinding::sqlite3_reset() { return ::exsqlite3_reset(stmt); }
 
 int NativeStatementBinding::sqlite3_step() { return ::exsqlite3_step(stmt); }
-
-bool NativeStatementBinding::isNullStatement() { return stmt == nullptr; }
 
 int NativeStatementBinding::bindStatementParam(
     int index, jni::alias_ref<jni::JObject> param) {

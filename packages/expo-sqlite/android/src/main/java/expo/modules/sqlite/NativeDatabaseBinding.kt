@@ -92,5 +92,9 @@ internal class NativeDatabaseBinding : Closeable {
 
     const val SQLITE_ROW = 100
     const val SQLITE_DONE = 101
+
+    // Not an sqlite3 code. Returned by sqlite3_prepare_v2 when the source had
+    // nothing to run. Keep in sync with kNullStatement in NativeDatabaseBinding.h.
+    const val NULL_STATEMENT = -1
   }
 }
