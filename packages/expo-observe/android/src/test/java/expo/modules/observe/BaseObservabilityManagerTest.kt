@@ -10,6 +10,9 @@ import expo.modules.appmetrics.storage.SessionWithLogs
 import expo.modules.appmetrics.storage.SessionWithMetrics
 import expo.modules.appmetrics.utils.TimeUtils
 import io.mockk.*
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -746,10 +749,10 @@ class BaseObservabilityManagerTest {
   @Test
   fun `dispatchUnsentMetrics dispatches a backlog in successive chunks`() =
     runTest {
+      val pendingIds = mutableListOf("metric-1", "metric-2", "metric-3")
       val requestedChunks = mutableListOf<List<String>>()
       val removedIds = mutableListOf<String>()
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } returnsMany
-        listOf(listOf("metric-1", "metric-2"), listOf("metric-3"), emptyList())
+      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } answers { pendingIds.take(2) }
       coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
         val ids = firstArg<List<String>>()
         requestedChunks.add(ids)
@@ -759,7 +762,9 @@ class BaseObservabilityManagerTest {
       }
       coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedIds.addAll(firstArg<List<String>>())
+        val ids = firstArg<List<String>>()
+        removedIds.addAll(ids)
+        pendingIds.removeAll(ids.toSet())
       }
 
       createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
@@ -771,6 +776,30 @@ class BaseObservabilityManagerTest {
       assertEquals(listOf("metric-1", "metric-2", "metric-3"), removedIds)
       coVerify(exactly = 2) { mockEventDispatcher.dispatch(any()) }
       coVerify(exactly = 3) { mockPendingMetricsManager.getPendingMetricIds(2) }
+    }
+
+  @Test
+  fun `dispatchUnsentMetrics stops reading chunks after cancellation`() =
+    runTest {
+      val pendingIds = mutableListOf("metric-1", "metric-2", "metric-3")
+      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } answers { pendingIds.take(2) }
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
+        firstArg<List<String>>().map { id ->
+          createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
+        }
+      }
+      coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } coAnswers {
+        pendingIds.removeAll(firstArg<List<String>>().toSet())
+        currentCoroutineContext().cancel()
+      }
+
+      launch {
+        createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
+      }.join()
+
+      assertEquals(listOf("metric-3"), pendingIds)
+      coVerify(exactly = 1) { mockPendingMetricsManager.getPendingMetricIds(2) }
     }
 
   @Test
@@ -830,38 +859,39 @@ class BaseObservabilityManagerTest {
   @Test
   fun `dispatchUnsentMetrics removes an orphaned chunk and continues`() =
     runTest {
+      val pendingIds = mutableListOf("orphan-1", "metric-1", "metric-2")
       val removedChunks = mutableListOf<List<String>>()
-      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } returnsMany
-        listOf(listOf("orphan-1", "orphan-2"), listOf("metric-1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithMetrics(listOf("orphan-1", "orphan-2")) } returns emptyList()
-      coEvery { mockSessionManager.getSessionsWithMetrics(listOf("metric-1")) } returns listOf(
-        createSessionWithMetrics(
-          "session-1",
-          "production",
-          listOf(createMetric("metric-1", metricId = "metric-1"))
-        )
-      )
+      coEvery { mockPendingMetricsManager.getPendingMetricIds(2) } answers { pendingIds.take(2) }
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } answers {
+        firstArg<List<String>>()
+          .filter { it.startsWith("metric-") }
+          .map { id ->
+            createSessionWithMetrics("session-$id", "production", listOf(createMetric(id, metricId = id)))
+          }
+      }
       coEvery { mockEventDispatcher.dispatch(any()) } returns DispatchResult.Success
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
-        removedChunks.add(firstArg<List<String>>())
+        val ids = firstArg<List<String>>()
+        removedChunks.add(ids)
+        pendingIds.removeAll(ids.toSet())
       }
 
       createManager(dispatchChunkSize = 2).dispatchUnsentMetrics()
 
       assertEquals(
-        listOf(listOf("orphan-1", "orphan-2"), listOf("metric-1")),
+        listOf(listOf("orphan-1"), listOf("metric-1"), listOf("metric-2")),
         removedChunks
       )
-      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 2) { mockEventDispatcher.dispatch(any()) }
     }
 
   @Test
   fun `dispatchUnsentLogs dispatches a backlog in successive chunks`() =
     runTest {
+      val pendingIds = mutableListOf("log-1", "log-2", "log-3")
       val requestedChunks = mutableListOf<List<String>>()
       val removedIds = mutableListOf<String>()
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } returnsMany
-        listOf(listOf("log-1", "log-2"), listOf("log-3"), emptyList())
+      coEvery { mockPendingLogsManager.getPendingLogIds(2) } answers { pendingIds.take(2) }
       coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
         val ids = firstArg<List<String>>()
         requestedChunks.add(ids)
@@ -871,7 +901,9 @@ class BaseObservabilityManagerTest {
       }
       coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
       coEvery { mockPendingLogsManager.removePendingLogs(any()) } answers {
-        removedIds.addAll(firstArg<List<String>>())
+        val ids = firstArg<List<String>>()
+        removedIds.addAll(ids)
+        pendingIds.removeAll(ids.toSet())
       }
 
       createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
@@ -880,6 +912,30 @@ class BaseObservabilityManagerTest {
       assertEquals(listOf("log-1", "log-2", "log-3"), removedIds)
       coVerify(exactly = 2) { mockEventDispatcher.dispatchLogs(any()) }
       coVerify(exactly = 3) { mockPendingLogsManager.getPendingLogIds(2) }
+    }
+
+  @Test
+  fun `dispatchUnsentLogs stops reading chunks after cancellation`() =
+    runTest {
+      val pendingIds = mutableListOf("log-1", "log-2", "log-3")
+      coEvery { mockPendingLogsManager.getPendingLogIds(2) } answers { pendingIds.take(2) }
+      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
+        firstArg<List<String>>().map { id ->
+          createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
+        }
+      }
+      coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
+      coEvery { mockPendingLogsManager.removePendingLogs(any()) } coAnswers {
+        pendingIds.removeAll(firstArg<List<String>>().toSet())
+        currentCoroutineContext().cancel()
+      }
+
+      launch {
+        createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
+      }.join()
+
+      assertEquals(listOf("log-3"), pendingIds)
+      coVerify(exactly = 1) { mockPendingLogsManager.getPendingLogIds(2) }
     }
 
   @Test
@@ -939,26 +995,27 @@ class BaseObservabilityManagerTest {
   @Test
   fun `dispatchUnsentLogs removes an orphaned chunk and continues`() =
     runTest {
+      val pendingIds = mutableListOf("orphan-1", "log-1", "log-2")
       val removedChunks = mutableListOf<List<String>>()
-      coEvery { mockPendingLogsManager.getPendingLogIds(2) } returnsMany
-        listOf(listOf("orphan-1", "orphan-2"), listOf("log-1"), emptyList())
-      coEvery { mockSessionManager.getSessionsWithLogs(listOf("orphan-1", "orphan-2")) } returns emptyList()
-      coEvery { mockSessionManager.getSessionsWithLogs(listOf("log-1")) } returns listOf(
-        createSessionWithLogs(
-          "session-1",
-          "production",
-          listOf(createLog("log-1", logId = "log-1"))
-        )
-      )
+      coEvery { mockPendingLogsManager.getPendingLogIds(2) } answers { pendingIds.take(2) }
+      coEvery { mockSessionManager.getSessionsWithLogs(any()) } answers {
+        firstArg<List<String>>()
+          .filter { it.startsWith("log-") }
+          .map { id ->
+            createSessionWithLogs("session-$id", "production", listOf(createLog(id, logId = id)))
+          }
+      }
       coEvery { mockEventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
       coEvery { mockPendingLogsManager.removePendingLogs(any()) } answers {
-        removedChunks.add(firstArg<List<String>>())
+        val ids = firstArg<List<String>>()
+        removedChunks.add(ids)
+        pendingIds.removeAll(ids.toSet())
       }
 
       createManager(dispatchChunkSize = 2).dispatchUnsentLogs()
 
-      assertEquals(listOf(listOf("orphan-1", "orphan-2"), listOf("log-1")), removedChunks)
-      coVerify(exactly = 1) { mockEventDispatcher.dispatchLogs(any()) }
+      assertEquals(listOf(listOf("orphan-1"), listOf("log-1"), listOf("log-2")), removedChunks)
+      coVerify(exactly = 2) { mockEventDispatcher.dispatchLogs(any()) }
     }
 
   // endregion

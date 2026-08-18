@@ -8,6 +8,8 @@ import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -163,7 +165,7 @@ class BaseObservabilityManager(
       return
     }
 
-    while (true) {
+    while (currentCoroutineContext().isActive) {
       val pendingIds = pendingMetricsManager.getPendingMetricIds(dispatchChunkSize)
       if (pendingIds.isEmpty()) {
         break
@@ -234,7 +236,7 @@ class BaseObservabilityManager(
       return
     }
 
-    while (true) {
+    while (currentCoroutineContext().isActive) {
       val pendingIds = pendingLogsManager.getPendingLogIds(dispatchChunkSize)
       if (pendingIds.isEmpty()) {
         break

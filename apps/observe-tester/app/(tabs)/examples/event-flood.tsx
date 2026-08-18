@@ -8,7 +8,7 @@ import { useTheme } from '@/utils/theme';
 
 export default function EventFlood() {
   const theme = useTheme();
-  const [lastRun, setLastRun] = useState<{ count: number; elapsedMs: number } | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
   function logFlood(count: number) {
     const startedAt = performance.now();
@@ -35,11 +35,19 @@ export default function EventFlood() {
       });
     }
 
-    setLastRun({ count, elapsedMs: Math.round(performance.now() - startedAt) });
+    setStatus(
+      `Logged ${count.toLocaleString()} events in ${Math.round(performance.now() - startedAt).toLocaleString()} ms`
+    );
   }
 
   async function clearStoredEntries() {
-    await AppMetrics.clearStoredEntries();
+    try {
+      await AppMetrics.clearStoredEntries();
+      setStatus('Cleared stored entries');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setStatus(`Failed to clear stored entries: ${message}`);
+    }
   }
 
   return (
@@ -53,11 +61,7 @@ export default function EventFlood() {
       <Button title="Log 1,000 events" onPress={() => logFlood(1_000)} />
       <Button title="Log 5,000 events" onPress={() => logFlood(5_000)} />
       <Button title="Clear stored entries" onPress={clearStoredEntries} theme="secondary" />
-      {lastRun ? (
-        <Text style={[styles.status, { color: theme.text.default }]}>
-          Logged {lastRun.count.toLocaleString()} events in {lastRun.elapsedMs.toLocaleString()} ms
-        </Text>
-      ) : null}
+      {status ? <Text style={[styles.status, { color: theme.text.default }]}>{status}</Text> : null}
     </ScrollView>
   );
 }
