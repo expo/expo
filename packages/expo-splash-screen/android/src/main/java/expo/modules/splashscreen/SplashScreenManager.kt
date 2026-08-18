@@ -70,6 +70,7 @@ object SplashScreenManager {
   }
 
   fun registerOnActivity(mainActivity: Activity) {
+    mainActivityStopped = false
     splashScreen = mainActivity.installSplashScreen()
     ReactMarker.addListener(contentAppearedListener)
 
