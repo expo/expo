@@ -309,8 +309,10 @@ export default function App() {
 
           // Handle URL from expo push notifications
           const response = Notifications.getLastNotificationResponse();
-
-          return response?.notification.request.content.data.url;
+          const notificationUrl = response?.notification.request.content.data?.url;
+          if (typeof notificationUrl === 'string') {
+            return notificationUrl;
+          }
         },
         subscribe(listener) {
           const onReceiveURL = ({ url }: { url: string }) => listener(url);
@@ -320,13 +322,15 @@ export default function App() {
 
           // Listen to expo push notifications
           const subscription = Notifications.addNotificationResponseReceivedListener(response => {
-            const url = response.notification.request.content.data.url;
+            const url = response.notification.request.content.data?.url;
 
             // Any custom logic to see whether the URL needs to be handled
             //...
 
-            // Let React Navigation handle the URL
-            listener(url);
+            if (typeof url === 'string') {
+              // Let React Navigation handle the URL
+              listener(url);
+            }
           });
 
           return () => {
