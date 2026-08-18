@@ -37,6 +37,7 @@ describe(resolveArgsAsync, () => {
         fix: false,
         dev: false,
         agentSkills: true,
+        skillContext: true,
       },
       extras: [],
     });
@@ -56,6 +57,7 @@ describe(resolveArgsAsync, () => {
         fix: false,
         dev: false,
         agentSkills: true,
+        skillContext: true,
       },
       extras: ['--save-exact', '--ignore-scripts'],
     });
@@ -84,6 +86,7 @@ describe(resolveArgsAsync, () => {
         fix: false,
         dev: false,
         agentSkills: true,
+        skillContext: true,
       },
       extras: ['--npm', '-g', 'not-a-plugin'],
     });
@@ -102,6 +105,7 @@ describe(resolveArgsAsync, () => {
         fix: false,
         dev: false,
         agentSkills: true,
+        skillContext: true,
       },
       extras: [],
     });
@@ -109,5 +113,10 @@ describe(resolveArgsAsync, () => {
   it(`disables agent skills with --no-agent-skills`, async () => {
     const result = await resolveArgsAsync(['expo-camera', '--no-agent-skills']);
     expect(result.options.agentSkills).toBe(false);
+  });
+  it(`disables the skill context output with --no-skill-context`, async () => {
+    const result = await resolveArgsAsync(['expo-camera', '--no-skill-context']);
+    expect(result.options.skillContext).toBe(false);
+    expect(result.options.agentSkills).toBe(true);
   });
 });
