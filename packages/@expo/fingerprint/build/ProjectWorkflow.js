@@ -39,7 +39,7 @@ async function resolveProjectWorkflowAsync(projectRoot, platform, fingerprintIgn
     const vcsClient = await getVCSClientAsync(projectRoot);
     const vcsRoot = path_1.default.normalize(await vcsClient.getRootPathAsync());
     for (const marker of platformWorkflowMarkers) {
-        const relativeMarker = path_1.default.relative(vcsRoot, marker);
+        const relativeMarker = (0, Path_1.toPosixPath)(path_1.default.relative(vcsRoot, marker));
         if ((await (0, Path_1.pathExistsAsync)(marker)) &&
             !(0, Path_1.isIgnoredPathWithMatchObjects)(relativeMarker, fingerprintIgnorePaths) &&
             !(await vcsClient.isFileIgnoredAsync(relativeMarker))) {
