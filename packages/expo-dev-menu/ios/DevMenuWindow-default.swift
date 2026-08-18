@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #if !os(macOS)
 
+import ExpoModulesCore
 import React
 
 #if os(tvOS)
@@ -21,12 +22,16 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
     self.manager = manager
     self.devMenuViewController = DevMenuViewController(manager: manager)
 
-    super.init(frame: UIScreen.main.bounds)
+    if let windowScene = SceneGeometry.foregroundActiveScene() {
+      super.init(windowScene: windowScene)
+    } else {
+      super.init(frame: .zero)
+    }
 
     self.rootViewController = UIViewController()
     self.backgroundColor = UIColor(white: 0, alpha: 0.4)
     #if os(tvOS)
-    self.windowLevel = .normal
+    self.windowLevel = .normal + 1
     #else
     self.windowLevel = .statusBar
     #endif
@@ -107,6 +112,7 @@ class DevMenuWindow: UIWindow, PresentationControllerDelegate {
       self.isDismissing = false
       self.isHidden = true
       self.backgroundColor = UIColor(white: 0, alpha: 0.4)
+      DevMenuManager.shared.updateFABVisibility()
       completion?()
     }
   }

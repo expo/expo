@@ -42,34 +42,6 @@ if defined?(Expo::PackagesConfig)
   coreFeatures = Expo::PackagesConfig.instance.coreFeatures
 end
 
-# During resolution phase, it will always false as Pod::Config.instance.podfile is not yet set.
-# However, for our use case, we only need to check this value during installation phase.
-def Pod::hasWorklets()
-  begin
-    # Safely access Pod::Config.instance.podfile without initiating it
-    if Pod::Config.instance_variable_defined?(:@instance) && !Pod::Config.instance_variable_get(:@instance).nil?
-      config = Pod::Config.instance
-
-      # Saefly access podfile and its dependencies
-      if config.instance_variable_defined?(:@podfile)
-        podfile = config.instance_variable_get(:@podfile)
-        if podfile && podfile.respond_to?(:dependencies)
-          dependencies = podfile.dependencies.map(&:name)
-          return dependencies.include?('RNWorklets')
-        end
-      end
-    end
-  rescue
-  end
-  return false
-end
-
-shouldEnableWorkletsIntegration = hasWorklets()
-workletsCppFlags = 'WORKLETS_ENABLED=0'
-if shouldEnableWorkletsIntegration
-  workletsCppFlags = "WORKLETS_ENABLED=1 REACT_NATIVE_MINOR_VERSION=#{reactNativeTargetVersion}"
-end
-
 Pod::Spec.new do |s|
   s.name           = 'ExpoModulesCore'
   s.version        = package['version']
@@ -79,14 +51,12 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms       = {
-    :ios => '15.1',
-    :osx => '11.0',
-    :tvos => '15.1'
+    :ios => '16.4',
+    :osx => '13.4',
+    :tvos => '16.4'
   }
   s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.static_framework = true
-  s.header_dir     = 'ExpoModulesCore'
 
   header_search_paths = []
   if ENV['USE_FRAMEWORKS']
@@ -108,18 +78,6 @@ Pod::Spec.new do |s|
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsitooling/JSITooling.framework/Headers"',
       '"${PODS_CONFIGURATION_BUILD_DIR}/React-jserrorhandler/React_jserrorhandler.framework/Headers"',
     ])
-
-    if shouldEnableWorkletsIntegration
-      pods_root = Pod::Config.instance.project_pods_root
-      react_native_worklets_node_modules_dir = File.join(File.dirname(`cd "#{Pod::Config.instance.installation_root.to_s}" && node --print "require.resolve('react-native-worklets/package.json')"`), '..')
-      react_native_worklets_dir_absolute = File.join(react_native_worklets_node_modules_dir, 'react-native-worklets')
-      workletsPath = Pathname.new(react_native_worklets_dir_absolute).relative_path_from(pods_root).to_s
-
-      header_search_paths.concat([
-        "\"$(PODS_ROOT)/#{workletsPath}/apple\"",
-        "\"$(PODS_ROOT)/#{workletsPath}/Common/cpp\"",
-      ])
-    end
   end
 
   # Swift/Objective-C compatibility
@@ -130,13 +88,14 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
     'OTHER_SWIFT_FLAGS' => "$(inherited) #{new_arch_enabled ? new_arch_compiler_flags : ''}",
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
-    'GCC_PREPROCESSOR_DEFINITIONS' => "$(inherited) #{workletsCppFlags} EXPO_MODULES_CORE_VERSION=" + package['version'],
+    'GCC_PREPROCESSOR_DEFINITIONS' => "$(inherited) EXPO_MODULES_CORE_VERSION=" + package['version'],
   }
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => [
       '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
       '"$(PODS_ROOT)/Headers/Private/Yoga"', # Expo.h -> ExpoModulesCore-umbrella.h -> Fabric ViewProps.h -> Private Yoga headers
     ],
+    'OTHER_LDFLAGS' => '$(inherited) -lc++', # C++ standard library - will propagate to dependent targets
   }
 
   if use_hermes
@@ -146,27 +105,44 @@ Pod::Spec.new do |s|
     s.dependency 'React-jsc'
   end
 
-  s.dependency 'ExpoModulesJSI'
-
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
   s.dependency 'React-NativeModulesApple'
   s.dependency 'React-RCTFabric'
 
-  if shouldEnableWorkletsIntegration
-    s.dependency 'RNWorklets'
-  end
+  # ExpoModulesJSI is re-exported by ExpoModulesCore's swiftinterface, so it must be a CocoaPods dep in both source and prebuilt modes.
+  s.dependency 'ExpoModulesJSI'
 
   install_modules_dependencies(s)
 
-  s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-  s.exclude_files = ['ios/JSI', 'ios/Tests', 'common/cpp/JSI']
-  s.compiler_flags = compiler_flags
-  s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
+  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
+    s.static_framework = true
+    s.header_dir     = 'ExpoModulesCore'
+    s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
+    s.exclude_files = ['ios/Tests', 'ios/Worklets', 'ios/WorkletsTests', 'ios/WorkletsAdapter']
+    s.compiler_flags = compiler_flags
+    s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
+  end
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'ios/Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ios/Tests/**/*.{h,m,mm,swift}'
+
+    # The Obj-C++ tests include React renderer headers, which need the library's folly
+    # config. It reaches them through the library's `compiler_flags`, which test specs
+    # inherit and CocoaPods applies per-file to C-family sources.
+    #
+    # OTHER_LDFLAGS: the library's -lc++ lives in `user_target_xcconfig` (for consuming
+    # apps), which a test_spec target doesn't inherit. The test bundle links
+    # libExpoModulesCore.a (C++), so link libc++ explicitly.
+    #
+    # SWIFT_OBJC_BRIDGING_HEADER: a test target has no module for its own Obj-C sources,
+    # so the Swift tests see the Obj-C test doubles (`ios/Tests/Mocks`) through the
+    # bridging header.
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++',
+      'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Tests/Tests-Bridging-Header.h'
+    }
   end
 end

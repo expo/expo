@@ -20,7 +20,7 @@ public class BackgroundTaskAppDelegateSubscriber: ExpoAppDelegateSubscriber {
         }
 
         // Let's find the task service implementation and call the runTasks(withReason)
-        if let taskService = ModuleRegistryProvider.singletonModules().first(where: { $0 is EXTaskServiceInterface }) as? EXTaskServiceInterface {
+        if let taskService = EXTaskServiceHelper.sharedTaskService() {
           taskService.runTasks(with: EXTaskLaunchReasonBackgroundTask, userInfo: nil, completionHandler: { _ in
             // Mark iOS task as finished - this is important so that we can continue calling it
             task.setTaskCompleted(success: true)

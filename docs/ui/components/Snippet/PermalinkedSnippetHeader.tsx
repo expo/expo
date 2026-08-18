@@ -8,7 +8,7 @@ import { SnippetHeader, SnippetHeaderProps } from './SnippetHeader';
 
 export const PermalinkedSnippetHeader = withHeadingManager(
   (props: SnippetHeaderProps & HeadingManagerProps) => {
-    const { title } = props;
+    const { headingManager, title, ...snippetHeaderProps } = props;
     let sidebarTitle;
     if (typeof title === 'string') {
       const pathSegments = title.split('/');
@@ -17,19 +17,22 @@ export const PermalinkedSnippetHeader = withHeadingManager(
       sidebarTitle =
         pathSegments.length > 2 ? pathSegments[0] + '/../' + pathSegments.at(-1) : title;
     }
-    const heading = props.headingManager.addHeading(title, 3, {
+    const heading = headingManager.addHeading(title, 3, {
       sidebarTitle,
       sidebarType: HeadingType.CODE_FILE_PATH,
     });
 
     return (
-      <LinkBase
-        id={heading.slug}
-        href={'#' + heading.slug}
-        ref={heading.ref}
-        className="scroll-m-4">
-        <SnippetHeader {...props} />
-      </LinkBase>
+      <div id={heading.slug} ref={heading.ref} className="scroll-m-4">
+        <SnippetHeader
+          {...snippetHeaderProps}
+          title={
+            <LinkBase href={'#' + heading.slug} className="text-inherit hocus:underline">
+              {title}
+            </LinkBase>
+          }
+        />
+      </div>
     );
   }
 );

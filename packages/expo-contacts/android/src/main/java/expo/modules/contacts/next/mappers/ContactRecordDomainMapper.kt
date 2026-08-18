@@ -39,7 +39,6 @@ import expo.modules.contacts.next.records.*
 import expo.modules.contacts.next.records.contact.*
 import expo.modules.contacts.next.records.fields.*
 import expo.modules.contacts.next.services.ImageByteArrayConverter
-import expo.modules.kotlin.apifeatures.EitherType
 
 class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter) {
   val contactMapper = ContactMapper(imageByteArrayConverter)
@@ -180,7 +179,6 @@ class ContactRecordDomainMapper(imageByteArrayConverter: ImageByteArrayConverter
     return UpdateContact(rawContactId, existingStarred, modelsToAppend)
   }
 
-  @OptIn(EitherType::class)
   fun toPatchContact(
     record: PatchContactRecord,
     rawContactId: RawContactId,

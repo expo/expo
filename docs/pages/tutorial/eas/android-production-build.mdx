@@ -2,14 +2,15 @@
 title: Create a production build for Android
 sidebar_title: Android production build
 description: Learn about the process of creating a production build for Android and automating the release process.
+hasVideoLink: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll create our example app's production version and submit it to the Google Play Store. We'll also explore how to automate the creation and release of new app versions.
@@ -17,17 +18,27 @@ In this chapter, we'll create our example app's production version and submit it
 <VideoBoxLink
   videoId="nxlt8uwqhpE"
   title="Watch: Creating and releasing a production build for Android"
+  description="Create a production build for Android with EAS, submit it to the Google Play Store, and automate the release process."
 />
 
 ---
 
-## Prerequisites
-
-To publish and distribute an app on the Google Play Store, we need:
-
-- **Google Play Developer Account:** Must have a paid developer account. For details on setting one up, visit the [Google Play sign-up page](https://play.google.com/apps/publish/signup/).
-- **Google Service Account key:** We'll need a Google Service Account email and JSON key to automate the app submission process. **Follow the detailed instructions in our guide on [creating a Google Service Account key or downloading it from an existing account ](https://expo.fyi/creating-google-service-account), then return to this guide.** This is optional but required for [automating the release process](#automated-release).
-- **Production build profile:** Ensure that a `production` build profile is present in your **eas.json**, which is added by default.
+<Prerequisites>
+  <Requirement title="Google Play Developer account">
+    A paid Google Play Developer account is required. For details on setting one up, visit the
+    [Google Play sign-up page](https://play.google.com/apps/publish/signup/).
+  </Requirement>
+  <Requirement title="A production build profile in eas.json">
+    Ensure that a `production` build profile is present in your **eas.json**, which is added by
+    default.
+  </Requirement>
+  <Requirement title="Google Service Account key (optional)">
+    A Google Service Account email and JSON key is required to [automate the release
+    process](#automated-release). Follow the detailed instructions in [creating a Google Service
+    Account key or downloading it from an existing
+    account](https://expo.fyi/creating-google-service-account), then return to this guide.
+  </Requirement>
+</Prerequisites>
 
 ## Production build for Android
 
@@ -49,6 +60,8 @@ The above command will queue the build. Notice in the EAS dashboard that the **V
 
 ## Create an app on the Google Play Console
 
+> **info** Creating the first release manually is not required: `eas submit` can create your app's first release directly. In this tutorial, we walk through Play Console to get familiar with how releases work.
+
 To upload the app to the Google Play Store for the first time, we need to:
 
 - Go to the Google Play dashboard.
@@ -56,7 +69,7 @@ To upload the app to the Google Play Store for the first time, we need to:
 
 <ContentSpotlight
   alt="Create app on Google Play Console"
-  src="/static/images/tutorial/eas/play-store-01.png"
+  src="/static/images/tutorial/eas/play-store-01.webp"
   className="max-w-[800px]"
 />
 
@@ -155,7 +168,7 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 
 <ContentSpotlight
   alt="Downloading app on the device as an internal tester"
-  src="/static/images/tutorial/eas/play-store-15.png"
+  src="/static/images/tutorial/eas/play-store-15.webp"
   className="max-w-[240px]"
 />
 
@@ -163,13 +176,13 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 
 <ContentSpotlight
   alt="On accepting the invite, the app can be installed on the device"
-  src="/static/images/tutorial/eas/play-store-16.png"
+  src="/static/images/tutorial/eas/play-store-16.webp"
   className="max-w-[240px]"
 />
 
 <ContentSpotlight
   alt="App installed on the device as an internal tester"
-  src="/static/images/tutorial/eas/play-store-17.png"
+  src="/static/images/tutorial/eas/play-store-17.webp"
   className="max-w-[260px]"
 />
 
@@ -194,7 +207,7 @@ To promote our internal test release version to **alpha**, in Google Play Store 
 
 > **info** **Tip**: Before following the steps in this section, see the instructions on [creating a Google Service Account key or downloading it from an existing account ](https://expo.fyi/creating-google-service-account) guide.
 
-From now on, we can use [EAS Submit](/submit/introduction/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's credentials.
+From now on, we can use [EAS Submit](/submit/android/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's credentials.
 
 After following the Google Service Account guide steps, we can upload the downloaded JSON key to EAS dashboard:
 
@@ -238,7 +251,7 @@ Let's set the track to `internal` in **eas.json**.
   /* @hide ... */ /* @end */
   "submit": {
     "production": {
-      /* @info Set <CODE>track</CODE> to <CODE>internal</CODE>. */
+      /* @info Set `track` to `internal`. */
       "android": {
         "track": "internal"
       }
@@ -278,7 +291,7 @@ To release the app for production:
   "submit": {
     "production": {
       "android": {
-        /* @info Change the track to <CODE>production</CODE>. */
+        /* @info Change the track to `production`. */
         "track": "production"
         /* @end */
       }
@@ -307,18 +320,4 @@ For subsequent releases in future, we can streamline the process by combining bu
 
 ## Summary
 
-<ProgressTracker
-  currentChapterIndex={7}
-  name="EAS_TUTORIAL"
-  summary={
-    <>
-      We successfully created a production-ready Android build, discussed manual and automated
-      uploading to Google Play Store using <CODE>eas submit</CODE>, and automated the release
-      process with the <CODE>--auto-submit</CODE>.
-    </>
-  }
-  nextChapterDescription="
-In the next chapter, learn about the process of creating a production build for iOS."
-  nextChapterTitle="Create a production build for iOS"
-  nextChapterLink="/tutorial/eas/ios-production-build/"
-/>
+<ProgressTracker name="EAS_TUTORIAL" currentChapterSlug="/tutorial/eas/android-production-build" />

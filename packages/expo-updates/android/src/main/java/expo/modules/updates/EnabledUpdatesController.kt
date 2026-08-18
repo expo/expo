@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
@@ -17,7 +19,6 @@ import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.events.UpdatesEventManager
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
@@ -34,6 +35,7 @@ import expo.modules.updates.statemachine.UpdatesStateValue
 import expo.modules.updatesinterface.UpdatesInterface
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -81,13 +83,19 @@ class EnabledUpdatesController(
   private val startupFinishedDeferred = CompletableDeferred<Unit>()
   private val startupFinishedMutex = Mutex()
   override val reloadScreenManager = ReloadScreenManager()
+  override var reactHost: WeakReference<ReactHost> = WeakReference(null)
 
   internal val stateChangeListenerMap: MutableMap<String, UpdatesStateChangeListener> = mutableMapOf()
 
   private fun purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader(context.filesDir).purgeLogEntries {
       if (it != null) {
-        logger.error("UpdatesLogReader: error in purgeLogEntries", it, UpdatesErrorCode.Unknown)
+        // Log directly via android.util.Log rather than through `logger.error`,
+        // which writes via the PersistentFileLog dispatch queue. This callback
+        // is invoked from inside one of that queue's own tasks, so feeding
+        // another entry back into the queue from here re-enters it. Bypassing
+        // the queue keeps the failure path off its own back.
+        Log.e("expo-updates", "UpdatesLogReader: error in purgeLogEntries", it)
       }
     }
   }
@@ -254,7 +262,7 @@ class EnabledUpdatesController(
   }
 
   override suspend fun fetchUpdate() = suspendCancellableCoroutine { continuation ->
-    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate) {
+    val procedure = FetchUpdateProcedure(context, updatesConfiguration, logger, databaseHolder, updatesDirectory, fileDownloader, selectionPolicy, launchedUpdate, controllerScope) {
       continuation.resume(it)
     }
     stateMachine.queueExecution(procedure)
@@ -278,6 +286,8 @@ class EnabledUpdatesController(
           }
         }
         continuation.resume(resultMap)
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         continuation.resumeWithException(e.toCodedException())
       }
@@ -286,7 +296,7 @@ class EnabledUpdatesController(
 
   override suspend fun setExtraParam(key: String, value: String?) = suspendCancellableCoroutine { continuation ->
     controllerScope.launch {
-      runCatching {
+      try {
         ManifestMetadata.setExtraParam(
           databaseHolder.database,
           updatesConfiguration,
@@ -294,7 +304,9 @@ class EnabledUpdatesController(
           value
         )
         continuation.resume(Unit)
-      }.onFailure { e ->
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
         continuation.resumeWithException(e.toCodedException())
       }
     }
@@ -318,13 +330,19 @@ class EnabledUpdatesController(
       requestHeaders
     )
     if (!isValidRequestHeaders) {
-      throw CodedException("ERR_UPDATES_RUNTIME_OVERRIDE", "Invalid update requestHeaders override: $requestHeaders", null)
+      throw CodedException(
+        "ERR_UPDATES_RUNTIME_OVERRIDE",
+        "Invalid update requestHeaders override: $requestHeaders. " +
+          "Override keys must be declared in `updates.requestHeaders` in your app config " +
+          "at build time. Add the key to `updates.requestHeaders` and rebuild the app.",
+        null
+      )
     }
     val configOverride = UpdatesConfigurationOverride.saveRequestHeaders(context, requestHeaders)
     updatesConfiguration = UpdatesConfiguration.create(context, updatesConfiguration, configOverride)
   }
 
-  // UpdatesEnabledInterface implementations
+  // UpdatesInterface implementations
 
   override val runtimeVersion: String?
     get() = updatesConfiguration.runtimeVersionRaw
@@ -332,11 +350,17 @@ class EnabledUpdatesController(
   override val updateUrl: Uri?
     get() = updatesConfiguration.updateUrl
 
+  override val requestHeaders: Map<String, String>?
+    get() = updatesConfiguration.requestHeaders
+
   override val launchedUpdateId: UUID?
     get() = startupProcedure.launchedUpdate?.id
 
   override val embeddedUpdateId: UUID?
     get() = getEmbeddedUpdate()?.id
+
+  override val launchAssetPath: String?
+    get() = startupProcedure.launchAssetFile
 
   override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     val subscriptionId = UUID.randomUUID().toString()
@@ -348,6 +372,10 @@ class EnabledUpdatesController(
     if (stateChangeListenerMap.containsKey(subscriptionId)) {
       stateChangeListenerMap.remove(subscriptionId)
     }
+  }
+
+  internal fun getNativeInterfaceContext(): expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext {
+    return stateMachine.context.nativeInterfaceContext
   }
 
   override val isEnabled: Boolean = true

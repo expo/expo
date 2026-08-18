@@ -6,7 +6,7 @@ exports[`allows destructuring in the catch block 1`] = `
   var foo = () => {
     try {
       console.log('hey');
-    } catch (_ref) {var message = _ref.message;
+    } catch ({ message }) {
       // NOTE(EvanBacon): React compiler throws:
       // (BuildHIR::lowerAssignment) Could not find binding for declaration.
       console.error(message);
@@ -16,7 +16,8 @@ exports[`allows destructuring in the catch block 1`] = `
 }"
 `;
 
-exports[`supports functions with discarded return values in try/catch blocks that run in memos 1`] = `
+exports[`supports functions with discarded return values in try/catch blocks that run in memos 1`] =
+  `
 "Object.defineProperty(exports, "__esModule", { value: true });exports.useSideEffectMayThrow = useSideEffectMayThrow;var _react = require("react");
 
 function SIDE_EFFECT_MAY_THROW() {}
@@ -33,14 +34,14 @@ function useSideEffectMayThrow() {var t0;
 `;
 
 exports[`supports memoizing 1`] = `
-"var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));var _compilerRuntime = require("react/compiler-runtime");var _vectorIcons = require("@expo/vector-icons");
+"var _interopRequireWildcard = require("@babel/runtime/helpers/interopRequireWildcard").default;var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault").default;Object.defineProperty(exports, "__esModule", { value: true });exports.default = App;var _compilerRuntime = require("react/compiler-runtime");var _vectorIcons = require("@expo/vector-icons");
 var _expoAppLoading = _interopRequireDefault(require("expo-app-loading"));
 var _expoAsset = require("expo-asset");
 var _react = _interopRequireWildcard(require("react"));
 var _reactNative = require("react-native");var _jsxRuntime = require("react/jsx-runtime");
 
 function App() {var $ = (0, _compilerRuntime.c)(5);
-  var _useState = (0, _react.useState)(false),_useState2 = (0, _slicedToArray2.default)(_useState, 2),assetsAreLoaded = _useState2[0],setAssetsAreLoaded = _useState2[1];var t0;var t1;if ($[0] === Symbol.for("react.memo_cache_sentinel")) {
+  var [assetsAreLoaded, setAssetsAreLoaded] = (0, _react.useState)(false);var t0;var t1;if ($[0] === Symbol.for("react.memo_cache_sentinel")) {
 
     t0 = () => {
       loadAssetsAsync(setAssetsAreLoaded);};
@@ -56,18 +57,18 @@ function App() {var $ = (0, _compilerRuntime.c)(5);
 
 
 
-    ) : /*#__PURE__*/(0, _jsxRuntime.jsx)(_reactNative.View, { style: styles.container, children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_vectorIcons.Ionicons, { name: "md-options", size: 28 }) });$[3] = assetsAreLoaded;$[4] = t2;} else {t2 = $[4];}return t2;}function
+    ) : /*#__PURE__*/(0, _jsxRuntime.jsx)(_reactNative.View, { style: styles.container, children: /*#__PURE__*/(0, _jsxRuntime.jsx)(_vectorIcons.Ionicons, { name: "md-options", size: 28 }) });$[3] = assetsAreLoaded;$[4] = t2;} else {t2 = $[4];}return t2;}
 
 
-loadAssetsAsync(_x) {return _loadAssetsAsync.apply(this, arguments);}function _loadAssetsAsync() {_loadAssetsAsync = (0, _asyncToGenerator2.default)(function* (
-  setAssetsAreLoaded)
-  {
-    try {
-      yield _expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
-    } finally {
-      setAssetsAreLoaded(true);
-    }
-  });return _loadAssetsAsync.apply(this, arguments);}
+async function loadAssetsAsync(
+setAssetsAreLoaded)
+{
+  try {
+    await _expoAsset.Asset.loadAsync([require('./assets/icon.png')]);
+  } finally {
+    setAssetsAreLoaded(true);
+  }
+}
 
 var styles = _reactNative.StyleSheet.create({
   container: {

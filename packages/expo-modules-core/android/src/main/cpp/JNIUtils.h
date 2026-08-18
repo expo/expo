@@ -2,12 +2,7 @@
 
 #pragma once
 
-#include <vector>
-#include <functional>
-
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-#include <react/jni/ReadableNativeMap.h>
+#include "ExpoHeader.pch"
 
 #include "JSIContext.h"
 #include "JavaScriptObject.h"

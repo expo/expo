@@ -1,13 +1,44 @@
-import { View, Text } from 'react-native';
+import { optionalRequire } from '../../navigation/routeBuilder';
+import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
 
-export const UIScreens = [];
+export const UIScreens = [
+  {
+    name: 'Community BottomSheet replacement',
+    route: 'ui/community-bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityBottomSheetScreen'));
+    },
+  },
+  {
+    name: 'Community Picker replacement',
+    route: 'ui/community-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPickerScreen'));
+    },
+  },
+  {
+    name: 'Community SegmentedControl replacement',
+    route: 'ui/community-segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
+    name: 'Community Slider replacement',
+    route: 'ui/community-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySliderScreen'));
+    },
+  },
+];
 
 export default function UIScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Expo UI is only available on Android and iOS currently.</Text>
-    </View>
-  );
+  const apis = componentScreensToListElements(UIScreens);
+  return <ComponentListScreen apis={apis} sort />;
 }
 
 UIScreen.navigationOptions = {

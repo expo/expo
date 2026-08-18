@@ -1,0 +1,19 @@
+import SwiftUI
+import ExpoModulesCore
+import ExpoUI
+
+final class <%- project.swiftUIViewName %>Props: UIBaseViewProps {
+  @Field var title: String = ""
+}
+
+struct <%- project.swiftUIViewName %>: ExpoSwiftUI.View {
+  @ObservedObject public var props: <%- project.swiftUIViewName %>Props
+
+  var body: some View {
+    VStack {
+      Text(props.title)
+        .font(.headline)
+      Children()
+    }
+  }
+}

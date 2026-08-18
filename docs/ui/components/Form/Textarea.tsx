@@ -29,7 +29,7 @@ export function Textarea({ characterLimit, className, onChange, ...rest }: Props
         <CAPTION
           theme={characterCount > characterLimit ? 'danger' : 'secondary'}
           tag="code"
-          className="absolute bottom-1.5 right-3 z-10">
+          className="absolute right-3 bottom-1.5 z-10">
           {characterLimit - characterCount}
         </CAPTION>
       )}

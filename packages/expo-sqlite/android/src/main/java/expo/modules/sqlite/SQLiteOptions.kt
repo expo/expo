@@ -4,7 +4,9 @@ package expo.modules.sqlite
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 internal data class OpenDatabaseOptions(
   @Field
   val enableChangeListener: Boolean = false,
@@ -13,14 +15,5 @@ internal data class OpenDatabaseOptions(
   val useNewConnection: Boolean = false,
 
   @Field
-  val finalizeUnusedStatementsBeforeClosing: Boolean = true,
-
-  @Field
-  val libSQLUrl: String? = null,
-
-  @Field
-  val libSQLAuthToken: String? = null,
-
-  @Field
-  val libSQLRemoteOnly: Boolean = false
+  val finalizeUnusedStatementsBeforeClosing: Boolean = true
 ) : Record

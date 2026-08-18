@@ -1,11 +1,10 @@
 import {
-  UnavailabilityError,
-  PermissionResponse,
-  PermissionStatus,
   createPermissionHook,
-  PermissionHookOptions,
-  EventSubscription,
-} from 'expo-modules-core';
+  type PermissionResponse,
+  PermissionStatus,
+  UnavailabilityError,
+  type EventSubscription,
+} from 'expo';
 import { useEffect } from 'react';
 
 import ExpoScreenCapture from './ExpoScreenCapture';
@@ -140,7 +139,7 @@ export async function disableAppSwitcherProtectionAsync(): Promise<void> {
  * - **Before Android 13**: Requires `READ_EXTERNAL_STORAGE`.
  * - **Android 13**: Switches to `READ_MEDIA_IMAGES`.
  * - **Post-Android 13**: No additional permissions required.
- * You can request the appropriate permissions by using [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasync).
+ * You can request the appropriate permissions by using [`MediaLibrary.requestPermissionsAsync()`](./media-library/#medialibraryrequestpermissionsasyncwriteonly-granularpermissions).
  *
  * @param listener The function that will be executed when the user takes a screenshot.
  * This function accepts no arguments.
@@ -152,23 +151,9 @@ export function addScreenshotListener(listener: () => void): EventSubscription {
   return ExpoScreenCapture.addListener(onScreenshotEventName, listener);
 }
 
-// @needsAudit
 /**
  * Removes the subscription you provide, so that you are no longer listening for screenshots.
- * You can also call `remove()` on that `Subscription` object.
- *
- * @param subscription Subscription returned by `addScreenshotListener`.
- *
- * @example
- * ```ts
- * let mySubscription = addScreenshotListener(() => {
- *   console.log("You took a screenshot!");
- * });
- * ...
- * mySubscription.remove();
- * // OR
- * removeScreenshotListener(mySubscription);
- * ```
+ * @deprecated use subscription.remove() instead.
  */
 export function removeScreenshotListener(subscription: EventSubscription) {
   subscription.remove();
@@ -238,9 +223,5 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
-export {
-  EventSubscription as Subscription,
-  PermissionResponse,
-  PermissionStatus,
-  PermissionHookOptions,
-};
+export { type PermissionResponse, PermissionStatus, type PermissionHookOptions } from 'expo';
+export { type EventSubscription as Subscription } from 'expo';

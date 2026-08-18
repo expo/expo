@@ -7,6 +7,7 @@ import android.util.Log
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.notifications.notifications.NotificationManager
 import expo.modules.notifications.notifications.debug.DebugLogging
+import expo.modules.notifications.service.NotificationsService.Companion.GOOGLE_MESSAGE_ID_KEY
 import expo.modules.notifications.service.NotificationsService.Companion.NOTIFICATION_RESPONSE_KEY
 import expo.modules.notifications.service.NotificationsService.Companion.TEXT_INPUT_NOTIFICATION_RESPONSE_KEY
 
@@ -23,6 +24,9 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
     // only actions that have opensAppToForeground: true are handled here
     if (extras.containsKey(NOTIFICATION_RESPONSE_KEY) || extras.containsKey(TEXT_INPUT_NOTIFICATION_RESPONSE_KEY)) {
       Log.d("ReactNativeJS", "[native] ExpoNotificationLifecycleListener contains an unmarshalled notification response. Skipping.")
+      return
+    }
+    if (!isFCMIntent(extras)) {
       return
     }
     DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onCreate:", extras)
@@ -45,9 +49,21 @@ class ExpoNotificationLifecycleListener : ReactActivityLifecycleListener {
         // NotificationForwarderActivity -> NotificationsService.onReceiveNotificationResponse -> NotificationEmitter.onNotificationResponseReceived
         return false
       }
+      if (!isFCMIntent(extras)) {
+        return false
+      }
       DebugLogging.logBundle("ExpoNotificationLifeCycleListener.onNewIntent:", extras)
       NotificationManager.onNotificationResponseFromExtras(extras)
     }
     return false
+  }
+
+  /**
+   * Returns true if the extras represent a genuine FCM notification intent.
+   * FCM always includes [GOOGLE_MESSAGE_ID_KEY] in notification data.
+   * OEM extras (e.g. Samsung's "anim_not_finish") do not contain this key.
+   */
+  private fun isFCMIntent(extras: Bundle): Boolean {
+    return extras.containsKey(GOOGLE_MESSAGE_ID_KEY)
   }
 }

@@ -2,7 +2,7 @@
 package host.exp.exponent.experience
 
 interface DevBundleDownloadProgressListener {
-  fun onProgress(status: String?, done: Int?, total: Int?)
+  fun onProgress(status: String?, done: Int?, total: Int?, percent: Int?)
   fun onSuccess()
   fun onFailure(error: Exception)
 }

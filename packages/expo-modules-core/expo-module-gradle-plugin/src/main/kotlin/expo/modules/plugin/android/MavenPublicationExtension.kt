@@ -4,6 +4,7 @@ package expo.modules.plugin.android
 
 import expo.modules.plugin.androidLibraryExtension
 import expo.modules.plugin.gradle.ExpoModuleExtension
+import expo.modules.plugin.gradle.POMConfigurator
 import expo.modules.plugin.publishingExtension
 import groovy.lang.Binding
 import groovy.lang.GroovyShell
@@ -22,9 +23,7 @@ import org.gradle.api.component.SoftwareComponent
 import org.gradle.api.publish.PublicationContainer
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.TaskProvider
-import java.nio.file.Path
-import kotlin.io.path.exists
-import kotlin.io.path.toPath
+import java.io.File
 
 internal data class PublicationInfo(
   val components: SoftwareComponent,
@@ -40,17 +39,15 @@ internal data class PublicationInfo(
     artifactId = requireNotNull(project.androidLibraryExtension().namespace) {
       "'android.namespace' is not defined"
     },
-    version = requireNotNull(project.androidLibraryExtension().defaultConfig.versionName) {
-      "'android.defaultConfig.versionName' is not defined"
+    version = requireNotNull(project.version.toString().takeUnless { it == "unspecified" }) {
+      "'project.version' is not defined. Set `version = \"<x.y.z>\"` in the module's android/build.gradle."
     },
   )
 
-  fun resolvePath(repositoryPath: Path): Path {
+  fun resolvePath(repositoryPath: File): File {
     val groupPath = groupId.replace('.', '/')
     val artifactPath = "$groupPath/$artifactId/$version"
-    val publicationPath = repositoryPath.resolve(artifactPath)
-
-    return publicationPath
+    return File(repositoryPath, artifactPath)
   }
 
   override fun toString(): String {
@@ -58,7 +55,10 @@ internal data class PublicationInfo(
   }
 }
 
-internal fun PublicationContainer.createReleasePublication(publicationInfo: PublicationInfo) {
+internal fun PublicationContainer.createReleasePublication(
+  publicationInfo: PublicationInfo,
+  pomConfigurator: POMConfigurator?
+) {
   create("release", MavenPublication::class.java) { mavenPublication ->
     with(mavenPublication) {
       from(publicationInfo.components)
@@ -66,23 +66,45 @@ internal fun PublicationContainer.createReleasePublication(publicationInfo: Publ
       artifactId = publicationInfo.artifactId
       version = publicationInfo.version
 
-      mavenPublication.pom { pom ->
-        pom.name.set(publicationInfo.artifactId)
-        pom.url.set("https://github.com/expo/expo")
-
-        pom.licenses { licenses ->
-          licenses.license { license ->
-            license.name.set("MIT License")
-            license.url.set("https://github.com/expo/expo/blob/main/LICENSE")
-          }
-        }
-
-        pom.scm { scm ->
-          scm.connection.set("https://github.com/expo/expo.git")
-          scm.developerConnection.set("https://github.com/expo/expo.git")
-          scm.url.set("https://github.com/expo/expo")
-        }
+      if (pomConfigurator != null) {
+        pomConfigurator.execute(mavenPublication.pom)
+      } else {
+        defaultPom(publicationInfo.artifactId)
       }
+    }
+  }
+}
+
+internal fun MavenPublication.defaultPom(artifactId: String) {
+  pom { pom ->
+    pom.name.set(artifactId)
+    pom.url.set("https://github.com/expo/expo")
+
+    pom.licenses { licenses ->
+      licenses.license { license ->
+        license.name.set("MIT License")
+        license.url.set("https://github.com/expo/expo/blob/main/LICENSE")
+        license.distribution.set("https://github.com/expo/expo/blob/main/LICENSE")
+      }
+    }
+
+    pom.organization { organization ->
+      organization.name.set("650 Industries, Inc. (“Expo”)")
+      organization.url.set("https://expo.dev/home")
+    }
+
+    pom.developers { developerSpec ->
+      developerSpec.developer { developer ->
+        developer.name.set("Expo Maintainers")
+        developer.email.set("support@expo.dev")
+        developer.url.set("https://github.com/orgs/expo/people")
+      }
+    }
+
+    pom.scm { scm ->
+      scm.connection.set("https://github.com/expo/expo.git")
+      scm.developerConnection.set("https://github.com/expo/expo.git")
+      scm.url.set("https://github.com/expo/expo")
     }
   }
 }
@@ -154,7 +176,7 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModule
 
   if (pathToRepository == null) {
     val mavenLocal = publishingExtension().repositories.mavenLocal()
-    val mavenLocalPath = mavenLocal.url.toPath()
+    val mavenLocalPath = File(mavenLocal.url)
     val publicationPath = publicationInfo.resolvePath(mavenLocalPath)
 
     if (!publicationPath.exists()) {
@@ -182,16 +204,13 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModule
   providers.exec { env ->
     env.workingDir(layout.projectDirectory.file(".."))
     // TODO(@lukmccall): support other package managers
-    env.commandLine("yarn", "prettier", "--write", "expo-module.config.json")
+    env.commandLine("pnpm", "prettier", "--write", "expo-module.config.json")
   }.result.get()
 }
 
 private fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModuleExtension) {
   val shouldUsePublicationScript = expoModulesExtension.autolinking.getShouldUsePublicationScriptPath(this)
-  // If the path to the script is not defined, we assume that we can publish the module.
-  if (shouldUsePublicationScript == null) {
-    return
-  }
+    ?: return // If the path to the script is not defined, we assume that we can publish the module.
 
   val binding = Binding()
   binding.setVariable("providers", project.providers)
@@ -205,12 +224,14 @@ private fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModul
 }
 
 private fun modifyModuleConfig(projectName: String, currentConfig: JsonObject, publicationInfo: PublicationInfo, pathToRepository: String?): JsonObject {
-  val publicationObject = JsonObject(mapOf(
-    "groupId" to publicationInfo.groupId.toJsonElement(),
-    "artifactId" to publicationInfo.artifactId.toJsonElement(),
-    "version" to publicationInfo.version.toJsonElement(),
-    "repository" to (pathToRepository ?: "mavenLocal").toJsonElement(),
-  ))
+  val publicationObject = JsonObject(
+    mapOf(
+      "groupId" to publicationInfo.groupId.toJsonElement(),
+      "artifactId" to publicationInfo.artifactId.toJsonElement(),
+      "version" to publicationInfo.version.toJsonElement(),
+      "repository" to (pathToRepository ?: "mavenLocal").toJsonElement(),
+    )
+  )
 
   val androidObject = currentConfig.getOrDefault("android", JsonObject(emptyMap())).jsonObject.mutate {
     val subProject = get("projects")

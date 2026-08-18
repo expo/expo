@@ -1,17 +1,13 @@
-import { Text, View, StyleSheet } from "react-native";
 import { Link, LinkProps } from 'expo-router';
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
+import { Text, View, StyleSheet } from 'react-native';
 
 interface SiteLinksProps {
   children: ReactNode;
 }
 
 export function SiteLinks({ children }: SiteLinksProps) {
-  return (
-    <View style={styles.linksContainer}>
-      {children}
-    </View>
-  );
+  return <View style={styles.linksContainer}>{children}</View>;
 }
 
 interface SiteLinkProps extends LinkProps {

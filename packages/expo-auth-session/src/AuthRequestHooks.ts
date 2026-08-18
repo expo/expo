@@ -1,9 +1,10 @@
 import { useCallback, useMemo, useEffect, useState } from 'react';
 
 import { AuthRequest } from './AuthRequest';
-import { AuthRequestConfig, AuthRequestPromptOptions, Prompt } from './AuthRequest.types';
-import { AuthSessionResult } from './AuthSession.types';
-import { DiscoveryDocument, IssuerOrDiscovery, resolveDiscoveryAsync } from './Discovery';
+import type { AuthRequestConfig, AuthRequestPromptOptions, Prompt } from './AuthRequest.types';
+import type { AuthSessionResult } from './AuthSession.types';
+import type { DiscoveryDocument, IssuerOrDiscovery } from './Discovery';
+import { resolveDiscoveryAsync } from './Discovery';
 
 // @needsAudit
 /**

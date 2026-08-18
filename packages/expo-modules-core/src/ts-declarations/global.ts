@@ -9,7 +9,7 @@ type ViewConfig = {
 };
 
 export interface ExpoProcessEnv {
-  NODE_ENV: string;
+  NODE_ENV: 'development' | 'production' | 'test';
   /** Used in `@expo/metro-runtime`. */
   EXPO_DEV_SERVER_ORIGIN?: string;
 
@@ -102,10 +102,11 @@ declare namespace ExpoGlobal {
   export function reloadAppAsync(reason: string): Promise<void>;
 
   /**
-   * Installs Expo Modules inside the Reanimated UI worklet runtime.
-   * @platform android
+   * Installs Expo Modules inside the worklets UI runtime.
+   * @param uiRuntimeHolder The UI runtime holder from `getUIRuntimeHolder()` in
+   * `react-native-worklets`.
    */
-  export function installOnUIRuntime(): void;
+  export function installOnUIRuntime(uiRuntimeHolder: object): void;
 }
 
 /* eslint-disable no-var */

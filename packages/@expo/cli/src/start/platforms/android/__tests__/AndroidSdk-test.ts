@@ -66,6 +66,13 @@ describe(assertSdkRoot, () => {
   });
 
   it('returns default location for Linux', () => {
+    const target = path.join(os.homedir(), 'Android', 'Sdk');
+    vol.fromJSON({ [path.join(target, 'file')]: 'file' });
+    setPlatform('linux');
+    expect(assertSdkRoot()).toBe(target);
+  });
+
+  it('returns alternative default location for Linux', () => {
     const target = path.join(os.homedir(), 'Android', 'sdk');
     vol.fromJSON({ [path.join(target, 'file')]: 'file' });
     setPlatform('linux');

@@ -1,4 +1,6 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import { validate, type JSONSchema } from '@expo/schema-utils';
+import fs from 'fs';
+import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 /**
@@ -13,9 +15,16 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     kotlinVersion: '1.6.10',
   },
   ios: {
-    deploymentTarget: '15.1',
+    deploymentTarget: '16.4',
   },
 };
+
+/**
+ * The hermes-compiler version expected to use legacy Hermes compiler version.
+ * Keep this in sync with the expected `react-native` version.
+ * @ignore
+ */
+const LEGACY_HERMES_COMPILER_VERSION = '0.15.0';
 
 /**
  * Shared build configuration fields that can be set at the top level
@@ -44,12 +53,15 @@ export interface SharedBuildConfigFields {
   reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 
   /**
-   * Enable the experimental Hermes V1 engine.
+   * Enable Hermes V1 engine. Turning on will provide faster startup times, improved runtime
+   * performance, and reduced memory usage.
    *
-   * In React Native 0.83, using Hermes V1 requires building React Native from source.
-   * You must set `buildReactNativeFromSource` to `true` when enabling this option.
+   * Hermes V1 is the default JavaScript engine starting in React Native 0.84.
+   * Set this to `false` to use the legacy Hermes engine instead, which also
+   * requires setting `buildReactNativeFromSource` to `true`.
    *
-   * @default false
+   * @default true
+   * @see [Hermes V1 as Default](https://reactnative.dev/blog/2026/02/11/react-native-0.84#hermes-v1-as-default)
    */
   useHermesV1?: boolean;
 }
@@ -103,6 +115,10 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
    *  Override the default `buildToolsVersion` version number in **build.gradle**.
    */
   buildToolsVersion?: string;
+  /**
+   * Override the CMake version, applied to the app and all autolinked native modules.
+   */
+  cmakeVersion?: string;
   /**
    * Override the Kotlin version used when building the app.
    */
@@ -217,6 +233,21 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
    * @default false
    */
   enableBundleCompression?: boolean;
+
+  /**
+   * Enable precompiled headers (PCH) for Android native builds.
+   * When enabled, creates a custom CMakeLists.txt with PCH support for all autolinked
+   * native libraries, significantly speeding up C++ compilation by pre-compiling
+   * commonly used React Native headers.
+   *
+   * Can also be enabled by setting the `EXPO_USE_ANDROID_PRECOMPILED_HEADERS=1` environment variable.
+   *
+   * > **Note:** This feature is experimental and might not work with all native libraries.
+   *
+   * @default false
+   * @experimental
+   */
+  usePrecompiledHeaders?: boolean;
 
   /**
    * Enable building React Native from source. Turning this on will significantly increase the build times.
@@ -339,6 +370,7 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * Override the default iOS "Deployment Target" version in the following projects:
    *  - in CocoaPods projects,
    *  - `PBXNativeTarget` with "com.apple.product-type.application" `productType` in the app project.
+   * @deprecated use built-in `ios.deploymentTarget` property instead (SDK 56 and greater).
    */
   deploymentTarget?: string;
 
@@ -411,6 +443,15 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * and [Apple's documentation on Privacy manifest files](https://developer.apple.com/documentation/bundleresources/privacy_manifest_files).
    */
   privacyManifestAggregationEnabled?: boolean;
+
+  /**
+   * Enable using precompiled Expo modules (XCFrameworks) instead of building from source.
+   * When enabled, sets the `EXPO_USE_PRECOMPILED_MODULES` environment variable to `1`
+   * during `pod install`, which causes matching modules to be linked as vendored frameworks.
+   *
+   * @default true
+   */
+  usePrecompiledModules?: boolean;
 }
 
 /**
@@ -595,7 +636,8 @@ export interface PluginConfigTypeAndroidQueriesData {
   mimeType?: string;
 }
 
-const schema: JSONSchemaType<PluginConfigType> = {
+const schema: JSONSchema<PluginConfigType> = {
+  title: 'expo-build-properties',
   type: 'object',
   properties: {
     buildReactNativeFromSource: { type: 'boolean', nullable: true },
@@ -612,6 +654,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         compileSdkVersion: { type: 'integer', nullable: true },
         targetSdkVersion: { type: 'integer', nullable: true },
         buildToolsVersion: { type: 'string', nullable: true },
+        cmakeVersion: { type: 'string', nullable: true },
         kotlinVersion: { type: 'string', nullable: true },
 
         enableMinifyInReleaseBuilds: { type: 'boolean', nullable: true },
@@ -725,6 +768,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           nullable: true,
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
+        usePrecompiledHeaders: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
@@ -778,6 +822,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
           nullable: true,
         },
         useHermesV1: { type: 'boolean', nullable: true },
+        usePrecompiledModules: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
@@ -839,22 +884,50 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
   }
 }
 
+/** Handle deprecated enableProguardInReleaseBuilds */
+const fixupDeprecatedEnableProguardInReleaseBuilds = (config: unknown) => {
+  if (
+    config &&
+    typeof config === 'object' &&
+    'android' in config &&
+    config.android &&
+    typeof config.android === 'object'
+  ) {
+    const androidConfig = config.android as PluginConfigTypeAndroid & Record<string, unknown>;
+    if (androidConfig.enableProguardInReleaseBuilds != null) {
+      if (androidConfig.enableMinifyInReleaseBuilds === undefined) {
+        androidConfig.enableMinifyInReleaseBuilds = !!androidConfig.enableProguardInReleaseBuilds;
+      }
+    }
+  }
+};
+
+/**
+ * Reads the hermes-compiler version from node_modules
+ * @ignore
+ */
+function getHermesCompilerVersion(projectRoot: string): string | null {
+  const reactNativePath = resolveFrom.silent(projectRoot, 'react-native/package.json');
+  const hermesCompilerPackageJsonPath =
+    reactNativePath && resolveFrom.silent(reactNativePath, 'hermes-compiler/package.json');
+  if (!hermesCompilerPackageJsonPath) {
+    return null;
+  }
+
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(hermesCompilerPackageJsonPath, 'utf8'));
+    return packageJson.version ?? null;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * @ignore
  */
-export function validateConfig(config: any): PluginConfigType {
-  const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
-  // handle deprecated enableProguardInReleaseBuilds
-  if (
-    config.android?.enableProguardInReleaseBuilds !== undefined &&
-    config.android?.enableMinifyInReleaseBuilds === undefined
-  ) {
-    config.android.enableMinifyInReleaseBuilds = config.android.enableProguardInReleaseBuilds;
-  }
-  if (!validate(config)) {
-    throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
-  }
-
+export function validateConfig(config: unknown, projectRoot?: string): PluginConfigType {
+  fixupDeprecatedEnableProguardInReleaseBuilds(config);
+  validate(schema, config);
   maybeThrowInvalidVersions(config);
 
   if (
@@ -866,22 +939,36 @@ export function validateConfig(config: any): PluginConfigType {
     );
   }
 
-  // Validate useHermesV1 requires buildReactNativeFromSource for Android
-  const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1');
+  const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1') ?? true;
+  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1') ?? true;
+
+  // Disabling Hermes V1 requires a specific hermes-compiler version
+  if ((!androidUseHermesV1 || !iosUseHermesV1) && projectRoot) {
+    const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
+    if (hermesCompilerVersion && hermesCompilerVersion !== LEGACY_HERMES_COMPILER_VERSION) {
+      throw new Error(
+        `\`useHermesV1\`: false, requires setting the hermes-compiler version to ${LEGACY_HERMES_COMPILER_VERSION} through resolutions. ` +
+          `Found version "${hermesCompilerVersion}" instead.`
+      );
+    }
+  }
+
+  // Validate legacy Hermes requires buildReactNativeFromSource for Android
   const androidBuildFromSource =
     resolveConfigValue(config, 'android', 'buildReactNativeFromSource') ??
     config.android?.buildFromSource; // Deprecated fallback
-  if (androidUseHermesV1 === true && androidBuildFromSource !== true) {
+  if (androidUseHermesV1 === false && androidBuildFromSource !== true) {
     throw new Error(
-      '`useHermesV1` requires `buildReactNativeFromSource` to be `true` for Android.'
+      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for Android.'
     );
   }
 
-  // Validate useHermesV1 requires buildReactNativeFromSource for iOS
-  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1');
+  // Validate legacy Hermes requires buildReactNativeFromSource for iOS
   const iosBuildFromSource = resolveConfigValue(config, 'ios', 'buildReactNativeFromSource');
-  if (iosUseHermesV1 === true && iosBuildFromSource !== true) {
-    throw new Error('`useHermesV1` requires `buildReactNativeFromSource` to be `true` for iOS.');
+  if (iosUseHermesV1 === false && iosBuildFromSource !== true) {
+    throw new Error(
+      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for iOS.'
+    );
   }
 
   return config;

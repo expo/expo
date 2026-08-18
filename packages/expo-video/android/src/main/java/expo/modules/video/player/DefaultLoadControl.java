@@ -389,7 +389,7 @@ public class DefaultLoadControl implements LoadControl {
   }
 
   @Override
-  public Allocator getAllocator() {
+  public Allocator getAllocator(PlayerId playerId) {
     return allocator;
   }
 
@@ -449,7 +449,7 @@ public class DefaultLoadControl implements LoadControl {
 
   @Override
   public boolean shouldContinuePreloading(
-    Timeline timeline, MediaPeriodId mediaPeriodId, long bufferedDurationUs) {
+    PlayerId playerId, Timeline timeline, MediaPeriodId mediaPeriodId, long bufferedDurationUs) {
     for (PlayerLoadingState playerLoadingState : loadingStates.values()) {
       if (playerLoadingState.isLoading) {
         return false;

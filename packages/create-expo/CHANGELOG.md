@@ -4,11 +4,124 @@
 
 ### 🛠 Breaking changes
 
+- Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
+
+- Detect and support the nub package manager ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
+- Reuse agent files from `@expo/llm-configs` ([#46968](https://github.com/expo/expo/pull/46968) by [@davidmokos](https://github.com/davidmokos))
+- Improved monorepo support ([#46434](https://github.com/expo/expo/pull/46434) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
+- Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
+- Print the "make sure you have modules installed" warning when the dependency install fails ([#48929](https://github.com/expo/expo/issues/48929)) ([#48946](https://github.com/expo/expo/pull/48946) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
+
+- Bump to `multitars@1.0.2` to address symlink and unicode bugs ([#48833](https://github.com/expo/expo/pull/48833) by [@kitten](https://github.com/kitten))
+
+## 5.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 — 2026-05-20
+
+### 💡 Others
+
+- Bump to `@expo/spawn-async@^1.8.0` ([#45999](https://github.com/expo/expo/pull/45999) by [@kitten](https://github.com/kitten))
+
+## 4.0.1 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Fix containment check in tar extraction to cover parallel folders with same prefix ([#45882](https://github.com/expo/expo/pull/45882) by [@kitten](https://github.com/kitten))
+
+## 3.8.0 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `picomatch@^2.3.2` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
+
+## 3.7.3 — 2026-05-07
+
+### 💡 Others
+
+- Drop automatically setting `node-linker=hoisted` for pnpm ([#45491](https://github.com/expo/expo/pull/45491) by [@kitten](https://github.com/kitten))
+
+## 3.7.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 3.7.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 3.7.0 — 2026-05-05
+
+### 🎉 New features
+
+- Generate `AGENTS.md`, `CLAUDE.md`, and `.claude/settings.json` for new projects to provide AI coding agents with Expo-specific guidance and the `expo` skills plugin. Use `--no-agents-md` to skip. ([#44618](https://github.com/expo/expo/pull/44618) by [@EvanBacon](https://github.com/EvanBacon))
+- Prompt for the Expo SDK version when scaffolding the default template. ([#45369](https://github.com/expo/expo/pull/45369) by [@brentvatne](https://github.com/brentvatne))
+
+### 💡 Others
+
+- Fixed plugin setup in `.claude/settings.json`. ([#44951](https://github.com/expo/expo/pull/44951) by [@kudo](https://github.com/kudo))
+
+## 3.6.13 - 2026-04-21
+
+### 💡 Others
+
+- Replace tar dependency logic with `multitars` package ([#44764](https://github.com/expo/expo/pull/44764) by [@kitten](https://github.com/kitten))
+- Update to `multitars@^1.0.0` ([#44774](https://github.com/expo/expo/pull/44774) by [@kitten](https://github.com/kitten))
+
+## 3.6.12 - 2026-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.11 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.10 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.9 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.8 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.7 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.6 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.5 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.4 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.3 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 3.6.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
 
 ## 3.6.0 — 2026-01-21
 

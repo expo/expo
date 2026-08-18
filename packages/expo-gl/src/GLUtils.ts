@@ -1,5 +1,6 @@
 import GLErrors from './GLErrors';
-import { ExpoWebGLRenderingContext, GLLoggingOption } from './GLView.types';
+import type { ExpoWebGLRenderingContext } from './GLView.types';
+import { GLLoggingOption } from './GLView.types';
 
 /**
  * Maximum length of the strings printed to the console.

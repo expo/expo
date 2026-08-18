@@ -1,0 +1,17 @@
+/** @type {import('expo/config').ExpoConfig} */
+module.exports = {
+  scheme: 'acme',
+  android: {
+    package: 'com.example.minimal',
+  },
+  ios: {
+    bundleIdentifier: 'com.example.minimal',
+  },
+  web: {
+    bundler: 'metro',
+    output: 'server',
+  },
+  experiments: {
+    autolinkingModuleResolution: true,
+  },
+};

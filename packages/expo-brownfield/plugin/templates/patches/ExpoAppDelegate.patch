@@ -6,7 +6,7 @@ index 09766c71fd8..f1e5a19d7cd 100644
 -import Foundation
 -import ExpoModulesCore
 +import UIKit
-+@_implementationOnly import ExpoModulesCore
++internal import ExpoModulesCore
 
  /**
   Allows classes extending `ExpoAppDelegateSubscriber` to hook into project's app delegate

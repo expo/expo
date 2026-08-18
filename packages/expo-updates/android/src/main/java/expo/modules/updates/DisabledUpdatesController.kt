@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.kotlin.exception.CodedException
@@ -88,6 +89,7 @@ class DisabledUpdatesController(
     get() = launcher?.bundleAssetName
   override val reloadScreenManager: ReloadScreenManager?
     get() = null
+  override var reactHost: WeakReference<ReactHost> = WeakReference(null)
 
   override fun onEventListenerStartObserving() {
     stateMachine.sendContextToJS()
@@ -202,6 +204,8 @@ class DisabledUpdatesController(
   override val runtimeVersion: String? = null
 
   override val updateUrl: Uri? = null
+
+  override val requestHeaders: Map<String, String>? = null
 
   override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     return DisabledUpdatesStateChangeSubscription()

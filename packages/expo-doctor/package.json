@@ -1,57 +1,66 @@
 {
   "name": "expo-doctor",
-  "version": "1.18.0",
-  "main": "build/index.js",
+  "version": "1.20.1",
   "description": "Check your Expo project for known issues",
   "keywords": [
+    "android",
     "expo",
-    "ios",
     "expo-doctor",
-    "android"
+    "ios"
   ],
   "homepage": "https://docs.expo.dev",
+  "license": "MIT",
+  "author": "Expo <support@expo.dev>",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-doctor"
   },
-  "author": "Expo <support@expo.dev>",
-  "license": "MIT",
-  "bin": "./build/index.js",
+  "bin": "./bin/expo-doctor.js",
   "files": [
+    "bin",
     "build"
   ],
+  "main": "build/index.js",
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
-    "prepare": "yarn run clean && yarn run build:prod",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
-    "test": "expo-module test",
-    "watch": "yarn run build -w",
-    "prepublishOnly": "expo-module prepublishOnly"
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
+    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
-    "@expo/cli": "55.0.0",
-    "@expo/config": "~55.0.0",
-    "@expo/env": "~2.0.9",
-    "@expo/json-file": "~10.0.9",
-    "@expo/metro": "~54.2.0",
-    "@expo/schemer": "2.1.2",
-    "@expo/spawn-async": "^1.7.2",
+    "@expo/config": "workspace:*",
+    "@expo/env": "workspace:*",
+    "@expo/json-file": "workspace:*",
+    "@expo/metro": "~56.0.0",
+    "@expo/schemer": "workspace:*",
+    "@expo/sdk-compatibility": "workspace:*",
+    "@expo/spawn-async": "^1.8.0",
     "@types/debug": "^4.1.8",
-    "@vercel/ncc": "0.38.3",
+    "@types/getenv": "^1.0.0",
+    "@types/semver": "^7.5.8",
+    "@vercel/ncc": "^0.38.3",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "expo-module-scripts": "^55.0.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "expo-modules-autolinking": "workspace:*",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "ignore": "^5.3.2",
+    "memfs": "^3.2.0",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
     "resolve-workspace-root": "^2.0.0",
     "semver": "7.5.4",
     "terminal-link": "^2.1.1"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
   }
 }

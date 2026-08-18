@@ -2,7 +2,7 @@ import { Asset } from 'expo-asset';
 import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontResource, FontSource } from './Font.types';
+import type { FontResource, FontSource } from './Font.types';
 
 export function getAssetForSource(source: FontSource): Asset | FontResource {
   if (source instanceof Asset) {

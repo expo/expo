@@ -1,9 +1,13 @@
-import { getVersionsAsync, SDKVersion, Versions } from '../../../api/getVersions';
+import type { SDKVersion, Versions } from '../../../api/getVersions';
+import { getVersionsAsync } from '../../../api/getVersions';
 import { downloadExpoGoAsync } from '../../../utils/downloadExpoGoAsync';
 import { confirmAsync } from '../../../utils/prompts';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 
 jest.mock('../../../log');
+jest.mock('../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 jest.mock('../../../utils/prompts');
 jest.mock('../../../utils/downloadExpoGoAsync');
 jest.mock('../../../api/getVersions', () => ({

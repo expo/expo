@@ -1,26 +1,16 @@
-import { JSONValue } from '@expo/json-file';
+import { IOSConfig } from '@expo/config-plugins';
+import type { JSONValue } from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
-import assert from 'assert';
-import crypto from 'crypto';
-import fs from 'fs';
-import path from 'path';
+import { TarTypeFlag } from 'multitars';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
 import slugify from 'slugify';
-import { PassThrough, Readable, Stream } from 'stream';
-import { extract as tarExtract, TarOptionsWithAliases } from 'tar';
-import { promisify } from 'util';
+import { Readable } from 'stream';
 
-import { createEntryResolver } from './createFileTransform';
-import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
-import { createCachedFetch } from '../api/rest/client';
-
-const debug = require('debug')('expo:utils:npm') as typeof console.log;
-
-const cachedFetch = createCachedFetch({
-  cacheDirectory: 'template-cache',
-  // Time to live. How long (in ms) responses remain cached before being automatically ejected. If undefined, responses are never automatically ejected from the cache.
-  // ttl: 1000,
-});
+import { event } from './events';
+import { extractStream } from './tar';
 
 export function sanitizeNpmPackageName(name: string): string {
   // https://github.com/npm/validate-npm-package-name/#naming-rules
@@ -55,7 +45,7 @@ export async function npmViewAsync(...props: string[]): Promise<JSONValue> {
   const cmd = ['view', ...props, '--json'];
   const results = (await spawnAsync('npm', cmd)).stdout?.trim();
   const cmdString = `npm ${cmd.join(' ')}`;
-  debug('Run:', cmdString);
+  event('npm_run', { command: cmdString });
   if (!results) {
     return null;
   }
@@ -97,86 +87,84 @@ export async function getNpmUrlAsync(packageName: string): Promise<string> {
   );
 }
 
-// @ts-ignore
-const pipeline = promisify(Stream.pipeline);
-
-export async function downloadAndExtractNpmModuleAsync(
-  npmName: string,
-  props: ExtractProps
-): Promise<string> {
-  const url = await getNpmUrlAsync(npmName);
-
-  debug('Fetch from URL:', url);
-  return await extractNpmTarballFromUrlAsync(url, props);
-}
-
-export async function extractLocalNpmTarballAsync(
-  tarFilePath: string,
-  props: ExtractProps
-): Promise<string> {
-  const readStream = fs.createReadStream(tarFilePath);
-  return await extractNpmTarballAsync(readStream, props);
-}
-
-export type ExtractProps = {
-  name: string;
-  cwd: string;
+export interface ExtractProps {
+  expName?: string;
+  filter?(path: string): boolean | undefined | null;
   strip?: number;
-  fileList?: string[];
-  /** The checksum algorithm to use when verifying the tarball. */
-  checksumAlgorithm?: string;
-  /** An optional filter to selectively extract specific paths */
-  filter?: TarOptionsWithAliases['filter'];
-};
-
-async function createUrlStreamAsync(url: string) {
-  const response = await cachedFetch(url);
-  if (!response.ok || !response.body) {
-    throw new Error(`Unexpected response: ${response.statusText}. From url: ${url}`);
-  }
-
-  return Readable.fromWeb(response.body);
 }
 
-export async function extractNpmTarballFromUrlAsync(
-  url: string,
-  props: ExtractProps
-): Promise<string> {
-  return await extractNpmTarballAsync(await createUrlStreamAsync(url), props);
+function renameNpmTarballEntries(expName: string | undefined) {
+  const renameConfigs = (input: string, typeflag: TarTypeFlag): string | null => {
+    if (typeflag === TarTypeFlag.FILE && path.basename(input) === 'gitignore') {
+      // Rename `gitignore` because npm ignores files named `.gitignore` when publishing.
+      // See: https://github.com/npm/npm/issues/1862
+      return input.replace(/gitignore$/, '.gitignore');
+    } else {
+      return input;
+    }
+  };
+  if (expName) {
+    const androidName = IOSConfig.XcodeUtils.sanitizedName(expName.toLowerCase());
+    const iosName = IOSConfig.XcodeUtils.sanitizedName(expName);
+    const lowerCaseName = iosName.toLowerCase();
+    return (input: string, typeflag: TarTypeFlag) => {
+      input = input
+        .replace(/HelloWorld/g, input.includes('android') ? androidName : iosName)
+        .replace(/helloworld/g, lowerCaseName);
+      return renameConfigs(input, typeflag);
+    };
+  } else {
+    return renameConfigs;
+  }
 }
 
 /**
  * Extracts a tarball stream to a directory and returns the checksum of the tarball.
  */
 export async function extractNpmTarballAsync(
-  stream: NodeJS.ReadableStream,
+  stream: ReadableStream,
+  output: string,
   props: ExtractProps
 ): Promise<string> {
-  const { cwd, strip, name, fileList = [], filter } = props;
-
-  await ensureDirectoryAsync(cwd);
-
-  const hash = crypto.createHash(props.checksumAlgorithm ?? 'md5');
-  const transformStream = new PassThrough();
-  transformStream.on('data', (chunk) => {
-    hash.update(chunk);
+  return await extractStream(stream, output, {
+    filter: props.filter,
+    rename: renameNpmTarballEntries(props.expName),
+    strip: props.strip ?? 1,
   });
+}
 
-  await pipeline(
-    stream,
-    transformStream,
-    tarExtract(
-      {
-        cwd,
-        filter,
-        onentry: createEntryResolver(name),
-        strip: strip ?? 1,
-      },
-      fileList
-    )
+export async function extractNpmTarballFromUrlAsync(
+  url: string,
+  output: string,
+  props: ExtractProps
+): Promise<string> {
+  const response = await fetch(url);
+  if (!response.ok || !response.body) {
+    throw new Error(`Unexpected response: ${response.statusText}. From url: ${url}`);
+  }
+  return await extractNpmTarballAsync(response.body, output, props);
+}
+
+export async function downloadAndExtractNpmModuleAsync(
+  npmName: string,
+  output: string,
+  props: ExtractProps
+): Promise<string> {
+  const url = await getNpmUrlAsync(npmName);
+  event('npm_fetch_url', { url });
+  return await extractNpmTarballFromUrlAsync(url, output, props);
+}
+
+export async function extractLocalNpmTarballAsync(
+  tarFilePath: string,
+  output: string,
+  props: ExtractProps
+): Promise<string> {
+  return await extractNpmTarballAsync(
+    Readable.toWeb(fs.createReadStream(tarFilePath)) as ReadableStream,
+    output,
+    props
   );
-
-  return hash.digest('hex');
 }
 
 export async function packNpmTarballAsync(packageDir: string): Promise<string> {
@@ -188,12 +176,31 @@ export async function packNpmTarballAsync(packageDir: string): Promise<string> {
     })
   ).stdout?.trim();
   try {
-    const [json] = JSON.parse(results) as { filename: string }[];
-    return path.resolve(packageDir, json.filename);
+    const packages = normalizeNpmPackResult(JSON.parse(results));
+    const packageInfo = packages?.[0];
+    assert(
+      packageInfo &&
+        typeof packageInfo === 'object' &&
+        'filename' in packageInfo &&
+        typeof packageInfo.filename === 'string',
+      'Expected filename property in npm pack JSON output of type "string"'
+    );
+    return path.resolve(packageDir, packageInfo.filename);
   } catch (error: any) {
     const cmdString = `npm ${cmdArgs.join(' ')}`;
     throw new Error(
       `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
     );
+  }
+}
+
+/** Normalize the npm pack JSON formats used before and after npm 12 */
+export function normalizeNpmPackResult(result: unknown): unknown[] | null {
+  if (Array.isArray(result)) {
+    return result;
+  } else if (result && typeof result === 'object') {
+    return Object.values(result);
+  } else {
+    return null;
   }
 }

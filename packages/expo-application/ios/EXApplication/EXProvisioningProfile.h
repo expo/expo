@@ -18,5 +18,6 @@ typedef NS_ENUM(NSInteger, EXAppReleaseType) {
 
 - (EXAppReleaseType)appReleaseType;
 - (nullable NSString *)notificationServiceEnvironment;
+- (nullable NSDate *)expirationDate;
 
 @end

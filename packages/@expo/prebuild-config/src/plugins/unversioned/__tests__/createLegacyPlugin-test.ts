@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import * as ConfigPlugins from '@expo/config-plugins';
 
 import { createLegacyPlugin } from '../createLegacyPlugin';
@@ -22,7 +22,7 @@ describe(createLegacyPlugin, () => {
 
     config = withPlugin(config);
     expect(fallback).toHaveBeenCalledTimes(1);
-    expect(config._internal.pluginHistory).toStrictEqual({
+    expect(config._internal?.pluginHistory).toStrictEqual({
       'expo-foobar': {
         name: 'expo-foobar',
         version: 'UNVERSIONED',

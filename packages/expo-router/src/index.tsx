@@ -1,4 +1,5 @@
 import './global';
-export { Stack } from './layouts/Stack';
-export { Tabs } from './layouts/Tabs';
 export * from './exports';
+export * from './stack';
+export * from './link';
+export * from './color';

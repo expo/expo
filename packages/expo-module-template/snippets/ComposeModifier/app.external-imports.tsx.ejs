@@ -1,0 +1,6 @@
+<% if (project.features.includes('ComposeView')) { -%>
+import { Column } from '@expo/ui/jetpack-compose';
+<% } else { -%>
+import { Host as ComposeHost, Column, Text as ComposeText } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+<% } -%>

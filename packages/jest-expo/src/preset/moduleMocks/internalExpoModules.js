@@ -16,18 +16,14 @@ module.exports = {
           { name: 'createCameraTextureAsync', argumentsCount: 2, key: 3 },
           { name: 'takeSnapshotAsync', argumentsCount: 2, key: 4 },
         ],
-        ExpoSplashScreen: [
-          { name: 'hide', argumentsCount: 0, key: 'hide' },
-          { name: 'hideAsync', argumentsCount: 0, key: 'hideAsync' },
-          { name: 'internalMaybeHideAsync', argumentsCount: 0, key: 'internalMaybeHideAsync' },
-          {
-            name: 'internalPreventAutoHideAsync',
-            argumentsCount: 0,
-            key: 'internalPreventAutoHideAsync',
-          },
-          { name: 'preventAutoHideAsync', argumentsCount: 0, key: 'preventAutoHideAsync' },
-          { name: 'setOptions', argumentsCount: 1, key: 'setOptions' },
+        // Android-only module the iOS mock generator can't reflect, kept here by hand.
+        ExpoRouter: [
+          { name: 'Material3Color', argumentsCount: 2, key: 'Material3Color' },
+          { name: 'Material3DynamicColor', argumentsCount: 2, key: 'Material3DynamicColor' },
         ],
+        // Expo Go only module. The bare generator can't produce it, but tests rely on it existing
+        // so isRunningInExpoGo() (requireNativeModule('ExpoGo')) stays true, e.g. expo-asset.
+        ExpoGo: [],
       },
     },
   },

@@ -1,7 +1,7 @@
-import React, { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 
 import View from '../primitives/RNWView';
-import { ViewProps } from '../primitives/View';
+import type { ViewProps } from '../primitives/View';
 
 function createView(nativeProps: ViewProps & { __element: string }): ComponentType<ViewProps> {
   return function Dom(props: ViewProps) {

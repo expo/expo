@@ -1,5 +1,8 @@
 {
   "extends": "../tsconfig.json",
-  "include": ["./__tests__", "./playwright", "./utils", "./jest.setup.ts"],
-  "exclude": []
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "."
+  },
+  "include": ["./__tests__", "./playwright", "./utils", "./jest.setup.ts"]
 }

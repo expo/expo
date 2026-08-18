@@ -1,7 +1,7 @@
-import { CSSProperties, SyntheticEvent } from 'react';
+import type { CSSProperties, SyntheticEvent } from 'react';
 
-import { SrcSetSource } from './useSourceSelection';
-import { ImageContentPositionObject, ImageProps, ImageSource } from '../Image.types';
+import type { ImageContentPositionObject, ImageProps, ImageSource } from '../Image.types';
+import type { SrcSetSource } from './useSourceSelection';
 
 export type OnErrorEvent =
   | (({ source }: { source: ImageSource | null }) => void)

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
-import { Command } from '../../bin/cli';
+import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
@@ -75,7 +75,7 @@ export const expoStart: Command = async (argv) => {
         `--scheme <scheme>               Custom URI protocol to use when launching an app`,
         chalk`-p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,
         ``,
-        chalk`--private-key-path <path>       Path to private key for code signing. {dim Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.}`,
+        chalk`--private-key-path <path>       Path to private key for code signing. {dim Required to sign development manifests when the project is configured with an expo-updates code signing certificate.}`,
         `-h, --help                      Usage info`,
       ].join('\n')
     );
@@ -84,9 +84,10 @@ export const expoStart: Command = async (argv) => {
   const projectRoot = getProjectRoot(args);
 
   // NOTE(cedric): `./resolveOptions` loads the expo config when using dev clients, this needs to be initialized before that
-  const { setNodeEnv, loadEnvFiles } = await import('../utils/nodeEnv.js');
-  setNodeEnv(!args['--no-dev'] ? 'development' : 'production');
-  loadEnvFiles(projectRoot);
+  const { loadEnvFiles } = await import('../utils/nodeEnv.js');
+  loadEnvFiles(projectRoot, {
+    mode: !args['--no-dev'] ? 'development' : 'production',
+  });
 
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, args).catch(logCmdError);

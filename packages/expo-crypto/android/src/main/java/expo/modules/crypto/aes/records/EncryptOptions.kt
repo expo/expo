@@ -4,14 +4,14 @@ import android.util.Base64
 import expo.modules.crypto.aes.AesConfig.DEFAULT_IV_SIZE
 import expo.modules.crypto.aes.AesConfig.DEFAULT_TAG_SIZE
 import expo.modules.crypto.aes.BinaryInput
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.EitherOfThree
 import java.security.SecureRandom
 import javax.crypto.spec.GCMParameterSpec
+import expo.modules.kotlin.types.OptimizedRecord
 
-@OptIn(EitherType::class)
+@OptimizedRecord
 class EncryptOptions : Record {
   @Field
   val nonce: EitherOfThree<String, ByteArray, Int>? = null

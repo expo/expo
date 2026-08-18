@@ -1,6 +1,6 @@
-import { CommanderStatic } from 'commander';
+import type { CommanderStatic } from 'commander';
 
-import { Config } from './Config';
+import type { Config } from './Config';
 import ConfigReader from './ConfigReader';
 import { temporaryDirectory } from './Paths';
 import { Platform } from './Platform';

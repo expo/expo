@@ -1,0 +1,790 @@
+// Copyright 2015-present 650 Industries. All rights reserved.
+
+import SwiftUI
+
+private let toolbarPlacement: ToolbarItemPlacement = .navigationBarTrailing
+
+struct SourceMapExplorerView: View {
+  @StateObject private var viewModel = SourceMapExplorerViewModel()
+  @ObservedObject private var editingSession = SnackEditingSession.shared
+  @ObservedObject private var overlay = ProjectSourceSession.current?.overlay ?? EditOverlay()
+
+  private var isSearching: Bool {
+    !viewModel.searchText.isEmpty
+  }
+
+  var body: some View {
+    Group {
+      switch viewModel.loadingState {
+      case .idle, .loading:
+        loadingView
+      case .loaded:
+        loadedView
+      case .error(let error):
+        errorView(error)
+      }
+    }
+    .navigationTitle("Source code explorer")
+    .inlineNavigationBar()
+    .searchable(text: $viewModel.searchText, placement: .automatic, prompt: "Search files")
+    .toolbar {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        if overlay.hasEdits {
+          Button("Revert all", role: .destructive) {
+            ProjectSourceSession.current?.revertAllEdits()
+          }
+        }
+      }
+    }
+    .task {
+      viewModel.observeSession()
+      await viewModel.loadSource()
+    }
+  }
+
+  private var loadedView: some View {
+    VStack(spacing: 0) {
+      connectionBanner
+      publishedEditBanner
+      FolderListView(
+        title: "Source code explorer",
+        nodes: isSearching ? viewModel.filteredFileTree : viewModel.fileTree,
+        isSearching: isSearching
+      )
+    }
+  }
+
+  @ViewBuilder
+  private var connectionBanner: some View {
+    if editingSession.connectionState == .reconnecting {
+      HStack(spacing: 8) {
+        ProgressView().controlSize(.small)
+        Text("Reconnecting to the Snack session… edits will sync when reconnected.")
+          .font(.caption)
+          .foregroundColor(.secondary)
+      }
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .padding(.horizontal)
+      .padding(.vertical, 8)
+      .background(Color(uiColor: .secondarySystemBackground))
+    }
+  }
+
+  @ViewBuilder
+  private var publishedEditBanner: some View {
+    if let message = viewModel.publishedEditError {
+      HStack(alignment: .top, spacing: 8) {
+        Image(systemName: "exclamationmark.triangle.fill")
+          .foregroundColor(.orange)
+        Text(message)
+          .font(.footnote)
+        Spacer(minLength: 0)
+      }
+      .padding(10)
+      .background(Color.orange.opacity(0.12))
+    }
+  }
+
+  private var loadingView: some View {
+    VStack(spacing: 12) {
+      ProgressView()
+      Text("Loading source code...")
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color(uiColor: .systemGroupedBackground))
+  }
+
+  private func errorView(_ error: SourceMapError) -> some View {
+    VStack(spacing: 16) {
+      Image(systemName: "exclamationmark.triangle")
+        .font(.system(size: 40))
+        .foregroundColor(.orange)
+
+      Text("Couldn't load source")
+        .font(.headline)
+
+      Text(error.errorDescription ?? "Unknown error")
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+        .multilineTextAlignment(.center)
+
+      Button("Retry") {
+        Task { await viewModel.loadSource() }
+      }
+      .buttonStyle(.borderedProminent)
+    }
+    .padding()
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+}
+
+struct FolderListView: View {
+  let title: String
+  let nodes: [FileTreeNode]
+  let isSearching: Bool
+
+  var body: some View {
+    List {
+      if nodes.isEmpty {
+        Text(isSearching ? "No files found" : "Empty folder")
+          .foregroundColor(.secondary)
+      } else {
+        ForEach(nodes) { node in
+          NavigationLink(destination: destinationView(for: node)) {
+            FileRow(node: node, showPath: isSearching)
+          }
+        }
+      }
+    }
+    .defaultListStyle()
+    .navigationTitle(isSearching ? "Search Results" : title)
+    .inlineNavigationBar()
+  }
+
+  @ViewBuilder
+  private func destinationView(for node: FileTreeNode) -> some View {
+    if node.isDirectory {
+      FolderListView(
+        title: node.name,
+        nodes: node.children,
+        isSearching: false
+      )
+    } else {
+      CodeFileView(node: node)
+    }
+  }
+}
+
+struct FileRow: View {
+  let node: FileTreeNode
+  var showPath: Bool = false
+
+  private var parentDirectory: String? {
+    let path = node.path
+    guard let lastSlash = path.lastIndex(of: "/") else { return nil }
+    let parent = String(path[..<lastSlash])
+    return parent.isEmpty ? nil : parent
+  }
+
+  var body: some View {
+    Label {
+      VStack(alignment: .leading, spacing: 2) {
+        Text(node.name)
+          .lineLimit(1)
+        if showPath, let parent = parentDirectory {
+          Text(parent)
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .lineLimit(1)
+        }
+      }
+    } icon: {
+      Image(systemName: node.isDirectory ? "folder.fill" : fileIcon)
+        .foregroundColor(node.isDirectory ? .blue : iconColor)
+    }
+  }
+
+  private var fileIcon: String {
+    let ext = (node.name as NSString).pathExtension.lowercased()
+    switch ext {
+    case "ts", "tsx", "js", "jsx": return "curlybraces"
+    case "json": return "doc.text"
+    case "css", "scss", "sass": return "paintbrush"
+    case "png", "jpg", "jpeg", "gif", "svg": return "photo"
+    case "md", "txt": return "doc.plaintext"
+    default: return "doc"
+    }
+  }
+
+  private var iconColor: Color {
+    let ext = (node.name as NSString).pathExtension.lowercased()
+    switch ext {
+    case "ts", "tsx": return .blue
+    case "js", "jsx": return .yellow
+    case "json": return .orange
+    case "css", "scss", "sass": return .pink
+    default: return .secondary
+    }
+  }
+}
+
+struct CodeFileView: View {
+  let node: FileTreeNode
+  private let session = ProjectSourceSession.current
+  @Environment(\.colorScheme) private var colorScheme
+  @State private var isEditing = false
+  @State private var displayContent: String = ""
+  @State private var showCopiedConfirmation = false
+  @AppStorage("EXDevMenuSourceExplorerFontSize") private var fontSize: Double = 12
+
+  private var isImageFile: Bool {
+    let ext = (node.name as NSString).pathExtension.lowercased()
+    return ["png", "jpg", "jpeg", "gif", "svg", "webp", "ico", "bmp"].contains(ext)
+  }
+
+  /// Current contents via the session (overlay first, then source tree).
+  /// nil means the sourcemap carried no content for this file.
+  private var fileContents: String? {
+    session?.content(forPath: node.path)
+  }
+
+  private var canEdit: Bool {
+    session?.canEdit == true && fileContents != nil
+  }
+
+  private var theme: SyntaxHighlighter.Theme {
+    colorScheme == .dark ? .dark : .light
+  }
+
+  private var codeToolbar: some View {
+    HStack(spacing: 0) {
+      // Copy button
+      Button {
+        UIPasteboard.general.string = displayContent
+        showCopiedConfirmation = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+          showCopiedConfirmation = false
+        }
+      } label: {
+        Label("Copy", systemImage: "doc.on.doc")
+          .font(.system(size: 14))
+          .frame(maxWidth: .infinity)
+      }
+
+      Divider().frame(height: 24)
+
+      // Font size decrease
+      Button {
+        if fontSize > 8 {
+          fontSize -= 1
+        }
+      } label: {
+        HStack(spacing: 2) {
+          Image(systemName: "minus")
+            .font(.system(size: 10, weight: .bold))
+          Text("A")
+            .font(.system(size: 16, weight: .medium))
+        }
+        .frame(maxWidth: .infinity)
+      }
+
+      Divider().frame(height: 24)
+
+      // Font size increase
+      Button {
+        if fontSize < 24 {
+          fontSize += 1
+        }
+      } label: {
+        HStack(spacing: 2) {
+          Image(systemName: "plus")
+            .font(.system(size: 10, weight: .bold))
+          Text("A")
+            .font(.system(size: 16, weight: .medium))
+        }
+        .frame(maxWidth: .infinity)
+      }
+    }
+    .foregroundColor(Color(uiColor: .label))
+    .padding(.vertical, 10)
+    .background(Color(uiColor: .secondarySystemBackground))
+  }
+
+  var body: some View {
+    VStack(spacing: 0) {
+      if !isImageFile && fileContents != nil {
+        codeToolbar
+      }
+
+      Group {
+        if isImageFile {
+          imagePreviewUnavailableView()
+        } else if fileContents == nil {
+          contentUnavailableView()
+        } else {
+          codeView()
+        }
+      }
+    }
+    .background(isImageFile ? Color(uiColor: .systemGroupedBackground) : theme.background)
+    .navigationTitle(node.name)
+    .inlineNavigationBar()
+    .toolbar {
+      ToolbarItem(placement: toolbarPlacement) {
+        if canEdit {
+          Button(isEditing ? "Done" : "Edit") {
+            if isEditing {
+              finishEditing()
+            } else {
+              isEditing = true
+            }
+          }
+        }
+      }
+    }
+    .overlay {
+      if showCopiedConfirmation {
+        copiedConfirmationView
+          .transition(.opacity.combined(with: .scale(scale: 0.9)))
+      }
+    }
+    .animation(.easeOut(duration: 0.2), value: showCopiedConfirmation)
+    .onAppear {
+      if displayContent.isEmpty {
+        displayContent = fileContents ?? ""
+      }
+    }
+    .onDisappear {
+      if isEditing {
+        finishEditing()
+      }
+    }
+  }
+
+  private func finishEditing() {
+    isEditing = false
+
+    guard let session, displayContent != (fileContents ?? "") else { return }
+    session.submitEdit(path: node.path, newContents: displayContent)
+  }
+
+  private func imagePreviewUnavailableView() -> some View {
+    VStack(spacing: 12) {
+      Image(systemName: "photo")
+        .font(.system(size: 40))
+        .foregroundColor(.secondary)
+      Text("Image preview not available")
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+
+  private func contentUnavailableView() -> some View {
+    VStack(spacing: 12) {
+      Image(systemName: "doc.questionmark")
+        .font(.system(size: 40))
+        .foregroundColor(.secondary)
+      Text("Contents not available for this file")
+        .font(.subheadline)
+        .foregroundColor(.secondary)
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+  }
+
+  private var copiedConfirmationView: some View {
+    HStack(spacing: 8) {
+      Image(systemName: "checkmark")
+        .font(.system(size: 14, weight: .semibold))
+      Text("Copied")
+        .font(.system(size: 16, weight: .medium))
+    }
+    .foregroundColor(.white)
+    .padding(.horizontal, 16)
+    .padding(.vertical, 10)
+    .background(Color(uiColor: .darkGray))
+    .cornerRadius(8)
+  }
+
+  private func codeView() -> some View {
+    // Unified UITextView for both read-only and edit modes - guarantees no layout shift
+    CodeTextEditor(
+      text: $displayContent,
+      font: .monospacedSystemFont(ofSize: CGFloat(fontSize), weight: .regular),
+      theme: theme,
+      isEditable: isEditing
+    )
+  }
+}
+
+private extension View {
+  func inlineNavigationBar() -> some View {
+    self.navigationBarTitleDisplayMode(.inline)
+  }
+
+  func defaultListStyle() -> some View {
+    self.listStyle(.insetGrouped)
+  }
+}
+
+/// Helper for VSCode-style auto-indentation in JS/TS/JSX
+struct IndentationHelper {
+  // Two spaces per indent level
+  static let indentUnit = "  "
+
+  // VSCode-style patterns for JS/TS/JSX
+  // Increase indent if line ends with { [ ( or opening JSX tag (not self-closing)
+  private static let increaseIndentPattern = #"^((?!//).)*(\{[^}"'`]*|\([^)"'`]*|\[[^\]"'`]*|<[A-Za-z][A-Za-z0-9]*[^>]*(?<!/)>)\s*$"#
+
+  // Decrease indent if line starts with } ] ) or closing JSX tag
+  private static let decreaseIndentPattern = #"^\s*[\}\]\)]|^\s*</"#
+
+  /// Check if a line should trigger increased indent on next line
+  static func shouldIncreaseIndent(after line: String) -> Bool {
+    line.range(of: increaseIndentPattern, options: .regularExpression) != nil
+  }
+
+  /// Check if a line should be dedented
+  static func shouldDecreaseIndent(_ line: String) -> Bool {
+    line.range(of: decreaseIndentPattern, options: .regularExpression) != nil
+  }
+
+  /// Extract leading whitespace from a line
+  static func getIndent(of line: String) -> String {
+    String(line.prefix(while: { $0 == " " || $0 == "\t" }))
+  }
+
+  /// Get the line containing a position in text
+  static func getLine(at position: Int, in text: String) -> String {
+    let nsText = text as NSString
+    guard position >= 0 && position <= nsText.length else { return "" }
+    let lineRange = nsText.lineRange(for: NSRange(location: min(position, nsText.length - 1), length: 0))
+    return nsText.substring(with: lineRange).trimmingCharacters(in: .newlines)
+  }
+
+  /// Calculate indent for a new line after pressing Enter
+  static func calculateNewLineIndent(afterPosition position: Int, in text: String) -> String {
+    let currentLine = getLine(at: position, in: text)
+    let currentIndent = getIndent(of: currentLine)
+
+    if shouldIncreaseIndent(after: currentLine) {
+      return currentIndent + indentUnit
+    }
+    return currentIndent
+  }
+
+  /// Calculate indent when typing a closing bracket at line start
+  static func calculateDedentedIndent(forClosingBracket bracket: Character, at position: Int, in text: String) -> String? {
+    let currentLine = getLine(at: position, in: text)
+
+    // Only dedent if we're at line start (only whitespace before cursor)
+    guard currentLine.trimmingCharacters(in: .whitespaces).isEmpty else {
+      return nil
+    }
+
+    // Find matching opening bracket and use its line's indent
+    let openBracket: Character = bracket == "}" ? "{" : (bracket == "]" ? "[" : "(")
+    if let matchPos = findMatchingBracket(openBracket, before: position, in: text) {
+      return getIndent(of: getLine(at: matchPos, in: text))
+    }
+
+    return nil
+  }
+
+  /// Find matching opening bracket, accounting for nesting
+  private static func findMatchingBracket(_ open: Character, before position: Int, in text: String) -> Int? {
+    let close: Character = open == "{" ? "}" : (open == "[" ? "]" : ")")
+    var depth = 1
+    var i = position - 1
+    let chars = Array(text)
+
+    while i >= 0 {
+      let char = chars[i]
+      if char == close {
+        depth += 1
+      } else if char == open {
+        depth -= 1
+        if depth == 0 {
+          return i
+        }
+      }
+      i -= 1
+    }
+    return nil
+  }
+}
+
+/// A unified code view using UITextView for both read-only and edit modes
+/// This guarantees identical layout in both modes (no shift when toggling)
+struct CodeTextEditor: UIViewRepresentable {
+  @Binding var text: String
+  var font: UIFont
+  var theme: SyntaxHighlighter.Theme
+  var isEditable: Bool
+
+  func makeUIView(context: Context) -> UITextView {
+    let textView = UITextView()
+    textView.delegate = context.coordinator
+    textView.font = font
+    textView.backgroundColor = UIColor(theme.background)
+    textView.isEditable = isEditable
+    textView.isSelectable = true  // Allow selection in both modes
+    textView.autocorrectionType = .no
+    textView.autocapitalizationType = .none
+    textView.smartQuotesType = .no
+    textView.smartDashesType = .no
+    textView.smartInsertDeleteType = .no
+    textView.spellCheckingType = .no
+    textView.keyboardType = .asciiCapable
+    textView.showsVerticalScrollIndicator = false
+    textView.showsHorizontalScrollIndicator = false
+    textView.textContainerInset = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
+    textView.textContainer.lineFragmentPadding = 0  // Remove default 5pt padding
+
+    // Initialize coordinator tracking state
+    context.coordinator.lastFontSize = font.pointSize
+
+    // Configure line wrapping
+    configureWrapping(for: textView)
+
+    // Set initial text and highlighting
+    textView.text = text
+    applyHighlighting(to: textView)
+
+    // Auto-focus if editable
+    if isEditable {
+      focusAtStart(textView)
+    }
+
+    return textView
+  }
+
+  func updateUIView(_ textView: UITextView, context: Context) {
+    let wasEditable = textView.isEditable
+    let coordinator = context.coordinator
+    textView.isEditable = isEditable
+    textView.backgroundColor = UIColor(theme.background)
+
+    // Check what changed
+    let fontChanged = coordinator.lastFontSize != font.pointSize
+    let textChanged = textView.text != text
+
+    // Update tracking
+    coordinator.lastFontSize = font.pointSize
+
+    // Update text if needed
+    if textChanged {
+      textView.text = text
+    }
+
+    // Re-apply highlighting if text, font, or wrap changed
+    if textChanged || fontChanged {
+      let selectedRange = textView.selectedRange
+      applyHighlighting(to: textView)
+      // Restore cursor position if still valid
+      let nsLength = (textView.text as NSString?)?.length ?? 0
+      if selectedRange.location + selectedRange.length <= nsLength {
+        textView.selectedRange = selectedRange
+      }
+    }
+
+    // Focus when transitioning from read-only to edit mode
+    if isEditable && !wasEditable && !textView.isFirstResponder {
+      focusAtStart(textView)
+    }
+
+    // Resign first responder when transitioning to read-only
+    if !isEditable && textView.isFirstResponder {
+      textView.resignFirstResponder()
+    }
+  }
+
+  private func focusAtStart(_ textView: UITextView) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+      // Set position first, then scroll, then focus - this prevents scroll jump
+      textView.selectedRange = NSRange(location: 0, length: 0)
+      textView.setContentOffset(.zero, animated: false)
+      textView.becomeFirstResponder()
+    }
+  }
+
+  private func configureWrapping(for textView: UITextView) {
+    textView.textContainer.lineBreakMode = .byWordWrapping
+    textView.textContainer.widthTracksTextView = true
+    textView.textContainer.size.height = CGFloat.greatestFiniteMagnitude
+  }
+
+  func makeCoordinator() -> Coordinator {
+    Coordinator(self)
+  }
+
+  /// Apply syntax highlighting. Large or minified files render as plain text
+  /// (skipping the tokenize + whole-document layout that would hang the UI);
+  /// everything else tokenizes off the main actor and applies on main.
+  fileprivate func applyHighlighting(to textView: UITextView) {
+    let text = textView.text ?? ""
+
+    guard HighlightPolicy.shouldHighlight(text) else {
+      setAttributed(plainAttributed(text), on: textView)
+      return
+    }
+
+    Task.detached(priority: .userInitiated) {
+      let tokens = SyntaxHighlighter.tokenize(text)
+      await MainActor.run {
+        // Skip if the buffer changed while we tokenized.
+        guard textView.text == text else { return }
+        setAttributed(highlightedAttributed(tokens), on: textView)
+      }
+    }
+  }
+
+  private func setAttributed(_ attributed: NSAttributedString, on textView: UITextView) {
+    let selectedRange = textView.selectedRange
+    textView.attributedText = attributed
+    if selectedRange.location + selectedRange.length <= attributed.length {
+      textView.selectedRange = selectedRange
+    }
+    // Re-apply wrapping — setting attributedText resets text container properties
+    configureWrapping(for: textView)
+  }
+
+  private var codeParagraphStyle: NSParagraphStyle {
+    // Match line height with the read-only view (fontSize * 1.5)
+    let lineHeight = font.pointSize * 1.5
+    let style = NSMutableParagraphStyle()
+    style.minimumLineHeight = lineHeight
+    style.maximumLineHeight = lineHeight
+    style.lineBreakMode = .byWordWrapping
+    return style
+  }
+
+  private func highlightedAttributed(_ tokens: [SyntaxHighlighter.Token]) -> NSAttributedString {
+    let paragraphStyle = codeParagraphStyle
+    let attributed = NSMutableAttributedString()
+    for token in tokens {
+      attributed.append(NSAttributedString(string: token.text, attributes: [
+        .foregroundColor: UIColor(token.type.color(in: theme)),
+        .font: font,
+        .paragraphStyle: paragraphStyle
+      ]))
+    }
+    return attributed
+  }
+
+  private func plainAttributed(_ text: String) -> NSAttributedString {
+    NSAttributedString(string: text, attributes: [
+      .foregroundColor: UIColor(theme.plain),
+      .font: font,
+      .paragraphStyle: codeParagraphStyle
+    ])
+  }
+
+  class Coordinator: NSObject, UITextViewDelegate {
+    var parent: CodeTextEditor
+    private var highlightTask: DispatchWorkItem?
+    var lastFontSize: CGFloat?
+
+    init(_ parent: CodeTextEditor) {
+      self.parent = parent
+    }
+
+    // Handle Enter key and closing brackets for auto-indentation
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+      let fullText = textView.text ?? ""
+
+      // === ENTER KEY ===
+      if text == "\n" {
+        let indent = IndentationHelper.calculateNewLineIndent(
+          afterPosition: range.location,
+          in: fullText
+        )
+
+        // Insert newline + indent
+        textView.insertText("\n" + indent)
+
+        // Update binding
+        parent.text = textView.text
+
+        // Trigger highlighting (debounced)
+        scheduleHighlighting(for: textView)
+
+        return false  // We handled it
+      }
+
+      // === CLOSING BRACKETS ===
+      if let char = text.first, ["}", "]", ")"].contains(char) {
+        if let dedentedIndent = IndentationHelper.calculateDedentedIndent(
+          forClosingBracket: char,
+          at: range.location,
+          in: fullText
+        ) {
+          // Replace current line's indent with correct indent + bracket
+          let currentLine = IndentationHelper.getLine(at: range.location, in: fullText)
+          let currentIndent = IndentationHelper.getIndent(of: currentLine)
+
+          // Find the start of the current line
+          let nsText = fullText as NSString
+          let lineRange = nsText.lineRange(for: NSRange(location: range.location, length: 0))
+          let lineStart = lineRange.location
+
+          // Calculate range of current indent
+          let indentRange = NSRange(location: lineStart, length: currentIndent.count)
+
+          // Replace indent and insert bracket
+          if let textRange = Range(indentRange, in: textView.text ?? "") {
+            textView.text.replaceSubrange(textRange, with: dedentedIndent)
+
+            // Position cursor and insert bracket
+            let newCursorPos = lineStart + dedentedIndent.count
+            textView.selectedRange = NSRange(location: newCursorPos, length: 0)
+            textView.insertText(String(char))
+
+            parent.text = textView.text
+            scheduleHighlighting(for: textView)
+            return false
+          }
+        }
+      }
+
+      // === CLOSING JSX TAG ===
+      if text == "/" {
+        // Check if we just typed "<" (making "</")
+        let nsText = fullText as NSString
+        if range.location > 0 && nsText.substring(with: NSRange(location: range.location - 1, length: 1)) == "<" {
+          // Check if at line start (only whitespace and "<" before cursor)
+          let lineRange = nsText.lineRange(for: NSRange(location: range.location, length: 0))
+          let lineStart = lineRange.location
+          let beforeCursor = nsText.substring(with: NSRange(location: lineStart, length: range.location - lineStart))
+
+          // Only the "<" should be there (with optional whitespace before it)
+          let trimmed = beforeCursor.trimmingCharacters(in: .whitespaces)
+          if trimmed == "<" {
+            // Reduce indent by one level
+            let currentLine = IndentationHelper.getLine(at: range.location, in: fullText)
+            let currentIndent = IndentationHelper.getIndent(of: currentLine)
+
+            if currentIndent.count >= IndentationHelper.indentUnit.count {
+              let newIndent = String(currentIndent.dropLast(IndentationHelper.indentUnit.count))
+              let indentRange = NSRange(location: lineStart, length: currentIndent.count)
+
+              if let textRange = Range(indentRange, in: textView.text ?? "") {
+                textView.text.replaceSubrange(textRange, with: newIndent)
+                // Cursor is now at lineStart + newIndent.count + 1 (for "<")
+                let newCursorPos = lineStart + newIndent.count + 1
+                textView.selectedRange = NSRange(location: newCursorPos, length: 0)
+                textView.insertText("/")
+
+                parent.text = textView.text
+                scheduleHighlighting(for: textView)
+                return false
+              }
+            }
+          }
+        }
+      }
+
+      return true  // Let normal typing happen
+    }
+
+    func textViewDidChange(_ textView: UITextView) {
+      // Update binding immediately for responsiveness
+      parent.text = textView.text
+
+      // Debounce highlighting to avoid lag while typing fast
+      scheduleHighlighting(for: textView)
+    }
+
+    private func scheduleHighlighting(for textView: UITextView) {
+      highlightTask?.cancel()
+      let task = DispatchWorkItem { [weak self] in
+        guard let self = self else { return }
+        self.parent.applyHighlighting(to: textView)
+      }
+      highlightTask = task
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: task)
+    }
+  }
+}

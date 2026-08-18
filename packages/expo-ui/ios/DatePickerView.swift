@@ -4,17 +4,33 @@ import SwiftUI
 internal struct DatePickerView: ExpoSwiftUI.View {
   @ObservedObject var props: DatePickerProps
   @State private var date = Date()
+  // `.graphical` has some AutoLayout bug (it uses UICalendarView under the hood)
+  // It shrinks height when user taps a date.
+  // https://github.com/expo/expo/issues/47062
+  // https://stackoverflow.com/a/74763440/7070640
+  // Current fix is to add a fixed min width of 320 when `.graphical` style is used.
+  // TODO: Remove if apple fixes the bug in newer versions
+  private var isGraphicalStyle: Bool {
+    props.modifiers?.contains {
+      $0["$type"] as? String == "datePickerStyle" && $0["style"] as? String == "graphical"
+    } ?? false
+  }
 
   var body: some View {
 #if os(tvOS)
     Text("DatePicker is not supported on tvOS")
 #else
     createDatePicker()
+      .frame(minWidth: isGraphicalStyle ? 320 : nil)
+      .onChange(of: date) { newDate in
+        if props.selection == newDate { return }
+        props.onDateChange(["date": newDate.timeIntervalSince1970 * 1000])
+      }
+      .onChange(of: props.selection) { newValue in
+        date = newValue ?? Date()
+      }
       .onAppear {
         date = props.selection ?? Date()
-      }
-      .onChange(of: date) { newDate in
-        props.onDateChange(["date": newDate.timeIntervalSince1970 * 1000])
       }
       .if(props.title == nil && !hasChildren) { $0.labelsHidden() }
 #endif

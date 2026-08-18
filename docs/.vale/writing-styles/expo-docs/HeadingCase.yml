@@ -1,7 +1,7 @@
 extends: capitalization
 message: "'%s' should be in sentence case"
 link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#headings'
-level: warning
+level: error
 scope:
   - heading.h2
   - heading.h3
@@ -15,12 +15,21 @@ exceptions:
   - '.*app\.plugin\.js.*'
   - '.*app directory.*'
   - '.*assets.*'
+  - '.*build\.yml.*'
   - '.*create-expo-app.*'
   - '.*create-react-native-app.*'
+  - '.*e2e-test.*'
+  - '.*get-build.*'
+  - '.*hello\.yml.*'
   - '.*^iOS(.*)'
+  - '.*iPhone.*'
+  - '.*preview\.yml.*'
+  - '.*production\.yml.*'
   - '.*web.*'
   - '.*AASA.*'
   - '.*AES.*'
+  - '.*AGENTS\.md.*'
+  - '.*\bAI\b.*'
   - '.*API.*'
   - '.*APIs.*'
   - '.*^Android(.*)'
@@ -41,6 +50,7 @@ exceptions:
   - '.*Apple Developer Portal.*'
   - '.*Apple ID.*'
   - '.*Apple Pay.*'
+  - '.*Argent.*'
   - '.*Asset Links.*'
   - '.*Async Storage.*'
   - '.*Autolinking.*'
@@ -49,6 +59,7 @@ exceptions:
   - '.*AWS.*'
   - '.*Babel.*'
   - '.*babel\.config\.js.*'
+  - '.*Beta App Review.*'
   - '.*Bundler.*'
   - '.*Cache-Control.*'
   - '.*Can I pay.*'
@@ -56,15 +67,22 @@ exceptions:
   - '.*CDN.*'
   - '.*Chrome.*'
   - '.*CLI.*'
+  - '.*TTI.*'
   - '.*Classic Updates.*'
+  - '.*CLAUDE\.md.*'
+  - '.*Claude Code.*'
+  - '.*Clerk.*'
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
+  - '.*Codex.*'
+  - '.*Convex.*'
   - '.*Command Line Tools.*'
   - '.*Config Plugin.*'
   - '.*CORS.*'
   - '.*CRUD.*'
   - '.*credentials\.json.*'
+  - '.*Cursor.*'
   - '.*DevTools.*'
   - '.*Developer Console.*'
   - '.*Developer Mode.*'
@@ -81,6 +99,7 @@ exceptions:
   - '.*Element Inspector.*'
   - '.*Environment Variables.*'
   - '.*ESLint.*'
+  - '.*EXIF.*'
   - '.*Expo.*'
   - '.*ExpoKit.*'
   - '.*Expo Application Services.*'
@@ -93,14 +112,15 @@ exceptions:
   - '.*FileSystem.*'
   - '.*FlatList.*'
   - '.*Flipper.*'
-  - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
+  - '.*FAB.*'
   - '.*FAQ.*'
   - '.*FCM.*'
   - '.*FYI.*'
   - '.*fingerprintignore.*'
   - '.*fingerprint.config.js.*'
   - '.*Generate.*Android.*'
+  - '.*\bGET\b.*'
   - '.*GitHub.*'
   - '.*GitHub Pages.*'
   - '.*Google.*'
@@ -122,6 +142,7 @@ exceptions:
   - '.*HTTPS.*'
   - '.*Info\.plist.*'
   - '.*iOS.*Simulator.*'
+  - '.*JDK.*'
   - '.*JSON.*'
   - '.*JavaScript.*'
   - '.*JavaScriptCore.*'
@@ -134,12 +155,15 @@ exceptions:
   - '.*Link component.*'
   - '.*Linking.*'
   - '.*MCP*'
+  - '.*Mac Catalyst.*'
+  - '.*Material Symbols.*'
+  - '.*MultiBrowse.*'
   - '.*macOS.*'
   - '.*manifest\.json.*'
   - '.*metro\.config\.js.*'
+  - '.*Maven.*'
   - '.*Netlify.*'
   - '.*Node\.js.*'
-  - '.*Node Package Managers.*'
   - '.*NavigationContainer.*'
   - '.*Next\.js.*'
   - '.*New Architecture.*'
@@ -148,7 +172,9 @@ exceptions:
   - '.*OAuth.*'
   - '.*OTA.*'
   - '.*OTF.*'
+  - '.*\bPOST\b.*'
   - '.*PostCSS.*'
+  - '.*PostHog.*'
   - '.*PRAGMA.*'
   - '.*Prebuild.*'
   - '.*Privacy Shield.*'
@@ -168,6 +194,7 @@ exceptions:
   - '.*Remote JS.*'
   - '.*Router.*'
   - ".*Router's.*"
+  - '.*RxDB.*'
   - '.*SAF.*'
   - '.*SASS.*'
   - '.*SDK.*'
@@ -187,12 +214,15 @@ exceptions:
   - '.*Storage Access Framework.*'
   - '.*Strict-Transport-Security.*'
   - '.*SSO.*'
+  - '.*Supabase.*'
+  - '.*Suspense.*'
   - '.*Swift.*'
   - '.*Terser.*'
   - '.*TestFlight.*'
   - '.*TLS.*'
   - '.*Transporter.*'
   - '.*TTF.*'
+  - '.*TTI.*'
   - '.*Turtle.*'
   - '.*TV.*'
   - '.*TypeScript.*'
@@ -216,9 +246,9 @@ exceptions:
   # PascalCase for React component names that end with common component suffixes
   - '^[A-Z][a-zA-Z]*(?:Input|Sheet|Picker|Progress|Menu|View|Button|Switch|Slider|Text|TextInput)(?:\s*\([^)]+\))?$'
   # Standalone Expo UI component names
-  - '^(?:BottomSheet|Button|Chip|CircularProgress|ColorPicker|ContextMenu|DatePicker|DateTimePicker|DisclosureGroup|Divider|Form|Gauge|Host|LinearProgress|List|Menu|Modifiers|Namespace|Picker|Popover|ProgressView|Section|Slider|Switch|TextField|TextInput|Toggle)(?:\s*\([^)]+\))?$'
+  - '^(?:BottomSheet|Button|Chip|CircularProgress|ColorPicker|ContextMenu|DatePicker|DateTimePicker|DisclosureGroup|Divider|DropdownMenu|Form|Gauge|Host|LinearProgress|List|Menu|Modifiers|Namespace|Picker|Popover|ProgressView|Section|Slider|Switch|TextField|TextInput|Toggle)(?:\s*\([^)]+\))?$'
   # Component, service and product names that are proper nouns
-  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer|Popover|HStack|VStack)(?:\s*\([^)]+\))?$'
+  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer|Popover|HStack|VStack)(?:\s*\([^)]+\))?$'
   # Specific edge cases
   - two-factor
   - (deprecated)
@@ -274,7 +304,6 @@ exceptions:
   - Maestro
   - Maestro Cloud
   - Require Approval
-  - Asset Caching
   - Getting Started
   - Keyboard Controller
   - PR
@@ -289,3 +318,19 @@ exceptions:
   - 'Method 1: Use'
   - 'Method 2: Use'
   - 'Image manipulation without disk I/O'
+  - Live Activities
+  - Live Activity
+  - 'Prerequisite: Creating widget'
+  - 'Prerequisite: Creating Live Activity'
+  - 'Prerequisite: Creating a widget'
+  - 'Prerequisite: Creating a Live Activity'
+  - Hiding the Tab bar
+  - Expo Skills
+  - DSL
+  - TriStateCheckbox
+  - MainApplication
+  - MainActivity
+  - HorizontalCenteredHeroCarousel
+  - HorizontalUncontainedCarousel
+  - Serving Markdown to AI Agents
+  - Clerk Publishable Key

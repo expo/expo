@@ -6,10 +6,11 @@ import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.types.testConverterContext
 import expo.modules.kotlin.types.toAnyType
 import io.mockk.mockk
 import org.junit.Test
-import kotlin.reflect.typeOf
 
 class ConcreteViewPropTest {
   @Test
@@ -18,12 +19,12 @@ class ConcreteViewPropTest {
     var providedValue = -1
     var providedView: View? = null
 
-    val prop = ConcreteViewProp<View, Int>("name", { typeOf<Int>() }.toAnyType<Int>()) { view, value ->
+    val prop = ConcreteViewProp<View, Int>("name", toAnyType<Int>()) { view, value ->
       providedValue = value
       providedView = view
     }
 
-    prop.set(DynamicFromObject(10.0), mockedView)
+    prop.set(DynamicFromObject(10.0), mockedView, testConverterContext)
 
     Truth.assertThat(providedValue).isEqualTo(10)
     Truth.assertThat(providedView).isSameInstanceAs(mockedView)
@@ -31,6 +32,7 @@ class ConcreteViewPropTest {
 
   @Test
   fun `should be able to convert records`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       lateinit var id: String
@@ -42,7 +44,7 @@ class ConcreteViewPropTest {
     val mockedView = mockk<View>()
     var providedValue: MyRecord? = null
 
-    val prop = ConcreteViewProp<View, MyRecord>("name", { typeOf<MyRecord>() }.toAnyType<MyRecord>()) { _, value ->
+    val prop = ConcreteViewProp<View, MyRecord>("name", toAnyType<MyRecord>()) { _, value ->
       providedValue = value
     }
 
@@ -53,7 +55,8 @@ class ConcreteViewPropTest {
           putString("name", "name")
         }
       ),
-      mockedView
+      mockedView,
+      testConverterContext
     )
 
     Truth.assertThat(providedValue?.id).isEqualTo("1234")

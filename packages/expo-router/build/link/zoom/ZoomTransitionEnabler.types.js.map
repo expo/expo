@@ -1,1 +1,0 @@
-{"version":3,"file":"ZoomTransitionEnabler.types.js","sourceRoot":"","sources":["../../../src/link/zoom/ZoomTransitionEnabler.types.ts"],"names":[],"mappings":"","sourcesContent":["export interface ZoomTransitionEnablerProps {\n  route?: unknown;\n}\n"]}

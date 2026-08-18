@@ -1,13 +1,12 @@
 import chalk from 'chalk';
 import os from 'os';
 
-import { ADBServer } from './ADBServer';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
-
-const debug = require('debug')('expo:start:platforms:android:adb') as typeof console.log;
+import { event } from '../events';
+import { ADBServer } from './ADBServer';
 
 export enum DeviceABI {
   // The arch specific android target platforms are soft-deprecated.
@@ -78,21 +77,12 @@ export async function isPackageInstalledAsync(
   androidPackage: string
 ): Promise<boolean> {
   const packages = await getServer().runAsync(
-    adbArgs(
-      device.pid,
-      'shell',
-      'pm',
-      'list',
-      'packages',
-      '--user',
-      env.EXPO_ADB_USER,
-      androidPackage
-    )
+    adbShellArgs(device.pid, 'pm', 'list', 'packages', '--user', env.EXPO_ADB_USER, androidPackage)
   );
 
   const lines = packages.split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const line = lines[i]!.trim();
     if (line === `package:${androidPackage}`) {
       return true;
     }
@@ -115,8 +105,7 @@ export async function launchActivityAsync(
     url?: string;
   }
 ) {
-  const args: string[] = [
-    'shell',
+  const command: string[] = [
     'am',
     'start',
     // FLAG_ACTIVITY_SINGLE_TOP -- If set, the activity will not be launched if it is already running at the top of the history stack.
@@ -128,10 +117,10 @@ export async function launchActivityAsync(
   ];
 
   if (url) {
-    args.push('-d', url);
+    command.push('-d', url);
   }
 
-  return openAsync(adbArgs(device.pid, ...args));
+  return openAsync(adbShellArgs(device.pid, ...command));
 }
 
 /**
@@ -147,17 +136,7 @@ export async function openUrlAsync(
   }
 ) {
   return openAsync(
-    adbArgs(
-      device.pid,
-      'shell',
-      'am',
-      'start',
-      '-a',
-      'android.intent.action.VIEW',
-      '-d',
-      // ADB requires ampersands to be escaped.
-      url.replace(/&/g, String.raw`\&`)
-    )
+    adbShellArgs(device.pid, 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url)
   );
 }
 
@@ -188,7 +167,7 @@ export async function getPackageInfoAsync(
   device: DeviceContext,
   { appId }: { appId: string }
 ): Promise<string> {
-  return await getServer().runAsync(adbArgs(device.pid, 'shell', 'dumpsys', 'package', appId));
+  return await getServer().runAsync(adbShellArgs(device.pid, 'dumpsys', 'package', appId));
 }
 
 /** Install an app on a connected device. */
@@ -207,6 +186,18 @@ export function adbArgs(pid: Device['pid'], ...options: string[]): string[] {
   }
 
   return args.concat(options);
+}
+
+/**
+ * `adb shell` concatenates trailing args and runs the result through `sh -c` on
+ * the device, so unquoted metacharacters in tainted tokens execute on-device.
+ */
+export function adbShellArgs(pid: Device['pid'], ...command: string[]): string[] {
+  return adbArgs(pid, 'shell', ...command.map(shellQuote));
+}
+
+function shellQuote(value: string): string {
+  return `'${value.replace(/'/g, `'\\''`)}'`;
 }
 
 // TODO: This is very expensive for some operations.
@@ -331,7 +322,7 @@ export async function isDeviceBootedAsync({
 export async function isBootAnimationCompleteAsync(pid?: string): Promise<boolean> {
   try {
     const props = await getPropertyDataForDeviceAsync({ pid }, PROP_BOOT_ANIMATION_STATE);
-    return !!props[PROP_BOOT_ANIMATION_STATE].match(/stopped/);
+    return !!props[PROP_BOOT_ANIMATION_STATE]?.match(/stopped/);
   } catch {
     return false;
   }
@@ -359,8 +350,9 @@ export async function getPropertyDataForDeviceAsync(
   device: DeviceContext,
   prop?: string
 ): Promise<DeviceProperties> {
-  // @ts-ignore
-  const propCommand = adbArgs(...[device.pid, 'shell', 'getprop', prop].filter(Boolean));
+  const propCommand = prop
+    ? adbShellArgs(device.pid, 'getprop', prop)
+    : adbShellArgs(device.pid, 'getprop');
   try {
     // Prevent reading as UTF8.
     const results = await getServer().getFileOutputAsync(propCommand);
@@ -369,14 +361,14 @@ export async function getPropertyDataForDeviceAsync(
     // [wifi.interface]: [wlan0]
 
     if (prop) {
-      debug(`Property data: (device pid: ${device.pid}, prop: ${prop}, data: ${results})`);
+      event('adb_property_data', { devicePid: device.pid, prop, data: results });
       return {
         [prop]: results,
       };
     }
     const props = parseAdbDeviceProperties(results);
 
-    debug(`Parsed data:`, props);
+    event('adb_parsed_properties', { props });
 
     return props;
   } catch (error: any) {
@@ -389,7 +381,7 @@ function parseAdbDeviceProperties(devicePropertiesString: string) {
   const properties: DeviceProperties = {};
   const propertyExp = /\[(.*?)\]: \[(.*?)\]/gm;
   for (const match of devicePropertiesString.matchAll(propertyExp)) {
-    properties[match[1]] = match[2];
+    properties[match[1]!] = match[2]!;
   }
   return properties;
 }

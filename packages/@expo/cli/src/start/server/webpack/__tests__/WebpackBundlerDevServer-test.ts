@@ -1,11 +1,15 @@
 import { vol } from 'memfs';
 import webpack from 'webpack';
 
-import { BundlerStartOptions } from '../../BundlerDevServer';
+import { loadEnvFiles } from '../../../../utils/nodeEnv';
+import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { WebpackBundlerDevServer } from '../WebpackBundlerDevServer';
 
 jest.mock('../../../../log');
+jest.mock('../../../../utils/nodeEnv', () => ({
+  loadEnvFiles: jest.fn(),
+}));
 jest.mock('../resolveFromProject');
 
 jest.mock('../compile', () => ({
@@ -27,10 +31,10 @@ async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
     '/',
     getPlatformBundlers('/', { web: { bundler: 'webpack' } })
   );
-  devServer['getAvailablePortAsync'] = jest.fn(() => Promise.resolve(3000));
   // Tested in the superclass
   devServer['postStartAsync'] = jest.fn(async () => {});
-  await devServer.startAsync({ location: {}, ...options });
+  // The port is resolved by the caller before the dev server starts.
+  await devServer.startAsync({ location: {}, port: 3000, ...options });
   return devServer;
 }
 
@@ -53,11 +57,30 @@ describe('bundleAsync', () => {
   });
 });
 
+describe('loadConfigAsync', () => {
+  it.each(['development', 'production'] as const)(
+    'loads %s env files before Webpack config',
+    async (mode) => {
+      const devServer = new WebpackBundlerDevServer(
+        '/',
+        getPlatformBundlers('/', { web: { bundler: 'webpack' } })
+      );
+      const expoWebpackConfig = require('@expo/webpack-config') as jest.Mock;
+
+      await devServer.loadConfigAsync({ mode, isImageEditingEnabled: false });
+
+      expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode });
+      expect(jest.mocked(loadEnvFiles).mock.invocationCallOrder[0]).toBeLessThan(
+        expoWebpackConfig.mock.invocationCallOrder[0]!
+      );
+    }
+  );
+});
+
 describe('startAsync', () => {
   it(`starts webpack`, async () => {
     const devServer = await getStartedDevServer();
 
-    expect(devServer['getAvailablePortAsync']).toHaveBeenCalled();
     expect(devServer['postStartAsync']).toHaveBeenCalled();
 
     expect(devServer.getInstance()).toEqual({

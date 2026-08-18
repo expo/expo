@@ -1,5 +1,6 @@
 import type { ExpoConfig } from '@expo/config';
-import JsonFile, { JSONObject } from '@expo/json-file';
+import type { JSONObject } from '@expo/json-file';
+import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -7,16 +8,17 @@ import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
 
+import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { sanitizedName } from './createFileTransform';
 import { Log } from './log';
-import { formatRunCommand, PackageManagerName } from './resolvePackageManager';
+import type { PackageManagerName } from './resolvePackageManager';
+import { formatRunCommand } from './resolvePackageManager';
 import { env } from './utils/env';
 import { downloadAndExtractGitHubRepositoryAsync } from './utils/github';
 import {
   applyBetaTag,
   applyKnownNpmPackageNameRules,
   downloadAndExtractNpmModuleAsync,
-  ExtractProps,
   getResolvedTemplateName,
 } from './utils/npm';
 
@@ -116,11 +118,16 @@ export function resolvePackageModuleId(moduleId: string) {
 /**
  * Extract a template app to a given file path and clean up any properties left over from npm to
  * prepare it for usage.
+ *
+ * If the template ships a `.create-expo.json`, its `renamePatterns`
+ * field overrides the default rename config used by the HelloWorld
+ * find-and-replace pass. The config file is read once and deleted from disk
+ * immediately so it can never leak into the user's project.
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
   { npmPackage }: { npmPackage?: string | null }
-) {
+): Promise<string> {
   const projectName = path.basename(projectRoot);
 
   debug(`Extracting template app (pkg: ${npmPackage}, projectName: ${projectName})`);
@@ -128,21 +135,24 @@ export async function extractAndPrepareTemplateAppAsync(
   const { type, uri } = resolvePackageModuleId(npmPackage || 'expo-template-default');
 
   if (type === 'repository') {
-    await downloadAndExtractGitHubRepositoryAsync(uri, {
-      cwd: projectRoot,
-      name: projectName,
+    await downloadAndExtractGitHubRepositoryAsync(uri, projectRoot, {
+      expName: projectName,
     });
   } else {
     const resolvedUri = type === 'file' ? uri : getResolvedTemplateName(applyBetaTag(uri));
-    await downloadAndExtractNpmModuleAsync(resolvedUri, {
-      cwd: projectRoot,
-      name: projectName,
+    await downloadAndExtractNpmModuleAsync(resolvedUri, projectRoot, {
+      expName: projectName,
       disableCache: type === 'file',
     });
   }
 
+  const monorepoConfig = await consumeMonorepoConfigAsync(projectRoot);
+
   try {
-    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
+    const files = await getTemplateFilesToRenameAsync({
+      cwd: projectRoot,
+      renameConfig: monorepoConfig?.renamePatterns,
+    });
     await renameTemplateAppNameAsync({
       cwd: projectRoot,
       files,
@@ -175,7 +185,7 @@ function escapeXMLCharacters(original: string): string {
  * specified.
  *
  * By convention, the app name of all templates is "HelloWorld". During
- * extraction, filepaths are transformed via `createEntryResolver()` in
+ * extraction, filepaths are transformed via `createEntryRenamer()` in
  * `createFileTransform.ts`, but the contents of files are left untouched.
  * Technically, the contents used to be transformed during extraction as well,
  * but due to poor configurability, we've moved to a post-extraction approach.
@@ -197,8 +207,8 @@ function escapeXMLCharacters(original: string): string {
  * Whitespace is trimmed and whitespace-only lines are ignored.
  *
  * If no rename config has been passed directly to
- * `getTemplateFilesToRenameAsync()` then this default rename config will be
- * used instead.
+ * `getTemplateFilesToRenameAsync()`, then this default
+ * rename config will be used instead.
  */
 export const defaultRenameConfig = [
   // Common
@@ -240,11 +250,16 @@ export async function getTemplateFilesToRenameAsync({
    * @see defaultRenameConfig
    */
   renameConfig: userConfig,
-}: Pick<ExtractProps, 'cwd'> & { renameConfig?: string[] }) {
+}: {
+  cwd: string;
+  renameConfig?: string[];
+}) {
   let config = userConfig ?? defaultRenameConfig;
 
   // Strip comments, trim whitespace, and remove empty lines.
-  config = config.map((line) => line.split(/(?<!\\)#/, 2)[0].trim()).filter((line) => line !== '');
+  config = config
+    .map((line) => line.split(/(?<!\\)#/, 2)[0]?.trim() ?? '')
+    .filter((line) => line !== '');
 
   return await glob(config, {
     cwd,
@@ -262,7 +277,9 @@ export async function renameTemplateAppNameAsync({
   cwd,
   name,
   files,
-}: Pick<ExtractProps, 'cwd' | 'name'> & {
+}: {
+  cwd: string;
+  name: string;
   /**
    * An array of files to transform. Usually provided by calling
    * getTemplateFilesToRenameAsync().
@@ -278,7 +295,9 @@ export async function renameTemplateAppNameAsync({
 
       let contents: string;
       try {
-        contents = await fs.promises.readFile(absoluteFilePath, { encoding: 'utf-8' });
+        contents = await fs.promises.readFile(absoluteFilePath, {
+          encoding: 'utf-8',
+        });
       } catch (error) {
         throw new Error(
           `Failed to read template file: "${absoluteFilePath}". Was it removed mid-operation?`,
@@ -351,7 +370,9 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
     slug: projectName,
   };
 
-  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), { default: {} });
+  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {
+    default: {},
+  });
   const appContent = (await appFile.readAsync()) as ExpoConfig | Record<'expo', ExpoConfig>;
   const appJson = deepMerge(
     appContent,

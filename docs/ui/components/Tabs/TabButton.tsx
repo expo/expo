@@ -1,7 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
-import { Tab as ReachTab } from '@reach/tabs';
+import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { motion, useReducedMotion } from 'framer-motion';
-import * as React from 'react';
 import { ComponentType, ReactElement } from 'react';
 
 import { TextComponentProps } from '~/ui/components/Text/types';
@@ -11,6 +10,7 @@ import { P } from '../Text';
 export type TabProps = {
   label: string;
   active: boolean;
+  value: string;
   href?: string;
   icon?: ReactElement;
   disabled?: boolean;
@@ -24,6 +24,7 @@ export type TabProps = {
 export function TabButton({
   label,
   active,
+  value,
   disabled,
   icon,
   className,
@@ -46,16 +47,17 @@ export function TabButton({
           className={mergeClasses(
             'absolute inset-0 rounded-md border',
             theme === 'default' && 'border-secondary bg-screen dark:bg-hover dark:drop-shadow-none',
-            theme === 'secondary' && 'border-button-secondary bg-default shadow-xs dark:bg-subtle'
+            theme === 'secondary' && 'border-default bg-default shadow-sm dark:bg-subtle'
           )}
         />
       )}
-      <ReachTab
+      <TabsPrimitive.Trigger
+        value={value}
         disabled={disabled}
         className={mergeClasses(
           'relative z-10 rounded-md transition-colors',
-          !active && theme === 'default' && 'hocus:bg-selected dark:hocus:bg-element',
-          !active && theme === 'secondary' && 'hocus:bg-element dark:hocus:bg-subtle',
+          !active && theme === 'default' && 'dark:hocus:bg-element hocus:bg-selected',
+          !active && theme === 'secondary' && 'dark:hocus:bg-subtle hocus:bg-element',
           className
         )}>
         <div
@@ -67,12 +69,12 @@ export function TabButton({
           <LabelElement
             theme={active ? 'default' : 'tertiary'}
             weight="medium"
-            className="transition-colors max-md-gutters:text-sm max-sm-gutters:text-xs">
+            className="transition-colors max-md:text-sm max-sm:text-sm">
             {label}
           </LabelElement>
           {rightSlot}
         </div>
-      </ReachTab>
+      </TabsPrimitive.Trigger>
     </div>
   );
 }

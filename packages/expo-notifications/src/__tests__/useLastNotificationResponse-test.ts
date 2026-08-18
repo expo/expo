@@ -1,4 +1,4 @@
-import { NotificationRequest } from '../Notifications.types';
+import type { NotificationRequest } from '../Notifications.types';
 import { determineNextResponse } from '../useLastNotificationResponse';
 
 describe(determineNextResponse, () => {

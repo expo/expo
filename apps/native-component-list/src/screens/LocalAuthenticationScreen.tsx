@@ -1,10 +1,11 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { Platform } from 'expo';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { BiometricsSecurityLevel } from 'expo-local-authentication';
-import { Platform } from 'expo-modules-core';
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
 import MonoText from '../components/MonoText';
 
@@ -73,10 +74,33 @@ const LocalAuthenticationScreen = () => {
     }
   };
 
+  const doubleAuthenticate = async () => {
+    const fire = (label: string) =>
+      LocalAuthentication.authenticateAsync({
+        promptMessage: `Authenticate (${label})`,
+        cancelLabel: 'Cancel',
+        promptSubtitle: `Call ${label}`,
+        disableDeviceFallback: true,
+        biometricsSecurityLevel: securityLevels[securityLevelIndex],
+      }).then((result) => {
+        alert(
+          result.success
+            ? `Call ${label}: success`
+            : // @ts-ignore
+              `Call ${label}: error=${result.error}`
+        );
+      });
+
+    const first = fire('A');
+    await new Promise((r) => setTimeout(r, 2000));
+    const second = fire('B');
+    await Promise.all([first, second]);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.capabilitiesContainer}>
-        <Text>Device capabilities:</Text>
+        <BodyText>Device capabilities:</BodyText>
         <MonoText textStyle={styles.monoText}>
           {JSON.stringify(
             {
@@ -92,12 +116,12 @@ const LocalAuthenticationScreen = () => {
       </View>
       <View>
         {waiting ? (
-          <Text>Waiting for authentication...</Text>
+          <BodyText>Waiting for authentication...</BodyText>
         ) : (
           <View>
             {Platform.OS === 'android' && (
               <View style={styles.button}>
-                <Text>Authentication security level</Text>
+                <BodyText>Authentication security level</BodyText>
                 <SegmentedControl
                   values={securityLevels}
                   selectedIndex={securityLevelIndex}
@@ -117,6 +141,11 @@ const LocalAuthenticationScreen = () => {
               onPress={() => authenticate(false)}
               title="Authenticate without device fallback"
             />
+            <Button
+              style={styles.button}
+              onPress={doubleAuthenticate}
+              title="Double authenticate (2s delay)"
+            />
           </View>
         )}
       </View>
@@ -129,7 +158,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
   },
   capabilitiesContainer: {
     paddingBottom: 30,

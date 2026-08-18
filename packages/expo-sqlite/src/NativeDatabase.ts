@@ -1,5 +1,5 @@
-import { NativeSession } from './NativeSession';
-import { NativeStatement } from './NativeStatement';
+import type { NativeSession } from './NativeSession';
+import type { NativeStatement } from './NativeStatement';
 
 /**
  * A class that represents an instance of the SQLite database.
@@ -32,8 +32,6 @@ export declare class NativeDatabase {
   public loadExtensionSync(libPath: string, entryPoint?: string): void;
 
   //#endregion
-
-  public syncLibSQL(): Promise<void>;
 }
 
 /**
@@ -58,45 +56,4 @@ export interface SQLiteOpenOptions {
    * @hidden
    */
   finalizeUnusedStatementsBeforeClosing?: boolean;
-
-  /**
-   * Options for libSQL integration.
-   */
-  libSQLOptions?: {
-    /** The URL of the libSQL server. */
-    url: string;
-
-    /** The auth token for the libSQL server. */
-    authToken: string;
-
-    /**
-     * Whether to use remote-only without syncing to local database.
-     * @default false
-     */
-    remoteOnly?: boolean;
-  };
-}
-
-type FlattenedOpenOptions = Omit<SQLiteOpenOptions, 'libSQLOptions'> & {
-  libSQLUrl?: string;
-  libSQLAuthToken?: string;
-  libSQLRemoteOnly?: boolean;
-};
-
-/**
- * Flattens the SQLiteOpenOptions that are passed to the native module.
- */
-export function flattenOpenOptions(options: SQLiteOpenOptions): FlattenedOpenOptions {
-  const { libSQLOptions, ...restOptions } = options;
-  const result: FlattenedOpenOptions = {
-    ...restOptions,
-  };
-  if (libSQLOptions) {
-    Object.assign(result, {
-      libSQLUrl: libSQLOptions.url,
-      libSQLAuthToken: libSQLOptions.authToken,
-      libSQLRemoteOnly: libSQLOptions.remoteOnly,
-    });
-  }
-  return result;
 }

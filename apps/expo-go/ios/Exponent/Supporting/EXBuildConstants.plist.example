@@ -20,6 +20,8 @@
 	<string>exp://localhost:80</string>
         <key>developmentUrl</key>
         <string>exp://exp.host/@community/pomodoro</string>
+	<key>USE_EMBEDDED_SNACK_RUNTIME</key>
+	<false/>
 	<key>USE_GENERATED_DEFAULTS</key>
 	<true/>
 </dict>

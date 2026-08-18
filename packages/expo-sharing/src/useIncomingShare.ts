@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import type { AppStateStatus } from 'react-native';
+import { AppState } from 'react-native';
 
 import { clearSharedPayloads, getResolvedSharedPayloadsAsync, getSharedPayloads } from './Sharing';
-import { ResolvedSharePayload, SharePayload } from './Sharing.types';
+import type { ResolvedSharePayload, SharePayload, UseIncomingShareResult } from './Sharing.types';
 
 function sharePayloadsAreEqual(a: SharePayload[], b: SharePayload[]): boolean {
   if (a.length !== b.length) {
@@ -32,10 +33,10 @@ function sharePayloadsAreEqual(a: SharePayload[], b: SharePayload[]): boolean {
 }
 
 /**
- * TODO: Docs
+ * Hook, which returns the data shared with the application and updates the data if the shared payload has changed.
  */
-export function useIncomingShare() {
-  const [sharedPayloads, setSharedPayloads] = useState<SharePayload[]>([]);
+export function useIncomingShare(): UseIncomingShareResult {
+  const [sharedPayloads, setSharedPayloads] = useState<SharePayload[]>(getSharedPayloads());
   const [resolvedSharedPayloads, setResolvedSharedPayloads] = useState<ResolvedSharePayload[]>([]);
   const [isResolving, setIsResolving] = useState(false);
   const [error, setError] = useState<Error | null>(null);

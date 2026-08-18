@@ -13,7 +13,7 @@ import { type CommonViewModifierProps } from '../types';
  */
 export type ButtonRole = 'default' | 'cancel' | 'destructive';
 
-export type ButtonProps = {
+export interface ButtonProps extends CommonViewModifierProps {
   /**
    * A callback that is called when the button is pressed.
    */
@@ -40,7 +40,7 @@ export type ButtonProps = {
    * Target identifier for the button, used for identifying which button was pressed in widgets and live activities.
    */
   target?: string;
-} & CommonViewModifierProps;
+}
 
 type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButtonPress', void>;
 

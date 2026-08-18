@@ -1,9 +1,13 @@
+<% const hasEvent = project.features.includes('Event'); -%>
+<% const hasView = project.features.includes('View') || project.features.includes('ViewEvent'); -%>
+<% if (hasView) { -%>
 import type { StyleProp, ViewStyle } from 'react-native';
 
-export type OnLoadEventPayload = {
-  url: string;
-};
-
+<% } -%>
+<% if (!hasEvent && !hasView) { -%>
+// Define your exported module types here.
+<% } -%>
+<% if (hasEvent) { -%>
 export type <%- project.moduleName %>Events = {
   onChange: (params: ChangeEventPayload) => void;
 };
@@ -11,9 +15,17 @@ export type <%- project.moduleName %>Events = {
 export type ChangeEventPayload = {
   value: string;
 };
+<% } -%>
+<% if (hasView) { -%>
+<% if (hasEvent) { -%>
+
+<% } -%>
+export type OnTapEventPayload = Record<string, never>;
 
 export type <%- project.viewName %>Props = {
-  url: string;
-  onLoad: (event: { nativeEvent: OnLoadEventPayload }) => void;
+<% if (project.features.includes('ViewEvent')) { -%>
+  onTap: (event: { nativeEvent: OnTapEventPayload }) => void;
+<% } -%>
   style?: StyleProp<ViewStyle>;
 };
+<% } -%>

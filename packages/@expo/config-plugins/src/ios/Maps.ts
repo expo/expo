@@ -1,10 +1,11 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
+import { resolveFrom } from '@expo/require-utils';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
-import { ConfigPlugin, InfoPlist } from '../Plugin.types';
+import type { ConfigPlugin, InfoPlist } from '../Plugin.types';
 import { createInfoPlistPlugin, withAppDelegate, withPodfile } from '../plugins/ios-plugins';
-import { mergeContents, MergeResults, removeContents } from '../utils/generateCode';
+import type { MergeResults } from '../utils/generateCode';
+import { mergeContents, removeContents } from '../utils/generateCode';
 
 const debug = require('debug')('expo:config-plugins:ios:maps') as typeof console.log;
 
@@ -110,7 +111,7 @@ export function removeMapsCocoaPods(src: string): MergeResults {
 }
 
 function isReactNativeMapsInstalled(projectRoot: string): string | null {
-  const resolved = resolveFrom.silent(projectRoot, 'react-native-maps/package.json');
+  const resolved = resolveFrom(projectRoot, 'react-native-maps/package.json');
   return resolved ? path.dirname(resolved) : null;
 }
 

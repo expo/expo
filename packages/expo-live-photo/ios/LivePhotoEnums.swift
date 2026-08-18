@@ -1,9 +1,9 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-import Foundation
 import ExpoModulesCore
-import PhotosUI
+import Foundation
 import Photos
+import PhotosUI
 
 // Live photo only supports two content modes
 internal enum ContentFit: String, Enumerable {

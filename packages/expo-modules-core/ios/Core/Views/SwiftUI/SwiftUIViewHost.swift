@@ -4,7 +4,7 @@ import SwiftUI
 
 extension ExpoSwiftUI {
   /**
-   SwiftUI view that embeds an UIKit-based view.
+   SwiftUI view that embeds a UIKit-based view.
    */
   struct UIViewHost: UIViewRepresentable, AnyChild {
     let view: UIView
@@ -13,7 +13,6 @@ extension ExpoSwiftUI {
 
     #if os(macOS)
     func makeNSView(context: Context) -> NSView {
-      context.coordinator.originalAutoresizingMask = view.autoresizingMask
       return view
     }
 
@@ -23,8 +22,17 @@ extension ExpoSwiftUI {
     #endif
 
     func makeUIView(context: Context) -> UIView {
-      context.coordinator.originalAutoresizingMask = view.autoresizingMask
+      #if os(macOS)
       return view
+      #else
+      // SwiftUI mutates the view it hosts (autoresizingMask, frame, visibility), sometimes
+      // asynchronously after teardown, corrupting unmounted or recycled React views.
+      // Hand it a disposable container instead. Fixes expo/expo#47706; supersedes the #40604 mitigation.
+      let container = ReactViewIsolationContainer()
+      container.hostedView = view
+      container.addSubview(view)
+      return container
+      #endif
     }
 
     func updateUIView(_ uiView: UIView, context: Context) {
@@ -32,11 +40,7 @@ extension ExpoSwiftUI {
     }
 
     static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
-      // https://github.com/expo/expo/issues/40604
-      // UIViewRepresentable attaches autoresizingMask w+h to the hosted UIView
-      // This causes issues for RN views when they are recycled.
-      // So we restore the original autoresizingMask to avoid issues.
-      uiView.autoresizingMask = coordinator.originalAutoresizingMask
+      // Nothing to restore — SwiftUI only ever touched the container.
     }
 
     func makeCoordinator() -> Coordinator {
@@ -44,63 +48,42 @@ extension ExpoSwiftUI {
     }
 
     class Coordinator {
-      var originalAutoresizingMask: UIView.AutoresizingMask = []
+      init() {}
     }
 
     // MARK: - AnyChild implementations
 
     var childView: some SwiftUI.View {
-      ViewSizeWrapper(viewHost: self)
+      self
     }
 
     var id: ObjectIdentifier {
       ObjectIdentifier(view)
     }
-  }
 
-  public protocol RNHostViewProtocol {
-    var matchContents: Bool { get set }
-  }
-}
-
-// ViewSizeWrapper attaches an observer to the view's bounds and updates the frame modifier of the view host.
-// This allows us to respect RN layout styling in SwiftUI realm
-// .e.g. <View style={{ width: 100, height: 100 }} />
-private struct ViewSizeWrapper: View {
-  let viewHost: ExpoSwiftUI.UIViewHost
-  @StateObject private var viewSizeModel: ViewSizeModel
-
-  init(viewHost: ExpoSwiftUI.UIViewHost) {
-    self.viewHost = viewHost
-    _viewSizeModel = StateObject(wrappedValue: ViewSizeModel(viewHost: viewHost))
-  }
-
-  var body: some View {
-    if let rnHostView = viewHost.view as? ExpoSwiftUI.RNHostViewProtocol, rnHostView.matchContents {
-      viewHost
-        .frame(width: viewSizeModel.viewFrame.width, height: viewSizeModel.viewFrame.height)
-    } else {
-      viewHost
+    var uiView: UIView? {
+      view
     }
   }
-}
 
-@MainActor
-private class ViewSizeModel: ObservableObject {
-  @Published var viewFrame: CGSize
-  private var observer: NSKeyValueObservation?
+  #if !os(macOS)
+  /**
+   Disposable UIView handed to SwiftUI in place of the React-managed view —
+   see `UIViewHost.makeUIView`.
+   */
+  private final class ReactViewIsolationContainer: UIView {
+    weak var hostedView: UIView?
 
-  init(viewHost: ExpoSwiftUI.UIViewHost) {
-    let view = viewHost.view
-    self.viewFrame = view.bounds.size
-    observer = view.observe(\.bounds) { [weak self] view, _ in
-      MainActor.assumeIsolated {
-        self?.viewFrame = view.bounds.size
+    override func layoutSubviews() {
+      super.layoutSubviews()
+      // Ignore transient zero bounds (initial layout, teardown) — never propagate them.
+      guard let hostedView, hostedView.superview === self, !bounds.isEmpty else {
+        return
+      }
+      if hostedView.frame != bounds {
+        hostedView.frame = bounds
       }
     }
   }
-
-  deinit {
-    observer?.invalidate()
-  }
+  #endif
 }

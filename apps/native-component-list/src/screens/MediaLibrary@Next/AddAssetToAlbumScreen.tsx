@@ -1,6 +1,6 @@
 import { Directory, File, Paths } from 'expo-file-system';
 import { Image } from 'expo-image';
-import { Asset, Album, requestPermissionsAsync } from 'expo-media-library/next';
+import { Asset, Album, requestPermissionsAsync } from 'expo-media-library';
 import { useEffect, useState } from 'react';
 import {
   View,
@@ -52,7 +52,7 @@ const AddAssetToAlbumScreen = () => {
     const url =
       type === 'image'
         ? 'https://picsum.photos/200/300'
-        : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4';
+        : 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4';
     await File.downloadFileAsync(url, file, { idempotent: true });
     return file;
   };
@@ -226,7 +226,7 @@ const AddAssetToAlbumScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5', width: '100%' },
+  container: { flex: 1, width: '100%' },
   contentWrapper: { flex: 1 },
   scrollContent: { padding: 20 },
   header: { fontSize: 22, fontWeight: '700', marginVertical: 12, color: '#333' },

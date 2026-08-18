@@ -1,23 +1,31 @@
-/* eslint-env jest */
-import { runExportSideEffects } from './export-side-effects';
+import fs from 'node:fs';
+import path from 'node:path';
+
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
   RUNTIME_EXPO_START,
   setupServer,
 } from '../../utils/runtime';
-import { findProjectFiles, getHtml } from '../utils';
+import { findProjectFiles, getHtml, getPageAndLoaderData } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe.each(
   prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
     fixtureName: 'server-loader',
+    uniqueOutputKey: 'static',
     export: {
       env: {
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SERVER_LOADERS: 'true',
         TEST_SECRET_KEY: 'test-secret-key',
+      },
+    },
+    serve: {
+      env: {
+        TEST_SECRET_RUNTIME_KEY: 'runtime-secret-value',
       },
     },
   })
@@ -35,92 +43,293 @@ describe.each(
     expect(files).toContain('_sitemap.html');
     expect(files).toContain('+not-found.html');
 
-    // Normal routes - static mode pre-renders HTML
+    // HTML routes should be pre-rendered in SSR mode
+    expect(files).toContain('env.html');
     expect(files).toContain('index.html');
+    expect(files).toContain('meta.html');
+    expect(files).toContain('request.html');
+    expect(files).toContain('response.html');
     expect(files).toContain('second.html');
+    expect(files).toContain('nested/index.html');
+    expect(files).toContain('nullish/[value].html');
+    expect(files).toContain('nullish/null.html');
+    expect(files).toContain('nullish/undefined.html');
     expect(files).toContain('posts/[postId].html');
     expect(files).toContain('posts/static-post-1.html');
     expect(files).toContain('posts/static-post-2.html');
+    expect(files).toContain('static-helper.html');
+    expect(files).toContain('server-helper.html');
 
-    // Loader outputs - pre-generated JSON files (no extension in static mode)
+    // Loader outputs are pre-generated JSON files
+    expect(files).toContain('_expo/loaders/index');
+    expect(files).toContain('_expo/loaders/env');
+    expect(files).toContain('_expo/loaders/meta');
+    expect(files).toContain('_expo/loaders/request');
+    expect(files).toContain('_expo/loaders/response');
     expect(files).toContain('_expo/loaders/second');
+    expect(files).toContain('_expo/loaders/nested/index');
+    expect(files).toContain('_expo/loaders/nullish/[value]');
+    expect(files).toContain('_expo/loaders/nullish/null');
+    expect(files).toContain('_expo/loaders/nullish/undefined');
     expect(files).toContain('_expo/loaders/posts/[postId]');
     expect(files).toContain('_expo/loaders/posts/static-post-1');
     expect(files).toContain('_expo/loaders/posts/static-post-2');
-    expect(files).toContain('_expo/loaders/nullish/undefined');
-    expect(files).toContain('_expo/loaders/nullish/null');
-    expect(files).toContain('_expo/loaders/response');
+    expect(files).toContain('_expo/loaders/(group)/index');
+    expect(files).toContain('_expo/loaders/static-helper');
   });
 
-  it('loader endpoint returns JSON', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/second');
-    expect(response.status).toBe(200);
-    // NOTE(@hassankhan): expo-server returns `application/octet-stream` for extensionless files,
-    // but the content is still valid JSON.
-    // expect(response.headers.get('content-type')).toContain('application/json');
-
-    const data = await response.json();
-    expect(data).toBeDefined();
+  it('returns 404 for loader endpoint when route has no loader', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/no-loader');
+    expect(response.status).toBe(404);
   });
 
-  it('loader endpoint returns JSON with params for static route', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/posts/static-post-1');
-    expect(response.status).toBe(200);
-
-    const data = await response.json();
-    expect(data.params).toHaveProperty('postId', 'static-post-1');
+  it('returns 404 for loader endpoint when route does not exist', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/nonexistent');
+    expect(response.status).toBe(404);
   });
 
-  it('loader endpoint returns `Response` body', async () => {
+  it.each(getPageAndLoaderData('/'))(
+    'can access data for root index route $url ($name)',
+    async ({ getData, name, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      if (name === 'loader') {
+        // NOTE(@hassankhan): expo-server returns `application/octet-stream` for extensionless files,
+        // but the content is still valid JSON.
+        // expect(response.headers.get('content-type')).toContain('application/json');
+      }
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'root-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/(group)', true))(
+    'can access data for group index route $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'grouped-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/second'))(
+    'can access data for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'second' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/nested', true))(
+    'can access data for nested index route $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+
+      const data = await getData(response);
+      expect(data).toEqual({ data: 'nested-index' });
+    }
+  );
+
+  it.each(getPageAndLoaderData('/posts/static-post-1'))(
+    'can access data with dynamic params for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      expect(data.params).toHaveProperty('postId', 'static-post-1');
+    }
+  );
+
+  (server.isExpoStart ? it.skip : it).each(getPageAndLoaderData('/env'))(
+    'can access server environment variables for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      expect(data).toHaveProperty('TEST_SECRET_KEY', 'test-secret-key');
+      expect(data).not.toHaveProperty('TEST_SECRET_RUNTIME_KEY', 'runtime-secret-value');
+    }
+  );
+
+  it.each(getPageAndLoaderData('/nullish/undefined'))(
+    'returns `null` for `undefined` loader data for $url ($name)',
+    async ({ getData, name, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      // NOTE(@hassankhan): For HTML pages, the fixture component converts `null` to the
+      // string `NULL` for display (see `nullish/[value].tsx`). The loader endpoint
+      // returns the raw `null` value.
+      if (name === 'page') {
+        expect(data).toEqual('NULL');
+      } else {
+        expect(data).toBeNull();
+      }
+    }
+  );
+
+  it.each(getPageAndLoaderData('/nullish/null'))(
+    'returns `null` for `null` loader data for $url ($name)',
+    async ({ getData, name, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      // NOTE(@hassankhan): For HTML pages, the fixture component converts `null` to the
+      // string `NULL` for display (see `nullish/[value].tsx`). The loader endpoint
+      // returns the raw `null` value.
+      if (name === 'page') {
+        expect(data).toEqual('NULL');
+      } else {
+        expect(data).toBeNull();
+      }
+    }
+  );
+
+  it.each(getPageAndLoaderData('/request'))(
+    'does not receive `Request` object for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      expect(data.url).toBeNull();
+      expect(data.method).toBeNull();
+      expect(data.headers).toBeNull();
+    }
+  );
+
+  it('loader endpoint returns `Response`', async () => {
     const response = await server.fetchAsync('/_expo/loaders/response');
     expect(response.status).toBe(200);
     // NOTE(@hassankhan): expo-server returns `application/octet-stream` for extensionless files,
     // but the content is still valid JSON.
     // expect(response.headers.get('content-type')).toContain('application/json');
-    expect(response.headers.get('cache-control')).not.toBe('public, max-age=3600');
-    expect(response.headers.get('x-custom-header')).not.toBe('test-value');
+
+    expect(response.headers.get('cache-control')).toBe('public, max-age=604800');
+    // Non-allowlisted headers are stripped in dev and static exports
+    expect(response.headers.get('x-loader-header')).toBeNull();
 
     const data = await response.json();
-    expect(data).toEqual({ foo: 'bar' });
+    expect(data).toEqual({ foo: null });
   });
 
-  it('loader endpoint returns `{}` for `undefined` loader data', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/nullish/undefined');
+  (server.isExpoStart ? it.skip : it)(
+    'applies the SSG default Cache-Control to a headerless loader',
+    async () => {
+      const response = await server.fetchAsync('/_expo/loaders/index');
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('private, must-revalidate, max-age=0');
+    }
+  );
+
+  it('passes a loader-declared no-store through verbatim', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/second');
+
     expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toEqual({});
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
   });
 
-  it('loader endpoint returns `null` for `null` loader data', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/nullish/null');
+  (server.isExpoStart ? it.skip : it)(
+    'applies loader-declared `Cache-Control` to the pre-rendered page',
+    async () => {
+      const response = await server.fetchAsync('/response');
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('public, max-age=604800');
+    }
+  );
+
+  (server.isExpoStart ? it.skip : it)(
+    'writes loader and page `Cache-Control` rules to the manifest subset',
+    () => {
+      const routesJson = JSON.parse(
+        fs.readFileSync(path.join(server.outputDir, '_expo/.routes.json'), 'utf8')
+      );
+      const SSG_DEFAULT = { 'Cache-Control': 'private, must-revalidate, max-age=0' };
+
+      expect(routesJson.pageHeaders).toEqual([
+        // Header-less loader routes: the SSG default, applied to each page and loader file.
+        { namedRegex: '^/(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/\\(group\\)(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/env(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/error(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/meta(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nested(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nullish/null(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/\\(group\\)/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/env(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/error(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/meta(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nested/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nullish/null(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        // Loader-declared headers: appended last so they win, applied to page and loader file.
+        {
+          namedRegex: '^/response(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        { namedRegex: '^/second(?:/)?$', headers: { 'Cache-Control': 'private, no-store' } },
+        {
+          namedRegex: '^/_expo/loaders/response(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/second(?:/)?$',
+          headers: { 'Cache-Control': 'private, no-store' },
+        },
+      ]);
+    }
+  );
+
+  it('renders meta tags from loader data in HTML', async () => {
+    const response = await server.fetchAsync('/meta');
     expect(response.status).toBe(200);
-    const data = await response.json();
-    expect(data).toBeNull();
+    const html = getHtml(await response.text());
+
+    expect(html.querySelector('title')?.textContent).toBe('Meta page');
+    expect(html.querySelector('meta[name="description"]')?.getAttribute('content')).toBe(
+      'Meta tag testing'
+    );
+    expect(html.querySelector('meta[name="keywords"]')?.getAttribute('content')).toBe(
+      'expo-router,loaders,meta'
+    );
+    expect(html.querySelector('meta[name="author"]')?.getAttribute('content')).toBe('Expo');
   });
 
-  it.each([
-    {
-      name: 'loader endpoint',
-      url: '/_expo/loaders/request',
-      getData: (response: Response) => {
-        return response.json();
-      },
-    },
-    {
-      name: 'page',
-      url: '/request',
-      getData: async (response: Response) => {
-        const html = getHtml(await response.text());
-        return JSON.parse(html.querySelector('[data-testid="loader-result"]')!.textContent);
-      },
-    },
-  ])('$name $url does not receive `Request` object', async ({ getData, url }) => {
-    const response = await server.fetchAsync(url);
-    expect(response.status).toBe(200);
-    const data = await getData(response);
+  it.each(getPageAndLoaderData('/static-helper'))(
+    'can access data from `createStaticLoader()` for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
 
-    expect(data.url).toBeNull();
-    expect(data.method).toBeNull();
-    expect(data.headers).toBeNull();
-  });
+      expect(data).toEqual({ source: 'static-helper' });
+    }
+  );
 });

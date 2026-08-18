@@ -102,7 +102,7 @@ function SymbolScales({ title, ...props }: RowProps) {
                 style={styles.symbol}
                 scale={scale}
               />
-              <Text style={{ color: 'white', fontSize: 8 }}>{scale}</Text>
+              <Text style={{ color: 'white', fontSize: 8 }}>{scale} </Text>
             </View>
           );
         })}

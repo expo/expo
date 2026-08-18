@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
 import { SimulatorLogStreamer } from '../../../start/platforms/ios/simctlLogging';
-import { DevServerManager } from '../../../start/server/DevServerManager';
+import type { DevServerManager } from '../../../start/server/DevServerManager';
 import { getAppDeltaDirectory, installOnDeviceAsync } from '../appleDevice/installOnDeviceAsync';
 import { launchAppAsync } from '../launchApp';
 
@@ -62,6 +62,7 @@ describe(launchAppAsync, () => {
       device: {
         name: 'simulator',
         udid: '123',
+        osType: 'iOS',
       },
       isSimulator: true,
       shouldStartBundler: true,
@@ -78,6 +79,7 @@ describe(launchAppAsync, () => {
       device: {
         name: 'simulator',
         udid: '123',
+        osType: 'iOS',
       },
       isSimulator: true,
       shouldStartBundler: false,
@@ -95,6 +97,7 @@ describe(launchAppAsync, () => {
       device: {
         name: "Evan's phone",
         udid: '00008101-001964A22629003A',
+        osType: 'iOS',
       },
       isSimulator: false,
       shouldStartBundler: true,

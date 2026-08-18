@@ -1,5 +1,5 @@
-import { type Ref } from 'react';
-import { View, type ViewProps } from 'react-native';
+import type { Ref } from 'react';
+import type { View, ViewProps } from 'react-native';
 
 export type GlassContainerProps = {
   /**

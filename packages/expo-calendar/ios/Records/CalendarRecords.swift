@@ -131,6 +131,27 @@ struct OpenInCalendarOptions: Record {
   var allowsCalendarPreview: Bool = false
 }
 
+struct AddEventWithFormOptions: Record {
+  @Field
+  var title: String?
+  @Field
+  var startDate: Either<String, Double>?
+  @Field
+  var endDate: Either<String, Double>?
+  @Field
+  var allDay: Bool?
+  @Field
+  var notes: String?
+  @Field
+  var location: String?
+  @Field
+  var url: String?
+  @Field
+  var alarms: [Alarm]?
+  @Field
+  var recurrenceRule: RecurrenceRule?
+}
+
 enum ResponseAction: String, Enumerable {
   case done
   case canceled

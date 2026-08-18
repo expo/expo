@@ -105,7 +105,12 @@ internal fun Node.artifactId(): String? {
  * @param version The version to set.
  */
 internal fun Node.setVersion(version: String) {
-  val versionNode = this.children().firstOrNull { it is Node && it.name() == "version" } as? Node
+  val versionNode =
+    when (val v = get("version")) {
+      is Node -> v
+      is NodeList -> v.firstOrNull() as? Node
+      else -> null
+    }
 
   if (versionNode != null) {
     versionNode.setValue(version)
@@ -179,11 +184,14 @@ internal fun PublishingExtension.createPublication(
   from: String,
   project: Project,
   libraryExtension: LibraryExtension,
-  rnVersion: String?,
-  hermesVersion: String?,
 ) {
+  val rnVersion = getReactNativeVersion(project)
+  val hermesVersion = getHermesVersion(project)
+
+  val isBrownfieldProject = project.plugins.hasPlugin("expo-brownfield-setup")
+
   val _artifactId =
-    if (rnVersion != null) {
+    if (isBrownfieldProject) {
       project.name
     } else {
       requireNotNull(libraryExtension.namespace)
@@ -198,9 +206,7 @@ internal fun PublishingExtension.createPublication(
 
       pom.withXml { xml ->
         removeReactNativeDependencyPom(xml)
-        if (rnVersion != null && hermesVersion != null) {
-          setReactNativeVersionPom(xml, rnVersion, hermesVersion)
-        }
+        setReactNativeVersionPom(xml, rnVersion, hermesVersion)
       }
     }
   }

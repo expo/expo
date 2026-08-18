@@ -2,6 +2,9 @@
 
 import Foundation
 
+/// - Warning: The ObjC name `EXFileSystemLegacyUtilities` is resolved at runtime via
+///   `NSClassFromString` from `EXModuleRegistryProvider.m`.
+///   Renaming the class will break that call site silently at runtime.
 @objc(EXFileSystemLegacyUtilities)
 public class FileSystemManager: NSObject, EXInternalModule, EXFileSystemInterface, EXFilePermissionModuleInterface {
   @objc

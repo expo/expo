@@ -17,9 +17,21 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   internal var permissionsManager: EXPermissionsInterface?
 
   internal var barcodeScanner: BarcodeScanner?
-  internal lazy var previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
+
+  public override class var layerClass: AnyClass {
+    AVCaptureVideoPreviewLayer.self
+  }
+
+  internal var previewLayer: AVCaptureVideoPreviewLayer {
+    // swiftlint:disable:next force_cast
+    layer as! AVCaptureVideoPreviewLayer
+  }
 
   internal var physicalOrientation: UIDeviceOrientation = .unknown
+  // Typed as Any? because AVCaptureDevice.RotationCoordinator is iOS 17+.
+  private var rotationCoordinator: Any?
+  private var previewRotationObservation: NSKeyValueObservation?
+  private var didStartSession = false
   private var motionManager: CMMotionManager = {
     let mm = CMMotionManager()
     mm.accelerometerUpdateInterval = 0.2
@@ -72,17 +84,21 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
 
   var torchEnabled = false {
     didSet {
-      sessionManager.enableTorch()
+      sessionQueue.async {
+        self.sessionManager.enableTorch()
+      }
     }
   }
 
   var autoFocus = AVCaptureDevice.FocusMode.continuousAutoFocus {
     didSet {
-      sessionManager.setFocusMode()
+      sessionQueue.async {
+        self.sessionManager.setFocusMode()
+      }
     }
   }
 
-  var pictureSize = PictureSize.high {
+  var pictureSize = PictureSize.photo {
     didSet {
       updatePictureSize()
     }
@@ -92,8 +108,6 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     didSet {
       sessionQueue.async {
         self.sessionManager.setCameraMode()
-        let preset = self.mode == .video ? self.videoQuality.toPreset() : self.pictureSize.toCapturePreset()
-        self.sessionManager.updateSessionPreset(preset: preset)
       }
     }
   }
@@ -127,7 +141,9 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
 
   var zoom: CGFloat = 0 {
     didSet {
-      sessionManager.updateZoom()
+      sessionQueue.async {
+        self.sessionManager.updateZoom()
+      }
     }
   }
 
@@ -141,9 +157,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   let onAvailableLensesChanged = EventDispatcher()
 
   internal var deviceOrientation: UIInterfaceOrientation {
-    UIApplication.shared.connectedScenes.compactMap {
-      $0 as? UIWindowScene
-    }.first?.interfaceOrientation ?? .unknown
+    SceneGeometry.interfaceOrientation(for: self)
   }
 
   required init(appContext: AppContext? = nil) {
@@ -156,9 +170,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     videoRecording = CameraVideoRecording(delegate: self)
     session = sessionManager.session
 
-    #if !targetEnvironment(simulator)
     setupPreview()
-    #endif
     barcodeScanner = createBarcodeScanner()
     UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.addObserver(
@@ -171,9 +183,25 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   private func setupPreview() {
-    previewLayer = AVCaptureVideoPreviewLayer(session: sessionManager.session)
+    previewLayer.session = sessionManager.session
     previewLayer.videoGravity = .resizeAspectFill
     previewLayer.needsDisplayOnBoundsChange = true
+  }
+
+  func startSessionIfNeeded() {
+    guard !didStartSession else {
+      return
+    }
+    didStartSession = true
+    sessionQueue.async { [weak self] in
+      guard let self else {
+        return
+      }
+      self.sessionManager.updateCameraIsActive()
+      DispatchQueue.main.async {
+        self.onCameraReady()
+      }
+    }
   }
 
   public func onAppForegrounded() {
@@ -204,14 +232,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   private func updatePictureSize() {
-#if !targetEnvironment(simulator)
     sessionQueue.async {
       if self.mode == .picture {
         let preset = self.pictureSize.toCapturePreset()
         self.sessionManager.updateSessionPreset(preset: preset)
       }
     }
-#endif
   }
 
   func setBarcodeScannerSettings(settings: BarcodeSettings) {
@@ -226,12 +252,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
         return
       }
       self.onAvailableLensesChanged([
-        "lenses": self.sessionManager.getAvailableLenses()
+        "lenses": self.getAvailableLenses().map { $0.toDictionary() }
       ])
     }
   }
 
-  func getAvailableLenses() -> [String] {
+  func getAvailableLenses() -> [LensInfo] {
     return sessionManager.getAvailableLenses()
   }
 
@@ -288,21 +314,26 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
     videoRecording.toggleRecording(videoFileOutput: videoFileOutput)
   }
 
-  public override func layoutSubviews() {
-    super.layoutSubviews()
-    self.backgroundColor = .black
-    previewLayer.frame = self.bounds
-    self.layer.insertSublayer(previewLayer, at: 0)
+  public override func didMoveToWindow() {
+    super.didMoveToWindow()
+    if window != nil {
+      configurePreviewRotation()
+      startSessionIfNeeded()
+    }
   }
 
   public override func removeFromSuperview() {
     super.removeFromSuperview()
-    sessionQueue.async {
-      self.sessionManager.stopSession()
+    sessionQueue.async { [weak self] in
+      self?.sessionManager.stopSession()
     }
+    motionManager.stopAccelerometerUpdates()
     lifecycleManager?.unregisterAppLifecycleListener(self)
     UIDevice.current.endGeneratingDeviceOrientationNotifications()
     NotificationCenter.default.removeObserver(self, name: UIDevice.orientationDidChangeNotification, object: nil)
+    previewRotationObservation?.invalidate()
+    previewRotationObservation = nil
+    rotationCoordinator = nil
   }
 
   func stopRecording() {
@@ -318,10 +349,58 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   @objc func orientationChanged() {
-    changePreviewOrientation()
+    // On iOS 17+ the RotationCoordinator's KVO drives preview rotation; the legacy
+    // notification path is only needed on iOS 16.
+    if #available(iOS 17.0, *) {
+      return
+    }
+    applyLegacyPreviewOrientation()
   }
 
-  func changePreviewOrientation() {
+  func configurePreviewRotation() {
+    if #available(iOS 17.0, *) {
+      Task { @MainActor in
+        self.setUpRotationCoordinator()
+      }
+    } else {
+      applyLegacyPreviewOrientation()
+    }
+  }
+
+  @available(iOS 17.0, *)
+  private func setUpRotationCoordinator() {
+    previewRotationObservation?.invalidate()
+    previewRotationObservation = nil
+
+    guard let device = sessionManager.currentDevice else {
+      rotationCoordinator = nil
+      return
+    }
+
+    let coordinator = AVCaptureDevice.RotationCoordinator(device: device, previewLayer: previewLayer)
+    rotationCoordinator = coordinator
+    applyPreviewRotationAngle(from: coordinator)
+
+    previewRotationObservation = coordinator.observe(
+      \.videoRotationAngleForHorizonLevelPreview,
+      options: [.new]
+    ) { [weak self] coordinator, _ in
+      self?.applyPreviewRotationAngle(from: coordinator)
+    }
+  }
+
+  @available(iOS 17.0, *)
+  private func applyPreviewRotationAngle(from coordinator: AVCaptureDevice.RotationCoordinator) {
+    guard let connection = previewLayer.connection else {
+      return
+    }
+    let angle = coordinator.videoRotationAngleForHorizonLevelPreview
+    if connection.isVideoRotationAngleSupported(angle) {
+      connection.videoRotationAngle = angle
+    }
+  }
+
+  private func applyLegacyPreviewOrientation() {
     // We shouldn't access the device orientation anywhere but on the main thread
     Task { @MainActor in
       let videoOrientation = ExpoCameraUtils.videoOrientation(for: deviceOrientation)
@@ -349,6 +428,8 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   }
 
   deinit {
+    previewRotationObservation?.invalidate()
+    motionManager.stopAccelerometerUpdates()
     photoCapture.cleanup()
     videoRecording.cleanup()
   }

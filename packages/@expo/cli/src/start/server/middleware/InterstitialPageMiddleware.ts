@@ -5,23 +5,28 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
+import type { RuntimePlatform } from './resolvePlatform';
 import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
   parsePlatformHeader,
   resolvePlatformFromUserAgentHeader,
-  RuntimePlatform,
 } from './resolvePlatform';
-import { ServerRequest, ServerResponse } from './server.types';
+import type { ServerRequest, ServerResponse } from './server.types';
 
 type ProjectVersion = {
   type: 'sdk' | 'runtime';
   version: string | null;
 };
 
-const debug = require('debug')(
-  'expo:start:server:middleware:interstitialPage'
-) as typeof console.log;
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 export const LoadingEndpoint = '/_expo/loading';
 
@@ -48,14 +53,17 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
       path.resolve(__dirname, '../../../../../static/loading-page/index.html');
     let content = (await readFile(templatePath)).toString('utf-8');
 
-    content = content.replace(/{{\s*AppName\s*}}/, appName);
-    content = content.replace(/{{\s*Path\s*}}/, this.projectRoot);
-    content = content.replace(/{{\s*Scheme\s*}}/, this.options.scheme ?? 'Unknown');
+    content = content.replace(/{{\s*AppName\s*}}/, escapeHtml(appName));
+    content = content.replace(/{{\s*Path\s*}}/, escapeHtml(this.projectRoot));
+    content = content.replace(/{{\s*Scheme\s*}}/, escapeHtml(this.options.scheme ?? 'Unknown'));
     content = content.replace(
       /{{\s*ProjectVersionType\s*}}/,
       `${projectVersion.type === 'sdk' ? 'SDK' : 'Runtime'} version`
     );
-    content = content.replace(/{{\s*ProjectVersion\s*}}/, projectVersion.version ?? 'Undetected');
+    content = content.replace(
+      /{{\s*ProjectVersion\s*}}/,
+      escapeHtml(projectVersion.version ?? 'Undetected')
+    );
 
     return content;
   }
@@ -69,7 +77,13 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
 
     const { exp } = getConfig(this.projectRoot);
     const { appName } = getNameFromConfig(exp);
-    const runtimeVersion = await getRuntimeVersionNullableAsync(this.projectRoot, exp, platform);
+    const runtimeVersion = await getRuntimeVersionNullableAsync(
+      this.projectRoot,
+      exp,
+      // TODO(@kitten): Runtime-version resolution only reads ios/android config
+      // tvos/macos fall back to the shared `runtimeVersion` until they get explicit support
+      platform as 'android' | 'ios'
+    );
     const sdkVersion = exp.sdkVersion ?? null;
 
     return {
@@ -90,9 +104,6 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
     assertRuntimePlatform(platform);
 
     const { appName, projectVersion } = await this._getProjectOptionsAsync(platform);
-    debug(
-      `Create loading page. (platform: ${platform}, appName: ${appName}, projectVersion: ${projectVersion.version}, type: ${projectVersion.type})`
-    );
     const content = await this._getPageAsync({ appName, projectVersion });
     res.end(content);
   }

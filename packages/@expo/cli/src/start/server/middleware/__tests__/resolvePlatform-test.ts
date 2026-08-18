@@ -4,7 +4,7 @@ import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
 } from '../resolvePlatform';
-import { ServerRequest } from '../server.types';
+import type { ServerRequest } from '../server.types';
 
 const asRequest = (req: Partial<ServerRequest>) => req as ServerRequest;
 
@@ -145,7 +145,15 @@ describe(assertRuntimePlatform, () => {
       assertRuntimePlatform('android');
     }).not.toThrow();
     expect(() => {
+      assertRuntimePlatform('tvos');
+    }).not.toThrow();
+    expect(() => {
+      assertRuntimePlatform('macos');
+    }).not.toThrow();
+    expect(() => {
       assertRuntimePlatform('not-supported');
-    }).toThrow('platform must be "android", "ios", or "web". Received: "not-supported"');
+    }).toThrow(
+      'platform must be "android", "ios", "web", "tvos", or "macos". Received: "not-supported"'
+    );
   });
 });

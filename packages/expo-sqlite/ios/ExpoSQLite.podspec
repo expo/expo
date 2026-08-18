@@ -13,9 +13,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1',
-    :tvos => '15.1',
-    :osx => '11.0'
+    :ios => '16.4',
+    :tvos => '16.4',
+    :osx => '13.4'
   }
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.dependency 'ExpoModulesCore'
@@ -63,25 +63,15 @@ Pod::Spec.new do |s|
   end
 
   # Swift/Objective-C compatibility
+  s.static_framework = true
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'OTHER_CFLAGS' => '$(inherited) ' + sqlite_cflags,
     'OTHER_SWIFT_FLAGS' => '$(inherited) ' + swift_flags,
   }
-
   s.source_files = "**/*.{c,h,m,swift}"
 
   vendored_frameworks = []
-  if podfile_properties['expo.sqlite.useLibSQL'] == 'true'
-    vendored_frameworks << 'libsql.xcframework'
-    s.private_header_files = [
-      'libsql.xcframework/**/*.h',
-    ]
-    s.exclude_files = ['SQLiteModule.swift', 'sqlite3.c', 'sqlite3.h']
-    Pod::UI.message('SQLite: use libSQL integration')
-  else
-    s.exclude_files = ['libsql/**/*', 'libsql.xcframework/**/*', 'SQLiteModuleLibSQL.swift']
-  end
   if podfile_properties['expo.sqlite.withSQLiteVecExtension'] == 'true'
     vendored_frameworks << 'vec.xcframework'
   end

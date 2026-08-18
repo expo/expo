@@ -1,5 +1,13 @@
+import { Platform } from 'react-native';
+
 import ExpoAgeRange from './ExpoAgeRange';
-import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
+import type {
+  AgeRangeRequest,
+  AgeRangeResponse,
+  AgeRangeRegulatoryFeature,
+  AgeSignalsStatus,
+  FakeAgeSignals,
+} from './ExpoAgeRange.types';
 
 /**
  * Prompts the user to share their age range with the app. Responses may be cached by the OS for future requests.
@@ -7,10 +15,149 @@ import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
  * The user needs to be signed in on the device to get a valid response.
  * When not supported (earlier than iOS 26 and web), the call returns `lowerBound: 18`, which is equivalent to the response of an adult user.
  *
+ * On Android, call [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) first and
+ * only call this function when it resolves with `'SHARED'`. Play Age Signals reports every field as
+ * `null` otherwise.
  *
  * @platform android
  * @platform ios 26.0+
  */
 export async function requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse> {
   return ExpoAgeRange.requestAgeRangeAsync(options);
+}
+
+/**
+ * Asks the OS whether age-assurance regulation applies to the current user. Apple
+ * uses this to signal that the account region is covered by a law such as
+ * Utah's or Louisiana's age-assurance requirements, so apps can avoid gating
+ * users in jurisdictions where the rules do not apply.
+ *
+ * - Resolves with `true` only when Apple confirms regulation applies.
+ * - Resolves with `false` when the OS confirms regulation does not apply.
+ * - Resolves with `null` on iOS earlier than 26.2, and on Android and web.
+ *   Treat `null` as "unknown" rather than a definitive `false`.
+ * - Rejects when the request fails — see [AgeRangeService.Error](https://developer.apple.com/documentation/declaredagerange/agerangeservice/error)
+ *   for more information. Treat rejection as "unknown" and fall through to [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions)
+ *   or your own gating logic.
+ *
+ * Recommended pattern: call this first and only prompt the user for their age
+ * range when the result is not `false`. When it is `false`, the user is outside
+ * a regulated jurisdiction and you can skip the age gate entirely.
+ *
+ * @example
+ * ```ts
+ * try {
+ *   const eligible = await isEligibleForAgeFeaturesAsync();
+ *   if (eligible === false) {
+ *     // Regulation does not apply — no age gate needed.
+ *     return;
+ *   }
+ * } catch {
+ *   // Treat errors as "unknown" and fall through to the prompt below or your own gating logic.
+ * }
+ *
+ * const ageRange = await requestAgeRangeAsync({ threshold1: 18 });
+ * ```
+ *
+ * @platform ios 26.2+
+ */
+export async function isEligibleForAgeFeaturesAsync(): Promise<boolean | null> {
+  return ExpoAgeRange.isEligibleForAgeFeaturesAsync();
+}
+
+/**
+ * Displays a system-provided interface for people to acknowledge a significant app update.
+ *
+ * Only on iOS 26.4+, this presents an update acknowledgement dialog and resolves once the user confirms it, or rejects with an error.
+ * On unsupported platforms this resolves immediately without showing any UI.
+ *
+ * Call [`getRequiredRegulatoryFeaturesAsync`](#agerangegetrequiredregulatoryfeaturesasync) first to
+ * determine whether the user actually needs to acknowledge a significant change — only invoke
+ * this function when the returned features include `'significantAppChangeRequiresAdultNotification'`.
+ * Doing so avoids prompting users who are not subject to the regulation.
+ *
+ * @param updateDescription A description of the significant update to show to the user.
+ *
+ * @platform ios 26.4+
+ */
+export async function showSignificantUpdateAcknowledgmentAsync(
+  updateDescription: string
+): Promise<void> {
+  if (Platform.OS === 'ios') {
+    return ExpoAgeRange.showSignificantUpdateAcknowledgmentAsync(updateDescription);
+  }
+}
+
+/**
+ * Returns the set of regulatory features that the OS reports as required for the current user.
+ *
+ * Use this to discover which age-assurance obligations apply.
+ *
+ * Resolves with `null` on iOS earlier than 26.4 and on Android and web — treat
+ * `null` as "unknown" rather than "no features required".
+ *
+ * @platform ios 26.4+
+ */
+export async function getRequiredRegulatoryFeaturesAsync(): Promise<
+  AgeRangeRegulatoryFeature[] | null
+> {
+  if (Platform.OS === 'ios') {
+    return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
+  }
+  return null;
+}
+
+/**
+ * Asks the user to consent to sharing their age signals, showing the Play Age Signals in-app age sharing consent
+ * screen. Play Age Signals requires this before [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions):
+ * age signals are only reported while the status is `'SHARED'`.
+ *
+ * - Resolves with `'SHARED'` when the user agrees to share their age signals. Only then does
+ *   `requestAgeRangeAsync` report an age range.
+ * - Resolves with `'NOT_SHARED'` when the user does not agree. `requestAgeRangeAsync` reports every
+ *   field as `null` until the user consents.
+ * - Resolves with `'VERIFICATION_REQUIRED'` when the user's age is unknown and they are in a region
+ *   where age verification is mandatory. Ask the user to visit the Play Store to resolve their status.
+ * - Resolves with `null` when Play Age Signals reports no status, and on iOS and web. On iOS the consent prompt
+ *   is part of `requestAgeRangeAsync` itself, so there is nothing separate to call.
+ * - Rejects when the request fails.
+ *
+ * @platform android
+ */
+export async function requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus | null> {
+  if (Platform.OS === 'android') {
+    return ExpoAgeRange.requestAgeSignalsAccessAsync();
+  }
+  return null;
+}
+
+/**
+ * Fakes the age signals that [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions) and
+ * [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) report, using Play Age Signals
+ * [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api).
+ * Pass `null` to go back to the real signals.
+ *
+ * Only debuggable builds can fake signals. Passing anything other than `null` in a build that is not debuggable
+ * throws.
+ *
+ * @param fake The signals or an error to report, or `null` to report the real signals.
+ *
+ * @example
+ * ```ts
+ * // A supervised 13 to 15 year old with a change waiting for approval.
+ * setFakeAgeSignals({
+ *   ageSignalsStatus: 'SHARED',
+ *   lowerBound: 13,
+ *   upperBound: 15,
+ *   ageRangeSource: 'TIER_B',
+ *   significantChangeStatus: 'PENDING',
+ * });
+ * ```
+ *
+ * @platform android
+ */
+export function setFakeAgeSignals(fake: FakeAgeSignals | null): void {
+  if (Platform.OS === 'android') {
+    ExpoAgeRange.setFakeAgeSignals(fake);
+  }
 }

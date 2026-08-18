@@ -34,7 +34,7 @@ mkdir $WORKING_DIR_ROOT
 
 ```bash
 # it will generate android and iOS bundles.
-yarn generate-test-update-bundles
+pnpm generate-test-update-bundles
 ```
 
 - To run iOS tests:
@@ -44,7 +44,7 @@ yarn generate-test-update-bundles
 
 ```bash
 npx pod-install
-yarn maestro:ios:debug:build
+pnpm maestro:ios:debug:build
 ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml ios debug
 ```
 
@@ -54,7 +54,7 @@ yarn maestro:ios:debug:build
   - Execute these commands:
 
 ```bash
-yarn maestro:android:debug:build
+pnpm maestro:android:debug:build
 ./maestro/maestro-test-executor.sh ./maestro/tests/updates-e2e-enabled.yml android debug
 ```
 

@@ -1,0 +1,41 @@
+/*
+  Tailwind v4 Compatibility Overrides
+
+  Override TW4's default font size line-heights to match the styleguide.
+  The JS config sets font-size correctly, but TW4 uses separate CSS
+  variables for line-height that need to be explicitly overridden.
+  Values from @expo/styleguide/tailwind.js
+*/
+@theme {
+  --text-2xs--line-height: 1.6;
+  --text-xs--line-height: 1.6;
+  --text-sm--line-height: 1.6;
+  --text-base--line-height: 1.6;
+  --text-lg--line-height: 1.4;
+  --text-xl--line-height: 1.2;
+  --text-2xl--line-height: 1.2;
+}
+
+/*
+  TW4 changed default border color to currentcolor.
+  This restores the TW3 behavior.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+/*
+  Reset TW4 preflight's --tw-leading on li elements.
+  TW4 sets --tw-leading: var(--leading-relaxed) on li, which overrides
+  the fallback line-height in text utilities. This restores correct
+  line-heights.
+*/
+li {
+  --tw-leading: initial;
+}

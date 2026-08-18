@@ -1,6 +1,6 @@
-import { CodedError } from 'expo-modules-core';
+import { CodedError } from 'expo';
 
-import { ActionExtent } from '../../ImageManipulator.types';
+import type { ActionExtent } from '../../ImageManipulator.types';
 import { getContext } from '../utils.web';
 
 export default (canvas: HTMLCanvasElement, options: ActionExtent['extent']) => {

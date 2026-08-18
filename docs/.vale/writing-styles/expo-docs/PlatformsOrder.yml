@@ -1,7 +1,7 @@
 extends: existence
 message: "When referencing multiple platforms, use the order: 'Android, iOS, and web'."
 link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#referencing-android-ios-and-web'
-level: warning
+level: error
 scope: raw
 ignorecase: true
 tokens:

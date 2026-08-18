@@ -2,7 +2,8 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { parse } from 'node:url';
 import { promisify } from 'node:util';
-import { ClientOptions, WebSocket } from 'ws';
+import type { ClientOptions } from 'ws';
+import { WebSocket } from 'ws';
 
 import { createMetroMiddleware } from '../createMetroMiddleware';
 
@@ -11,10 +12,20 @@ export function withMetroServer(projectRoot = '/project'): {
   metro: ReturnType<typeof createMetroMiddleware>;
   server: ReturnType<typeof createServer> & {
     fetch: (url: string, init?: RequestInit) => Promise<Response>;
-    connect: (url: string) => WebSocket;
+    connect: (url: string, options?: ClientOptions) => WebSocket;
   };
 } {
-  const metro = createMetroMiddleware({ projectRoot });
+  const metro = createMetroMiddleware(
+    { projectRoot },
+    {
+      getMetroBundler: () =>
+        ({
+          ready: () => Promise.resolve(),
+        }) as any,
+      serverBaseUrl: 'http://localhost',
+    }
+  );
+
   const server = createServer(metro.middleware);
 
   const closeServer = promisify(server.close.bind(server));
@@ -31,9 +42,13 @@ export function withMetroServer(projectRoot = '/project'): {
   // Ensure the websockets can be tested
   server.on('upgrade', (request, socket, head) => {
     const { pathname } = parse(request.url!);
-    if (pathname != null && metro.websocketEndpoints[pathname]) {
-      metro.websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
-        metro.websocketEndpoints[pathname].emit('connection', ws, request);
+    const endpoint =
+      pathname != null
+        ? metro.websocketEndpoints[pathname as keyof typeof metro.websocketEndpoints]
+        : undefined;
+    if (endpoint) {
+      endpoint.handleUpgrade(request, socket, head, (ws) => {
+        endpoint.emit('connection', ws, request);
       });
     } else {
       socket.destroy();
@@ -53,7 +68,7 @@ export function withMetroServer(projectRoot = '/project'): {
 
         Object.defineProperty(server, 'connect', {
           value: (url = '', options?: ClientOptions) =>
-            new WebSocket(`ws://${hostname}:${address.port}${url}`),
+            new WebSocket(`ws://${hostname}:${address.port}${url}`, options),
         });
 
         resolve();
@@ -98,7 +113,7 @@ export function waitForExpect(
       try {
         Promise.resolve(expectation()).then(resolve).catch(retryOnReject);
       } catch (error) {
-        retryOnReject(error);
+        retryOnReject(error as Error);
       }
     }
 

@@ -1,0 +1,63 @@
+---
+title: EAS Workflows insights
+sidebar_title: EAS Workflows
+description: Track run counts, success rates, and trends for your EAS Workflows in the Workflows tab of EAS Insights.
+---
+
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** Workflows insights is available on the Production and Enterprise plans. Learn more at [EAS pricing](https://expo.dev/pricing).
+
+The **Workflows** tab in the dashboard shows how your [EAS Workflows](/eas/workflows/introduction/) are doing over time: how often they run, how often they succeed, and which workflows fail most. Data appears automatically as your workflows run.
+
+- To view these insights, open your project in the EAS dashboard, select **Insights** from the navigation menu, and then select the **Workflows** tab.
+- Choose a time range to load the data. Every metric also compares against the previous period of equal length so you can see whether a number is trending up or down.
+
+<ContentSpotlight
+  alt="The Workflows tab in EAS Insights showing run metrics, a runs-over-time chart, and a table of workflows."
+  src="/static/images/eas-insights/insights-workflows-light.webp"
+  darkSrc="/static/images/eas-insights/insights-workflows-dark.webp"
+/>
+
+## Overview
+
+The top of the tab summarizes activity for the selected time range:
+
+- **Total runs**: How many workflow runs started.
+- **Success rate**: The share of runs that succeeded.
+- **Active workflows**: How many distinct workflows ran.
+- **Failed runs**: How many runs failed.
+
+## Runs over time
+
+A chart breaks runs down by day (or by hour or minute for shorter time ranges) into total, successful, failed, and canceled runs. Toggle between a line view and a stacked view, and turn individual statuses on or off to focus on what you care about.
+
+## Workflows table
+
+Below the chart, a table lists each workflow that ran in the time range with:
+
+- **Runs**: The total count, broken down into succeeded, failed, and canceled.
+- **Success rate**: The share of runs that succeeded.
+- **Last run**: When the workflow last ran.
+
+## Filters
+
+Narrow the data down by workflow, run status (success, failure, canceled), trigger type (manual, schedule, or a GitHub event), or git ref. You can also search by workflow name.
+
+## Export
+
+Export the workflow runs that match your current filters and time range as CSV or newline-delimited JSON (NDJSON) for further analysis.
+
+> **info** Insights are aggregated for trend analysis and can lag behind real time or omit recent runs. Use exports to investigate trends rather than as an authoritative record for billing or auditing.
+
+## More
+
+<BoxLink
+  title="Introduction to EAS Workflows"
+  description="Learn how to automate builds, updates, submissions, and tests with EAS Workflows."
+  href="/eas/workflows/introduction/"
+  Icon={Dataflow03Icon}
+/>

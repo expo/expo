@@ -11,18 +11,16 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1'
+    :ios => '16.4'
   }
   s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
   s.header_dir     = 'ExpoModulesTestCore'
 
-  s.source_files   = '**/*.{h,m,mm,swift}'
-
+  # This pod ships no sources. It exists so that test specs can depend on a single pod to pull in the
+  # JS runtime that ExpoModulesCore requires when running tests.
   s.dependency 'ExpoModulesCore'
-  s.dependency 'Quick', '~> 7.3.0'
-  s.dependency 'Nimble', '~> 13.0.0'
 
   # react_native_pods.rb will add the ENV['USE_HERMES'],
   # we could use this to check current js runtime.

@@ -149,6 +149,7 @@ public protocol InternalAppControllerInterface: AppControllerInterface {
   var reloadScreenManager: Reloadable? { get }
 
   var eventManager: UpdatesEventManager { get }
+  var isStarted: Bool { get }
   func onEventListenerStartObserving()
 
   func getConstantsForModule() -> UpdatesModuleConstants

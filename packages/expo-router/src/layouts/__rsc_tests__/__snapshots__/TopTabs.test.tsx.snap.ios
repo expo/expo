@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders TopTabs 1`] = `
+"1:I["src/layouts/TopTabsClient.tsx",[],"",1]
+0:["$","$L1",null,{},null]"
+`;
+
+exports[`renders TopTabs.Protected 1`] = `
+"1:I["src/primitives/navigation.tsx",[],"Group",1]
+0:["$","$L1",null,{"guard":false},null]"
+`;
+
+exports[`renders TopTabs.Screen 1`] = `
+"1:I["src/views/Screen.tsx",[],"Screen",1]
+0:["$","$L1",null,{"options":{"title":"..."}},null]"
+`;

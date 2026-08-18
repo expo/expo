@@ -6,9 +6,70 @@
 
 ### 🎉 New features
 
+- Add `setNodeEnv` for Expo commands and tools. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🐛 Bug fixes
 
+- Set `NODE_ENV` when `loadProjectEnv` receives a development or production mode. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
+
+- Pass the config mode through an internal variable and remove inherited dotenv values from Expo subprocesses. ([#48938](https://github.com/expo/expo/pull/48938) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+## 2.4.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.0 — 2026-05-20
+
+### 🎉 New features
+
+- Add `getOriginalEnv` and `getOriginalEnvValue` ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- Exclude system environment variables from being loaded by `@expo/env`, bypassable using `$EXPO_UNSAFE_DOTENV_KEYS` ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Differentiate between personal environment variables for .local env files and system environment variables, which are both now blocked respectively when they're misused ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
+- Add `REACT_NATIVE_OVERRIDE_HERMES_DIR` to local-only env vars ([#45847](https://github.com/expo/expo/pull/45847) by [@kitten](https://github.com/kitten))
+
+## 2.2.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.2 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.1 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- Fix env variables from system env being returned instead of sourced value from files ([#43037](https://github.com/expo/expo/pull/43037) by [@kitten](https://github.com/kitten))
+
+## 2.1.0 — 2026-02-08
+
+### 🎉 New features
+
+- Switch to `node:util`'s `parseEnv` and preserve previous `dotenv-expand` logic ([#42763](https://github.com/expo/expo/pull/42763) by [@kitten](https://github.com/kitten))
+
+## 2.0.11 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.10 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
 
 ## 2.0.9 — 2026-01-21
 

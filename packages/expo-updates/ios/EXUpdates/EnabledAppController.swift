@@ -16,6 +16,13 @@ internal class EnabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscrip
       updatesController.unsubscribeFromUpdatesStateChanges(subscriptionId)
     }
   }
+
+  func getContext() -> Any? {
+    if let updatesController = AppController.sharedInstance as? EnabledAppController {
+      return updatesController.getNativeInterfaceContext()
+    }
+    return nil
+  }
 }
 
 /**
@@ -32,7 +39,7 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
   private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
   public let isActiveController = true
-  private var isStarted = false
+  public private(set) var isStarted = false
   private var startupStartTime: DispatchTime?
   private var startupEndTime: DispatchTime?
 
@@ -190,6 +197,10 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     }
   }
 
+  internal func getNativeInterfaceContext() -> UpdatesNativeInterfaceStateContext {
+    return stateMachine.context.nativeInterfaceContext
+  }
+
   public var runtimeVersion: String? {
     return config.runtimeVersion
   }
@@ -198,12 +209,20 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     return config.updateUrl
   }
 
+  public var requestHeaders: [String : String]? {
+    return config.requestHeaders
+  }
+
   public var launchedUpdateId: UUID? {
     return startupProcedure.launchedUpdate()?.updateId
   }
 
   public var embeddedUpdateId: UUID? {
     return getEmbeddedUpdate()?.updateId
+  }
+
+  public var launchAssetPath: String? {
+    return startupProcedure.launchAssetUrl()?.relativePath
   }
 
   public var isEnabled: Bool = true

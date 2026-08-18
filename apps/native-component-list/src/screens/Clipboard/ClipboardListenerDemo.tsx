@@ -1,7 +1,8 @@
 import * as Clipboard from 'expo-clipboard';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import { isCurrentPlatformSupported } from '../../components/FunctionDemo/utils';
 import HeadingText from '../../components/HeadingText';
 import MonoTextWithCountdown from '../../components/MonoTextWithCountdown';
@@ -15,7 +16,7 @@ export default function ClipboardListenerDemo() {
       {isSupported ? (
         <ClipboardListenerContent />
       ) : (
-        <Text>Clipboard listener is not supported on web</Text>
+        <BodyText>Clipboard listener is not supported on web</BodyText>
       )}
     </View>
   );
@@ -42,7 +43,7 @@ function ClipboardListenerContent() {
       {value}
     </MonoTextWithCountdown>
   ) : (
-    <Text>No recent changes. Copy something to trigger event</Text>
+    <BodyText>No recent changes. Copy something to trigger event</BodyText>
   );
 }
 

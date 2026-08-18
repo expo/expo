@@ -1,9 +1,11 @@
+import ExpoModulesJSI
+
 /**
  Concurrently-executing asynchronous function without arguments.
  */
 public func AsyncFunction<R>(
   _ name: String,
-  @_implicitSelfCapture _ closure: @escaping () async throws -> R
+  @_inheritActorContext @_implicitSelfCapture _ closure: sending @escaping @Sendable () async throws -> sending R
 ) -> ConcurrentFunctionDefinition<(), Void, R> {
   return ConcurrentFunctionDefinition(
     name,
@@ -18,7 +20,7 @@ public func AsyncFunction<R>(
  */
 public func AsyncFunction<R, A0: AnyArgument, each A: AnyArgument>(
   _ name: String,
-  @_implicitSelfCapture _ closure: @escaping (A0, repeat each A) async throws -> R
+  @_inheritActorContext @_implicitSelfCapture _ closure: sending @escaping @Sendable (A0, repeat each A) async throws -> sending R
 ) -> ConcurrentFunctionDefinition<(A0, repeat each A), A0, R> {
   return ConcurrentFunctionDefinition(
     name,

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ImageTransition } from '../Image.types';
+import type { ImageTransition } from '../Image.types';
 
 type Callbacks = {
   onReady?: (() => void) | null;

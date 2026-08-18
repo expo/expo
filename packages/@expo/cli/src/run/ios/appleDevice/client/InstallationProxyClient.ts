@@ -5,14 +5,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import Debug from 'debug';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 
-import { ResponseError, ServiceClient } from './ServiceClient';
 import { LockdownProtocolClient } from '../protocol/LockdownProtocol';
 import type { LockdownCommand, LockdownResponse } from '../protocol/LockdownProtocol';
-
-const debug = Debug('expo:apple-device:client:installation_proxy');
+import { ResponseError, ServiceClient } from './ServiceClient';
 
 export type OnInstallProgressCallback = (props: {
   status: string;
@@ -132,8 +129,6 @@ export class InstallationProxyClient extends ServiceClient<LockdownProtocolClien
       ApplicationsType: 'Any',
     }
   ) {
-    debug(`lookupApp, options: ${JSON.stringify(options)}`);
-
     let resp = await this.protocolClient.sendMessage({
       Command: 'Lookup',
       ClientOptions: {
@@ -143,7 +138,7 @@ export class InstallationProxyClient extends ServiceClient<LockdownProtocolClien
     });
     if (resp && !Array.isArray(resp)) resp = [resp];
     if (isIPLookupResponse(resp)) {
-      return resp[0].LookupResult;
+      return resp[0]?.LookupResult;
     } else {
       throw new ResponseError(`There was an error looking up app`, resp);
     }
@@ -158,8 +153,6 @@ export class InstallationProxyClient extends ServiceClient<LockdownProtocolClien
     },
     onProgress: OnInstallProgressCallback
   ) {
-    debug(`installApp, packagePath: ${packagePath}, bundleId: ${bundleId}`);
-
     return this.protocolClient.sendMessage(
       {
         Command: 'Install',
@@ -176,18 +169,16 @@ export class InstallationProxyClient extends ServiceClient<LockdownProtocolClien
           onProgress({
             isComplete: true,
             progress: 100,
-            status: resp[0].Status,
+            status: resp[0]!.Status,
           });
           resolve();
         } else if (isIPInstallPercentCompleteResponse(resp)) {
           onProgress({
             isComplete: false,
-            progress: resp[0].PercentComplete,
-            status: resp[0].Status,
+            progress: resp[0]!.PercentComplete,
+            status: resp[0]!.Status,
           });
-          debug(`Installation status: ${resp[0].Status}, %${resp[0].PercentComplete}`);
         } else if (isIPInstallCFBundleIdentifierResponse(resp)) {
-          debug(`Installed app: ${resp[0].CFBundleIdentifier}`);
         } else {
           reject(
             new ResponseError(

@@ -1,6 +1,8 @@
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import React, { useState } from 'react';
-import { StyleSheet, Button, View, Image, Text } from 'react-native';
+import { StyleSheet, Button, View, Image } from 'react-native';
+
+import { BodyText } from '../components/BodyText';
 
 export default function VideoThumbnailsScreen() {
   const [image, setImage] = useState<string | null>(null);
@@ -19,13 +21,9 @@ export default function VideoThumbnailsScreen() {
   return (
     <View style={styles.container}>
       {image && <Image source={{ uri: image }} style={styles.image} />}
-      <Text>{image}</Text>
+      <BodyText>{image}</BodyText>
       <Button
-        onPress={() =>
-          generateThumbnail(
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-          )
-        }
+        onPress={() => generateThumbnail('https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4')}
         title="Check Valid Source"
       />
       <Button
@@ -45,7 +43,6 @@ const styles = StyleSheet.create({
     rowGap: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
   },
   image: {
     width: 200,

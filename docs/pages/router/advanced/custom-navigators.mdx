@@ -1,0 +1,220 @@
+---
+title: Custom navigators
+description: Learn how to build your own navigator in Expo Router and how library authors can integrate an existing navigator with the router.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { FileTree } from '~/ui/components/FileTree';
+
+> **important** The custom navigator API described on this page is in [alpha](/more/release-statuses/#alpha) and available in SDK 56 and later. The API is subject to breaking changes.
+
+Expo Router ships with navigators for the most common patterns — [Stack](/router/advanced/stack/), [Tabs](/router/advanced/tabs/), [Native tabs](/router/advanced/native-tabs/), and [Drawer](/router/advanced/drawer/). When none of them fit, you can build your own navigator and use it as a layout, with file-based routing, deep linking, and typed routes working exactly as they do for the built-in navigators.
+
+Choose the entry point that matches your goal:
+
+- **App developers** building a navigator for one app use [`unstable_createStandardRouterNavigator`](#create-a-navigator-in-your-app).
+- **Library authors** shipping a reusable navigator for both Expo Router and React Navigation use [`unstable_integrateWithRouter`](#integrate-an-existing-navigator-library-authors).
+
+## Create a navigator in your app
+
+Use `unstable_createStandardRouterNavigator` to turn a content component into a navigator you can render as a layout. It takes two required arguments:
+
+- **`NavigatorContent`**: a component that renders your navigator's UI. It receives the current navigation `state`, the `descriptors` for each screen, `actions` to navigate, and an `emitter` to send events.
+- **`router`**: the routing behavior to use. Import `StackRouter` for stack-like navigation or `TabRouter` for tab-like navigation from `expo-router`.
+
+The following example builds a minimal tab navigator:
+
+```tsx components/Tabs.tsx
+import {
+  unstable_createStandardRouterNavigator,
+  TabRouter,
+  type NavigatorContentProps,
+} from 'expo-router';
+import { Pressable, Text, View } from 'react-native';
+
+// The first type argument is the options you can set per screen
+type TabsContentProps = NavigatorContentProps<{ title?: string }>;
+
+function TabsContent({ state, descriptors, actions }: TabsContentProps) {
+  const focusedRoute = state.routes[state.index];
+
+  return (
+    <View style={{ flex: 1 }}>
+      {/* Render the screen for the focused route. */}
+      <View style={{ flex: 1 }}>{descriptors[focusedRoute.key].render()}</View>
+
+      {/* A simple tab bar. */}
+      <View style={{ flexDirection: 'row' }}>
+        {state.routes.map(route => (
+          <Pressable
+            key={route.key}
+            style={{ flex: 1, padding: 16 }}
+            onPress={() => actions.navigate(route.name)}>
+            <Text>{descriptors[route.key].options.title ?? route.name}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+export const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter);
+```
+
+The returned navigator has a `.Screen` child for declaring screens, so you can use it in a `_layout` file like any other layout:
+
+```tsx app/_layout.tsx
+import { Tabs } from '../components/Tabs';
+
+export default function Layout() {
+  return (
+    <Tabs>
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
+    </Tabs>
+  );
+}
+```
+
+### What `NavigatorContent` receives
+
+| Property      | Description                                                                                                                            |
+| ------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `state`       | The current navigation state: `{ index, routes }`, where each route has a `key`, `name`, `params`, and an `href`.                      |
+| `descriptors` | A map keyed by `route.key`. Each descriptor exposes the screen's resolved `options` and a `render()` function that renders the screen. |
+| `actions`     | Functions to change the navigation state: `navigate(name, params?)` and `back()`.                                                      |
+| `emitter`     | An object with an `emit()` method for sending events to screens.                                                                       |
+
+### Typed events
+
+If your navigator emits events, declare them in the second type argument to `NavigatorContentProps`. Each key is an event name, and its value describes the event's `data` and whether it `canPreventDefault`. `emitter.emit` is then typed against that map — unknown event names and mismatched payloads are rejected:
+
+```tsx
+type TabsContentProps = NavigatorContentProps<
+  { title?: string },
+  { tabPress: { data: undefined; canPreventDefault: true } }
+>;
+
+function TabsContent({ emitter }: TabsContentProps) {
+  emitter.emit({ type: 'tabPress', canPreventDefault: true });
+  // ...
+}
+```
+
+`unstable_createStandardRouterNavigator` infers the event map from the component, so you do not pass it again at the call site. Omit the second type argument for a navigator that emits no events.
+
+### Options
+
+Both `unstable_createStandardRouterNavigator` and `unstable_integrateWithRouter` accept an optional `options` object as their third argument:
+
+- **`useOnlyUserDefinedScreens`**: when `true`, only screens you declare with `<Navigator.Screen>` are rendered. Expo Router ignores routes discovered from the filesystem that you did not declare. Defaults to `false`, where Expo Router also renders routes discovered from the filesystem alongside your declared screens.
+- **`createProps`**: derives extra props for `NavigatorContent` from the underlying router state. Use this for router-specific information that is not part of the standard `state` and `actions`.
+
+```tsx
+export const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter, {
+  useOnlyUserDefinedScreens: true,
+  createProps: ({ state, dispatch }) => ({
+    activeRouteKey: state.routes[state.index].key,
+    preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
+  }),
+});
+```
+
+Declare the props returned by `createProps` in the third type argument to `NavigatorContentProps` so `NavigatorContent` receives them in a typed way:
+
+```tsx
+type TabsContentProps = NavigatorContentProps<
+  { title?: string },
+  // No custom events in this example.
+  Record<string, never>,
+  // Props injected by `createProps`.
+  { activeRouteKey: string; preload: (name: string) => void }
+>;
+
+function TabsContent({ activeRouteKey, preload }: TabsContentProps) {
+  // ...
+}
+```
+
+> **info** `createProps` receives the raw Expo Router `state` and `dispatch`. These are internal and may have breaking changes between releases, so prefer the `state` and `actions` passed to `NavigatorContent` when they are enough. If something you need to build your navigator is missing from the standard `state`, `actions`, or `emitter`, [open an issue on GitHub](https://github.com/expo/expo/issues).
+
+## Integrate an existing navigator (library authors)
+
+### The standard navigator API
+
+The `NavigatorContent` component shown above is a [standard navigator](https://github.com/react-navigation/standard-navigation). It implements a minimal, framework-agnostic contract defined by the [`standard-navigation`](https://www.npmjs.com/package/standard-navigation) package. The `state`, `descriptors`, `actions`, and `emitter` your content receives are exactly the [same API](#what-navigatorcontent-receives) as the in-app navigator above. The only difference is who creates the navigator.
+
+`unstable_createStandardRouterNavigator` is a shortcut that calls `createStandardNavigator` (from `standard-navigation`) for you and integrates the result with Expo Router in one step. As a library author, call `createStandardNavigator` yourself and keep a reference to the navigator:
+
+```tsx src/index.ts
+import { createStandardNavigator } from 'standard-navigation';
+import { TabsContent } from './TabsContent';
+
+// Framework-agnostic: this navigator targets the standard contract, not any one host.
+// The first type argument is the per-screen options; the second is the event map.
+export const navigator = createStandardNavigator<
+  { title?: string },
+  { tabPress: { data: undefined; canPreventDefault: true } }
+>(TabsContent);
+```
+
+Because `TabsContent` and `navigator` depend only on the standard contract, the same code runs on Expo Router, React Navigation, or any other host that implements it. You write the navigator once and ship a thin integration entry point per framework.
+
+### Integrate with Expo Router
+
+Wire your navigator into Expo Router with `unstable_integrateWithRouter`:
+
+```tsx src/expo-router.ts
+import { unstable_integrateWithRouter, TabRouter } from 'expo-router';
+import { navigator } from './index';
+
+export const Tabs = unstable_integrateWithRouter(navigator, TabRouter);
+```
+
+The returned component works exactly like the one from `unstable_createStandardRouterNavigator`, including the `.Screen` child and the same [options](#options).
+
+### Library entry points
+
+Keep the navigator content and the standard navigator framework-agnostic, then expose one entry point per framework so consumers import the integration that matches their app:
+
+<FileTree
+  files={[
+    ['./src/TabsContent.tsx', 'Navigator UI implementing the standard navigator API'],
+    ['./src/index.ts', 'Root entry — exports the framework-agnostic navigator'],
+    ['./src/react-navigation.ts', 'React Navigation entry — integrates the same navigator'],
+    ['./src/expo-router.ts', 'Expo Router entry — unstable_integrateWithRouter(navigator, ...)'],
+    ['./package.json', 'Maps subpath exports to each framework entry'],
+  ]}
+/>
+
+Map each entry point to a [subpath export](https://nodejs.org/api/packages.html#subpath-exports) in your library's **package.json**, pointing at your build output:
+
+```json package.json
+{
+  "exports": {
+    ".": {
+      "types": "./lib/typescript/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./react-navigation": {
+      "types": "./lib/typescript/react-navigation.d.ts",
+      "default": "./lib/module/react-navigation.js"
+    },
+    "./expo-router": {
+      "types": "./lib/typescript/expo-router.d.ts",
+      "default": "./lib/module/expo-router.js"
+    }
+  }
+}
+```
+
+Consumers then import the integration for their framework (for example, `import { Tabs } from 'my-tabs/expo-router'`) while you maintain the navigator logic in one place.
+
+<BoxLink
+  title="React Navigation integration"
+  href="https://reactnavigation.org/docs/standard-navigator/"
+  description="Learn how to integrate the same standard navigator with React Navigation, and read the contract that defines the state, descriptors, actions, and emitter your NavigatorContent receives."
+  Icon={BookOpen02Icon}
+/>

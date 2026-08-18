@@ -1,7 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect } from 'react';
-import { Image, Platform, Animated, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Platform, Animated, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../components/BodyText';
 import MonoText from '../components/MonoText';
 
 // https://github.com/expo/expo/issues/10599
@@ -58,7 +59,7 @@ const Container: React.FunctionComponent<{ title: string; children?: React.React
   children,
 }) => (
   <View style={styles.container}>
-    <Text style={styles.containerTitle}>{title}</Text>
+    <BodyText style={styles.containerTitle}>{title}</BodyText>
     {children}
   </View>
 );
@@ -84,7 +85,7 @@ const SnapshotTest = () => (
         style={{ width: 100, height: 200, marginVertical: 20 }}
       />
     </View>
-    <Text style={{ marginHorizontal: 20 }}>The gradients above should look the same.</Text>
+    <BodyText style={{ marginHorizontal: 20 }}>The gradients above should look the same.</BodyText>
   </Container>
 );
 

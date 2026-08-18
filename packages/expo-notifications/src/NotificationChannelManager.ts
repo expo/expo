@@ -1,4 +1,4 @@
-import { NotificationChannelManager } from './NotificationChannelManager.types';
+import type { NotificationChannelManager } from './NotificationChannelManager.types';
 
 export default {
   addListener: () => {},

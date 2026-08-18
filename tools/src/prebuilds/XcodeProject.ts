@@ -138,8 +138,8 @@ export default class XcodeProject {
    */
   async xcodebuildAsync(args: string[], settings?: XcodebuildSettings) {
     // `xcodebuild` writes error details to stdout but we don't want to pollute our output if nothing wrong happens.
-    // Spawn it quietly, pipe stderr to stdout and pass it to the current process stdout only when it fails.
-    const finalArgs = ['-quiet', ...args, '2>&1'];
+    // Spawn it quietly, capture stdout + stderr, and print them only on failure.
+    const finalArgs = ['-quiet', ...args];
 
     if (settings) {
       finalArgs.unshift(
@@ -151,12 +151,11 @@ export default class XcodeProject {
     try {
       await spawnAsync('xcodebuild', finalArgs, {
         cwd: this.rootDir,
-        shell: true,
-        stdio: ['ignore', 'pipe', 'inherit'],
+        stdio: ['ignore', 'pipe', 'pipe'],
       });
     } catch (e) {
       // Print formatted Xcode logs (merged from stdout and stderr).
-      process.stdout.write(formatXcodeBuildOutput(e.stdout));
+      process.stdout.write(formatXcodeBuildOutput((e.stdout ?? '') + (e.stderr ?? '')));
       throw e;
     }
   }

@@ -1,5 +1,5 @@
 import { requireNativeModule } from 'expo';
 
-import { ImageManipulator } from './ImageManipulator.types';
+import type { ImageManipulator } from './ImageManipulator.types';
 
 export default requireNativeModule<ImageManipulator>('ExpoImageManipulator');

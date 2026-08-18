@@ -18,7 +18,7 @@ const { green, yellow, cyan } = chalk;
 export const updateWorkspaceProjects = new Task<TaskArgs>(
   {
     name: 'updateWorkspaceProjects',
-    filesToStage: ['**/package.json', 'yarn.lock'],
+    filesToStage: ['**/package.json', 'pnpm-lock.yaml'],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     logger.info('\n📤 Updating workspace projects...');
@@ -30,7 +30,7 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
 
     const workspaceInfo = await Workspace.getInfoAsync();
 
-    // Append project templates as they're not yarn workspaces.
+    // Append project templates as they're not pnpm workspaces.
     const templates = await getAvailableProjectTemplatesAsync();
     templates.forEach((template) => {
       workspaceInfo[template.packageName] = {
@@ -40,6 +40,7 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
           .map((dep) => dep.name),
         mismatchedWorkspaceDependencies: [],
         workspacePeerDependencies: [],
+        mismatchedWorkspacePeerDependencies: [],
         workspaceOptionalDependencies: [],
       };
     });
@@ -101,9 +102,17 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
             }
 
             // Leave tilde and caret as they are, just replace the version.
+            // For workspace: forms with an embedded version, preserve the
+            // workspace: prefix and any caret/tilde modifier so the source
+            // continues to declare the workspace protocol.
             const newVersionRange = options.canary
               ? state.releaseVersion
-              : currentVersionRange.replace(/([\^~]?).*/, `$1${state.releaseVersion}`);
+              : currentVersionRange.startsWith('workspace:')
+                ? currentVersionRange.replace(
+                    /^workspace:([\^~]?).*/,
+                    `workspace:$1${state.releaseVersion}`
+                  )
+                : currentVersionRange.replace(/([\^~]?).*/, `$1${state.releaseVersion}`);
 
             dependenciesObject[pkg.packageName] = newVersionRange;
 
@@ -143,6 +152,22 @@ function shouldUpdateDependencyVersion(context: {
   // Do not update the version if there is no current version range
   if (!context.currentVersionRange) {
     return false;
+  }
+
+  // For workspace: specs, distinguish between auto-resolving forms (no
+  // embedded version — pnpm pack picks the local version at pack time) and
+  // embedded-version forms (workspace:1.2.3, workspace:^1.2.3 — pnpm pack
+  // ships the embedded version verbatim). Auto-resolving forms must NOT be
+  // mutated in source, otherwise the workspace: protocol gets flushed.
+  // Embedded-version forms DO need refreshing when their target is in the
+  // current parcel set, otherwise expo and similar packages keep pointing at
+  // stale versions of their workspace deps.
+  if (context.currentVersionRange.startsWith('workspace:')) {
+    const rest = context.currentVersionRange.slice('workspace:'.length);
+    if (rest === '*' || rest === '' || rest === '^' || rest === '~') {
+      return false;
+    }
+    return true;
   }
 
   // Only update the peerDependencies & optionalDependencies, where the version is `*`, during canary releases

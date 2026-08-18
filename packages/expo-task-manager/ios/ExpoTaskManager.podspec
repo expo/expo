@@ -11,8 +11,8 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1',
-    :tvos => '15.1'
+    :ios => '16.4',
+    :tvos => '16.4'
   }
   s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -28,4 +28,10 @@ Pod::Spec.new do |s|
     'ExpoTaskManager_privacy' => ['PrivacyInfo.xcprivacy']
   }
   s.source_files = '**/*.{h,m,mm,swift}'
+  s.exclude_files = 'Tests/'
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.dependency 'ExpoModulesTestCore'
+    test_spec.source_files = 'Tests/**/*.{m,swift}'
+  end
 end

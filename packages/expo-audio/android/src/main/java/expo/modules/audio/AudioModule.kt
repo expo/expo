@@ -3,6 +3,7 @@ package expo.modules.audio
 import android.Manifest
 import android.content.ContentResolver
 import android.content.Context
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
@@ -17,7 +18,6 @@ import androidx.media3.common.C.CONTENT_TYPE_HLS
 import androidx.media3.common.C.CONTENT_TYPE_OTHER
 import androidx.media3.common.C.CONTENT_TYPE_SS
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.Util
 import androidx.media3.datasource.DataSource
@@ -28,19 +28,22 @@ import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.smoothstreaming.SsMediaSource
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ProgressiveMediaSource
-import expo.modules.audio.service.AudioControlsService
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import java.io.File
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.min
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
@@ -51,12 +54,34 @@ class AudioModule : Module() {
 
   private val players = ConcurrentHashMap<String, AudioPlayer>()
   private val recorders = ConcurrentHashMap<String, AudioRecorder>()
+  private val playlists = ConcurrentHashMap<String, AudioPlaylist>()
   private var shouldPlayInBackground = false
   private var audioEnabled = true
   private var shouldRouteThroughEarpiece = false
   private var focusAcquired = false
   private var interruptionMode: InterruptionMode? = null
   private var allowsBackgroundRecording = false
+  private var playsInSilentMode = true
+
+  private val allPlayables: Sequence<Playable>
+    get() = players.values.asSequence() + playlists.values.asSequence()
+
+  private val allLockScreenPlayables: Sequence<LockScreenPlayable>
+    get() = sequence {
+      yieldAll(players.values)
+      yieldAll(playlists.values)
+    }
+
+  private val ringerModeReceiver = RingerModeReceiver {
+    if (playsInSilentMode) return@RingerModeReceiver
+    appContext.mainQueue.launch {
+      allPlayables.forEach { playable ->
+        if (playable.isPlaying) {
+          playable.pause()
+        }
+      }
+    }
+  }
 
   private var audioFocusRequest: AudioFocusRequest? = null
   private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
@@ -64,34 +89,32 @@ class AudioModule : Module() {
       when (focusChange) {
         AudioManager.AUDIOFOCUS_LOSS -> {
           focusAcquired = false
-          players.values.forEach { player ->
-            player.ref.pause()
-          }
+          allPlayables.forEach { it.pause() }
         }
 
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
           focusAcquired = false
-          players.values.forEach { player ->
-            if (player.ref.isPlaying) {
-              player.isPaused = true
-              player.ref.pause()
+          allPlayables.forEach { playable ->
+            if (playable.isPlaying) {
+              playable.isPaused = true
+              playable.pause()
             }
           }
         }
 
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
           if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
-            players.values.forEach { player ->
-              if (player.previousVolume != player.ref.volume) {
-                player.previousVolume = player.ref.volume
+            allPlayables.forEach { playable ->
+              if (playable.previousVolume != playable.volume) {
+                playable.previousVolume = playable.volume
               }
-              player.ref.volume = player.previousVolume * 0.5f
+              playable.setVolume(playable.previousVolume * 0.5f)
             }
           } else {
-            players.values.forEach { player ->
-              if (player.ref.isPlaying) {
-                player.isPaused = true
-                player.ref.pause()
+            allPlayables.forEach { playable ->
+              if (playable.isPlaying) {
+                playable.isPaused = true
+                playable.pause()
               }
             }
           }
@@ -99,11 +122,16 @@ class AudioModule : Module() {
 
         AudioManager.AUDIOFOCUS_GAIN -> {
           focusAcquired = true
-          players.values.forEach { player ->
-            player.setVolume(player.previousVolume)
-            if (player.isPaused) {
-              player.isPaused = false
-              player.ref.play()
+
+          if (!shouldPlayInSilentMode()) {
+            return@launch
+          }
+
+          allPlayables.forEach { playable ->
+            playable.setVolume(playable.previousVolume)
+            if (playable.isPaused) {
+              playable.isPaused = false
+              playable.play()
             }
           }
         }
@@ -112,12 +140,21 @@ class AudioModule : Module() {
   }
 
   private fun shouldReleaseFocus(): Boolean {
-    return players.values.none { it.ref.isPlaying }
+    return allPlayables.none { it.isPlaying }
   }
 
-  private fun requestAudioFocus() {
-    if (focusAcquired || !audioEnabled || interruptionMode == InterruptionMode.MIX_WITH_OTHERS) {
-      return
+  private fun shouldPlayInSilentMode(): Boolean {
+    return playsInSilentMode || audioManager.ringerMode == AudioManager.RINGER_MODE_NORMAL
+  }
+
+  private enum class AudioFocusResult { GRANTED, DELAYED, FAILED, NOT_REQUESTED }
+
+  private fun requestAudioFocus(): AudioFocusResult {
+    if (focusAcquired) {
+      return AudioFocusResult.GRANTED
+    }
+    if (!audioEnabled || interruptionMode == InterruptionMode.MIX_WITH_OTHERS) {
+      return AudioFocusResult.NOT_REQUESTED
     }
 
     val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -140,7 +177,7 @@ class AudioModule : Module() {
       }
       audioFocusRequest?.let {
         audioManager.requestAudioFocus(it)
-      }
+      } ?: AudioManager.AUDIOFOCUS_REQUEST_FAILED
     } else {
       @Suppress("DEPRECATION")
       val requestType = if (interruptionMode == InterruptionMode.DO_NOT_MIX) {
@@ -151,10 +188,21 @@ class AudioModule : Module() {
       audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, requestType)
     }
 
-    if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-      focusAcquired = true
-    } else {
-      Log.e(TAG, "Audio focus request failed with: $result")
+    return when (result) {
+      AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> {
+        focusAcquired = true
+        AudioFocusResult.GRANTED
+      }
+      // The system can grant focus later through the listener, so this is not a failure.
+      AudioManager.AUDIOFOCUS_REQUEST_DELAYED -> AudioFocusResult.DELAYED
+      else -> {
+        appContext.jsLogger?.warn(
+          "expo-audio couldn't acquire audio focus, so playback won't start. On Android an app can't " +
+            "play in the background without an active media playback foreground service. Call " +
+            "setActiveForLockScreen(true) on the player to keep playback alive in the background."
+        )
+        AudioFocusResult.FAILED
+      }
     }
   }
 
@@ -174,21 +222,39 @@ class AudioModule : Module() {
     focusAcquired = false
   }
 
+  @OptIn(DelicateCoroutinesApi::class)
   override fun definition() = ModuleDefinition {
     Name("ExpoAudio")
 
     OnCreate {
       audioManager = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+      context.registerReceiver(ringerModeReceiver, IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION))
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
       shouldPlayInBackground = mode.shouldPlayInBackground
       interruptionMode = mode.interruptionMode
+      playsInSilentMode = mode.playsInSilentMode
       updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
       allowsBackgroundRecording = mode.allowsBackgroundRecording
 
       recorders.values.forEach { recorder ->
         recorder.useForegroundService = allowsBackgroundRecording
+      }
+
+      allLockScreenPlayables.forEach { playable ->
+        playable.serviceConnection.playsInSilentMode = playsInSilentMode
+        playable.serviceConnection.playbackServiceBinder?.service?.playsInSilentMode = playsInSilentMode
+      }
+
+      if (!shouldPlayInSilentMode()) {
+        runOnMain {
+          allPlayables.forEach { playable ->
+            if (playable.isPlaying) {
+              playable.pause()
+            }
+          }
+        }
       }
     }
 
@@ -197,9 +263,9 @@ class AudioModule : Module() {
       if (!enabled) {
         releaseAudioFocus()
         runOnMain {
-          players.values.forEach {
-            if (it.ref.isPlaying) {
-              it.ref.pause()
+          allPlayables.forEach {
+            if (it.isPlaying) {
+              it.pause()
             }
           }
         }
@@ -210,17 +276,43 @@ class AudioModule : Module() {
       Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
     }
 
+    AsyncFunction("requestNotificationPermissionsAsync") { promise: Promise ->
+      Permissions.askForPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.POST_NOTIFICATIONS)
+    }
+
     AsyncFunction("getRecordingPermissionsAsync") { promise: Promise ->
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.RECORD_AUDIO)
+    }
+
+    AsyncFunction("preload") Coroutine { source: AudioSource, _: Double ->
+      val uri = source.uri ?: return@Coroutine
+      val factory = when (uri.toUri().scheme) {
+        "http", "https" -> httpDataSourceFactory(source.headers)
+        else -> DefaultDataSource.Factory(context)
+      }
+      AudioPreloadManager.preload(uri, factory)
+    }
+
+    AsyncFunction("clearPreloadedSource") Coroutine { source: AudioSource ->
+      val uri = source.uri ?: return@Coroutine
+      AudioPreloadManager.clearSource(uri)
+    }
+
+    AsyncFunction("clearAllPreloadedSources") Coroutine { ->
+      AudioPreloadManager.clearAll()
+    }
+
+    AsyncFunction("getPreloadedSources") {
+      AudioPreloadManager.getPreloadedSources()
     }
 
     OnActivityEntersBackground {
       if (!shouldPlayInBackground) {
         releaseAudioFocus()
-        players.values.forEach { player ->
-          if (player.ref.isPlaying) {
-            player.isPaused = true
-            player.ref.pause()
+        allPlayables.forEach { playable ->
+          if (playable.isPlaying) {
+            playable.isPaused = true
+            playable.pause()
           }
         }
       }
@@ -235,15 +327,18 @@ class AudioModule : Module() {
 
     OnActivityEntersForeground {
       if (!shouldPlayInBackground) {
-        val hasPlayersToResume = players.values.any { it.isPaused }
-        if (hasPlayersToResume) {
+        if (!shouldPlayInSilentMode()) {
+          return@OnActivityEntersForeground
+        }
+
+        if (allPlayables.any { it.isPaused }) {
           requestAudioFocus()
         }
 
-        players.values.forEach { player ->
-          if (player.isPaused) {
-            player.isPaused = false
-            player.ref.play()
+        allPlayables.forEach { playable ->
+          if (playable.isPaused) {
+            playable.isPaused = false
+            playable.play()
           }
         }
       }
@@ -260,29 +355,35 @@ class AudioModule : Module() {
     }
 
     OnDestroy {
-      appContext.mainQueue.launch {
+      context.unregisterReceiver(ringerModeReceiver)
+      GlobalScope.launch(Dispatchers.Main) {
         releaseAudioFocus()
         players.values.forEach {
+          it.ref.stop()
+        }
+
+        playlists.values.forEach {
           it.ref.stop()
         }
 
         recorders.values.forEach {
           it.stopRecording()
         }
-
-        AudioControlsService.clearSession()
+        AudioPreloadManager.clearAll()
       }
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean ->
+      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double, /* allowsExternalPlayback - iOS only */ _: Boolean? ->
         val mediaSource = createMediaItem(source)
+        val bufferDurationMs = (preferredForwardBufferDuration * 1000).toLong()
         runOnMain {
           val player = AudioPlayer(
             context,
             appContext,
             mediaSource,
-            updateInterval
+            updateInterval,
+            bufferDurationMs
           )
           player.onPlaybackStateChange = { isPlaying ->
             if (!isPlaying && shouldReleaseFocus()) {
@@ -391,9 +492,12 @@ class AudioModule : Module() {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
           return@Function
         }
+        if (!shouldPlayInSilentMode()) {
+          return@Function
+        }
         runOnMain {
-          if (!focusAcquired) {
-            requestAudioFocus()
+          if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
+            return@runOnMain
           }
           player.ref.play()
         }
@@ -405,16 +509,23 @@ class AudioModule : Module() {
         }
       }
 
-      Function("replace") { player: AudioPlayer, source: AudioSource ->
+      Function("replace") { player: AudioPlayer, source: AudioSource? ->
         runOnMain {
           if (player.ref.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            if (source == null) {
+              player.clearMediaSource()
+              return@runOnMain
+            }
             val mediaSource = createMediaItem(source)
             val wasPlaying = player.ref.isPlaying
             mediaSource?.let {
               player.setMediaSource(it)
               if (wasPlaying) {
-                if (!focusAcquired) {
-                  requestAudioFocus()
+                if (!shouldPlayInSilentMode()) {
+                  return@runOnMain
+                }
+                if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
+                  return@runOnMain
                 }
                 player.ref.play()
               }
@@ -453,9 +564,7 @@ class AudioModule : Module() {
 
       Function("setPlaybackRate") { player: AudioPlayer, rate: Float ->
         appContext.mainQueue.launch {
-          val playbackRate = if (rate <= 0) 0.1f else min(rate, 2.0f)
-          val pitch = if (player.preservesPitch) 1f else playbackRate
-          player.ref.playbackParameters = PlaybackParameters(playbackRate, pitch)
+          player.setPlaybackRate(rate)
         }
       }
 
@@ -494,7 +603,7 @@ class AudioModule : Module() {
         recorder.getCurrentTimeSeconds()
       }
 
-      AsyncFunction("prepareToRecordAsync") { recorder: AudioRecorder, options: RecordingOptions? ->
+      AsyncFunction("prepareToRecordAsync") Coroutine { recorder: AudioRecorder, options: RecordingOptions? ->
         checkRecordingPermission()
         recorder.prepareRecording(options)
       }
@@ -524,11 +633,7 @@ class AudioModule : Module() {
       }
 
       Function("getStatus") { recorder: AudioRecorder ->
-        try {
-          return@Function recorder.getAudioRecorderStatus()
-        } catch (e: Exception) {
-          throw e
-        }
+        recorder.getAudioRecorderStatus()
       }
 
       AsyncFunction("getCurrentInput") { recorder: AudioRecorder ->
@@ -550,6 +655,284 @@ class AudioModule : Module() {
         }
       }
     }
+
+    Class(AudioStream::class) {
+      Constructor { options: AudioStreamOptions ->
+        AudioStream(appContext, options)
+      }
+
+      Property("id") { stream: AudioStream ->
+        stream.id
+      }
+
+      Property("sampleRate") { stream: AudioStream ->
+        stream.sampleRate
+      }
+
+      Property("channels") { stream: AudioStream ->
+        stream.channels
+      }
+
+      Property("isStreaming") { stream: AudioStream ->
+        stream.isStreaming
+      }
+
+      AsyncFunction("start") Coroutine { stream: AudioStream ->
+        checkRecordingPermission()
+        stream.start()
+      }
+
+      Function("stop") { stream: AudioStream ->
+        stream.stop()
+      }
+
+      AsyncFunction("startFileRecordingAsync") Coroutine { stream: AudioStream, options: AudioStreamFileRecordingOptions? ->
+        val opts = options ?: AudioStreamFileRecordingOptions()
+        val format = opts.format
+        val file = opts.uri?.let { uri ->
+          val ext = File(uri.toURI()).extension.lowercase()
+          if (ext != format.fileExtension) {
+            throw AudioStreamFileException(
+              "The URI '${File(uri.toURI()).name}' has extension '.$ext' but the chosen format is '${format.value}'. Change the URI extension or the format to match."
+            )
+          }
+          File(uri.toURI())
+        } ?: run {
+          val parentDir = when (opts.directory ?: RecordingDirectory.CACHE) {
+            RecordingDirectory.CACHE -> appContext.cacheDirectory
+            RecordingDirectory.DOCUMENT -> appContext.persistentFilesDirectory
+          }
+          val dir = File(parentDir, "AudioStream")
+          dir.mkdirs()
+          File(dir, "stream-${UUID.randomUUID()}.${format.fileExtension}")
+        }
+        AudioStreamFileRecordingStartResult().apply {
+          uri = stream.startFileRecording(file, format)
+        }
+      }
+
+      AsyncFunction("stopFileRecordingAsync") Coroutine { stream: AudioStream ->
+        stream.stopFileRecording()
+      }
+    }
+
+    Class(AudioPlaylist::class) {
+      Constructor { sources: List<AudioSource>, updateInterval: Double, loop: LoopMode ->
+        runOnMain {
+          val playlist = AudioPlaylist(
+            context,
+            appContext,
+            sources,
+            updateInterval,
+            DefaultDataSource.Factory(context)
+          )
+          playlist.loopMode = loop
+          playlist.setMediaItemCreator { source ->
+            source.uri?.let { uriString ->
+              val uri = uriString.toUri()
+              when {
+                isRawResource(uri) -> {
+                  val file = getResourceName(uri, uriString)
+                  MediaItem.fromUri(getRawResourceURI(file))
+                }
+                else -> MediaItem.fromUri(uri)
+              }
+            }
+          }
+          playlist.loadInitialPlaylist()
+          playlist.onPlaybackStateChange = { isPlaying ->
+            if (!isPlaying && shouldReleaseFocus()) {
+              releaseAudioFocus()
+            }
+          }
+          playlists[playlist.id] = playlist
+          playlist
+        }
+      }
+
+      Property("id") { playlist ->
+        playlist.id
+      }
+
+      Property("currentIndex") { playlist ->
+        runOnMain {
+          playlist.currentTrackIndex
+        }
+      }
+
+      Property("trackCount") { playlist ->
+        runOnMain {
+          playlist.trackCount
+        }
+      }
+
+      Property("sources") { playlist ->
+        playlist.getSources()
+      }
+
+      Property("playing") { playlist ->
+        runOnMain {
+          playlist.ref.isPlaying
+        }
+      }
+
+      Property("muted") { playlist ->
+        playlist.isMuted
+      }.set { playlist, muted: Boolean? ->
+        val newMuted = muted ?: false
+        playlist.isMuted = newMuted
+        playlist.setVolume(if (newMuted) 0f else playlist.previousVolume)
+      }
+
+      Property("isLoaded") { playlist ->
+        runOnMain {
+          playlist.ref.playbackState == Player.STATE_READY
+        }
+      }
+
+      Property("isBuffering") { playlist ->
+        runOnMain {
+          playlist.ref.playbackState == Player.STATE_BUFFERING
+        }
+      }
+
+      Property("currentTime") { playlist ->
+        runOnMain {
+          playlist.currentTime
+        }
+      }
+
+      Property("duration") { playlist ->
+        runOnMain {
+          playlist.duration
+        }
+      }
+
+      Property("volume") { playlist ->
+        runOnMain {
+          playlist.ref.volume
+        }
+      }.set { playlist, volume: Float? ->
+        playlist.setVolume(volume)
+      }
+
+      Property("playbackRate") { playlist ->
+        runOnMain {
+          playlist.ref.playbackParameters.speed
+        }
+      }.set { playlist, rate: Float ->
+        appContext.mainQueue.launch {
+          playlist.setPlaybackRate(rate)
+        }
+      }
+
+      Property("loop") { playlist ->
+        playlist.loopMode.value
+      }.set { playlist, mode: LoopMode ->
+        runOnMain {
+          playlist.loopMode = mode
+        }
+      }
+
+      Property("currentStatus") { playlist ->
+        runOnMain {
+          playlist.currentStatus()
+        }
+      }
+
+      Function("play") { playlist: AudioPlaylist ->
+        if (!audioEnabled) {
+          Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+          return@Function
+        }
+        if (!shouldPlayInSilentMode()) {
+          return@Function
+        }
+        runOnMain {
+          if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
+            return@runOnMain
+          }
+          playlist.ref.play()
+        }
+      }
+
+      Function("pause") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.ref.pause()
+        }
+      }
+
+      Function("next") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.next()
+        }
+      }
+
+      Function("previous") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.previous()
+        }
+      }
+
+      Function("skipTo") { playlist: AudioPlaylist, index: Int ->
+        runOnMain {
+          playlist.skipTo(index)
+        }
+      }
+
+      AsyncFunction("seekTo") { playlist: AudioPlaylist, seconds: Double ->
+        playlist.seekTo(seconds)
+      }.runOnQueue(Queues.MAIN)
+
+      Function("add") { playlist: AudioPlaylist, source: AudioSource ->
+        runOnMain {
+          playlist.add(source)
+        }
+      }
+
+      Function("insert") { playlist: AudioPlaylist, source: AudioSource, index: Int ->
+        runOnMain {
+          playlist.insert(source, index)
+        }
+      }
+
+      Function("remove") { playlist: AudioPlaylist, index: Int ->
+        runOnMain {
+          playlist.remove(index)
+        }
+      }
+
+      Function("clear") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.clear()
+        }
+      }
+
+      Function("setActiveForLockScreen") { ref: AudioPlaylist, active: Boolean, metadata: Metadata?, options: AudioLockScreenOptions? ->
+        runOnMain {
+          ref.setActiveForLockScreen(active, metadata, options)
+        }
+      }
+
+      Function("updateLockScreenMetadata") { ref: AudioPlaylist, metadata: Metadata ->
+        runOnMain {
+          ref.updateLockScreenMetadata(metadata)
+        }
+      }
+
+      Function("clearLockScreenControls") { ref: AudioPlaylist ->
+        runOnMain {
+          ref.clearLockScreenControls()
+        }
+      }
+
+      Function("destroy") { playlist: AudioPlaylist ->
+        runOnMain {
+          playlist.clearLockScreenControls()
+        }
+        playlists.remove(playlist.id)
+      }
+    }
   }
 
   private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uriString ->
@@ -562,9 +945,14 @@ class AudioModule : Module() {
       else -> MediaItem.fromUri(uri)
     }
 
-    val factory = when (uri.scheme) {
-      "http", "https" -> httpDataSourceFactory(source.headers)
-      else -> DefaultDataSource.Factory(context)
+    val preloadedBytes = AudioPreloadManager.get(uriString)
+    val factory: DataSource.Factory = if (preloadedBytes != null) {
+      InMemoryDataSourceFactory(preloadedBytes)
+    } else {
+      when (uri.scheme) {
+        "http", "https" -> httpDataSourceFactory(source.headers)
+        else -> DefaultDataSource.Factory(context)
+      }
     }
     return buildMediaSourceFactory(factory, mediaItem)
   }

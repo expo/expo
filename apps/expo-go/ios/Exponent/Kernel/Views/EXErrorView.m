@@ -45,8 +45,20 @@
     _txtFixDetail.textContainer.lineFragmentPadding = 0;
 
     for (UIButton *btnToStyle in @[ _btnRetry, _btnBack ]) {
-      btnToStyle.layer.cornerRadius = 4.0;
+      btnToStyle.layer.cornerRadius = 10.0;
       btnToStyle.layer.masksToBounds = YES;
+      btnToStyle.titleLabel.font = [UIFont systemFontOfSize:16 weight:UIFontWeightSemibold];
+
+      // Touch feedback: slight alpha dip + scale on press
+      [btnToStyle addTarget:self
+                     action:@selector(_onButtonTouchDown:)
+           forControlEvents:UIControlEventTouchDown];
+      [btnToStyle addTarget:self
+                     action:@selector(_onButtonTouchUp:)
+           forControlEvents:UIControlEventTouchUpInside |
+                            UIControlEventTouchUpOutside |
+                            UIControlEventTouchCancel |
+                            UIControlEventTouchDragExit];
     }
   }
   return self;
@@ -55,7 +67,7 @@
 - (void)setType:(EXFatalErrorType)type
 {
   _type = type;
-  NSString *appOwnerName = @"the requested app";
+  NSString *appOwnerName = @"the requested project";
   if (_appRecord) {
     if (_appRecord.appLoader.manifest && _appRecord.appLoader.manifest.name) {
       appOwnerName = [NSString stringWithFormat:@"\"%@\"", _appRecord.appLoader.manifest.name];
@@ -82,27 +94,40 @@
   NSString *errorDetail = [error localizedDescription];
   NSString *errorFixInstructions = [error userInfo][EXFixInstructionsKey];
   NSNumber *showTryAgainButtonNumber = [error userInfo][EXShowTryAgainButtonKey];
-  Boolean showTryAgainButton = [showTryAgainButtonNumber boolValue];
+  // Default to showing the retry button. Errors that should suppress it
+  // (e.g., SDK incompatibility) set EXShowTryAgainButtonKey to @NO explicitly.
+  BOOL showTryAgainButton = (showTryAgainButtonNumber == nil) || [showTryAgainButtonNumber boolValue];
 
   if (errorHeader != nil) {
     _lblError.text = errorHeader;
   }
 
+  // Strip the generic "Unknown error: " prefix that expo-updates prepends to
+  // uncategorized errors — the underlying cause (e.g. "Could not connect to
+  // the server.") is more useful on its own.
+  if ([errorDetail hasPrefix:@"Unknown error: "]) {
+    errorDetail = [errorDetail substringFromIndex:[@"Unknown error: " length]];
+  }
+
   switch (_type) {
     case kEXFatalErrorTypeLoading: {
+      NSString *url = _appRecord.appLoader.manifestUrl.absoluteString;
+
       if (_error.code == kCFURLErrorNotConnectedToInternet) {
         errorDetail = [NSString stringWithFormat:@"%@ Make sure you're connected to the internet.", errorDetail];
-      } else if (_appRecord.appLoader.manifestUrl) {
-        NSString *url = _appRecord.appLoader.manifestUrl.absoluteString;
-        if ([self _urlLooksLikeLAN:url]) {
-          NSString *extraLANPermissionText = @"";
-          if (@available(iOS 14, *)) {
-            extraLANPermissionText = @", and that you have granted Expo Go the Local Network permission in the Settings app,";
-          }
-          errorDetail = [NSString stringWithFormat:
-                            @"%@\n\nIt looks like you may be using a LAN URL. "
-                            "Make sure your device is on the same network as the server%@ or try using the tunnel connection type.", errorDetail, extraLANPermissionText];
+      } else if (url && [self _urlLooksLikeLAN:url]) {
+        NSString *extraLANPermissionText = @"";
+        if (@available(iOS 14, *)) {
+          extraLANPermissionText = @", and that you have granted Expo Go the Local Network permission in the Settings app,";
         }
+        errorDetail = [NSString stringWithFormat:
+                          @"%@\n\nIt looks like you may be using a LAN URL. "
+                          "Make sure your device is on the same network as the server%@ or try using the tunnel connection type.", errorDetail, extraLANPermissionText];
+      }
+
+      // Append the manifest URL inline (the dedicated URL label has been removed)
+      if (url) {
+        errorDetail = [NSString stringWithFormat:@"%@\n\n%@", errorDetail, url];
       }
       break;
     }
@@ -172,9 +197,8 @@
 - (void)_resetUIState
 {
   _btnBack.hidden = NO;
-  _lblUrl.hidden = NO;
-  _lblUrl.text = _appRecord.appLoader.manifestUrl.absoluteString;
-  // TODO: maybe hide retry (see BrowserErrorView)
+  // The URL label has been replaced by inline URL in the error detail text.
+  [_lblUrl removeFromSuperview];
   [self setNeedsLayout];
 }
 
@@ -190,6 +214,22 @@
   if ([EXKernel sharedInstance].browserController) {
     [[EXKernel sharedInstance].browserController moveHomeToVisible];
   }
+}
+
+- (void)_onButtonTouchDown:(UIButton *)button
+{
+  [UIView animateWithDuration:0.08 animations:^{
+    button.alpha = 0.55;
+    button.transform = CGAffineTransformMakeScale(0.98, 0.98);
+  }];
+}
+
+- (void)_onButtonTouchUp:(UIButton *)button
+{
+  [UIView animateWithDuration:0.15 animations:^{
+    button.alpha = 1.0;
+    button.transform = CGAffineTransformIdentity;
+  }];
 }
 
 - (BOOL)_urlLooksLikeLAN:(NSString *)url

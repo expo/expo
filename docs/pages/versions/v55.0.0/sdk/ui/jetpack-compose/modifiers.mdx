@@ -1,0 +1,460 @@
+---
+title: Modifiers
+description: Jetpack Compose layout modifiers for @expo/ui components.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Jetpack Compose modifiers allow you to customize the layout, appearance, and behavior of UI components. Modifiers are the Compose equivalent of style properties — they control sizing, padding, backgrounds, interactions, and more.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+Modifiers are applied to components using the `modifiers` prop with an array syntax. You can combine multiple modifiers to create complex styling and behavior. Modifiers are applied in the order they appear in the array, which can affect the final result (for example, applying `padding` before `background` produces different results than the reverse).
+
+```tsx
+import { Button, Host } from '@expo/ui/jetpack-compose';
+import {
+  paddingAll,
+  fillMaxWidth,
+  background,
+  border,
+  shadow,
+  clickable,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+function ModifiersExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      {/* Basic styling modifiers */}
+      <Button modifiers={[paddingAll(16), fillMaxWidth(), background('#FF6B6B')]}>
+        Full-width padded button
+      </Button>
+
+      {/* Complex combination with border and shadow */}
+      <Button modifiers={[paddingAll(12), background('#4ECDC4'), border(2, '#2C3E50'), shadow(4)]}>
+        Styled with border and shadow
+      </Button>
+    </Host>
+  );
+}
+```
+
+## Padding
+
+Control the spacing around a component's content.
+
+### `paddingAll(all)`
+
+Applies equal padding on all four sides.
+
+| Parameter | Type     | Description          |
+| --------- | -------- | -------------------- |
+| `all`     | `number` | Padding value in dp. |
+
+```tsx
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[paddingAll(16)]}>Padded button</Button>;
+```
+
+### `padding(start, top, end, bottom)`
+
+Applies individual padding to each side.
+
+| Parameter | Type     | Description               |
+| --------- | -------- | ------------------------- |
+| `start`   | `number` | Left/start padding in dp. |
+| `top`     | `number` | Top padding in dp.        |
+| `end`     | `number` | Right/end padding in dp.  |
+| `bottom`  | `number` | Bottom padding in dp.     |
+
+```tsx
+import { padding } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[padding(16, 8, 16, 8)]}>Custom padding</Button>;
+```
+
+## Size
+
+Control the dimensions of a component.
+
+### `size(width, height)`
+
+Sets exact dimensions for the component.
+
+| Parameter | Type     | Description   |
+| --------- | -------- | ------------- |
+| `width`   | `number` | Width in dp.  |
+| `height`  | `number` | Height in dp. |
+
+```tsx
+import { size } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[size(200, 48)]}>Fixed size</Button>;
+```
+
+### `fillMaxSize(fraction?)`
+
+Fills all available space in both dimensions.
+
+| Parameter  | Type     | Description                                           |
+| ---------- | -------- | ----------------------------------------------------- |
+| `fraction` | `number` | Fraction of available space (0.0–1.0). Default `1.0`. |
+
+```tsx
+import { fillMaxSize } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[fillMaxSize()]}>Fill all space</Button>
+<Button modifiers={[fillMaxSize(0.5)]}>Fill half</Button>
+```
+
+### `fillMaxWidth(fraction?)`
+
+Fills available width.
+
+| Parameter  | Type     | Description                                           |
+| ---------- | -------- | ----------------------------------------------------- |
+| `fraction` | `number` | Fraction of available width (0.0–1.0). Default `1.0`. |
+
+```tsx
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[fillMaxWidth()]}>Full width</Button>;
+```
+
+### `fillMaxHeight(fraction?)`
+
+Fills available height.
+
+| Parameter  | Type     | Description                                            |
+| ---------- | -------- | ------------------------------------------------------ |
+| `fraction` | `number` | Fraction of available height (0.0–1.0). Default `1.0`. |
+
+### `width(value)`
+
+Sets an exact width.
+
+| Parameter | Type     | Description  |
+| --------- | -------- | ------------ |
+| `value`   | `number` | Width in dp. |
+
+### `height(value)`
+
+Sets an exact height.
+
+| Parameter | Type     | Description   |
+| --------- | -------- | ------------- |
+| `value`   | `number` | Height in dp. |
+
+### `wrapContentWidth(alignment?)`
+
+Sizes the component to wrap its content width.
+
+| Parameter   | Type     | Description                          |
+| ----------- | -------- | ------------------------------------ |
+| `alignment` | `string` | Horizontal alignment of the content. |
+
+### `wrapContentHeight(alignment?)`
+
+Sizes the component to wrap its content height.
+
+| Parameter   | Type     | Description                        |
+| ----------- | -------- | ---------------------------------- |
+| `alignment` | `string` | Vertical alignment of the content. |
+
+## Position
+
+Control the position of a component relative to its natural placement.
+
+### `offset(x, y)`
+
+Offsets the component from its natural position without affecting the layout of surrounding components.
+
+| Parameter | Type     | Description              |
+| --------- | -------- | ------------------------ |
+| `x`       | `number` | Horizontal offset in dp. |
+| `y`       | `number` | Vertical offset in dp.   |
+
+```tsx
+import { offset } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[offset(10, 5)]}>Offset button</Button>;
+```
+
+## Appearance
+
+Control the visual appearance of a component.
+
+### `background(color)`
+
+Sets the background color.
+
+| Parameter | Type     | Description                    |
+| --------- | -------- | ------------------------------ |
+| `color`   | `string` | Background color (hex string). |
+
+```tsx
+import { background } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[background('#3498DB')]}>Blue background</Button>;
+```
+
+### `border(borderWidth, borderColor)`
+
+Adds a border around the component.
+
+| Parameter     | Type     | Description                |
+| ------------- | -------- | -------------------------- |
+| `borderWidth` | `number` | Border width in dp.        |
+| `borderColor` | `string` | Border color (hex string). |
+
+```tsx
+import { border } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[border(2, '#E74C3C')]}>Bordered button</Button>;
+```
+
+### `shadow(elevation)`
+
+Adds an elevation shadow beneath the component.
+
+| Parameter   | Type     | Description             |
+| ----------- | -------- | ----------------------- |
+| `elevation` | `number` | Shadow elevation in dp. |
+
+```tsx
+import { shadow } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[shadow(8)]}>Elevated button</Button>;
+```
+
+### `alpha(alpha)`
+
+Controls the opacity of the component.
+
+| Parameter | Type     | Description              |
+| --------- | -------- | ------------------------ |
+| `alpha`   | `number` | Opacity value (0.0–1.0). |
+
+```tsx
+import { alpha } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[alpha(0.5)]}>Semi-transparent</Button>;
+```
+
+### `blur(radius)`
+
+Applies a blur effect to the component.
+
+| Parameter | Type     | Description        |
+| --------- | -------- | ------------------ |
+| `radius`  | `number` | Blur radius in dp. |
+
+```tsx
+import { blur } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[blur(4)]}>Blurred button</Button>;
+```
+
+## Transform
+
+Apply visual transformations to a component.
+
+### `rotate(degrees)`
+
+Rotates the component.
+
+| Parameter | Type     | Description                |
+| --------- | -------- | -------------------------- |
+| `degrees` | `number` | Rotation angle in degrees. |
+
+```tsx
+import { rotate } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[rotate(45)]}>Rotated</Button>;
+```
+
+### `zIndex(index)`
+
+Controls the drawing order of overlapping components.
+
+| Parameter | Type     | Description  |
+| --------- | -------- | ------------ |
+| `index`   | `number` | Layer index. |
+
+```tsx
+import { zIndex } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[zIndex(10)]}>On top</Button>;
+```
+
+## Animation
+
+Animate layout changes within a component.
+
+### `animateContentSize(dampingRatio?, stiffness?)`
+
+Animates size changes of the component's content using a spring animation.
+
+| Parameter      | Type     | Description                                 |
+| -------------- | -------- | ------------------------------------------- |
+| `dampingRatio` | `number` | Spring damping ratio. Controls bounciness.  |
+| `stiffness`    | `number` | Spring stiffness. Controls animation speed. |
+
+```tsx
+import { animateContentSize } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[animateContentSize()]}>Animated size</Button>
+<Button modifiers={[animateContentSize(0.5, 200)]}>Custom spring</Button>
+```
+
+## Layout
+
+Control how a component is sized and positioned within its parent container.
+
+### `weight(weight)`
+
+Assigns a flexible weight to a component inside a `Row` or `Column`, distributing available space proportionally among weighted children.
+
+| Parameter | Type     | Description    |
+| --------- | -------- | -------------- |
+| `weight`  | `number` | Weight factor. |
+
+```tsx
+import { weight } from '@expo/ui/jetpack-compose/modifiers';
+
+// In a Row, the first button takes 2/3 and the second takes 1/3
+<Button modifiers={[weight(2)]}>Wider</Button>
+<Button modifiers={[weight(1)]}>Narrower</Button>
+```
+
+### `align(alignment)`
+
+Sets the alignment of the component within its parent container.
+
+| Parameter   | Type     | Description                     |
+| ----------- | -------- | ------------------------------- |
+| `alignment` | `string` | Alignment within the container. |
+
+### `matchParentSize()`
+
+Sizes the component to match the size of its parent `Box`. Unlike `fillMaxSize`, this does not affect the parent's measurement.
+
+```tsx
+import { matchParentSize } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[matchParentSize()]}>Match parent</Button>;
+```
+
+## Interaction
+
+Add user interaction handlers to a component.
+
+### `clickable(handler)`
+
+Makes the component respond to click events.
+
+| Parameter | Type         | Description                |
+| --------- | ------------ | -------------------------- |
+| `handler` | `() => void` | Callback invoked on click. |
+
+```tsx
+import { clickable } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[clickable(() => console.log('Clicked!'))]}>Clickable</Button>;
+```
+
+### `selectable(selected, handler)`
+
+Makes the component selectable, similar to a radio button.
+
+| Parameter  | Type         | Description                                    |
+| ---------- | ------------ | ---------------------------------------------- |
+| `selected` | `boolean`    | Whether the component is currently selected.   |
+| `handler`  | `() => void` | Callback invoked when selection state changes. |
+
+```tsx
+import { selectable } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[selectable(isSelected, () => setIsSelected(!isSelected))]}>
+  Selectable option
+</Button>;
+```
+
+## Clipping
+
+Clip a component's content to a specific shape.
+
+### `clip(shape)`
+
+Clips the component to the given shape. Content outside the shape boundary is not drawn.
+
+| Parameter | Type    | Description           |
+| --------- | ------- | --------------------- |
+| `shape`   | `Shape` | The shape to clip to. |
+
+#### Available shapes
+
+| Shape                          | Description                                                                                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Shapes.Rectangle`             | A rectangle with no rounded corners.                                                                                                                                |
+| `Shapes.Circle`                | A perfect circle.                                                                                                                                                   |
+| `Shapes.RoundedCorner(radius)` | A rectangle with uniform rounded corners. Pass a `number` for equal radius or an object `{ topStart, topEnd, bottomStart, bottomEnd }` for individual corner radii. |
+| `Shapes.CutCorner(radius)`     | A rectangle with cut (chamfered) corners. Accepts the same radius options as `RoundedCorner`.                                                                       |
+| `Shapes.Material.Cookie4Sided` | Material Design cookie shape with 4 sides.                                                                                                                          |
+| `Shapes.Material.Cookie6Sided` | Material Design cookie shape with 6 sides.                                                                                                                          |
+
+```tsx
+import { clip } from '@expo/ui/jetpack-compose/modifiers';
+import { Shapes } from '@expo/ui/jetpack-compose/modifiers';
+
+// Circular clipping
+<Button modifiers={[clip(Shapes.Circle)]}>Circle</Button>
+
+// Rounded corners with uniform radius
+<Button modifiers={[clip(Shapes.RoundedCorner(12))]}>Rounded</Button>
+
+// Rounded corners with individual radii
+<Button
+  modifiers={[
+    clip(Shapes.RoundedCorner({ topStart: 16, topEnd: 16, bottomStart: 0, bottomEnd: 0 })),
+  ]}>
+  Top rounded only
+</Button>
+
+// Cut corners
+<Button modifiers={[clip(Shapes.CutCorner(8))]}>Cut corners</Button>
+```
+
+## Utility
+
+### `testID(tag)`
+
+Assigns a test identifier to the component for use in UI testing.
+
+| Parameter | Type     | Description  |
+| --------- | -------- | ------------ |
+| `tag`     | `string` | The test ID. |
+
+```tsx
+import { testID } from '@expo/ui/jetpack-compose/modifiers';
+
+<Button modifiers={[testID('submit-button')]}>Submit</Button>;
+```
+
+## API
+
+{/* prettier-ignore */}
+```tsx
+import { paddingAll, padding, size, fillMaxWidth, background, clickable, clip, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/modifiers" />

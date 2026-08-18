@@ -1,8 +1,10 @@
 import { CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontSource } from './Font.types';
+import type { FontSource, ServerFontResourceDescriptor } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
+
+export { withServerContext } from './serverContext';
 
 /**
  * @returns the server resources that should be statically extracted.
@@ -15,15 +17,11 @@ export function getServerResources(): string[] {
   return ExpoFontLoader.getServerResources();
 }
 
-/**
- * @returns clear the server resources from the global scope.
- * @private
- */
-export function resetServerContext() {
-  if (!ExpoFontLoader.resetServerContext) {
-    throw new UnavailabilityError('expo-font', 'resetServerContext');
+export function getServerResourceDescriptors(): ServerFontResourceDescriptor[] {
+  if (!ExpoFontLoader.getServerResourceDescriptors) {
+    throw new UnavailabilityError('expo-font', 'getServerResourceDescriptors');
   }
-  return ExpoFontLoader.resetServerContext();
+  return ExpoFontLoader.getServerResourceDescriptors();
 }
 
 export function registerStaticFont(fontFamily: string, source?: FontSource | null) {

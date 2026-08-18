@@ -1,7 +1,19 @@
 import { Color, Label, Stack, useLocalSearchParams } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
-import { View, Text, Switch, ScrollView, StyleSheet, Pressable, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  Switch,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+  Alert,
+  Platform,
+  TextInput,
+} from 'react-native';
+
+import { searchIcon, sendIcon, deleteIcon } from './icons';
 
 export default function HeaderItemsScreen() {
   const params = useLocalSearchParams();
@@ -13,11 +25,16 @@ export default function HeaderItemsScreen() {
   const [leftButton2SeparateBackground, setLeftButton2SeparateBackground] = useState(false);
   const [showLeftCustomItem, setShowLeftCustomItem] = useState(!!params.leftCustomItem);
   const [showLeftMenu, setShowLeftMenu] = useState(!!params.leftMenu);
+  const [menuBadgeContent, setMenuBadgeContent] = useState('99');
 
   const [showRightButton, setShowRightButton] = useState(!!params.rightButton);
   const [showRightMenu1, setShowRightMenu1] = useState(!!params.rightMenu1);
   const [showRightMenu2, setShowRightMenu2] = useState(false);
   const [showSearchButton, setShowSearchButton] = useState(!!params.searchButton);
+  const [showXcassetButton1, setShowXcassetButton1] = useState(false);
+  const [showXcassetButton2, setShowXcassetButton2] = useState(false);
+  const [showXcassetMenu1, setShowXcassetMenu1] = useState(false);
+  const [showXcassetMenu2, setShowXcassetMenu2] = useState(false);
 
   // State for menu items
   const [emailsArchived, setEmailsArchived] = useState(false);
@@ -88,9 +105,15 @@ export default function HeaderItemsScreen() {
         style={styles.customHeaderElement}>
         <SymbolView
           size={20}
-          tintColor={Color.ios.systemBlue}
+          tintColor={Platform.select({
+            ios: Color.ios.systemBlue,
+            android: Color.android.dynamic.primary,
+          })}
           style={{ width: 20, height: 20 }}
-          name="heart.fill"
+          name={{
+            ios: 'heart.fill',
+            android: 'favorite',
+          }}
         />
       </Pressable>
     );
@@ -107,13 +130,15 @@ export default function HeaderItemsScreen() {
         <Stack.Toolbar placement="left">
           <Stack.Toolbar.Button
             hidden={!showLeftButton1}
-            icon="arrow.left"
+            icon={process.env.EXPO_OS === 'ios' ? 'arrow.left' : searchIcon}
             onPress={handleLeftButton1Press}
           />
           <Stack.Toolbar.Button
             hidden={!showLeftButton2}
             separateBackground={leftButton2SeparateBackground}
             selected={leftButton2Selected}
+            icon={process.env.EXPO_OS === 'ios' ? 'star' : require('../../../assets/expo-logo.png')}
+            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}
             onPress={handleLeftButton2Press}
             style={{
               fontWeight: 500,
@@ -121,7 +146,6 @@ export default function HeaderItemsScreen() {
               color: '#f0f',
             }}>
             <Stack.Toolbar.Label>Button 2</Stack.Toolbar.Label>
-            <Stack.Toolbar.Icon sf="star" />
             <Stack.Toolbar.Badge>33</Stack.Toolbar.Badge>
           </Stack.Toolbar.Button>
 
@@ -134,16 +158,21 @@ export default function HeaderItemsScreen() {
             style={{
               color: '#00f',
               fontFamily: 'Arial',
-            }}>
+            }}
+            icon={
+              process.env.EXPO_OS === 'ios'
+                ? 'list.bullet'
+                : require('../../../assets/expo-logo.png')
+            }
+            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}>
             <Stack.Toolbar.Label>Left Menu</Stack.Toolbar.Label>
-            <Stack.Toolbar.Icon sf="list.bullet" />
             <Stack.Toolbar.Badge
               style={{
                 backgroundColor: '#eee',
                 fontFamily: 'Courier New',
                 fontWeight: 100,
               }}>
-              99
+              {menuBadgeContent}
             </Stack.Toolbar.Badge>
             <Stack.Toolbar.MenuAction onPress={() => Alert.alert('Option 1')}>
               <Stack.Toolbar.Label>Option 1</Stack.Toolbar.Label>
@@ -154,148 +183,189 @@ export default function HeaderItemsScreen() {
               <Stack.Toolbar.Icon sf="2.circle" />
             </Stack.Toolbar.MenuAction>
           </Stack.Toolbar.Menu>
+
+          <Stack.Toolbar.Menu
+            icon={require('../../../assets/expo-logo.png')}
+            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}
+            title="Actions"
+            tintColor={Platform.select({
+              ios: Color.ios.systemBrown,
+              android: Color.android.dynamic.primary,
+            })}>
+            {/* Simple actions */}
+            <Stack.Toolbar.MenuAction
+              icon={require('../../../assets/expo-transparent.png')}
+              iconRenderingMode="template"
+              destructive
+              onPress={() => Alert.alert('Send', 'Email sent!')}>
+              Send email
+            </Stack.Toolbar.MenuAction>
+
+            {/* Nested menu */}
+            <Stack.Toolbar.Menu title="Preferences" icon={require('../../../assets/expo-logo.png')}>
+              <Stack.Toolbar.MenuAction
+                icon="bell"
+                onPress={() => Alert.alert('Notifications', 'Toggling notifications...')}>
+                Enable notifications
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+          </Stack.Toolbar.Menu>
         </Stack.Toolbar>
 
         {/* Right header items */}
         <Stack.Toolbar placement="right">
           <Stack.Toolbar.Menu
             hidden={!showRightMenu1}
-            icon="ellipsis.circle"
+            icon={
+              process.env.EXPO_OS === 'ios'
+                ? 'ellipsis.circle'
+                : require('../../../assets/expo-logo.png')
+            }
+            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}
             title="Actions"
+            tintColor={Platform.select({
+              ios: Color.ios.systemBrown,
+              android: Color.android.dynamic.primary,
+            })}
             style={{
               color: '#00f',
               fontFamily: 'Arial',
             }}>
-              <Stack.Toolbar.Label>Menu</Stack.Toolbar.Label>
-              <Stack.Toolbar.Badge
-                style={{
-                  backgroundColor: '#eee',
-                  fontFamily: 'Courier New',
-                  fontWeight: 100,
-                }}>
-                99
-              </Stack.Toolbar.Badge>
+            <Stack.Toolbar.Label>Menu</Stack.Toolbar.Label>
+            <Stack.Toolbar.Badge
+              style={{
+                backgroundColor: '#eee',
+                fontFamily: 'Courier New',
+                fontWeight: 100,
+              }}>
+              {menuBadgeContent}
+            </Stack.Toolbar.Badge>
 
-              {/* Simple actions */}
-              <Stack.Toolbar.MenuAction onPress={handleSendEmail}>
-                <Stack.Toolbar.Label>Send email</Stack.Toolbar.Label>
-                <Stack.Toolbar.Icon sf="paperplane" />
+            {/* Simple actions */}
+            <Stack.Toolbar.MenuAction
+              icon={process.env.EXPO_OS === 'ios' ? undefined : sendIcon}
+              onPress={handleSendEmail}>
+              <Stack.Toolbar.Label>Send email</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="paperplane" />
+            </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.MenuAction
+              icon={process.env.EXPO_OS === 'ios' ? undefined : deleteIcon}
+              destructive
+              onPress={handleDeleteEmail}>
+              <Stack.Toolbar.Label>Delete email</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="trash" />
+            </Stack.Toolbar.MenuAction>
+
+            {/* Toggle action */}
+            <Stack.Toolbar.MenuAction isOn={emailsArchived} onPress={handleArchiveToggle}>
+              <Stack.Toolbar.Label>
+                {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
+              </Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf={emailsArchived ? 'tray.full' : 'tray'} />
+            </Stack.Toolbar.MenuAction>
+
+            {/* Nested inline menu - View mode */}
+            <Stack.Toolbar.Menu inline>
+              <Stack.Toolbar.Label>View Mode</Stack.Toolbar.Label>
+              <Stack.Toolbar.MenuAction
+                isOn={viewMode === 'icons'}
+                onPress={() => handleViewModeSelect('icons')}>
+                <Stack.Toolbar.Label>Icons</Stack.Toolbar.Label>
+                <Stack.Toolbar.Icon sf="square.grid.2x2" />
               </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction destructive onPress={handleDeleteEmail}>
-                <Stack.Toolbar.Label>Delete email</Stack.Toolbar.Label>
-                <Stack.Toolbar.Icon sf="trash" />
-              </Stack.Toolbar.MenuAction>
-
-              {/* Toggle action */}
-              <Stack.Toolbar.MenuAction isOn={emailsArchived} onPress={handleArchiveToggle}>
-                <Stack.Toolbar.Label>
-                  {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
-                </Stack.Toolbar.Label>
-                <Stack.Toolbar.Icon sf={emailsArchived ? 'tray.full' : 'tray'} />
-              </Stack.Toolbar.MenuAction>
-
-              {/* Nested inline menu - View mode */}
-              <Stack.Toolbar.Menu inline>
-                <Stack.Toolbar.Label>View Mode</Stack.Toolbar.Label>
-                <Stack.Toolbar.MenuAction
-                  isOn={viewMode === 'icons'}
-                  onPress={() => handleViewModeSelect('icons')}>
-                  <Stack.Toolbar.Label>Icons</Stack.Toolbar.Label>
-                  <Stack.Toolbar.Icon sf="square.grid.2x2" />
-                </Stack.Toolbar.MenuAction>
-                <Stack.Toolbar.MenuAction
-                  isOn={viewMode === 'list'}
-                  onPress={() => handleViewModeSelect('list')}>
-                  <Stack.Toolbar.Label>List</Stack.Toolbar.Label>
-                  <Stack.Toolbar.Icon sf="list.bullet" />
-                </Stack.Toolbar.MenuAction>
-              </Stack.Toolbar.Menu>
-
-              {/* Nested inline menu - Sort by */}
-              <Stack.Toolbar.Menu inline>
-                <Stack.Toolbar.Label>Sort By</Stack.Toolbar.Label>
-                <Stack.Toolbar.MenuAction
-                  isOn={sortBy === 'name'}
-                  subtitle="Ascending"
-                  onPress={() => handleSortBySelect('name')}>
-                  Name
-                </Stack.Toolbar.MenuAction>
-                <Stack.Toolbar.MenuAction
-                  isOn={sortBy === 'kind'}
-                  onPress={() => handleSortBySelect('kind')}>
-                  Kind
-                </Stack.Toolbar.MenuAction>
-                <Stack.Toolbar.MenuAction
-                  isOn={sortBy === 'date'}
-                  onPress={() => handleSortBySelect('date')}>
-                  Date
-                </Stack.Toolbar.MenuAction>
-                <Stack.Toolbar.MenuAction
-                  isOn={sortBy === 'size'}
-                  onPress={() => handleSortBySelect('size')}>
-                  Size
-                </Stack.Toolbar.MenuAction>
-                <Stack.Toolbar.MenuAction
-                  isOn={sortBy === 'tags'}
-                  onPress={() => handleSortBySelect('tags')}>
-                  Tags
-                </Stack.Toolbar.MenuAction>
-              </Stack.Toolbar.Menu>
-
-              {/* Nested menu - Preferences */}
-              <Stack.Toolbar.Menu title="Preferences">
-                <Stack.Toolbar.MenuAction
-                  isOn={notificationsEnabled}
-                  onPress={handleNotificationsToggle}>
-                  <Stack.Toolbar.Label>
-                    {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
-                  </Stack.Toolbar.Label>
-                  <Stack.Toolbar.Icon sf="bell" />
-                </Stack.Toolbar.MenuAction>
-
-                {/* Color selection submenu */}
-                <Stack.Toolbar.Menu inline title="Favorite Color">
-                  <Stack.Toolbar.MenuAction
-                    isOn={favoriteColors.includes('red')}
-                    onPress={() => handleColorSelect('red')}>
-                    <Stack.Toolbar.Label>Red</Stack.Toolbar.Label>
-                    <Stack.Toolbar.Icon sf="circle.fill" />
-                  </Stack.Toolbar.MenuAction>
-                  <Stack.Toolbar.MenuAction
-                    isOn={favoriteColors.includes('blue')}
-                    onPress={() => handleColorSelect('blue')}>
-                    <Stack.Toolbar.Label>Blue</Stack.Toolbar.Label>
-                    <Stack.Toolbar.Icon sf="circle.fill" />
-                  </Stack.Toolbar.MenuAction>
-                  <Stack.Toolbar.MenuAction
-                    isOn={favoriteColors.includes('green')}
-                    onPress={() => handleColorSelect('green')}>
-                    <Stack.Toolbar.Label>Green</Stack.Toolbar.Label>
-                    <Stack.Toolbar.Icon sf="circle.fill" />
-                  </Stack.Toolbar.MenuAction>
-                </Stack.Toolbar.Menu>
-              </Stack.Toolbar.Menu>
-
-              {/* Palette menu */}
-              <Stack.Toolbar.Menu palette destructive title="quick-actions">
-                <Label>Quick Actions</Label>
-                <Stack.Toolbar.MenuAction isOn icon="star" onPress={() => Alert.alert('Star')}>
-                  Star
-                </Stack.Toolbar.MenuAction>
-                <Stack.Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
-                  Flag
-                </Stack.Toolbar.MenuAction>
-                <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
-                  Pin
-                </Stack.Toolbar.MenuAction>
-              </Stack.Toolbar.Menu>
-
-              {/* Disabled action */}
-              <Stack.Toolbar.MenuAction disabled onPress={() => {}}>
-                <Stack.Toolbar.Label>Locked action</Stack.Toolbar.Label>
-                <Stack.Toolbar.Icon sf="lock" />
+              <Stack.Toolbar.MenuAction
+                isOn={viewMode === 'list'}
+                onPress={() => handleViewModeSelect('list')}>
+                <Stack.Toolbar.Label>List</Stack.Toolbar.Label>
+                <Stack.Toolbar.Icon sf="list.bullet" />
               </Stack.Toolbar.MenuAction>
             </Stack.Toolbar.Menu>
+
+            {/* Nested inline menu - Sort by */}
+            <Stack.Toolbar.Menu inline>
+              <Stack.Toolbar.Label>Sort By</Stack.Toolbar.Label>
+              <Stack.Toolbar.MenuAction
+                isOn={sortBy === 'name'}
+                subtitle="Ascending"
+                onPress={() => handleSortBySelect('name')}>
+                Name
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction
+                isOn={sortBy === 'kind'}
+                onPress={() => handleSortBySelect('kind')}>
+                Kind
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction
+                isOn={sortBy === 'date'}
+                onPress={() => handleSortBySelect('date')}>
+                Date
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction
+                isOn={sortBy === 'size'}
+                onPress={() => handleSortBySelect('size')}>
+                Size
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction
+                isOn={sortBy === 'tags'}
+                onPress={() => handleSortBySelect('tags')}>
+                Tags
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+
+            {/* Nested menu - Preferences */}
+            <Stack.Toolbar.Menu title="Preferences">
+              <Stack.Toolbar.MenuAction
+                isOn={notificationsEnabled}
+                onPress={handleNotificationsToggle}>
+                <Stack.Toolbar.Label>
+                  {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
+                </Stack.Toolbar.Label>
+                <Stack.Toolbar.Icon sf="bell" />
+              </Stack.Toolbar.MenuAction>
+
+              {/* Color selection submenu */}
+              <Stack.Toolbar.Menu inline title="Favorite Color">
+                <Stack.Toolbar.MenuAction
+                  isOn={favoriteColors.includes('red')}
+                  onPress={() => handleColorSelect('red')}>
+                  <Stack.Toolbar.Label>Red</Stack.Toolbar.Label>
+                  <Stack.Toolbar.Icon sf="circle.fill" />
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction
+                  isOn={favoriteColors.includes('blue')}
+                  onPress={() => handleColorSelect('blue')}>
+                  <Stack.Toolbar.Label>Blue</Stack.Toolbar.Label>
+                  <Stack.Toolbar.Icon sf="circle.fill" />
+                </Stack.Toolbar.MenuAction>
+                <Stack.Toolbar.MenuAction
+                  isOn={favoriteColors.includes('green')}
+                  onPress={() => handleColorSelect('green')}>
+                  <Stack.Toolbar.Label>Green</Stack.Toolbar.Label>
+                  <Stack.Toolbar.Icon sf="circle.fill" />
+                </Stack.Toolbar.MenuAction>
+              </Stack.Toolbar.Menu>
+            </Stack.Toolbar.Menu>
+
+            {/* Palette menu */}
+            <Stack.Toolbar.Menu palette destructive title="quick-actions">
+              <Label>Quick Actions</Label>
+              <Stack.Toolbar.MenuAction isOn icon="star" onPress={() => Alert.alert('Star')}>
+                Star
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
+                Flag
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+                Pin
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+
+            {/* Disabled action */}
+            <Stack.Toolbar.MenuAction disabled onPress={() => {}}>
+              <Stack.Toolbar.Label>Locked action</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="lock" />
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
 
           <Stack.Toolbar.Menu hidden={!showRightMenu2} title="second-menu">
             <Stack.Toolbar.Label>Second</Stack.Toolbar.Label>
@@ -310,9 +380,45 @@ export default function HeaderItemsScreen() {
 
           <Stack.Toolbar.Button
             hidden={!showSearchButton}
-            icon="magnifyingglass"
+            icon={process.env.EXPO_OS === 'ios' ? 'magnifyingglass' : searchIcon}
             onPress={handleSearchPress}
           />
+
+          {/* Xcasset icon buttons */}
+          <Stack.Toolbar.Button
+            hidden={!showXcassetButton1}
+            onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
+            <Stack.Toolbar.Icon xcasset="expo-logo" />
+          </Stack.Toolbar.Button>
+          <Stack.Toolbar.Button
+            hidden={!showXcassetButton2}
+            tintColor={Color.ios.systemTeal}
+            onPress={() => Alert.alert('Xcasset Button', 'expo-transparent pressed')}>
+            <Stack.Toolbar.Icon xcasset="expo-transparent" />
+          </Stack.Toolbar.Button>
+
+          {/* Xcasset icon menus */}
+          <Stack.Toolbar.Menu hidden={!showXcassetMenu1} title="Xcasset Menu 1">
+            <Stack.Toolbar.Icon xcasset="expo-logo" />
+            <Stack.Toolbar.Label>Expo Logo</Stack.Toolbar.Label>
+            <Stack.Toolbar.MenuAction
+              onPress={() => Alert.alert('Action', 'Action from expo-logo menu')}>
+              <Stack.Toolbar.Label>Logo Action</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="star" />
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+          <Stack.Toolbar.Menu
+            hidden={!showXcassetMenu2}
+            title="Xcasset Menu 2"
+            tintColor={Color.ios.systemTeal}>
+            <Stack.Toolbar.Icon xcasset="expo-transparent" />
+            <Stack.Toolbar.Label>Expo Transparent</Stack.Toolbar.Label>
+            <Stack.Toolbar.MenuAction
+              onPress={() => Alert.alert('Action', 'Action from expo-transparent menu')}>
+              <Stack.Toolbar.Label>Transparent Action</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="star" />
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
         </Stack.Toolbar>
       </Stack.Screen>
 
@@ -382,6 +488,19 @@ export default function HeaderItemsScreen() {
               onValueChange={setShowLeftMenu}
             />
           </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Menu Badge Content</Text>
+            <TextInput
+              testID="input-menu-badge-content"
+              style={styles.textInput}
+              value={menuBadgeContent}
+              onChangeText={setMenuBadgeContent}
+              placeholder="Badge text"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </View>
         </View>
 
         <View style={styles.section}>
@@ -420,6 +539,42 @@ export default function HeaderItemsScreen() {
               testID="toggle-search-button"
               value={showSearchButton}
               onValueChange={setShowSearchButton}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Button (expo-logo)</Text>
+            <Switch
+              testID="toggle-xcasset-button-1"
+              value={showXcassetButton1}
+              onValueChange={setShowXcassetButton1}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Button (expo-transparent)</Text>
+            <Switch
+              testID="toggle-xcasset-button-2"
+              value={showXcassetButton2}
+              onValueChange={setShowXcassetButton2}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Menu (expo-logo)</Text>
+            <Switch
+              testID="toggle-xcasset-menu-1"
+              value={showXcassetMenu1}
+              onValueChange={setShowXcassetMenu1}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Menu (expo-transparent)</Text>
+            <Switch
+              testID="toggle-xcasset-menu-2"
+              value={showXcassetMenu2}
+              onValueChange={setShowXcassetMenu2}
             />
           </View>
         </View>
@@ -525,6 +680,15 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     flex: 1,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    minWidth: 100,
+    fontSize: 16,
   },
   stateText: {
     fontSize: 14,

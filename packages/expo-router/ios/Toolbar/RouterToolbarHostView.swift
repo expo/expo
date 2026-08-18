@@ -3,6 +3,9 @@ import RNScreens
 import UIKit
 
 class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
+  // Cached reference to the view controller to avoid responder chain traversal
+  private weak var cachedController: RNSScreen?
+
   // Mutable map of toolbar items
   var toolbarItemsArray: [String] = []
   var toolbarItemsMap: [String: RouterToolbarItemView] = [:]
@@ -70,8 +73,8 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
               return nil
             }
             let item = UIBarButtonItem(
-              title: menu.title,
-              image: menu.icon.flatMap { UIImage(systemName: $0) },
+              title: menu.label,
+              image: menu.image,
               primaryAction: nil,
               menu: menu.uiAction as? UIMenu
             )
@@ -91,8 +94,8 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
             item.isEnabled = !menu.disabled
             if let accessibilityLabel = menu.accessibilityLabelForMenu {
               item.accessibilityLabel = accessibilityLabel
-            } else {
-              item.accessibilityLabel = menu.title
+            } else if let label = menu.label {
+              item.accessibilityLabel = label
             }
             if let accessibilityHint = menu.accessibilityHintForMenu {
               item.accessibilityHint = accessibilityHint
@@ -111,7 +114,9 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
 
         controller.setToolbarItems(items, animated: true)
         controller.navigationController?.setToolbarHidden(
-          false, animated: true)
+          false,
+          animated: true
+        )
         return
       }
     }
@@ -149,7 +154,8 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
     } else if let menu = childComponentView as? LinkPreviewNativeActionView {
       if menu.identifier.isEmpty {
         logger?.warn(
-          "[expo-router] Menu identifier is empty. This is most likely a bug in expo-router.")
+          "[expo-router] Menu identifier is empty. This is most likely a bug in expo-router."
+        )
         return
       }
       removeToolbarItemWithId(menu.identifier)
@@ -163,8 +169,17 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
 
   override func didMoveToWindow() {
     super.didMoveToWindow()
-    // Update toolbar items when the view is added to the window
-    updateToolbarItems()
+    if window == nil {
+      // View was removed from window - hide toolbar and clear items
+      // Use cached controller since responder chain may be broken
+      if let controller = cachedController {
+        controller.setToolbarItems(nil, animated: true)
+      }
+      cachedController = nil // Clear cache when removed from window
+    } else {
+      // View was added to window - update toolbar items
+      updateToolbarItems()
+    }
   }
 
   func updateMenu() {
@@ -172,10 +187,14 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   }
 
   func findViewController() -> RNSScreen? {
+    if let cached = cachedController {
+      return cached
+    }
     var responder: UIResponder? = self
     while let r = responder {
-      if let r = r as? RNSScreen {
-        return r
+      if let screen = r as? RNSScreen {
+        cachedController = screen
+        return screen
       }
       responder = r.next
     }

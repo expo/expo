@@ -6,10 +6,10 @@ hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll create our example app's production version and submit it for testing using TestFlight. After that, we'll submit them for App Store review to get it on the App Store.
@@ -17,16 +17,20 @@ In this chapter, we'll create our example app's production version and submit it
 <VideoBoxLink
   videoId="VZL_e0cEwo8"
   title="Watch: Creating and releasing a production build for iOS"
+  description="Create a production build for iOS with EAS, test it using TestFlight, and submit it to the App Store."
 />
 
 ---
 
-## Prerequisites
-
-To publish and distribute an app on the Apple Play Store, we need:
-
-- **Apple Developer account:** To create one, see [Apple Developer Portal](https://developer.apple.com/account/).
-- **Production build profile:** Ensure that a `production` build profile is present in your **eas.json**, which is added by default.
+<Prerequisites>
+  <Requirement title="Apple Developer account">
+    To create one, see the [Apple Developer Portal](https://developer.apple.com/account/).
+  </Requirement>
+  <Requirement title="A production build profile in eas.json">
+    Ensure that a `production` build profile is present in your **eas.json**, which is added by
+    default.
+  </Requirement>
+</Prerequisites>
 
 ## Production build for iOS
 
@@ -44,7 +48,7 @@ Run the `eas credentials` command in the terminal and then answer the following 
 - **What do you want to do?** Select **Build credentials** and choose **All: Set up all the required credentials to build your project**.
 - Now, it will prompt whether we want to re-use the previous Distribution Certificate. Press <kbd>Y</kbd>.
 - **Generate a new Apple Provisioning Profile?** Press <kbd>Y</kbd>. This will be the provisioning profile for the production app.
-- Once the profiles are created, press any <kbd>ctrl</kbd> + <kbd>c</kbd> to exit the EAS CLI.
+- Once the profiles are created, press any <kbd>Ctrl</kbd> + <kbd>C</kbd> to exit the EAS CLI.
 
 </Step>
 
@@ -64,7 +68,7 @@ The command will queue the build. Notice on the EAS dashboard that the **Build N
 
 ## Submit the app binary to the App Store
 
-To submit the app binary created from our latest EAS Build, run the [`eas submit`](/submit/introduction/) command:
+To submit the app binary created from our latest EAS Build, run the [`eas submit`](/submit/ios/) command:
 
 <Terminal cmd={['$ eas submit --platform ios']} />
 
@@ -92,7 +96,7 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 
 <ContentSpotlight
   alt="Create a test user group in App Store Connect"
-  src="/static/images/tutorial/eas/app-store-01.png"
+  src="/static/images/tutorial/eas/app-store-01.webp"
   className="max-w-[800px]"
 />
 
@@ -114,7 +118,7 @@ After the submission process is complete, we'll need to log in to the Apple Deve
 
 After that, the app will download on our device so that we can test it.
 
-> **Note**: Similar to internal testing, we can also create a group for inviting external testers using TestFlight. Where internal testing has a limit of 100 users, TestFlight allows sharing a test release version externally with up to 10,000 testers and provides a publicly shareable link. For brevity, we are not going to cover those steps in this tutorial.
+> **Note**: Similar to internal testing, we can also create a group for inviting external testers using TestFlight. Where internal testing has a limit of 100 users, TestFlight allows sharing a test release version externally with up to 10,000 testers and provides a publicly shareable link. For step-by-step instructions, see [Distribute an iOS app with TestFlight](/submit/testflight/).
 
 </Step>
 
@@ -166,17 +170,4 @@ For future releases, we can streamline the process by combining build creation a
 
 ## Summary
 
-<ProgressTracker
-  currentChapterIndex={8}
-  name="EAS_TUTORIAL"
-  summary={
-    <>
-      We successfully created a production-ready iOS build, discussed distribution using TestFlight
-      and Apple App Store using <CODE>eas submit</CODE>, and automated the release process with the{' '}
-      <CODE>--auto-submit</CODE>.
-    </>
-  }
-  nextChapterDescription="In the next chapter, learn how to use the EAS Update to send OTA updates and share previews with our team."
-  nextChapterTitle="Share previews with your team"
-  nextChapterLink="/tutorial/eas/team-development/"
-/>
+<ProgressTracker name="EAS_TUTORIAL" currentChapterSlug="/tutorial/eas/ios-production-build" />

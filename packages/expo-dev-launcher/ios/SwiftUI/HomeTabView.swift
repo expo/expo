@@ -17,6 +17,12 @@ struct HomeTabView: View {
             crashReportBanner
           }
 
+          #if !targetEnvironment(simulator)
+          if viewModel.permissionStatus == .denied {
+            NetworkPermissionsBanner()
+          }
+          #endif
+
           DevServersView(showingInfoDialog: $showingInfoDialog)
 
           if !viewModel.recentlyOpenedApps.isEmpty {
@@ -49,13 +55,21 @@ struct HomeTabView: View {
         }
         .padding()
       }
+      #if !os(tvOS)
+      .refreshable {
+        await viewModel.refreshDevServers()
+      }
+      #endif
     }
     #if os(tvOS)
     .background()
     #endif
-    .overlay(
-      DevServerInfoModal(showingInfoDialog: $showingInfoDialog)
-    )
+    .onAppear {
+      viewModel.loadRecentlyOpenedApps()
+    }
+    .sheet(isPresented: $showingInfoDialog) {
+      DevServerInfoModal()
+    }
   }
 
   private var crashReportBanner: some View {
@@ -76,7 +90,38 @@ struct HomeTabView: View {
   }
 }
 
-#Preview {
-  HomeTabView()
+struct NetworkPermissionsBanner: View {
+  var body: some View {
+    Button {
+#if os(iOS)
+      if let url = URL(string: UIApplication.openSettingsURLString) {
+        UIApplication.shared.open(url)
+      }
+#endif
+    } label: {
+      HStack {
+        Image(systemName: "wifi.exclamationmark")
+          .font(.title2)
+          .foregroundColor(.orange)
+        VStack(alignment: .leading, spacing: 4) {
+          Text("Local Network Access Disabled")
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundColor(.primary)
+          Text("Dev servers can't be discovered. Tap to open Settings and enable Local Network access.")
+            .font(.footnote)
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.leading)
+        }
+        Spacer()
+        Image(systemName: "gear")
+          .foregroundColor(.secondary)
+      }
+      .padding()
+    }
+    .buttonStyle(PlainButtonStyle())
+    .background(Color.expoSecondarySystemGroupedBackground)
+    .cornerRadius(18)
+  }
 }
 // swiftlint:enable closure_body_length

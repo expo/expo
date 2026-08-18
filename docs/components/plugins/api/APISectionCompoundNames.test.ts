@@ -63,6 +63,26 @@ describe('buildCompoundNameByComponent', () => {
       Tab: 'Tabs.Tab',
     });
   });
+
+  test('prefers depth-2 path over deeper alias for the same component', () => {
+    const stackTitle = makeComponent('StackTitle', 'StackTitleProps');
+    const stackScreen = makeComponent('StackScreen', 'StackScreenProps', [
+      makeProp('Title', makeComponentType('StackTitleProps')),
+    ]);
+    const stack = makeComponent('Stack', 'StackProps', [
+      makeProp('Screen', makeComponentType('StackScreenProps')),
+      makeProp('Title', makeComponentType('StackTitleProps')),
+    ]);
+
+    const result = Object.fromEntries(
+      buildCompoundNameByComponent([stack, stackScreen, stackTitle])
+    );
+
+    expect(result).toEqual({
+      StackScreen: 'Stack.Screen',
+      StackTitle: 'Stack.Title',
+    });
+  });
 });
 
 describe('deriveComponentsFromProps', () => {

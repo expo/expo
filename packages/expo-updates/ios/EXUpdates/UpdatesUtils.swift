@@ -16,6 +16,22 @@ internal extension Array where Element: Equatable {
   }
 }
 
+/**
+ * In brownfield setups the Expo project is packaged as an xcframework, so
+ * resources like Expo.plist, main.jsbundle, and image assets live in the
+ * framework bundle instead of the host app's main bundle.
+ *
+ * `updatesBundle` resolves to whichever bundle actually contains the
+ * expo-updates resources at runtime: `Bundle.main` for standard apps,
+ * or the framework bundle for brownfield xcframeworks.
+ */
+internal let updatesBundle: Bundle = {
+  if Bundle.main.path(forResource: "Expo", ofType: "plist") != nil {
+    return Bundle.main
+  }
+  return Bundle(for: UpdatesUtils.self)
+}()
+
 @objc(EXUpdatesUtils)
 @objcMembers
 public final class UpdatesUtils: NSObject {
@@ -57,6 +73,23 @@ public final class UpdatesUtils: NSObject {
       try fileManager.createDirectory(atPath: updatesDirectoryPath, withIntermediateDirectories: true)
     }
     return updatesDirectory
+  }
+
+  /**
+   * Asset filenames are built from manifest-controlled values, so a filename holding a path
+   * separator or a `..` component would resolve outside the updates directory.
+   *
+   * Matching is done on unicode scalars because `String.contains` compares grapheme clusters, and
+   * a separator followed by a combining mark forms one cluster that does not equal the separator.
+   * The filesystem still sees the separator byte.
+   */
+  public static func isSafeFilename(_ filename: String) -> Bool {
+    return !filename.isEmpty &&
+      filename != "." &&
+      filename != ".." &&
+      !filename.unicodeScalars.contains("/") &&
+      !filename.unicodeScalars.contains("\\") &&
+      !filename.unicodeScalars.contains("\0")
   }
 
   // MARK: - Internal methods
@@ -110,16 +143,16 @@ public final class UpdatesUtils: NSObject {
 
   internal static func url(forBundledAsset asset: UpdateAsset) -> URL? {
     guard let mainBundleDir = asset.mainBundleDir else {
-      return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type)
+      return updatesBundle.url(forResource: asset.mainBundleFilename, withExtension: asset.type)
     }
-    return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type, subdirectory: mainBundleDir)
+    return updatesBundle.url(forResource: asset.mainBundleFilename, withExtension: asset.type, subdirectory: mainBundleDir)
   }
 
   internal static func path(forBundledAsset asset: UpdateAsset) -> String? {
     guard let mainBundleDir = asset.mainBundleDir else {
-      return Bundle.main.path(forResource: asset.mainBundleFilename, ofType: asset.type)
+      return updatesBundle.path(forResource: asset.mainBundleFilename, ofType: asset.type)
     }
-    return Bundle.main.path(forResource: asset.mainBundleFilename, ofType: asset.type, inDirectory: mainBundleDir)
+    return updatesBundle.path(forResource: asset.mainBundleFilename, ofType: asset.type, inDirectory: mainBundleDir)
   }
 
   /**
@@ -143,6 +176,14 @@ public final class UpdatesUtils: NSObject {
 
   internal static func isUsingCustomInitialization() -> Bool {
 #if EX_UPDATES_CUSTOM_INIT
+    return true
+#else
+    return false
+#endif
+  }
+
+  internal static func shouldCopyEmbeddedAssets() -> Bool {
+#if EX_UPDATES_COPY_EMBEDDED_ASSETS
     return true
 #else
     return false

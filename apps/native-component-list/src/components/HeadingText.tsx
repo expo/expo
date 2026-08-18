@@ -1,11 +1,20 @@
-import React, { PropsWithChildren } from 'react';
+import { type ThemeType, useTheme } from 'ThemeProvider';
+import { PropsWithChildren } from 'react';
 import { StyleSheet, Text, TextProps, View } from 'react-native';
 
-const HeadingText = ({ children, style }: PropsWithChildren<TextProps>) => (
-  <View style={styles.container}>
-    <Text style={[styles.headingText, style]}>{children}</Text>
-  </View>
-);
+type Props = PropsWithChildren<TextProps> & {
+  color?: keyof ThemeType['text'];
+};
+
+const HeadingText = ({ children, color = 'default', style }: Props) => {
+  const { theme } = useTheme();
+
+  return (
+    <View style={styles.container}>
+      <Text style={[styles.headingText, { color: theme.text[color] }, style]}>{children}</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

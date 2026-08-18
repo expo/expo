@@ -1,9 +1,9 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { useMemo, type ReactNode } from 'react';
 import { StyleSheet, type ColorValue, type StyleProp } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
 
-import { Screen } from '../../views/Screen';
+import { useCompositionOption } from '../../fork/native-stack/composition-options';
+import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 
 export interface StackHeaderProps {
   /**
@@ -23,6 +23,17 @@ export interface StackHeaderProps {
    * @default false
    */
   asChild?: boolean;
+  /**
+   * Whether the header should be transparent.
+   * When `true`, the header is absolutely positioned and content scrolls underneath.
+   *
+   * Auto-enabled when:
+   * - `style.backgroundColor` is 'transparent'
+   * - `blurEffect` is set (required for blur to work)
+   *
+   * @default false
+   */
+  transparent?: boolean;
   /**
    * The blur effect to apply to the header background on iOS.
    * Common values include 'regular', 'prominent', 'systemMaterial', etc.
@@ -92,12 +103,33 @@ export interface StackHeaderProps {
  *   );
  * }
  * ```
+ *
+ * > **Note:** If multiple instances of this component are rendered for the same screen,
+ * the last one rendered in the component tree takes precedence.
  */
-export function StackHeaderComponent(props: StackHeaderProps) {
-  // This component will only render when used inside a page
-  // but only if it is not wrapped in Stack.Screen
-  const updatedOptions = useMemo(() => appendStackHeaderPropsToOptions({}, props), [props]);
-  return <Screen options={updatedOptions} />;
+export function StackHeaderComponent({
+  children,
+  hidden,
+  asChild,
+  transparent,
+  blurEffect,
+  style,
+  largeStyle,
+}: StackHeaderProps) {
+  const options = useMemo(
+    () =>
+      appendStackHeaderPropsToOptions(
+        {},
+        // satisfies ensures every prop is listed here
+        { children, hidden, asChild, transparent, blurEffect, style, largeStyle } satisfies Record<
+          keyof StackHeaderProps,
+          unknown
+        >
+      ),
+    [children, hidden, asChild, transparent, blurEffect, style, largeStyle]
+  );
+  useCompositionOption(options);
+  return null;
 }
 
 export function appendStackHeaderPropsToOptions(
@@ -119,17 +151,37 @@ export function appendStackHeaderPropsToOptions(
     console.warn(`To render a custom header, set the 'asChild' prop to true on Stack.Header.`);
   }
 
+  // Determine if header should be transparent:
+  // 1. Explicitly set via `transparent` prop
+  // 2. Implicitly via backgroundColor === 'transparent'
+  // 3. Implicitly when blurEffect is set (required for blurEffect to work)
+  const isBackgroundTransparent = flattenedStyle?.backgroundColor === 'transparent';
+  const hasBlurEffect = props.blurEffect !== undefined;
+  const shouldBeTransparent =
+    props.transparent === true ||
+    (props.transparent !== false && (isBackgroundTransparent || hasBlurEffect));
+
+  // Warn if blurEffect is set but transparent is explicitly false
+  if (props.blurEffect && props.transparent === false) {
+    console.warn(`Stack.Header: 'blurEffect' requires 'transparent' to be enabled.`);
+  }
+
   return {
     ...options,
     headerShown: !props.hidden,
     headerBlurEffect: props.blurEffect,
+    ...(shouldBeTransparent && { headerTransparent: true }),
+    ...(props.transparent === false && { headerTransparent: false }),
+    ...(flattenedStyle?.color && { headerTintColor: flattenedStyle.color as string }),
     headerStyle: {
       backgroundColor: flattenedStyle?.backgroundColor as string | undefined,
     },
     headerLargeStyle: {
       backgroundColor: flattenedLargeStyle?.backgroundColor as string | undefined,
     },
-    headerShadowVisible: flattenedStyle?.shadowColor !== 'transparent',
-    headerLargeTitleShadowVisible: flattenedLargeStyle?.shadowColor !== 'transparent',
+    ...(flattenedStyle?.shadowColor === 'transparent' && { headerShadowVisible: false }),
+    ...(flattenedLargeStyle?.shadowColor === 'transparent' && {
+      headerLargeTitleShadowVisible: false,
+    }),
   };
 }

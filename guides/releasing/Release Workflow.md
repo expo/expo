@@ -13,7 +13,7 @@
 - Assign someone to update each listed module. If you're not sure who to assign, look at who updated it previously.
 - Update each listed module separately, and test examples in NCL/test-suite to make sure none of the changes are unexpectedly breaking.
   - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
-- Pay extra attention to messages and warnings printed along the way for each module. Sometimes these's need for some extra manual work to be done in the updated files.
+- Pay extra attention to messages and warnings printed along the way for each module. Sometimes there's need for some extra manual work to be done in the updated files.
 - Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
 - Make sure that each individual library update lands on `main` as a **separate commit** so that it's easy to revert later on if needed.
 
@@ -73,6 +73,7 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 
 **How:**
 
+- Make sure Xcode 26.4.1 is installed in `/Applications` (it can coexist with newer Xcodes). `et publish-packages` automatically points the iOS prebuild step at it via `DEVELOPER_DIR` regardless of which Xcode is active, and fails fast with a clear error if 26.4.1 isn't found. This pin matters because the npm-bundled iOS xcframeworks embed the producing Swift compiler version in their `.swiftinterface` headers, and Swift refuses to consume an interface produced by a newer compiler — publishing on a newer Xcode would break every EAS Build worker and consumer on an older one.
 - Run `et publish-packages`. Talk to @tsapeta for more details/information.
 - Run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 
@@ -106,14 +107,21 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 
 **Why:** We store separate versions of API reference docs for each SDK version. We need to version the docs as soon as we cut the release branch so that docs changes that land on main between cutting the release branch and the release date get applied to the new SDK version or not, as appropriate.
 
-**How:**
+**How:** Run the **Docs SDK Beta** workflow (`.github/workflows/docs-sdk-beta.yml`) from the Actions tab, passing the major version to cut as `sdkVersion`, for example `58`. Do this immediately before cutting the release branch.
 
-- Do this step immediately before cutting the release branch.
-- Run `et generate-docs-api-data` to regenerate `unversioned` API data files before cutting new documentation version.
-- Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK.
-- Run `yarn run schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
-- Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
-- Commit and push changes to main.
+The run takes care of:
+
+- Refreshing the canary example on the Reference index.
+- Regenerating the `unversioned` API data (`et generate-docs-api-data`).
+- Generating the versioned reference docs for the new SDK (`et generate-sdk-docs`).
+- Cloning hardcoded type links into the new version directory.
+- Syncing the app config schema and repointing the import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
+- Creating the `native-modules.json` stub, so the cut is not blocked on the new SDK's packages being live on `exp.host`. Run `pnpm versions-schema-sync` in `docs` to replace it once they are.
+- Archiving the previous SDK's `llms-sdk.txt` bundle and linking it from `pages/llms.mdx`.
+- Adding the new SDK's row to the compatibility table.
+- Setting `betaVersion` in `docs/package.json`, leaving `version` at the released SDK.
+
+The run never pushes to `main`. It opens a PR labelled `docs` and `preview` whose body carries a per-step status table, the files changed per directory, and a checklist of what is still manual. `docs/package.json` keeps `version` at the released SDK and gains `betaVersion`, so the new reference stays hidden in production until it is promoted.
 
 # Stage 1 - Quality Assurance
 
@@ -163,6 +171,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 **How:**
 
+- Make sure Xcode 26.4.1 is installed in `/Applications` (see [§0.6](#06-publish-next-packages) for why; `et publish-packages` will use it automatically).
 - From the main branch, run `et publish-packages` and publish all packages with changes.
 - From the main branch, run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 - If there are any packages for which a patch was cherry-picked to the release branch AND a new feature (requiring a minor version bump) was added on main in the meantime, you will need to publish a patch release of that package from the release branch which does not include the new feature.
@@ -223,8 +232,8 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Run `GITHUB_TOKEN=${GITHUB_TOKEN} et eas android-apk-upload` to download the build artifact and upload it to [the expo-go-releases GitHub repo](https://github.com/expo/expo-go-releases/releases). The `GITHUB_TOKEN` environment variable should have contents read/write access to the repo.
 - Once the job is finished, test if this simulator build work as expected. You can install and launch it using expotools command `et client-install -p {ios,android}`.
 - Ensure that you update the root `iosVersion`/`androidVersion` `iosUrl`/`androidUrl` properties, eg:
-  - `et update-versions-endpoint -k 'iosVersion' -v '2.19.3' --root`
-  - `et update-versions-endpoint -k 'iosUrl' -v 'https://dpq5q02fu5f55.cloudfront.net/Exponent-2.19.3.tar.gz' --root`
+  - `et update-versions-endpoint -k 'iosVersion' -v '55.0.9' --root`
+  - `et update-versions-endpoint -k 'iosUrl' -v 'https://github.com/expo/expo-go-releases/releases/download/Expo-Go-55.0.9/Expo-Go-55.0.9.tar.gz' --root`
 
 # Stage 3 - Sync with EAS Build
 
@@ -316,13 +325,13 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 - Monitor GitHub issues.
 - Expo team should all update any dogfooding apps they work on, including building on EAS Build, deploying updates with EAS Update, and ideally even submitting to stores.
 - Test out new features.
-- Report updates in the umbrealla issue.
+- Report updates in the umbrella issue.
 - Fix, test, repeat.
 - Update issue with fixes from latest beta release
 
 ## 4.8. Submit iOS Expo Go for review
 
-**Why:** When the Expo Go app for iOS appears to be a good candidate for the final release, we should submit it for review in order to have an accepted release ready to deploy to the App Store in one button click when we proceed to the next stage. This should be ideally be done ~1-3 days before moving on to the final release, to account for review delays.
+**Why:** When the Expo Go app for iOS appears to be a good candidate for the final release, we should submit it for review in order to have an accepted release ready to deploy to the App Store in one button click when we proceed to the next stage. This should ideally be done ~1-3 days before moving on to the final release, to account for review delays.
 
 **How:**
 
@@ -334,7 +343,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 4.9. Start release notes document
 
-**Why:** The release notes are a collaborative effort, we need contributions from folks who worked on the various improvements shipping with the release to draft brief explainations for them if they believe its worth calling out. It can take time for everyone to carve out time for this, so it's best to start it well before the final release in order to give people a week or so to contribute.
+**Why:** The release notes are a collaborative effort, we need contributions from folks who worked on the various improvements shipping with the release to draft brief explanations for them if they believe its worth calling out. It can take time for everyone to carve out time for this, so it's best to start it well before the final release in order to give people a week or so to contribute.
 
 **How:**
 

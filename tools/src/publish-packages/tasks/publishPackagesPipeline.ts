@@ -2,8 +2,10 @@ import chalk from 'chalk';
 
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { addTemplateTarball } from './addTemplateTarball';
+import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
+import { checkPackagesWithTurbo } from './checkPackagesWithTurbo';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
 // import { commentOnIssuesTask } from './commentOnIssuesTask';
 import { commitStagedChanges } from './commitStagedChanges';
@@ -13,6 +15,7 @@ import { loadRequestedParcels } from './loadRequestedParcels';
 import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
 import { pushCommittedChanges } from './pushCommittedChanges';
+import { refreshPnpmLockfile } from './refreshPnpmLockfile';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { updateAndroidProjects } from './updateAndroidProjects';
 import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
@@ -20,6 +23,7 @@ import { updateIosProjects } from './updateIosProjects';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateProjectTemplates } from './updateProjectTemplates';
+import { updateVersionsEndpoint } from './updateVersionsEndpoint';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 import Git from '../../Git';
 import logger from '../../Logger';
@@ -44,7 +48,11 @@ const cleanWorkingTree = new Task<TaskArgs>(
         // JSON files are automatically added to the index after previous tasks.
         await Git.checkoutAsync({
           ref: 'HEAD',
-          paths: ['packages/**/expo-module.config.json'],
+          paths: [
+            'apps/bare-expo/package.json',
+            'packages/**/expo-module.config.json',
+            'pnpm-lock.yaml',
+          ],
         });
         // Remove local repositories.
         await Git.cleanAsync({
@@ -54,9 +62,9 @@ const cleanWorkingTree = new Task<TaskArgs>(
         });
         // Remove tarballs.
         await Git.cleanAsync({
-          recursive: false,
+          recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz', 'templates/**/*.tgz'],
+          paths: ['packages/**/*.tgz', 'packages/**/prebuilds/**', 'templates/**/*.tgz'],
         });
       },
       'Cleaned up the working tree'
@@ -76,6 +84,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       loadRequestedParcels,
       checkPackagesIntegrity,
       selectPackagesToPublish,
+      checkPackagesWithTurbo,
       updatePackageVersions,
       updateBundledNativeModulesFile,
       updateProjectTemplates,
@@ -85,10 +94,13 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       updateIosProjects,
       addTemplateTarball,
       cutOffChangelogs,
+      refreshPnpmLockfile,
       commitStagedChanges,
       pushCommittedChanges,
       publishAndroidArtifacts,
+      bundleIOSPrebuilds,
       publishPackages,
+      updateVersionsEndpoint,
       grantTeamAccessToPackages,
       addPublishedLabelToPullRequests,
       cleanWorkingTree,

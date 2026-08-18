@@ -16,7 +16,6 @@ import expo.modules.crypto.aes.records.CiphertextOptions
 import expo.modules.crypto.aes.records.DecryptOptions
 import expo.modules.crypto.aes.records.EncryptOptions
 import expo.modules.crypto.aes.records.SealedDataConfig
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -26,10 +25,9 @@ import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 
-@OptIn(EitherType::class)
 typealias BinaryInput = Either<ByteArray, String>
 
-@OptIn(EitherType::class, ExperimentalStdlibApi::class)
+@OptIn(ExperimentalStdlibApi::class)
 class AesCryptoModule : Module() {
   private val rng: SecureRandom by lazy { SecureRandom() }
 
@@ -79,9 +77,9 @@ class AesCryptoModule : Module() {
       }
 
       StaticFunction("fromParts", this@AesCryptoModule::sealedDataFromParts)
-      StaticFunction("fromCombined") { combined: ByteArray, config: SealedDataConfig? ->
+      StaticFunction("fromCombined") { combined: BinaryInput, config: SealedDataConfig? ->
         val config = config ?: SealedDataConfig()
-        SealedData(config, content = combined)
+        SealedData(config, content = combined.toBytes())
       }
 
       AsyncFunction("iv") { sealedData: SealedData, format: DataFormat? ->

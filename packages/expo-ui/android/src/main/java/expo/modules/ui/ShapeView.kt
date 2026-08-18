@@ -1,32 +1,35 @@
 package expo.modules.ui
 
-import androidx.compose.ui.graphics.Color
-import expo.modules.kotlin.views.ComposeProps
 import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.graphics.shapes.RoundedPolygon
-import androidx.graphics.shapes.toPath
-import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
 import androidx.graphics.shapes.CornerRounding
+import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.circle
 import androidx.graphics.shapes.pill
 import androidx.graphics.shapes.pillStar
 import androidx.graphics.shapes.rectangle
 import androidx.graphics.shapes.star
+import androidx.graphics.shapes.toPath
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.ExpoViewComposableScope
+import expo.modules.kotlin.views.ComposeProps
+import expo.modules.kotlin.views.FunctionalComposableScope
 import android.graphics.Color as GraphicsColor
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class ShapeType(val value: String) : Enumerable {
   STAR("star"),
@@ -34,18 +37,29 @@ enum class ShapeType(val value: String) : Enumerable {
   PILL("pill"),
   CIRCLE("circle"),
   RECTANGLE("rectangle"),
-  POLYGON("polygon")
+  POLYGON("polygon"),
+  ROUNDED_CORNER("roundedCorner")
 }
 
+@OptimizedRecord
+data class CornerRadii(
+  @Field val topStart: Float = 0f,
+  @Field val topEnd: Float = 0f,
+  @Field val bottomStart: Float = 0f,
+  @Field val bottomEnd: Float = 0f
+) : Record
+
+@OptimizedComposeProps
 data class ShapeProps(
   val cornerRounding: Float = 0.0f,
   val smoothing: Float = 0.0f,
   val verticesCount: Int = 6,
   val innerRadius: Float = 0.0f,
   val radius: Float = 0.0f,
+  val cornerRadii: CornerRadii? = null,
   val type: ShapeType = ShapeType.CIRCLE,
   val color: GraphicsColor? = null,
-  val modifiers: List<ModifierConfig> = emptyList()
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 private fun Size.centerX() = this.width / 2
@@ -117,6 +131,22 @@ private fun createRectanglePath(size: Size, cornerRounding: Float, smoothing: Fl
   ).toPath().asComposePath()
 }
 
+private fun createRoundedCornerPath(size: Size, cornerRadii: CornerRadii?, density: Density): Path {
+  val radii = cornerRadii ?: CornerRadii()
+  val shape = RoundedCornerShape(
+    topStart = radii.topStart.dp,
+    topEnd = radii.topEnd.dp,
+    bottomStart = radii.bottomStart.dp,
+    bottomEnd = radii.bottomEnd.dp
+  )
+  return when (val outline = shape.createOutline(size, LayoutDirection.Ltr, density)) {
+    is Outline.Rectangle -> Path().apply { addRect(outline.rect) }
+    is Outline.Rounded -> Path().apply { addRoundRect(outline.roundRect) }
+    is Outline.Generic -> outline.path
+  }
+}
+
+@OptimizedRecord
 data class ShapeRecord(
   @Field
   val cornerRounding: Float = 0.0f,
@@ -129,10 +159,12 @@ data class ShapeRecord(
   @Field
   val radius: Float = 0.0f,
   @Field
+  val cornerRadii: CornerRadii? = null,
+  @Field
   val type: ShapeType = ShapeType.CIRCLE
 ) : Record
 
-fun pathFromShapeRecord(record: ShapeRecord, size: Size): Path {
+fun pathFromShapeRecord(record: ShapeRecord, size: Size, density: Density): Path {
   return runCatching {
     when (record.type) {
       ShapeType.STAR -> createStarPath(size = size, cornerRounding = record.cornerRounding, smoothing = record.smoothing, innerRadius = record.innerRadius, radius = record.radius, verticesCount = record.verticesCount)
@@ -141,6 +173,7 @@ fun pathFromShapeRecord(record: ShapeRecord, size: Size): Path {
       ShapeType.CIRCLE -> createCirclePath(size = size, radius = record.radius, verticesCount = record.verticesCount)
       ShapeType.RECTANGLE -> createRectanglePath(size = size, cornerRounding = record.cornerRounding, smoothing = record.smoothing)
       ShapeType.POLYGON -> createPolygonPath(size = size, cornerRounding = record.cornerRounding, smoothing = record.smoothing, verticesCount = record.verticesCount)
+      ShapeType.ROUNDED_CORNER -> createRoundedCornerPath(size = size, cornerRadii = record.cornerRadii, density = density)
     }
   }.getOrNull() ?: Path()
 }
@@ -149,16 +182,16 @@ fun shapeFromShapeRecord(shapeRecord: ShapeRecord?): Shape? {
   if (shapeRecord == null) return null
   return object : Shape {
     override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-      val path = pathFromShapeRecord(shapeRecord, size)
+      val path = pathFromShapeRecord(shapeRecord, size, density)
       return Outline.Generic(path)
     }
   }
 }
 
 @Composable
-fun ExpoViewComposableScope.ShapeContent(props: ShapeProps) {
+fun FunctionalComposableScope.ShapeContent(props: ShapeProps) {
   Box(
-    modifier = ModifierRegistry.applyModifiers(props.modifiers)
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
       .drawWithCache {
         val path = pathFromShapeRecord(
           ShapeRecord(
@@ -166,10 +199,12 @@ fun ExpoViewComposableScope.ShapeContent(props: ShapeProps) {
             smoothing = props.smoothing,
             innerRadius = props.innerRadius,
             radius = props.radius,
+            cornerRadii = props.cornerRadii,
             type = props.type,
             verticesCount = props.verticesCount
           ),
-          size
+          size,
+          this
         )
 
         onDrawBehind {

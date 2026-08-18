@@ -1,9 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import React
+internal import React
 import Foundation
-
-private let WORKLET_RUNTIME_KEY = "_WORKLET_RUNTIME"
+import ExpoModulesJSI
 
 // The core module that describes the `global.expo` object.
 internal final class CoreModule: Module {
@@ -28,7 +27,7 @@ internal final class CoreModule: Module {
       FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.path ?? ""
     }
 
-    Function("installOnUIRuntime") {
+    Function("installOnUIRuntime") { (uiRuntimeHolder: JavaScriptValue) in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
@@ -39,23 +38,27 @@ internal final class CoreModule: Module {
       }
 
       let runtime = try appContext.runtime
-      if !runtime.global().hasProperty(WORKLET_RUNTIME_KEY) {
+      guard uiRuntimeHolder.isObject() else {
         throw WorkletUIRuntimeException()
       }
 
-      let pointerHolder = runtime.global().getProperty(WORKLET_RUNTIME_KEY)
-      if !pointerHolder.isObject() {
+      guard let factory = AppContext.uiRuntimeFactory else {
         throw WorkletUIRuntimeException()
       }
 
-      let uiRuntimePointer = WorkletRuntimeFactory.extractRuntimePointer(pointerHolder, runtime: runtime)
-      if uiRuntimePointer == nil {
-        throw WorkletUIRuntimePointerExtractionException()
+      // Use a Sendable box to safely capture error across isolation boundaries
+      final class ErrorHolder: @unchecked Sendable {
+        var error: (any Error)?
       }
+      let errorHolder = ErrorHolder()
 
       let block = {
-        let workletRuntime = WorkletRuntimeFactory.createWorkletRuntime(appContext, fromPointer: uiRuntimePointer)
-        appContext._uiRuntime = workletRuntime
+        do {
+          let uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
+          appContext._uiRuntime = uiRuntime
+        } catch {
+          errorHolder.error = error
+        }
       }
 
       if Thread.isMainThread {
@@ -64,6 +67,10 @@ internal final class CoreModule: Module {
         DispatchQueue.main.sync {
           block()
         }
+      }
+
+      if let error = errorHolder.error {
+        throw error
       }
     }
 
@@ -127,8 +134,3 @@ internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
   }
 }
 
-internal final class WorkletUIRuntimePointerExtractionException: Exception, @unchecked Sendable {
-  override var reason: String {
-    "Cannot extract pointer to UI worklet runtime"
-  }
-}

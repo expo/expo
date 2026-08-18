@@ -1,25 +1,25 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';
-import { flattenOpenOptions, NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { type NativeDatabase, type SQLiteOpenOptions } from './NativeDatabase';
 import {
   registerDatabaseForDevToolsAsync,
   unregisterDatabaseForDevToolsAsync,
 } from './SQLiteDevToolsClient';
 import { SQLiteSession } from './SQLiteSession';
-import {
+import type {
   SQLiteBindParams,
   SQLiteExecuteAsyncResult,
   SQLiteExecuteSyncResult,
   SQLiteRunResult,
-  SQLiteStatement,
   SQLiteVariadicBindParams,
 } from './SQLiteStatement';
+import { SQLiteStatement } from './SQLiteStatement';
 import { SQLiteTaggedQuery } from './SQLiteTaggedQuery';
 import { createDatabasePath } from './pathUtils';
 
-export { SQLiteOpenOptions };
+export type { SQLiteOpenOptions } from './NativeDatabase';
 
 /**
  * A SQLite database.
@@ -539,17 +539,6 @@ export class SQLiteDatabase {
     return allRows;
   }
 
-  /**
-   * Synchronize the local database with the remote libSQL server.
-   * This method is only available from libSQL integration.
-   */
-  public syncLibSQL(): Promise<void> {
-    if (typeof this.nativeDatabase.syncLibSQL !== 'function') {
-      throw new Error('syncLibSQL is not supported in the current environment');
-    }
-    return this.nativeDatabase.syncLibSQL();
-  }
-
   //#endregion
 }
 
@@ -581,10 +570,7 @@ export async function openDatabaseAsync(
   const openOptions = options ?? {};
   const databasePath = createDatabasePath(databaseName, directory);
   await ExpoSQLite.ensureDatabasePathExistsAsync(databasePath);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(
-    databasePath,
-    flattenOpenOptions(openOptions)
-  );
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
   await nativeDatabase.initAsync();
   const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
   if (options?.useNewConnection !== true) {
@@ -610,10 +596,7 @@ export function openDatabaseSync(
   const openOptions = options ?? {};
   const databasePath = createDatabasePath(databaseName, directory);
   ExpoSQLite.ensureDatabasePathExistsSync(databasePath);
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(
-    databasePath,
-    flattenOpenOptions(openOptions)
-  );
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(databasePath, openOptions);
   nativeDatabase.initSync();
   const database = new SQLiteDatabase(databasePath, openOptions, nativeDatabase);
   if (options?.useNewConnection !== true) {
@@ -633,11 +616,7 @@ export async function deserializeDatabaseAsync(
   options?: SQLiteOpenOptions
 ): Promise<SQLiteDatabase> {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(
-    ':memory:',
-    flattenOpenOptions(openOptions),
-    serializedData
-  );
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
   await nativeDatabase.initAsync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -655,11 +634,7 @@ export function deserializeDatabaseSync(
   options?: SQLiteOpenOptions
 ): SQLiteDatabase {
   const openOptions = options ?? {};
-  const nativeDatabase = new ExpoSQLite.NativeDatabase(
-    ':memory:',
-    flattenOpenOptions(openOptions),
-    serializedData
-  );
+  const nativeDatabase = new ExpoSQLite.NativeDatabase(':memory:', openOptions, serializedData);
   nativeDatabase.initSync();
   return new SQLiteDatabase(':memory:', openOptions, nativeDatabase);
 }
@@ -697,7 +672,7 @@ export function deleteDatabaseSync(databaseName: string, directory?: string): vo
  * @param options.sourceDatabase - The source database to backup from
  * @param options.sourceDatabaseName - The name of the source database. The default value is `main`
  * @param options.destDatabase - The destination database to backup to
- * @param options.destDatabaseName - The name of the destination database. The default value is `m
+ * @param options.destDatabaseName - The name of the destination database. The default value is `main`
  */
 export function backupDatabaseAsync({
   sourceDatabase,
@@ -729,7 +704,7 @@ export function backupDatabaseAsync({
  * @param options.sourceDatabase - The source database to backup from
  * @param options.sourceDatabaseName - The name of the source database. The default value is `main`
  * @param options.destDatabase - The destination database to backup to
- * @param options.destDatabaseName - The name of the destination database. The default value is `m
+ * @param options.destDatabaseName - The name of the destination database. The default value is `main`
  */
 export function backupDatabaseSync({
   sourceDatabase,
@@ -787,10 +762,7 @@ export function addDatabaseChangeListener(
 class Transaction extends SQLiteDatabase {
   public static async createAsync(db: SQLiteDatabase): Promise<Transaction> {
     const options = { ...db.options, useNewConnection: true };
-    const nativeDatabase = new ExpoSQLite.NativeDatabase(
-      db.databasePath,
-      flattenOpenOptions(options)
-    );
+    const nativeDatabase = new ExpoSQLite.NativeDatabase(db.databasePath, options);
     await nativeDatabase.initAsync();
     return new Transaction(db.databasePath, options, nativeDatabase);
   }

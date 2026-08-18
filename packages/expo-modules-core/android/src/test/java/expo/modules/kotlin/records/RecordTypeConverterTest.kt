@@ -9,10 +9,12 @@ import expo.modules.kotlin.EnumWithString
 import expo.modules.kotlin.EnumWithoutParameter
 import expo.modules.kotlin.types.convert
 import org.junit.Test
+import expo.modules.kotlin.types.OptimizedRecord
 
 class RecordTypeConverterTest {
   @Test
   fun `should convert map to mutable record`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       var int: Int = 0
@@ -36,6 +38,7 @@ class RecordTypeConverterTest {
 
   @Test
   fun `should convert map to immutable record`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       val int: Int = 0
@@ -59,6 +62,7 @@ class RecordTypeConverterTest {
 
   @Test
   fun `should convert map to lateinit record`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       lateinit var string: String
@@ -77,6 +81,7 @@ class RecordTypeConverterTest {
 
   @Test
   fun `should convert map to mixed record`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       val int: Int = 0
@@ -105,6 +110,7 @@ class RecordTypeConverterTest {
 
   @Test
   fun `should respect required annotation`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       @Required
@@ -119,6 +125,7 @@ class RecordTypeConverterTest {
 
   @Test
   fun `should respect custom js key`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field(key = "point1")
       val int: Int = 0
@@ -147,6 +154,7 @@ class RecordTypeConverterTest {
 
   @Test
   fun `should respect non required value`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       val required: Int = 10
@@ -173,6 +181,7 @@ class RecordTypeConverterTest {
 
   @Test
   fun `primary constructor default values shouldn't be ignored if using the 'shorthand' class syntax`() {
+    @OptimizedRecord
     class MyRecord(
       @Field
       val int: Int = 42,
@@ -195,6 +204,7 @@ class RecordTypeConverterTest {
 
   @Test
   fun `should work with complex types`() {
+    @OptimizedRecord
     class InnerRecord : Record {
       @Field
       lateinit var name: String
@@ -213,6 +223,7 @@ class RecordTypeConverterTest {
       }
     }
 
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       lateinit var points: List<Double>
@@ -248,6 +259,7 @@ class RecordTypeConverterTest {
 
   @Test
   fun `should work with enums`() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       lateinit var enumWithoutParameter: EnumWithoutParameter

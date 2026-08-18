@@ -3,6 +3,7 @@ package expo.modules.sharing
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class ShareType(val value: String) : Enumerable {
   Text("text"),
@@ -47,12 +48,14 @@ enum class ContentType(val value: String) : Enumerable {
   }
 }
 
+@OptimizedRecord
 internal data class SharePayload(
   @Field var value: String = "",
   @Field var shareType: ShareType = ShareType.Text,
   @Field var mimeType: String = "text/plain"
 ) : Record
 
+@OptimizedRecord
 data class ResolvedSharePayload(
   @Field var value: String = "",
   @Field var shareType: ShareType = ShareType.Text,

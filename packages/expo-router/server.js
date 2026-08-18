@@ -1,1 +1,1 @@
-// Use `expo-server` directly instead
+module.exports = require('./build/server');

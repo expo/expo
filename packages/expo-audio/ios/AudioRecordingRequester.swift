@@ -8,15 +8,25 @@ public class AudioRecordingRequester: NSObject, EXPermissionsRequester {
   }
 
   public func getPermissions() -> [AnyHashable: Any] {
-    let systemStatus = AVAudioSession.sharedInstance().recordPermission
+    return Self.permissions(
+      systemStatus: AVAudioSession.sharedInstance().recordPermission,
+      usageDescription: Bundle.main.object(forInfoDictionaryKey: "NSMicrophoneUsageDescription")
+    )
+  }
+
+  static func permissions(
+    systemStatus: AVAudioSession.RecordPermission,
+    usageDescription: Any?
+  ) -> [AnyHashable: Any] {
     var status: EXPermissionStatus
 
-    guard (Bundle.main.infoDictionary?["NSMicrophoneUsageDescription"]) != nil else {
-      RCTFatal(RCTErrorWithMessage("""
-        This app is missing NSMicrophoneUsageDescription, so audio services will fail.
-        Add one of these keys to your bundle's Info.plist.
-      """))
-      return ["status": EXPermissionStatusDenied]
+    guard usageDescription != nil else {
+      log.error("""
+        This app is missing NSMicrophoneUsageDescription, so audio recording will fail. \
+        Add the key to the app's Info.plist, or set the `microphonePermission` option on the \
+        expo-audio config plugin.
+        """)
+      return ["status": EXPermissionStatusDenied.rawValue]
     }
 
     switch systemStatus {

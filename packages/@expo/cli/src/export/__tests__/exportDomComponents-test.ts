@@ -5,7 +5,7 @@ import {
   transformDomEntryForMd5Filename,
   transformNativeBundleForMd5Filename,
 } from '../exportDomComponents';
-import { type BundleOutput, type ExportAssetMap } from '../saveAssets';
+import type { BundleOutput, ExportAssetMap } from '../saveAssets';
 
 jest.mock('crypto');
 

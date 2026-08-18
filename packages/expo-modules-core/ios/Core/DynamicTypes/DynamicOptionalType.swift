@@ -1,5 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A dynamic type that represents an optional type, which allows `nil` to be passed when casting.
  Requires the optional's wrapped type as it delegates casting to that type for non-nil values.
@@ -35,6 +37,13 @@ internal struct DynamicOptionalType: AnyDynamicType {
     return try wrappedType.cast(value, appContext: appContext)
   }
 
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if Optional.isNil(value) || value is NSNull {
+      return .null
+    }
+    return try wrappedType.castToJS(value, appContext: appContext)
+  }
+
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
     // Delegate the conversion to the wrapped type
     return try wrappedType.convertResult(result, appContext: appContext)
@@ -54,6 +63,12 @@ internal protocol AnyOptional {
    Exposes the `Wrapped` generic type wrapped by the dynamic type to preserve its metadata.`
    */
   static func getWrappedDynamicType() -> AnyDynamicType
+
+  /**
+   Whether the optional holds no value. Implemented on `Optional` directly so the check
+   runs with the concrete `Wrapped` type known.
+   */
+  var isNone: Bool { get }
 }
 
 /**
@@ -64,12 +79,19 @@ extension Optional: AnyOptional {
     return ~Wrapped.self
   }
 
-  static func isNil(_ object: Wrapped) -> Bool {
-    switch object as Any {
-    case Optional<Any>.none:
+  var isNone: Bool {
+    if case .none = self {
       return true
-    default:
-      return false
     }
+    return false
+  }
+
+  /**
+   Checks whether the given type-erased value is `Optional.none`, regardless of the
+   Optional's `Wrapped` generic parameter. Uses an `AnyOptional` protocol cast, which
+   is backed by a witness table and runs in O(1).
+   */
+  static func isNil(_ object: Wrapped) -> Bool {
+    return (object as? AnyOptional)?.isNone ?? false
   }
 }

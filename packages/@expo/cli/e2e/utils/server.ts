@@ -25,8 +25,8 @@ export type BackgroundServerOptions = ExpoSpawnOptions & {
    * The command to spawn as background process.
    * You can also provide a function that receives the configured port.
    *
-   * @example command: ['yarn', 'expo', 'start']
-   * @example command: (port) => ['yarn', 'expo', 'start', '--port', port]
+   * @example command: ['pnpm', 'expo', 'start']
+   * @example command: (port) => ['pnpm', 'expo', 'start', '--port', port]
    */
   command: string[] | ((port: number) => string[]);
   /**
@@ -39,10 +39,10 @@ export type BackgroundServerOptions = ExpoSpawnOptions & {
    */
   port?: number | (() => Promise<number>);
   /**
-   * The host derrived from the child process output chunks (stdout or stderr).
+   * The host derived from the child process output chunks (stdout or stderr).
    * `server.startAsync` will not be resolved, until this method returns the host.
    * This method also functions as the ready-check to determine if the server fully started.
-   * When passing a URL, the port will be overriden using the configured port.
+   * When passing a URL, the port will be overridden using the configured port.
    */
   host(chunk: any): URL | string | null;
   /** Fully show the child process output, enabled when re-running GitHub Actions with debug mode */
@@ -117,11 +117,13 @@ export function createBackgroundServer({
       spawnOptions.env ??= {};
       spawnOptions.env.PORT = String(port);
 
-      child = spawn(bin, commandOrFlags, {
+      child = spawn(bin!, commandOrFlags, {
         shell: false,
         stdio: ['ignore', 'pipe', 'pipe'],
         ...spawnOptions,
         env: {
+          // NOTE: Preconfigure flags to disable certain background-like activities
+          EXPO_UNSTABLE_HEADLESS: '1',
           ...env, // Pipe through all environment variables from the host by default
           ...spawnOptions.env,
         },

@@ -16,7 +16,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 `expo-background-task` provides an API to run deferrable background tasks in a way that optimizes battery and power consumption on the end user's device. This module uses the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android and the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS to schedule tasks. It also uses the [`expo-task-manager`](task-manager.mdx) Native API to run JavaScript tasks.
 
-<VideoBoxLink videoId="4lFus7TvayI" title="Watch: Expo Background Task Deep Dive" />
+<VideoBoxLink
+  videoId="4lFus7TvayI"
+  title="Watch: Expo Background Task Deep Dive"
+  description="Sync data, prefetch content, and run deferred work in the background with expo-background-task."
+/>
 
 ## Background tasks
 
@@ -206,7 +210,7 @@ function App() {
 
 ## Inspecting background tasks&ensp;<PlatformTags platforms={['android']} />
 
-To troubleshoot or debug issues with background tasks on Android, use the `adb` tool included with the Android SDK to inspect scheduled tasks:
+To troubleshoot or debug issues with background tasks on Android, use the `adb` tool included with the Android SDK to inspect scheduled tasks and replace `<package-name>` with your app's [Android package name](/versions/latest/config/app/#package) in app config:
 
 <Terminal
   cmd={['$ adb shell dumpsys jobscheduler | grep -A 40 -m 1 -E "JOB #.* <package-name>"']}

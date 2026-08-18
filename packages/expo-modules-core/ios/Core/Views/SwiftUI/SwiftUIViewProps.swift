@@ -5,11 +5,17 @@ import SwiftUI
 internal let GLOBAL_EVENT_NAME = "onGlobalEvent"
 
 extension ExpoSwiftUI {
+  public enum IgnoreSafeArea: String, Enumerable {
+    case all
+    case container
+    case keyboard
+  }
+
   /**
    Protocol for view props that support controlling safe area behavior of SwiftUI content. Used by HostView
    */
   public protocol SafeAreaControllable {
-    var ignoreSafeAreaKeyboardInsets: Bool { get set }
+    var ignoreSafeArea: IgnoreSafeArea? { get set }
   }
 
   /**
@@ -28,6 +34,11 @@ extension ExpoSwiftUI {
      An array of views passed by React as children.
      */
     public var children: [any AnyChild]?
+
+    /**
+     Proxy for controlling the shadow node (Yoga layout) of the view.
+     */
+    public internal(set) var shadowNodeProxy: ShadowNodeProxy = ShadowNodeProxy()
 
     public internal(set) weak var appContext: AppContext?
 

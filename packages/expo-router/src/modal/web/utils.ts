@@ -1,34 +1,15 @@
 'use client';
-import { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import React from 'react';
 
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import { isModalPresentation } from '../../utils/stackPresentation';
 
 /**
  * A minimal subset of `ExtendedStackNavigationOptions` needed for the helper
  * @internal
  */
 export type PresentationOptions = Partial<Pick<ExtendedStackNavigationOptions, 'presentation'>>;
-
-/**
- * Helper to determine if a given screen should be treated as a modal-type presentation
- *
- * @param options - The navigation options.
- * @returns Whether the screen should be treated as a modal-type presentation.
- *
- * @internal
- */
-export function isModalPresentation(options?: PresentationOptions | null) {
-  const presentation = options?.presentation;
-  return (
-    presentation === 'modal' ||
-    presentation === 'formSheet' ||
-    presentation === 'fullScreenModal' ||
-    presentation === 'containedModal' ||
-    presentation === 'transparentModal' ||
-    presentation === 'containedTransparentModal'
-  );
-}
 
 /**
  * Helper to determine if a given screen should be treated as a transparent modal-type presentation
@@ -95,23 +76,27 @@ export function convertStackStateToNonModalState(
   descriptors: Record<string, { options: ExtendedStackNavigationOptions }>,
   isWeb: boolean
 ) {
+  const activeRoutes = state.routes.slice(0, state.index + 1);
+  const preloadedRoutes = state.routes.slice(state.index + 1);
+
   if (!isWeb) {
     return { routes: state.routes, index: state.index };
   }
 
   // Remove every modal-type route from the stack on web.
-  const routes = state.routes.filter((route) => {
-    return !isModalPresentation(descriptors[route.key].options);
+  const routes = activeRoutes.filter((route) => {
+    return !isModalPresentation(descriptors[route.key]!.options);
   });
 
   // Recalculate the active index so it still points at the same non-modal route, or –
   // if that route was filtered out – at the last remaining route.
-  let index = routes.findIndex((r) => r.key === state.routes[state.index]?.key);
+  let index = routes.findIndex((r) => r.key === activeRoutes[state.index]?.key);
   if (index < 0) {
-    index = routes.length > 0 ? routes.length - 1 : 0;
+    index = routes.length - 1;
   }
 
-  return { routes, index };
+  // Keep preloaded routes after the recalculated active index. If there are no active routes, index will be -1.
+  return { routes: routes.concat(preloadedRoutes), index };
 }
 
 /**
@@ -127,9 +112,10 @@ export function findLastNonModalIndex(
   state: StackNavigationState<ParamListBase>,
   descriptors: Record<string, { options: ExtendedStackNavigationOptions }>
 ) {
+  const activeRoutes = state.routes.slice(0, state.index + 1);
   // Iterate backwards through the stack to find the last non-modal route.
-  for (let i = state.routes.length - 1; i >= 0; i--) {
-    if (!isModalPresentation(descriptors[state.routes[i].key].options)) {
+  for (let i = activeRoutes.length - 1; i >= 0; i--) {
+    if (!isModalPresentation(descriptors[activeRoutes[i]!.key]!.options)) {
       return i;
     }
   }

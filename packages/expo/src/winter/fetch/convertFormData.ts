@@ -1,5 +1,5 @@
 import { blobToArrayBufferAsync } from '../../utils/blobUtils';
-import { type ExpoFormDataValue } from '../FormData';
+import type { ExpoFormDataValue } from '../FormData';
 
 function encodeFilename(filename: string): string {
   return encodeURIComponent(filename.replace(/\//g, '_'));
@@ -93,7 +93,7 @@ export async function convertFormDataAsync(
 }
 
 /**
- * Create mutipart boundary
+ * Create multipart boundary
  */
 export function createBoundary(): string {
   const boundaryChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

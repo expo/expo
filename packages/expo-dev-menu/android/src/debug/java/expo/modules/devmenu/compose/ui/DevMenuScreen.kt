@@ -23,6 +23,9 @@ fun DevMenuScreen(
   appInfo: DevMenuState.AppInfo,
   devToolsSettings: DevToolsSettings,
   customItems: List<DevMenuState.CustomItem> = emptyList(),
+  availableAppKeys: List<String> = emptyList(),
+  currentAppKey: String? = null,
+  openSubScreen: DevMenuState.SubScreen? = null,
   shouldShowOnboarding: Boolean = false,
   showFab: Boolean = false,
   hasGoHomeAction: Boolean = false,
@@ -37,11 +40,16 @@ fun DevMenuScreen(
     return
   }
 
+  if (openSubScreen == DevMenuState.SubScreen.Components) {
+    ComponentsScreen(
+      appKeys = availableAppKeys,
+      currentAppKey = currentAppKey,
+      onAction = onAction
+    )
+    return
+  }
+
   Column {
-    BundlerInfo(bundlerIp = appInfo.hostUrl)
-
-    Spacer(NewAppTheme.spacing.`2`)
-
     Row(
       horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
       verticalAlignment = Alignment.CenterVertically
@@ -76,13 +84,22 @@ fun DevMenuScreen(
       Spacer(NewAppTheme.spacing.`5`)
     }
 
-    ToolsSection(onAction, devToolsSettings, showFab)
+    ToolsSection(
+      onAction = onAction,
+      devToolsSettings = devToolsSettings,
+      showFab = showFab,
+      hasComponentSwitcher = availableAppKeys.size > 1
+    )
 
     Box(modifier = Modifier.padding(vertical = NewAppTheme.spacing.`6`)) {
       if (appInfo.engine == "Hermes") {
         Tip("Debugging not working? Try manually reloading first.")
       }
     }
+
+    BundlerInfo(bundlerIp = appInfo.hostUrl)
+
+    Spacer(NewAppTheme.spacing.`5`)
 
     SystemSection(
       appInfo.appVersion,

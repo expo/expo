@@ -17,9 +17,9 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 1. Prepare the credentials needed for the build.
    - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're offered to generate them.
 
-1. **Bare** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (to ensure the correct bundle identifier and Apple Team ID are set).
+1. Projects that manage their own native directories (**android** and **ios**), require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (to ensure the correct bundle identifier and Apple Team ID are set).
 1. Create the tarball containing a copy of the repository. Actual behavior depends on the [VCS workflow](https://expo.fyi/eas-vcs-workflow) you are using.
-1. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
+1. Upload the project tarball to a private Google Cloud Storage (GCS) bucket and send the build request to EAS Build.
 
 ### Remote steps
 
@@ -28,7 +28,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Create a new macOS VM for the build.
    - Every build gets its own fresh macOS VM with all build tools installed there (Xcode, Fastlane, and so on).
 
-1. Download the project tarball from a private AWS S3 bucket and unpack it.
+1. Download the project tarball from a private GCS bucket and unpack it.
 1. [Create **.npmrc**](/build-reference/private-npm-packages) if `NPM_TOKEN` is set.
 1. Run the `eas-build-pre-install` script from **package.json** if defined.
 1. Run `npm install` in the project root (or `yarn install` if **yarn.lock** exists).
@@ -39,7 +39,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
    - Write the Provisioning Profile to the **~/Library/MobileDevice/Provisioning Profiles** directory.
    - Verify that the Distribution Certificate and Provisioning Profile match (every Provisioning Profile is assigned to a particular Distribution Certificate and cannot be used for building the iOS with any other certificate).
 
-1. Additional step for **managed** projects: Run `npx expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI.
+1. Additional step for projects using Continuous Native Generation (CNG): Run `npx expo prebuild` to generate **android** and **ios** directories. This step will use the versioned Expo CLI.
 1. Restore a previously saved cache identified by the `cache.key` value in the [build profile](/build/eas-json).
 1. Run `pod install` in the **ios** directory inside your project.
 1. Run the `eas-build-post-install` script from **package.json** if defined.
@@ -48,13 +48,13 @@ In this next phase, this is what happens when EAS Build picks up your request:
 1. Run `fastlane gym` in the **ios** directory.
 1. **Deprecated:** Run the `eas-build-pre-upload-artifacts` script from **package.json** if defined.
 1. Store a cache of files and directories defined in the [build profile](/build/eas-json). **Podfile.lock** is cached by default. Subsequent builds will restore this cache.
-1. Upload the application archive to a private AWS S3 bucket.
+1. Upload the application archive to a private GCS bucket.
    - The artifact path can be configured in **eas.json** at `builds.ios.PROFILE_NAME.applicationArchivePath`. It defaults to **ios/build/App.ipa**. You can specify a glob-like pattern for `applicationArchivePath`. We're using [glob patterns](https://github.com/isaacs/node-glob#glob-primer) for pattern matching.
 
 1. If the build was successful: run the `eas-build-on-success` script from **package.json** if defined.
 1. If the build failed: run the `eas-build-on-error` script from **package.json** if defined.
 1. Run the `eas-build-on-complete` script from **package.json** if defined. The `EAS_BUILD_STATUS` env variable is set to either `finished` or `errored`.
-1. Upload the build artifacts archive to a private AWS S3 bucket if `buildArtifactPaths` is specified in the build profile.
+1. Upload the build artifacts archive to a private GCS bucket if `buildArtifactPaths` is specified in the build profile.
 
 ## Building iOS projects with Fastlane
 

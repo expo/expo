@@ -1,12 +1,25 @@
 import { getConfig } from '@expo/config';
 import type { Platform } from '@expo/config';
-import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import assert from 'assert';
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { createFaviconAsString } from '@expo/router-server/build/utils/html';
 import chalk from 'chalk';
-import fs from 'fs';
-import path from 'path';
+import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
 
+import * as Log from '../log';
+import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
+import { DevServerManager } from '../start/server/DevServerManager';
+import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
+import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
+import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
+import { env } from '../utils/env';
+import { CommandError } from '../utils/errors';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
+import { event } from './events';
 import { exportAssetsAsync } from './exportAssets';
 import {
   addDomBundleToMetadataAsync,
@@ -15,35 +28,14 @@ import {
   transformDomEntryForMd5Filename,
 } from './exportDomComponents';
 import { assertEngineMismatchAsync, isEnableHermesManaged } from './exportHermes';
-import {
-  exportApiRoutesStandaloneAsync,
-  exportFromServerAsync,
-  injectScriptTags,
-} from './exportStaticAsync';
-import { getVirtualFaviconAssetsAsync } from './favicon';
+import { exportApiRoutesStandaloneAsync, exportFromServerAsync } from './exportStaticAsync';
+import { generateFaviconAssetAsync } from './favicon';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
-import { copyPublicFolderAsync } from './publicFolder';
-import { Options } from './resolveOptions';
-import {
-  ExportAssetMap,
-  BundleOutput,
-  getFilesFromSerialAssets,
-  persistMetroFilesAsync,
-  BundleAssetWithFileHashes,
-} from './saveAssets';
+import { copyPublicFolderAsync, getPublicFolderPath } from './publicFolder';
+import type { Options } from './resolveOptions';
+import type { ExportAssetMap, BundleOutput, BundleAssetWithFileHashes } from './saveAssets';
+import { getFilesFromSerialAssets, persistMetroFilesAsync } from './saveAssets';
 import { createAssetMap } from './writeContents';
-import * as Log from '../log';
-import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
-import { DevServerManager } from '../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
-import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
-import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
-import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
-import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
-import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
-import { env } from '../utils/env';
-import { CommandError } from '../utils/errors';
-import { setNodeEnv } from '../utils/nodeEnv';
 
 export async function exportAppAsync(
   projectRoot: string,
@@ -54,6 +46,7 @@ export async function exportAppAsync(
     dev,
     dumpAssetmap,
     sourceMaps,
+    inlineSourceMaps,
     minify,
     bytecode,
     maxWorkers,
@@ -63,6 +56,7 @@ export async function exportAppAsync(
     Options,
     | 'dumpAssetmap'
     | 'sourceMaps'
+    | 'inlineSourceMaps'
     | 'dev'
     | 'clear'
     | 'outputDir'
@@ -74,13 +68,6 @@ export async function exportAppAsync(
     | 'hostedNative'
   >
 ): Promise<void> {
-  // Force the environment during export and do not allow overriding it.
-  const environment = dev ? 'development' : 'production';
-  process.env.NODE_ENV = environment;
-  setNodeEnv(environment);
-
-  require('@expo/env').load(projectRoot);
-
   const projectConfig = getConfig(projectRoot);
   const exp = await getPublicExpoManifestAsync(projectRoot, {
     // Web doesn't require validation.
@@ -99,7 +86,7 @@ export async function exportAppAsync(
 
   const baseUrl = getBaseUrlFromExpoConfig(exp);
 
-  if (!bytecode && (platforms.includes('ios') || platforms.includes('android'))) {
+  if (!bytecode && platforms.some((platform) => platform !== 'web')) {
     Log.warn(
       `Bytecode makes the app startup faster, disabling bytecode is highly discouraged and should only be used for debugging purposes.`
     );
@@ -118,8 +105,10 @@ export async function exportAppAsync(
   }
 
   const mode = dev ? 'development' : 'production';
-  const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+  const publicPath = getPublicFolderPath(projectRoot);
   const outputPath = path.resolve(projectRoot, outputDir);
+
+  const doneExport = event.span();
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
 
@@ -181,6 +170,7 @@ export async function exportAppAsync(
             files?: ExportAssetMap;
           };
 
+          const bundleStartedAt = Date.now();
           try {
             // Run metro bundler and create the JS bundles/source maps.
             bundle = await devServer.nativeExportBundleAsync(
@@ -190,13 +180,14 @@ export async function exportAppAsync(
                 splitChunks:
                   !env.EXPO_NO_BUNDLE_SPLITTING &&
                   ((devServer.isReactServerComponentsEnabled && !bytecode) || platform === 'web'),
-                mainModuleName: getEntryWithServerRoot(projectRoot, {
+                mainModuleName: resolveRelativeEntryPoint(projectRoot, {
                   platform,
                   pkg: projectConfig.pkg,
                 }),
                 mode: dev ? 'development' : 'production',
                 engine: isHermes ? 'hermes' : undefined,
-                serializerIncludeMaps: sourceMaps,
+                serializerIncludeMaps: sourceMaps || inlineSourceMaps,
+                inlineSourceMap: inlineSourceMaps,
                 bytecode: bytecode && isHermes,
                 reactCompiler: !!exp.experiments?.reactCompiler,
                 hosted: hostedNative,
@@ -216,20 +207,29 @@ export async function exportAppAsync(
 
           bundles[platform] = bundle;
 
+          event('bundle', {
+            platform,
+            assets: bundle.assets.length,
+            ms: Date.now() - bundleStartedAt,
+          });
+
           getFilesFromSerialAssets(bundle.artifacts, {
             includeSourceMaps: sourceMaps,
             files,
             isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
           });
 
-          // TODO: Remove duplicates...
-          const expoDomComponentReferences = bundle.artifacts
-            .map((artifact) =>
-              Array.isArray(artifact.metadata.expoDomComponentReferences)
-                ? artifact.metadata.expoDomComponentReferences
-                : []
-            )
-            .flat();
+          const expoDomComponentReferences = [
+            ...new Set(
+              bundle.artifacts
+                .map((artifact) =>
+                  Array.isArray(artifact.metadata.expoDomComponentReferences)
+                    ? artifact.metadata.expoDomComponentReferences
+                    : []
+                )
+                .flat()
+            ),
+          ];
           await Promise.all(
             // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
             expoDomComponentReferences.map(async (filePath) => {
@@ -246,9 +246,10 @@ export async function exportAppAsync(
                   useMd5Filename: true,
                 });
 
-              // Merge the assets from the DOM component into the output assets.
+              // Merge the assets from the DOM component into the output assets, deduplicating by hash.
+              const existingHashes = new Set(bundle.assets.map((a) => a.hash));
               (bundle.assets as (typeof bundle.assets)[0][]).push(
-                ...platformDomComponentsBundle.assets
+                ...platformDomComponentsBundle.assets.filter((a) => !existingHashes.has(a.hash))
               );
 
               transformNativeBundleForMd5Filename({
@@ -269,29 +270,26 @@ export async function exportAppAsync(
           );
 
           if (platform === 'web') {
-            // TODO: Unify with exportStaticAsync
-            // TODO: Maybe move to the serializer.
-            let html = await serializeHtmlWithAssets({
-              isExporting: true,
-              resources: bundle.artifacts,
-              template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-                scripts: [],
-                cssLinks: [],
-                exp: projectConfig.exp,
-              }),
-              baseUrl,
-            });
-
-            // Add the favicon assets to the HTML.
-            const modifyHtml = await getVirtualFaviconAssetsAsync(projectRoot, {
+            const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
               outputDir,
               baseUrl,
               files,
               exp: projectConfig.exp,
             });
-            if (modifyHtml) {
-              html = modifyHtml(html);
-            }
+
+            // TODO: Unify with exportStaticAsync
+            // TODO: Maybe move to the serializer.
+            const html = serializeHtmlWithAssets({
+              isExporting: true,
+              resources: bundle.artifacts,
+              template: await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+                scripts: [],
+                cssLinks: [],
+                extraHead: faviconAsset ? createFaviconAsString(faviconAsset.href) : undefined,
+                exp: projectConfig.exp,
+              }),
+              baseUrl,
+            });
 
             // HACK: This is used for adding SSR shims in React Server Components.
             templateHtml = html;
@@ -406,4 +404,11 @@ export async function exportAppAsync(
 
   // Write all files at the end for unified logging.
   await persistMetroFilesAsync(files, outputPath);
+
+  doneExport('done', {
+    platforms,
+    outputDir,
+    mode: (exp.web?.output as 'static' | 'server' | 'single') ?? 'single',
+    dev: !!dev,
+  });
 }

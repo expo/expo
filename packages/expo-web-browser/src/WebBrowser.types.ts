@@ -112,6 +112,18 @@ export type AuthSessionOpenOptions = WebBrowserOpenOptions & {
    * @platform ios
    */
   preferEphemeralSession?: boolean;
+  /**
+   * Whether to use HTTPS universal link callbacks instead of custom URL scheme callbacks.
+   * Set this to `true` when your app has the Associated Domains entitlement configured for
+   * the redirect URL host and you want to use HTTPS callbacks on iOS 17.4+.
+   *
+   * When `false` (the default), the legacy `callbackURLScheme` API is used, which works
+   * without any entitlement configuration.
+   *
+   * @default false
+   * @platform ios
+   */
+  preferUniversalLinks?: boolean;
 };
 
 export type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;

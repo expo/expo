@@ -45,6 +45,7 @@ export type ExpoSerializerOptions = SerializerOptions & {
     output?: string;
     includeSourceMaps?: boolean;
     exporting?: boolean;
+    excludeSource?: boolean;
   };
   // Chunk-based stable identifier for the bundle that is used for identifying the bundle.
   // https://sentry.engineering/blog/the-case-for-debug-ids
@@ -208,14 +209,13 @@ export function baseJSBundleWithDependencies(
     post: postCode,
     modules: mods.map(([id, code]) => [
       id,
-      typeof code === 'number' ? code : code.src,
+      typeof code === 'number' ? code : code?.src,
     ]) as ModuleMap,
     paths: Object.fromEntries(
       (
-        mods.filter(([id, code]) => typeof code !== 'number' && Object.keys(code.paths).length) as [
-          string,
-          { src: string; paths: Record<string, string> },
-        ][]
+        mods.filter(
+          ([id, code]) => typeof code !== 'number' && Object.keys(code?.paths ?? {}).length
+        ) as [string, { src: string; paths: Record<string, string> }][]
       ).map(([id, code]) => [id, code.paths])
     ),
   };

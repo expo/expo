@@ -1,0 +1,33 @@
+diff --git a/packages/expo-brownfield/plugin/templates/android/BrownfieldActivity.kt b/packages/expo-brownfield/plugin/templates/android/BrownfieldActivity.kt
+index dda8db9d25..ee263e78e2 100644
+--- a/packages/expo-brownfield/plugin/templates/android/BrownfieldActivity.kt
++++ b/packages/expo-brownfield/plugin/templates/android/BrownfieldActivity.kt
+@@ -3,9 +3,11 @@ package ${{packageId}}
+ import android.app.Activity
+ import android.app.Application
+ import android.content.res.Configuration
++import android.view.KeyEvent
+ import androidx.appcompat.app.AppCompatActivity
+ import com.facebook.react.ReactPackage
+ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
+ import expo.modules.ApplicationLifecycleDispatcher
++import expo.modules.devmenu.api.DevMenuApi
+
+ object BrownfieldLifecycleDispatcher {
+   @JvmStatic
+@@ -45,4 +47,15 @@ open class BrownfieldActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
+   override fun invokeDefaultOnBackPressed() {
+     finish()
+   }
++
++  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
++    if (BuildConfig.DEBUG) {
++      val fragment by DevMenuApi.fragment { this }
++      if (fragment?.onKeyUp(keyCode, event) == true) {
++        return true
++      }
++    }
++
++    return super.onKeyUp(keyCode, event)
++  }
+ }

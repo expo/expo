@@ -1,0 +1,13 @@
+extends: existence
+message: 'Use separate <kbd> elements for keyboard shortcuts. Capitalize key names and keep plus signs outside the elements.'
+link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#referencing-keyboard-shortcuts'
+level: error
+scope: raw
+nonword: true
+tokens:
+  - '`\s*(?:⌘|cmd|Cmd|ctrl|Ctrl|alt|Alt|option|Option|shift|Shift|command|Command)(?:\s*\+\s*(?:⌘|cmd|Cmd|ctrl|Ctrl|alt|Alt|option|Option|shift|Shift|command|Command|Space|Return|Enter|Esc|Escape|Tab|Delete|Backspace|Up|Down|Left|Right|[A-Za-z0-9?]))+\s*`'
+  - '⌘\s*\+\s*(?:Space|Return|Enter|Esc|Escape|Tab|Delete|Backspace|Up|Down|Left|Right|[A-Za-z0-9?])\b'
+  - '<kbd>[^<]*\+[^<]*</kbd>'
+  - '</kbd>\+\s*<kbd>'
+  - '</kbd>\s\+<kbd>'
+  - '<kbd>(?:[a-z]|shift|ctrl|cmd|alt|option|return|enter|space|tab|esc|escape|delete|backspace|up|down|left|right)</kbd>'

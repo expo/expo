@@ -1,4 +1,4 @@
-import fs from 'fs';
+import type fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 

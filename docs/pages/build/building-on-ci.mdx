@@ -4,26 +4,26 @@ description: Learn how to trigger builds on EAS for your app from a CI environme
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
 This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="A successful build from your local machine">
+    To trigger EAS builds from a CI environment, your app needs to be set up to use EAS Build in non-interactive mode. Run `eas build -p [all|android|ios]` from your local terminal for each platform you want to support on CI, so the `eas build` command can prompt for any additional configuration it needs. That configuration will then be available for future non-interactive runs.
 
-### Run a successful build from your local machine
+    Running a build locally accomplishes the following critical configuration steps:
 
-To trigger EAS builds from a CI environment, your app needs to be set up to use EAS Build in non-interactive mode. To do this, go through the EAS Build initialization steps and run a successful build from your local terminal for each platform you would like to support on CI. This way, the `eas build` command can prompt for any additional configuration it needs, and then that configuration will be available for future non-interactive runs on CI.
+    - Initialize the project on EAS by generating a `projectId`.
+    - Add an **eas.json** file defining your build profiles.
+    - Populate critical app config properties for native builds, such as `android.packageName` and `ios.bundleIdentifier`.
+    - Ensure build credentials are created, including Android keystores and iOS distribution certs and provisioning profiles.
 
-Running a build locally will accomplish the following critical configuration steps:
+    If you haven't done this yet, see the [Create your first build](/build/setup/) guide and return here when you're ready.
 
-- Initialize the project on EAS by generating a `projectId`.
-- Add an **eas.json** file defining your build profiles.
-- Populates critical app config properties for native builds, such as `android.packageName` and `ios.bundleIdentifier`.
-- Ensure build credentials are created, including Android keystores and iOS distribution certs and provisioning profiles.
-
-Run `eas build -p [all|android|ios]` and verify that your builds for each platform complete successfully. Then, continue with the below steps for implementing EAS Build on CI.
-
-If you haven't done this yet, see the [Create your first build](/build/setup/) guide and return here when you're ready.
+  </Requirement>
+</Prerequisites>
 
 ## Using EAS Workflows
 
@@ -82,11 +82,11 @@ Next, we need to ensure that we can authenticate ourselves on CI as the owner of
 
 See [personal access tokens](/accounts/programmatic-access/#personal-access-tokens) to learn how to create access tokens.
 
-### (Optional) Provide an ASC API Token for your Apple Team
+### (Optional) Provide an ASC API token for your Apple team
 
 In the event your iOS credentials need to be repaired, we will need an ASC API key to authenticate ourselves to Apple in CI. A common case is when your provisioning profile needs to be re-signed.
 
-You will need to create an [API Key](https://expo.fyi/creating-asc-api-key). Next, you will need to gather information about your [Apple Team](https://expo.fyi/apple-team).
+You will need to create an [API Key](https://expo.fyi/creating-asc-api-key). Next, you will need to gather information about your [Apple team](https://expo.fyi/apple-team).
 
 Using the information you've gathered, pass it into the build command through environment variables. You will need to pass the following:
 
@@ -95,6 +95,8 @@ Using the information you've gathered, pass it into the build command through en
 - `EXPO_ASC_ISSUER_ID`: The issuer ID of your ASC API Key. For example, `f9675cff-f45d-4116-bd2c-2372142cee09`.
 - `EXPO_APPLE_TEAM_ID`: Your Apple Team ID. For example, `77KQ969CHE`.
 - `EXPO_APPLE_TEAM_TYPE`: Your Apple Team Type. Valid types are `IN_HOUSE`, `COMPANY_OR_ORGANIZATION`, or `INDIVIDUAL`.
+
+If you run [internal distribution](/build/internal-distribution/) builds on CI with ad hoc provisioning, refresh the ad hoc provisioning profile so registered devices added after the last build are included. For `eas build`, pass [`--refresh-ad-hoc-provisioning-profile`](/eas/cli/#eas-build) with `--non-interactive`. For [EAS Workflows](/eas/workflows/get-started), set `refresh_ad_hoc_provisioning_profile: true` in the build job's `params` ([build job parameters](/eas/workflows/pre-packaged-jobs#build)). See [Automation on CI](/build/internal-distribution/#automation-on-ci-optional) for requirements and an example command.
 
 ### Trigger new builds
 
@@ -248,7 +250,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - name: Setup Expo and EAS
         uses: expo/expo-github-action@v8

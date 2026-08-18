@@ -169,8 +169,10 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
           sourceRepository?.registerSource(
             identifier: identifier,
             source: LinkSourceInfo(
-              view: child, alignment: alignment,
-              animateAspectRatioChange: animateAspectRatioChange)
+              view: child,
+              alignment: alignment,
+              animateAspectRatioChange: animateAspectRatioChange
+            )
           )
         } else {
           sourceRepository?.updateIdentifier(
@@ -200,8 +202,10 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
     sourceRepository?.registerSource(
       identifier: identifier,
       source: LinkSourceInfo(
-        view: childComponentView, alignment: alignment,
-        animateAspectRatioChange: animateAspectRatioChange)
+        view: childComponentView,
+        alignment: alignment,
+        animateAspectRatioChange: animateAspectRatioChange
+      )
     )
     super.mountChildComponentView(childComponentView, index: index)
   }
@@ -273,7 +277,17 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
 
 class LinkZoomTransitionEnabler: LinkZoomExpoView {
   var zoomTransitionSourceIdentifier: String = ""
-  var dismissalBoundsRect: DismissalBoundsRect?
+  var dismissalBoundsRect: DismissalBoundsRect? {
+    didSet {
+      // When dismissalBoundsRect changes, re-setup the zoom transition
+      // to include/exclude interactiveDismissShouldBegin callback
+      if superview != nil {
+        DispatchQueue.main.async {
+          self.setupZoomTransition()
+        }
+      }
+    }
+  }
 
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
@@ -287,23 +301,28 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
 
   private func setupZoomTransition() {
     if self.zoomTransitionSourceIdentifier.isEmpty {
-      logger?.warn("[expo-router] No zoomTransitionSourceIdentifier passed to LinkZoomTransitionEnabler. This is most likely a bug in expo-router.")
+      logger?.warn(
+        "[expo-router] No zoomTransitionSourceIdentifier passed to LinkZoomTransitionEnabler. This is most likely a bug in expo-router."
+      )
       return
     }
     if let controller = self.findViewController() {
       if #available(iOS 18.0, *) {
         let options = UIViewController.Transition.ZoomOptions()
 
-        options.alignmentRectProvider = { context in
+        options.alignmentRectProvider = { [weak self] context in
+          guard let self else { return nil }
           guard
             let sourceInfo = self.sourceRepository?.getSource(
-              identifier: self.zoomTransitionSourceIdentifier)
+              identifier: self.zoomTransitionSourceIdentifier
+            )
           else {
             return nil
           }
           guard
             let alignmentView = self.alignmentViewRepository?.get(
-              identifier: self.zoomTransitionSourceIdentifier)
+              identifier: self.zoomTransitionSourceIdentifier
+            )
           else {
             return sourceInfo.alignment
           }
@@ -313,27 +332,30 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
             to: context.zoomedViewController.view
           )
           if sourceInfo.animateAspectRatioChange,
-            let sourceView = sourceInfo.view {
+            let sourceView = sourceInfo.view
+          {
             return self.calculateAdjustedRect(rect, toMatch: sourceView.bounds.size)
           }
           return rect
         }
-        options.interactiveDismissShouldBegin = { context in
-          // Check dismissal bounds rect if provided
-          if let rect = self.dismissalBoundsRect {
-              let location = context.location
-              // Check each optional bound independently
-              if let minX = rect.minX, location.x < minX { return false }
-              if let maxX = rect.maxX, location.x > maxX { return false }
-              if let minY = rect.minY, location.y < minY { return false }
-              if let maxY = rect.maxY, location.y > maxY { return false }
+        // Only set up interactiveDismissShouldBegin when dismissalBoundsRect is set
+        // If dismissalBoundsRect is nil, don't set the callback - iOS uses default behavior
+        if let rect = self.dismissalBoundsRect {
+          options.interactiveDismissShouldBegin = { context in
+            let location = context.location
+            // Check each optional bound independently
+            if let minX = rect.minX, location.x < minX { return false }
+            if let maxX = rect.maxX, location.x > maxX { return false }
+            if let minY = rect.minY, location.y < minY { return false }
+            if let maxY = rect.maxY, location.y > maxY { return false }
+            return true
           }
-
-          return true
         }
-        controller.preferredTransition = .zoom(options: options) { _ in
+        controller.preferredTransition = .zoom(options: options) { [weak self] _ in
+          guard let self else { return nil }
           let sourceInfo = self.sourceRepository?.getSource(
-            identifier: self.zoomTransitionSourceIdentifier)
+            identifier: self.zoomTransitionSourceIdentifier
+          )
           var view: UIView? = sourceInfo?.view
           if let linkPreviewView = view as? NativeLinkPreviewView {
             view = linkPreviewView.directChild
@@ -349,12 +371,15 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
         return
       }
     } else {
-      logger?.warn("[expo-router] No navigation controller found to enable zoom transition. This is most likely a bug in expo-router.")
+      logger?.warn(
+        "[expo-router] No navigation controller found to enable zoom transition. This is most likely a bug in expo-router."
+      )
     }
   }
 
   private func calculateAdjustedRect(
-    _ rect: CGRect, toMatch sourceSize: CGSize
+    _ rect: CGRect,
+    toMatch sourceSize: CGSize
   ) -> CGRect {
     guard sourceSize.width > 0, sourceSize.height > 0,
       rect.width > 0, rect.height > 0
@@ -365,7 +390,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
     let rectAspectRatio = rect.width / rect.height
 
     if abs(sourceAspectRatio - rectAspectRatio) < 0.001 {
-      return rect  // Aspect ratios are essentially equal
+      return rect // Aspect ratios are essentially equal
     }
 
     if rectAspectRatio > sourceAspectRatio {

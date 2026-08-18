@@ -216,6 +216,14 @@ export const MapsScreens = Platform.select({
       },
     },
     {
+      name: 'Geodesic polyline',
+      route: 'expo-maps/geodesic-polyline',
+      options: {},
+      getComponent() {
+        return optionalRequire(() => require('./apple/MapsGeodesicPolylineScreen'));
+      },
+    },
+    {
       name: 'Polygon',
       route: 'expo-maps/polygon',
       options: {},

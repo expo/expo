@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import type { NestedDirectoryJSON } from 'memfs/lib/volume';
 import path from 'path';
 
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { findModulesAsync } from '../findModules';
 
 const projectRoot = '/fake/project';
@@ -12,6 +12,7 @@ const BASE_AUTOLINKING_OPTIONS: AutolinkingOptions = {
   searchPaths: [],
   nativeModulesDir: null,
   exclude: [],
+  include: [],
 };
 
 const expectAnyModule = (version = expect.any(String)) => {
@@ -21,7 +22,7 @@ const expectAnyModule = (version = expect.any(String)) => {
 const symlinkMany = (symlinks: Record<string, string>) => {
   for (const from in symlinks) {
     vol.mkdirSync(path.dirname(path.join(projectRoot, from)), { recursive: true });
-    vol.symlinkSync(path.join(projectRoot, symlinks[from]), path.join(projectRoot, from));
+    vol.symlinkSync(path.join(projectRoot, symlinks[from]!), path.join(projectRoot, from));
   }
 };
 
@@ -47,6 +48,7 @@ function mockedModule(
   options?: {
     pkgVersion?: string;
     pkgDependencies?: Record<string, string>;
+    platforms?: string[];
   }
 ): NestedDirectoryJSON {
   const packageJson = {
@@ -55,7 +57,7 @@ function mockedModule(
     dependencies: options?.pkgDependencies ?? {},
   };
   const expoModuleConfig = {
-    platforms: ['ios'],
+    platforms: options?.platforms ?? ['ios'],
   };
   return {
     'package.json': JSON.stringify(packageJson),
@@ -677,6 +679,98 @@ describe(findModulesAsync, () => {
     expect(result).toEqual({
       'expo-module-1': expectAnyModule(),
       'expo-module-2': expectAnyModule(),
+    });
+  });
+
+  /**
+   * Workaround for https://github.com/google/prefab/issues/187
+   * pnpm creates paths with '=' characters that break Android builds.
+   * /app/node_modules
+   *   ├── /react-native-reanimated → /.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules/react-native-reanimated
+   *   └── /.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules/react-native-reanimated
+   */
+  it('should use originPath on Android when path contains = and .pnpm', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot('app', {
+          pkgDependencies: {
+            'react-native-reanimated': '*',
+          },
+        }),
+        node_modules: {
+          '.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules':
+            {
+              'react-native-reanimated': mockedModule('react-native-reanimated', {
+                platforms: ['android', 'ios'],
+              }),
+            },
+        },
+      },
+      projectRoot
+    );
+
+    symlinkMany({
+      'node_modules/react-native-reanimated':
+        'node_modules/.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules/react-native-reanimated',
+    });
+
+    const result = await findModulesAsync({
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'android',
+      },
+    });
+
+    expect(result).toEqual({
+      'react-native-reanimated': expect.objectContaining({
+        path: path.join(projectRoot, 'node_modules/react-native-reanimated'),
+        version: expect.any(String),
+      }),
+    });
+  });
+
+  it('should use real path on iOS even when path contains = and .pnpm', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot('app', {
+          pkgDependencies: {
+            'react-native-reanimated': '*',
+          },
+        }),
+        node_modules: {
+          '.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules':
+            {
+              'react-native-reanimated': mockedModule('react-native-reanimated', {
+                platforms: ['android', 'ios'],
+              }),
+            },
+        },
+      },
+      projectRoot
+    );
+
+    symlinkMany({
+      'node_modules/react-native-reanimated':
+        'node_modules/.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules/react-native-reanimated',
+    });
+
+    const result = await findModulesAsync({
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+      },
+    });
+
+    expect(result).toEqual({
+      'react-native-reanimated': expect.objectContaining({
+        path: path.join(
+          projectRoot,
+          'node_modules/.pnpm/react-native-reanimated@4.2.1_patch_hash=19e38bf7650a6a790106ae72f32af729572765bce71d6f_658a77dc5578c6448dc44cbda6094811/node_modules/react-native-reanimated'
+        ),
+        version: expect.any(String),
+      }),
     });
   });
 });

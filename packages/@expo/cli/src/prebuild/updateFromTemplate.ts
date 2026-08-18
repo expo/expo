@@ -1,18 +1,19 @@
-import { ExpoConfig, PackageJSONConfig } from '@expo/config';
-import { ModPlatform } from '@expo/config-plugins';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import type { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
-import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
-import { getTemplateFilesToRenameAsync, renameTemplateAppNameAsync } from './renameTemplateAppName';
-import { type ResolvedTemplateOption } from './resolveOptions';
-import { cloneTemplateAsync } from './resolveTemplate';
-import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
-import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 import * as Log from '../log';
 import { createTempDirectoryPath } from '../utils/createTempPath';
 import { AbortCommandError, SilentError } from '../utils/errors';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
+import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
+import { getTemplateFilesToRenameAsync, renameTemplateAppNameAsync } from './renameTemplateAppName';
+import type { ResolvedTemplateOption } from './resolveOptions';
+import { cloneTemplateAsync } from './resolveTemplate';
+import type { DependenciesModificationResults } from './updatePackageJson';
+import { updatePackageJSONAsync } from './updatePackageJson';
+import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 
 /**
  * Creates local native files from an input template file path.
@@ -124,11 +125,11 @@ export async function cloneTemplateAndCopyToProjectAsync({
       platforms,
     });
 
-    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
-    await renameTemplateAppNameAsync({
-      cwd: projectRoot,
+    // TODO(@kitten): This duplicates functionality that `cloneTemplateAsync` can already do
+    const files = await getTemplateFilesToRenameAsync(projectRoot);
+    await renameTemplateAppNameAsync(projectRoot, {
       files,
-      name: exp.name,
+      expName: exp.name,
     });
 
     // Says: "Created native directories"

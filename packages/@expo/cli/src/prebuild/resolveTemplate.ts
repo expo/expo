@@ -1,23 +1,20 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 import semver from 'semver';
 
-import { type ResolvedTemplateOption } from './resolveOptions';
-import { fetchAsync } from '../api/rest/client';
 import * as Log from '../log';
-import { resolveLocalTemplateAsync } from './resolveLocalTemplate';
 import { createGlobFilter } from '../utils/createFileTransform';
 import { AbortCommandError } from '../utils/errors';
+import { fetch } from '../utils/fetch';
 import {
-  ExtractProps,
   downloadAndExtractNpmModuleAsync,
   extractLocalNpmTarballAsync,
   extractNpmTarballFromUrlAsync,
 } from '../utils/npm';
-import { isUrlOk } from '../utils/url';
-
-const debug = require('debug')('expo:prebuild:resolveTemplate') as typeof console.log;
+import { event, debugEvent } from './events';
+import { resolveLocalTemplateAsync } from './resolveLocalTemplate';
+import type { ResolvedTemplateOption } from './resolveOptions';
 
 type RepoInfo = {
   username: string;
@@ -40,32 +37,35 @@ export async function cloneTemplateAsync({
   ora: Ora;
 }): Promise<string> {
   if (template) {
-    const appName = exp.name;
+    const expName = exp.name;
     const { type, uri } = template;
     if (type === 'file') {
-      return await extractLocalNpmTarballAsync(uri, {
-        cwd: templateDirectory,
-        name: appName,
+      event('template:resolved', { source: 'local', name: uri });
+      return await extractLocalNpmTarballAsync(uri, templateDirectory, {
+        expName,
       });
     } else if (type === 'npm') {
-      return await downloadAndExtractNpmModuleAsync(uri, {
-        cwd: templateDirectory,
-        name: appName,
+      event('template:resolved', { source: 'npm', name: uri });
+      return await downloadAndExtractNpmModuleAsync(uri, templateDirectory, {
+        expName,
       });
     } else if (type === 'repository') {
-      return await resolveAndDownloadRepoTemplateAsync(templateDirectory, ora, appName, uri);
+      event('template:resolved', { source: 'git', name: uri });
+      return await resolveAndDownloadRepoTemplateAsync(templateDirectory, ora, expName, uri);
     } else {
       throw new Error(`Unknown template type: ${type}`);
     }
   } else {
     try {
-      return await resolveLocalTemplateAsync({ templateDirectory, projectRoot, exp });
+      const result = await resolveLocalTemplateAsync({ templateDirectory, projectRoot, exp });
+      event('template:resolved', { source: 'local', name: 'expo-template-bare-minimum' });
+      return result;
     } catch (error: any) {
       const templatePackageName = getTemplateNpmPackageNameFromSdkVersion(exp.sdkVersion);
-      debug('Fallback to SDK template:', templatePackageName);
-      return await downloadAndExtractNpmModuleAsync(templatePackageName, {
-        cwd: templateDirectory,
-        name: exp.name,
+      debugEvent('sdk_template_fallback', { name: templatePackageName });
+      event('template:resolved', { source: 'npm', name: templatePackageName });
+      return await downloadAndExtractNpmModuleAsync(templatePackageName, templateDirectory, {
+        expName: exp.name,
       });
     }
   }
@@ -87,8 +87,9 @@ async function getRepoInfo(url: any, examplePath?: string): Promise<RepoInfo | u
 
   // Support repos whose entire purpose is to be an example, e.g.
   // https://github.com/:username/:my-cool-example-repo-name.
+  // Use the plain unauthenticated `fetch` so Expo credentials aren't forwarded to GitHub.
   if (t === undefined) {
-    const infoResponse = await fetchAsync(`https://api.github.com/repos/${username}/${name}`);
+    const infoResponse = await fetch(`https://api.github.com/repos/${username}/${name}`);
     if (infoResponse.status !== 200) {
       return;
     }
@@ -107,27 +108,33 @@ async function getRepoInfo(url: any, examplePath?: string): Promise<RepoInfo | u
   return undefined;
 }
 
-function hasRepo({ username, name, branch, filePath }: RepoInfo) {
+async function hasRepo({ username, name, branch, filePath }: RepoInfo): Promise<boolean> {
   const contentsUrl = `https://api.github.com/repos/${username}/${name}/contents`;
   const packagePath = `${filePath ? `/${filePath}` : ''}/package.json`;
 
-  return isUrlOk(contentsUrl + packagePath + `?ref=${branch}`);
+  try {
+    const response = await fetch(contentsUrl + packagePath + `?ref=${branch}`);
+    return response.ok;
+  } catch {
+    return false;
+  }
 }
 
 async function downloadAndExtractRepoAsync(
   { username, name, branch, filePath }: RepoInfo,
-  props: ExtractProps
+  output: string,
+  props: { expName?: string }
 ): Promise<string> {
   const url = `https://codeload.github.com/${username}/${name}/tar.gz/${branch}`;
 
-  debug('Downloading tarball from:', url);
+  debugEvent('repo_tarball_download', { url });
 
   // Extract the (sub)directory into non-empty path segments
   const directory = filePath.replace(/^\//, '').split('/').filter(Boolean);
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.length + 1;
   // Only extract the relevant (sub)directories, ignoring irrelevant files
-  // The filder auto-ignores dotfiles, unless explicitly included
+  // The filter auto-ignores dotfiles, unless explicitly included
   const filter = createGlobFilter(
     !directory.length
       ? ['*/**', '*/ios/.xcode.env']
@@ -138,13 +145,17 @@ async function downloadAndExtractRepoAsync(
     }
   );
 
-  return await extractNpmTarballFromUrlAsync(url, { ...props, strip, filter });
+  return await extractNpmTarballFromUrlAsync(url, output, {
+    ...props,
+    strip,
+    filter,
+  });
 }
 
 async function resolveAndDownloadRepoTemplateAsync(
   templateDirectory: string,
   oraInstance: Ora,
-  appName: string,
+  expName: string,
   template: string,
   templatePath?: string
 ) {
@@ -196,8 +207,5 @@ async function resolveAndDownloadRepoTemplateAsync(
     `Downloading files from repo ${chalk.cyan(template)}. This might take a moment.`
   );
 
-  return await downloadAndExtractRepoAsync(repoInfo, {
-    cwd: templateDirectory,
-    name: appName,
-  });
+  return await downloadAndExtractRepoAsync(repoInfo, templateDirectory, { expName });
 }

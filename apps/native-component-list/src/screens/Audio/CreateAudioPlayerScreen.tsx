@@ -2,9 +2,9 @@ import { createAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import React from 'react';
 import { PixelRatio, ScrollView, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 
+import HeadingText from '../../components/HeadingText';
 import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
-import HeadingText from '../../components/HeadingText';
 
 export default function CreateAudioPlayerScreen(props: any) {
   React.useLayoutEffect(() => {
@@ -21,7 +21,7 @@ export default function CreateAudioPlayerScreen(props: any) {
   );
 }
 const player = createAudioPlayer({
-  uri: 'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
+  uri: 'https://expo-test-media.com/audio/por_una_cabeza.mp3',
 });
 
 function AudioPlayer({ style }: { style?: StyleProp<ViewStyle> }) {

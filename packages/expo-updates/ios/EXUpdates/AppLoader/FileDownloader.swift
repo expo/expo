@@ -440,6 +440,7 @@ public final class FileDownloader {
     request.setValue("1", forHTTPHeaderField: "Expo-API-Version")
     request.setValue("BARE", forHTTPHeaderField: "Expo-Updates-Environment")
     request.setValue(EASClientID.uuid().uuidString, forHTTPHeaderField: "EAS-Client-ID")
+    request.setValue(config.runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
 
     for (key, value) in config.requestHeaders {
       request.setValue(value, forHTTPHeaderField: key)

@@ -4,46 +4,55 @@
 
 import fs from 'fs/promises';
 import module from 'module';
-import assert from 'node:assert';
 import process from 'node:process';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { resolveExpoEnvPath } from './ExpoResolver';
 import { DEFAULT_IGNORE_PATHS } from './Options';
-import { isIgnoredPath } from './utils/Path';
+import { buildPathMatchObjects, isIgnoredPathWithMatchObjects, toPosixPath } from './utils/Path';
 
 async function runAsync(programName: string, args: string[] = []) {
-  if (args.length < 1) {
-    console.log(`Usage: ${programName} <projectRoot> [ignoredFile]`);
+  if (args[0] == null) {
+    console.log(`Usage: ${programName} <projectRoot> [ignoredFile] [--skipPlugins]`);
     return;
   }
 
   const projectRoot = path.resolve(args[0]);
-  const ignoredFile = args[1] ? path.resolve(args[1]) : null;
+  const skipPlugins = args.includes('--skipPlugins');
+  const ignoredFileArg = args[1] && !args[1].startsWith('--') ? args[1] : null;
+  const ignoredFile = ignoredFileArg ? path.resolve(ignoredFileArg) : null;
 
-  // @ts-expect-error: module internal _cache
-  const loadedModulesBefore = new Set(Object.keys(module._cache));
-
-  const expoEnvPath = resolveExpoEnvPath(projectRoot);
-  assert(expoEnvPath, `Could not find '@expo/env' package for the project from ${projectRoot}.`);
-  require(expoEnvPath).load(projectRoot);
   setNodeEnv('development');
-  const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
-  const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  // @ts-expect-error: module internal _cache
-  const loadedModules = Object.keys(module._cache)
-    .filter((modulePath) => !loadedModulesBefore.has(modulePath))
-    .map((modulePath) => path.relative(projectRoot, modulePath));
+  require('@expo/env').load(projectRoot);
+
+  const { getCapturedModules, uninstall } = installModuleCaptureHook();
+  let config;
+  try {
+    const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
+    config = await getConfig(projectRoot, {
+      skipSDKVersionRequirement: true,
+      skipPlugins,
+    });
+  } finally {
+    uninstall();
+  }
 
   const ignoredPaths = [
     ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
     ...(await loadIgnoredPathsAsync(ignoredFile)),
   ];
-  const filteredLoadedModules = loadedModules.filter(
-    (modulePath) => !isIgnoredPath(modulePath, ignoredPaths)
+  const loadedModules = await resolveLoadedModuleSourcesAsync(
+    getCapturedModules(),
+    projectRoot,
+    ignoredPaths
   );
-  const result = JSON.stringify({ config, loadedModules: filteredLoadedModules });
+
+  const result = JSON.stringify({
+    // The plugins-skipped pass only contributes its module list to the diff; its config is unused.
+    config: skipPlugins ? null : config,
+    loadedModules,
+  });
+
   if (process.send) {
     process.send(result);
   } else {
@@ -55,8 +64,9 @@ async function runAsync(programName: string, args: string[] = []) {
 if (require.main?.filename === __filename) {
   (async () => {
     const programIndex = process.argv.findIndex((arg) => arg === __filename);
+    const programName = process.argv[programIndex] ?? __filename;
     try {
-      await runAsync(process.argv[programIndex], process.argv.slice(programIndex + 1));
+      await runAsync(programName, process.argv.slice(programIndex + 1));
     } catch (e) {
       console.error('Uncaught Error', e);
       process.exit(1);
@@ -88,6 +98,105 @@ async function loadIgnoredPathsAsync(ignoredFile: string | null) {
 }
 
 /**
+ * A CommonJS module observed while `installModuleCaptureHook()` was active.
+ */
+export interface CapturedModule {
+  /** The module id (cache key). May diverge from `filename` for virtual modules. */
+  id: string;
+  /** The filename Node compiled the module under. Authoritative even for transpiled sources. */
+  filename: string;
+  /** The source content Node executed for the module. */
+  content: string;
+}
+
+/**
+ * A config-plugin source produced from a captured module.
+ * A module backed by a real file becomes a `file` source.
+ * For virtual modules without a physical file in the file system, it becomes a `contents` source
+ * carrying the captured body.
+ */
+export type LoadedModuleSource =
+  | { type: 'file'; path: string }
+  | { type: 'contents'; id: string; contents: string };
+
+/**
+ * Observe every CommonJS module compiled while the hook is installed.
+ * We hook `Module.prototype._compile` to keep each module's authoritative filename and source
+ * content.
+ */
+export function installModuleCaptureHook(): {
+  getCapturedModules: () => CapturedModule[];
+  uninstall: () => void;
+} {
+  const moduleProto = (module as unknown as { prototype: ModuleCompilePrototype }).prototype;
+  const capturedModules: CapturedModule[] = [];
+  const originalCompile = moduleProto._compile;
+  moduleProto._compile = function (this: { id?: string }, content: string, filename: string) {
+    capturedModules.push({ id: this.id ?? filename, filename, content });
+    return originalCompile.call(this, content, filename);
+  };
+  return {
+    getCapturedModules: () => capturedModules,
+    uninstall: () => {
+      moduleProto._compile = originalCompile;
+    },
+  };
+}
+
+interface ModuleCompilePrototype {
+  _compile: (this: { id?: string }, content: string, filename: string) => unknown;
+}
+
+/**
+ * Turn captured modules into config-plugin sources, dropping ignored paths.
+ * A real file becomes a `file` source; a module with no file on disk (virtual / compiled from a
+ * string) becomes a `contents` source keyed by its project-relative path so it stays stable across
+ * runs. A path that exists but is not a file (e.g. a directory) is skipped.
+ */
+export async function resolveLoadedModuleSourcesAsync(
+  capturedModules: CapturedModule[],
+  projectRoot: string,
+  ignoredPaths: string[]
+): Promise<LoadedModuleSource[]> {
+  const seen = new Set<string>();
+  const ignoredPathMatchObjects = buildPathMatchObjects(ignoredPaths);
+  const candidates = capturedModules
+    .map(({ filename, content }) => ({
+      relativePath: toPosixPath(path.relative(projectRoot, filename)),
+      filename,
+      content,
+    }))
+    .filter(({ relativePath }) => {
+      if (
+        seen.has(relativePath) ||
+        isIgnoredPathWithMatchObjects(relativePath, ignoredPathMatchObjects)
+      ) {
+        return false;
+      }
+      seen.add(relativePath);
+      return true;
+    });
+
+  const sources = await Promise.all(
+    candidates.map(
+      async ({ relativePath, filename, content }): Promise<LoadedModuleSource | null> => {
+        try {
+          const stat = await fs.stat(filename);
+          return stat.isFile() ? { type: 'file', path: relativePath } : null;
+        } catch (error: any) {
+          if (error.code === 'ENOENT') {
+            return { type: 'contents', id: relativePath, contents: content };
+          }
+          throw error;
+        }
+      }
+    )
+  );
+
+  return sources.filter((source): source is LoadedModuleSource => source !== null);
+}
+
+/**
  * Get the path to the ExpoConfigLoader file.
  */
 export function getExpoConfigLoaderPath() {
@@ -106,45 +215,37 @@ function setNodeEnv(mode: 'development' | 'production') {
   globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
 }
 
-// Ignore default javascript files when calling `getConfig()`
+// Ignore known non-native packages loaded while applying config plugins, which the plugins-skipped
+// diff can't drop since they only load during plugin application.
 const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
-  // We don't want to include the whole project package.json from the ExpoConfigLoader phase.
-  'package.json',
-
-  '**/node_modules/@babel/**/*',
   '**/node_modules/@expo/**/*',
-  '**/node_modules/@jridgewell/**/*',
-  '**/node_modules/expo/config.js',
-  '**/node_modules/expo/config-plugins.js',
   `**/node_modules/{${[
-    'ajv',
-    'ajv-formats',
-    'ajv-keywords',
     'ansi-styles',
+    'base64-js',
+    'big-integer',
+    'bplist-creator',
     'chalk',
+    'cross-spawn',
     'debug',
-    'dotenv',
-    'dotenv-expand',
-    'escape-string-regexp',
-    'getenv',
-    'graceful-fs',
-    'fast-deep-equal',
-    'fast-uri',
     'has-flag',
-    'imurmurhash',
-    'js-tokens',
-    'json5',
-    'json-schema-traverse',
+    'isexe',
+    'jimp-compact',
     'ms',
-    'picocolors',
-    'lines-and-columns',
-    'require-from-string',
-    'resolve-from',
-    'schema-utils',
-    'signal-exit',
-    'sucrase',
+    'parse-png',
+    'path-key',
+    'plist',
+    'pngjs',
+    'sax',
+    'semver',
+    'shebang-command',
+    'shebang-regex',
+    'simple-plist',
+    'stream-buffers',
     'supports-color',
-    'ts-interface-checker',
-    'write-file-atomic',
+    'uuid',
+    'which',
+    'xcode',
+    'xml2js',
+    'xmlbuilder',
   ].join(',')}}/**/*`,
 ];

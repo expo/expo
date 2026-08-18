@@ -1,6 +1,9 @@
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo';
 
-import { ApplicationReleaseType, PushNotificationServiceEnvironment } from './Application.types';
+import type {
+  ApplicationReleaseType,
+  PushNotificationServiceEnvironment,
+} from './Application.types';
 import ExpoApplication from './ExpoApplication';
 
 // @needsAudit
@@ -19,7 +22,7 @@ export const nativeApplicationVersion: string | null = ExpoApplication
 // @needsAudit
 /**
  * The internal build version of the native application that the app stores may use to distinguish
- * between different binaries. At the time when native app is built, On Android, this is the version
+ * between different binaries. At the time when native app is built, on Android, this is the version
  * code set by `android.versionCode` in app config, and on iOS, the `Info.plist` value for
  * `CFBundleVersion` (set with `ios.buildNumber` value in app config in a standalone app).
  * On web, this value is `null`. The return type on Android and iOS is `string`.
@@ -201,4 +204,7 @@ export async function getLastUpdateTimeAsync(): Promise<Date> {
   return new Date(lastUpdateTime);
 }
 
-export { ApplicationReleaseType, PushNotificationServiceEnvironment };
+export {
+  ApplicationReleaseType,
+  type PushNotificationServiceEnvironment,
+} from './Application.types';

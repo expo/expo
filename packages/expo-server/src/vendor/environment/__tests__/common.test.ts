@@ -6,7 +6,7 @@ import type {
   RenderingConfiguration,
   RouteInfo,
 } from '../../../manifest';
-import type { ServerRenderModule } from '../../../rendering';
+import type { LegacyServerRenderModule, ServerRenderModule } from '../../../rendering';
 import { createEnvironment } from '../common';
 
 describe('getRoutesManifest', () => {
@@ -27,7 +27,7 @@ describe('getRoutesManifest', () => {
     const manifest = await env.getRoutesManifest();
 
     expect(input.readJson).toHaveBeenCalledWith('_expo/routes.json');
-    expect(manifest.htmlRoutes).toHaveLength(1);
+    expect(manifest!.htmlRoutes).toHaveLength(1);
   });
 
   it('converts `namedRegex` strings to RegExp instances', async () => {
@@ -60,12 +60,12 @@ describe('getRoutesManifest', () => {
 
     const manifest = await env.getRoutesManifest();
 
-    expect(manifest.htmlRoutes[0].namedRegex).toBeInstanceOf(RegExp);
-    expect(manifest.apiRoutes[0].namedRegex).toBeInstanceOf(RegExp);
-    expect(manifest.notFoundRoutes[0].namedRegex).toBeInstanceOf(RegExp);
+    expect(manifest!.htmlRoutes[0]!.namedRegex).toBeInstanceOf(RegExp);
+    expect(manifest!.apiRoutes[0]!.namedRegex).toBeInstanceOf(RegExp);
+    expect(manifest!.notFoundRoutes[0]!.namedRegex).toBeInstanceOf(RegExp);
   });
 
-  it('caches the manifest on subsequent calls', async () => {
+  it('caches the manifest on subsequent calls in production', async () => {
     const input = createMockInput();
     const env = createEnvironment(input);
 
@@ -73,6 +73,16 @@ describe('getRoutesManifest', () => {
     await env.getRoutesManifest();
 
     expect(input.readJson).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not cache the manifest in development', async () => {
+    const input = createMockInput({ isDevelopment: true });
+    const env = createEnvironment(input);
+
+    await env.getRoutesManifest();
+    await env.getRoutesManifest();
+
+    expect(input.readJson).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -197,7 +207,7 @@ describe('getHtml', () => {
       })
     );
 
-    expect(html).toBe('<html>SSR content</html>');
+    expect(await new Response(html as ReadableStream).text()).toBe('<html>SSR content</html>');
     expect(input.loadModule).toHaveBeenCalledWith('_expo/server/render.js');
     expect(input.readText).not.toHaveBeenCalled();
   });
@@ -222,7 +232,7 @@ describe('getHtml', () => {
     ).rejects.toThrow(/SSR module not found/);
   });
 
-  it('caches SSR renderer on subsequent calls', async () => {
+  it('caches SSR renderer on subsequent calls in production', async () => {
     const mockSSRModule = createMockSSRModule();
     const input = createMockInput({
       manifest: {
@@ -253,7 +263,81 @@ describe('getHtml', () => {
     expect(input.loadModule).toHaveBeenCalledTimes(1);
   });
 
-  it('passes location, request, and assets to `getStaticContent()`', async () => {
+  it('does not cache SSR renderer in development', async () => {
+    const mockSSRModule = createMockSSRModule();
+    const input = createMockInput({
+      isDevelopment: true,
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: { css: [], js: ['/app.js'] },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+      })
+    );
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './other.tsx',
+        page: '/other',
+        namedRegex: new RegExp('^/other(?:/)?$'),
+      })
+    );
+
+    expect(input.loadModule).toHaveBeenCalledTimes(2);
+  });
+
+  it('uses the legacy SSR renderer for SDK 55 exports', async () => {
+    const mockLegacySSRModule = createMockLegacySSRModule();
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: { css: ['/style.css'], js: ['/app.js'] },
+      },
+      modules: { '_expo/server/render.js': mockLegacySSRModule },
+    });
+    const env = createEnvironment(input);
+    const request = new Request('http://localhost/path?query=1');
+
+    const result = await env.getHtml(
+      request,
+      createMockRoute({
+        file: './path.tsx',
+        page: '/path',
+        namedRegex: new RegExp('^/path(?:/)?$'),
+      })
+    );
+    expect(result).toEqual('<html>Legacy SSR content</html>');
+
+    expect(mockLegacySSRModule.getStaticContent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pathname: '/path',
+        search: '?query=1',
+      }),
+      expect.objectContaining({
+        request,
+        assets: { css: ['/style.css'], externalCss: [], js: ['/app.js'] },
+      })
+    );
+    expect(mockLegacySSRModule.getStaticContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        request: expect.objectContaining({
+          signal: request.signal,
+        }),
+      })
+    );
+  });
+
+  it('passes location, request, and assets to `getStreamingContent()`', async () => {
     const mockSSRModule = createMockSSRModule();
     const input = createMockInput({
       manifest: {
@@ -274,14 +358,99 @@ describe('getHtml', () => {
       })
     );
 
-    expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
       expect.objectContaining({
         pathname: '/path',
         search: '?query=1',
       }),
       expect.objectContaining({
         request,
-        assets: { css: ['/style.css'], js: ['/app.js'] },
+        assets: { css: ['/style.css'], externalCss: [], js: ['/app.js'] },
+      })
+    );
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        request: expect.objectContaining({
+          signal: request.signal,
+        }),
+      })
+    );
+  });
+
+  it('merges top-level and per-route assets', async () => {
+    const mockSSRModule = createMockSSRModule();
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: { css: ['/global.css'], js: ['/runtime.js', '/entry.js'] },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+        assets: { css: [], js: ['/layout-chunk.js', '/index-chunk.js'] },
+      })
+    );
+
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        assets: {
+          css: ['/global.css'],
+          externalCss: [],
+          js: ['/runtime.js', '/entry.js', '/layout-chunk.js', '/index-chunk.js'],
+        },
+      })
+    );
+  });
+
+  it('merges top-level and per-route external CSS', async () => {
+    const mockSSRModule = createMockSSRModule();
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: {
+          css: [],
+          externalCss: [{ href: 'https://fonts.googleapis.com/css2?family=Roboto' }],
+          js: [],
+        },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+        assets: {
+          css: [],
+          externalCss: [
+            { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },
+          ],
+          js: [],
+        },
+      })
+    );
+
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        assets: expect.objectContaining({
+          externalCss: [
+            { href: 'https://fonts.googleapis.com/css2?family=Roboto' },
+            { href: 'https://example.com/route.css', media: 'screen and (min-width: 900px)' },
+          ],
+        }),
       })
     );
   });
@@ -290,7 +459,7 @@ describe('getHtml', () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
     const renderError = new Error('Render failed');
     const mockSSRModule = {
-      getStaticContent: jest.fn().mockRejectedValue(renderError),
+      getStreamingContent: jest.fn().mockRejectedValue(renderError),
     };
     const input = createMockInput({
       manifest: {
@@ -352,12 +521,117 @@ describe('getHtml', () => {
 
     expect(input.loadModule).toHaveBeenCalledWith('_expo/loaders/index.js');
     expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), {});
-    expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
-        loader: { data: loaderData },
+        loader: { key: '/index', data: loaderData },
       })
     );
+  });
+
+  it('resolves metadata before render and passes the resolved head tags to the SSR renderer', async () => {
+    const mockSSRModule = createMockSSRModule({
+      resolveMetadata: jest.fn().mockResolvedValue({
+        metadata: { title: 'Route title' },
+        // In reality, this would be `<title>Route title</title>` but we're doing this to avoid pulling React in as a devDependency just for this test
+        headNodes: [],
+      }),
+    });
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+    const request = new Request('http://localhost/posts/123');
+
+    await env.getHtml(
+      request,
+      createMockRoute({
+        file: './posts/[id].tsx',
+        page: '/posts/[id]',
+        namedRegex: new RegExp('^/posts/(?<id>[^/]+?)(?:/)?$'),
+        routeKeys: { id: 'id' },
+      })
+    );
+
+    expect(mockSSRModule.resolveMetadata).toHaveBeenCalledWith({
+      route: {
+        file: './posts/[id].tsx',
+        page: '/posts/[id]',
+      },
+      request: new ImmutableRequest(request),
+      params: { id: '123' },
+    });
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        metadata: {
+          metadata: { title: 'Route title' },
+          headNodes: [],
+        },
+      })
+    );
+  });
+
+  it('passes through null metadata results without adding renderer metadata input', async () => {
+    const mockSSRModule = createMockSSRModule({
+      resolveMetadata: jest.fn().mockResolvedValue(null),
+    });
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await env.getHtml(
+      new Request('http://localhost/'),
+      createMockRoute({
+        file: './index.tsx',
+        page: '/index',
+        namedRegex: new RegExp('^/(?:/)?$'),
+      })
+    );
+
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        metadata: null,
+      })
+    );
+  });
+
+  it('re-throws metadata resolution errors before render', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+    const metadataError = new Error('Metadata failed');
+    const mockSSRModule = createMockSSRModule({
+      resolveMetadata: jest.fn().mockRejectedValue(metadataError),
+    });
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+      },
+      modules: { '_expo/server/render.js': mockSSRModule },
+    });
+    const env = createEnvironment(input);
+
+    await expect(
+      env.getHtml(
+        new Request('http://localhost/'),
+        createMockRoute({
+          file: './index.tsx',
+          page: '/index',
+          namedRegex: new RegExp('^/(?:/)?$'),
+        })
+      )
+    ).rejects.toThrow('Metadata failed');
+
+    expect(mockSSRModule.getStreamingContent).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalledWith('SSR render error:', metadataError);
+    consoleErrorSpy.mockRestore();
   });
 });
 
@@ -462,7 +736,7 @@ describe('getLoaderData', () => {
     expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), {});
   });
 
-  it('returns `Response` with `{}` body when route has no loader', async () => {
+  it('returns `Response` with `null` body when route has no loader', async () => {
     const input = createMockInput();
     const env = createEnvironment(input);
 
@@ -476,7 +750,7 @@ describe('getLoaderData', () => {
     );
 
     expect(result).toBeInstanceOf(Response);
-    expect(await result.json()).toEqual({});
+    expect(await result.json()).toBeNull();
   });
 
   it('throws when loader module fails to load', async () => {
@@ -517,7 +791,7 @@ describe('getLoaderData', () => {
     expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), { id: '123' });
   });
 
-  it('normalizes `undefined` loader result to `{}`', async () => {
+  it('normalizes `undefined` loader result to `null`', async () => {
     const loaderModule = { loader: jest.fn().mockResolvedValue(undefined) };
     const input = createMockInput({
       modules: { '_expo/loaders/undefined-route.js': loaderModule },
@@ -535,7 +809,7 @@ describe('getLoaderData', () => {
     );
 
     expect(result).toBeInstanceOf(Response);
-    expect(await result.json()).toEqual({});
+    expect(await result.json()).toBeNull();
   });
 
   it('passes through `null` loader result as `null`', async () => {
@@ -619,10 +893,12 @@ function createMockInput({
   files = {},
   modules = {},
   manifest = {},
+  isDevelopment = false,
 }: {
   files?: Record<string, string | null>;
   modules?: Record<string, unknown>;
   manifest?: Parameters<typeof createMockManifest>[0];
+  isDevelopment?: boolean;
 } = {}) {
   return {
     readText: jest.fn().mockImplementation((path: string) => Promise.resolve(files[path] ?? null)),
@@ -630,6 +906,7 @@ function createMockInput({
     loadModule: jest
       .fn()
       .mockImplementation((path: string) => Promise.resolve(modules[path] ?? null)),
+    isDevelopment,
   };
 }
 
@@ -645,8 +922,30 @@ function createMockRoute<T extends string | RegExp = string>(
   };
 }
 
-function createMockSSRModule(): ServerRenderModule {
+function createMockLegacySSRModule(
+  overrides: Partial<LegacyServerRenderModule> = {}
+): LegacyServerRenderModule {
   return {
-    getStaticContent: jest.fn().mockResolvedValue('<html>SSR content</html>'),
+    getStaticContent: jest.fn().mockResolvedValue('<html>Legacy SSR content</html>'),
+    ...overrides,
   };
+}
+
+function createMockSSRModule(overrides: Partial<ServerRenderModule> = {}): ServerRenderModule {
+  return {
+    resolveMetadata: jest.fn().mockResolvedValue(null),
+    getStreamingContent: jest
+      .fn()
+      .mockResolvedValue(createMockHtmlStream('<html>SSR content</html>')),
+    ...overrides,
+  };
+}
+
+function createMockHtmlStream(html: string): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode(html));
+      controller.close();
+    },
+  });
 }

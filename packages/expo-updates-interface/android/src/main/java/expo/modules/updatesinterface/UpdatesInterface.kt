@@ -26,8 +26,10 @@ interface UpdatesInterface {
   /**
    * These properties are only set when updates is enabled
    */
+  val requestHeaders: Map<String, String>? get() = null
   val launchedUpdateId: UUID? get() = null
   val embeddedUpdateId: UUID? get() = null
+  val launchAssetPath: String? get() = null
 
   /**
    * User code or third party modules can add a listener that will be called
@@ -61,6 +63,7 @@ interface UpdatesDevLauncherInterface : UpdatesInterface {
   var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>?
 
   fun reset()
+  fun setIsUsingEmbeddedAssets(isUsingEmbeddedAssets: Boolean) {}
   fun fetchUpdateWithConfiguration(configuration: HashMap<String, Any>, callback: UpdateCallback)
   fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>): Boolean
 }
@@ -78,4 +81,33 @@ interface UpdatesStateChangeSubscription {
    * Call this to remove the subscription and stop receiving state change events
    */
   fun remove()
+
+  /*
+   * When updates is enabled, returns the current state context as an instance of UpdatesNativeInterfaceStateContext
+   */
+  fun getContext(): Any?
+}
+
+/**
+ * Expose the state machine context to the native interface.
+ */
+data class UpdatesNativeInterfaceStateContext(
+  val isUpdateAvailable: Boolean,
+  val isUpdatePending: Boolean,
+  val isChecking: Boolean,
+  val isDownloading: Boolean,
+  val isRestarting: Boolean,
+  val restartCount: Int,
+  val latestManifest: Map<String, Any>?,
+  val downloadedManifest: Map<String, Any>?,
+  val rollback: Rollback?,
+  val checkError: Map<String, String>?,
+  val downloadError: Map<String, String>?,
+  val downloadProgress: Double,
+  val lastCheckForUpdateTime: java.util.Date?,
+  val sequenceNumber: Int,
+  val downloadStartTime: java.util.Date?,
+  val downloadFinishTime: java.util.Date?
+) {
+  data class Rollback(val commitTime: java.util.Date)
 }

@@ -2,33 +2,51 @@ import {
   AndroidConfig,
   ConfigPlugin,
   createRunOncePlugin,
+  WarningAggregator,
   withGradleProperties,
   withPodfileProperties,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-sqlite/package.json');
+const pkg = require('../../package.json');
 
-interface Props {
+export interface Props {
   customBuildFlags?: string;
   enableFTS?: boolean;
   useSQLCipher?: boolean;
-  useLibSQL?: boolean;
   withSQLiteVecExtension?: boolean;
-  android: {
+  /** @deprecated libSQL support was removed. This property no longer has any effect. */
+  useLibSQL?: boolean;
+  android?: {
     customBuildFlags?: string;
     enableFTS?: boolean;
     useSQLCipher?: boolean;
-    useLibSQL?: boolean;
     useSQLiteVec?: boolean;
     withSQLiteVecExtension?: boolean;
+    /** @deprecated libSQL support was removed. This property no longer has any effect. */
+    useLibSQL?: boolean;
   };
-  ios: {
+  ios?: {
     customBuildFlags?: string;
     enableFTS?: boolean;
     useSQLCipher?: boolean;
-    useLibSQL?: boolean;
     withSQLiteVecExtension?: boolean;
+    /** @deprecated libSQL support was removed. This property no longer has any effect. */
+    useLibSQL?: boolean;
   };
+}
+
+// Warn rather than silently ignore the property, so an app that opted into libSQL learns that its
+// build quietly switched to SQLite instead of discovering it at runtime.
+function warnRemovedLibSQLProp(props: Props | undefined, platform: 'android' | 'ios') {
+  const useLibSQL = props?.[platform]?.useLibSQL ?? props?.useLibSQL;
+  if (useLibSQL === undefined) {
+    return;
+  }
+  WarningAggregator.addWarningForPlatform(
+    platform,
+    'expo-sqlite useLibSQL',
+    'libSQL support was removed, so this property is deprecated and no longer has any effect. The build always uses SQLite now. Remove `useLibSQL` from your app config.'
+  );
 }
 
 const withSQLite: ConfigPlugin<Props> = (config, props) => {
@@ -39,10 +57,11 @@ const withSQLite: ConfigPlugin<Props> = (config, props) => {
 
 const withSQLiteAndroidProps: ConfigPlugin<Props> = (config, props) => {
   return withGradleProperties(config, (config) => {
+    warnRemovedLibSQLProp(props, 'android');
+
     const customBuildFlags = props?.android?.customBuildFlags ?? props?.customBuildFlags;
     const enableFTS = props?.android?.enableFTS ?? props?.enableFTS;
     const useSQLCipher = props?.android?.useSQLCipher ?? props?.useSQLCipher;
-    const useLibSQL = props?.android?.useLibSQL ?? props?.useLibSQL;
     const withSQLiteVecExtension =
       props?.android?.withSQLiteVecExtension ?? props?.withSQLiteVecExtension;
 
@@ -63,11 +82,6 @@ const withSQLiteAndroidProps: ConfigPlugin<Props> = (config, props) => {
     );
     config.modResults = updateAndroidBuildPropertyIfNeeded(
       config.modResults,
-      'expo.sqlite.useLibSQL',
-      useLibSQL
-    );
-    config.modResults = updateAndroidBuildPropertyIfNeeded(
-      config.modResults,
       'expo.sqlite.withSQLiteVecExtension',
       withSQLiteVecExtension
     );
@@ -78,10 +92,11 @@ const withSQLiteAndroidProps: ConfigPlugin<Props> = (config, props) => {
 
 const withSQLiteIOSProps: ConfigPlugin<Props> = (config, props) => {
   return withPodfileProperties(config, (config) => {
+    warnRemovedLibSQLProp(props, 'ios');
+
     const customBuildFlags = props?.ios?.customBuildFlags ?? props?.customBuildFlags;
     const enableFTS = props?.ios?.enableFTS ?? props?.enableFTS;
     const useSQLCipher = props?.ios?.useSQLCipher ?? props?.useSQLCipher;
-    const useLibSQL = props?.ios?.useLibSQL ?? props?.useLibSQL;
     const withSQLiteVecExtension =
       props?.ios?.withSQLiteVecExtension ?? props?.withSQLiteVecExtension;
 
@@ -99,11 +114,6 @@ const withSQLiteIOSProps: ConfigPlugin<Props> = (config, props) => {
       config.modResults,
       'expo.sqlite.useSQLCipher',
       useSQLCipher
-    );
-    config.modResults = updateIOSBuildPropertyIfNeeded(
-      config.modResults,
-      'expo.sqlite.useLibSQL',
-      useLibSQL
     );
     config.modResults = updateIOSBuildPropertyIfNeeded(
       config.modResults,

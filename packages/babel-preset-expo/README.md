@@ -11,6 +11,33 @@ at https://github.com/expo/expo.
 
 A bundler must follow these requirements if they are to be considered spec compliant for use with a **universal React** (Expo) project.
 
+### Babel Loader
+
+The Babel loading mechanism must include the following properties on its `caller`.
+
+#### platform
+
+A `platform` property denoting the target platform. If the `platform` is not defined, it will default to using `web` when the `bundler` is `webpack` -- this is temporary and will throw an error in the future.
+
+| Value     | Description             |
+| --------- | ----------------------- |
+| `ios`     | Runs on iOS devices     |
+| `android` | Runs on Android devices |
+| `web`     | Runs in web browsers    |
+
+#### bundler
+
+A `bundler` property denoting the name of the bundler that is being used to create the JavaScript bundle.
+If the `bundler` is not defined, it will default to checking if a `babel-loader` is used, if so then `webpack` will be used, otherwise it will default to `metro`.
+
+| Value     | Description                      |
+| --------- | -------------------------------- |
+| `metro`   | Bundling with [Metro][metro]     |
+| `webpack` | Bundling with [Webpack][webpack] |
+
+[metro]: https://facebook.github.io/metro/
+[webpack]: https://webpack.js.org/
+
 ## Options
 
 ### `react-compiler`
@@ -73,7 +100,7 @@ Defaults to `true` for server environments, and `false` for client environments 
 ];
 ```
 
-This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx). This flag does nothing when `useTransformReactJSXExperimental` is set to `true` because `@babel/plugin-transform-react-jsx` is omitted.
+This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx).
 
 ### [`jsxImportSource`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx#importsource)
 
@@ -152,17 +179,13 @@ If `undefined` (default), this will be set automatically via `caller.supportsSta
 
 Changes the engine preset in `@react-native/babel-preset` based on the JavaScript engine that is being targeted. In Expo SDK 50 and greater, this is automatically set based on the [`jsEngine`](https://docs.expo.dev/versions/latest/config/app/#jsengine) option in your `app.json`.
 
-### `unstable_transformImportMeta`
+### `transformImportMeta`
 
-Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`, defaults to `false` in client bundles and `true` for server bundles.
+Enable transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`. Defaults to `true`.
 
-> **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
+> **Note:** If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
 
 ### `enableBabelRuntime`
-
-Passed to `@react-native/babel-preset`.
-
-### `disableFlowStripTypesTransform`
 
 Passed to `@react-native/babel-preset`.
 
@@ -186,30 +209,3 @@ All options can be passed in the platform-specific objects `native` and `web` to
 ```
 
 Platform-specific options have higher priority over top-level options.
-
-### Babel Loader
-
-The Babel loading mechanism must include the following properties on its `caller`.
-
-#### platform
-
-A `platform` property denoting the target platform. If the `platform` is not defined, it will default to using `web` when the `bundler` is `webpack` -- this is temporary and will throw an error in the future.
-
-| Value     | Description             |
-| --------- | ----------------------- |
-| `ios`     | Runs on iOS devices     |
-| `android` | Runs on Android devices |
-| `web`     | Runs in web browsers    |
-
-#### bundler
-
-A `bundler` property denoting the name of the bundler that is being used to create the JavaScript bundle.
-If the `bundler` is not defined, it will default to checking if a `babel-loader` is used, if so then `webpack` will be used, otherwise it will default to `metro`.
-
-| Value     | Description                      |
-| --------- | -------------------------------- |
-| `metro`   | Bundling with [Metro][metro]     |
-| `webpack` | Bundling with [Webpack][webpack] |
-
-[metro]: https://facebook.github.io/metro/
-[webpack]: https://webpack.js.org/

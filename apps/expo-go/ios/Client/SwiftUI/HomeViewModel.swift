@@ -24,7 +24,10 @@ class HomeViewModel: ObservableObject {
   @Published var developmentServers: [DevelopmentServer] = []
   @Published var projects: [ExpoProject] = []
   @Published var snacks: [Snack] = []
+  @Published var totalProjectCount: Int = 0
   @Published var isLoadingData = false
+  @Published var isLoadingApp = false
+  @Published var pendingLessonId: Int?
   @Published var dataError: APIError?
 
   private var cancellables = Set<AnyCancellable>()
@@ -64,11 +67,14 @@ class HomeViewModel: ObservableObject {
   }
 
   func onViewWillAppear() {
-    serverService.startDiscovery()
     serverService.setSessionSecret(authService.sessionSecret)
 
     if isAuthenticated, let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
+    }
+
+    if serverService.hasGrantedNetworkPermission || DevelopmentServerService.isSimulator {
+      serverService.startDiscovery()
     }
 
     Task {
@@ -103,14 +109,27 @@ class HomeViewModel: ObservableObject {
     }
   }
 
+  func ssoLogin() async {
+    do {
+      try await authService.ssoLogin()
+      if let account = selectedAccount {
+        dataService.startPolling(accountName: account.name)
+      }
+    } catch {
+      showError("Failed to sign in with SSO")
+    }
+  }
+
   func signOut() {
     authService.signOut()
+    clearRecentlyOpenedApps()
     dataService.clearData()
     dataService.stopPolling()
   }
 
   func selectAccount(accountId: String) {
     authService.selectAccount(accountId: accountId)
+    clearRecentlyOpenedApps()
     if let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
     }
@@ -120,18 +139,22 @@ class HomeViewModel: ObservableObject {
     guard let account = selectedAccount else { return }
 
     async let fetchTask: Void = dataService.fetchProjectsAndData(accountName: account.name)
-    async let discoveryTask: Void = serverService.discoverDevelopmentServers()
     async let remoteTask: Void = serverService.refreshRemoteSessions()
 
-    _ = await (fetchTask, discoveryTask, remoteTask)
+    _ = await (fetchTask, remoteTask)
   }
 
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {
     let normalizedUrl = normalizeUrl(url)
 
-    if let existingIndex = recentlyOpenedApps.firstIndex(where: {
+    // Update permalinks are unique per published update, so entries for the same app are
+    // matched by name instead of URL to avoid one row per update.
+    let isDuplicate: (RecentlyOpenedApp) -> Bool = {
       normalizeUrl($0.url) == normalizedUrl
-    }) {
+        || (isUpdatePermalink($0.url) && isUpdatePermalink(url) && $0.name == name)
+    }
+
+    if let existingIndex = recentlyOpenedApps.firstIndex(where: isDuplicate) {
       let existingApp = recentlyOpenedApps[existingIndex]
 
       if existingApp.name == name && iconUrl != nil && existingApp.iconUrl == nil {
@@ -142,7 +165,7 @@ class HomeViewModel: ObservableObject {
         return
       }
 
-      recentlyOpenedApps.remove(at: existingIndex)
+      recentlyOpenedApps.removeAll(where: isDuplicate)
     }
 
     let newApp = RecentlyOpenedApp(
@@ -174,6 +197,10 @@ class HomeViewModel: ObservableObject {
 
   func openApp(url: String) {
     openAppViaBridge(url: url)
+  }
+
+  func openApp(url: String, snackParams: NSDictionary) {
+    openAppViaBridge(url: url, snackParams: snackParams)
   }
 
   func updateShakeGesture(_ enabled: Bool) {
@@ -222,6 +249,10 @@ class HomeViewModel: ObservableObject {
 
     dataService.$snacks
       .sink { [weak self] in self?.snacks = $0 }
+      .store(in: &cancellables)
+
+    dataService.$totalProjectCount
+      .sink { [weak self] in self?.totalProjectCount = $0 }
       .store(in: &cancellables)
 
     dataService.$isLoadingData

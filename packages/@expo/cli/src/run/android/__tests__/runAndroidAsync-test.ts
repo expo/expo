@@ -2,12 +2,19 @@ import { vol } from 'memfs';
 
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
 import { assembleAsync, installAsync } from '../../../start/platforms/android/gradle';
-import { resolveOptionsAsync } from '../resolveOptions';
+import { loadEnvFiles } from '../../../utils/nodeEnv';
+import { startBundlerAsync } from '../../startBundler';
 import { runAndroidAsync } from '../runAndroidAsync';
 
 jest.mock('../../../log');
 
 jest.mock('../../../utils/port');
+jest.mock('../../../utils/nodeEnv', () => ({
+  loadEnvFiles: jest.fn(),
+}));
+jest.mock('../../../export/embed/exportEager', () => ({
+  exportEagerAsync: jest.fn(async () => ({})),
+}));
 
 jest.mock('../../../start/platforms/android/gradle', () => ({
   assembleAsync: jest.fn(async () => {}),
@@ -27,6 +34,7 @@ jest.mock('../../../utils/env', () => ({
   env: {
     CI: false,
   },
+  envIsHeadless: () => false,
 }));
 
 jest.mock('../../startBundler', () => ({
@@ -38,8 +46,29 @@ jest.mock('../../startBundler', () => ({
   })),
 }));
 
-describe(resolveOptionsAsync, () => {
+describe(runAndroidAsync, () => {
   afterEach(() => vol.reset());
+
+  it('uses production mode for a release variant', async () => {
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        '/package.json': JSON.stringify({}),
+        'node_modules/expo/package.json': JSON.stringify({
+          version: '53.0.0',
+        }),
+      },
+      '/'
+    );
+
+    await runAndroidAsync('/', { variant: 'demoRelease' });
+
+    expect(loadEnvFiles).toHaveBeenCalledWith('/', { mode: 'production' });
+    expect(startBundlerAsync).toHaveBeenCalledWith(
+      '/',
+      expect.objectContaining({ mode: 'production' })
+    );
+  });
 
   it(`runs android`, async () => {
     vol.fromJSON(

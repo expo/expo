@@ -1,4 +1,3 @@
-import { ExpoConfig } from 'expo/config';
 import { fs, vol } from 'memfs';
 import * as path from 'path';
 
@@ -12,7 +11,7 @@ export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: str
         ...acc,
         [path.substring(rootDir.length).startsWith('/')
           ? path.substring(rootDir.length + 1)
-          : path.substring(rootDir.length)]: fileContent,
+          : path.substring(rootDir.length)]: fileContent as string,
       }),
       {}
     );

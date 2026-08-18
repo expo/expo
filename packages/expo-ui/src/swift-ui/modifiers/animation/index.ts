@@ -1,6 +1,6 @@
 import { createModifier } from '../createModifier';
 import { VALUE_SYMBOL } from './constants';
-import {
+import type {
   AnimationObject,
   ChainableAnimationType,
   InterpolatingSpringAnimationParams,

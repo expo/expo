@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
@@ -48,7 +47,7 @@ class LocationTaskService : Service() {
   }
 
   fun stop() {
-    stopForeground(true)
+    stopForeground(STOP_FOREGROUND_REMOVE)
     stopSelf()
   }
 
@@ -98,11 +97,11 @@ class LocationTaskService : Service() {
       if (ai.metaData?.containsKey(META_DATA_FOREGROUND_SERVICE_ICON_KEY) == true) {
         ai.metaData.getInt(META_DATA_FOREGROUND_SERVICE_ICON_KEY)
       } else {
-        applicationInfo.icon
+        getDefaultNotificationIcon()
       }
     } catch (e: Exception) {
       android.util.Log.e("expo-location", "Could not fetch default notification icon.", e)
-      applicationInfo.icon
+      getDefaultNotificationIcon()
     }
 
     return builder.setCategory(Notification.CATEGORY_SERVICE)
@@ -121,6 +120,17 @@ class LocationTaskService : Service() {
       channel.description = "Background location notification channel"
       notificationManager.createNotificationChannel(channel)
     }
+  }
+
+  /**
+   * Returns the best available notification icon resource ID.
+   * Prefers the `notification_icon` drawable (configured via expo notifications config plugin) over `applicationInfo.icon`. The launcher icon is
+   * full-color and renders as a solid white square in notifications, since Android
+   * requires small notification icons to be monochrome.
+   */
+  private fun getDefaultNotificationIcon(): Int {
+    return mParentContext.resources.getIdentifier("notification_icon", "drawable", mParentContext.packageName)
+      .takeIf { it != 0 } ?: applicationInfo.icon
   }
 
   private fun colorStringToInteger(color: String?): Int? {

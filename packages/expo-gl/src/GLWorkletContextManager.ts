@@ -1,4 +1,4 @@
-import { ExpoWebGLRenderingContext } from './GLView.types';
+import type { ExpoWebGLRenderingContext } from './GLView.types';
 
 // This method needs to be in a separate file because react-native-reanimated
 // import wrapped in try catch does not work correctly with inlineRequires option

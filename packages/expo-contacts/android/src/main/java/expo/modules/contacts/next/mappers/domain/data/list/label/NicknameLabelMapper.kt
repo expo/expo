@@ -32,6 +32,8 @@ object NicknameLabelMapper {
       is NicknameLabel.ShortName -> "shortName"
       is NicknameLabel.Initials -> "initials"
       is NicknameLabel.Custom -> label.label
+      is NicknameLabel.MalformedType -> label.label
+      is NicknameLabel.MalformedCustom -> null
     }
   }
 }

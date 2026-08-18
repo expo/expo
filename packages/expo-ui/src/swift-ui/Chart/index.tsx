@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
 /**
  * The type of chart to display.
@@ -144,7 +144,7 @@ export type RuleChartStyle = {
   dashArray?: number[];
 };
 
-export type ChartProps = {
+export interface ChartProps extends CommonViewModifierProps {
   /**
    * Array of data points to display.
    */
@@ -201,7 +201,7 @@ export type ChartProps = {
    * Rule mark specific styling options.
    */
   ruleStyle?: RuleChartStyle;
-} & CommonViewModifierProps;
+}
 
 const ChartNativeView: React.ComponentType<ChartProps> = requireNativeView('ExpoUI', 'ChartView');
 

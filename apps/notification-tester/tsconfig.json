@@ -3,6 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
+      "ThemeProvider": ["../common/ThemeProvider"]
     }
   },
   "include": [

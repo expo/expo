@@ -1,8 +1,12 @@
 'use client';
 import * as React from 'react';
-import { ColorValue, View } from 'react-native';
+import type { ColorValue } from 'react-native';
+import { View } from 'react-native';
 
-import { NativeLinearGradientPoint, NativeLinearGradientProps } from './NativeLinearGradient.types';
+import type {
+  NativeLinearGradientPoint,
+  NativeLinearGradientProps,
+} from './NativeLinearGradient.types';
 import { normalizeColor } from './normalizeColor';
 
 export default function NativeLinearGradient({
@@ -91,7 +95,7 @@ function calculatePseudoAngle(
     return [correctedStartPoint, correctedEndPoint];
   };
 
-  const [start, end] = getControlPoints();
+  const [start = [0, 0], end = [0, 0]] = getControlPoints();
   start[0] *= width;
   end[0] *= width;
   start[1] *= height;

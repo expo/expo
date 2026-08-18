@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.ProgressBar
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -135,6 +136,8 @@ class ReloadScreenView @JvmOverloads constructor(
             imageView.setImageBitmap(it)
           } ?: handleImageLoadFailure()
         }
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         withContext(Dispatchers.Main) {
           handleImageLoadFailure()

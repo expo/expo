@@ -2,9 +2,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getHtml, getPageHtml, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -23,6 +23,7 @@ describe('exports static', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: '',
+          E2E_FAVICON: './assets/icon.png',
         },
       }
     );
@@ -69,6 +70,15 @@ describe('exports static', () => {
     it(`gets a 404`, async () => {
       expect(await server.fetchAsync('/missing-route').then((res) => res.status)).toBe(404);
     });
+
+    it('injects `<link rel="icon">` into statically rendered pages', async () => {
+      for (const route of ['/', '/styled', '/welcome-to-the-universe']) {
+        const html = getHtml(await server.fetchAsync(route).then((res) => res.text()));
+        const icon = html.querySelector('html > head > link[rel="icon"]');
+        expect(icon).not.toBeNull();
+        expect(icon?.attributes.href).toBe('/favicon.ico');
+      }
+    });
   });
 
   it('has expected files', async () => {
@@ -93,6 +103,9 @@ describe('exports static', () => {
     expect(files).toContain('other.html');
 
     expect(files).toContain('_expo/.routes.json');
+
+    // Generated from `web.favicon` in app config
+    expect(files).toContain('favicon.ico');
   });
 
   it('has source maps', async () => {
@@ -161,7 +174,7 @@ describe('exports static', () => {
       .querySelectorAll('script')
       .filter((script) => !!script.attributes.src)
       .forEach((script) => {
-        const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
+        const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src ?? ''), 'utf8');
 
         // Ensure the bundle is valid
         expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
@@ -194,7 +207,10 @@ describe('exports static', () => {
 
     const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {
       // Fonts are tested elsewhere
-      return link.attributes.as !== 'font';
+      if (link.attributes.as === 'font') return false;
+      // Favicon is tested elsewhere
+      if (link.attributes.rel === 'icon') return false;
+      return true;
     });
     expect(links.length).toBe(
       // Global CSS, CSS Module
@@ -227,13 +243,13 @@ describe('exports static', () => {
     expect(globalPreload).toBeDefined();
     if (globalPreload) {
       expect(
-        fs.readFileSync(path.join(outputDir, globalPreload.attributes.href), 'utf-8')
+        fs.readFileSync(path.join(outputDir, globalPreload.attributes.href ?? ''), 'utf-8')
       ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
     }
 
     // CSS Module
     expect(
-      fs.readFileSync(path.join(outputDir, links[2].attributes.href), 'utf-8')
+      fs.readFileSync(path.join(outputDir, links[2]?.attributes.href ?? ''), 'utf-8')
     ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
 
     const styledHtml = await getPageHtml(outputDir, 'styled.html');
@@ -251,16 +267,19 @@ describe('exports static', () => {
 
     const links = indexHtml.querySelectorAll('html > head > link[as="font"]');
     expect(links.length).toBe(1);
-    expect(links[0].attributes.href).toBe(
+    expect(links[0]?.attributes.href).toBe(
       '/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
     );
 
-    expect(links[0].toString()).toMatch(
+    expect(links[0]?.toString()).toMatch(
       /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="" >/
     );
 
     expect(
-      fs.readFileSync(path.join(outputDir, links[0].attributes.href.replace(/\?.*$/, '')), 'utf-8')
+      fs.readFileSync(
+        path.join(outputDir, links[0]?.attributes.href?.replace(/\?.*$/, '') ?? ''),
+        'utf-8'
+      )
     ).toBeDefined();
 
     // Ensure the font is used

@@ -1,65 +1,34 @@
-import {
-  ExpoConfig,
-  ExpoGoConfig,
-  getConfig,
-  PackageJSONConfig,
-  ProjectConfig,
-} from '@expo/config';
-import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
-import path from 'path';
+import type { ExpoConfig, ExpoGoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { respond } from 'expo-server/adapter/http';
+import { posix } from 'node:path';
 import { resolve } from 'url';
 
+import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
+import { isEnableHermesManaged } from '../../../export/exportHermes';
+import * as Log from '../../../log';
+import { env } from '../../../utils/env';
+import { toPosixPath } from '../../../utils/filePath';
+import * as ProjectDevices from '../../project/devices';
+import type { UrlCreator } from '../UrlCreator';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
+import type { PlatformBundlers } from '../platformBundlers';
+import { getPlatformBundlers } from '../platformBundlers';
+import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 import { ExpoMiddleware } from './ExpoMiddleware';
+import { manifestDebugEvent } from './events';
 import {
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
   createBundleUrlPathFromExpoConfig,
-  convertPathToModuleSpecifier,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
-import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
-import { isEnableHermesManaged } from '../../../export/exportHermes';
-import * as Log from '../../../log';
-import { env } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
-import { stripExtension } from '../../../utils/url';
-import * as ProjectDevices from '../../project/devices';
-import { UrlCreator } from '../UrlCreator';
-import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
-import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
-import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
-
-const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
-
-const supportedPlatforms = ['ios', 'android', 'web', 'none'];
-
-export function getEntryWithServerRoot(
-  projectRoot: string,
-  props: { platform: string; pkg?: PackageJSONConfig }
-) {
-  if (!supportedPlatforms.includes(props.platform)) {
-    throw new CommandError(
-      `Failed to resolve the project's entry file: The platform "${props.platform}" is not supported.`
-    );
-  }
-  return convertPathToModuleSpecifier(
-    path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props))
-  );
-}
-
-/** Get the main entry module ID (file) relative to the project root. */
-export function resolveMainModuleName(
-  projectRoot: string,
-  props: { platform: string; pkg?: PackageJSONConfig }
-): string {
-  const entryPoint = getEntryWithServerRoot(projectRoot, props);
-
-  debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
-
-  return convertPathToModuleSpecifier(stripExtension(entryPoint, 'js'));
-}
+import type { ForwardedRequestInfo } from './resolveForwarded';
+import type { RuntimePlatform } from './resolvePlatform';
+import { parsePlatformHeader } from './resolvePlatform';
+import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -79,6 +48,8 @@ export interface ManifestRequestInfo {
   hostname?: string | null;
   /** The protocol used to request the manifest */
   protocol?: 'http' | 'https';
+  /** How the client addressed this dev server, when the request was forwarded */
+  forwarded?: ForwardedRequestInfo | undefined | null;
 }
 
 /** Project related info. */
@@ -90,6 +61,17 @@ export type ResponseProjectSettings = {
 };
 
 export const DEVELOPER_TOOL = 'expo-cli';
+
+/**
+ * Convert a project-relative asset path to the path component of an asset URL.
+ *
+ * Asset paths come from the app config, so they may be written as `./assets/icon.png` and may use
+ * Windows separators. Both forms are normalized here, since these paths are joined into URLs that
+ * clients resolve against the manifest URL.
+ */
+function toAssetUrlPath(assetPath: string): string {
+  return posix.normalize(toPosixPath(assetPath)).replace(/^\//, '');
+}
 
 export type ManifestMiddlewareOptions = {
   /** Should start the dev servers in development mode (minify). */
@@ -128,9 +110,10 @@ export abstract class ManifestMiddleware<
     platform,
     hostname,
     protocol,
+    forwarded,
   }: Pick<
     TManifestRequestInfo,
-    'hostname' | 'platform' | 'protocol'
+    'hostname' | 'platform' | 'protocol' | 'forwarded'
   >): Promise<ResponseProjectSettings> {
     // Read the config
     const projectConfig = getConfig(this.projectRoot);
@@ -143,15 +126,23 @@ export abstract class ManifestMiddleware<
 
     const isHermesEnabled = isEnableHermesManaged(projectConfig.exp, platform);
 
+    // Resolve the signed-in CLI user to pass through the manifest
+    const user = await getUserAsync();
+    const username = getActorDisplayName(user);
+
+    // We emit relative URLs if the client reported a forwarded authority
+    const shouldUseRelativeManifestUrls = !!forwarded?.authority;
+    // `hostUri` and `debuggerHost` can only hold an authority, so they can't be made relative
+    const hostUri = forwarded?.authority ?? this.options.constructUrl({ scheme: '', hostname });
+
     // Create the manifest and set fields within it
     const expoGoConfig = this.getExpoGoConfig({
       mainModuleName,
-      hostname,
+      debuggerHost: hostUri,
+      username: username !== 'anonymous' ? username : undefined,
     });
 
-    const hostUri = this.options.constructUrl({ scheme: '', hostname });
-
-    const bundleUrl = this._getBundleUrl({
+    const absoluteBundleUrl = this._getBundleUrl({
       platform,
       mainModuleName,
       hostname,
@@ -168,7 +159,15 @@ export abstract class ManifestMiddleware<
     });
 
     // Resolve all assets and set them on the manifest as URLs
-    await this.mutateManifestWithAssetsAsync(projectConfig.exp, bundleUrl);
+    await this.mutateManifestWithAssetsAsync(
+      projectConfig.exp,
+      absoluteBundleUrl,
+      !!shouldUseRelativeManifestUrls
+    );
+
+    const bundleUrl = shouldUseRelativeManifestUrls
+      ? this.toPathRelativeUrl(absoluteBundleUrl)
+      : absoluteBundleUrl;
 
     return {
       expoGoConfig,
@@ -180,10 +179,6 @@ export abstract class ManifestMiddleware<
 
   /** Get the main entry module ID (file) relative to the project root. */
   private resolveMainModuleName(props: { pkg: PackageJSONConfig; platform: string }): string {
-    let entryPoint = getEntryWithServerRoot(this.projectRoot, props);
-
-    debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
-
     // NOTE(Bacon): Webpack is currently hardcoded to index.bundle on native
     // in the future (TODO) we should move this logic into a Webpack plugin and use
     // a generated file name like we do on web.
@@ -191,10 +186,12 @@ export abstract class ManifestMiddleware<
     // // TODO: Move this into BundlerDevServer and read this info from self.
     // const isNativeWebpack = server instanceof WebpackBundlerDevServer && server.isTargetingNative();
     if (this.options.isNativeWebpack) {
-      entryPoint = 'index.js';
+      return 'index';
     }
 
-    return stripExtension(entryPoint, 'js');
+    const entry = resolveRelativeEntryPoint(this.projectRoot, props);
+    manifestDebugEvent('resolved_entry', { path: manifestDebugEvent.path(entry) });
+    return entry;
   }
 
   /** Parse request headers into options. */
@@ -259,22 +256,21 @@ export abstract class ManifestMiddleware<
   }
 
   /** Get the manifest response to return to the runtime. This file contains info regarding where the assets can be loaded from. Exposed for testing. */
-  public abstract _getManifestResponseAsync(options: TManifestRequestInfo): Promise<{
-    body: string;
-    version: string;
-    headers: ServerHeaders;
-  }>;
+  public abstract _getManifestResponseAsync(options: TManifestRequestInfo): Promise<Response>;
 
   private getExpoGoConfig({
     mainModuleName,
-    hostname,
+    debuggerHost,
+    username,
   }: {
     mainModuleName: string;
-    hostname?: string | null;
+    /** The authority the client can reach this dev server on, e.g. `localhost:8081`. */
+    debuggerHost: string;
+    username?: string;
   }): ExpoGoConfig {
     return {
       // localhost:8081
-      debuggerHost: this.options.constructUrl({ scheme: '', hostname }),
+      debuggerHost,
       // Required for Expo Go to function.
       developer: {
         tool: DEVELOPER_TOOL,
@@ -286,20 +282,37 @@ export abstract class ManifestMiddleware<
       },
       // Indicates the name of the main bundle.
       mainModuleName,
+      // The signed-in CLI username, used by Expo Go to verify account match.
+      ...(username ? { username } : undefined),
     };
   }
 
+  /** Convert an absolute URL to one relative to the root of the dev server. */
+  private toPathRelativeUrl(url: string): string {
+    const parsedUrl = new URL(url);
+    return parsedUrl.pathname.replace(/^\//, '') + parsedUrl.search + parsedUrl.hash;
+  }
+
   /** Resolve all assets and set them on the manifest as URLs */
-  private async mutateManifestWithAssetsAsync(manifest: ExpoConfig, bundleUrl: string) {
+  private async mutateManifestWithAssetsAsync(
+    manifest: ExpoConfig,
+    bundleUrl: string,
+    shouldUseRelativeManifestUrls: boolean
+  ) {
     await resolveManifestAssets(this.projectRoot, {
       manifest,
-      resolver: async (path) => {
+      resolver: async (assetPath) => {
         if (this.options.isNativeWebpack) {
           // When using our custom dev server, just do assets normally
           // without the `assets/` subpath redirect.
-          return resolve(bundleUrl!.match(/^https?:\/\/.*?\//)![0], path);
+          return shouldUseRelativeManifestUrls
+            ? toAssetUrlPath(assetPath)
+            : resolve(bundleUrl!.match(/^https?:\/\/.*?\//)![0], assetPath);
         }
-        return bundleUrl!.match(/^https?:\/\/.*?\//)![0] + 'assets/' + path;
+        const assetUrlPath = 'assets/' + toAssetUrlPath(assetPath);
+        return shouldUseRelativeManifestUrls
+          ? assetUrlPath
+          : bundleUrl!.match(/^https?:\/\/.*?\//)![0] + assetUrlPath;
       },
     });
     // The server normally inserts this but if we're offline we'll do it here
@@ -389,10 +402,8 @@ export abstract class ManifestMiddleware<
 
     // Read from headers
     const options = this.getParsedHeaders(req);
-    const { body, headers } = await this._getManifestResponseAsync(options);
-    for (const [headerName, headerValue] of headers) {
-      res.setHeader(headerName, headerValue);
-    }
-    res.end(body);
+
+    const response = await this._getManifestResponseAsync(options);
+    await respond(res, response);
   }
 }

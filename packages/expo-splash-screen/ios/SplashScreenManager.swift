@@ -1,24 +1,29 @@
-import React
-import UIKit
 import ExpoModulesCore
+internal import React
+import UIKit
 
-public class SplashScreenManager: NSObject, RCTReloadListener {
-  @objc public static let shared = SplashScreenManager()
+class SplashScreenManager: NSObject, RCTReloadListener {
+  @objc static let shared = SplashScreenManager()
   private var loadingView: UIView?
   private var rootView: UIView?
   private var options = SplashScreenOptions()
-  public var preventAutoHideCalled = false
+  var preventAutoHideCalled = false
 
   private override init() {}
 
-  public func initWith(_ rootView: UIView) {
+  func initWith(_ rootView: UIView) {
     if RCTRunningInAppExtension() {
       return
     }
 
     self.rootView = rootView
     showSplashScreen()
-    NotificationCenter.default.addObserver(self, selector: #selector(onAppReady), name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(onAppReady),
+      name: Notification.Name("RCTContentDidAppearNotification"),
+      object: nil
+    )
   }
 
   @objc private func onAppReady() {
@@ -57,7 +62,8 @@ public class SplashScreenManager: NSObject, RCTReloadListener {
   }
 
   private func showSplashScreen() {
-    let splashScreenFilename = Bundle.main.object(forInfoDictionaryKey: "UILaunchStoryboardName") as? String ?? "SplashScreen"
+    let splashScreenFilename =
+      Bundle.main.object(forInfoDictionaryKey: "UILaunchStoryboardName") as? String ?? "SplashScreen"
     // Prevents crashes in brownfield apps where the splash screen storyboard may not be present.
     guard Bundle.main.path(forResource: splashScreenFilename, ofType: "storyboardc") != nil else {
       return
@@ -79,7 +85,7 @@ public class SplashScreenManager: NSObject, RCTReloadListener {
     }
   }
 
-  public func didReceiveReloadCommand() {
+  func didReceiveReloadCommand() {
     showSplashScreen()
   }
 
@@ -92,6 +98,10 @@ public class SplashScreenManager: NSObject, RCTReloadListener {
   }
 
   func removeObservers() {
-    NotificationCenter.default.removeObserver(self, name: Notification.Name("RCTContentDidAppearNotification"), object: nil)
+    NotificationCenter.default.removeObserver(
+      self,
+      name: Notification.Name("RCTContentDidAppearNotification"),
+      object: nil
+    )
   }
 }

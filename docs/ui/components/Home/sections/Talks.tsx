@@ -21,7 +21,7 @@ export function Talks() {
         <Button
           theme="secondary"
           className="ml-auto"
-          rightSlot={<ArrowRightIcon />}
+          rightSlot={<ArrowRightIcon aria-hidden="true" />}
           href="/additional-resources/#talks">
           See more talks
         </Button>
@@ -40,9 +40,9 @@ export function TalkGridWrapper({ children }: PropsWithChildren) {
     <div
       className={mergeClasses(
         'my-4 inline-grid w-full grid-cols-4 gap-8',
-        'max-2xl-gutters:grid-cols-3',
-        'max-xl-gutters:grid-cols-2',
-        'max-sm-gutters:grid-cols-1'
+        'max-2xl:grid-cols-3',
+        'max-xl:grid-cols-2',
+        'max-sm:grid-cols-1'
       )}>
       {children}
     </div>
@@ -67,8 +67,8 @@ export function TalkGridCell({
       openInNewTab
       href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
       className={mergeClasses(
-        'relative flex h-full min-h-[266px] flex-col justify-between overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
-        '[&_h2]:!my-0 [&_h3]:!mt-0',
+        'relative flex h-full min-h-66.5 flex-col justify-between overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
+        '[&_h2]:my-0! [&_h3]:mt-0!',
         'hocus:shadow-sm',
         className
       )}
@@ -82,22 +82,25 @@ export function TalkGridCell({
                 : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
             })`,
           }}
-          className="h-[138px] border-b border-b-default bg-cover bg-center max-sm-gutters:h-[168px]"
+          className="h-34.5 border-b border-b-default bg-cover bg-center max-sm:h-42"
         />
-        <div className="flex min-h-[30px] items-start justify-between gap-1 bg-default px-4 py-3">
+        <div className="flex min-h-7.5 items-start justify-between gap-1 bg-default px-4 py-3">
           <LABEL className="block leading-normal">{title}</LABEL>
-          <ArrowUpRightIcon className="icon-sm mt-1 shrink-0 text-icon-secondary" />
+          <ArrowUpRightIcon
+            aria-hidden="true"
+            className="mt-1 icon-sm shrink-0 text-icon-secondary"
+          />
         </div>
       </div>
       <div className="flex flex-col gap-0.5 bg-default px-4 pb-2">
         {description && (
           <CALLOUT theme="secondary" className="flex items-center gap-2">
-            <Users02Icon className="icon-xs shrink-0 text-icon-tertiary" />
+            <Users02Icon aria-hidden="true" className="icon-xs shrink-0 text-icon-tertiary" />
             {description}
           </CALLOUT>
         )}
         <CALLOUT theme="secondary" className="flex items-center gap-2">
-          <AtSignIcon className="icon-xs shrink-0 text-icon-tertiary" />
+          <AtSignIcon aria-hidden="true" className="icon-xs shrink-0 text-icon-tertiary" />
           {event}
         </CALLOUT>
       </div>

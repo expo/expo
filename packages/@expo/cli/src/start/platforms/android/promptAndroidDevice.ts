@@ -1,8 +1,9 @@
 import chalk from 'chalk';
 
-import { Device, logUnauthorized } from './adb';
 import { AbortCommandError } from '../../../utils/errors';
 import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
+import type { Device } from './adb';
+import { logUnauthorized } from './adb';
 
 export async function promptForDeviceAsync(devices: Device[]): Promise<Device> {
   // TODO: provide an option to add or download more simulators

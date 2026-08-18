@@ -22,16 +22,19 @@ export function captureStackForServerLogs() {
     );
     if (preventSymbolication) {
       // NOTE(krystofwoldrich): Although a generic flag, it's only used for compilation errors for which symbolication will fail.
-      // If the error would be send back to metro it would be printed multiple times, once by Metro and once from here.
+      // If the error would be sent back to metro it would be printed multiple times, once by Metro and once from here.
       // https://github.com/facebook/react-native/blob/a8bc74c0099252cb1d11ad3b80f3deac71dcc0d5/packages/react-native/Libraries/Utilities/HMRClient.js#L367
       return;
     }
 
-    const hasErrorLikeStack = data.some((item) => hasStringKey(item, 'stack'));
+    const hasErrorLikeStack = data.some((item) => {
+      return hasStringKey(item, 'stack');
+    });
     const hasComponentStack = data.some(
       (item) =>
         (typeof item === 'string' && isComponentStack(withoutANSIColorStyles(item))) ||
-        (hasStringKey(item, 'message') && isComponentStack(withoutANSIColorStyles(item.message)))
+        (hasStringKey(item, 'message') &&
+          isComponentStack(withoutANSIColorStyles(item.message ?? '')))
     );
 
     // This is not an Expo error. It's used only to capture the stack trace of the log call.
@@ -103,5 +106,6 @@ class NamelessError extends Error {
   name = '';
 }
 function captureCurrentStack() {
+  // If you're reading this, look deeper into the call stack to find the actual error source.
   return new NamelessError().stack;
 }

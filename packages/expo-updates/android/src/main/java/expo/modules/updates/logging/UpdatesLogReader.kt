@@ -40,8 +40,8 @@ class UpdatesLogReader(
   private val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, filesDirectory)
 
   private fun isEntryStringLaterThanTimestamp(entryString: String, timestamp: Long): Boolean {
-    val entry = UpdatesLogEntry.create(entryString) ?: return false
-    return entry.timestamp >= timestamp
+    val entryTimestamp = UpdatesLogEntry.getTimestamp(entryString) ?: return false
+    return entryTimestamp >= timestamp
   }
 
   private fun epochFromDateOrOneDayAgo(date: Date): Long {
@@ -54,6 +54,6 @@ class UpdatesLogReader(
   }
 
   companion object {
-    private const val ONE_DAY_MILLISECONDS = 86400
+    private const val ONE_DAY_MILLISECONDS = 86_400_000L
   }
 }

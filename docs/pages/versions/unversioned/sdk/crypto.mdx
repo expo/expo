@@ -71,16 +71,16 @@ export default function App() {
   useEffect(() => {
     (async () => {
       const plaintext = 'Hello, world!';
-      const plaintextBase64 = btoa(plaintexxt);
+      const plaintextBase64 = btoa(plaintext);
 
       const encryptionKey = await AESEncryptionKey.generate();
-      const sealedData = await aesEncryptAsync(plaintextBase64, key);
-      const decryptedBase64 = await aesDecryptAsync(sealedData, key, {
+      const sealedData = await aesEncryptAsync(plaintextBase64, encryptionKey);
+      const decryptedBase64 = await aesDecryptAsync(sealedData, encryptionKey, {
         output: 'base64',
       });
 
-      const decrpyted = atob(decryptedBase64);
-      console.log('Decrypted: ', decrpyted);
+      const decrypted = atob(decryptedBase64);
+      console.log('Decrypted: ', decrypted);
     })();
   }, []);
 
@@ -125,7 +125,7 @@ async function encryptAndSaveData(plaintextData: Uint8Array) {
   // Save encrypted file
   const file = new File(Paths.cache, 'encrypted.dat');
   file.create({ overwrite: true });
-  file.write(encryptedBytes);
+  await file.write(encryptedBytes);
 }
 ```
 

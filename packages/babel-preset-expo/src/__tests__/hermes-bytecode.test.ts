@@ -7,22 +7,27 @@ function getCaller(props: Record<string, string | boolean>): babel.TransformCall
   return props as unknown as babel.TransformCaller;
 }
 
-jest.mock('../common.ts', () => ({
-  ...jest.requireActual('../common.ts'),
-  hasModule: jest.fn((moduleId) => {
+jest.mock('../utils/resolveModule.ts', () => {
+  function resolveModule(_api: any, id: string): string | null {
     if (
       [
-        'react-native-worklets',
-        'react-native-reanimated',
-        'expo-router',
+        'react-native-worklets/plugin',
+        'react-native-reanimated/plugin',
+        'expo-router/package.json',
         '@expo/vector-icons',
-      ].includes(moduleId)
+      ].includes(id)
     ) {
-      return true;
+      return id;
     }
-    return false;
-  }),
-}));
+    return null;
+  }
+
+  return {
+    ...jest.requireActual('../utils/resolveModule.ts'),
+    resolveModule: jest.fn(resolveModule),
+    hasModule: jest.fn((api, id) => !!resolveModule(api, id)),
+  };
+});
 
 const SAMPLE_CODE = `
 try {
@@ -34,42 +39,13 @@ try {
 
 const LANGUAGE_SAMPLES: {
   name: string;
+  presetOptions?: Record<string, unknown>;
   code: string;
   getCompiledCode: (props: { platform: string }) => string;
   hermesError?: RegExp;
   unhandledInBabel?: boolean;
 }[] = [
   // Unsupported features
-  {
-    name: `destructuring in catch statement (ES10)`,
-    code: SAMPLE_CODE,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return 'try{}catch({message}){}';
-      }
-      return 'try{}catch(_ref){var message=_ref.message;}';
-    },
-    hermesError: /Destructuring in catch parameters is currently unsupported/,
-  },
-  {
-    name: `classes`,
-    code: `class Test {
-        constructor(name) {
-          this.name = name;
-        }
-
-        logger() {
-          console.log("Hello", this.name);
-        }
-      }`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return 'class Test{constructor(name){this.name=name;}logger(){console.log("Hello",this.name);}}';
-      }
-      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var Test=function(){function Test(name){(0,_classCallCheck2.default)(this,Test);this.name=name;}return(0,_createClass2.default)(Test,[{key:"logger",value:function logger(){console.log("Hello",this.name);}}]);}();';
-    },
-    hermesError: /invalid statement encountered\./,
-  },
   {
     // https://babeljs.io/docs/babel-plugin-transform-async-generator-functions
     // Hermes docs say this is supported, but I can't get it to work (March 27, 2024). https://hermesengine.dev/docs/language-features#supported
@@ -87,47 +63,14 @@ const LANGUAGE_SAMPLES: {
     hermesError: /async generators are unsupported/,
   },
   {
-    // https://babeljs.io/docs/babel-plugin-transform-private-methods
-    name: `private-methods`,
-    code: `class Counter {
-        #foo() {}
-
-      }`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");class Counter{constructor(){Object.defineProperty(this,_foo,{value:_foo2});}}function _foo2(){}';
-      }
-      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");var Counter=(0,_createClass2.default)(function Counter(){(0,_classCallCheck2.default)(this,Counter);Object.defineProperty(this,_foo,{value:_foo2});});function _foo2(){}';
-    },
-    hermesError: /private properties are not supported/,
-  },
-  {
-    // https://babeljs.io/docs/babel-plugin-transform-private-property-in-object
-    name: `private-property-in-object`,
-    code: `class Foo {
-        #bar = "bar";
-
-        test(obj) {
-          return #bar in obj;
-        }
-      }`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return `function _checkInRHS(e){if(Object(e)!==e)throw TypeError("right-hand side of 'in' should be an object, got "+(null!==e?typeof e:"null"));return e;}var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),"bar");test(obj){return _barBrandCheck.has(_checkInRHS(obj));}}`;
-      }
-      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _checkInRHS2=_interopRequireDefault(require("@babel/runtime/helpers/checkInRHS"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _bar=(0,_classPrivateFieldLooseKey2.default)("bar");var Foo=function(){function Foo(){(0,_classCallCheck2.default)(this,Foo);Object.defineProperty(this,_bar,{writable:true,value:"bar"});}return(0,_createClass2.default)(Foo,[{key:"test",value:function test(obj){return Object.prototype.hasOwnProperty.call((0,_checkInRHS2.default)(obj),_bar);}}]);}();';
-    },
-    hermesError: /private properties are not supported/,
-  },
-  {
     // Sanity check. It appears Hermes can parse JSX optionally.
     name: `JSX`,
     code: `const value = (<div />)`,
     getCompiledCode({ platform }) {
       if (platform === 'web') {
-        return `var _jsxDevRuntime=require("react/jsx-dev-runtime");var _jsxFileName="/unknown";const value=(0,_jsxDevRuntime.jsxDEV)("div",{},void 0,false,{fileName:_jsxFileName,lineNumber:1,columnNumber:16},this);`;
+        return `var _jsxRuntime=require("react/jsx-runtime");const value=(0,_jsxRuntime.jsx)("div",{});`;
       }
-      return `var _jsxDevRuntime=require("react/jsx-dev-runtime");var _jsxFileName="/unknown";var value=(0,_jsxDevRuntime.jsxDEV)("div",{},void 0,false,{fileName:_jsxFileName,lineNumber:1,columnNumber:16},this);`;
+      return `var _jsxRuntime=require("react/jsx-runtime");var value=(0,_jsxRuntime.jsx)("div",{});`;
     },
     hermesError: /possible JSX: pass -parse-jsx to parse/,
   },
@@ -139,7 +82,7 @@ const LANGUAGE_SAMPLES: {
     getCompiledCode({ platform }) {
       if (platform === 'web') {
         // NOTE(@kitten): This should align with the below, but doesn't
-        return `Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;function _getRequireWildcardCache(e){if("function"!=typeof WeakMap)return null;var r=new WeakMap(),t=new WeakMap();return(_getRequireWildcardCache=function(e){return e?t:r;})(e);}function _interopRequireWildcard(e,r){if(!r&&e&&e.__esModule)return e;if(null===e||"object"!=typeof e&&"function"!=typeof e)return{default:e};var t=_getRequireWildcardCache(r);if(t&&t.has(e))return t.get(e);var n={__proto__:null},a=Object.defineProperty&&Object.getOwnPropertyDescriptor;for(var u in e)if("default"!==u&&{}.hasOwnProperty.call(e,u)){var i=a?Object.getOwnPropertyDescriptor(e,u):null;i&&(i.get||i.set)?Object.defineProperty(n,u,i):n[u]=e[u];}return n.default=e,t&&t.set(e,n),n;}`;
+        return `var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;`;
       }
       return `var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;`;
     },
@@ -170,6 +113,92 @@ const LANGUAGE_SAMPLES: {
   },
 
   // Supported natively
+  {
+    name: `destructuring in catch statement (ES10)`,
+    code: SAMPLE_CODE,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
+    getCompiledCode({ platform }) {
+      if (platform === 'web') {
+        return 'try{}catch({message}){}';
+      }
+      return 'try{}catch(_ref){var message=_ref.message;}';
+    },
+  },
+  {
+    name: `classes`,
+    code: `class Test {
+        constructor(name) {
+          this.name = name;
+        }
+
+        logger() {
+          console.log("Hello", this.name);
+        }
+      }`,
+    getCompiledCode({ platform }) {
+      return 'class Test{constructor(name){this.name=name;}logger(){console.log("Hello",this.name);}}';
+    },
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-private-methods
+    name: `private-methods`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
+    code: `class Counter {
+        #foo() {}
+
+      }`,
+    getCompiledCode({ platform }) {
+      if (platform === 'web') {
+        return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");class Counter{constructor(){Object.defineProperty(this,_foo,{value:_foo2});}}function _foo2(){}';
+      }
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");var Counter=(0,_createClass2.default)(function Counter(){(0,_classCallCheck2.default)(this,Counter);Object.defineProperty(this,_foo,{value:_foo2});});function _foo2(){}';
+    },
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-private-property-in-object
+    name: `private-property-in-object`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
+    code: `class Foo {
+        #bar = "bar";
+
+        test(obj) {
+          return #bar in obj;
+        }
+      }`,
+    getCompiledCode({ platform }) {
+      if (platform === 'web') {
+        return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _checkInRHS2=_interopRequireDefault(require("@babel/runtime/helpers/checkInRHS"));var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),"bar");test(obj){return _barBrandCheck.has((0,_checkInRHS2.default)(obj));}}`;
+      }
+      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _checkInRHS2=_interopRequireDefault(require("@babel/runtime/helpers/checkInRHS"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _bar=(0,_classPrivateFieldLooseKey2.default)("bar");var Foo=function(){function Foo(){(0,_classCallCheck2.default)(this,Foo);Object.defineProperty(this,_bar,{writable:true,value:"bar"});}return(0,_createClass2.default)(Foo,[{key:"test",value:function test(obj){return Object.prototype.hasOwnProperty.call((0,_checkInRHS2.default)(obj),_bar);}}]);}();`;
+    },
+  },
+  {
+    // https://babeljs.io/docs/babel-plugin-transform-class-static-block
+    name: `plugin-transform-class-static-block`,
+    code: `class C {
+  static #x = 42;
+  static y;
+  static {
+    try {
+      this.y = doSomethingWith(this.#x);
+    } catch {
+      this.y = "unknown";
+    }
+  }
+}`,
+    getCompiledCode({ platform }) {
+      if (platform === 'web') {
+        return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");class C{}_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch{_C.y="unknown";}})();`;
+      }
+      return `var _staticBlock;class C{static#x=(_staticBlock=()=>{try{this.y=doSomethingWith(this.#x);}catch{this.y="unknown";}},42);}_staticBlock();`;
+    },
+  },
   // This isn't transformed but also should be handled since the current minimum iOS version is 13.4 and logical assignment operators are iOS +14.
   {
     name: 'logical-assignment-operators',
@@ -215,19 +244,6 @@ const LANGUAGE_SAMPLES: {
     },
   },
   {
-    name: 'optional-catch-binding',
-    code: `try {
-        throw 0;
-      } catch {
-      }`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return `try{throw 0;}catch{}`;
-      }
-      return `try{throw 0;}catch(_unused){}`;
-    },
-  },
-  {
     name: 'literals',
     code: `const d = 0b11; // binary integer literal
     const e = 0o7; // octal integer literal
@@ -259,6 +275,9 @@ const LANGUAGE_SAMPLES: {
   },
   {
     name: 'object-rest-spread',
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `var y = {};
     var x = 1;
     var k = { x, ...y };`,
@@ -267,30 +286,12 @@ const LANGUAGE_SAMPLES: {
     },
   },
   {
-    name: 'optional-chaining',
-    code: `var m = {}?.x;`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return `var m={}?.x;`;
-      }
-      return `var _ref;var m=(_ref={})==null?void 0:_ref.x;`;
-    },
-  },
-  {
-    name: 'nullish-coalescing-operator',
-    code: `var obj2 = {};
-    var foo = obj2.foo ?? "default";`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return `var obj2={};var foo=obj2.foo??"default";`;
-      }
-      return `var _obj2$foo;var obj2={};var foo=(_obj2$foo=obj2.foo)!=null?_obj2$foo:"default";`;
-    },
-  },
-  {
     // https://babeljs.io/docs/babel-plugin-transform-async-to-generator
     // Hermes says this isn't supported but it appears to work when compiled.
     name: `async/await`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `async function foo() {
         await bar();
       }`,
@@ -305,6 +306,9 @@ const LANGUAGE_SAMPLES: {
     // https://babeljs.io/docs/babel-plugin-transform-named-capturing-groups-regex
     // Hermes says this isn't supported but it appears to work when compiled.
     name: `named-capturing-groups-regex`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `var re = /(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;
     console.log(re.exec("1999-02-29").groups.year);`,
     getCompiledCode({ platform }) {
@@ -319,6 +323,9 @@ const LANGUAGE_SAMPLES: {
     // https://babeljs.io/docs/babel-plugin-transform-unicode-regex
     // Hermes doesn't claim that this doesn't work but it is in the upstream transform.
     name: `unicode-regex`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `var string = "foo🥓bar";
     var match = string.match(/foo(.)bar/u);`,
     getCompiledCode({ platform }) {
@@ -327,28 +334,6 @@ const LANGUAGE_SAMPLES: {
       }
       return 'var string="foo🥓bar";var match=string.match(/foo((?:[\\0-\\t\\x0B\\f\\x0E-\\u2027\\u202A-\\uD7FF\\uE000-\\uFFFF]|[\\uD800-\\uDBFF][\\uDC00-\\uDFFF]|[\\uD800-\\uDBFF](?![\\uDC00-\\uDFFF])|(?:[^\\uD800-\\uDBFF]|^)[\\uDC00-\\uDFFF]))bar/);';
     },
-  },
-  {
-    // https://babeljs.io/docs/babel-plugin-transform-class-static-block
-    name: `plugin-transform-class-static-block`,
-    code: `class C {
-  static #x = 42;
-  static y;
-  static {
-    try {
-      this.y = doSomethingWith(this.#x);
-    } catch {
-      this.y = "unknown";
-    }
-  }
-}`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");class C{}_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch{_C.y="unknown";}})();`;
-      }
-      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");var C=(0,_createClass2.default)(function C(){(0,_classCallCheck2.default)(this,C);});_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch(_unused){_C.y="unknown";}})();`;
-    },
-    hermesError: /private properties are not supported/,
   },
   {
     // https://babeljs.io/docs/babel-plugin-transform-arrow-functions
@@ -378,7 +363,7 @@ LANGUAGE_SAMPLES.forEach((sample) => {
       it(`babel-preset-expo ensures Hermes compiles (platform: ${platform})`, async () => {
         const options = {
           babelrc: false,
-          presets: [preset],
+          presets: [[preset, sample.presetOptions ?? {}]],
           filename: '/unknown',
           sourceMaps: true,
           caller: getCaller({ name: 'metro', platform, isDev: true, engine: 'hermes' }),

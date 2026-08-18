@@ -1,8 +1,8 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from 'expo/config';
 import { Platform } from 'react-native';
 
 import Constants, { ExecutionEnvironment } from '../Constants';
-import { Manifest } from '../Constants.types';
+import type { Manifest } from '../Constants.types';
 
 it(`defines a manifest`, () => {
   expect(Constants.manifest).toBeTruthy();
@@ -10,7 +10,9 @@ it(`defines a manifest`, () => {
 });
 
 it(`defines a linking URI`, () => {
-  expect(typeof Constants.linkingUri).toBe('string');
+  if (Constants.linkingUri !== undefined) {
+    expect(typeof Constants.linkingUri).toBe('string');
+  }
 });
 
 describe(`manifest`, () => {

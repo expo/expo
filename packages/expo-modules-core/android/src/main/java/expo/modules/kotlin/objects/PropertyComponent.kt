@@ -4,7 +4,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.jni.JNIFunctionBody
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 
 class PropertyComponent(
   /**
@@ -29,7 +29,7 @@ class PropertyComponent(
     val jniGetter = if (getter != null) {
       JNIFunctionBody { args ->
         val result = getter.callUserImplementation(args, appContext)
-        return@JNIFunctionBody JSTypeConverter.convertToJSValue(result, useExperimentalConverter = true)
+        return@JNIFunctionBody JSTypeConverterProvider.convertToJSValue(result, useExperimentalConverter = true)
       }
     } else {
       null

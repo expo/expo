@@ -7,9 +7,7 @@ import android.content.Context
 /**
  * Default implementation that uses native resources.
  */
-class NativeResourcesBasedSplashScreenViewProvider(
-  private val resizeMode: SplashScreenImageResizeMode
-) : SplashScreenViewProvider {
+class NativeResourcesBasedSplashScreenViewProvider() : SplashScreenViewProvider {
 
   override fun createSplashScreenView(context: Context) = SplashScreenView(context)
 }

@@ -4,19 +4,19 @@ import React
 import ExpoModulesCore
 
 class DevMenuDevOptionsDelegate {
-  internal private(set) weak var bridge: RCTBridge?
+  internal private(set) weak var appContext: AppContext?
   internal private(set) weak var devSettings: RCTDevSettings?
 
   #if DEBUG
   internal private(set) weak var perfMonitor: NSObject?
   #endif
 
-  internal init(forBridge bridge: RCTBridge) {
-    self.bridge = bridge
-    devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings
+  internal init(forAppContext appContext: AppContext) {
+    self.appContext = appContext
+    devSettings = appContext.nativeModule(named: "DevSettings")
 
     #if DEBUG && !os(macOS)
-    perfMonitor = bridge.module(forName: "PerfMonitor") as? NSObject
+    perfMonitor = appContext.nativeModule(named: "PerfMonitor")
     #endif
   }
 
@@ -24,9 +24,7 @@ class DevMenuDevOptionsDelegate {
     // Without this the `expo-splash-screen` will reject
     // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
     DevMenuManager.shared.hideMenu()
-
-    let emc = self.bridge?.moduleRegistry.module(forName: "ExpoModulesCore") as? ExpoBridgeModule
-    emc?.appContext?.reloadAppAsync()
+    appContext?.reloadAppAsync()
   }
 
   internal func toggleElementInsector() {
@@ -34,14 +32,20 @@ class DevMenuDevOptionsDelegate {
   }
 
   internal func openJSInspector() {
-    guard let bundleURL = bridge?.bundleURL else {
+    guard let bundleURL = appContext?.bundleURL else {
       return
     }
-    let port = bundleURL.port ?? Int(RCT_METRO_PORT)
-    let host = bundleURL.host ?? "localhost"
-    let openURL = "http://\(host):\(port)/_expo/debugger?applicationId=\(Bundle.main.bundleIdentifier ?? "")"
-    guard let url = URL(string: openURL) else {
-      NSLog("[DevMenu] Invalid openJSInspector URL: $@", openURL)
+    let isServed = bundleURL.scheme == "http" || bundleURL.scheme == "https" || bundleURL.scheme == "exps" || bundleURL.scheme == "exp"
+    var components = URLComponents()
+    components.scheme = bundleURL.scheme == "https" || bundleURL.scheme == "exps" ? "https" : "http"
+    components.host = isServed ? bundleURL.host : "localhost"
+    components.port = isServed ? bundleURL.port : Int(RCT_METRO_PORT)
+    components.path = "/_expo/debugger"
+    components.queryItems = [
+      URLQueryItem(name: "applicationId", value: Bundle.main.bundleIdentifier ?? "")
+    ]
+    guard let url = components.url else {
+      NSLog("[DevMenu] Invalid openJSInspector URL: $@", components.description)
       return
     }
     let request = NSMutableURLRequest(url: url)

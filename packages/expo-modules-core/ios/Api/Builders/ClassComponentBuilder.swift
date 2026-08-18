@@ -4,7 +4,7 @@
  A result builder that captures the ``ClassDefinition`` elements such as functions, constants and properties.
  */
 @resultBuilder
-public struct ClassDefinitionBuilder<OwnerType> {
+public struct ClassDefinitionBuilder<OwnerType: ~Copyable> {
   public static func buildBlock(_ elements: AnyClassDefinitionElement...) -> [AnyClassDefinitionElement] {
     return elements
   }

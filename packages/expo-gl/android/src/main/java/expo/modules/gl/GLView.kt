@@ -9,7 +9,9 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class OnSurfaceCreateRecord(
   @Field val exglCtxId: Int
 ) : Record

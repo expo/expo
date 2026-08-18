@@ -68,7 +68,7 @@ This CLI has the following purposes:
 To develop the CLI run (defaults to watch mode):
 
 ```
-yarn build
+pnpm build
 ```
 
 We highly recommend setting up an alias for the Expo CLI so you can try it in projects all around your computer. Open your **.zshrc** or other config file and add:
@@ -110,16 +110,17 @@ Then you can run it and visit `chrome://inspect/#devices` in Chrome, and press *
 
 ## Testing
 
-There are two testing scripts:
+There are three testing scripts:
 
-- `yarn test`: Controlled unit and integration tests.
-- `yarn test:e2e`: End to end testing for CLI commands. This requires the files to be built with `yarn build`.
+- `pnpm test`: Controlled unit and integration tests
+- `pnpm test:e2e`: End to end testing for CLI commands
+- `pnpm test:playwright`: End to end testing for Expo SDK in general with the CLI
 
 ---
 
-- You can target a specific set of tests with the `--watch` flag. Example: `yarn test --watch config`.
+- You can target a specific set of tests with the `--watch` flag. Example: `pnpm test --watch config`.
 - We use backticks for `it` blocks. Example <code>it(`works`)</code>.
-- If a pull request is fully self-contained to the `packages/@expo/cli/` folder (i.e. no `yarn.lock` modifications, etc.) then most native CI tests will be skipped, making CI pass faster in PRs.
+- If a pull request is fully self-contained to the `packages/@expo/cli/` folder (i.e. no `pnpm-lock.yaml` modifications, etc.) then most native CI tests will be skipped, making CI pass faster in PRs.
 
 ### Unit Testing Guidelines
 

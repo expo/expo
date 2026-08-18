@@ -114,11 +114,6 @@ const renderInterface = (
   sdkVersion: string
 ) => {
   const interfaceChildren = children?.filter(child => !child?.inheritedFrom) || [];
-
-  if (interfaceChildren.length === 0) {
-    return null;
-  }
-
   const interfaceMethods = interfaceChildren.filter(child => child.signatures);
   const interfaceFields = interfaceChildren.filter(child => !child.signatures);
 
@@ -153,7 +148,12 @@ const renderInterface = (
         <>
           <APIBoxSectionHeader text={`${name} Methods`} exposeInSidebar baseNestingLevel={99} />
           {interfaceMethods.map(method =>
-            renderMethod(method, { exposeInSidebar: false, sdkVersion, nested: true })
+            renderMethod(method, {
+              exposeInSidebar: true,
+              baseNestingLevel: 4,
+              sdkVersion,
+              nested: true,
+            })
           )}
         </>
       )}

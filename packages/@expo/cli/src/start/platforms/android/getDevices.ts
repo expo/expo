@@ -1,6 +1,7 @@
-import { Device, getAttachedDevicesAsync } from './adb';
-import { listAvdsAsync } from './emulator';
 import { CommandError } from '../../../utils/errors';
+import type { Device } from './adb';
+import { getAttachedDevicesAsync } from './adb';
+import { listAvdsAsync } from './emulator';
 
 /** Get a list of all devices including offline emulators. Asserts if no devices are available. */
 export async function getDevicesAsync(): Promise<Device[]> {

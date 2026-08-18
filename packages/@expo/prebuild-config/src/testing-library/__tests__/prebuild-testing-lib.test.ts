@@ -40,6 +40,12 @@ it('runs normally for a single iOS prebuild', async () => {
   expect(Object.values(config.mods!.ios!).every((value) => typeof value === 'function')).toBe(true);
 
   expect(config).toMatchInfoPlist(expect.objectContaining({ CFBundleDisplayName: 'app' }));
+  expect(() =>
+    expect(config).not.toMatchInfoPlist(expect.objectContaining({ CFBundleDisplayName: 'app' }))
+  ).toThrow(/\.not\.toMatchInfoPlist/);
+  expect(() =>
+    expect(config).not.toMatchInfoPlist(expect.objectContaining({ CFBundleDisplayName: 'app' }))
+  ).toThrow(/Expected: not/);
   expect(config).toMatchAppleEntitlements({});
 });
 

@@ -1,0 +1,22 @@
+version: 2
+updates:
+  # Keep SHA-pinned GitHub Actions fresh. Without this, pins never receive
+  # upstream security patches because tag movements no longer reach us.
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/expo-caches
+      - /.github/actions/slack-notify
+      - /.github/actions/use-android-emulator
+    schedule:
+      interval: weekly
+    ignore:
+      # Stay on gradle/actions v5.x: v6 moved caching into the closed-source
+      # gradle-actions-caching component governed by Gradle's Terms of Use.
+      # Remove this if we decide to adopt the v6+ caching component.
+      - dependency-name: 'gradle/actions'
+        update-types: ['version-update:semver-major']
+    groups:
+      actions:
+        patterns:
+          - '*'

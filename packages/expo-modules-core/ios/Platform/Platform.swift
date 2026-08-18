@@ -14,6 +14,7 @@ public typealias UIHostingController = NSHostingController
 public typealias UIViewRepresentable = NSViewRepresentable
 public typealias UILabel = NSLabel
 public typealias UIImage = NSImage
+public typealias UIImageView = NSImageView
 public typealias UIPasteboard = NSPasteboard
 
 extension UIApplication {
@@ -23,6 +24,18 @@ extension UIApplication {
 extension Image {
   public init(uiImage: NSImage) {
     self.init(nsImage: uiImage)
+  }
+}
+
+public extension Color {
+  init(uiColor: NSColor) {
+    self.init(nsColor: uiColor)
+  }
+}
+
+public extension NSColor {
+  static var label: NSColor {
+    return NSColor.labelColor
   }
 }
 
@@ -37,6 +50,12 @@ extension NSPasteboard {
         self.setString(newValue, forType: .string)
       }
     }
+  }
+}
+
+extension NSEdgeInsets {
+  public static var zero: NSEdgeInsets {
+    return NSEdgeInsetsZero
   }
 }
 

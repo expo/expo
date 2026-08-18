@@ -47,7 +47,7 @@ function replaceVersionInGradleFile(
       });
 
     // val PUBG_API_WRAPPER by extra("0.8.1")
-    // eslint-disable-next-line no-useless-escape
+
     const regexKotlinValExtra = new RegExp(`${variableName}.+\(("|')${oldVersion}("|')\)`);
     regexKotlinValExtra
       .exec(modifiedBody)

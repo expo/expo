@@ -1,12 +1,28 @@
-import { Button, Host, Menu, Text, List, Section, Divider, Picker } from '@expo/ui/swift-ui';
+import {
+  Button,
+  ControlGroup,
+  Host,
+  Image,
+  Menu,
+  Text,
+  List,
+  Section,
+  Divider,
+  Picker,
+  RNHostView,
+} from '@expo/ui/swift-ui';
 import {
   buttonStyle,
   foregroundStyle,
   labelStyle,
+  menuIndicator,
+  menuOrder,
+  menuStyle,
   pickerStyle,
   tag,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
+import { Pressable, Text as RNText } from 'react-native';
 
 export default function MenuScreen() {
   const [selectedIndex, setSelectedIndex] = React.useState<number | undefined>(1);
@@ -40,6 +56,30 @@ export default function MenuScreen() {
           <Menu label={<Text modifiers={[foregroundStyle('accentColor')]}>Custom Label</Text>}>
             <Button onPress={() => console.log('Action 1')} label="Action 1" />
             <Button onPress={() => console.log('Action 2')} label="Action 2" />
+          </Menu>
+        </Section>
+
+        <Section title="RN Pressable label">
+          <Menu
+            label={
+              <RNHostView matchContents>
+                <Pressable
+                  onPress={() => console.log('RN trigger pressed')}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    borderRadius: 8,
+                    alignSelf: 'flex-start',
+                    backgroundColor: '#9B59B6',
+                  }}>
+                  <RNText style={{ color: 'white', fontWeight: '600' }}>
+                    RN Pressable Trigger
+                  </RNText>
+                </Pressable>
+              </RNHostView>
+            }>
+            <Button onPress={() => console.log('Item 1')} label="Item 1" />
+            <Button onPress={() => console.log('Item 2')} label="Item 2" />
           </Menu>
         </Section>
 
@@ -79,6 +119,28 @@ export default function MenuScreen() {
           </Menu>
         </Section>
 
+        <Section title="Menu with fixed item order">
+          {/* Menus opening upward reverse their items with the default automatic
+              order. menuOrder('fixed') keeps First/Second/Third top to bottom. */}
+          <Menu label="Fixed Order" modifiers={[menuOrder('fixed')]}>
+            <Button onPress={() => console.log('First')} label="First" />
+            <Button onPress={() => console.log('Second')} label="Second" />
+            <Button onPress={() => console.log('Third')} label="Third" />
+          </Menu>
+        </Section>
+
+        <Section title="Menu with a plain trigger">
+          {/* Under the Mac idiom on Mac Catalyst, Menu renders as an AppKit pull-down:
+              bordered chrome and a chevron replace the custom label. This combination
+              keeps the label as the entire trigger, on Catalyst and on iOS alike. */}
+          <Menu
+            label={<Text modifiers={[foregroundStyle('accentColor')]}>Plain Trigger</Text>}
+            modifiers={[menuStyle('button'), buttonStyle('plain'), menuIndicator('hidden')]}>
+            <Button onPress={() => console.log('Plain 1')} label="Plain Action 1" />
+            <Button onPress={() => console.log('Plain 2')} label="Plain Action 2" />
+          </Menu>
+        </Section>
+
         <Section title="Menu with primary action">
           <Menu
             label="Tap or Hold"
@@ -103,6 +165,61 @@ export default function MenuScreen() {
             <Button onPress={() => console.log('Menu Item 1')} label="Menu Item 1" />
             <Button onPress={() => console.log('Menu Item 2')} label="Menu Item 2" />
             <Button onPress={() => console.log('Menu Item 3')} label="Menu Item 3" />
+          </Menu>
+        </Section>
+
+        <Section title="Apple Music-style Menu">
+          <Menu label="Song Options" systemImage="ellipsis.circle">
+            <ControlGroup>
+              <Button systemImage="plus" label="Add" onPress={() => console.log('Add')} />
+              <Button systemImage="star" label="Favorite" onPress={() => console.log('Favorite')} />
+              <Button
+                systemImage="square.and.arrow.up"
+                label="Share"
+                onPress={() => console.log('Share')}
+              />
+            </ControlGroup>
+            <Section>
+              <Button
+                systemImage="text.badge.plus"
+                label="Add to a Playlist"
+                onPress={() => console.log('Add to Playlist')}
+              />
+              <Button
+                systemImage="antenna.radiowaves.left.and.right"
+                label="Create Station"
+                onPress={() => console.log('Create Station')}
+              />
+            </Section>
+            <Section>
+              <Button onPress={() => console.log('Go to Album')}>
+                <Image systemName="square.stack" />
+                <Text>Go to Album</Text>
+                <Text>Atado a Tu Amor</Text>
+              </Button>
+              <Button onPress={() => console.log('Go to Artist')}>
+                <Image systemName="mic" />
+                <Text>Go to Artist</Text>
+                <Text>Chayanne</Text>
+              </Button>
+            </Section>
+            <Section>
+              <Button
+                systemImage="info.circle"
+                label="View Credits"
+                onPress={() => console.log('View Credits')}
+              />
+              <Button
+                systemImage="quote.bubble"
+                label="Share Lyrics"
+                onPress={() => console.log('Share Lyrics')}
+              />
+            </Section>
+            <Button
+              systemImage="hand.thumbsdown"
+              label="Suggest Less"
+              onPress={() => console.log('Suggest Less')}
+            />
           </Menu>
         </Section>
       </List>

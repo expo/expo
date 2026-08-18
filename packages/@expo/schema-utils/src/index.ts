@@ -5,8 +5,10 @@ import {
   BaseValidationError,
   ValidationError as ValidationResult,
 } from './validate';
+import { visitNode, SchemaVisitor } from './visit';
 
-export { JSONSchema } from './JSONSchema';
+export type { JSONSchema } from './JSONSchema';
+export type { SchemaVisitor } from './visit';
 
 const CACHE_SYMBOL = Symbol('@expo/schema-utils');
 
@@ -25,8 +27,8 @@ const flattenValidationResults = (
     keyword: input.keyword,
     value: input.value,
   });
-  for (let idx = 0; input.cause && idx < input.cause.length; idx++) {
-    flattenValidationResults(input.cause[idx], output);
+  for (const cause of input.cause ?? []) {
+    flattenValidationResults(cause, output);
   }
   return output;
 };
@@ -90,4 +92,8 @@ export function validate<T>(schema: JSONSchema<T>, value: unknown): asserts valu
   if (result) {
     throw new ValidationError(result, data.schema);
   }
+}
+
+export function visit<T>(schema: JSONSchema<T>, value: unknown, visitor: SchemaVisitor): void {
+  visitNode(derefSchemaCache(schema).schema, value, visitor);
 }

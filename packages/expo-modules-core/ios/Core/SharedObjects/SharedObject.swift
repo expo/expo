@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 public protocol AnySharedObject: AnyArgument, AnyObject {
   var sharedObjectId: SharedObjectId { get }
 }
@@ -21,6 +23,13 @@ open class SharedObject: AnySharedObject {
    An app context for which the shared object was created.
    */
   public internal(set) weak var appContext: AppContext?
+
+  /**
+   Weak reference to the native state that owns this `SharedObject` and bridges
+   it to its JS counterpart. Populated by `SharedObjectRegistry.add` and used to
+   recover the paired JS object without going through the registry's id table.
+   */
+  internal weak var nativeState: SharedObjectNativeState?
 
   /**
    The default public initializer of the shared object.
@@ -52,53 +61,113 @@ open class SharedObject: AnySharedObject {
   }
 
   /**
+   Returns the JavaScript value associated with the native shared object.
+   */
+  public func getJavaScriptValue() -> JavaScriptValue? {
+    return appContext?.sharedObjectRegistry.toJavaScriptValue(self)
+  }
+
+  /**
    Returns the JavaScript shared object associated with the native shared object.
    */
   public func getJavaScriptObject() -> JavaScriptObject? {
     return appContext?.sharedObjectRegistry.toJavaScriptObject(self)
   }
+
+  /**
+   Backwards-compatible overload that forwards to `emit(event:payload:)`. Existing single-argument
+   call sites keep working unchanged; the parameter has been renamed to `payload` to make the
+   single-payload semantics explicit, so callers should migrate the label.
+   */
+  @available(*, deprecated, renamed: "emit(event:payload:)", message: "Use `emit(event:payload:)` and pass a single value (typically a dictionary). Multi-argument event emission is no longer supported.")
+  public func emit<P: AnyArgument>(event: String, arguments: sending P) {
+    emit(event: event, payload: arguments)
+  }
+
+  // MARK: - Macro-synthesized JSI hooks
+
+  /// Binds the class's `@JS` members onto its JavaScript prototype. Overridden by the `@SharedObject`
+  /// macro; a `class func` (not a protocol requirement) so dispatch resolves per subclass.
+  @JavaScriptActor
+  open class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+
+  /// Builds a native instance from the JS constructor arguments, or `nil` to use the DSL `Constructor`
+  /// path. Overridden by the `@SharedObject` macro from the class's `@JS init`.
+  @JavaScriptActor
+  open class func _constructSharedObject(this: JavaScriptValue, arguments: borrowing JavaScriptValuesBuffer, in runtime: JavaScriptRuntime) throws -> SharedObject? {
+    return nil
+  }
 }
 
-// Unfortunately the `emit` function needs to be defined in the extension.
-// When put in the class, pack expansion is crashing with `EXC_BAD_ACCESS` code.
-// See https://github.com/apple/swift/issues/72381 for more details.
-public extension SharedObject { // swiftlint:disable:this no_grouping_extension
-  // Parameter packs feature requires Swift 5.9 (Xcode 15.0), but some CIs and EAS images may still use older versions.
-  // As of April 29, all submissions must be made with Xcode 15, so hopefully we can remove this condition soon.
-  // No one should use <15.0 these days.
-  #if swift(>=5.9)
-  /**
-   Schedules an event with the given name and arguments to be emitted to the associated JavaScript object.
-   */
-  func emit<each A: AnyArgument>(event: String, arguments: repeat each A) {
-    guard let appContext, let runtime = try? appContext.runtime else {
-      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
-      return
+extension SharedObject: EventEmitter {
+  @JavaScriptActor
+  public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
+    guard let target = getJavaScriptObject() else {
+      return nil
+    }
+    return try body(target)
+  }
+}
+
+// MARK: - Recovering the native object from JS
+
+extension SharedObject {
+  /// Recovers the native shared object paired with the given JS object, reading it off the object's
+  /// `SharedObjectNativeState`. Callers holding a `JavaScriptValue` or borrowed `JavaScriptUnownedValue`
+  /// convert it first via `asObject()` / `asObject(in:)`.
+  ///
+  /// Returns the base `SharedObject`. Callers wanting a concrete subclass use the `as:` overload, which
+  /// performs a checked downcast.
+  ///
+  /// Throws `NotFoundException` when the object carries no native state.
+  @JavaScriptActor
+  public static func native(from jsObject: borrowing JavaScriptObject) throws -> SharedObject {
+    guard let native = jsObject.getNativeState(as: SharedObjectNativeState.self)?.native else {
+      throw NotFoundException()
+    }
+    return native
+  }
+
+  /// Recovers the native shared object and casts it to the given subclass, e.g.
+  /// `SharedObject.native(from: jsObject, as: Cache.self)`. The target type is an explicit argument
+  /// rather than inferred from the return type, so the checked cast can never be skipped by omitting a
+  /// contextual type. `@inlinable` so the `as?` specializes in the caller's module as a plain
+  /// concrete-class cast. Throws `TypeMismatchException` when the paired native object isn't `type`.
+  @JavaScriptActor
+  @inlinable
+  public static func native<SharedObjectType: SharedObject>(
+    from jsObject: borrowing JavaScriptObject,
+    as type: SharedObjectType.Type
+  ) throws -> SharedObjectType {
+    let native = try native(from: jsObject)
+    guard let typed = native as? SharedObjectType else {
+      throw TypeMismatchException((expected: SharedObjectType.self, actual: Swift.type(of: native)))
+    }
+    return typed
+  }
+
+  /// Thrown when a JS object has no paired native object, for example a foreign JS object that carries
+  /// no `SharedObjectNativeState`.
+  internal final class NotFoundException: Exception, @unchecked Sendable {
+    override var code: String {
+      "ERR_NATIVE_SHARED_OBJECT_NOT_FOUND"
     }
 
-    // Collect arguments and their dynamic types from parameter pack
-    var argumentPairs: [(AnyArgument, AnyDynamicType)] = []
-    repeat argumentPairs.append((each arguments, ~(each A).self))
-
-    // Schedule the event to be asynchronously emitted from the runtime's thread
-    runtime.schedule { [weak self, weak appContext] in
-      guard let appContext, let runtime = try? appContext.runtime, let jsObject = self?.getJavaScriptObject() else {
-        log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS object is no longer associated with the native instance")
-        return
-      }
-
-      // Convert native arguments to JS, just like function results
-      let arguments = argumentPairs.map { argument, dynamicType in
-        return Conversions.convertFunctionResult(argument, appContext: appContext, dynamicType: dynamicType)
-      }
-
-      JSUtils.emitEvent(event, to: jsObject, withArguments: arguments, in: runtime)
+    override var reason: String {
+      "Unable to find the native shared object associated with given JavaScript object"
     }
   }
-  #else // swift(>=5.9)
-  @available(*, unavailable, message: "Unavailable in Xcode <15.0")
-  public func emit(event: String, arguments: AnyArgument...) {
-    fatalError("Emitting events to JS requires at least Xcode 15.0")
+
+  /// Thrown when the native shared object paired with a JS object exists but isn't the expected subclass.
+  /// `@usableFromInline` so `native(from:)`'s inlinable generic overloads can throw it.
+  @usableFromInline
+  internal final class TypeMismatchException: GenericException<(expected: Any.Type, actual: Any.Type)>, @unchecked Sendable {
+    override var code: String {
+      "ERR_NATIVE_SHARED_OBJECT_TYPE_MISMATCH"
+    }
+
+    override var reason: String {
+      "Expected the native shared object to be '\(param.expected)', but found '\(param.actual)'"
+    }
   }
-  #endif // swift(<5.9)
 }

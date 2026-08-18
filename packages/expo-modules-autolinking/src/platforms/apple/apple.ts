@@ -2,6 +2,11 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import {
+  getIosInlineModulesClassNames,
+  isTargetInInlineModulesTargets,
+} from '../../inlineModules/iosInlineModules';
 import type {
   AppleCodeSignEntitlements,
   ExtraDependencies,
@@ -14,6 +19,16 @@ import { listFilesInDirectories, fileExistsAsync } from '../../utils';
 
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
+
+interface AppleConfigurationOutput {
+  buildFromSource: string[];
+}
+
+export function getConfiguration(
+  options: AutolinkingOptions
+): AppleConfigurationOutput | undefined {
+  return options.buildFromSource ? { buildFromSource: options.buildFromSource } : undefined;
+}
 
 const indent = '  ';
 
@@ -90,22 +105,40 @@ export async function resolveExtraBuildDependenciesAsync(
   return null;
 }
 
+interface GenerateModulesProviderParams {
+  watchedDirectories: string[];
+  inlineModulesTargets: { mainTarget?: string; targets: string[] };
+  targetPath: string;
+  targetName?: string;
+  appRoot: string;
+}
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
 export async function generateModulesProviderAsync(
   modules: ModuleDescriptorIos[],
   targetPath: string,
-  entitlementPath: string | null
+  entitlementPath: string | null,
+  params: GenerateModulesProviderParams
 ): Promise<void> {
   const className = path.basename(targetPath, path.extname(targetPath));
   const entitlements = await parseEntitlementsAsync(entitlementPath);
   const generatedFileContent = await generatePackageListFileContentAsync(
     modules,
     className,
-    entitlements
+    entitlements,
+    params
   );
   const parentPath = path.dirname(targetPath);
+
+  // Avoid writing the file if the content hasn't changed to prevent unnecessary recompilation.
+  try {
+    const existingContent = await fs.promises.readFile(targetPath, 'utf8');
+    if (existingContent === generatedFileContent) {
+      return;
+    }
+  } catch {}
+
   await fs.promises.mkdir(parentPath, { recursive: true });
   await fs.promises.writeFile(targetPath, generatedFileContent, 'utf8');
 }
@@ -116,7 +149,8 @@ export async function generateModulesProviderAsync(
 async function generatePackageListFileContentAsync(
   modules: ModuleDescriptorIos[],
   className: string,
-  entitlements: AppleCodeSignEntitlements
+  entitlements: AppleCodeSignEntitlements,
+  params: GenerateModulesProviderParams
 ): Promise<string> {
   const iosModules = modules.filter(
     (module) =>
@@ -136,9 +170,13 @@ async function generatePackageListFileContentAsync(
     .concat(...debugOnlyModules.map((module) => module.swiftModuleNames))
     .filter(Boolean);
 
-  const modulesClassNames = ([] as ModuleIosConfig[])
+  let modulesClassNames = ([] as ModuleIosConfig[])
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
+
+  if (isTargetInInlineModulesTargets(params)) {
+    modulesClassNames = modulesClassNames.concat(await getIosInlineModulesClassNames(params));
+  }
 
   const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
     .concat(...debugOnlyModules.map((module) => module.modules))
@@ -167,7 +205,7 @@ async function generatePackageListFileContentAsync(
  * but only these that are written in Swift and use the new API for creating Expo modules.
  */
 
-@_implementationOnly import ExpoModulesCore
+internal import ExpoModulesCore
 ${generateCommonImportList(swiftModules)}
 ${generateDebugOnlyImportList(debugOnlySwiftModules)}
 @objc(${className})
@@ -192,7 +230,7 @@ ${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDeleg
 }
 
 function generateCommonImportList(swiftModules: string[]): string {
-  return swiftModules.map((moduleName) => `@_implementationOnly import ${moduleName}`).join('\n');
+  return swiftModules.map((moduleName) => `internal import ${moduleName}`).join('\n');
 }
 
 function generateDebugOnlyImportList(swiftModules: string[]): string {
@@ -203,7 +241,7 @@ function generateDebugOnlyImportList(swiftModules: string[]): string {
   return (
     wrapInDebugConfigurationCheck(
       0,
-      swiftModules.map((moduleName) => `@_implementationOnly import ${moduleName}`).join('\n')
+      swiftModules.map((moduleName) => `internal import ${moduleName}`).join('\n')
     ) + '\n'
   );
 }

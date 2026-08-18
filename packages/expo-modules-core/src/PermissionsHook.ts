@@ -4,7 +4,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { PermissionResponse } from './PermissionsInterface';
+import type { PermissionResponse } from './PermissionsInterface';
 
 // These types are identical, but improves the readability for suggestions in editors
 type RequestPermissionMethod<Permission extends PermissionResponse> = () => Promise<Permission>;

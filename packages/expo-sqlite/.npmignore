@@ -9,6 +9,7 @@ __tests__
 __rsc_tests__
 
 /babel.config.js
+/oxlint.config.mjs
 /android/src/androidTest/
 /android/src/test/
 
@@ -16,8 +17,11 @@ __rsc_tests__
 /ios/sqlite3.c
 /ios/sqlite3.h
 
-# Scripts are only for sqlite3 source code prebuilding
+# Scripts only prebuild sqlite3 sources and the devtools plugin web UI
 /scripts/
 
 # Exclude source of dev-plugin-webui to reduce package size
 /dev-plugin-webui/
+
+# Include all files in dev-plugin-dist, which `prepublishOnly` generates
+!/dev-plugin-dist/**/*

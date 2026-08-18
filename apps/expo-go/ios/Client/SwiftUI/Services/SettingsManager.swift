@@ -2,7 +2,7 @@
 
 import Foundation
 import UIKit
-import EXDevMenu
+import ExpoModulesCore
 
 @MainActor
 class SettingsManager: ObservableObject {
@@ -10,11 +10,30 @@ class SettingsManager: ObservableObject {
   @Published var threeFingerLongPressEnabled = true
   @Published var selectedTheme = 0
   @Published var buildInfo: [String: Any] = [:]
+  @Published var completedLessons: Set<Int> = []
+
+  private static let completedLessonsKey = "ExpoGoCompletedLessons"
 
   init() {
     loadDevSettings()
     loadThemeSettings()
     loadBuildInfo()
+    loadCompletedLessons()
+  }
+
+  // MARK: - Lesson Completion
+
+  func isLessonCompleted(_ lessonId: Int) -> Bool {
+    completedLessons.contains(lessonId)
+  }
+
+  func refreshCompletedLessons() {
+    loadCompletedLessons()
+  }
+
+  private func loadCompletedLessons() {
+    let ids = UserDefaults.standard.array(forKey: Self.completedLessonsKey) as? [Int] ?? []
+    completedLessons = Set(ids)
   }
 
   func updateShakeGesture(_ enabled: Bool) {
@@ -88,10 +107,7 @@ class SettingsManager: ObservableObject {
   }
 
   private func applyThemeChange(_ themeIndex: Int) {
-    guard let window = UIApplication.shared.connectedScenes
-      .compactMap({ $0 as? UIWindowScene })
-      .flatMap({ $0.windows })
-      .first(where: { $0.isKeyWindow }) else {
+    guard let window = SceneGeometry.keyWindow() else {
       return
     }
 
@@ -109,6 +125,7 @@ class SettingsManager: ObservableObject {
 
     UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve) {
       window.overrideUserInterfaceStyle = style
+      window.rootViewController?.setNeedsStatusBarAppearanceUpdate()
     }
   }
 }

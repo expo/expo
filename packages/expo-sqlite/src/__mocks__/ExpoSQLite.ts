@@ -1,8 +1,11 @@
 import assert from 'assert';
-import sqlite3 from 'better-sqlite3';
+import fs from 'fs';
+import { DatabaseSync, type SQLInputValue, type StatementSync } from 'node:sqlite';
+import os from 'os';
+import path from 'path';
 
-import { SQLiteOpenOptions } from '../NativeDatabase';
-import {
+import type { SQLiteOpenOptions } from '../NativeDatabase';
+import type {
   SQLiteBindBlobParams,
   SQLiteBindParams,
   SQLiteBindPrimitiveParams,
@@ -11,10 +14,13 @@ import {
   SQLiteRunResult,
 } from '../NativeStatement';
 
+// Per-worker temp directory: node:sqlite refuses concurrent opens of the same path across processes.
+const defaultDatabaseDirectory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-sqlite-test-'));
+
 export default {
   deleteDatebaseAsync: jest.fn(),
 
-  defaultDatabaseDirectory: '.',
+  defaultDatabaseDirectory,
   bundledExtensions: {},
 
   ensureDatabasePathExistsAsync: jest.fn().mockImplementation(async (databasePath: string) => {}),
@@ -30,41 +36,37 @@ export default {
   NativeStatement: jest.fn().mockImplementation(() => new NativeStatement()),
 };
 
-//#region async sqlite3
+//#region node:sqlite
 
-/**
- * A sqlite3.Database wrapper with async methods and conforming to the NativeDatabase interface.
- */
+/** node:sqlite (bundled with Node 22+) backs the mock, avoiding a node-gyp-compiled dependency. */
 class NativeDatabase {
-  private readonly sqlite3Db: sqlite3.Database;
+  private readonly nodeDb: DatabaseSync;
 
   constructor(databaseName: string, options?: SQLiteOpenOptions, serializedData?: Uint8Array) {
+    if (serializedData != null && !hasDatabaseMethod('deserialize')) {
+      // Without `deserialize()`, write the bytes out and let SQLite open them as an ordinary file.
+      this.nodeDb = new DatabaseSync(writeTempDatabase(serializedData));
+      return;
+    }
+    this.nodeDb = new DatabaseSync(databaseName);
     if (serializedData != null) {
-      this.sqlite3Db = new sqlite3(Buffer.from(serializedData));
-    } else {
-      this.sqlite3Db = new sqlite3(databaseName);
+      const deserialize = (this.nodeDb as unknown as { deserialize: (data: Uint8Array) => void })
+        .deserialize;
+      deserialize.call(this.nodeDb, serializedData);
     }
   }
 
   //#region Asynchronous API
 
   initAsync = jest.fn().mockResolvedValue(null);
-  isInTransactionAsync = jest.fn().mockImplementation(async () => {
-    return this.sqlite3Db.inTransaction;
-  });
-  closeAsync = jest.fn().mockImplementation(async () => {
-    return this.sqlite3Db.close();
-  });
-  execAsync = jest.fn().mockImplementation(async (source: string) => {
-    return this.sqlite3Db.exec(source);
-  });
-  serializeAsync = jest.fn().mockImplementation(async (databaseName: string) => {
-    return this.sqlite3Db.serialize({ attached: databaseName });
-  });
+  isInTransactionAsync = jest.fn().mockImplementation(async () => this.nodeDb.isTransaction);
+  closeAsync = jest.fn().mockImplementation(async () => this._close());
+  execAsync = jest.fn().mockImplementation(async (source: string) => this.nodeDb.exec(source));
+  serializeAsync = jest.fn().mockImplementation(async (databaseName: string) => this._serialize());
   prepareAsync = jest
     .fn()
     .mockImplementation(async (nativeStatement: NativeStatement, source: string) => {
-      nativeStatement.sqlite3Stmt = this.sqlite3Db.prepare(source);
+      nativeStatement.prepare(this.nodeDb, source);
     });
 
   //#endregion
@@ -72,25 +74,70 @@ class NativeDatabase {
   //#region Synchronous API
 
   initSync = jest.fn();
-  isInTransactionSync = jest.fn().mockImplementation(() => this.sqlite3Db.inTransaction);
-  closeSync = jest.fn().mockImplementation(() => this.sqlite3Db.close());
-  execSync = jest.fn().mockImplementation((source: string) => this.sqlite3Db.exec(source));
-  serializeSync = jest.fn().mockImplementation((databaseName: string) => {
-    return this.sqlite3Db.serialize({ attached: databaseName });
-  });
+  isInTransactionSync = jest.fn().mockImplementation(() => this.nodeDb.isTransaction);
+  closeSync = jest.fn().mockImplementation(() => this._close());
+  execSync = jest.fn().mockImplementation((source: string) => this.nodeDb.exec(source));
+  serializeSync = jest.fn().mockImplementation((databaseName: string) => this._serialize());
   prepareSync = jest.fn().mockImplementation((nativeStatement: NativeStatement, source: string) => {
-    nativeStatement.sqlite3Stmt = this.sqlite3Db.prepare(source);
+    nativeStatement.prepare(this.nodeDb, source);
   });
 
   //#endregion
+
+  // node:sqlite throws when closing an already-closed database; callers may close more than once.
+  private _close() {
+    if (this.nodeDb.isOpen) {
+      this.nodeDb.close();
+    }
+  }
+
+  private _serialize(): Uint8Array {
+    if (hasDatabaseMethod('serialize')) {
+      const serialize = (this.nodeDb as unknown as { serialize: () => Uint8Array }).serialize;
+      return serialize.call(this.nodeDb);
+    }
+    // Without `serialize()`, `VACUUM INTO` writes an equivalent database to a file we can read back.
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-sqlite-serialize-'));
+    try {
+      const filePath = path.join(directory, 'database.db');
+      this.nodeDb.exec(`VACUUM INTO '${filePath.replaceAll("'", "''")}'`);
+      return new Uint8Array(fs.readFileSync(filePath));
+    } finally {
+      fs.rmSync(directory, { recursive: true, force: true });
+    }
+  }
+}
+
+/** Node 24 ships neither method, so probe and let newer runtimes use the native ones. */
+function hasDatabaseMethod(name: 'serialize' | 'deserialize'): boolean {
+  return typeof (DatabaseSync.prototype as unknown as Record<string, unknown>)[name] === 'function';
+}
+
+/** The file backs the database for its whole lifetime, so it is left for the OS to reap. */
+function writeTempDatabase(serializedData: Uint8Array): string {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-sqlite-deserialize-'));
+  const filePath = path.join(directory, 'database.db');
+  fs.writeFileSync(filePath, serializedData);
+  return filePath;
 }
 
 /**
- * A sqlite3.Statement wrapper with async methods and conforming to the NativeStatement interface.
+ * node:sqlite re-executes a statement's side effects on each run/get/all call, so row-returning
+ * statements are driven through one iterator created in `_run()` to execute exactly once.
  */
 class NativeStatement {
-  public sqlite3Stmt: sqlite3.Statement | null = null;
-  private iterator: ReturnType<sqlite3.Statement['iterate']> | null = null;
+  private nodeStmt: StatementSync | null = null;
+  private iterator: Iterator<unknown> | null = null;
+  private boundParams: SQLiteBindParams = [];
+
+  prepare(nodeDb: DatabaseSync, source: string) {
+    const stmt = nodeDb.prepare(source);
+    // The native module strips the `:@$` prefixes from named parameters.
+    stmt.setAllowBareNamedParameters(true);
+    // The JS layer expects rows as value arrays.
+    stmt.setReturnArrays(true);
+    this.nodeStmt = stmt;
+  }
 
   //#region Asynchronous API
 
@@ -107,25 +154,18 @@ class NativeStatement {
           this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
         )
     );
-  public stepAsync = jest.fn().mockImplementation((database: NativeDatabase): Promise<any> => {
-    assert(this.sqlite3Stmt);
-    if (this.iterator == null) {
-      this.iterator = this.sqlite3Stmt.iterate();
-      // Since the first row is retrieved by `_run()`, we need to skip the first row here.
-      this.iterator.next();
-    }
-    const result = this.iterator.next();
-    const columnValues =
-      result.done === false ? Object.values(result.value as Record<string, any>) : null;
-    return Promise.resolve(columnValues);
-  });
+  public stepAsync = jest
+    .fn()
+    .mockImplementation(
+      (database: NativeDatabase): Promise<SQLiteColumnValues | null> =>
+        Promise.resolve(this._step())
+    );
   public getAllAsync = jest
     .fn()
     .mockImplementation((database: NativeDatabase) => Promise.resolve(this._allValues()));
-  public getColumnNamesAsync = jest.fn().mockImplementation(async (database: NativeDatabase) => {
-    assert(this.sqlite3Stmt);
-    return this.sqlite3Stmt.columns().map((column) => column.name);
-  });
+  public getColumnNamesAsync = jest
+    .fn()
+    .mockImplementation(async (database: NativeDatabase) => this._columnNames());
   public resetAsync = jest.fn().mockImplementation(async (database: NativeDatabase) => {
     this._reset();
   });
@@ -148,24 +188,13 @@ class NativeStatement {
       ): SQLiteRunResult & { firstRowValues: SQLiteColumnValues } =>
         this._run(normalizeSQLite3Args(bindParams, bindBlobParams, shouldPassAsArray))
     );
-  public stepSync = jest.fn().mockImplementation((database: NativeDatabase): any => {
-    assert(this.sqlite3Stmt);
-    if (this.iterator == null) {
-      this.iterator = this.sqlite3Stmt.iterate();
-      // Since the first row is retrieved by `_run()`, we need to skip the first row here.
-      this.iterator.next();
-    }
-
-    const result = this.iterator.next();
-    const columnValues =
-      result.done === false ? Object.values(result.value as Record<string, any>) : null;
-    return columnValues;
-  });
+  public stepSync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase): SQLiteColumnValues | null => this._step());
   public getAllSync = jest.fn().mockImplementation((database: NativeDatabase) => this._allValues());
-  public getColumnNamesSync = jest.fn().mockImplementation((database: NativeDatabase) => {
-    assert(this.sqlite3Stmt);
-    return this.sqlite3Stmt.columns().map((column) => column.name);
-  });
+  public getColumnNamesSync = jest
+    .fn()
+    .mockImplementation((database: NativeDatabase) => this._columnNames());
   public resetSync = jest.fn().mockImplementation((database: NativeDatabase) => {
     this._reset();
   });
@@ -175,40 +204,63 @@ class NativeStatement {
 
   //#endregion
 
-  private _run = (...params: any[]): SQLiteRunResult & { firstRowValues: SQLiteColumnValues } => {
-    assert(this.sqlite3Stmt);
-    this.sqlite3Stmt.bind(...params);
-    const result = this.sqlite3Stmt.run();
+  private _run = (
+    params: SQLiteBindParams
+  ): SQLiteRunResult & { firstRowValues: SQLiteColumnValues } => {
+    assert(this.nodeStmt);
+    this.boundParams = params;
+    this.iterator = null;
 
-    // better-sqlite3 does not support run() returning the first row, use get() instead.
-    let firstRow;
-    try {
-      firstRow = this.sqlite3Stmt.get();
-    } catch {
-      // better-sqlite3 may throw `TypeError: This statement does not return data. Use run() instead`
-      firstRow = null;
+    if (this.nodeStmt.columns().length === 0) {
+      const result = this.nodeStmt.run(...asBindArgs(params));
+      return {
+        lastInsertRowId: Number(result.lastInsertRowid),
+        changes: Number(result.changes),
+        firstRowValues: [],
+      };
     }
+
+    // node:sqlite exposes no changes/lastInsertRowId for row-returning statements.
+    this.iterator = this.nodeStmt.iterate(...asBindArgs(params));
+    const first = this.iterator.next();
     return {
-      lastInsertRowId: Number(result.lastInsertRowid),
-      changes: result.changes,
-      firstRowValues: firstRow ? Object.values(firstRow) : [],
+      lastInsertRowId: 0,
+      changes: 0,
+      firstRowValues: first.done ? [] : (first.value as SQLiteColumnValues),
     };
   };
 
-  private _allValues = (): SQLiteColumnNames[] => {
-    assert(this.sqlite3Stmt);
-    const sqlite3Stmt = this.sqlite3Stmt as any;
-    // Since the first row is retrieved by `_run()`, we need to skip the first row here.
-    return sqlite3Stmt
-      .all()
-      .slice(1)
-      .map((row: any) => Object.values(row));
+  private _step = (): SQLiteColumnValues | null => {
+    if (this.iterator == null) {
+      return null;
+    }
+    const result = this.iterator.next();
+    return result.done ? null : (result.value as SQLiteColumnValues);
+  };
+
+  private _allValues = (): SQLiteColumnValues[] => {
+    if (this.iterator == null) {
+      return [];
+    }
+    // _run() already consumed the first row.
+    const rows: SQLiteColumnValues[] = [];
+    let result = this.iterator.next();
+    while (!result.done) {
+      rows.push(result.value as SQLiteColumnValues);
+      result = this.iterator.next();
+    }
+    return rows;
+  };
+
+  private _columnNames = (): SQLiteColumnNames => {
+    assert(this.nodeStmt);
+    return this.nodeStmt.columns().map((column) => column.name);
   };
 
   private _reset = () => {
-    assert(this.sqlite3Stmt);
+    assert(this.nodeStmt);
     this.iterator?.return?.();
-    this.iterator = this.sqlite3Stmt.iterate();
+    this.iterator = this.nodeStmt.iterate(...asBindArgs(this.boundParams));
   };
 
   private _finalize = () => {
@@ -218,6 +270,11 @@ class NativeStatement {
 }
 
 //#endregion
+
+function asBindArgs(params: SQLiteBindParams): SQLInputValue[] {
+  // Booleans are already normalized to 1/0 upstream, so values fit node:sqlite's input types.
+  return (Array.isArray(params) ? params : [params]) as unknown as SQLInputValue[];
+}
 
 function normalizeSQLite3Args(
   bindParams: SQLiteBindPrimitiveParams,
@@ -230,6 +287,10 @@ function normalizeSQLite3Args(
       result[Number(key)] = value;
     }
     for (const [key, value] of Object.entries(bindBlobParams)) {
+      if (value instanceof ArrayBuffer) {
+        result[Number(key)] = new Uint8Array(value) as any;
+        continue;
+      }
       result[Number(key)] = value;
     }
     return result;
@@ -243,6 +304,10 @@ function normalizeSQLite3Args(
   }
   for (const [key, value] of Object.entries(bindBlobParams)) {
     const normalizedKey = key.replace(replaceRegexp, '');
+    if (value instanceof ArrayBuffer) {
+      result[normalizedKey] = new Uint8Array(value) as any;
+      continue;
+    }
     result[normalizedKey] = value;
   }
   return result;

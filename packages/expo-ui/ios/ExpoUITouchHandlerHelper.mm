@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "ExpoUITouchHandlerHelper.h"
+#import <ExpoModulesCore/Platform.h>
 #import <React/RCTSurfaceTouchHandler.h>
 
 @implementation ExpoUITouchHandlerHelper
@@ -14,6 +15,12 @@
   RCTSurfaceTouchHandler *touchHandler = [[RCTSurfaceTouchHandler alloc] init];
   [touchHandler attachToView:view];
   return touchHandler;
+}
+
++ (void)detachTouchHandler:(UIGestureRecognizer *)touchHandler fromView:(UIView *)view {
+  if ([touchHandler isKindOfClass:[RCTSurfaceTouchHandler class]]) {
+    [(RCTSurfaceTouchHandler *)touchHandler detachFromView:view];
+  }
 }
 
 @end

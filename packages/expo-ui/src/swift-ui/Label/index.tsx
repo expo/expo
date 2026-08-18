@@ -2,10 +2,11 @@ import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 import { type SFSymbol } from 'sf-symbols-typescript';
 
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type LabelProps = {
+export interface LabelProps extends CommonViewModifierProps {
   /**
    * The title text to be displayed in the label.
    */
@@ -23,18 +24,20 @@ export type LabelProps = {
   icon?: React.ReactNode;
 
   /**
+   * Custom title view. Accepts any React node (for example, a `VStack` with title and subtitle).
+   * When provided, this takes precedence over `title`.
+   */
+  children?: React.ReactNode;
+
+  /**
    * The color of the label icon.
    * @deprecated Use `foregroundStyle` modifier instead.
    */
   color?: ColorValue;
-} & CommonViewModifierProps;
+}
 
 const LabelNativeView: React.ComponentType<LabelProps & { children?: React.ReactNode }> =
   requireNativeView('ExpoUI', 'LabelView');
-const LabelIconNativeView: React.ComponentType<{ children?: React.ReactNode }> = requireNativeView(
-  'ExpoUI',
-  'LabelIcon'
-);
 
 /**
  * Renders a native label view, which could be used in a list or section.
@@ -43,13 +46,14 @@ const LabelIconNativeView: React.ComponentType<{ children?: React.ReactNode }> =
  * @returns {JSX.Element} The rendered native Label component.
  */
 export function Label(props: LabelProps) {
-  const { modifiers, icon, ...restProps } = props;
+  const { modifiers, icon, children, ...restProps } = props;
   return (
     <LabelNativeView
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       {...restProps}>
-      {icon && <LabelIconNativeView>{icon}</LabelIconNativeView>}
+      {children && <Slot name="title">{children}</Slot>}
+      {icon && <Slot name="icon">{icon}</Slot>}
     </LabelNativeView>
   );
 }

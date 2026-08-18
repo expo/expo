@@ -25,5 +25,7 @@ export function getPlatformBundlers(
     ios: (exp.ios as WithBundlerConfig)?.bundler ?? 'metro',
     android: (exp.android as WithBundlerConfig)?.bundler ?? 'metro',
     web,
+    tvos: 'metro',
+    macos: 'metro',
   };
 }

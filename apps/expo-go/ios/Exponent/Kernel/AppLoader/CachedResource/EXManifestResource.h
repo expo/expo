@@ -7,6 +7,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString * const EXRuntimeErrorDomain;
 extern NSString * const EXFixInstructionsKey;
 extern NSString * const EXShowTryAgainButtonKey;
 

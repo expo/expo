@@ -1,10 +1,9 @@
-/* eslint-env jest */
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getPageHtml, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -57,8 +56,8 @@ describe('static-rendering with a custom base path', () => {
 
     const jsFiles = indexHtml
       .querySelectorAll('script')
-      .filter((script) => !!script.attributes.src)
-      .map((script) => script.attributes.src);
+      .map((script) => script.attributes.src)
+      .filter((src): src is string => !!src);
     expect(jsFiles).toEqual([
       expect.stringMatching(/\/one\/two\/_expo\/static\/js\/web\/entry-.*\.js/),
     ]);
@@ -68,7 +67,9 @@ describe('static-rendering with a custom base path', () => {
       return link.attributes.as !== 'font';
     });
 
-    const cssFiles = links.map((link) => link.attributes.href);
+    const cssFiles = links
+      .map((link) => link.attributes.href)
+      .filter((link): link is string => !!link);
 
     cssFiles.forEach((src) => {
       // Linked to the expected static location

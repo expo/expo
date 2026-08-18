@@ -1,4 +1,5 @@
-import { PlatformOSType, Platform as ReactNativePlatform } from 'react-native';
+import type { PlatformOSType } from 'react-native';
+import { Platform as ReactNativePlatform } from 'react-native';
 
 import {
   isDOMAvailable,
@@ -6,6 +7,8 @@ import {
   canUseViewport,
   isAsyncDebugging,
 } from './environment/browser';
+
+declare const window: typeof globalThis | undefined;
 
 export type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'default';
 

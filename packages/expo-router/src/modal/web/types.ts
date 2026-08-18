@@ -1,19 +1,17 @@
-import {
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type {
   ParamListBase,
   StackActionHelpers,
   StackNavigationState,
   StackRouterOptions,
   useNavigationBuilder,
-} from '@react-navigation/native';
-import {
+} from '../../react-navigation/native';
+import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
-
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+} from '../../react-navigation/native-stack';
 
 export type ModalStackNavigatorProps = {
-  initialRouteName?: string;
   screenOptions?: ExtendedStackNavigationOptions;
   children: React.ReactNode;
 };
@@ -28,7 +26,7 @@ export type ModalStackViewProps = Omit<
       NativeStackNavigationEventMap
     >
   >,
-  'NavigationContent'
+  'NavigationContent' | 'describe'
 >;
 
 export type CSSWithVars = React.CSSProperties & {

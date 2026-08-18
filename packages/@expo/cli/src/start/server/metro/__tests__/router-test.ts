@@ -4,6 +4,7 @@ import {
   getAppRouterRelativeEntryPath,
   getApiRoutesForDirectory,
   getMiddlewareForDirectory,
+  getRouterDirectoryModuleIdWithManifest,
 } from '../router';
 
 jest.mock('resolve-from');
@@ -45,6 +46,39 @@ describe(getAppRouterRelativeEntryPath, () => {
   });
 });
 
+describe(getRouterDirectoryModuleIdWithManifest, () => {
+  const exp = (root?: string): any => ({ extra: root != null ? { router: { root } } : undefined });
+
+  it('returns the configured relative root', () => {
+    expect(getRouterDirectoryModuleIdWithManifest('/project', exp('./src/routes'))).toBe(
+      './src/routes'
+    );
+  });
+
+  it('returns an absolute root that is inside the project', () => {
+    expect(getRouterDirectoryModuleIdWithManifest('/project', exp('/project/routes'))).toBe(
+      '/project/routes'
+    );
+  });
+
+  it('falls back to autodetection when no root is configured', () => {
+    vol.fromJSON({ 'app/index.tsx': '' }, '/project');
+    expect(getRouterDirectoryModuleIdWithManifest('/project', exp())).toBe('app');
+  });
+
+  it('throws when the configured root traverses out of the project', () => {
+    expect(() => getRouterDirectoryModuleIdWithManifest('/project', exp('../sibling/app'))).toThrow(
+      /outside the project root/
+    );
+  });
+
+  it('throws when the configured root is an absolute path outside the project', () => {
+    expect(() => getRouterDirectoryModuleIdWithManifest('/project', exp('/random/value'))).toThrow(
+      /outside the project root/
+    );
+  });
+});
+
 describe(getApiRoutesForDirectory, () => {
   it('returns api routes by glob pattern', () => {
     vol.fromJSON(
@@ -73,7 +107,7 @@ describe(getMiddlewareForDirectory, () => {
       },
       '/project'
     );
-    expect(getMiddlewareForDirectory('/project/app')).toBeNull();
+    expect(getMiddlewareForDirectory('/project/app', 'development')).toBeNull();
   });
 
   it('returns the middleware file when only one exists', () => {
@@ -84,30 +118,12 @@ describe(getMiddlewareForDirectory, () => {
       },
       '/project'
     );
-    expect(getMiddlewareForDirectory('/project/app')).toBe('/project/app/+middleware.ts');
-  });
-
-  it('returns the middleware file when only one exists', () => {
-    vol.fromJSON(
-      {
-        'app/+middleware.ts': 'export default () => {}',
-        'app/index.tsx': 'export default () => {}',
-      },
-      '/project'
+    expect(getMiddlewareForDirectory('/project/app', 'development')).toBe(
+      '/project/app/+middleware.ts'
     );
-    expect(getMiddlewareForDirectory('/project/app')).toBe('/project/app/+middleware.ts');
   });
 
   describe('in development', () => {
-    let originalEnv: string;
-    beforeAll(() => {
-      originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'development';
-    });
-    afterAll(() => {
-      process.env.NODE_ENV = originalEnv;
-    });
-
     it('throws an error when multiple middleware files exist in development', () => {
       vol.fromJSON(
         {
@@ -118,7 +134,7 @@ describe(getMiddlewareForDirectory, () => {
         '/project'
       );
 
-      expect(() => getMiddlewareForDirectory('/project/app')).toThrow(
+      expect(() => getMiddlewareForDirectory('/project/app', 'development')).toThrow(
         'Only one middleware file is allowed. Keep one of the conflicting files: "./+middleware.js" or "./+middleware.ts"'
       );
     });
@@ -133,22 +149,13 @@ describe(getMiddlewareForDirectory, () => {
         '/project'
       );
 
-      expect(() => getMiddlewareForDirectory('/project/app')).toThrow(
+      expect(() => getMiddlewareForDirectory('/project/app', 'development')).toThrow(
         'Only one middleware file is allowed. Keep one of the conflicting files: "./+middleware.jsx" or "./+middleware.tsx"'
       );
     });
   });
 
   describe('in production', () => {
-    let originalEnv: string;
-    beforeAll(() => {
-      originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'production';
-    });
-    afterAll(() => {
-      process.env.NODE_ENV = originalEnv;
-    });
-
     it('returns the first middleware file in production when multiple exist', () => {
       vol.fromJSON(
         {
@@ -159,7 +166,7 @@ describe(getMiddlewareForDirectory, () => {
         '/project'
       );
 
-      const result = getMiddlewareForDirectory('/project/app');
+      const result = getMiddlewareForDirectory('/project/app', 'production');
       expect(result).toBeTruthy();
       expect(result).toMatch('/project/app/+middleware.ts');
     });

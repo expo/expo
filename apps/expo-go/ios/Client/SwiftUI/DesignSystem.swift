@@ -43,3 +43,21 @@ extension View {
     self.modifier(ExpoSectionHeaderStyle())
   }
 }
+
+struct ErrorBanner: View {
+  let message: String
+
+  var body: some View {
+    HStack(spacing: 10) {
+      Image(systemName: "exclamationmark.circle.fill")
+        .font(.body)
+      Text(message)
+        .font(.callout)
+    }
+    .foregroundColor(.red)
+    .padding(12)
+    .frame(maxWidth: .infinity, alignment: .leading)
+    .background(Color.red.opacity(0.08))
+    .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
+  }
+}

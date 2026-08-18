@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 
 import { CreateFileMiddleware } from '../CreateFileMiddleware';
-import { ServerRequest, ServerResponse } from '../server.types';
+import type { ServerRequest, ServerResponse } from '../server.types';
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
 

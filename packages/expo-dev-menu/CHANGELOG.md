@@ -6,9 +6,316 @@
 
 ### 🎉 New features
 
+- Add a JavaScript API to show or hide the floating Tools button at runtime. ([#47746](https://github.com/expo/expo/pull/47746) by [@KevinvdBurg](https://github.com/KevinvdBurg))
+- Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
+- [Android] Fix the dev menu not closing when the keyboard shortcut is pressed while it's already open. ([#47640](https://github.com/expo/expo/pull/47640) by [@alanjhughes](https://github.com/alanjhughes))
+- [macOS] Fix build failure from `RCTDevMenu.devMenuEnabled` / `keyboardShortcutsEnabled` access, which react-native-macos does not have. ([#47693](https://github.com/expo/expo/pull/47693) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Fixed the dev menu sizing itself from the main screen instead of the app's own window, and the FAB choosing its slide-in edge from the screen rather than its window. ([#48171](https://github.com/expo/expo/pull/48171) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed the dev menu and FAB resolving their scene by filtering all scene types before casting, which could miss a real window scene. ([#48317](https://github.com/expo/expo/pull/48317) by [@alanjhughes](https://github.com/alanjhughes))
+- Open the JS inspector on the origin the bundle was loaded from, keeping its scheme and port ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- [iOS] Replace dev-menu swizzling and reflection into React Native internals with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Remove the manual packager socket reconnect now that the bundle configuration resolves the dev server host. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
+
+## 57.0.10 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.9 - 2026-07-23
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.8 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.7 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-25
+
+### 🎉 New features
+
+- Add a `tryToLaunchLastBundle` preference backing the dev launcher auto-launch toggle. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner. ([#46762](https://github.com/expo/expo/pull/46762) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- [Android] Restore the "Open React Native dev menu" entry in the dev menu's Tools section (regressed in [#38759](https://github.com/expo/expo/pull/38759)). ([#47047](https://github.com/expo/expo/pull/47047) by [@lindboe](https://github.com/lindboe)) ([#38759](https://github.com/expo/expo/pull/38759), [#47047](https://github.com/expo/expo/pull/47047) by [@lindboe](https://github.com/lindboe))
+- [Android] Re-enable the Fast Refresh toggle in the dev menu's Tools section. ([#47136](https://github.com/expo/expo/pull/47136) by [@lukmccall](https://github.com/lukmccall))
+
+## 56.0.17 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.15 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.14 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.13 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.12 — 2026-05-20
+
+### 🎉 New features
+
+- [iOS] Add `setShowsAtLaunch`/`getShowsAtLaunch` to `DevMenuManager` so preferences can be toggled at runtime and applied immediately. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@gabrieldonadel](https://github.com/gabrieldonadel)) ([#46000](https://github.com/expo/expo/pull/46000) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Fix FAB resizing on label disappearance ([#45869](https://github.com/expo/expo/pull/45869) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.11 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- Fix FAB safe-area bounds ([#45647](https://github.com/expo/expo/pull/45647) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.6 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-08
+
+### 💡 Others
+
+- Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
+
+## 56.0.4 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix support for react-native 0.84 ([#43661](https://github.com/expo/expo/pull/43661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix react-native version resolution in podspec ([#44178](https://github.com/expo/expo/pull/44178) by [@kitten](https://github.com/kitten))
+- [iOS] Fix deadlock in `DevMenuPackagerConnectionHandler.setup`. ([#44405](https://github.com/expo/expo/pull/44405) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix dev menu auto-launch not triggering. The `updateAutoLaunchObserver()` now called from `setAppContext`. ([#45167](https://github.com/expo/expo/pull/45167) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Reconnect the packager to the bundle URL host so expo-cli commands reach the app on physical devices. ([#45195](https://github.com/expo/expo/pull/45195) by [@alanjhughes](https://github.com/alanjhughes))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.27 - 2026-05-04
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.26 - 2026-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.25 - 2026-05-01
+
+### 🎉 New features
+
+- [plugin] Add option to disable tools button by default. ([#44251](https://github.com/expo/expo/pull/44251) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.24 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- [iOS] Remove `#Preview` SwiftUI blocks that cause build failures when consuming the package as a dependency. ([#44775](https://github.com/expo/expo/pull/44775) by [@fabriziocucci](https://github.com/fabriziocucci))
+
+## 55.0.23 - 2026-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.22 - 2026-04-10
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.21 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.20 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.19 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.18 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.17 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-03-11
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-03-11
+
+### 🐛 Bug fixes
+
+- [Android] Fix crash in FabState coerceTo ([#43752](https://github.com/expo/expo/pull/43752) by [@kot331107](https://github.com/kot331107))
+
+## 55.0.12 - 2026-03-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-04
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-02-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 💡 Others
+
+- [iOS] Ensures DevMenuWindow is created in the main thread ([#43078](https://github.com/expo/expo/pull/43078) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.6 — 2026-02-16
+
+### 🐛 Bug fixes
+
+- update labels for consistency ([#42825](https://github.com/expo/expo/pull/42825) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- [Android] Fix `null cannot be cast to non-null type expo.modules.devmenu.DevMenuFragment`. ([#42660](https://github.com/expo/expo/pull/42660) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix null current bridge in standalone mode ([#42666](https://github.com/expo/expo/pull/42666) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fix `cmd + m` not opening the dev menu. ([#42701](https://github.com/expo/expo/pull/42701) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Restore dev menu on tvOS. ([#42737](https://github.com/expo/expo/pull/42737) by [@douglowder](https://github.com/douglowder))
+
+## 55.0.3 — 2026-01-27
+
+### 🎉 New features
+
+- [iOS] Add delegate method to control visibility of "Open React Native dev menu" option. ([#42541](https://github.com/expo/expo/pull/42541) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Add action button. ([#42587](https://github.com/expo/expo/pull/42587) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix tvOS compilation errors in Source Map Explorer by excluding tvOS from unavailable SwiftUI APIs (`navigationBarTitleDisplayMode`, `listStyle(.insetGrouped)`, `Menu`) and adding proper availability checks. Refactored platform-specific modifiers to use `@ViewBuilder` instead of `AnyView` for better type preservation and performance. ([#42574](https://github.com/expo/expo/pull/42574) by [@OtavioStasiak](https://github.com/OtavioStasiak))
+- [Android] Fix dev menu not opening when pressing m key in CLI. ([#42566](https://github.com/expo/expo/pull/42566) by [@lukmccall](https://github.com/lukmccall))
+- [Quest] Fix Floating action button not responding to presses. ([#42563](https://github.com/expo/expo/pull/42563) by [@behenate](https://github.com/behenate))
+
+### 💡 Others
+
+- Make the Action Button always enabled on Quest. ([#42562](https://github.com/expo/expo/pull/42562) by [@behenate](https://github.com/behenate))
+- Moves connection info lower in the menu. ([#42568](https://github.com/expo/expo/pull/42568) and [#42569](https://github.com/expo/expo/pull/42569) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.2 — 2026-01-26
+
+### 🎉 New features
+
+- Add "Source Code Explorer" screen to iOS dev menu ([#42493](https://github.com/expo/expo/pull/42493) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.0 — 2026-01-21
 
@@ -697,12 +1004,12 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Fixed react-native nighlies `0.73.0-nightly-20230515-066f0b76d` build errors on Android. ([#22503](https://github.com/expo/expo/pull/22503) by [@kudo](https://github.com/kudo))
+- Fixed react-native nightlies `0.73.0-nightly-20230515-066f0b76d` build errors on Android. ([#22503](https://github.com/expo/expo/pull/22503) by [@kudo](https://github.com/kudo))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
-- Update onboarding text to be more concise and clear, and fix compat with large text accessibiltiy settings. ([#22712](https://github.com/expo/expo/pull/22712) by [@brentvatne](https://github.com/brentvatne))
+- Update onboarding text to be more concise and clear, and fix compat with large text accessibility settings. ([#22712](https://github.com/expo/expo/pull/22712) by [@brentvatne](https://github.com/brentvatne))
 - Bump `babel-plugin-module-resolver` dev dependency. ([#22871](https://github.com/expo/expo/pull/22871) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.0.0 — 2023-05-08
@@ -817,7 +1124,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Add landscape orienation support. ([#18509](https://github.com/expo/expo/pull/18509)) by [@ajsmth](https://github.com/ajsmth)
+- Add landscape orientation support. ([#18509](https://github.com/expo/expo/pull/18509)) by [@ajsmth](https://github.com/ajsmth)
 
 ### 🐛 Bug fixes
 

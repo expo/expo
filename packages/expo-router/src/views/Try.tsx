@@ -1,9 +1,9 @@
 'use client';
 
-import React, { Component, type ComponentType, type PropsWithChildren } from 'react';
+import { Component, type ComponentType, type PropsWithChildren } from 'react';
 
-import * as SplashScreen from './Splash';
 import { MetroServerError } from '../rsc/router/errors';
+import * as SplashScreen from './Splash';
 
 /** Props passed to a page's `ErrorBoundary` export. */
 export type ErrorBoundaryProps = {

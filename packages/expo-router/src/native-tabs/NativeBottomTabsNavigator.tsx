@@ -1,174 +1,205 @@
 'use client';
 
-import {
-  createNavigatorFactory,
-  NavigationState,
+import React, { use, useCallback, useMemo, useRef } from 'react';
+
+import type {
   ParamListBase,
   TabNavigationState,
   TabRouterOptions,
-  useNavigationBuilder,
-  type EventMapBase,
-} from '@react-navigation/native';
-import React, { use, useCallback, useMemo } from 'react';
-
+} from '../react-navigation/native';
+import { unstable_createStandardRouterNavigator } from '../standard-navigation';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../standard-navigation/appendMissingPlaceholderTabRoutes';
+import type { StandardNavigatorContentProps } from '../standard-navigation/types';
+import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
+import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
+import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
 import type {
   InternalNativeTabsProps,
+  NativeTabNavigationEventMap,
   NativeTabOptions,
   NativeTabsProps,
+  NativeTabsViewProps,
   NativeTabsViewTabItem,
+  OnTabChangeEventPayload,
 } from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
-import { withLayoutContext } from '../layouts/withLayoutContext';
-import { getPathFromState } from '../link/linking';
-import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
 export const NativeTabsContext = React.createContext<boolean>(false);
 
-export function NativeTabsNavigator({
-  children,
-  backBehavior = defaultBackBehavior,
+export interface NativeTabsNavigatorCreateProps {
+  routeNames: string[];
+  preload: (name: string) => void;
+}
+
+function NativeTabsContent({
+  state,
+  routeNames,
+  descriptors,
+  actions,
+  emitter,
+  preload,
+  // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
+  // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
+  // `NativeTabsView` as top-level props.
   labelStyle,
   iconColor,
-  blurEffect,
   backgroundColor,
   badgeBackgroundColor,
+  blurEffect,
   indicatorColor,
   badgeTextColor,
-  shadowColor,
+  rippleColor,
+  disableIndicator,
+  labelVisibilityMode,
   ...rest
-}: InternalNativeTabsProps) {
+}: StandardNavigatorContentProps<
+  NativeTabOptions,
+  NativeTabNavigationEventMap,
+  Omit<InternalNativeTabsProps, 'screenListeners'>
+> &
+  NativeTabsNavigatorCreateProps) {
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
     );
   }
 
-  const processedLabelStyle = convertLabelStylePropToObject(labelStyle);
-  const processedIconColor = convertIconColorPropToObject(iconColor);
-
-  const selectedLabelStyle = processedLabelStyle.selected
-    ? {
-        ...processedLabelStyle.selected,
-        color: processedLabelStyle.selected.color ?? rest.tintColor,
-      }
-    : rest.tintColor
-      ? { color: rest.tintColor }
-      : undefined;
-
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
-    TabNavigationState<ParamListBase>,
-    TabRouterOptions,
-    Record<string, (...args: any) => void>,
-    NativeTabOptions,
-    Record<string, any>
-  >(NativeBottomTabsRouter, {
-    children,
-    backBehavior,
-    screenOptions: {
-      disableTransparentOnScrollEdge: rest.disableTransparentOnScrollEdge,
-      labelStyle: processedLabelStyle.default,
-      selectedLabelStyle,
-      iconColor: processedIconColor.default,
-      selectedIconColor: processedIconColor.selected ?? rest.tintColor,
-      blurEffect,
-      backgroundColor,
-      badgeBackgroundColor,
-      indicatorColor,
-      badgeTextColor,
-      shadowColor,
-    },
-  });
-
   const { routes } = state;
 
+  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+    routes,
+    routeNames,
+    focusedRouteKey: routes[state.index]?.key,
+    descriptors,
+  });
   const visibleTabs = useMemo(
     () =>
-      routes
-        // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
-        // If it is not defined, then it was not specified, and we should hide the tab.
-        .filter((route) => descriptors[route.key].options?.hidden !== true)
-        .map(
-          (route): NativeTabsViewTabItem => ({
-            options: descriptors[route.key].options,
-            routeKey: route.key,
-            name: route.name,
-            contentRenderer: () => descriptors[route.key].render(),
-          })
-        ),
-    [routes, descriptors]
+      visibleRoutes.map(
+        (route): NativeTabsViewTabItem => ({
+          options: descriptors[route.key]!.options,
+          name: route.name,
+          contentRenderer: () => descriptors[route.key]!.render(),
+        })
+      ),
+    [descriptors, visibleRoutes]
   );
-  const visibleFocusedTabIndex = useMemo(
-    () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key),
-    [visibleTabs, routes, state.index]
-  );
-  const visibleTabsKeys = useMemo(
-    () => visibleTabs.map((tab) => tab.routeKey).join(';'),
+  const visibleTabNames = useMemo(
+    () => visibleTabs.map((tab) => tab.name).join(';'),
     [visibleTabs]
   );
 
-  if (visibleFocusedTabIndex < 0) {
-    if (process.env.NODE_ENV !== 'production') {
-      throw new Error(
-        `The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Path: "${getPathFromState(state)}"`
-      );
-    }
-  }
-  const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
+  usePreloadPlaceholderRoutes({
+    routes: visibleRoutes,
+    descriptors,
+    preload,
+    lazyByDefault: false,
+  });
+
+  const provenanceRef = useRef(0);
 
   const onTabChange = useCallback(
-    (tabKey: string) => {
-      const descriptor = descriptors[tabKey];
-      const route = descriptor.route;
-      navigation.emit({
-        type: 'tabPress',
-        target: tabKey,
-        data: {
-          __internalTabsType: 'native',
-        },
-      });
-      navigation.dispatch({
-        type: 'JUMP_TO',
-        target: state.key,
-        payload: {
-          name: route.name,
-        },
-      });
+    ({ selectedKey, provenance, isNativeAction, isPrevented = false }: OnTabChangeEventPayload) => {
+      if (isPrevented) {
+        // The native side blocked selecting a disabled tab. Notify listeners, but
+        // don't advance navigation or acknowledge a (non-existent) state transition,
+        // so the provenance counter is left untouched.
+        emitter.emit({
+          type: 'tabPress',
+          target: routes.find((route) => route.name === selectedKey)?.key ?? selectedKey,
+          data: {
+            __internalTabsType: 'native',
+            isPrevented: true,
+          },
+        });
+        return;
+      }
+
+      // We should always send the last provenance we got from native side
+      provenanceRef.current = provenance;
+
+      if (isNativeAction) {
+        const selectedRoute = routes.find((route) => route.name === selectedKey);
+        if (!selectedRoute) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn(
+              `NativeTabs received a native tab change for an unknown tab (key: "${selectedKey}"), so the change was ignored. ` +
+                `This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.`
+            );
+          }
+          return;
+        }
+        emitter.emit({
+          type: 'tabPress',
+          target: selectedRoute.key,
+          data: {
+            __internalTabsType: 'native',
+            isPrevented: false,
+          },
+        });
+        actions.navigate(selectedRoute.name);
+      }
     },
-    [descriptors, navigation, state.key]
+    [routes, actions, emitter]
   );
 
+  // Compile-time guard: everything spread onto `<NativeTabsView>` must be a prop it declares. The
+  // `Record<…, never>` turns any prop the view doesn't accept into a type error here instead of
+  // letting it leak silently through the spread.
+  const nativeTabsViewProps: Omit<
+    NativeTabsViewProps,
+    'focusedIndex' | 'provenance' | 'tabs' | 'onTabChange'
+  > &
+    Record<Exclude<keyof typeof rest, keyof NativeTabsViewProps>, never> = rest;
+
+  if (visibleTabs.length === 0 || focusedIndex < 0) {
+    return null;
+  }
+
   return (
-    <NavigationContent>
-      <NativeTabsContext value>
-        <NativeTabsView
-          {...rest}
-          key={visibleTabsKeys}
-          focusedIndex={focusedIndex}
-          tabs={visibleTabs}
-          onTabChange={onTabChange}
-        />
-      </NativeTabsContext>
-    </NavigationContent>
+    <NativeTabsContext value>
+      <NativeTabsView
+        {...nativeTabsViewProps}
+        key={visibleTabNames}
+        focusedIndex={focusedIndex}
+        // Provenance should only be sent with updates, and updates
+        // on JS side are only triggered by rerender, so passing ref
+        // here is ok.
+        provenance={provenanceRef.current}
+        tabs={visibleTabs}
+        onTabChange={onTabChange}
+      />
+    </NativeTabsContext>
   );
 }
 
-const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
-
-const NativeTabsNavigatorWithContext = withLayoutContext<
+const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
   NativeTabOptions,
-  typeof NativeTabsNavigator,
-  NavigationState,
-  EventMapBase
->(createNativeTabNavigator().Navigator, undefined, true);
+  TabNavigationState<ParamListBase>,
+  NativeTabNavigationEventMap,
+  Omit<InternalNativeTabsProps, 'screenListeners'>,
+  TabRouterOptions,
+  NativeTabsNavigatorCreateProps
+>(NativeTabsContent, NativeBottomTabsRouter, {
+  processDescriptors: appendMissingPlaceholderTabDescriptors,
+  processState: appendMissingPlaceholderTabRoutes,
+  createProps: ({ state, dispatch }) => ({
+    routeNames: state.routeNames,
+    preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
+  }),
+});
 
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
   const triggerChildren = useMemo(
-    () => getAllChildrenOfType(props.children, NativeTabTrigger),
+    () =>
+      getAllChildrenOfType(props.children, NativeTabTrigger).filter((child) => !child.props.hidden),
     [props.children]
   );
   const nonTriggerChildren = useMemo(
@@ -176,11 +207,77 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
     [props.children]
   );
 
+  const {
+    backBehavior = defaultBackBehavior,
+    labelStyle,
+    iconColor,
+    blurEffect,
+    backgroundColor,
+    badgeBackgroundColor,
+    indicatorColor,
+    badgeTextColor,
+    shadowColor,
+    rippleColor,
+    disableIndicator,
+    labelVisibilityMode,
+    tintColor,
+    disableTransparentOnScrollEdge,
+  } = props;
+
+  const screenOptions = useMemo(() => {
+    const processedLabelStyle = convertLabelStylePropToObject(labelStyle);
+    const processedIconColor = convertIconColorPropToObject(iconColor);
+
+    const selectedLabelStyle = processedLabelStyle.selected
+      ? {
+          ...processedLabelStyle.selected,
+          color: processedLabelStyle.selected.color ?? tintColor,
+        }
+      : tintColor
+        ? { color: tintColor }
+        : undefined;
+
+    return {
+      disableTransparentOnScrollEdge,
+      labelStyle: processedLabelStyle.default,
+      selectedLabelStyle,
+      iconColor: processedIconColor.default,
+      selectedIconColor: processedIconColor.selected ?? tintColor,
+      blurEffect,
+      backgroundColor,
+      badgeBackgroundColor,
+      indicatorColor,
+      badgeTextColor,
+      shadowColor,
+      rippleColor,
+      disableIndicator,
+      labelVisibilityMode,
+      tintColor,
+    };
+  }, [
+    labelStyle,
+    iconColor,
+    blurEffect,
+    backgroundColor,
+    badgeBackgroundColor,
+    indicatorColor,
+    badgeTextColor,
+    shadowColor,
+    rippleColor,
+    disableIndicator,
+    labelVisibilityMode,
+    tintColor,
+    disableTransparentOnScrollEdge,
+  ]);
+
   return (
     <NativeTabsNavigatorWithContext
       {...props}
       children={triggerChildren}
       nonTriggerChildren={nonTriggerChildren}
+      screenOptions={screenOptions}
+      // Passed to TabRouter
+      backBehavior={backBehavior}
     />
   );
 }

@@ -34,7 +34,7 @@ for (const outputMode of outputModes) {
       },
     });
 
-    test.beforeEach(async () => {
+    test.beforeAll(async () => {
       console.time('expo start');
       await expoStart.startAsync();
       console.timeEnd('expo start');
@@ -43,7 +43,7 @@ for (const outputMode of outputModes) {
       await expoStart.fetchBundleAsync('/');
       console.timeEnd('Eagerly bundled JS');
     });
-    test.afterEach(async () => {
+    test.afterAll(async () => {
       await expoStart.stopAsync();
     });
 

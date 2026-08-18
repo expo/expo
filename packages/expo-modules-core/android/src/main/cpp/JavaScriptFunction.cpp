@@ -18,14 +18,7 @@ JavaScriptFunction::JavaScriptFunction(
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::Function> jsFunction
 ) : runtimeHolder(std::move(runtime)), jsFunction(std::move(jsFunction)) {
-  runtimeHolder.ensureRuntimeIsValid();
-}
-
-JavaScriptFunction::JavaScriptFunction(
-  WeakRuntimeHolder runtime,
-  std::shared_ptr<jsi::Function> jsFunction
-) : runtimeHolder(std::move(runtime)), jsFunction(std::move(jsFunction)) {
-  runtimeHolder.ensureRuntimeIsValid();
+  assert((!runtimeHolder.expired()) && "JS Runtime was used after deallocation");
 }
 
 std::shared_ptr<jsi::Function> JavaScriptFunction::get() {
@@ -34,37 +27,32 @@ std::shared_ptr<jsi::Function> JavaScriptFunction::get() {
 
 jobject JavaScriptFunction::invoke(
   jni::alias_ref<JavaScriptObject::javaobject> jsThis,
-  jni::alias_ref<jni::JArrayClass<jni::JObject>> args,
+  jni::alias_ref<jni::JArrayClass<jobject>> args,
   jni::alias_ref<ExpectedType::javaobject> expectedReturnType
 ) {
-  auto &rt = runtimeHolder.getJSRuntime();
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
   JNIEnv *env = jni::Environment::current();
-
-  size_t size = args->size();
-  std::vector<jsi::Value> convertedArgs;
-  convertedArgs.reserve(size);
-
-  for (size_t i = 0; i < size; i++) {
-    jni::local_ref<jobject> arg = args->getElement(i);
-    convertedArgs.push_back(convert(env, rt, arg));
-  }
+  std::vector<jsi::Value> convertedArgs = convertArray(env, rawRuntime, args);
 
   // TODO(@lukmccall): add better error handling
   jsi::Value result = jsThis == nullptr ?
     jsFunction->call(
-      rt,
+      rawRuntime,
       (const jsi::Value *) convertedArgs.data(),
-      size
+      convertedArgs.size()
     ) :
     jsFunction->callWithThis(
-      rt,
+      rawRuntime,
       *(jsThis->cthis()->get()),
       (const jsi::Value *) convertedArgs.data(),
-      size
+      convertedArgs.size()
     );
 
   auto converter = AnyType(jni::make_local(expectedReturnType)).converter;
-  auto convertedResult = converter->convert(rt, env, result);
+  auto convertedResult = converter->convert(rawRuntime, env, result);
   return convertedResult;
 }
 

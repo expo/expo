@@ -1,5 +1,5 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 
-import { NotificationSchedulerModule } from './NotificationScheduler.types';
+import type { NotificationSchedulerModule } from './NotificationScheduler.types';
 
 export default requireNativeModule<NotificationSchedulerModule>('ExpoNotificationScheduler');

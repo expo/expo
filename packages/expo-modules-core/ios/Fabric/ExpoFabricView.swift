@@ -1,7 +1,9 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#if RCT_NEW_ARCH_ENABLED
-
+/// - Warning: The ObjC name `ExpoFabricView` and the selector
+///   `makeViewClassForAppContext:moduleName:viewName:className:` are resolved at runtime via
+///   `NSClassFromString` / `NSSelectorFromString` from `ExpoFabricViewObjC.mm`.
+///   Renaming the class or that method will break those call sites silently at runtime.
 @objc(ExpoFabricView)
 open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
@@ -54,7 +56,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    The view creator expected to be called for derived ExpoFabricView, the `viewDefinition` and event dispatchers will be setup from here.
 
    NOTE: We swizzle the initializers, e.g. `ViewManagerAdapter_ExpoImage.new()` to `ImageView.init(appContext:)`
-   and we also need viewDefintion (or moduleName) for the `installEventDispatchers()`.
+   and we also need viewDefinition (or moduleName) for the `installEventDispatchers()`.
    Swizzling ExpoFabricView doesn't give us chance to inject iMethod or iVar of ImageView and pass the moduleName.
    Alternatively, we try to add a dedicated `ExpoFabricView.create()` and passing viewDefinition into the class.
    That's not a perfect implementation but turns out to be the only way to get the viewDefinition (or moduleName).
@@ -78,6 +80,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
 
   // MARK: - ExpoFabricViewInterface
 
+  @MainActor
   public override func updateProps(_ props: [String: Any]) {
     guard let context = appContext, let propsDict = viewManagerPropDict else {
       return
@@ -117,6 +120,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
    Calls lifecycle methods registered by `OnViewDidUpdateProps` definition component.
    */
+  @MainActor
   public override func viewDidUpdateProps() {
     guard let viewDefinition else {
       return
@@ -140,7 +144,10 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    Installs convenient event dispatchers for declared events, so the view can just invoke the block to dispatch the proper event.
    */
   private func installEventDispatchers() {
-    viewDefinition?.eventNames.forEach { eventName in
+    guard let viewDefinition else {
+      return
+    }
+    viewDefinition.eventNames.forEach { eventName in
       installEventDispatcher(forEvent: eventName, onView: self) { [weak self] (body: [String: Any]) in
         if let self = self {
           self.dispatchEvent(eventName, payload: body)
@@ -191,7 +198,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
 
   internal static func inject(appContext: AppContext) {
-    // Keep it weak so we don't leak the app context.
+    // Keep it weak so we don't leak the app context. We use `var` because `let` is only supported in Swift 6.0+
     weak var weakAppContext = appContext
     let appContextBlock: @convention(block) () -> AppContext? = { weakAppContext }
     let appContextBlockImp: IMP = imp_implementationWithBlock(appContextBlock)
@@ -229,5 +236,3 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
   // swiftlint:enable unavailable_function
 }
-
-#endif // RCT_NEW_ARCH_ENABLED

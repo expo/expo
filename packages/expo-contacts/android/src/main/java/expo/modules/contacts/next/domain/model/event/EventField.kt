@@ -6,6 +6,9 @@ import expo.modules.contacts.next.domain.model.ExtractableField
 import expo.modules.contacts.next.domain.model.event.operations.ExistingEvent
 import expo.modules.contacts.next.domain.wrappers.ContactDate
 import expo.modules.contacts.next.domain.wrappers.DataId
+import expo.modules.contacts.next.extensions.getNullableInt
+import expo.modules.contacts.next.extensions.getNullableString
+import expo.modules.contacts.next.extensions.getRequiredString
 
 object EventField : ExtractableField.Data<ExistingEvent> {
   override val mimeType = Event.CONTENT_ITEM_TYPE
@@ -18,23 +21,27 @@ object EventField : ExtractableField.Data<ExistingEvent> {
   )
 
   override fun extract(cursor: Cursor): ExistingEvent = with(cursor) {
-    val dateString = getString(getColumnIndexOrThrow(Event.START_DATE))
+    val dateString = getNullableString(getColumnIndexOrThrow(Event.START_DATE))
 
     return ExistingEvent(
-      dataId = DataId(getString(getColumnIndexOrThrow(DataId.COLUMN_IN_DATA_TABLE))),
+      dataId = DataId(getRequiredString(getColumnIndexOrThrow(DataId.COLUMN_IN_DATA_TABLE))),
       startDate = if (dateString != null) ContactDate(dateString) else null,
       label = extractLabel()
     )
   }
 
   private fun Cursor.extractLabel(): EventLabel =
-    when (getInt(getColumnIndexOrThrow(Event.TYPE))) {
+    when (getNullableInt(Event.TYPE)) {
       Event.TYPE_ANNIVERSARY -> EventLabel.Anniversary
       Event.TYPE_BIRTHDAY -> EventLabel.Birthday
       Event.TYPE_OTHER -> EventLabel.Other
+      null -> {
+        val customLabel = getNullableString(getColumnIndexOrThrow(Event.LABEL))
+        EventLabel.MalformedType(customLabel)
+      }
       else -> {
-        val customLabel = getString(getColumnIndexOrThrow(Event.LABEL))
-        EventLabel.Custom(customLabel)
+        val customLabel = getNullableString(getColumnIndexOrThrow(Event.LABEL))
+        customLabel?.let { EventLabel.Custom(it) } ?: EventLabel.MalformedCustom
       }
     }
 }

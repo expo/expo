@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoFontLoader.web.d.ts","sourceRoot":"","sources":["../src/ExpoFontLoader.web.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,oBAAoB,EAAE,MAAM,kBAAkB,CAAC;AAE7D,OAAO,EAAe,YAAY,EAAE,MAAM,cAAc,CAAC;AAgFzD,QAAA,MAAM,cAAc,EAAE,QAAQ,CAAC,oBAAoB,CAsGlD,CAAC;wBAcyB,OAAO,cAAc;AAAhD,wBAAiD;AAejD,wBAAgB,sBAAsB,CAAC,UAAU,EAAE,MAAM,EAAE,QAAQ,EAAE,YAAY,GAAG,MAAM,CAIzF"}

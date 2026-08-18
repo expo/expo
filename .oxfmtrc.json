@@ -1,0 +1,34 @@
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "singleQuote": true,
+  "bracketSameLine": true,
+  "trailingComma": "es5",
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/build/**",
+    "**/dist/**",
+    "**/vendor/**",
+    "**/vendored/**",
+    "**/__generated__/**",
+    "**/fixtures/**",
+    "**/__fixtures__/**",
+    "**/.expo/**",
+    "**/.next/**",
+    "**/assets/**",
+    "**/android/**",
+    "**/ios/**",
+    "!**/src/**/android/**",
+    "!**/src/**/ios/**",
+    "react-native-lab/**"
+  ],
+  "sortImports": {
+    "groups": [
+      ["builtin", "external"],
+      ["internal", "subpath"],
+      ["parent", "sibling", "index"],
+      "unknown"
+    ],
+    "ignoreCase": false
+  }
+}

@@ -1,5 +1,5 @@
+import type { ConfigPlugin } from '@expo/config-plugins';
 import {
-  ConfigPlugin,
   withAppBuildGradle,
   withAppDelegate,
   withDangerousMod,
@@ -9,7 +9,8 @@ import {
 import { appendContentsInsideDeclarationBlock } from '@expo/config-plugins/build/android/codeMod';
 import fs from 'fs';
 import path from 'path';
-import { ISA, PBXShellScriptBuildPhase } from 'xcparse';
+import type { PBXShellScriptBuildPhase } from 'xcparse';
+import { ISA } from 'xcparse';
 
 import { withXCParseXcodeProject } from '../ios/withXCParseXcodeProject';
 

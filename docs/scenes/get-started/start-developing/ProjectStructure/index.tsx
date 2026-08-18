@@ -22,18 +22,42 @@ export function ProjectStructure() {
       <div className="flex border-b border-default bg-subtle p-3 pl-4">
         <HEADLINE>Files</HEADLINE>
       </div>
-      <div className="grid grid-cols-[250px_minmax(0,_1fr)] max-md-gutters:grid-cols-1">
+      <div className="grid grid-cols-[250px_minmax(0,1fr)] max-md:grid-cols-1">
         <div
           className={mergeClasses(
             'flex flex-col gap-1 border-r border-default p-3',
-            'max-md-gutters:border-b max-md-gutters:border-r-0'
+            'max-md:border-r-0 max-md:border-b'
           )}>
           <Tab
-            title="app"
+            title="src/app"
             onClick={() => {
               setSelected('app');
             }}
             isSelected={selected === 'app'}
+            type="directory"
+          />
+          <Tab
+            title="src/components"
+            onClick={() => {
+              setSelected('components');
+            }}
+            isSelected={selected === 'components'}
+            type="directory"
+          />
+          <Tab
+            title="src/constants"
+            onClick={() => {
+              setSelected('constants');
+            }}
+            isSelected={selected === 'constants'}
+            type="directory"
+          />
+          <Tab
+            title="src/hooks"
+            onClick={() => {
+              setSelected('hooks');
+            }}
+            isSelected={selected === 'hooks'}
             type="directory"
           />
           <Tab
@@ -42,30 +66,6 @@ export function ProjectStructure() {
               setSelected('assets');
             }}
             isSelected={selected === 'assets'}
-            type="directory"
-          />
-          <Tab
-            title="components"
-            onClick={() => {
-              setSelected('components');
-            }}
-            isSelected={selected === 'components'}
-            type="directory"
-          />
-          <Tab
-            title="constants"
-            onClick={() => {
-              setSelected('constants');
-            }}
-            isSelected={selected === 'constants'}
-            type="directory"
-          />
-          <Tab
-            title="hooks"
-            onClick={() => {
-              setSelected('hooks');
-            }}
-            isSelected={selected === 'hooks'}
             type="directory"
           />
           <Tab
@@ -116,6 +116,3 @@ export function ProjectStructure() {
     </div>
   );
 }
-
-// - **tsconfig.json**
-//   - Contains the rules that TypeScript will use to enforce type safety throughout the project.

@@ -1,10 +1,11 @@
-import { ExpoConfig, getConfig, getNameFromConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig, getNameFromConfig } from '@expo/config';
 import fs from 'fs';
 import path from 'path';
 
 import { TEMPLATES } from '../../customize/templates';
 import { appendLinkToHtml, appendScriptsToHtml } from '../../export/html';
-import { env } from '../../utils/env';
+import { getPublicFolderPath } from '../../export/publicFolder';
 
 /**
  * Create a static HTML for SPA styled websites.
@@ -15,10 +16,13 @@ export async function createTemplateHtmlFromExpoConfigAsync(
   {
     scripts,
     cssLinks,
+    extraHead,
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
   }: {
     scripts: string[];
     cssLinks?: string[];
+    /** Pre-rendered HTML to inject before `</head>`. Used for caller-owned head assets like favicons. */
+    extraHead?: string;
     exp?: ExpoConfig;
   }
 ) {
@@ -26,6 +30,7 @@ export async function createTemplateHtmlFromExpoConfigAsync(
     langIsoCode: exp.web?.lang ?? 'en',
     scripts,
     cssLinks,
+    extraHead,
     title: getNameFromConfig(exp).webName ?? 'Expo App',
     description: exp.web?.description,
     themeColor: exp.web?.themeColor,
@@ -34,9 +39,9 @@ export async function createTemplateHtmlFromExpoConfigAsync(
 
 function getFileFromLocalPublicFolder(
   projectRoot: string,
-  { publicFolder, filePath }: { publicFolder: string; filePath: string }
+  { filePath }: { filePath: string }
 ): string | null {
-  const localFilePath = path.resolve(projectRoot, publicFolder, filePath);
+  const localFilePath = path.resolve(getPublicFolderPath(projectRoot), filePath);
   if (!fs.existsSync(localFilePath)) {
     return null;
   }
@@ -46,8 +51,6 @@ function getFileFromLocalPublicFolder(
 /** Attempt to read the `index.html` from the local project before falling back on the template `index.html`. */
 async function getTemplateIndexHtmlAsync(projectRoot: string): Promise<string> {
   let filePath = getFileFromLocalPublicFolder(projectRoot, {
-    // TODO: Maybe use the app.json override.
-    publicFolder: env.EXPO_PUBLIC_FOLDER,
     filePath: 'index.html',
   });
   if (!filePath) {
@@ -62,6 +65,7 @@ export async function createTemplateHtmlAsync(
   {
     scripts,
     cssLinks,
+    extraHead,
     description,
     langIsoCode,
     title,
@@ -69,6 +73,8 @@ export async function createTemplateHtmlAsync(
   }: {
     scripts: string[];
     cssLinks?: string[];
+    /** Pre-rendered HTML to inject before `</head>`. */
+    extraHead?: string;
     description?: string;
     langIsoCode: string;
     title: string;
@@ -109,6 +115,10 @@ export async function createTemplateHtmlAsync(
 
   if (description) {
     contents = addMeta(contents, `name="description" content="${description}"`);
+  }
+
+  if (extraHead) {
+    contents = contents.replace('</head>', `${extraHead}</head>`);
   }
 
   return contents;

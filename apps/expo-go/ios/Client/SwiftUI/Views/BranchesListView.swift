@@ -34,7 +34,7 @@ struct BranchesListView: View {
             }
 
             if viewModel.hasMore && !viewModel.isLoading {
-              Button("Load More") {
+              Button("Load more") {
                 Task {
                   await viewModel.loadMore()
                 }

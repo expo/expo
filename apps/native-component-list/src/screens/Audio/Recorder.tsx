@@ -1,15 +1,10 @@
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import {
-  useAudioRecorder,
-  useAudioRecorderState,
-  AudioModule,
-  RecordingStatus,
-  RecordingOptions,
-  RecordingPresets,
-} from 'expo-audio';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import { useAudioRecorder, useAudioRecorderState, AudioModule, RecordingPresets } from 'expo-audio';
+import type { RecordingDirectory, RecordingOptions, RecordingStatus } from 'expo-audio';
 import React, { useEffect } from 'react';
 import {
   Alert,
+  Platform,
   ScrollView,
   StyleProp,
   StyleSheet,
@@ -20,18 +15,21 @@ import {
   ViewStyle,
 } from 'react-native';
 
-import AudioInputSelector from './AudioInputSelector';
+import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import Colors from '../../constants/Colors';
+import AudioInputSelector from './AudioInputSelector';
 
 type RecorderProps = {
   onDone?: (uri: string) => void;
   style?: StyleProp<ViewStyle>;
 };
 
+const supportsRecordingDirectory = Platform.OS === 'android' || Platform.OS === 'ios';
+
 export default function Recorder({ onDone, style }: RecorderProps) {
   const [state, setState] = React.useState<RecordingStatus>({
-    id: 0,
+    id: 'initial',
     hasError: false,
     error: null,
     isFinished: false,
@@ -40,8 +38,20 @@ export default function Recorder({ onDone, style }: RecorderProps) {
   const [recorderOptions, setRecorderOptions] = React.useState<RecordingOptions>(
     RecordingPresets.HIGH_QUALITY
   );
+  const [recordingDirectory, setRecordingDirectory] = React.useState<RecordingDirectory>('cache');
+  const [lastUri, setLastUri] = React.useState<string | null>(null);
   const [useAtTime, setUseAtTime] = React.useState(false);
   const [useForDuration, setUseForDuration] = React.useState(false);
+  const currentRecorderOptions = React.useMemo<RecordingOptions>(
+    () =>
+      supportsRecordingDirectory
+        ? {
+            ...recorderOptions,
+            directory: recordingDirectory,
+          }
+        : recorderOptions,
+    [recorderOptions, recordingDirectory]
+  );
 
   useEffect(() => {
     (async () => {
@@ -52,12 +62,26 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     })();
   }, []);
 
-  const audioRecorder = useAudioRecorder(recorderOptions, (status) => {
+  const audioRecorder = useAudioRecorder(currentRecorderOptions, (status) => {
+    if (status.mediaServicesDidReset) {
+      console.warn('[Recorder] Media services were reset');
+      Alert.alert(
+        'Recording Interrupted',
+        status.hasError
+          ? 'The system interrupted your recording and recovery failed.'
+          : 'The system interrupted your recording. Tap the mic to start a new recording.',
+        [{ text: 'OK' }]
+      );
+      setState(status);
+      return;
+    }
+
     setState(status);
 
     // Handle automatic recording completion (from forDuration or atTime+forDuration)
-    if (status.isFinished && !status.hasError && status.url && onDone) {
-      onDone(status.url);
+    if (status.isFinished && !status.hasError && status.url) {
+      setLastUri(status.url);
+      onDone?.(status.url);
     }
   });
 
@@ -76,7 +100,7 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       }
 
       audioRecorder.record(Object.keys(options).length > 0 ? options : undefined);
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Error', error.message);
     }
   };
@@ -90,6 +114,30 @@ export default function Recorder({ onDone, style }: RecorderProps) {
     );
   };
 
+  const renderDirectoryOptions = () => {
+    if (!supportsRecordingDirectory) {
+      return null;
+    }
+
+    return (
+      <View style={styles.optionRow}>
+        <BodyText style={styles.optionText}>Directory</BodyText>
+        <View style={styles.directoryButtons}>
+          <Button
+            onPress={() => setRecordingDirectory('cache')}
+            title={`${recordingDirectory === 'cache' ? '✓ ' : ''}Cache`}
+            buttonStyle={styles.directoryButton}
+          />
+          <Button
+            onPress={() => setRecordingDirectory('document')}
+            title={`${recordingDirectory === 'document' ? '✓ ' : ''}Document`}
+            buttonStyle={styles.directoryButton}
+          />
+        </View>
+      </View>
+    );
+  };
+
   const togglePause = () => {
     try {
       if (audioRecorder.isRecording) {
@@ -97,25 +145,35 @@ export default function Recorder({ onDone, style }: RecorderProps) {
       } else {
         audioRecorder.record();
       }
-    } catch (error) {
+    } catch (error: any) {
       Alert.alert('Error', error.message);
     }
   };
 
   const stop = async () => {
-    if (onDone) {
-      await audioRecorder.stop();
-      onDone(audioRecorder.uri!);
+    await audioRecorder.stop();
+    if (audioRecorder.uri) {
+      setLastUri(audioRecorder.uri);
+      onDone?.(audioRecorder.uri);
     }
     setState((state) => ({ ...state, options: undefined, durationMillis: 0 }));
+  };
+
+  const clearError = () => {
+    setState((prev) => ({ ...prev, error: null, hasError: false }));
   };
 
   const maybeRenderErrorOverlay = () => {
     if (state.error) {
       return (
-        <ScrollView style={styles.errorMessage}>
-          <Text style={styles.errorText}>{state.error}</Text>
-        </ScrollView>
+        <View style={styles.errorMessage}>
+          <ScrollView style={styles.errorScroll}>
+            <Text style={styles.errorText}>{state.error}</Text>
+          </ScrollView>
+          <TouchableOpacity style={styles.dismissButton} onPress={clearError}>
+            <Text style={styles.dismissButtonText}>Dismiss</Text>
+          </TouchableOpacity>
+        </View>
       );
     }
     return null;
@@ -176,12 +234,13 @@ export default function Recorder({ onDone, style }: RecorderProps) {
 
       {/* Recording Options */}
       <View style={styles.optionsContainer}>
+        {renderDirectoryOptions()}
         <View style={styles.optionRow}>
-          <Text style={styles.optionText}>Record at Time (3s delay - iOS only)</Text>
+          <BodyText style={styles.optionText}>Record at Time (3s delay - iOS only)</BodyText>
           <Switch value={useAtTime} onValueChange={setUseAtTime} />
         </View>
         <View style={styles.optionRow}>
-          <Text style={styles.optionText}>Record for Duration (5s)</Text>
+          <BodyText style={styles.optionText}>Record for Duration (5s)</BodyText>
           <Switch value={useForDuration} onValueChange={setUseForDuration} />
         </View>
         {(useAtTime || useForDuration) && (
@@ -198,24 +257,43 @@ export default function Recorder({ onDone, style }: RecorderProps) {
         <Button
           onPress={async () => {
             onDone?.('');
-            await audioRecorder.prepareToRecordAsync(recorderOptions);
+            await audioRecorder.prepareToRecordAsync(currentRecorderOptions);
           }}
           disabled={recorderState.canRecord}
           title="Prepare Recording"
           style={[!recorderState.canRecord && { backgroundColor: 'gray' }]}
         />
       </View>
+      {!!lastUri && (
+        <View style={styles.uriContainer}>
+          <BodyText style={styles.uriLabel}>URI</BodyText>
+          <BodyText selectable style={styles.uriText}>
+            {lastUri}
+          </BodyText>
+        </View>
+      )}
       <View style={styles.centerer}>
         {renderRecorderButtons()}
-        <Text style={{ fontWeight: 'bold', marginVertical: 10 }}>
+        <BodyText style={{ fontWeight: 'bold', marginVertical: 10 }}>
           {_formatTime(recorderState.durationMillis / 1000)}
-        </Text>
+        </BodyText>
+        <BodyText>File size: {_formatFileSize(recorderState.fileSize)}</BodyText>
       </View>
-      <AudioInputSelector recorder={audioRecorder} />
+      <AudioInputSelector recorder={audioRecorder} canRecord={recorderState.canRecord} />
       {maybeRenderErrorOverlay()}
     </View>
   );
 }
+
+const _formatFileSize = (bytes: number) => {
+  if (bytes < 1000) {
+    return `${bytes} B`;
+  }
+  if (bytes < 1000 * 1000) {
+    return `${(bytes / 1000).toFixed(1)} kB`;
+  }
+  return `${(bytes / (1000 * 1000)).toFixed(2)} MB`;
+};
 
 const _formatTime = (duration: number) => {
   const paddedSecs = _leftPad(`${Math.floor(duration % 60)}`, '0', 2);
@@ -254,6 +332,13 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
   },
+  directoryButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  directoryButton: {
+    minWidth: 88,
+  },
   optionsStatus: {
     fontSize: 14,
     color: Colors.tintColor,
@@ -266,19 +351,49 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 5,
   },
+  uriContainer: {
+    marginHorizontal: 20,
+    marginVertical: 8,
+  },
+  uriLabel: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  uriText: {
+    fontSize: 12,
+  },
   icon: {
     padding: 8,
     fontSize: 24,
     color: Colors.tintColor,
   },
   errorMessage: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: Colors.errorBackground,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorScroll: {
+    maxHeight: '60%',
   },
   errorText: {
     margin: 8,
     fontWeight: 'bold',
     color: Colors.errorText,
+    textAlign: 'center',
+  },
+  dismissButton: {
+    marginTop: 20,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    backgroundColor: 'white',
+    borderRadius: 8,
+  },
+  dismissButtonText: {
+    color: Colors.errorText,
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   bigRoundButton: {
     width: 100,

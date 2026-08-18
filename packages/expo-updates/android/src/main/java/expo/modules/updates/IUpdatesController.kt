@@ -1,6 +1,7 @@
 package expo.modules.updates
 
 import android.os.Bundle
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.updates.db.entity.AssetEntity
@@ -11,6 +12,7 @@ import expo.modules.updates.manifest.Update
 import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.statemachine.UpdatesStateContext
 import java.io.File
+import java.lang.ref.WeakReference
 import java.util.Date
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -34,6 +36,11 @@ interface IUpdatesController {
    * this.
    */
   val bundleAssetName: String?
+
+  /**
+   * The current [ReactHost], populated automatically by `ReactNativeHostHandler.onDidCreateReactHost`.
+   */
+  var reactHost: WeakReference<ReactHost>
 
   val reloadScreenManager: ReloadScreenManager?
 

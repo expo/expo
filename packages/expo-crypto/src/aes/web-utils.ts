@@ -1,4 +1,4 @@
-import { BinaryInput } from './aes.types';
+import type { BinaryInput } from './aes.types';
 
 export function hexToUintArray(hexString: string): Uint8Array {
   const byteLength = hexString.length / 2;
@@ -11,8 +11,8 @@ export function hexToUintArray(hexString: string): Uint8Array {
 
 export function bytesToHex(bytes: Uint8Array): string {
   const hex = [];
-  for (let i = 0; i < bytes.length; i++) {
-    const current = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+  for (const byte of bytes) {
+    const current = byte < 0 ? byte + 256 : byte;
     hex.push((current >>> 4).toString(16));
     hex.push((current & 0xf).toString(16));
   }
@@ -30,8 +30,8 @@ export function base64ToUintArray(base64String: string): Uint8Array {
 }
 export function uint8ArrayToBase64(uint8Array: Uint8Array) {
   let binaryString = '';
-  for (let i = 0; i < uint8Array.length; i++) {
-    binaryString += String.fromCharCode(uint8Array[i]);
+  for (const byte of uint8Array) {
+    binaryString += String.fromCharCode(byte);
   }
 
   return btoa(binaryString);

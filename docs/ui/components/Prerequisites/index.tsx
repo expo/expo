@@ -3,7 +3,16 @@ import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon
 import { ListIcon } from '@expo/styleguide-icons/outline/ListIcon';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/compat/router';
-import { type ComponentType, type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import {
+  Children,
+  isValidElement,
+  type ComponentType,
+  type PropsWithChildren,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { useIntl } from 'react-intl';
 
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink';
@@ -11,10 +20,6 @@ import { PermalinkIcon } from '~/ui/components/Permalink';
 import { Requirement } from './Requirement';
 
 type PrerequisitesProps = PropsWithChildren<{
-  /**
-   * The number of requirements for the prerequisites.
-   */
-  numberOfRequirements: number;
   /**
    * If the prerequisites should be rendered "open" by default.
    */
@@ -24,13 +29,17 @@ type PrerequisitesProps = PropsWithChildren<{
 
 const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
   ({
-    numberOfRequirements = 1,
     children,
     className,
     headingManager,
     open = false,
   }: PrerequisitesProps & HeadingManagerProps) => {
+    const requirementChildren = Children.toArray(children).filter(
+      child => isValidElement(child) && child.type === Requirement
+    );
+    const numberOfRequirements = requirementChildren.length;
     const router = useRouter();
+    const intl = useIntl();
     const [isOpen, setIsOpen] = useState(open);
     const detailsRef = useRef<HTMLDetailsElement>(null);
     const anchorId = 'prerequisites';
@@ -58,10 +67,10 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
     }, [open]);
     return (
       <details
-        id={anchorId}
+        id={heading.current.slug}
         className={mergeClasses(
           'mb-3 scroll-m-4 rounded-md border border-default p-0',
-          '[&[open]]:shadow-xs',
+          '[[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
         )}
@@ -69,7 +78,8 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
         open={isOpen}
         onToggle={event => {
           setIsOpen(event.currentTarget.open);
-        }}>
+        }}
+        data-md="prerequisites">
         <summary
           className={mergeClasses(
             'group m-0 flex cursor-pointer items-center justify-between rounded-md p-1.5 py-3 pr-4',
@@ -77,8 +87,9 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             'hocus:bg-subtle'
           )}>
           <div className="flex items-center">
-            <div className="ml-1.5 mr-2 mt-[5px] self-baseline">
+            <div className="mt-1.25 mr-2 ml-1.5 self-baseline">
               <TriangleDownIcon
+                aria-hidden="true"
                 className={mergeClasses(
                   'icon-sm text-icon-default',
                   '-rotate-90 transition-transform duration-200',
@@ -87,13 +98,13 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               />
             </div>
             <div className="flex items-center gap-2">
-              <ListIcon className={mergeClasses('icon-sm text-icon-default')} />
+              <ListIcon aria-hidden="true" className={mergeClasses('icon-sm text-icon-default')} />
               <p
                 className={mergeClasses(
                   'relative inline scroll-m-5',
                   'group-hover:text-secondary group-hover:[&_code]:text-secondary'
                 )}>
-                Prerequisites
+                {intl.formatMessage({ id: 'prerequisitesHeading' })}
               </p>
             </div>
             <LinkBase
@@ -104,12 +115,18 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               }}
               className="ml-1 inline rounded-md p-1 hocus:bg-element"
               aria-label="Permalink">
-              <PermalinkIcon className="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible" />
+              <PermalinkIcon className="invisible inline-flex icon-sm group-hover:visible group-focus-visible:visible" />
             </LinkBase>
           </div>
           <div>
-            <p className="text-xs text-secondary">
-              {numberOfRequirements} requirement{numberOfRequirements === 1 ? '' : 's'}
+            <p className="text-sm text-secondary" data-md="skip">
+              {numberOfRequirements}{' '}
+              {intl.formatMessage({
+                id:
+                  numberOfRequirements === 1
+                    ? 'prerequisitesRequirementSingular'
+                    : 'prerequisitesRequirementPlural',
+              })}
             </p>
           </div>
         </summary>
@@ -120,7 +137,20 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             height: isOpen ? 'auto' : 0,
           }}
           className="overflow-hidden">
-          <div>{children}</div>
+          <div>
+            {requirementChildren.map((child, index) => (
+              <div
+                key={index}
+                className={mergeClasses('flex items-baseline gap-1.5 border-t border-default p-5')}>
+                {numberOfRequirements > 1 && (
+                  <p className="mb-2 text-right font-medium" data-md="skip">
+                    {index + 1}.
+                  </p>
+                )}
+                {child}
+              </div>
+            ))}
+          </div>
         </motion.div>
       </details>
     );

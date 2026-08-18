@@ -1,10 +1,7 @@
 import { getConfig } from '@expo/config';
-import * as PackageManager from '@expo/package-manager';
+import type * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
-import resolveFrom from 'resolve-from';
 
-import { fixPackagesAsync } from './fixPackages';
-import { Options } from './resolveOptions';
 import * as Log from '../log';
 import {
   getVersionedDependenciesAsync,
@@ -14,8 +11,9 @@ import { isInteractive } from '../utils/interactive';
 import { learnMore } from '../utils/link';
 import { confirmAsync } from '../utils/prompts';
 import { joinWithCommasAnd } from '../utils/strings';
-
-const debug = require('debug')('expo:install:check') as typeof console.log;
+import { debugEvent } from './events';
+import { fixPackagesAsync } from './fixPackages';
+import type { Options } from './resolveOptions';
 
 /**
  * Handles `expo install --fix|check'.
@@ -67,30 +65,6 @@ export async function checkPackagesAsync(
 
   const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
 
-  /*
-   * Expo Router projects will do this additional check
-   * Note: The e2e tests use nexpo which will always resolve 'expo-router/doctor.js'
-   *       For that reason, you cannot use nexpo to test for the sub-dependency check,
-   *       and you cannot replace this guard with a try/catch around the import('expo-router')
-   */
-  if (pkg.dependencies?.['expo-router']) {
-    // TODO(@kitten): This should be removed. None of the checks apply anymore
-    try {
-      const { doctor: routerDoctor } = await import('expo-router/doctor.js');
-      dependencies.push(
-        ...routerDoctor(pkg, resolveFrom.silent(projectRoot, '@react-navigation/native'), {
-          bold: chalk.bold,
-          learnMore,
-        })
-      );
-    } catch (error) {
-      if (!json) {
-        Log.log(`Skipped checking expo-router dependencies: expo-router/doctor.js not found.`);
-      }
-      debug('expo-router/doctor error:', error);
-    }
-  }
-
   if (!dependencies.length) {
     if (json) {
       console.log(JSON.stringify({ dependencies: [], upToDate: true }));
@@ -115,7 +89,7 @@ export async function checkPackagesAsync(
     (isInteractive() && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
 
   if (value) {
-    debug('Installing fixed dependencies:', dependencies);
+    debugEvent('fixing_dependencies', { packages: dependencies.map((d) => d.packageName) });
     // Install the corrected dependencies.
     return fixPackagesAsync(projectRoot, {
       packageManager,

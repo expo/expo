@@ -1,16 +1,13 @@
 {
   "extends": "expo-module-scripts/tsconfig.node",
   "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "noEmit": true,
     "allowJs": true,
-    "outDir": "build",
-    "resolveJsonModule": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "moduleResolution": "Node16",
+    "rootDir": "./src",
     "declaration": false,
-    "composite": false,
+    // The preset's setup files reach into web-targeting dependency source (e.g. expo-modules-core),
+    // so the DOM lib is required alongside the node defaults.
+    "lib": ["es2023", "dom"]
   }
 }

@@ -6,11 +6,13 @@ import Foundation
 class DataService: ObservableObject {
   @Published var projects: [ExpoProject] = []
   @Published var snacks: [Snack] = []
+  @Published var totalProjectCount: Int = 0
   @Published var isLoadingData = false
   @Published var dataError: APIError?
 
   private let pollingInterval: TimeInterval = 10.0
   private var pollingTask: Task<Void, Never>?
+  private var hasCompletedInitialFetch = false
 
   func startPolling(accountName: String) {
     stopPolling()
@@ -30,9 +32,15 @@ class DataService: ObservableObject {
   }
 
   func fetchProjectsAndData(accountName: String) async {
-    isLoadingData = true
+    if !hasCompletedInitialFetch {
+      isLoadingData = true
+    }
     dataError = nil
-    defer { isLoadingData = false }
+
+    defer {
+      isLoadingData = false
+      hasCompletedInitialFetch = true
+    }
 
     do {
       let response: HomeScreenDataResponse = try await APIClient.shared.request(
@@ -47,8 +55,9 @@ class DataService: ObservableObject {
         return
       }
 
-      let newProjects = response.data.account.byName.apps.map { $0.toExpoProject() }
-      let newSnacks = response.data.account.byName.snacks
+      let accountData = response.data.account.byName
+      let newProjects = accountData.apps.map { $0.toExpoProject() }
+      let newSnacks = accountData.snacks
 
       if newProjects != self.projects {
         self.projects = newProjects
@@ -56,6 +65,7 @@ class DataService: ObservableObject {
       if newSnacks != self.snacks {
         self.snacks = newSnacks
       }
+      self.totalProjectCount = accountData.appCount
       if self.dataError != nil {
         self.dataError = nil
       }
@@ -72,5 +82,6 @@ class DataService: ObservableObject {
     projects = []
     snacks = []
     dataError = nil
+    hasCompletedInitialFetch = false
   }
 }

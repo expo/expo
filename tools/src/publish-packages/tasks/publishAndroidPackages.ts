@@ -5,14 +5,15 @@ import { glob } from 'glob';
 import inquirer from 'inquirer';
 import path from 'path';
 
+import { ensureBareExpoDependencies } from './ensureBareExpoDependencies';
+import { updateAndroidProjects } from './updateAndroidProjects';
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { ExpoModuleConfig, Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import type { CommandOptions, Parcel, TaskArgs } from '../types';
-import { updateAndroidProjects } from './updateAndroidProjects';
 
-const EXCLUDE = ['expo-module-template-local', 'expo-module-template'];
+const EXCLUDE = ['expo-module-template'];
 
 /**
  * Finds and removes stale build directories (*.cxx and android/build) that can cause build issues.
@@ -85,7 +86,7 @@ async function cleanupStaleBuildDirectories(): Promise<void> {
 export const publishAndroidArtifacts = new Task<TaskArgs>(
   {
     name: 'publishAndroidArtifacts',
-    dependsOn: [updateAndroidProjects],
+    dependsOn: [updateAndroidProjects, ensureBareExpoDependencies],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     // If only templates are being published, skip Android artifacts step entirely
@@ -199,7 +200,7 @@ async function removeExistingPublications(pkg: Package) {
   const stringifyConfig = JSON.stringify(pkg.expoModuleConfig, null, 2);
 
   await fs.writeFile(pkg.expoModulesConfigPath, stringifyConfig, 'utf-8');
-  return spawnAsync('yarn', ['prettier', '--write', pkg.expoModulesConfigPath], {
+  return spawnAsync('pnpm', ['prettier', '--write', pkg.expoModulesConfigPath], {
     cwd: pkg.path,
   });
 }

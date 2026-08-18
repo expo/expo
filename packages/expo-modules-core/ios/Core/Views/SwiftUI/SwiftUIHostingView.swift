@@ -61,16 +61,11 @@ extension ExpoSwiftUI {
     private let hostingController: UIHostingController<AnyView>
 
     /**
-     Tracks whether safe area has been configured (can only be set once on mount)
-     */
-    private var hasSafeAreaBeenConfigured = false
-
-    /**
      Initializes a SwiftUI hosting view with the given SwiftUI view type.
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
       self.contentView = ContentView(props: props)
-      let rootView = AnyView(contentView.environmentObject(shadowNodeProxy))
+      let rootView = AnyView(contentView)
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
@@ -81,17 +76,15 @@ extension ExpoSwiftUI {
 
       super.init(appContext: appContext)
 
-      shadowNodeProxy.setViewSize = { size in
-        #if RCT_NEW_ARCH_ENABLED
-        self.setViewSize(size)
-        #endif
+      shadowNodeProxy.setViewSize = { [weak self] size in
+        self?.setViewSize(size)
       }
 
-      shadowNodeProxy.setStyleSize = { width, height in
-        #if RCT_NEW_ARCH_ENABLED
-        self.setStyleSize(width, height: height)
-        #endif
+      shadowNodeProxy.setStyleSize = { [weak self] width, height in
+        self?.setStyleSize(width, height: height)
       }
+
+      props.shadowNodeProxy = shadowNodeProxy
 
       shadowNodeProxy.objectWillChange.send()
 
@@ -123,11 +116,8 @@ extension ExpoSwiftUI {
         log.error("Updating props for \(ContentView.self) has failed: \(error.localizedDescription)")
       }
 
-      if !hasSafeAreaBeenConfigured,
-         let safeAreaProps = props as? SafeAreaControllable,
-         safeAreaProps.ignoreSafeAreaKeyboardInsets {
-        hostingController.disableSafeArea()
-        hasSafeAreaBeenConfigured = true
+      if let safeAreaProps = props as? SafeAreaControllable {
+        hostingController.setSafeAreaRegions(ignoring: safeAreaProps.ignoreSafeArea)
       }
     }
 
@@ -161,7 +151,6 @@ extension ExpoSwiftUI {
       setupHostingViewConstraints()
     }
 
-#if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
      */
@@ -202,7 +191,6 @@ extension ExpoSwiftUI {
         props.objectWillChange.send()
       }
     }
-#endif // RCT_NEW_ARCH_ENABLED
 
     /**
      Setups layout constraints of the hosting controller view to match the layout set by React.
@@ -226,11 +214,20 @@ extension ExpoSwiftUI {
     public override func didMoveToWindow() {
       super.didMoveToWindow()
 
+      #if os(iOS)
+      if let window {
+        // SwiftUI content can open a menu, and UIKit passes the tap that closes it through to
+        // React Native underneath. The gate stops that tap from reaching the view below.
+        SystemMenuTouchGate.install(in: window)
+      }
+      #endif
+
       if window != nil, let parentController = reactViewController() {
         #if !os(macOS)
-        if parentController as? UINavigationController == nil {
+        if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
           // Swift automatically adds the hostingController in the correct place when the parentController
-          // is UINavigationController, since it's children are supposed to be only screens
+          // is UINavigationController, since its children are supposed to be only screens.
+          // Similarly, for UITabBarController we expect its children to be only tabs.
           parentController.addChild(hostingController)
         }
         #else
@@ -263,30 +260,26 @@ extension ExpoSwiftUI {
 }
 
 extension UIHostingController {
-    func disableSafeArea() {
-      if #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) {
-        self.safeAreaRegions.remove(.keyboard)
-      } else {
-        // For older versions
-        // https://gist.github.com/steipete/da72299613dcc91e8d729e48b4bb582c
-        // https://developer.apple.com/forums/thread/658432
-        guard let viewClass = object_getClass(view) else { return }
-
-        let viewSubclassName = String(cString: class_getName(viewClass)).appending("_IgnoresKeyboard")
-        if let viewSubclass = NSClassFromString(viewSubclassName) {
-            object_setClass(view, viewSubclass)
-        } else {
-            guard let viewClassNameUtf8 = (viewSubclassName as NSString).utf8String else { return }
-            guard let viewSubclass = objc_allocateClassPair(viewClass, viewClassNameUtf8, 0) else { return }
-
-            if let method = class_getInstanceMethod(viewClass, NSSelectorFromString("keyboardWillShowWithNotification:")) {
-                let keyboardWillShow: @convention(block) (AnyObject, AnyObject) -> Void = { _, _ in }
-                class_addMethod(viewSubclass, NSSelectorFromString("keyboardWillShowWithNotification:"),
-                                imp_implementationWithBlock(keyboardWillShow), method_getTypeEncoding(method))
-            }
-            objc_registerClassPair(viewSubclass)
-            object_setClass(view, viewSubclass)
-        }
+  /// Applies the `ignoreSafeArea` mode reactively, restoring the default safe area when `nil` so
+  /// clearing the prop re-enables the safe area without an app reload.
+  func setSafeAreaRegions(ignoring mode: ExpoSwiftUI.IgnoreSafeArea?) {
+    // `safeAreaRegions` needs iOS 16.4+; the precompiled xcframework targets 16.0, so no-op below it.
+    guard #available(iOS 16.4, tvOS 16.4, macOS 13.3, *) else {
+      return
+    }
+    var regions: SafeAreaRegions = .all
+    if let mode {
+      switch mode {
+      case .all:
+        regions = []
+      case .container:
+        regions.remove(.container)
+      case .keyboard:
+        regions.remove(.keyboard)
       }
     }
+    if safeAreaRegions != regions {
+      safeAreaRegions = regions
+    }
+  }
 }

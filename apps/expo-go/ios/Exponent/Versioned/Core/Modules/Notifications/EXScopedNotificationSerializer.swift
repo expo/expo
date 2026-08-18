@@ -3,7 +3,7 @@
 import UserNotifications
 import ExpoNotifications
 
-public class EXScopedNotificationSerializer {
+class EXScopedNotificationSerializer {
 
     public static func serializedNotification(_ notification: UNNotification) -> NotificationRecord {
         let scopedSerializedNotification = NotificationRecord(from: notification)

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import klawSync from 'klaw-sync';
+import { assert } from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -7,7 +8,6 @@ import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { pageCollectErrors } from '../page';
-import { assert } from 'node:console';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -16,6 +16,8 @@ const projectRoot = getRouterE2ERoot();
 const baseDir = 'dist-react-compiler';
 
 test.describe(baseDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -26,7 +28,7 @@ test.describe(baseDir, () => {
   test.describe('default', () => {
     const inputDir = 'dist-react-compiler-default';
 
-    test.beforeEach('bundle and serve', async () => {
+    test.beforeAll('bundle and serve', async () => {
       console.time('expo export');
       await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
         env: {
@@ -42,7 +44,7 @@ test.describe(baseDir, () => {
       await expoServe.startAsync([inputDir]);
       console.timeEnd('npx serve');
     });
-    test.afterEach(async () => {
+    test.afterAll(async () => {
       await expoServe.stopAsync();
     });
 
@@ -60,7 +62,7 @@ test.describe(baseDir, () => {
 
       // The useBananas code which otherwise causes the app to crash uses live bindings.
       expect(bundleContent).toMatch(
-        /Object\.defineProperty\(e,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
+        /Object\.defineProperty\(\w+,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
       );
     });
 
@@ -86,7 +88,7 @@ test.describe(baseDir, () => {
   test.describe('without live bindings', () => {
     const inputDir = 'dist-react-compiler-no-live-bindings';
 
-    test.beforeEach('bundle and serve', async () => {
+    test.beforeAll('bundle and serve', async () => {
       console.time('expo export');
       const res = await executeExpoAsync(
         projectRoot,
@@ -109,7 +111,7 @@ test.describe(baseDir, () => {
       await expoServe.startAsync([inputDir]);
       console.timeEnd('npx serve');
     });
-    test.afterEach(async () => {
+    test.afterAll(async () => {
       await expoServe.stopAsync();
     });
 
@@ -127,9 +129,9 @@ test.describe(baseDir, () => {
 
       // The useBananas code which causes the application to crash uses static bindings.
       expect(bundleContent).not.toMatch(
-        /Object\.defineProperty\(e,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
+        /Object\.defineProperty\(\w+,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
       );
-      expect(bundleContent).toContain('e.useBananas=function()');
+      expect(bundleContent).toMatch(/\w+\.useBananas=function\(\)/);
     });
 
     // This test generally ensures no errors are thrown during an export loading.

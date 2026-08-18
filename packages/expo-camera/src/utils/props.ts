@@ -1,6 +1,6 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
-import { CameraNativeProps, CameraType, FlashMode, CameraViewProps } from '../Camera.types';
+import type { CameraNativeProps, CameraType, FlashMode, CameraViewProps } from '../Camera.types';
 import CameraManager from '../ExpoCameraManager';
 
 // Values under keys from this object will be transformed to native options

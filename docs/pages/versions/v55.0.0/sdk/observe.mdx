@@ -1,0 +1,60 @@
+---
+title: Observe
+description: A library that collects app performance metrics and dispatches them to EAS Observe.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-55/packages/expo-observe'
+packageName: 'expo-observe'
+platforms: ['android', 'ios', 'tvos']
+isBeta: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+> **important** **EAS Observe** is in [Open Beta](/more/release-statuses/#beta). The first 10,000 monthly active users are free. For higher usage, contact [sales@expo.dev](mailto:sales@expo.dev).
+
+`expo-observe` is a library that collects performance metrics from your app and dispatches them to [EAS Observe](/eas/observe/introduction/), a performance monitoring service from Expo, or to your preferred OpenTelemetry (OTEL)-compliant backend. It measures real-world startup performance, such as [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render-ttr) and [Time to Interactive (TTI)](/eas/observe/reference/metrics/#time-to-interactive-tti), from apps running in production.
+
+> **warning** `expo-observe` is not available in Expo Go. To use it, create a [development build](/develop/development-builds/introduction/).
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration
+
+In release builds, installing the `expo-observe` library is all that is needed to configure the library to start sending startup metrics (though you will need to follow the usage instructions below to call `AppMetrics.markInteractive` to track TTI). The library will not dispatch events in debug builds, but you can change this and other config options such as sample rate and environment name with the `AppMetrics.configure({})` call. For all available options, see the [EAS Observe configuration guide](/eas/observe/configuration/).
+
+## Usage
+
+On SDK 55, wrap your root layout with `AppMetricsRoot` to measure Time to First Render automatically. Then, call `AppMetrics.markInteractive` when your app is ready for user interaction to record Time to Interactive:
+
+```tsx src/app/_layout.tsx
+import { AppMetrics, AppMetricsRoot } from 'expo-observe';
+import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+
+function RootLayout() {
+  useEffect(() => {
+    // Replace this effect with your own readiness signal: only call
+    // markInteractive() after initialization work behind the splash screen
+    // (such as loading initial data) completes.
+    AppMetrics.markInteractive();
+  }, []);
+
+  return <Stack />;
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
+```
+
+For step-by-step instructions, including a complete splash screen example and how to handle apps with multiple entry screens, see the [EAS Observe Get started guide](/eas/observe/get-started/).
+
+> **info** [User-defined events](/eas/observe/events/) and the [navigation integrations](/eas/observe/integrations/expo-router/) require SDK 56 and later.
+
+## API
+
+```ts
+import { AppMetrics, AppMetricsRoot } from 'expo-observe';
+```
+
+<APISection packageName="expo-observe" apiName="Observe" />

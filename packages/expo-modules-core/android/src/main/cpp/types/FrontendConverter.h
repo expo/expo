@@ -2,16 +2,8 @@
 
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include "CppType.h"
-
-#include <jsi/jsi.h>
-#include <fbjni/fbjni.h>
-
-#if WORKLETS_ENABLED
-
-#include <worklets/SharedItems/Synchronizable.h>
-
-#endif
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -175,6 +167,17 @@ public:
  * Converter from js type array to [expo.modules.kotlin.jni.JavaScriptTypedArray].
  */
 class TypedArrayFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+class ArrayBufferFrontendConverter : public FrontendConverter {
 public:
   jobject convert(
     jsi::Runtime &rt,
@@ -486,20 +489,5 @@ public:
 private:
   std::shared_ptr<FrontendConverter> parameterConverter;
 };
-
-#if WORKLETS_ENABLED
-
-class SynchronizableFrontendConverter : public FrontendConverter {
-public:
-  jobject convert(
-    jsi::Runtime &rt,
-    JNIEnv *env,
-    const jsi::Value &value
-  ) const override;
-
-  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
-};
-
-#endif
 
 } // namespace expo

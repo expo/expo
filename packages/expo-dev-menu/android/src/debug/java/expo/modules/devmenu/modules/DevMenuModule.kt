@@ -11,7 +11,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.weak
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class DevMenuCallback(
   @Field
   val name: String,
@@ -42,6 +44,11 @@ class DevMenuModule : Module() {
       viewModel.onAction(DevMenuAction.Close)
     }
 
+    AsyncFunction("setToolsButtonVisible") { visible: Boolean ->
+      viewModel.menuPreferences.showFab = visible
+      Unit
+    }
+
     AsyncFunction("addDevMenuCallbacks") { callbacks: List<DevMenuCallback> ->
       val reactContext = appContext.reactContext as? ReactContext
         ?: throw Exceptions.ReactContextLost()
@@ -61,6 +68,10 @@ class DevMenuModule : Module() {
           }
         }
       )
+    }
+
+    AsyncFunction("setAvailableAppKeys") { keys: List<String> ->
+      viewModel.updateAvailableAppKeys(keys)
     }
   }
 }

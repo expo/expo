@@ -1,10 +1,11 @@
 import { requireNativeView } from 'expo';
-import { NativeSyntheticEvent } from 'react-native';
+import type { NativeSyntheticEvent } from 'react-native';
 
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
-export type PopoverViewProps = {
+export interface PopoverViewProps extends CommonViewModifierProps {
   children: React.ReactNode;
   /**
    * Whether the popover is presented.
@@ -23,7 +24,7 @@ export type PopoverViewProps = {
    * @default 'none'
    */
   arrowEdge?: 'leading' | 'trailing' | 'top' | 'bottom' | 'none';
-} & CommonViewModifierProps;
+}
 
 type NativePopoverViewProps = Omit<PopoverViewProps, 'onIsPresentedChange'> & {
   onIsPresentedChange?: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
@@ -34,22 +35,12 @@ const PopoverNativeView: React.ComponentType<NativePopoverViewProps> = requireNa
   'PopoverView'
 );
 
-const PopoverViewContent: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'PopoverViewContent'
-);
-
-const PopoverViewPopContent: React.ComponentType<object> = requireNativeView(
-  'ExpoUI',
-  'PopoverViewPopContent'
-);
-
 function PopoverTrigger(props: { children: React.ReactNode }) {
-  return <PopoverViewContent {...props} />;
+  return <Slot name="trigger">{props.children}</Slot>;
 }
 
 function PopoverContent(props: { children: React.ReactNode }) {
-  return <PopoverViewPopContent {...props} />;
+  return <Slot name="popover">{props.children}</Slot>;
 }
 
 Popover.Trigger = PopoverTrigger;

@@ -2,10 +2,10 @@ import { existsSync, readFileSync } from 'fs';
 import { globSync } from 'glob';
 import * as path from 'path';
 
-import * as Entitlements from './Entitlements';
 import { UnexpectedError } from '../utils/errors';
 import { withSortedGlobResult } from '../utils/glob';
 import { addWarningIOS } from '../utils/warnings';
+import * as Entitlements from './Entitlements';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 
@@ -181,7 +181,7 @@ export function getAllXcodeProjectPaths(projectRoot: string): string[] {
   const iosFolder = 'ios';
   const pbxprojPaths = withSortedGlobResult(
     globSync('ios/**/*.xcodeproj', { cwd: projectRoot, ignore: ignoredPaths })
-      // Drop leading `/` from glob results to mimick glob@<9 behavior
+      // Drop leading `/` from glob results to mimic glob@<9 behavior
       .map((filePath) => filePath.replace(/^\//, ''))
       .filter(
         (project) => !/test|example|sample/i.test(project) || path.dirname(project) === iosFolder
@@ -208,7 +208,7 @@ export function getAllXcodeProjectPaths(projectRoot: string): string[] {
  * Get the pbxproj for the given path
  */
 export function getXcodeProjectPath(projectRoot: string): string {
-  const [using, ...extra] = getAllXcodeProjectPaths(projectRoot);
+  const [using = '', ...extra] = getAllXcodeProjectPaths(projectRoot);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -238,7 +238,7 @@ export function getAllPBXProjectPaths(projectRoot: string): string[] {
 }
 
 export function getPBXProjectPath(projectRoot: string): string {
-  const [using, ...extra] = getAllPBXProjectPaths(projectRoot);
+  const [using = '', ...extra] = getAllPBXProjectPaths(projectRoot);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -274,7 +274,7 @@ export function getAllInfoPlistPaths(projectRoot: string): string[] {
 }
 
 export function getInfoPlistPath(projectRoot: string): string {
-  const [using, ...extra] = getAllInfoPlistPaths(projectRoot);
+  const [using = '', ...extra] = getAllInfoPlistPaths(projectRoot);
 
   if (extra.length) {
     warnMultipleFiles({

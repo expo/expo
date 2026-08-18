@@ -6,7 +6,7 @@ class ContactNext: SharedObject {
   private let contactRepository: ContactRepository
   private let imageService: ImageService
   private let imageMapper: ImageMapper
-  private let thumbnailMapper: ImageMapper
+  private let thumbnailMapper: ThumbnailMapper
 
   init(
     id: String,
@@ -21,7 +21,7 @@ class ContactNext: SharedObject {
       filename: "\(id)-\(CNContactImageDataKey).png"
     )
 
-    self.thumbnailMapper = ImageMapper(
+    self.thumbnailMapper = ThumbnailMapper(
       service: imageService,
       filename: "\(id)-\(CNContactThumbnailImageDataKey).png"
     )
@@ -115,7 +115,8 @@ class ContactNext: SharedObject {
       offset: queryOptions?.offset,
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
-      }
+      },
+      unifyResults: queryOptions?.rawContacts != true
     )
     .map { contactFactory.create(id: $0.identifier) }
   }
@@ -135,7 +136,8 @@ class ContactNext: SharedObject {
       offset: queryOptions?.offset,
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
-      }
+      },
+      unifyResults: queryOptions?.rawContacts != true
     )
     .map { try getContactDetailsMapper.map(contact: $0) }
   }

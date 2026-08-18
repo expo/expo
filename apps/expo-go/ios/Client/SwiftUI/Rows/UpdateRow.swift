@@ -5,6 +5,7 @@ import SwiftUI
 struct UpdateRow: View {
   let update: AppUpdate
   let isCompatible: Bool
+  var isLoading: Bool = false
   let onOpen: () -> Void
 
   var body: some View {
@@ -40,7 +41,9 @@ struct UpdateRow: View {
 
         Spacer()
 
-        if isCompatible {
+        if isLoading {
+          ProgressView()
+        } else if isCompatible {
           Image(systemName: "chevron.right")
             .font(.caption)
             .foregroundColor(.secondary)

@@ -1,0 +1,41 @@
+{
+  "pr_url": "https://github.com/expo/expo/pull/48954",
+  "pull_number": 48954,
+  "commit_id": "72023ba5f8f1e982b2d2ef115d4e5931aee77c33",
+  "summary": "_🤖 This is an automated review. Addressing it doesn't guarantee a merge._\n\n## The fix is correct\n\nI verified the mechanism against `walker@1.0.8` source: `filterDir` runs for every directory, including the walk root, receives `(entry, stat)`, and runs **before** `fs.readdir` of that directory. `dir` events fire only **after** the read. Moving `#watchdir` into `filterDir` therefore closes the read-to-watch window exactly as described. Also verified: directory touch events emitted before the read are dropped downstream (`index.ts:829`), so the timing change is invisible to consumers; duplicate reports from read+watch are deduplicated by `#register` and the debounce; and error handling improves (an `fs.watch` throw used to escape the `'dir'` handler as an uncaught exception, now it goes through `#checkedEmitError`).\n\n## What success looks like, and where this lands\n\nFrom #48950 and the review feedback, success is: (S1) a package installed while the dev server runs becomes resolvable without a restart, on every platform that uses `FallbackWatcher` (Linux **and Windows** without watchman); (S2) no timing heuristics in the watcher, and recovery lives in the recrawl layer (kitten's constraint); (S3) the change is inert everywhere else — macOS `NativeWatcher`, watchman, `TreeFS`; (S4) no existing watcher behavior regresses. This PR achieves S2 and S3 by construction, achieves S1 for the deterministic race on Linux (verified live), and leaves two named gaps: S1 on Windows is unverified (see guardrails), and S1 still fails silently when the kernel event queue overflows (yarn+firebase case) until a recrawl/reconciliation layer exists. The issue also explicitly asks for a better error than the misleading `Cannot find native module 'ExpoAsset'` — untouched here, and still what users will see in the overflow case. #48950 should not be closed as fully fixed by this PR alone; follow-ups should be filed for (a) recrawl-on-suspected-loss, (b) the misleading error, (c) `TreeFS` fallback-miss invalidation.\n\n## Guardrails to add (tests + verification)\n\n1. **Windows run before merge (blocking).** No PR CI runs this package's jest suite on Windows: `check-packages-windows` in sdk.yml is schedule/dispatch-only, and `jest-windows` in cli.yml runs only `@expo/cli` E2E. `FallbackWatcher` *is* the Windows watcher and has win32-only branches (missing-filename events, EPERM, the 1 s end delay). Trigger `check-packages-windows` via workflow_dispatch, or run the suite once on a Windows machine, before merging. Standing guardrail: the nightly windows job covers it after merge.\n2. **Deterministic walker-contract test.** The fix depends on an undocumented internal of `walker` (filterDir runs for the root and before readdir). The new race test guards this, but fails as a 10 s timeout. Add a cheap mock-based test that asserts the ordering directly, so a future `walker` bump fails with a clear message.\n3. **Ignored-directory regression test.** `filterDir` now has two responsibilities, and the ignore check must stay ahead of the watch callback. Pin it: an ignored directory gets no `fs.watch`, no events, no descent.\n4. **Check in the soak harness.** The 48-install harness (npm/yarn/bun × packages, disk-vs-events diff) is the only verification that measures S1 directly, and it doubles as an inertness check (event sets equal, zero files lost). Add it as a script in the package or a manual/scheduled workflow, and re-run it for any future watcher change.\n5. **One macOS local run.** The suite drives a real `fs.watch`; contributors on macOS run `pnpm test` locally, and no CI covers darwin for this package.\n\n## Blocking items\n\n1. `check-packages` CI is red: `oxfmt --check` fails on the new test file — run `pnpm run format`.\n2. The PR description is stale: it describes the removed re-scan-timer + `TreeFS` design and a test plan that measured deleted code. Replace it before merge.\n3. Windows verification (guardrail 1 above).\n",
+  "verdict": "REQUEST_CHANGES",
+  "comments": [
+    {
+      "path": "packages/@expo/metro-file-map/src/watchers/__tests__/FallbackWatcher.test.ts",
+      "line": 2,
+      "side": "RIGHT",
+      "body": "The `check-packages` CI job fails on this file: `oxfmt --check` reports format issues, so the job exits 1 and blocks merge. The agent ran `pnpm run lint` (oxlint) but not `pnpm run format` (oxfmt). Run `pnpm run format` in `packages/@expo/metro-file-map` and commit the result.",
+      "severity": "design",
+      "line_content": "Copyright (c) 650 Industries, Inc. (Expo)."
+    },
+    {
+      "path": "packages/@expo/metro-file-map/src/watchers/__tests__/FallbackWatcher.test.ts",
+      "line": 33,
+      "side": "RIGHT",
+      "body": "Two guardrail tests worth adding to this suite:\n\n1. **Walker-contract test.** The fix depends on undocumented `walker` internals: `filterDir` runs for the walk root and runs before `readdir`. The race test above guards this, but a `walker` bump that changes the ordering would surface as a 10-second timeout. A deterministic test (stub `fs.readdir`, record call order against `filterDir`) fails fast with a clear message instead.\n2. **Ignored-directory regression test.** `filterDir` now both filters and starts watches, and the ignore check must stay ahead of the watch callback. Pin the behavior: a directory matching `ignored` gets no `fs.watch`, no touch events, and no descent. Nothing asserts this today, and a reorder inside the new `filterDir` callback would silently start watching ignored trees (e.g. `.git`).",
+      "severity": "suggestion",
+      "line_content": "describe('FallbackWatcher', () => {"
+    },
+    {
+      "path": "packages/@expo/metro-file-map/CHANGELOG.md",
+      "line": 11,
+      "side": "RIGHT",
+      "body": "Every other entry in this file follows the convention `([#PR](pr-link) by [@author](profile-link))`, linking the PR rather than the issue. Suggest: `([#48954](https://github.com/expo/expo/pull/48954) by [@expo-bot](https://github.com/expo-bot))` — keeping the issue link in the sentence is fine.",
+      "severity": "suggestion",
+      "line_content": "Pick up files written into a new directory while `FallbackWatcher`"
+    },
+    {
+      "path": "packages/@expo/metro-file-map/src/watchers/FallbackWatcher.ts",
+      "line": 198,
+      "side": "RIGHT",
+      "body": "This file is vendored from metro/sane, and the same read-to-watch race exists in upstream `metro-file-map`'s NodeWatcher. Consider filing or sending this fix upstream — both to fix it there and so a future re-sync of the vendored file doesn't silently reintroduce the race (the new test would catch that, but only after the fact).",
+      "severity": "suggestion",
+      "line_content": "#watchdirDuringWalk(dir: string): boolean {"
+    }
+  ]
+}

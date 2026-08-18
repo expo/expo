@@ -6,7 +6,7 @@ description: Learn how to speed up development with async bundling in Expo Route
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** Async routes is in alpha.
+> **important** Async routes is in [alpha](/more/release-statuses/#alpha).
 
 <ContentSpotlight file="expo-router/async-routes.mp4" loop={false} />
 
@@ -22,7 +22,7 @@ All Routes are wrapped inside a suspense boundary and are loaded asynchronously.
 
 {/* The [Suspense fallback](https://react.dev/reference/react/Suspense#displaying-a-fallback-while-content-is-loading) or loading state **cannot be customized** at this time. We plan to add support in the future via a **route+loading.js** file. */}
 
-Loading errors are handled in the parent route, via the [`ErrorBoundary`](/router/error-handling/#errorboundary) export.
+Loading errors are handled in the parent route, via the [`ErrorBoundary`](/router/error-handling/#error-handling) export.
 
 Async routes cannot be statically analyzed during development, so all files will be treated as routes even if they don't export a default component. After the component is bundled and loaded, any invalid route will use a fallback warning screen.
 
@@ -78,7 +78,12 @@ You can set platform-specific settings (`default`, `android`, `ios` or `web`) fo
 Then, when you are about to start your project, you can use the `--clear` flag to clear the Metro cache. This will ensure that the routes are loaded asynchronously:
 
 <Terminal
-  cmd={['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear']}
+  cmd={{
+    npm: ['$ npx expo start --clear', '', '# Or when exporting', '$ npx expo export --clear'],
+    yarn: ['$ yarn expo start --clear', '', '# Or when exporting', '$ yarn expo export --clear'],
+    pnpm: ['$ pnpm expo start --clear', '', '# Or when exporting', '$ pnpm expo export --clear'],
+    bun: ['$ bun expo start --clear', '', '# Or when exporting', '$ bun expo export --clear'],
+  }}
 />
 
 ## Static rendering
@@ -93,6 +98,6 @@ All initial routes, defined with `unstable_settings = { initialRouteName: '...' 
 
 Async Routes represents an early preview of how we plan to support [React Server Components](https://react.dev/blog/2023/03/22/react-labs-what-we-have-been-working-on-march-2023#react-server-components) in the future. As such, there are some caveats to be aware of:
 
-- Async Routes do not support native production apps yet.
+- Async routes do not support native production apps yet.
 - In development, the runtime JavaScript is lazily bundled so you may encounter cases where the HTML doesn't match the available JavaScript.
-- The loading state cannot be customized at this time.
+- Custom [`SuspenseFallback`](/router/error-handling/#loading-states-with-suspense-fallback) exports do not work with async routes.

@@ -95,9 +95,34 @@ internal class NonisolatedUnsafeVar<VarType>: @unchecked Sendable {
   }
 }
 
+/**
+ Like ``NonisolatedUnsafeVar``, but holds a weak reference so it can be captured into an isolated
+ closure without extending the referenced object's lifetime. Useful for sending a non-`Sendable`
+ object across an isolation boundary while keeping weak semantics.
+ - TODO: Remove it once the code is refactored to deal better with the concurrency model.
+ */
+internal class NonisolatedUnsafeWeakVar<VarType: AnyObject>: @unchecked Sendable {
+  nonisolated(unsafe) weak var value: VarType?
+
+  init(_ value: VarType?) {
+    self.value = value
+  }
+}
+
 internal func performSynchronouslyOnMainActor<Result: Sendable>(_ closure: @MainActor () throws -> Result) rethrows -> Result {
   if Thread.isMainThread {
     return try MainActor.assumeIsolated(closure)
+  }
+  return try DispatchQueue.main.sync(execute: closure)
+}
+
+/**
+ Like `performSynchronouslyOnMainActor` but without the `Sendable` constraint on the result,
+ for cases where the returned value cannot satisfy `Sendable`.
+ */
+internal func performSynchronouslyOnMainThread<Result>(_ closure: () throws -> Result) rethrows -> Result {
+  if Thread.isMainThread {
+    return try closure()
   }
   return try DispatchQueue.main.sync(execute: closure)
 }
@@ -113,10 +138,23 @@ public struct Utilities {
     return convertToUrl(string: string)
   }
 
+  /**
+   Returns the app's key window. On iOS and tvOS it is resolved from the foregrounded scene, so
+   callers presenting UI don't reach a window in a scene the user isn't looking at.
+   */
+  @MainActor
+  public static func keyWindow() -> UIWindow? {
+#if os(iOS) || os(tvOS)
+    return SceneGeometry.keyWindow()
+#elseif os(macOS)
+    return NSApplication.shared.keyWindow
+#endif
+  }
+
   nonisolated public func currentViewController() -> UIViewController? {
     return MainActor.assumeIsolated {
 #if os(iOS) || os(tvOS)
-      var controller = UIApplication.shared.keyWindow?.rootViewController
+      var controller = Utilities.keyWindow()?.rootViewController
 
       while let presentedController = controller?.presentedViewController, !presentedController.isBeingDismissed {
         controller = presentedController
@@ -124,7 +162,7 @@ public struct Utilities {
       return controller
 #elseif os(macOS)
       // Even though the function's return type is `UIViewController`, react-native-macos will alias `NSViewController` to `UIViewController`.
-      return NSApplication.shared.keyWindow?.contentViewController
+      return Utilities.keyWindow()?.contentViewController
 #endif
     }
   }

@@ -1,7 +1,8 @@
-import { NativeStackView as RNNativeStackView } from '@react-navigation/native-stack';
-import { ComponentProps, use, useMemo } from 'react';
+import type { ComponentProps } from 'react';
+import { use, useMemo } from 'react';
 
 import { RootModalContext, RootModalProvider } from '../../layouts/RootModal';
+import { NativeStackView as RNNativeStackView } from '../../react-navigation/native-stack';
 
 export function NativeStackView(props: ComponentProps<typeof RNNativeStackView>) {
   return (
@@ -20,9 +21,13 @@ function NativeStackViewInner(props: ComponentProps<typeof RNNativeStackView>) {
       return props.state;
     }
 
+    const activeRoutes = props.state.routes.slice(0, props.state.index + 1);
+    const preloadedRoutes = props.state.routes.slice(props.state.index + 1);
+
     return {
       ...props.state,
-      routes: props.state.routes.concat(rootModals.routes),
+      index: props.state.index + rootModals.routes.length,
+      routes: activeRoutes.concat(rootModals.routes, preloadedRoutes),
     };
   }, [props.state, rootModals.routes]);
 

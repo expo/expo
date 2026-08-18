@@ -5,8 +5,10 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.notifications.notifications.enums.NotificationPriority
 import kotlinx.parcelize.Parcelize
+import expo.modules.kotlin.types.OptimizedRecord
 
 @Parcelize
+@OptimizedRecord
 data class NotificationBehaviorRecord(
   @Field val shouldShowAlert: Boolean = false,
   @Field val shouldShowBanner: Boolean = false,

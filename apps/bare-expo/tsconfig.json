@@ -5,8 +5,10 @@
     "lib": ["dom", "esnext"],
     "paths": {
       "ThemeProvider": ["../common/ThemeProvider"],
+      "benchmark-helper": ["./modules/benchmark-helper"],
       "benchmarking": ["./modules/benchmarking"],
-      "worklets-tester": ["./modules/worklets-tester"]
+      "worklets-tester": ["./modules/worklets-tester"],
+      "test-expo-ui": ["./modules/test-expo-ui"]
     }
   }
 }

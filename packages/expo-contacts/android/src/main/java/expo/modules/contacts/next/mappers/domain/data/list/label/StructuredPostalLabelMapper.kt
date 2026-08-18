@@ -28,6 +28,8 @@ object StructuredPostalLabelMapper {
       is StructuredPostalLabel.Work -> "work"
       is StructuredPostalLabel.Other -> "other"
       is StructuredPostalLabel.Custom -> label.label
+      is StructuredPostalLabel.MalformedType -> label.label
+      is StructuredPostalLabel.MalformedCustom -> null
     }
   }
 }

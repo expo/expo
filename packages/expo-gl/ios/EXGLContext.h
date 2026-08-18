@@ -3,6 +3,7 @@
 #import <OpenGLES/EAGL.h>
 #import <ExpoGL/EXGLNativeApi.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXFileSystemInterface.h>
 
 @class EXGLContext;
 
@@ -13,13 +14,22 @@
 - (void)glContextWillDestroy:(nonnull EXGLContext *)context;
 - (EXGLObjectId)glContextGetDefaultFramebuffer;
 
+/// The scale the drawable was sized with, so snapshots convert pixels to points using the same value.
+- (CGFloat)glContextGetScale;
+
 @end
 
 @interface EXGLContext : NSObject
 
 - (nonnull instancetype)initWithDelegate:(nullable id<EXGLContextDelegate>)delegate
-                       andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry;
-- (void)prepare:(nullable void(^)(BOOL))callback andEnableExperimentalWorkletSupport:(BOOL)enableExperimentalWorkletSupport;
+                              fileSystem:(nullable id<EXFileSystemInterface>)fileSystemManager;
+
+/**
+ Must be called on the JS thread. The runtimePointer is a raw pointer to `facebook::jsi::Runtime`.
+ */
+- (void)prepareWithRuntimePointer:(nonnull void *)runtimePointer
+                         callback:(nullable void(^)(BOOL))callback
+   enableExperimentalWorkletSupport:(BOOL)enableExperimentalWorkletSupport;
 - (BOOL)isInitialized;
 - (nonnull EAGLContext *)createSharedEAGLContext;
 - (void)runAsync:(nonnull void(^)(void))callback;

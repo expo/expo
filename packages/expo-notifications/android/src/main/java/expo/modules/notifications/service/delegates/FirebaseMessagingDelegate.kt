@@ -15,7 +15,6 @@ import expo.modules.notifications.notifications.model.triggers.FirebaseNotificat
 import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.interfaces.FirebaseMessagingDelegate
 import expo.modules.notifications.tokens.interfaces.FirebaseTokenListener
-import java.lang.ref.WeakReference
 import java.util.*
 
 open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseMessagingDelegate {
@@ -62,26 +61,25 @@ open class FirebaseMessagingDelegate(protected val context: Context) : FirebaseM
     }
 
     /**
-     * TODO vonovak this WeakHashMap is an awkward construct - simplify it
-     * A weak map of task consumers -> reference. Used to check quickly whether given task
-     * is already registered and to iterate over when notifying of new notification received
+     * A set of background task consumers, notified when a notification is received
      * while the app is not in the foreground.
      */
-    protected var sBackgroundTaskConsumerReferences = WeakHashMap<BackgroundRemoteNotificationTaskConsumer, WeakReference<BackgroundRemoteNotificationTaskConsumer>>()
+    protected var sBackgroundTaskConsumers = mutableSetOf<BackgroundRemoteNotificationTaskConsumer>()
 
     /**
      * Background tasks are registered in [BackgroundRemoteNotificationTaskConsumer] instances.
      *
-     * @param taskConsumer A task instance to be executed when a notification is received while the * app is not in the foreground
+     * @param taskConsumer A task instance to be executed when a notification is received while the app is not in the foreground
      */
     fun addBackgroundTaskConsumer(taskConsumer: BackgroundRemoteNotificationTaskConsumer) {
-      if (sBackgroundTaskConsumerReferences.containsKey(taskConsumer)) {
-        return
-      }
-      sBackgroundTaskConsumerReferences[taskConsumer] = WeakReference(taskConsumer)
+      sBackgroundTaskConsumers.add(taskConsumer)
     }
 
-    fun getBackgroundTasks() = sBackgroundTaskConsumerReferences.values.mapNotNull { it.get() }
+    fun removeBackgroundTaskConsumer(taskConsumer: BackgroundRemoteNotificationTaskConsumer) {
+      sBackgroundTaskConsumers.remove(taskConsumer)
+    }
+
+    fun getBackgroundTasks(): List<BackgroundRemoteNotificationTaskConsumer> = sBackgroundTaskConsumers.toList()
 
     fun runTaskManagerTasks(applicationContext: Context, bundle: Bundle) {
       // getTaskServiceImpl() has a side effect:

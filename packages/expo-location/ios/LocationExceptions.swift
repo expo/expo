@@ -68,4 +68,19 @@ extension Exceptions {
       "Background location permission is required to do this operation"
     }
   }
+
+  internal final class MotionActivityUnavailable: Exception {
+    override var reason: String {
+      "Motion activity is not available on this device. " +
+        "CMMotionActivityManager requires a physical device with a motion coprocessor (iPhone 5s or later). " +
+        "It is not supported on the iOS Simulator."
+    }
+  }
+
+  internal final class MotionActivityUnauthorized: Exception {
+    override var reason: String {
+      "Motion activity access has been denied. Add NSMotionUsageDescription to Info.plist, " +
+        "then direct the user to Settings > Privacy > Motion and Fitness to re-enable access"
+    }
+  }
 }

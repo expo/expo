@@ -7,7 +7,7 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-[Expo Orbit](https://expo.dev/orbit) for macOS and Windows enables faster to install and launch builds or updates from EAS, local files, or run Snack projects, on simulators and physical devices.
+[Expo Orbit](https://expo.dev/orbit) for macOS, Windows, and Linux enables faster to install and launch builds or updates from EAS, local files, or run Snack projects, on simulators and physical devices.
 
 <ContentSpotlight file="orbit/basic-features.mp4" />
 
@@ -26,7 +26,7 @@ Before Orbit, installing builds or updates from EAS (on Android and iOS physical
 
 ## Installation
 
-> **info** Orbit relies on the Android SDK on both macOS and Windows and `xcrun` for device management only on macOS, which requires setting up both [Android Studio](/workflow/android-studio-emulator/) and [Xcode](/workflow/ios-simulator/).
+> **info** Orbit relies on the Android SDK on macOS, Windows, and Linux, and `xcrun` for device management only on macOS, which requires setting up both [Android Studio](/workflow/android-studio-emulator/) and [Xcode](/workflow/ios-simulator/).
 
 <Tabs>
 
@@ -42,9 +42,13 @@ If you want Orbit to start when you log in automatically, click on the Orbit ico
 
 <Tab label="Windows">
 
-> **important** Orbit for Windows is in beta and is only compatible with x64 and x86 machines. Compatibility for other architectures will be added in the future.
-
 You can download Orbit for Windows directly from the [GitHub releases](https://github.com/expo/orbit/releases).
+
+</Tab>
+
+<Tab label="Linux">
+
+You can download Orbit for Linux directly from the [GitHub releases](https://github.com/expo/orbit/releases). Both `.deb` (Debian and Ubuntu) and `.rpm` (Fedora and RHEL) packages are available.
 
 </Tab>
 

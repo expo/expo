@@ -10,8 +10,11 @@ export const getRemoteVersionsForSdkAsync = async (
 ): Promise<DependencyList> => {
   const { sdkVersions } = await getVersionsAsync();
   if (sdkVersion && sdkVersion in sdkVersions) {
-    const { relatedPackages, facebookReactVersion, facebookReactNativeVersion } =
-      sdkVersions[sdkVersion];
+    const {
+      relatedPackages = '',
+      facebookReactVersion = '',
+      facebookReactNativeVersion = '',
+    } = sdkVersions[sdkVersion] ?? {};
     const reactVersion = facebookReactVersion
       ? {
           react: facebookReactVersion,

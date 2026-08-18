@@ -2,8 +2,14 @@ import { CodedError, registerWebModule } from 'expo-modules-core';
 import FontObserver from 'fontfaceobserver';
 
 import type { ExpoFontLoaderModule } from './ExpoFontLoader';
-import { UnloadFontOptions } from './Font';
-import { FontDisplay, FontResource } from './Font.types';
+import type { UnloadFontOptions } from './Font';
+import { FontDisplay, type FontResource } from './Font.types';
+import {
+  addServerFont,
+  getLoadedServerFonts,
+  getServerResourceDescriptors as readServerResourceDescriptors,
+  isServerFontLoaded,
+} from './serverContext';
 
 function getFontFaceStyleSheet(): CSSStyleSheet | null {
   if (typeof window === 'undefined') {
@@ -47,42 +53,6 @@ function getFontFaceRulesMatchingResource(
   });
 }
 
-const serverContext: Set<{ name: string; css: string; resourceId: string }> = new Set();
-
-function getHeadElements(): {
-  $$type: string;
-  rel?: string;
-  href?: string;
-  as?: string;
-  crossorigin?: string;
-  children?: string;
-  id?: string;
-  type?: string;
-}[] {
-  const entries = [...serverContext.entries()];
-  if (!entries.length) {
-    return [];
-  }
-  const css = entries.map(([{ css }]) => css).join('\n');
-  const links = entries.map(([{ resourceId }]) => resourceId);
-  // TODO: Maybe return nothing if no fonts were loaded.
-  return [
-    {
-      $$type: 'style',
-      children: css,
-      id: ID,
-      type: 'text/css',
-    },
-    ...links.map((resourceId) => ({
-      $$type: 'link',
-      rel: 'preload',
-      href: resourceId,
-      as: 'font',
-      crossorigin: '',
-    })),
-  ];
-}
-
 const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
   async unloadAllAsync(): Promise<void> {
     if (typeof window === 'undefined') return;
@@ -103,15 +73,15 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
   },
 
   getServerResources(): string[] {
-    const elements = getHeadElements();
+    const elements = readServerResourceDescriptors();
 
     return elements
       .map((element) => {
-        switch (element.$$type) {
+        switch (element.type) {
           case 'style':
-            return `<style id="${element.id}">${element.children}</style>`;
+            return `<style id="${element.id}">${element.css}</style>`;
           case 'link':
-            return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
+            return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossOrigin}" />`;
           default:
             return '';
         }
@@ -119,13 +89,13 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
       .filter(Boolean);
   },
 
-  resetServerContext() {
-    serverContext.clear();
+  getServerResourceDescriptors() {
+    return readServerResourceDescriptors();
   },
 
   getLoadedFonts(): string[] {
     if (typeof window === 'undefined') {
-      return [...serverContext.values()].map(({ name }) => name);
+      return getLoadedServerFonts();
     }
     const rules = getFontFaceRules();
     return rules.map(({ rule }) => rule.style.fontFamily);
@@ -133,9 +103,7 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
 
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
     if (typeof window === 'undefined') {
-      return !![...serverContext.values()].find((asset) => {
-        return asset.name === fontFamilyName;
-      });
+      return isServerFontLoaded(fontFamilyName);
     }
     return getFontFaceRulesMatchingResource(fontFamilyName, resource)?.length > 0;
   },
@@ -151,7 +119,7 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
       );
     }
     if (typeof window === 'undefined') {
-      serverContext.add({
+      addServerFont({
         name: fontFamilyName,
         css: _createWebFontTemplate(fontFamilyName, resource),
         // @ts-expect-error: typeof string
@@ -183,7 +151,7 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
     return new FontObserver(fontFamilyName, {
       // @ts-expect-error: TODO(@kitten): Typings indicate that the polyfill may not support this?
       display: resource.display,
-    }).load(null, 6000);
+    }).load(resource.testString ?? null, 12000);
   },
 };
 
@@ -214,10 +182,16 @@ function getStyleElement(): HTMLStyleElement {
   return styleElement;
 }
 
+const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
+
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
-  return `@font-face{font-family:"${fontFamily}";src:url("${resource.uri}");font-display:${
-    resource.display || FontDisplay.AUTO
-  }}`;
+  const display =
+    typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)
+      ? resource.display
+      : FontDisplay.AUTO;
+  return `@font-face{font-family:${JSON.stringify(fontFamily)};src:url(${JSON.stringify(
+    resource.uri
+  )});font-display:${display}}`;
 }
 
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {
@@ -247,7 +221,5 @@ function isFontLoadingListenerSupported(): boolean {
   const isEdge = userAgent.includes('Edge');
   // Internet Explorer
   const isIE = userAgent.includes('Trident');
-  // Firefox
-  const isFirefox = userAgent.includes('Firefox');
-  return !isSafari && !isIOS && !isEdge && !isIE && !isFirefox;
+  return !isSafari && !isIOS && !isEdge && !isIE;
 }

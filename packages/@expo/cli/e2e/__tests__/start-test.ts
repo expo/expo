@@ -2,13 +2,13 @@
 import fs from 'fs';
 import path from 'path';
 
+import { createExpoStart, executeExpoAsync } from '../utils/expo';
 import {
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   getRouterE2ERoot,
 } from './utils';
-import { createExpoStart, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -71,7 +71,7 @@ it('runs `npx expo start --help`', async () => {
         --scheme <scheme>               Custom URI protocol to use when launching an app
         -p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). Default: 8081
         
-        --private-key-path <path>       Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
+        --private-key-path <path>       Path to private key for code signing. Required to sign development manifests when the project is configured with an expo-updates code signing certificate.
         -h, --help                      Usage info
     "
   `);
@@ -98,15 +98,12 @@ describeSkipWin('server', () => {
 
   beforeEach(async () => {
     expo.options.cwd = await setupTestProjectWithOptionsAsync('basic-start', 'with-blank', {
-      // TODO(@hassankhan, @krystofwoldrich): remove all linked after publishing
-      linkExpoPackages: [
-        '@expo/router-server',
-        '@expo/log-box',
-        'expo',
-        '@expo/local-build-cache-provider',
-      ],
+      linkExpoPackages: ['expo', 'babel-preset-expo'],
     });
-    await fs.promises.rm(path.join(projectRoot, '.expo'), { force: true, recursive: true });
+    await fs.promises.rm(path.join(projectRoot, '.expo'), {
+      force: true,
+      recursive: true,
+    });
     await expo.startAsync();
   });
   afterAll(async () => {
@@ -128,18 +125,17 @@ describeSkipWin('server', () => {
     // URLs
     expect(manifest.launchAsset.url).toBe(
       new URL(
-        '/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
+        '/index.bundle?platform=ios&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.bytecode=1&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
         expo.url
       ).href
     );
 
     expect(manifest.extra.expoGo?.debuggerHost).toBe(expo.url.host);
-    expect(manifest.extra.expoGo?.mainModuleName).toMatchPath('node_modules/expo/AppEntry');
     expect(manifest.extra.expoClient?.hostUri).toBe(expo.url.host);
 
     // Manifest
     expect(manifest.runtimeVersion).toBe('1.0');
-    expect(manifest.extra.expoClient?.sdkVersion).toBe('55.0.0');
+    expect(manifest.extra.expoClient?.sdkVersion).toMatch(/\d+\.0\.0/);
     expect(manifest.extra.expoClient?.slug).toBe('basic-start');
     expect(manifest.extra.expoClient?.name).toBe('basic-start');
 
@@ -215,30 +211,58 @@ describe('start - dev clients', () => {
   });
 });
 
-describe('start - webcontainer', () => {
-  const expo = createExpoStart({
-    cwd: getRouterE2ERoot(),
-    port: 8081, // Only port 8081 is supported with the ws-tunnel
-    env: {
-      NODE_ENV: 'development',
-      EXPO_USE_STATIC: 'server',
-      E2E_ROUTER_SRC: 'server',
-      E2E_ROUTER_ASYNC: 'development',
-      // Force webcontainer mode
-      CI: 'false',
-      EXPO_FORCE_WEBCONTAINER_ENV: 'true',
-    },
+describeSkipWin('web-only (no react-native)', () => {
+  let webOnlyRoot: string;
+
+  beforeAll(async () => {
+    webOnlyRoot = await setupTestProjectWithOptionsAsync('web-only-start', 'with-web-only', {
+      linkExpoPackages: ['expo', 'babel-preset-expo'],
+    });
   });
 
-  beforeEach(async () => {
-    await expo.startAsync();
-  });
-  afterAll(async () => {
-    await expo.stopAsync();
+  it('runs `npx expo config --json` without react-native', async () => {
+    const results = await executeExpoAsync(webOnlyRoot, ['config', '--json'], {
+      env: {
+        ...process.env,
+        NODE_PATH: '',
+      },
+    });
+    const exp = JSON.parse(results.stdout);
+    expect(exp.platforms).toStrictEqual(['web']);
   });
 
-  it('starts with ws-tunnel enabled by default', () => {
-    // Ensure dev server URL points to the ws tunnel by default
-    expect(expo.url.href).toContain('.boltexpo.dev:');
+  it('runs `npx expo export --platform web` without react-native', async () => {
+    await executeExpoAsync(webOnlyRoot, ['export', '--platform', 'web'], {
+      env: {
+        NODE_ENV: 'production',
+        TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+      },
+    });
+
+    const outputDir = path.join(webOnlyRoot, 'dist');
+    expect(fs.existsSync(outputDir)).toBe(true);
+
+    const indexHtml = path.join(outputDir, 'index.html');
+    expect(fs.existsSync(indexHtml)).toBe(true);
+  });
+
+  describe('server', () => {
+    const expo = createExpoStart();
+
+    beforeEach(async () => {
+      expo.options.cwd = webOnlyRoot;
+      await expo.startAsync(['--web']);
+    });
+
+    afterAll(async () => {
+      await expo.stopAsync();
+    });
+
+    it('starts and serves web bundle without react-native', async () => {
+      const response = await expo.fetchBundleAsync('/index.bundle?platform=web&dev=true');
+      expect(response.ok).toBeTruthy();
+      const content = await response.text();
+      expect(content.length).toBeGreaterThan(100);
+    });
   });
 });

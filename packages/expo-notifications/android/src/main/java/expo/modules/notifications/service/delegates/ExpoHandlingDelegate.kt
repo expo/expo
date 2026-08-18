@@ -13,7 +13,6 @@ import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationResponse
 import expo.modules.notifications.service.NotificationForwarderActivity
 import expo.modules.notifications.service.NotificationsService
-import expo.modules.notifications.service.delegates.FirebaseMessagingDelegate.Companion.runTaskManagerTasks
 import expo.modules.notifications.service.interfaces.HandlingDelegate
 import java.lang.ref.WeakReference
 import java.util.*
@@ -70,7 +69,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
 
       val backgroundActivityIntent = Intent(context, NotificationForwarderActivity::class.java)
       backgroundActivityIntent.data = broadcastIntent.data
-      backgroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+      backgroundActivityIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK or Intent.FLAG_ACTIVITY_NO_USER_ACTION
       backgroundActivityIntent.putExtras(broadcastIntent)
       val requestCode = broadcastIntent.component?.className?.hashCode() ?: NotificationsService::class.java.hashCode()
       return PendingIntent.getActivity(context, requestCode, backgroundActivityIntent, intentFlags)
@@ -97,8 +96,19 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       return null
     }
 
-    private fun getMainActivityLauncher(context: Context) =
-      context.packageManager.getLaunchIntentForPackage(context.packageName)
+    /**
+     * Returns the intent that launches the app's main activity, or `null` if there is none.
+     *
+     * Some OEM ROMs throw (e.g. `NullPointerException: class name is null`) instead of
+     * returning `null` when no launcher activity resolves for the package. A throwing
+     * lookup is treated as "no launch intent" so callers degrade gracefully.
+     */
+    fun getMainActivityLauncher(context: Context): Intent? =
+      runCatching { context.packageManager.getLaunchIntentForPackage(context.packageName) }
+        .onFailure {
+          Log.w("expo-notifications", "getLaunchIntentForPackage threw while resolving the main activity launcher; treating as no launch intent.", it)
+        }
+        .getOrNull()
   }
 
   fun isAppInForeground() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
@@ -138,14 +148,22 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {
-    if (!isAppInForeground()) {
-      // do not run in foreground for better alignment with iOS
-      // iOS doesn't run background tasks for notification responses at all
-      runTaskManagerTasks(context.applicationContext, NotificationSerializer.toBundle(notificationResponse))
-    }
     if (notificationResponse.action.opensAppToForeground()) {
       openAppToForeground(context, notificationResponse)
     }
+
+    // Run background tasks only for custom notification action buttons (not the default tap).
+    // When the default notification tap launches the app from killed state, calling
+    // runTaskManagerTasks starts a headless React instance that races with the foreground app.
+    // The foreground TaskManager gets misclassified as headless (via isStartedByHeadlessLoader),
+    // then wiped by invalidateAppRecord — breaking all subsequent background task execution.
+    if (!isAppInForeground() && notificationResponse.actionIdentifier != NotificationResponse.DEFAULT_ACTION_IDENTIFIER) {
+      FirebaseMessagingDelegate.runTaskManagerTasks(
+        context.applicationContext,
+        NotificationSerializer.toBundle(notificationResponse)
+      )
+    }
+
     // NOTE the listeners are not set up when the app is killed
     // and is launched in response to tapping a notification button
     // this code is a noop in that case

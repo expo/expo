@@ -9,10 +9,12 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnable
 import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 import expo.modules.ReactActivityDelegateWrapper
+import expo.modules.benchmarkhelper.BenchmarkManager
 import expo.modules.splashscreen.SplashScreenManager
 
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
+    BenchmarkManager.delayFullDrawn(this)
     SplashScreenManager.registerOnActivity(this)
     super.onCreate(null)
   }

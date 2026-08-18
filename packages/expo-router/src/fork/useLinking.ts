@@ -1,5 +1,11 @@
+import isEqual from 'fast-deep-equal';
+import { type RefObject, useEffect, useState, useCallback, useRef, use } from 'react';
+
+import { ServerContext } from '../global-state/serverLocationContext';
+import { useExpoRouterStore } from '../global-state/storeContext';
+import { getRootStackRouteNames } from '../global-state/utils';
 import {
-  LinkingOptions,
+  type LinkingOptions,
   findFocusedRoute,
   getActionFromState as getActionFromStateDefault,
   getPathFromState as getPathFromStateDefault,
@@ -8,15 +14,10 @@ import {
   type NavigationState,
   type ParamListBase,
   useNavigationIndependentTree,
-} from '@react-navigation/native';
-import isEqual from 'fast-deep-equal';
-import * as React from 'react';
-
+} from '../react-navigation/native';
+import { getHistoryLength } from '../utils/stack';
 import { createMemoryHistory } from './createMemoryHistory';
 import { appendBaseUrl } from './getPathFromState';
-import { ServerContext } from '../global-state/serverLocationContext';
-import { useExpoRouterStore } from '../global-state/storeContext';
-import { getRootStackRouteNames } from '../global-state/utils';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
@@ -33,11 +34,11 @@ const findMatchingState = <T extends NavigationState>(
   }
 
   // Tab and drawer will have `history` property, but stack will have history in `routes`
-  const aHistoryLength = a.history ? a.history.length : a.routes.length;
-  const bHistoryLength = b.history ? b.history.length : b.routes.length;
+  const aHistoryLength = getHistoryLength(a);
+  const bHistoryLength = getHistoryLength(b);
 
-  const aRoute = a.routes[a.index];
-  const bRoute = b.routes[b.index];
+  const aRoute = a.routes[a.index]!;
+  const bRoute = b.routes[b.index]!;
 
   const aChildState = aRoute.state as T | undefined;
   const bChildState = bRoute.state as T | undefined;
@@ -76,7 +77,7 @@ const linkingHandlers: symbol[] = [];
 type Options = LinkingOptions<ParamListBase>;
 
 export function useLinking(
-  ref: React.RefObject<NavigationContainerRef<ParamListBase> | null>,
+  ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
   {
     enabled = true,
     config,
@@ -90,7 +91,7 @@ export function useLinking(
 
   const store = useExpoRouterStore();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       return undefined;
     }
@@ -126,18 +127,18 @@ export function useLinking(
     };
   }, [enabled, independent]);
 
-  const [history] = React.useState(createMemoryHistory);
+  const [history] = useState(createMemoryHistory);
 
   // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
   // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
   // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-  const enabledRef = React.useRef(enabled);
-  const configRef = React.useRef(config);
-  const getStateFromPathRef = React.useRef(getStateFromPath);
-  const getPathFromStateRef = React.useRef(getPathFromState);
-  const getActionFromStateRef = React.useRef(getActionFromState);
+  const enabledRef = useRef(enabled);
+  const configRef = useRef(config);
+  const getStateFromPathRef = useRef(getStateFromPath);
+  const getPathFromStateRef = useRef(getPathFromState);
+  const getActionFromStateRef = useRef(getActionFromState);
 
-  React.useEffect(() => {
+  useEffect(() => {
     enabledRef.current = enabled;
     configRef.current = config;
     getStateFromPathRef.current = getStateFromPath;
@@ -145,7 +146,7 @@ export function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const validateRoutesNotExistInRootState = React.useCallback(
+  const validateRoutesNotExistInRootState = useCallback(
     (state: ResultState) => {
       // START FORK
       // Instead of using the rootState, we use INTERNAL_SLOT_NAME, which is the only route in the root navigator in Expo Router
@@ -164,16 +165,18 @@ export function useLinking(
     [ref]
   );
 
-  const server = React.use(ServerContext);
+  const server = use(ServerContext);
 
-  const getInitialState = React.useCallback(() => {
+  const getInitialState = useCallback(() => {
     let value: ResultState | undefined;
 
     if (enabledRef.current) {
       const location =
         server?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
 
-      const path = location ? location.pathname + location.search : undefined;
+      const path = location
+        ? location.pathname + location.search + (location.hash ?? '')
+        : undefined;
 
       if (path) {
         value = getStateFromPathRef.current(path, configRef.current);
@@ -196,11 +199,11 @@ export function useLinking(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const previousIndexRef = React.useRef<number | undefined>(undefined);
-  const previousStateRef = React.useRef<NavigationState | undefined>(undefined);
-  const pendingPopStatePathRef = React.useRef<string | undefined>(undefined);
+  const previousIndexRef = useRef<number | undefined>(undefined);
+  const previousStateRef = useRef<NavigationState | undefined>(undefined);
+  const pendingPopStatePathRef = useRef<string | undefined>(undefined);
 
-  React.useEffect(() => {
+  useEffect(() => {
     previousIndexRef.current = history.index;
 
     return history.listen(() => {
@@ -294,7 +297,7 @@ export function useLinking(
     });
   }, [enabled, history, onUnhandledLinking, ref, validateRoutesNotExistInRootState]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!enabled) {
       return;
     }
@@ -422,10 +425,7 @@ export function useLinking(
         path !== pendingPath
       ) {
         const historyDelta =
-          (focusedState.history ? focusedState.history.length : focusedState.routes.length) -
-          (previousFocusedState.history
-            ? previousFocusedState.history.length
-            : previousFocusedState.routes.length);
+          getHistoryLength(focusedState) - getHistoryLength(previousFocusedState);
 
         if (historyDelta > 0) {
           // If history length is increased, we should pushState

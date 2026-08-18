@@ -32,6 +32,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 import java.util.UUID
+import expo.modules.kotlin.types.OptimizedRecord
 
 const val onContactsChangeEventName = "onContactsChange"
 
@@ -100,6 +101,7 @@ private val DEFAULT_PROJECTION = listOf(
   ContactsContract.Data.STARRED
 )
 
+@OptimizedRecord
 class ContactQuery : Record {
   @Field
   val pageSize = 0
@@ -455,6 +457,8 @@ class ContactsModule : Module() {
     data["birthday"]?.takeIf { it is Map<*, *> }?.let {
       contact.dates.add(
         BirthdayModel().apply {
+          // Legacy API uses raw maps instead of Record; fixed in the new API.
+          @Suppress("UNCHECKED_CAST")
           fromMap(it as Map<String, Any>)
         }
       )
@@ -580,6 +584,8 @@ class ContactsModule : Module() {
       selection += " OR " + ContactsContract.Data.MIMETYPE + "=?"
       selectionArgs.add(CommonDataKinds.Event.CONTENT_ITEM_TYPE)
     }
+    // Legacy API supports IM addresses, deprecated since Android API 35. The new Contacts API removes these fields.
+    @Suppress("DEPRECATION")
     if (keysToFetch.contains("instantMessageAddresses")) {
       projection.add(CommonDataKinds.Im.DATA)
       projection.add(CommonDataKinds.Im.TYPE)

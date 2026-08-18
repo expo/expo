@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 // Rebuild the ExpoLogBox.bundle on a file change in the package.
-// Use `yarn watch` to run this script.
+// Use `pnpm watch` to run this script.
 
 import { watch } from 'fs/promises';
 import { join, resolve, dirname } from 'path';

@@ -1,10 +1,12 @@
-import { Host, TextField } from '@expo/ui/swift-ui';
-import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { View } from 'react-native';
 import { KeyboardProvider, KeyboardStickyView } from 'react-native-keyboard-controller';
 
+import useOptionalBottomTabBarHeight from '../../utilities/useOptionalBottomTabBarHeight';
+
 function HostIgnoreSafeAreaKeyboardScreen() {
-  const bottomOffset = useBottomTabBarHeight();
+  const bottomOffset = useOptionalBottomTabBarHeight();
+  const text = useNativeState('');
   return (
     <View style={{ flex: 1, backgroundColor: 'black' }}>
       <KeyboardStickyView
@@ -17,8 +19,8 @@ function HostIgnoreSafeAreaKeyboardScreen() {
           backgroundColor: 'green',
         }}
         offset={{ opened: bottomOffset }}>
-        <Host matchContents ignoreSafeAreaKeyboardInsets style={{ backgroundColor: 'red' }}>
-          <TextField placeholder="Enter text" multiline />
+        <Host matchContents ignoreSafeArea="keyboard" style={{ backgroundColor: 'red' }}>
+          <TextField text={text} placeholder="Enter text" axis="vertical" />
         </Host>
       </KeyboardStickyView>
     </View>

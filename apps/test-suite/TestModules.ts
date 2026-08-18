@@ -16,7 +16,7 @@ function browserSupportsWebGL() {
   }
 }
 
-function optionalRequire(requirer) {
+function optionalRequire<T>(requirer: () => T): T | undefined {
   try {
     return requirer();
   } catch {
@@ -40,6 +40,18 @@ export function getTestModules() {
   const modules: Module[] = [
     // Sanity
     require('./tests/Basic'),
+    require('./tests/JSDestructuring'),
+    require('./tests/JSAsync'),
+    require('./tests/JSAsyncGenerator'),
+    require('./tests/JSBlockScoping'),
+    require('./tests/JSPrivateMethods'),
+    require('./tests/JSPrivateProperties'),
+    require('./tests/JSReactJSX'),
+    require('./tests/JSNamedGroupsRegexes'),
+    require('./tests/JSUnicodeRegexes'),
+    require('./tests/JSNullishCoalescing'),
+    require('./tests/JSOptionalChaining'),
+    require('./tests/JSHermesMisc'),
   ];
 
   // Expo core modules should run everywhere
@@ -60,16 +72,19 @@ export function getTestModules() {
     require('./tests/CryptoAES'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
-    require('./tests/LinearGradient'),
     require('./tests/HTML'),
-    require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
     require('./tests/Fetch'),
     require('./tests/SQLite')
   );
 
+  if (Platform.OS !== 'android') {
+    modules.push(require('./tests/LinearGradient'));
+  }
+
   if (['android', 'ios'].includes(Platform.OS)) {
+    modules.push(require('./tests/AppMetrics'));
     modules.push(require('./tests/Blob'));
     modules.push(require('./tests/FileSystem'));
     modules.push(require('./tests/CalendarNext'));
@@ -116,7 +131,6 @@ export function getTestModules() {
     optionalRequire(() => require('./tests/Recording')),
     optionalRequire(() => require('./tests/ScreenOrientation')),
 
-    optionalRequire(() => require('./tests/NavigationBar')),
     optionalRequire(() => require('./tests/SystemUI'))
   );
 

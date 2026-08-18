@@ -1,9 +1,5 @@
-import {
-  MailClient,
-  MailComposerOptions,
-  MailComposerResult,
-  MailComposerStatus,
-} from './MailComposer.types';
+import type { MailClient, MailComposerOptions, MailComposerResult } from './MailComposer.types';
+import { MailComposerStatus } from './MailComposer.types';
 
 function removeNullishValues<T extends Record<string, any>>(
   obj: T

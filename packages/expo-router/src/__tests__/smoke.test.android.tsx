@@ -2,7 +2,6 @@ import { act, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { Slot, router, useGlobalSearchParams, usePathname } from '../exports';
-import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
@@ -174,7 +173,11 @@ it('layouts', async () => {
 it('nested layouts', async () => {
   const RootLayout = jest.fn(() => <Slot />);
   const AppLayout = jest.fn(() => <Slot />);
-  const TabsLayout = jest.fn(() => <Tabs />);
+  const TabsLayout = jest.fn(() => (
+    <Tabs>
+      <Tabs.Screen name="home" />
+    </Tabs>
+  ));
   const StackLayout = jest.fn(() => <Stack />);
 
   const Index = jest.fn(() => <Redirect href="/home" />);
@@ -194,8 +197,8 @@ it('nested layouts', async () => {
   expect(await screen.findByText('HomeNested')).toBeOnTheScreen();
 
   expect(AppLayout).toHaveBeenCalledTimes(1);
-  expect(TabsLayout).toHaveBeenCalledTimes(2);
-  expect(StackLayout).toHaveBeenCalledTimes(2);
+  expect(TabsLayout).toHaveBeenCalledTimes(1);
+  expect(StackLayout).toHaveBeenCalledTimes(1);
   expect(Index).toHaveBeenCalledTimes(1);
   expect(Home).toHaveBeenCalledTimes(1);
   expect(HomeNested).toHaveBeenCalledTimes(1);
@@ -204,13 +207,21 @@ it('nested layouts', async () => {
 it('deep linking nested groups', async () => {
   const RootLayout = jest.fn(() => <Slot />);
   const AppLayout = jest.fn(() => <Stack />);
-  const TabsLayout = jest.fn(() => <Tabs />);
+  const TabsLayout = jest.fn(() => (
+    <Tabs>
+      <Tabs.Screen name="home" />
+    </Tabs>
+  ));
   const HomeLayout = jest.fn(() => <Stack />);
 
   const Home = jest.fn(() => <Text testID="Home" />);
 
   const OtherTabsLayout = jest.fn(() => <Stack />);
-  const NestedTabsLayout = jest.fn(() => <Tabs />);
+  const NestedTabsLayout = jest.fn(() => (
+    <Tabs>
+      <Tabs.Screen name="home" />
+    </Tabs>
+  ));
   const OtherTabsIndex = jest.fn(() => <Text testID="OtherTabsHome" />);
 
   renderRouter(

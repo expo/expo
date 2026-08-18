@@ -49,8 +49,11 @@ class MainRuntime(
    * Runs a code block on the JavaScript thread.
    */
   override fun schedule(block: () -> Unit) {
-    // TODO(@lukmccall): start using RuntimeScheduler
-    reactContext?.runOnJSQueueThread(block)
+    if (isJSIContextInitialized()) {
+      jsiContext.scheduleOnJSThread(block)
+    } else {
+      reactContext?.runOnJSQueueThread(block)
+    }
   }
 
   /**
@@ -105,6 +108,12 @@ class MainRuntime(
   }
 
   override fun deallocate() {
-    deallocator.deallocate()
+    try {
+      if (isJSIContextInitialized()) {
+        jsiContext.getJSHeapAccessExecutor()?.invalidate()
+      }
+    } finally {
+      deallocator.deallocate()
+    }
   }
 }

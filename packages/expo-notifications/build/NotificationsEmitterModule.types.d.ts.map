@@ -1,1 +1,0 @@
-{"version":3,"file":"NotificationsEmitterModule.types.d.ts","sourceRoot":"","sources":["../src/NotificationsEmitterModule.types.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,mBAAmB,CAAC;AAEtD,OAAO,EAAE,oBAAoB,EAAE,MAAM,uBAAuB,CAAC;AAE7D,MAAM,WAAW,0BAA2B,SAAQ,iBAAiB;IACnE,2BAA2B,CAAC,EAAE,MAAM,oBAAoB,GAAG,IAAI,CAAC;IAChE,6BAA6B,CAAC,EAAE,MAAM,IAAI,CAAC;CAC5C"}

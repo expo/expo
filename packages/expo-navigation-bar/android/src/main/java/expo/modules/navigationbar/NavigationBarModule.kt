@@ -3,23 +3,99 @@ package expo.modules.navigationbar
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.TypedValue
 import android.view.View
+import android.view.Window
 import android.view.WindowInsets
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import expo.modules.kotlin.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.interfaces.ExtraWindowEventListener
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.navigationbar.singletons.NavigationBar
+import java.util.Collections
+import java.util.WeakHashMap
 
-class NavigationBarModule : Module() {
+// The light scrim color used in the platform API 29+
+// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/java/com/android/internal/policy/DecorView.java;drc=6ef0f022c333385dba2c294e35b8de544455bf19;l=142
+internal val LightNavigationBarColor = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+
+// The dark scrim color used in the platform.
+// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/res/color/system_bar_background_semi_transparent.xml
+// https://cs.android.com/android/platform/superproject/+/master:frameworks/base/core/res/remote_color_resources_res/values/colors.xml;l=67
+internal val DarkNavigationBarColor = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
+
+@Suppress("DEPRECATION")
+internal fun Window.setNavigationBarStyle(
+  hasLightBackground: Boolean,
+  isContrastEnforced: Boolean
+) {
+  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+    return // isAppearanceLightNavigationBars is not available below Android O.
+  }
+
+  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+    navigationBarColor = when {
+      !isContrastEnforced -> Color.TRANSPARENT
+      hasLightBackground -> LightNavigationBarColor
+      else -> DarkNavigationBarColor
+    }
+  } else {
+    isNavigationBarContrastEnforced = isContrastEnforced
+  }
+
+  WindowInsetsControllerCompat(this, decorView).run {
+    isAppearanceLightNavigationBars = hasLightBackground
+  }
+}
+
+internal fun Window.setNavigationBarHidden(hidden: Boolean) {
+  WindowInsetsControllerCompat(this, decorView).apply {
+    systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+    when (hidden) {
+      true -> hide(WindowInsetsCompat.Type.navigationBars())
+      else -> show(WindowInsetsCompat.Type.navigationBars())
+    }
+  }
+}
+
+class NavigationBarModule : Module(), ExtraWindowEventListener {
   private val currentActivity get() = appContext.throwingActivity
+  private val reactContext get() = appContext.reactContext as? ReactApplicationContext
+
+  private val isContrastEnforced: Boolean by lazy {
+    val theme = currentActivity.theme
+    val value = TypedValue()
+
+    val resId = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      R.attr.expoEnforceNavigationBarContrast
+    } else {
+      android.R.attr.enforceNavigationBarContrast
+    }
+
+    if (theme.resolveAttribute(resId, value, true)) {
+      value.data != 0
+    } else {
+      true
+    }
+  }
 
   override fun definition() = ModuleDefinition {
     Name("ExpoNavigationBar")
 
     Events(VISIBILITY_EVENT_NAME)
+
+    OnCreate {
+      reactContext?.addExtraWindowEventListener(this@NavigationBarModule)
+    }
+
+    OnDestroy {
+      reactContext?.removeExtraWindowEventListener(this@NavigationBarModule)
+    }
 
     OnStartObserving {
       val decorView = currentActivity.window.decorView
@@ -47,45 +123,20 @@ class NavigationBarModule : Module() {
       }
     }
 
-    AsyncFunction("setBackgroundColorAsync") { color: Int, promise: Promise ->
-      NavigationBar.setBackgroundColor(currentActivity, color) { promise.resolve(null) }
+    AsyncFunction("setStyle") { style: String ->
+      val hasLightBackground = style == "dark" // dark content -> light background
+
+      currentActivity.window.setNavigationBarStyle(hasLightBackground, isContrastEnforced)
+      extraWindows.forEach { it.setNavigationBarStyle(hasLightBackground, isContrastEnforced) }
+
+      return@AsyncFunction
     }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction<String>("getBackgroundColorAsync") {
-      return@AsyncFunction colorToHex(currentActivity.window.navigationBarColor)
-    }.runOnQueue(Queues.MAIN)
+    AsyncFunction("setHidden") { hidden: Boolean ->
+      currentActivity.window.setNavigationBarHidden(hidden)
+      extraWindows.forEach { it.setNavigationBarHidden(hidden) }
 
-    AsyncFunction("setBorderColorAsync") { color: Int, promise: Promise ->
-      NavigationBar.setBorderColor(currentActivity, color, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction<String>("getBorderColorAsync") {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        return@AsyncFunction colorToHex(currentActivity.window.navigationBarDividerColor)
-      } else {
-        throw NavigationBarException("'getBorderColorAsync' is only available on Android API 28 or higher")
-      }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("setButtonStyleAsync") { buttonStyle: String, promise: Promise ->
-      NavigationBar.setButtonStyle(
-        currentActivity,
-        buttonStyle,
-        {
-          promise.resolve(null)
-        },
-        { m -> promise.reject(NavigationBarException(m)) }
-      )
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction<String>("getButtonStyleAsync") {
-      WindowInsetsControllerCompat(currentActivity.window, currentActivity.window.decorView).let { controller ->
-        return@AsyncFunction if (controller.isAppearanceLightNavigationBars) "dark" else "light"
-      }
-    }.runOnQueue(Queues.MAIN)
-
-    AsyncFunction("setVisibilityAsync") { visibility: String, promise: Promise ->
-      NavigationBar.setVisibility(currentActivity, visibility, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
+      return@AsyncFunction
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction<String>("getVisibilityAsync") {
@@ -97,39 +148,28 @@ class NavigationBarModule : Module() {
       }
       return@AsyncFunction if (isVisible) "visible" else "hidden"
     }.runOnQueue(Queues.MAIN)
+  }
 
-    AsyncFunction("setPositionAsync") { position: String, promise: Promise ->
-      NavigationBar.setPosition(currentActivity, position, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
-    }.runOnQueue(Queues.MAIN)
+  override fun onExtraWindowCreate(window: Window) {
+    extraWindows.add(window)
 
-    AsyncFunction<String>("unstable_getPositionAsync") {
-      return@AsyncFunction if (ViewCompat.getFitsSystemWindows(currentActivity.window.decorView)) "relative" else "absolute"
-    }.runOnQueue(Queues.MAIN)
+    currentActivity.window.let { activityWindow ->
+      val controller = WindowCompat.getInsetsController(activityWindow, activityWindow.decorView)
+      val insets = ViewCompat.getRootWindowInsets(activityWindow.decorView)
+      val hasLightBackground = controller.isAppearanceLightNavigationBars
+      val visible = insets?.isVisible(WindowInsetsCompat.Type.navigationBars()) ?: true
 
-    AsyncFunction("setBehaviorAsync") { behavior: String, promise: Promise ->
-      NavigationBar.setBehavior(currentActivity, behavior, { promise.resolve(null) }, { m -> promise.reject(NavigationBarException(m)) })
-    }.runOnQueue(Queues.MAIN)
+      window.setNavigationBarStyle(hasLightBackground, isContrastEnforced)
+      window.setNavigationBarHidden(!visible)
+    }
+  }
 
-    AsyncFunction<String>("getBehaviorAsync") {
-      WindowInsetsControllerCompat(currentActivity.window, currentActivity.window.decorView).let { controller ->
-        val behavior = when (controller.systemBarsBehavior) {
-          // TODO: Maybe relative / absolute
-          WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE -> "overlay-swipe"
-          WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE -> "inset-swipe"
-          // WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_TOUCH -> "inset-touch"
-          else -> "inset-touch"
-        }
-
-        return@AsyncFunction behavior
-      }
-    }.runOnQueue(Queues.MAIN)
+  override fun onExtraWindowDestroy(window: Window) {
+    extraWindows.remove(window)
   }
 
   companion object {
     private const val VISIBILITY_EVENT_NAME = "ExpoNavigationBar.didChange"
-
-    fun colorToHex(color: Int): String {
-      return String.format("#%02x%02x%02x", Color.red(color), Color.green(color), Color.blue(color))
-    }
+    private val extraWindows = Collections.newSetFromMap<Window>(WeakHashMap())
   }
 }

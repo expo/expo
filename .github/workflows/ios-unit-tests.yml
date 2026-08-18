@@ -5,29 +5,26 @@ on:
   pull_request:
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - apps/expo-go/ios/**
       - packages/**/ios/**
-      - apps/native-tests/ios/**
-      - tools/src/dynamic-macros/**
-      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - packages/**/apple/**
+      - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
-      - secrets/**
-      - fastlane/**
+      - tools/src/AffectedPackages.ts
+      - Gemfile
       - Gemfile.lock
       - '!packages/@expo/cli/**'
   push:
     branches: [main]
     paths:
       - .github/workflows/ios-unit-tests.yml
-      - apps/expo-go/ios/**
       - packages/**/ios/**
-      - tools/src/dynamic-macros/**
-      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - packages/**/apple/**
+      - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
-      - secrets/**
-      - fastlane/**
+      - tools/src/AffectedPackages.ts
+      - Gemfile
       - Gemfile.lock
       - '!packages/@expo/cli/**'
 
@@ -37,19 +34,24 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 75
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          submodules: true
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+          # Enough history for `--affected` to diff against the base branch (same approach
+          # as .github/workflows/sdk.yml).
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }} --depth 100
+        if: github.event_name == 'pull_request'
+      - name: 🔨 Switch to Xcode 26.4.1
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           bundler-cache: true
           ruby-version: 3.2.2
@@ -60,27 +62,53 @@ jobs:
           xcrun simctl erase all
           xcrun simctl shutdown all
           sudo xcodebuild -runFirstLaunch
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: Setup ccache
+        uses: ./.github/actions/setup-ccache
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-          native-tests-pods: 'true'
-      - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: 🥥 Install CocoaPods in `apps/native-tests/ios`
-        if: steps.expo-caches.outputs.bare-expo-pods-hit != 'true'
+          ccache: 'true'
+          bare-expo-pods: 'true'
+          # Unit tests build Debug, while Test Suite e2e builds the same app Release. They'd
+          # otherwise share one cache entry, and whichever saved it first would decide which
+          # React.xcframework the other restored. A Release framework in a Debug build fails
+          # to link, since Debug ExpoModulesCore references debug-only Fabric symbols.
+          bare-expo-pods-configuration: 'Debug'
+      - name: Reset ccache stats
+        run: ccache -z
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      # Always run pod install (the restored Pods cache only speeds it up) — it generates
+      # files outside the Pods dir that the cache doesn't carry, e.g. ReactCodegen sources
+      # in `ios/build/generated` and expo-updates' vendored bspatch.c.
+      - name: 🥥 Install CocoaPods in `apps/bare-expo/ios`
         run: pod install
-        env:
-          RCT_USE_PREBUILT_RNCORE: 1
-          RCT_USE_RN_DEP: 1
-        working-directory: apps/native-tests/ios
+        working-directory: apps/bare-expo/ios
+      # On pull requests, only test packages affected by the PR (and their dependents);
+      # changes to the test infrastructure itself still trigger a full run. Pushes to main
+      # always run everything.
       - name: 🧪 Run native iOS unit tests
-        timeout-minutes: 30
-        env:
-          FASTLANE_SKIP_UPDATE_CHECK: '1'
-          FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 30
-          FASTLANE_XCODEBUILD_SETTINGS_RETRIES: 8
-        run: expotools native-unit-tests --platform ios
+        timeout-minutes: 60
+        run: pnpm expotools native-unit-tests --platform ios ${{ github.event_name == 'pull_request' && format('--affected --since {0}', github.base_ref) || '' }}
+      - name: Show ccache stats
+        if: always()
+        run: ccache -s -v
+      - name: 📤 Upload xcresult
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ios-unit-tests-results
+          path: /tmp/ios-unit-tests-results

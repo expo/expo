@@ -2,11 +2,9 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JSIContext.h"
 
-#include <jsi/jsi.h>
-
-#include <vector>
 #import <unordered_map>
 
 namespace jsi = facebook::jsi;

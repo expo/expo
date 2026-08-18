@@ -80,6 +80,7 @@ import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerModule
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule
+import expo.modules.ui.ExpoUIModule
 import expo.modules.updates.UpdatesPackage
 import expo.modules.video.VideoModule
 import expo.modules.videothumbnails.VideoThumbnailsModule
@@ -156,6 +157,7 @@ object ExperiencePackagePicker : ModulesProvider {
     FontUtilsModule::class.java to null,
     ExpoLinkingModule::class.java to null,
     ExpoRouterModule::class.java to null,
+    ExpoUIModule::class.java to null,
     FileSystemModule::class.java to null,
     FileSystemLegacyModule::class.java to null,
     FontLoaderModule::class.java to null,

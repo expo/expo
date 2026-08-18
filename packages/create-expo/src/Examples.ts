@@ -3,21 +3,18 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import prompts from 'prompts';
-import { Readable, Stream } from 'stream';
-import { extract as tarExtract } from 'tar';
-import { promisify } from 'util';
 
 import {
   getTemplateFilesToRenameAsync,
   renameTemplateAppNameAsync,
   sanitizeTemplateAsync,
 } from './Template';
-import { createEntryResolver } from './createFileTransform';
+import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { env } from './utils/env';
 import { fetch } from './utils/fetch';
+import { extractNpmTarballAsync } from './utils/npm';
 
 const debug = require('debug')('expo:init:template') as typeof console.log;
-const pipeline = promisify(Stream.pipeline);
 
 /**
  * The partial GitHub content type, used to filter out examples.
@@ -115,8 +112,15 @@ export async function promptExamplesAsync() {
   return answer;
 }
 
-/** Download and move the selected example from https://github.com/expo/examples. */
-export async function downloadAndExtractExampleAsync(root: string, name: string) {
+/**
+ * Download and move the selected example from https://github.com/expo/examples.
+ *
+ * If the example ships a `.create-expo.json`, its `renamePatterns`
+ * field overrides the default rename config used by the HelloWorld
+ * find-and-replace pass. The config file is read once and deleted from disk
+ * immediately so it can never leak into the user's project.
+ */
+export async function downloadAndExtractExampleAsync(root: string, name: string): Promise<void> {
   const projectName = path.basename(root);
   const response = await fetch('https://codeload.github.com/expo/examples/tar.gz/master');
   if (!response.ok) {
@@ -131,20 +135,19 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     throw new Error('Failed to fetch the examples code from https://github.com/expo/examples');
   }
 
-  await pipeline(
-    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
-    Readable.fromWeb(response.body),
-    tarExtract(
-      {
-        cwd: root,
-        onentry: createEntryResolver(projectName),
-        strip: 2,
-      },
-      [`examples-master/${name}`]
-    )
-  );
+  const prefix = `examples-master/${name}/`;
+  await extractNpmTarballAsync(response.body, root, {
+    expName: projectName,
+    strip: 2,
+    filter: (entryName) => entryName.startsWith(prefix),
+  });
 
-  const files = await getTemplateFilesToRenameAsync({ cwd: root });
+  const monorepoConfig = await consumeMonorepoConfigAsync(root);
+
+  const files = await getTemplateFilesToRenameAsync({
+    cwd: root,
+    renameConfig: monorepoConfig?.renamePatterns,
+  });
   await renameTemplateAppNameAsync({
     cwd: root,
     files,

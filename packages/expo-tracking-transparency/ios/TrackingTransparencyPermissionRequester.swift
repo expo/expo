@@ -2,13 +2,17 @@
 
 import AppTrackingTransparency
 import ExpoModulesCore
+internal import React
 
 public class TrackingTransparencyPermissionRequester: NSObject, EXPermissionsRequester {
   static public func permissionType() -> String {
     return "appTracking"
   }
 
-  public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
+  public func requestPermissions(
+    resolver resolve: @escaping EXPromiseResolveBlock,
+    rejecter reject: EXPromiseRejectBlock
+  ) {
     ATTrackingManager.requestTrackingAuthorization { [weak self] _ in
       resolve(self?.getPermissions())
     }
@@ -21,10 +25,14 @@ public class TrackingTransparencyPermissionRequester: NSObject, EXPermissionsReq
 
     let trackingUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSUserTrackingUsageDescription")
     if trackingUsageDescription == nil {
-      RCTFatal(RCTErrorWithMessage("""
-      This app is missing 'NSUserTrackingUsageDescription' so tracking transparency will fail. \
-      Ensure that this key exists in app's Info.plist.
-      """))
+      RCTFatal(
+        RCTErrorWithMessage(
+          """
+          This app is missing 'NSUserTrackingUsageDescription' so tracking transparency will fail. \
+          Ensure that this key exists in app's Info.plist.
+          """
+        )
+      )
       systemStatus = .denied
     } else {
       systemStatus = ATTrackingManager.trackingAuthorizationStatus

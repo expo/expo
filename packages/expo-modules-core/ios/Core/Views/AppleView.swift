@@ -4,8 +4,14 @@ import SwiftUI
 
 /**
  An abstract view supports both UIKit and SwiftUI.
+
+ Sendability is `@unchecked` because the dev-mode `SwiftUIVirtualViewDev` is a `UIView`
+ subclass (not `Sendable`). Safety is enforced by main-actor isolation at the producers
+ and consumers of this enum (see `SwiftUIViewDefinition.swift`), so it must never be
+ accessed off the main thread. Future changes that expose `AppleView` to background
+ execution need to reconsider this constraint.
  */
-public enum AppleView: Sendable {
+public enum AppleView: @unchecked Sendable {
   case uikit(UIView)
   case swiftui(any ExpoSwiftUI.View)
 

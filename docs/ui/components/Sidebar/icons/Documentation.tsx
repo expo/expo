@@ -8,6 +8,7 @@ export const DocumentationIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGE
       viewBox="0 0 16 12"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
       className={mergeClasses('icon-md', className)}
       {...rest}>
       <path

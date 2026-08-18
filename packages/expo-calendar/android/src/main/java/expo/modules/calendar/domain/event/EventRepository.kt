@@ -13,7 +13,6 @@ import expo.modules.calendar.exceptions.EventNotSavedException
 import expo.modules.calendar.extensions.DateTimeInput
 import expo.modules.calendar.extensions.getTimeInMillis
 import expo.modules.calendar.domain.event.records.input.RemoveEventInput
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
@@ -27,7 +26,6 @@ class EventRepository(context: Context) {
   private val contentResolver
     get() = contextRef.get()?.contentResolver ?: throw Exceptions.ReactContextLost()
 
-  @OptIn(EitherType::class)
   suspend fun findEvents(startDate: DateTimeInput, endDate: DateTimeInput, calendars: List<String>): List<EventEntity> =
     withContext(Dispatchers.IO) {
       val eStartDate = requireNotNull(startDate.getTimeInMillis())
@@ -38,14 +36,14 @@ class EventRepository(context: Context) {
         ContentUris.appendId(builder, eEndDate)
         builder.build()
       }
-      val selection = buildSelectionForEventsQuery(eStartDate, eEndDate, calendars)
+      val (selection, selectionArgs) = buildSelectionForEventsQuery(eStartDate, eEndDate, calendars)
       val sortOrder = "${CalendarContract.Instances.BEGIN} ASC"
 
       val cursor = contentResolver.query(
         uri,
         findEventsQueryParameters,
         selection,
-        null,
+        selectionArgs,
         sortOrder
       )
 
@@ -58,7 +56,7 @@ class EventRepository(context: Context) {
     }
 
   suspend fun findEventById(eventId: String): EventEntity? = withContext(Dispatchers.IO) {
-    val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId.toInt().toLong())
+    val uri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId.toLong())
     val selection = "((${CalendarContract.Events.DELETED} != 1))"
     val cursor = contentResolver.query(
       uri,
@@ -73,9 +71,9 @@ class EventRepository(context: Context) {
     }
   }
 
-  suspend fun createEvent(eventInput: NewEventInput): Int = withContext(Dispatchers.IO) {
+  suspend fun createEvent(eventInput: NewEventInput): Long = withContext(Dispatchers.IO) {
     val payload = eventInput.toContentValues().apply {
-      put(CalendarContract.Events.CALENDAR_ID, eventInput.calendarId.toInt())
+      put(CalendarContract.Events.CALENDAR_ID, eventInput.calendarId.toLong())
     }
 
     val eventsUri = CalendarContract.Events.CONTENT_URI
@@ -84,7 +82,7 @@ class EventRepository(context: Context) {
 
     val eventId = requireNotNull(eventUri.lastPathSegment) {
       "Couldn't decode event ID from inserted content URI"
-    }.toInt()
+    }.toLong()
 
     eventInput.alarms?.let { reminders ->
       createRemindersForEvent(eventId, reminders)
@@ -93,9 +91,9 @@ class EventRepository(context: Context) {
     return@withContext eventId
   }
 
-  suspend fun updateEvent(updateInput: EventUpdateInput): Int = withContext(Dispatchers.IO) {
-    val eventID = updateInput.id.toInt()
-    val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID.toLong())
+  suspend fun updateEvent(updateInput: EventUpdateInput): Long = withContext(Dispatchers.IO) {
+    val eventID = updateInput.id.toLong()
+    val updateUri = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventID)
 
     contentResolver.update(updateUri, updateInput.toContentValues(), null, null)
     removeRemindersForEvent(eventID)
@@ -126,7 +124,7 @@ class EventRepository(context: Context) {
     return@withContext true
   }
 
-  private suspend fun createRemindersForEvent(eventId: Int, reminders: List<Alarm>) = withContext(Dispatchers.IO) {
+  private suspend fun createRemindersForEvent(eventId: Long, reminders: List<Alarm>) = withContext(Dispatchers.IO) {
     for (reminder in reminders) {
       ensureActive()
       if (reminder.relativeOffset == null) {
@@ -145,11 +143,11 @@ class EventRepository(context: Context) {
     }
   }
 
-  private suspend fun removeRemindersForEvent(eventId: Int) = withContext(Dispatchers.IO) {
+  private suspend fun removeRemindersForEvent(eventId: Long) = withContext(Dispatchers.IO) {
     val projection = arrayOf(CalendarContract.Reminders._ID)
     val cursor = CalendarContract.Reminders.query(
       contentResolver,
-      eventId.toLong(),
+      eventId,
       projection
     )
 
@@ -206,21 +204,30 @@ class EventRepository(context: Context) {
   }
 }
 
-private fun buildSelectionForEventsQuery(startDateMillis: Long, endDateMillis: Long, calendars: List<String>): String {
+private fun buildSelectionForEventsQuery(
+  startDateMillis: Long,
+  endDateMillis: Long,
+  calendars: List<String>
+): Pair<String, Array<String>> {
   val selectionConditions = mutableListOf(
-    "${CalendarContract.Instances.BEGIN} >= $startDateMillis",
-    "${CalendarContract.Instances.END} <= $endDateMillis",
-    "${CalendarContract.Instances.VISIBLE} = 1"
+    "${CalendarContract.Instances.BEGIN} >= ?",
+    "${CalendarContract.Instances.END} <= ?",
+    "${CalendarContract.Instances.VISIBLE} = ?"
+  )
+  val selectionArgs = mutableListOf(
+    startDateMillis.toString(),
+    endDateMillis.toString(),
+    "1"
   )
 
   if (calendars.isNotEmpty()) {
-    val calendarQuery = calendars.joinToString(" OR ") { calendar ->
-      "${CalendarContract.Instances.CALENDAR_ID} = '$calendar'"
-    }
-    selectionConditions += calendarQuery
+    val placeholders = Array(calendars.size) { "?" }.joinToString(",")
+    selectionConditions += "${CalendarContract.Instances.CALENDAR_ID} IN ($placeholders)"
+    selectionArgs += calendars
   }
 
-  return selectionConditions
+  val selection = selectionConditions
     .joinToString(" AND ") { condition -> "($condition)" }
     .let { expr -> "($expr)" }
+  return selection to selectionArgs.toTypedArray()
 }

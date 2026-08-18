@@ -1,17 +1,18 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import bplistCreator from 'bplist-creator';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import { isSpawnResultError, xcrunAsync } from './xcrun';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
+import { learnMore } from '../../../utils/link';
 import { parsePlistAsync } from '../../../utils/plist';
 import { profile } from '../../../utils/profile';
-
-const debug = require('debug')('expo:simctl') as typeof console.log;
+import { event } from '../events';
+import { isSpawnResultError, xcrunAsync } from './xcrun';
 
 type DeviceState = 'Shutdown' | 'Booted';
 
@@ -128,24 +129,16 @@ async function updateSimulatorLinkingPermissionsAsync(
   { url, appId }: { url: string; appId?: string }
 ) {
   if (!device.udid || !appId) {
-    debug('Skipping deep link permissions as missing properties could not be found:', {
-      url,
-      appId,
-      udid: device.udid,
-    });
+    event('simctl_skip_deep_link_perms', { url, appId, udid: device.udid });
     return;
   }
-  debug('Rewriting simulator permissions to support deep linking:', {
-    url,
-    appId,
-    udid: device.udid,
-  });
+  event('simctl_deep_link_perms', { url, appId, udid: device.udid });
   let scheme: string;
   try {
     // Attempt to extract the scheme from the URL.
     scheme = new URL(url).protocol.slice(0, -1);
   } catch (error: any) {
-    debug(`Could not parse the URL scheme: ${error.message}`);
+    event('simctl_url_scheme_parse_error', { error: event.error(error as Error) });
     return;
   }
 
@@ -164,11 +157,11 @@ async function updateSimulatorLinkingPermissionsAsync(
       // Can be tested by launching a new simulator or by deleting the file and relaunching the simulator.
       {};
 
-  debug('Allowed links:', plistData);
+  event('simctl_allowed_links', { plistData: plistData as Record<string, unknown> });
   const key = `com.apple.CoreSimulator.CoreSimulatorBridge-->${scheme}`;
   // Replace any existing value for the scheme with the new appId.
   plistData[key] = appId;
-  debug('Allowing deep link:', { key, appId });
+  event('simctl_allow_deep_link', { key, appId });
 
   try {
     const data = bplistCreator(plistData);
@@ -274,6 +267,7 @@ export async function bootDeviceAsync(device: DeviceContext): Promise<void> {
     await simctlAsync(['boot', device.udid]);
   } catch (error: any) {
     if (!error.stderr?.match(/Unable to boot device in current state: Booted/)) {
+      error.message += `\n${learnMore('https://docs.expo.dev/workflow/ios-simulator/#troubleshooting', { learnMoreMessage: 'Troubleshooting guide' })}`;
       throw error;
     }
   }
@@ -330,11 +324,13 @@ async function getRuntimesAsync(
     // Join the end components [13, 4] -> '13.4'
     const osVersion = osVersionComponents.join('.');
     const sims = info.devices[runtime];
-    for (const device of sims) {
-      device.runtime = runtime;
-      device.osVersion = osVersion;
-      device.windowName = `${device.name} (${osVersion})`;
-      device.osType = osType as OSType;
+    if (sims) {
+      for (const device of sims) {
+        device.runtime = runtime;
+        device.osVersion = osVersion;
+        device.windowName = `${device.name} (${osVersion})`;
+        device.osType = osType as OSType;
+      }
     }
   }
   return info;

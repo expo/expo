@@ -15,7 +15,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   private let skipTimeInterval = 10.0
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
-  private var players = NSHashTable<VideoPlayer>.weakObjects()
+  private let players = SynchronizedHashTable<VideoPlayer>(weakObjects: true)
   private var artworkDataTask: URLSessionDataTask?
 
   private var playTarget: Any?
@@ -226,6 +226,14 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
         }
         return .commandFailed
       }
+
+      // `MPRemoteCommandCenter` is a process-wide singleton that other modules (e.g. expo-audio) disable on
+      // teardown, so re-enable the commands we handle to keep the lock screen controls working. (issue #46711)
+      commandCenter.playCommand.isEnabled = true
+      commandCenter.pauseCommand.isEnabled = true
+      commandCenter.skipForwardCommand.isEnabled = true
+      commandCenter.skipBackwardCommand.isEnabled = true
+      commandCenter.changePlaybackPositionCommand.isEnabled = true
     }
   }
 
@@ -270,13 +278,13 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
 private func fetchArtwork(url: URL, completion: @escaping (MPMediaItemArtwork?) -> Void) -> URLSessionDataTask {
   let task = URLSession.shared.dataTask(with: url) { data, response, error in
     if let error = error {
-      log.warn("ExpoVideo - Couldn't fetch the artwork: \(error.localizedDescription)")
+      log.warn("[expo-video] Couldn't fetch the artwork: \(error.localizedDescription)")
       completion(nil)
       return
     }
 
     guard let data, response is HTTPURLResponse else {
-      log.warn("ExpoVideo - Couldn't display the artwork: the response was empty")
+      log.warn("[expo-video] Couldn't display the artwork: the response was empty")
       completion(nil)
       return
     }

@@ -1,10 +1,9 @@
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include "../JSIContext.h"
-#include <fbjni/fbjni.h>
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
-#include "SharedObject.h"
 
 #if IS_NEW_ARCHITECTURE_ENABLED
 

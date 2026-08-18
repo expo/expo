@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
-import { Command } from '../../bin/cli';
+import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { logCmdError } from '../utils/errors';
+import { getConfigEnvMode, loadEnvFiles } from '../utils/nodeEnv';
 
 export const expoConfig: Command = async (argv) => {
   const args = assertArgs(
@@ -33,18 +35,19 @@ export const expoConfig: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx expo config -h` shows as fast as possible.
-  const [
-    // ./configAsync
-    { configAsync },
-    // ../utils/errors
-    { logCmdError },
-  ] = await Promise.all([import('./configAsync.js'), import('../utils/errors.js')]);
+  return (async () => {
+    const projectRoot = getProjectRoot(args);
+    loadEnvFiles(projectRoot, {
+      mode: getConfigEnvMode(),
+      silent: args['--json'],
+    });
 
-  return configAsync(getProjectRoot(args), {
-    // Parsed options
-    full: args['--full'],
-    json: args['--json'],
-    type: args['--type'],
-  }).catch(logCmdError);
+    // Load the config module after the help prompt so `npx expo config -h` shows as fast as possible.
+    const { configAsync } = await import('./configAsync.js');
+    return configAsync(projectRoot, {
+      full: args['--full'],
+      json: args['--json'],
+      type: args['--type'],
+    });
+  })().catch(logCmdError);
 };

@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.ToggleSwitch
+import com.composeunstyled.UnstyledToggleSwitch
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 
 @Composable
@@ -34,7 +34,7 @@ fun ToggleSwitch(
     }
   )
 
-  ToggleSwitch(
+  UnstyledToggleSwitch(
     toggled = isToggled,
     onToggled = onToggled,
     shape = RoundedCornerShape(NewAppTheme.borderRadius.full),

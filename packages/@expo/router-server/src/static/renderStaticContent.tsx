@@ -1,22 +1,26 @@
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2026 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
-
 import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
 import React from 'react';
-import ReactDOMServer from 'react-dom/server.node';
+import ReactDOMServer from 'react-dom/server';
 
-import { getRootComponent } from './getRootComponent';
-import { PreloadedDataScript } from './html';
 import { createDebug } from '../utils/debug';
+import {
+  createLoaderDataScriptAsString,
+  injectAssetsIntoHtml,
+  serializeHelmetToHtml,
+  type StaticContentAssets,
+} from '../utils/html';
+import { getRootComponent } from './getRootComponent';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
 
@@ -33,19 +37,19 @@ function resetReactNavigationContexts() {
 export type GetStaticContentOptions = {
   loader?: {
     data?: any;
+    /** Unique key for the route. Derived from the route's contextKey */
+    key: string;
   };
   request?: Request;
-  /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
-  assets?: {
-    css: string[];
-    js: string[];
-  };
+  hydrate?: boolean;
+  assets?: StaticContentAssets;
 };
 
-export async function getStaticContent(
-  location: URL,
-  options?: GetStaticContentOptions
-): Promise<string> {
+/**
+ * Shared setup for both `getStaticContent()` and `getStreamingContent()`. Creates the React element
+ * tree, resets server contexts, and computes loader data.
+ */
+function prepareRenderContext(location: URL, options?: GetStaticContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
 
@@ -64,91 +68,72 @@ export async function getStaticContent(
     ),
   });
 
-  // Clear any existing static resources from the global scope to attempt to prevent leaking between pages.
-  // This could break if pages are rendered in parallel or if fonts are loaded outside of the React tree
-  Font.resetServerContext();
-
   // This MUST be run before `ReactDOMServer.renderToString` to prevent
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const loadedData =
-    options?.loader !== undefined
-      ? {
-          [location.pathname + location.search]:
-            options.loader.data === undefined ? {} : options.loader.data,
-        }
-      : null;
+  const loaderKey = options?.loader ? options.loader.key + location.search : null;
 
-  const html = ReactDOMServer.renderToString(
-    <Head.Provider context={headContext}>
-      <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-    </Head.Provider>
-  );
+  const loadedData = loaderKey
+    ? {
+        [loaderKey]: options?.loader?.data ?? null,
+      }
+    : null;
 
-  // Eval the CSS after the HTML is rendered so that the CSS is in the same order
-  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+  return { headContext, element, getStyleElement, loadedData };
+}
 
-  let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
-
-  output = output.replace('</head>', `${css}</head>`);
-
-  const fonts = Font.getServerResources();
-  debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-  // debug('Push static fonts:', fonts)
-  // Inject static fonts loaded with expo-font
-  output = output.replace('</head>', `${fonts.join('')}</head>`);
-  if (loadedData) {
-    const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
-      <PreloadedDataScript data={loadedData} />
+export async function getStaticContent(
+  location: URL,
+  options?: GetStaticContentOptions
+): Promise<string> {
+  return Font.withServerContext(() => {
+    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
+      location,
+      options
     );
-    output = output.replace('</head>', `${loaderDataScript}</head>`);
-  }
 
-  // Inject hydration assets (JS/CSS bundles). Used in SSR mode
-  if (options?.assets) {
-    if (options.assets.css.length > 0) {
-      /**
-       * For each CSS file, inject two link elements; one for preloading and one as the actual
-       * stylesheet. This matches what we do for SSG
-       *
-       * @see @expo/cli/src/start/server/metro/serializeHtml.ts
-       */
-      const injectedCSS = options.assets.css
-        .flatMap((href) => [
-          `<link rel="preload" href="${href}" as="style">`,
-          `<link rel="stylesheet" href="${href}">`,
-        ])
-        .join('\n');
-      output = output.replace('</head>', `${injectedCSS}\n</head>`);
+    const html = ReactDOMServer.renderToString(
+      <Head.Provider context={headContext}>
+        <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
+      </Head.Provider>
+    );
+
+    // Eval the CSS after the HTML is rendered so that the CSS is in the same order
+    const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+
+    let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
+
+    output = output.replace('</head>', `${css}</head>`);
+
+    const fonts = Font.getServerResources();
+    debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
+    // Inject static fonts loaded with expo-font
+    output = output.replace('</head>', `${fonts.join('')}</head>`);
+    if (loadedData) {
+      output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
     }
 
-    if (options.assets.js.length > 0) {
-      const injectedJS = options.assets.js
-        .map((src) => `<script src="${src}" defer></script>`)
-        .join('\n');
-      output = output.replace('</body>', `${injectedJS}\n</body>`);
-    }
-  }
+    output = injectAssetsIntoHtml(output, { assets: options?.assets, hydrate: options?.hydrate });
 
-  return '<!DOCTYPE html>' + output;
+    return '<!DOCTYPE html>' + output;
+  });
 }
 
 function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
-  // Head components
-  for (const key of ['title', 'priority', 'meta', 'link', 'script', 'style'].reverse()) {
-    const result = helmet?.[key]?.toString();
-    if (result) {
-      html = html.replace('<head>', `<head>${result}`);
-    }
+  const { headTags, htmlAttributes, bodyAttributes } = serializeHelmetToHtml(helmet);
+
+  if (headTags) {
+    html = html.replace('<head>', `<head>${headTags}`);
   }
 
   // attributes
-  html = html.replace('<html ', `<html ${helmet?.htmlAttributes.toString()} `);
-  html = html.replace('<body ', `<body ${helmet?.bodyAttributes.toString()} `);
+  html = html.replace('<html ', `<html ${htmlAttributes} `);
+  html = html.replace('<body ', `<body ${bodyAttributes} `);
 
   return html;
 }
 
 // Re-export for use in server
+export { getStreamingContent, resolveMetadata } from '../server/renderStreamingContent';
 export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';

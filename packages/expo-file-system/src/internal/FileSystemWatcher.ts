@@ -1,0 +1,91 @@
+import type { EventSubscription } from 'expo-modules-core';
+
+import type { Directory } from '../Directory';
+import ExpoFileSystem from '../ExpoFileSystem';
+import type { File } from '../File';
+import {
+  DEFAULT_DEBOUNCE_MS,
+  type WatchEvent,
+  type WatchOptions,
+  type WatchSubscription,
+} from '../FileSystemWatcher.types';
+import type { NativeFileSystemWatcherEvent } from './NativeFileSystem.types';
+
+type TargetFactory<T> = (uri: string, isDirectory: boolean) => T;
+
+function normalizePath(path: string): string {
+  return path.replace(/\/+$/, '');
+}
+
+/**
+ * @hidden
+ * Internal implementation of file system watching. Use `File.watch()` or `Directory.watch()` instead.
+ */
+export class FileSystemWatcher<T extends File | Directory> implements WatchSubscription {
+  private nativeWatcher: InstanceType<typeof ExpoFileSystem.FileSystemWatcher> | null;
+  private subscription: EventSubscription | null = null;
+  private removed = false;
+  private readonly normalizedWatchedPath: string;
+
+  constructor(
+    path: string,
+    callback: (event: WatchEvent<T>) => void,
+    options: WatchOptions = {},
+    private readonly targetFactory: TargetFactory<T>
+  ) {
+    this.normalizedWatchedPath = normalizePath(path);
+    this.nativeWatcher = new ExpoFileSystem.FileSystemWatcher(path, {
+      debounce: options.debounce ?? DEFAULT_DEBOUNCE_MS,
+      events: options.events,
+    });
+
+    this.subscription = this.nativeWatcher.addListener(
+      'change',
+      (raw: NativeFileSystemWatcherEvent) => {
+        const event = this.mapEvent(raw);
+        const isWatchedTarget = normalizePath(raw.path) === this.normalizedWatchedPath;
+
+        if (!options.events || options.events.includes(event.type)) {
+          callback(event);
+        }
+
+        if ((event.type === 'deleted' || event.type === 'renamed') && isWatchedTarget) {
+          this.remove();
+        }
+      }
+    );
+
+    try {
+      this.nativeWatcher.start();
+    } catch (error) {
+      this.subscription.remove();
+      this.subscription = null;
+      this.nativeWatcher = null;
+      throw error;
+    }
+  }
+
+  private mapEvent(raw: NativeFileSystemWatcherEvent): WatchEvent<T> {
+    return {
+      type: raw.type,
+      target: this.targetFactory(raw.path, raw.isDirectory),
+      newTarget: raw.newPath
+        ? this.targetFactory(raw.newPath, raw.newPathIsDirectory ?? raw.isDirectory)
+        : undefined,
+      nativeEventFlags: raw.nativeEventFlags,
+    };
+  }
+
+  remove(): void {
+    if (this.removed) {
+      return;
+    }
+    this.removed = true;
+
+    this.subscription?.remove();
+    this.subscription = null;
+
+    this.nativeWatcher?.stop();
+    this.nativeWatcher = null;
+  }
+}

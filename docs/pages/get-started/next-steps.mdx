@@ -12,7 +12,14 @@ Here are next steps to continue building your app:
 
 You can remove the boilerplate code and start fresh with a new project. Run the following command to reset your project:
 
-<Terminal cmd={['$ npm run reset-project']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run reset-project'],
+    yarn: ['$ yarn run reset-project'],
+    pnpm: ['$ pnpm run reset-project'],
+    bun: ['$ bun run reset-project'],
+  }}
+/>
 
 This command will move the existing files in **app** to **app-example**, then create a new **app** directory with a new **index.tsx** file.
 

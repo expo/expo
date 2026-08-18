@@ -16,14 +16,6 @@ internal protocol AnyStaticFunctionDefinition: AnyFunctionDefinition {
 public final class StaticSyncFunctionDefinition<Args, FirstArgType, ReturnType>:
   SyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition, @unchecked Sendable {
   let isStatic = true
-
-  override func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext) throws -> Any {
-    return try super.call(by: nil, withArguments: args, appContext: appContext)
-  }
-
-  override func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
-    return super.call(by: nil, withArguments: args, appContext: appContext, callback: callback)
-  }
 }
 
 /**
@@ -32,13 +24,12 @@ public final class StaticSyncFunctionDefinition<Args, FirstArgType, ReturnType>:
 public final class StaticAsyncFunctionDefinition<Args, FirstArgType, ReturnType>:
   AsyncFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition, @unchecked Sendable {
   let isStatic = true
+}
 
-  override func call(
-    by owner: AnyObject?,
-    withArguments args: [Any],
-    appContext: AppContext,
-    callback: @Sendable @escaping (FunctionCallResult) -> Void
-  ) {
-    return super.call(by: nil, withArguments: args, appContext: appContext, callback: callback)
-  }
+/**
+ Represents a static function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
+ */
+public final class StaticConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
+  ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>, AnyStaticFunctionDefinition, @unchecked Sendable {
+  let isStatic = true
 }

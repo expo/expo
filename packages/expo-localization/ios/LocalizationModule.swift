@@ -2,6 +2,7 @@
 
 import Foundation
 import ExpoModulesCore
+import React
 
 let LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
 let CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
@@ -19,14 +20,9 @@ public class LocalizationModule: Module {
 
     Function("getLocales", Self.getLocales)
     Function("getCalendars", Self.getCalendars)
+
     OnCreate {
-      if let forceRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool {
-        self.setRTLPreferences(true, forceRTL)
-      } else {
-        if let enableRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool {
-          self.setRTLPreferences(enableRTL, false)
-        }
-      }
+      setRTLPreferences()
     }
 
     Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
@@ -53,26 +49,16 @@ public class LocalizationModule: Module {
     }
   }
 
-  func isRTLPreferredForCurrentLocale() -> Bool {
-    // swiftlint:disable:next legacy_objc_type
-    return NSLocale.characterDirection(forLanguage: NSLocale.preferredLanguages.first ?? "en-US") == NSLocale.LanguageDirection.rightToLeft
-  }
+  func setRTLPreferences() {
+    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool ?? true
+    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool ?? false
 
-  func setRTLPreferences(_ supportsRTL: Bool, _ forceRTL: Bool) {
-    // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
-    // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
-    // On iOS we need to set both forceRTL and allowRTL so apps don't have to include localization strings.
+    // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
     // Uses required reason API based on the following reason: CA92.1
-
-    if forceRTL {
-      UserDefaults.standard.set(true, forKey: "RCTI18nUtil_allowRTL")
-      UserDefaults.standard.set(true, forKey: "RCTI18nUtil_forceRTL")
-    } else {
-      UserDefaults.standard.set(supportsRTL, forKey: "RCTI18nUtil_allowRTL")
-      UserDefaults.standard.set(supportsRTL ? isRTLPreferredForCurrentLocale() : false, forKey: "RCTI18nUtil_forceRTL")
+    if let i18nUtil = RCTI18nUtil.sharedInstance() {
+      i18nUtil.allowRTL(supportsRTL)
+      i18nUtil.forceRTL(forcesRTL)
     }
-
-    UserDefaults.standard.synchronize()
   }
 
   // If the application isn't manually localized for the device language then the

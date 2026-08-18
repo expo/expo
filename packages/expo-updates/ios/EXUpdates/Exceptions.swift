@@ -91,7 +91,11 @@ internal final class InvalidRequestHeadersOverrideException: Exception {
   }
 
   override var reason: String {
-    "Invalid update requestHeaders override: \(String(describing: requestHeaders))"
+    """
+    Invalid update requestHeaders override: \(String(describing: requestHeaders)). \
+    Override keys must be declared in `updates.requestHeaders` in your app config at \
+    build time. Add the key to `updates.requestHeaders` and rebuild the app.
+    """
   }
 }
 

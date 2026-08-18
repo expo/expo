@@ -17,6 +17,7 @@ config.watchFolders = [
   path.join(monorepoRoot, 'apps/common'), // Allow Metro to resolve common ThemeProvider
   path.join(monorepoRoot, 'apps/bare-expo/modules/benchmarking'), // Allow Metro to resolve benchmarking folder
   path.join(monorepoRoot, 'apps/bare-expo/modules/worklets-tester'), // Allow Metro to resolve worklets-tester folder
+  path.join(monorepoRoot, 'apps/bare-expo/modules/test-expo-ui'), // Allow Metro to resolve test-expo-ui folder
   path.join(monorepoRoot, 'apps/test-suite'), // Allow Metro to resolve test-suite app
 ];
 
@@ -26,5 +27,9 @@ config.resolver.assetExts.push(
 
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
+if (process.env.E2E_FORCE_BABEL === '1') {
+  config.transformer.babelTransformerPath =
+    require.resolve('../router-e2e/forced-babel-transformer');
+}
 
 module.exports = config;

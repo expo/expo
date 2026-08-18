@@ -12,7 +12,7 @@
 
 type MetroRequire = {
   (id: number): unknown;
-  importAll: <T>(id: number) => T;
+  importAll: <T>(id: number, moduleName?: string) => T;
 };
 
 type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
@@ -62,23 +62,54 @@ function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Pr
   return undefined;
 }
 
-function asyncRequireImpl<T>(moduleID: number, paths: DependencyMapPaths): Promise<T> | T {
-  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
-  const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID);
+function asyncRequireImpl<T>(
+  moduleID: number,
+  paths: DependencyMapPaths,
+  moduleName?: string
+): Promise<T> | T {
+  const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID, moduleName);
 
+  // NOTE(@hassankhan): We need to come back and improve this, ideally we shouldn't need to have a
+  // separate conditional specifically for web
+  // On web, split chunks may already be preloaded via `<script>` tags, so importing
+  // synchronously first prevents double-loading the script
+  if (process.env.EXPO_OS === 'web') {
+    try {
+      return importAll();
+    } catch (error) {
+      const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+      if (maybeLoadBundlePromise != null) {
+        return maybeLoadBundlePromise.then(importAll);
+      }
+      throw error;
+    }
+  }
+
+  // On native, requiring a missing module reports a fatal error via `global.ErrorUtils`
+  // instead of throwing, so the split bundle must be loaded before importing
+  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
   if (maybeLoadBundlePromise != null) {
     return maybeLoadBundlePromise.then(importAll);
   }
-
   return importAll();
 }
 
-async function asyncRequire<T>(
+type PromiseWithResult<T> = Promise<T> & {
+  _result?: T | Promise<T>;
+};
+
+function asyncRequire<T>(
   moduleID: number,
   paths: DependencyMapPaths,
-  moduleName?: string // unused
-): Promise<T> {
-  return asyncRequireImpl<T>(moduleID, paths);
+  moduleName?: string
+): PromiseWithResult<T> {
+  const ret = asyncRequireImpl<T>(moduleID, paths, moduleName);
+  // We return a Promise with an added `unstable_importMaybeSync`-like
+  // `_result` property to bypass this being force-converted to a promise
+  // for rehydration
+  const promise: PromiseWithResult<T> = Promise.resolve(ret);
+  promise._result = ret;
+  return promise;
 }
 
 // Synchronous version of asyncRequire, which can still return a promise

@@ -1,14 +1,13 @@
-/* eslint-env jest */
 import fs from 'fs';
 import path from 'path';
 
+import { executeExpoAsync } from '../utils/expo';
 import {
   expectChunkPathMatching,
   projectRoot,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
 } from './utils';
-import { executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -39,15 +38,15 @@ it('runs `npx expo export -p web`', async () => {
   // If this changes then everything else probably changed as well.
   expect(files).toEqual(
     expect.arrayContaining([
-      expectChunkPathMatching('AppEntry'),
+      expectChunkPathMatching('index'),
       expectChunkPathMatching('a'),
       expectChunkPathMatching('b'),
       expectChunkPathMatching('c'),
     ])
   );
 
-  const appEntryFile = files.find((name) => name?.startsWith('_expo/static/js/web/AppEntry-'))!;
-  expect(appEntryFile).toEqual(expectChunkPathMatching('AppEntry'));
+  const appEntryFile = files.find((name) => name?.startsWith('_expo/static/js/web/index-'))!;
+  expect(appEntryFile).toEqual(expectChunkPathMatching('index'));
 
   // NOTE: We don't expect an async import depending on the entrypoint
   // Hence, we shouldn't see the entrypoint path any output chunk

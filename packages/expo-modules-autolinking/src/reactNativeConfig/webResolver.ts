@@ -1,8 +1,6 @@
-import fs from 'fs/promises';
-import path from 'path';
-
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
-import {
+import { fastJoin, loadPackageJson } from '../utils';
+import type {
   RNConfigReactNativePlatformsConfig,
   RNConfigDependencyWeb,
 } from './reactNativeConfig.types';
@@ -20,9 +18,10 @@ export async function checkDependencyWebAsync(
 
   const hasReactNativeConfig = !!reactNativeConfig && Object.keys(reactNativeConfig).length > 0;
   if (!hasReactNativeConfig) {
-    const packageJson = JSON.parse(
-      await fs.readFile(path.join(resolution.path, 'package.json'), 'utf8')
-    );
+    const packageJson = await loadPackageJson(fastJoin(resolution.path, 'package.json'));
+    if (!packageJson) {
+      return null;
+    }
     const peerDependencies: Record<string, unknown> =
       packageJson.peerDependencies && typeof packageJson.peerDependencies === 'object'
         ? packageJson.peerDependencies

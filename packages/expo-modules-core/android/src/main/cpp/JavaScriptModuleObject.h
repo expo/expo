@@ -2,11 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-
-#include <vector>
-#include <memory>
+#include "ExpoHeader.pch"
 
 #include "decorators/JSDecorator.h"
 

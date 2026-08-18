@@ -1,12 +1,12 @@
 {
   "extends": "expo-module-scripts/tsconfig.node",
-  "include": ["./src", "./ts-declarations"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__typetests__/*"],
+  "include": ["./src", "./metro-require"],
+  "exclude": ["**/__typetests__/*"],
   "compilerOptions": {
-    "outDir": "./build",
-    "typeRoots": [
-      "../../expo-module-scripts/ts-declarations",
-      "../../../node_modules/@types"
-    ]
+    "noEmit": true,
+    "lib": ["dom", "esnext"],
+    "rootDir": ".",
+    "verbatimModuleSyntax": false,
+    "types": ["jest"]
   }
 }

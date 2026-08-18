@@ -12,14 +12,66 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     project.evaluationDependsOn(":expo")
     setupDependencySubstitution(project)
+    setupFusedModeStripping(project)
 
     project.afterEvaluate { project ->
       setupSourceSets(project)
       setupCopyingAutolinking(project)
-      setupBundleDependencyForRelease(project)
       setupCopyingNativeLibsForType(project, "Release")
       setupCopyingNativeLibsForType(project, "Debug")
+      setupHostAppArtifactForwardingForRelease(project)
       wireDevLauncherTasks(project)
+    }
+  }
+
+  /**
+   * In `--fused` builds, strips entries from the autolinking-generated
+   * `ExpoModulesPackageList.kt` by package prefix, via
+   * `-Pbrownfield.fused.strip-packages=expo.modules.foo.,expo.modules.bar.`.
+   *
+   * This is the companion escape hatch to `-Pbrownfield.fused.skip=<project,...>`
+   * in the fused sibling's build script: a module excluded from the fat AAR still
+   * has its `Package` class referenced by `ExpoModulesPackageList.<clinit>`, which
+   * would crash the host with `NoClassDefFoundError` at startup — stripping the
+   * matching entries here keeps the package list consistent with the AAR contents.
+   * Inert unless both properties are set.
+   */
+  private fun setupFusedModeStripping(brownfieldProject: Project) {
+    if (brownfieldProject.findProperty("brownfield.fused") != "true") return
+
+    val expoProject = brownfieldProject.rootProject.findProject(":expo") ?: return
+
+    val stripPrefixes =
+      (brownfieldProject.findProperty("brownfield.fused.strip-packages") as? String)
+        ?.split(',')
+        ?.map { it.trim() }
+        ?.filter { it.isNotEmpty() }
+        ?.toSet()
+        ?: emptySet()
+
+    if (stripPrefixes.isEmpty()) return
+
+    // `:expo` is already evaluated (forced by `evaluationDependsOn(":expo")` at the
+    // top of `apply`), so we read the task directly — no afterEvaluate needed.
+    val task = expoProject.tasks.findByName("generatePackagesList") ?: return
+    task.doLast {
+      val outputFile =
+        expoProject.layout.buildDirectory
+          .file("generated/expo/src/main/java/expo/modules/ExpoModulesPackageList.kt")
+          .get()
+          .asFile
+      if (!outputFile.exists()) {
+        expoProject.logger.warn(
+          "brownfield.fused: ExpoModulesPackageList.kt not found at ${outputFile.path}; nothing to strip"
+        )
+        return@doLast
+      }
+      val original = outputFile.readText()
+      val stripped = stripFusedPackageListEntries(original, stripPrefixes)
+      outputFile.writeText(stripped)
+      expoProject.logger.lifecycle(
+        "brownfield.fused: stripped ExpoModulesPackageList entries matching ${stripPrefixes.joinToString(", ")}"
+      )
     }
   }
 
@@ -58,7 +110,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
     libraryExtension.sourceSets.getByName("release").apply {
       jniLibs.srcDirs("libsRelease")
-      assets.srcDirs("$appBuildDir/generated/assets/react/release")
+      // release assets src dir is wired in setupHostAppArtifactForwardingForRelease
       res.srcDirs("$appBuildDir/generated/res/react/release")
     }
 
@@ -120,18 +172,74 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   }
 
   /**
-   * Setup the dependency of the bundle tasks.
+   * Forward the host `:app` module's build-time outputs into the published brownfield AAR so the
+   * runtime React Native + expo libraries inside the AAR find the configuration they need.
    *
-   * Needed to include bundle and assets in the release variant.
+   * Two pieces are forwarded:
    *
-   * @param brownfieldProject The brownfield project to setup the dependency of the bundle tasks
-   *   for.
+   *   1. `:app:mergeReleaseAssets` output (everything that AGP would bundle into the host APK's
+   *      `assets/`). This includes the RN JS bundle and hashed assets, expo-updates' `app.manifest`,
+   *      expo-constants' `app.config`, and any other generated asset emitted by a host-side gradle
+   *      plugin. Forwarding the merged output (rather than picking specific generator tasks) makes
+   *      this future-proof: any new expo library that emits an asset on the `:app` side is picked
+   *      up automatically. Transitive dep: `mergeReleaseAssets` requires `createBundleReleaseJsAndAssets`
+   *      so the old `setupBundleDependencyForRelease` is no longer needed.
+   *
+   *   2. Every `<application>` `<meta-data>` entry from `:app/src/main/AndroidManifest.xml`,
+   *      written into a generated release-variant manifest that AGP merges into the consumer.
+   *      Covers expo-updates' `EXPO_UPDATE_URL`, expo-notifications' default icon/color, and
+   *      anything else a config plugin injects.
+   *
+   * @param brownfieldProject The brownfield project.
    */
-  internal fun setupBundleDependencyForRelease(brownfieldProject: Project) {
+  internal fun setupHostAppArtifactForwardingForRelease(brownfieldProject: Project) {
     val appProject = findAppProject(brownfieldProject)
-    brownfieldProject.tasks.named("preReleaseBuild").configure { task ->
-      task.dependsOn(":${appProject.name}:createBundleReleaseJsAndAssets")
+    val mergeAssetsTask = appProject.tasks.findByName("mergeReleaseAssets") ?: run {
+      brownfieldProject.logger.lifecycle(
+        "brownfield: \":${appProject.name}:mergeReleaseAssets\" task not found; " +
+          "skipping host-app asset forwarding."
+      )
+      return
     }
+
+    val libraryExtension = getLibraryExtension(brownfieldProject)
+    val moduleBuildDir = brownfieldProject.layout.buildDirectory.get().asFile
+
+    val hostAssetsDir = File(moduleBuildDir, "generated/assets/hostApp/release")
+    val copyHostAssetsTask =
+      brownfieldProject.tasks.register("copyHostAppAssetsRelease", Copy::class.java) { task ->
+        task.dependsOn(mergeAssetsTask)
+        task.from(mergeAssetsTask.outputs.files)
+        task.into(hostAssetsDir)
+      }
+    libraryExtension.sourceSets.getByName("release").assets.srcDirs(hostAssetsDir)
+
+    val hostManifestFile =
+      File(moduleBuildDir, "generated/manifest/hostApp/release/AndroidManifest.xml")
+    val appManifest = File(appProject.projectDir, "src/main/AndroidManifest.xml")
+    val appStrings = File(appProject.projectDir, "src/main/res/values/strings.xml")
+
+    val generateHostManifestTask =
+      brownfieldProject.tasks.register("generateBrownfieldHostAppManifestRelease") { task ->
+        task.inputs.file(appManifest)
+        if (appStrings.exists()) {
+          task.inputs.file(appStrings)
+        }
+        task.outputs.file(hostManifestFile)
+        task.doLast {
+          hostManifestFile.parentFile.mkdirs()
+          hostManifestFile.writeText(buildForwardedApplicationManifest(appManifest, appStrings))
+        }
+      }
+    libraryExtension.sourceSets.getByName("release").manifest.srcFile(hostManifestFile)
+
+    brownfieldProject.tasks.named("preReleaseBuild").configure { task ->
+      task.dependsOn(copyHostAssetsTask)
+      task.dependsOn(generateHostManifestTask)
+    }
+    brownfieldProject.tasks
+      .matching { it.name == "processReleaseManifest" || it.name == "processReleaseMainManifest" }
+      .configureEach { task -> task.dependsOn(generateHostManifestTask) }
   }
 
   /**
@@ -266,7 +374,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   /**
    * Add explicit dependency between the `sourceDebugJar` and `generateServiceApolloSources`
    * tasks in `expo-dev-launcher` project.
-   * 
+   *
    * @param brownfieldProject The brownfield project
    */
   private fun wireDevLauncherTasks(brownfieldProject: Project) {
@@ -275,7 +383,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
       val sourceDebugTask = devLauncherProject.tasks.findByName("sourceDebugJar")
       val apolloSourcesTask = devLauncherProject.tasks.findByName("generateServiceApolloSources")
-      
+
       if (sourceDebugTask == null || apolloSourcesTask == null) {
         brownfieldProject.logger.warn("WARNING: Application uses expo-dev-launcher but tasks: sourceDebugJar and generateServiceApolloSources")
         brownfieldProject.logger.warn("Skipping explicitly defining dependency between the tasks...")
@@ -284,7 +392,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
       sourceDebugTask.dependsOn(apolloSourcesTask)
     } catch (e: GradleException) {
-      // no-op  
+      // no-op
     }
   }
 }

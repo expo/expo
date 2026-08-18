@@ -31,7 +31,7 @@ final class AgeRangeUserDeclinedException: Exception, @unchecked Sendable {
 
 final class AgeRangeNoViewControllerException: Exception, @unchecked Sendable {
   override var reason: String {
-    "No current view controller available"
+    "No current view controller or window scene available to present the Age Range UI"
   }
 }
 

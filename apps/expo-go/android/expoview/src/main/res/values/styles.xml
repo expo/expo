@@ -8,6 +8,7 @@
   </style>
 
   <style name="Theme.Exponent.Light" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <item name="android:windowLightStatusBar">false</item>
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -16,6 +17,7 @@
   </style>
 
   <style name="Theme.Exponent.Dark" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <item name="android:windowLightStatusBar">false</item>
     <item name="android:statusBarColor">@android:color/transparent</item>
     <item name="colorPrimary">@color/colorPrimary</item>
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -28,7 +30,7 @@
   </style>
 
   <style name="Theme.Exponent.Light.LightStatusBar" parent="Theme.Exponent.Light">
-    <!-- dummy theme here: see v23 styles -->
+    <item name="android:windowLightStatusBar">true</item>
   </style>
 
   <!-- Theme passed to RN. -->

@@ -1,11 +1,12 @@
+import { getSdkCompatibility, isXcodeVersionSupported } from '@expo/sdk-compatibility';
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { getXcodeVersionAsync } from '../utils/getXcodeVersionAsync';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 async function checkCocoapodsVersionAsync(): Promise<string | null> {
   if (process.platform !== 'darwin') {
@@ -36,19 +37,19 @@ async function checkMinimumXcodeVersionAsync(
     return null;
   }
 
-  // Table of SDK version compatibility with Xcode versions
-  const compatibilityTable: Record<string, string> = {
-    '51': '<=16.2.0',
-  };
+  const compatibility = getSdkCompatibility(sdkVersion);
+  if (!compatibility) {
+    return null;
+  }
 
-  const majorSdkVersion = semver.major(sdkVersion).toString();
+  const xcodeVersionCheckRange = compatibility.ios.xcodeVersionCheckRange;
+  if (!xcodeVersionCheckRange) {
+    return null;
+  }
 
-  if (compatibilityTable[majorSdkVersion]) {
-    const requiredXcodeVersion = compatibilityTable[majorSdkVersion];
-
-    if (!semver.satisfies(xcodeVersion, requiredXcodeVersion)) {
-      return `Your Expo SDK version ${majorSdkVersion} is not compatible with Xcode ${xcodeVersion}. Required Xcode version: ${requiredXcodeVersion}.`;
-    }
+  if (isXcodeVersionSupported(sdkVersion, xcodeVersion) === false) {
+    const majorSdkVersion = semver.major(compatibility.sdk).toString();
+    return `Your Expo SDK version ${majorSdkVersion} is not compatible with Xcode ${xcodeVersion}. Required Xcode version: ${xcodeVersionCheckRange}.`;
   }
 
   return null;

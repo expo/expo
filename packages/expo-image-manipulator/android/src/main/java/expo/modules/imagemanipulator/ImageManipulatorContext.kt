@@ -2,9 +2,9 @@ package expo.modules.imagemanipulator
 
 import android.graphics.Bitmap
 import expo.modules.imagemanipulator.transformers.ImageTransformer
-import expo.modules.kotlin.RuntimeContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.toCodedException
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.sharedobjects.SharedObject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -76,9 +76,9 @@ class ManipulatorTask(
 }
 
 class ImageManipulatorContext(
-  runtimeContext: RuntimeContext,
+  runtime: Runtime,
   private val task: ManipulatorTask
-) : SharedObject(runtimeContext) {
+) : SharedObject(runtime) {
   fun addTransformer(transformer: ImageTransformer) = apply { task.addTransformer(transformer) }
 
   fun reset() = apply { task.reset() }

@@ -6,8 +6,6 @@ import { getDynamicConfig } from '../getConfig';
 
 const mockConfigContext = {} as any;
 
-jest.unmock('resolve-from');
-
 describe(getDynamicConfig, () => {
   describe('process.cwd in a child process', () => {
     const originalCwd = process.cwd();
@@ -69,6 +67,6 @@ describe(getConfig, () => {
     expect(exp.slug).toBe('from-custom-plugin');
     expect(exp.plugins?.[0]).toStrictEqual('./my-plugin');
     // Ensure the plugin method is serialized into its original name
-    expect(exp.plugins?.[1][0]).toBe('withCustom');
+    expect(exp.plugins![1]![0]).toBe('withCustom');
   });
 });

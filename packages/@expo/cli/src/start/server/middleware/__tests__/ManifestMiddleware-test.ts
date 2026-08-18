@@ -1,12 +1,25 @@
 import { getConfig } from '@expo/config';
 import { vol } from 'memfs';
+import { PassThrough } from 'stream';
 
 import * as Log from '../../../../log';
 import * as ProjectDevices from '../../../project/devices';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../../webTemplate';
-import { ManifestMiddleware, ManifestRequestInfo } from '../ManifestMiddleware';
-import { ServerHeaders, ServerRequest, ServerResponse } from '../server.types';
+import type { ManifestRequestInfo } from '../ManifestMiddleware';
+import { ManifestMiddleware } from '../ManifestMiddleware';
+import { resolveManifestAssets } from '../resolveAssets';
+import type { ServerRequest, ServerResponse } from '../server.types';
+
+class MockServerResponse extends PassThrough {
+  statusCode = 200;
+  statusMessage = '';
+  setHeaders = jest.fn();
+  setHeader = jest.fn();
+  toWeb(): ReadableStream {
+    return PassThrough.toWeb(this).readable as any;
+  }
+}
 
 jest.mock('../../webTemplate', () => ({
   createTemplateHtmlFromExpoConfigAsync: jest.fn(async () => '<html />'),
@@ -22,9 +35,7 @@ jest.mock('../resolveAssets', () => ({
 }));
 jest.mock('@expo/config/paths', () => ({
   ...jest.requireActual('@expo/config/paths'),
-  resolveEntryPoint: jest.fn((projectRoot: string) =>
-    require('path').join(projectRoot, './index.js')
-  ),
+  resolveRelativeEntryPoint: () => 'index',
 }));
 jest.mock('@expo/config', () => ({
   getNameFromConfig: jest.fn(jest.requireActual('@expo/config').getNameFromConfig),
@@ -43,18 +54,17 @@ jest.mock('../../../project/devices', () => ({
 }));
 
 class MockManifestMiddleware extends ManifestMiddleware<any> {
-  public _getManifestResponseAsync(
-    options: ManifestRequestInfo
-  ): Promise<{ body: string; version: string; headers: ServerHeaders }> {
+  public _getManifestResponseAsync(_options: ManifestRequestInfo): Promise<Response> {
     throw new Error('Method not implemented.');
   }
-  public getParsedHeaders(req: ServerRequest): ManifestRequestInfo {
+
+  public getParsedHeaders(_req: ServerRequest): ManifestRequestInfo {
     throw new Error('Method not implemented.');
   }
 }
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
-const asRes = (res: Partial<ServerResponse>) => res as ServerResponse;
+const asRes = (res: MockServerResponse) => res as any as ServerResponse;
 
 describe('checkBrowserRequestAsync', () => {
   const createConstructUrl = () =>
@@ -65,37 +75,30 @@ describe('checkBrowserRequestAsync', () => {
       web: 'metro',
       ios: 'metro',
       android: 'metro',
+      tvos: 'metro',
+      macos: 'metro',
     });
 
-    jest.mocked(getConfig).mockReturnValueOnce(
-      // @ts-expect-error
-      {
-        pkg: {},
-        exp: {
-          sdkVersion: '45.0.0',
-          name: 'my-app',
-          slug: 'my-app',
-          platforms: ['ios', 'android', 'web'],
-        },
-      }
-    );
+    jest.mocked(getConfig).mockReturnValueOnce({
+      pkg: {},
+      exp: {
+        sdkVersion: '45.0.0',
+        name: 'my-app',
+        slug: 'my-app',
+        platforms: ['ios', 'android', 'web'],
+      },
+    } as any);
 
     const middleware = new MockManifestMiddleware('/', {
       constructUrl: createConstructUrl(),
       mode: 'development',
     });
 
-    const res = asRes({
-      setHeader: jest.fn(),
-      end: jest.fn(),
-    });
+    const req = asReq({ url: 'http://localhost:8080/', headers: {} });
+    const res = new MockServerResponse();
+    const body = new Response(res.toWeb());
 
-    expect(
-      await middleware.checkBrowserRequestAsync(
-        asReq({ url: 'http://localhost:8080/', headers: {} }),
-        res
-      )
-    ).toBe(true);
+    expect(await middleware.checkBrowserRequestAsync(req, asRes(res), () => {})).toBe(true);
 
     expect(createTemplateHtmlFromExpoConfigAsync).toHaveBeenCalledWith('/', {
       exp: {
@@ -111,8 +114,9 @@ describe('checkBrowserRequestAsync', () => {
         '/index.bundle?platform=web&dev=true&hot=false&lazy=true&transform.engine=hermes&transform.routerRoot=app&unstable_transformProfile=hermes-stable',
       ],
     });
+
     expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'text/html');
-    expect(res.end).toHaveBeenCalledWith('<html />');
+    expect(await body.text()).toBe('<html />');
   });
 
   it('skips handling browser requests when the web bundler is "webpack"', async () => {
@@ -120,6 +124,8 @@ describe('checkBrowserRequestAsync', () => {
       web: 'webpack',
       ios: 'metro',
       android: 'metro',
+      tvos: 'metro',
+      macos: 'metro',
     });
 
     const middleware = new MockManifestMiddleware('/', {
@@ -127,17 +133,10 @@ describe('checkBrowserRequestAsync', () => {
       mode: 'development',
     });
 
-    const res = asRes({
-      setHeader: jest.fn(),
-      end: jest.fn(),
-    });
+    const req = asReq({ url: 'http://localhost:8080/', headers: {} });
+    const res = new MockServerResponse();
 
-    expect(
-      await middleware.checkBrowserRequestAsync(
-        asReq({ url: 'http://localhost:8080/', headers: {} }),
-        res
-      )
-    ).toBe(false);
+    expect(await middleware.checkBrowserRequestAsync(req, asRes(res), () => {})).toBe(false);
   });
 });
 
@@ -160,7 +159,7 @@ describe('_getBundleUrl', () => {
         hostname: 'evanbacon.dev',
         mainModuleName: 'index',
         platform: 'android',
-      })
+      } as any)
     ).toEqual(
       'http://evanbacon.dev:8080/index.bundle?platform=android&dev=true&hot=false&lazy=true'
     );
@@ -178,7 +177,7 @@ describe('_getBundleUrl', () => {
       middleware._getBundleUrl({
         mainModuleName: 'node_modules/expo/AppEntry',
         platform: 'ios',
-      })
+      } as any)
     ).toEqual(
       'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
     );
@@ -203,7 +202,7 @@ describe('_getBundleUrl', () => {
       middleware._getBundleUrl({
         mainModuleName: 'node_modules/expo/AppEntry',
         platform: 'ios',
-      })
+      } as any)
     ).toEqual(
       'http://localhost:8080/node_modules/expo/AppEntry.bundle?platform=ios&dev=false&hot=false&lazy=true&minify=true'
     );
@@ -220,13 +219,14 @@ describe('_resolveProjectSettingsAsync', () => {
     });
 
     jest.mocked(getConfig).mockClear();
+    jest.mocked(resolveManifestAssets).mockClear();
 
     middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
 
     const hostname = 'localhost';
 
     await expect(
-      middleware._resolveProjectSettingsAsync({ hostname, platform: 'android' })
+      middleware._resolveProjectSettingsAsync({ hostname, platform: 'android' } as any)
     ).resolves.toEqual({
       bundleUrl: 'http://fake.mock/index.bundle',
       exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
@@ -242,6 +242,107 @@ describe('_resolveProjectSettingsAsync', () => {
     // Limit this to a single call since it can get expensive.
     expect(getConfig).toHaveBeenCalledTimes(1);
   });
+  it(`returns relative bundle and asset URLs for forwarded requests`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+      mode: 'development',
+    });
+
+    jest.mocked(getConfig).mockClear();
+    jest.mocked(resolveManifestAssets).mockClear();
+
+    middleware._getBundleUrl = jest.fn(
+      () => 'http://fake.mock/index.bundle?platform=android&dev=true&hot=false&lazy=true#debug'
+    );
+
+    const settings = await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
+    } as any);
+
+    expect(settings.bundleUrl).toBe(
+      'index.bundle?platform=android&dev=true&hot=false&lazy=true#debug'
+    );
+
+    const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe('assets/assets/icon.png');
+  });
+  it(`returns the forwarded authority as hostUri and debuggerHost`, async () => {
+    const constructUrl = jest.fn(() => 'http://fake.mock');
+    const middleware = new MockManifestMiddleware('/', { constructUrl, mode: 'development' });
+
+    middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
+
+    const settings = await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
+    } as any);
+
+    expect(settings.hostUri).toBe('proxy.test:4443');
+    expect(settings.expoGoConfig.debuggerHost).toBe('proxy.test:4443');
+  });
+  it(`falls back to the dev server address when only the protocol was forwarded`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'fake.mock:8081'),
+      mode: 'development',
+    });
+
+    middleware._getBundleUrl = jest.fn(() => 'https://fake.mock:8081/index.bundle');
+
+    const settings = await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+      protocol: 'https',
+      forwarded: { authority: undefined, protocol: 'https' },
+    });
+
+    expect(settings.hostUri).toBe('fake.mock:8081');
+    expect(settings.expoGoConfig.debuggerHost).toBe('fake.mock:8081');
+    // The bundle URL stays absolute, since no forwarded authority was reported.
+    expect(settings.bundleUrl).toBe('https://fake.mock:8081/index.bundle');
+  });
+  it(`normalizes relative asset paths`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+      mode: 'development',
+    });
+
+    jest.mocked(resolveManifestAssets).mockClear();
+    middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
+
+    await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+      forwarded: { authority: 'proxy.test' },
+    } as any);
+
+    const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
+    await expect(resolver?.('assets/icon.png')).resolves.toBe('assets/assets/icon.png');
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe('assets/assets/icon.png');
+    await expect(resolver?.('assets\\icon.png')).resolves.toBe('assets/assets/icon.png');
+    await expect(resolver?.('./nested/../assets/icon.png')).resolves.toBe('assets/assets/icon.png');
+  });
+  it(`normalizes absolute asset URLs the same way`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+      mode: 'development',
+    });
+
+    jest.mocked(resolveManifestAssets).mockClear();
+    middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
+
+    await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+    } as any);
+
+    const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe(
+      'http://fake.mock/assets/assets/icon.png'
+    );
+  });
   it(`returns the project settings for Webpack dev servers`, async () => {
     const middleware = new MockManifestMiddleware('/', {
       isNativeWebpack: true,
@@ -256,7 +357,7 @@ describe('_resolveProjectSettingsAsync', () => {
     const hostname = 'localhost';
 
     await expect(
-      middleware._resolveProjectSettingsAsync({ hostname, platform: 'ios' })
+      middleware._resolveProjectSettingsAsync({ hostname, platform: 'ios' } as any)
     ).resolves.toEqual({
       bundleUrl: 'http://fake.mock/index.bundle',
       exp: { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
@@ -279,36 +380,30 @@ describe('getHandler', () => {
     const middleware = new MockManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
     });
-    // @ts-expect-error
-    middleware.getParsedHeaders = jest.fn(() => ({}));
-    // @ts-expect-error
-    middleware._getManifestResponseAsync = jest.fn(async () => ({
-      body: 'body',
-      version: '45.0.0',
-      headers: [['header', 'value']],
-    }));
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
+    middleware._getManifestResponseAsync = jest.fn(
+      async () =>
+        new Response('body', {
+          status: 201,
+          statusText: 'Created',
+          headers: { header: 'value' },
+        })
+    );
 
     const handleAsync = middleware.getHandler();
 
     const next = jest.fn();
 
-    const res = {
-      setHeader: jest.fn(),
-      end: jest.fn(),
-      statusCode: 200,
-    };
-
-    await handleAsync(
-      asReq({
-        url: '/',
-        headers: {
-          'expo-dev-client-id': 'client-id',
-        },
-      }),
-      // @ts-expect-error
-      res,
-      next
-    );
+    const req = asReq({
+      url: '/',
+      headers: {
+        'expo-dev-client-id': 'client-id',
+      },
+    });
+    const res = new MockServerResponse();
+    const chunks: Buffer[] = [];
+    res.on('data', (chunk) => chunks.push(chunk));
+    await handleAsync(req, asRes(res), next);
 
     // Ensure that devices are stored successfully.
     expect(ProjectDevices.saveDevicesAsync).toHaveBeenCalledWith('/', 'client-id');
@@ -317,18 +412,39 @@ describe('getHandler', () => {
     expect(middleware._getManifestResponseAsync).toHaveBeenCalled();
 
     // Generally tests that the server I/O works as expected so we don't need to test this in subclasses.
-    expect(res.statusCode).toEqual(200);
-    expect(next).not.toHaveBeenCalled();
-    expect(res.end).toHaveBeenCalledWith('body');
+    expect(res.statusCode).toEqual(201);
+    expect(res.statusMessage).toEqual('Created');
     expect(res.setHeader).toHaveBeenCalledWith('header', 'value');
+    expect(Buffer.concat(chunks).toString()).toEqual('body');
+    expect(next).not.toHaveBeenCalled();
+  });
+
+  it(`does not report an error when the response closes while the manifest resolves`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+    });
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
+    const res = new MockServerResponse();
+    middleware._getManifestResponseAsync = jest.fn(async () => {
+      res.destroy();
+      return new Response('body');
+    });
+
+    const handleAsync = middleware.getHandler();
+    const next = jest.fn();
+    const req = asReq({ url: '/', headers: {} });
+
+    await handleAsync(req, asRes(res), next);
+
+    expect(Log.exception).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
 
   it(`returns error info in the response`, async () => {
     const middleware = new MockManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
     });
-    // @ts-expect-error
-    middleware.getParsedHeaders = jest.fn(() => ({}));
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
     middleware._getManifestResponseAsync = jest.fn(async () => {
       throw new Error('demo');
     });
@@ -337,23 +453,15 @@ describe('getHandler', () => {
 
     const next = jest.fn();
 
-    const res = {
-      setHeader: jest.fn(),
-      end: jest.fn(),
-      statusCode: 200,
-    };
+    const req = asReq({
+      url: '/',
+      headers: {
+        'expo-dev-client-id': 'client-id',
+      },
+    });
 
-    await handleAsync(
-      asReq({
-        url: '/',
-        headers: {
-          'expo-dev-client-id': 'client-id',
-        },
-      }),
-      // @ts-expect-error
-      res,
-      next
-    );
+    const res = new MockServerResponse();
+    await handleAsync(req, asRes(res), next);
 
     // Ensure that devices are stored successfully.
     expect(ProjectDevices.saveDevicesAsync).toHaveBeenCalledWith('/', 'client-id');
@@ -365,8 +473,6 @@ describe('getHandler', () => {
     expect(res.statusCode).toEqual(500);
 
     expect(next).not.toHaveBeenCalled();
-    // Returns error info.
-    expect(res.end).toHaveBeenCalledWith(JSON.stringify({ error: 'Error: demo' }));
     // Ensure the user sees the error in the terminal.
     expect(Log.exception).toHaveBeenCalled();
   });

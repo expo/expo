@@ -6,16 +6,11 @@ exports[`passes the environment as isReactServer to the babel preset 1`] = `
 });
 exports.default = App;
 var _reactNative = require("react-native");
-var _jsxDevRuntime = require("react/jsx-dev-runtime");
-var _jsxFileName = "/foo.js";
+var _jsxRuntime = require("react/jsx-runtime");
 function App() {
-  return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)("div", {
+  return (0, _jsxRuntime.jsx)("div", {
     children: "Hello"
-  }, void 0, false, {
-    fileName: _jsxFileName,
-    lineNumber: 4,
-    columnNumber: 16
-  }, this);
+  });
 }"
 `;
 
@@ -25,15 +20,10 @@ exports[`passes the environment as isServer to the babel preset 1`] = `
 });
 exports.default = App;
 var _reactNative = require("react-native");
-var _jsxDevRuntime = require("react/jsx-dev-runtime");
-var _jsxFileName = "/foo.js";
+var _jsxRuntime = require("react/jsx-runtime");
 function App() {
-  return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)("div", {
+  return (0, _jsxRuntime.jsx)("div", {
     children: "Hello"
-  }, void 0, false, {
-    fileName: _jsxFileName,
-    lineNumber: 4,
-    columnNumber: 16
-  }, this);
+  });
 }"
 `;

@@ -191,6 +191,9 @@ export function setLocationHref(href: string) {
   location = new Location(href);
 }
 
+declare const global: typeof globalThis;
+declare const window: typeof globalThis;
+
 export function install() {
   Object.defineProperty(global, 'Location', {
     value: Location,

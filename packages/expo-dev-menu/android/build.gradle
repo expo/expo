@@ -12,7 +12,7 @@ apply plugin: 'expo-module-gradle-plugin'
 apply plugin: 'org.jetbrains.kotlin.plugin.compose'
 
 group = 'host.exp.exponent'
-version = '55.0.0'
+version = '56.0.15'
 
 def hasDevLauncher = findProject(":expo-dev-launcher") != null
 def configureInRelease = findProperty("expo.devmenu.configureInRelease") == "true"
@@ -29,7 +29,7 @@ android {
 
   defaultConfig {
     versionCode 10
-    versionName '55.0.0'
+    versionName '56.0.15'
   }
 
   buildTypes {
@@ -135,7 +135,7 @@ dependencies {
   debugOnly "androidx.compose.ui:ui:$composeVersion"
   debugOnly "androidx.compose.ui:ui-tooling:$composeVersion"
 
-  debugOnly("com.composables:core:1.49.6")
+  debugOnly("com.composables:core:1.49.9")
 
   debugOnlyApi 'io.github.lukmccall:radix-ui-colors:1.0.1'
 

@@ -21,33 +21,38 @@ struct ContextMenuWithPreview<ActivationElement: View, Preview: View, MenuConten
   }
 }
 
+internal struct LongPressContextMenu<ActivationElement: View, MenuContent: View>: View {
+  let activationElement: ActivationElement
+  let menuContent: MenuContent
+
+  var body: some View {
+    activationElement.contextMenu(menuItems: {
+      menuContent
+    })
+  }
+}
+
 struct ContextMenu: ExpoSwiftUI.View {
   @ObservedObject var props: ContextMenuProps
 
   var body: some View {
-    let activationElement = (props.children?
-      .compactMap { $0.childView as? ContextMenuActivationElement }
-      .first) ?? ContextMenuActivationElement(props: ContextMenuActivationElementProps())
+    let activationElement = props.children?.slot("trigger")
+    let menuContent = props.children?.slot("items")
+    let preview = props.children?.slot("preview")
 
-    let menuContent = (props.children?
-      .compactMap { $0.childView as? ContextMenuContent }
-      .first) ?? ContextMenuContent(props: ContextMenuContentProps())
-
-    let preview = props.children?
-      .compactMap { $0.childView as? ContextMenuPreview }
-      .first
-
-    if let preview {
-      ContextMenuWithPreview(
-        activationElement: activationElement,
-        preview: preview,
-        menuContent: menuContent
-      )
-    } else {
-      LongPressContextMenu(
-        activationElement: activationElement,
-        menuContent: menuContent
-      )
+    if let activationElement {
+      if let preview {
+        ContextMenuWithPreview(
+          activationElement: activationElement,
+          preview: preview,
+          menuContent: menuContent
+        )
+      } else {
+        LongPressContextMenu(
+          activationElement: activationElement,
+          menuContent: menuContent
+        )
+      }
     }
   }
 }

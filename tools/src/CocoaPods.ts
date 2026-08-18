@@ -46,13 +46,16 @@ type PodInstallOptions = Partial<{
 }>;
 
 /**
- * Installs pods under given project path.
+ * Re-resolves the given pods under the project path,
+ * respecting the existing lockfile for all other pods. Equivalent to
+ * `pod update <names> --no-repo-update`.
  */
-export async function podInstallAsync(
+export async function podUpdateAsync(
   projectPath: string,
+  podNames: string[],
   options: PodInstallOptions = { noRepoUpdate: false, stdio: 'pipe' }
 ): Promise<void> {
-  const args = ['install'];
+  const args = ['update', ...podNames];
 
   if (options.noRepoUpdate) {
     args.push('--no-repo-update');

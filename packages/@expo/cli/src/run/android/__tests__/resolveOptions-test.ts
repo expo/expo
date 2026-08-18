@@ -64,7 +64,7 @@ describe(resolveOptionsAsync, () => {
         appId: 'dev.expo.test',
       })
     ).toEqual({
-      apkVariantDirectory: '/android/app/build/outputs/apk/first/second/third',
+      apkVariantDirectory: '/android/app/build/outputs/apk/firstSecond/third',
       appName: 'app',
       buildCache: true,
       buildType: 'third',

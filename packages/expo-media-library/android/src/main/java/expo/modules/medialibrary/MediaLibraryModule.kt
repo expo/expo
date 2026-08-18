@@ -40,6 +40,7 @@ import expo.modules.medialibrary.albums.migration.migrateAlbum
 import expo.modules.medialibrary.albums.removeAssetsFromAlbum
 import expo.modules.medialibrary.assets.createAssetWithAlbumId
 import expo.modules.medialibrary.assets.deleteAssets
+import expo.modules.medialibrary.assets.getAssetContentUri
 import expo.modules.medialibrary.assets.getAssetInfo
 import expo.modules.medialibrary.assets.getAssets
 import expo.modules.medialibrary.contracts.DeleteContract
@@ -134,6 +135,11 @@ class MediaLibraryModule : Module() {
     AsyncFunction("getAssetInfoAsync") Coroutine { assetId: String, _: Map<String, Any?>?/* unused on android atm */ ->
       requireSystemPermissions(false)
       return@Coroutine getAssetInfo(context, assetId)
+    }
+
+    AsyncFunction("getAssetContentUriAsync") Coroutine { assetId: String ->
+      requireSystemPermissions(false)
+      return@Coroutine getAssetContentUri(context, assetId)
     }
 
     AsyncFunction("getAlbumsAsync") Coroutine { _: Map<String, Any?>?/* unused on android atm */ ->
@@ -381,7 +387,7 @@ class MediaLibraryModule : Module() {
   private fun maybeThrowIfExpoGo(permissions: List<GranularPermission>) {
     if (isExpoGo) {
       if (permissions.contains(GranularPermission.PHOTO) || permissions.contains(GranularPermission.VIDEO)) {
-        throw PermissionsException("Due to changes in Androids permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build")
+        throw PermissionsException("Due to changes in Android's permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build")
       }
     }
   }

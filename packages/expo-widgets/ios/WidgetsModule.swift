@@ -1,18 +1,23 @@
 import ExpoModulesCore
 import ActivityKit
 import WidgetKit
-import JavaScriptCore
 
-private let onUserInteraction = "onExpoWidgetsUserInteraction"
+let pushNotificationsEnabledKey: String = "ExpoWidgets_EnablePushNotifications"
+
+let onUserInteraction = "onExpoWidgetsUserInteraction"
+let onPushToStartTokenReceived = "onExpoWidgetsPushToStartTokenReceived"
+let onTokenReceived = "onExpoWidgetsTokenReceived"
 let onUserInteractionNotification = Notification.Name(onUserInteraction)
 
 public final class WidgetsModule: Module {
+  var pushToStartTokenObserverTask: Task<Void, Never>?
+
   public func definition() -> ModuleDefinition {
     Name("ExpoWidgets")
 
-    Events(onUserInteraction)
+    Events(onPushToStartTokenReceived, onTokenReceived, onUserInteraction)
 
-    OnStartObserving {
+    OnStartObserving(onUserInteraction) {
       NotificationCenter.default.addObserver(
         self,
         selector: #selector(handleUserInteractionNotification),
@@ -21,7 +26,7 @@ public final class WidgetsModule: Module {
       )
     }
 
-    OnStopObserving {
+    OnStopObserving(onUserInteraction) {
       NotificationCenter.default.removeObserver(
         self,
         name: onUserInteractionNotification,
@@ -29,71 +34,82 @@ public final class WidgetsModule: Module {
       )
     }
 
-    Function("reloadWidget") { (timeline: String?) in
-      if let timeline = timeline {
-        WidgetCenter.shared.reloadTimelines(ofKind: timeline)
-      } else {
-        WidgetCenter.shared.reloadAllTimelines()
+    OnStartObserving(onPushToStartTokenReceived) {
+      if pushNotificationsEnabled {
+        observePushToStartToken()
       }
     }
 
-    Function("updateWidget") { (name: String, data: String, props: [String: Any]?, updateFunction: String?) in
-      WidgetsStorage.set(data, forKey: "__expo_widgets_\(name)")
-      if let props {
-        WidgetsStorage.set(props, forKey: "__expo_widgets_\(name)_props")
-      }
-      if let updateFunction {
-        WidgetsStorage.set(updateFunction, forKey: "__expo_widgets_\(name)_updateFunction")
-      }
+    OnStopObserving(onPushToStartTokenReceived) {
+      pushToStartTokenObserverTask?.cancel()
+      pushToStartTokenObserverTask = nil
     }
 
-    Function("startLiveActivity") { (name: String, nodes: String, url: URL?) throws -> String in
-      guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-      guard ActivityAuthorizationInfo().areActivitiesEnabled else {
-        throw LiveActivitiesNotSupportedException()
+    Constant("widgetsDirectory") { () -> String? in
+      guard let appGroupIdentifier = WidgetsStorage.appGroupIdentifier,
+            let containerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) else {
+        return nil
       }
-
-      let nodesData = nodes.data(using: .utf8)
-      guard let compressedData = try nodesData?.brotliCompressed() else {
-        throw LiveActivitiesNotSupportedException()
-      }
-
-      WidgetsStorage.set(compressedData, forKey: "__expo_widgets_live_activity_\(name)")
-      if let url {
-        WidgetsStorage.set(url.absoluteString, forKey: "__expo_widgets_live_activity_\(name)_url")
-      }
-
+      let directoryUrl = containerUrl.appendingPathComponent("ExpoWidgets", isDirectory: true)
       do {
-        let initialState = LiveActivityAttributes.ContentState(name: name)
-
-        let activity = try Activity.request(
-          attributes: LiveActivityAttributes(),
-          content: .init(state: initialState, staleDate: nil),
-          pushType: nil
-        )
-
-        return activity.id
+        try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+        return directoryUrl.absoluteString
       } catch {
-        throw StartLiveActivityException(error.localizedDescription)
+        return nil
       }
     }
 
-    Function("updateLiveActivity") { (id: String, name: String, nodes: String) throws in
-      guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
+    Function("reloadAllWidgets") {
+      WidgetCenter.shared.reloadAllTimelines()
+    }
 
-      guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id })
-      else { throw LiveActivitiesNotSupportedException() }
-
-      let nodesData = nodes.data(using: .utf8)
-      guard let compressedData = try nodesData?.brotliCompressed() else {
-        throw LiveActivitiesNotSupportedException()
+    Class("Widget", WidgetObject.self) {
+      Constructor { (name: String, layout: String, initialProps: [String: Any]?) in
+        WidgetObject(name: name, layout: layout, initialProps: initialProps)
       }
 
-      WidgetsStorage.set(compressedData, forKey: "__expo_widgets_live_activity_\(name)")
+      Function("reload") { (widget: WidgetObject) in
+        widget.reload()
+      }
 
-      Task {
-        let newState = LiveActivityAttributes.ContentState(name: name)
-        await activity.update(ActivityContent(state: newState, staleDate: nil))
+      Function("updateTimeline") { (widget: WidgetObject, entries: [WidgetsJSTimelineEntry]) in
+        try widget.updateTimeline(entries: entries)
+      }
+
+      Function("getTimeline") { (widget: WidgetObject) in
+        try widget.getTimeline()
+      }
+
+      Function("setConfigurationParameterEnum") { (widget: WidgetObject, parameterName: String, options: [WidgetConfigurationOptionRecord]?) in
+        widget.setConfigurationParameterEnum(parameterName: parameterName, options: options)
+      }
+    }
+
+    Class("LiveActivityFactory", LiveActivityFactory.self) {
+      Constructor { (name: String, layout: String) in
+        LiveActivityFactory(name: name, layout: layout)
+      }
+
+      Function("start") { (liveActivity: LiveActivityFactory, props: String?, url: URL?, staleDate: Date?) in
+        return try liveActivity.start(props: props, url: url, staleDate: staleDate)
+      }
+
+      Function("getInstances") { (liveActivity: LiveActivityFactory) in
+        try liveActivity.getInstances()
+      }
+    }
+
+    Class("LiveActivity", LiveActivity.self) {
+      AsyncFunction("update") { (instance: LiveActivity, props: String?, staleDate: Date?) in
+        try await instance.update(props: props, staleDate: staleDate)
+      }
+
+      AsyncFunction("end") { (instance: LiveActivity, dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) in
+        try await instance.end(dismissalPolicy: dismissalPolicy, afterDate: afterDate, props: props, contentDate: contentDate)
+      }
+
+      AsyncFunction("getPushToken") { (instance: LiveActivity) in
+        try instance.getPushToken()
       }
     }
   }
@@ -103,5 +119,35 @@ public final class WidgetsModule: Module {
           let eventData = userInfo["eventData"] as? [String: Any]
     else { return }
     self.sendEvent(onUserInteraction, eventData)
+  }
+
+  private func sendPushToStartToken(activityPushToStartToken: String) {
+    sendEvent(
+      onPushToStartTokenReceived,
+      [
+        "activityPushToStartToken": activityPushToStartToken
+      ]
+    )
+  }
+
+  private func observePushToStartToken() {
+    guard #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+    pushToStartTokenObserverTask = Task {
+      let initialToken = (Activity<LiveActivityAttributes>.pushToStartToken?.reduce("") { $0 + String(format: "%02x", $1) })
+      if let initialToken {
+        sendPushToStartToken(activityPushToStartToken: initialToken)
+      }
+
+      for await data in Activity<LiveActivityAttributes>.pushToStartTokenUpdates {
+        let token = data.reduce("") { $0 + String(format: "%02x", $1) }
+        if token != initialToken {
+          sendPushToStartToken(activityPushToStartToken: token)
+        }
+      }
+    }
+  }
+
+  private var pushNotificationsEnabled: Bool {
+    Bundle.main.object(forInfoDictionaryKey: pushNotificationsEnabledKey) as? Bool ?? false
   }
 }

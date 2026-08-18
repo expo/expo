@@ -1,8 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ExpoModulesJSI/EXJavaScriptObject.h>
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
 
 // Enum mirroring worklets::Serializable::ValueType for Swift exposure
 typedef NS_ENUM(NSInteger, EXSerializableValueType) {
@@ -32,5 +30,12 @@ NS_SWIFT_NAME(JavaScriptSerializable)
 @interface EXJavaScriptSerializable : NSObject
 
 @property (nonatomic, readonly) EXSerializableValueType valueType;
+
+// Opaque handle wrapping a `shared_ptr<worklets::Serializable>`, owned by the
+// adapter pod. Nil when the adapter isn't linked.
+@property (nonatomic, strong, readonly, nullable) id handle;
+
+- (nonnull instancetype)initWithHandle:(nullable id)handle
+                             valueType:(EXSerializableValueType)valueType;
 
 @end

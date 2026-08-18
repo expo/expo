@@ -1,30 +1,26 @@
 import { AppleMaps } from 'expo-maps';
-import {
-  AppleMapPointOfInterestCategory,
-  AppleMapsPointOfInterestCategories,
-} from 'expo-maps/build/apple/AppleMaps.types';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 
-const includingSome: AppleMapsPointOfInterestCategories = {
+const includingSome: AppleMaps.PointOfInterestCategories = {
   including: [
-    AppleMapPointOfInterestCategory.RESTAURANT,
-    AppleMapPointOfInterestCategory.CAFE,
-    AppleMapPointOfInterestCategory.HOTEL,
-    AppleMapPointOfInterestCategory.MUSEUM,
-    AppleMapPointOfInterestCategory.PARK,
+    AppleMaps.PointOfInterestCategory.RESTAURANT,
+    AppleMaps.PointOfInterestCategory.CAFE,
+    AppleMaps.PointOfInterestCategory.HOTEL,
+    AppleMaps.PointOfInterestCategory.MUSEUM,
+    AppleMaps.PointOfInterestCategory.PARK,
   ],
 };
 
-const excludingSome: AppleMapsPointOfInterestCategories = {
-  excluding: [AppleMapPointOfInterestCategory.RESTAURANT, AppleMapPointOfInterestCategory.CAFE],
+const excludingSome: AppleMaps.PointOfInterestCategories = {
+  excluding: [AppleMaps.PointOfInterestCategory.RESTAURANT, AppleMaps.PointOfInterestCategory.CAFE],
 };
-const all: AppleMapsPointOfInterestCategories = { excluding: [] };
-const none: AppleMapsPointOfInterestCategories = { including: [] };
+const all: AppleMaps.PointOfInterestCategories = { excluding: [] };
+const none: AppleMaps.PointOfInterestCategories = { including: [] };
 
 export default function MapsPointOfInterestScreen() {
   const [pointsOfInterest, setPointsOfInterest] = useState<
-    AppleMapsPointOfInterestCategories | undefined
+    AppleMaps.PointOfInterestCategories | undefined
   >(includingSome);
 
   return (

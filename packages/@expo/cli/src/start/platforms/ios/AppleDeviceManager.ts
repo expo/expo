@@ -1,9 +1,18 @@
-import * as osascript from '@expo/osascript';
+import { spawnAsync as spawnAppleScriptAsync } from '@expo/osascript';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
+import { delayAsync, waitForActionAsync } from '../../../utils/delay';
+import { CommandError } from '../../../utils/errors';
+import { isInteractive } from '../../../utils/interactive';
+import { parsePlistAsync } from '../../../utils/plist';
+import { validateUrl } from '../../../utils/url';
+import { DeviceManager } from '../DeviceManager';
+import { ExpoGoInstaller } from '../ExpoGoInstaller';
+import type { BaseResolveDeviceProps } from '../PlatformManager';
+import { event } from '../events';
 import { assertSystemRequirementsAsync } from './assertSystemRequirements';
 import { ensureSimulatorAppRunningAsync } from './ensureSimulatorAppRunning';
 import {
@@ -13,15 +22,6 @@ import {
 } from './getBestSimulator';
 import { promptAppleDeviceAsync } from './promptAppleDevice';
 import * as SimControl from './simctl';
-import { delayAsync, waitForActionAsync } from '../../../utils/delay';
-import { CommandError } from '../../../utils/errors';
-import { parsePlistAsync } from '../../../utils/plist';
-import { validateUrl } from '../../../utils/url';
-import { DeviceManager } from '../DeviceManager';
-import { ExpoGoInstaller } from '../ExpoGoInstaller';
-import { BaseResolveDeviceProps } from '../PlatformManager';
-
-const debug = require('debug')('expo:start:platforms:ios:AppleDeviceManager') as typeof console.log;
 
 const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
 
@@ -150,14 +150,13 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   private async getApplicationIdFromBundle(filePath: string): Promise<string> {
-    debug('getApplicationIdFromBundle:', filePath);
     const builtInfoPlistPath = path.join(filePath, 'Info.plist');
     if (fs.existsSync(builtInfoPlistPath)) {
       const { CFBundleIdentifier } = await parsePlistAsync(builtInfoPlistPath);
-      debug('getApplicationIdFromBundle: using built Info.plist', CFBundleIdentifier);
+      event('apple_bundle_id_resolved', { filePath, bundleId: CFBundleIdentifier });
       return CFBundleIdentifier;
     }
-    debug('getApplicationIdFromBundle: no Info.plist found');
+    event('apple_bundle_id_fallback', {});
     return EXPO_GO_BUNDLE_IDENTIFIER;
   }
 
@@ -210,8 +209,19 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
 
   async activateWindowAsync() {
     await ensureSimulatorAppRunningAsync(this.device);
-    // TODO: Focus the individual window
-    await osascript.execAsync(`tell application "Simulator" to activate`);
+
+    // If we're in interactive mode, we can attempt to focus the Simulator app.
+    // In non-interactive mode, we should assume this is an agent and not attempt to focus the Simulator app since it doesn't need focus.
+    if (isInteractive()) {
+      // TODO: Focus the individual window
+      await spawnAppleScriptAsync([
+        `if application "Simulator" is running then`,
+        `tell application "Simulator" to activate`,
+        `else if application "DeviceHub" is running then`,
+        `tell application "DeviceHub" to activate`,
+        `end if`,
+      ]);
+    }
   }
 
   getExpoGoAppId(): string {
@@ -219,6 +229,12 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   async ensureExpoGoAsync(sdkVersion: string): Promise<boolean> {
+    if (this.device.osType === 'watchOS') {
+      throw new CommandError(
+        'UNSUPPORTED_DEVICE',
+        `Expo Go is not supported on Apple Watch. Please select an iPhone or iPad simulator instead.`
+      );
+    }
     const installer = new ExpoGoInstaller('ios', EXPO_GO_BUNDLE_IDENTIFIER, sdkVersion);
     return installer.ensureAsync(this);
   }

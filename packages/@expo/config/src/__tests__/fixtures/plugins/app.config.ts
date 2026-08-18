@@ -1,6 +1,6 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 
-const withCustom = (config, props) => {
+const withCustom = (config: ExpoConfig, props?: { name?: string }) => {
   config.name = props?.name ?? 'fallback-name';
   return config;
 };

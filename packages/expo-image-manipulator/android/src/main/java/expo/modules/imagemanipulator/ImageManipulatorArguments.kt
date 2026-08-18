@@ -4,10 +4,24 @@ import android.graphics.Bitmap
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
+
+/**
+ * Options for loading the source image.
+ */
+@OptimizedRecord
+class ImageLoadOptions : Record {
+  @Field
+  val maxWidth: Int? = null
+
+  @Field
+  val maxHeight: Int? = null
+}
 
 /**
  * Options provided for resize action.
  */
+@OptimizedRecord
 class ResizeOptions : Record {
   @Field
   val width: Int? = null
@@ -19,6 +33,7 @@ class ResizeOptions : Record {
 /**
  * Cropping rect for crop action.
  */
+@OptimizedRecord
 class CropRect : Record {
   @Field
   val originX: Double = 0.0
@@ -36,6 +51,7 @@ class CropRect : Record {
 /**
  * Options to use when saving the resulted image.
  */
+@OptimizedRecord
 class ManipulateOptions : Record {
   @Field
   val base64: Boolean = false

@@ -35,7 +35,7 @@ const getValueAtPath = (input: unknown, ref: RefPath): unknown | typeof NOT_FOUN
   let node = input;
   for (let index = 0; index < ref.length; index++) {
     const part = ref[index];
-    if (node != null && typeof node === 'object' && part in node) {
+    if (node != null && typeof node === 'object' && part != null && part in node) {
       node = (node as Record<string, unknown>)[part];
     } else {
       node = NOT_FOUND_SYMBOL;
@@ -93,7 +93,7 @@ const isSelfReferencingRefEntry = (target: RefPath, source: RefPath) => {
 /** Return sorted refs entries. Longest target paths will be returned first */
 const getSortedRefEntries = (refs: Map<RefPath, RefPath>): readonly [RefPath, RefPath][] => {
   const entries = [...refs.entries()].sort((a, b) => b[1].length - a[1].length);
-  // Filter out self-referenceing paths. If we set nested targets to source values, we'd
+  // Filter out self-referencing paths. If we set nested targets to source values, we'd
   // create unserializable circular references
   return entries.filter((entry) => !isSelfReferencingRefEntry(entry[0], entry[1]));
 };
@@ -121,7 +121,12 @@ export function deref(input: any): any {
     // to not pollute it
     for (; targetIndex < target.length - 1; targetIndex++) {
       const part = target[targetIndex];
-      if (inputNode == null || typeof inputNode !== 'object' || !(part in inputNode)) {
+      if (
+        inputNode == null ||
+        typeof inputNode !== 'object' ||
+        part == null ||
+        !(part in inputNode)
+      ) {
         // If the part doesn't exist, we abort
         break;
       } else if (outputNode[part] === inputNode[part]) {
@@ -139,7 +144,12 @@ export function deref(input: any): any {
     // For each remaining part on the target, continue traversing the output
     for (; targetIndex < target.length - 1; targetIndex++) {
       const part = target[targetIndex];
-      if (outputNode == null || typeof outputNode !== 'object' || !(part in outputNode)) {
+      if (
+        outputNode == null ||
+        typeof outputNode !== 'object' ||
+        part == null ||
+        !(part in outputNode)
+      ) {
         // If the part doesn't exist, skip the entire ref
         continue nextRef;
       } else {
@@ -157,7 +167,7 @@ export function deref(input: any): any {
     // Set the source value on the target path
     // The for-loops prior have made sure that the output has already been deeply
     // cloned and traversed for the entire path
-    outputNode[target[target.length - 1]] = sourceValue;
+    outputNode[target[target.length - 1]!] = sourceValue;
   }
   // Handle root refs last
   const rootTargetRef = parseRefMaybe(getRef(input));

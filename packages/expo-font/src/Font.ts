@@ -1,7 +1,7 @@
 import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontDisplay, FontSource, FontResource, UnloadFontOptions } from './Font.types';
+import type { FontSource, UnloadFontOptions } from './Font.types';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
 import {
   isLoadedInCache,
@@ -60,6 +60,8 @@ export function isLoading(fontFamily: string): boolean {
  * a shared style sheet for fonts. No CSS is needed to use this method.
  *
  * > **Note**: We recommend using the [config plugin](#configuration-in-app-config) instead whenever possible.
+ *
+ * > **Note**: When the `fontFamily` is already loaded, this method resolves without replacing it.
  *
  * @param fontFamilyOrFontMap String or map of values that can be used as the `fontFamily` [style prop](https://reactnative.dev/docs/text#style)
  * with React Native `Text` elements.
@@ -223,4 +225,10 @@ async function unloadFontInNamespaceAsync(
   await ExpoFontLoader.unloadAsync(fontFamily, options);
 }
 
-export { FontDisplay, FontSource, FontResource, UnloadFontOptions };
+export {
+  FontDisplay,
+  type FontSource,
+  type FontResource,
+  type UnloadFontOptions,
+  type ServerFontResourceDescriptor,
+} from './Font.types';
