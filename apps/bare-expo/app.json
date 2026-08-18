@@ -50,7 +50,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-video",
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true,
+          "icons": ["./assets/heart.png"]
+        }
+      ],
       "expo-background-fetch",
       [
         "expo-splash-screen",
