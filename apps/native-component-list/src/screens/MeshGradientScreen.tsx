@@ -2,7 +2,7 @@ import { Platform } from 'expo';
 import { MeshGradientView } from 'expo-mesh-gradient';
 import { useCallback, useState } from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
@@ -24,17 +24,18 @@ export default function MeshGradientScreen() {
   const [mask, setMask] = useState(false);
   const point = useSharedValue({ x: 0.5, y: 0.5 });
 
-  const panGesture = Gesture.Pan()
-    .minDistance(1)
-    .onUpdate((event) => {
+  const panGesture = usePanGesture({
+    minDistance: 1,
+    onUpdate: (event) => {
       point.value = {
         x: event.absoluteX / SCREEN_SIZE.width,
         y: event.absoluteY / SCREEN_SIZE.height,
       };
-    })
-    .onEnd(() => {
+    },
+    onDeactivate: () => {
       point.value = withSpring({ x: 0.5, y: 0.5 });
-    });
+    },
+  });
 
   const animatedProps = useAnimatedProps(() => {
     return {

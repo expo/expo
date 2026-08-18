@@ -14,6 +14,7 @@ import { YoutubeIcon } from '@expo/styleguide-icons/outline/YoutubeIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FAQ } from '~/ui/components/FAQ';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -36,7 +37,7 @@ We recommend creating a new Expo app using `create-expo-app` to create a project
   }}
 />
 
-> **Note:** During the SDK 57 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-57` to create an SDK 57 project.
+> **Note:** Without `--template`, `create-expo-app` prompts which Expo SDK version to use. Select **Latest (SDK 57)** for most projects, or **for learning with Expo Go (SDK 54)**, which matches the Google Play Store and Apple App Store versions of Expo Go.
 
 </Step>
 
@@ -78,6 +79,12 @@ Now, you can start your project by running:
   description="A tutorial series from core concepts to more complex navigation flows."
   href="https://www.youtube.com/playlist?list=PLsXDmrmFV_AT17JDf-otXSNE_eH7s0uDD"
 />
+
+### Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it file-based navigation patterns:
+
+<RelatedSkills names={['expo-router']} />
 
 ## Key features
 

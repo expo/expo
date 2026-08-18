@@ -2,7 +2,7 @@
 
 import EXUpdatesInterface
 
-/// Provides some basic informations about the app.
+/// Provides some basic information about the app.
 public struct AppInfo: Codable, Equatable, Sendable {
   public let appId: String?
   public let appName: String?

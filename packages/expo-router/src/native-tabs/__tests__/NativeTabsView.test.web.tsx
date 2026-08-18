@@ -11,13 +11,11 @@ describe('Native Bottom Tabs Navigation', () => {
     const tabs: NativeTabsViewProps['tabs'] = [
       {
         name: 'index',
-        routeKey: 'r-0',
         options: { title: 'Index', hidden: false },
         contentRenderer: () => <div data-testid="index" />,
       },
       {
         name: 'about',
-        routeKey: 'r-1',
         options: { title: 'About', hidden: false },
         contentRenderer: () => <div data-testid="about" />,
       },
@@ -32,19 +30,16 @@ describe('Native Bottom Tabs Navigation', () => {
     const tabs: NativeTabsViewProps['tabs'] = [
       {
         name: 'index',
-        routeKey: 'r-0',
         options: { title: 'Index', hidden: false },
         contentRenderer: () => <div data-testid="index" />,
       },
       {
         name: 'about',
-        routeKey: 'r-1',
         options: { title: 'About', hidden: false },
         contentRenderer: () => <div data-testid="about" />,
       },
       {
         name: 'tab-3',
-        routeKey: 'r-2',
         options: { title: 'Tab-3', hidden: false },
         contentRenderer: () => <div data-testid="tab-3"> 3</div>,
       },
@@ -68,37 +63,31 @@ describe('Native Bottom Tabs Navigation', () => {
     const tabs: NativeTabsViewProps['tabs'] = [
       {
         name: 'index',
-        routeKey: 'r-0',
         options: { title: 'Index', hidden: false },
         contentRenderer: () => <div data-testid="index">Index</div>,
       },
       {
         name: 'about',
-        routeKey: 'r-1',
         options: { title: 'About', hidden: false },
         contentRenderer: () => <div data-testid="about">About</div>,
       },
       {
         name: 'tab-3',
-        routeKey: 'r-2',
         options: { title: 'Tab-3', hidden: false },
         contentRenderer: () => <div data-testid="tab-3">Tab 3</div>,
       },
       {
         name: 'tab-4',
-        routeKey: 'r-3',
         options: { title: 'Tab 4', hidden: false },
         contentRenderer: () => <div data-testid="tab-4">Tab 4</div>,
       },
       {
         name: 'tab-5',
-        routeKey: 'r-4',
         options: { title: 'Tab 5', hidden: false },
         contentRenderer: () => <div data-testid="tab-5">Tab 5</div>,
       },
       {
         name: 'tab-6',
-        routeKey: 'r-5',
         options: { title: 'Tab 6', hidden: false },
         contentRenderer: () => <div data-testid="tab-6">Tab 6</div>,
       },
@@ -115,7 +104,6 @@ describe('Focused tab handling', () => {
     const tabs: NativeTabsViewProps['tabs'] = [
       {
         name: 'index',
-        routeKey: 'r-0',
         options: { title: 'Index-tab', hidden: false },
         contentRenderer: () => (
           <div data-testid="index">
@@ -126,7 +114,6 @@ describe('Focused tab handling', () => {
       },
       {
         name: 'about',
-        routeKey: 'r-1',
         options: { title: 'About-tab', hidden: false },
         contentRenderer: () => (
           <div data-testid="about">

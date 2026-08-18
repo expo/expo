@@ -19,30 +19,38 @@ export function useFocusEvents<State extends NavigationState>({ state, emitter }
   const navigation = use(NavigationContext);
   const lastFocusedKeyRef = React.useRef<string | undefined>(undefined);
 
-  const currentFocusedKey = state.routes[state.index]!.key;
+  const currentFocusedKey = state.routes[state.index]?.key;
 
   // When the parent screen changes its focus state, we also need to change child's focus
   // Coz the child screen can't be focused if the parent screen is out of focus
-  React.useEffect(
-    () =>
-      navigation?.addListener('focus', () => {
-        lastFocusedKeyRef.current = currentFocusedKey;
-        emitter.emit({ type: 'focus', target: currentFocusedKey });
-      }),
-    [currentFocusedKey, emitter, navigation]
-  );
+  React.useEffect(() => {
+    if (currentFocusedKey === undefined) {
+      return;
+    }
 
-  React.useEffect(
-    () =>
-      navigation?.addListener('blur', () => {
-        lastFocusedKeyRef.current = undefined;
-        emitter.emit({ type: 'blur', target: currentFocusedKey });
-      }),
-    [currentFocusedKey, emitter, navigation]
-  );
+    return navigation?.addListener('focus', () => {
+      lastFocusedKeyRef.current = currentFocusedKey;
+      emitter.emit({ type: 'focus', target: currentFocusedKey });
+    });
+  }, [currentFocusedKey, emitter, navigation]);
+
+  React.useEffect(() => {
+    if (currentFocusedKey === undefined) {
+      return;
+    }
+
+    return navigation?.addListener('blur', () => {
+      lastFocusedKeyRef.current = undefined;
+      emitter.emit({ type: 'blur', target: currentFocusedKey });
+    });
+  }, [currentFocusedKey, emitter, navigation]);
 
   React.useEffect(() => {
     const lastFocusedKey = lastFocusedKeyRef.current;
+
+    if (currentFocusedKey === undefined) {
+      return;
+    }
 
     lastFocusedKeyRef.current = currentFocusedKey;
 

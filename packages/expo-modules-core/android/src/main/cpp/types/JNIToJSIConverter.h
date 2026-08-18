@@ -168,7 +168,7 @@ struct JNIToJSIConverter<JavaScriptTypedArray *> {
 template<>
 struct JNIToJSIConverter<ArrayBuffer *> {
   static jsi::Value convert(JNIEnv *, jsi::Runtime &rt, ArrayBuffer *value) {
-    return jsi::Value{rt, rt.createArrayBuffer(value->jsiMutableBuffer())};
+    return value->toJSIValue(rt);
   }
 };
 

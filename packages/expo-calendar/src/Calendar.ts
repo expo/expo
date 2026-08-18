@@ -432,7 +432,7 @@ export function useRemindersPermissions(
 ): ReturnType<typeof createRemindersPermissionHook> {
   if (Platform.OS !== 'ios') {
     // While for getRemindersPermissions and other iOS-specific functions we throw UnavailabilityError,
-    // returning a denied permission response is a deliberate choice to make it work without need to wrap it in try/catch.
+    // returning a denied permission response is a deliberate choice to make it work without needing to wrap it in try/catch.
     const response: PermissionResponse = {
       canAskAgain: false,
       expires: 'never',

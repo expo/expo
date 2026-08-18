@@ -29,7 +29,7 @@ import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
-import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
+import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
@@ -41,15 +41,13 @@ import type { Options } from './resolveOptions';
 import { deserializeEagerKey, getExportEmbedOptionsKey } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 
-const debug = require('debug')('expo:export:embed');
-
 function guessCopiedAppleBundlePath(bundleOutput: string) {
   // Ensure the path is familiar before guessing.
   if (
     !bundleOutput.match(/\/Xcode\/DerivedData\/.*\/Build\/Products\//) &&
     !bundleOutput.match(/\/CoreSimulator\/Devices\/.*\/data\/Containers\/Bundle\/Application\//)
   ) {
-    debug('Bundling to non-standard location:', bundleOutput);
+    debugEvent('embed:nonstandard_location', { bundleOutput });
     return false;
   }
   const bundleName = path.basename(bundleOutput);
@@ -60,7 +58,7 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
     // bundle identifiers can start with dots.
     dot: true,
   })[0];
-  debug('Possible path for previous bundle:', possiblePath);
+  debugEvent('embed:possible_previous_bundle', { possiblePath: possiblePath ?? '' });
   return possiblePath;
 }
 
@@ -68,12 +66,8 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   // The React Native build scripts always enable the cache reset but we shouldn't need this in CI environments.
   // By disabling it, we can eagerly bundle code before the build and reuse the cached artifacts in subsequent builds.
   if (env.CI && options.resetCache) {
-    debug('CI environment detected, disabling automatic cache reset');
     options.resetCache = false;
   }
-
-  setNodeEnv(options.dev ? 'development' : 'production');
-  loadEnvFiles(projectRoot);
 
   // This is an optimized codepath that can occur during `npx expo run` and does not occur during builds from Xcode or Android Studio.
   // Here we reconcile a bundle pass that was run before the native build process. This order can fail faster and is show better errors since the logs won't be obscured by Xcode and Android Studio.
@@ -129,7 +123,7 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
   if (isApplePlatform(options.platform)) {
     const previousPath = guessCopiedAppleBundlePath(options.bundleOutput);
     if (previousPath && fs.existsSync(previousPath)) {
-      debug('Removing previous iOS bundle:', previousPath);
+      debugEvent('embed:removing_previous_bundle', { previousPath });
       await removeAsync(previousPath);
     }
   }

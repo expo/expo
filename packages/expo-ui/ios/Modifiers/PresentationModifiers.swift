@@ -67,17 +67,13 @@ internal struct PresentationDetentsModifier: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
-      if selection != nil || eventDispatcher != nil {
-        PresentationDetentsSelectionView(
-          detents: parseDetents(),
-          rawDetents: detents ?? [],
-          initialSelection: selection.flatMap { parsePresentationDetent($0) },
-          eventDispatcher: eventDispatcher
-        ) {
-          content
-        }
-      } else {
-        content.presentationDetents(parseDetents())
+      PresentationDetentsSelectionView(
+        detents: parseDetents(),
+        rawDetents: detents ?? [],
+        initialSelection: selection.flatMap { parsePresentationDetent($0) },
+        eventDispatcher: eventDispatcher
+      ) {
+        content
       }
     } else {
       content
@@ -128,7 +124,10 @@ private struct PresentationDetentsSelectionView<WrappedContent: View>: View {
     self.initialSelection = initialSelection
     self.eventDispatcher = eventDispatcher
     self.wrappedContent = content()
-    self._selectedDetent = State(initialValue: initialSelection ?? detents.first ?? .large)
+    // Default to the first detent in the ordered array, not `detents.first` (the Set's order is
+    // randomized per process), so the sheet always opens at the same detent.
+    let firstOrderedDetent = rawDetents.compactMap { parsePresentationDetent($0) }.first
+    self._selectedDetent = State(initialValue: initialSelection ?? firstOrderedDetent ?? .large)
   }
 
   var body: some View {

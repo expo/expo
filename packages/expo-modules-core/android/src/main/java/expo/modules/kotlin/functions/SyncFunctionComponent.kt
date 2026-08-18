@@ -6,6 +6,7 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JNIFunctionBody
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.types.ConverterContext
 import expo.modules.kotlin.types.ReturnType
 
 class SyncFunctionComponent(
@@ -14,16 +15,16 @@ class SyncFunctionComponent(
   private val returnType: ReturnType,
   private val body: (args: Array<out Any?>) -> Any?
 ) : AnyFunction(name, argTypes) {
-  fun callUserImplementation(args: Array<Any?>, appContext: AppContext? = null): Any? {
-    return body(convertArgs(args, appContext))
+  fun callUserImplementation(args: Array<Any?>, converterContext: ConverterContext): Any? {
+    return body(convertArgs(args, converterContext))
   }
 
-  internal fun getJNIFunctionBody(moduleName: String, appContext: AppContext?): JNIFunctionBody {
+  internal fun getJNIFunctionBody(moduleName: String, converterContext: ConverterContext): JNIFunctionBody {
     return JNIFunctionBody { args ->
       return@JNIFunctionBody exceptionDecorator({
         FunctionCallException(name, moduleName, it)
       }) {
-        val result = callUserImplementation(args, appContext)
+        val result = callUserImplementation(args, converterContext)
         return@exceptionDecorator returnType.convertToJS(result)
       }
     }

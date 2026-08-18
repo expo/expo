@@ -2,7 +2,7 @@ import { createModifier } from './createModifier';
 import type { Color } from './types';
 
 /**
- * Specifies the how to render an Image when using the WidgetKit/WidgetRenderingMode/accented mode.
+ * Specifies how to render an Image when using the WidgetKit/WidgetRenderingMode/accented mode.
  * @param renderingMode - A constant describing how the Image should be rendered.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/image/widgetaccentedrenderingmode(_:)).
  */

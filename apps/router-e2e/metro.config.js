@@ -1,7 +1,6 @@
 /* eslint-env node */
 // Learn more https://docs.expo.dev/guides/customizing-metro/
 const { getDefaultConfig } = require('expo/metro-config');
-const path = require('node:path');
 
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(
@@ -42,14 +41,8 @@ const config = getDefaultConfig(
 
 // Disable Babel's RC lookup, reducing the config loading in Babel - resulting in faster bootup for transformations
 config.transformer.enableBabelRCLookup = false;
-
-const originalCustomizeFrame = config.symbolicator.customizeFrame;
-config.symbolicator.customizeFrame = (frame) => {
-  const newFrame = originalCustomizeFrame(frame);
-  // This will make frames collapsed the same as in use apps, where expo/packages are in node_modules
-  // and thus collapsed by default.
-  newFrame.collapse ||= new RegExp('expo/packages/.+').test(frame.file);
-  return newFrame;
-};
+if (process.env.E2E_FORCE_BABEL === '1') {
+  config.transformer.babelTransformerPath = require.resolve('./forced-babel-transformer');
+}
 
 module.exports = config;

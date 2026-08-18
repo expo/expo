@@ -205,7 +205,7 @@ Similarly, migrate from the `route` prop to the [`useLocalSearchParams`](/versio
 
 <DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-local-search-params.diff" />
 
-To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-object/#navigate), import the `navigation` prop from [`useNavigation`](/versions/latest/sdk/router/#usenavigation) hook.
+To access the [`navigation.navigate`](https://reactnavigation.org/docs/navigation-object/#navigate), import the `navigation` prop from [`useNavigation`](/versions/latest/sdk/router/#usenavigationparent) hook.
 
 <DiffBlock source="/static/diffs/router/migrate-from-react-navigation/use-navigation-hook.diff" />
 
@@ -457,7 +457,7 @@ In React Navigation, you can use the `initialRouteName` property of the linking 
 
 ### Reset navigation state
 
-You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#reset) action from the React Navigation library to reset the navigation state. It is dispatched using the [`useNavigation`](/versions/latest/sdk/router/#usenavigation) hook from Expo Router to access the `navigation` prop.
+You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#reset) action from the React Navigation library to reset the navigation state. It is dispatched using the [`useNavigation`](/versions/latest/sdk/router/#usenavigationparent) hook from Expo Router to access the `navigation` prop.
 
 In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `expo-router/react-navigation`. The object specified in the `reset` action replaces the existing navigation state with the new one.
 

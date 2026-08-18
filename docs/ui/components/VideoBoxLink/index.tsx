@@ -47,6 +47,7 @@ export function VideoBoxLink({
           'hocus:bg-subtle hocus:shadow-sm',
           'max-sm:flex-col',
           '[&+hr]:mt-6!',
+          '[&+&]:mt-3',
           className
         )}
         aria-label={`Watch video: ${title} (opens in new tab)`}>

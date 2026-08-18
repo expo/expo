@@ -20,10 +20,13 @@ private const val PACKAGER_STATUS_ENDPOINT = "status"
 
 class DevLauncherDevServerHelper(
   context: Context,
-  private val controller: DevLauncherControllerInterface?,
+  private val controllerProvider: () -> DevLauncherControllerInterface?,
   devSettings: DeveloperSettings,
   packagerConnection: PackagerConnectionSettings
 ) : DevServerHelper(devSettings, context, packagerConnection) {
+
+  private val controller: DevLauncherControllerInterface?
+    get() = controllerProvider()
 
   private val httpClient = OkHttpClientProvider.getOkHttpClient().newBuilder()
     .connectTimeout(HTTP_CONNECT_TIMEOUT_MS, TimeUnit.MILLISECONDS)

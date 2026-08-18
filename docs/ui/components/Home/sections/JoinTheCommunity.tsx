@@ -29,7 +29,7 @@ export function JoinTheCommunity() {
           'max-md:grid-cols-1'
         )}>
         <CommunityGridCell
-          title="Discord and Forums"
+          title="Discord and forums"
           description="Join our Discord to chat, ask questions or attend events."
           link="https://chat.expo.dev"
           icon={<DiscordIcon aria-hidden="true" className="icon-xl text-palette-white" />}

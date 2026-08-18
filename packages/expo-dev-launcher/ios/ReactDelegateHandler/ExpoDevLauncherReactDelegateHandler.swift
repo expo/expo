@@ -93,21 +93,7 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     self.reactNativeFactory = reactDelegate.reactNativeFactory as? RCTReactNativeFactory
 
     // Reset rctAppDelegate so we can relaunch the app
-    if RCTIsNewArchEnabled() {
-      self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
-    } else {
-      self.reactNativeFactory?.bridge = nil
-      self.reactNativeFactory?.rootViewFactory.bridge = nil
-    }
-
-    #if RCT_DEV_MENU
-    // Set core dev menu configuration to disable shortcuts and shake gesture
-    self.reactNativeFactory?.devMenuConfiguration = RCTDevMenuConfiguration(
-      devMenuEnabled: true,
-      shakeGestureEnabled: false,
-      keyboardShortcutsEnabled: false
-    )
-    #endif
+    self.reactNativeFactory?.rootViewFactory.setValue(nil, forKey: "_reactHost")
 
     let rootView = reactDelegate.reactNativeFactory.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),

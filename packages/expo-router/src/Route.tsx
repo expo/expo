@@ -81,6 +81,42 @@ export function useRouteNode(): RouteNode | null {
   return use(CurrentRouteContext);
 }
 
+export function findRouteNodeByName(
+  children: RouteNode[] | undefined,
+  routeName: string | undefined
+): RouteNode | undefined {
+  if (!routeName) {
+    return undefined;
+  }
+  return children?.find(
+    (child) => child.route === routeName || child.route === `${routeName}/index`
+  );
+}
+
+export function getValidInitialRoute(
+  node: RouteNode | null,
+  initialRouteName = node?.initialRouteName,
+  groupName?: string
+): RouteNode | undefined {
+  if (!node || !initialRouteName) {
+    return undefined;
+  }
+  const route = findRouteNodeByName(node.children, initialRouteName);
+  if (!route) {
+    throw new Error(
+      `The initial route name "${initialRouteName}"${groupName ? ` for group "${groupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
+        `Available routes are: ${node.children.map(({ route }) => `"${route}"`).join(', ')}. ` +
+        'Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+    );
+  }
+  return route;
+}
+
+export const getValidInitialRouteName = (
+  node: RouteNode | null,
+  initialRouteName = node?.initialRouteName
+) => getValidInitialRoute(node, initialRouteName)?.route;
+
 export function useContextKey(): string {
   const node = useRouteNode();
   if (node == null) {

@@ -5,6 +5,7 @@ import { Button, Platform, Text, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from '../../hooks';
 import { router } from '../../imperative-api';
 import Stack from '../../layouts/Stack';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 import { renderRouter } from '../../testing-library';
 import { useNavigation } from '../../useNavigation';
 import { Slot } from '../../views/Navigator';
@@ -342,7 +343,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -354,7 +354,6 @@ describe('singular', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -405,7 +404,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -417,7 +415,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -473,7 +470,6 @@ test('can dynamically route using singular function', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -485,7 +481,6 @@ test('can dynamically route using singular function', () => {
         state: {
           index: 4,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['[slug]'],
           routes: [
             {
@@ -547,7 +542,6 @@ test('can dynamically route using singular function', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -559,7 +553,6 @@ test('can dynamically route using singular function', () => {
         state: {
           index: 3,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['[slug]'],
           routes: [
             {
@@ -619,7 +612,6 @@ describe('prefetch', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -629,13 +621,6 @@ describe('prefetch', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [
-              {
-                key: expect.any(String),
-                name: 'test',
-                params: {},
-              },
-            ],
             routeNames: ['index', 'test'],
             routes: [
               {
@@ -644,96 +629,12 @@ describe('prefetch', () => {
                 params: undefined,
                 path: '/',
               },
-            ],
-            stale: false,
-            type: 'stack',
-          },
-        },
-      ],
-      stale: false,
-      type: 'stack',
-    });
-  });
-
-  it('does not throw an exception when prefetching a protected route with guard false', () => {
-    renderRouter({
-      index: () => {
-        return <Link prefetch href="/test" />;
-      },
-      test: () => null,
-      _layout: () => (
-        <Stack>
-          <Stack.Protected guard={false}>
-            <Stack.Screen name="test" />
-          </Stack.Protected>
-        </Stack>
-      ),
-    });
-
-    // There was no state update, because prefetch of protected route didn't make any state changes, so we received the initial state
-    // This is stale state created by router
-    expect(screen).toHaveRouterState({
-      routes: [
-        {
-          name: '__root',
-          state: {
-            routes: [
-              {
-                name: 'index',
-                params: undefined,
-                path: '/',
-              },
-            ],
-          },
-        },
-      ],
-    });
-  });
-
-  it('does not throw an exception when prefetching a protected route with guard true', () => {
-    renderRouter({
-      index: () => {
-        return <Link prefetch href="/test" />;
-      },
-      test: () => null,
-      _layout: () => (
-        <Stack>
-          <Stack.Protected guard>
-            <Stack.Screen name="test" />
-          </Stack.Protected>
-        </Stack>
-      ),
-    });
-
-    expect(screen).toHaveRouterState({
-      index: 0,
-      key: expect.any(String),
-      preloadedRoutes: [],
-      routeNames: ['__root', '+not-found', '_sitemap'],
-      routes: [
-        {
-          key: expect.any(String),
-          name: '__root',
-          params: undefined,
-          state: {
-            index: 0,
-            key: expect.any(String),
-            preloadedRoutes: [
               {
                 key: expect.any(String),
                 name: 'test',
                 params: {},
               },
             ],
-            routeNames: ['test', 'index'],
-            routes: [
-              {
-                key: expect.any(String),
-                name: 'index',
-                params: undefined,
-                path: '/',
-              },
-            ],
             stale: false,
             type: 'stack',
           },
@@ -742,6 +643,45 @@ describe('prefetch', () => {
       stale: false,
       type: 'stack',
     });
+  });
+
+  it.each([false, true])('prefetches a protected route when guard is %s', (guard) => {
+    const result = renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => <Text testID="guarded-content">guarded</Text>,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={guard}>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    // The preloaded guarded route must not leak its content.
+    expect(screen.queryByTestId('guarded-content')).toBeNull();
+
+    // Guarded routes stay registered in the navigator, so the prefetch preloads
+    // the route like any other. Its content still renders nothing while guarded.
+    const innerState = result.getRouterState()?.routes[0]?.state;
+    if (innerState?.type !== 'stack') {
+      throw new Error('Expected a stack navigator');
+    }
+    expect((innerState as StackNavigationState<ParamListBase>).routes).toEqual([
+      {
+        key: expect.stringMatching(/^index-/),
+        name: 'index',
+        params: undefined,
+        path: '/',
+      },
+      {
+        key: expect.stringMatching(/^test-/),
+        name: 'test',
+        params: {},
+      },
+    ]);
   });
 });
 

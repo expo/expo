@@ -4,7 +4,8 @@
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { useContextKey } from '../Route';
+import { getValidInitialRouteName, useContextKey, useRouteNode } from '../Route';
+import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import type { RouterFactory } from '../react-navigation/native';
@@ -27,12 +28,13 @@ type UseNavigationBuilderRouter = Parameters<typeof useNavigationBuilder>[0];
 type UseNavigationBuilderOptions = Parameters<typeof useNavigationBuilder>[1];
 
 export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
-  initialRouteName?: UseNavigationBuilderOptions['initialRouteName'];
   screenOptions?: UseNavigationBuilderOptions['screenOptions'];
   children?: UseNavigationBuilderOptions['children'];
   router?: T;
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
 };
+
+// TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
 
 /**
  * An unstyled custom navigator. Good for basic web layouts.
@@ -40,25 +42,25 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
  * @hidden
  */
 export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({
-  initialRouteName,
   screenOptions,
   children,
   router,
   routerOptions,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
+  const node = useRouteNode();
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
   const {
     screens,
     children: nonScreenChildren,
-    protectedScreens,
+    guardedRedirects,
   } = useFilterScreenChildren(children, {
     isCustomNavigator: true,
     contextKey,
   });
 
-  const sortedScreens = useSortedScreens(screens ?? [], protectedScreens);
+  const sortedScreens = useSortedScreens(screens ?? [], guardedRedirects);
 
   router ||= StackRouter as unknown as T;
 
@@ -68,7 +70,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
     id: contextKey,
     children: sortedScreens || [<Screen key="default" />],
     screenOptions,
-    initialRouteName,
+    initialRouteName: getValidInitialRouteName(node),
   });
 
   // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
@@ -84,7 +86,9 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {nonScreenChildren}
+      <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+        {nonScreenChildren}
+      </GuardContextProvider>
     </NavigatorContext.Provider>
   );
 }
@@ -102,20 +106,27 @@ export function useNavigatorContext() {
 
 function SlotNavigator(props: NavigatorProps<any>) {
   const contextKey = useContextKey();
+  const node = useRouteNode();
 
   // Allows adding Screen components as children to configure routes.
-  const { screens, protectedScreens } = useFilterScreenChildren([], {
+  const { screens, guardedRedirects } = useFilterScreenChildren([], {
     contextKey,
   });
 
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     ...props,
     id: contextKey,
-    children: useSortedScreens(screens ?? [], protectedScreens),
+    children: useSortedScreens(screens ?? [], guardedRedirects),
+    initialRouteName: getValidInitialRouteName(node),
   });
+  const focusedRouteKey = state.routes[state.index]?.key;
 
   return (
-    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+      <NavigationContent>
+        {focusedRouteKey ? descriptors[focusedRouteKey]!.render() : null}
+      </NavigationContent>
+    </GuardContextProvider>
   );
 }
 
@@ -153,8 +164,9 @@ function NavigatorSlot() {
   const context = useNavigatorContext();
 
   const { state, descriptors } = context;
+  const focusedRouteKey = state.routes[state.index]?.key;
 
-  return descriptors[state.routes[state.index]!.key]?.render() ?? null;
+  return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }
 
 /**

@@ -1,5 +1,5 @@
-import { Text } from 'react-native';
 import { Redirect, useLocalSearchParams } from 'expo-router';
+import { Text } from 'react-native';
 
 export default function Protected() {
   const params = useLocalSearchParams();

@@ -141,7 +141,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       return true
     }
     if (uri.isAssetUri) {
-      // TODO: Consider adding a check for asset URIs – this returns asset files of Expo Go (such as root-cert), but these are already freely available on apk mirrors ect.
+      // TODO: Consider adding a check for asset URIs – this returns asset files of Expo Go (such as root-cert), but these are already freely available on apk mirrors etc.
       return true
     }
     return checkPermissionForPath(javaFile.path, permission)
@@ -212,7 +212,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     val currentUri = uri.toString()
     val currentPath = currentUri.trimEnd('/')
     val parentUri = currentUri.substring(0, currentPath.lastIndexOf('/') + 1)
-    val renamedUri = Uri.withAppendedPath(Uri.parse(parentUri), newName).toString()
+    val renamedUri = Uri.parse(parentUri).buildUpon().appendPath(newName).build().toString()
     return Uri.parse(if (this is FileSystemDirectory) "$renamedUri/" else renamedUri)
   }
 

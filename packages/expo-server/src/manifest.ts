@@ -72,6 +72,29 @@ export interface RouteInfo<TRegex = RegExp | string> {
   assets?: AssetInfo;
 }
 
+/**
+ * A per-path header rule, applied to matching page responses only.
+ *
+ * For scalar headers, the order is headers already on the response (set by
+ * `expo-server` or declared by the route itself), then matching rules, then
+ * global `headers`. When multiple rules match a path, the rule declared last
+ * in the `pageHeaders` array takes precedence.
+ *
+ * For array headers, always append. Values from `headers` come first,
+ * then `pageHeaders`.
+ */
+export interface PageHeaderInfo<TRegex = RegExp | string> {
+  /**
+   * Regex for matching the requested path against this rule.
+   */
+  namedRegex: TRegex;
+  /**
+   * Headers to apply to matching responses. Scalar values are set unless the response already
+   * carries the header; array values always append.
+   */
+  headers: Record<string, string | string[]>;
+}
+
 export interface RoutesManifest<TRegex = RegExp | string> {
   /**
    * Middleware function that runs before any route matching.
@@ -82,6 +105,10 @@ export interface RoutesManifest<TRegex = RegExp | string> {
    * Headers to be applied to all responses from the server.
    */
   headers?: Record<string, string | string[]>;
+  /**
+   * Headers to be applied to path-specific responses from the server.
+   */
+  pageHeaders?: PageHeaderInfo<TRegex>[];
   /**
    * Routes that are matched after HTML routes and invoke WinterCG-compliant functions.
    */

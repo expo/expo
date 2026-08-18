@@ -1,5 +1,15 @@
 import ExpoModulesJSI
+import Foundation
 import Testing
+
+/// A `JavaScriptEncodable` whose `encode` always throws, for exercising the encodable `resolve`'s
+/// encode-failure path.
+private struct FailingEncodable: JavaScriptEncodable {
+  struct EncodingError: Error {}
+  static func encode(_ value: FailingEncodable, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    throw EncodingError()
+  }
+}
 
 @Suite
 @JavaScriptActor
@@ -31,6 +41,45 @@ struct JavaScriptPromiseTests {
 
     let result = try await promise.await()
     #expect(result.getInt() == 42)
+  }
+
+  @Test
+  func `resolve with a both-conforming value keeps its representable type`() async throws {
+    // A 64-bit integer conforms to both `JavaScriptRepresentable` and `JavaScriptEncodable`. The
+    // encodable overload is disfavored, so it resolves through the representable path and stays a JS
+    // `number`, rather than encoding to a `bigint` (`Int64.encode`) or rejecting for exceeding the
+    // safe-integer range (`Int.encode`).
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(Int64(42))
+    let result = try await promise.await()
+    #expect(result.isNumber())
+    #expect(result.getInt() == 42)
+  }
+
+  @Test
+  func `resolve promise with an encodable-only value`() async throws {
+    // `Date` is `JavaScriptEncodable` but not `JavaScriptRepresentable`, so it can only settle the
+    // promise through the encodable overload. It encodes to a JS `Date`.
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    let date = Date(timeIntervalSince1970: 1000)
+    promise.resolve(date)
+    let result = try await promise.await()
+    let milliseconds = try result.getObject().callFunction("getTime").asDouble()
+    #expect(milliseconds == 1_000_000)
+  }
+
+  @Test
+  func `resolve rejects the promise when encoding throws`() async throws {
+    // The encodable `resolve` encodes on the JavaScript thread; if that throws, the promise must
+    // reject with the thrown error rather than fulfill.
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    promise.resolve(FailingEncodable())
+    await #expect(throws: Error.self) {
+      try await promise.await()
+    }
   }
 
   @Test
@@ -101,11 +150,15 @@ struct JavaScriptPromiseTests {
       const promise = Promise.resolve(42);
       promise.then = undefined;
       promise;
-      """)
+      """
+    )
 
     #expect(throws: Error.self) {
       _ = try promiseValue.getPromise()
     }
+    // A failed initializer must not leave its state registered, or it would pin the promise object
+    // in the collection until teardown even though no `JavaScriptPromise` escaped.
+    #expect(runtime.longLivedObjects.count == 0)
   }
 
   @Test
@@ -271,7 +324,7 @@ struct JavaScriptPromiseTests {
 
     // Resolve from a task
     Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
       promise.resolve(JavaScriptValue(runtime, 99))
     }
 
@@ -289,7 +342,7 @@ struct JavaScriptPromiseTests {
     // Reject after the await has already suspended on the pending promise. This must throw, not
     // resume the awaiting caller with the rejection value as if it were fulfilled.
     Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000)  // 10ms
+      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
       promise.reject(TestError())
     }
 
@@ -369,5 +422,127 @@ struct JavaScriptPromiseTests {
     let promise = try runtime.eval("Promise.resolve(42)").getPromise()
 
     #expect(promise.isDeferred == false)
+  }
+
+  // MARK: - Long-lived object registration
+
+  @Test
+  func `deferred promise registers as a long-lived object`() throws {
+    let runtime = JavaScriptRuntime()
+    #expect(runtime.longLivedObjects.count == 0)
+
+    let promise = try JavaScriptPromise(runtime)
+    _ = promise.isDeferred
+
+    #expect(runtime.longLivedObjects.count == 1)
+  }
+
+  @Test
+  func `wrapping an existing promise registers to own its object`() throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try runtime.eval("Promise.resolve(42)").getPromise()
+    #expect(promise.isDeferred == false)
+
+    // Even a wrapped promise owns a JSI object that must not be released against a freed runtime,
+    // so it registers to have that object swept at teardown.
+    #expect(runtime.longLivedObjects.count == 1)
+  }
+
+  @Test
+  func `settling keeps the promise registered while the wrapper is alive`() async throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    #expect(runtime.longLivedObjects.count == 1)
+
+    promise.resolve(JavaScriptValue(runtime, 42))
+    _ = try await promise.await()
+
+    // Settling releases the resolve/reject functions, but the state stays registered so it continues
+    // to own the promise object for as long as the wrapper is alive (it is only deregistered when the
+    // wrapper is dropped, see the tests below, or by the teardown sweep).
+    #expect(promise.isDeferred == false)
+    #expect(runtime.longLivedObjects.count == 1)
+  }
+
+  @Test
+  func `dropping a settled promise deregisters its state`() async throws {
+    let runtime = JavaScriptRuntime()
+
+    do {
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve(JavaScriptValue(runtime, 42))
+      _ = try await promise.await()
+      #expect(runtime.longLivedObjects.count == 1)
+      // Leaving the scope drops the last owner of the wrapper.
+    }
+
+    // Dropping the wrapper deregisters its state and releases the promise object, so a stream of
+    // short-lived promises doesn't pin their objects (and resolution values) until teardown.
+    #expect(runtime.longLivedObjects.count == 0)
+  }
+
+  @Test
+  func `dropping an unsettled promise deregisters its state`() throws {
+    let runtime = JavaScriptRuntime()
+
+    do {
+      let promise = try JavaScriptPromise(runtime)
+      #expect(promise.isDeferred == true)
+      #expect(runtime.longLivedObjects.count == 1)
+      // The promise is never settled; dropping the wrapper here is the only owner going away.
+    }
+
+    // Even an unsettled promise releases its state when its wrapper is dropped: nothing outside can
+    // settle it anymore, so keeping it registered would only pin the object until teardown.
+    #expect(runtime.longLivedObjects.count == 0)
+  }
+
+  @Test
+  func `dropping a wrapped promise deregisters its state`() throws {
+    let runtime = JavaScriptRuntime()
+
+    do {
+      let promise = try runtime.eval("Promise.resolve(42)").getPromise()
+      #expect(promise.isDeferred == false)
+      #expect(runtime.longLivedObjects.count == 1)
+    }
+
+    #expect(runtime.longLivedObjects.count == 0)
+  }
+
+  @Test
+  func `an unsettled deferred promise is released by the teardown sweep`() throws {
+    let runtime = JavaScriptRuntime()
+    let promise = try JavaScriptPromise(runtime)
+    #expect(runtime.longLivedObjects.count == 1)
+
+    // The promise is never settled; the runtime's teardown sweep must release its long-lived state.
+    runtime.longLivedObjects.clear()
+
+    #expect(runtime.longLivedObjects.count == 0)
+    // After the sweep the settle functions are released, so it can no longer be settled.
+    #expect(promise.isDeferred == false)
+  }
+
+  @Test
+  func `an unsettled deferred promise outliving its runtime does not crash on teardown`() throws {
+    // Reproduces the shape of the promise-teardown crash (#47454): a deferred promise is still in
+    // flight when its runtime is torn down. Before the state was owned by the runtime's
+    // `LongLivedObjectCollection`, its JSI values were released after the Hermes runtime was already
+    // destroyed, a use-after-free. Now the runtime's teardown sweep releases the state on the JS
+    // thread while the runtime is still valid.
+    var promise: JavaScriptPromise? = nil
+
+    do {
+      let runtime = JavaScriptRuntime()
+      promise = try JavaScriptPromise(runtime)
+      #expect(promise?.isDeferred == true)
+      // Leaving the scope releases the runtime while the promise is still unsettled. Its teardown
+      // sweep must release the promise's state before Hermes is destroyed.
+    }
+
+    // Dropping the promise wrapper here must not touch a freed runtime. This is the crash point in
+    // #47454; reaching the end of the test without a crash is the assertion.
+    promise = nil
   }
 }

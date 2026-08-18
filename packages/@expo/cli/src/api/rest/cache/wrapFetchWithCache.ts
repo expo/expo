@@ -1,9 +1,8 @@
 import { Response, type RequestInfo, type RequestInit } from 'fetch-nodeshim';
 
+import { debugEvent } from '../../events';
 import type { FetchLike } from '../client.types';
 import { getRequestCacheKey, getResponseInfo, type ResponseCache } from './ResponseCache';
-
-const debug = require('debug')('expo:fetch-cache');
 
 export function wrapFetchWithCache(fetch: FetchLike, cache: ResponseCache): FetchLike {
   return async function cachedFetch(url: RequestInfo, init?: RequestInit) {
@@ -36,7 +35,7 @@ export function wrapFetchWithCache(fetch: FetchLike, cache: ResponseCache): Fetc
 
       // Warn through debug logs that caching failed
       if (!cachedResponse) {
-        debug(`Failed to cache response for: ${url}`);
+        debugEvent('cache_store_failed', { url: url.toString() });
         await cache.remove(cacheKey);
         return response;
       }

@@ -6,6 +6,7 @@ import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/clie
 import { AppQuery } from '../api/graphql/queries/AppQuery';
 import { getSettings } from '../api/user/UserSettings';
 import * as Log from '../log';
+import { event } from './events';
 import { memoize } from './fn';
 import { learnMore } from './link';
 import { attemptModification } from './modifyConfigAsync';
@@ -21,8 +22,6 @@ import {
   validatePackage,
   validatePackageWithWarning,
 } from './validateApplicationId';
-
-const debug = require('debug')('expo:app-id') as typeof console.log;
 
 const ANONYMOUS_USERNAME = 'anonymous';
 
@@ -188,9 +187,11 @@ async function getRecommendedPackageNameAsync(exp: ExpoConfig): Promise<string |
     if (validatePackage(possibleId)) {
       return possibleId;
     } else {
-      debug(
-        `Recommended package name is invalid: "${possibleId}" (owner: ${recommendedReverseDomainNameSecondPart}, slug: ${exp.slug})`
-      );
+      event('invalid_package_name', {
+        name: possibleId,
+        owner: recommendedReverseDomainNameSecondPart,
+        slug: exp.slug,
+      });
     }
   }
   return undefined;

@@ -278,7 +278,8 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   @_disfavoredOverload
   @JavaScriptActor
   public func setProperty(
-    _ name: String, function: sending @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
+    _ name: String,
+    function: sending @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
   ) {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -286,11 +287,10 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     setProperty(name, value: runtime.createFunction(name, function))
   }
 
-  /// Sets a property to an asynchronous host function created from the given closure. The function
-  /// is named after the property and runs the closure when called from JavaScript, returning a
-  /// promise that resolves with its result. Equivalent to
-  /// `setProperty(name, runtime.createAsyncFunction(name) { … })`. The `async` closure body
-  /// selects this overload over the synchronous `setProperty(_:_:)`.
+  /// Sets a property named after it to an asynchronous host function created from the given closure.
+  /// Equivalent to `setProperty(name, runtime.createAsyncFunction(name) { … })`. Returning an
+  /// ``JavaScriptRuntime/AsyncFunctionBody`` from the closure selects this overload over the
+  /// synchronous `setProperty(_:_:)`.
   @JavaScriptActor
   public func setProperty(_ name: String, function: sending @escaping JavaScriptRuntime.AsyncFunctionClosure) {
     guard let runtime else {
@@ -331,7 +331,9 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   public func defineProperty<T: JavaScriptRepresentable & ~Copyable>(
-    _ name: String, value: borrowing T, options: PropertyOptions = []
+    _ name: String,
+    value: borrowing T,
+    options: PropertyOptions = []
   ) {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -360,7 +362,8 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   @discardableResult
   @JavaScriptActor
   public func callFunction<each T: JavaScriptRepresentable>(
-    _ functionName: JavaScriptPropNameID, arguments: repeat each T
+    _ functionName: JavaScriptPropNameID,
+    arguments: repeat each T
   ) throws -> JavaScriptValue {
     return try getPropertyAsFunction(functionName).call(this: self, arguments: repeat each arguments)
   }
@@ -535,7 +538,10 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     /// - Note: When all parameters use their default values, this creates a non-configurable,
     ///   non-enumerable, non-writable property with no value (undefined in JavaScript).
     public init(
-      configurable: Bool = false, enumerable: Bool = false, writable: Bool = false, value: JavaScriptValue? = nil
+      configurable: Bool = false,
+      enumerable: Bool = false,
+      writable: Bool = false,
+      value: JavaScriptValue? = nil
     ) {
       self.configurable = configurable
       self.enumerable = enumerable

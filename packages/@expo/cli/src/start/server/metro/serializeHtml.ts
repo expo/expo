@@ -1,12 +1,11 @@
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import {
-  createInjectedCssAsString,
-  createInjectedScriptsAsString,
-  getHydrationFlagScriptAsString,
+  injectAssetsIntoHtml,
+  type StaticContentAssets,
 } from '@expo/router-server/build/utils/html';
 import type { RouteNode } from 'expo-router/build/Route';
 
-const debug = require('debug')('expo:metro:html') as typeof console.log;
+import { event } from './ssrEvents';
 
 export function serializeHtmlWithAssets({
   resources,
@@ -29,14 +28,13 @@ export function serializeHtmlWithAssets({
   if (!resources) {
     return '';
   }
-  return htmlFromSerialAssets(resources, {
+  const assets = serialAssetsToStaticContentAssets(resources, {
     isExporting,
-    template,
     baseUrl,
     bundleUrl: isExporting ? undefined : devBundleUrl,
     route,
-    hydrate,
   });
+  return injectAssetsIntoHtml(template, { assets, hydrate });
 }
 
 /**
@@ -55,40 +53,42 @@ function combineUrlPath(baseUrl: string, ...segments: string[]) {
     .join('/');
 }
 
-function htmlFromSerialAssets(
+export function serialAssetsToStaticContentAssets(
   assets: SerialAsset[],
   {
     isExporting,
-    template,
     baseUrl,
     bundleUrl,
     route,
-    hydrate,
+    favicon,
   }: {
     isExporting: boolean;
-    template: string;
     baseUrl: string;
-    /** This is dev-only. */
     bundleUrl?: string;
     route?: RouteNode;
-    hydrate?: boolean;
+    favicon?: string;
   }
-) {
-  // Combine the CSS modules into tags that have hot refresh data attributes.
-  const styleString = assets
-    .filter((asset) => asset.type.startsWith('css'))
-    .map(({ type, metadata, filename, source }) => {
-      if (type === 'css') {
-        if (isExporting) {
-          return createInjectedCssAsString([combineUrlPath(baseUrl, filename)]);
-        } else {
-          return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
-        }
+): StaticContentAssets {
+  const css = assets
+    .filter((asset) => asset.type === 'css' || asset.type === 'css-external')
+    .map((asset) => {
+      // NOTE(@hassankhan): External CSS assets are always injected into the HTML as `<link>`s,
+      // both in development and in production
+      if (asset.type === 'css-external') {
+        return { type: 'external' as const, source: asset.source };
       }
-      // External link tags will be passed through as-is.
-      return source;
-    })
-    .join('');
+      // NOTE(@hassankhan): `isExporting` means export-time rendering (SSG/SPA/DOM components),
+      // where CSS is linked from standalone files. In development, we inline CSS into the HTML
+      // document directly for HMR
+      if (isExporting) {
+        return { type: 'css' as const, href: combineUrlPath(baseUrl, asset.filename) };
+      }
+      return { type: 'inline' as const, source: asset.source, hmrId: asset.metadata.hmrId };
+    });
+
+  if (bundleUrl) {
+    return { css, js: [bundleUrl], favicon };
+  }
 
   let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
 
@@ -103,46 +103,38 @@ function htmlFromSerialAssets(
     orderedJsAssets = [...runtimeAssets, ...sortedAsync, ...entryAssets];
   }
 
-  const scripts = bundleUrl
-    ? `<script src="${bundleUrl}" defer></script>`
-    : orderedJsAssets
-        .map(({ filename, metadata }) => {
-          // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
-          if (metadata.isAsync) {
-            // We have the data required to match async chunks to the route's HTML file.
-            if (
-              route?.entryPoints &&
-              metadata.modulePaths &&
-              Array.isArray(route.entryPoints) &&
-              Array.isArray(metadata.modulePaths)
-            ) {
-              // TODO: Handle module IDs like `expo-router/build/views/Unmatched.js`
-              const doesAsyncChunkContainRouteEntryPoint = route.entryPoints.some((entryPoint) =>
-                (metadata.modulePaths as string[]).includes(entryPoint)
-              );
-              if (!doesAsyncChunkContainRouteEntryPoint) {
-                return '';
-              }
-              debug('Linking async chunk %s to HTML for route %s', filename, route.contextKey);
-              // Pass through to the next condition.
-            } else {
-              return '';
-            }
-            // Mark async chunks as defer so they don't block the page load.
-            // return `<script src="${combineUrlPath(baseUrl, filename)" defer></script>`;
-          }
+  const js = orderedJsAssets
+    .filter((asset) => {
+      // Sync assets are always linked in the HTML
+      if (!asset.metadata.isAsync) {
+        return true;
+      }
+      // Link async chunks that contain one of the route's entry points in the HTML, so the
+      // route's own code doesn't wait on a dynamic `import()` waterfall; all other async chunks
+      // are left for the runtime to fetch on-demand.
+      // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
+      // TODO: Handle module IDs like `expo-router/build/views/Unmatched.js`
+      if (
+        route?.entryPoints &&
+        Array.isArray(route.entryPoints) &&
+        Array.isArray(asset.metadata.modulePaths)
+      ) {
+        const matches = route.entryPoints.some((entryPoint) =>
+          (asset.metadata.modulePaths as string[]).includes(entryPoint)
+        );
+        if (matches) {
+          event('html_async_chunk_linked', {
+            filename: asset.filename,
+            contextKey: route.contextKey,
+          });
+        }
+        return matches;
+      }
+      return false;
+    })
+    .map((asset) => combineUrlPath(baseUrl, asset.filename));
 
-          return createInjectedScriptsAsString([combineUrlPath(baseUrl, filename)]);
-        })
-        .join('');
-
-  if (hydrate) {
-    template = template.replace('</head>', `${getHydrationFlagScriptAsString()}</head>`);
-  }
-
-  return template
-    .replace('</head>', `${styleString}</head>`)
-    .replace('</body>', `${scripts}\n</body>`);
+  return { css, js, favicon };
 }
 
 /**

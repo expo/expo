@@ -60,6 +60,12 @@ export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] 
   linking?: Partial<ExpoLinkingOptions>;
 };
 
+// TODO: Remove `renderAsync` when we migrate to RNTL v14.
+export type RenderRouterAsyncOptions = Parameters<typeof rnTestingLibrary.renderAsync>[1] & {
+  initialUrl?: any;
+  linking?: Partial<ExpoLinkingOptions>;
+};
+
 type Result = ReturnType<typeof rnTestingLibrary.render> & {
   getPathname(): string;
   getPathnameWithParams(): string;
@@ -115,8 +121,29 @@ export function renderRouter(
   });
 }
 
+export async function renderRouterAsync(
+  context: MockContextConfig = './app',
+  { initialUrl = '/', linking, ...options }: RenderRouterAsyncOptions = {}
+): Promise<Awaited<ReturnType<typeof rnTestingLibrary.renderAsync>>> {
+  const systemTime = Date.now();
+  jest.useFakeTimers();
+  try {
+    jest.setSystemTime(systemTime);
+  } catch {
+    // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
+  }
+
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
+
+  // TODO: Remove `renderAsync` when we migrate to RNTL v14.
+  return rnTestingLibrary.renderAsync(
+    <ExpoRoot context={getMockContext(context)} location={initialUrl} linking={linking} />,
+    options
+  );
+}
+
 export const testRouter = {
-  /** Navigate to the provided pathname and the pathname */
+  /** Navigate to the provided pathname and assert the pathname */
   navigate(path: string) {
     rnTestingLibrary.act(() => router.navigate(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
@@ -131,7 +158,7 @@ export const testRouter = {
     rnTestingLibrary.act(() => router.replace(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
   },
-  /** Go back in history and asset the new pathname */
+  /** Go back in history and assert the new pathname */
   back(path?: string) {
     expect(router.canGoBack()).toBe(true);
     rnTestingLibrary.act(() => router.back());

@@ -19,15 +19,15 @@ import {
   ThemeProvider,
   UNSTABLE_UnhandledLinkingContext as UnhandledLinkingContext,
   getActionFromState,
-  getPathFromState,
-  getStateFromPath,
-  validatePathConfig,
 } from '../react-navigation/native';
 import useLatestCallback from '../utils/useLatestCallback';
+import { getPathFromState } from './getPathFromState';
+import { getStateFromPath } from './getStateFromPath';
 import { useBackButton } from './useBackButton';
 import { useDocumentTitle } from './useDocumentTitle';
 import { useLinking } from './useLinking';
 import { useThenable } from './useThenable';
+import { validatePathConfig } from './validatePathConfig';
 
 declare global {
   // eslint-disable-next-line no-var

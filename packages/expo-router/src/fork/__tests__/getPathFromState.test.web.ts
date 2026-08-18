@@ -34,6 +34,66 @@ it(`handles nested params.screen/params.params for dynamic routes`, () => {
   expect(getPathFromState(state, config as Options<object>)).toBe('/foo/bar');
 });
 
+it('serializes screen as a query param for non-group routes without nested state', () => {
+  const state = {
+    routes: [{ name: 'root', params: { screen: 'child' } }],
+  };
+  const config = {
+    screens: {
+      root: {
+        path: 'root',
+        screens: {
+          child: 'child',
+        },
+      },
+    },
+  };
+
+  expect(getPathFromState(state, config)).toBe('/root?screen=child');
+});
+
+it('does not serialize screen as a query param for routes with nested state', () => {
+  const state = {
+    routes: [
+      {
+        name: 'root',
+        params: { screen: 'child' },
+        state: { routes: [{ name: 'child' }] },
+      },
+    ],
+  };
+  const config = {
+    screens: {
+      root: {
+        path: 'root',
+        screens: {
+          child: 'child',
+        },
+      },
+    },
+  };
+
+  expect(getPathFromState(state, config)).toBe('/root/child');
+});
+
+it('does not implicitly select a child for non-group routes without nested state', () => {
+  const state = {
+    routes: [{ name: 'root' }],
+  };
+  const config = {
+    screens: {
+      root: {
+        path: 'root',
+        screens: {
+          index: 'child',
+        },
+      },
+    },
+  };
+
+  expect(getPathFromState(state, config)).toBe('/root');
+});
+
 describe('hash support', () => {
   it('appends hash to the path', () => {
     const state = {

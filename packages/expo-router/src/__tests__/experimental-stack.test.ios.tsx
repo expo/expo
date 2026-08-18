@@ -4,6 +4,7 @@ import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
 import { ExperimentalStack } from '../layouts/experimental-stack';
+import { usePreventRemove } from '../react-navigation/native';
 import { renderRouter } from '../testing-library';
 
 jest.mock('react-native-screens/experimental', () => {
@@ -302,6 +303,77 @@ describe('ExperimentalStack — dismiss handlers', () => {
     });
 
     expect(screen).toHavePathname('/a');
+  });
+
+  it('onNativeDismissPrevented warns without prevention context', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      renderRouter(
+        {
+          a: () => null,
+          b: () => null,
+          _layout: () => <ExperimentalStack />,
+        },
+        { initialUrl: '/a' }
+      );
+
+      act(() => router.push('/b'));
+      const propsB = MockedScreen.mock.calls
+        .map((call) => call[0])
+        .reverse()
+        .find((props: any) => props.screenKey?.startsWith('b-'));
+
+      expect(propsB.preventNativeDismiss).toBe(false);
+      act(() => propsB.onNativeDismissPrevented());
+
+      expect(screen).toHavePathname('/b');
+      expect(warn).toHaveBeenCalledWith(
+        "ExperimentalStack received `onNativeDismissPrevented` for route 'b' without an active removal guard. The dismiss action was ignored because prevention context and native state are out of sync."
+      );
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it('onNativeDismissPrevented dispatches a pop through nested prevention', () => {
+    const onPreventRemove = jest.fn();
+    const onGestureCancel = jest.fn();
+    const ProtectedScreen = () => {
+      usePreventRemove(true, ({ data }) => onPreventRemove(data.action));
+      return null;
+    };
+    const RootLayout = () => (
+      <ExperimentalStack screenListeners={{ gestureCancel: onGestureCancel }} />
+    );
+
+    renderRouter(
+      {
+        a: () => null,
+        _layout: RootLayout,
+        'nested/_layout': () => <ExperimentalStack />,
+        'nested/index': ProtectedScreen,
+      },
+      { initialUrl: '/a' }
+    );
+
+    act(() => router.push('/nested'));
+    const propsNested = MockedScreen.mock.calls
+      .map((call) => call[0])
+      .reverse()
+      .find((props: any) => props.screenKey?.startsWith('nested-'));
+
+    expect(propsNested.preventNativeDismiss).toBe(true);
+    act(() => propsNested.onNativeDismissPrevented());
+
+    expect(screen).toHavePathname('/nested');
+    expect(onPreventRemove).toHaveBeenCalledWith({
+      payload: { count: 1 },
+      source: propsNested.screenKey,
+      target: expect.any(String),
+      type: 'POP',
+    });
+    expect(onGestureCancel).toHaveBeenCalledTimes(1);
   });
 });
 

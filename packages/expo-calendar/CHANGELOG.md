@@ -8,11 +8,22 @@
 
 ### 🐛 Bug fixes
 
+- [ios] Fix a crash when reading `calendarId` on an event or reminder whose `EKCalendarItem.calendar` is nil. The property is `null_unspecified` in the EventKit headers, so the bare access was an implicit force-unwrap that trapped the JS thread. ([#48445](https://github.com/expo/expo/pull/48445) by [@cvburgess](https://github.com/cvburgess))
+- [ios] Fix typo in the internal permissions exception name (`MissionPermissionsException` -> `MissingPermissionsException`), which corrects the error code surfaced to JS from `ERR_MISSION_PERMISSIONS` to `ERR_MISSING_PERMISSIONS`. ([#47804](https://github.com/expo/expo/pull/47804) by [@conanm](https://github.com/conanm))
+
+### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
 - Add `@platform ios` JSDoc annotations to iOS-exclusive APIs: `ExpoCalendarReminder` class, `listReminders()`, `createReminder()`, `requestRemindersPermissions()`, `getRemindersPermissions()`, `useRemindersPermissions()`, `AddEventWithFormOptions.url`, and `AddEventWithFormOptions.alarms`. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
 - Throw `UnavailabilityError` when iOS-only Reminders and Sources APIs (`listReminders()`, `createReminder()`, `ExpoCalendarReminder.get/update/delete`, `requestRemindersPermissions()`, `getRemindersPermissions()`, and `getSourcesSync()`) are called on non-iOS platforms. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
 - Return a denied permission response from `useRemindersPermissions()` on non-iOS platforms instead of throwing. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
-
-### 💡 Others
 
 ## 56.0.8 — 2026-05-21
 

@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect } from 'react';
 
+import { getValidInitialRouteName, useRouteNode } from '../../Route';
 import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 import { withLayoutContext } from '../../layouts/withLayoutContext';
 import type {
@@ -22,7 +23,7 @@ import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '../../react-navigation/native-stack';
-import { NativeStackView } from '../../react-navigation/native-stack';
+import { makePopAction, NativeStackView } from '../../react-navigation/native-stack';
 import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
 import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
 import type { ModalStackNavigatorProps, ModalStackViewProps } from './types';
@@ -32,12 +33,9 @@ import {
   isTransparentModalPresentation,
 } from './utils';
 
-function ModalStackNavigator({
-  initialRouteName,
-  children,
-  screenOptions,
-}: ModalStackNavigatorProps) {
-  const { state, navigation, descriptors, NavigationContent, describe } = useNavigationBuilder<
+function ModalStackNavigator({ children, screenOptions }: ModalStackNavigatorProps) {
+  const routeNode = useRouteNode();
+  const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -46,7 +44,7 @@ function ModalStackNavigator({
   >(StackRouter, {
     children,
     screenOptions,
-    initialRouteName,
+    initialRouteName: getValidInitialRouteName(routeNode),
   });
 
   useEffect(
@@ -73,20 +71,16 @@ function ModalStackNavigator({
 
   return (
     <NavigationContent>
-      <ModalStackView
-        state={state}
-        navigation={navigation}
-        descriptors={descriptors}
-        describe={describe}
-      />
+      <ModalStackView state={state} navigation={navigation} descriptors={descriptors} />
     </NavigationContent>
   );
 }
 
-const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStackViewProps) => {
+const ModalStackView = ({ state, navigation, descriptors }: ModalStackViewProps) => {
   const isWeb = process.env.EXPO_OS === 'web';
   const { colors } = useTheme();
   const { preventedRoutes } = usePreventRemoveContext();
+  const activeRoutes = state.routes.slice(0, state.index + 1);
 
   const { routes: filteredRoutes, index: nonModalIndex } = convertStackStateToNonModalState(
     state,
@@ -100,6 +94,8 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
     index: nonModalIndex,
   };
 
+  const pop = makePopAction(navigation.dispatch, state.key);
+
   const dismiss = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
@@ -107,17 +103,19 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
   const overlayRoutes = React.useMemo(() => {
     if (!isWeb) return [];
     const idx = findLastNonModalIndex(state, descriptors);
-    return state.routes.slice(idx + 1);
-  }, [isWeb, state, descriptors]);
+    return activeRoutes.slice(idx + 1);
+  }, [isWeb, activeRoutes, state, descriptors]);
 
   return (
     <div style={{ flex: 1, display: 'flex' }}>
-      <NativeStackView
-        state={newStackState}
-        navigation={navigation}
-        descriptors={descriptors}
-        describe={describe}
-      />
+      {newStackState.routes.length > 0 && (
+        <NativeStackView
+          state={newStackState}
+          descriptors={descriptors}
+          emit={navigation.emit}
+          pop={pop}
+        />
+      )}
       {isWeb &&
         overlayRoutes.map((route) => {
           const isTransparentModal = isTransparentModalPresentation(

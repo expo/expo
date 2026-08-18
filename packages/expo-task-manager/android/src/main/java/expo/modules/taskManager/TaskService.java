@@ -230,7 +230,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
 
     // Invoke task callback
-    TaskExecutionCallback taskCallback = sTaskCallbacks.get(eventId);
+    TaskExecutionCallback taskCallback = sTaskCallbacks.remove(eventId);
 
     if (taskCallback != null) {
       taskCallback.onFinished(response);
@@ -242,6 +242,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // It may be called with null when the host activity is destroyed.
     if (taskManager == null) {
       sTaskManagers.remove(appScopeKey);
+      sHeadlessTaskManagers.remove(appScopeKey);
       return;
     }
 
@@ -611,9 +612,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   private void invalidateAppRecord(String appScopeKey) {
     HeadlessAppLoader appLoader = getAppLoader();
     if (appLoader != null) {
-      if (getAppLoader().invalidateApp(appScopeKey)) {
-        sHeadlessTaskManagers.remove(appScopeKey);
-      }
+      appLoader.invalidateApp(appScopeKey);
     }
   }
 

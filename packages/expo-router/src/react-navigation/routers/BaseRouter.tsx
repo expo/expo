@@ -1,12 +1,41 @@
 import { nanoid } from 'nanoid/non-secure';
 
-import type { CommonNavigationAction, NavigationState, PartialState } from './types';
+import type {
+  CommonNavigationAction,
+  NavigationAction,
+  NavigationState,
+  PartialState,
+} from './types';
 
 /**
  * Base router object that can be used when writing custom routers.
  * This provides few helper methods to handle common actions such as `RESET`.
  */
 export const BaseRouter = {
+  getStateForDeclaredRoutes<State extends NavigationState>(
+    state: State,
+    routeNames: string[]
+  ): State {
+    const declaredRouteNames = new Set(routeNames);
+    const routes = state.routes.filter((route) => declaredRouteNames.has(route.name));
+
+    if (routes.length === state.routes.length) {
+      return state;
+    }
+
+    const focusedKey = state.routes[state.index]?.key;
+    // `-1` reports that nothing is focused; consumers of the focused route handle it.
+    const index =
+      routes.length === 0
+        ? -1
+        : Math.max(
+            0,
+            routes.findIndex((route) => route.key === focusedKey)
+          );
+
+    return { ...state, routes, index };
+  },
+
   getStateForAction<State extends NavigationState>(
     state: State,
     action: CommonNavigationAction
@@ -72,7 +101,9 @@ export const BaseRouter = {
     }
   },
 
-  shouldActionChangeFocus(action: CommonNavigationAction) {
-    return action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED';
+  shouldActionChangeFocus(action: NavigationAction) {
+    return (
+      action.type === 'PUSH' || action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED'
+    );
   },
 };

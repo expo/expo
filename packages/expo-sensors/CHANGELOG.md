@@ -8,9 +8,25 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the prebuilt `ExpoSensors.xcframework` always returning `denied` for the motion permission on iOS. The prebuild config unconditionally defined `EXPO_DISABLE_MOTION_PERMISSION`, which is only meant to be set when opting out via the `motionPermission: false` config plugin option. ([#46686](https://github.com/expo/expo/issues/46686) by [@zoontek](https://github.com/zoontek))
-
 ### 💡 Others
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 - 2026-06-10
+
+### 🐛 Bug fixes
+
+- Fixed the prebuilt `ExpoSensors.xcframework` always returning `denied` for the motion permission on iOS. The prebuild config unconditionally defined `EXPO_DISABLE_MOTION_PERMISSION`, which is only meant to be set when opting out via the `motionPermission: false` config plugin option. ([#46686](https://github.com/expo/expo/issues/46686) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.5 — 2026-05-21
 

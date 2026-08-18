@@ -7,8 +7,7 @@ import path from 'path';
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
 import { validateUrl } from '../utils/url';
-
-const debug = require('debug')('expo:prebuild:resolveOptions') as typeof console.log;
+import { debugEvent } from './events';
 
 export interface ResolvedTemplateOption {
   type: 'file' | 'npm' | 'repository';
@@ -59,7 +58,7 @@ export function resolveTemplateOption(template: string): ResolvedTemplateOption 
     if (!validateUrl(template)) {
       throw new CommandError('BAD_ARGS', 'Invalid URL provided as a template');
     }
-    debug('Resolved template to repository path:', template);
+    debugEvent('template_option_repository', { uri: template });
     return { type: 'repository', uri: template };
   }
 
@@ -82,18 +81,18 @@ export function resolveTemplateOption(template: string): ResolvedTemplateOption 
       'template must be a tar file created by running `npm pack` in a project: ' + templatePath
     );
 
-    debug(`Resolved template to file path:`, templatePath);
+    debugEvent('template_option_file', { path: debugEvent.path(templatePath) });
     return { type: 'file', uri: templatePath };
   }
 
   if (fs.existsSync(template)) {
     // Backward compatible with the old local template argument, e.g. `--template dir/template.tgz`
     const templatePath = path.resolve(template);
-    debug(`Resolved template to file path:`, templatePath);
+    debugEvent('template_option_file', { path: debugEvent.path(templatePath) });
     return { type: 'file', uri: templatePath };
   }
 
-  debug(`Resolved template to NPM package:`, template);
+  debugEvent('template_option_npm', { name: template });
   return { type: 'npm', uri: template };
 }
 

@@ -5,6 +5,7 @@ description: Track per-route render and interactive timings by enabling the Expo
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/) that collects per-route metrics tagged with the route pattern (for example, `/(tabs)/sessions/[sessionId]`). This lets you compare navigation performance by route in the dashboard instead of looking only at app-wide aggregates.
@@ -69,6 +70,26 @@ export default function Home() {
 
 </Step>
 
+## Filter sensitive URL parameters
+
+> **info** Available in **SDK 57 and later**.
+
+By default, the integration includes the resolved `url` and all serializable route and query parameters in `routeParams`. If your app includes sensitive values in URL parameters, pass their keys to `filteredParams`:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: {
+    'expo-router': {
+      filteredParams: ['userId', 'token'],
+    },
+  },
+});
+```
+
+The integration removes filtered keys from `routeParams`, and the event omits `url` and includes `urlHidden: true` instead. `routeName` is not affected because it is a pattern and never contains parameter values.
+
 ## Metrics
 
 ### Per-route first render (`cold_ttr`)
@@ -83,6 +104,7 @@ Emitted at most once per screen instance within a session.
 | ------------- | --------- | ------------------------------------------------------------------------------ |
 | `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                     |
 | `url`         | `string`  | Resolved pathname for the navigation.                                          |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered.      |
 | `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).                   |
 | `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation. |
 
@@ -92,11 +114,12 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type     | Description                                                  |
-| ------------- | -------- | ------------------------------------------------------------ |
-| `routeName`   | `string` | Route pattern, for example `/(tabs)/sessions/[sessionId]`.   |
-| `url`         | `string` | Resolved pathname for the navigation.                        |
-| `routeParams` | `object` | Resolved route params (for example, `{ sessionId: 'abc' }`). |
+| Param         | Type      | Description                                                               |
+| ------------- | --------- | ------------------------------------------------------------------------- |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                |
+| `url`         | `string`  | Resolved pathname for the navigation.                                     |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
+| `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).              |
 
 ### Per-route time to interactive (`tti`)
 
@@ -104,12 +127,31 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type     | Description                                                          |
-| ------------- | -------- | -------------------------------------------------------------------- |
-| `routeName`   | `string` | Route pattern, for example `/(tabs)/sessions/[sessionId]`.           |
-| `url`         | `string` | Resolved pathname.                                                   |
-| `routeParams` | `object` | Resolved route params.                                               |
-| `...`         | `any`    | Any custom params passed via `markInteractive({ params: { ... } })`. |
+| Param         | Type      | Description                                                               |
+| ------------- | --------- | ------------------------------------------------------------------------- |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                |
+| `url`         | `string`  | Resolved pathname.                                                        |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
+| `routeParams` | `object`  | Resolved route params.                                                    |
+| `...`         | `any`     | Any custom params passed via `markInteractive({ params: { ... } })`.      |
+
+## View navigation metrics
+
+In the dashboard, open your project, navigate to [**Observe**](https://expo.dev/accounts/[account]/projects/[project]/observe), and select the **Navigation** tab. It shows per-route navigation timings with cold and warm time to first render and time to interactive.
+
+In the CLI, you can run the following commands:
+
+<Terminal
+  cmd={[
+    '# Navigation metrics grouped by route name',
+    '$ eas observe:routes',
+    '',
+    '# Filter to specific metrics or routes',
+    '$ eas observe:routes --metric cold_ttr --route-name "/(tabs)/sessions/[sessionId]"',
+  ]}
+/>
+
+Run `eas observe:routes --help` for the full list of flags (time range, platform, app version, and more). See [Querying with EAS CLI](/eas/observe/eas-cli/) for the other `eas observe` commands.
 
 ## Notes and troubleshooting
 

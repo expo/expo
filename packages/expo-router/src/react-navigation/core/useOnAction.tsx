@@ -13,11 +13,18 @@ import { DeprecatedNavigationInChildContext } from './DeprecatedNavigationInChil
 import {
   type ChildActionListener,
   type ChildBeforeRemoveListener,
+  type ChildPreventRemoveListener,
   NavigationBuilderContext,
 } from './NavigationBuilderContext';
 import type { EventMapCore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
-import { shouldPreventRemove, useOnPreventRemove } from './useOnPreventRemove';
+import {
+  getPreventableRoutes,
+  emitBeforeRemove,
+  shouldPreventRemove,
+  useOnPreventRemove,
+} from './useOnPreventRemove';
+import type { IsRoutePrevented } from './usePreventRemoveState';
 
 type Options<State extends NavigationState> = {
   router: Router<State, NavigationAction>;
@@ -25,7 +32,9 @@ type Options<State extends NavigationState> = {
   getState: () => State;
   setState: (state: State | PartialState<State>) => void;
   actionListeners: ChildActionListener[];
+  preventRemoveListeners: Record<string, ChildPreventRemoveListener | undefined>;
   beforeRemoveListeners: Record<string, ChildBeforeRemoveListener | undefined>;
+  isRoutePrevented: IsRoutePrevented;
   routerConfigOptions: RouterConfigOptions;
   emitter: NavigationEventEmitter<EventMapCore<any>>;
 };
@@ -37,7 +46,7 @@ type Options<State extends NavigationState> = {
  * 1. To bubble action to parent, we expose the action handler in context and then access the parent context
  * 2. To bubble action to child, child adds event listeners subscribing to actions from parent
  *
- * When the action handler handles as action, it returns `true`, otherwise `false`.
+ * When the action handler handles an action, it returns `true`, otherwise `false`.
  */
 export function useOnAction<State extends NavigationState>({
   router,
@@ -45,7 +54,9 @@ export function useOnAction<State extends NavigationState>({
   setState,
   key,
   actionListeners,
+  preventRemoveListeners,
   beforeRemoveListeners,
+  isRoutePrevented,
   routerConfigOptions,
   emitter,
 }: Options<State>) {
@@ -86,18 +97,28 @@ export function useOnAction<State extends NavigationState>({
           onDispatchAction(action, state === result);
 
           if (state !== result) {
-            const isPrevented = shouldPreventRemove(
-              emitter,
-              beforeRemoveListeners,
-              state.routes,
-              result.routes,
-              action
-            );
+            const isPrevented =
+              action.type !== 'ROUTE_NAMES_CHANGED' &&
+              shouldPreventRemove(
+                emitter,
+                preventRemoveListeners,
+                isRoutePrevented,
+                getPreventableRoutes(state),
+                getPreventableRoutes(result, state.type),
+                action
+              );
 
             if (isPrevented) {
               return true;
             }
 
+            emitBeforeRemove(
+              emitter,
+              beforeRemoveListeners,
+              getPreventableRoutes(state),
+              getPreventableRoutes(result, state.type),
+              action
+            );
             setState(result);
           }
 
@@ -145,6 +166,7 @@ export function useOnAction<State extends NavigationState>({
       beforeRemoveListeners,
       emitter,
       getState,
+      isRoutePrevented,
       navigationInChildEnabled,
       key,
       onActionParent,
@@ -152,12 +174,15 @@ export function useOnAction<State extends NavigationState>({
       onRouteFocusParent,
       router,
       setState,
+      preventRemoveListeners,
     ]
   );
 
   useOnPreventRemove({
     getState,
+    isRoutePrevented,
     emitter,
+    preventRemoveListeners,
     beforeRemoveListeners,
   });
 

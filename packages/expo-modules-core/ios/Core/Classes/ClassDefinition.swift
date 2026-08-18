@@ -142,7 +142,7 @@ public final class ClassDefinition: ObjectDefinition {
 // MARK: - ClassAssociatedObject
 
 /**
- A protocol for types that can be used an associated type of the ``ClassDefinition``.
+ A protocol for types that can be used as an associated type of the ``ClassDefinition``.
  */
 internal protocol ClassAssociatedObject: ~Copyable {}
 

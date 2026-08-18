@@ -10,10 +10,45 @@
 
 ### 🐛 Bug fixes
 
-- Inline `EXPO_PUBLIC_USE_RN_FETCH` inside `node_modules` so the `expo/fetch` opt-out works in production builds. ([#46986](https://github.com/expo/expo/pull/46986) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+- Escape backslashes when serializing `'widget'` functions so escape sequences like `\n` in a widget layout survive the template-literal round-trip instead of corrupting the stored function and crashing the widget with `SyntaxError: Unexpected EOF`. ([#47626](https://github.com/expo/expo/pull/47626) by [@alecmolloy](https://github.com/alecmolloy))
+- Fix legacy decorators on class properties when corresponding class transforms are disabled, which the decorators plugin relies on ([#47724](https://github.com/expo/expo/pull/47724) by [@Gitarcitano](https://github.com/Gitarcitano), [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+## 57.0.5 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- Bump `babel-plugin-syntax-hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
+- Inline `EXPO_PUBLIC_USE_RN_FETCH` inside `node_modules` so the `expo/fetch` opt-out works in production builds. ([#46986](https://github.com/expo/expo/pull/46986) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 56.0.15 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.14 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.13 — 2026-05-26
 

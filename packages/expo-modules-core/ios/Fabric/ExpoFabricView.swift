@@ -56,7 +56,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    The view creator expected to be called for derived ExpoFabricView, the `viewDefinition` and event dispatchers will be setup from here.
 
    NOTE: We swizzle the initializers, e.g. `ViewManagerAdapter_ExpoImage.new()` to `ImageView.init(appContext:)`
-   and we also need viewDefintion (or moduleName) for the `installEventDispatchers()`.
+   and we also need viewDefinition (or moduleName) for the `installEventDispatchers()`.
    Swizzling ExpoFabricView doesn't give us chance to inject iMethod or iVar of ImageView and pass the moduleName.
    Alternatively, we try to add a dedicated `ExpoFabricView.create()` and passing viewDefinition into the class.
    That's not a perfect implementation but turns out to be the only way to get the viewDefinition (or moduleName).

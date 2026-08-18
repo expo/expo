@@ -8,10 +8,33 @@
 
 ### 🐛 Bug fixes
 
-- Add missing `expo` peer dependency. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
-- Preserve Error call stacks when capturing component stacks. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Fix the web overlay bundle printing a `Deep imports from the 'react-native' package are deprecated` warning on every load. ([#47772](https://github.com/expo/expo/pull/47772) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Resolve development server requests from the URL the bundle was loaded from, instead of the default Metro address ([#48276](https://github.com/expo/expo/pull/48276) by [@kitten](https://github.com/kitten))
+- Stop the iOS webview wrapper printing `Unknown message type` for DOM runtime messages that LogBox does not handle, matching Android. ([#48813](https://github.com/expo/expo/pull/48813) by [@kudo](https://github.com/Kudo))
 
 ### 💡 Others
+
+- Get the development server address from the loaded bundle. ([#48722](https://github.com/expo/expo/pull/48722) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+## 57.0.2 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- Add missing `expo` peer dependency. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.13 - 2026-06-10
+
+### 🐛 Bug fixes
+
+- Preserve Error call stacks when capturing component stacks. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 56.0.12 — 2026-05-20
 

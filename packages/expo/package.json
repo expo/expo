@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "56.0.5",
+  "version": "57.0.9",
   "description": "The Expo SDK",
   "keywords": [
     "expo"
@@ -95,6 +95,14 @@
       },
       "expo-source": "./src/winter/installGlobal.ts",
       "default": "./build/winter/installGlobal.js"
+    },
+    "./internal/bundle-origin": {
+      "types": {
+        "expo-source": "./src/utils/getBundleOrigin.ts",
+        "default": "./build/utils/getBundleOrigin.d.ts"
+      },
+      "expo-source": "./src/utils/getBundleOrigin.ts",
+      "default": "./build/utils/getBundleOrigin.js"
     },
     "./internal/*": {
       "types": "./internal/*.d.ts",
@@ -222,7 +230,7 @@
     "expo-modules-core": "workspace:~56.0.13",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
-    "whatwg-url-minimum": "^0.1.2"
+    "whatwg-url-minimum": "^0.2.0"
   },
   "devDependencies": {
     "@expo/dom-webview": "workspace:*",
