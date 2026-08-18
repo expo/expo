@@ -11,7 +11,7 @@ export async function getProjectConfigAsync(
 ): Promise<ProjectConfig> {
   const result = await spawnExpoCLI(projectRoot, ['config', '--json', '--full'], {
     stdio: 'pipe',
-    env: { EXPO_CONFIG_MODE: mode, EXPO_DEBUG: '0' },
+    env: { __EXPO_CONFIG_MODE: mode, EXPO_DEBUG: '0' },
   });
 
   let parsed: any;
