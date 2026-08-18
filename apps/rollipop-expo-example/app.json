@@ -13,7 +13,8 @@
       "bundler": "rollipop"
     },
     "android": {
-      "package": "com.example.app"
+      "package": "com.example.app",
+      "bundler": "rollipop"
     },
     "web": {
       "bundler": "metro"
