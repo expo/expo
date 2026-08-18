@@ -98,6 +98,7 @@ namespace react = facebook::react;
 - (void)prepareForRecycle
 {
   // Default implementation does nothing.
+  [self clearContentOrigin];
   _eventEmitter.reset();
 }
 
@@ -188,6 +189,7 @@ namespace react = facebook::react;
 
 - (void)setContentOrigin:(CGPoint)contentOrigin
 {
+  self.publishedContentOriginTag = self.tag;
   expo::ContentOriginRegistry::set(
     (react::Tag)self.tag,
     react::Point{.x = (react::Float)contentOrigin.x, .y = (react::Float)contentOrigin.y});
@@ -195,7 +197,11 @@ namespace react = facebook::react;
 
 - (void)clearContentOrigin
 {
-  expo::ContentOriginRegistry::clear((react::Tag)self.tag);
+  // Not `self.tag`: by the time a teardown hook runs, React Native has already zeroed it.
+  if (self.publishedContentOriginTag != 0) {
+    expo::ContentOriginRegistry::clear((react::Tag)self.publishedContentOriginTag);
+    self.publishedContentOriginTag = 0;
+  }
 }
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name
