@@ -64,4 +64,18 @@
   XCTAssertEqualObjects(installationID, requestHeaders[@"Expo-Dev-Client-ID"]);
 }
 
+- (void)testCreateUpdatesConfiguration_forwardingHeaders
+{
+  NSURL *url = [NSURL URLWithString:@"https://proxy.example.dev/dev/manifest"];
+  NSDictionary *configuration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:url
+                                                                                   projectURL:url
+                                                                               runtimeVersion:@"1.0.0"
+                                                                               installationID:nil];
+
+  NSDictionary *requestHeaders = configuration[@"EXUpdatesRequestHeaders"];
+  XCTAssertEqualObjects(@"host=\"proxy.example.dev\";proto=https", requestHeaders[@"Forwarded"]);
+  XCTAssertEqualObjects(@"proxy.example.dev", requestHeaders[@"X-Forwarded-Host"]);
+  XCTAssertEqualObjects(@"https", requestHeaders[@"X-Forwarded-Proto"]);
+}
+
 @end

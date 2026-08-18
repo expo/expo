@@ -6,13 +6,16 @@ import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 import path from 'path';
 import semver from 'semver';
 
+import type { LoadedModuleSource } from '../ExpoConfigLoader';
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
-import { toPosixPath } from '../utils/Path';
+import { getNodeModulesPackageJsonPath, toPosixPath } from '../utils/Path';
 import { SourceSkips } from './SourceSkips';
 import {
+  createAutolinkingHashSourceAsync,
   getFileBasedHashSourceAsync,
   maybeGetRealPathAsync,
+  readPackageIdentityAsync,
   relativizeJsonPaths,
   stringifyJsonSorted,
 } from './Utils';
@@ -22,7 +25,7 @@ const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 export async function getExpoConfigSourcesAsync(
   projectRoot: string,
   config: ProjectConfig | null,
-  loadedModules: string[] | null,
+  loadedModules: LoadedModuleSource[] | null,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
   if (options.sourceSkips & SourceSkips.ExpoConfigAll) {
@@ -43,9 +46,11 @@ export async function getExpoConfigSourcesAsync(
     'expo-splash-screen'
   );
   const fontPluginProps = getConfigPluginProps<{
-    // Type mirrors FontProps from expo-font/plugin/src/withFonts.ts
+    // Type mirrors FontProps from expo-font/plugin/src/withFonts.ts and must stay in sync with it
     fonts?: string[];
-    android?: { fonts?: (string | { fontDefinitions: { path: string }[] })[] };
+    android?: {
+      fonts?: (string | { path?: string; fontDefinitions: { path?: string }[] })[];
+    };
     ios?: { fonts?: string[] };
   }>(expoConfig, 'expo-font');
 
@@ -55,7 +60,11 @@ export async function getExpoConfigSourcesAsync(
     ...(isIos ? (fontPluginProps?.ios?.fonts ?? []) : []),
     ...(isAndroid
       ? (fontPluginProps?.android?.fonts ?? []).flatMap((f) =>
-          typeof f === 'string' ? [f] : (f.fontDefinitions ?? []).map((d) => d.path)
+          typeof f === 'string'
+            ? [f]
+            : // When a variable font file backs several definitions,
+              // a family may name the file path once instead of each definition repeating it
+              (f.fontDefinitions ?? []).map((d) => d.path ?? f.path)
         )
       : []),
 
@@ -111,11 +120,35 @@ export async function getExpoConfigSourcesAsync(
   });
 
   // config plugins
-  const configPluginModules: HashSource[] = (loadedModules ?? []).map((modulePath) => ({
-    type: 'file',
-    filePath: toPosixPath(modulePath),
-    reasons: ['expoConfigPlugins'],
-  }));
+  // With `configPluginSourceType: 'package'`, node_modules plugin files collapse to their package
+  // name+version; in-repo files and virtual modules are hashed directly.
+  const configPluginModules: HashSource[] = await Promise.all(
+    (loadedModules ?? []).map(async (loadedModule): Promise<HashSource> => {
+      if (loadedModule.type === 'contents') {
+        return {
+          type: 'contents',
+          id: loadedModule.id,
+          contents: loadedModule.contents,
+          reasons: ['expoConfigPlugins'],
+        };
+      }
+      if (options.configPluginSourceType === 'package') {
+        const packageJsonPath = getNodeModulesPackageJsonPath(loadedModule.path);
+        if (packageJsonPath) {
+          const identity = await readPackageIdentityAsync(path.join(projectRoot, packageJsonPath));
+          if (identity) {
+            return {
+              type: 'package',
+              ...identity,
+              filePath: packageJsonPath,
+              reasons: ['expoConfigPlugins'],
+            };
+          }
+        }
+      }
+      return { type: 'file', filePath: loadedModule.path, reasons: ['expoConfigPlugins'] };
+    })
+  );
   results.push(...configPluginModules);
 
   return results;
@@ -260,7 +293,10 @@ export async function createHashSourceExternalFileAsync({
 }
 
 export async function getEasBuildSourcesAsync(projectRoot: string, options: NormalizedOptions) {
-  const files = ['eas.json', '.easignore'];
+  const files = [
+    ...(options.sourceSkips & SourceSkips.EasJson ? [] : ['eas.json']),
+    ...(options.sourceSkips & SourceSkips.Easignore ? [] : ['.easignore']),
+  ];
   const results = (
     await Promise.all(
       files.map(async (file) => {
@@ -299,7 +335,14 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
         const filePath = toPosixPath(path.relative(realProjectRoot, project.sourceDir));
         project.sourceDir = filePath; // use relative path for the dir
         debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
-        results.push({ type: 'dir', filePath, reasons });
+        results.push(
+          await createAutolinkingHashSourceAsync(
+            realProjectRoot,
+            filePath,
+            reasons,
+            options.nativeModuleSourceType
+          )
+        );
         // `aarProjects` is present in project starting from SDK 53+.
         if (project.aarProjects) {
           for (const aarProject of project.aarProjects) {
@@ -324,7 +367,14 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
           const filePath = toPosixPath(path.relative(realProjectRoot, plugin.sourceDir));
           plugin.sourceDir = filePath; // use relative path for the dir
           debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
-          results.push({ type: 'dir', filePath, reasons });
+          results.push(
+            await createAutolinkingHashSourceAsync(
+              realProjectRoot,
+              filePath,
+              reasons,
+              options.nativeModuleSourceType
+            )
+          );
         }
       }
       // Backward compatibility for SDK versions earlier than 53
@@ -393,7 +443,14 @@ export async function getExpoAutolinkingIosSourcesAsync(
         const filePath = toPosixPath(path.relative(realProjectRoot, pod.podspecDir));
         pod.podspecDir = filePath; // use relative path for the dir
         debug(`Adding expo-modules-autolinking ios dir - ${chalk.dim(filePath)}`);
-        results.push({ type: 'dir', filePath, reasons });
+        results.push(
+          await createAutolinkingHashSourceAsync(
+            realProjectRoot,
+            filePath,
+            reasons,
+            options.nativeModuleSourceType
+          )
+        );
       }
     }
     results.push({

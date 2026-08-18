@@ -28,7 +28,8 @@ public class ApplicationModule: Module {
     }
 
     AsyncFunction("getInstallationTimeAsync") { () -> Double in
-      guard let urlToDocumentsFolder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last else {
+      guard let urlToDocumentsFolder = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last
+      else {
         throw UrlDocumentDirectoryException()
       }
 

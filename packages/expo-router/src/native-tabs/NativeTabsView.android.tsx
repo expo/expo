@@ -37,13 +37,13 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
   const children = tabs.map((tab, index) => (
     <Screen
-      key={tab.routeKey}
-      routeKey={tab.routeKey}
+      key={tab.name}
       name={tab.name}
       options={tab.options}
-      isFocused={selectedScreenKey === tab.routeKey}
+      isFocused={selectedScreenKey === tab.name}
       androidAppearance={androidAppearances[index]!}
       contentRenderer={tab.contentRenderer}
+      tabBarHidden={props.hidden}
     />
   ));
 
@@ -69,10 +69,11 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
 interface InternalTabScreenProps extends SharedInternalTabScreenProps {
   androidAppearance: TabsScreenAppearanceAndroid;
+  tabBarHidden?: boolean;
 }
 
 function Screen(props: InternalTabScreenProps) {
-  const { options, androidAppearance, contentRenderer } = props;
+  const { options, androidAppearance, contentRenderer, tabBarHidden } = props;
 
   const shared = useSharedScreenProps(props);
 
@@ -83,7 +84,7 @@ function Screen(props: InternalTabScreenProps) {
 
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
   const wrappedContent = useMemo(() => {
-    if (!options.disableAutomaticContentInsets) {
+    if (!options.disableAutomaticContentInsets && !tabBarHidden) {
       return (
         <SafeAreaView
           // https://github.com/software-mansion/react-native-screens/issues/2662#issuecomment-2757735088
@@ -95,7 +96,7 @@ function Screen(props: InternalTabScreenProps) {
       );
     }
     return content;
-  }, [content, options.disableAutomaticContentInsets]);
+  }, [content, options.disableAutomaticContentInsets, tabBarHidden]);
 
   return (
     <Tabs.Screen

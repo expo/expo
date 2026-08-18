@@ -4,21 +4,55 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] `Asset.getUri()` and `AssetInfo.uri` now resolve a video to the version currently shown in the Photos app instead of the originally captured file. Pass `version: AssetUriVersion.ORIGINAL` to `getUri()` to keep the previous behavior. Note that only `getUri()` accepts the option; `AssetInfo.uri` from `getInfo()` always resolves the current version. ([#48640](https://github.com/expo/expo/pull/48640) by [@barthap](https://github.com/barthap))
+
 ### 🎉 New features
 
+- [iOS] Add a `version` option to `Asset.getUri()` for choosing between the current and the original rendition of an asset. ([#48640](https://github.com/expo/expo/pull/48640) by [@barthap](https://github.com/barthap))
 - [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
+
+### 🐛 Bug fixes
+
+- [Android] Fix transposed `width`/`height` for rotated assets (portrait photos and videos): `Asset.getInfo()`, `getWidth()`/`getHeight()`/`getShape()` and `Query.exeForMetadata()` now honor MediaStore `ORIENTATION`, matching the legacy API. ([#48150](https://github.com/expo/expo/pull/48150) by [@oeddyo](https://github.com/oeddyo))
+
+### 💡 Others
+
+- Re-organize TS code ([#45953](https://github.com/expo/expo/pull/45953) by [@Wenszel](https://github.com/Wenszel))
+
+## 57.0.3 - 2026-07-17
+
+### 🐛 Bug fixes
+
+- [Android] Fix saving files larger than ~2 GB (e.g. `createAssetAsync` with large videos) failing with "Unable to copy file into external storage" by looping `FileChannel.transferTo` until the whole file is copied. ([#47811](https://github.com/expo/expo/pull/47811) by [@jiunshinn](https://github.com/jiunshinn))
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🎉 New features
+
 - Add filtering by `isFavorite` to `Query` ([#45769](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
 - Add `Query.exeForMetadata()` for cheap bulk fetch ([#46485](https://github.com/expo/expo/pull/46485) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix resolving iCloud-offloaded assets ("Optimize iPhone Storage"): allow network access when extracting asset URIs so `Asset.getUri()`, `getInfo()`, `getExif()` and `getOrientation()` can download originals from iCloud, matching the legacy API's `shouldDownloadFromNetwork` default. ([#47790](https://github.com/expo/expo/pull/47790) by [@oeddyo](https://github.com/oeddyo))
 - Add `accessPrivileges` to `PermissionResponse` type ([#47177](https://github.com/expo/expo/pull/47177) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fix permission guards for limited and write-only photo library access. ([#47216](https://github.com/expo/expo/pull/47216) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 
-- [android] Add `getAssetContentUriAsync` for legacy ID migration ([#46854](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
-- Re-organize TS code ([#45953](https://github.com/expo/expo/pull/45953) by [@Wenszel](https://github.com/Wenszel))
+- [android] Add `getAssetContentUriAsync` for legacy ID migration ([#46854](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel)) ([#45769](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.7 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.6 — 2026-05-21
 

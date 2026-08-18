@@ -15,7 +15,7 @@ import {
 
 const mockSetOptions = jest.fn();
 const mockIsFocused = jest.fn().mockReturnValue(true);
-const mockGetState = jest.fn().mockReturnValue({ type: 'stack', preloadedRoutes: [] });
+const mockGetState = jest.fn().mockReturnValue({ type: 'stack', routes: [], index: 0 });
 
 jest.mock('../../../react-navigation/native', () => ({
   useRoute: jest.fn(() => ({ key: 'route-1', name: 'test', params: {} })),
@@ -80,7 +80,7 @@ describe('usePreventZoomTransitionDismissal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockIsFocused.mockReturnValue(true);
-    mockGetState.mockReturnValue({ type: 'stack', preloadedRoutes: [] });
+    mockGetState.mockReturnValue({ type: 'stack', routes: [], index: 0 });
     consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 

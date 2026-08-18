@@ -374,7 +374,7 @@ class AudioModule : Module() {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double ->
+      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double, /* allowsExternalPlayback - iOS only */ _: Boolean? ->
         val mediaSource = createMediaItem(source)
         val bufferDurationMs = (preferredForwardBufferDuration * 1000).toLong()
         runOnMain {
@@ -509,9 +509,13 @@ class AudioModule : Module() {
         }
       }
 
-      Function("replace") { player: AudioPlayer, source: AudioSource ->
+      Function("replace") { player: AudioPlayer, source: AudioSource? ->
         runOnMain {
           if (player.ref.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            if (source == null) {
+              player.clearMediaSource()
+              return@runOnMain
+            }
             val mediaSource = createMediaItem(source)
             val wasPlaying = player.ref.isPlaying
             mediaSource?.let {

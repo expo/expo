@@ -36,7 +36,8 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   internal init(
-    _ runtime: JavaScriptRuntime, buffer: consuming UnsafeMutableBufferPointer<facebook.jsi.Value>,
+    _ runtime: JavaScriptRuntime,
+    buffer: consuming UnsafeMutableBufferPointer<facebook.jsi.Value>,
     ownsMemory: Bool = false
   ) {
     self.runtime = runtime
@@ -47,8 +48,10 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
 
   internal init(_ runtime: JavaScriptRuntime, start: consuming UnsafePointer<facebook.jsi.Value>?, count: Int) {
     self.init(
-      runtime, buffer: UnsafeMutableBufferPointer(start: UnsafeMutablePointer(mutating: start), count: count),
-      ownsMemory: false)
+      runtime,
+      buffer: UnsafeMutableBufferPointer(start: UnsafeMutablePointer(mutating: start), count: count),
+      ownsMemory: false
+    )
   }
 
   internal init(_ runtime: JavaScriptRuntime, buffer: consuming UnsafeBufferPointer<facebook.jsi.Value>) {
@@ -122,13 +125,17 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   /// You must initialize all elements using `set(value:atIndex)` method.
   public static func allocate(in runtime: JavaScriptRuntime, capacity: Int) -> JavaScriptValuesBuffer {
     return JavaScriptValuesBuffer(
-      runtime, buffer: UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: capacity), ownsMemory: true)
+      runtime,
+      buffer: UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: capacity),
+      ownsMemory: true
+    )
   }
 
   /// Allocates new values buffer with the given JS representables.
   /// Note that parameter packs still do not support non-copyable types so they need to be passed as `JavaScriptRef`.
   public static func allocate<each T: JavaScriptRepresentable>(
-    in runtime: JavaScriptRuntime, with values: repeat each T
+    in runtime: JavaScriptRuntime,
+    with values: repeat each T
   ) -> JavaScriptValuesBuffer {
     // First we count parameters in a pack to find the proper buffer capacity. This is still the simplest way.
     var capacity = 0
@@ -170,7 +177,9 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
     for (index, value) in values.enumerated() {
       assert(
-        value.runtime === runtime, "JavaScriptValue belongs to a different runtime than the buffer being initialized")
+        value.runtime === runtime,
+        "JavaScriptValue belongs to a different runtime than the buffer being initialized"
+      )
       buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))
     }
     return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)

@@ -1,10 +1,9 @@
-/* eslint-env jest */
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -28,7 +27,7 @@ describe('export server with magic import comments', () => {
   it('has expected syntax', async () => {
     expect(
       fs.readFileSync(path.resolve(outputDir, 'server/_expo/functions/methods+api.js'), 'utf8')
-    ).toMatch(/=await import\('path'\);/);
+    ).toMatch(/=await import\(["']path["']\);/);
   });
 
   describe('server', () => {

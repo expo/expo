@@ -1,10 +1,11 @@
-import { useState } from 'react';
 import { Play } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+
+import { DataTable } from '@/components/DataTable';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { DataTable } from '@/components/DataTable';
 import type { QueryResult } from '@/types';
-import { toast } from 'sonner';
 
 interface QueryEditorProps {
   onExecuteQuery: (query: string) => Promise<QueryResult>;

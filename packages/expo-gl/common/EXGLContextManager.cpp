@@ -27,8 +27,8 @@ ContextManager manager;
 // a different thread which also needs to hold a shared lock. This situation can lead
 // to deadlock if unique lock have a priority and flush can never start.
 //
-// This solution resolves an issue, but introduces a risk that uniqe lock will never
-// be establish, but given the use-case that should never happen.
+// This solution resolves an issue, but introduces a risk that unique lock will never
+// be established, but given the use-case that should never happen.
 std::unique_lock<std::shared_mutex> getUniqueLockSafely(std::shared_mutex &mutex) {
   std::unique_lock lock(mutex, std::defer_lock);
   while (!lock.try_lock()) {

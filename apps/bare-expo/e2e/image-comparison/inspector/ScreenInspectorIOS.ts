@@ -4,13 +4,23 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'node:fs';
 import path from 'node:path';
 
-interface CoordinatesRequest {
-  action: 'getCoordinates';
-  accessibilityId: string;
+type InspectorRequestBody =
+  | {
+      action: 'getCoordinates';
+      accessibilityId: string;
+    }
+  | {
+      action: 'captureView';
+      accessibilityId: string;
+      // Path where the inspector writes the captured PNG.
+      outputPath: string;
+    };
+
+type InspectorRequest = InspectorRequestBody & {
   // Unique response pipe created by the client for this request, so that a response can never
   // pair with another request's reader; see resolveResponsePipePath in ScreenInspector.swift.
   responsePipe: string;
-}
+};
 
 let nextRequestId = 0;
 
@@ -22,6 +32,9 @@ interface InspectorResponse {
     width: number;
     height: number;
   };
+  path?: string;
+  width?: number;
+  height?: number;
   error: string;
 }
 
@@ -52,12 +65,55 @@ export class ScreenInspectorIOS {
     width: number;
     height: number;
   }> {
+    const response = await this.sendRequest(
+      {
+        action: 'getCoordinates',
+        accessibilityId,
+      },
+      timeoutMs
+    );
+
+    if (!response.success) {
+      throw new Error(`Get coordinates failed: ${response.error}`);
+    }
+
+    if (!response.bounds) {
+      throw new Error('No bounds returned in response');
+    }
+
+    return response.bounds;
+  }
+
+  async captureView(
+    accessibilityId: string,
+    outputPath: string,
+    timeoutMs: number = 15000
+  ): Promise<string> {
+    const response = await this.sendRequest(
+      {
+        action: 'captureView',
+        accessibilityId,
+        outputPath,
+      },
+      timeoutMs
+    );
+
+    if (!response.success) {
+      throw new Error(`Capture view failed: ${response.error}`);
+    }
+
+    if (!response.path) {
+      throw new Error('No output path returned in response');
+    }
+
+    return response.path;
+  }
+
+  private async sendRequest(
+    request: InspectorRequestBody,
+    timeoutMs: number
+  ): Promise<InspectorResponse> {
     const responsePipePath = `${this.responsePipePath}_${process.pid}_${nextRequestId++}`;
-    const request: CoordinatesRequest = {
-      action: 'getCoordinates',
-      accessibilityId,
-      responsePipe: responsePipePath,
-    };
 
     await spawnAsync('mkfifo', [responsePipePath]);
     let responseFd: number | null = null;
@@ -67,21 +123,14 @@ export class ScreenInspectorIOS {
       // abandoned request leaks nothing.
       responseFd = fs.openSync(responsePipePath, fs.constants.O_RDONLY | fs.constants.O_NONBLOCK);
 
-      await this.writeToNamedPipe(this.requestPipePath, request);
+      await this.writeToNamedPipe(this.requestPipePath, {
+        ...request,
+        responsePipe: responsePipePath,
+      });
 
-      const response = await this.pollResponse(responseFd, timeoutMs);
-
-      if (!response.success) {
-        throw new Error(`Get coordinates failed: ${response.error}`);
-      }
-
-      if (!response.bounds) {
-        throw new Error('No bounds returned in response');
-      }
-
-      return response.bounds;
+      return await this.pollResponse(responseFd, timeoutMs);
     } catch (error: any) {
-      console.error('❌ iOS get coordinates failed:', error.message);
+      console.error(`❌ iOS ${request.action} request failed:`, error.message);
       throw error;
     } finally {
       if (responseFd != null) {
@@ -93,7 +142,7 @@ export class ScreenInspectorIOS {
 
   private async writeToNamedPipe(
     pipePath: string,
-    request: CoordinatesRequest,
+    request: InspectorRequest,
     timeoutMs: number = 10000
   ): Promise<void> {
     const buffer = Buffer.from(JSON.stringify(request), 'utf8');

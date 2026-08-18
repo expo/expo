@@ -1,10 +1,10 @@
 {
-  "id": "local-1778543314315",
-  "createdAt": "2026-05-11T23:48:34.315Z",
+  "id": "local-1785499534226",
+  "createdAt": "2026-07-31T12:05:34.226Z",
   "runtimeVersion": "exposdk:unknown",
   "metadata": {
     "source": "local-build",
-    "sourceDir": "/Users/brent/code/snack/runtime"
+    "sourceDir": "/Users/alanhughes/Work/snack/runtime"
   },
   "extra": {
     "expoClient": {

@@ -448,7 +448,7 @@ PLATFORMS=("${platforms_to_build[@]}")
 # generated modulemap is left intact — it was already regenerated above for the
 # cache hash, so wiping it here would just force a redundant rebuild.
 log "Clearing stale build state (DerivedData, SwiftPM) before rebuild"
-rm -rf "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
+safe_remove_dirs "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
 
 SECONDS=0
 

@@ -1,12 +1,16 @@
-// The widget bundle is plain Node-targeted TS (the JSX runtime is a hand-written
-// stub, not real JSX syntax), and its tests live under `bundle/__tests__` rather
-// than `src`. Use the SWC-based CLI preset (Node env, type-stripping transform)
-// and point `roots` at `bundle` so the test suite is discovered and transpiled.
-/** @type {import('jest').Config} */
-module.exports = {
-  ...require('expo-module-scripts/jest-preset-cli'),
-  clearMocks: true,
-  displayName: require('./package').name,
-  rootDir: __dirname,
-  roots: ['bundle'],
-};
+// `bundle` tests are plain Node-targeted TS (hand-written JSX runtime stub, not real JSX), so
+// they run on the CLI preset in place of the default `src` projects; `plugin` runs as its own
+// project — so a single `jest` invocation covers the whole package.
+const { watchPlugins, prettierPath, ...cliPreset } = require('expo-module-scripts/jest-preset-cli');
+
+module.exports = require('expo-module-scripts/createCompositeJestPreset')(__dirname, ['plugin'], {
+  srcProjects: [
+    {
+      ...cliPreset,
+      displayName: 'bundle',
+      clearMocks: true,
+      rootDir: __dirname,
+      roots: ['bundle'],
+    },
+  ],
+});

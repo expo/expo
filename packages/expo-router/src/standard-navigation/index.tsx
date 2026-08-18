@@ -4,11 +4,11 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
+import { getValidInitialRouteName, useRouteNode } from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
   type DefaultRouterOptions,
-  type EventMapBase,
   type NavigationAction,
   type NavigationState,
   type RouterFactory,
@@ -21,7 +21,6 @@ import type {
   StandardRouterNavigatorProps,
   StandardUseNavigationBuilderOptions,
 } from './types';
-import { useProjectedDescriptors } from './useProjectedDescriptors';
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
@@ -29,6 +28,7 @@ import { useStandardState } from './useStandardState';
 export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
+  StandardNavigatorDescriptor,
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './types';
@@ -36,12 +36,42 @@ export type {
 const SUPPORTED_VERSION = 1;
 const STANDARD_NAVIGATOR_TYPE = 'standard';
 
+// A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
+// required otherwise; a normal optional parameter would accept `undefined` in both cases.
+type IntegrateWithRouterOptionsTuple<
+  State extends NavigationState,
+  CreateProps extends object,
+  NavigatorOptions extends object,
+  EventMap extends StandardNavigatorEventMapBase,
+> = [keyof CreateProps] extends [never]
+  ? [options?: IntegrateWithRouterOptions<State, CreateProps, NavigatorOptions, EventMap>]
+  : [options: IntegrateWithRouterOptions<State, CreateProps, NavigatorOptions, EventMap>];
+
+type StandardRouterNavigatorComponent<
+  NavigatorOptions extends object,
+  State extends NavigationState,
+  EventMap extends StandardNavigatorEventMapBase,
+  NavigatorProps extends object,
+  RouterOptions extends DefaultRouterOptions,
+> = ReturnType<
+  typeof withLayoutContext<
+    NavigatorOptions,
+    ComponentType<
+      StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>
+    >,
+    State,
+    EventMap
+  >
+>;
+
 /**
  * > **warning** This API is unstable and may change between minor releases.
  *
  * Creates a [`standard-navigation`](https://www.npmjs.com/package/standard-navigation) navigator and
  * wires it into Expo Router in one step. Use `unstable_integrateWithRouter` instead if you already
  * have a navigator from `createStandardNavigator`.
+ * Props declared in both `NavigatorProps` and `CreateProps` are intersected, so incompatible types
+ * produce `never` rather than a type error at this call.
  *
  * @param NavigatorContent Renders the navigator UI; receives the standard-navigation `state`,
  * `descriptors`, `actions`, and `emitter`.
@@ -61,23 +91,38 @@ export function unstable_createStandardRouterNavigator<
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
 >(
   NavigatorContent: ComponentType<
-    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps>
+    NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps, CreateProps>
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  options?: IntegrateWithRouterOptions<State, NavigatorProps>
-) {
-  const navigator = createStandardNavigator<NavigatorOptions, EventMap, NavigatorProps>(
-    NavigatorContent
-  );
+  ...options: IntegrateWithRouterOptionsTuple<
+    State,
+    NoInfer<CreateProps>,
+    NavigatorOptions,
+    EventMap
+  >
+): StandardRouterNavigatorComponent<
+  NavigatorOptions,
+  State,
+  EventMap,
+  NavigatorProps,
+  RouterOptions
+> {
+  const navigator = createStandardNavigator<
+    NavigatorOptions,
+    EventMap,
+    NavigatorProps & CreateProps
+  >(NavigatorContent);
   return unstable_integrateWithRouter<
     NavigatorOptions,
     State,
     EventMap,
     NavigatorProps,
-    RouterOptions
-  >(navigator, router, options);
+    RouterOptions,
+    CreateProps
+  >(navigator, router, ...options);
 }
 
 /**
@@ -106,10 +151,16 @@ export function unstable_integrateWithRouter<
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
+  CreateProps extends object = object,
 >(
-  navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps>,
+  navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps & CreateProps>,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  options?: IntegrateWithRouterOptions<State, NavigatorProps>
+  ...[options]: IntegrateWithRouterOptionsTuple<
+    State,
+    NoInfer<CreateProps>,
+    NavigatorOptions,
+    EventMap
+  >
 ) {
   assertStandardNavigator(navigator);
   const { NavigatorContent } = navigator;
@@ -123,14 +174,15 @@ export function unstable_integrateWithRouter<
   >;
 
   function StandardRouterNavigator(props: NavPropsType) {
+    const routeNode = useRouteNode();
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
       NavigatorOptions,
       State,
       EventMap,
       NavigatorProps,
       RouterOptions
-    >(props);
-    const { state, navigation, descriptors, describe, NavigationContent } = useNavigationBuilder<
+    >(props, getValidInitialRouteName(routeNode));
+    const { state, navigation, describe, descriptors, NavigationContent } = useNavigationBuilder<
       State,
       RouterOptions,
       Record<string, (...args: unknown[]) => void>,
@@ -140,14 +192,26 @@ export function unstable_integrateWithRouter<
 
     const { dispatch } = navigation;
 
-    const derivedProps = useMemo<Partial<NavigatorProps>>(
-      () => options?.createProps?.({ state, dispatch, navigation }) ?? {},
-      [state, dispatch, navigation, options]
+    const processedDescriptors = useMemo(
+      () =>
+        (options?.processDescriptors?.(descriptors, state, describe) as
+          | typeof descriptors
+          | undefined) ?? descriptors,
+      [state, descriptors, describe, options]
+    );
+    const processedState = useMemo(
+      () => options?.processState?.(state, processedDescriptors, describe) ?? state,
+      [state, processedDescriptors, describe, options]
+    );
+
+    const derivedProps = useMemo<Partial<CreateProps>>(
+      () => options?.createProps?.({ state: processedState, dispatch, navigation }) ?? {},
+      [processedState, dispatch, navigation, options]
     );
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
-      state: useStandardState(state),
-      descriptors: useProjectedDescriptors(state, descriptors, describe),
+      state: useStandardState(processedState),
+      descriptors: processedDescriptors,
       actions: useStandardActions(navigation, state.key),
       emitter: useStandardEmitter(navigation),
     };
@@ -162,19 +226,19 @@ export function unstable_integrateWithRouter<
           // its type, so the TS contract keeps users from reading router options off `NavigatorContent`
           // in the common case, even though they are physically present on the object.
           {...(extraProps as unknown as NavigatorProps)}
-          {...derivedProps}
+          // `derivedProps` is partial only when `CreateProps` is empty; otherwise `createProps` is
+          // required and returns the complete shape.
+          {...(derivedProps as CreateProps)}
           {...standardArgs}
         />
       </NavigationContent>
     );
   }
 
-  return withLayoutContext<
-    NavigatorOptions,
-    typeof StandardRouterNavigator,
-    State,
-    EventMap & EventMapBase
-  >(StandardRouterNavigator, undefined, options?.useOnlyUserDefinedScreens);
+  return withLayoutContext<NavigatorOptions, typeof StandardRouterNavigator, State, EventMap>(
+    StandardRouterNavigator,
+    options?.processScreens
+  );
 }
 
 /**
@@ -195,13 +259,15 @@ function partitionNavigatorProps<
     NavigatorProps,
     RouterOptions
   > & {
+    initialRouteName?: unknown;
     ref?: unknown;
-  }
+  },
+  routeNodeInitialRouteName?: string
 ) {
   const {
     id,
     children,
-    initialRouteName,
+    initialRouteName: _initialRouteName,
     layout,
     // `ref` is supplied by `withLayoutContext` and consumed by React; it must not be forwarded
     // to `NavigatorContent`, so it is pulled out of the props here and intentionally dropped.
@@ -209,7 +275,6 @@ function partitionNavigatorProps<
     screenLayout,
     screenListeners,
     screenOptions,
-    UNSTABLE_routeNamesChangeBehavior,
     UNSTABLE_router,
     ...extraProps
   } = props;
@@ -225,12 +290,11 @@ function partitionNavigatorProps<
   > = {
     id,
     children,
-    initialRouteName,
+    initialRouteName: routeNodeInitialRouteName,
     layout,
     screenLayout,
     screenListeners,
     screenOptions,
-    UNSTABLE_routeNamesChangeBehavior,
     UNSTABLE_router,
   };
   return {

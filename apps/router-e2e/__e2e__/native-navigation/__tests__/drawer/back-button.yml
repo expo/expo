@@ -1,0 +1,35 @@
+env:
+  APP_ID: com.expo.routere2e
+appId: ${APP_ID}
+name: Drawer Android back button
+---
+# Back button only exists on Android; this flow is a no-op on iOS.
+- runFlow:
+    when:
+      platform: Android
+    commands:
+      - stopApp: ${APP_ID}
+      - openLink: router-e2e://drawer
+      - runFlow: ../close-warning.yml
+
+      # Back closes an open drawer instead of navigating away
+      - tapOn:
+          id: "e2e-open-drawer"
+      - waitForAnimationToEnd
+      - assertVisible: "Drawer Home"
+      - assertVisible: "Drawer Second"
+      - back
+      - waitForAnimationToEnd
+      - assertVisible: "closed"
+      - assertVisible: "Home screen"
+
+      # With the drawer closed, back returns to the drawer's first route
+      - tapOn:
+          id: "e2e-goto-second"
+      - assertVisible: "Second screen"
+      - back
+      - waitForAnimationToEnd
+      - assertVisible: "Home screen"
+      - assertVisible:
+          id: "e2e-pathname"
+          text: "/drawer"

@@ -484,7 +484,7 @@ declare module 'react-native-web/dist/modules/usePlatformMethods' {
   import type { GenericStyleProp } from 'react-native-web/dist/types';
 
   /**
-   * Adds non-standard methods to the hode element. This is temporarily until an
+   * Adds non-standard methods to the host element. This is temporarily until an
    * API like `ReactNative.measure(hostRef, callback)` is added to React Native.
    */
   export default function usePlatformMethods(methods: {

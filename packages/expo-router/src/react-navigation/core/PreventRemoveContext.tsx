@@ -2,7 +2,7 @@
 import * as React from 'react';
 
 /**
- * A type of an object that have a route key as an object key
+ * A type of an object that has a route key as an object key
  * and a value whether to prevent that route.
  */
 export type PreventedRoutes = Record<string, { preventRemove: boolean }>;

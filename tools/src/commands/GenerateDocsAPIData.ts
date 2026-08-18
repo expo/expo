@@ -121,6 +121,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/icon': ['jetpack-compose/Icon/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/iconbutton': ['jetpack-compose/IconButton/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/image': ['jetpack-compose/Image/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/box': ['jetpack-compose/Box/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/row': ['jetpack-compose/Row/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/column': ['jetpack-compose/Column/index.tsx', 'expo-ui'],
@@ -286,6 +287,7 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
+  'expo-observe': ['index.ts'],
   'expo-widgets': ['index.ts'],
   ...uiPackagesMapping,
 };
@@ -454,6 +456,7 @@ async function action({ packageName, sdk }: ActionOptions) {
     for (const { key, reason } of failures) {
       logger.error(`💥 Failed to generate docs API data for '${key}':`, reason);
     }
+    process.exitCode = 1;
     return;
   }
   logger.log(

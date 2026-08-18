@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "56.0.13",
+  "version": "57.0.5",
   "description": "The Babel preset for Expo projects",
   "keywords": [
     "babel",

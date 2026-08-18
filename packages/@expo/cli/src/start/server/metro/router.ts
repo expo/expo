@@ -10,8 +10,8 @@ import { directoryExistsSync, isPathInside } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { learnMore } from '../../../utils/link';
-
-const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
+import type { EnvironmentMode } from '../../../utils/nodeEnv';
+import { event } from './routerEvents';
 
 /**
  * Get the relative path for requiring the `/app` folder relative to the `expo-router/entry` file.
@@ -30,7 +30,11 @@ export function getAppRouterRelativeEntryPath(
   // It doesn't matter if the app folder exists.
   const appFolder = path.join(projectRoot, routerDirectory);
   const appRoot = path.relative(path.dirname(routerEntry), appFolder);
-  debug('expo-router entry', routerEntry, appFolder, appRoot);
+  event('entry_resolved', {
+    routerEntry: event.path(routerEntry),
+    appFolder: event.path(appFolder),
+    appRoot,
+  });
   return appRoot;
 }
 
@@ -75,7 +79,6 @@ export function getRouterDirectory(projectRoot: string): string {
     return path.join('src', 'app');
   }
 
-  debug('Using app as the root directory for Expo Router.');
   return 'app';
 }
 
@@ -92,10 +95,10 @@ export function getApiRoutesForDirectory(cwd: string) {
 }
 
 /**
- * Gets the +middleware file for a given directory. In
+ * Gets the +middleware file for a given directory.
  * @param cwd
  */
-export function getMiddlewareForDirectory(cwd: string): string | null {
+export function getMiddlewareForDirectory(cwd: string, mode: EnvironmentMode): string | null {
   const files = globSync('+middleware.@(ts|tsx|js|jsx)', {
     cwd,
     absolute: true,
@@ -106,7 +109,7 @@ export function getMiddlewareForDirectory(cwd: string): string | null {
 
   if (files.length > 1) {
     // In development, throw an error if there are multiple root-level middleware files
-    if (process.env.NODE_ENV !== 'production') {
+    if (mode === 'development') {
       const relativePaths = files.map((f) => './' + path.relative(cwd, f)).sort();
       throw new Error(
         `Only one middleware file is allowed. Keep one of the conflicting files: ${relativePaths.map((p) => `"${p}"`).join(' or ')}`

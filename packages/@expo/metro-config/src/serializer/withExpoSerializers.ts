@@ -17,6 +17,7 @@ import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
+import { event } from './events';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { sourceMapString } from './sourceMap';
@@ -389,13 +390,16 @@ export function createSerializerFromSerialProcessors(
   return wrapSerializerWithOriginal(
     originalSerializer,
     async (...props: SerializerParameters): ReturnType<Serializer> => {
+      const done = event.span();
       for (const processor of processors) {
         if (processor) {
           props = await processor(...props);
         }
       }
 
-      return finalSerializer(...props);
+      const result = await finalSerializer(...props);
+      done('serialize', { modules: props[2]?.dependencies?.size ?? 0 });
+      return result;
     }
   );
 }

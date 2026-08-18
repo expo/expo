@@ -95,7 +95,7 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
 
 To use `expo-sqlite` on web, you need to configure Metro bundler to support **wasm** files and add HTTP headers to allow [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) usage.
 
-Add the following configuration to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more](/guides/customizing-metro/).
+Add the following configuration to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more about customizing Metro](/guides/customizing-metro/).
 
 <DiffBlock source="/static/diffs/sqlite-web-metro-config.diff" />
 
@@ -287,7 +287,7 @@ export function Header() {
       const result = await db.getFirstAsync<{ 'sqlite_version()': string }>(
         'SELECT sqlite_version()'
       );
-      setVersion(result['sqlite_version()']);
+      setVersion(result?.['sqlite_version()'] ?? '');
     }
     setup();
   }, []);
@@ -328,9 +328,8 @@ export function Content() {
 
 async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const DATABASE_VERSION = 1;
-  let { user_version: currentDbVersion } = await db.getFirstAsync<{ user_version: number }>(
-    'PRAGMA user_version'
-  );
+  const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  let currentDbVersion = result?.user_version ?? 0;
   if (currentDbVersion >= DATABASE_VERSION) {
     return;
   }
@@ -356,7 +355,7 @@ const styles = StyleSheet.create({
 
 ### `useSQLiteContext()` hook with `React.Suspense`
 
-As with the [`useSQLiteContext()`](#usesqlitecontext-hook) hook, you can also integrate the [`SQLiteProvider`](#sqliteprovider) with [`React.Suspense`](https://react.dev/reference/react/Suspense) to show a fallback component until the database is ready. To enable the integration, pass the `useSuspense` prop to the `SQLiteProvider` component.
+As with the [`useSQLiteContext()`](#usesqlitecontext-hook) hook, you can also integrate the [`SQLiteProvider`](#sqlitesqliteprovider) with [`React.Suspense`](https://react.dev/reference/react/Suspense) to show a fallback component until the database is ready. To enable the integration, pass the `useSuspense` prop to the `SQLiteProvider` component.
 
 ```tsx useSQLiteContext() hook with React.Suspense
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
@@ -430,7 +429,7 @@ await db.execAsync('PRAGMA foreign_keys = ON');
 
 ### Import an existing database
 
-To open a new SQLite database using an existing **.db** file you already have, you can use the [`SQLiteProvider`](#sqliteprovider) with [`assetSource`](#assetsource).
+To open a new SQLite database using an existing **.db** file you already have, you can use the [`SQLiteProvider`](#sqlitesqliteprovider) with [`assetSource`](#assetsource).
 
 ```tsx useSQLiteContext() with existing database
 import { SQLiteProvider, useSQLiteContext } from 'expo-sqlite';
@@ -526,7 +525,7 @@ The `expo-sqlite` library includes a built-in DevTools inspector plugin that is 
 
 <ContentSpotlight
   alt="SQLite inspector showing a data browser with table rows, edit/delete actions, and a sidebar listing tables"
-  src="/static/images/sdk/sqlite/inspector.png"
+  src="/static/images/sdk/sqlite/inspector.webp"
 />
 
 Alternatively, you can also use the [`drizzle-studio-expo` dev tools plugin](https://github.com/drizzle-team/drizzle-studio-expo) to launch [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), connected to a database in your app, directly from Expo CLI. This plugin can be used with any `expo-sqlite` configuration and does not require [Drizzle ORM](#drizzle-orm). [Learn how to install and use the plugin](https://github.com/drizzle-team/drizzle-studio-expo).
@@ -616,7 +615,7 @@ await db.execAsync(`PRAGMA key = 'password'`);
 
 The following table summarizes the common API for [`SQLiteDatabase`](#sqlitedatabase) and [`SQLiteStatement`](#sqlitestatement) classes:
 
-| [`SQLiteDatabase`](#sqlitedatabase) methods      | [`SQLiteStatement`](#sqlitestatement) methods                                 | Description                                                                                                                                                            | Use Case                                                                                                                                                                                   |
+| [`SQLiteDatabase`](#sqlitedatabase) methods      | [`SQLiteStatement`](#sqlitestatement) methods                                 | Description                                                                                                                                                            | Use case                                                                                                                                                                                   |
 | ------------------------------------------------ | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [`runAsync()`](#runasyncsource-params)           | [`executeAsync()`](#executeasyncparams)                                       | Executes a SQL query, returning information on the changes made.                                                                                                       | Ideal for SQL write operations such as `INSERT`, `UPDATE`, `DELETE`.                                                                                                                       |
 | [`getFirstAsync()`](#getfirstasyncsource-params) | [`executeAsync()`](#executeasyncparams) + [`getFirstAsync()`](#getfirstasync) | Retrieves the first row from the query result.                                                                                                                         | Suitable for fetching a single row from the database. For example: `getFirstAsync('SELECT * FROM Users WHERE id = ?', userId)`.                                                            |

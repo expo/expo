@@ -62,7 +62,23 @@ export type ObserveConfig = {
    */
   sampleRate?: number;
   /**
-   * Opt in to per-integration behavior.
+   * Whether to record unhandled JavaScript errors as `exception` log events.
+   *
+   * When `false`, unhandled errors are no longer recorded. React Native's own handling is
+   * unaffected either way: the red box in development and fatal termination in production still
+   * happen. Errors you report yourself with `reportError`, and render-phase errors captured by
+   * `ObserveErrorBoundary`, are also unaffected.
+   *
+   * > Note: The handler is installed when the package is first imported, which is earlier than any
+   * > `configure` call. An error thrown before `configure` runs is therefore still recorded.
+   *
+   * @default true
+   */
+  errorHandlingEnabled?: boolean;
+  /**
+   * Opt in to per-integration behavior. See the [Expo Router](/eas/observe/integrations/expo-router/)
+   * and [React Navigation](/eas/observe/integrations/react-navigation/) integrations, or
+   * [integrate your own package](/eas/observe/integrations/third-party/).
    */
   integrations?: ObserveIntegrationsConfig;
 };
@@ -116,9 +132,40 @@ export type ObserveModuleEvents = {
 };
 
 export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
+  /**
+   * Dispatches pending events to the server immediately.
+   *
+   * Events are dispatched automatically when the app moves to the background. On Android,
+   * a background worker dispatches events once network connectivity is available. On iOS,
+   * dispatching happens when the app resigns active state or is about to terminate. Call
+   * this method to flush events manually, for example, during testing or to ensure events
+   * are sent before a specific point.
+   *
+   * @returns A promise that resolves when the pending events have been dispatched.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * await Observe.dispatchEvents();
+   * ```
+   */
   dispatchEvents(): Promise<void>;
   /**
-   * Configures observability settings.
+   * Configures how observability events are collected and dispatched at runtime, such as
+   * the environment label, dispatching behavior, sampling, and integrations.
+   *
+   * @param config Observability settings to apply.
+   *
+   * @example
+   * ```ts
+   * import { Observe } from 'expo-observe';
+   *
+   * Observe.configure({
+   *   environment: 'production',
+   *   dispatchingEnabled: true,
+   * });
+   * ```
    */
   configure(config: ObserveConfig): void;
   /**
@@ -126,6 +173,23 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * call, or an empty object if `configure` has not run yet.
    */
   getIntegrations(): ObserveIntegrationsConfig;
+  /**
+   * Invokes a callback once when the named integration configuration becomes available.
+   *
+   * @param name Integration name.
+   * @param callback Function called with the integration configuration.
+   *
+   * @example
+   * ```ts
+   * Observe.registerIntegration('expo-router', config => {
+   *   console.log(config);
+   * });
+   * ```
+   */
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+    name: K,
+    callback: (config: ObserveIntegrationsConfig[K]) => void
+  ): void;
   /**
    * Records a log event against the current main session. The event is
    * persisted locally and dispatched on the next `dispatchEvents()` flush.
@@ -136,6 +200,27 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * @param options Optional body, attributes, and severity overrides.
    */
   logEvent(name: string, options?: LogEventOptions): void;
+  /**
+   * Reports an error your code caught and handled, recorded as a non-fatal `exception` event. Use it
+   * to keep visibility into failures you recover from, which never reach the automatic global handler
+   * or an error boundary.
+   *
+   * The thrown value is normalized: an `Error`'s `name`, `message`, and `stack` are captured; any
+   * other value (a string, a plain object) is stringified as the message.
+   *
+   * @param error The caught value. An `Error` is preferred, but any thrown value is accepted.
+   *
+   * @example
+   * ```ts
+   * try {
+   *   await syncCart();
+   * } catch (error) {
+   *   Observe.reportError(error);
+   * }
+   * ```
+   */
+  // eslint-disable-next-line handle-callback-err -- `error` is the caught value to report, not a Node callback error.
+  reportError(error: unknown): void;
   /**
    * Marks the first render of the app. Used to compute the `cold_ttr` and
    * `warm_ttr` metrics.

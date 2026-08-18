@@ -6,9 +6,23 @@
 
 ### 🎉 New features
 
+- Add `setNodeEnv` for Expo commands and tools. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 🐛 Bug fixes
 
+- Set `NODE_ENV` when `loadProjectEnv` receives a development or production mode. ([#48554](https://github.com/expo/expo/pull/48554) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
+
+- Pass the config mode through an internal variable and remove inherited dotenv values from Expo subprocesses. ([#48938](https://github.com/expo/expo/pull/48938) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+## 2.4.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 2.4.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 2.3.0 — 2026-05-20
 

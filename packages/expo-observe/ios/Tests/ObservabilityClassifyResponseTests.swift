@@ -245,8 +245,8 @@ struct ObservabilityParseRetryAfterTests {
     // Neither a Double nor an RFC 7231 HTTP-date — caller should fall through to backoff.
     let cases = [
       "tomorrow morning",
-      "Mon Jun 16",  // partial date, missing time + year + zone
-      "30 minutes",  // delta-seconds doesn't accept units
+      "Mon Jun 16", // partial date, missing time + year + zone
+      "30 minutes", // delta-seconds doesn't accept units
       "30s",
       "abc",
       "300/600",

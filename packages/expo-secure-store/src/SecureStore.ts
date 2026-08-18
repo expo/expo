@@ -85,6 +85,15 @@ export type SecureStoreOptions = {
    */
   requireAuthentication?: boolean;
   /**
+   * Sets a hint to the system for whether to require user confirmation after authentication.
+   * This may be ignored by the system if the user has disabled implicit authentication in Settings
+   * or if it does not apply to a particular biometric modality. Defaults to `true`.
+   *
+   * This option is only used when `requireAuthentication` is enabled.
+   * @platform android
+   */
+  requireConfirmation?: boolean;
+  /**
    * Custom message displayed to the user while `requireAuthentication` option is turned on.
    */
   authenticationPrompt?: string;

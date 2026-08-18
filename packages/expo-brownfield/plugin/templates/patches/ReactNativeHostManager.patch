@@ -2,7 +2,7 @@ diff --git a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostMa
 index a9fbbe7d70..f7561327e7 100644
 --- a/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
 +++ b/packages/expo-brownfield/plugin/templates/android/ReactNativeHostManager.kt
-@@ -12,6 +12,16 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+@@ -13,6 +13,16 @@
  import com.facebook.react.modules.core.DeviceEventManagerModule
  import expo.modules.ExpoReactHostFactory
  import expo.modules.brownfield.BrownfieldNavigationState
@@ -19,9 +19,9 @@ index a9fbbe7d70..f7561327e7 100644
  
  class ReactNativeHostManager {
    companion object {
-@@ -61,13 +71,44 @@ class ReactNativeHostManager {
-       context = application.applicationContext,
-       packageList = PackageList(application).packages + additionalPackages
+@@ -68,13 +78,44 @@
+       packageList = PackageList(application).packages + additionalPackages,
+       useDevSupport = BuildConfig.DEBUG
      )
 +
 +    if (BuildConfig.DEBUG) {
@@ -66,13 +66,13 @@ index a9fbbe7d70..f7561327e7 100644
    setUpNativeBackHandling()
  }
  
-@@ -97,3 +138,30 @@ fun Activity.setUpNativeBackHandling() {
+@@ -104,3 +145,30 @@
  
    componentActivity.onBackPressedDispatcher?.addCallback(componentActivity, backCallback)
  }
 +
 +internal fun maybeGetAppInfoFromManifest(
-+  application: Application, 
++  application: Application,
 +  reactHost: ReactHost?,
 +  activity: Activity
 +) {

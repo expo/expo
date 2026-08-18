@@ -49,8 +49,16 @@ export default function ScrollViewVerticalExample() {
 Use the `axes` prop to scroll horizontally.
 
 ```tsx ScrollViewHorizontalExample.tsx
-import { Host, ScrollView, HStack, RoundedRectangle } from '@expo/ui/swift-ui';
-import { frame, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import {
+  Host,
+  ScrollView,
+  HStack,
+  RoundedRectangle,
+} from '@expo/ui/swift-ui';
+import {
+  frame,
+  foregroundStyle,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function ScrollViewHorizontalExample() {
   return (
@@ -107,8 +115,20 @@ The `scrollPosition` modifier also works on other scrollable containers like `La
 > **warning** Writes to `state.value` must run on the UI runtime. Wrap the write in `scheduleOnUI` from `react-native-worklets`, or call them from inside a `'worklet'` function. Writes from the JS runtime trip Main Thread Checker, Xcode's runtime tool that flags UIKit calls made from a background thread.
 
 ```tsx ScrollViewSharedPositionExample.tsx
-import { Button, Host, ScrollView, Text, VStack, useNativeState } from '@expo/ui/swift-ui';
-import { id, padding, scrollPosition, scrollTargetLayout } from '@expo/ui/swift-ui/modifiers';
+import {
+  Button,
+  Host,
+  ScrollView,
+  Text,
+  VStack,
+  useNativeState,
+} from '@expo/ui/swift-ui';
+import {
+  id,
+  padding,
+  scrollPosition,
+  scrollTargetLayout,
+} from '@expo/ui/swift-ui/modifiers';
 import { scheduleOnUI } from 'react-native-worklets';
 
 export default function ScrollViewSharedPositionExample() {
@@ -129,7 +149,10 @@ export default function ScrollViewSharedPositionExample() {
             {Array.from({ length: 30 }, (_, i) => (
               <Text
                 key={`item-${i}`}
-                modifiers={[id(`item-${i}`), padding({ horizontal: 16, vertical: 12 })]}>
+                modifiers={[
+                  id(`item-${i}`),
+                  padding({ horizontal: 16, vertical: 12 }),
+                ]}>
                 {`Item ${i}`}
               </Text>
             ))}
@@ -156,4 +179,7 @@ export default function ScrollViewSharedPositionExample() {
 import { ScrollView } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/scrollview" apiName="ScrollView" />
+<APISection
+  packageName="expo-ui/swift-ui/scrollview"
+  apiName="ScrollView"
+/>

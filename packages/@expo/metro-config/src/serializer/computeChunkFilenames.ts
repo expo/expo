@@ -121,7 +121,7 @@ interface PrecomputeChunkFilenamesInput {
 /** Precompute each chunk's emitted filename.
  *
  * Hashes each chunk's intrinsic source combined with the intrinsics of all
- * its transitively reachabl async chunks.
+ * its transitively reachable async chunks.
  */
 export function precomputeChunkFilenames({
   chunks,

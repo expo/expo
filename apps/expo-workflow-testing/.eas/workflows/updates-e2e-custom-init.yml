@@ -1,5 +1,9 @@
 name: Updates E2E (custom init)
 
+defaults:
+  tools:
+    pnpm: '10.34.5'
+
 on:
   push:
     branches: [main, 'sdk-*']

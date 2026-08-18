@@ -1,4 +1,9 @@
-import type { DynamicConvention, MiddlewareNode, RouteNode } from './Route';
+import {
+  getValidInitialRoute,
+  type DynamicConvention,
+  type MiddlewareNode,
+  type RouteNode,
+} from './Route';
 import {
   matchArrayGroupName,
   matchDynamicName,
@@ -31,9 +36,14 @@ export type Options = {
   platformRoutes?: boolean;
   sitemap?: boolean;
   platform?: string;
+  /** Redirect rules declared in config plugin options */
   redirects?: RedirectConfig[];
+  /** Rewrite rules declared in config plugin options */
   rewrites?: RewriteConfig[];
+  /** Global headers declared in config plugin options */
   headers?: Record<string, string | string[]>;
+  /** Per-path header rules declared in config plugin options */
+  pageHeaders?: PageHeadersConfig[];
   /* Keep redirects as valid routes within the RouteConfig tree */
   preserveRedirectAndRewrites?: boolean;
 
@@ -67,6 +77,11 @@ export type RewriteConfig = {
   destination: string;
   destinationContextKey: string;
   methods?: string[];
+};
+
+export type PageHeadersConfig = {
+  source: string;
+  headers: Record<string, string | string[]>;
 };
 
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
@@ -383,7 +398,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           // This can be useful when you accidentally use an async function in a route file for the default export.
           if (routeModule instanceof Promise) {
             throw new Error(
-              `Route "${filePath}" cannot be a promise when async routes is disabled.`
+              `Route "${filePath}" cannot be a promise when async routes are disabled.`
             );
           }
 
@@ -923,6 +938,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
       return child.route.replace(/\/index$/, '') === groupName;
     });
     let anchor = childMatchingGroup?.route;
+    let anchorGroupName: string | undefined;
     // We may strip loadRoute during testing
     if (!options.internal_stripLoadRoute) {
       const loaded = node.loadRoute();
@@ -946,31 +962,15 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
             loaded.unstable_settings?.[groupName]?.initialRouteName;
 
           anchor = groupSpecificInitialRouteName ?? anchor;
+          anchorGroupName = groupSpecificInitialRouteName ? groupName : undefined;
         }
       }
     }
 
     if (anchor) {
-      const anchorRoute = node.children.find((child) => child.route === anchor);
-      if (!anchorRoute) {
-        const validAnchorRoutes = node.children
-          .filter((child) => !child.generated)
-          .map((child) => `'${child.route}'`)
-          .join(', ');
-
-        if (groupName) {
-          throw new Error(
-            `Layout ${node.contextKey} has invalid anchor '${anchor}' for group '(${groupName})'. Valid options are: ${validAnchorRoutes}`
-          );
-        } else {
-          throw new Error(
-            `Layout ${node.contextKey} has invalid anchor '${anchor}'. Valid options are: ${validAnchorRoutes}`
-          );
-        }
-      }
-
-      // Navigators can add initialsRoutes into the history, so they need to be to be included in the entryPoints
-      node.initialRouteName = anchor;
+      // Navigators can add initialRoutes into the history, so they need to be included in the entryPoints
+      const anchorRoute = getValidInitialRoute(node, anchor, anchorGroupName)!;
+      node.initialRouteName = anchorRoute.route;
       entryPoints.push(anchorRoute.contextKey);
     }
 

@@ -89,27 +89,11 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     }
   }
 
-  private func safeAreaSize() -> CGSize {
-    let safeSize = UIApplication
-      .shared
-      .connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }?
-      .safeAreaLayoutGuide
-      .layoutFrame
-      .size
-      ?? UIScreen.main.bounds.size
-
-    let width = safeSize.width > 0 ? safeSize.width : UIScreen.main.bounds.width
-    let height = safeSize.height > 0 ? safeSize.height : UIScreen.main.bounds.height
-    return CGSize(width: width, height: height)
-  }
 }
 
 /**
  A Layout designed for the `useViewportSizeMeasurement` behavior.
- If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand it's children size.
+ If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand its children size.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 private struct ViewportSizeMeasurementLayout: Layout {
@@ -150,26 +134,12 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   private func safeAreaSize() -> CGSize {
-    let screenSize = UIScreen.main.bounds.size
-    let safeSize = UIApplication
-      .shared
-      .connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }?
-      .safeAreaLayoutGuide
-      .layoutFrame
-      .size
-      ?? screenSize
-
-    let width = safeSize.width > 0 ? safeSize.width : screenSize.width
-    let height = safeSize.height > 0 ? safeSize.height : screenSize.height
-    return CGSize(width: width, height: height)
+    return SceneGeometry.safeAreaSize()
   }
 }
 
 /**
- A ViewModifier that listens for view size change the dispatch the `onLayoutContent` event
+ A ViewModifier that listens for view size changes and dispatches the `onLayoutContent` event
  */
 private struct GeometryChangeModifier: ViewModifier {
   let props: HostViewProps

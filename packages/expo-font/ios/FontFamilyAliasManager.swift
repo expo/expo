@@ -1,9 +1,11 @@
 import ExpoModulesCore
 
 /**
- A registry of font family aliases mapped to their real font family names.
+ Maps each font family alias to the PostScript names of the fonts in the file it was registered for.
+ A file usually provides one name. A variable font provides one per named instance, which is what
+ lets `fontWeight` reach the weights it declares.
  */
-private var fontFamilyAliases = [String: String]()
+private var fontFamilyAliases = [String: [String]]()
 
 /**
  A flag that is set to `true` when the ``UIFont.fontNames(forFamilyName:)`` is already swizzled.
@@ -29,20 +31,20 @@ internal struct FontFamilyAliasManager {
   }
 
   /**
-   Sets the alias for the given family name.
-   If the alias has already been set, its family name will be overriden.
+   Sets the alias for the given PostScript names.
+   If the alias has already been set, its PostScript names will be overridden.
    */
-  internal static func setAlias(_ familyNameAlias: String, forFont font: String) {
+  internal static func setAlias(_ familyNameAlias: String, forPostScriptNames postScriptNames: [String]) {
     maybeSwizzleUIFont()
     queue.sync(flags: .barrier) {
-      fontFamilyAliases[familyNameAlias] = font
+      fontFamilyAliases[familyNameAlias] = postScriptNames
     }
   }
 
   /**
-   Returns the family name for the given alias or `nil` when it's not set yet.
+   Returns the PostScript names for the given alias or `nil` when it's not set yet.
    */
-  internal static func familyName(forAlias familyNameAlias: String) -> String? {
+  internal static func postScriptNames(forAlias familyNameAlias: String) -> [String]? {
     return queue.sync {
       fontFamilyAliases[familyNameAlias]
     }
@@ -50,9 +52,8 @@ internal struct FontFamilyAliasManager {
 }
 
 /**
- Swizzles ``UIFont.fontNames(forFamilyName:)`` to support font family aliases.
- This is necessary because the user provides a custom family name that is then used in stylesheets,
- however the font usually has a different name encoded in the binary, thus the system may use a different name.
+ Swizzles ``UIFont.fontNames(forFamilyName:)`` to support font family aliases. RN core asks for a family's font faces (postScript names) to pick from:
+ https://github.com/react/react-native/blob/v0.86.0/packages/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTFontUtils.mm#L359
  */
 private func maybeSwizzleUIFont() {
   if hasSwizzled {
