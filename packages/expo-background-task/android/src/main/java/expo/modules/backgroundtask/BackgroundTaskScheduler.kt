@@ -40,15 +40,19 @@ object BackgroundTaskScheduler {
   // Interval
   private var intervalMinutes: Long = DEFAULT_INTERVAL_MINUTES
 
+  // Whether to require network connectivity
+  private var requiresNetworkConnectivity: Boolean = false
+
   // Tracks whether in foreground
   var inForeground: Boolean = false
 
   /**
    * Call when a task is registered
    */
-  fun registerTask(context: Context, intervalMinutes: Long) {
+  fun registerTask(context: Context, intervalMinutes: Long, requiresNetworkConnectivity: Boolean = false) {
     numberOfRegisteredTasksOfThisType += 1
     this.intervalMinutes = intervalMinutes
+    this.requiresNetworkConnectivity = requiresNetworkConnectivity
 
     if (numberOfRegisteredTasksOfThisType == 1) {
       runBlocking {
@@ -105,7 +109,7 @@ object BackgroundTaskScheduler {
       .putString("appScopeKey", appScopeKey)
       .build()
     val constraints = Constraints.Builder()
-      .setRequiredNetworkType(NetworkType.CONNECTED)
+      .setRequiredNetworkType(if (requiresNetworkConnectivity) NetworkType.CONNECTED else NetworkType.NOT_REQUIRED)
       .build()
 
     // Get Work manager
