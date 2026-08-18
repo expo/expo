@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Section matches the official SwiftUI [Section API](https://developer.apple.com/documentation/swiftui/section) and is used to group related content within [`List`](list), [`Form`](form) or [`Picker`](picker) components.
@@ -30,7 +31,13 @@ Expo UI Section matches the official SwiftUI [Section API](https://developer.app
 
 Use the `title` prop for simple sections with a text header.
 
-```tsx BasicSectionExample.tsx
+<ComponentExample
+  title="BasicSectionExample.tsx"
+  src="/static/images/expo-ui/examples/section-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/section-basic-ios-dark.webp"
+  alt="A list with a Settings header above General, Privacy, and Notifications rows">
+
+```tsx
 import { Host, List, Section, Text } from '@expo/ui/swift-ui';
 
 export default function BasicSectionExample() {
@@ -48,12 +55,28 @@ export default function BasicSectionExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Section with custom header and footer
 
 Use the `header` and `footer` props for custom views. These props are only used when `title` is not provided.
 
-```tsx CustomHeaderFooterExample.tsx
-import { Host, List, Section, Toggle, Text, HStack, Image } from '@expo/ui/swift-ui';
+<ComponentExample
+  title="CustomHeaderFooterExample.tsx"
+  src="/static/images/expo-ui/examples/section-header-footer-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/section-header-footer-ios-dark.webp"
+  alt="A section with a location icon in its header, a toggle row, and footer text below">
+
+```tsx
+import {
+  Host,
+  List,
+  Section,
+  Toggle,
+  Text,
+  HStack,
+  Image,
+} from '@expo/ui/swift-ui';
 import { useState } from 'react';
 
 export default function CustomHeaderFooterExample() {
@@ -65,13 +88,18 @@ export default function CustomHeaderFooterExample() {
         <Section
           header={
             <HStack>
-              <Image systemName="location.fill" color="blue" size={16} />
+              <Image
+                systemName="location.fill"
+                color="blue"
+                size={16}
+              />
               <Text>Location Services</Text>
             </HStack>
           }
           footer={
             <Text>
-              Enabling location services allows the app to provide personalized recommendations.
+              Enabling location services allows the app to provide
+              personalized recommendations.
             </Text>
           }>
           <Toggle
@@ -86,13 +114,21 @@ export default function CustomHeaderFooterExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Collapsible section
 
 Use the `isExpanded` prop to control whether the section is expanded or collapsed. When provided, the section becomes collapsible. Use `onIsExpandedChange` to handle state changes.
 
 > **Note:** Collapsible sections require iOS 17+ and tvOS 17+, and the list must use the `sidebar` style. Footer is not supported for collapsible sections.
 
-```tsx CollapsibleSectionExample.tsx
+<ComponentExample
+  title="CollapsibleSectionExample.tsx"
+  src="/static/images/expo-ui/examples/section-collapsible-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/section-collapsible-ios-dark.webp"
+  alt="Two collapsed sections, Favorites and Recents, each with a disclosure chevron">
+
+```tsx
 import { useState } from 'react';
 import { Host, List, Section, Text } from '@expo/ui/swift-ui';
 import { listStyle } from '@expo/ui/swift-ui/modifiers';
@@ -126,13 +162,29 @@ export default function CollapsibleSectionExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Multiple sections in a form
 
 Sections work within `Form` components to organize form controls into logical groups.
 
-```tsx FormSectionsExample.tsx
+<ComponentExample
+  title="FormSectionsExample.tsx"
+  src="/static/images/expo-ui/examples/section-form-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/section-form-ios-dark.webp"
+  alt="A form with Appearance, Notifications, and Account sections holding toggles, a picker, and a red Sign out button">
+
+```tsx
 import { useState } from 'react';
-import { Host, Form, Section, Toggle, Picker, Text, Button } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Form,
+  Section,
+  Toggle,
+  Picker,
+  Text,
+  Button,
+} from '@expo/ui/swift-ui';
 import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 
 export default function FormSectionsExample() {
@@ -145,7 +197,11 @@ export default function FormSectionsExample() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="Appearance">
-          <Toggle label="Dark Mode" isOn={darkMode} onIsOnChange={setDarkMode} />
+          <Toggle
+            label="Dark Mode"
+            isOn={darkMode}
+            onIsOnChange={setDarkMode}
+          />
           <Picker
             label="Language"
             selection={language}
@@ -159,10 +215,18 @@ export default function FormSectionsExample() {
           </Picker>
         </Section>
         <Section title="Notifications">
-          <Toggle label="Push Notifications" isOn={notifications} onIsOnChange={setNotifications} />
+          <Toggle
+            label="Push Notifications"
+            isOn={notifications}
+            onIsOnChange={setNotifications}
+          />
         </Section>
         <Section title="Account">
-          <Button label="Sign out" role="destructive" onPress={() => alert('Signed out')} />
+          <Button
+            label="Sign out"
+            role="destructive"
+            onPress={() => alert('Signed out')}
+          />
         </Section>
       </Form>
     </Host>
@@ -170,10 +234,15 @@ export default function FormSectionsExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { Section } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/section" apiName="Section" />
+<APISection
+  packageName="expo-ui/swift-ui/section"
+  apiName="Section"
+/>

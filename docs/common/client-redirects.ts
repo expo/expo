@@ -651,4 +651,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/module-config/': '/modules/module-config/',
   '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
   '/router/advance/router-setttings/': '/router/advanced/router-settings/',
+
+  // After removing the Vexo guide
+  '/guides/using-vexo/': '/guides/using-analytics/',
 };

@@ -56,6 +56,23 @@ export async function applyPatchAsync(projectRoot: string, patchFilePath: string
   return await runGitAsync(['apply', '--ignore-whitespace', patchFilePath], { cwd: projectRoot });
 }
 
+export async function isPatchAppliedAsync(
+  projectRoot: string,
+  patchFilePath: string
+): Promise<boolean> {
+  try {
+    await runGitAsync(['apply', '--reverse', '--check', '--ignore-whitespace', patchFilePath], {
+      cwd: projectRoot,
+    });
+    return true;
+  } catch (e: any) {
+    if (e.code === 'ENOENT') {
+      throw e;
+    }
+    return false;
+  }
+}
+
 export async function getPatchChangedLinesAsync(patchFilePath: string): Promise<number> {
   const stdout = await runGitAsync(['apply', '--numstat', patchFilePath]);
   const lines = stdout.split(/\r?\n/);

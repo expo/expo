@@ -223,52 +223,39 @@ class SessionManager(
   }
 
   suspend fun getSessionsWithMetrics(metricIds: List<String>): List<SessionWithMetrics> {
-    val metricIdSet = metricIds.toSet()
-    if (metricIds.size <= SQLITE_MAX_BIND_VARIABLES) {
-      return database.sessionDao().getSessionsWithMetricsByMetricIds(metricIds).map { sessionWithMetrics ->
-        sessionWithMetrics.copy(metrics = sessionWithMetrics.metrics.filter { it.metricId in metricIdSet })
-      }
-    }
+    val metricsBySessionId = metricIds
+      .distinct()
+      .chunked(SQLITE_MAX_BIND_VARIABLES)
+      .flatMap { database.metricDao().getByIds(it) }
+      .sortedBy { it.timestamp }
+      .groupBy { it.sessionId }
+    val sessionsById = getSessionsByIds(metricsBySessionId.keys).associateBy { it.id }
 
-    val allResults = metricIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { chunk ->
-      database.sessionDao().getSessionsWithMetricsByMetricIds(chunk)
-    }
-    return allResults
-      .groupBy { it.session.id }
-      .map { (_, sessions) ->
-        SessionWithMetrics(
-          session = sessions.first().session,
-          metrics = sessions
-            .flatMap { it.metrics }
-            .distinctBy { it.metricId }
-            .filter { it.metricId in metricIdSet }
-        )
+    return metricsBySessionId.mapNotNull { (sessionId, metrics) ->
+      sessionsById[sessionId]?.let { session ->
+        SessionWithMetrics(session = session, metrics = metrics)
       }
+    }
   }
 
   suspend fun getSessionsWithLogs(logIds: List<String>): List<SessionWithLogs> {
-    val logIdSet = logIds.toSet()
-    if (logIds.size <= SQLITE_MAX_BIND_VARIABLES) {
-      return database.sessionDao().getSessionsWithLogsByLogIds(logIds).map { sessionWithLogs ->
-        sessionWithLogs.copy(logs = sessionWithLogs.logs.filter { it.logId in logIdSet })
-      }
-    }
+    val logsBySessionId = logIds
+      .distinct()
+      .chunked(SQLITE_MAX_BIND_VARIABLES)
+      .flatMap { database.logDao().getByIds(it) }
+      .sortedBy { it.timestamp }
+      .groupBy { it.sessionId }
+    val sessionsById = getSessionsByIds(logsBySessionId.keys).associateBy { it.id }
 
-    val allResults = logIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { chunk ->
-      database.sessionDao().getSessionsWithLogsByLogIds(chunk)
-    }
-    return allResults
-      .groupBy { it.session.id }
-      .map { (_, sessions) ->
-        SessionWithLogs(
-          session = sessions.first().session,
-          logs = sessions
-            .flatMap { it.logs }
-            .distinctBy { it.logId }
-            .filter { it.logId in logIdSet }
-        )
+    return logsBySessionId.mapNotNull { (sessionId, logs) ->
+      sessionsById[sessionId]?.let { session ->
+        SessionWithLogs(session = session, logs = logs)
       }
+    }
   }
+
+  private suspend fun getSessionsByIds(sessionIds: Collection<String>): List<Session> =
+    sessionIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { database.sessionDao().getByIds(it) }
 
   /**
    * Decodes a JSON-encoded `params` / `attributes` column, folds the current

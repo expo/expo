@@ -12,10 +12,34 @@ name: AI code review (command)
 # This never changes configuration. CONTINUOUS review is configured in
 # expo-code-review.yml (the `pull_request` workflow) via the `review.trigger`
 # policy in .expo-code-review/config.jsonc and the `ai-review:skip` label.
+#
+# Also dispatchable manually (Actions → this workflow → Run workflow) with a PR
+# number. Dispatch requires write access, so it carries the same maintainers-only
+# gate as the comment path. The `config-from-checkout` input exists for PRs whose
+# base commit predates .expo-code-review/ — `ecr ci` loads configuration from the
+# PR's trusted base commit and fails closed when that commit has no config, so
+# such PRs can only be reviewed by trusting this base-ref checkout's config
+# (still never the PR head).
 
 on:
   issue_comment:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: PR number to review
+        type: number
+        required: true
+      agents:
+        description: "Agent ids (comma-separated), 'all' for every agent, or empty to let the router pick"
+        type: string
+        required: false
+        default: ''
+      config-from-checkout:
+        description: Load reviewer config from this checkout instead of the PR's base commit (for PRs whose base predates .expo-code-review/)
+        type: boolean
+        required: false
+        default: false
 
 # Comment-only: read the repo, write PR comments (issue comments API).
 permissions:
@@ -25,11 +49,12 @@ permissions:
 
 jobs:
   command:
-    # Only PR comments starting with /review, /expo-review, @expo-bot review,
-    # or @expo-bot check.
+    # Manual dispatch (write access required), or PR comments starting with
+    # /review, /expo-review, @expo-bot review, or @expo-bot check.
     # @ref LLP 0009#workflow-security-posture [implements] — gate controls who triggers, not what code runs
     if: >-
-      github.event.issue.pull_request != null &&
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.issue.pull_request != null &&
       github.event.comment.user.login != 'expo-bot' &&
       (github.event.comment.body == '/review' ||
       startsWith(github.event.comment.body, '/review ') ||
@@ -39,12 +64,12 @@ jobs:
       startsWith(github.event.comment.body, '@expo-bot review ') ||
       github.event.comment.body == '@expo-bot check' ||
       startsWith(github.event.comment.body, '@expo-bot check ')) &&
-      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     # Job-level so a prose comment that the gate rejects cannot claim this
     # group at workflow creation and cancel a real review already in flight.
     concurrency:
-      group: ai-code-review-cmd-${{ github.event.issue.number }}
+      group: ai-code-review-cmd-${{ github.event.issue.number || inputs.pr }}
       cancel-in-progress: true
     # Bound the run so a slow/stalled review fails fast rather than hanging. Keep it
     # above the passes budget (budget.totalPassesMinutes, 55m) + coordinator (10m) +
@@ -59,7 +84,26 @@ jobs:
         env:
           # Via env (never inline ${{ }}) so an untrusted comment can't inject shell.
           COMMENT: ${{ github.event.comment.body }}
+          DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
+          DISPATCH_AGENTS: ${{ inputs.agents }}
         run: |
+          # Manual dispatch: agent selection comes from inputs, with the same
+          # sanitization as the comment path below.
+          if [ "$DISPATCH" = "true" ]; then
+            agents=""
+            route=false
+            if [ -z "$DISPATCH_AGENTS" ]; then
+              route=true
+            elif [ "$DISPATCH_AGENTS" != "all" ]; then
+              agents=$(printf '%s' "$DISPATCH_AGENTS" | tr ' ' ',' | tr -cd 'a-zA-Z0-9,_-')
+            fi
+            {
+              echo "run=true"
+              echo "agents=$agents"
+              echo "route=$route"
+            } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           line=$(printf '%s' "$COMMENT" | head -n1 | tr -d '\r')
           first=$(printf '%s' "$line" | awk '{print tolower($1)}')
           second=$(printf '%s' "$line" | awk '{print tolower($2)}')
@@ -102,7 +146,8 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Acknowledge
-        if: steps.cmd.outputs.run == 'true'
+        # Comment path only — a manual dispatch has no comment to react to.
+        if: steps.cmd.outputs.run == 'true' && github.event_name == 'issue_comment'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
@@ -182,7 +227,7 @@ jobs:
         if: always() && steps.cmd.outputs.run == 'true' && steps.model-env.outcome == 'failure'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-          PR: ${{ github.event.issue.number }}
+          PR: ${{ github.event.issue.number || inputs.pr }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           # See the matching step in expo-code-review.yml: pick.sh writes this
@@ -214,6 +259,9 @@ jobs:
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
           AGENTS: ${{ steps.cmd.outputs.agents }}
           ROUTE: ${{ steps.cmd.outputs.route }}
+          DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
+          PR_NUMBER: ${{ inputs.pr }}
+          CONFIG_FROM_CHECKOUT: ${{ inputs.config-from-checkout }}
         # NOTE: running via `issue_comment` makes this a manual review command, which
         # the CLI detects (GITHUB_EVENT_NAME=issue_comment) and treats as a trigger-gate bypass
         # — it reviews even when the config trigger policy or an `ai-review:skip` label
@@ -229,18 +277,39 @@ jobs:
           elif [ "$ROUTE" = "true" ]; then
             ARGS=(--route)
           fi
+          if [ "$DISPATCH" = "true" ]; then
+            # A dispatch's event payload has no PR number for the CLI to read, and
+            # the runner forbids overriding GITHUB_* defaults via step `env:` — so
+            # export the CLI's documented GITHUB_REF fallback from inside the
+            # script, where the runner can't overwrite it.
+            case "$PR_NUMBER" in
+              ''|*[!0-9]*) echo "invalid pr input: $PR_NUMBER" >&2; exit 1 ;;
+            esac
+            export GITHUB_REF="refs/pull/${PR_NUMBER}/merge"
+            # A dispatch is a manual command like /review, but the CLI only
+            # infers the trigger-gate bypass from GITHUB_EVENT_NAME=issue_comment,
+            # so pass --force explicitly.
+            ARGS+=(--force)
+            if [ "$CONFIG_FROM_CHECKOUT" = "true" ]; then
+              # Operator trust decision (absolute path): PRs whose base commit
+              # predates .expo-code-review/ have no trusted-base config to load,
+              # so trust this base-ref checkout's config — still never the PR head.
+              ARGS+=(--config-dir "$GITHUB_WORKSPACE/.expo-code-review")
+            fi
+          fi
           ./scripts/expo-code-review ecr ci "${ARGS[@]}"
 
       # Same ephemeral per-run log as the pull_request workflow — a review command
       # runs the full `ecr ci`, whose .expo-code-review/.runs/ log is gone when the
       # runner tears down. always() captures it even on error, gated on run=='true'
       # (an unrelated comment writes no log); issue.number IS the PR number here
-      # (issue_comment context has no pull_request.number).
+      # (issue_comment context has no pull_request.number), and inputs.pr covers
+      # the manual-dispatch path.
       - name: Upload review run log
         if: always() && steps.cmd.outputs.run == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: review-run-log-pr${{ github.event.issue.number }}
+          name: review-run-log-pr${{ github.event.issue.number || inputs.pr }}
           path: .expo-code-review/.runs/reviews.jsonl
           if-no-files-found: ignore
           retention-days: 14
