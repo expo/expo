@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - [android] Fix `UnsupportedOperationException` and `NoSuchMethodError` on Android 7.x ([#48577](https://github.com/expo/expo/pull/48577) by [@Ubax](https://github.com/Ubax))
+- [android] Stop a `SQLiteConstraintException` on the `metrics.sessionId`/`logs.sessionId` foreign key from crashing the host app: writes that reach `SessionManager` without going through `SessionSharedObject` can race the session-row INSERT, so the batch is now dropped and logged instead of propagating off a background coroutine. ([#48896](https://github.com/expo/expo/pull/48896) by [@spsaucier](https://github.com/spsaucier))
 - [iOS] Fix a crash on FirebaseAuth's first token refresh. GTMSessionFetcher branches on the class of `session.delegate`, so our network-observing delegate proxy now answers class and protocol checks for the delegate it wraps. ([#48360](https://github.com/expo/expo/pull/48360) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others

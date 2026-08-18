@@ -9,6 +9,7 @@ import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.GlobalAttributes
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
@@ -102,7 +103,18 @@ class SessionManager(
         params = mergeGlobalAttributesIntoJsonString(metric.params)
       )
     }
-    database.metricDao().insertAll(metricsWithSession)
+    // `metrics.sessionId` carries a foreign key to `sessions.id`. Callers that reach
+    // `SessionManager` without going through `SessionSharedObject` can supply an id whose row is
+    // not persisted yet — or never will be — and the resulting SQLiteConstraintException is thrown
+    // on a background coroutine, which is fatal. Telemetry is not worth the host app.
+    try {
+      database.metricDao().insertAll(metricsWithSession)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      Log.e(TAG, "Dropped ${metricsWithSession.size} metric(s) for session $sessionId", e)
+      return
+    }
     val metricIds = metricsWithSession.map { it.metricId }
     metricsInsertListeners.forEach { listener ->
       try {
@@ -202,7 +214,15 @@ class SessionManager(
         attributes = mergeGlobalAttributesIntoJsonString(log.attributes)
       )
     }
-    database.logDao().insertAll(logsWithSession)
+    // Same foreign key on `logs.sessionId`, same rule: never fatal.
+    try {
+      database.logDao().insertAll(logsWithSession)
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      Log.e(TAG, "Dropped ${logsWithSession.size} log(s) for session $sessionId", e)
+      return
+    }
     val logIds = logsWithSession.map { it.logId }
     logsInsertListeners.forEach { listener ->
       try {
