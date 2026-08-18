@@ -111,8 +111,10 @@ public class SingleNotificationHandlerTask {
   /**
    * Callback called by {@link #mTimeoutRunnable} after timeout time elapses.
    * <p>
-   * Sends a timeout event to the app and presents the notification the way the system does
-   * when the app is in the background, because the app didn't ask for another behavior.
+   * Sends a timeout event to the app and presents the notification with a banner, in the
+   * notification list, with a sound, and with a badge, because the app didn't ask for another
+   * behavior. This is the same behavior the handler that applies until the app sets one of its own
+   * asks for, so a notification shows the same way whether or not a slow handler is in place.
    */
   private void handleTimeout() {
     Bundle eventBody = new Bundle();
@@ -120,7 +122,7 @@ public class SingleNotificationHandlerTask {
     eventBody.putBundle("notification", NotificationSerializer.toBundle(mNotification));
     mEventEmitter.emit(HANDLE_NOTIFICATION_TIMEOUT_EVENT_NAME, eventBody);
 
-    NotificationsService.Companion.present(mContext, mNotification, null, null);
+    NotificationsService.Companion.present(mContext, mNotification, NotificationBehaviorRecord.ALLOW_ALL, null);
 
     finish();
   }
