@@ -9,7 +9,8 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.example.app"
+      "bundleIdentifier": "com.example.app",
+      "bundler": "rollipop"
     },
     "android": {
       "package": "com.example.app"
