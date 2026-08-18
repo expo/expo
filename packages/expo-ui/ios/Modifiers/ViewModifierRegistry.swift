@@ -147,7 +147,11 @@ internal struct PaddingModifier: ViewModifier, Record {
     } else {
       // `EdgeInsets` can only carry lengths, so the edges left to the system are applied by a
       // second call. Padding modifiers add up and these two cover disjoint edges.
-      content.padding(insets).padding(autoEdges)
+  if autoEdges.isEmpty {
+    content.padding(insets)
+  } else {
+    content.padding(insets).padding(autoEdges)
+  }
     }
   }
 }
