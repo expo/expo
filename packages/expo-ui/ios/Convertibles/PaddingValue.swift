@@ -8,17 +8,17 @@ import SwiftUI
  SwiftUI resolves it at layout time — so it is kept as a separate case instead of a number.
  */
 internal enum PaddingValue: Convertible {
-  case auto
+  case `default`
   case points(CGFloat)
 
-  private static let autoKeyword = "auto"
+  private static let defaultKeyword = "default"
 
   static func convert(from value: Any?, appContext: AppContext) throws -> PaddingValue {
     if let value = value as? String {
-      guard value == autoKeyword else {
+      guard value == defaultKeyword else {
         throw InvalidPaddingValueException(value)
       }
-      return .auto
+      return .default
     }
 
     if let value = value as? Double {
@@ -41,8 +41,8 @@ internal enum PaddingValue: Convertible {
     return nil
   }
 
-  var isAuto: Bool {
-    if case .auto = self {
+  var isDefault: Bool {
+    if case .default = self {
       return true
     }
     return false
@@ -52,6 +52,6 @@ internal enum PaddingValue: Convertible {
 internal final class InvalidPaddingValueException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     "Padding edge value '\(param)' is neither a length nor a keyword, so the padding modifier cannot be applied. "
-      + "Pass a number of points, such as padding({ top: 16 }), or 'auto' to use the system default padding for that edge."
+      + "Pass a number of points, such as padding({ top: 16 }), or 'default' to use the system default padding for that edge."
   }
 }

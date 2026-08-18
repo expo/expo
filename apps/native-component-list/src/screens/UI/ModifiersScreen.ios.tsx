@@ -694,7 +694,7 @@ export default function ModifiersScreen() {
 
             <Text
               modifiers={[
-                padding({ top: 'auto', horizontal: 24 }),
+                padding({ top: 'default', horizontal: 24 }),
                 background('#E8F0FE'),
                 foregroundStyle({ type: 'color', color: '#1A1A1A' }),
               ]}>
@@ -703,7 +703,7 @@ export default function ModifiersScreen() {
 
             <Text
               modifiers={[
-                padding({ all: 'auto', leading: 0 }),
+                padding({ all: 'default', leading: 0 }),
                 background('#E8F0FE'),
                 foregroundStyle({ type: 'color', color: '#1A1A1A' }),
               ]}>

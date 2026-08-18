@@ -108,20 +108,20 @@ internal struct PaddingModifier: ViewModifier, Record {
   /**
    The edges left to the system, which `EdgeInsets` cannot express.
    */
-  private var autoEdges: Edge.Set {
+  private var defaultEdges: Edge.Set {
     let edges = resolvedEdges
     var result: Edge.Set = []
 
-    if edges.top?.isAuto == true {
+    if edges.top?.isDefault == true {
       result.insert(.top)
     }
-    if edges.leading?.isAuto == true {
+    if edges.leading?.isDefault == true {
       result.insert(.leading)
     }
-    if edges.bottom?.isAuto == true {
+    if edges.bottom?.isDefault == true {
       result.insert(.bottom)
     }
-    if edges.trailing?.isAuto == true {
+    if edges.trailing?.isDefault == true {
       result.insert(.trailing)
     }
     return result
@@ -147,11 +147,11 @@ internal struct PaddingModifier: ViewModifier, Record {
     } else {
       // `EdgeInsets` can only carry lengths, so the edges left to the system are applied by a
       // second call. Padding modifiers add up and these two cover disjoint edges.
-  if autoEdges.isEmpty {
-    content.padding(insets)
-  } else {
-    content.padding(insets).padding(autoEdges)
-  }
+      if defaultEdges.isEmpty {
+        content.padding(insets)
+      } else {
+        content.padding(insets).padding(defaultEdges)
+      }
     }
   }
 }
