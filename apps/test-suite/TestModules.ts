@@ -83,7 +83,7 @@ export function getTestModules() {
     modules.push(require('./tests/LinearGradient'));
   }
 
-  if (Platform.OS === 'ios') {
+  if (['android', 'ios'].includes(Platform.OS)) {
     modules.push(require('./tests/ExpoUIMeasurement'));
   }
 

@@ -173,9 +173,17 @@ class ExpoUIModule : Module() {
     }
 
     View(RNHostView::class) {
-      // Consumed by `ExpoViewShadowNode` in C++, which marks the shadow node with the
-      // `RootNodeKind` trait. Declared here only so React Native forwards the prop to native
-      Prop("layoutRoot") { _, _: Boolean -> }
+      // Also consumed by `ExpoViewShadowNode` in C++, which marks the shadow node with the
+      // `RootNodeKind` trait so `measure()` reports positions relative to this view. Kotlin reads
+      // the same prop to decide whether this view dispatches its subtree's touches, so the
+      // position in `measure()` and the dispatcher can never disagree.
+      Prop("layoutRoot") { view: RNHostView, layoutRoot: Boolean ->
+        view.setLayoutRoot(layoutRoot)
+      }
+
+      OnViewDestroys { view: RNHostView ->
+        view.clearPublishedContentOrigin()
+      }
     }
 
     View(SlotView::class) {
