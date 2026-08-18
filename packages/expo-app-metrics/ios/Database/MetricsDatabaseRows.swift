@@ -219,3 +219,129 @@ extension LogRow {
     )
   }
 }
+
+/// Persistence-layer representation of one trace span, mirroring the OTLP `Span` shape. Spans are
+/// a generic signal: any producer (network requests today, navigation or custom spans later)
+/// converts its domain event into a `SpanRow` at record time, and `expo-observe` exports rows past
+/// a cursor to the OTLP traces endpoint without knowing what produced them.
+public struct SpanRow: Sendable {
+  /// `SpanKind` values from the OTLP proto, for producers picking a `kind`.
+  public static let internalKind = 1
+  public static let clientKind = 3
+
+  /// `Status.code` values from the OTLP proto. UNSET is expressed by a `nil` `statusCode`.
+  public static let statusError = 2
+
+  public let id: Int64?
+  public let sessionId: String
+
+  /// W3C trace/span identifiers as lowercase hex (32 and 16 characters). Generated once at
+  /// record time and persisted, so a redelivered row (export is at-least-once) reaches the
+  /// server byte-identical instead of becoming an untraceable duplicate.
+  public let traceId: String
+  public let spanId: String
+
+  /// Parent span id for in-app hierarchies, or `nil` for a root span. No producer sets this yet;
+  /// the column exists so adding nested spans later is not a schema change.
+  public let parentSpanId: String?
+
+  /// Span name per the semantic conventions of the producer (the HTTP method for network
+  /// request spans).
+  public let name: String
+
+  /// `SpanKind` per the OTLP proto (`clientKind` for network requests).
+  public let kind: Int
+
+  /// Unix-epoch milliseconds. Stored as integers rather than the ISO strings the other tables use:
+  /// a span's duration is routinely sub-second, and the house ISO format carries no fractional
+  /// seconds, so a string timestamp would collapse every fast span to zero length.
+  public let startTimestampMs: Int64
+  public let endTimestampMs: Int64
+
+  /// OTLP status code (`statusError`), or `nil` when the span completed without one (UNSET).
+  public let statusCode: Int?
+  public let statusMessage: String?
+
+  /// JSON object of span attributes, keyed per the producer's semantic conventions. Stored as an
+  /// opaque blob — nothing queries individual attributes locally, and the export layer converts
+  /// them generically to the OTLP wire shape.
+  public let attributes: String?
+
+  /// JSON array of span events (`[{name, timeMs?, attributes}]`). Stored as an opaque blob for
+  /// the same reason as `attributes`.
+  public let events: String?
+
+  public init(
+    id: Int64? = nil,
+    sessionId: String,
+    traceId: String = SpanRow.generateTraceId(),
+    spanId: String = SpanRow.generateSpanId(),
+    parentSpanId: String? = nil,
+    name: String,
+    kind: Int = SpanRow.internalKind,
+    startTimestampMs: Int64,
+    endTimestampMs: Int64,
+    statusCode: Int? = nil,
+    statusMessage: String? = nil,
+    attributes: String? = nil,
+    events: String? = nil
+  ) {
+    self.id = id
+    self.sessionId = sessionId
+    self.traceId = traceId
+    self.spanId = spanId
+    self.parentSpanId = parentSpanId
+    self.name = name
+    self.kind = kind
+    self.startTimestampMs = startTimestampMs
+    self.endTimestampMs = endTimestampMs
+    self.statusCode = statusCode
+    self.statusMessage = statusMessage
+    self.attributes = attributes
+    self.events = events
+  }
+
+  /// A new random 16-byte trace id as 32 lowercase hex characters. There is no trace-context
+  /// propagation yet, so every span starts its own trace.
+  public static func generateTraceId() -> String {
+    return generateHexId(words: 2)
+  }
+
+  /// A new random 8-byte span id as 16 lowercase hex characters.
+  public static func generateSpanId() -> String {
+    return generateHexId(words: 1)
+  }
+
+  /// Random identifier built from 8-byte words, hex-encoded. The all-zero value is invalid per
+  /// the OTLP spec (the server rejects the span), so it redraws — a branch that is hit once per
+  /// 2^64 draws but keeps the invariant explicit.
+  private static func generateHexId(words: Int) -> String {
+    while true {
+      let drawn = (0..<words).map { _ in UInt64.random(in: .min ... .max) }
+      guard drawn.contains(where: { $0 != 0 }) else {
+        continue
+      }
+      return drawn.map { String(format: "%016llx", $0) }.joined()
+    }
+  }
+}
+
+extension SpanRow {
+  init(row: SQLiteRow) {
+    self.init(
+      id: row.int64(at: 0),
+      sessionId: row.string(at: 1) ?? "",
+      traceId: row.string(at: 2) ?? "",
+      spanId: row.string(at: 3) ?? "",
+      parentSpanId: row.string(at: 4),
+      name: row.string(at: 5) ?? "",
+      kind: row.int(at: 6) ?? SpanRow.internalKind,
+      startTimestampMs: row.int64(at: 7) ?? 0,
+      endTimestampMs: row.int64(at: 8) ?? 0,
+      statusCode: row.int(at: 9),
+      statusMessage: row.string(at: 10),
+      attributes: row.string(at: 11),
+      events: row.string(at: 12)
+    )
+  }
+}

@@ -562,6 +562,158 @@ struct MetricsDatabaseTests {
     }
   }
 
+  // MARK: - Spans
+
+  @Test
+  func `insert span returns auto-incremented id`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      let firstId = try database.insert(span: makeSpanRow(sessionId: "s"))
+      let secondId = try database.insert(span: makeSpanRow(sessionId: "s"))
+      #expect(secondId > firstId)
+    }
+  }
+
+  @Test
+  func `getSpans returns rows past the cursor in ascending id order`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      let firstId = try database.insert(span: makeSpanRow(sessionId: "s", name: "a"))
+      try database.insert(span: makeSpanRow(sessionId: "s", name: "b"))
+      try database.insert(span: makeSpanRow(sessionId: "s", name: "c"))
+      let rows = try database.getSpans(afterId: firstId)
+      #expect(rows.map(\.name) == ["b", "c"])
+      #expect(rows.compactMap(\.id) == rows.compactMap(\.id).sorted())
+    }
+  }
+
+  @Test
+  func `span round-trips its full payload`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      try database.insert(
+        span: makeSpanRow(
+          sessionId: "s",
+          traceId: "a3ce929d0e0e4736a3ce929d0e0e4736",
+          spanId: "00f067aa0ba902b7",
+          parentSpanId: "abcdef0123456789",
+          name: "POST",
+          kind: SpanRow.clientKind,
+          startTimestampMs: 1_782_131_895_000,
+          endTimestampMs: 1_782_131_895_250,
+          statusCode: SpanRow.statusError,
+          statusMessage: "went wrong",
+          attributes: "{\"url.full\":\"https://example.com\"}",
+          events: "[{\"name\":\"http.redirect\"}]"
+        )
+      )
+      let row = try #require(try database.getSpans(afterId: -1).first)
+      #expect(row.id != nil)
+      #expect(row.sessionId == "s")
+      #expect(row.traceId == "a3ce929d0e0e4736a3ce929d0e0e4736")
+      #expect(row.spanId == "00f067aa0ba902b7")
+      #expect(row.parentSpanId == "abcdef0123456789")
+      #expect(row.name == "POST")
+      #expect(row.kind == SpanRow.clientKind)
+      #expect(row.startTimestampMs == 1_782_131_895_000)
+      #expect(row.endTimestampMs == 1_782_131_895_250)
+      #expect(row.statusCode == SpanRow.statusError)
+      #expect(row.statusMessage == "went wrong")
+      #expect(row.attributes == "{\"url.full\":\"https://example.com\"}")
+      #expect(row.events == "[{\"name\":\"http.redirect\"}]")
+    }
+  }
+
+  @Test
+  func `span round-trips absent optionals as nil`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      try database.insert(span: makeSpanRow(sessionId: "s"))
+      let row = try #require(try database.getSpans(afterId: -1).first)
+      #expect(row.parentSpanId == nil)
+      #expect(row.statusCode == nil)
+      #expect(row.statusMessage == nil)
+      #expect(row.attributes == nil)
+      #expect(row.events == nil)
+    }
+  }
+
+  @Test
+  func `getMaxSpanId reflects the newest row and nil when empty`() throws {
+    try withTemporaryDatabase { database in
+      let emptyMaxId = try database.getMaxSpanId()
+      #expect(emptyMaxId == nil)
+      try database.insert(session: makeSessionRow(id: "s"))
+      try database.insert(span: makeSpanRow(sessionId: "s"))
+      let lastId = try database.insert(span: makeSpanRow(sessionId: "s"))
+      let maxId = try database.getMaxSpanId()
+      #expect(maxId == lastId)
+    }
+  }
+
+  @Test
+  func `deleteSpans removes rows up to and including the given id`() throws {
+    // Dispatched rows are deleted rather than retained: unlike metrics and logs, no
+    // per-session JS API reads them back, and spans are high-volume.
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      try database.insert(span: makeSpanRow(sessionId: "s"))
+      let secondId = try database.insert(span: makeSpanRow(sessionId: "s"))
+      let thirdId = try database.insert(span: makeSpanRow(sessionId: "s"))
+      try database.deleteSpans(upToId: secondId)
+      let remaining = try database.getSpans(afterId: -1)
+      #expect(remaining.compactMap(\.id) == [thirdId])
+    }
+  }
+
+  @Test
+  func `spans are deleted when their session is deleted`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      try database.insert(span: makeSpanRow(sessionId: "s"))
+      try database.deleteSession(id: "s")
+      let remaining = try database.getSpans(afterId: -1)
+      #expect(remaining.isEmpty)
+    }
+  }
+
+  @Test
+  func `insert span prunes the oldest rows past the retention cap`() throws {
+    // Span producers (network requests especially) can record orders of magnitude more rows
+    // than metrics or logs. The cap bounds the table when nothing consumes (and deletes) the rows.
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "s"))
+      for _ in 0..<(MetricsDatabase.spanCap + 10) {
+        try database.insert(span: makeSpanRow(sessionId: "s"))
+      }
+      let count = try countRows(database: database, table: "spans")
+      #expect(count <= MetricsDatabase.spanCap)
+      let rows = try database.getSpans(afterId: -1)
+      let maxId = try #require(try database.getMaxSpanId())
+      #expect(rows.compactMap(\.id).max() == maxId)
+    }
+  }
+
+  @Test
+  func `adding the spans table preserves an existing database`() throws {
+    // The table ships without a schema-version bump, so a database created by a build
+    // that predates it must keep its rows when this build opens the file. This models
+    // that by dropping the table and re-opening.
+    try withTemporaryDirectory { directoryUrl in
+      do {
+        let database = try MetricsDatabase(directoryUrl: directoryUrl)
+        try database.insert(session: makeSessionRow(id: "kept"))
+        try database.database.execute("DROP TABLE spans;")
+      }
+      let database = try MetricsDatabase(directoryUrl: directoryUrl)
+      let session = try database.getSession(id: "kept")
+      #expect(session != nil)
+      try database.insert(span: makeSpanRow(sessionId: "kept"))
+      let requests = try database.getSpans(afterId: -1)
+      #expect(requests.count == 1)
+    }
+  }
+
   // MARK: - Helpers
 }
 
@@ -668,6 +820,36 @@ private func makeLogRow(
     body: body,
     attributes: attributes,
     droppedAttributesCount: droppedAttributesCount
+  )
+}
+
+private func makeSpanRow(
+  sessionId: String,
+  traceId: String = SpanRow.generateTraceId(),
+  spanId: String = SpanRow.generateSpanId(),
+  parentSpanId: String? = nil,
+  name: String = "GET",
+  kind: Int = SpanRow.clientKind,
+  startTimestampMs: Int64 = 1_782_131_895_000,
+  endTimestampMs: Int64 = 1_782_131_895_250,
+  statusCode: Int? = nil,
+  statusMessage: String? = nil,
+  attributes: String? = nil,
+  events: String? = nil
+) -> SpanRow {
+  return SpanRow(
+    sessionId: sessionId,
+    traceId: traceId,
+    spanId: spanId,
+    parentSpanId: parentSpanId,
+    name: name,
+    kind: kind,
+    startTimestampMs: startTimestampMs,
+    endTimestampMs: endTimestampMs,
+    statusCode: statusCode,
+    statusMessage: statusMessage,
+    attributes: attributes,
+    events: events
   )
 }
 
