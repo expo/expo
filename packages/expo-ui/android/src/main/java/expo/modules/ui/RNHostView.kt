@@ -118,7 +118,12 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     wrapperState.value = null
   }
 
-  private fun clearPublishedContentOrigin() {
+  /**
+   * The removal paths above do not run when React unmounts this view with its child still attached,
+   * so the module also calls this when the view is destroyed in OnViewDestroys. Without it the entry would stay in the
+   * process-global registry
+   */
+  internal fun clearPublishedContentOrigin() {
     lastContentOriginX = Double.NaN
     lastContentOriginY = Double.NaN
     shadowNodeProxy.clearContentOrigin()

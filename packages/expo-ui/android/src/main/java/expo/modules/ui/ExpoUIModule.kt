@@ -180,6 +180,10 @@ class ExpoUIModule : Module() {
       Prop("layoutRoot") { view: RNHostView, layoutRoot: Boolean ->
         view.setLayoutRoot(layoutRoot)
       }
+
+      OnViewDestroys { view: RNHostView ->
+        view.clearPublishedContentOrigin()
+      }
     }
 
     View(SlotView::class) {
