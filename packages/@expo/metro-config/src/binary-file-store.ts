@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { decode, encode } from './binary-file-store/serializer';
+import { shouldSkipCache } from './cache-store';
 import { event } from './events';
 import { tryRenameAndDeleteAsync } from './file-store';
 
@@ -67,9 +68,8 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
   }
 
   async set(key: Buffer, value: T): Promise<void> {
-    // Prevent caching of CSS files that have the skipCache flag set.
-    if ((value as any)?.output?.[0]?.data?.css?.skipCache) {
-      event('cache:skipped_css', { path: (value as any).path });
+    if (shouldSkipCache(value)) {
+      event('cache:skipped', {});
       return;
     }
 

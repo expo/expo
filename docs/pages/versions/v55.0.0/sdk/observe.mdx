@@ -35,8 +35,9 @@ import { useEffect } from 'react';
 
 function RootLayout() {
   useEffect(() => {
-    // Call markInteractive() after any initialization work behind the
-    // splash screen completes.
+    // Replace this effect with your own readiness signal: only call
+    // markInteractive() after initialization work behind the splash screen
+    // (such as loading initial data) completes.
     AppMetrics.markInteractive();
   }, []);
 
@@ -46,7 +47,7 @@ function RootLayout() {
 export default AppMetricsRoot.wrap(RootLayout);
 ```
 
-For step-by-step instructions, including how to handle apps with multiple entry screens, see the [EAS Observe Get started guide](/eas/observe/get-started/).
+For step-by-step instructions, including a complete splash screen example and how to handle apps with multiple entry screens, see the [EAS Observe Get started guide](/eas/observe/get-started/).
 
 > **info** [User-defined events](/eas/observe/events/) and the [navigation integrations](/eas/observe/integrations/expo-router/) require SDK 56 and later.
 

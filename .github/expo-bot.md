@@ -12,9 +12,11 @@ Comment `@expo-bot help` on an expo/expo thread for a short list. That command a
 | `@expo-bot verify` | `/verify` | issue or PR | Investigate and post attested findings. On an issue, also opens a fix PR when it can. On a PR, report only unless `--fix`. |
 | `@expo-bot verify --fix` | `/verify --fix` | PR (on an issue, fix is already the default) | Also attempt a fix pull request |
 | `@expo-bot verify --no-fix` | `/verify --no-fix` | issue or PR | Report only; never open a PR |
+| `… --model <name>` | `… --fable`, `--opus`, `--sonnet`, `--haiku` | issue or PR | Run the agent on a different model for this run (`fable`/`opus`/`sonnet`/`haiku` or a full `claude-*` id). Combines with any verify/check/work form. |
 | `@expo-bot review` | `/review`, `/expo-review` | PR | One-shot AI review; router picks agents |
 | `@expo-bot review all` | `/review all` | PR | Review with every agent |
 | `@expo-bot review <agents>` | `/review <agents>` | PR | Review with a named subset (`correctness security`, …) |
+| `@expo-bot check` | — | PR (on an issue, only the verify half runs) | Verify + review from one comment. `--fix` / `--no-fix` apply to the verify half; the review router picks agents. |
 | `@expo-bot dismiss <id>…` | `/dismiss <id>…` | PR | Hide reviewer finding(s); optional `-- reason` |
 | `@expo-bot undismiss <id>…` | `/undismiss <id>…` | PR | Restore finding(s) |
 | `@expo-bot <task>` | — | open PR **authored by expo-bot** | Carry out that follow-up and push to the same PR |
@@ -28,7 +30,7 @@ Incidental mentions in the middle of a comment do nothing. The command has to st
 - **Review / dismiss / work** are pull-request only.
 - **Verify and help** also run on issues. On an issue, `/verify` will open a fix PR when it can; on a pull request it reports only unless you pass `--fix`.
 - **Work mode** (`@expo-bot <task>`) only updates PRs expo-bot itself opened. It will not push to a contributor branch.
-- Reserved verbs (`help`, `verify`, `review`, `dismiss`, `undismiss`) are never treated as a work-mode task.
+- Reserved verbs (`help`, `verify`, `check`, `review`, `dismiss`, `undismiss`) are never treated as a work-mode task.
 
 ## Continuous review
 

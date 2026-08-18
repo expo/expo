@@ -81,6 +81,7 @@ jobs:
           | `@expo-bot help` | This list (and refresh the manpage if it is behind) |
           | `@expo-bot verify` | Investigate; on an issue may also open a fix PR (`/verify`) |
           | `@expo-bot review` | One-shot AI review on a PR (`/review`) |
+          | `@expo-bot check` | Verify + review from one comment (on an issue, verify only) |
           | `@expo-bot dismiss` / `undismiss` | Hide or restore a finding |
           | `@expo-bot <task>` | Follow-up on an open expo-bot PR |
 
