@@ -25,6 +25,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
 
   private var players: MutableList<WeakReference<VideoPlayer>> = mutableListOf()
   private var currentFocusRequest: AudioFocusRequest? = null
+  private var legacyAudioFocusAcquired = false
   private var currentMixingMode: AudioMixingMode = AudioMixingMode.MIX_WITH_OTHERS
   private val anyPlayerRequiresFocus: Boolean
     get() = players.toList().any {
@@ -71,25 +72,26 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
       audioManager.requestAudioFocus(newFocusRequest)
     } else {
       @Suppress("DEPRECATION")
-      audioManager.requestAudioFocus(
+      legacyAudioFocusAcquired = audioManager.requestAudioFocus(
         this,
         AudioManager.STREAM_MUSIC,
         audioFocusType
-      )
+      ) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
     }
     currentMixingMode = audioMixingMode
   }
 
   private fun abandonAudioFocus() {
-    currentFocusRequest?.let {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      currentFocusRequest?.let {
         audioManager.abandonAudioFocusRequest(it)
-      } else {
-        @Suppress("DEPRECATION")
-        audioManager.abandonAudioFocus(this)
       }
+    } else if (legacyAudioFocusAcquired) {
+      @Suppress("DEPRECATION")
+      audioManager.abandonAudioFocus(this)
     }
     currentFocusRequest = null
+    legacyAudioFocusAcquired = false
   }
 
   fun registerPlayer(player: VideoPlayer) {
