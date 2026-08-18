@@ -63,9 +63,8 @@ export function useStore(
       });
       rootComponent = getQualifiedRouteComponent(routeNode);
 
-      // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
-      // This will cause static rendering to fail, which once performs a single pass.
-      // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
+      // Prefetch synchronous state and route info for consumers that run before the container mounts.
+      // The container derives its own initial state from linking.
       const initialURL = linking?.getInitialURL?.();
       if (typeof initialURL === 'string') {
         let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);

@@ -19,6 +19,11 @@ type Options = LinkingOptions<ParamListBase>;
 
 const linkingHandlers: symbol[] = [];
 
+function getInitialPath(prefixes: string[], url: string) {
+  const path = extractExpoPathFromURL(prefixes, url);
+  return path.startsWith('/') ? path : `/${path}`;
+}
+
 export function useLinking(
   ref: RefObject<NavigationContainerRef<ParamListBase>>,
   options: Options | undefined,
@@ -105,12 +110,15 @@ export function useLinking(
   });
 
   const getStateFromURL = useCallback(
-    (url: string | null | undefined) => {
+    // TODO: This may no longer be necessary. It was added during the initial-state refactor to preserve the previous path shape.
+    (url: string | null | undefined, initial = false) => {
       if (!url || (filterRef.current && !filterRef.current(url))) {
         return undefined;
       }
 
-      const path = extractExpoPathFromURL(prefixesRef.current, url);
+      const path = initial
+        ? getInitialPath(prefixesRef.current, url)
+        : extractExpoPathFromURL(prefixesRef.current, url);
 
       return path !== undefined
         ? getStateFromPathRef.current(path, configRef.current, segments)
@@ -130,21 +138,21 @@ export function useLinking(
       if (url != null) {
         if (typeof url !== 'string') {
           return url.then((url) => {
-            const state = getStateFromURL(url);
+            const state = getStateFromURL(url, true);
 
             if (typeof url === 'string') {
               // If the link were handled, it gets cleared in NavigationContainer
-              onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
+              onUnhandledLinking(getInitialPath(prefixes, url));
             }
 
             return state;
           });
         } else {
-          onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
+          onUnhandledLinking(getInitialPath(prefixes, url));
         }
       }
 
-      state = getStateFromURL(url);
+      state = getStateFromURL(url, true);
     }
 
     const thenable = {

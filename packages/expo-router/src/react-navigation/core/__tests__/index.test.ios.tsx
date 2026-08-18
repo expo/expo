@@ -921,10 +921,7 @@ test('overrides router with UNSTABLE_router', () => {
     <BaseNavigationContainer
       ref={navigation}
       initialState={{
-        type: 'test',
-        key: 'stack',
         index: 0,
-        routeNames: ['foo', 'bar'],
         routes: [{ name: 'foo' }, { name: 'bar' }],
       }}>
       <TestNavigator

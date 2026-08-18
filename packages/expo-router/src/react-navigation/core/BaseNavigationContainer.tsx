@@ -38,35 +38,21 @@ type State = NavigationState | PartialState<NavigationState> | undefined;
 const serializableWarnings: string[] = [];
 const duplicateNameWarnings: string[] = [];
 
-/**
- * Remove `key` and `routeNames` from the state objects recursively to get partial state.
- *
- * @param state Initial state object.
- */
-const getPartialState = (
-  state: InitialState | undefined
-): PartialState<NavigationState> | undefined => {
+function validateInitialState(state: InitialState | undefined): void {
   if (state === undefined) {
     return;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { key, routeNames, ...partialState } = state;
+  if ('key' in state || 'routeNames' in state || ('stale' in state && state.stale === false)) {
+    throw new Error(
+      'The `initialState` prop must contain a partial navigation state. Complete navigation states include internal fields (`key`, `routeNames`, or `stale: false`) that cannot be safely restored. Remove these fields and pass the partial state returned by `getStateFromPath` instead.'
+    );
+  }
 
-  return {
-    ...partialState,
-    stale: true,
-    routes: state.routes.map((route) => {
-      if (route.state === undefined) {
-        return route as Route<string> & {
-          state?: PartialState<NavigationState>;
-        };
-      }
-
-      return { ...route, state: getPartialState(route.state) };
-    }),
-  };
-};
+  for (const route of state.routes) {
+    validateInitialState(route.state);
+  }
+}
 
 /**
  * Container component which holds the navigation state.
@@ -96,9 +82,11 @@ export function BaseNavigationContainer({
     );
   }
 
-  const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(() =>
-    getPartialState(initialState == null ? undefined : initialState)
-  );
+  const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(() => {
+    validateInitialState(initialState == null ? undefined : initialState);
+    // `InitialState` is the public recursive shape of a partial navigation state.
+    return (initialState == null ? undefined : initialState) as State;
+  });
 
   const isFirstMountRef = React.useRef<boolean>(true);
 

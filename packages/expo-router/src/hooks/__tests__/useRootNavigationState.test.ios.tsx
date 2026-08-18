@@ -20,7 +20,6 @@ describe(useRootNavigationState, () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             routes: [
               {
@@ -31,7 +30,6 @@ describe(useRootNavigationState, () => {
                 path: '/?test=1&test=2',
               },
             ],
-            stale: true,
           },
         },
       ],
@@ -64,7 +62,6 @@ describe(useRootNavigationState, () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             routes: [
               {
@@ -76,11 +73,9 @@ describe(useRootNavigationState, () => {
                       path: '/',
                     },
                   ],
-                  stale: true,
                 },
               },
             ],
-            stale: true,
           },
         },
       ],
@@ -108,7 +103,6 @@ describe(useRootNavigationState, () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             routes: [
               {
@@ -116,7 +110,6 @@ describe(useRootNavigationState, () => {
                 path: '/',
               },
             ],
-            stale: true,
           },
         },
       ],
@@ -149,7 +142,6 @@ describe(useRootNavigationState, () => {
         {
           key: expect.any(String),
           name: '__root',
-          params: undefined,
           state: {
             routes: [
               {
@@ -161,11 +153,9 @@ describe(useRootNavigationState, () => {
                       path: '/',
                     },
                   ],
-                  stale: true,
                 },
               },
             ],
-            stale: true,
           },
         },
       ],

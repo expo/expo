@@ -80,6 +80,39 @@ test('throws when nesting containers', () => {
   ).toThrow("install '@react-navigation/native' and use its NavigationContainer instead.");
 });
 
+test('rejects a complete initial state', () => {
+  const initialState: NavigationState = {
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['home'],
+    routes: [{ key: 'home', name: 'home' }],
+  };
+  expect(() =>
+    render(<BaseNavigationContainer initialState={initialState}>{null}</BaseNavigationContainer>)
+  ).toThrow('The `initialState` prop must contain a partial navigation state.');
+});
+
+test('rejects a complete nested initial state', () => {
+  const initialState = {
+    routes: [
+      {
+        name: 'home',
+        state: {
+          stale: false as const,
+          key: 'nested',
+          index: 0,
+          routeNames: ['details'],
+          routes: [{ key: 'details', name: 'details' }],
+        },
+      },
+    ],
+  };
+
+  expect(() =>
+    render(<BaseNavigationContainer initialState={initialState}>{null}</BaseNavigationContainer>)
+  ).toThrow('The `initialState` prop must contain a partial navigation state.');
+});
 test('handle dispatching with ref', () => {
   function CurrentRootRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);

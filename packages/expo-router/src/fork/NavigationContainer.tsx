@@ -38,7 +38,7 @@ declare global {
 
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 
-type Props<ParamList extends object> = NavigationContainerProps & {
+type Props<ParamList extends object> = Omit<NavigationContainerProps, 'initialState'> & {
   direction?: LocaleDirection;
   linking?: LinkingOptions<ParamList>;
   fallback?: React.ReactNode;
@@ -49,7 +49,6 @@ type Props<ParamList extends object> = NavigationContainerProps & {
  * Container component which holds the navigation state designed for React Native apps.
  * This should be rendered at the root wrapping the whole app.
  *
- * @param props.initialState Initial state object for the navigation tree. When deep link handling is enabled, this will override deep links when specified. Make sure that you don't specify an `initialState` when there's a deep link (`Linking.getInitialURL()`).
  * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onStateChange Callback which is called with the latest navigation state when it changes.
  * @param props.onUnhandledAction Callback which is called when an action is not handled.
@@ -141,7 +140,7 @@ function NavigationContainerInner(
 
   React.useImperativeHandle(ref, () => refContainer.current!);
 
-  const isLinkingReady = rest.initialState != null || !linking || isResolved;
+  const isLinkingReady = !linking || isResolved;
 
   if (!isLinkingReady) {
     // This is temporary until we have Suspense for data-fetching
@@ -158,7 +157,7 @@ function NavigationContainerInner(
             theme={theme}
             onReady={onReadyForLinkingHandling}
             onStateChange={onStateChangeForLinkingHandling}
-            initialState={rest.initialState == null ? initialState : rest.initialState}
+            initialState={initialState}
             ref={refContainer}
           />
         </LinkingContext.Provider>

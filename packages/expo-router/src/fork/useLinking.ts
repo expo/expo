@@ -1,6 +1,5 @@
-import { type RefObject, useEffect, useCallback, useRef, use } from 'react';
+import { type RefObject, useEffect, useCallback, useRef } from 'react';
 
-import { ServerContext } from '../global-state/serverLocationContext';
 import {
   type LinkingOptions,
   getPathFromState as getPathFromStateDefault,
@@ -8,6 +7,7 @@ import {
   type NavigationContainerRef,
   type ParamListBase,
 } from '../react-navigation/native';
+import { extractExpoPathFromURL } from './extractPathFromURL';
 import { useBrowserHistorySync } from './useBrowserHistorySync';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
@@ -22,7 +22,9 @@ export function useLinking(
   onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
 ) {
   const enabled = options !== undefined;
+  const prefixes = options?.prefixes ?? [];
   const config = options?.config;
+  const getInitialURL = options?.getInitialURL ?? getInitialURLWithTimeout;
   const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
   const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
 
@@ -62,39 +64,47 @@ export function useLinking(
   // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
   // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
   const enabledRef = useRef(enabled);
+  const prefixesRef = useRef(prefixes);
   const configRef = useRef(config);
+  const getInitialURLRef = useRef(getInitialURL);
   const getStateFromPathRef = useRef(getStateFromPath);
 
   useEffect(() => {
     enabledRef.current = enabled;
+    prefixesRef.current = prefixes;
     configRef.current = config;
+    getInitialURLRef.current = getInitialURL;
     getStateFromPathRef.current = getStateFromPath;
   });
 
-  const server = use(ServerContext);
-
   const getInitialState = useCallback(() => {
-    let value: ResultState | undefined;
+    let state: ResultState | undefined;
 
     if (enabledRef.current) {
-      const location =
-        server?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
+      const getStateFromURL = (url: string | null | undefined) => {
+        let path = url ? extractExpoPathFromURL(prefixesRef.current, url) : undefined;
+        if (path !== undefined && !path.startsWith('/')) {
+          path = `/${path}`;
+        }
 
-      const path = location
-        ? location.pathname + location.search + (location.hash ?? '')
-        : undefined;
+        const state = path ? getStateFromPathRef.current(path, configRef.current) : undefined;
 
-      if (path) {
-        value = getStateFromPathRef.current(path, configRef.current);
+        // If the link were handled, it gets cleared in NavigationContainer
+        onUnhandledLinking(path);
+        return state;
+      };
+      const url = getInitialURLRef.current();
+
+      if (typeof url !== 'string' && url != null) {
+        return url.then(getStateFromURL);
       }
 
-      // If the link were handled, it gets cleared in NavigationContainer
-      onUnhandledLinking(path);
+      state = getStateFromURL(url);
     }
 
     const thenable = {
       then(onfulfilled?: (state: ResultState | undefined) => void) {
-        return Promise.resolve(onfulfilled ? onfulfilled(value) : value);
+        return Promise.resolve(onfulfilled ? onfulfilled(state) : state);
       },
       catch() {
         return thenable;
