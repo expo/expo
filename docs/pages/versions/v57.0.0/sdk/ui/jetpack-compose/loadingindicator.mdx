@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Loading Indicators match the official Jetpack Compose [Loading Indicator API](https://m3.material.io/components/loading-indicator/overview).
@@ -30,7 +31,13 @@ Expo UI Loading Indicators match the official Jetpack Compose [Loading Indicator
 
 A morphing-shape loading animation from Material 3 Expressive.
 
-```tsx LoadingIndicatorExample.tsx
+<ComponentExample
+  title="LoadingIndicatorExample.tsx"
+  src="/static/images/expo-ui/examples/loadingindicator-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/loadingindicator-basic-android-dark.webp"
+  alt="A single morphing shape loading indicator">
+
+```tsx
 import { Host, LoadingIndicator } from '@expo/ui/jetpack-compose';
 
 export default function LoadingIndicatorExample() {
@@ -42,12 +49,23 @@ export default function LoadingIndicatorExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Contained loading indicator
 
 A loading indicator inside a colored background.
 
-```tsx ContainedLoadingIndicatorExample.tsx
-import { Host, ContainedLoadingIndicator } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="ContainedLoadingIndicatorExample.tsx"
+  src="/static/images/expo-ui/examples/loadingindicator-contained-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/loadingindicator-contained-android-dark.webp"
+  alt="A morphing shape loading indicator inside a filled circular container">
+
+```tsx
+import {
+  Host,
+  ContainedLoadingIndicator,
+} from '@expo/ui/jetpack-compose';
 
 export default function ContainedLoadingIndicatorExample() {
   return (
@@ -58,12 +76,25 @@ export default function ContainedLoadingIndicatorExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Indeterminate
 
 Omit the `progress` prop to animate continuously without indicating a specific completion level.
 
-```tsx IndeterminateExample.tsx
-import { ContainedLoadingIndicator, Host, LoadingIndicator, Row } from '@expo/ui/jetpack-compose';
+<ComponentExample
+  title="IndeterminateExample.tsx"
+  src="/static/images/expo-ui/examples/loadingindicator-indeterminate-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/loadingindicator-indeterminate-android-dark.webp"
+  alt="A plain loading indicator beside a contained one, both animating continuously">
+
+```tsx
+import {
+  ContainedLoadingIndicator,
+  Host,
+  LoadingIndicator,
+  Row,
+} from '@expo/ui/jetpack-compose';
 
 export default function IndeterminateExample() {
   return (
@@ -77,11 +108,19 @@ export default function IndeterminateExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Determinate
 
 Pass an observable state from `useNativeState` as `progress`. Update `progress.value` between `0` and `1`.
 
-```tsx DeterminateExample.tsx
+<ComponentExample
+  title="DeterminateExample.tsx"
+  src="/static/images/expo-ui/examples/loadingindicator-determinate-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/loadingindicator-determinate-android-dark.webp"
+  alt="A plain and a contained loading indicator, each drawing the shape for the current progress value">
+
+```tsx
 import {
   ContainedLoadingIndicator,
   Host,
@@ -112,10 +151,15 @@ export default function DeterminateExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
-import { LoadingIndicator, ContainedLoadingIndicator } from '@expo/ui/jetpack-compose';
+import {
+  LoadingIndicator,
+  ContainedLoadingIndicator,
+} from '@expo/ui/jetpack-compose';
 ```
 
 <APISection packageName="expo-ui/jetpack-compose/loadingindicator" />

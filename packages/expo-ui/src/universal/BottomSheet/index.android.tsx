@@ -39,6 +39,7 @@ export function BottomSheet({
   snapPoints,
   testID,
   modifiers,
+  shouldDismissOnBackPress = true,
   contentPadding,
 }: BottomSheetProps) {
   const sheetRef = useRef<ModalBottomSheetRef>(null);
@@ -81,6 +82,7 @@ export function BottomSheet({
         onDismissRequest={onDismiss}
         showDragHandle={showDragIndicator}
         skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
+        properties={{ shouldDismissOnBackPress }}
         modifiers={modifiers}>
         <Column modifiers={contentModifiers}>{children}</Column>
       </ModalBottomSheet>

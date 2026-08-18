@@ -34,12 +34,23 @@ function ModifiersExample() {
   return (
     <Host style={{ flex: 1 }}>
       {/* Basic styling modifiers */}
-      <Button modifiers={[paddingAll(16), fillMaxWidth(), background('#FF6B6B')]}>
+      <Button
+        modifiers={[
+          paddingAll(16),
+          fillMaxWidth(),
+          background('#FF6B6B'),
+        ]}>
         Full-width padded button
       </Button>
 
       {/* Complex combination with border and shadow */}
-      <Button modifiers={[paddingAll(12), background('#4ECDC4'), border(2, '#2C3E50'), shadow(4)]}>
+      <Button
+        modifiers={[
+          paddingAll(12),
+          background('#4ECDC4'),
+          border(2, '#2C3E50'),
+          shadow(4),
+        ]}>
         Styled with border and shadow
       </Button>
     </Host>
@@ -204,7 +215,9 @@ Sets the background color.
 ```tsx
 import { background } from '@expo/ui/jetpack-compose/modifiers';
 
-<Button modifiers={[background('#3498DB')]}>Blue background</Button>;
+<Button modifiers={[background('#3498DB')]}>
+  Blue background
+</Button>;
 ```
 
 ### `border(borderWidth, borderColor)`
@@ -251,11 +264,19 @@ Draws a shadow behind the component with control over the blur radius, spread, o
 | `config.alpha`   | `number` | Shadow opacity (0.0–1.0).                                 |
 
 ```tsx
-import { dropShadow, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  dropShadow,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 <Button
   modifiers={[
-    dropShadow(Shapes.RoundedCorner(24), { radius: 16, spread: 4, color: '#6200EE', offsetY: 8 }),
+    dropShadow(Shapes.RoundedCorner(24), {
+      radius: 16,
+      spread: 4,
+      color: '#6200EE',
+      offsetY: 8,
+    }),
   ]}>
   Drop shadow
 </Button>;
@@ -276,12 +297,20 @@ Draws a shadow inside the component to create an inset effect. Apply the `backgr
 | `config.alpha`   | `number` | Shadow opacity (0.0–1.0).                                 |
 
 ```tsx
-import { innerShadow, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  innerShadow,
+  background,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 <Button
   modifiers={[
     background('#FFFFFF'),
-    innerShadow(Shapes.RoundedCorner(24), { radius: 16, spread: 2, offsetY: 6 }),
+    innerShadow(Shapes.RoundedCorner(24), {
+      radius: 16,
+      spread: 2,
+      offsetY: 6,
+    }),
   ]}>
   Inner shadow
 </Button>;
@@ -324,7 +353,12 @@ Common shadow styles are combinations of the `dropShadow` and `innerShadow` modi
 A neobrutalist shadow is a hard-edged drop shadow with no blur and a thick border. Set `radius` and `spread` to `0`, then offset the shadow.
 
 ```tsx
-import { dropShadow, border, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  dropShadow,
+  border,
+  background,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 <Box
   modifiers={[
@@ -346,14 +380,28 @@ import { dropShadow, border, background, Shapes } from '@expo/ui/jetpack-compose
 A neumorphic shadow layers two drop shadows on a surface that shares its background color: a light shadow toward the light source and a darker shadow on the opposite side. Apply both before the `background`.
 
 ```tsx
-import { dropShadow, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  dropShadow,
+  background,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
 
 const shape = Shapes.RoundedCorner(24);
 
 <Box
   modifiers={[
-    dropShadow(shape, { radius: 15, offsetX: -10, offsetY: -10, color: '#FFFFFF' }),
-    dropShadow(shape, { radius: 15, offsetX: 10, offsetY: 10, color: '#B1B1B1' }),
+    dropShadow(shape, {
+      radius: 15,
+      offsetX: -10,
+      offsetY: -10,
+      color: '#FFFFFF',
+    }),
+    dropShadow(shape, {
+      radius: 15,
+      offsetX: 10,
+      offsetY: 10,
+      color: '#B1B1B1',
+    }),
     background('#E0E0E0'),
   ]}
 />;
@@ -466,7 +514,9 @@ Makes the component respond to click events.
 ```tsx
 import { clickable } from '@expo/ui/jetpack-compose/modifiers';
 
-<Button modifiers={[clickable(() => console.log('Clicked!'))]}>Clickable</Button>;
+<Button modifiers={[clickable(() => console.log('Clicked!'))]}>
+  Clickable
+</Button>;
 ```
 
 ### `combinedClickable(handlers, options?)`
@@ -505,7 +555,10 @@ Makes the component selectable, similar to a radio button.
 ```tsx
 import { selectable } from '@expo/ui/jetpack-compose/modifiers';
 
-<Button modifiers={[selectable(isSelected, () => setIsSelected(!isSelected))]}>
+<Button
+  modifiers={[
+    selectable(isSelected, () => setIsSelected(!isSelected)),
+  ]}>
   Selectable option
 </Button>;
 ```

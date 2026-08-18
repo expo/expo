@@ -8,6 +8,29 @@ import HeadingText from '../components/HeadingText';
 import MonoText from '../components/MonoText';
 import Colors from '../constants/Colors';
 
+const FAKE_SIGNALS: Record<string, AgeRange.FakeAgeSignals> = {
+  'supervised 13 to 15 year old': {
+    ageSignalsStatus: 'SHARED',
+    lowerBound: 13,
+    upperBound: 15,
+    ageRangeSource: 'TIER_B',
+    significantChangeStatus: 'PENDING',
+  },
+  adult: {
+    ageSignalsStatus: 'SHARED',
+    lowerBound: 18,
+    ageRangeSource: 'TIER_D',
+  },
+  'signals not shared': {
+    ageSignalsStatus: 'NOT_SHARED',
+  },
+  // -4 is PLAY_SERVICES_NOT_FOUND. See
+  // https://developer.android.com/google/play/age-signals/handle-errors
+  'error code -4': {
+    errorCode: -4,
+  },
+};
+
 export default function AgeRangeScreen() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -121,9 +144,35 @@ export default function AgeRangeScreen() {
     }
   };
 
+  const applyFakeSignals = (name: string | null) => {
+    setError(null);
+    setResult(null);
+
+    try {
+      AgeRange.setFakeAgeSignals(name === null ? null : FAKE_SIGNALS[name]);
+    } catch (err: any) {
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
       <HeadingText style={styles.heading}>Age Range API</HeadingText>
+
+      {result && (
+        <View style={styles.resultContainer}>
+          <Text style={styles.resultLabel}>Result:</Text>
+          <MonoText containerStyle={styles.resultText}>{result}</MonoText>
+        </View>
+      )}
+
+      {error && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorLabel}>Error:</Text>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
 
       <BodyText color="secondary" style={styles.description}>
         Request the user's age range with directly configurable (iOS) thresholds. This example uses
@@ -164,19 +213,26 @@ export default function AgeRangeScreen() {
         style={styles.button}
       />
 
-      {result && (
-        <View style={styles.resultContainer}>
-          <Text style={styles.resultLabel}>Result:</Text>
-          <MonoText containerStyle={styles.resultText}>{result}</MonoText>
-        </View>
-      )}
+      <HeadingText style={styles.heading}>Fake age signals (Android)</HeadingText>
 
-      {error && (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorLabel}>Error:</Text>
-          <Text style={styles.errorText}>{error}</Text>
-        </View>
-      )}
+      <BodyText color="secondary" style={styles.description}>
+        Play only reports age signals to accounts it has enabled, so pick a fake below to test the
+        buttons above against another age range. The requests do not change, only what they report.
+      </BodyText>
+
+      {Object.keys(FAKE_SIGNALS).map((name) => (
+        <Button
+          key={name}
+          onPress={() => applyFakeSignals(name)}
+          title={`Fake ${name}`}
+          style={styles.button}
+        />
+      ))}
+      <Button
+        onPress={() => applyFakeSignals(null)}
+        title="Report the real age signals"
+        style={styles.button}
+      />
     </ScrollView>
   );
 }
