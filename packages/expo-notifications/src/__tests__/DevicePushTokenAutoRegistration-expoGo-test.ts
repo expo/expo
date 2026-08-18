@@ -20,6 +20,9 @@ jest.mock('../ServerRegistrationModule', () => ({
 jest.mock('../utils/updateDevicePushTokenAsync');
 jest.mock('../getDevicePushTokenAsync');
 
-it('does not throw on import in Expo Go on Android', () => {
+it('warns instead of throwing on import in Expo Go on Android', () => {
+  const spy = jest.spyOn(console, 'warn').mockImplementation();
   expect(() => require('../DevicePushTokenAutoRegistration.fx')).not.toThrow();
+  expect(spy).toHaveBeenCalledWith(expect.stringContaining('unavailable in Expo Go on Android'));
+  spy.mockRestore();
 });

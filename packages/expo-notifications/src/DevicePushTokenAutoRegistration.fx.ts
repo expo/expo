@@ -99,8 +99,10 @@ export async function __handlePersistedRegistrationInfoAsync(
 }
 
 if (isRunningInExpoGo() && Platform.OS === 'android') {
-  // Push tokens are unavailable in Expo Go on Android since SDK 53;
-  // addPushTokenListener would throw and make the import fatal.
+  // Registering the module-scope push token listener would throw and make the import fatal.
+  console.warn(
+    '[expo-notifications] Push notifications (remote notifications) are unavailable in Expo Go on Android since SDK 53. Local notifications remain available. Use a development build for push notifications: https://docs.expo.dev/develop/development-builds/introduction/'
+  );
 } else if (ServerRegistrationModule.getRegistrationInfoAsync) {
   // A global scope (to get all the updates) device push token
   // subscription, never cleared.
