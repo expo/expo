@@ -2206,6 +2206,15 @@ it.each([
 
 it.each([
   ['class', `export default class DOMException {}; DOMException.code = 1;`],
+  [
+    'lowered class',
+    `export default class DOMException extends Error {
+    #name;
+    constructor(message) { super(message); this.#name = 'Error'; }
+    get name() { return this.#name; }
+  }
+  DOMException.code = 1;`,
+  ],
   ['function', `export default function createValue() {}; createValue.code = 1;`],
 ])('preserves a named default %s declaration binding', async (_name, source) => {
   const result = await transformFileFullyWithNoxcturnal({
