@@ -691,6 +691,34 @@ jobs:
               cat "$RUNNER_TEMP/cut-target.json"
             } > target.json
           fi
+          # Duplicate-target context. Two /verify --fix runs opened #48747
+          # and #49055 with identical hunks because each run saw only its
+          # own issue (#48705 and #49046 report the same bug). This search
+          # is the sideways view: issues and pull requests in this
+          # repository whose text matches the target title, duplicates
+          # first among them. Search hits are CANDIDATES the agent judges
+          # by mechanism, not verdicts — and their titles and excerpts are
+          # reporter-controlled data under the same rules as the thread.
+          # A failed search degrades to an empty list: it must not kill
+          # the run, and the publish step's file-overlap guard backstops
+          # a duplicate this word-match misses.
+          target_title=$(jq -r '.title // empty' "$RUNNER_TEMP/full-target.json")
+          # The search API treats brackets and colons as qualifiers or
+          # noise; keep word characters so "[expo-constants]" still
+          # matches as the word expo-constants. Cap well under the API's
+          # 256-char query limit.
+          terms=$(printf '%s' "$target_title" | tr -c 'A-Za-z0-9.-' ' ' | tr -s ' ' | cut -c1-180)
+          if [ -n "$(printf '%s' "$terms" | tr -d ' ')" ] && \
+            gh api -X GET search/issues -f q="repo:${{ github.repository }} $terms" -f per_page=15 \
+              > "$RUNNER_TEMP/related-search.json" 2>/dev/null; then
+            jq --argjson me "$TARGET_NUMBER" \
+              '[.items[] | select(.number != $me) | {number, title, state, isPullRequest: (.pull_request != null), createdAt: .created_at, url: .html_url, excerpt: ((.body // "") | .[0:800])}]' \
+              "$RUNNER_TEMP/related-search.json" > related.json \
+              || echo '[]' > related.json
+          else
+            echo '[]' > related.json
+          fi
+          echo "related.json: $(jq length related.json) search hits for possible duplicates"
           if [ "$IS_PR" = "true" ]; then
             # headRefOid/baseRefOid PIN the revision. Without them the diff
             # below and the checkout the agent makes later are two different
@@ -1805,6 +1833,82 @@ jobs:
             fi
           fi
           head_ref="$fork_owner:$branch"
+          # DUPLICATE-PR GUARD. Two /verify --fix runs opened #48747 and
+          # #49055 with identical hunks: each run saw only its own issue,
+          # and nothing in this pipeline looked sideways. The agent-side
+          # duplicate check (related.json) matches words, so it misses a
+          # differently-worded duplicate; this guard compares FILES, which
+          # do not depend on wording. It checks open pull requests from
+          # ANY author — scoping to expo-bot verify branches would miss a
+          # contributor's fix for the same bug. CHANGELOG.md files collide
+          # on almost every pair of pull requests, so they never count as
+          # overlap.
+          #   - Every non-changelog changed file already touched by ONE
+          #     open pull request -> likely duplicate: keep the pushed
+          #     branch, open NO pull request, and post the candidates so a
+          #     maintainer can open it by hand when it is not a duplicate.
+          #     Fail-safe by construction: nothing is lost, one click
+          #     recovers a false positive.
+          #   - Partial overlap -> open the pull request and list the
+          #     overlapping ones in its body for the reviewer.
+          #   - The listing itself failing degrades to opening the pull
+          #     request with a warning in the log: a duplicate is a
+          #     nuisance, a lost verified fix is worse.
+          related_prs_md=""
+          # `|| true`: a changelog-only change leaves grep with no match,
+          # and its exit 1 under pipefail would kill the publisher here.
+          ours_list=$(printf '%s\n' "$changed" | grep -Ev '(^|/)CHANGELOG\.md$' || true)
+          ours_json=$(printf '%s\n' "$ours_list" | jq -R . | jq -s 'map(select(length > 0))')
+          if [ "$(printf '%s' "$ours_json" | jq 'length')" -gt 0 ]; then
+            : > "$RUNNER_TEMP/open-pr-files.jsonl"
+            # GraphQL, not REST: list-files costs one call per pull
+            # request; this reads paths for 100 pull requests per call.
+            # Caps, logged so they are never silent: the 300 most recently
+            # updated open pull requests, first 100 files each.
+            # GraphQL variable markers are literal here.
+            # shellcheck disable=SC2016
+            files_query='query($q:String!, $cursor:String) { search(query:$q, type:ISSUE, first:100, after:$cursor) { pageInfo { hasNextPage endCursor } nodes { ... on PullRequest { number title url files(first:100) { nodes { path } } } } } }'
+            cursor=null
+            pages=0
+            while [ "$pages" -lt 3 ]; do
+              jq -n --arg query "$files_query" --arg q "repo:$GITHUB_REPOSITORY is:pr is:open sort:updated-desc" --argjson cursor "$cursor" \
+                '{query:$query, variables:{q:$q, cursor:$cursor}}' > "$RUNNER_TEMP/pr-files-query.json"
+              if ! page=$(gh api graphql --input "$RUNNER_TEMP/pr-files-query.json"); then
+                echo "::warning::open-PR file listing failed on page $((pages+1)); the duplicate-PR check ran on a partial listing."
+                break
+              fi
+              printf '%s\n' "$page" | jq -c '.data.search.nodes[] | select(.number != null)' >> "$RUNNER_TEMP/open-pr-files.jsonl"
+              [ "$(printf '%s' "$page" | jq -r '.data.search.pageInfo.hasNextPage')" = "true" ] || break
+              cursor=$(printf '%s' "$page" | jq '.data.search.pageInfo.endCursor')
+              pages=$((pages+1))
+            done
+            pr_count=$(wc -l < "$RUNNER_TEMP/open-pr-files.jsonl" | tr -d ' ')
+            echo "duplicate-PR check: compared the change against $pr_count open pull requests (most recently updated first, cap 300, first 100 files each)"
+            # jq variable markers are literal here.
+            # shellcheck disable=SC2016
+            jq -s --argjson ours "$ours_json" --argjson me "$ISSUE_NUMBER" '
+              [ .[]
+                | select(.number != $me)
+                | (.files.nodes | map(.path) | map(select(test("(^|/)CHANGELOG\\.md$") | not))) as $theirs
+                | {number, title, url, shared: [$ours[] | select(. as $f | ($theirs | index($f)) != null)]}
+                | select((.shared | length) > 0)
+                | . + {covers: ((.shared | length) == ($ours | length))} ]
+              | sort_by(-(.shared | length))' \
+              "$RUNNER_TEMP/open-pr-files.jsonl" > "$RUNNER_TEMP/pr-overlaps.json" || echo '[]' > "$RUNNER_TEMP/pr-overlaps.json"
+            covering=$(jq '[.[] | select(.covers)] | length' "$RUNNER_TEMP/pr-overlaps.json")
+            if [ "${covering:-0}" -gt 0 ]; then
+              dup_list=$(jq -r '[.[] | select(.covers)][0:5][] | "- \(.url) (\(.title)) — already touches every non-changelog file this change touches"' "$RUNNER_TEMP/pr-overlaps.json")
+              # Backticks in the printf format are Markdown delimiters.
+              # shellcheck disable=SC2016
+              gh issue comment "$ISSUE_NUMBER" --body "$(printf '⚠️ `%s` pushed the %s to `%s` but did NOT open a pull request: every non-changelog file it changes is already touched by an open pull request, so it is likely a duplicate of:\n\n%s\n\nIf it is not a duplicate, a maintainer can open the pull request from that branch by hand. [Run log](%s)' "$command_name" "$change_name" "$head_ref" "$dup_list" "$RUN_URL")"
+              echo "::notice::skipped pull-request creation: full non-changelog file overlap with an open pull request."
+              jq . "$RUNNER_TEMP/pr-overlaps.json"
+              exit 0
+            fi
+            if [ "$(jq 'length' "$RUNNER_TEMP/pr-overlaps.json")" -gt 0 ]; then
+              related_prs_md=$(jq -r '.[0:5][] | "- \(.url) (\(.title)) — shared files: \(.shared | join(", "))"' "$RUNNER_TEMP/pr-overlaps.json")
+            fi
+          fi
           {
             # ONE LINE PER PARAGRAPH, however long. GitHub renders a newline
             # inside a comment or pull-request body as a hard <br>, unlike a
@@ -1819,6 +1923,12 @@ jobs:
             echo "Requested by @$TRIGGER_ACTOR · [$run_name]($RUN_URL) · refs #$ISSUE_NUMBER"
             echo ""
             tail -n +2 .verify-out/pr.md 2>/dev/null || echo "_No description was provided by the run._"
+            if [ -n "$related_prs_md" ]; then
+              echo ""
+              echo "**Open pull requests touching the same files** (from the publish-time duplicate check — confirm they are distinct before merging both):"
+              echo ""
+              printf '%s\n' "$related_prs_md"
+            fi
           } > "$RUNNER_TEMP/pr-body.md"
           # The branch is pushed at this point, so a failure here must not
           # vanish: the thread would otherwise keep the findings comment with
