@@ -4,3 +4,7 @@
 
 # DevTools plugin temporary output
 /dev-plugin-webui/dist
+
+# Agent evals: opt-in npm install for AST checks (see skills/*/.evals/README.md)
+/skills/*/.evals/package-lock.json
+/skills/*/.evals/node_modules
