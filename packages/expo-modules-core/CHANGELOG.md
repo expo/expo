@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the `ExpoModulesProvider` lookup missing the generated class when the app `name` starts with a digit, which registered no native modules and left release builds on a blank screen. ([#48793](https://github.com/expo/expo/pull/48793) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
 
 ## 57.0.11 — 2026-08-14
