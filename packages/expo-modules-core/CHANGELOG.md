@@ -42,7 +42,7 @@
 - [iOS] Added `SceneGeometry` for reading bounds, safe area, display scale and interface orientation from the scene a view belongs to. ([#48168](https://github.com/expo/expo/pull/48168) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Added `SceneGeometry.foregroundScene()`, which returns nil when no scene is on screen so callers can avoid presenting UI into a background scene. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
-- [universal] Migrated from deprecated react-native-worklets WorkletRuntime API `executeSync` to up-to-date `runSync`. `runSync` is available since 0.7.0.
+- Migrated from deprecated react-native-worklets WorkletRuntime API `executeSync` to up-to-date `runSync`. `runSync` is available since 0.7.0. ([#48691](https://github.com/expo/expo/pull/48691) by [@tjzel](https://github.com/tjzel))
 
 ## 57.0.8 - 2026-07-29
 
