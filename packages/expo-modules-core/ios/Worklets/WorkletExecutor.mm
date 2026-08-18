@@ -82,7 +82,7 @@
     return;
   }
 
-  workletRuntime->executeSync([worklet, arguments](jsi::Runtime &rt) -> jsi::Value {
+  workletRuntime->runSync([worklet, arguments](jsi::Runtime &rt) -> jsi::Value {
     std::vector<jsi::Value> convertedArgs = expo::convertNSArrayToStdVector(rt, arguments);
 
     auto func = worklet->toJSValue(rt).asObject(rt).asFunction(rt);
