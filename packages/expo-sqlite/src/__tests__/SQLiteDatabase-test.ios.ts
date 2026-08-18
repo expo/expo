@@ -300,8 +300,9 @@ describe('Database - Synchronous calls', () => {
   });
 
   it('runSync should throw for a whitespace-only statement', () => {
-    db = openDatabaseSync(':memory:');
-    expect(() => db.runSync('\n')).toThrow(/Cannot prepare an empty SQL statement/);
+    const database = openDatabaseSync(':memory:');
+    db = database;
+    expect(() => database.runSync('\n')).toThrow(/Cannot prepare an empty SQL statement/);
   });
 
   it('getEachSync should return iterable', () => {
