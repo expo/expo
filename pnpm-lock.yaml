@@ -6561,6 +6561,9 @@ importers:
 
   packages/expo-video:
     dependencies:
+      '@expo/image-utils':
+        specifier: workspace:^0.10.1
+        version: link:../@expo/image-utils
       react:
         specifier: '*'
         version: 19.3.0

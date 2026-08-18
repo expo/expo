@@ -34,6 +34,9 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -b tsconfig.all.json"
   },
+  "dependencies": {
+    "@expo/image-utils": "workspace:^0.10.1"
+  },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
     "@testing-library/react-native": "^14.0.1",

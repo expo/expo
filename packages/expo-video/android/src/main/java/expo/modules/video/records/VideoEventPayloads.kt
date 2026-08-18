@@ -77,3 +77,11 @@ class VideoSourceLoadedEventPayload(
   @Field val availableSubtitleTracks: List<SubtitleTrack>,
   @Field val availableAudioTracks: List<AudioTrack>
 ) : VideoEventPayload
+
+class NowPlayingActionPressedEventPayload(
+  @Field val action: String
+) : VideoEventPayload
+
+class PiPActionPressedEventPayload(
+  @Field val action: String
+) : VideoEventPayload
