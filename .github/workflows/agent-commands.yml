@@ -1089,17 +1089,35 @@ jobs:
           else
             canary_prompt="Write the single word ok to .verify-out/.permcheck. Say nothing else."
           fi
+          set +e
           claude -p "$canary_prompt" \
             --model "$VERIFY_MODEL" \
             --disallowedTools "$DENIED" --strict-mcp-config \
-            --allowedTools "$ALLOWED" > "$RUNNER_TEMP/permcheck.log" 2>&1 || true
+            --allowedTools "$ALLOWED" > "$RUNNER_TEMP/permcheck.log" 2>&1
+          canary_rc=$?
+          set -e
           if [ ! -f .verify-out/.permcheck ]; then
+            # Also record WHICH failure this was, for the thread comment.
+            # The reporter's cause line comes from model-env-reason, and the
+            # credential probe PASSED by the time this runs — so without a
+            # verdict of its own, a canary death posts a bare "failed" with
+            # no cause (2026-08-18, PR 46816: a 529 between the probe and
+            # the canary). The verdict is grounded, not guessed: exit 0
+            # with no file means the CLI ran and the rule did not match;
+            # non-zero means the CLI itself failed, and the probe's own
+            # classifier names the flavor from the kept output.
+            if [ "$canary_rc" -eq 0 ]; then
+              echo permission > "$RUNNER_TEMP/canary-reason"
+            else
+              bash .github/actions/prepare-model-env/pick.sh --classify "$RUNNER_TEMP/permcheck.log" > "$RUNNER_TEMP/canary-reason" || true
+            fi
             echo "::error::Preflight canary did not write .verify-out/.permcheck, so the run stopped before spending a sandbox. This is EITHER a file-permission rule that does not match OR the CLI failing to run at all (credential, model access, outage). The CLI output below says which:"
             sed -n '1,40p' "$RUNNER_TEMP/permcheck.log" || true
             echo "::error::--allowedTools was: $ALLOWED"
             exit 1
           fi
           if [ "$FIX_MODE" = "true" ] && [ ! -f .permcheck-checkout ]; then
+            echo permission > "$RUNNER_TEMP/canary-reason"
             echo "::error::Preflight canary wrote .verify-out but not the checkout root, so the checkout-wide Edit rule is not matching — the agent would do its work and then fail to mirror it. Stopped before spending a sandbox. The CLI output:"
             sed -n '1,40p' "$RUNNER_TEMP/permcheck.log" || true
             echo "::error::--allowedTools was: $ALLOWED"
@@ -2101,16 +2119,26 @@ jobs:
             cancelled) outcome="was cancelled" ;;
             *) outcome="failed" ;;
           esac
-          cause=""
+          # Two sources for the cause, one vocabulary. model-env-reason
+          # covers a credential probe that failed; canary-reason covers a
+          # probe that PASSED followed by a preflight canary that did not —
+          # a window a 529 fell into on 2026-08-18 (PR 46816), which posted
+          # a bare "failed" with no cause and no hint that a plain retry
+          # would work.
+          reason=""
           if [ "$MODEL_ENV" = "failure" ]; then
             reason=$(cat "$RUNNER_TEMP/model-env-reason" 2>/dev/null || echo unprobed)
-            case "$reason" in
-              auth)  cause=" The cause is its model credential, which was rejected — a maintainer needs to take a look." ;;
-              usage) cause=" The cause is a temporary model usage limit; nothing is misconfigured, so trying again later should work." ;;
-              other) cause=" The cause is a failure reaching the model — a network fault, a timeout, or a provider outage." ;;
-              *)     cause=" It failed before reaching the model, so this is a workflow problem rather than a credential one." ;;
-            esac
+          elif [ -s "$RUNNER_TEMP/canary-reason" ]; then
+            reason=$(cat "$RUNNER_TEMP/canary-reason")
           fi
+          case "$reason" in
+            "")    cause="" ;;
+            auth)  cause=" The cause is its model credential, which was rejected — a maintainer needs to take a look." ;;
+            usage) cause=" The cause is a temporary model usage limit; nothing is misconfigured, so trying again later should work." ;;
+            other) cause=" The cause is a failure reaching the model — a network fault, a timeout, or a provider outage; nothing is misconfigured, so trying again later should work." ;;
+            permission) cause=" The cause is the workflow's file-permission rules: the preflight write check was refused, so a maintainer needs to fix the \`--allowedTools\` rules first — a plain retry will fail the same way." ;;
+            *)     cause=" It failed before reaching the model, so this is a workflow problem rather than a credential one." ;;
+          esac
           # Point at the salvage when there is one. An interrupted run often
           # established real things before it died, and a maintainer should be
           # told where they are rather than left to assume nothing survived.
