@@ -4,6 +4,7 @@ import { getConfig } from 'expo/config';
 import { patchProjectAsync } from '../patchProjectAsync';
 
 jest.mock('@expo/env', () => ({
+  ...jest.requireActual('@expo/env'),
   loadProjectEnv: jest.fn(),
   logLoadedEnv: jest.fn(),
 }));
@@ -22,24 +23,27 @@ jest.mock(
 );
 
 describe(patchProjectAsync, () => {
-  const originalEnv = process.env;
+  const devGlobal = globalThis as typeof globalThis & { __DEV__?: boolean };
+  const originalDev = devGlobal.__DEV__;
+  const originalConfigMode = process.env.__EXPO_CONFIG_MODE;
 
   beforeEach(() => {
-    process.env = { ...originalEnv, EXPO_CONFIG_MODE: 'production' };
+    process.env.__EXPO_CONFIG_MODE = 'production';
   });
 
-  afterAll(() => {
-    process.env = originalEnv;
+  afterEach(() => {
+    devGlobal.__DEV__ = originalDev;
+    if (originalConfigMode === undefined) {
+      delete process.env.__EXPO_CONFIG_MODE;
+    } else {
+      process.env.__EXPO_CONFIG_MODE = originalConfigMode;
+    }
   });
 
   it('loads and logs development env before Expo config', async () => {
     const envInfo = { result: 'skipped' as const, loaded: [] };
     jest.mocked(loadProjectEnv).mockReturnValue(envInfo);
-    let configMode: string | undefined = 'not loaded';
-    jest.mocked(getConfig).mockImplementation(() => {
-      configMode = process.env.EXPO_CONFIG_MODE;
-      return { exp: {} } as ReturnType<typeof getConfig>;
-    });
+    jest.mocked(getConfig).mockReturnValue({ exp: {} } as ReturnType<typeof getConfig>);
 
     await patchProjectAsync('/app', { platforms: [] });
 
@@ -48,6 +52,7 @@ describe(patchProjectAsync, () => {
     expect(jest.mocked(loadProjectEnv).mock.invocationCallOrder[0]).toBeLessThan(
       jest.mocked(getConfig).mock.invocationCallOrder[0]!
     );
-    expect(configMode).toBeUndefined();
+    expect(devGlobal.__DEV__).toBe(true);
+    expect(process.env.__EXPO_CONFIG_MODE).toBeUndefined();
   });
 });
