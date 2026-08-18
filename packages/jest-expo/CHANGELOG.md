@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix local mock lookup missing a package's `mocks` directory when the calling stack frame is source-mapped to a `.ts` path that is not emitted next to the compiled output. ([#48880](https://github.com/expo/expo/pull/48880) by [@giaBaoJS](https://github.com/giaBaoJS))
+
 ### 💡 Others
 
 ## 57.0.3 - 2026-07-29

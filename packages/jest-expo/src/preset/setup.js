@@ -11,6 +11,7 @@ const mockNativeModules = require('react-native/Libraries/BatchedBridge/NativeMo
 const stackTrace = require('stacktrace-js');
 
 const publicExpoModules = require('./moduleMocks/expoModules');
+const resolveExistingFile = require('./resolveExistingFile');
 const internalExpoModules = require('./moduleMocks/internalExpoModules');
 const thirdPartyModules = require('./moduleMocks/thirdPartyModules');
 
@@ -216,10 +217,11 @@ function attemptLookup(moduleName) {
       return true;
     }
 
-    if (!fs.existsSync(line.fileName)) {
+    const existingFileName = resolveExistingFile(line.fileName);
+    if (!existingFileName) {
       return false;
     }
-    const fileContents = fs.readFileSync(line.fileName, { encoding: 'utf8' });
+    const fileContents = fs.readFileSync(existingFileName, { encoding: 'utf8' });
     // Matches requireNativeModule<OptionalGeneric>("ModuleName")
     const regexPattern = new RegExp(
       `require(?:Optional)?NativeModule\\s*(?:<${moduleName}Module>)?\\s*\\(['"]${moduleName}['"]\\)`
