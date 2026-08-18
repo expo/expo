@@ -48,17 +48,18 @@ describe(getExpoConfigAsync, () => {
     expect(result.loadedModules).toBeNull();
   });
 
-  it('uses development mode for the config loader', async () => {
+  it('passes development mode to the config loader', async () => {
     process.env.NODE_ENV = 'production';
-    process.env.EXPO_CONFIG_MODE = 'production';
 
     await getExpoConfigAsync('/app', await normalizeOptionsAsync('/app'));
 
     expect(spawnWithIpcAsync).toHaveBeenCalledTimes(2);
     for (const [, args, options] of jest.mocked(spawnWithIpcAsync).mock.calls) {
       expect(args).toEqual(expect.arrayContaining(['--mode', 'development']));
-      expect(options?.env).toMatchObject({ NODE_ENV: 'development' });
-      expect(options?.env?.EXPO_CONFIG_MODE).toBeUndefined();
+      expect(options?.env).toMatchObject({
+        NODE_ENV: 'development',
+        __EXPO_CONFIG_MODE: 'development',
+      });
     }
   });
 });
