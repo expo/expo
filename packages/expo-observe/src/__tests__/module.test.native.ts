@@ -19,6 +19,7 @@ const mockAppMetrics = {
   markInteractive: jest.fn(),
   setGlobalAttributes: jest.fn(),
   reportError: jest.fn(),
+  setNetworkSpansConfig: jest.fn(),
 };
 
 const mockSetErrorHandlerEnabled = jest.fn();
@@ -153,6 +154,32 @@ describe('module Proxy', () => {
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
     expect(initRouterIntegration).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('enables network spans by default when configure omits traces', () => {
+    // `configure` is a full replacement: an absent `traces` resets to the default (on, no filter).
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test' });
+    expect(mockAppMetrics.setNetworkSpansConfig).toHaveBeenCalledTimes(1);
+    expect(mockAppMetrics.setNetworkSpansConfig).toHaveBeenCalledWith({ enabled: true });
+  });
+
+  it.each([true, false])('maps traces.network: %s to the native config', (enabled) => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', traces: { network: enabled } });
+    expect(mockAppMetrics.setNetworkSpansConfig).toHaveBeenCalledWith({ enabled });
+  });
+
+  it('passes a capture filter down with the enabled flag', () => {
+    const Observe = loadModule();
+    Observe.configure({
+      environment: 'test',
+      traces: { network: { filter: { hosts: ['api.myapp.com'], methods: ['GET'] } } },
+    });
+    expect(mockAppMetrics.setNetworkSpansConfig).toHaveBeenCalledWith({
+      enabled: true,
+      filter: { hosts: ['api.myapp.com'], methods: ['GET'] },
+    });
   });
 
   it('leaves unhandled-error reporting enabled when errorHandlingEnabled is unset', () => {

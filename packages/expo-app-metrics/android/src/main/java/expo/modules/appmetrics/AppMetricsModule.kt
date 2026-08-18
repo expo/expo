@@ -16,6 +16,7 @@ import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
 import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
+import expo.modules.appmetrics.networkrequests.NetworkSpansConfiguration
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateDisplayName
@@ -69,8 +70,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   lateinit var mainSession: SessionSharedObject
 
   /**
-   * The span producer installed on the monitor in `OnCreate`, kept so `OnDestroy` can
-   * uninstall it when the module is torn down (a JS reload).
+   * The span producer installed on the monitor in `OnCreate`, kept so `setNetworkSpansConfig`
+   * can apply a new recording policy to the live instance and `OnDestroy` can uninstall it
+   * when the module is torn down (a JS reload).
    */
   private var networkRequestPersistence: NetworkRequestPersistence? = null
 
@@ -136,6 +138,19 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         GlobalAttributes.set(attributes)
       }
 
+      Function("setNetworkSpansConfig") { config: NetworkSpansConfigParam ->
+        val configuration = NetworkSpansConfiguration(
+          enabled = config.enabled,
+          hosts = config.filter?.hosts,
+          methods = config.filter?.methods
+        )
+        // Persist first so the setting survives the process; the live producer picks it up for
+        // every request recorded after the volatile write. Applies forward only — rows
+        // persisted earlier in the launch still dispatch.
+        AppMetricsPreferences.setNetworkSpansConfiguration(context, configuration)
+        networkRequestPersistence?.setConfiguration(configuration)
+      }
+
       OnCreate {
         sessionManager = SessionManager(context)
 
@@ -172,6 +187,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
             sessionId = mainSession.sessionId
           )
           networkRequestPersistence = persistence
+          // The policy is read from preferences only after the reference above is visible:
+          // a `setNetworkSpansConfig` call landing before this line has already persisted its
+          // value and is picked up here; one landing after it hits the live setter instead.
+          // Reading before the assignment would let a concurrent configure fall between the
+          // read and the assignment and leave a stale policy until the next launch.
+          persistence.setConfiguration(AppMetricsPreferences.getNetworkSpansConfiguration(context))
           NetworkRequestMonitor.shared.installPersistence(persistence)
         }
 
@@ -390,4 +411,14 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 data class MetricAttributes(
   @Field val routeName: String? = null,
   @Field val params: Map<String, Any>? = null
+) : Record
+
+/**
+ * Payload of `setNetworkSpansConfig`: the normalized `traces.network` setting pushed down by
+ * `Observe.configure`.
+ */
+@OptimizedRecord
+data class NetworkSpansConfigParam(
+  @Field val enabled: Boolean = true,
+  @Field val filter: NetworkRequestFilter? = null
 ) : Record
