@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
 import expo.modules.video.FailedToGetAudioFocusManagerException
@@ -115,7 +116,8 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   override fun onIsPlayingChanged(player: VideoPlayer, isPlaying: Boolean, oldIsPlaying: Boolean?) {
     // we can't use `updateAudioFocus`, because when losing focus the videos are paused sequentially,
     // which can lead to unexpected results.
-    if (!isPlaying && !anyPlayerRequiresFocus) {
+    val isWaitingToResume = player.player.playWhenReady && player.player.playbackState == Player.STATE_BUFFERING
+    if (!isPlaying && !isWaitingToResume && !anyPlayerRequiresFocus) {
       abandonAudioFocus()
     } else if (isPlaying && anyPlayerRequiresFocus) {
       requestAudioFocus()
