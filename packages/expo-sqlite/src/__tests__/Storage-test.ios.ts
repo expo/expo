@@ -336,8 +336,8 @@ describe('SQLiteStorage migration', () => {
 
   /**
    * Seeds a database file that is already at `user_version = 1` but has no `storage` table.
-   * This is the state a device is left in when `getDbSync()` migrates on a second connection
-   * while `getDbAsync()` is migrating on the first one. See https://github.com/expo/expo/issues/47448.
+   * This is the state a device can be left in when `getDbSync()` races with an in-progress
+   * `getDbAsync()` migration on the same cached native connection. See https://github.com/expo/expo/issues/47448.
    */
   function seedDatabaseWithoutStorageTable() {
     const db = openDatabaseSync(databaseName);

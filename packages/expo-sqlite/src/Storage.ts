@@ -374,7 +374,7 @@ export class SQLiteStorage {
   private getDbSync(): SQLiteDatabase {
     // NOTE: Unlike `getDbAsync()`, this cannot acquire `awaitLock` because the lock is
     // promise-based and this method is synchronous. The migration is idempotent instead,
-    // so racing it with `getDbAsync()` cannot leave the database without a `storage` table.
+    // so the next open repairs a database left without a `storage` table by a race.
     if (!this.db) {
       const db = openDatabaseSync(this.databaseName);
       this.maybeMigrateDbSync(db);
