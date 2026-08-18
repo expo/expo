@@ -17,6 +17,7 @@
 
 - Changed native implementation to use the unified `ArrayBuffer` type. ([#47168](https://github.com/expo/expo/pull/47168) by [@barthap](https://github.com/barthap))
 - Build the devtools plugin web UI from the monorepo workspace instead of a standalone project. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
+- Updated SQLite to 3.53.3 and SQLCipher to 4.17.0 on all platforms, including the web WebAssembly build. ([#48544](https://github.com/expo/expo/pull/48544) by [@kudo](https://github.com/kudo))
 
 ## 57.0.1 - 2026-07-15
 
