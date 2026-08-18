@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix CNG patch paths not applying in monorepos due to git worktree path resolution. ([#47574](https://github.com/expo/expo/issues/47574))
+
 ### 💡 Others
 
 ## 57.0.9 - 2026-07-29
