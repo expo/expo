@@ -23,6 +23,7 @@
 - Fix async imports (`import(...)`) via `asyncRequireModule` not a thenable instead of a full promise shape ([#48550](https://github.com/expo/expo/pull/48550) by [@kitten](https://github.com/kitten))
 - Fix DOM components dropping prop updates that are emitted while the WebView is still loading. ([#48813](https://github.com/expo/expo/pull/48813) by [@expo-bot](https://github.com/expo-bot))
 - Fix `import.meta.url` being `null` on web when `transform.inlineRequires` is enabled. ([#49045](https://github.com/expo/expo/pull/49045) by [@expo-bot](https://github.com/expo-bot))
+- Fix platform resolution of the `expo/dom` and `expo/dom/internal` subpath exports ([#49056](https://github.com/expo/expo/pull/49056) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
