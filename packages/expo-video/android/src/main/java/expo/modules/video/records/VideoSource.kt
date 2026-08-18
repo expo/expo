@@ -68,6 +68,7 @@ class VideoSource(
           metadata?.let { data ->
             setTitle(data.title)
             setArtist(data.artist)
+            setAlbumTitle(data.album)
             data.artwork?.let {
               setArtworkUri(it)
             }

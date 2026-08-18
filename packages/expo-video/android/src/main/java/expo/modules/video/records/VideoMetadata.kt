@@ -10,5 +10,6 @@ import expo.modules.kotlin.types.OptimizedRecord
 class VideoMetadata(
   @Field var title: String? = null,
   @Field var artist: String? = null,
+  @Field var album: String? = null,
   @Field var artwork: Uri? = null
 ) : Record, Serializable
