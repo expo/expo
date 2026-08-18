@@ -6,6 +6,7 @@ import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.utils.TimeUtils.timestampToDateNS
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -134,6 +135,58 @@ data class OTResourceLogs(
   val schemaUrl: String
 )
 
+/**
+ * One OTLP span. Nullable fields with defaults (`parentSpanId`, `status`) rely on
+ * kotlinx-serialization omitting defaults: the ingestion endpoint rejects a span whose present
+ * `parentSpanId` isn't valid hex, so a root span must omit the key entirely rather than send
+ * null or "".
+ */
+@Serializable
+data class OTSpan(
+  val traceId: String,
+  val spanId: String,
+  val parentSpanId: String? = null,
+  val name: String,
+  val kind: Int,
+  val startTimeUnixNano: Long,
+  val endTimeUnixNano: Long,
+  val attributes: List<OTAttribute>,
+  val events: List<OTSpanEvent>,
+  val droppedEventsCount: Int = 0,
+  val status: OTSpanStatus? = null
+)
+
+/** `Span.Event` per the OTLP proto — used for redirect hops. */
+@Serializable
+data class OTSpanEvent(
+  val timeUnixNano: Long,
+  val name: String,
+  val attributes: List<OTAttribute>
+)
+
+/**
+ * `Status` per the OTLP proto. Only attached when the span represents a failure; a successful
+ * client span stays UNSET by omitting the status entirely, per the semantic conventions.
+ */
+@Serializable
+data class OTSpanStatus(
+  val code: Int,
+  val message: String? = null
+)
+
+@Serializable
+data class OTScopeSpans(
+  val scope: OTScope,
+  val spans: List<OTSpan>
+)
+
+@Serializable
+data class OTResourceSpans(
+  val resource: OTMetadata,
+  val scopeSpans: List<OTScopeSpans>,
+  val schemaUrl: String
+)
+
 // MARK: -- Request body for Open Telemetry events
 
 @Serializable
@@ -160,6 +213,18 @@ data class OTLogsRequestBody(
   }
 }
 
+@Serializable
+data class OTTracesRequestBody(
+  val resourceSpans: List<OTResourceSpans>
+) {
+  fun toJson(prettyPrint: Boolean = false): String {
+    val json = Json {
+      this.prettyPrint = prettyPrint
+    }
+    return json.encodeToString(serializer(), this)
+  }
+}
+
 // MARK: -- Response shapes
 
 /**
@@ -177,10 +242,11 @@ data class OTLogsRequestBody(
 data class OTPartialSuccess(
   val rejectedDataPoints: Int? = null,
   val rejectedLogRecords: Int? = null,
+  val rejectedSpans: Int? = null,
   val errorMessage: String? = null
 ) {
   val rejectedCount: Int
-    get() = (rejectedDataPoints ?: 0) + (rejectedLogRecords ?: 0)
+    get() = (rejectedDataPoints ?: 0) + (rejectedLogRecords ?: 0) + (rejectedSpans ?: 0)
 }
 
 @Serializable
@@ -396,6 +462,99 @@ fun Event.toOTResourceLogs(easClientId: String): OTResourceLogs {
       )
     ),
     schemaUrl = SEMCONV_SCHEMA_URL
+  )
+}
+
+/**
+ * Wraps already-mapped spans in this event's resource envelope. Spans are passed in rather than
+ * derived from the event because they come from `spans` rows, which are not part of the `Event`
+ * payload shape the metrics/logs signals share.
+ */
+fun Event.toOTResourceSpans(easClientId: String, spans: List<OTSpan>): OTResourceSpans {
+  return OTResourceSpans(
+    resource = toOTMetadata(easClientId),
+    scopeSpans = listOf(
+      OTScopeSpans(
+        scope = OTScope(name = "expo-observe", version = BuildConfig.EXPO_OBSERVE_VERSION),
+        spans = spans
+      )
+    ),
+    schemaUrl = SEMCONV_SCHEMA_URL
+  )
+}
+
+/**
+ * Maximum span events the ingestion endpoint keeps per span; anything past it is counted as
+ * dropped server-side, so the SDK truncates locally and reports the loss itself instead of
+ * shipping payload that is guaranteed to be discarded.
+ */
+private const val MAX_SPAN_EVENT_COUNT = 32
+
+/**
+ * Converts a persisted unix-epoch millisecond timestamp to nanoseconds, saturating instead of
+ * overflowing: a corrupt row or a device clock set far into the future must never wrap into a
+ * negative timestamp.
+ */
+private fun spanNanosecondsFromMilliseconds(milliseconds: Long): Long {
+  val maxRepresentableMs = Long.MAX_VALUE / 1_000_000
+  return milliseconds.coerceIn(0, maxRepresentableMs) * 1_000_000
+}
+
+/**
+ * Maps one persisted span row onto the OTLP wire shape. The mapping is producer-agnostic:
+ * attributes and events were shaped by whichever producer recorded the row (per its own
+ * semantic conventions), and this conversion only handles the generic concerns — timestamps,
+ * the session attribute, the event cap, and the JSON-to-`AnyValue` typing. Mirrors the iOS
+ * `SpanRow.toOTSpan`.
+ */
+fun expo.modules.appmetrics.storage.Span.toOTSpan(): OTSpan {
+  // Millisecond precision matches the backend's DateTime64(3) storage. A clock adjustment
+  // mid-span can invert the two wall-clock timestamps, and the server rejects a span whose end
+  // precedes its start, so the end clamps to the start.
+  val startNs = spanNanosecondsFromMilliseconds(startTimestampMs)
+  val endNs = maxOf(startNs, spanNanosecondsFromMilliseconds(endTimestampMs))
+
+  val otAttributes = mutableListOf(
+    OTAttribute.of(key = "session.id", rawValue = sessionId)
+  )
+  attributes
+    ?.let { json -> runCatching { Json.decodeFromString<JsonObject>(json) }.getOrNull() }
+    ?.let { obj -> otAttributes.addAll(otAttributesFromJsonObject(obj).first) }
+
+  // The ingestion endpoint keeps at most `MAX_SPAN_EVENT_COUNT` events per span and counts the
+  // rest as dropped; truncating locally reports the same loss without shipping payload that is
+  // guaranteed to be discarded.
+  val allEvents = events
+    ?.let { json -> runCatching { Json.decodeFromString<JsonArray>(json) }.getOrNull() }
+    ?: JsonArray(emptyList())
+  val otEvents = allEvents.take(MAX_SPAN_EVENT_COUNT).mapNotNull { element ->
+    val obj = element as? JsonObject ?: return@mapNotNull null
+    // The server drops nameless events anyway; skipping them locally keeps the payload honest.
+    val name = (obj["name"] as? JsonPrimitive)?.takeIf { it.isString }?.content
+      ?: return@mapNotNull null
+    val eventAttributes = (obj["attributes"] as? JsonObject)
+      ?.let { otAttributesFromJsonObject(it).first }
+      ?: emptyList()
+    // Producers may record a per-event timestamp; without one the event anchors to the span
+    // start, which keeps it inside the span window.
+    val timeNs = (obj["timeMs"] as? JsonPrimitive)?.longOrNull
+      ?.let { spanNanosecondsFromMilliseconds(it) }
+      ?: startNs
+    OTSpanEvent(timeUnixNano = timeNs, name = name, attributes = eventAttributes)
+  }
+
+  return OTSpan(
+    traceId = traceId,
+    spanId = spanId,
+    parentSpanId = parentSpanId,
+    name = name,
+    kind = kind,
+    startTimeUnixNano = startNs,
+    endTimeUnixNano = endNs,
+    attributes = otAttributes,
+    events = otEvents,
+    droppedEventsCount = maxOf(0, allEvents.size - MAX_SPAN_EVENT_COUNT),
+    status = statusCode?.let { OTSpanStatus(code = it, message = statusMessage) }
   )
 }
 

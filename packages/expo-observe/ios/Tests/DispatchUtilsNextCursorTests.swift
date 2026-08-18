@@ -47,7 +47,12 @@ struct DispatchUtilsNextCursorTests {
   /// re-sending the same rows would just trip the same rejection.
   @Test
   func `partialSuccess advances cursor to highestId`() {
-    let partial = OTPartialSuccess(rejectedDataPoints: 1, rejectedLogRecords: nil, errorMessage: "x")
+    let partial = OTPartialSuccess(
+      rejectedDataPoints: 1,
+      rejectedLogRecords: nil,
+      rejectedSpans: nil,
+      errorMessage: "x"
+    )
     let next = DispatchUtils.nextCursor(
       for: .partialSuccess(partial),
       currentCursor: 10,
