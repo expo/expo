@@ -193,59 +193,7 @@ export function StackRouter(options: StackRouterOptions) {
   > = {
     ...BaseRouter,
 
-    // TODO: Keep this value in sync with the `ensureStateType` calls below.
     type: 'stack',
-
-    getRehydratedState(partialState, { routeNames }) {
-      const state = partialState;
-
-      if (state.stale === false) {
-        return state;
-      }
-
-      const index = state.index ?? state.routes.length - 1;
-      const activeRoutes = state.routes.slice(0, index + 1);
-      const stalePreloadedRoutes = state.routes.slice(index + 1);
-
-      const routes: Route<string>[] = activeRoutes
-        .filter((route) => routeNames.includes(route.name))
-        .map((route) => ({
-          ...route,
-          key: route.key || `${route.name}-${nanoid()}`,
-        }));
-
-      const preloadedRoutes =
-        stalePreloadedRoutes
-          ?.filter((route) => routeNames.includes(route.name))
-          .map(
-            (route) =>
-              ({
-                ...route,
-                key: route.key || `${route.name}-${nanoid()}`,
-              }) as Route<string>
-          ) ?? [];
-
-      if (routes.length === 0) {
-        const initialRouteName =
-          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0]!;
-
-        routes.push({
-          key: `${initialRouteName}-${nanoid()}`,
-          name: initialRouteName,
-        });
-      }
-
-      return ensureStateType(
-        {
-          stale: false,
-          key: `stack-${nanoid()}`,
-          index: routes.length - 1,
-          routeNames,
-          routes: routes.concat(preloadedRoutes),
-        },
-        'stack'
-      );
-    },
 
     getStateForDeclaredRoutes(state, routeNames) {
       const filteredState = BaseRouter.getStateForDeclaredRoutes(state, routeNames);
@@ -685,7 +633,7 @@ export function StackRouter(options: StackRouterOptions) {
         default: {
           const result = BaseRouter.getStateForAction(state, action);
 
-          if (result === null || result.state.stale !== false) {
+          if (result === null) {
             return result;
           }
 

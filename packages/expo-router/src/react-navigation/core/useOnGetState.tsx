@@ -17,7 +17,7 @@ export function useOnGetState({ getState, getStateListeners }: Options) {
   const route = use(NavigationRouteContext);
   const key = route ? route.key : 'root';
 
-  const getRehydratedState = React.useCallback(() => {
+  const getStateWithChildren = React.useCallback(() => {
     const state = getState();
 
     // Avoid returning new route objects if we don't need to
@@ -45,6 +45,6 @@ export function useOnGetState({ getState, getStateListeners }: Options) {
   }, [getState, getStateListeners]);
 
   React.useEffect(() => {
-    return addKeyedListener?.('getState', key, getRehydratedState);
-  }, [addKeyedListener, getRehydratedState, key]);
+    return addKeyedListener?.('getState', key, getStateWithChildren);
+  }, [addKeyedListener, getStateWithChildren, key]);
 }

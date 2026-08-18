@@ -1,6 +1,7 @@
 import { act, render, waitFor } from '@testing-library/react-native';
 
 import type { RouteNode } from '../../Route';
+import { expectCompleteStateToMatch } from '../../__tests__/assertCompleteState';
 import { RouterRegistryProvider } from '../../global-state/routerRegistry';
 import { routingQueue } from '../../global-state/routingQueue';
 import { Screen } from '../../react-navigation/core/Screen';
@@ -68,6 +69,7 @@ beforeEach(() => {
 const webTest = typeof window === 'undefined' ? test.skip : test;
 
 webTest('queues forward history and restores saved, parsed, and initial state', () => {
+  mockStoreEnabled = true;
   let historyListener: (() => void) | undefined;
   let historyIndex = 3;
   jest.mocked(createMemoryHistory).mockReturnValueOnce({
@@ -127,11 +129,16 @@ webTest('queues forward history and restores saved, parsed, and initial state', 
   history.get.mockReturnValueOnce({ path: '/other' });
   Object.assign(globalThis.location, { pathname: '/parsed', search: '', hash: '' });
   act(() => historyListener?.());
-  expect(routingQueue.queue[2]).toMatchObject({
+  const parsedIntent = routingQueue.queue[2];
+  expect(parsedIntent).toMatchObject({
     type: 'ACTION',
-    payload: { action: { type: 'RESET', payload: parsedState, target: 'root' } },
+    payload: { action: { type: 'RESET', target: expect.any(String) } },
     metadata: { history: { id: 2, path: '/parsed' } },
   });
+  const parsedPayload =
+    parsedIntent?.type === 'ACTION' ? parsedIntent.payload.action.payload : undefined;
+  // `NavigationAction` exposes its payload only as `object`.
+  expectCompleteStateToMatch(parsedPayload as NavigationState | undefined, parsedState);
 
   const initialState = { routes: [{ key: 'initial', name: 'home' }] };
   getStateFromPath.mockReturnValueOnce(undefined as never);

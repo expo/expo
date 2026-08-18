@@ -54,15 +54,14 @@ describe('state without router metadata', () => {
     });
   });
 
-  test('passes partial RESET state through unchanged', () => {
-    const partialState = { routes: [{ name: 'bar' }] };
-    const result = TabRouter({}).getStateForAction(
-      createState(),
-      CommonActions.reset(partialState),
-      options
-    );
-
-    expect(result?.state).toBe(partialState);
+  test('throws for partial RESET state', () => {
+    expect(() =>
+      TabRouter({}).getStateForAction(
+        createState(),
+        CommonActions.reset({ routes: [{ name: 'bar' }] }),
+        options
+      )
+    ).toThrow('The RESET action payload must contain a complete navigation state.');
   });
 
   test('route focus returns tab type and history', () => {
@@ -129,11 +128,6 @@ test('handles empty tab states', () => {
     routeGetIdList: {},
   });
 
-  expect(router.getRehydratedState({ routes: [] }, emptyOptions)).toMatchObject({
-    index: -1,
-    routes: [],
-    history: [],
-  });
   const emptyState = router.getStateForAction(
     state,
     { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: [] } },
@@ -141,152 +135,6 @@ test('handles empty tab states', () => {
   )!.state as TabNavigationState<ParamListBase>;
   expect(emptyState).toMatchObject({ index: -1, routes: [], history: [] });
   expect(router.getStateForAction(emptyState, CommonActions.goBack(), emptyOptions)).toBeNull();
-});
-
-test('gets rehydrated state from partial state', () => {
-  const router = TabRouter({});
-
-  const options: RouterConfigOptions = {
-    routeNames: ['bar', 'baz', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'qux-1', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'tab-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'qux-1', name: 'qux' },
-    ],
-    history: [{ type: 'route', key: 'bar-0' }],
-    stale: false,
-    type: 'tab',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        routes: [{ key: 'baz-0', name: 'baz' }],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'tab-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'baz-0', name: 'baz' }],
-    history: [{ type: 'route', key: 'baz-0' }],
-    stale: false,
-    type: 'tab',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-1', name: 'baz' },
-          { key: 'qux-2', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 2,
-    key: 'tab-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-1', name: 'baz' },
-      { key: 'qux-2', name: 'qux' },
-    ],
-    history: [
-      { type: 'route', key: 'bar-0' },
-      { type: 'route', key: 'qux-2' },
-    ],
-    stale: false,
-    type: 'tab',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 1,
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'qux-2', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    index: 1,
-    key: 'tab-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'qux-2', name: 'qux' },
-    ],
-    history: [
-      { type: 'route', key: 'bar-0' },
-      { type: 'route', key: 'qux-2' },
-    ],
-    stale: false,
-    type: 'tab',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 4,
-        routes: [],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'tab-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
-    history: [{ type: 'route', key: 'bar-test' }],
-    stale: false,
-    type: 'tab',
-  });
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 1,
-        history: [
-          { type: 'route', key: 'bar-test' },
-          { type: 'route', key: 'qux-test' },
-          { type: 'route', key: 'foo-test' },
-        ],
-        routes: [],
-      },
-      options
-    )
-  ).toEqual({
-    index: 0,
-    key: 'tab-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: 'bar-test', name: 'bar' }],
-    history: [{ type: 'route', key: 'bar-test' }],
-    stale: false,
-    type: 'tab',
-  });
 });
 
 test.each([
@@ -651,7 +499,14 @@ test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>
     routeNames: ['bar', 'baz', 'qux'],
     routeGetIdList: {},
   };
-  const state = router.getRehydratedState({ routes: [{ key: 'qux-key', name: 'qux' }] }, options);
+  const state: TabNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'tab',
+    key: 'root',
+    index: 0,
+    routeNames: options.routeNames,
+    routes: [{ key: 'qux-key', name: 'qux' }],
+  };
 
   const result = router.getStateForAction(state, CommonActions.goBack(), options)!.state;
 
@@ -669,10 +524,14 @@ test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>
     routeNames: ['bar', 'baz', 'qux'],
     routeGetIdList: {},
   };
-  const focusedState = router.getRehydratedState(
-    { routes: [{ key: 'qux-key', name: 'qux' }] },
-    options
-  );
+  const focusedState: TabNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'tab',
+    key: 'root',
+    index: 0,
+    routeNames: options.routeNames,
+    routes: [{ key: 'qux-key', name: 'qux' }],
+  };
   const state = router.getStateForAction(
     focusedState,
     { type: 'PRELOAD', payload: { name } },
@@ -688,269 +547,6 @@ test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>
 
   expect(result.state.routes[result.state.index!]!.name).toBe(name);
   expect(result.state.history).toEqual([{ type: 'route', key: `${name}-test` }]);
-});
-
-test("doesn't rehydrate state if it's not stale", () => {
-  const router = TabRouter({});
-
-  const state: TabNavigationState<ParamListBase> = {
-    index: 0,
-    key: 'tab-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-    ],
-    history: [{ type: 'route', key: 'bar-test' }],
-    stale: false,
-    type: 'tab',
-  };
-
-  expect(
-    router.getRehydratedState(state, {
-      routeNames: [],
-      routeGetIdList: {},
-    })
-  ).toBe(state);
-});
-
-test('restores correct history on rehydrating with backBehavior: order', () => {
-  const router = TabRouter({ backBehavior: 'order' });
-
-  const options: RouterConfigOptions = {
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'foo-0', name: 'foo' },
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    key: 'tab-test',
-    index: 2,
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routes: [
-      { key: 'foo-0', name: 'foo' },
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [
-      { key: 'foo-0', type: 'route' },
-      { key: 'bar-0', type: 'route' },
-      { key: 'baz-0', type: 'route' },
-    ],
-    stale: false,
-    type: 'tab',
-  });
-});
-
-test('restores correct history on rehydrating with backBehavior: history', () => {
-  const router = TabRouter({ backBehavior: 'history' });
-
-  const options: RouterConfigOptions = {
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'foo-0', name: 'foo' },
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    key: 'tab-test',
-    index: 2,
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routes: [
-      { key: 'foo-0', name: 'foo' },
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [{ key: 'baz-0', type: 'route' }],
-    stale: false,
-    type: 'tab',
-  });
-});
-
-test('restores correct history on rehydrating with backBehavior: fullHistory', () => {
-  const router = TabRouter({ backBehavior: 'fullHistory' });
-
-  const options: RouterConfigOptions = {
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'foo-0', name: 'foo' },
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    key: 'tab-test',
-    index: 2,
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routes: [
-      { key: 'foo-0', name: 'foo' },
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [{ key: 'baz-0', type: 'route' }],
-    stale: false,
-    type: 'tab',
-  });
-});
-
-test('restores correct history on rehydrating with backBehavior: firstRoute', () => {
-  const router = TabRouter({
-    backBehavior: 'firstRoute',
-    initialRouteName: 'bar',
-  });
-
-  const options: RouterConfigOptions = {
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'foo-0', name: 'foo' },
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    key: 'tab-test',
-    index: 2,
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routes: [
-      { key: 'foo-0', name: 'foo' },
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [
-      { key: 'foo-0', type: 'route' },
-      { key: 'baz-0', type: 'route' },
-    ],
-    stale: false,
-    type: 'tab',
-  });
-});
-
-test('restores correct history on rehydrating with backBehavior: initialRoute', () => {
-  const router = TabRouter({
-    backBehavior: 'initialRoute',
-    initialRouteName: 'bar',
-  });
-
-  const options: RouterConfigOptions = {
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'foo-0', name: 'foo' },
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    key: 'tab-test',
-    index: 2,
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routes: [
-      { key: 'foo-0', name: 'foo' },
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [
-      { key: 'bar-0', type: 'route' },
-      { key: 'baz-0', type: 'route' },
-    ],
-    stale: false,
-    type: 'tab',
-  });
-});
-
-test('restores correct history on rehydrating with backBehavior: none', () => {
-  const router = TabRouter({ backBehavior: 'none' });
-
-  const options: RouterConfigOptions = {
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getRehydratedState(
-      {
-        index: 2,
-        routes: [
-          { key: 'foo-0', name: 'foo' },
-          { key: 'bar-0', name: 'bar' },
-          { key: 'baz-0', name: 'baz' },
-          { key: 'qux-0', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    key: 'tab-test',
-    index: 2,
-    routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routes: [
-      { key: 'foo-0', name: 'foo' },
-      { key: 'bar-0', name: 'bar' },
-      { key: 'baz-0', name: 'baz' },
-      { key: 'qux-0', name: 'qux' },
-    ],
-    history: [{ key: 'baz-0', type: 'route' }],
-    stale: false,
-    type: 'tab',
-  });
 });
 
 test('gets state on route names change', () => {
@@ -1133,28 +729,6 @@ test('falls back to the first surviving route in state order', () => {
     },
     options
   )!.state;
-
-  expect(result.routes[result.index!]!.name).toBe('bar');
-});
-
-test('rehydration falls back to the first surviving route in state order', () => {
-  const router = TabRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['qux', 'bar'],
-    routeGetIdList: {},
-  };
-
-  const result = router.getRehydratedState(
-    {
-      routes: [
-        { key: 'bar-test', name: 'bar' },
-        { key: 'removed-test', name: 'removed' },
-        { key: 'qux-test', name: 'qux' },
-      ],
-      index: 1,
-    },
-    options
-  );
 
   expect(result.routes[result.index!]!.name).toBe('bar');
 });
@@ -3291,14 +2865,36 @@ describe('state without history', () => {
     expect(result?.state.history).toBeDefined();
   });
 
-  test('handles route focus', () => {
-    const router = TabRouter({ backBehavior: 'history' });
+  test.each<[Parameters<typeof TabRouter>[0]['backBehavior'], string | undefined, string[]]>([
+    ['order', undefined, ['foo-0', 'bar-0', 'baz-0']],
+    ['history', undefined, ['baz-0']],
+    ['fullHistory', undefined, ['baz-0']],
+    ['firstRoute', 'bar', ['foo-0', 'baz-0']],
+    ['initialRoute', 'bar', ['bar-0', 'baz-0']],
+    ['none', undefined, ['baz-0']],
+  ])(
+    'reconstructs history during route focus with backBehavior: %s',
+    (backBehavior, initialRouteName, keys) => {
+      const router = TabRouter({ backBehavior, initialRouteName });
+      const state: TabNavigationState<ParamListBase> = {
+        stale: false,
+        type: 'tab',
+        key: 'tab-test',
+        index: 2,
+        routeNames: ['foo', 'bar', 'baz', 'qux'],
+        routes: [
+          { key: 'foo-0', name: 'foo' },
+          { key: 'bar-0', name: 'bar' },
+          { key: 'baz-0', name: 'baz' },
+          { key: 'qux-0', name: 'qux' },
+        ],
+      };
 
-    expect(router.getStateForRouteFocus(createState(), 'qux').history).toEqual([
-      { type: 'route', key: 'baz' },
-      { type: 'route', key: 'qux' },
-    ]);
-  });
+      expect(router.getStateForRouteFocus(state, 'baz-0').history).toEqual(
+        keys.map((key) => ({ type: 'route', key }))
+      );
+    }
+  );
 
   test('preserves params when reconstructing full history', () => {
     const router = TabRouter({ backBehavior: 'fullHistory' });

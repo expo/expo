@@ -34,15 +34,11 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
   routes: NavigationRoute<ParamList, keyof ParamList>[];
   /**
    * Custom type for the state, whether it's for tab, stack, drawer etc.
-   * During rehydration, the state will be discarded if type doesn't match with router type.
-   * It can also be used to detect the type of the navigator we're dealing with. Note that initial
-   * state does not include type, so an action needs to be dispatched in a navigator, in order
-   * for the type to be set
+   * A navigator discards state whose type doesn't match its router type.
+   * It can also be used to detect the type of the navigator we're dealing with.
    */
   type?: string;
-  /**
-   * Whether the navigation state has been rehydrated.
-   */
+  // TODO: Remove `stale` in a follow-up after partial navigation states are removed.
   stale: false;
 }>;
 
@@ -57,6 +53,7 @@ export type PartialRoute<R extends Route<string>> = Omit<R, 'key'> & {
   state?: PartialState<NavigationState>;
 };
 
+// TODO: Remove `PartialState` in a follow-up once all state producers return complete states.
 export type PartialState<State extends NavigationState> = Partial<Omit<State, 'stale' | 'routes'>> &
   Readonly<{
     stale?: true;
@@ -144,7 +141,7 @@ export type RouterConfigOptions = {
 
 /**
  * Type of the router. Should match the `type` property in state.
- * If the type doesn't match, the state will be discarded during rehydration.
+ * If the type doesn't match, the state will be discarded.
  * Only routers whose state has no `type` may omit it, since a state without a `type`
  * is accepted by every router.
  */
@@ -156,17 +153,6 @@ export type Router<
   State extends NavigationState,
   Action extends NavigationAction,
 > = RouterType<State> & {
-  /**
-   * Rehydrate the full navigation state from a given partial state.
-   *
-   * @param partialState Navigation state to rehydrate from.
-   * @param options.routeNames List of valid route names as defined in the screen components.
-   */
-  getRehydratedState(
-    partialState: PartialState<State> | State,
-    options: RouterConfigOptions
-  ): State;
-
   /**
    * Take the current state and the route names the navigator declares, and return the state to
    * render until `ROUTE_NAMES_CHANGED` has been reconciled.

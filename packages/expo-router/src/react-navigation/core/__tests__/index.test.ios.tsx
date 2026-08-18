@@ -99,6 +99,7 @@ test('initializes state for a navigator on navigation', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['foo', 'bar', 'baz'],
@@ -165,7 +166,7 @@ test('throws for incorrect initialRouteName', () => {
   ).not.toThrow();
 });
 
-test('rehydrates state for a navigator on navigation', () => {
+test('preserves a complete navigator state on navigation', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -209,15 +210,15 @@ test('rehydrates state for a navigator on navigation', () => {
     key: '0',
     routeNames: ['foo', 'bar'],
     routes: [
-      { key: 'foo', name: 'foo', params: undefined },
-      { key: 'bar', name: 'bar', params: undefined },
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar' },
     ],
     stale: false,
     type: 'test',
   });
 });
 
-test("doesn't rehydrate state if the type of state didn't match router", () => {
+test('initializes fresh state when the state type does not match the router', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -263,6 +264,7 @@ test("doesn't rehydrate state if the type of state didn't match router", () => {
     routeNames: ['foo', 'bar'],
     routes: [{ key: 'foo-1', name: 'foo' }],
     stale: false,
+    type: 'test',
   });
 });
 
@@ -303,6 +305,7 @@ test('initializes state for nested screens in React.Fragment', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['foo', 'bar', 'baz'],
@@ -347,6 +350,7 @@ test('initializes state for nested screens in Group', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['foo', 'bar', 'baz'],
@@ -404,6 +408,7 @@ test('initializes state for nested navigator on navigation', () => {
         name: 'baz',
         state: {
           stale: false,
+          type: 'test',
           index: 0,
           key: 'navigator-6',
           routeNames: ['qux'],
@@ -414,7 +419,7 @@ test('initializes state for nested navigator on navigation', () => {
   });
 });
 
-test("doesn't update state if nothing changed", () => {
+test('adds the router type if nothing else changed', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -425,6 +430,7 @@ test("doesn't update state if nothing changed", () => {
 
   const FooScreen = (props: any) => {
     React.useEffect(() => {
+      props.navigation.dispatch({ type: 'NOOP' });
       props.navigation.dispatch({ type: 'NOOP' });
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -443,7 +449,15 @@ test("doesn't update state if nothing changed", () => {
     </BaseNavigationContainer>
   );
 
-  expect(onStateChange).toHaveBeenCalledTimes(0);
+  expect(onStateChange).toHaveBeenCalledTimes(1);
+  expect(onStateChange).toHaveBeenCalledWith({
+    stale: false,
+    type: 'test',
+    index: 0,
+    key: 'navigator-2',
+    routeNames: ['foo', 'bar'],
+    routes: [{ key: 'foo-1', name: 'foo' }],
+  });
 });
 
 test("doesn't update state if action wasn't handled", () => {
@@ -523,6 +537,7 @@ test('cleans up state when the navigator unmounts', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['foo', 'bar'],
@@ -577,6 +592,7 @@ test('allows state updates by dispatching a function returning an action', () =>
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    type: 'test',
     index: 1,
     key: 'navigator-2',
     routeNames: ['foo', 'bar'],
@@ -682,6 +698,7 @@ test('updates route params with setParams', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['foo', 'bar'],
@@ -693,6 +710,7 @@ test('updates route params with setParams', () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['foo', 'bar'],
@@ -741,6 +759,7 @@ test('updates route params with setParams applied to parent', () => {
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['foo', 'bar'],
@@ -765,6 +784,7 @@ test('updates route params with setParams applied to parent', () => {
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenLastCalledWith({
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['foo', 'bar'],
@@ -815,6 +835,7 @@ test('handles change in route names', () => {
 
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['foo', 'baz', 'qux'],
@@ -849,6 +870,7 @@ test('reconciles route names when no previous route survives', () => {
 
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    type: 'test',
     index: 0,
     key: 'navigator-2',
     routeNames: ['baz', 'qux'],
@@ -886,6 +908,7 @@ test('does not clear params if there is no nested navigator', () => {
   );
 
   expect(navigation.getRootState()).toEqual({
+    type: 'test',
     index: 1,
     key: 'navigator-2',
     routeNames: ['foo', 'bar'],

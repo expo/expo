@@ -11,7 +11,6 @@ import type {
   DefaultRouterOptions,
   NavigationState,
   ParamListBase,
-  PartialState,
   Route,
   Router,
 } from './types';
@@ -305,48 +304,6 @@ export function TabRouter({
     ...BaseRouter,
 
     type: 'tab',
-
-    getRehydratedState(partialState, { routeNames }) {
-      const state = partialState;
-
-      if (state.stale === false) {
-        return state;
-      }
-
-      const partialRoutes = (state as PartialState<TabNavigationState<ParamListBase>>).routes;
-      const filteredRoutes = partialRoutes
-        .filter((route) => routeNames.includes(route.name))
-        .map((route) => ({
-          ...route,
-          key: route.key || `${route.name}-${nanoid()}`,
-        }));
-      const routes = addFallbackRouteIfEmpty(filteredRoutes, routeNames, initialRouteName);
-
-      const focusedName = state.routes[state.index ?? 0]?.name;
-      const focusedIndex = routes.findIndex((route) => route.name === focusedName);
-      const index = Math.min(Math.max(focusedIndex, 0), routes.length - 1);
-
-      const routeKeys = routes.map((route) => route.key);
-
-      const history = state.history?.filter((it) => routeKeys.includes(it.key)) ?? [];
-
-      return changeIndex(
-        ensureStateType(
-          {
-            stale: false,
-            key: `tab-${nanoid()}`,
-            index,
-            routeNames,
-            history,
-            routes,
-          },
-          'tab'
-        ),
-        index,
-        backBehavior,
-        initialRouteName
-      );
-    },
 
     getStateForRouteFocus(inputState, key) {
       const state = ensureStateType(
@@ -727,14 +684,19 @@ export function TabRouter({
         default: {
           const result = BaseRouter.getStateForAction(state, action);
 
-          if (result === null || result.state.stale !== false) {
+          if (result === null) {
             return result;
           }
 
           return {
             ...result,
             state: ensureStateType(
-              ensureStateHistory(result.state, backBehavior, initialRouteName),
+              ensureStateHistory(
+                // BaseRouter throws instead of returning partial RESET payloads.
+                result.state as TabNavigationState<ParamListBase>,
+                backBehavior,
+                initialRouteName
+              ),
               state.type
             ),
           };

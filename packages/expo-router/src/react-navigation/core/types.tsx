@@ -774,7 +774,7 @@ export type NavigationContainerRef<ParamList extends {}> = NavigationHelpers<Par
      */
     resetRoot(state?: PartialState<NavigationState> | NavigationState): void;
     /**
-     * Get the rehydrated navigation state of the navigation tree.
+     * Get the current state of the navigation tree.
      */
     getRootState(): NavigationState;
     /**
