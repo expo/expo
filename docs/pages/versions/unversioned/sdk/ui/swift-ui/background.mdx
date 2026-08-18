@@ -22,18 +22,39 @@ Expo UI Background matches the official SwiftUI [background](<https://developer.
 ### Basic background
 
 ```tsx BackgroundExample.tsx
-import { Background, Host, RoundedRectangle, Text } from '@expo/ui/swift-ui';
-import { font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
+import {
+  Background,
+  Host,
+  RoundedRectangle,
+  Text,
+} from '@expo/ui/swift-ui';
+import {
+  font,
+  foregroundStyle,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function BackgroundExample() {
   return (
-    <Host style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <Host
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
       <Background>
-        <Text modifiers={[font({ size: 17, weight: 'semibold' }), padding({ all: 16 })]}>
+        <Text
+          modifiers={[
+            font({ size: 17, weight: 'semibold' }),
+            padding({ all: 16 }),
+          ]}>
           Card title
         </Text>
         <Background.Content>
-          <RoundedRectangle cornerRadius={12} modifiers={[foregroundStyle('#E8F0FE')]} />
+          <RoundedRectangle
+            cornerRadius={12}
+            modifiers={[foregroundStyle('#E8F0FE')]}
+          />
         </Background.Content>
       </Background>
     </Host>
@@ -46,16 +67,37 @@ export default function BackgroundExample() {
 Use the `alignment` prop to position the background content relative to the base view. Because the background does not affect the layout of the base view, a smaller background can be pinned to one of its edges.
 
 ```tsx BackgroundAlignmentExample.tsx
-import { Background, Host, Rectangle, Text } from '@expo/ui/swift-ui';
-import { font, foregroundStyle, frame } from '@expo/ui/swift-ui/modifiers';
+import {
+  Background,
+  Host,
+  Rectangle,
+  Text,
+} from '@expo/ui/swift-ui';
+import {
+  font,
+  foregroundStyle,
+  frame,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function BackgroundAlignmentExample() {
   return (
-    <Host style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <Host
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
       <Background alignment="bottom">
-        <Text modifiers={[font({ size: 17 })]}>Underlined by its background</Text>
+        <Text modifiers={[font({ size: 17 })]}>
+          Underlined by its background
+        </Text>
         <Background.Content>
-          <Rectangle modifiers={[frame({ height: 3 }), foregroundStyle('#007AFF')]} />
+          <Rectangle
+            modifiers={[
+              frame({ height: 3 }),
+              foregroundStyle('#007AFF'),
+            ]}
+          />
         </Background.Content>
       </Background>
     </Host>
@@ -69,4 +111,7 @@ export default function BackgroundAlignmentExample() {
 import { Background } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/background" apiName="Background" />
+<APISection
+  packageName="expo-ui/swift-ui/background"
+  apiName="Background"
+/>
