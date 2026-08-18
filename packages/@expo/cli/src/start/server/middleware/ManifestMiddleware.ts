@@ -130,11 +130,8 @@ export abstract class ManifestMiddleware<
     const user = await getUserAsync();
     const username = getActorDisplayName(user);
 
-    // We emit relative URLs only if the client itself reported the authority it used, via the
-    // RFC 7239 `Forwarded` header. Clients that send it also resolve relative manifest URLs
-    // against the request URL. Proxies (like the WS tunnel) only add `X-Forwarded-*` headers,
-    // which say nothing about the client: older clients, like released Expo Go versions, treat
-    // a relative `launchAsset.url` as a file path and fail to load the bundle.
+    // We emit relative URLs only if the client itself reported the authority,
+    // via a `Forwarded` header to differentiate older/newer clients
     const shouldUseRelativeManifestUrls = !!forwarded?.viaForwardedHeader;
     // `hostUri` and `debuggerHost` can only hold an authority, so they can't be made relative
     const hostUri = forwarded?.authority ?? this.options.constructUrl({ scheme: '', hostname });

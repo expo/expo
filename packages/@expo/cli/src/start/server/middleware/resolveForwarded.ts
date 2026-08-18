@@ -4,12 +4,6 @@ import type { ServerRequest } from './server.types';
 export interface ForwardedRequestInfo {
   authority: string | undefined;
   protocol: 'http' | 'https' | undefined;
-  /**
-   * Whether the authority was reported via the RFC 7239 `Forwarded` header rather than the
-   * `X-Forwarded-Host` header. Expo clients send `Forwarded` themselves and resolve relative
-   * manifest URLs, while proxies typically only add `X-Forwarded-*` headers for clients that may
-   * not support relative URLs.
-   */
   viaForwardedHeader: boolean;
 }
 
