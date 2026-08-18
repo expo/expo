@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android][iOS] Prevent player teardown from clearing Now Playing metadata and notifications owned by other modules. ([#48470](https://github.com/expo/expo/pull/48470) by [@stareezy-1](https://github.com/stareezy-1))
 - [iOS] Fix races between overlapping source loads and player release. ([#47967](https://github.com/expo/expo/pull/47967) by [@behenate](https://github.com/behenate))
 - [iOS] Set the default `audioMixingMode` to `auto`, [as documented](https://docs.expo.dev/versions/latest/sdk/video/#audiomixingmode); was `doNotMix`. ([#47363](https://github.com/expo/expo/issues/47363) by [@andymatuschak](https://github.com/andymatuschak))
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))

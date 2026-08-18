@@ -236,9 +236,6 @@ class ExpoVideoPlaybackService : MediaSessionService() {
     for (session in mediaSessions.values) {
       notificationManager.cancel(session.player.hashCode())
     }
-    mostRecentInteractionSession?.let {
-      notificationManager.cancel(it.player.hashCode())
-    }
   }
 
   private fun MediaSession.wantsToShowNotification(): Boolean =
