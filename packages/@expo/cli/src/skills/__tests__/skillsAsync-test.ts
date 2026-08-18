@@ -11,6 +11,7 @@ import {
 import { discoverSkillsAsync } from '../discovery';
 import { cleanSkillLinksAsync, syncSkillLinksAsync, updateGitIgnoreAsync } from '../linking';
 import {
+  autoSyncSkillsAsync,
   cleanSkillsAsync,
   listSkillsAsync,
   showSkillsAsync,
@@ -310,5 +311,78 @@ describe('cleanSkillsAsync', () => {
       ['.claude/skills', '.agents/skills'],
       { dryRun: false }
     );
+  });
+});
+
+describe('autoSyncSkillsAsync', () => {
+  it('should do nothing when no agent selection is cached', async () => {
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(null);
+
+    await autoSyncSkillsAsync('/root');
+
+    expect(discoverSkillsAsync).not.toHaveBeenCalled();
+    expect(syncSkillLinksAsync).not.toHaveBeenCalled();
+  });
+
+  it('should not sync when no selection is cached even if agents are detected', async () => {
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(null);
+    jest.mocked(detectInstalledAgentsAsync).mockResolvedValueOnce([cursorAgent]);
+
+    await autoSyncSkillsAsync('/root');
+
+    expect(syncSkillLinksAsync).not.toHaveBeenCalled();
+  });
+
+  it('should sync without prompting for the cached agents', async () => {
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent, cursorAgent, codexAgent]);
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
+
+    await autoSyncSkillsAsync('/root');
+
+    expect(resolveAgentsAsync).not.toHaveBeenCalled();
+    expect(syncSkillLinksAsync).toHaveBeenCalledWith('/root', [testSkill], ['.claude/skills'], {});
+  });
+
+  it('should only link skills from the given packages and skip pruning', async () => {
+    const otherSkill: DiscoveredSkill = {
+      name: 'other-skill',
+      path: '/root/node_modules/other/skills/other-skill',
+      packageName: 'other',
+      linkName: 'other-skill',
+    };
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill, otherSkill]);
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+
+    await autoSyncSkillsAsync('/root', { packages: ['@acme/tool'] });
+
+    expect(syncSkillLinksAsync).toHaveBeenCalledWith('/root', [testSkill], ['.claude/skills'], {
+      prune: false,
+    });
+  });
+
+  it('should parse versioned package specs when scoping the sync', async () => {
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: [], pruned: [] });
+
+    await autoSyncSkillsAsync('/root', { packages: ['@acme/tool@~1.2.0'] });
+
+    expect(syncSkillLinksAsync).toHaveBeenCalledWith('/root', [testSkill], ['.claude/skills'], {
+      prune: false,
+    });
+  });
+
+  it('should warn instead of throwing when the sync fails', async () => {
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(['claude-code']);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
+    jest.mocked(discoverSkillsAsync).mockRejectedValueOnce(new Error('boom'));
+
+    await expect(autoSyncSkillsAsync('/root')).resolves.toBeUndefined();
+    expect(syncSkillLinksAsync).not.toHaveBeenCalled();
   });
 });
