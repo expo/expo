@@ -682,6 +682,35 @@ export default function ModifiersScreen() {
             />
           </Section>
 
+          <Section title="Padding">
+            <Text
+              modifiers={[
+                padding(),
+                background('#E8F0FE'),
+                foregroundStyle({ type: 'color', color: '#1A1A1A' }),
+              ]}>
+              System default padding on every edge
+            </Text>
+
+            <Text
+              modifiers={[
+                padding({ top: 'default', horizontal: 24 }),
+                background('#E8F0FE'),
+                foregroundStyle({ type: 'color', color: '#1A1A1A' }),
+              ]}>
+              System default on top, 24 points on the sides, none at the bottom
+            </Text>
+
+            <Text
+              modifiers={[
+                padding({ all: 'default', leading: 0 }),
+                background('#E8F0FE'),
+                foregroundStyle({ type: 'color', color: '#1A1A1A' }),
+              ]}>
+              System default on every edge except the leading one
+            </Text>
+          </Section>
+
           {/* New Modifier System Demo Section */}
           <Section title="SwiftUI Modifiers Demo">
             {/* Basic Appearance Modifiers */}
