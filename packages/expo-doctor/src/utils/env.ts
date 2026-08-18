@@ -35,7 +35,7 @@ class Env {
     return boolish('EXPO_DOCTOR_WARN_ON_NETWORK_ERRORS', false);
   }
 
-  /** Whether Expo Doctor runs in EAS Build. */
+  /** Is running in EAS Build */
   get EAS_BUILD() {
     return boolish('EAS_BUILD', false);
   }
