@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added `'default'` as a value for every edge of the `padding` modifier, so a single edge can use the system default padding while the other edges use explicit lengths. ([#48903](https://github.com/expo/expo/pull/48903) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Added the `Background` component, which draws any view behind another view with an optional `alignment`, matching SwiftUI's `background(alignment:content:)`. ([#48904](https://github.com/expo/expo/pull/48904) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [android] Added `maskClip` modifier, exposing Compose's `CarouselItemScope.maskClip` so carousel items keep their shape while the carousel masks them. ([#48852](https://github.com/expo/expo/pull/48852) by [@SchroederNathan](https://github.com/SchroederNathan))
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
@@ -29,6 +30,7 @@
 - [iOS] Fix `community/bottom-sheet` close callbacks firing before the sheet finished dismissing. ([#48389](https://github.com/expo/expo/issues/48389) by [@nicklamont](https://github.com/nicklamont)) ([#48436](https://github.com/expo/expo/pull/48436) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed viewport size measurement reading the main screen instead of the scene the view is in. ([#48170](https://github.com/expo/expo/pull/48170) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed `Overlay`, `Alert`, `ConfirmationDialog` and `Popover` silently ignoring the `modifiers` prop, which never reached the native view. ([#48949](https://github.com/expo/expo/pull/48949) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 💡 Others
 
