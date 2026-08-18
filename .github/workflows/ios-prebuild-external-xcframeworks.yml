@@ -100,6 +100,22 @@ jobs:
           manifest="apps/bare-expo/package.json"
           changed=()
 
+          # A React Native bump changes the <rnVersion>/<hermesVersion> segments of
+          # every external artifact path, so the whole published set must be rebuilt.
+          # Read the version from `dependencies` only, mirroring the producer's source
+          # of truth in tools/src/prebuilds/Utils.ts (getVersionsInfoAsync).
+          before_rn="$(git show "$base:$manifest" 2>/dev/null \
+            | jq -r '.dependencies["react-native"] // empty')"
+          after_rn="$(jq -r '.dependencies["react-native"] // empty' "$manifest")"
+
+          if [ -z "$after_rn" ]; then
+            build_all "Could not read the react-native version from $manifest; building all external packages."
+          fi
+
+          if [ "$before_rn" != "$after_rn" ]; then
+            build_all "React Native changed (${before_rn:-unknown} -> $after_rn); every external artifact path is invalidated. Building all external packages."
+          fi
+
           # Derive the package -> patch-file map from pnpm's own source of truth
           # (the `patchedDependencies` block in pnpm-workspace.yaml) so adding a
           # patched package needs no edits here. Keys may carry an `@version`
