@@ -14,8 +14,10 @@
   "dependencies": {
     "expo": "workspace:*",
     "expo-constants": "workspace:*",
+    "expo-clipboard": "workspace:*",
     "expo-dev-client": "57.0.12",
     "expo-glass-effect": "workspace:*",
+    "expo-image-picker": "workspace:*",
     "expo-linking": "workspace:*",
     "expo-router": "workspace:*",
     "expo-splash-screen": "workspace:*",

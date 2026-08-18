@@ -1421,6 +1421,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-clipboard:
+        specifier: workspace:*
+        version: link:../../packages/expo-clipboard
       expo-constants:
         specifier: workspace:*
         version: link:../../packages/expo-constants
@@ -1430,6 +1433,9 @@ importers:
       expo-glass-effect:
         specifier: workspace:*
         version: link:../../packages/expo-glass-effect
+      expo-image-picker:
+        specifier: workspace:*
+        version: link:../../packages/expo-image-picker
       expo-linking:
         specifier: workspace:*
         version: link:../../packages/expo-linking
@@ -17808,7 +17814,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
