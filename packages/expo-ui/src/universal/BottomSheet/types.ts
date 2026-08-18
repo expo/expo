@@ -62,7 +62,7 @@ export interface BottomSheetProps {
    * @default true
    * @platform android
    */
-  dismissOnBackPress?: boolean;
+  shouldDismissOnBackPress?: boolean;
 
   /**
    * Platform-specific modifier escape hatch. Pass an array of modifier configs
