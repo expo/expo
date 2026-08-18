@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [android] Add `shouldDismissOnBackPress` prop to the universal `BottomSheet` component, forwarding it to `ModalBottomSheet` via `properties.shouldDismissOnBackPress`. When false, the back press does not dismiss the sheet (and the press still does not reach BackHandler). ([#48987](https://github.com/expo/expo/pull/48987) by [@webdevsamran](https://github.com/webdevsamran))
+
 ### 🐛 Bug fixes
 
 - [Android] Preserve vector drawable `fillType` values when loading images so even-odd paths render correctly. ([#49049](https://github.com/expo/expo/pull/49049) by [@aonan-brex](https://github.com/aonan-brex))
