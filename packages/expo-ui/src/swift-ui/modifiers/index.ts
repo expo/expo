@@ -89,6 +89,23 @@ export const matchedGeometryEffect = (
 ) => createModifier('matchedGeometryEffect', { id, namespaceId, ...options });
 
 /**
+ * Isolates the geometry (e.g. position and size) of the view from its parent view.
+ *
+ * @example
+ * ```tsx
+ * <VStack modifiers={[animation(Animation.spring(), isBusy)]}>
+ *   {isBusy ? <Text>Working…</Text> : null}
+ *   <Button label="Check now" modifiers={[geometryGroup()]} />
+ * </VStack>
+ * ```
+ *
+ * @platform ios 17.0+
+ * @platform tvos 17.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/geometrygroup()).
+ */
+export const geometryGroup = () => createModifier('geometryGroup', {});
+
+/**
  * Sets the frame properties of a view.
  * @param params - The frame parameters. Width, height, minWidth, maxWidth, minHeight, maxHeight, idealWidth, idealHeight and alignment.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/frame(width:height:alignment:)).
@@ -140,18 +157,26 @@ export const containerRelativeFrame = (params: {
 
 /**
  * Sets padding on a view.
- * Supports individual edges or shorthand properties.
+ * Supports individual edges or shorthand properties. Every edge accepts a length in points or
+ * `'default'` to apply the system default padding to that edge. Edges set by a specific property
+ * take precedence over the shorthand ones, and unspecified edges get no padding.
+ * Calling it without parameters applies the system default padding to all edges.
  * @param params - The padding parameters: `top`, `bottom`, `leading`, `trailing`, `horizontal`, `vertical` and `all`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/padding(_:_:)).
+ * @example
+ * ```tsx
+ * // The system default padding on top, 12 points on the sides, nothing at the bottom.
+ * <Text modifiers={[padding({ top: 'default', horizontal: 12 })]}>Hello</Text>
+ * ```
  */
 export const padding = (params?: {
-  top?: number;
-  bottom?: number;
-  leading?: number;
-  trailing?: number;
-  horizontal?: number;
-  vertical?: number;
-  all?: number;
+  top?: number | 'default';
+  bottom?: number | 'default';
+  leading?: number | 'default';
+  trailing?: number | 'default';
+  horizontal?: number | 'default';
+  vertical?: number | 'default';
+  all?: number | 'default';
 }) => createModifier('padding', params);
 
 /**
@@ -672,6 +697,30 @@ export const toggleStyle = (style: 'automatic' | 'switch' | 'button') =>
   createModifier('toggleStyle', { style });
 
 /**
+ * Sets the style for menus within this view.
+ * @param style - The menu style. Combine `'button'` with `buttonStyle('plain')` and
+ * `menuIndicator('hidden')` to render the menu's own label as the entire trigger, without any
+ * surrounding button chrome or disclosure chevron.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menustyle(_:)).
+ * @platform ios
+ * @platform tvos 17.0+
+ */
+export const menuStyle = (style: 'automatic' | 'button') => createModifier('menuStyle', { style });
+
+/**
+ * Sets the visibility of the menu indicator, the disclosure chevron drawn next to a menu's label.
+ * @param visibility - Indicator visibility:
+ * - `'automatic'`: platform-default behavior.
+ * - `'visible'`: show the indicator.
+ * - `'hidden'`: hide the indicator.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menuindicator(_:)).
+ * @platform ios
+ * @platform tvos 17.0+
+ */
+export const menuIndicator = (visibility: 'automatic' | 'visible' | 'hidden') =>
+  createModifier('menuIndicator', { visibility });
+
+/**
  * Sets the size of controls within this view.
  * @param size - The control size.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/controlsize(_:)).
@@ -1062,6 +1111,15 @@ export const listRowSeparator = (
   visibility: 'automatic' | 'visible' | 'hidden',
   edges?: 'all' | 'top' | 'bottom'
 ) => createModifier('listRowSeparator', { visibility, edges });
+
+/**
+ * Sets the tint color of the separator for a list row.
+ * @param color - The color to apply to the separator (hex string). For example, `#FF0000`. When omitted, the default separator color is used.
+ * @param edges - The edges where the separator tint applies.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowseparatortint(_:edges:)).
+ */
+export const listRowSeparatorTint = (color?: Color, edges?: 'all' | 'top' | 'bottom') =>
+  createModifier('listRowSeparatorTint', { color, edges });
 
 /**
  * Sets the vertical spacing between adjacent rows in a list.
@@ -1637,6 +1695,8 @@ export type BuiltInModifier =
   | ReturnType<typeof buttonStyle>
   | ReturnType<typeof buttonBorderShape>
   | ReturnType<typeof toggleStyle>
+  | ReturnType<typeof menuStyle>
+  | ReturnType<typeof menuIndicator>
   | ReturnType<typeof controlSize>
   | ReturnType<typeof imageScale>
   | ReturnType<typeof labelStyle>
@@ -1660,6 +1720,7 @@ export type BuiltInModifier =
   | ReturnType<typeof clipped>
   | ReturnType<typeof glassEffect>
   | ReturnType<typeof glassEffectId>
+  | ReturnType<typeof geometryGroup>
   | ReturnType<typeof animation>
   | ReturnType<typeof containerShape>
   | ReturnType<typeof contentShape>
@@ -1680,6 +1741,7 @@ export type BuiltInModifier =
   | ReturnType<typeof environment>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
+  | ReturnType<typeof listRowSeparatorTint>
   | ReturnType<typeof listRowSpacing>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>

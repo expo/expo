@@ -64,6 +64,28 @@ const JA_TRANSLATED_PAGES: Record<string, string> = {
   '/tutorial/build-with-ai/add-stickers': 'ステッカーを追加する',
   '/tutorial/build-with-ai/save-your-creation': '画像を保存する',
   '/tutorial/build-with-ai/finishing-touches': '仕上げ',
+  '/tutorial/cicd/introduction': 'はじめに',
+  '/tutorial/cicd/first-workflow': '最初の EAS Workflows ジョブ',
+  '/tutorial/cicd/development-builds': '開発ビルド',
+  '/tutorial/cicd/preview-builds': 'プレビュービルド',
+  '/tutorial/cicd/e2e-tests': 'E2E テスト',
+  '/tutorial/cicd/production': '本番デプロイ',
+  '/tutorial/cicd/tag-based-releases': 'タグベースのリリース',
+  '/tutorial/cicd/web-deployments': 'web デプロイ',
+  '/tutorial/cicd/next-steps': '次のステップ',
+  '/tutorial/eas/introduction': 'はじめに',
+  '/tutorial/eas/configure-development-build': '開発ビルドを設定する',
+  '/tutorial/eas/android-development-build': 'Android 開発ビルド',
+  '/tutorial/eas/ios-development-build-for-simulators': 'iOS シミュレーター向け開発ビルド',
+  '/tutorial/eas/ios-development-build-for-devices': 'iOS 実機向け開発ビルド',
+  '/tutorial/eas/multiple-app-variants': '複数のアプリバリアント',
+  '/tutorial/eas/internal-distribution-builds': '内部配布ビルド',
+  '/tutorial/eas/manage-app-versions': 'アプリバージョンを管理する',
+  '/tutorial/eas/android-production-build': 'Android 本番ビルド',
+  '/tutorial/eas/ios-production-build': 'iOS 本番ビルド',
+  '/tutorial/eas/team-development': 'プレビューを共有する',
+  '/tutorial/eas/using-github': 'GitHub からのビルド',
+  '/tutorial/eas/next-steps': '次のステップ',
 };
 
 export const JA_TRANSLATED_PATHS: ReadonlySet<string> = new Set(Object.keys(JA_TRANSLATED_PAGES));
@@ -83,6 +105,8 @@ export function getJapaneseSidebarTitle(path: string): string | undefined {
 const JA_SECTION_TITLES: Record<string, string> = {
   'Expo tutorial': 'Expo チュートリアル',
   'Build with AI tutorial': 'AI エージェントで作るチュートリアル',
+  'CI/CD tutorial': 'CI/CD チュートリアル',
+  'EAS tutorial': 'EAS チュートリアル',
   More: 'その他',
 };
 

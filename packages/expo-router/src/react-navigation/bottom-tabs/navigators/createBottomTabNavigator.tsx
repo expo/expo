@@ -15,7 +15,6 @@ import { BottomTabView } from '../views/BottomTabView';
 
 export interface BottomTabNavigatorCreateProps {
   routeNames: string[];
-  preloadedRouteKeys: string[];
   popNestedStackToTop: (routeKey: string) => void;
   preload: (name: string) => void;
 }
@@ -36,7 +35,6 @@ function BottomTabNavigatorContent({
   actions,
   emitter,
   routeNames,
-  preloadedRouteKeys,
   popNestedStackToTop,
   preload,
   ...rest
@@ -85,7 +83,6 @@ function BottomTabNavigatorContent({
       descriptors={bottomTabDescriptors}
       emitter={emitter}
       navigateToTab={navigateToTab}
-      preloadedRouteKeys={preloadedRouteKeys}
       popNestedStackToTop={popNestedStackToTop}
     />
   );

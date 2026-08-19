@@ -18,28 +18,6 @@ interface LoaderSource {
 export class LoaderClient {
   private active = new Map<string, LoaderSource>();
   private fetchers = new Map<string, LoaderFetcher>();
-  private version = 0;
-  private listeners = new Set<() => void>();
-
-  // Arrow-bound so `loaderClient.subscribe` returns a stable reference across renders,
-  // which keeps `useSyncExternalStore()` from tearing down and re-attaching every render.
-  subscribe = (listener: () => void): (() => void) => {
-    this.listeners.add(listener);
-    return () => {
-      this.listeners.delete(listener);
-    };
-  };
-
-  getSnapshot = (): number => {
-    return this.version;
-  };
-
-  notify() {
-    this.version++;
-    for (const listener of this.listeners) {
-      listener();
-    }
-  }
 
   subscribeLoader(path: string, callback: LoaderSubscriber = () => {}): LoaderUnsubscribe {
     let source = this.active.get(path);
@@ -127,6 +105,5 @@ export class LoaderClient {
     for (const subscriber of source.subscribers) {
       subscriber(result, isCurrentSource);
     }
-    this.notify();
   }
 }

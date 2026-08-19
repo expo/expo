@@ -424,6 +424,8 @@ describe(getExpoConfigSourcesAsync, () => {
         'assets/fonts/SF-Pro.ttf': 'sf pro data',
         'assets/fonts/Roboto-Regular.ttf': 'roboto regular data',
         'assets/fonts/Roboto-Bold.ttf': 'roboto bold data',
+        'assets/fonts/RobotoFlex.ttf': 'roboto flex data',
+        'assets/fonts/RobotoFlex-Italic.ttf': 'roboto flex italic data',
       };
       const pluginProps = {
         fonts: ['./assets/fonts/SpaceMono-Regular.ttf'],
@@ -437,6 +439,17 @@ describe(getExpoConfigSourcesAsync, () => {
                 { path: './assets/fonts/Roboto-Bold.ttf', weight: 700 },
               ],
             },
+            {
+              // A family may name its file once instead of each definition repeating it.
+              fontFamily: 'Roboto Flex',
+              path: './assets/fonts/RobotoFlex.ttf',
+              fontDefinitions: [
+                { weight: 400 },
+                { weight: 700, axes: { wght: 650 } },
+                // A definition may still name a file of its own.
+                { path: './assets/fonts/RobotoFlex-Italic.ttf', weight: 400, style: 'italic' },
+              ],
+            },
           ],
         },
       };
@@ -446,11 +459,14 @@ describe(getExpoConfigSourcesAsync, () => {
       expectFontSource(iosSources, 'assets/fonts/SF-Pro.ttf');
       expectNoFontSource(iosSources, 'assets/fonts/Roboto-Regular.ttf');
       expectNoFontSource(iosSources, 'assets/fonts/Roboto-Bold.ttf');
+      expectNoFontSource(iosSources, 'assets/fonts/RobotoFlex.ttf');
 
       const androidSources = await getFontSources(files, pluginProps, 'android');
       expectFontSource(androidSources, 'assets/fonts/SpaceMono-Regular.ttf');
       expectFontSource(androidSources, 'assets/fonts/Roboto-Regular.ttf');
       expectFontSource(androidSources, 'assets/fonts/Roboto-Bold.ttf');
+      expectFontSource(androidSources, 'assets/fonts/RobotoFlex.ttf');
+      expectFontSource(androidSources, 'assets/fonts/RobotoFlex-Italic.ttf');
       expectNoFontSource(androidSources, 'assets/fonts/SF-Pro.ttf');
     });
 

@@ -68,6 +68,36 @@ export default function BottomSheetNoIndicatorExample() {
 }
 ```
 
+### Content padding
+
+The sheet insets its content by default. Pass [`contentPadding`](#contentpadding) to change that inset — `0` lets a row, image, or divider reach the sheet's edges.
+
+```tsx BottomSheetContentPaddingExample.tsx
+import { useState } from 'react';
+import { Host, BottomSheet, Button, Column, Text } from '@expo/ui';
+
+export default function BottomSheetContentPaddingExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Button label="Open" onPress={() => setIsPresented(true)} />
+      <BottomSheet
+        isPresented={isPresented}
+        onDismiss={() => setIsPresented(false)}
+        contentPadding={0}>
+        <Column>
+          <Column style={{ backgroundColor: '#0a84ff', padding: 16 }}>
+            <Text>This banner reaches the sheet's edge.</Text>
+          </Column>
+          <Button label="Close" onPress={() => setIsPresented(false)} />
+        </Column>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
+
 ### Snap points
 
 Pass [`snapPoints`](#snappoints) to let the user drag the sheet between multiple resting heights. You can use the semantic values `'half'` and `'full'` for cross-platform parity. The `{ fraction }` and `{ height }` forms are honored precisely on iOS and web.

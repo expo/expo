@@ -117,7 +117,11 @@ const renderProps = (
   return (
     <div
       key={`props-definition-${def.name}`}
-      className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:mb-0!')}>
+      className={mergeClasses(
+        STYLES_APIBOX,
+        !exposeInSidebar && 'mb-0 rounded-none border-0 shadow-none',
+        '[&>*:last-child]:mb-0!'
+      )}>
       {propsDeclarations?.map(prop =>
         prop
           ? renderProp(

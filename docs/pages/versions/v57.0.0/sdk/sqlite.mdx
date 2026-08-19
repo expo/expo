@@ -287,7 +287,7 @@ export function Header() {
       const result = await db.getFirstAsync<{ 'sqlite_version()': string }>(
         'SELECT sqlite_version()'
       );
-      setVersion(result['sqlite_version()']);
+      setVersion(result?.['sqlite_version()'] ?? '');
     }
     setup();
   }, []);
@@ -328,9 +328,8 @@ export function Content() {
 
 async function migrateDbIfNeeded(db: SQLiteDatabase) {
   const DATABASE_VERSION = 1;
-  let { user_version: currentDbVersion } = await db.getFirstAsync<{ user_version: number }>(
-    'PRAGMA user_version'
-  );
+  const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  let currentDbVersion = result?.user_version ?? 0;
   if (currentDbVersion >= DATABASE_VERSION) {
     return;
   }

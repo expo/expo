@@ -14,7 +14,12 @@
 
 ### 🐛 Bug fixes
 
+- Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
+- Print the "make sure you have modules installed" warning when the dependency install fails ([#48929](https://github.com/expo/expo/issues/48929)) ([#48946](https://github.com/expo/expo/pull/48946) by [@expo-bot](https://github.com/expo-bot))
+
 ### 💡 Others
+
+- Bump to `multitars@1.0.2` to address symlink and unicode bugs ([#48833](https://github.com/expo/expo/pull/48833) by [@kitten](https://github.com/kitten))
 
 ## 5.0.0 - 2026-06-25
 

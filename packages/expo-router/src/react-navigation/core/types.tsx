@@ -699,11 +699,6 @@ export type RouteConfigProps<
   getId?: ({ params }: { params: Readonly<ParamList[RouteName]> }) => string | undefined;
 
   /**
-   * Initial params object for the route.
-   */
-  initialParams?: Partial<ParamList[RouteName]>;
-
-  /**
    * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
    * or inferred from the filesystem.
    */
@@ -1039,10 +1034,6 @@ export type PathConfig<ParamList extends {}> = Partial<PathConfigAlias> & {
    * ```
    */
   stringify?: Record<string, (value: any) => string>;
-  /**
-   * Additional path alias that will be matched to the same screen.
-   */
-  alias?: (string | PathConfigAlias)[];
   /**
    * Path configuration for child screens.
    */

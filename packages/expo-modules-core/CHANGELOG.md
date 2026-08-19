@@ -21,7 +21,9 @@
 
 ### 🐛 Bug fixes
 
+
 - Defer the `useReleasingSharedObject` unmount release by a microtask, so cleanups registered after the hook — such as a `useFocusEffect` cleanup pausing a `useVideoPlayer` player — no longer throw `Unable to find the native shared object associated with given JS object`. ([#30994](https://github.com/expo/expo/issues/30994), [#48678](https://github.com/expo/expo/pull/48678) by [@L65FREAD](https://github.com/L65FREAD))
+- [iOS] Fixed the `ExpoModulesProvider` lookup missing the generated class when the app `name` starts with a digit, which registered no native modules and left release builds on a blank screen. ([#48793](https://github.com/expo/expo/pull/48793) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fixed the tap that closes a SwiftUI menu also pressing the React Native view underneath it. ([#48419](https://github.com/expo/expo/issues/48419) by [@bohdanstefaniuk](https://github.com/bohdanstefaniuk)) ([#48463](https://github.com/expo/expo/pull/48463) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fixed hosted Compose views missing layout after reattachment or in-place configuration changes. ([#48370](https://github.com/expo/expo/issues/48370) by [@lujjjh](https://github.com/lujjjh))
 - [iOS] Fixed infinite recursion and `EXC_BAD_ACCESS` when encoding native `Date` values to JavaScript. ([#48239](https://github.com/expo/expo/issues/48239), [#48240](https://github.com/expo/expo/pull/48240) by [@samuelcorsan](https://github.com/samuelcorsan))
@@ -44,6 +46,7 @@
 - [iOS] Added `SceneGeometry` for reading bounds, safe area, display scale and interface orientation from the scene a view belongs to. ([#48168](https://github.com/expo/expo/pull/48168) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Added `SceneGeometry.foregroundScene()`, which returns nil when no scene is on screen so callers can avoid presenting UI into a background scene. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
 - Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
+- Migrated from deprecated react-native-worklets WorkletRuntime API `executeSync` to up-to-date `runSync`. `runSync` is available since 0.7.0. ([#48691](https://github.com/expo/expo/pull/48691) by [@tjzel](https://github.com/tjzel))
 
 ## 57.0.8 - 2026-07-29
 

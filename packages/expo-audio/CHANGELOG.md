@@ -21,10 +21,13 @@
 - [iOS] Create a fresh recording file each time `prepareToRecordAsync` is called, matching Android — repeated takes no longer overwrite the previous recording at the same URL. ([#48002](https://github.com/expo/expo/pull/48002) by [@idoyana](https://github.com/idoyana))
 - Fix `player.replace(null)` throwing due to a mismatch between native and TypeScript types. ([#48219](https://github.com/expo/expo/pull/48219) by [@zoontek](https://github.com/zoontek))
 - [iOS] Activate the audio session once and keep it active instead of toggling. ([#48588](https://github.com/expo/expo/pull/48588) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix `createAudioPlayer`/`useAudioPlayer` throwing "Received 5 arguments, but 4 was expected" due to the native `AudioPlayer` constructor missing the iOS-only `allowsExternalPlayback` parameter. ([#48655](https://github.com/expo/expo/pull/48655) by [@RasmusKard](https://github.com/RasmusKard))
+- [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
 
 ### 💡 Others
 
 - [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`). ([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
+- [iOS] Fix the microphone permissions test not compiling. ([#49027](https://github.com/expo/expo/pull/49027) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 57.0.3 - 2026-07-22
 

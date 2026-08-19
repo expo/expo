@@ -13,6 +13,10 @@ When you run `npx expo start` and connect a device, console logs will show up in
 
 You can view **high fidelity** logs and use advanced logging functions like `console.table` by creating a development build with [Hermes](/guides/using-hermes), and [connecting the inspector](/guides/using-hermes#javascript-debugger).
 
+### View console logs in production mode
+
+When you start your app with [`npx expo start --no-dev`](/workflow/development-mode/#production-mode), console logs do not appear in the Expo CLI terminal. The runtime code that forwards logs to Expo CLI only runs in development mode. You cannot re-enable it in production mode. However, `console.log` still writes to the native log on the device. To view these logs, use `adb logcat` on Android or the Console app on iOS. For step-by-step instructions, see [Viewing native logs](/debugging/runtime-issues/#viewing-native-logs).
+
 ## Native logs
 
 You can view native runtime logs in Android Studio and Xcode by compiling the native app locally. For more information, see [native debugging](/debugging/runtime-issues/#native-debugging).
