@@ -155,6 +155,27 @@ describe(createFingerprintService, () => {
       expect(warn).toHaveBeenCalledTimes(3);
     });
 
+    it(`warns again when a stale app announces after the throttle window`, () => {
+      const warn = jest.fn();
+      let now = 1_000_000;
+      const service = createFingerprintService(projectRoot, { warn, now: () => now });
+
+      service.recordClientFingerprint('ios', 'stale-hash', server);
+      expect(warn).toHaveBeenCalledTimes(1);
+
+      // Announces seconds apart belong to one app launch (the automatic one, plus any explicit
+      // `checkFingerprintAsync()` call), so they must not double-warn.
+      now += 5_000;
+      service.recordClientFingerprint('ios', 'stale-hash', server);
+      expect(warn).toHaveBeenCalledTimes(1);
+
+      // A later relaunch has to warn again. One warning per project state is scrolled past and
+      // then unobtainable without restarting the dev server.
+      now += 60_000;
+      service.recordClientFingerprint('ios', 'stale-hash', server);
+      expect(warn).toHaveBeenCalledTimes(2);
+    });
+
     it(`does not warn on a match and returns no advice`, () => {
       const warn = jest.fn();
       const service = createFingerprintService(projectRoot, { warn });
@@ -213,6 +234,40 @@ describe(createFingerprintService, () => {
         recommendation: expect.stringContaining('app config'),
         commands: ['npx expo prebuild -p ios', 'npx expo run:ios'],
       });
+    });
+
+    it(`does not name a dependency when it is the only stale source`, () => {
+      const dependencySource = (hash: string) => ({
+        type: 'dir' as const,
+        filePath: '../../packages/expo',
+        reasons: ['expoConfigPlugins'],
+        hash,
+      });
+      vol.fromJSON({
+        [`${projectRoot}/ios/Podfile`]: '',
+        [getPrebuildFingerprintMarkerPath(projectRoot, 'ios')]: JSON.stringify({
+          version: 1,
+          platform: 'ios',
+          hash: 'marker-hash',
+          sources: [dependencySource('old-expo-dir')],
+          fingerprintVersion: '0.20.6',
+          createdAt: '2026-08-13T00:00:00.000Z',
+        }),
+      });
+      const warn = jest.fn();
+      const service = createFingerprintService(projectRoot, { warn });
+
+      const advice = service.recordClientFingerprint('ios', 'stale-hash', {
+        ...server,
+        sources: [dependencySource('new-expo-dir')],
+      });
+
+      // The verdict still needs prebuild, but the sentence must not point at a path the
+      // developer did not touch — nor trail off with nothing before "changed".
+      expect(advice?.commands).toEqual(['npx expo prebuild -p ios', 'npx expo run:ios']);
+      expect(advice?.recommendation).not.toContain('..');
+      expect(advice?.recommendation).toContain('out of date');
+      expect(warn.mock.calls[0][0]).not.toContain('..');
     });
 
     it(`recommends a plain rebuild when the native directories are up to date`, () => {

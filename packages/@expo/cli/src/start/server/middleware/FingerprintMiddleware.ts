@@ -74,28 +74,41 @@ export class FingerprintMiddleware extends ExpoMiddleware {
     }
 
     const platform = parsePlatformHeader(req);
-    if (!platform) {
-      res.statusCode = 400;
-      res.end(
-        JSON.stringify({
-          code: 'MISSING_PLATFORM',
-          error: 'A platform is required: pass ?platform= or the expo-platform header.',
-        })
-      );
-      return;
-    }
     if (platform !== 'android' && platform !== 'ios') {
       res.statusCode = 400;
       res.end(
-        JSON.stringify({
-          code: 'INVALID_PLATFORM',
-          error: `Unsupported platform: ${platform}. Use "android" or "ios".`,
-        })
+        JSON.stringify(
+          platform
+            ? {
+                code: 'INVALID_PLATFORM',
+                error: `Unsupported platform: ${platform}. Use "android" or "ios".`,
+              }
+            : {
+                code: 'MISSING_PLATFORM',
+                error: 'A platform is required: pass ?platform= or the expo-platform header.',
+              }
+        )
       );
       return;
     }
 
-    const server = await this.options.getFingerprintAsync(platform);
+    let server: ServerFingerprint | null;
+    try {
+      server = await this.options.getFingerprintAsync(platform);
+    } catch (error: any) {
+      // Computing the fingerprint evaluates the app config and applies config plugins, so a
+      // broken plugin throws here. Every app launch announces and failures are not cached, so
+      // letting this reach `ExpoMiddleware` would print a red error and a 500 on every reload.
+      // The client maps any code other than FINGERPRINT_UNAVAILABLE to `check-failed`.
+      res.statusCode = 503;
+      res.end(
+        JSON.stringify({
+          code: 'FINGERPRINT_FAILED',
+          error: `Could not compute the project fingerprint: ${error.message}`,
+        })
+      );
+      return;
+    }
     if (!server) {
       res.statusCode = 503;
       res.end(
