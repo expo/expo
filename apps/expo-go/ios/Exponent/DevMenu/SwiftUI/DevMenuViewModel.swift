@@ -112,8 +112,14 @@ class DevMenuViewModel: ObservableObject {
   }
 
   func togglePerformanceMonitor() {
-    manager.togglePerformanceMonitor()
-    manager.closeMenu()
+    // Close the menu first. RCTPerfMonitor attaches its overlay to the key window, which is still
+    // the menu's window until the sheet is dismissed.
+    let closed = manager.closeMenu {
+      self.manager.togglePerformanceMonitor()
+    }
+    if !closed {
+      manager.togglePerformanceMonitor()
+    }
   }
 
   func toggleElementInspector() {
