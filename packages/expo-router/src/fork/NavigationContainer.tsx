@@ -75,7 +75,6 @@ function NavigationContainerInner(
   }: Props<ParamListBase>,
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
 ) {
-
   if (linking?.config) {
     validatePathConfig(linking.config);
   }
