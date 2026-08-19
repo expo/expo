@@ -6,12 +6,12 @@
 
 ### 🎉 New features
 
-- [android] Add `ReactNativeViewFactory.createSurface`, returning a `ReactNativeSurfaceHandle` the host disposes when its container goes away.
+- [android] Add `ReactNativeViewFactory.createSurface`, returning a `ReactNativeSurfaceHandle` the host disposes when its container goes away. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
 
 ### 🐛 Bug fixes
 
-- [android] Stop React Native surfaces when their container is destroyed instead of when the Activity is, so embedding a surface in a Compose node, fragment or tab no longer leaves it running off screen while a second one is created.
-- [android] Fix `ReactDelegate.onHostResume()` throwing in host Activities that don't implement `DefaultHardwareBackBtnHandler`.
+- [android] Stop React Native surfaces when their container is destroyed instead of when the Activity is, so embedding a surface in a Compose node, fragment or tab no longer leaves it running off screen while a second one is created. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
+- [android] Fix `ReactDelegate.onHostResume()` throwing in host Activities that don't implement `DefaultHardwareBackBtnHandler`. ([#49094](https://github.com/expo/expo/pull/49094) by [@josefnorlin-svt](https://github.com/josefnorlin-svt))
 - [android] Fix `brownfield.fused.strip-packages` corrupting the generated `ExpoModulesPackageList.kt` when given a broad prefix (e.g. `expo.modules`). ([@gabrieldonadel](https://github.com/gabrieldonadel)) ([#48118](https://github.com/expo/expo/pull/48118) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix `ARG_MAX` error when using `multipleFrameworks`. ([#47999](https://github.com/expo/expo/pull/47999) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
