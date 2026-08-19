@@ -76,7 +76,9 @@ import { frame } from '@expo/ui/swift-ui/modifiers';
 
 export default function LazyHStackAlignmentExample() {
   return (
-    <Host style={{ flex: 1 }}>
+    <Host
+      matchContents={{ horizontal: true }}
+      style={{ flex: 1, alignSelf: 'center' }}>
       <ScrollView axes="horizontal">
         <LazyHStack spacing={12} alignment="top">
           <Rectangle

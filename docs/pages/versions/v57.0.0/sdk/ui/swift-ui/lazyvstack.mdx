@@ -76,7 +76,9 @@ import { frame } from '@expo/ui/swift-ui/modifiers';
 
 export default function LazyVStackAlignmentExample() {
   return (
-    <Host style={{ flex: 1 }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <ScrollView>
         <LazyVStack spacing={12} alignment="leading">
           <Rectangle
