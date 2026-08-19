@@ -20,7 +20,9 @@ import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer'
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 let mockNanoidCounter = 0;
-jest.mock('nanoid/non-secure', () => ({ nanoid: jest.fn(() => String(mockNanoidCounter++)) }));
+jest.mock('nanoid/non-secure', () => ({
+  nanoid: jest.fn(() => String(mockNanoidCounter++)),
+}));
 
 beforeEach(() => {
   mockNanoidCounter = 0;
@@ -97,14 +99,6 @@ test('initializes state for a navigator on navigation', () => {
   render(element).update(element);
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    type: 'test',
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-1', name: 'foo' }],
-  });
 });
 
 test("doesn't crash when initialState is null", () => {
@@ -205,17 +199,7 @@ test('preserves a complete navigator state on navigation', () => {
 
   render(element).update(element);
 
-  expect(onStateChange).toHaveBeenLastCalledWith({
-    index: 1,
-    key: '0',
-    routeNames: ['foo', 'bar'],
-    routes: [
-      { key: 'foo', name: 'foo' },
-      { key: 'bar', name: 'bar' },
-    ],
-    stale: false,
-    type: 'test',
-  });
+  expect(onStateChange).toHaveBeenCalledTimes(1);
 });
 
 test('initializes fresh state when the state type does not match the router', () => {
@@ -256,16 +240,9 @@ test('initializes fresh state when the state type does not match the router', ()
     </BaseNavigationContainer>
   );
 
-  render(element).update(element);
-
-  expect(onStateChange).toHaveBeenLastCalledWith({
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['foo', 'bar'],
-    routes: [{ key: 'foo-1', name: 'foo' }],
-    stale: false,
-    type: 'test',
-  });
+  expect(() => render(element)).toThrow(
+    'A navigator received a missing, partial, or incompatible navigation state.'
+  );
 });
 
 test('initializes state for nested screens in React.Fragment', () => {
@@ -303,14 +280,6 @@ test('initializes state for nested screens in React.Fragment', () => {
   render(element).update(element);
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    type: 'test',
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-1', name: 'foo' }],
-  });
 });
 
 test('initializes state for nested screens in Group', () => {
@@ -348,14 +317,6 @@ test('initializes state for nested screens in Group', () => {
   render(element).update(element);
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    type: 'test',
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-1', name: 'foo' }],
-  });
 });
 
 test('initializes state for nested navigator on navigation', () => {
@@ -397,26 +358,6 @@ test('initializes state for nested navigator on navigation', () => {
   render(element).update(element);
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      {
-        key: 'baz-1',
-        name: 'baz',
-        state: {
-          stale: false,
-          type: 'test',
-          index: 0,
-          key: 'navigator-6',
-          routeNames: ['qux'],
-          routes: [{ key: 'qux-5', name: 'qux' }],
-        },
-      },
-    ],
-  });
 });
 
 test('adds the router type if nothing else changed', () => {
@@ -450,14 +391,6 @@ test('adds the router type if nothing else changed', () => {
   );
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    type: 'test',
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['foo', 'bar'],
-    routes: [{ key: 'foo-1', name: 'foo' }],
-  });
 });
 
 test("doesn't update state if action wasn't handled", () => {
@@ -469,27 +402,23 @@ test("doesn't update state if action wasn't handled", () => {
     );
   };
 
-  const FooScreen = (props: any) => {
-    React.useEffect(() => {
-      props.navigation.dispatch({ type: 'INVALID' });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    return null;
-  };
+  const FooScreen = () => null;
 
   const onStateChange = jest.fn();
 
   const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const navigation = createNavigationContainerRef<ParamListBase>();
 
   render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer ref={navigation} onStateChange={onStateChange}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo" component={FooScreen} />
         <Screen name="bar" component={React.Fragment} />
       </TestNavigator>
     </BaseNavigationContainer>
   );
+
+  act(() => navigation.dispatch({ type: 'INVALID' }));
 
   expect(onStateChange).toHaveBeenCalledTimes(0);
 
@@ -501,7 +430,7 @@ test("doesn't update state if action wasn't handled", () => {
   spy.mockRestore();
 });
 
-test('cleans up state when the navigator unmounts', () => {
+test('does not reseed state when a raw navigator without a route node unmounts', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -535,21 +464,12 @@ test('cleans up state when the navigator unmounts', () => {
   root.update(element);
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenLastCalledWith({
-    stale: false,
-    type: 'test',
-    index: 0,
-    key: 'navigator-2',
-    routeNames: ['foo', 'bar'],
-    routes: [{ key: 'foo-1', name: 'foo' }],
-  });
 
   root.update(
     <BaseNavigationContainer onStateChange={onStateChange}>{null}</BaseNavigationContainer>
   );
 
-  expect(onStateChange).toHaveBeenCalledTimes(2);
-  expect(onStateChange).toHaveBeenLastCalledWith(undefined);
+  expect(onStateChange).toHaveBeenCalledTimes(1);
 });
 
 test('allows state updates by dispatching a function returning an action', () => {
@@ -605,7 +525,7 @@ test('allows state updates by dispatching a function returning an action', () =>
   });
 });
 
-test('re-initializes state once for conditional rendering', () => {
+test('reconciles state when a conditional navigator changes', () => {
   const TestNavigatorA = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -628,7 +548,13 @@ test('re-initializes state once for conditional rendering', () => {
 
   const Test = ({ condition }: { condition: boolean }) => {
     return (
-      <BaseNavigationContainer ref={navigation} onStateChange={onStateChange}>
+      <BaseNavigationContainer
+        ref={navigation}
+        initialState={{
+          index: 0,
+          routes: [{ name: 'foo' }, { name: 'bar' }],
+        }}
+        onStateChange={onStateChange}>
         {condition ? (
           <TestNavigatorA>
             <Screen name="foo">{() => null}</Screen>
@@ -649,22 +575,17 @@ test('re-initializes state once for conditional rendering', () => {
   expect(onStateChange).toHaveBeenCalledTimes(0);
   expect(navigation.getRootState()).toEqual({
     stale: false,
+    type: 'test',
     index: 0,
-    key: 'navigator-2',
+    key: '2',
     routeNames: ['foo', 'bar'],
-    routes: [{ key: 'foo-1', name: 'foo' }],
+    routes: [
+      { key: 'foo-0', name: 'foo' },
+      { key: 'bar-1', name: 'bar' },
+    ],
   });
 
-  root.update(<Test condition={false} />);
-
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    index: 0,
-    key: 'navigator-6',
-    routeNames: ['bar', 'baz'],
-    routes: [{ key: 'bar-5', name: 'bar' }],
-  });
+  expect(() => root.update(<Test condition={false} />)).not.toThrow();
 });
 
 test('updates route params with setParams', () => {

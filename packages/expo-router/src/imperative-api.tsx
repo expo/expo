@@ -44,7 +44,7 @@ export function ImperativeApiEmitter({
     );
   });
   useEffect(() => {
-    if (events.length) {
+    if (events.length && navigationRef.current?.isReady()) {
       runQueue();
     }
   }, [events]);

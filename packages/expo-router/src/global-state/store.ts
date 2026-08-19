@@ -2,8 +2,8 @@ import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
 import * as SplashScreen from '../views/Splash';
-import { defaultRouteInfo, getRouteInfoFromState, type UrlObject } from './getRouteInfoFromState';
-import { getCachedRouteInfo, routeInfoSubscribers, setCachedRouteInfo } from './routeInfoCache';
+import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
+import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
 import type { FocusedRouteState, ReactNavigationState } from './types';
 
 export type RouterStore = typeof store;
@@ -14,6 +14,7 @@ type StoreRef = {
   routeNode: RouteNode | null;
   state?: ReactNavigationState;
   linking?: ExpoLinkingOptions;
+  // TODO(@ubax): dead code, remove in a follow-up. Written by useStore but never read.
   config: any;
   routeInfo?: UrlObject;
 };
@@ -22,11 +23,11 @@ export const storeRef = {
   current: {} as StoreRef,
 };
 
-export function seedStoreState(state: ReactNavigationState) {
-  const routeInfo = getRouteInfoFromState(state);
+// TODO(temporary): remove once consumers read the reducer state directly.
+export function syncStoreState(state: ReactNavigationState) {
+  const routeInfo = getCachedRouteInfo(state);
   storeRef.current.state = state;
   storeRef.current.routeInfo = routeInfo;
-  setCachedRouteInfo(state, routeInfo);
 }
 
 let splashScreenAnimationFrame: number | undefined;
@@ -40,6 +41,7 @@ export function setSplashScreenAnimationFrame(value: number | undefined) {
   splashScreenAnimationFrame = value;
 }
 
+// TODO(@ubax): dead code, remove in a follow-up. The `export` is unnecessary; only self-consumed below.
 export function setHasAttemptedToHideSplash(value: boolean) {
   hasAttemptedToHideSplash = value;
 }
@@ -100,10 +102,6 @@ export const store = {
         );
       }
     }
-
-    storeRef.current.state = newState;
-
-    storeRef.current.routeInfo = getCachedRouteInfo(newState);
 
     for (const callback of routeInfoSubscribers) {
       callback();

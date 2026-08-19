@@ -20,6 +20,7 @@ type MinimalState = {
 /**
  * Helper to build a href for a screen based on the linking options.
  */
+// TODO(@ubax): dead code, remove in a follow-up. The `export` is unnecessary; only self-consumed below.
 export function useBuildHref() {
   const navigation = use(NavigationHelpersContext);
   const route = use(NavigationRouteContext);

@@ -303,7 +303,7 @@ describe('routingQueue', () => {
     warn.mockRestore();
   });
 
-  it('run() warns when two actions target the same navigator with sub-trees', () => {
+  it('run() dispatches consecutive sub-tree actions without warning', () => {
     const ref = makeRef();
     const action = {
       type: 'NAVIGATE',
@@ -325,7 +325,8 @@ describe('routingQueue', () => {
 
     routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
 
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining('same navigator'));
+    expect(ref.current?.dispatchSync).toHaveBeenCalledTimes(2);
+    expect(warn).not.toHaveBeenCalled();
     warn.mockRestore();
   });
 

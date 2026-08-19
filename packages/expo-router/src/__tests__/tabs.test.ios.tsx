@@ -105,8 +105,9 @@ it('has correct routeInfo when switching tabs as a nested navigator - using api'
   expect(layoutCalls).toHaveBeenCalledTimes(1);
   expect(layoutCalls).toHaveBeenNthCalledWith(1, ['(tabs)']);
 
-  expect(indexCalls).toHaveBeenCalledTimes(1);
-  expect(indexCalls).toHaveBeenCalledWith(['(tabs)']);
+  expect(indexCalls).toHaveBeenCalledTimes(2);
+  expect(indexCalls).toHaveBeenNthCalledWith(1, ['(tabs)']);
+  expect(indexCalls).toHaveBeenNthCalledWith(2, ['(tabs)']);
 
   expect(exploreCalls).toHaveBeenCalledTimes(1);
   expect(exploreCalls).toHaveBeenCalledWith(['(tabs)']);

@@ -28,12 +28,10 @@ const state: NavigationState = {
 
 const firstEntry: RouterRegistryEntry = {
   reduce: () => ({ state, affectedRouteKey: state.routes[state.index]?.key }),
-  routerType: 'stack',
 };
 
 const secondEntry: RouterRegistryEntry = {
   reduce: () => ({ state, affectedRouteKey: state.routes[state.index]?.key }),
-  routerType: 'stack',
 };
 
 function getLayoutState(): NavigationState {
@@ -47,14 +45,16 @@ function getLayoutState(): NavigationState {
 }
 
 function Registrant({
+  children,
   entry,
   stateKey = state.key,
 }: {
+  children?: ReactNode;
   entry: RouterRegistryEntry;
   stateKey?: string;
 }) {
   useRegisterRouter(stateKey, entry);
-  return null;
+  return children;
 }
 
 function RegistryProbe({ onRender }: { onRender: (registry: RouterRegistry) => void }) {
@@ -273,7 +273,7 @@ describe('navigation builder registration', () => {
       routes.second = () => <Text testID="second" />;
       result.rerender(<ExpoRoot context={context} location="/" />);
 
-      const updatedEntry = [...registry.values()].find((entry) => entry.contextKey === '')!;
+      const updatedEntry = registry.get(getLayoutState().key)!;
       expect(updatedEntry).not.toBe(initialEntry);
       expect(
         updatedEntry.reduce(getLayoutState(), StackActions.push('second'))?.state.routes
