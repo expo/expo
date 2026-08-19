@@ -35,6 +35,15 @@ export function createSeededRootState(
   });
 }
 
+export function completeNavigationState(
+  state: SeedState,
+  rootRouteNode: RouteNode
+): NavigationState {
+  return completeExistingState(state, getRootStackRouteNames(), (routeName) =>
+    routeName === INTERNAL_SLOT_NAME ? rootRouteNode : undefined
+  );
+}
+
 export function completeParsedState(
   targetState: SeedState | undefined
 ): NavigationState | undefined {
@@ -58,7 +67,7 @@ export function completeParsedState(
   };
 }
 
-function createSeededNavigationState(
+export function createSeededNavigationState(
   targetState: SeedState | undefined,
   routeNode: RouteNode
 ): NavigationState {
@@ -74,6 +83,67 @@ function createSeededNavigationState(
     targetInitialRouteName: routeNode.initialRouteName,
     findChildNode: (routeName) => findRouteNodeByName(routeNode, routeName),
   });
+}
+
+// TODO(@ubax): consider replacing findChildNode here and in other places
+// by passing the node directly
+function completeExistingState(
+  state: SeedState,
+  fallbackRouteNames: string[],
+  findChildNode: (routeName: string) => RouteNode | undefined
+): NavigationState {
+  let routesChanged = false;
+  const routes = state.routes.map((route) => {
+    const childNode = findChildNode(route.name);
+    const routeKey = route.key ?? `${route.name}-${nanoid()}`;
+    // `PartialState` keeps the route union partial after the key check, but this branch proves it is complete.
+    const completeRoute: NavigationState['routes'][number] =
+      route.key === undefined
+        ? { ...route, key: routeKey }
+        : (route as NavigationState['routes'][number]);
+    if (route.key === undefined) {
+      routesChanged = true;
+    }
+    if (!childNode || childNode.children.length === 0) {
+      return completeRoute;
+    }
+
+    const initialRouteName = getValidInitialRouteName(childNode);
+    const childRouteNames = [...childNode.children]
+      .sort(sortRoutesWithInitial(initialRouteName))
+      .map((child) => child.route);
+    const childState = route.state
+      ? completeExistingState(route.state, childRouteNames, (routeName) =>
+          findRouteNodeByName(childNode, routeName)
+        )
+      : createSeededNavigationState(undefined, childNode);
+
+    if (childState === route.state && routeKey === route.key) {
+      return completeRoute;
+    }
+
+    routesChanged = true;
+    return { ...completeRoute, state: childState };
+  });
+
+  if (
+    !routesChanged &&
+    state.stale === false &&
+    state.key !== undefined &&
+    state.index !== undefined &&
+    state.routeNames !== undefined
+  ) {
+    return state as NavigationState;
+  }
+
+  return {
+    ...state,
+    stale: false,
+    key: state.key ?? `navigator-${nanoid()}`,
+    index: state.index ?? Math.max(routes.length - 1, 0),
+    routeNames: state.routeNames ?? fallbackRouteNames,
+    routes,
+  };
 }
 
 type CreateSeededStateOptions = {
@@ -120,7 +190,7 @@ function createSeededState({
   const routes = targetRoutes.map((targetRoute) => {
     const childNode = findChildNode(targetRoute.name);
     const childState =
-      targetRoute.state && childNode
+      childNode && childNode.children.length > 0
         ? createSeededNavigationState(targetRoute.state, childNode)
         : undefined;
 

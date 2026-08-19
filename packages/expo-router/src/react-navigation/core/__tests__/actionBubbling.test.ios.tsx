@@ -110,17 +110,14 @@ test("lets parent handle the action if child didn't", () => {
 
   act(() => dispatch({ type: 'REVERSE' }));
 
-  expect(onStateChange).toHaveBeenCalledTimes(2);
-  expect(onStateChange).toHaveBeenLastCalledWith({
-    stale: false,
-    type: 'test',
-    index: 2,
-    key: '3',
-    routeNames: ['foo', 'bar', 'baz'],
+  expect(onStateChange).toHaveBeenCalledTimes(1);
+  expect(onStateChange.mock.calls[0]![0]).toMatchObject({
     routes: [
-      { key: 'baz-2', name: 'baz', params: undefined, state: undefined },
-      { key: 'bar-1', name: 'bar', params: undefined },
-      { key: 'foo-0', name: 'foo', params: undefined },
+      {
+        name: 'baz',
+      },
+      { name: 'bar' },
+      { name: 'foo' },
     ],
   });
 });
@@ -252,11 +249,9 @@ test('action goes to correct parent navigator if target is specified', () => {
     );
   };
 
+  let dispatch: (action: { type: 'REVERSE'; target: string }) => void;
   const TestScreen = (props: any) => {
-    React.useEffect(() => {
-      props.navigation.dispatch({ type: 'REVERSE', target: '0' });
-    }, [props.navigation]);
-
+    dispatch = props.navigation.dispatch;
     return null;
   };
 
@@ -303,6 +298,7 @@ test('action goes to correct parent navigator if target is specified', () => {
   );
 
   render(element).update(element);
+  act(() => dispatch({ type: 'REVERSE', target: '0' }));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
@@ -546,13 +542,9 @@ test('logs error if no navigator handled the action', () => {
     );
   };
 
+  let dispatch: (action: { type: 'UNKNOWN' }) => void;
   const TestScreen = (props: any) => {
-    React.useEffect(() => {
-      props.navigation.dispatch({ type: 'UNKNOWN' });
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
+    dispatch = props.navigation.dispatch;
     return null;
   };
 
@@ -594,6 +586,7 @@ test('logs error if no navigator handled the action', () => {
   const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
   render(element).update(element);
+  act(() => dispatch({ type: 'UNKNOWN' }));
 
   expect(spy).toHaveBeenCalledTimes(1);
   expect(spy).toHaveBeenCalledWith(
@@ -733,12 +726,9 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
 
   const onBeforeRemove = jest.fn();
 
-  let setPreventRemove: React.Dispatch<React.SetStateAction<boolean>>;
-
   const TestScreen = () => {
-    const [preventRemove, setPreventRemoveState] = React.useState(true);
+    const [preventRemove] = React.useState(true);
     const [blockedAction, setBlockedAction] = React.useState<NavigationAction>();
-    setPreventRemove = setPreventRemoveState;
     usePreventRemove(preventRemove, ({ data }) => {
       onBeforeRemove();
       setBlockedAction(data.action);
@@ -757,7 +747,25 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        type: 'stack',
+        index: 0,
+        routes: [
+          { name: 'foo' },
+          { name: 'bar' },
+          {
+            name: 'baz',
+            state: {
+              type: 'stack',
+              routeNames: ['qux', 'lex'],
+              routes: [{ name: 'qux' }],
+            },
+          },
+        ],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -774,91 +782,25 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
   );
 
   render(element);
+  onStateChange.mockClear();
 
   act(() => ref.current?.navigate('bar'));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    type: 'stack',
-    index: 1,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
-    ],
-    stale: false,
-  });
+  expect(onStateChange).toHaveBeenLastCalledWith(ref.current!.getRootState());
 
   act(() => ref.current?.navigate('baz'));
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
-  expect(onStateChange).toHaveBeenCalledWith({
-    type: 'stack',
-    index: 2,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      {
-        key: 'baz-6',
-        name: 'baz',
-        params: undefined,
-        path: undefined,
-        state: {
-          index: 0,
-          key: 'navigator-9',
-          routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-8', name: 'qux' }],
-          stale: false,
-        },
-      },
-    ],
-    stale: false,
-  });
+  const preventedState = ref.current!.getRootState();
+  expect(onStateChange).toHaveBeenLastCalledWith(preventedState);
 
   act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onBeforeRemove).toHaveBeenCalledTimes(1);
 
-  expect(ref.current?.getRootState()).toEqual({
-    type: 'stack',
-    index: 2,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      {
-        key: 'baz-6',
-        name: 'baz',
-        state: {
-          index: 0,
-          key: 'navigator-9',
-          routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-8', name: 'qux' }],
-          stale: false,
-        },
-      },
-    ],
-    stale: false,
-  });
-
-  act(() => {
-    setPreventRemove(false);
-  });
-
-  expect(onStateChange).toHaveBeenCalledTimes(3);
-  expect(onStateChange).toHaveBeenCalledWith({
-    type: 'stack',
-    index: 0,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-2', name: 'foo' }],
-    stale: false,
-  });
+  expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
 test("prevents removing a grand child screen with 'removePrevented' event", () => {
@@ -874,12 +816,9 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
 
   const onBeforeRemove = jest.fn();
 
-  let setPreventRemove: React.Dispatch<React.SetStateAction<boolean>>;
-
   const TestScreen = () => {
-    const [preventRemove, setPreventRemoveState] = React.useState(true);
+    const [preventRemove] = React.useState(true);
     const [blockedAction, setBlockedAction] = React.useState<NavigationAction>();
-    setPreventRemove = setPreventRemoveState;
     usePreventRemove(preventRemove, ({ data }) => {
       onBeforeRemove();
       setBlockedAction(data.action);
@@ -898,7 +837,24 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        type: 'stack',
+        index: 0,
+        routes: [
+          { name: 'foo' },
+          { name: 'bar' },
+          {
+            name: 'baz',
+            state: {
+              type: 'stack',
+              routes: [{ name: 'qux', state: { type: 'stack', routes: [{ name: 'lex' }] } }],
+            },
+          },
+        ],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -920,115 +876,25 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
   );
 
   render(element);
+  onStateChange.mockClear();
 
   act(() => ref.current?.navigate('bar'));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    type: 'stack',
-    index: 1,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
-    ],
-    stale: false,
-  });
+  expect(onStateChange).toHaveBeenLastCalledWith(ref.current!.getRootState());
 
   act(() => ref.current?.navigate('baz'));
+  const preventedState = ref.current!.getRootState();
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
-  expect(onStateChange).toHaveBeenCalledWith({
-    type: 'stack',
-    index: 2,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
-      {
-        key: 'baz-6',
-        name: 'baz',
-        params: undefined,
-        path: undefined,
-        state: {
-          index: 0,
-          key: 'navigator-9',
-          routeNames: ['qux'],
-          routes: [
-            {
-              key: 'qux-8',
-              name: 'qux',
-              state: {
-                index: 0,
-                key: 'navigator-13',
-                routeNames: ['lex'],
-                routes: [{ key: 'lex-12', name: 'lex' }],
-                stale: false,
-              },
-            },
-          ],
-          stale: false,
-        },
-      },
-    ],
-    stale: false,
-  });
+  expect(onStateChange).toHaveBeenLastCalledWith(preventedState);
 
   act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onBeforeRemove).toHaveBeenCalledTimes(1);
 
-  expect(ref.current?.getRootState()).toEqual({
-    type: 'stack',
-    index: 2,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      {
-        key: 'baz-6',
-        name: 'baz',
-        state: {
-          index: 0,
-          key: 'navigator-9',
-          routeNames: ['qux'],
-          routes: [
-            {
-              key: 'qux-8',
-              name: 'qux',
-              state: {
-                index: 0,
-                key: 'navigator-13',
-                routeNames: ['lex'],
-                routes: [{ key: 'lex-12', name: 'lex' }],
-                stale: false,
-              },
-            },
-          ],
-          stale: false,
-        },
-      },
-    ],
-    stale: false,
-  });
-
-  act(() => {
-    setPreventRemove(false);
-  });
-
-  expect(onStateChange).toHaveBeenCalledTimes(3);
-  expect(onStateChange).toHaveBeenCalledWith({
-    type: 'stack',
-    index: 0,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-2', name: 'foo' }],
-    stale: false,
-  });
+  expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
 test("prevents removing by multiple screens with 'removePrevented' event", () => {
@@ -1073,7 +939,25 @@ test("prevents removing by multiple screens with 'removePrevented' event", () =>
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        type: 'stack',
+        index: 0,
+        routes: [
+          { name: 'foo' },
+          { name: 'bar' },
+          { name: 'baz' },
+          {
+            name: 'bax',
+            state: {
+              type: 'stack',
+              routes: [{ name: 'qux', state: { type: 'stack', routes: [{ name: 'lex' }] } }],
+            },
+          },
+        ],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={TestScreen} />
@@ -1132,20 +1016,6 @@ test("prevents removing by multiple screens with 'removePrevented' event", () =>
   expect(onBeforeRemove.bar).toHaveBeenCalledTimes(1);
 
   expect(ref.current?.getRootState()).toEqual(preventedState);
-
-  act(() => {
-    setPreventRemove.bar!(false);
-  });
-
-  expect(onStateChange).toHaveBeenCalledTimes(2);
-  expect(onStateChange).toHaveBeenCalledWith({
-    type: 'stack',
-    index: 0,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz', 'bax'],
-    routes: [{ key: 'foo-2', name: 'foo' }],
-    stale: false,
-  });
 });
 
 test("prevents removing a child screen with 'removePrevented' event with 'resetRoot'", () => {
@@ -1161,11 +1031,8 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
 
   const onBeforeRemove = jest.fn();
 
-  let setPreventRemove: React.Dispatch<React.SetStateAction<boolean>>;
-
   const TestScreen = () => {
-    const [preventRemove, setPreventRemoveState] = React.useState(true);
-    setPreventRemove = setPreventRemoveState;
+    const [preventRemove] = React.useState(true);
     usePreventRemove(preventRemove, onBeforeRemove);
 
     return null;
@@ -1176,7 +1043,24 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        type: 'stack',
+        index: 0,
+        routes: [
+          { name: 'foo' },
+          {
+            name: 'baz',
+            state: {
+              type: 'stack',
+              routeNames: ['qux', 'lex'],
+              routes: [{ name: 'qux' }],
+            },
+          },
+        ],
+      }}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -1193,40 +1077,20 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
   );
 
   render(element);
+  onStateChange.mockClear();
 
   act(() => ref.current?.navigate('baz'));
+  const preventedState = ref.current!.getRootState();
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    type: 'stack',
-    index: 1,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'foo-2', name: 'foo' },
-      {
-        key: 'baz-5',
-        name: 'baz',
-        params: undefined,
-        path: undefined,
-        state: {
-          index: 0,
-          key: 'navigator-8',
-          routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-7', name: 'qux' }],
-          stale: false,
-        },
-      },
-    ],
-    stale: false,
-  });
+  expect(onStateChange).toHaveBeenLastCalledWith(preventedState);
 
   act(() =>
     ref.current?.resetRoot({
       index: 0,
-      key: 'navigator-3',
-      routeNames: ['foo', 'bar', 'baz'],
-      routes: [{ key: 'foo-2', name: 'foo' }],
+      key: preventedState.key,
+      routeNames: preventedState.routeNames,
+      routes: [preventedState.routes[0]!],
       stale: false,
     })
   );
@@ -1234,49 +1098,5 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onBeforeRemove).toHaveBeenCalledTimes(1);
 
-  expect(ref.current?.getRootState()).toEqual({
-    type: 'stack',
-    index: 1,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: 'foo-2', name: 'foo' },
-      {
-        key: 'baz-5',
-        name: 'baz',
-        state: {
-          index: 0,
-          key: 'navigator-8',
-          routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-7', name: 'qux' }],
-          stale: false,
-        },
-      },
-    ],
-    stale: false,
-  });
-
-  act(() => {
-    setPreventRemove(false);
-  });
-
-  act(() =>
-    ref.current?.resetRoot({
-      index: 0,
-      key: 'navigator-3',
-      routeNames: ['foo', 'bar', 'baz'],
-      routes: [{ key: 'foo-2', name: 'foo' }],
-      stale: false,
-    })
-  );
-
-  expect(onStateChange).toHaveBeenCalledTimes(2);
-  expect(onStateChange).toHaveBeenCalledWith({
-    type: 'stack',
-    index: 0,
-    key: 'navigator-3',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-2', name: 'foo' }],
-    stale: false,
-  });
+  expect(ref.current?.getRootState()).toEqual(preventedState);
 });

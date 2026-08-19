@@ -5,12 +5,10 @@ import type { NavigationAction, NavigationState, ParamListBase } from '../router
 import type { NavigationHelpers } from './types';
 
 export type ListenerMap = {
-  action: ChildActionListener;
   focus: FocusedNavigationListener;
 };
 
 export type KeyedListenerMap = {
-  getState: GetStateListener;
   preventRemove: ChildPreventRemoveListener;
   beforeRemove: ChildBeforeRemoveListener;
 };
@@ -23,11 +21,6 @@ export type AddKeyedListener = <T extends keyof KeyedListenerMap>(
   listener: KeyedListenerMap[T]
 ) => void;
 
-export type ChildActionListener = (
-  action: NavigationAction,
-  visitedNavigators?: Set<string>
-) => boolean;
-
 export type FocusedNavigationCallback<T> = (navigation: NavigationHelpers<ParamListBase>) => T;
 
 export type FocusedNavigationListener = <T>(callback: FocusedNavigationCallback<T>) => {
@@ -35,32 +28,29 @@ export type FocusedNavigationListener = <T>(callback: FocusedNavigationCallback<
   result: T;
 };
 
-export type GetStateListener = () => NavigationState;
-
 export type ChildPreventRemoveListener = (action: NavigationAction) => boolean;
 
 export type ChildBeforeRemoveListener = (action: NavigationAction) => void;
+
+export type HandleActionResult = {
+  handled: boolean;
+  originStateKey?: string;
+};
 
 /**
  * Context which holds the required helpers needed to build nested navigators.
  */
 export const NavigationBuilderContext = React.createContext<{
-  onAction?: (action: NavigationAction, visitedNavigators?: Set<string>) => boolean;
+  handleAction: (action: NavigationAction, originKey?: string) => HandleActionResult;
+  getStateForKey: (key: string) => NavigationState | undefined;
   addListener?: AddListener;
   addKeyedListener?: AddKeyedListener;
-  onRouteFocus?: (key: string) => void;
   onDispatchAction: (action: NavigationAction, noop: boolean) => void;
   onOptionsChange: (options: object) => void;
-  scheduleUpdate: (callback: () => void) => void;
-  flushUpdates: () => void;
   stackRef?: React.MutableRefObject<string | undefined>;
 }>({
+  handleAction: () => ({ handled: false }),
+  getStateForKey: () => undefined,
   onDispatchAction: () => undefined,
   onOptionsChange: () => undefined,
-  scheduleUpdate: () => {
-    throw new Error("Couldn't find a context for scheduling updates.");
-  },
-  flushUpdates: () => {
-    throw new Error("Couldn't find a context for flushing updates.");
-  },
 });

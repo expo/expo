@@ -74,14 +74,12 @@ const series = (cb: () => Promise<void>) => {
 
 export function useBrowserHistorySync({
   ref,
-  enabled,
   config,
   getStateFromPath,
   getPathFromState,
   onUnhandledLinking,
 }: {
   ref: RefObject<NavigationContainerRef<ParamListBase> | null>;
-  enabled: boolean;
   config: LinkingOptions<ParamListBase>['config'];
   getStateFromPath: GetStateFromPath;
   getPathFromState: GetPathFromState;
@@ -109,7 +107,7 @@ export function useBrowserHistorySync({
     const unsubscribe = history.listen(() => {
       const navigation = ref.current;
 
-      if (!navigation || !enabled) {
+      if (!navigation) {
         return;
       }
 
@@ -195,13 +193,9 @@ export function useBrowserHistorySync({
       unsubscribe();
       pendingHistoryOperationsRef.current = [];
     };
-  }, [enabled, history, onUnhandledLinking, ref]);
+  }, [history, onUnhandledLinking, ref]);
 
   useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-
     const getPathForRoute = (
       route: ReturnType<typeof findFocusedRoute>,
       state: NavigationState
@@ -242,7 +236,7 @@ export function useBrowserHistorySync({
     const onStateChange = async () => {
       const navigation = ref.current;
 
-      if (!navigation || !enabled) {
+      if (!navigation) {
         return;
       }
 
@@ -313,5 +307,5 @@ export function useBrowserHistorySync({
 
     // Serialize writes because `history.go` is asynchronous and can be interrupted by another write.
     return ref.current?.addListener('state', series(onStateChange));
-  }, [enabled, history, ref]);
+  }, [history, ref]);
 }

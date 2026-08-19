@@ -1,11 +1,24 @@
 import { act, render, screen } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { createNavigationContainerRef, NavigationRouteContext, useNavigation } from '../../core';
+import {
+  createNavigationContainerRef,
+  NavigationRouteContext,
+  type NavigationState,
+  useNavigation,
+} from '../../core';
 import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
 import type { StackNavigationProp } from '../../stack';
 import { createStackNavigator } from '../__stubs__/createStackNavigator';
 import { useRoutePath } from '../useRoutePath';
+
+const initialState = {
+  stale: false,
+  key: 'root',
+  index: 0,
+  routeNames: ['a', 'b'],
+  routes: [{ key: 'a', name: 'a' }],
+} satisfies NavigationState;
 
 const config = {
   prefixes: ['https://example.com'],
@@ -50,7 +63,7 @@ const Test = () => {
 test('throws when not rendered inside a screen', () => {
   expect(() => {
     render(
-      <NavigationContainer linking={config}>
+      <NavigationContainer initialState={initialState} linking={config}>
         <Test />
       </NavigationContainer>
     );
@@ -70,7 +83,7 @@ test('gets path for route in root navigator screen', () => {
   const navigation = createNavigationContainerRef<RootStackParamList>();
 
   render(
-    <NavigationContainer ref={navigation} linking={config}>
+    <NavigationContainer ref={navigation} initialState={initialState} linking={config}>
       <Stack.Navigator>
         <Stack.Screen name="a" component={Test} />
         <Stack.Screen name="b" component={Test} />

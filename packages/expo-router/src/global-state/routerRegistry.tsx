@@ -10,6 +10,7 @@ import {
   type RefObject,
 } from 'react';
 
+import type { RouteNode } from '../Route';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type {
   NavigationAction,
@@ -22,8 +23,19 @@ export type RouterRegistryEntry = {
     state: NavigationState,
     action: NavigationAction
   ) => RouterActionResult<NavigationState> | null;
-  routerType: string | undefined;
-  contextKey?: string;
+  shouldActionChangeFocus?: (action: NavigationAction) => boolean;
+  getStateForRouteFocus?: (state: NavigationState, routeKey: string) => NavigationState;
+  shouldPreventRemove?: (
+    prev: NavigationState,
+    next: NavigationState,
+    action: NavigationAction
+  ) => boolean;
+  emitBeforeRemove?: (
+    prev: NavigationState,
+    next: NavigationState,
+    action: NavigationAction
+  ) => void;
+  routeNode?: RouteNode;
 };
 
 // Entries appear after the first commit and state keys can change when navigation state is reset.

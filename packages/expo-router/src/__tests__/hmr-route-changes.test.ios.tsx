@@ -79,6 +79,26 @@ it('does not crash when a route file is added and the app re-renders', () => {
   expect(screen.getByTestId('second')).toBeVisible();
 });
 
+it('seeds state when a route gains a nested layout', () => {
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/second' });
+  expect(screen.getByTestId('second')).toBeVisible();
+
+  delete routes.second;
+  routes['second/_layout'] = () => <Stack />;
+  routes['second/index'] = () => <Text testID="second-index">Second index</Text>;
+
+  expect(() =>
+    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
+  ).not.toThrow();
+  expect(screen.getByTestId('second-index')).toBeVisible();
+});
+
 it('does not crash when the currently focused route file is removed', () => {
   const routes: Record<string, () => ReactElement | null> = {
     _layout: () => <Stack />,
