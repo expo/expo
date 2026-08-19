@@ -154,6 +154,16 @@ Seeds from Kudo [confirmed — Slack, 2026-08-18]: Cloudflare Worker compatibili
   - Remote transport: `@expo/mcp-tunnel` already provides WebSocket MCP transport for exactly this shape [observed — expo-mcp repo].
   - Delivery without a Mac: EAS Build → TestFlight/internal distribution → EAS Update for OTA iteration.
   - Everything upstream of this (F1 headless creation, A-tools for verification, C guardrails, JSONL events) is a prerequisite; F3 is the composition of them, not a separate system.
+- **F4. EAS auth for headless agents.** Decision [confirmed — Kudo, 2026-08-18]: use EAS as the delivery rails for F3. Auth is the gap. What exists today [observed — `packages/@expo/cli/src/api/user/`]:
+  - password + OTP login (`actions.ts`, `otp.ts`);
+  - browser OAuth: PKCE authorization-code flow with a **localhost redirect** — `expoSsoLauncher.ts` starts a local HTTP server, opens the browser, exchanges the code at `auth/token` (client_id `expo-cli`);
+  - `EXPO_TOKEN` env for CI (`UserSettings.ts`).
+
+  Fit for a cloud agent, where the approving browser is on the user's phone and the CLI is on a remote machine:
+  - *Localhost-redirect PKCE does not work remotely* — the redirect lands on the phone, not on the agent machine. It stays the right flow for laptop-local interactive use only.
+  - *`EXPO_TOKEN` works today* and is the pragmatic bootstrap: CI mode (D3) and early F3 use it. Downsides: long-lived, broad scope, manual provisioning — wrong end-state for a consumer chat flow.
+  - *Recommended end state [inferred]: OAuth device authorization grant* (device-code flow). The agent posts a URL + code into the chat; the user taps it on the phone, approves on expo.dev; the agent polls `auth/token` for the session. Purpose-built for input-constrained/remote clients, and incremental to build since the `auth/token` grant exchange already exists — the www side adds a `device_code` grant and an approval page.
+  - Harden either path with *scoped, expiring agent sessions*: tokens carry scopes (read, build, update, submit), show up in the dashboard as revocable "agent sessions", and default to short expiry with refresh while the chat session is active.
 
 ## Open questions
 
@@ -163,4 +173,5 @@ Seeds from Kudo [confirmed — Slack, 2026-08-18]: Cloudflare Worker compatibili
 4. Skill-from-module contract: `package.json` field vs directory convention; and whether `expo/skills` content gets bundled or fetched.
 5. Relationship to `expo-mcp` repo: vendor the tools in-process, or depend on `expo-mcp` as published?
 6. Whether `expo agent` (subcommand alias in `@expo/cli`) ships at all, and when.
-7. F3 hosting: where does the cloud agent run — EAS-provided machines, or bring-your-own (Tuft-style) — and how does it authenticate to the user's EAS account?
+7. F3 hosting: where does the cloud agent run — EAS-provided machines, or bring-your-own (Tuft-style)? (EAS auth itself: resolved direction in F4 — `EXPO_TOKEN` now, device-code grant as end state.)
+8. Does the device-code grant + scoped agent sessions land in www/expo.dev auth, and who owns that work?
