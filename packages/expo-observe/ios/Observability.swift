@@ -23,10 +23,6 @@ internal struct ObservabilityManager {
   private static var metricsRetryGate: DispatchUtils.RetryGateState = .initial
   private static var logsRetryGate: DispatchUtils.RetryGateState = .initial
 
-  /// How many rows one dispatch request carries at most. Dispatch keeps fetching and sending
-  /// chunks of this size until the table is drained or a batch fails.
-  private static let dispatchChunkSize = 200
-
   internal static func dispatch() async {
     // Per-signal gates are checked inside `dispatchMetrics` / `dispatchLogs` rather than
     // here, so a backoff on one endpoint doesn't suppress the other's traffic.
@@ -74,7 +70,7 @@ internal struct ObservabilityManager {
 
     repairMetricCursorIfStale()
 
-    var cursor = ObserveUserDefaults.lastDispatchedMetricId
+    let cursor = ObserveUserDefaults.lastDispatchedMetricId
     if !shouldDispatch {
       do {
         if let highestId = try AppMetrics.getMaxMetricId() {
@@ -86,94 +82,53 @@ internal struct ObservabilityManager {
       return
     }
 
-    dispatchLoop: while !Task.isCancelled {
-      let fetchedMetrics: [MetricRow]
-      do {
-        fetchedMetrics = try AppMetrics.getMetrics(afterId: cursor, limit: dispatchChunkSize)
-      } catch {
-        observeLogger.warn("[EAS Observe] Failed to read pending metrics: \(error.localizedDescription)")
-        return
-      }
-      guard !fetchedMetrics.isEmpty else {
-        observeLogger.debug("[EAS Observe] No new metrics to dispatch")
-        return
-      }
-
-      var metrics = fetchedMetrics
-      while !Task.isCancelled {
-        guard let lastRow = metrics.last else {
-          return
+    await DispatchLoop.drain(
+      startCursor: cursor,
+      fetchBatch: { cursor, limit in
+        let metrics = try AppMetrics.getMetrics(afterId: cursor, limit: limit)
+        if metrics.isEmpty {
+          observeLogger.debug("[EAS Observe] No new metrics to dispatch")
         }
-        // A missing id must never rewind the cursor, so fall back to the current one.
-        let highestId = lastRow.id ?? cursor
-
-        let events: [Event]
-        do {
-          events = try buildEvents(forMetrics: metrics)
-        } catch {
-          observeLogger.warn("[EAS Observe] Failed to assemble metric events: \(error.localizedDescription)")
-          return
-        }
+        return metrics
+      },
+      rowId: { $0.id },
+      send: { metrics in
+        let events = try buildEvents(forMetrics: metrics)
         guard !events.isEmpty else {
-          // Stop when the batch cannot advance the cursor — continuing would refetch and
-          // re-send the same rows forever.
-          guard highestId > cursor else {
-            return
-          }
-          cursor = highestId
-          ObserveUserDefaults.lastDispatchedMetricId = cursor
-          continue dispatchLoop
+          return nil
         }
-
         let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
-        let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+        return await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+      },
+      onResult: { result, batchCount, highestId in
         applyRetryOutcome(result, to: &metricsRetryGate)
-
         switch result {
         case .success:
           ObserveUserDefaults.lastDispatchDate = Date.now
-          guard highestId > cursor else {
-            return
-          }
-          cursor = highestId
-          ObserveUserDefaults.lastDispatchedMetricId = cursor
-          continue dispatchLoop
         case .partialSuccess(let partial):
           ObserveUserDefaults.lastDispatchDate = Date.now
           observeLogger.warn(
-            "[EAS Observe] Partial success on batch of \(metrics.count) metric row(s) past "
+            "[EAS Observe] Partial success on batch of \(batchCount) metric row(s) past "
               + "id \(highestId): server rejected \(partial.rejectedCount) "
               + "(\(partial.errorMessage ?? "no error message"))"
           )
-          guard highestId > cursor else {
-            return
-          }
-          cursor = highestId
-          ObserveUserDefaults.lastDispatchedMetricId = cursor
-          continue dispatchLoop
         case .retryableFailure:
-          return
+          break
         case .nonRetryableFailure(let reason):
           observeLogger.warn(
-            "[EAS Observe] Dropping batch of \(metrics.count) metric row(s) past id "
+            "[EAS Observe] Dropping batch of \(batchCount) metric row(s) past id "
               + "\(highestId): \(reason)"
           )
-          ObserveUserDefaults.lastDispatchedMetricId = highestId
-          return
+        case .payloadTooLarge where batchCount == 1:
+          observeLogger.warn(
+            "[EAS Observe] Dropping metric row id \(highestId) because it exceeds the server payload limit"
+          )
         case .payloadTooLarge:
-          guard metrics.count > 1 else {
-            observeLogger.warn(
-              "[EAS Observe] Dropping metric row id \(highestId) because it exceeds the server payload limit"
-            )
-            ObserveUserDefaults.lastDispatchedMetricId = highestId
-            return
-          }
-          // Unlike Android's re-fetch, slicing can re-send rows deleted during this loop, and event
-          // payloads are rebuilt from the session snapshot available on each attempt.
-          metrics = Array(metrics.prefix(max(1, metrics.count / 2)))
+          break
         }
-      }
-    }
+      },
+      persistCursor: { ObserveUserDefaults.lastDispatchedMetricId = $0 }
+    )
   }
 
   private static func dispatchLogs(shouldDispatch: Bool) async {
@@ -186,7 +141,7 @@ internal struct ObservabilityManager {
 
     repairLogCursorIfStale()
 
-    var cursor = ObserveUserDefaults.lastDispatchedLogId
+    let cursor = ObserveUserDefaults.lastDispatchedLogId
     if !shouldDispatch {
       do {
         if let highestId = try AppMetrics.getMaxLogId() {
@@ -198,34 +153,18 @@ internal struct ObservabilityManager {
       return
     }
 
-    dispatchLoop: while !Task.isCancelled {
-      let fetchedLogs: [LogRow]
-      do {
-        fetchedLogs = try AppMetrics.getLogs(afterId: cursor, limit: dispatchChunkSize)
-      } catch {
-        observeLogger.warn("[EAS Observe] Failed to read pending logs: \(error.localizedDescription)")
-        return
-      }
-      guard !fetchedLogs.isEmpty else {
-        observeLogger.debug("[EAS Observe] No new logs to dispatch")
-        return
-      }
-
-      var logs = fetchedLogs
-      while !Task.isCancelled {
-        guard let lastRow = logs.last else {
-          return
+    await DispatchLoop.drain(
+      startCursor: cursor,
+      fetchBatch: { cursor, limit in
+        let logs = try AppMetrics.getLogs(afterId: cursor, limit: limit)
+        if logs.isEmpty {
+          observeLogger.debug("[EAS Observe] No new logs to dispatch")
         }
-        // A missing id must never rewind the cursor, so fall back to the current one.
-        let highestId = lastRow.id ?? cursor
-
-        let events: [Event]
-        do {
-          events = try buildEvents(forLogs: logs)
-        } catch {
-          observeLogger.warn("[EAS Observe] Failed to assemble log events: \(error.localizedDescription)")
-          return
-        }
+        return logs
+      },
+      rowId: { $0.id },
+      send: { logs in
+        let events = try buildEvents(forLogs: logs)
         let resourceLogs = events.compactMap { event -> OTResourceLogs? in
           guard !event.logs.isEmpty else {
             return nil
@@ -233,66 +172,38 @@ internal struct ObservabilityManager {
           return event.toOTResourceLogs(easClientId)
         }
         guard !resourceLogs.isEmpty else {
-          // Stop when the batch cannot advance the cursor — continuing would refetch and
-          // re-send the same rows forever.
-          guard highestId > cursor else {
-            return
-          }
-          cursor = highestId
-          ObserveUserDefaults.lastDispatchedLogId = cursor
-          continue dispatchLoop
+          return nil
         }
-
         let body = OTLogsRequestBody(resourceLogs: resourceLogs)
-        let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+        return await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+      },
+      onResult: { result, batchCount, highestId in
         applyRetryOutcome(result, to: &logsRetryGate)
-
         switch result {
-        case .success:
+        case .success, .retryableFailure:
           ObserveUserDefaults.lastDispatchDate = Date.now
-          guard highestId > cursor else {
-            return
-          }
-          cursor = highestId
-          ObserveUserDefaults.lastDispatchedLogId = cursor
-          continue dispatchLoop
         case .partialSuccess(let partial):
           ObserveUserDefaults.lastDispatchDate = Date.now
           observeLogger.warn(
-            "[EAS Observe] Partial success on batch of \(logs.count) log row(s) past "
+            "[EAS Observe] Partial success on batch of \(batchCount) log row(s) past "
               + "id \(highestId): server rejected \(partial.rejectedCount) "
               + "(\(partial.errorMessage ?? "no error message"))"
           )
-          guard highestId > cursor else {
-            return
-          }
-          cursor = highestId
-          ObserveUserDefaults.lastDispatchedLogId = cursor
-          continue dispatchLoop
-        case .retryableFailure:
-          ObserveUserDefaults.lastDispatchDate = Date.now
-          return
         case .nonRetryableFailure(let reason):
           observeLogger.warn(
-            "[EAS Observe] Dropping batch of \(logs.count) log row(s) past id "
+            "[EAS Observe] Dropping batch of \(batchCount) log row(s) past id "
               + "\(highestId): \(reason)"
           )
-          ObserveUserDefaults.lastDispatchedLogId = highestId
-          return
+        case .payloadTooLarge where batchCount == 1:
+          observeLogger.warn(
+            "[EAS Observe] Dropping log row id \(highestId) because it exceeds the server payload limit"
+          )
         case .payloadTooLarge:
-          guard logs.count > 1 else {
-            observeLogger.warn(
-              "[EAS Observe] Dropping log row id \(highestId) because it exceeds the server payload limit"
-            )
-            ObserveUserDefaults.lastDispatchedLogId = highestId
-            return
-          }
-          // Unlike Android's re-fetch, slicing can re-send rows deleted during this loop, and event
-          // payloads are rebuilt from the session snapshot available on each attempt.
-          logs = Array(logs.prefix(max(1, logs.count / 2)))
+          break
         }
-      }
-    }
+      },
+      persistCursor: { ObserveUserDefaults.lastDispatchedLogId = $0 }
+    )
   }
 
   /// Groups `metrics` by `sessionId`, hydrates the matching session rows, and emits one `Event` per
