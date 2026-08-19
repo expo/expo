@@ -19,7 +19,6 @@ describe('exports all platforms with static export', () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'url-polyfill',
-        E2E_ROUTER_ASYNC: 'development',
         EXPO_ATLAS: 'true',
       },
     });

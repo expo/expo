@@ -46,7 +46,7 @@
           "type": "boolean"
         },
         "asyncRoutes": {
-          "description": "Should Async Routes be enabled. `production` is currently web-only and will be disabled on native.",
+          "description": "Should Async Routes be enabled. Web defaults to true, other platforms default to false.",
           "oneOf": [
             {
               "$ref": "#/definitions/AsyncRouteOption"
