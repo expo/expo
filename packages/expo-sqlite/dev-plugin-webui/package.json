@@ -29,7 +29,7 @@
     "react-dom": "19.2.3",
     "react-native": "0.86.0",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.26.0",
+    "react-native-screens": "4.27.0",
     "react-native-web": "~0.21.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.3.1",

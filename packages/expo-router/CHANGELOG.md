@@ -37,6 +37,7 @@
 - Re-export drawer content components and types (`DrawerContentScrollView`, `DrawerItem`, `DrawerItemList`, `DrawerContentComponentProps`, `DrawerNavigationProp`, and more) from `expo-router/drawer` ([#46635](https://github.com/expo/expo/pull/46635) by [@Ubax](https://github.com/Ubax))
 - Add `pageHeaders` config plugin option for declaring per-path response headers ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 - Upgrade react-native-screens to 4.26.0 ([#47770](https://github.com/expo/expo/pull/47770) by [@Ubax](https://github.com/Ubax))
+- Upgrade react-native-screens to 4.27.0 ([#49122](https://github.com/expo/expo/pull/49122) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Improve standard-navigation types for `createProps`. ([#47825](https://github.com/expo/expo/pull/47825) by [@Ubax](https://github.com/Ubax))
 - Add a `processScreens` option to the `standard-navigation` integration. ([#48290](https://github.com/expo/expo/pull/48290) by [@Ubax](https://github.com/Ubax))
 - Hide the splash screen when the built-in `+not-found` screen renders ([#48721](https://github.com/expo/expo/pull/48721) by [@Ubax](https://github.com/Ubax))
