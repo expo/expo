@@ -9,7 +9,7 @@
 
 ## Summary
 
-Ship a terminal agent for Expo development. The agent plans and runs Expo workflows: start, install, prebuild, build, debug, fix. It ships as a new package in `expo/expo` with its own bin (for example `npx exagent`). It reuses Expo CLI internals, `expo-mcp` tools, and official Expo skills. It ships only behind heavy tests and an eval suite.
+Make Expo the best framework to develop *through an agent*. Decision [confirmed — Kudo, 2026-08-18]: **Shape 1 — Expo ships the tool layer, not the model.** The product is deterministic, agent-facing tools (extending `expo-mcp`) plus official skills; the intelligence comes from whatever agent the user already runs (Claude Code, Cursor, the Claude mobile app). No model, no API key, and no billing anywhere in the product. Models appear only in CI, to run the eval suite. A standalone agent bin (`npx exagent`) remains a possible later wrapper, not v1. Shipping is gated on heavy tests and evals.
 
 ## Motivation
 
@@ -45,23 +45,29 @@ Recommendation [inferred]: use `exagent` as the bin and package name. It is shor
 New workspace package `packages/exagent/` (final name per §Naming):
 
 ```
-packages/exagent/
-├── bin/cli.ts          # entry: `npx exagent [prompt] [flags]`
+packages/exagent/       # thin, model-free launcher (Shape 1)
+├── bin/cli.ts          # `npx exagent setup|mcp|context|new` — no agent loop
 ├── src/
-│   ├── agent/          # engine setup, system prompt, session loop
-│   ├── tools/          # Expo-specific tools (see below)
-│   ├── skills/         # skill discovery from node_modules + bundled skills
-│   ├── project/        # project-state model (CNG? dev client? native dirs?)
-│   └── ui/             # terminal UI (interactive) + JSON output (headless)
+│   ├── setup/          # install Expo skills + register MCP server into Claude Code/Cursor/Codex
+│   ├── context/        # project-state probe: machine-readable project brief
+│   └── new/            # F1 headless project creation
 ├── e2e/
-└── evals/              # eval scenarios, fixtures, graders
+└── evals/              # eval scenarios, fixtures, graders (tiers 0–2)
 ```
+
+The intelligence-adjacent surface lives in `expo-mcp` (tools) and `expo/skills` (knowledge); this package wires a user's existing agents to them. [inferred — layout sketch under Shape 1]
 
 `@expo/cli` stays lean [observed — `packages/@expo/cli/CLAUDE.md` states the public interface is intentional and lean]. If an `expo agent` alias is wanted later, it follows the existing lazy-resolution pattern: `src/start/server/MCP.ts` resolves `expo-mcp` from the project with `resolveFrom.silent` and errors with an install hint when missing [observed].
 
-### Engine
+### Product shape: tool provider, no model
 
-Use the Claude Agent SDK for the agent loop, permissions, MCP client, and skills loading [inferred — recommendation, not yet validated in this repo]. A model-agnostic engine is out of scope for v1. Model auth (BYO key vs. expo.dev-backed gateway) is an open question.
+Decision [confirmed — Kudo, 2026-08-18]: Shape 1. Consequences:
+
+- New capabilities land as `expo-mcp` tools and Expo skills, not as an agent loop.
+- Agent-friendly affordances in `@expo/cli` itself (non-interactive parity F1, JSONL events, deterministic decision commands) serve every driving agent.
+- The reserved bins (`exagent` / `ai-expo`) can still ship as a thin, model-free launcher: start/connect the MCP server, install skills into the user's agents, print project context. [inferred]
+- F3 (Claude mobile app) needs no Expo-side model either: the Claude app brings the model; Expo provides tools over `@expo/mcp-tunnel`.
+- A standalone embedded-loop agent (the former Shape 2) is deferred; if built later, it wraps the user's existing Claude Code auth rather than handling keys. [inferred]
 
 ### Tool surface
 
@@ -77,11 +83,12 @@ Shipping is gated on all three layers.
 
 1. **Unit tests (jest).** Same setup as `@expo/cli` (`pnpm test`) [observed — `packages/@expo/cli/package.json`]. Everything deterministic is unit-tested: project-state model, impact classifier, tool input/output schemas, skill discovery.
 2. **E2E CLI tests.** Same pattern as `@expo/cli` (`test:e2e`, `e2e/jest.config.js`) [observed]. Run the bin against fixture projects with the model mocked: scripted tool-call sequences verify wiring, permissions, and JSON output without model cost or nondeterminism.
-3. **Evals (live model).** Scenario = fixture project + task prompt + programmatic grader.
-   - Example scenarios: "make this broken project start", "add expo-camera and get it running on iOS sim", "is this project Expo Go compatible?", "upgrade this SDK 52 fixture".
-   - Graders check outcomes, not transcripts: dev server responds, app boots (via `automation_take_screenshot`), `expo-doctor` passes, correct files changed.
-   - Nondeterminism: run each scenario N times; gate on pass rate per scenario and aggregate; store transcripts as artifacts for regression triage.
-   - CI: deterministic layers on every PR; eval suite on a schedule and before releases. [inferred — proposed policy]
+3. **Evals (model-driven).** Scenario = fixture project + task prompt + a driving agent + programmatic grader. Constraint [confirmed — Kudo, 2026-08-18]: prefer a free local model that runs on GitHub Actions.
+   - Example scenarios: "make this broken project start", "add expo-camera and get it running", "is this project Expo Go compatible?", "upgrade this SDK 52 fixture".
+   - Graders are programmatic and model-free: dev server responds, app boots (via `automation_take_screenshot`), `expo-doctor` passes, correct files changed.
+   - **Tier 0 — scripted MCP client (every PR, free, deterministic).** No model at all: replay recorded tool-call sequences against the real tools. Catches schema breaks, wiring regressions, and output-format drift. This tier does most of the CI work.
+   - **Tier 1 — small local model (every PR or nightly, free).** Run a quantized open model (e.g. a 4–8B Qwen/Llama class model via llama.cpp or Ollama) as the driving agent on a GitHub-hosted runner, CPU-only. Feasibility [inferred]: standard runners are ~4 vCPU/16 GB, so expect single-digit tokens/sec — keep scenarios short and the suite small. Deliberate side effect: **if a weak model can use the tools, strong models certainly can** — tool/schema ergonomics get evaluated at the hardest setting.
+   - **Tier 2 — frontier model (scheduled + pre-release).** A real agent (e.g. Claude Code headless) drives the full scenario set with an API key from CI secrets. N trials per scenario; gate on pass rate; transcripts stored as artifacts.
    - Note: `expo/skills` has an empty `eval-harness/` directory [observed]; the harness built here could serve both repos. [inferred]
 
 ## Feature candidates
@@ -168,8 +175,8 @@ Seeds from Kudo [confirmed — Slack, 2026-08-18]: Cloudflare Worker compatibili
 ## Open questions
 
 1. Final name: `exagent` vs `ai-expo` vs a scoped `@expo/*` bin.
-2. Model auth and billing: BYO Anthropic key vs expo.dev account gateway.
-3. Engine commitment: Claude Agent SDK only for v1, or abstraction from day one?
+2. ~~Model auth and billing~~ — resolved [confirmed — Kudo, 2026-08-18]: Shape 1, no model in the product; CI-only models for evals (§Testing).
+3. ~~Engine commitment~~ — moot under Shape 1; revisit only if a standalone bin is built later.
 4. Skill-from-module contract: `package.json` field vs directory convention; and whether `expo/skills` content gets bundled or fetched.
 5. ~~Relationship to `expo-mcp` repo~~ — resolved [confirmed — Kudo, 2026-08-18]: depend on and extend `expo-mcp`; do not vendor. See §Tool surface.
 6. Whether `expo agent` (subcommand alias in `@expo/cli`) ships at all, and when.
