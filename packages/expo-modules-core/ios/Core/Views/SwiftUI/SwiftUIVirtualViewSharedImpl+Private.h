@@ -72,7 +72,17 @@ namespace react = facebook::react;
 - (void)updateLayoutMetrics:(const react::LayoutMetrics &)layoutMetrics
            oldLayoutMetrics:(const react::LayoutMetrics &)oldLayoutMetrics
 {
-  // Yoga layout is not respected in SwiftUI integration.
+  // SwiftUI decides its own layout, so the frame is not applied to anything here. It is still the
+  // only place a virtual view can learn the size its shadow node was laid out at - it has no
+  // `UIView` of its own to read a bounds from - and a view that sizes itself to its children needs
+  // that size to pass on to SwiftUI.
+  [self shadowNodeLayoutDidChange:CGSizeMake(layoutMetrics.frame.size.width,
+                                             layoutMetrics.frame.size.height)];
+}
+
+- (void)shadowNodeLayoutDidChange:(CGSize)size
+{
+  // Implemented in `SwiftUIVirtualView.swift`
 }
 
 - (void)finalizeUpdates:(RNComponentViewUpdateMask)updateMask

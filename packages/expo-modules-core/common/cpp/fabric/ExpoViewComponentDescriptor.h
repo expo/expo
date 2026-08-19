@@ -87,6 +87,11 @@ public:
         snode->dirtyLayout();
       }
     }
+
+    // Clones (a prop, state or child update) come through here; the initial mount is covered by
+    // `appendChild` on the shadow node itself.
+    snode->sizeToContentIfNeeded();
+
     facebook::react::ConcreteComponentDescriptor<ShadowNodeType>::adopt(shadowNode);
   }
 };

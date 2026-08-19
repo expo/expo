@@ -5,6 +5,11 @@ import ExpoModulesCore
 
 internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
   @Field var matchContents: Bool = false
+
+  // Read by `ExpoViewShadowNode` rather than by this view: it tells the shadow node to size itself to
+  // its children instead of to the space Yoga offered it. Declared here because a prop that no
+  // native side declares never reaches the shadow node's props map.
+  @Field var sizeFromChildren: Bool = false
 }
 
 struct RNHostView: ExpoSwiftUI.View {
@@ -16,7 +21,7 @@ struct RNHostView: ExpoSwiftUI.View {
 
   var body: some View {
     if props.matchContents, let childUIView = firstChildUIView {
-      ApplySizeFromYogaNode(childUIView: childUIView) {
+      ApplySizeFromShadowNode(proxy: props.shadowNodeProxy) {
         Children()
       }
       .onAppear {
@@ -78,38 +83,25 @@ private final class RNHostTouchHandler: ObservableObject {
   }
 }
 
-// Sets SwiftUI view size from Yoga node size
-// Listens to Yoga node size changes and updates the SwiftUI view size
-private struct ApplySizeFromYogaNode<Content: SwiftUI.View>: SwiftUI.View {
-  @StateObject private var observer: Observer
+// Sets the SwiftUI size from this view's own shadow node, which `ExpoViewShadowNode` sizes to its
+// children. Reading our own node instead of the first child's bounds means the size is right when
+// there is more than one child, and when a child does not stretch to fill us.
+private struct ApplySizeFromShadowNode<Content: SwiftUI.View>: SwiftUI.View {
+  @ObservedObject var proxy: ExpoSwiftUI.ShadowNodeProxy
   let content: Content
 
-  init(childUIView: UIView, @ViewBuilder content: () -> Content) {
-    _observer = StateObject(wrappedValue: Observer(view: childUIView))
+  init(proxy: ExpoSwiftUI.ShadowNodeProxy, @ViewBuilder content: () -> Content) {
+    self.proxy = proxy
     self.content = content()
   }
 
   var body: some SwiftUI.View {
-    content
-      .frame(width: observer.size.width, height: observer.size.height)
-  }
-
-  @MainActor
-  fileprivate class Observer: ObservableObject {
-    @Published var size: CGSize
-    private var kvoToken: NSKeyValueObservation?
-
-    init(view: UIView) {
-      self.size = view.bounds.size
-      kvoToken = view.observe(\.bounds) { [weak self] view, _ in
-        MainActor.assumeIsolated {
-          self?.size = view.bounds.size
-        }
-      }
-    }
-
-    deinit {
-      kvoToken?.invalidate()
+    // Nothing has been laid out yet on the first render, and a zero frame would collapse the content.
+    if proxy.size == .zero {
+      content
+    } else {
+      content
+        .frame(width: proxy.size.width, height: proxy.size.height)
     }
   }
 }

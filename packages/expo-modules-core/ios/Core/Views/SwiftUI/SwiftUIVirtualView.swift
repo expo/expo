@@ -109,6 +109,17 @@ extension ExpoSwiftUI {
     }
 
     /**
+     Fabric calls this with the size Yoga laid this view's shadow node out at. Published on the proxy
+     so a view that sizes itself to its children can pass that size on to SwiftUI.
+     */
+    override func shadowNodeLayoutDidChange(_ size: CGSize) {
+      guard props.shadowNodeProxy.size != size else {
+        return
+      }
+      props.shadowNodeProxy.size = size
+    }
+
+    /**
      Fabric calls this function when mounting (attaching) a child component view.
      */
     override func mountChildComponentView(_ childComponentView: UIView, index: Int) {
@@ -272,6 +283,17 @@ extension ExpoSwiftUI {
       // Otherwise we would have to re-iterate over ViewProps fields which might be an expensive operation.
       // TODO: ViewProps should lazy load and cache an array of fields
       return true
+    }
+
+    /**
+     Fabric calls this with the size Yoga laid this view's shadow node out at. Published on the proxy
+     so a view that sizes itself to its children can pass that size on to SwiftUI.
+     */
+    override func shadowNodeLayoutDidChange(_ size: CGSize) {
+      guard props.shadowNodeProxy.size != size else {
+        return
+      }
+      props.shadowNodeProxy.size = size
     }
 
     /**

@@ -20,6 +20,9 @@ export function RNHostView(props: RNHostViewProps) {
   return (
     <RNHostNativeView
       {...props}
+      // Tells the shadow node to measure its children and adopt that as its own size. Kept separate
+      // from `matchContents` so the shadow node's contract does not ride on a public prop name.
+      sizeFromChildren={props.matchContents}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
       key={props.matchContents ? 'matchContents' : 'noMatchContents'}

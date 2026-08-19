@@ -12,5 +12,11 @@ extension ExpoSwiftUI {
 
     public var setViewSize: ((CGSize) -> Void)?
     public var setStyleSize: ((NSNumber?, NSNumber?) -> Void)?
+
+    /**
+     The size Yoga laid this view's shadow node out at, as reported by Fabric. A SwiftUI virtual view
+     has no `UIView`, so this is the only way for it to learn its own size.
+     */
+    @Published public internal(set) var size: CGSize = .zero
   }
 }

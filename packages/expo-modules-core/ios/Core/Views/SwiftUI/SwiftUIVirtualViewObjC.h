@@ -26,6 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)supportsPropWithName:(nonnull NSString *)name;
 
+/**
+ Called with the size Yoga laid this view's shadow node out at.
+ */
+- (void)shadowNodeLayoutDidChange:(CGSize)size NS_SWIFT_UI_ACTOR;
+
 /*
  * Called for mounting (attaching) a child component view inside `self` component view.
  */
