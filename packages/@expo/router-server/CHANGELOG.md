@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix JavaScript chunk execution order during streaming server rendering ([#50077](https://github.com/expo/expo/pull/50077) by [@hassankhan](https://github.com/hassankhan))
+- Preserve bundled, external, and inline stylesheet order in static and streaming documents. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
