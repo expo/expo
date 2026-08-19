@@ -323,6 +323,13 @@ describe('getStaticPageAsync', () => {
     const getStaticResourcesAsync = jest.fn(async () => ({
       artifacts: [
         {
+          type: 'css-external',
+          filename: 'https://example.com/font.css',
+          originFilename: 'app/global.css',
+          source: '',
+          metadata: {},
+        },
+        {
           type: 'css',
           filename: '_expo/static/css/app.css',
           originFilename: 'app/global.css',
@@ -331,10 +338,17 @@ describe('getStaticPageAsync', () => {
         },
         {
           type: 'css-external',
-          filename: 'https://example.com/font.css',
-          originFilename: 'app/global.css',
-          source: '<link rel="stylesheet" href="https://example.com/font.css">',
-          metadata: {},
+          filename: 'https://example.com/route.css',
+          originFilename: 'app/route.css',
+          source: '',
+          metadata: { media: 'screen' },
+        },
+        {
+          type: 'css',
+          filename: '_expo/static/css/route.css',
+          originFilename: 'app/route.css',
+          source: 'body { color: blue; }',
+          metadata: { hmrId: 'app_route_css' },
         },
       ],
     }));
@@ -360,9 +374,12 @@ describe('getStaticPageAsync', () => {
       metadata: null,
       request,
       assets: {
-        css: [],
-        externalCss: [{ href: 'https://example.com/font.css' }],
-        inlineCss: [{ source: 'body { color: red; }', hmrId: 'app_global_css' }],
+        css: [
+          { type: 'external', href: 'https://example.com/font.css', media: undefined },
+          { type: 'inline', source: 'body { color: red; }', hmrId: 'app_global_css' },
+          { type: 'external', href: 'https://example.com/route.css', media: 'screen' },
+          { type: 'inline', source: 'body { color: blue; }', hmrId: 'app_route_css' },
+        ],
         js: [expect.stringContaining('/index.bundle?')],
       },
     });
