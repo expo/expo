@@ -5,6 +5,7 @@ import { attachRouteState } from '../attachRouteState';
 const childState = {
   __internal__routerActionState: true as const,
   stale: false as const,
+  routeKeySeq: 0,
   key: 'child',
   index: 0,
   routeNames: ['index'],

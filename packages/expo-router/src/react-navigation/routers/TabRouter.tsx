@@ -1,11 +1,10 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
+import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -108,7 +107,8 @@ const TYPE_ROUTE = 'route' as const;
 const addFallbackRouteIfEmpty = (
   routes: Route<string>[],
   routeNames: string[],
-  initialRouteName: string | undefined
+  initialRouteName: string | undefined,
+  mintRouteKey: (name: string) => string
 ) => {
   if (routes.length > 0 || routeNames.length === 0) {
     return routes;
@@ -118,7 +118,7 @@ const addFallbackRouteIfEmpty = (
     initialRouteName !== undefined && routeNames.includes(initialRouteName)
       ? initialRouteName
       : routeNames[0]!;
-  return [{ name, key: `${name}-${nanoid()}` }];
+  return [{ name, key: mintRouteKey(name) }];
 };
 
 const addRouteIfMissing = (
@@ -328,6 +328,7 @@ export function TabRouter({
       if (action.target && action.target !== state.key) {
         return null;
       }
+      const minter = createRouteKeyMinter(state);
 
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
@@ -340,7 +341,8 @@ export function TabRouter({
           const routes = addFallbackRouteIfEmpty(
             state.routes.filter((route) => routeNames.includes(route.name)),
             routeNames,
-            initialRouteName
+            initialRouteName,
+            minter.mint
           );
 
           if (routes.length === 0) {
@@ -349,6 +351,7 @@ export function TabRouter({
                 ...state,
                 routeNames,
                 routes,
+                routeKeySeq: minter.routeKeySeq,
                 index: -1,
                 history: [],
               },
@@ -415,6 +418,7 @@ export function TabRouter({
               history,
               routeNames,
               routes,
+              routeKeySeq: minter.routeKeySeq,
               index,
             },
             affectedRouteKey: routes[index]!.key,
@@ -430,7 +434,10 @@ export function TabRouter({
           }
 
           const { routes, index } = addRouteIfMissing(state.routes, action.payload.name, () => {
-            const route = createRouteFromAction({ action });
+            const route = createRouteFromAction({
+              action,
+              key: minter.mint(action.payload.name),
+            });
             return action.type === 'NAVIGATE' && action.payload.path != null
               ? { ...route, path: action.payload.path }
               : route;
@@ -449,7 +456,7 @@ export function TabRouter({
                 const currentId = getId?.({ params: route.params });
                 const nextId = getId?.({ params: action.payload.params });
 
-                const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
+                const key = currentId === nextId ? route.key : minter.mint(route.name);
 
                 let params;
 
@@ -476,6 +483,7 @@ export function TabRouter({
                     : route;
                 return attachRouteState(updatedRoute, action);
               }),
+              routeKeySeq: minter.routeKeySeq,
             },
             index,
             backBehavior,
@@ -552,12 +560,12 @@ export function TabRouter({
           if (backTargetName !== undefined && backTargetName !== focusedRoute.name) {
             const { routes, index } = addRouteIfMissing(state.routes, backTargetName, () => ({
               name: backTargetName,
-              key: `${backTargetName}-${nanoid()}`,
+              key: minter.mint(backTargetName),
             }));
 
             if (routes !== state.routes) {
               const result = changeIndex(
-                { ...state, routes },
+                { ...state, routes, routeKeySeq: minter.routeKeySeq },
                 index,
                 backBehavior,
                 initialRouteName
@@ -613,7 +621,10 @@ export function TabRouter({
           let routes: Route<string>[];
 
           if (routeIndex === -1) {
-            const route = attachRouteState(createRouteFromAction({ action }), action);
+            const route = attachRouteState(
+              createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+              action
+            );
             routes = [...state.routes, route];
             affectedRouteKey = route.key;
           } else {
@@ -621,7 +632,7 @@ export function TabRouter({
             const getId = routeGetIdList[route.name];
             const currentId = getId?.({ params: route.params });
             const nextId = getId?.({ params: action.payload.params });
-            const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
+            const key = currentId === nextId ? route.key : minter.mint(route.name);
             const params = action.payload.params;
             const newRoute = attachRouteState(
               params !== route.params ? { ...route, key, params } : route,
@@ -676,6 +687,7 @@ export function TabRouter({
               ...state,
               routes,
               history,
+              routeKeySeq: minter.routeKeySeq,
             },
             affectedRouteKey,
           };

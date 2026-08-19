@@ -390,11 +390,13 @@ describe('singular', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -435,11 +437,13 @@ describe('singular', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
   });
@@ -528,11 +532,13 @@ test('can dynamically route using singular function', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 
@@ -591,11 +597,13 @@ test('can dynamically route using singular function', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -634,11 +642,13 @@ describe('prefetch', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
     });
   });
 
@@ -669,13 +679,12 @@ describe('prefetch', () => {
     // The complete initial state stays typeless until this navigator dispatches an action.
     expect((innerState as StackNavigationState<ParamListBase>).routes).toEqual([
       {
-        key: expect.stringMatching(/^index-/),
+        key: expect.stringMatching(/^index:/),
         name: 'index',
-        params: undefined,
         path: '/',
       },
       {
-        key: expect.stringMatching(/^test-/),
+        key: expect.stringMatching(/^test:/),
         name: 'test',
         params: {},
       },
@@ -1101,7 +1110,7 @@ describe('Preview', () => {
       expect(screen.getByTestId('slotB-test')).toBeVisible();
       // Initial render, onWillPreviewOpen, setTimeout from prefetch
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
-      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB-[-\w]+/);
+      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB:[-\w]+/);
     });
     it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
@@ -1147,7 +1156,7 @@ describe('Preview', () => {
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       expect(
         NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
-      ).toMatch(/slotB\/\[xyz\]-[-\w]+/);
+      ).toMatch(/slotB\/\[xyz\]:[-\w]+/);
     });
   });
   describe('external links in preview', () => {

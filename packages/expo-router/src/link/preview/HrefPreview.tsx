@@ -193,6 +193,7 @@ const navigationPropWithWarnings: NavigationProp<ParamListBase> = {
     displayWarningForProp('getState');
     return {
       key: '',
+      routeKeySeq: 0,
       index: 0,
       routeNames: [],
       routes: [],

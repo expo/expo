@@ -25,6 +25,7 @@ type NestedStackParamList = {
 
 const initialState = {
   stale: false,
+  routeKeySeq: 0,
   key: 'root',
   index: 0,
   routeNames: ['A', 'B'],
@@ -39,6 +40,7 @@ const nestedInitialState = {
       name: 'A',
       state: {
         stale: false,
+        routeKeySeq: 0,
         key: 'nested-A',
         index: 0,
         routeNames: ['C'],
@@ -50,6 +52,7 @@ const nestedInitialState = {
       name: 'B',
       state: {
         stale: false,
+        routeKeySeq: 0,
         key: 'nested-B',
         index: 0,
         routeNames: ['C'],

@@ -14,6 +14,7 @@ import { useRoutePath } from '../useRoutePath';
 
 const initialState = {
   stale: false,
+  routeKeySeq: 0,
   key: 'root',
   index: 0,
   routeNames: ['a', 'b'],

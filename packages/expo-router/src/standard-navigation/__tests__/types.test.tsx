@@ -78,6 +78,7 @@ const Nav = unstable_createStandardRouterNavigator<
 
 type TypelessNavigationState = Readonly<{
   key: string;
+  routeKeySeq: number;
   index: number;
   routeNames: string[];
   routes: { key: string; name: string; params?: object }[];

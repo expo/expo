@@ -127,6 +127,7 @@ describe('toHaveRouterState', () => {
         },
       ],
       stale: false,
+      routeKeySeq: 0,
       type: 'stack',
     });
   });

@@ -27,6 +27,7 @@ function makeBuilderState(
     routes,
     type: 'tab',
     stale: false,
+    routeKeySeq: 0,
   } as unknown as NavigationState;
 }
 

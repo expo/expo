@@ -53,6 +53,7 @@ test.each([
 
   expect(state).toEqual({
     stale: false,
+    routeKeySeq: 0,
     key: 'navigator-2',
     index: 0,
     routeNames: ['first', 'second'],
@@ -514,6 +515,7 @@ test('allows state updates by dispatching a function returning an action', () =>
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 1,
     key: 'navigator-2',
@@ -575,6 +577,7 @@ test('reconciles state when a conditional navigator changes', () => {
   expect(onStateChange).toHaveBeenCalledTimes(0);
   expect(navigation.getRootState()).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 0,
     key: '2',
@@ -621,6 +624,7 @@ test('updates route params with setParams', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 0,
     key: 'navigator-2',
@@ -633,6 +637,7 @@ test('updates route params with setParams', () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 0,
     key: 'navigator-2',
@@ -697,10 +702,12 @@ test('updates route params with setParams applied to parent', () => {
           routeNames: ['baz'],
           routes: [{ key: 'baz-5', name: 'baz' }],
           stale: false,
+          routeKeySeq: 0,
         },
       },
     ],
     stale: false,
+    routeKeySeq: 0,
   });
 
   act(() => setParams({ age: 25 }));
@@ -722,10 +729,12 @@ test('updates route params with setParams applied to parent', () => {
           routeNames: ['baz'],
           routes: [{ key: 'baz-5', name: 'baz' }],
           stale: false,
+          routeKeySeq: 0,
         },
       },
     ],
     stale: false,
+    routeKeySeq: 0,
   });
 });
 
@@ -758,6 +767,7 @@ test('handles change in route names', () => {
 
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 0,
     key: 'navigator-2',
@@ -793,6 +803,7 @@ test('reconciles route names when no previous route survives', () => {
 
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 0,
     key: 'navigator-2',
@@ -847,6 +858,7 @@ test('does not clear params if there is no nested navigator', () => {
       },
     ],
     stale: false,
+    routeKeySeq: 0,
   });
 });
 
@@ -904,6 +916,7 @@ test('overrides router with UNSTABLE_router', () => {
       { key: 'bar-1', name: 'bar', params: undefined },
     ],
     stale: false,
+    routeKeySeq: 0,
   });
 
   act(() => {
@@ -922,6 +935,7 @@ test('overrides router with UNSTABLE_router', () => {
       { key: 'foo-0', name: 'foo', params: undefined },
     ],
     stale: false,
+    routeKeySeq: 0,
   });
 
   act(() => {
@@ -943,6 +957,7 @@ test('overrides router with UNSTABLE_router', () => {
       { key: 'foo-0', name: 'foo', params: undefined },
     ],
     stale: false,
+    routeKeySeq: 0,
   });
 });
 
@@ -1139,6 +1154,7 @@ test('gives access to internal state', () => {
     routeNames: ['bar'],
     routes: [{ key: 'bar-1', name: 'bar' }],
     stale: false,
+    routeKeySeq: 0,
   });
 });
 

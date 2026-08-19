@@ -7,6 +7,7 @@ import type { HandleActionResult } from '../react-navigation/core/NavigationBuil
 import { deepFreeze } from '../react-navigation/core/deepFreeze';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type { InitialState, NavigationAction, NavigationState } from '../react-navigation/routers';
+import { getChainFromStateKey } from '../react-navigation/routers/stateKeys';
 import useLatestCallback from '../utils/useLatestCallback';
 import {
   completeNavigationState,
@@ -173,7 +174,10 @@ export function useNavigationTreeReducer({
     previousRegistryRef.current = registry;
     for (const [stateKey, entry] of previousRegistry) {
       if (!registry.has(stateKey) && entry.routeNode && findStateByKey(completedState, stateKey)) {
-        resetState(stateKey, createSeededNavigationState(undefined, entry.routeNode));
+        resetState(
+          stateKey,
+          createSeededNavigationState(undefined, entry.routeNode, getChainFromStateKey(stateKey))
+        );
       }
     }
   }, [completedState, registry, resetState]);
@@ -208,12 +212,15 @@ function validateInitialState(state: InitialState | undefined): void {
 
   const index = 'index' in state ? state.index : undefined;
   const routeNames = 'routeNames' in state ? state.routeNames : undefined;
+  const routeKeySeq = 'routeKeySeq' in state ? state.routeKeySeq : undefined;
   if (
     !('stale' in state) ||
     state.stale !== false ||
     !('key' in state) ||
     typeof state.key !== 'string' ||
     !Number.isInteger(index) ||
+    !Number.isInteger(routeKeySeq) ||
+    routeKeySeq! < 0 ||
     !Array.isArray(routeNames) ||
     state.routes.some(
       (route) =>
@@ -222,7 +229,7 @@ function validateInitialState(state: InitialState | undefined): void {
     (state.routes.length === 0 ? index !== -1 : index! < 0 || index! >= state.routes.length)
   ) {
     throw new Error(
-      'The navigation container received an incomplete initial state. Expo Router always seeds a complete initial state with valid `key`, `index`, `routeNames`, route keys, and `stale: false` at every level, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
+      'The navigation container received an incomplete initial state. Expo Router always seeds a complete initial state with valid `key`, `routeKeySeq`, `index`, `routeNames`, route keys, and `stale: false` at every level, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
     );
   }
 

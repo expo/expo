@@ -164,6 +164,7 @@ describe('hash support', () => {
         },
       ],
       stale: false,
+      routeKeySeq: 0,
       type: 'stack',
     };
 
@@ -224,6 +225,7 @@ describe('state mutation safety', () => {
         },
       ],
       stale: false,
+      routeKeySeq: 0,
       type: 'stack',
     };
 

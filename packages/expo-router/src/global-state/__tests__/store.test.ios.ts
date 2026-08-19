@@ -5,6 +5,7 @@ import type { ReactNavigationState } from '../types';
 
 const state: ReactNavigationState = {
   stale: false,
+  routeKeySeq: 0,
   key: 'root',
   index: 0,
   routeNames: [INTERNAL_SLOT_NAME],
@@ -14,6 +15,7 @@ const state: ReactNavigationState = {
       name: INTERNAL_SLOT_NAME,
       state: {
         stale: false,
+        routeKeySeq: 0,
         key: 'layout',
         index: 0,
         routeNames: ['index'],

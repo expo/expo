@@ -10,6 +10,7 @@ function buildTabState(
 ): TabNavigationState<ParamListBase> {
   return {
     stale: false,
+    routeKeySeq: 0,
     type: 'tab',
     key: 'tabs',
     index,
@@ -25,6 +26,7 @@ test('reselecting a seeded tab returns tab metadata', () => {
   const result = router.getStateForAction(
     {
       stale: false,
+      routeKeySeq: 0,
       key: 'tabs',
       index: 0,
       routeNames: options.routeNames,

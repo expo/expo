@@ -7,6 +7,7 @@ import { useLinkBuilder } from '../useLinkBuilder';
 
 const initialState = {
   stale: false,
+  routeKeySeq: 0,
   key: 'root',
   index: 0,
   routeNames: ['Foo'],
@@ -21,6 +22,7 @@ const nestedInitialState = {
       name: 'Foo',
       state: {
         stale: false,
+        routeKeySeq: 0,
         key: 'nested',
         index: 0,
         routeNames: ['Bar'],

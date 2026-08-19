@@ -16,6 +16,7 @@ import {
   type ParamListBase,
   type PartialState,
 } from '../react-navigation/native';
+import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import { getHistoryLength } from '../utils/stack';
 import { createMemoryHistory } from './createMemoryHistory';
 import { appendBaseUrl } from './getPathFromState';
@@ -153,7 +154,7 @@ export function useBrowserHistorySync({
         }
         const state = store.routeNode
           ? createSeededRootState(parsedState, store.routeNode)
-          : completeParsedState(parsedState);
+          : completeParsedState(parsedState, ROOT_CHAIN);
         if (!state) {
           return;
         }

@@ -52,6 +52,7 @@ jest.mock('../store', () => ({
           type: 'stack',
           routeNames: ['home'],
           stale: false,
+          routeKeySeq: 0,
         })),
       },
     },

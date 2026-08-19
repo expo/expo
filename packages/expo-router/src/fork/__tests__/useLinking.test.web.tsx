@@ -88,6 +88,7 @@ webTest('queues forward history and restores saved, parsed, and initial state', 
   });
   const savedState = {
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
     key: 'saved-stack',
     index: 0,
@@ -161,6 +162,7 @@ webTest('parses the initial URL instead of returning the existing store state', 
   mockStoreEnabled = true;
   const existingState = {
     stale: false as const,
+    routeKeySeq: expect.any(Number),
     key: 'root',
     index: 0,
     routeNames: ['home'],
@@ -188,6 +190,7 @@ webTest('parses the initial URL instead of returning the existing store state', 
   expect(state).not.toBe(existingState);
   expect(state).toMatchObject({
     stale: false,
+    routeKeySeq: expect.any(Number),
     routeNames: ['home'],
     routes: [{ name: 'home' }],
   });
@@ -242,6 +245,7 @@ test('does not add browser history when preloading a stack route', async () => {
   mockNavigationRef = ref;
   mockStoreState = {
     stale: false,
+    routeKeySeq: expect.any(Number),
     key: 'root',
     index: 0,
     routeNames: ['home', 'details'],

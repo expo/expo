@@ -303,6 +303,7 @@ test('action goes to correct parent navigator if target is specified', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 1,
     key: '0',
@@ -315,6 +316,7 @@ test('action goes to correct parent navigator if target is specified', () => {
         name: 'baz',
         state: {
           stale: false,
+          routeKeySeq: 0,
           type: 'test',
           index: 0,
           key: '1',
@@ -418,6 +420,7 @@ test('action goes to correct child navigator if target is specified', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 2,
     key: '0',
@@ -430,6 +433,7 @@ test('action goes to correct child navigator if target is specified', () => {
         name: 'baz',
         state: {
           stale: false,
+          routeKeySeq: 0,
           type: 'test',
           index: 0,
           key: '1',
@@ -654,9 +658,10 @@ test("prevents removing a screen with 'removePrevented' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
+      { key: 'bar:3-0', name: 'bar' },
     ],
     stale: false,
+    routeKeySeq: 1,
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -669,15 +674,16 @@ test("prevents removing a screen with 'removePrevented' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
+      { key: 'bar:3-0', name: 'bar' },
       {
-        key: 'baz-7',
+        key: 'baz:3-1',
         name: 'baz',
         params: undefined,
         path: undefined,
       },
     ],
     stale: false,
+    routeKeySeq: 2,
   });
 
   act(() => ref.current?.dispatchSync(StackActions.popTo('foo')));
@@ -692,10 +698,11 @@ test("prevents removing a screen with 'removePrevented' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-7', name: 'baz' },
+      { key: 'bar:3-0', name: 'bar' },
+      { key: 'baz:3-1', name: 'baz' },
     ],
     stale: false,
+    routeKeySeq: 2,
   });
 
   act(() => {
@@ -710,6 +717,7 @@ test("prevents removing a screen with 'removePrevented' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    routeKeySeq: 2,
   });
 });
 
@@ -1092,6 +1100,7 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
       routeNames: preventedState.routeNames,
       routes: [preventedState.routes[0]!],
       stale: false,
+      routeKeySeq: 0,
     })
   );
 

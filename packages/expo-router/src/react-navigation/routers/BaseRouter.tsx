@@ -1,5 +1,4 @@
-import { nanoid } from 'nanoid/non-secure';
-
+import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
   NavigationAction,
@@ -89,11 +88,16 @@ export const BaseRouter = {
             return null;
           }
 
+          const minter = createRouteKeyMinter({
+            key: nextState.key,
+            routeKeySeq: nextState.routeKeySeq ?? 0,
+          });
           const result = {
             ...nextState,
             routes: nextState.routes.map((route) =>
-              route.key ? route : { ...route, key: `${route.name}-${nanoid()}` }
+              route.key ? route : { ...route, key: minter.mint(route.name) }
             ),
+            routeKeySeq: minter.routeKeySeq,
           };
 
           return {
@@ -104,7 +108,7 @@ export const BaseRouter = {
 
         // TODO: support completing partial reset payloads at dispatch (follow-up PR).
         throw new Error(
-          'The RESET action payload must contain a complete navigation state. Partial states can no longer be completed during render. Include `key`, `index`, `routeNames`, and `stale: false` when resetting.'
+          'The RESET action payload must contain a complete navigation state. Partial states can no longer be completed during render. Include `key`, `index`, `routeNames`, `routeKeySeq`, and `stale: false` when resetting.'
         );
       }
 
