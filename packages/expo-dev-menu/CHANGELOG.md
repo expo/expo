@@ -8,6 +8,7 @@
 
 - Add a JavaScript API to show or hide the floating Tools button at runtime. ([#47746](https://github.com/expo/expo/pull/47746) by [@KevinvdBurg](https://github.com/KevinvdBurg))
 - Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Read the performance monitor state from hosts that replace the default FPS overlay with their own monitor.
 
 ### 🐛 Bug fixes
 
