@@ -77,6 +77,30 @@ Three layers, all machine-readable:
 2. **`expo-mcp` tools, reused as-is.** `automation_tap`, `automation_take_screenshot`, `automation_find_view`, `collect_app_logs`, `expo_router_sitemap`, `open_devtools` [observed — expo-mcp repo]. Decision [confirmed — Kudo, 2026-08-18]: reuse the `expo-mcp` infrastructure (Kudo owns that codebase) instead of vendoring. The agent package in `expo/expo` depends on the published `expo-mcp` / `@expo/mcp-tunnel` packages: in-process MCP connection locally, `@expo/mcp-tunnel` WebSocket transport for the remote/F3 case. New agent-facing tools land in `expo-mcp` first, so every MCP client (Claude Code, Cursor) inherits them.
 3. **Expo-specific decision tools** built for the agent (see §Feature candidates): Expo Go compatibility check, post-install impact classifier, project-state probe.
 
+### The smart start decision engine
+
+Feature seed [confirmed — Kudo, 2026-08-19]: a single `start` command; agents never reason about prebuild vs build vs start. Design [inferred], built on pieces that exist today:
+
+**Inputs (project-state probe):**
+- Target: Expo Go, dev client, or web? Is the target app installed on the device/simulator?
+- Native state: bare `ios/`/`android/` dirs vs CNG; `@expo/fingerprint` hash of the native surface [observed — package exists; the CLI's build-cache providers already compute `calculateFingerprintHashAsync` to reuse builds, `src/utils/build-cache-providers/index.ts`].
+- Compatibility: Expo Go check (feature 2); post-install impact classification (feature 3).
+
+**Decision table (sketch):**
+
+| State | Plan |
+| --- | --- |
+| Expo Go compatible, Go installed | start Metro → open in Expo Go |
+| Dev client installed, fingerprint matches last build | start Metro → open dev client |
+| Fingerprint changed (new native module / config plugin) | prebuild (CNG) → native build → install → start |
+| Build cache hit for current fingerprint | download/install cached build → start Metro |
+| Bare project, native dirs dirty | pod install / gradle sync → build → start |
+| Web | start Metro for web |
+
+**Contract:** the command first *emits the plan* as a structured event (steps + reasons + time-class estimates), then executes, streaming JSONL progress. `--plan` stops after emitting (agents can present it for approval — guardrail C2). Exposed identically as a CLI command for humans and an MCP tool for agents. The same engine answers feature 3's post-install question ("what must rerun?") — it is one classifier consumed at two moments.
+
+**Testing:** the decision table is pure logic over probed state — unit-tested exhaustively (tier 0 material, no model, no device).
+
 ## Testing and evals
 
 Shipping is gated on all three layers.
@@ -98,7 +122,7 @@ Seed list from Kudo [confirmed — Slack, 2026-08-18], expanded [inferred]:
 1. **Skills shipped from Expo modules.** SDK packages carry their own skill (usage, pitfalls, config-plugin notes). Discovery mirrors how `expo-mcp` is resolved from the project: scan `node_modules` for a declared skill entry (for example `expo.skills` in `package.json`, or a `skills/` folder). Installed packages then teach the agent automatically. Also exportable to other agents (Claude Code, Cursor) as a skills provider.
 2. **Expo Go compatibility check.** A tool that answers "can this project run in Expo Go?" with reasons: compare dependencies against `packages/expo/bundledNativeModules.json` [observed — file exists], detect config plugins and custom native code, check SDK version support.
 3. **Post-install impact decisions.** After `npx expo install {pkg}`, the agent classifies the change: JS-only → keep the dev server, maybe reload; new config plugin or native module under CNG → prebuild + new dev build; bare native dirs → pod install / gradle sync. The agent states the classification, then acts. This logic is deterministic and unit-tested; the agent is a consumer.
-4. **One command to run the app.** "Get this app on the simulator" without the user choosing between `start`, `prebuild`, `run:ios`, or a dev build. The project-state probe decides the plan; the agent executes and narrates it.
+4. **Smart `start` — one command, no prebuild/build/start decisions.** [confirmed — Kudo, 2026-08-19, promoted to a core feature] A single deterministic command gets the app running; neither the agent nor the user decides *when* to prebuild, rebuild, or just start Metro. See §Design → The smart start decision engine.
 5. **Agent-native dev server output.** In agent mode: no QR code, no spinner, no interactive keymap. Emit JSONL events (already available [observed]) plus a small status endpoint: bundle state, connected clients, last error. Same interface serves web-based agents; a QR code is meaningless to an agent, but a URL + platform launch tool is not.
 6. **Log triage loop.** On a red screen or crash: pull device/simulator logs (`collect_app_logs`), symbolicate, map to source, propose or apply the fix, verify by screenshot.
 7. **Verified UI changes.** After an edit: reload, `automation_take_screenshot`, compare against the request, iterate. Closes the loop that text-only agents cannot close.
