@@ -1,10 +1,6 @@
 import type { RouteNode } from '../../Route';
+import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
 import { completeParsedState, createSeededRootState } from '../createSeededNavigationState';
-
-jest.mock('nanoid/non-secure', () => {
-  let id = 0;
-  return { nanoid: () => `test-${++id}` };
-});
 
 function node(route: string, children: RouteNode[] = [], initialRouteName?: string): RouteNode {
   return {
@@ -22,6 +18,7 @@ function expectCompleteState(state: object) {
   expect(state).toMatchObject({
     stale: false,
     key: expect.any(String),
+    routeKeySeq: expect.any(Number),
     index: expect.any(Number),
     routeNames: expect.any(Array),
     routes: expect.any(Array),
@@ -109,16 +106,19 @@ test('completes nested parsed routes without dropping anchor or dynamic params',
 });
 
 test('completes parsed routes without a route tree', () => {
-  const state = completeParsedState({
-    routes: [
-      {
-        name: 'a',
-        state: {
-          routes: [{ name: 'b', path: '/foo/bar/apple', params: { id: 'apple' } }],
+  const state = completeParsedState(
+    {
+      routes: [
+        {
+          name: 'a',
+          state: {
+            routes: [{ name: 'b', path: '/foo/bar/apple', params: { id: 'apple' } }],
+          },
         },
-      },
-    ],
-  });
+      ],
+    },
+    ROOT_CHAIN
+  );
 
   expectCompleteState(state!);
   expect(state?.routes[0]!.state?.routes[0]).toMatchObject({
@@ -126,6 +126,40 @@ test('completes parsed routes without a route tree', () => {
     path: '/foo/bar/apple',
     params: { id: 'apple' },
   });
+});
+
+test('creates the same state for the same parsed routes', () => {
+  const routeNode = node('root', [node('a', [node('child')]), node('b', [node('child')])]);
+  const parsedState = {
+    routes: [
+      {
+        name: '__root',
+        state: { routes: [{ name: 'a' }, { name: 'b' }] },
+      },
+    ],
+  };
+
+  expect(createSeededRootState(parsedState, routeNode)).toEqual(
+    createSeededRootState(parsedState, routeNode)
+  );
+});
+
+test('uses distinct chains for sibling and nested navigators', () => {
+  const state = createSeededRootState(
+    {
+      routes: [
+        {
+          name: '__root',
+          state: { routes: [{ name: 'a' }, { name: 'b' }] },
+        },
+      ],
+    },
+    node('root', [node('a', [node('child')]), node('b', [node('child')])])
+  );
+  const appState = state.routes[0]!.state!;
+  const stateKeys = [state.key, appState.key, ...appState.routes.map((route) => route.state!.key)];
+
+  expect(new Set(stateKeys).size).toBe(stateKeys.length);
 });
 
 test('throws when a nested state contains an unknown route', () => {

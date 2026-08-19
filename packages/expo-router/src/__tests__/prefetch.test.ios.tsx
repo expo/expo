@@ -81,10 +81,12 @@ it('prefetch a sibling route', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
   });
 });
 
@@ -141,10 +143,12 @@ it('will prefetch the correct route within a group', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
   });
 });
 
@@ -201,11 +205,13 @@ it('will prefetch the correct route within nested groups', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
   });
 });
 
@@ -260,11 +266,13 @@ it('works with relative Href', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
   });
 });
 
@@ -321,11 +329,13 @@ it('works with params', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
   });
 });
 
@@ -402,15 +412,18 @@ it('ignores the current route', () => {
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
   });
 });
 
@@ -525,23 +538,28 @@ it('can prefetch a deeply nested route', () => {
                               },
                             ],
                             stale: false,
+                            routeKeySeq: expect.any(Number),
                           },
                         },
                       ],
                       stale: false,
+                      routeKeySeq: expect.any(Number),
                     },
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
   });
 });
 
@@ -654,10 +672,12 @@ it('can prefetch a parent route', () => {
                               },
                             ],
                             stale: false,
+                            routeKeySeq: expect.any(Number),
                           },
                         },
                       ],
                       stale: false,
+                      routeKeySeq: expect.any(Number),
                     },
                   },
                   {
@@ -667,15 +687,18 @@ it('can prefetch a parent route', () => {
                   },
                 ],
                 stale: false,
+                routeKeySeq: expect.any(Number),
                 type: 'stack',
               },
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
   });
 });
 

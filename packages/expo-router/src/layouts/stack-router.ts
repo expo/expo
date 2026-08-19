@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
@@ -22,6 +20,7 @@ import {
 import type { NativeStackNavigatorProps } from '../react-navigation/native-stack';
 import { attachRouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
+import { createRouteKeyMinter } from '../react-navigation/routers/stateKeys';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../useScreens';
 
@@ -88,10 +87,11 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
       if (action.target && action.target !== state.key) {
         return null;
       }
-
       if (!isStackAction(action)) {
         return original.getStateForAction(state, action, options);
       }
+
+      const minter = createRouteKeyMinter(state);
 
       // The dynamic getId added to an action, `router.push('screen', { singular: true })`
       const actionSingularOptions =
@@ -246,7 +246,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               // For preloaded route, we want to use the same key, so that preloaded screen is used.
               const key =
                 routes.length === activeRoutes.length && !isPreloadedRoute
-                  ? `${action.payload.name}-${nanoid()}`
+                  ? minter.mint(action.payload.name)
                   : route.key;
 
               routes.push({
@@ -275,7 +275,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               ...activeRoutes,
               attachRouteState(
                 {
-                  key: `${action.payload.name}-${nanoid()}`,
+                  key: minter.mint(action.payload.name),
                   name: action.payload.name,
                   path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
                   params,
@@ -289,6 +289,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           // return filterSingular(
           const result = {
             ...state,
+            routeKeySeq: minter.routeKeySeq,
             index: routes.length - 1,
             routes: routes.concat(
               preloadedRoutes.filter((route) => routes[routes.length - 1]!.key !== route.key)
@@ -382,7 +383,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
             };
           } else {
             // START FORK
-            const preloadedRouteKey = `${action.payload.name}-${nanoid()}`;
+            const preloadedRouteKey = minter.mint(action.payload.name);
             const currentPreloadedRoute: (typeof state)['routes'][number] = attachRouteState(
               {
                 key: preloadedRouteKey,
@@ -401,6 +402,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
             return {
               state: {
                 ...state,
+                routeKeySeq: minter.routeKeySeq,
                 // START FORK
                 // Adding the current preloaded route to the beginning of the preloadedRoutes array
                 // This ensures that the preloaded route will be the next one after the visible route

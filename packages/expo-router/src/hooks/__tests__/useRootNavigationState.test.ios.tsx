@@ -35,10 +35,12 @@ describe(useRootNavigationState, () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
     });
   });
 
@@ -86,14 +88,17 @@ describe(useRootNavigationState, () => {
                     },
                   ],
                   stale: false,
+                  routeKeySeq: expect.any(Number),
                 },
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
     });
   });
 
@@ -128,10 +133,12 @@ describe(useRootNavigationState, () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
     });
   });
 
@@ -179,14 +186,17 @@ describe(useRootNavigationState, () => {
                     },
                   ],
                   stale: false,
+                  routeKeySeq: expect.any(Number),
                 },
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
     });
   });
 });

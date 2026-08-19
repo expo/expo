@@ -15,6 +15,7 @@ import {
   type NavigationState,
   type ParamListBase,
 } from '../react-navigation/native';
+import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import { extractExpoPathFromURL } from './extractPathFromURL';
 
 type Options = LinkingOptions<ParamListBase>;
@@ -124,7 +125,7 @@ export function useLinking(
       const routeNode = store?.routeNode;
       return routeNode
         ? createSeededRootState(parsedState, routeNode)
-        : completeParsedState(parsedState);
+        : completeParsedState(parsedState, ROOT_CHAIN);
     };
 
     if (url != null) {

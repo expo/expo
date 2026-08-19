@@ -75,11 +75,13 @@ it('can push a hash url', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -247,11 +249,13 @@ it('navigating to the same route with a hash will only rerender the screen', () 
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });

@@ -1,10 +1,9 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
 import { createRouteFromAction } from './createRouteFromAction';
 import { ensureStateType } from './ensureStateType';
+import { createRouteKeyMinter } from './stateKeys';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -231,6 +230,7 @@ export function StackRouter(options: StackRouterOptions) {
     getStateForAction(inputState, action, options) {
       const state = ensureStateType(inputState, 'stack');
       const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
+      const minter = createRouteKeyMinter(state);
 
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
@@ -257,7 +257,7 @@ export function StackRouter(options: StackRouterOptions) {
             const fallbackRoute =
               preloadedIndex === -1
                 ? {
-                    key: `${fallbackName}-${nanoid()}`,
+                    key: minter.mint(fallbackName),
                     name: fallbackName,
                   }
                 : filteredPreloadedRoutes[preloadedIndex]!;
@@ -267,6 +267,7 @@ export function StackRouter(options: StackRouterOptions) {
 
           const result = {
             ...reconcileStackRoutes(state, routes, filteredPreloadedRoutes),
+            routeKeySeq: minter.routeKeySeq,
             routeNames,
           };
           return { state: result, affectedRouteKey: result.routes[result.index]?.key };
@@ -296,16 +297,19 @@ export function StackRouter(options: StackRouterOptions) {
           );
 
           if (!route) {
-            route = createRouteFromAction({ action });
+            route = createRouteFromAction({ action, key: minter.mint(action.payload.name) });
           }
           route = attachRouteState(route, action);
 
           return {
-            state: reconcileStackRoutes(
-              state,
-              activeRoutes.map((r, i) => (i === currentIndex ? route : r)),
-              preloadedRoutes.filter((r) => r.key !== route.key)
-            ),
+            state: {
+              ...reconcileStackRoutes(
+                state,
+                activeRoutes.map((r, i) => (i === currentIndex ? route : r)),
+                preloadedRoutes.filter((r) => r.key !== route.key)
+              ),
+              routeKeySeq: minter.routeKeySeq,
+            },
             affectedRouteKey: route.key,
           };
         }
@@ -406,7 +410,7 @@ export function StackRouter(options: StackRouterOptions) {
               ...activeRoutes,
               attachRouteState(
                 {
-                  key: `${action.payload.name}-${nanoid()}`,
+                  key: minter.mint(action.payload.name),
                   name: action.payload.name,
                   path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
                   params,
@@ -418,11 +422,14 @@ export function StackRouter(options: StackRouterOptions) {
 
           const affectedRouteKey = routes[routes.length - 1]!.key;
           return {
-            state: reconcileStackRoutes(
-              state,
-              routes,
-              preloadedRoutes.filter((route) => affectedRouteKey !== route.key)
-            ),
+            state: {
+              ...reconcileStackRoutes(
+                state,
+                routes,
+                preloadedRoutes.filter((route) => affectedRouteKey !== route.key)
+              ),
+              routeKeySeq: minter.routeKeySeq,
+            },
             affectedRouteKey,
           };
         }
@@ -524,18 +531,21 @@ export function StackRouter(options: StackRouterOptions) {
             );
 
             if (!route) {
-              route = createRouteFromAction({ action });
+              route = createRouteFromAction({ action, key: minter.mint(action.payload.name) });
             }
             route = attachRouteState(route, action);
 
             const routes = activeRoutes.slice(0, currentIndex).concat(route);
 
             return {
-              state: reconcileStackRoutes(
-                state,
-                routes,
-                preloadedRoutes.filter((r) => r.key !== route.key)
-              ),
+              state: {
+                ...reconcileStackRoutes(
+                  state,
+                  routes,
+                  preloadedRoutes.filter((r) => r.key !== route.key)
+                ),
+                routeKeySeq: minter.routeKeySeq,
+              },
               affectedRouteKey: route.key,
             };
           }
@@ -614,17 +624,23 @@ export function StackRouter(options: StackRouterOptions) {
               affectedRouteKey: route.key,
             };
           } else {
-            const preloadedRoute = attachRouteState(createRouteFromAction({ action }), action);
+            const preloadedRoute = attachRouteState(
+              createRouteFromAction({ action, key: minter.mint(action.payload.name) }),
+              action
+            );
             return {
-              state: reconcileStackRoutes(
-                state,
-                activeRoutes,
-                preloadedRoutes
-                  .filter(
-                    (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
-                  )
-                  .concat(preloadedRoute)
-              ),
+              state: {
+                ...reconcileStackRoutes(
+                  state,
+                  activeRoutes,
+                  preloadedRoutes
+                    .filter(
+                      (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
+                    )
+                    .concat(preloadedRoute)
+                ),
+                routeKeySeq: minter.routeKeySeq,
+              },
               affectedRouteKey: preloadedRoute.key,
             };
           }

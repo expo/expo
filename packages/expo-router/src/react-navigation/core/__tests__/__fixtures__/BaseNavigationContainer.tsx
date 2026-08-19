@@ -18,6 +18,7 @@ function getInitialState(children: React.ReactNode): NavigationState {
   if (!React.isValidElement<{ children?: React.ReactNode; initialRouteName?: string }>(navigator)) {
     return {
       stale: false,
+      routeKeySeq: 0,
       key: `navigator-${nanoid()}`,
       index: -1,
       routeNames: [],
@@ -77,6 +78,7 @@ function getInitialState(children: React.ReactNode): NavigationState {
 
   return {
     stale: false,
+    routeKeySeq: 0,
     key,
     index: routes.length - 1,
     routeNames,
@@ -110,6 +112,7 @@ function completeState(
   return {
     ...state,
     stale: false,
+    routeKeySeq: 0,
     type: state.type ?? 'test',
     key,
     index: state.index ?? 0,

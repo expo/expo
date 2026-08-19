@@ -248,11 +248,13 @@ it('can push to a redirect', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -436,11 +438,13 @@ it('not existing nested route redirects correctly', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });

@@ -14,6 +14,7 @@ import type {
   Route,
 } from '../react-navigation/routers';
 import type { RouteState } from '../react-navigation/routers/attachRouteState';
+import { createRouteKeyMinter, getChainFromRouteKey } from '../react-navigation/routers/stateKeys';
 import type { RouterRegistry } from './routerRegistry';
 
 type DestinationAction = NavigationAction & {
@@ -155,6 +156,10 @@ function createResolvedAction({
     return baseAction;
   }
 
+  // Resolution and dispatch reduce the same state, so speculative minting produces the same key.
+  const parentChain = getChainFromRouteKey(
+    selectedRoute?.key ?? createRouteKeyMinter(navigationState).mint(targetRoute.name)
+  );
   const childState = resolveState({
     targetState: childTarget,
     navigationState: selectedRoute?.state,
@@ -162,6 +167,7 @@ function createResolvedAction({
     registry,
     withAnchor,
     internalParams,
+    parentChain,
   });
 
   return {
@@ -180,6 +186,7 @@ function resolveState({
   registry,
   withAnchor,
   internalParams,
+  parentChain,
 }: {
   targetState: PartialState<NavigationState>;
   navigationState: NavigationState | PartialState<NavigationState> | undefined;
@@ -187,9 +194,10 @@ function resolveState({
   registry: RouterRegistry;
   withAnchor: boolean;
   internalParams: InternalExpoRouterParams;
+  parentChain: string;
 }): NavigationState {
   if (navigationState?.stale !== false || !registry.has(navigationState.key)) {
-    return createDestinationState(targetState, routeNode, withAnchor, internalParams);
+    return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
   }
 
   const targetRoute = getFocusedRoute(targetState);
@@ -208,7 +216,7 @@ function resolveState({
   });
   const result = registry.get(navigationState.key)?.reduce(navigationState, action);
   if (result?.state.stale !== false || getSelectedRoute(result) === undefined) {
-    return createDestinationState(targetState, routeNode, withAnchor, internalParams);
+    return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
   }
 
   return isEqual(result.state, navigationState) ? navigationState : result.state;
@@ -218,7 +226,8 @@ function createDestinationState(
   targetState: PartialState<NavigationState>,
   routeNode: RouteNode,
   withAnchor: boolean,
-  internalParams: InternalExpoRouterParams
+  internalParams: InternalExpoRouterParams,
+  parentChain: string
 ): NavigationState {
   const targetRoute = getFocusedRoute(targetState);
   const routeNames = routeNode.children.map((child) => child.route);
@@ -227,33 +236,47 @@ function createDestinationState(
       createInitialState({
         routeNames,
         initialRouteName: getValidInitialRouteName(routeNode),
+        parentChain,
       })
     );
   }
 
+  const initialRouteName = getValidInitialRouteName(routeNode);
+  const hasAnchor = withAnchor && initialRouteName && initialRouteName !== targetRoute.name;
   const destination = createInitialState({
     routeNames,
-    initialRouteName: targetRoute.name,
+    initialRouteName: hasAnchor ? initialRouteName : targetRoute.name,
+    parentChain,
   });
+  const minter = createRouteKeyMinter(destination);
+  const destinationRouteKey = hasAnchor
+    ? minter.mint(targetRoute.name)
+    : destination.routes[0]!.key;
   const childNode = findRouteNodeByName(routeNode, targetRoute.name);
   const childState =
     targetRoute.state && childNode
-      ? createDestinationState(targetRoute.state, childNode, withAnchor, internalParams)
+      ? createDestinationState(
+          targetRoute.state,
+          childNode,
+          withAnchor,
+          internalParams,
+          getChainFromRouteKey(destinationRouteKey)
+        )
       : undefined;
   const destinationRoute = {
     ...destination.routes[0]!,
+    key: destinationRouteKey,
+    name: targetRoute.name,
     ...(targetRoute.path !== undefined ? { path: targetRoute.path } : undefined),
     params: appendInternalExpoRouterParams(targetRoute.params, internalParams) ?? {},
     ...(childState !== undefined ? { state: childState } : undefined),
   };
-  const initialRouteName = getValidInitialRouteName(routeNode);
-
-  if (withAnchor && initialRouteName && initialRouteName !== targetRoute.name) {
-    const initial = createInitialState({ routeNames, initialRouteName });
+  if (hasAnchor) {
     return markState({
       ...destination,
+      routeKeySeq: minter.routeKeySeq,
       index: 1,
-      routes: [initial.routes[0]!, destinationRoute],
+      routes: [destination.routes[0]!, destinationRoute],
     });
   }
 

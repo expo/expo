@@ -13,6 +13,7 @@ import {
   type NavigationState,
   type ParamListBase,
 } from '../react-navigation/native';
+import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import { extractExpoPathFromURL } from './extractPathFromURL';
 import { useBrowserHistorySync } from './useBrowserHistorySync';
 
@@ -75,7 +76,7 @@ export function useLinking(
       const routeNode = store?.routeNode;
       const state = routeNode
         ? createSeededRootState(parsedState, routeNode)
-        : completeParsedState(parsedState);
+        : completeParsedState(parsedState, ROOT_CHAIN);
 
       // If the link were handled, it gets cleared in NavigationContainer
       onUnhandledLinking(path);

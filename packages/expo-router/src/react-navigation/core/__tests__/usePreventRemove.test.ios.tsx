@@ -204,6 +204,7 @@ test('only active stack routes are preventable', () => {
   expect(
     getPreventableRoutes({
       stale: false,
+      routeKeySeq: 0,
       type: 'stack',
       key: 'stack',
       index: 1,
@@ -215,6 +216,7 @@ test('only active stack routes are preventable', () => {
   expect(
     getPreventableRoutes({
       stale: false,
+      routeKeySeq: 0,
       type: 'tab',
       key: 'tabs',
       index: 1,
@@ -285,9 +287,10 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
+      { key: 'bar:3-0', name: 'bar' },
     ],
     stale: false,
+    routeKeySeq: 1,
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -300,10 +303,11 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
-      { key: 'baz-7', name: 'baz', params: undefined, path: undefined },
+      { key: 'bar:3-0', name: 'bar' },
+      { key: 'baz:3-1', name: 'baz' },
     ],
     stale: false,
+    routeKeySeq: 2,
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -318,10 +322,11 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-7', name: 'baz' },
+      { key: 'bar:3-0', name: 'bar' },
+      { key: 'baz:3-1', name: 'baz' },
     ],
     stale: false,
+    routeKeySeq: 2,
   });
 
   act(() => setPreventRemove(false));
@@ -336,6 +341,7 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    routeKeySeq: 2,
   });
 });
 
@@ -439,9 +445,10 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
+      { key: 'bar:3-0', name: 'bar' },
     ],
     stale: false,
+    routeKeySeq: 1,
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -454,10 +461,11 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-9', name: 'baz', params: undefined, path: undefined },
+      { key: 'bar:3-0', name: 'bar' },
+      { key: 'baz:3-1', name: 'baz' },
     ],
     stale: false,
+    routeKeySeq: 2,
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -472,10 +480,11 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-9', name: 'baz' },
+      { key: 'bar:3-0', name: 'bar' },
+      { key: 'baz:3-1', name: 'baz' },
     ],
     stale: false,
+    routeKeySeq: 2,
   });
 
   act(() => setPreventRemove(false));
@@ -490,6 +499,7 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    routeKeySeq: 2,
   });
 });
 
@@ -540,9 +550,10 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
+      { key: 'bar:3-0', name: 'bar' },
     ],
     stale: false,
+    routeKeySeq: 1,
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -555,10 +566,11 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo-2', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-7', name: 'baz', params: undefined, path: undefined },
+      { key: 'bar:3-0', name: 'bar' },
+      { key: 'baz:3-1', name: 'baz' },
     ],
     stale: false,
+    routeKeySeq: 2,
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -572,6 +584,7 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    routeKeySeq: 2,
   });
 
   act(() => ref.current?.navigate('bar'));
@@ -585,6 +598,7 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    routeKeySeq: 3,
   });
 
   expect(onPreventRemove).toHaveBeenCalledTimes(0);
@@ -993,6 +1007,7 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
       routeNames: preventedState.routeNames,
       routes: [preventedState.routes[0]!],
       stale: false,
+      routeKeySeq: 0,
     })
   );
 

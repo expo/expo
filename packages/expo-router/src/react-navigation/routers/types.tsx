@@ -17,6 +17,10 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
    */
   key: string;
   /**
+   * Sequence used to mint route keys in this navigation state.
+   */
+  routeKeySeq: number;
+  /**
    * Index of the currently focused route.
    */
   index: number;

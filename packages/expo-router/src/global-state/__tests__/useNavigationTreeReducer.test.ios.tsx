@@ -7,6 +7,7 @@ import { useNavigationTreeReducer } from '../useNavigationTreeReducer';
 
 const initialState: NavigationState = {
   stale: false,
+  routeKeySeq: 0,
   key: 'root',
   index: 0,
   routeNames: ['first', 'second', 'third'],

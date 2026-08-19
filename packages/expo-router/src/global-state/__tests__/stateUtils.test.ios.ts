@@ -17,6 +17,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['home'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -50,6 +51,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['home'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -58,6 +60,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['root'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -95,6 +98,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['home'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -103,6 +107,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['root'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -140,6 +145,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['details'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -148,6 +154,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['[id]'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -184,6 +191,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['details'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -192,6 +200,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['[id]'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -238,6 +247,7 @@ describe('findDivergentState', () => {
                   type: 'stack',
                   routeNames: ['leaf'],
                   stale: false,
+                  routeKeySeq: 0,
                 },
               },
             ],
@@ -246,6 +256,7 @@ describe('findDivergentState', () => {
             type: 'stack',
             routeNames: ['branch-b'],
             stale: false,
+            routeKeySeq: 0,
           },
         },
       ],
@@ -254,6 +265,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['root'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState);
@@ -294,6 +306,7 @@ describe('findDivergentState', () => {
               type: 'stack',
               routeNames: ['page'],
               stale: false,
+              routeKeySeq: 0,
             },
           },
         ],
@@ -302,6 +315,7 @@ describe('findDivergentState', () => {
         type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
+        routeKeySeq: 0,
       };
 
       const result = findDivergentState(actionState, navState, true);
@@ -331,6 +345,7 @@ describe('findDivergentState', () => {
         type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
+        routeKeySeq: 0,
       };
 
       const result = findDivergentState(actionState, navState, true);
@@ -358,6 +373,7 @@ describe('findDivergentState', () => {
         type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
+        routeKeySeq: 0,
       };
 
       const result = findDivergentState(actionState, navState);
@@ -386,6 +402,7 @@ describe('findDivergentState', () => {
         type: 'tab',
         routeNames: ['home', 'settings'],
         stale: false,
+        routeKeySeq: 0,
       };
 
       const result = findDivergentState(actionState, navState, true);
@@ -406,6 +423,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['leaf'],
       stale: false,
+      routeKeySeq: 0,
     };
     const actionState: ResultState = {
       routes: [{ name: 'root', state: { routes: [{ name: 'leaf' }] } }],
@@ -417,6 +435,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['root'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     const result = findDivergentState(actionState, navState, false, (key) => key !== 'child-nav');
@@ -447,6 +466,7 @@ describe('findDivergentState', () => {
       type: 'stack',
       routeNames: ['root'],
       stale: false,
+      routeKeySeq: 0,
     };
 
     expect(findDivergentState(actionState, navState).navigationState.key).toBe('root-nav');

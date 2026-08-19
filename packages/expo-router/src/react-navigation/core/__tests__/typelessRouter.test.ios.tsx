@@ -53,6 +53,7 @@ function TestNavigator({ createRouter = TypelessRouter, ...props }: any): any {
 /** A persisted state focusing the second route, so a discarded state is visible as `index: 0`. */
 const persistedState = {
   stale: false,
+  routeKeySeq: 0,
   key: 'persisted',
   index: 1,
   routeNames: ['first', 'second'],

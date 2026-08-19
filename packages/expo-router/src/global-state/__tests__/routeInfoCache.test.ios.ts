@@ -38,6 +38,7 @@ function makeState(name: string): ReactNavigationState {
     type: 'stack',
     routeNames: [name],
     stale: false,
+    routeKeySeq: 0,
   } as ReactNavigationState;
 }
 

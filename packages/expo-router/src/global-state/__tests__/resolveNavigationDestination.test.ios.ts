@@ -9,11 +9,6 @@ import {
 import { resolveNavigationDestination } from '../resolveNavigationDestination';
 import type { RouterRegistry, RouterRegistryEntry } from '../routerRegistry';
 
-jest.mock('nanoid/non-secure', () => {
-  let id = 0;
-  return { nanoid: () => `test-${++id}` };
-});
-
 function node(route: string, children: RouteNode[] = [], initialRouteName?: string): RouteNode {
   return {
     type: 'route',
@@ -49,6 +44,7 @@ function entry(
 test('switches mounted tabs and extends the selected tab stack', () => {
   const settingsStack: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
     key: 'settings-stack',
     index: 1,
@@ -60,6 +56,7 @@ test('switches mounted tabs and extends the selected tab stack', () => {
   };
   const tabs: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     type: 'tab',
     key: 'tabs',
     index: 0,
@@ -112,6 +109,7 @@ test.each([
 ])('builds an unmounted destination with anchor=%s', (withAnchor, expectedRoutes) => {
   const tabs: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     type: 'tab',
     key: 'tabs',
     index: 0,
@@ -147,6 +145,7 @@ test.each([
 test('preloads a parent without focusing it and resolves its child', () => {
   const stack: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
     key: 'root-stack',
     index: 0,
@@ -183,6 +182,7 @@ test('preloads a parent without focusing it and resolves its child', () => {
 test('preloads into the mounted stack of an unfocused tab', () => {
   const settingsStack: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
     key: 'settings-stack',
     index: 0,
@@ -191,6 +191,7 @@ test('preloads into the mounted stack of an unfocused tab', () => {
   };
   const tabs: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     type: 'tab',
     key: 'tabs',
     index: 0,
@@ -227,6 +228,7 @@ test('preloads into the mounted stack of an unfocused tab', () => {
 test('builds the synthetic root subtree without registered routers', () => {
   const rootState: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
     key: 'root',
     index: 0,
@@ -258,6 +260,7 @@ test('builds the synthetic root subtree without registered routers', () => {
 test('rebuilds from a router that returns partial state', () => {
   const child: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'child-stack',
     index: 0,
     routeNames: ['index', 'details'],
@@ -265,6 +268,7 @@ test('rebuilds from a router that returns partial state', () => {
   };
   const root: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'root-stack',
     index: 0,
     routeNames: ['settings'],
@@ -298,6 +302,7 @@ test('rebuilds from a router that returns partial state', () => {
   expect(action.payload.state).toEqual(
     expect.objectContaining({
       stale: false,
+      routeKeySeq: 1,
       key: expect.any(String),
       routeNames: ['index', 'details'],
     })
@@ -310,6 +315,7 @@ test('rebuilds from a router that returns partial state', () => {
 test('strips source, target and first-level options from deeper actions', () => {
   const child: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'child-stack',
     index: 0,
     routeNames: ['details'],
@@ -317,6 +323,7 @@ test('strips source, target and first-level options from deeper actions', () => 
   };
   const root: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'root-stack',
     index: 0,
     routeNames: ['settings'],
@@ -351,7 +358,6 @@ test('strips source, target and first-level options from deeper actions', () => 
       payload: { merge: true, singular: true },
     },
   });
-
   expect(action.type).toBe('REPLACE');
   expect(action.source).toBeUndefined();
   expect(action.target).toBe('child-stack');
@@ -365,6 +371,7 @@ test('strips source, target and first-level options from deeper actions', () => 
 test('targets an equivalent mounted state directly without carrying replacement state', () => {
   const child: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'child-stack',
     index: 0,
     routeNames: ['details'],
@@ -372,6 +379,7 @@ test('targets an equivalent mounted state directly without carrying replacement 
   };
   const root: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'root-stack',
     index: 0,
     routeNames: ['settings'],
@@ -400,6 +408,7 @@ test('targets an equivalent mounted state directly without carrying replacement 
 test('adds internal params at every generated level without mutating inputs', () => {
   const stack: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     type: 'stack',
     key: 'root-stack',
     index: 0,

@@ -58,6 +58,7 @@ test('rejects a partial initial state', () => {
 test('rejects a partial nested initial state', () => {
   const initialState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'root',
     index: 0,
     routeNames: ['home'],
@@ -82,6 +83,7 @@ test('rejects a partial nested initial state', () => {
 test('rejects an initial state without an index', () => {
   const initialState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'root',
     routeNames: ['home'],
     routes: [{ key: 'home', name: 'home' }],
@@ -97,6 +99,7 @@ test('rejects an initial state without an index', () => {
 test('rejects an initial state without route keys', () => {
   const initialState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'root',
     index: 0,
     routeNames: ['home'],
@@ -113,6 +116,7 @@ test('rejects an initial state without route keys', () => {
 test('preserves a complete initial state by identity', () => {
   const initialState: NavigationState = {
     stale: false,
+    routeKeySeq: 0,
     key: 'root',
     index: 0,
     routeNames: ['home'],
@@ -185,6 +189,7 @@ test('handle dispatching with ref', () => {
 
   const initialState = {
     stale: false as const,
+    routeKeySeq: 0,
     type: 'test',
     key: '0',
     index: 1,
@@ -225,6 +230,7 @@ test('handle dispatching with ref', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 1,
     key: '0',
@@ -316,6 +322,7 @@ test('handles resetting to a complete state with ref', () => {
 
   const state = {
     stale: false as const,
+    routeKeySeq: 0,
     type: 'test',
     key: 'navigator-3',
     index: 1,
@@ -326,6 +333,7 @@ test('handles resetting to a complete state with ref', () => {
         name: 'baz',
         state: {
           stale: false as const,
+          routeKeySeq: 0,
           type: 'test',
           index: 0,
           key: '4',
@@ -348,6 +356,7 @@ test('handles resetting to a complete state with ref', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 1,
     key: 'navigator-3',
@@ -358,6 +367,7 @@ test('handles resetting to a complete state with ref', () => {
         name: 'baz',
         state: {
           stale: false,
+          routeKeySeq: 0,
           type: 'test',
           index: 0,
           key: '4',
@@ -420,10 +430,12 @@ test('handles getRootState', () => {
           routeNames: ['qux', 'lex'],
           routes: [{ key: 'qux-6', name: 'qux' }],
           stale: false,
+          routeKeySeq: 0,
         },
       },
     ],
     stale: false,
+    routeKeySeq: 0,
   });
 });
 
@@ -535,6 +547,7 @@ test('emits state events when the state changes', () => {
   expect(listener).toHaveBeenCalledTimes(1);
   expect(listener.mock.calls[0]![0].data.state).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 1,
     key: 'navigator-3',
@@ -553,6 +566,7 @@ test('emits state events when the state changes', () => {
   expect(listener).toHaveBeenCalledTimes(2);
   expect(listener.mock.calls[1]![0].data.state).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
     index: 2,
     key: 'navigator-3',
@@ -608,6 +622,7 @@ test('emits state events when new navigator mounts', () => {
         // The nested state is complete, but the prop's partial-state union rejects route keys.
         {
           stale: false,
+          routeKeySeq: 0,
           type: 'test',
           key: '2',
           index: 0,
@@ -619,6 +634,7 @@ test('emits state events when new navigator mounts', () => {
               name: 'bar',
               state: {
                 stale: false,
+                routeKeySeq: 0,
                 type: 'test',
                 key: '1',
                 index: 0,
@@ -1009,6 +1025,7 @@ test('works with state change events in a sibling root container', () => {
       { key: 'lex-0', name: 'lex', params: undefined },
     ],
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
   });
 
@@ -1021,6 +1038,7 @@ test('works with state change events in a sibling root container', () => {
       { key: 'lex-0', name: 'lex', params: undefined },
     ],
     stale: false,
+    routeKeySeq: 0,
     type: 'test',
   });
 });

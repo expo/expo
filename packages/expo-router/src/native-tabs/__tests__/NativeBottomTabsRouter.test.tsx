@@ -8,8 +8,6 @@ import { CommonActions, type RouterConfigOptions } from '../../react-navigation/
 import type { ParamListBase, TabNavigationState } from '../../react-navigation/routers';
 import { NativeBottomTabsRouter } from '../NativeBottomTabsRouter';
 
-jest.mock('nanoid/non-secure', () => ({ nanoid: jest.fn(() => 'test') }));
-
 let warn: jest.SpyInstance;
 
 beforeEach(() => {
@@ -26,7 +24,10 @@ test('post-processes a first navigation to an unvisited tab', () => {
     routeNames: ['index', 'second'],
     routeGetIdList: {},
   };
-  const state = createInitialState<TabNavigationState<ParamListBase>>(options);
+  const state = createInitialState<TabNavigationState<ParamListBase>>({
+    ...options,
+    parentChain: 'test',
+  });
 
   const destinationState = {
     routes: [
@@ -92,7 +93,10 @@ test('does not treat a screen param as a deep destination', () => {
     routeNames: ['index', 'second'],
     routeGetIdList: {},
   };
-  const state = createInitialState<TabNavigationState<ParamListBase>>(options);
+  const state = createInitialState<TabNavigationState<ParamListBase>>({
+    ...options,
+    parentChain: 'test',
+  });
 
   const result = router.getStateForAction(
     state,
@@ -115,7 +119,10 @@ test('preserves trusted carried state content while post-processing navigation',
     routes: [{ name: 'nested' }],
     __internal__routerActionState: true as const,
   };
-  const state = createInitialState<TabNavigationState<ParamListBase>>(options);
+  const state = createInitialState<TabNavigationState<ParamListBase>>({
+    ...options,
+    parentChain: 'test',
+  });
 
   const result = router.getStateForAction(
     state,
@@ -135,7 +142,10 @@ test('warns once when navigation carries untrusted state', () => {
     routeNames: ['index', 'second'],
     routeGetIdList: {},
   };
-  const state = createInitialState<TabNavigationState<ParamListBase>>(options);
+  const state = createInitialState<TabNavigationState<ParamListBase>>({
+    ...options,
+    parentChain: 'test',
+  });
 
   router.getStateForAction(
     state,

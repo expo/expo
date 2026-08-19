@@ -30,6 +30,7 @@ test('preserves reference for navigation objects', () => {
   const state: NavigationState = {
     type: 'tab',
     stale: false as const,
+    routeKeySeq: 0,
     index: 1,
     key: 'State',
     routeNames: ['Foo', 'Bar'],
@@ -83,6 +84,7 @@ test('preserves placeholder navigation after the route is created', () => {
   const getState = (): NavigationState => ({
     type: 'tab',
     stale: false as const,
+    routeKeySeq: 0,
     index: 0,
     key: 'State',
     routeNames,

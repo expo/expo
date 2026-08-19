@@ -7,6 +7,7 @@ const staleStateError =
 
 const child: NavigationState = {
   stale: false,
+  routeKeySeq: 0,
   key: 'child',
   index: 0,
   routeNames: ['a', 'b'],
@@ -18,6 +19,7 @@ const child: NavigationState = {
 const sibling: NavigationState = { ...child, key: 'sibling' };
 const root: NavigationState = {
   stale: false,
+  routeKeySeq: 0,
   key: 'root',
   index: 0,
   routeNames: ['nested', 'other'],

@@ -1,15 +1,16 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import type { NavigationState, Route } from '../routers';
+import { createNavigatorStateKey, createRouteKeyMinter } from '../routers/stateKeys';
 
 type InitialStateOptions = {
   routeNames: string[];
   initialRouteName?: string;
+  parentChain: string;
 };
 
 export function createInitialState<State extends NavigationState = NavigationState>({
   routeNames,
   initialRouteName,
+  parentChain,
 }: InitialStateOptions): State {
   const focusedRouteName =
     initialRouteName !== undefined && routeNames.includes(initialRouteName)
@@ -17,10 +18,12 @@ export function createInitialState<State extends NavigationState = NavigationSta
       : routeNames[0];
 
   const routes: Route<string>[] = [];
+  const key = createNavigatorStateKey(parentChain);
+  const minter = createRouteKeyMinter({ key, routeKeySeq: 0 });
 
   if (focusedRouteName !== undefined) {
     routes.push({
-      key: `${focusedRouteName}-${nanoid()}`,
+      key: minter.mint(focusedRouteName),
       name: focusedRouteName,
     });
   }
@@ -29,7 +32,8 @@ export function createInitialState<State extends NavigationState = NavigationSta
   // Router state types may narrow the shared metadata added later by actions.
   return {
     stale: false,
-    key: `navigator-${nanoid()}`,
+    key,
+    routeKeySeq: minter.routeKeySeq,
     index: routes.length - 1,
     routeNames,
     routes,

@@ -131,6 +131,7 @@ test('resolves a completed state from an async initial URL without writing to th
   expect(getStateFromPath).toHaveBeenCalledWith('/home/42', undefined);
   expect(state?.routes[0]!.state?.routes[0]!.state).toMatchObject({
     stale: false,
+    routeKeySeq: expect.any(Number),
     key: expect.any(String),
     routeNames: ['[id]'],
   });
@@ -302,6 +303,7 @@ test('seeds the store when a synchronous initial URL is absent', () => {
 
   expect(mockStoreRef.current.state).toMatchObject({
     stale: false,
+    routeKeySeq: expect.any(Number),
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {

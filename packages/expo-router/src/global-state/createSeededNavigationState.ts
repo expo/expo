@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid/non-secure';
-
 import {
   findRouteNodeByName,
   getValidInitialRouteName,
@@ -10,6 +8,12 @@ import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
 import { createInitialState } from '../react-navigation/core/createInitialState';
 import type { NavigationState, PartialState } from '../react-navigation/routers';
+import {
+  createNavigatorStateKey,
+  createRouteKeyMinter,
+  getChainFromRouteKey,
+  ROOT_CHAIN,
+} from '../react-navigation/routers/stateKeys';
 import { getRootStackRouteNames } from './utils';
 
 type SeedState = NavigationState | PartialState<NavigationState>;
@@ -31,6 +35,7 @@ export function createSeededRootState(
     routeNames: getRootStackRouteNames(),
     initialRouteName: undefined,
     targetInitialRouteName: undefined,
+    parentChain: ROOT_CHAIN,
     findChildNode: (routeName) => (routeName === INTERNAL_SLOT_NAME ? rootRouteNode : undefined),
   });
 }
@@ -39,28 +44,37 @@ export function completeNavigationState(
   state: SeedState,
   rootRouteNode: RouteNode
 ): NavigationState {
-  return completeExistingState(state, getRootStackRouteNames(), (routeName) =>
+  return completeExistingState(state, getRootStackRouteNames(), ROOT_CHAIN, (routeName) =>
     routeName === INTERNAL_SLOT_NAME ? rootRouteNode : undefined
   );
 }
 
 export function completeParsedState(
-  targetState: SeedState | undefined
+  targetState: SeedState | undefined,
+  parentChain: string
 ): NavigationState | undefined {
   if (!targetState) {
     return undefined;
   }
 
-  const routes = targetState.routes.map((route) => ({
-    ...route,
-    key: route.key ?? `${route.name}-${nanoid()}`,
-    ...(route.state ? { state: completeParsedState(route.state) } : undefined),
-  }));
+  const key = targetState.key ?? createNavigatorStateKey(parentChain);
+  const minter = createRouteKeyMinter({ key, routeKeySeq: targetState.routeKeySeq ?? 0 });
+  const routes = targetState.routes.map((route) => {
+    const routeKey = route.key ?? minter.mint(route.name);
+    return {
+      ...route,
+      key: routeKey,
+      ...(route.state
+        ? { state: completeParsedState(route.state, getChainFromRouteKey(routeKey)) }
+        : undefined),
+    };
+  });
 
   return {
     ...targetState,
     stale: false,
-    key: targetState.key ?? `navigator-${nanoid()}`,
+    key,
+    routeKeySeq: minter.routeKeySeq,
     index: targetState.index ?? routes.length - 1,
     routeNames: targetState.routeNames ?? [...new Set(routes.map((route) => route.name))],
     routes,
@@ -69,7 +83,8 @@ export function completeParsedState(
 
 export function createSeededNavigationState(
   targetState: SeedState | undefined,
-  routeNode: RouteNode
+  routeNode: RouteNode,
+  parentChain: string
 ): NavigationState {
   const initialRouteName = getValidInitialRouteName(routeNode);
   const routeNames = [...routeNode.children]
@@ -81,6 +96,7 @@ export function createSeededNavigationState(
     routeNames,
     initialRouteName,
     targetInitialRouteName: routeNode.initialRouteName,
+    parentChain,
     findChildNode: (routeName) => findRouteNodeByName(routeNode, routeName),
   });
 }
@@ -90,12 +106,15 @@ export function createSeededNavigationState(
 function completeExistingState(
   state: SeedState,
   fallbackRouteNames: string[],
+  parentChain: string,
   findChildNode: (routeName: string) => RouteNode | undefined
 ): NavigationState {
+  const key = state.key ?? createNavigatorStateKey(parentChain);
+  const minter = createRouteKeyMinter({ key, routeKeySeq: state.routeKeySeq ?? 0 });
   let routesChanged = false;
   const routes = state.routes.map((route) => {
     const childNode = findChildNode(route.name);
-    const routeKey = route.key ?? `${route.name}-${nanoid()}`;
+    const routeKey = route.key ?? minter.mint(route.name);
     // `PartialState` keeps the route union partial after the key check, but this branch proves it is complete.
     const completeRoute: NavigationState['routes'][number] =
       route.key === undefined
@@ -113,10 +132,13 @@ function completeExistingState(
       .sort(sortRoutesWithInitial(initialRouteName))
       .map((child) => child.route);
     const childState = route.state
-      ? completeExistingState(route.state, childRouteNames, (routeName) =>
-          findRouteNodeByName(childNode, routeName)
+      ? completeExistingState(
+          route.state,
+          childRouteNames,
+          getChainFromRouteKey(routeKey),
+          (routeName) => findRouteNodeByName(childNode, routeName)
         )
-      : createSeededNavigationState(undefined, childNode);
+      : createSeededNavigationState(undefined, childNode, getChainFromRouteKey(routeKey));
 
     if (childState === route.state && routeKey === route.key) {
       return completeRoute;
@@ -130,6 +152,7 @@ function completeExistingState(
     !routesChanged &&
     state.stale === false &&
     state.key !== undefined &&
+    state.routeKeySeq === minter.routeKeySeq &&
     state.index !== undefined &&
     state.routeNames !== undefined
   ) {
@@ -139,8 +162,9 @@ function completeExistingState(
   return {
     ...state,
     stale: false,
-    key: state.key ?? `navigator-${nanoid()}`,
-    index: state.index ?? Math.max(routes.length - 1, 0),
+    key,
+    routeKeySeq: minter.routeKeySeq,
+    index: state.index ?? routes.length - 1,
     routeNames: state.routeNames ?? fallbackRouteNames,
     routes,
   };
@@ -151,6 +175,7 @@ type CreateSeededStateOptions = {
   routeNames: string[];
   initialRouteName: string | undefined;
   targetInitialRouteName: string | undefined;
+  parentChain: string;
   // Root maps `INTERNAL_SLOT_NAME` to itself; nested levels lazily use `findRouteNodeByName`.
   findChildNode: (routeName: string) => RouteNode | undefined;
 };
@@ -160,9 +185,10 @@ function createSeededState({
   routeNames,
   initialRouteName,
   targetInitialRouteName,
+  parentChain,
   findChildNode,
 }: CreateSeededStateOptions): NavigationState {
-  const initialState = createInitialState({ routeNames, initialRouteName });
+  const initialState = createInitialState({ routeNames: [], parentChain });
   const parsedRoutes = targetState?.routes ?? [];
   const targetInitialRouteIndex = parsedRoutes.findIndex(
     (route) => route.name === targetInitialRouteName
@@ -187,15 +213,28 @@ function createSeededState({
     }
   }
 
-  const routes = targetRoutes.map((targetRoute) => {
+  const defaultRouteName = initialRouteName ?? routeNames[0];
+  const routesToCreate =
+    targetRoutes.length > 0
+      ? targetRoutes
+      : defaultRouteName === undefined
+        ? []
+        : [{ name: defaultRouteName }];
+  const minter = createRouteKeyMinter(initialState);
+  const routes = routesToCreate.map((targetRoute) => {
+    const key = minter.mint(targetRoute.name);
     const childNode = findChildNode(targetRoute.name);
     const childState =
       childNode && childNode.children.length > 0
-        ? createSeededNavigationState(targetRoute.state, childNode)
+        ? createSeededNavigationState(
+            'state' in targetRoute ? targetRoute.state : undefined,
+            childNode,
+            getChainFromRouteKey(key)
+          )
         : undefined;
 
     return {
-      key: `${targetRoute.name}-${nanoid()}`,
+      key,
       name: targetRoute.name,
       ...('path' in targetRoute ? { path: targetRoute.path } : undefined),
       ...('params' in targetRoute ? { params: targetRoute.params } : undefined),
@@ -203,17 +242,17 @@ function createSeededState({
     };
   });
 
-  if (routes.length === 0) {
-    return initialState;
-  }
-
-  const targetIndex = targetState?.index ?? routes.length - 1;
+  const targetIndex = targetRoutes.length > 0 ? (targetState?.index ?? routes.length - 1) : 0;
   return {
     ...initialState,
+    routeKeySeq: minter.routeKeySeq,
+    routeNames,
     index:
-      omitTargetInitialRoute && targetInitialRouteIndex <= targetIndex
-        ? targetIndex - 1
-        : targetIndex,
+      routes.length === 0
+        ? -1
+        : omitTargetInitialRoute && targetInitialRouteIndex <= targetIndex
+          ? targetIndex - 1
+          : targetIndex,
     routes,
   };
 }

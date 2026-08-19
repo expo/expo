@@ -1,4 +1,4 @@
-import { expect, jest, test } from '@jest/globals';
+import { expect, test } from '@jest/globals';
 
 import {
   CommonActions,
@@ -11,8 +11,6 @@ import {
 } from '..';
 import { createInitialState } from '../../core/createInitialState';
 
-jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
-
 test('actions return drawer metadata for state without router metadata', () => {
   const router = DrawerRouter({});
   const options: RouterConfigOptions = {
@@ -21,6 +19,7 @@ test('actions return drawer metadata for state without router metadata', () => {
   };
   const createState = (): DrawerNavigationState<ParamListBase> => ({
     stale: false,
+    routeKeySeq: 0,
     key: 'root',
     index: 1,
     routeNames: options.routeNames,
@@ -46,6 +45,7 @@ test('actions return drawer metadata for state without router metadata', () => {
 test('route focus returns drawer metadata for state without router metadata', () => {
   const state: DrawerNavigationState<ParamListBase> = {
     stale: false,
+    routeKeySeq: 0,
     key: 'root',
     index: 0,
     routeNames: ['bar', 'baz'],
@@ -64,6 +64,7 @@ test('route focus returns drawer metadata for state without router metadata', ()
 test('throws for partial RESET state', () => {
   const state: DrawerNavigationState<ParamListBase> = {
     stale: false,
+    routeKeySeq: 0,
     key: 'root',
     index: 0,
     routeNames: ['bar'],
@@ -89,6 +90,7 @@ function getCompleteState(
 
 const stateWithoutHistory = (): DrawerNavigationState<ParamListBase> => ({
   stale: false,
+  routeKeySeq: 0,
   type: 'drawer',
   key: 'root',
   index: 0,
@@ -201,6 +203,7 @@ test('preserves reconstructed history after closing the drawer', () => {
   };
   const state: DrawerNavigationState<ParamListBase> = {
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
     key: 'root',
     index: 1,
@@ -232,7 +235,10 @@ test('preserves drawer status when route names change', () => {
     routeNames: ['bar', 'baz'],
     routeGetIdList: {},
   };
-  const initialState = createInitialState<DrawerNavigationState<ParamListBase>>(options);
+  const initialState = createInitialState<DrawerNavigationState<ParamListBase>>({
+    ...options,
+    parentChain: 'test',
+  });
   const openState = router.getStateForAction(
     initialState,
     DrawerActions.openDrawer(),
@@ -254,7 +260,10 @@ test('restores route history without dropping drawer status when the active rout
     routeNames: ['bar', 'baz'],
     routeGetIdList: {},
   };
-  const initialState = createInitialState<DrawerNavigationState<ParamListBase>>(options);
+  const initialState = createInitialState<DrawerNavigationState<ParamListBase>>({
+    ...options,
+    parentChain: 'test',
+  });
   const openState = router.getStateForAction(
     initialState,
     DrawerActions.openDrawer(),
@@ -268,7 +277,7 @@ test('restores route history without dropping drawer status when the active rout
   );
 
   expect(state!.state.history).toEqual([
-    { type: 'route', key: 'baz-test' },
+    { type: 'route', key: 'baz:test-1' },
     { type: 'drawer', status: 'open' },
   ]);
 });
@@ -281,8 +290,9 @@ test('PRELOAD rebuilds route history without dropping drawer status', () => {
   };
   const focusedState: DrawerNavigationState<ParamListBase> = {
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
-    key: 'drawer-test',
+    key: 'navigator:drawer',
     index: 0,
     routeNames: options.routeNames,
     routes: [{ key: 'qux-key', name: 'qux' }],
@@ -300,7 +310,7 @@ test('PRELOAD rebuilds route history without dropping drawer status', () => {
   );
 
   expect(state!.state.history).toEqual([
-    { type: 'route', key: 'baz-test' },
+    { type: 'route', key: 'baz:drawer-0' },
     { type: 'route', key: 'qux-key' },
     { type: 'drawer', status: 'open' },
   ]);
@@ -317,6 +327,7 @@ test('handles navigate action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
         key: 'root',
         index: 1,
@@ -332,6 +343,7 @@ test('handles navigate action', () => {
     )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
     key: 'root',
     index: 0,
@@ -354,6 +366,7 @@ test('handles navigate action with open drawer', () => {
   const result = router.getStateForAction(
     {
       stale: false,
+      routeKeySeq: 0,
       type: 'drawer',
       key: 'root',
       index: 1,
@@ -373,6 +386,7 @@ test('handles navigate action with open drawer', () => {
 
   expect(result?.state).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
     key: 'root',
     index: 0,
@@ -397,6 +411,7 @@ test('attaches trusted state while closing the drawer', () => {
   const result = router.getStateForAction(
     {
       stale: false,
+      routeKeySeq: 0,
       type: 'drawer',
       key: 'root',
       index: 1,
@@ -432,6 +447,7 @@ test('closes open drawer on replace with backBehavior: fullHistory', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
         key: 'root',
         index: 1,
@@ -450,6 +466,7 @@ test('closes open drawer on replace with backBehavior: fullHistory', () => {
     )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
     key: 'root',
     index: 0,
@@ -472,6 +489,7 @@ test('handles open drawer action', () => {
   const result = router.getStateForAction(
     {
       stale: false,
+      routeKeySeq: 0,
       type: 'drawer',
       key: 'root',
       index: 1,
@@ -488,6 +506,7 @@ test('handles open drawer action', () => {
 
   expect(result?.state).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
     key: 'root',
     index: 1,
@@ -505,6 +524,7 @@ test('handles open drawer action', () => {
 
   const state: DrawerNavigationState<ParamListBase> = {
     stale: false as const,
+    routeKeySeq: 0,
     type: 'drawer' as const,
     key: 'root',
     index: 1,
@@ -532,6 +552,7 @@ test('handles close drawer action', () => {
   const result = router.getStateForAction(
     {
       stale: false,
+      routeKeySeq: 0,
       type: 'drawer',
       key: 'root',
       index: 1,
@@ -551,6 +572,7 @@ test('handles close drawer action', () => {
 
   expect(result?.state).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
     key: 'root',
     index: 1,
@@ -565,6 +587,7 @@ test('handles close drawer action', () => {
 
   const state: DrawerNavigationState<ParamListBase> = {
     stale: false as const,
+    routeKeySeq: 0,
     type: 'drawer' as const,
     key: 'root',
     index: 1,
@@ -593,6 +616,7 @@ test('handles toggle drawer action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
         key: 'root',
         index: 1,
@@ -611,6 +635,7 @@ test('handles toggle drawer action', () => {
     )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
     key: 'root',
     index: 1,
@@ -626,6 +651,7 @@ test('handles toggle drawer action', () => {
     router.getStateForAction(
       {
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
         key: 'root',
         index: 1,
@@ -641,6 +667,7 @@ test('handles toggle drawer action', () => {
     )?.state
   ).toEqual({
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
     key: 'root',
     index: 1,
@@ -670,6 +697,7 @@ test('updates history on focus change with backBehavior: history', () => {
     ],
     history: [{ type: 'route', key: 'bar-0' }],
     stale: false as const,
+    routeKeySeq: 0,
     type: 'drawer' as const,
   };
 
@@ -715,6 +743,7 @@ test('updates history on focus change with backBehavior: fullHistory', () => {
     ],
     history: [{ type: 'route', key: 'bar-0' }],
     stale: false as const,
+    routeKeySeq: 0,
     type: 'drawer' as const,
   };
 
@@ -763,6 +792,7 @@ test('closes drawer on focus change with backBehavior: history', () => {
         ],
         history: [{ type: 'route', key: 'bar-0' }],
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
       },
       'baz-0'
@@ -781,6 +811,7 @@ test('closes drawer on focus change with backBehavior: history', () => {
       { type: 'route', key: 'baz-0' },
     ],
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
   });
 
@@ -800,6 +831,7 @@ test('closes drawer on focus change with backBehavior: history', () => {
           { type: 'drawer', status: 'open' },
         ],
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
       },
       'bar-0'
@@ -815,6 +847,7 @@ test('closes drawer on focus change with backBehavior: history', () => {
     ],
     history: [{ type: 'route', key: 'bar-0' }],
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
   });
 
@@ -834,6 +867,7 @@ test('closes drawer on focus change with backBehavior: history', () => {
           { type: 'drawer', status: 'open' },
         ],
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
       },
       'baz-0'
@@ -852,6 +886,7 @@ test('closes drawer on focus change with backBehavior: history', () => {
       { type: 'route', key: 'baz-0' },
     ],
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
   });
 });
@@ -872,6 +907,7 @@ test('closes drawer on focus change with backBehavior: fullHistory', () => {
         ],
         history: [{ type: 'route', key: 'bar-0' }],
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
       },
       'baz-0'
@@ -890,6 +926,7 @@ test('closes drawer on focus change with backBehavior: fullHistory', () => {
       { type: 'route', key: 'baz-0' },
     ],
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
   });
 
@@ -909,6 +946,7 @@ test('closes drawer on focus change with backBehavior: fullHistory', () => {
           { type: 'drawer', status: 'open' },
         ],
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
       },
       'bar-0'
@@ -924,6 +962,7 @@ test('closes drawer on focus change with backBehavior: fullHistory', () => {
     ],
     history: [{ type: 'route', key: 'bar-0' }],
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
   });
 
@@ -943,6 +982,7 @@ test('closes drawer on focus change with backBehavior: fullHistory', () => {
           { type: 'drawer', status: 'open' },
         ],
         stale: false,
+        routeKeySeq: 0,
         type: 'drawer',
       },
       'baz-0'
@@ -961,6 +1001,7 @@ test('closes drawer on focus change with backBehavior: fullHistory', () => {
       { type: 'route', key: 'baz-0' },
     ],
     stale: false,
+    routeKeySeq: 0,
     type: 'drawer',
   });
 });
