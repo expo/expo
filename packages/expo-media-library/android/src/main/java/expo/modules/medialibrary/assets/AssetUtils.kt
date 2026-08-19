@@ -169,7 +169,10 @@ suspend fun putAssetsInfo(
         async {
           val localUri = "file://${pending.path}"
           var exifInterface: ExifInterface? = null
-          if (resolveWithFullInfo && pending.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
+          if (
+            (resolveWithFullInfo || pending.missingDimensions) &&
+            pending.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
+          ) {
             try {
               exifInterface = ExifInterface(pending.path)
             } catch (e: IOException) {
@@ -185,6 +188,20 @@ suspend fun putAssetsInfo(
           }
 
           if (exifInterface != null) {
+            // If we haven't already, use the fetched EXIF data to populate the dimensions.
+            // While the cursor should have the orientation, this defends against bugs when it
+            // might be missing.
+            if (!pending.missingDimensions) {
+              val (width, height) = getImageDimensionsFromExifFast(
+                exifInterface,
+                pending.cursorWidth,
+                pending.cursorHeight,
+                pending.cursorOrientation
+              )
+              pending.asset.putLong("width", width.toLong())
+              pending.asset.putLong("height", height.toLong())
+            }
+
             getExifFullInfo(exifInterface, pending.asset)
 
             val assetId = pending.asset.getString("id") ?: return@async
@@ -350,6 +367,23 @@ private fun getAssetDimensionsSlow(
     width = options.outWidth
     height = options.outHeight
   }
+
+  return getImageDimensionsFromExifFast(exifInterface, width, height, orientation)
+}
+
+/**
+ * Applies EXIF orientation to pre-fetched image dimensions. This is fast because — it performs no
+ * file I/O. It prefers EXIF orientation when [exifInterface] is available, and otherwise falls back
+ * to [cursorOrientation] from the MediaStore cursor.
+ */
+private fun getImageDimensionsFromExifFast(
+  exifInterface: ExifInterface?,
+  width: Int,
+  height: Int,
+  cursorOrientation: Int
+): Pair<Int, Int> {
+  var resolvedOrientation = cursorOrientation
+
   if (exifInterface != null) {
     val exifOrientation = exifInterface.getAttributeInt(
       ExifInterface.TAG_ORIENTATION,
@@ -360,10 +394,10 @@ private fun getAssetDimensionsSlow(
       exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
       exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
     ) {
-      orientation = 90
+      resolvedOrientation = 90
     }
   }
-  return maybeRotateAssetSize(width, height, orientation)
+  return maybeRotateAssetSize(width, height, resolvedOrientation)
 }
 
 /**

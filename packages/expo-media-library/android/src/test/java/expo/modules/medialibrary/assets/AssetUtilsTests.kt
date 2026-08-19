@@ -59,6 +59,10 @@ internal class AssetUtilsTests {
     assertEquals("file://${MockData.mockVideo.path}", result[0].getString("uri"))
     assertEquals(MockData.mockVideo.width!!.toLong(), result[0].getLong("width"))
     assertEquals(MockData.mockVideo.height!!.toLong(), result[0].getLong("height"))
+
+    assertEquals(MockData.mockAudio.id.toString(), result[1].getString("id"))
+    assertEquals(0L, result[1].getLong("width"))
+    assertEquals(0L, result[1].getLong("height"))
   }
 
   @Test
