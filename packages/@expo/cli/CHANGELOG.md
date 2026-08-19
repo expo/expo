@@ -20,6 +20,7 @@
 - Use default `Cache-Control` header value of `public, max-age=0, must-revalidate` for SSG loader files and their pages ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
 - Use default `Cache-Control` header value of `no-store` for SSR loader responses ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
 - Add `experiments.noxcturnalTransformWorker` with native transformer experiment ([#48443](https://github.com/expo/expo/pull/48443) by [@kitten](https://github.com/kitten))
+- Enable server middleware by default ([#49000](https://github.com/expo/expo/pull/49000) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 

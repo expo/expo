@@ -1,14 +1,13 @@
 ---
 title: Server middleware
 description: Learn how to create middleware that runs for every request to the server in Expo Router.
-isAlpha: true
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **important** Server middleware is in [alpha](/more/release-statuses/#alpha) and is available in SDK 54 and later. It requires a [deployed server](/router/web/api-routes/#deployment) for production use.
+> **important** Server middleware requires a [deployed server](/router/web/api-routes/#deployment) for production use.
 
 Server middleware in Expo Router allows you to run code before requests reach your routes, enabling powerful server-side functionality like authentication and logging for every request. Unlike [API routes](/router/web/api-routes) that handle specific endpoints, middleware runs for **every** request in your app, so it should run as quickly as possible to avoid slowing down your app's performance. Client-side navigation such as on native, or in a web app when using [`<Link />`](/versions/latest/sdk/router/link/#link), will not move through the server middleware.
 
@@ -30,16 +29,7 @@ First, configure your app to use server output by adding the server configuratio
       "output": "server"
       /* @end */
     },
-    "plugins": [
-      [
-        "expo-router",
-        {
-          /* @info Enables server middleware */
-          "unstable_useServerMiddleware": true
-          /* @end */
-        }
-      ]
-    ]
+    "plugins": ["expo-router"]
   }
 }
 ```
