@@ -1,5 +1,4 @@
 import { type EventSubscription, CodedError, Platform, UnavailabilityError } from 'expo';
-import { LegacyEventEmitter } from 'expo-modules-core';
 
 import type { Notification, NotificationBehavior } from './Notifications.types';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
@@ -38,16 +37,6 @@ export interface NotificationHandler {
    */
   handleError?: (notificationId: string, error: NotificationHandlingError) => void;
 }
-
-type HandleNotificationEvent = {
-  id: string;
-  notification: Notification;
-};
-
-type HandleNotificationTimeoutEvent = HandleNotificationEvent;
-
-// Web uses SyntheticEventEmitter
-const notificationEmitter = new LegacyEventEmitter(NotificationsHandlerModule);
 
 const handleNotificationEventName = 'onHandleNotification';
 const handleNotificationTimeoutEventName = 'onHandleNotificationTimeout';
@@ -116,7 +105,7 @@ export function setNotificationHandler(handler: NotificationHandler | null): voi
 }
 
 function subscribe(activeHandler: NotificationHandler): void {
-  handleSubscription = notificationEmitter.addListener<HandleNotificationEvent>(
+  handleSubscription = NotificationsHandlerModule.addListener(
     handleNotificationEventName,
     async ({ id, notification }) => {
       if (!NotificationsHandlerModule.handleNotificationAsync) {
@@ -145,7 +134,7 @@ function subscribe(activeHandler: NotificationHandler): void {
     }
   );
 
-  handleTimeoutSubscription = notificationEmitter.addListener<HandleNotificationTimeoutEvent>(
+  handleTimeoutSubscription = NotificationsHandlerModule.addListener(
     handleNotificationTimeoutEventName,
     ({ id, notification }) =>
       activeHandler.handleError?.(

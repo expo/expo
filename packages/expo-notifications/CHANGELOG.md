@@ -20,6 +20,8 @@
 
 ### 💡 Others
 
+- Drop usage of the deprecated `LegacyEventEmitter`. ([#49080](https://github.com/expo/expo/pull/49080) by [@vonovak](https://github.com/vonovak))
+
 ## 57.0.8 - 2026-07-29
 
 _This version does not introduce any user-facing changes._
