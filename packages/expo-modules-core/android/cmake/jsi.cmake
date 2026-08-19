@@ -3,7 +3,7 @@ file(GLOB android_sources_jsi "${ANDROID_SRC_DIR}/jsi/*.cpp")
 
 add_library(
   expo-modules-jsi
-  STATIC
+  SHARED
   ${common_sources_jsi}
   ${android_sources_jsi}
 )
