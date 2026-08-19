@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Reject `deleteItemAsync` when the keychain refuses the delete, instead of resolving as if the item was removed.
+
 ### 💡 Others
 
 ## 57.0.1 - 2026-07-15
