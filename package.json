@@ -54,6 +54,7 @@
     "@types/babel__template": "^7.4.4",
     "@types/babel__traverse": "^7.20.7",
     "react-native": "0.86.0",
+    "react-native-web": "file:tarballs/react-native-web-0.21.2-00508291.tgz",
     "react-native-reanimated": "4.5.1",
     "react-native-worklets": "0.10.1"
   },
