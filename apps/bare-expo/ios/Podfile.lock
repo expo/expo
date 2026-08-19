@@ -596,6 +596,8 @@ PODS:
     - RNScreens
   - ExpoScreenCapture (57.0.1):
     - ExpoModulesCore
+  - ExpoScreenCapture/Tests (57.0.1):
+    - ExpoModulesCore
   - ExpoScreenOrientation (57.0.1):
     - ExpoModulesCore
     - hermes-engine
@@ -3417,6 +3419,7 @@ DEPENDENCIES:
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
+  - ExpoScreenCapture/Tests (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
   - ExpoSensors (from `../../../packages/expo-sensors/ios`)
@@ -4060,7 +4063,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: 4503d2da51ff7109712ccdfe0e4939f66818183e
   ExpoImage: 4c1e7634db6033185a98959fb028d8d4b1c89695
   ExpoImageManipulator: 40455ca0112c38e41defb14cb323c6372134eeac
-  ExpoImagePicker: ba36db5da890daafa3da9e061497df47e2252ee4
+  ExpoImagePicker: 8c6898eba27bb4086c4970ce5599e50bce5d7c80
   ExpoInsights: c7b7de693d2e81734a650086884016708e9d57ab
   ExpoKeepAwake: c26f14275017370cc8a4b7b43a0e23361f2053a5
   ExpoLinearGradient: 903b3f5fe566c666ff78b2599add51d094483613
@@ -4084,7 +4087,7 @@ SPEC CHECKSUMS:
   ExpoObserve: 161dcf385e295808637a06d20d4073ce4222e0cb
   ExpoPrint: 7e7a9bc7c12b9b336f34c4458d0c9ba14f243759
   ExpoRouter: 224087330cc8f5a39700e6f4d7a55f55ecb2f90d
-  ExpoScreenCapture: 1728376b2a32a05dc1f6bae6a8d19b1bd33926f9
+  ExpoScreenCapture: 387b18f4a51561916cbff71d6e0e7b386af31171
   ExpoScreenOrientation: 17fd81b2bdb7615b4b540335673aaf98a358281f
   ExpoSecureStore: 94793113049a2d7478dfe1a13aa15081e9f61755
   ExpoSensors: e71c7b6cb0c09d3427ef6ae29c69532a10c86b05
@@ -4092,7 +4095,7 @@ SPEC CHECKSUMS:
   ExpoSMS: ac35f6c85b72ee5b18a7c6bb06550fbd4a683775
   ExpoSpeech: 0e90904e2af5d6f166d4d2ffbdab535686597938
   ExpoSplashScreen: 247464c0fe484f766892db0d66c3fe54f92a624e
-  ExpoSQLite: ddd65ed74bdebcff20f6766e682f9321ecb28ab8
+  ExpoSQLite: 7ea4f5b0ebd0b6f15927c2349db7624a5abf6beb
   ExpoStoreReview: 2a0f6b8e04112aea2f6e3e1cb84109d78f4d041f
   ExpoSymbols: 7c7c7bd3c52f0b6dcbba6e8af4088b0dc1ea7d29
   ExpoSystemUI: ff3142b323ae7b4d11dc0b1dc4acfa30d92be7dc
@@ -4104,10 +4107,10 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 0a7d37113fe51af5c302461ad0344dc529161316
   ExpoWebBrowser: 9b98d939d5f1c5dd8f523f0a0683056fb1204434
   EXStructuredHeaders: 1423c3602a30eb078e03b63b251ef912267dd4c0
-  EXUpdates: 01f1b6c3ef1df0a981f84af9a91dc027baed4a07
+  EXUpdates: e8c071fa483afb3d9d1de09e8f4f9427278af0a1
   EXUpdatesInterface: 92d2aa5194b6fb93ca8ab749db75665cb28b2e60
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: ebe8b908c0614fa2c4e3655af31dcbadd9e73c67
+  hermes-engine: 4c998771d5218e20701b63d8358199a520a54447
   JestMockSchema: 96b4cfec246644f6323d1c30693b6a02044be1e6
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
