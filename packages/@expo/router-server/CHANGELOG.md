@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Preserve bundled, external, and inline stylesheet order in static and streaming documents. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 58.0.0 — 2026-09-10

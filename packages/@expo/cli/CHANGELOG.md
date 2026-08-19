@@ -56,6 +56,7 @@
 - Make Android tooling (avd and adb) handling safer, more reliable, and cancellable ([#49258](https://github.com/expo/expo/pull/49258) by [@kitten](https://github.com/kitten))
 - Serve one virtual Metro asset registry to every consumer on React Native 0.87 — Metro's generated asset modules, `react-native/asset-registry` and legacy `@react-native/assets-registry` imports, and React Native core's internal registry imports — so Metro-registered assets and React Native's `<Image>` share one registry instance. ([#49444](https://github.com/expo/expo/pull/49444) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Depend on `@react-native/js-polyfills` directly for the web polyfills instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Preserve bundled, external, and inline stylesheet order across static and server rendering. ([#50016](https://github.com/expo/expo/pull/50016) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
