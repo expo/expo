@@ -135,8 +135,15 @@ public final class SecureStoreModule: Module {
   private func update(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
     var query = query(with: key, options: options, requireAuthentication: options.requireAuthentication)
 
-    let valueData = value.data(using: .utf8)
-    let updateDictionary = [kSecValueData as String: valueData]
+    var updateDictionary: [String: Any] = [kSecValueData as String: Data(value.utf8)]
+
+    // An existing item keeps the accessibility it was created with unless the update
+    // names the attribute, so `keychainAccessible` was silently ignored on every write
+    // to a key that already existed. Mirrors `set(value:with:options:)`, where an
+    // authenticated item carries its accessibility in `kSecAttrAccessControl` instead.
+    if !options.requireAuthentication {
+      updateDictionary[kSecAttrAccessible as String] = attributeWith(options: options)
+    }
 
     if let authPrompt = options.authenticationPrompt {
       query[kSecUseOperationPrompt as String] = authPrompt

@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Reject `deleteItemAsync` when the keychain refuses the delete, instead of resolving as if the item was removed.
+- [iOS] Apply `keychainAccessible` when overwriting an existing item, instead of silently keeping the accessibility it was first stored with.
 
 ### 💡 Others
 
