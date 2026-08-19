@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Re-anchor the project-level `REACT_NATIVE_PATH` build setting to `$(SRCROOT)` when React Native's ccache integration is enabled, so the `CC`/`LD` ccache wrapper paths resolve in targets not integrated with CocoaPods (e.g. custom share or widget extensions), which previously failed with `unable to spawn process '/../../node_modules/react-native/scripts/xcode/ccache-clang.sh'`. ([#47596](https://github.com/expo/expo/pull/47596) by [@AbbanMustafa](https://github.com/AbbanMustafa))
 - [iOS] Fix `HEADER_SEARCH_PATHS` corruption for pod targets whose existing build setting is an array: interpolating the array into a string rendered it as `["…", "…"]`, producing unresolvable include paths. Surfaced as `'React/RCTSurfaceTouchHandler.h' file not found` when building `@expo/ui` with `use_frameworks! :linkage => :dynamic`. ([#48665](https://github.com/expo/expo/pull/48665) by [@Lanchez](https://github.com/Lanchez))
 - [Android] Fix autolinking pure C++ React Native modules published without `includesGeneratedCode: true`. ([#48514](https://github.com/expo/expo/pull/48514) by [@satya164](https://github.com/satya164))
 - [iOS] Only stub a source pod bundled inside a prebuilt XCFramework (e.g. `SDWebImage` in `ExpoImage.xcframework`) when one of its consumers also links the owning prebuilt pod. An app extension that depends on such a pod on its own now keeps building it from source instead of failing to link with undefined symbols. ([#47847](https://github.com/expo/expo/pull/47847) by [@chrfalch](https://github.com/chrfalch))
