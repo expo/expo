@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Queue `navigation.dispatch` and navigation helper actions until after commit, add synchronous `navigation.dispatchSync`, and require functional actions to use `dispatchSync`.
 - Require complete state in `CommonActions.reset` and `resetRoot`, and remove `Router.getRehydratedState` from `expo-router/react-navigation`.
 - Remove `NavigatorScreenParams`, `getActionFromState`, and `LinkingOptions.getActionFromState` from `expo-router/react-navigation`.
 - Represent nested navigation only as navigation state. The `screen`, `params`, and `initial` params are now ordinary user params

@@ -1,6 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { routingQueue } from '../../../global-state/routingQueue';
 import {
   CommonActions,
   type NavigationState,
@@ -309,17 +310,34 @@ test('ignores dispatches from a preloaded stack screen until it is promoted', ()
   act(() => ref.current?.dispatch(CommonActions.preload('second')));
   const preloadedNavigation = navigation;
   const preloadedState = ref.current?.getRootState();
+  const add = jest.spyOn(routingQueue, 'add');
 
   act(() => preloadedNavigation.goBack());
 
   expect(warn).toHaveBeenCalledWith(
     "Ignored a navigation action dispatched from the preloaded screen 'second'. The screen is rendered for preloading and is not focused, so its actions would unexpectedly modify the visible stack. Wait until the screen is focused before dispatching."
   );
+  expect(add).not.toHaveBeenCalled();
   expect(ref.current?.getRootState()).toEqual(preloadedState);
+
+  expect(() => preloadedNavigation.dispatch(() => CommonActions.goBack())).toThrow('dispatchSync');
 
   act(() => ref.current?.navigate('second'));
 
   expect(navigation).toBe(preloadedNavigation);
-  act(() => preloadedNavigation.goBack());
+  add.mockClear();
+
+  act(() => preloadedNavigation.dispatch(CommonActions.goBack()));
+
+  expect(add).toHaveBeenCalledTimes(1);
+  expect(add).toHaveBeenCalledWith({
+    type: 'NAVIGATOR_ACTION',
+    payload: expect.objectContaining({
+      action: expect.objectContaining({
+        source: expect.any(String),
+        type: 'GO_BACK',
+      }),
+    }),
+  });
   expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['first']);
 });

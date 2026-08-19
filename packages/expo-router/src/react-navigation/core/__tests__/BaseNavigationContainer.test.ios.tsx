@@ -2,7 +2,9 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
+import { routingQueue } from '../../../global-state/routingQueue';
 import {
+  CommonActions,
   type DefaultRouterOptions,
   type NavigationState,
   type ParamListBase,
@@ -28,6 +30,7 @@ jest.mock('nanoid/non-secure', () => {
 
 beforeEach(() => {
   MockRouterKey.current = 0;
+  routingQueue.queue = [];
 
   require('nanoid/non-secure').__key = 0;
 });
@@ -214,14 +217,19 @@ test('handle dispatching with ref', () => {
   };
 
   const element = (
-    <BaseNavigationContainer ref={ref} initialState={initialState} onStateChange={onStateChange}>
-      <RootNavigator>
-        <Screen name="foo">{() => null}</Screen>
-        <Screen name="foo2">{() => null}</Screen>
-        <Screen name="bar">{() => null}</Screen>
-        <Screen name="baz">{() => null}</Screen>
-      </RootNavigator>
-    </BaseNavigationContainer>
+    <RouterRegistryProvider>
+      <RawBaseNavigationContainer
+        ref={ref}
+        initialState={initialState}
+        onStateChange={onStateChange}>
+        <RootNavigator>
+          <Screen name="foo">{() => null}</Screen>
+          <Screen name="foo2">{() => null}</Screen>
+          <Screen name="bar">{() => null}</Screen>
+          <Screen name="baz">{() => null}</Screen>
+        </RootNavigator>
+      </RawBaseNavigationContainer>
+    </RouterRegistryProvider>
   );
 
   render(element).update(element);
@@ -229,6 +237,11 @@ test('handle dispatching with ref', () => {
   act(() => {
     ref.current?.dispatch({ type: 'REVERSE' });
   });
+
+  expect(onStateChange).not.toHaveBeenCalled();
+  expect(routingQueue.queue).toHaveLength(1);
+
+  act(() => routingQueue.run(ref));
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
@@ -242,6 +255,67 @@ test('handle dispatching with ref', () => {
       { key: 'baz', name: 'baz' },
     ],
   });
+
+  act(() => {
+    ref.current?.dispatchSync({ type: 'REVERSE' });
+  });
+
+  expect(onStateChange).toHaveBeenCalledTimes(2);
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['baz', 'bar']);
+});
+
+test('rejects functional ref dispatch and supports functional dispatchSync', () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+
+  const RootNavigator = (props: any) => {
+    const { descriptors, state, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  render(
+    <BaseNavigationContainer ref={ref}>
+      <RootNavigator>
+        <Screen name="foo">{() => null}</Screen>
+      </RootNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(() =>
+    // @ts-expect-error: Functional dispatch is rejected at runtime with migration guidance.
+    ref.current?.dispatch((state) => ({ type: 'SET_STATE', payload: state }))
+  ).toThrow('dispatchSync');
+
+  expect(() => act(() => ref.current?.dispatchSync(() => ({ type: 'NOOP' })))).not.toThrow();
+});
+
+test('rejects dispatchSync from an unregistered navigator', () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  const RootNavigator = (props: any) => {
+    const { descriptors, state, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  render(
+    <RawBaseNavigationContainer ref={ref}>
+      <RootNavigator>
+        <Screen name="foo">{() => null}</Screen>
+      </RootNavigator>
+    </RawBaseNavigationContainer>
+  );
+
+  expect(() => ref.current?.dispatchSync({ type: 'NOOP' })).toThrow('not registered');
+  warn.mockRestore();
 });
 
 test('handles resetting to a complete state with ref', () => {
@@ -314,6 +388,7 @@ test('handles resetting to a complete state with ref', () => {
 
   act(() => {
     ref.current?.resetRoot(state);
+    routingQueue.run(ref);
   });
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
@@ -500,7 +575,7 @@ test('emits state events when the state changes', () => {
   expect(listener).not.toHaveBeenCalled();
 
   act(() => {
-    ref.current?.navigate('bar');
+    ref.current?.dispatchSync(CommonActions.navigate('bar'));
   });
 
   expect(listener).toHaveBeenCalledTimes(1);
@@ -518,6 +593,7 @@ test('emits state events when the state changes', () => {
 
   act(() => {
     ref.current?.navigate('baz', { answer: 42 });
+    routingQueue.run(ref);
   });
 
   expect(listener).toHaveBeenCalledTimes(2);
@@ -682,7 +758,7 @@ test('emits option events when options change with tab router', () => {
   ref.current?.addListener('options', listener);
 
   act(() => {
-    ref.current?.navigate('bar');
+    ref.current?.dispatchSync(CommonActions.navigate('bar'));
   });
 
   expect(listener).toHaveBeenCalledTimes(1);
@@ -696,7 +772,7 @@ test('emits option events when options change with tab router', () => {
   ref.current?.addListener('options', listener2);
 
   act(() => {
-    ref.current?.navigate('baz');
+    ref.current?.dispatchSync(CommonActions.navigate('baz'));
   });
 
   expect(listener2).toHaveBeenCalledTimes(1);
@@ -704,7 +780,7 @@ test('emits option events when options change with tab router', () => {
   expect(ref.current?.getCurrentOptions()).toEqual({ g: 5 });
 
   act(() => {
-    ref.current?.navigate('quxx');
+    ref.current?.dispatchSync(CommonActions.navigate('quxx'));
   });
 
   expect(listener2).toHaveBeenCalledTimes(2);
@@ -757,7 +833,7 @@ test('emits option events when options change with stack router', () => {
   ref.current?.addListener('options', listener);
 
   act(() => {
-    ref.current?.navigate('bar');
+    ref.current?.dispatchSync(CommonActions.navigate('bar'));
   });
 
   expect(listener).toHaveBeenCalledTimes(1);
@@ -771,7 +847,7 @@ test('emits option events when options change with stack router', () => {
   ref.current?.addListener('options', listener2);
 
   act(() => {
-    ref.current?.navigate('baz');
+    ref.current?.dispatchSync(CommonActions.navigate('baz'));
   });
 
   expect(listener2).toHaveBeenCalledTimes(1);
@@ -779,7 +855,7 @@ test('emits option events when options change with stack router', () => {
   expect(ref.current?.getCurrentOptions()).toEqual({ g: 5 });
 
   act(() => {
-    ref.current?.navigate('quxx');
+    ref.current?.dispatchSync(CommonActions.navigate('quxx'));
   });
 
   expect(listener2).toHaveBeenCalledTimes(2);
@@ -904,8 +980,14 @@ test('invokes the unhandled action listener with the unhandled action', () => {
     </BaseNavigationContainer>
   );
 
-  act(() => ref.current!.navigate('bar'));
-  act(() => ref.current!.navigate('baz'));
+  act(() => {
+    ref.current!.navigate('bar');
+    routingQueue.run(ref);
+  });
+  act(() => {
+    ref.current!.navigate('baz');
+    routingQueue.run(ref);
+  });
 
   expect(fn).toHaveBeenCalledWith({
     payload: {
@@ -950,7 +1032,10 @@ test('works with state change events in independent nested container', () => {
     </BaseNavigationContainer>
   );
 
-  act(() => ref.current?.navigate('lex'));
+  act(() => {
+    ref.current?.navigate('lex');
+    routingQueue.run(ref);
+  });
 
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,

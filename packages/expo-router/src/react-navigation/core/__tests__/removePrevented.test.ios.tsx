@@ -2,7 +2,7 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
-import { type ParamListBase, StackActions, StackRouter } from '../../routers';
+import { CommonActions, type ParamListBase, StackActions, StackRouter } from '../../routers';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
@@ -68,7 +68,7 @@ test('blocks removal with the hook and emits removePrevented', () => {
   expect(beforeRemove).not.toHaveBeenCalled();
 
   act(() => setPreventRemove(false));
-  expect(() => act(() => ref.current?.goBack())).toThrow(
+  expect(() => act(() => ref.current?.dispatchSync(CommonActions.goBack()))).toThrow(
     '`beforeRemove` is a notification-only event and cannot prevent screen removal. Use `usePreventRemove` with the `removePrevented` event instead.'
   );
 
@@ -87,7 +87,7 @@ test('blocks synchronous redispatch from removePrevented without re-emitting', (
     );
   };
   const ref = createNavigationContainerRef<ParamListBase>();
-  const removePrevented = jest.fn(({ data }) => ref.current?.dispatch(data.action));
+  const removePrevented = jest.fn(({ data }) => ref.current?.dispatchSync(data.action));
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   const TestScreen = () => {
@@ -107,7 +107,7 @@ test('blocks synchronous redispatch from removePrevented without re-emitting', (
     );
 
     act(() => ref.current?.navigate('bar'));
-    act(() => ref.current?.goBack());
+    act(() => ref.current?.dispatchSync(CommonActions.goBack()));
 
     expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['foo', 'bar']);
     expect(removePrevented).toHaveBeenCalledTimes(1);

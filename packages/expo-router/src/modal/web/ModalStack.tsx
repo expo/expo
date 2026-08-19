@@ -94,7 +94,7 @@ const ModalStackView = ({ state, navigation, descriptors }: ModalStackViewProps)
     index: nonModalIndex,
   };
 
-  const pop = makePopAction(navigation.dispatch, state.key);
+  const pop = makePopAction(navigation.dispatchSync, state.key);
 
   const dismiss = useCallback(() => {
     navigation.goBack();

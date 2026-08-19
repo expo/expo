@@ -31,6 +31,7 @@ import type {
 import { useChildListeners } from './useChildListeners';
 import { useEventEmitter } from './useEventEmitter';
 import { useKeyedChildListeners } from './useKeyedChildListeners';
+import { FUNCTIONAL_DISPATCH_ERROR } from './useNavigationHelpers';
 import { useNavigationIndependentTree } from './useNavigationIndependentTree';
 import { useOptionsGetters } from './useOptionsGetters';
 import { useSyncState } from './useSyncState';
@@ -111,12 +112,24 @@ export function BaseNavigationContainer({
 
   const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
 
-  const dispatch = useLatestCallback(
+  const dispatch = useLatestCallback((action: NavigationAction) => {
+    if (typeof action === 'function') {
+      throw new Error(FUNCTIONAL_DISPATCH_ERROR);
+    }
+
+    if (listeners.focus[0] == null) {
+      console.error(NOT_INITIALIZED_ERROR);
+    } else {
+      listeners.focus[0]((navigation) => navigation.dispatch(action));
+    }
+  });
+
+  const dispatchSync = useLatestCallback(
     (action: NavigationAction | ((state: NavigationState) => NavigationAction)) => {
       if (listeners.focus[0] == null) {
         console.error(NOT_INITIALIZED_ERROR);
       } else {
-        listeners.focus[0]((navigation) => navigation.dispatch(action));
+        listeners.focus[0]((navigation) => navigation.dispatchSync(action));
       }
     }
   );
@@ -182,6 +195,7 @@ export function BaseNavigationContainer({
       }, {}),
       ...emitter.create('root'),
       dispatch,
+      dispatchSync,
       resetRoot,
       isFocused: () => true,
       canGoBack,
@@ -198,6 +212,7 @@ export function BaseNavigationContainer({
     [
       canGoBack,
       dispatch,
+      dispatchSync,
       emitter,
       getCurrentOptions,
       getCurrentRoute,
