@@ -388,8 +388,27 @@ describe('reportIfOversized', () => {
       'https://example.com/img@2x.png'
     );
     expect(appMetrics.logEvent.mock.calls[1][1].attributes.url).toBe(
-      'https://example.com?email=a@b.com'
+      'https://example.com/?email=a@b.com'
     );
+  });
+
+  it('reports urls in normalized form without flagging them as sanitized', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(state({ appMetrics }), image(1000, 1000, 'HTTPS://EXAMPLE.com/a.png'));
+
+    const attributes = appMetrics.logEvent.mock.calls[0][1].attributes;
+    expect(attributes.url).toBe('https://example.com/a.png');
+    expect(attributes).not.toHaveProperty('urlSanitized');
+  });
+
+  it('never reports an unparseable url', () => {
+    const appMetrics = makeAppMetrics();
+
+    // The scheme-less name React Native gives a bundled asset on Android in release builds.
+    reportIfOversized(state({ appMetrics }), image(1000, 1000, 'src_assets_hero'));
+
+    expect(appMetrics.logEvent).not.toHaveBeenCalled();
   });
 
   it('does not throw when logEvent fails', () => {

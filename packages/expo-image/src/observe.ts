@@ -33,8 +33,9 @@ export type ExpoImageIntegrationConfig = {
    * sensitive values such as signing tokens or API keys. Enable this only when your image URLs
    * are safe to send off-device in full. Regardless of this setting, basic-auth credentials are
    * always removed from the URL, and only `http(s)`, `file`, and `android.resource` URLs are
-   * reported (other schemes, such as `data:` or `ph://`, never leave the device). An event whose
-   * URL was modified before sending carries a `urlSanitized: true` attribute.
+   * reported (other schemes, such as `data:` or `ph://`, never leave the device). URLs are
+   * reported in normalized (WHATWG) form, and an event whose URL was modified beyond that carries
+   * a `urlSanitized: true` attribute.
    *
    * @default false
    */
@@ -75,21 +76,40 @@ export type LoadedImage = {
   pixelRatio: number;
 };
 
-// Truncates a URL at its query string and fragment (unless `includeUrlParams` opts in) and always
-// removes userinfo credentials from the authority, so values like signing tokens, API keys, or
-// basic-auth passwords never leave the device.
-function sanitizeUrl(url: string, includeUrlParams: boolean): string {
-  let sanitized = url;
-  if (!includeUrlParams) {
-    const paramsStart = sanitized.search(/[?#]/);
-    if (paramsStart !== -1) {
-      sanitized = sanitized.slice(0, paramsStart);
-    }
+// Only remote images, local files, and bundled Android resources are reported: those URLs
+// identify developer-owned content that the developer can act on. Every other scheme fails safe,
+// because it carries device-local or user-library content (the whole payload for `data:`, a
+// stable personal-photo identifier for `ph://` and `content://`).
+const REPORTABLE_PROTOCOLS = new Set(['http:', 'https:', 'file:', 'android.resource:']);
+
+// Prepares a loaded image's URL for sending off-device, or returns `null` when the image must not
+// be reported at all (a disallowed scheme, or a string the WHATWG parser rejects). Basic-auth
+// credentials are always removed, and the query string and fragment too unless `includeUrlParams`
+// opts in, so values like signing tokens or API keys never leave the device. The returned URL is
+// in normalized (WHATWG) form; `sanitized` is true only when something was removed, not when
+// normalization alone changed the string.
+function sanitizeUrl(
+  rawUrl: string,
+  includeUrlParams: boolean
+): { url: string; sanitized: boolean } | null {
+  let url: URL;
+  try {
+    url = new URL(rawUrl);
+  } catch {
+    return null;
   }
-  // Userinfo ends at the last `@` before the authority ends (matching WHATWG parsing, so an
-  // unencoded `@` inside a password is consumed too), while `/`, `?`, and `#` bound the match, so
-  // an `@` later in the path or query never matches.
-  return sanitized.replace(/^([^:/?#]+:\/\/)[^/?#]*@/, '$1');
+  if (!REPORTABLE_PROTOCOLS.has(url.protocol)) {
+    return null;
+  }
+  const normalized = url.toString();
+  url.username = '';
+  url.password = '';
+  if (!includeUrlParams) {
+    url.search = '';
+    url.hash = '';
+  }
+  const result = url.toString();
+  return { url: result, sanitized: result !== normalized };
 }
 
 // Exported for testing purposes only.
@@ -101,16 +121,13 @@ export function reportIfOversized(state: IntegrationState, image: LoadedImage): 
   if (!image.url || !(width > 0) || !(height > 0)) {
     return;
   }
-  // Only remote images, local files, and bundled Android resources are reported: those URLs
-  // identify developer-owned content that the developer can act on. Every other scheme fails safe
-  // regardless of `includeUrlParams`, because it carries device-local or user-library content (the
-  // whole payload for `data:`, a stable personal-photo identifier for `ph://` and `content://`).
-  if (!/^(https?|file|android\.resource):/i.test(image.url)) {
+  const sanitizedUrl = sanitizeUrl(image.url, state.includeUrlParams);
+  if (!sanitizedUrl) {
     return;
   }
   // Deduping on the reported form also collapses variants of one image that differ only in their
   // query parameters (such as rotating signed URLs) into a single event.
-  const url = sanitizeUrl(image.url, state.includeUrlParams);
+  const url = sanitizedUrl.url;
   if (state.reported.has(url)) {
     return;
   }
@@ -130,7 +147,7 @@ export function reportIfOversized(state: IntegrationState, image: LoadedImage): 
         url,
         // Present only when sanitization changed the URL, mirroring the navigation integration's
         // `urlHidden` attribute.
-        ...(url !== image.url ? { urlSanitized: true } : {}),
+        ...(sanitizedUrl.sanitized ? { urlSanitized: true } : {}),
         imageWidth: width,
         imageHeight: height,
         screenWidth,
