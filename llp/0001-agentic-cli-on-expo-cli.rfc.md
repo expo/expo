@@ -68,7 +68,7 @@ Use the Claude Agent SDK for the agent loop, permissions, MCP client, and skills
 Three layers, all machine-readable:
 
 1. **Expo CLI as structured subprocess.** The CLI already emits JSONL events via `installEventLogger` / `LOG_EVENTS` (`packages/@expo/cli/bin/cli.ts`) [observed]. The agent spawns `expo start` / `expo run:*` / `expo export` and consumes events, not text.
-2. **`expo-mcp` tools, in-process.** `automation_tap`, `automation_take_screenshot`, `automation_find_view`, `collect_app_logs`, `expo_router_sitemap`, `open_devtools` [observed — expo-mcp repo]. No tunnel needed when the agent runs on the same machine.
+2. **`expo-mcp` tools, reused as-is.** `automation_tap`, `automation_take_screenshot`, `automation_find_view`, `collect_app_logs`, `expo_router_sitemap`, `open_devtools` [observed — expo-mcp repo]. Decision [confirmed — Kudo, 2026-08-18]: reuse the `expo-mcp` infrastructure (Kudo owns that codebase) instead of vendoring. The agent package in `expo/expo` depends on the published `expo-mcp` / `@expo/mcp-tunnel` packages: in-process MCP connection locally, `@expo/mcp-tunnel` WebSocket transport for the remote/F3 case. New agent-facing tools land in `expo-mcp` first, so every MCP client (Claude Code, Cursor) inherits them (E1).
 3. **Expo-specific decision tools** built for the agent (see §Feature candidates): Expo Go compatibility check, post-install impact classifier, project-state probe.
 
 ## Testing and evals
@@ -171,7 +171,7 @@ Seeds from Kudo [confirmed — Slack, 2026-08-18]: Cloudflare Worker compatibili
 2. Model auth and billing: BYO Anthropic key vs expo.dev account gateway.
 3. Engine commitment: Claude Agent SDK only for v1, or abstraction from day one?
 4. Skill-from-module contract: `package.json` field vs directory convention; and whether `expo/skills` content gets bundled or fetched.
-5. Relationship to `expo-mcp` repo: vendor the tools in-process, or depend on `expo-mcp` as published?
+5. ~~Relationship to `expo-mcp` repo~~ — resolved [confirmed — Kudo, 2026-08-18]: depend on and extend `expo-mcp`; do not vendor. See §Tool surface.
 6. Whether `expo agent` (subcommand alias in `@expo/cli`) ships at all, and when.
 7. F3 hosting: where does the cloud agent run — EAS-provided machines, or bring-your-own (Tuft-style)? (EAS auth itself: resolved direction in F4 — `EXPO_TOKEN` now, device-code grant as end state.)
 8. Does the device-code grant + scoped agent sessions land in www/expo.dev auth, and who owns that work?
