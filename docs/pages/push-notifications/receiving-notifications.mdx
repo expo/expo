@@ -221,7 +221,11 @@ For more information on these objects, see [`Notification`](/versions/latest/sdk
 
 ## Foreground notification behavior
 
-To handle the behavior when notifications are received when your app is **foregrounded**, use [`Notifications.setNotificationHandler`](/versions/latest/sdk/notifications/#present-incoming-notifications-when-the-app-is) with the `handleNotification()` callback to set the following options:
+In SDK 57 and earlier, a foreground notification is not shown at all by default. To show it, you have to set a handler that asks for it using [`Notifications.setNotificationHandler`](/versions/latest/sdk/notifications/#present-incoming-notifications-when-the-app-is). A handler that does not respond within 3 seconds drops the notification.
+
+In SDK 58 and later, a notification that arrives while your app is **foregrounded** is shown by default. It plays a sound, shows a banner, appears in the notification list, and sets the app badge. A notification whose handler does not respond within 3 seconds is shown the same way.
+
+To change the behavior, use [`Notifications.setNotificationHandler`](/versions/latest/sdk/notifications/#present-incoming-notifications-when-the-app-is) with the `handleNotification()` callback to set the following options:
 
 - `shouldPlaySound`
 - `shouldSetBadge`
@@ -238,6 +242,16 @@ Notifications.setNotificationHandler({
   }),
 });
 ```
+
+### Disable the notification handler
+
+In SDK 58 and later, to stop `expo-notifications` from deciding whether an incoming notification shows, pass `null`:
+
+```jsx
+Notifications.setNotificationHandler(null);
+```
+
+On Android, the notification is then not shown while your app is in the foreground. On iOS, the decision goes to the `UNUserNotificationCenterDelegate` that another library sets. If no library sets one, the notification is not shown.
 
 ## Closed notification behavior
 
