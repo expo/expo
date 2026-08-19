@@ -74,7 +74,7 @@ Decision [confirmed — Kudo, 2026-08-18]: Shape 1. Consequences:
 Three layers, all machine-readable:
 
 1. **Expo CLI as structured subprocess.** The CLI already emits JSONL events via `installEventLogger` / `LOG_EVENTS` (`packages/@expo/cli/bin/cli.ts`) [observed]. The agent spawns `expo start` / `expo run:*` / `expo export` and consumes events, not text.
-2. **`expo-mcp` tools, reused as-is.** `automation_tap`, `automation_take_screenshot`, `automation_find_view`, `collect_app_logs`, `expo_router_sitemap`, `open_devtools` [observed — expo-mcp repo]. Decision [confirmed — Kudo, 2026-08-18]: reuse the `expo-mcp` infrastructure (Kudo owns that codebase) instead of vendoring. The agent package in `expo/expo` depends on the published `expo-mcp` / `@expo/mcp-tunnel` packages: in-process MCP connection locally, `@expo/mcp-tunnel` WebSocket transport for the remote/F3 case. New agent-facing tools land in `expo-mcp` first, so every MCP client (Claude Code, Cursor) inherits them (E1).
+2. **`expo-mcp` tools, reused as-is.** `automation_tap`, `automation_take_screenshot`, `automation_find_view`, `collect_app_logs`, `expo_router_sitemap`, `open_devtools` [observed — expo-mcp repo]. Decision [confirmed — Kudo, 2026-08-18]: reuse the `expo-mcp` infrastructure (Kudo owns that codebase) instead of vendoring. The agent package in `expo/expo` depends on the published `expo-mcp` / `@expo/mcp-tunnel` packages: in-process MCP connection locally, `@expo/mcp-tunnel` WebSocket transport for the remote/F3 case. New agent-facing tools land in `expo-mcp` first, so every MCP client (Claude Code, Cursor) inherits them.
 3. **Expo-specific decision tools** built for the agent (see §Feature candidates): Expo Go compatibility check, post-install impact classifier, project-state probe.
 
 ## Testing and evals
@@ -105,6 +105,7 @@ Seed list from Kudo [confirmed — Slack, 2026-08-18], expanded [inferred]:
 8. **Doctor auto-fix.** Run `expo-doctor`, then fix findings instead of printing them.
 9. **SDK upgrade workflow.** Drive an SDK upgrade end to end: bump, `expo install --fix`, run codemods, prebuild, build, boot-check — with the eval suite reusing this as a scenario.
 10. **Headless CI mode.** `exagent -p "<task>" --json` with pass/fail exit codes, for CI jobs like "verify the app still boots after this PR".
+11. **Cross-platform `deploy` command.** One command deploys every platform: web via EAS Hosting, native platforms via launch.expo.dev [confirmed — Kudo, 2026-08-19, feature seed]. Deterministic orchestration (export → upload → URL/links back), so it works equally as a human command and as an agent tool; agent mode returns structured URLs and status. Pairs with feature 4: "one command to run" for development, one `deploy` for shipping.
 
 ## Extended brainstorm
 
@@ -132,19 +133,12 @@ Wider candidate list, grouped by theme. All items [inferred] unless tagged; runt
 - **C2. Plan-with-cost dry run.** Before acting, show the plan with time estimates ("prebuild ~2 min, pod install ~4 min, dev build ~8 min") and let the user approve once for the batch.
 - **C3. Permission profiles.** `--safe` (JS-only edits, no native rebuilds, no network), default (asks for native/destructive), `--yolo` (CI). Maps to Agent SDK permission modes.
 
-### D. Ambient and long-running modes
+### D. Ecosystem leverage
 
-- **D1. Copilot watch mode.** The agent sits beside the dev server and auto-triages every red screen and build error as it happens, proposing (or applying) fixes in place. The dev keeps their normal workflow; the agent handles interrupts.
-- **D2. EAS build babysitter.** Submit an EAS build, stream logs, classify failures against a signature DB of known build errors, fix and resubmit. Long-running, high-value, currently fully manual.
-- **D3. PR verification bot.** Headless mode in CI: boot the app, walk key routes (A4), screenshot, attach results to the PR. "Does the app still boot" as a merge gate.
-- **D4. Maintenance agent.** Scheduled runs: dependency bumps within SDK constraints, doctor auto-fix, deprecation scan before SDK releases.
+- **D1. Module authoring flow.** `create-expo-module` + generate the Swift/Kotlin/TS scaffold, build the example app, and iterate against it — native module development as a guided agentic loop.
+- **D2. Skills as an output, too.** The same skill-from-module contract (Feature 1) exports to other agents' formats, making Expo packages self-documenting for the whole agent ecosystem.
 
-### E. Ecosystem leverage
-
-- **E1. `exagent mcp` — be a tool provider, not only an agent.** Expose the whole tool surface (project probe, Expo Go check, impact classifier, runtime eval, automation) as an MCP server so Claude Code, Cursor, and Codex get the same superpowers. Every improvement serves both our agent and everyone else's; adoption does not require switching agents.
-- **E2. Build-failure signature DB.** Curated, updatable mapping from xcodebuild/gradle/Metro error patterns to causes and fixes. Served from expo.dev, versioned, shared by D1/D2 and the docs. The eval suite doubles as its regression harness.
-- **E3. Module authoring flow.** `create-expo-module` + generate the Swift/Kotlin/TS scaffold, build the example app, and iterate against it — native module development as a guided agentic loop.
-- **E4. Skills as an output, too.** The same skill-from-module contract (Feature 1) exports to other agents' formats, making Expo packages self-documenting for the whole agent ecosystem.
+**Scoped out** [confirmed — Kudo, 2026-08-19]: the former theme "Ambient and long-running modes" (copilot watch mode, EAS build babysitter, PR verification bot, maintenance agent) — driving-agent behaviors, not tool-layer work, and off scope; likewise the former `exagent mcp` item (subsumed by Shape 1 — being the tool provider *is* the product) and the build-failure signature DB.
 
 ### F. Headless-first: no terminal, no laptop
 
@@ -154,7 +148,7 @@ Seeds from Kudo [confirmed — Slack, 2026-08-18]: Cloudflare Worker compatibili
 - **F2. Cloudflare Workers compatibility (EAS Hosting).** Expo API routes deploy to the Cloudflare Workers runtime (workerd). Agent tools:
   - *Compat preflight*: static lint of API routes and server code for Node APIs and packages that do not exist under workerd, before any deploy.
   - *Local workerd run*: execute routes under the real runtime locally and feed failures back to the agent as structured errors.
-  - *Fix loop*: known-incompatibility → known-substitution mapping (same signature-DB shape as E2), so the agent rewrites Node-isms into Workers-safe code and re-verifies.
+  - *Fix loop*: known-incompatibility → known-substitution mapping, so the agent rewrites Node-isms into Workers-safe code and re-verifies.
 - **F3. Chat-driven development — the phone is the only device.** North star [confirmed — Kudo]: run the whole lifecycle from the Claude mobile app. The agent runs on a cloud machine; the user's phone is both the chat client and the test device. Required pieces, most of which exist in some form:
   - Remote dev server: tunnel Metro to the device (packager proxy URL) — no QR, the agent sends an install/open link.
   - Agent eyes without a laptop: cloud simulators (EAS Simulator is an experimental API today) for screenshots and automation when the user's phone is busy being a chat client.
@@ -168,7 +162,7 @@ Seeds from Kudo [confirmed — Slack, 2026-08-18]: Cloudflare Worker compatibili
 
   Fit for a cloud agent, where the approving browser is on the user's phone and the CLI is on a remote machine:
   - *Localhost-redirect PKCE does not work remotely* — the redirect lands on the phone, not on the agent machine. It stays the right flow for laptop-local interactive use only.
-  - *`EXPO_TOKEN` works today* and is the pragmatic bootstrap: CI mode (D3) and early F3 use it. Downsides: long-lived, broad scope, manual provisioning — wrong end-state for a consumer chat flow.
+  - *`EXPO_TOKEN` works today* and is the pragmatic bootstrap: CI mode (feature 10) and early F3 use it. Downsides: long-lived, broad scope, manual provisioning — wrong end-state for a consumer chat flow.
   - *Recommended end state [inferred]: OAuth device authorization grant* (device-code flow). The agent posts a URL + code into the chat; the user taps it on the phone, approves on expo.dev; the agent polls `auth/token` for the session. Purpose-built for input-constrained/remote clients, and incremental to build since the `auth/token` grant exchange already exists — the www side adds a `device_code` grant and an approval page.
   - Harden either path with *scoped, expiring agent sessions*: tokens carry scopes (read, build, update, submit), show up in the dashboard as revocable "agent sessions", and default to short expiry with refresh while the chat session is active.
 
