@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix plist parsing under `@xmldom/xmldom@0.9.x` by passing the now-required `mimeType` argument and trimming leading whitespace before parsing. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@arthurdbpt](https://github.com/arthurdbpt))
+
 ### 💡 Others
 
 ## 0.8.1 - 2026-07-15
