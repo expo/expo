@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 Expo UI LazyVStack matches the official SwiftUI [LazyVStack API](https://developer.apple.com/documentation/swiftui/lazyvstack) and arranges its children vertically, creating items only as needed (when they become visible during scrolling).
 
@@ -23,7 +24,13 @@ Expo UI LazyVStack matches the official SwiftUI [LazyVStack API](https://develop
 
 LazyVStack should be used inside a `ScrollView` to enable lazy rendering.
 
-```tsx BasicLazyVStackExample.tsx
+<ComponentExample
+  title="BasicLazyVStackExample.tsx"
+  src="/static/images/expo-ui/examples/lazyvstack-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazyvstack-basic-ios-dark.webp"
+  alt="A vertical list of items numbered zero to twenty-four.">
+
+```tsx
 import {
   Host,
   ScrollView,
@@ -46,11 +53,19 @@ export default function BasicLazyVStackExample() {
 }
 ```
 
+</ComponentExample>
+
 ### With alignment
 
 The `alignment` prop controls horizontal alignment of children. Available options are: `leading`, `center`, and `trailing`.
 
-```tsx LazyVStackAlignmentExample.tsx
+<ComponentExample
+  title="LazyVStackAlignmentExample.tsx"
+  src="/static/images/expo-ui/examples/lazyvstack-alignment-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/lazyvstack-alignment-ios-dark.webp"
+  alt="Three rectangles of different widths stacked vertically, aligned to the leading edge.">
+
+```tsx
 import {
   Host,
   ScrollView,
@@ -61,7 +76,9 @@ import { frame } from '@expo/ui/swift-ui/modifiers';
 
 export default function LazyVStackAlignmentExample() {
   return (
-    <Host style={{ flex: 1 }}>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <ScrollView>
         <LazyVStack spacing={12} alignment="leading">
           <Rectangle
@@ -79,6 +96,8 @@ export default function LazyVStackAlignmentExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
