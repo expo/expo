@@ -1,4 +1,3 @@
-import { IS_DOM } from 'expo/dom';
 import type { MouseEvent } from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { Platform } from 'react-native';
