@@ -99,6 +99,46 @@ Seed list from Kudo [confirmed — Slack, 2026-08-18], expanded [inferred]:
 9. **SDK upgrade workflow.** Drive an SDK upgrade end to end: bump, `expo install --fix`, run codemods, prebuild, build, boot-check — with the eval suite reusing this as a scenario.
 10. **Headless CI mode.** `exagent -p "<task>" --json` with pass/fail exit codes, for CI jobs like "verify the app still boots after this PR".
 
+## Extended brainstorm
+
+Wider candidate list, grouped by theme. All items [inferred] unless tagged; runtime hooks named below exist in the repo today [observed where noted]. Not all of these are v1.
+
+### A. Close the loop with the running app
+
+- **A1. Runtime eval tool.** The CLI already speaks CDP to the app (`src/start/server/metro/debugging/messageHandlers/`: `VscodeRuntimeEvaluate`, `VscodeRuntimeCallFunctionOn`, `VscodeRuntimeGetProperties` [observed]). Expose this as an agent tool: run JS inside the live app, read state, trigger navigation, assert on values. This turns "I think the fix works" into "I evaluated it in the app".
+- **A2. Structured red-screen feed.** LogBox symbolication exists in the CLI (`log-box/LogBoxSymbolication.ts` [observed]). Push every runtime error to the agent as a structured event: message, symbolicated stack, source file/line. No screenshot-reading of red screens.
+- **A3. Network inspection.** A CDP `NetworkResponse` handler exists [observed]. Give the agent the app's network log: failing API calls become debuggable without guessing.
+- **A4. Deep-link navigation tool.** Combine `expo_router_sitemap` with `uri-scheme`-style launching: "open route /profile/42 on the simulator". Enables per-route verification and screenshot sweeps.
+- **A5. Performance probe.** `expo-app-metrics` / `expo-insights` exist as packages [observed]. Tool: startup time, slow frames, re-render counts — so "why is this list janky" starts from data.
+- **A6. Cross-platform verification sweep.** Boot iOS + Android + web in parallel, screenshot the same routes, report visual/behavioral divergence. Uniquely valuable for a universal framework.
+
+### B. Deterministic knowledge tools (agents ask, Expo answers)
+
+- **B1. Version-pinned docs lookup.** A `docs_lookup` tool that answers from documentation matching the project's installed SDK version. Wrong-version API usage is a top agent failure mode.
+- **B2. API diff tool.** "What changed in expo-camera between SDK 52 and 54" — generated from changelogs and type diffs; feeds the upgrade workflow.
+- **B3. Example transplant.** Fetch the canonical, version-matched integration from `expo/examples` (Stripe, Clerk, Supabase, ...) and adapt it into the project.
+- **B4. Dependency explainer.** Why is this package in the tree; which native module versions conflict; what does `expo install --fix` intend to change and why.
+
+### C. Guardrails that make autonomy safe
+
+- **C1. Checkpoints.** Auto git snapshot before each agent action batch; `exagent undo` restores. Cheap trust.
+- **C2. Plan-with-cost dry run.** Before acting, show the plan with time estimates ("prebuild ~2 min, pod install ~4 min, dev build ~8 min") and let the user approve once for the batch.
+- **C3. Permission profiles.** `--safe` (JS-only edits, no native rebuilds, no network), default (asks for native/destructive), `--yolo` (CI). Maps to Agent SDK permission modes.
+
+### D. Ambient and long-running modes
+
+- **D1. Copilot watch mode.** The agent sits beside the dev server and auto-triages every red screen and build error as it happens, proposing (or applying) fixes in place. The dev keeps their normal workflow; the agent handles interrupts.
+- **D2. EAS build babysitter.** Submit an EAS build, stream logs, classify failures against a signature DB of known build errors, fix and resubmit. Long-running, high-value, currently fully manual.
+- **D3. PR verification bot.** Headless mode in CI: boot the app, walk key routes (A4), screenshot, attach results to the PR. "Does the app still boot" as a merge gate.
+- **D4. Maintenance agent.** Scheduled runs: dependency bumps within SDK constraints, doctor auto-fix, deprecation scan before SDK releases.
+
+### E. Ecosystem leverage
+
+- **E1. `exagent mcp` — be a tool provider, not only an agent.** Expose the whole tool surface (project probe, Expo Go check, impact classifier, runtime eval, automation) as an MCP server so Claude Code, Cursor, and Codex get the same superpowers. Every improvement serves both our agent and everyone else's; adoption does not require switching agents.
+- **E2. Build-failure signature DB.** Curated, updatable mapping from xcodebuild/gradle/Metro error patterns to causes and fixes. Served from expo.dev, versioned, shared by D1/D2 and the docs. The eval suite doubles as its regression harness.
+- **E3. Module authoring flow.** `create-expo-module` + generate the Swift/Kotlin/TS scaffold, build the example app, and iterate against it — native module development as a guided agentic loop.
+- **E4. Skills as an output, too.** The same skill-from-module contract (Feature 1) exports to other agents' formats, making Expo packages self-documenting for the whole agent ecosystem.
+
 ## Open questions
 
 1. Final name: `exagent` vs `ai-expo` vs a scoped `@expo/*` bin.
