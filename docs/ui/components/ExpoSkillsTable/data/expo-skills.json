@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-08-13T18:42:57.000Z"
+    "fetchedAt": "2026-08-19T08:11:32.877Z"
   },
-  "totalSkills": 22,
+  "totalSkills": 23,
   "skills": [
     {
       "name": "eas-app-stores",
@@ -41,6 +41,12 @@
       "category": "eas",
       "description": "Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS context, mentions .eas/workflows/, or wants help with EAS build pipelines or deployment automation.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-workflows/SKILL.md"
+    },
+    {
+      "name": "expo-animation",
+      "category": "framework",
+      "description": "Build animations in React Native and Expo, making the decisions in the order that determines whether they feel right — should it animate, which thread it runs on, which properties, spring or timing, how the gesture hands off, how it degrades. Writes the implementation with Reanimated, Gesture Handler, Expo Router and expo-haptics. Use when animating anything in an Expo app, adding gestures, sheets, screen transitions, press feedback or haptics, or fixing motion that stutters on device. For web animation use `animate`.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-animation/SKILL.md"
     },
     {
       "name": "expo-app-clip",
