@@ -104,8 +104,10 @@ jobs:
           # every external artifact path, so the whole published set must be rebuilt.
           # Read the version from `dependencies` only, mirroring the producer's source
           # of truth in tools/src/prebuilds/Utils.ts (getVersionsInfoAsync).
+          # `|| true` keeps a base commit without the manifest falling through to
+          # build_all; without it `pipefail` aborts the step with git's status.
           before_rn="$(git show "$base:$manifest" 2>/dev/null \
-            | jq -r '.dependencies["react-native"] // empty')"
+            | jq -r '.dependencies["react-native"] // empty' || true)"
           after_rn="$(jq -r '.dependencies["react-native"] // empty' "$manifest")"
 
           if [ -z "$after_rn" ]; then
