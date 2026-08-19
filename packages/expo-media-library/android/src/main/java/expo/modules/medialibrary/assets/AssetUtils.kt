@@ -170,7 +170,7 @@ suspend fun putAssetsInfo(
           val localUri = "file://${pending.path}"
           var exifInterface: ExifInterface? = null
           if (
-            (resolveWithFullInfo || pending.missingDimensions) &&
+            resolveWithFullInfo &&
             pending.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
           ) {
             try {
