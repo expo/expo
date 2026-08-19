@@ -319,12 +319,12 @@ describe('reportIfOversized', () => {
     expect(appMetrics.logEvent.mock.calls[0][1].attributes.urlSanitized).toBe(true);
   });
 
-  it('omits urlSanitized when the url is reported unchanged', () => {
+  it('reports urlSanitized as false when the url is unchanged', () => {
     const appMetrics = makeAppMetrics();
 
     reportIfOversized(state({ appMetrics }), image(1000, 1000, 'https://example.com/a.png'));
 
-    expect(appMetrics.logEvent.mock.calls[0][1].attributes).not.toHaveProperty('urlSanitized');
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.urlSanitized).toBe(false);
   });
 
   it('never reports data: urls', () => {
@@ -399,7 +399,7 @@ describe('reportIfOversized', () => {
 
     const attributes = appMetrics.logEvent.mock.calls[0][1].attributes;
     expect(attributes.url).toBe('https://example.com/a.png');
-    expect(attributes).not.toHaveProperty('urlSanitized');
+    expect(attributes.urlSanitized).toBe(false);
   });
 
   it('never reports an unparseable url', () => {
