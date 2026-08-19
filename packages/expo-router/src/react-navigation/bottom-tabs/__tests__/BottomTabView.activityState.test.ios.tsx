@@ -14,9 +14,9 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-const { Screen: MockedScreen } = jest.requireMock(
-  'react-native-screens'
-) as unknown as { Screen: jest.Mock };
+const { Screen: MockedScreen } = jest.requireMock('react-native-screens') as unknown as {
+  Screen: jest.Mock;
+};
 
 beforeEach(() => {
   MockedScreen.mockClear();
