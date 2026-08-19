@@ -4,9 +4,14 @@
 
 ### 🛠 Breaking changes
 
+- Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Recognize the React Native Directory `new-arch-only` status so New-Architecture-only libraries aren't flagged ([#46755](https://github.com/expo/expo/pull/46755) by [@zoontek](https://github.com/zoontek))
+- Fix SDK 55 Metro config check for missing `metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

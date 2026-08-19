@@ -17,7 +17,14 @@ In this tutorial you will learn how to use the `expo-type-information` package t
 
 First install the `expo-type-information` package.
 
-<Terminal cmd={['$ npm install expo-type-information']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install expo-type-information'],
+    yarn: ['$ yarn add expo-type-information'],
+    pnpm: ['$ pnpm add expo-type-information'],
+    bun: ['$ bun add expo-type-information'],
+  }}
+/>
 
 To use this package you also need to have sourcekitten installed.
 
@@ -67,8 +74,16 @@ const styles = StyleSheet.create({
 We will now use the `expo-type-information` package to generate a TS interface for these modules. When in the root of the project run the following command:
 
 <Terminal
-  cmd={['$ npx expo-type-information inline-modules-interface --app-json ./app.json --watcher']}
-  cmdCopy="npx expo-type-information inline-modules-interface --app-json ./app.json --watcher"
+  cmd={{
+    npm: ['$ npx expo-type-information inline-modules-interface --app-json ./app.json --watcher'],
+    yarn: [
+      '$ yarn dlx expo-type-information inline-modules-interface --app-json ./app.json --watcher',
+    ],
+    pnpm: [
+      '$ pnpm dlx expo-type-information inline-modules-interface --app-json ./app.json --watcher',
+    ],
+    bun: ['$ bunx expo-type-information inline-modules-interface --app-json ./app.json --watcher'],
+  }}
 />
 
 The `--app-json` (short `-a`) specifies the path to the app configuration file, where watchedDirectories for inline modules are defined. When using `--watcher` (short `-w`) option the app configuration file and all `watchedDirectories` will be watched and TS interface will be regenerated when these change.
@@ -225,8 +240,16 @@ const styles = StyleSheet.create({
 To see the watcher in action make sure that you have the previous command still running
 
 <Terminal
-  cmd={['$ npx expo-type-information inline-modules-interface --app-json ./app.json --watcher']}
-  cmdCopy="npx expo-type-information inline-modules-interface --app-json ./app.json --watcher"
+  cmd={{
+    npm: ['$ npx expo-type-information inline-modules-interface --app-json ./app.json --watcher'],
+    yarn: [
+      '$ yarn dlx expo-type-information inline-modules-interface --app-json ./app.json --watcher',
+    ],
+    pnpm: [
+      '$ pnpm dlx expo-type-information inline-modules-interface --app-json ./app.json --watcher',
+    ],
+    bun: ['$ bunx expo-type-information inline-modules-interface --app-json ./app.json --watcher'],
+  }}
 />
 
 And let's add a new function to the FirstInlineModule:
@@ -359,15 +382,23 @@ First remove the files above and make sure you're in the project root.
 Now run a command to generate the interface
 
 <Terminal
-  cmd={['$ npx expo-type-information module-interface --module ./expo-settings']}
-  cmdCopy="npx expo-type-information module-interface --module ./expo-settings"
+  cmd={{
+    npm: ['$ npx expo-type-information module-interface --module ./expo-settings'],
+    yarn: ['$ yarn dlx expo-type-information module-interface --module ./expo-settings'],
+    pnpm: ['$ pnpm dlx expo-type-information module-interface --module ./expo-settings'],
+    bun: ['$ bunx expo-type-information module-interface --module ./expo-settings'],
+  }}
 />
 
 If you intend on changing the file and want to see how the interface changes, add the `--watcher` (short `-w`) flag to the command.
 
 <Terminal
-  cmd={['$ npx expo-type-information module-interface --module ./expo-settings -w']}
-  cmdCopy="npx expo-type-information module-interface --module ./expo-settings -w"
+  cmd={{
+    npm: ['$ npx expo-type-information module-interface --module ./expo-settings -w'],
+    yarn: ['$ yarn dlx expo-type-information module-interface --module ./expo-settings -w'],
+    pnpm: ['$ pnpm dlx expo-type-information module-interface --module ./expo-settings -w'],
+    bun: ['$ bunx expo-type-information module-interface --module ./expo-settings -w'],
+  }}
 />
 
 The `--module` option (short `-m`) is a path to the root folder of the module. After running this command you should see 3 new generated files in the module package.

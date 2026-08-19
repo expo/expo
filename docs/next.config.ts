@@ -84,6 +84,25 @@ const nextConfig: NextConfig = {
           join(__dirname, 'empty-polyfill.js')
         )
       );
+
+      // APISection pulls versioned API reference data (public/static/data/<version>/*.json) through a
+      // dynamic `require.context`, so webpack otherwise bundles every SDK version into a single chunk.
+      // That chunk exceeds Cloudflare Pages' 25 MiB per-file limit once enough versions exist.
+      const splitChunks = config.optimization?.splitChunks;
+      if (splitChunks && typeof splitChunks === 'object') {
+        splitChunks.cacheGroups = {
+          ...splitChunks.cacheGroups,
+          apiData: {
+            test: /[/\\]public[/\\]static[/\\]data[/\\]/,
+            name(module: { identifier: () => string }) {
+              const match = module.identifier().match(/static[/\\]data[/\\]([^/\\]+)[/\\]/);
+              return `api-data-${match ? match[1] : 'misc'}`;
+            },
+            chunks: 'all',
+            enforce: true,
+          },
+        };
+      }
     }
 
     // Add support for MDX with our custom loader
@@ -187,6 +206,7 @@ const nextConfig: NextConfig = {
       pathMap,
       domain: `https://docs.expo.dev`,
       output: join(outDir, `sitemap.xml`),
+      pagesDirectory: pagesDir,
       // Some of the search engines only track the first N items from the sitemap,
       // this makes sure our starting and general guides are first, and API index last (in order from new to old)
       pathsPriority: [

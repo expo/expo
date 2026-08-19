@@ -34,6 +34,7 @@ internal enum ExpoLayoutDirection: String, Enumerable {
 internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaControllable {
   @Field var useViewportSizeMeasurement: Bool = false
   @Field var colorScheme: ExpoColorScheme?
+  @Field var seedColor: Color?
   @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
@@ -48,6 +49,8 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   var body: some View {
     let layoutDirection = props.layoutDirection.toLayoutDirection()
     let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
+    let fillHorizontal = !props.useViewportSizeMeasurement && !props.matchContentsHorizontal
+    let fillVertical = !props.useViewportSizeMeasurement && !props.matchContentsVertical
 
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
@@ -60,12 +63,14 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+      .modifier(SeedColorModifier(seedColor: props.seedColor))
       .applyModifiers(
         props.modifiers,
         appContext: props.appContext,
         globalEventDispatcher: props.globalEventDispatcher
       )
       .modifier(GeometryChangeModifier(props: props))
+      .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
     } else {
       ZStack(alignment: alignment) {
         Children()
@@ -73,12 +78,14 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+      .modifier(SeedColorModifier(seedColor: props.seedColor))
       .applyModifiers(
         props.modifiers,
         appContext: props.appContext,
         globalEventDispatcher: props.globalEventDispatcher
       )
       .modifier(GeometryChangeModifier(props: props))
+      .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
     }
   }
 
@@ -200,12 +207,44 @@ private struct GeometryChangeModifier: ViewModifier {
   }
 }
 
+private struct FillAlignmentModifier: ViewModifier {
+  let alignment: Alignment
+  let fillHorizontal: Bool
+  let fillVertical: Bool
+
+  func body(content: Content) -> some View {
+    if fillHorizontal || fillVertical {
+      content.frame(
+        maxWidth: fillHorizontal ? .infinity : nil,
+        maxHeight: fillVertical ? .infinity : nil,
+        alignment: alignment
+      )
+    } else {
+      // Leave the view untouched (e.g. useViewportSizeMeasurement / full matchContents) so the
+      // layout proposal reaches the content's own layout unmodified.
+      content
+    }
+  }
+}
+
 private struct ColorSchemeModifier: ViewModifier {
   let colorScheme: ColorScheme?
 
   func body(content: Content) -> some View {
     if let colorScheme {
       content.environment(\.colorScheme, colorScheme)
+    } else {
+      content
+    }
+  }
+}
+
+private struct SeedColorModifier: ViewModifier {
+  let seedColor: Color?
+
+  func body(content: Content) -> some View {
+    if let seedColor {
+      content.tint(seedColor)
     } else {
       content
     }

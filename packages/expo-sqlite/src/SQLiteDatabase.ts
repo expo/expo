@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';

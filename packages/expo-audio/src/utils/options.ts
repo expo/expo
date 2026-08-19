@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import type {
   RecordingOptions,
@@ -15,9 +15,18 @@ type CommonRecordingOptions = {
   isMeteringEnabled: boolean;
 };
 
+type NativeRecordingOptions = {
+  directory?: RecordingOptions['directory'];
+};
+
 export function createRecordingOptions(
   options: RecordingOptions
-): CommonRecordingOptions & (RecordingOptionsIos | RecordingOptionsAndroid | RecordingOptionsWeb) {
+): CommonRecordingOptions &
+  (
+    | (NativeRecordingOptions & RecordingOptionsIos)
+    | (NativeRecordingOptions & RecordingOptionsAndroid)
+    | RecordingOptionsWeb
+  ) {
   const commonOptions: CommonRecordingOptions = {
     extension: options.extension,
     sampleRate: options.sampleRate,
@@ -29,11 +38,13 @@ export function createRecordingOptions(
   if (Platform.OS === 'ios') {
     return {
       ...commonOptions,
+      directory: options.directory,
       ...options.ios,
     };
   } else if (Platform.OS === 'android') {
     return {
       ...commonOptions,
+      directory: options.directory,
       ...options.android,
     };
   } else {

@@ -35,7 +35,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
   // This property is not applied in this component, but read by the host
   @ReactiveProp var routerHidden: Bool = false
 
-  var host: RouterToolbarHostView?
+  weak var host: RouterToolbarHostView?
   private var currentBarButtonItem: UIBarButtonItem?
 
   let onSelected = EventDispatcher()

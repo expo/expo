@@ -1,7 +1,8 @@
+import { events } from '2g';
 import * as env from '@expo/env';
 import path from 'node:path';
 
-import { events, shouldReduceLogs } from '../events';
+import { shouldReduceLogs } from './interactive';
 
 type EnvOutput = Record<string, string | undefined>;
 
@@ -11,19 +12,27 @@ declare namespace globalThis {
   let __DEV__: boolean | undefined;
 }
 
-// prettier-ignore
-export const event = events('env', (t) => [
-  t.event<'mode', {
-    nodeEnv: string;
-    babelEnv: string;
-    mode: 'development' | 'production';
-  }>(),
-  t.event<'load', {
-    mode: string | undefined;
-    files: string[];
-    env: Record<string, string | undefined>;
-  }>(),
-]);
+declare module '2g' {
+  interface EventRegistry {
+    'env:mode': {
+      nodeEnv: string;
+      babelEnv: string;
+      mode: 'development' | 'production';
+    };
+    'env:load': {
+      mode: string | undefined;
+      files: string[];
+      env: Record<string, string | undefined>;
+    };
+  }
+}
+
+export const event = events('env');
+
+/** Defer relativizing a list of paths until the event is written. */
+function relativeFiles(files: string[]) {
+  return { toJSON: () => files.map((file) => event.path(file).toJSON()) };
+}
 
 /**
  * Set the environment to production or development
@@ -75,7 +84,7 @@ export function loadEnvFiles(projectRoot: string, options?: LoadEnvFilesOptions)
   if (envInfo.result === 'loaded') {
     event('load', {
       mode: params.mode,
-      files: envInfo.files.map((file) => event.path(file)),
+      files: relativeFiles(envInfo.files),
       env: envOutput,
     });
   }
@@ -121,7 +130,7 @@ export function reloadEnvFiles(projectRoot: string) {
 
     event('load', {
       mode: params.mode,
-      files: envInfo.files.map((file) => event.path(file)),
+      files: relativeFiles(envInfo.files),
       env: envOutput,
     });
   }

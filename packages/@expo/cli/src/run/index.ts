@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
-import { logPlatformRunCommand } from './hints';
-import type { Command } from '../../bin/cli';
+import type { Command } from '../index';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
 import { CommandError, logCmdError } from '../utils/errors';
+import { logPlatformRunCommand } from './hints';
 
 export const expoRun: Command = async (argv) => {
   const args = assertWithOptionsArgs(

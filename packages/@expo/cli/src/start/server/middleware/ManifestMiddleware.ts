@@ -5,6 +5,16 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { resolve } from 'url';
 
+import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
+import { isEnableHermesManaged } from '../../../export/exportHermes';
+import * as Log from '../../../log';
+import { env } from '../../../utils/env';
+import * as ProjectDevices from '../../project/devices';
+import type { UrlCreator } from '../UrlCreator';
+import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
+import type { PlatformBundlers } from '../platformBundlers';
+import { getPlatformBundlers } from '../platformBundlers';
+import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import {
   createBundleUrlPath,
@@ -16,16 +26,6 @@ import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAsset
 import type { RuntimePlatform } from './resolvePlatform';
 import { parsePlatformHeader } from './resolvePlatform';
 import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
-import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
-import { isEnableHermesManaged } from '../../../export/exportHermes';
-import * as Log from '../../../log';
-import { env } from '../../../utils/env';
-import * as ProjectDevices from '../../project/devices';
-import type { UrlCreator } from '../UrlCreator';
-import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
-import type { PlatformBundlers } from '../platformBundlers';
-import { getPlatformBundlers } from '../platformBundlers';
-import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 

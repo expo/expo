@@ -6,8 +6,6 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import url from 'url';
 
-import type { PlatformMetadata } from './createMetadataJson';
-import { type BundleOutput, type ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
 import type { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import {
@@ -16,6 +14,8 @@ import {
 } from '../start/server/middleware/DomComponentsMiddleware';
 import { env } from '../utils/env';
 import { toPosixPath } from '../utils/filePath';
+import type { PlatformMetadata } from './createMetadataJson';
+import { type BundleOutput, type ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
 
 const debug = require('debug')('expo:export:exportDomComponents') as typeof console.log;
 

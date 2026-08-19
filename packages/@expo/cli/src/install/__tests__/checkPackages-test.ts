@@ -291,7 +291,7 @@ describe(checkPackagesAsync, () => {
 
     // Get the JSON output
     expect(mockConsoleLog).toHaveBeenCalledTimes(1);
-    const jsonOutput = mockConsoleLog.mock.calls[0][0];
+    const jsonOutput = mockConsoleLog.mock.calls[0]![0];
 
     // Parse and validate the JSON structure
     expect(() => JSON.parse(jsonOutput)).not.toThrow();

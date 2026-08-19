@@ -23,12 +23,14 @@ export function DiscoverMore() {
             'max-md:min-h-50'
           )}>
           <PlanEnterpriseIcon
+            aria-hidden="true"
             className={mergeClasses(
               'absolute -bottom-12 -left-20 size-87.5! rotate-40 opacity-[0.12]',
               'text-palette-green7'
             )}
           />
           <PlanEnterpriseIcon
+            aria-hidden="true"
             className={mergeClasses(
               'absolute right-6 bottom-6 size-18! rounded-xl border-[6px] p-2',
               'border-palette-green5 bg-palette-green4 text-palette-green8'
@@ -41,7 +43,9 @@ export function DiscoverMore() {
             className="border-palette-green10 bg-palette-green10 dark:text-palette-green2 hocus:bg-palette-green9"
             href="/tutorial/eas/introduction/"
             size="sm"
-            rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-green2" />}>
+            rightSlot={
+              <ArrowRightIcon aria-hidden="true" className="icon-md dark:text-palette-green2" />
+            }>
             <span className="max-sm:hidden">Start&nbsp;</span>EAS Tutorial
           </HomeButton>
         </GridCell>
@@ -52,12 +56,14 @@ export function DiscoverMore() {
             'max-md:min-h-50'
           )}>
           <RouterLogo
+            aria-hidden="true"
             className={mergeClasses(
               'absolute -bottom-20 -left-24 size-85! rotate-20 opacity-[0.12]',
               'stroke-palette-pink7 stroke-[0.01rem] text-palette-pink7'
             )}
           />
           <RouterLogo
+            aria-hidden="true"
             className={mergeClasses(
               'absolute right-6 bottom-6 size-18! rounded-xl border-[6px] p-3',
               'border-palette-pink5 bg-palette-pink4 stroke-palette-pink8 stroke-[0.01rem] text-palette-pink8'
@@ -70,7 +76,10 @@ export function DiscoverMore() {
             className="border-palette-pink10 bg-palette-pink10 dark:text-palette-pink2 hocus:bg-palette-pink9"
             href="/router/introduction/"
             size="sm"
-            rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-pink2" />}>
+            aria-label="Learn more about Expo Router"
+            rightSlot={
+              <ArrowRightIcon aria-hidden="true" className="icon-md dark:text-palette-pink2" />
+            }>
             Learn more
           </HomeButton>
         </GridCell>
@@ -87,13 +96,18 @@ export function DiscoverMore() {
             )}
             href="https://snack.expo.dev/"
             target="_blank"
-            rightSlot={<ArrowUpRightIcon className="icon-md text-palette-orange3" />}>
+            rightSlot={
+              <ArrowUpRightIcon aria-hidden="true" className="icon-md text-palette-orange3" />
+            }>
             Create a Snack
           </HomeButton>
         </GridCell>
         <GridCell className="bg-linear-to-br from-subtle from-30% to-palette-blue3 selection:bg-palette-blue5">
           <div className="absolute right-6 bottom-6 rounded-full bg-palette-blue5 p-4">
-            <DiscordIcon className="size-12! text-palette-blue9 dark:text-palette-blue9" />
+            <DiscordIcon
+              aria-hidden="true"
+              className="size-12! text-palette-blue9 dark:text-palette-blue9"
+            />
           </div>
           <RawH3 className="font-bold! text-palette-blue11!">Chat with the community</RawH3>
           <P className="max-w-[32ch] text-sm! text-palette-blue11!">
@@ -105,7 +119,10 @@ export function DiscoverMore() {
             className="border-palette-blue10 bg-palette-blue10 text-palette-blue1 dark:border-palette-blue9 dark:bg-palette-blue9 dark:text-palette-blue2 hocus:bg-palette-blue9"
             href="https://chat.expo.dev"
             rightSlot={
-              <ArrowUpRightIcon className="icon-md text-palette-blue1 dark:text-palette-blue2" />
+              <ArrowUpRightIcon
+                aria-hidden="true"
+                className="icon-md text-palette-blue1 dark:text-palette-blue2"
+              />
             }>
             Go to Discord
           </HomeButton>

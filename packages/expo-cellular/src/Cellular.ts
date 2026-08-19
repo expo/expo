@@ -1,5 +1,4 @@
-import { createPermissionHook, PermissionStatus } from 'expo';
-import { Platform, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, Platform, UnavailabilityError } from 'expo';
 
 import type { PermissionResponse, CellularGeneration } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';
@@ -30,35 +29,6 @@ export async function getCellularGenerationAsync(): Promise<CellularGeneration> 
     throw new UnavailabilityError('expo-cellular', 'getCellularGenerationAsync');
   }
   return await ExpoCellular.getCellularGenerationAsync();
-}
-
-/**
- * @return Returns if the carrier allows making VoIP calls on its network. On Android, this checks whether
- * the system supports SIP-based VoIP API. See [here](https://developer.android.com/reference/android/net/sip/SipManager.html#isVoipSupported(android.content.Context))
- * to view more information.
- *
- * On iOS, if you configure a device for a carrier and then remove the SIM card, this property
- * retains the `boolean` value indicating the carrier’s policy regarding VoIP. If you then install
- * a new SIM card, its VoIP policy `boolean` replaces the previous value of this property.
- *
- * On iOS and web, this returns `null`.
- *
- * @platform android
- *
- * @example
- * ```ts
- * await Cellular.allowsVoipAsync(); // true or false
- * ```
- * @deprecated Voip technology is not widely used and Google is removing it from the Android platform. This method will be removed in a future release.
- */
-export async function allowsVoipAsync(): Promise<boolean | null> {
-  if (Platform.OS === 'ios') {
-    return null;
-  }
-  if (!ExpoCellular.allowsVoipAsync) {
-    throw new UnavailabilityError('expo-cellular', 'allowsVoipAsync');
-  }
-  return await ExpoCellular.allowsVoipAsync();
 }
 
 /**

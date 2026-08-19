@@ -62,14 +62,14 @@ describe('exports static with bundle splitting', () => {
   // Ensure the correct script tags are injected.
   it('has eager script tags in html', async () => {
     expect(await getScriptTagsAsync('index.html')).toEqual(
-      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '_layout', 'index', '__common', 'entry'].map(expectChunkPathMatching)
     );
   });
   it('has eager script tags in dynamic html', async () => {
     const staticParamsPage = await getScriptTagsAsync('welcome-to-the-universe.html');
 
     expect(staticParamsPage).toEqual(
-      ['__expo-metro-runtime', '__common', 'entry', '_layout', '[post]'].map(
+      ['__expo-metro-runtime', '_layout', '[post]', '__common', 'entry'].map(
         expectChunkPathMatching
       )
     );
@@ -79,7 +79,7 @@ describe('exports static with bundle splitting', () => {
   it('has (fewer) eager script tags in generated routes', async () => {
     // Less chunks because the not-found route is not an async import.
     expect(await getScriptTagsAsync('+not-found.html')).toEqual(
-      ['__expo-metro-runtime', '__common', 'entry', '_layout'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '_layout', '__common', 'entry'].map(expectChunkPathMatching)
     );
   });
 
@@ -117,7 +117,15 @@ describe('exports static with bundle splitting', () => {
 
       // Common chunk
       if (file!.match(/__common/)) {
-        expect(sourceMap.sources.length).toEqual(44);
+        const sources: string[] = sourceMap.sources;
+        expect(
+          sources.every(
+            (source) => source.startsWith('/packages/') || source.startsWith('/node_modules/')
+          )
+        ).toBe(true);
+        expect(sources.some((source) => source.includes('router-e2e/__e2e__/'))).toBe(
+          false
+        );
       } else {
         // expect(sourceMap.sources).toEqual(
         //   expect.arrayContaining([

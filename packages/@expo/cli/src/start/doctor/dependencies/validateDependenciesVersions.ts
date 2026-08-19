@@ -5,6 +5,8 @@ import npmPackageArg from 'npm-package-arg';
 import semver from 'semver';
 import semverRangeSubset from 'semver/ranges/subset';
 
+import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import type { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 import {
@@ -13,8 +15,6 @@ import {
   reactNativeTvVersionMatchesBundled,
 } from './reactNativeTv';
 import { resolveAllPackageVersionsAsync } from './resolvePackages';
-import * as Log from '../../../log';
-import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
 

@@ -6,6 +6,7 @@ interface GenerateModulesProviderParams {
   targetPath: string;
   entitlementPath: string | null;
   watchedDirectories: string[];
+  inlineModulesTargets: { mainTarget?: string; targets: string[] };
   appRoot: string;
 }
 

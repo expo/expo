@@ -5,7 +5,7 @@ import {
   diffFingerprints,
   diffFingerprintChangesAsync,
 } from '../Fingerprint';
-import type { Fingerprint, FingerprintDiffItem } from '../Fingerprint.types';
+import type { Fingerprint, FingerprintDiffItem, Options } from '../Fingerprint.types';
 import { normalizeOptionsAsync } from '../Options';
 
 jest.mock('fs');
@@ -516,14 +516,14 @@ describe(diffFingerprints, () => {
 });
 
 describe('function api stability', () => {
-  const Fingerprint = require('../index');
+  const Fingerprint: typeof import('../index') = require('../index');
   afterEach(() => {
     vol.reset();
   });
 
-  function getCreateFingerprintFixedArgs(): [string, Record<string, any>] {
+  function getCreateFingerprintFixedArgs(): [string, Options] {
     // The fixed options and arguments as called by eas-cli
-    const FIXED_OPTIONS = {
+    const FIXED_OPTIONS: Options = {
       platforms: ['android', 'ios'],
       ignorePaths: ['android/**/*', 'ios/**/*'],
       debug: true,
@@ -566,7 +566,7 @@ describe('function api stability', () => {
     const fingerprint = await Fingerprint.createFingerprintAsync(...createFingerprintFixedArgs);
 
     // The fixed arguments as called by eas-cli
-    const FIXED_ARGS = [fingerprint, fingerprint];
+    const FIXED_ARGS: [Fingerprint, Fingerprint] = [fingerprint, fingerprint];
     expect(Fingerprint.diffFingerprints(...FIXED_ARGS)).toBeDefined();
   });
 });

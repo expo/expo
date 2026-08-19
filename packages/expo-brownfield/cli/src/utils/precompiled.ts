@@ -20,6 +20,22 @@ const RESERVED_POD_DIRS = new Set([
 ]);
 
 /**
+ * Returns true when an `entry` refers to a directory either directly OR via a symlink whose
+ * target is a directory.
+ */
+export const isDirentDirectory = (entry: fs.Dirent, parentDir: string): boolean => {
+  if (entry.isDirectory()) {
+    return true;
+  }
+  if (!entry.isSymbolicLink()) {
+    return false;
+  }
+  return (
+    fs.statSync(path.join(parentDir, entry.name), { throwIfNoEntry: false })?.isDirectory() ?? false
+  );
+};
+
+/**
  * Scans `ios/Pods/` for prebuilt xcframeworks installed by autolinking when
  * `EXPO_USE_PRECOMPILED_MODULES=1` is set. A pod is "precompiled" when its directory contains
  * a `<Product>.xcframework/` dir and an `artifacts/<Product>-{debug,release}.tar.gz` tarball —
@@ -62,7 +78,7 @@ export const enumeratePrecompiledModules = (iosDir: string): ModuleXCFramework[]
 
     const xcframeworks = fs
       .readdirSync(podDir, { withFileTypes: true })
-      .filter((f) => f.isDirectory() && f.name.endsWith('.xcframework'))
+      .filter((f) => f.name.endsWith('.xcframework') && isDirentDirectory(f, podDir))
       .map((f) => f.name.replace(/\.xcframework$/, ''));
 
     // Identify the "main" product for this pod — the xcframework whose name matches a tarball.
@@ -205,7 +221,10 @@ export const enumerateSpmDepsXcframeworks = (
   const results: ModuleXCFramework[] = [];
 
   for (const entry of fs.readdirSync(spmDepsRoot, { withFileTypes: true })) {
-    if (!entry.isDirectory() || entry.name.startsWith('_') || entry.name.startsWith('.')) {
+    if (entry.name.startsWith('_') || entry.name.startsWith('.')) {
+      continue;
+    }
+    if (!isDirentDirectory(entry, spmDepsRoot)) {
       continue;
     }
     if (existingNames.has(entry.name)) {
@@ -573,11 +592,54 @@ export const enumerateBundledSpmDepsXcframeworks = (
  * xcframework can land on disk without a matching `.binaryTarget` (or vice-versa). Calling this
  * helper from both sites guarantees they agree, and gates both behind the completeness check
  * so we never produce a half-baked package on missing deps.
+ *
+ * `hostProvidedFrameworks` is the set of xcframework names the consuming host iOS app already
+ * provides (typically via its own CocoaPods). Matching entries are filtered out of both the
+ * enumeration result AND the completeness-check input — so we neither ship them nor fail the
+ * build when an `spm.config.json` declares them.
  */
 export const enumerateAllPrebuildModules = (
   cwd: string,
-  buildConfiguration: BuildConfiguration
+  buildConfiguration: BuildConfiguration,
+  hostProvidedFrameworks: readonly string[] = []
 ): ModuleXCFramework[] => {
+  const hostProvided = new Set(hostProvidedFrameworks);
+  const {
+    modules: allModules,
+    podModules,
+    podToNpm,
+  } = enumeratePrebuildModulesRaw(cwd, buildConfiguration);
+
+  const modules = allModules.filter((m) => !hostProvided.has(m.name));
+
+  // Drop host-provided names from the completeness check
+  const declaredDeps = collectDeclaredSpmDeps(podModules, podToNpm).filter(
+    ({ name }) => !hostProvided.has(name)
+  );
+  const coveredNames = new Set(modules.map((m) => m.name));
+  const missing = declaredDeps.filter(({ name }) => !coveredNames.has(name));
+  if (missing.length > 0) {
+    const detail = missing
+      .map(({ name, declaringPod }) => `${name} (required by ${declaringPod})`)
+      .join(', ');
+    CLIError.handle('ios-prebuilds-spm-dep-missing', detail);
+  }
+
+  return modules;
+};
+
+/**
+ * Walks all three resolution layers (pod scan → npm-bundled → shared `.spm-deps/` cache) without
+ * applying host-provided filtering or running the missing-SPM-dep completeness check.
+ */
+export const enumeratePrebuildModulesRaw = (
+  cwd: string,
+  buildConfiguration: BuildConfiguration
+): {
+  modules: ModuleXCFramework[];
+  podModules: ModuleXCFramework[];
+  podToNpm: Map<string, NpmPackageInfo>;
+} => {
   const podModules = enumeratePrecompiledModules(path.join(cwd, 'ios'));
   const podToNpm = buildPodToNpmPackageMap(cwd);
   const seenNames = new Set(podModules.map((m) => m.name));
@@ -592,17 +654,9 @@ export const enumerateAllPrebuildModules = (
 
   const spmDepModules = enumerateSpmDepsXcframeworks(cwd, buildConfiguration, seenNames);
 
-  const modules = [...podModules, ...bundledModules, ...spmDepModules];
-
-  const declaredDeps = collectDeclaredSpmDeps(podModules, podToNpm);
-  const coveredNames = new Set(modules.map((m) => m.name));
-  const missing = declaredDeps.filter(({ name }) => !coveredNames.has(name));
-  if (missing.length > 0) {
-    const detail = missing
-      .map(({ name, declaringPod }) => `${name} (required by ${declaringPod})`)
-      .join(', ');
-    CLIError.handle('ios-prebuilds-spm-dep-missing', detail);
-  }
-
-  return modules;
+  return {
+    modules: [...podModules, ...bundledModules, ...spmDepModules],
+    podModules,
+    podToNpm,
+  };
 };

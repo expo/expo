@@ -11,12 +11,6 @@
 import { transformFromAstSync, parse, types as t, template } from '@babel/core';
 import type { ParseResult, PluginItem, NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
-import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
-import {
-  importLocationsPlugin,
-  locToKey,
-} from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import { stableHash } from '@expo/metro/metro-cache';
 import { getCacheKey as getMetroCacheKey } from '@expo/metro/metro-cache-key';
@@ -28,8 +22,24 @@ import type {
   JsTransformOptions,
   Type,
 } from '@expo/metro/metro-transform-worker';
+import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
+import {
+  importLocationsPlugin,
+  locToKey,
+} from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import assert from 'node:assert';
 
+import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
+import {
+  countLinesAndTerminateSourceMap,
+  emptySourceMap,
+  packDecodedMappings,
+  packRawMappings,
+  type SerializableSourceMap,
+} from '../serializer/packedMap';
+import { rawMappingsToEncodedMap, type BabelSourceMapSegment } from '../serializer/sourceMap';
+import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import * as assetTransformer from './asset-transformer';
 import type {
   Dependency,
@@ -43,16 +53,6 @@ import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from './collect-dependencies';
 import { shouldMinify } from './resolveOptions';
-import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
-import {
-  countLinesAndTerminateSourceMap,
-  emptySourceMap,
-  packDecodedMappings,
-  packRawMappings,
-  type SerializableSourceMap,
-} from '../serializer/packedMap';
-import { rawMappingsToEncodedMap, type BabelSourceMapSegment } from '../serializer/sourceMap';
-import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
 export { JsTransformOptions };

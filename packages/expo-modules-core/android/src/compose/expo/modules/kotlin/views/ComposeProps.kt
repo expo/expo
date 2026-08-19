@@ -15,7 +15,7 @@ inline fun <reified Props : ComposeProps> createComposeProps(
   appContext: AppContext? = null
 ): Props {
   val propsParsingStrategy = toPropsParsingStrategy<Props>()
-  val propsInstance = propsParsingStrategy.createNewInstance()
+  var propsInstance = propsParsingStrategy.createNewInstance()
 
   if (propsMap == null) {
     return propsInstance
@@ -29,12 +29,13 @@ inline fun <reified Props : ComposeProps> createComposeProps(
     val prop = props[name] ?: continue
 
     propsMap.getDynamic(name).recycle {
-      @Suppress("UNCHECKED_CAST")
-      prop.setPropDirectly(
-        prop = this,
-        currentProps = propsInstance,
-        appContext = appContext
-      ) as Props
+      propsInstance = (
+        prop.copyPropsWithNewValue(
+          prop = this,
+          currentProps = propsInstance,
+          appContext = appContext
+        ) ?: propsInstance
+        ) as Props
     }
   }
 

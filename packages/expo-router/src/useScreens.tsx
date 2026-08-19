@@ -9,6 +9,8 @@ import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
+import { useGuardRedirect } from './layouts/GuardContext';
+import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { unstable_navigationEvents } from './navigationEvents';
@@ -30,13 +32,19 @@ import {
   type ScreenListeners,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
-import type { UnknownOutputParams } from './types';
+import type { Href, UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
   type SuspenseFallbackProps,
 } from './views/SuspenseFallback';
 import { Try } from './views/Try';
+
+declare module 'react' {
+  export function lazy<T extends React.ComponentType<any>>(
+    load: () => PromiseLike<{ default: T }> | Promise<{ default: T }>
+  ): React.LazyExoticComponent<T>;
+}
 
 export type ScreenProps<
   TOptions extends Record<string, any> = Record<string, any>,
@@ -167,7 +175,7 @@ function getSortedChildren(
  */
 export function useSortedScreens(
   order: ScreenProps[],
-  protectedScreens: Set<string>,
+  guardedRedirects: Map<string, Href | undefined> = new Map(),
   useOnlyUserDefinedScreens: boolean = false
 ): React.ReactNode[] {
   const node = useRouteNode();
@@ -184,20 +192,24 @@ export function useSortedScreens(
     : nodeChildren;
 
   const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
-  return React.useMemo(
-    () =>
-      sorted
-        .filter((item) => {
-          const route = item.route.route;
-          return (
-            !protectedScreens.has(route) && !protectedScreens.has(route.replace(/\/index$/, ''))
-          );
-        })
-        .map((value) => {
-          return routeToScreen(value.route, value.props);
-        }),
-    [sorted, protectedScreens]
-  );
+  return React.useMemo(() => {
+    const screensWithGuarded = sorted.map((value) => {
+      const route = value.route.route;
+      const isGuarded =
+        guardedRedirects.has(route) || guardedRedirects.has(route.replace(/\/index$/, ''));
+      return { ...value, isGuarded };
+    });
+    const allScreensGuarded =
+      screensWithGuarded.length > 0 && screensWithGuarded.every((item) => item.isGuarded);
+
+    if (allScreensGuarded) {
+      return [];
+    }
+
+    return screensWithGuarded.map((value) => {
+      return routeToScreen(value.route, value.props, value.isGuarded);
+    });
+  }, [sorted, guardedRedirects]);
 }
 
 function fromImport(
@@ -237,15 +249,7 @@ function fromImport(
     }
   }
 
-  return { default: component.default, SuspenseFallback };
-}
-
-function fromLoadedRoute(value: RouteNode, res: LoadedRoute) {
-  if (!(res instanceof Promise)) {
-    return fromImport(value, res);
-  }
-
-  return res.then(fromImport.bind(null, value));
+  return { default: component.default!, SuspenseFallback };
 }
 
 // TODO: Maybe there's a more React-y way to do this?
@@ -258,26 +262,33 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     return qualifiedStore.get(value)!;
   }
 
-  let ScreenComponent:
-    | React.ForwardRefExoticComponent<React.RefAttributes<unknown>>
-    | React.ComponentType<{ segment?: string }>;
-
+  let ScreenComponent: React.ComponentType<any>;
   let LayoutSuspenseFallback: React.ComponentType<SuspenseFallbackProps> | undefined;
 
   // TODO: This ensures sync doesn't use React.lazy, but it's not ideal.
   if (EXPO_ROUTER_IMPORT_MODE === 'lazy') {
-    ScreenComponent = React.lazy(async () => {
-      const res = value.loadRoute();
-      return fromLoadedRoute(value, res) as Promise<{
-        default: React.ComponentType<any>;
-      }>;
+    ScreenComponent = React.lazy<React.ComponentType<any>>(() => {
+      const res = value.loadRoute() as LoadedRoute | PromiseLike<LoadedRoute>;
+      // NOTE(@kitten): React.lazy supports promise likes, which we can use to ensure that
+      // the route is synchronously available, if the `loadRoute` method returns a loaded route
+      // synchronously
+      if (!('then' in res)) {
+        return {
+          then(resolve) {
+            const ret = fromImport(value, res);
+            return Promise.resolve(resolve ? resolve(ret) : ret);
+          },
+        } as PromiseLike<{ default: React.ComponentType<any> }>;
+      } else {
+        return res.then(fromImport.bind(null, value));
+      }
     });
 
     if (__DEV__) {
       ScreenComponent.displayName = `AsyncRoute(${value.route})`;
     }
   } else {
-    const res = value.loadRoute();
+    const res = value.loadRoute() as LoadedRoute;
     const result = fromImport(value, res);
     ScreenComponent = result.default!;
     LayoutSuspenseFallback = value.type === 'layout' ? result.SuspenseFallback : undefined;
@@ -314,6 +325,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
+    const guardRedirect = useGuardRedirect(value.route);
 
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'
@@ -324,7 +336,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
-    if (isFocused) {
+    if (isFocused && !guardRedirect) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]!);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
@@ -339,9 +351,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,
           // and this won’t cause a redundant second update.
-          if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
+          if (isLeaf && stateForPath && !guardRedirect) store.setFocusedState(stateForPath);
         }),
-      [navigation]
+      [navigation, guardRedirect]
     );
 
     useEffect(() => {
@@ -360,6 +372,14 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
+
+    if (guardRedirect) {
+      return (
+        <Route node={value} params={route?.params}>
+          <Redirect href={guardRedirect} />
+        </Route>
+      );
+    }
 
     return (
       <Route node={value} params={route?.params}>
@@ -490,7 +510,8 @@ function AnalyticsListeners({
 
 export function screenOptionsFactory(
   route: RouteNode,
-  options?: ScreenProps['options']
+  options?: ScreenProps['options'],
+  isGuarded?: boolean
 ): ScreenProps['options'] {
   return (args) => {
     // Only eager load generated components
@@ -503,11 +524,12 @@ export function screenOptionsFactory(
     };
 
     // Prevent generated screens from showing up in the tab bar.
-    if (route.internal) {
+    if (route.internal || isGuarded) {
       output.tabBarItemStyle = { display: 'none' };
       output.tabBarButton = () => null;
       // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
       output.drawerItemStyle = { height: 0, display: 'none' };
+      output.hidden = true;
     }
 
     return output;
@@ -516,7 +538,8 @@ export function screenOptionsFactory(
 
 export function routeToScreen(
   route: RouteNode,
-  { options, getId, ...props }: Partial<ScreenProps> = {}
+  { options, getId, ...props }: Partial<ScreenProps> = {},
+  isGuarded?: boolean
 ) {
   return (
     <Screen
@@ -524,7 +547,7 @@ export function routeToScreen(
       name={route.route}
       key={route.route}
       getId={getId}
-      options={screenOptionsFactory(route, options)}
+      options={screenOptionsFactory(route, options, isGuarded)}
       getComponent={() => getQualifiedRouteComponent(route)}
     />
   );

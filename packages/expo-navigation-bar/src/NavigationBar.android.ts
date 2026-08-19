@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Appearance, useColorScheme } from 'react-native';
 
@@ -59,7 +59,7 @@ function createStackEntry({ style, hidden }: NavigationBarProps): NavigationBarP
 const entriesStack: NavigationBarProps[] = [];
 
 // Timer for updating the native module values at the end of the frame
-let updateImmediate: number | null = null;
+let updateImmediate: ReturnType<typeof setImmediate> | null = null;
 
 // The current merged values from the entries stack
 const currentValues: {

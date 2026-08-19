@@ -1,6 +1,6 @@
-import type MetroServer from '@expo/metro/metro/Server';
 import type { ChangeEvent } from '@expo/metro/metro-file-map';
 import type FileMap from '@expo/metro/metro-file-map';
+import type MetroServer from '@expo/metro/metro/Server';
 import path from 'path';
 
 import type { ServerLike } from '../BundlerDevServer';

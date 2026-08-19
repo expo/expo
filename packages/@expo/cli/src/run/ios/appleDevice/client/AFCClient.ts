@@ -140,16 +140,14 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
     // so we delay any requests that would push us over until more open up
     let numOpenFiles = 0;
     const pendingFileUploads: (() => void)[] = [];
-    const _this = this;
-    return uploadDir(srcPath);
 
-    async function uploadDir(dirPath: string): Promise<void> {
+    const uploadDir = async (dirPath: string): Promise<void> => {
       const promises: Promise<void>[] = [];
       for (const file of fs.readdirSync(dirPath)) {
         const filePath = path.join(dirPath, file);
         const remotePath = path.join(destPath, path.relative(srcPath, filePath));
         if (fs.lstatSync(filePath).isDirectory()) {
-          promises.push(_this.makeDirectory(remotePath).then(() => uploadDir(filePath)));
+          promises.push(this.makeDirectory(remotePath).then(() => uploadDir(filePath)));
         } else {
           // Create promise to add to promises array
           // this way it can be resolved once a pending upload has finished
@@ -164,8 +162,7 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
           // wrap upload in a function in case we need to save it for later
           const uploadFile = (tries = 0) => {
             numOpenFiles++;
-            _this
-              .uploadFile(filePath, remotePath)
+            this.uploadFile(filePath, remotePath)
               .then(() => {
                 resolve();
                 numOpenFiles--;
@@ -198,7 +195,9 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
         }
       }
       await Promise.all(promises);
-    }
+    };
+
+    return uploadDir(srcPath);
   }
 }
 

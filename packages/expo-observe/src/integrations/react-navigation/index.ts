@@ -8,5 +8,9 @@ export {
   ObserveNavigationContainer,
   type ObserveNavigationContainerProps,
 } from './ObserveNavigationContainer';
+export {
+  ObserveNavigationProvider,
+  type ObserveNavigationProviderProps,
+} from './ObserveNavigationProvider';
 export { ObserveReactNavigationIntegrationContext } from './context';
 export { useObserveForReactNavigation } from './useObserveForReactNavigation';

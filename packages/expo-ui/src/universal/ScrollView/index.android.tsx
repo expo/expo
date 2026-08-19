@@ -1,9 +1,9 @@
 import { Column, Row } from '@expo/ui/jetpack-compose';
 import { horizontalScroll, verticalScroll } from '@expo/ui/jetpack-compose/modifiers';
 
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { ScrollViewProps } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 export function ScrollView({
   children,

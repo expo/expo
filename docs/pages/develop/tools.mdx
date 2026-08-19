@@ -45,7 +45,14 @@ EAS CLI is used to log in to your Expo account and compile your app using differ
 
 To use EAS CLI, you need to install it globally on your local machine by running the command:
 
-<Terminal cmd={['$ npm install -g eas-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
 
 You can use `eas --help` in your terminal window to learn more about the available commands. For a complete reference, see [`eas-cli` npm page](https://www.npmjs.com/package/eas-cli).
 
@@ -53,7 +60,14 @@ You can use `eas --help` in your terminal window to learn more about the availab
 
 Expo Doctor is a command-line tool used to diagnose issues in your Expo project. To use it, run the following command in your project's root directory:
 
-<Terminal cmd={['$ npx expo-doctor']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-doctor'],
+    yarn: ['$ yarn dlx expo-doctor'],
+    pnpm: ['$ pnpm dlx expo-doctor'],
+    bun: ['$ bunx expo-doctor'],
+  }}
+/>
 
 This command performs checks and analyzes your project's codebase for common issues in [app config](/workflow/configuration/) and **package.json** files, dependency compatibility, configuration files, and the overall health of the project. Once the check is complete, Expo Doctor outputs the results.
 
@@ -142,15 +156,58 @@ For more information on how to use it:
 
 > **Note:** Expo Go is limited and not useful for building production-grade projects. Use [development builds](/get-started/set-up-your-environment/?mode=development-build) instead.
 
+#### `expo-go` CLI
+
+The [`expo-go` CLI](https://www.npmjs.com/package/expo-go) is a standalone tool that downloads an Expo Go binary for a platform and specific SDK version, or prints its download URL. Pass an SDK version to pin a specific release, or omit it for the latest release, and specify a platform to download the correct binary.
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Download Expo Go for a platform',
+      '$ npx expo-go download android latest',
+      '',
+      '# Print the download URL instead of downloading',
+      '$ npx expo-go url ios latest',
+    ],
+    yarn: [
+      '# Download Expo Go for a platform',
+      '$ yarn dlx expo-go download android latest',
+      '',
+      '# Print the download URL instead of downloading',
+      '$ yarn dlx expo-go url ios latest',
+    ],
+    pnpm: [
+      '# Download Expo Go for a platform',
+      '$ pnpm dlx expo-go download android latest',
+      '',
+      '# Print the download URL instead of downloading',
+      '$ pnpm dlx expo-go url ios latest',
+    ],
+    bun: [
+      '# Download Expo Go for a platform',
+      '$ bunx expo-go download android latest',
+      '',
+      '# Print the download URL instead of downloading',
+      '$ bunx expo-go url ios latest',
+    ],
+  }}
+/>
+
+This command downloads the Expo Go app to the current directory and caches it under **~/.expo**.
+
+> **warning** The `expo-go` CLI works for Android device, Android Emulator, iOS Simulator. Due to Apple's policies, an iPhone device does not support side-loading older app versions in general and the `expo-go` CLI does not support it.
+
 <Collapsible summary="What if I open a project with an unsupported SDK version?">
 
 When running a project that was created for an unsupported SDK version in Expo Go, you'll see the following error:
 
-```sh
+```text
 "Project is incompatible with this version of Expo Go"
 ```
 
 To fix this, upgrading your project to a [supported SDK version](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) is recommended. If you want to learn how to do it, see [Upgrade the project to a new SDK Version](#how-do-i-upgrade-my-project-from).
+
+Alternatively, you can use `expo-go` CLI to download the version of Expo Go that matches your project's SDK version.
 
 </Collapsible>
 

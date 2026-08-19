@@ -168,8 +168,12 @@ Workbox doesn't have a Metro integration, but because Workbox doesn't require on
 For example, here's a possible flow for setting up Workbox. Create a new project with the following command:
 
 <Terminal
-  cmd={['$ npm create expo -t tabs my-app', '', '$ cd my-app']}
-  cmdCopy="npm create expo -t tabs my-app && cd my-app"
+  cmd={{
+    npm: ['$ npm create expo -t tabs my-app', '', '$ cd my-app'],
+    yarn: ['$ yarn create expo -t tabs my-app', '', '$ cd my-app'],
+    pnpm: ['$ pnpm create expo -t tabs my-app', '', '$ cd my-app'],
+    bun: ['$ bun create expo -t tabs my-app', '', '$ cd my-app'],
+  }}
 />
 
 Next, create a root HTML file for the app and add the service worker registration script:
@@ -221,20 +225,56 @@ if ('serviceWorker' in navigator) {
 
 Now build the app before running the wizard:
 
-<Terminal cmd={['$ npx expo export -p web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export -p web'],
+    yarn: ['$ yarn expo export -p web'],
+    pnpm: ['$ pnpm expo export -p web'],
+    bun: ['$ bun expo export -p web'],
+  }}
+/>
 
 Run the wizard command, select `dist` as the root of the app, and the defaults for everything else:
 
 <Terminal
-  cmd={[
-    '$ npx workbox-cli wizard',
-    '',
-    '$ ? What is the root of your web app (that is which directory do you deploy)? dist/',
-    '$ ? Which file types would you like to precache? js, html, ttf, ico, json',
-    '$ ? Where would you like your service worker file to be saved? dist/sw.js',
-    '$ ? Where would you like to save these configuration options? workbox-config.js',
-    "$ ? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
-  ]}
+  cmd={{
+    npm: [
+      '$ npx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+    yarn: [
+      '$ yarn dlx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+    pnpm: [
+      '$ pnpm dlx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+    bun: [
+      '$ bunx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+  }}
 />
 
 Finally, run `npx workbox-cli generateSW workbox-config.js` to generate the service worker config. Going forward, you can add a build script in **package.json** to run both scripts in the correct order:

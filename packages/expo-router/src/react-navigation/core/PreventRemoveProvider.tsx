@@ -3,10 +3,10 @@ import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 import { use } from 'react';
 
+import useLatestCallback from '../../utils/useLatestCallback';
 import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationRouteContext } from './NavigationProvider';
 import { type PreventedRoutes, PreventRemoveContext } from './PreventRemoveContext';
-import useLatestCallback from '../../utils/useLatestCallback';
 
 type Props = {
   children: React.ReactNode;

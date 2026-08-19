@@ -48,4 +48,33 @@ class JSONObjectUtilsTest {
     jsonObject.getNullable<JSONArray>("jsonarray") shouldBeEqualTo innerJSONArray
     jsonObject.getNullable<JSONObject>("jsonobject") shouldBeEqualTo innerJSONObject
   }
+
+  @Test
+  @Throws(Exception::class)
+  fun testRequireLongRoundTripsForIntSizedValues() {
+    val parsed = JSONObject(JSONObject(mapOf("duration" to 6000L)).toString())
+    val out: Long = parsed.require("duration")
+    out shouldBeEqualTo 6000L
+  }
+
+  @Test
+  @Throws(Exception::class)
+  fun testRequireIntRoundTrips() {
+    val parsed = JSONObject(JSONObject(mapOf("count" to 42)).toString())
+    parsed.require<Int>("count") shouldBeEqualTo 42
+  }
+
+  @Test
+  @Throws(Exception::class)
+  fun testRequireDoubleRoundTrips() {
+    val parsed = JSONObject(JSONObject(mapOf("ratio" to 1.5)).toString())
+    parsed.require<Double>("ratio") shouldBeEqualTo 1.5
+  }
+
+  @Test
+  @Throws(Exception::class)
+  fun testRequireBooleanRoundTrips() {
+    val parsed = JSONObject(JSONObject(mapOf("flag" to true)).toString())
+    parsed.require<Boolean>("flag") shouldBeEqualTo true
+  }
 }

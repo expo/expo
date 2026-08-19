@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
 
-import type { MenuAction, MenuComponentProps, MenuComponentRef, NativeActionEvent } from './types';
 import { HorizontalDivider } from '../../jetpack-compose/Divider';
 import { DropdownMenu } from '../../jetpack-compose/DropdownMenu';
 import {
@@ -13,6 +12,7 @@ import { Icon } from '../../jetpack-compose/Icon';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
 import { Text as ComposeText } from '../../jetpack-compose/Text';
 import { useMaterialColors } from '../../jetpack-compose/colors';
+import type { MenuAction, MenuComponentProps, MenuComponentRef, NativeActionEvent } from './types';
 
 function actionId(action: MenuAction): string {
   return action.id ?? action.title;

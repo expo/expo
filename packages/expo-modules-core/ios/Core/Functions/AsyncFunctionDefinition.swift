@@ -186,7 +186,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
-      let promise = JavaScriptPromise(try appContext.runtime)
+      let promise = try JavaScriptPromise(appContext.runtime)
       let promiseValue = promise.asValue()
 
       self.call(appContext, this: this, arguments: arguments) { [promise] result in
@@ -209,5 +209,3 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     return self
   }
 }
-
-

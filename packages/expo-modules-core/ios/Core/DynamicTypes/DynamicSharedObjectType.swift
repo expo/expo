@@ -41,7 +41,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       let nativeSharedObject = appContext.sharedObjectRegistry.get(sharedObjectId)?.native {
       return nativeSharedObject
     }
-    throw NativeSharedObjectNotFoundException()
+    throw SharedObject.NotFoundException()
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
@@ -49,7 +49,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       let sharedObjectId = jsValue.getInt() as SharedObjectId
 
       guard let nativeSharedObject = appContext.sharedObjectRegistry.get(sharedObjectId)?.native else {
-        throw NativeSharedObjectNotFoundException()
+        throw SharedObject.NotFoundException()
       }
       return nativeSharedObject
     }
@@ -57,7 +57,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       let nativeSharedObject = appContext.sharedObjectRegistry.toNativeObject(jsObject) {
       return nativeSharedObject
     }
-    throw NativeSharedObjectNotFoundException()
+    throw SharedObject.NotFoundException()
   }
 
   var description: String {
@@ -82,7 +82,7 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
 
       return jsObject.asValue()
     }
-    throw NativeSharedObjectNotFoundException()
+    throw SharedObject.NotFoundException()
   }
 }
 
@@ -95,12 +95,6 @@ private func getBaseSharedType(_ appContext: AppContext, nativeType: AnySharedOb
 
 private func newBaseSharedObject(_ appContext: AppContext, nativeType: AnySharedObject.Type) throws -> JavaScriptObject? {
   let jsClass = try getBaseSharedType(appContext, nativeType: nativeType)
-  let prototype = jsClass.asObject().getPropertyAsObject("prototype")
+  let prototype = try jsClass.asObject().getPropertyAsObject("prototype")
   return try appContext.runtime.createObject(prototype: prototype)
-}
-
-internal final class NativeSharedObjectNotFoundException: Exception {
-  override var reason: String {
-    "Unable to find the native shared object associated with given JavaScript object"
-  }
 }

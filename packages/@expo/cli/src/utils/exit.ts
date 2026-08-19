@@ -1,8 +1,8 @@
 import { ChildProcess } from 'node:child_process';
 import process from 'node:process';
 
-import { guardAsync } from './fn';
 import { warn } from '../log';
+import { guardAsync } from './fn';
 
 const debug = require('debug')('expo:utils:exit') as typeof console.log;
 

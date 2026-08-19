@@ -1,6 +1,7 @@
 import type {
   ContactField,
   ContactQueryOptions,
+  CreateFormOptions,
   FormOptions,
   PartialContactDetails,
 } from './Contact.props';
@@ -516,7 +517,7 @@ export declare class Contact {
 
   /**
    * Opens the native contact editor for this contact.
-   * @param options - Configuration options for the form.
+   * @param options - iOS only configuration options for the form.
    * @returns a promise resolving to `true` if changes were saved, `false` otherwise.
    */
   editWithForm(options?: FormOptions): Promise<boolean>;
@@ -997,6 +998,7 @@ export declare class Contact {
   /**
    * A static method that opens the native "Create Contact" form.
    * @param contact - Optional pre-filled data for the form.
+   * @param options - iOS only configuration options for the form.
    * @returns a promise resolving to `true` if a contact was created, `false` otherwise.
    * @example
    * ```ts
@@ -1006,7 +1008,10 @@ export declare class Contact {
    * });
    * ```
    */
-  static presentCreateForm(contact?: CreateContactRecord): Promise<boolean>;
+  static presentCreateForm(
+    contact?: CreateContactRecord,
+    options?: CreateFormOptions
+  ): Promise<boolean>;
 
   /**
    * A static method that retrieves the total count of contacts in the address book.

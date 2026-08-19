@@ -64,6 +64,7 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
       data-testid="callout-container"
       data-md="callout">
       <Icon
+        aria-hidden="true"
         className={mergeClasses(
           'mt-1 select-none',
           size === 'sm' ? 'mt-0.75 icon-xs' : 'icon-sm',

@@ -54,6 +54,7 @@ export type EnumCase = string;
  */
 export type EnumType = {
   name: string;
+  stringBacked: boolean;
   cases: EnumCase[];
 };
 
@@ -171,6 +172,7 @@ export type FunctionDeclaration = {
   returnType: Type;
   arguments: Argument[];
   parameters: Type[];
+  isStatic: boolean;
 } & DefinitionOffset;
 
 /**
@@ -378,6 +380,8 @@ export type GetFileTypeInformationOptions = {
   input: StringInputOption | FileInputOption;
   /** The desired level of type inference. Defaults to PREPROCESS_AND_INFERENCE if omitted. */
   typeInference?: TypeInferenceOption;
+  /** An option to map unicode code points to ASCII strings to fix underlying SourceKit issue. */
+  mapUnicodeCharacters: boolean;
 };
 
 async function mergeFileContents(absoluteFilePaths: string[]): Promise<string> {
@@ -400,10 +404,11 @@ async function withTempFile<T>(content: string, fn: (filePath: string) => Promis
 }
 
 export async function withPreparedSingleFile<T>(
-  { input, typeInference }: GetFileTypeInformationOptions,
+  { input, typeInference, mapUnicodeCharacters }: GetFileTypeInformationOptions,
   fn: (filePath: string) => Promise<T>
 ): Promise<T> {
-  const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+  const shouldPreprocessFile =
+    typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE || mapUnicodeCharacters;
   if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
     return fn(input.inputFileAbsolutePaths[0] as string);
   }
@@ -413,8 +418,12 @@ export async function withPreparedSingleFile<T>(
       ? await mergeFileContents(input.inputFileAbsolutePaths)
       : input.fileContent;
 
+  const preprocessFileOptions = {
+    preprocessReturns: shouldPreprocessFile,
+    mapUnicodeCharacters,
+  };
   if (shouldPreprocessFile) {
-    return withTempFile(preprocessSwiftFile(fileContent), fn);
+    return withTempFile(preprocessSwiftFile(fileContent, preprocessFileOptions), fn);
   }
   return withTempFile(fileContent, fn);
 }
@@ -430,8 +439,10 @@ export async function withPreparedSingleFile<T>(
 export async function getFileTypeInformation({
   input,
   typeInference,
+  mapUnicodeCharacters,
 }: GetFileTypeInformationOptions): Promise<FileTypeInformation | null> {
-  const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+  const shouldPreprocessFile =
+    typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE || mapUnicodeCharacters;
   const typeInferenceOn = typeInference !== TypeInferenceOption.NO_INFERENCE;
   if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
     return getSwiftFileTypeInformation(input.inputFileAbsolutePaths[0] as string, {
@@ -439,7 +450,10 @@ export async function getFileTypeInformation({
     });
   }
 
-  return withPreparedSingleFile({ input, typeInference }, async (tempFilePath) => {
-    return getSwiftFileTypeInformation(tempFilePath, { typeInference: typeInferenceOn });
-  });
+  return withPreparedSingleFile(
+    { input, typeInference, mapUnicodeCharacters },
+    async (tempFilePath) => {
+      return getSwiftFileTypeInformation(tempFilePath, { typeInference: typeInferenceOn });
+    }
+  );
 }

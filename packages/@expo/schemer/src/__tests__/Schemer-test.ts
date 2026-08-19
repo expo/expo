@@ -1,3 +1,5 @@
+import { JSONSchema } from '@expo/schema-utils';
+
 import Schemer from '..';
 import { ErrorCodes, SchemerError } from '../Error';
 import good from './fixtures/app.json';
@@ -6,7 +8,7 @@ import badWithNot from './fixtures/badwithnot.json';
 import invalidAppIcon from './fixtures/invalidAppIcon.json';
 import schema from './fixtures/schema.json';
 
-const validator = new Schemer(schema.schema, { rootDir: __dirname });
+const validator = new Schemer(schema.schema as unknown as JSONSchema, { rootDir: __dirname });
 
 describe('Sanity Tests', () => {
   it('returns instance of Schemer', () => {
@@ -16,7 +18,8 @@ describe('Sanity Tests', () => {
   it('returns instance with public functions', () => {
     expect(validator).toMatchObject({
       validateAll: expect.any(Function),
-      validateProperty: expect.any(Function),
+      validateSchemaAsync: expect.any(Function),
+      validateAssetsAsync: expect.any(Function),
     });
   });
 });
@@ -82,7 +85,7 @@ describe('Holistic Unit Test', () => {
 
 describe('Manual Validation Individual Unit Tests', () => {
   it('Local Icon', async () => {
-    expect(await validator.validateIcon('./fixtures/check.png')).toBeUndefined();
+    expect(await validator.validateAssetsAsync({ icon: './fixtures/check.png' })).toBeUndefined();
   });
 
   it('Local Square Icon correct', async () => {
@@ -90,7 +93,7 @@ describe('Manual Validation Individual Unit Tests', () => {
       { properties: { icon: { meta: { asset: true, square: true } } } },
       { rootDir: __dirname }
     );
-    expect(await customValidator.validateIcon('./fixtures/check.png')).toBeUndefined();
+    expect(await customValidator.validateAssetsAsync({ icon: './fixtures/check.png' })).toBeUndefined();
   });
 
   it('Local icon dimensions wrong', async () => {
@@ -109,7 +112,7 @@ describe('Manual Validation Individual Unit Tests', () => {
       { rootDir: __dirname }
     );
     const error = await expectSchemerToThrowAsync(() =>
-      customValidator.validateIcon('./fixtures/check.png')
+      customValidator.validateAssetsAsync({ icon: './fixtures/check.png' })
     );
 
     expect(error.errors).toHaveLength(1);
@@ -131,7 +134,7 @@ describe('Manual Validation Individual Unit Tests', () => {
       },
       { rootDir: __dirname }
     );
-    expect(await customValidator.validateIcon('./fixtures/test.icon')).toBeUndefined();
+    expect(await customValidator.validateAssetsAsync({ icon: './fixtures/test.icon' })).toBeUndefined();
   });
 
   it('iOS .icon directory fails validation - does not exist', async () => {
@@ -150,7 +153,7 @@ describe('Manual Validation Individual Unit Tests', () => {
       { rootDir: __dirname }
     );
     const error = await expectSchemerToThrowAsync(() =>
-      customValidator.validateIcon('./fixtures/nonexistent.icon')
+      customValidator.validateAssetsAsync({ icon: './fixtures/nonexistent.icon' })
     );
 
     expect(error.errors).toHaveLength(1);
@@ -178,7 +181,7 @@ describe('Manual Validation Individual Unit Tests', () => {
       { rootDir: __dirname }
     );
     const error = await expectSchemerToThrowAsync(() =>
-      customValidator.validateIcon('./fixtures/check.png')
+      customValidator.validateAssetsAsync({ icon: './fixtures/check.png' })
     );
 
     expect(error.errors).toHaveLength(1);
@@ -224,57 +227,6 @@ describe('Individual Unit Tests', () => {
       expect.objectContaining({ errorCode: ErrorCodes.SCHEMA_ADDITIONAL_PROPERTY }),
     ]);
     expectSchemerErrorToMatchSnapshot(error);
-  });
-
-  it.each`
-    name            | expectedError
-    ${'wilson'}     | ${undefined}
-    ${[1, 2, 3, 4]} | ${'must be string'}
-    ${23.232332}    | ${'must be string'}
-    ${/regex.*/}    | ${'must be string'}
-  `('validates name: $name', async ({ name, expectedError }) => {
-    if (!expectedError) {
-      expect(await validator.validateName(name)).toBeUndefined();
-    } else {
-      const error = await expectSchemerToThrowAsync(() => validator.validateName(name));
-      expect(error.message).toBe(expectedError);
-    }
-  });
-
-  it.each`
-    slug                                             | expectedError
-    ${'wilson'}                                      | ${undefined}
-    ${12312123123}                                   | ${'must be string'}
-    ${[1, 23]}                                       | ${'must be string'}
-    ${'wilson123'}                                   | ${undefined}
-    ${'wilson-123'}                                  | ${undefined}
-    ${'wilson/test'}                                 | ${'\'\' must match pattern "^[a-zA-Z0-9_\\-]+$"'}
-    ${'wilson-test%'}                                | ${'\'\' must match pattern "^[a-zA-Z0-9_\\-]+$"'}
-    ${'wilson-test-zhao--javascript-is-super-funky'} | ${undefined}
-  `('validates slug: $slug', async ({ slug, expectedError }) => {
-    if (!expectedError) {
-      expect(await validator.validateSlug(slug)).toBeUndefined();
-    } else {
-      const error = await expectSchemerToThrowAsync(() => validator.validateSlug(slug));
-      expect(error.message).toBe(expectedError);
-    }
-  });
-
-  it.each`
-    sdkVersion       | expectedError
-    ${'1.0.0'}       | ${undefined}
-    ${'2.0.0.0.1'}   | ${undefined}
-    ${'UNVERSIONED'} | ${undefined}
-    ${'12.2a.3'}     | ${'\'\' must match pattern "^(\\d+\\.\\d+\\.\\d+)|(UNVERSIONED)$"'}
-    ${'9,9,9'}       | ${'\'\' must match pattern "^(\\d+\\.\\d+\\.\\d+)|(UNVERSIONED)$"'}
-    ${'1.2'}         | ${'\'\' must match pattern "^(\\d+\\.\\d+\\.\\d+)|(UNVERSIONED)$"'}
-  `('validates SDK version: $sdkVersion', async ({ sdkVersion, expectedError }) => {
-    if (!expectedError) {
-      expect(await validator.validateSdkVersion(sdkVersion)).toBeUndefined();
-    } else {
-      const error = await expectSchemerToThrowAsync(() => validator.validateSdkVersion(sdkVersion));
-      expect(error.message).toBe(expectedError);
-    }
   });
 });
 

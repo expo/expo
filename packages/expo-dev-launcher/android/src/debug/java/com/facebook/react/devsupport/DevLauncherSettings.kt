@@ -16,7 +16,4 @@ internal class DevLauncherSettings(
   init {
     mPreferences.registerOnSharedPreferenceChangeListener(this)
   }
-
-  @Suppress("FunctionName")
-  fun public_getPackagerConnectionSettings() = packagerConnectionSettings
 }

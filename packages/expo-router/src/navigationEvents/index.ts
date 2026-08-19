@@ -1,3 +1,5 @@
+/// <reference path="../ts-declarations/expo-global.d.ts" />
+
 import type {
   PagePreloadedEvent,
   PageFocusedEvent,

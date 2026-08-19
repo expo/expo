@@ -1,5 +1,4 @@
-import { requireNativeView } from 'expo';
-import { Platform, requireOptionalNativeModule } from 'expo-modules-core';
+import { requireNativeView, Platform, requireOptionalNativeModule } from 'expo';
 import React from 'react';
 import type { ColorValue, ViewProps } from 'react-native';
 

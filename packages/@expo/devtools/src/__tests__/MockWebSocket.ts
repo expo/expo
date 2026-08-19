@@ -44,7 +44,7 @@ export default class MockWebSocket {
       this.readyState = MockWebSocket.OPEN;
       this.emitter.emit('open');
 
-      const subscription = MockWebSocket.broadcastEmitter[this.address].addListener(
+      const subscription = MockWebSocket.broadcastEmitter[this.address]!.addListener(
         'broadcast',
         this.handleBroadcast
       );
@@ -56,7 +56,7 @@ export default class MockWebSocket {
     const subscription = this.emitter.addListener(event, listener);
     this.subscriptions.push(subscription);
 
-    const broadcastSubscription = MockWebSocket.broadcastEmitter[this.address].addListener(
+    const broadcastSubscription = MockWebSocket.broadcastEmitter[this.address]!.addListener(
       event,
       listener
     );
@@ -67,7 +67,7 @@ export default class MockWebSocket {
       (subscription) => subscription.listener === listener
     );
     if (index >= 0) {
-      this.subscriptions[index].remove();
+      this.subscriptions[index]!.remove();
       this.subscriptions.splice(index, 1);
     }
 
@@ -75,7 +75,7 @@ export default class MockWebSocket {
       (subscription) => subscription.listener === listener
     );
     if (broadcastIndex >= 0) {
-      this.broadcastSubscriptions[broadcastIndex].remove();
+      this.broadcastSubscriptions[broadcastIndex]!.remove();
       this.broadcastSubscriptions.splice(broadcastIndex, 1);
     }
   });
@@ -89,7 +89,7 @@ export default class MockWebSocket {
   });
 
   send = jest.fn().mockImplementation((data) => {
-    MockWebSocket.broadcastEmitter[this.address].emit('broadcast', { sender: this, data });
+    MockWebSocket.broadcastEmitter[this.address]!.emit('broadcast', { sender: this, data });
   });
 
   private handleBroadcast = ({ sender, data }: any) => {

@@ -3,10 +3,14 @@ import { useRouter } from 'next/compat/router';
 
 import { WithTestRequire } from '~/types/common';
 import { MarkdownActionsDropdown } from '~/ui/components/MarkdownActions/MarkdownActionsDropdown';
-import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/MarkdownActions/paths';
+import {
+  hasDynamicData,
+  normalizePath,
+  shouldShowMarkdownActions,
+} from '~/ui/components/MarkdownActions/paths';
 import { H1, P } from '~/ui/components/Text';
 
-import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI';
+import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI/AskPageAITrigger';
 import { PageCliVersion } from './PageCliVersion';
 import { PagePackageVersion } from './PagePackageVersion';
 import { PagePlatformTags } from './PagePlatformTags';
@@ -44,7 +48,7 @@ export function PageHeader({
   const currentPath = router?.asPath ?? router?.pathname ?? '';
   const showMarkdownActions = shouldShowMarkdownActions({
     packageName,
-    path: currentPath,
+    path: router?.isReady ? currentPath : normalizePath(currentPath),
   });
   const showPackageMarkdown = packageName ? !hasDynamicData(currentPath) : false;
   const isSdkPage = currentPath.includes('/sdk/');
@@ -107,6 +111,7 @@ export function PageHeader({
             )}>
             <PagePackageVersion
               packageName={packageName}
+              platforms={platforms}
               testRequire={testRequire}
               showMarkdownActions={showPackageMarkdown}
               className="max-md:w-full max-md:justify-between"
@@ -180,6 +185,7 @@ export function PageHeader({
         {packageName && (
           <PagePackageVersion
             packageName={packageName}
+            platforms={platforms}
             testRequire={testRequire}
             showMarkdownActions={showPackageMarkdown}
           />

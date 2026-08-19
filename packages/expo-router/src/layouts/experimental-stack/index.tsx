@@ -2,17 +2,17 @@
 import type { ComponentProps } from 'react';
 import { Children, useMemo } from 'react';
 
-import { createExperimentalStackNavigator } from './createExperimentalStackNavigator';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import { isChildOfType } from '../../utils/children';
+import { Protected } from '../../views/Protected';
 import { stackRouterOverride } from '../StackClient';
 import { mapProtectedScreen, StackHeader, StackScreen } from '../stack-utils';
 import { withLayoutContext } from '../withLayoutContext';
+import { createExperimentalStackNavigator } from './createExperimentalStackNavigator';
 import type {
   ExperimentalStackNavigationEventMap,
   ExperimentalStackNavigationOptions,
 } from './types';
-import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
-import { isChildOfType } from '../../utils/children';
-import { Protected } from '../../views/Protected';
 
 const ExperimentalStackNavigator = createExperimentalStackNavigator().Navigator;
 

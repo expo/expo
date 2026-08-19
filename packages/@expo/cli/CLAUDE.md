@@ -96,34 +96,38 @@ Windows support requires careful path handling throughout the codebase.
 Metro assumes all module specifiers use POSIX paths (forward slashes `/`). On Windows, `path.sep` is `\` (backslash), which breaks Metro resolution.
 
 **Key utilities:**
+
 - `convertPathToModuleSpecifier(path)` - from `src/start/server/middleware/metroOptions.ts` - converts paths to POSIX format for Metro module resolution
 - `toPosixPath(path)` - from `src/utils/filePath.ts` - general-purpose path conversion
 
 **When to use:**
+
 - Any path passed to Metro as a module specifier
 - Entry points, main module names, relative imports
 - Source map source paths
 
 **Common mistakes to avoid:**
+
 ```ts
 // BAD: Uses platform-specific separator
-'.' + path.sep + moduleName
+'.' + path.sep + moduleName;
 
 // GOOD: Use literal forward slash
-'./' + moduleName
+'./' + moduleName;
 
 // BAD: Passing Windows path to Metro
-metro._resolveRelativePath(moduleId)
+metro._resolveRelativePath(moduleId);
 
 // GOOD: Convert first
-metro._resolveRelativePath(convertPathToModuleSpecifier(moduleId))
+metro._resolveRelativePath(convertPathToModuleSpecifier(moduleId));
 ```
 
 ### Environment Variables
 
 Windows environment variables are case-insensitive at the OS level, but Node.js `process.env` preserves case. Handle both forms when needed:
+
 ```ts
-process.env.SYSTEMROOT ?? process.env.SystemRoot
+process.env.SYSTEMROOT ?? process.env.SystemRoot;
 ```
 
 See `src/utils/open.ts` for an example of handling the `SYSTEMROOT`/`SystemRoot` case sensitivity issue.

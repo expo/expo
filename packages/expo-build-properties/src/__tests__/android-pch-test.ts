@@ -1,22 +1,24 @@
 import { updateBuildGradleForPCH, withAndroidPrecompiledHeaders } from '../android';
 
-const mockWithAppBuildGradle = jest.fn().mockImplementation((config) => config);
-
-jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
-  const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');
+jest.mock('expo/config-plugins', () => {
   return {
-    ...plugins,
-    withAppBuildGradle: mockWithAppBuildGradle,
+    __esModule: true,
+    AndroidConfig: {
+      BuildProperties: {
+        createBuildGradlePropsConfigPlugin: () => jest.fn((config) => config),
+      },
+    },
+    History: {},
+    withAndroidManifest: jest.fn((config) => config),
+    withAndroidStyles: jest.fn((config) => config),
+    withAppBuildGradle: jest.fn((config) => config),
+    withDangerousMod: jest.fn((config) => config),
+    withSettingsGradle: jest.fn((config) => config),
   };
 });
 
-jest.mock('@expo/config-plugins/build/plugins/withDangerousMod', () => {
-  const mod = jest.requireActual('@expo/config-plugins/build/plugins/withDangerousMod');
-  return {
-    ...mod,
-    withDangerousMod: jest.fn().mockImplementation((config) => config),
-  };
-});
+const getMockWithAppBuildGradle = () =>
+  jest.requireMock('expo/config-plugins').withAppBuildGradle as jest.Mock;
 
 const TEMPLATE_BUILD_GRADLE = `\
 apply plugin: "com.android.application"
@@ -43,7 +45,7 @@ android {
         release {
             signingConfig signingConfigs.debug
             minifyEnabled false
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
     androidResources {
@@ -61,31 +63,31 @@ describe(withAndroidPrecompiledHeaders, () => {
 
   afterEach(() => {
     delete process.env.EXPO_USE_ANDROID_PRECOMPILED_HEADERS;
-    mockWithAppBuildGradle.mockClear();
+    getMockWithAppBuildGradle().mockClear();
   });
 
   it('should skip when neither config nor env var is set', () => {
     withAndroidPrecompiledHeaders(mockConfig, { android: {} });
-    expect(mockWithAppBuildGradle).not.toHaveBeenCalled();
+    expect(getMockWithAppBuildGradle()).not.toHaveBeenCalled();
   });
 
   it('should apply when usePrecompiledHeaders is true in config', () => {
     withAndroidPrecompiledHeaders(mockConfig, {
       android: { usePrecompiledHeaders: true },
     });
-    expect(mockWithAppBuildGradle).toHaveBeenCalled();
+    expect(getMockWithAppBuildGradle()).toHaveBeenCalled();
   });
 
   it('should apply when EXPO_USE_ANDROID_PRECOMPILED_HEADERS env var is set to 1', () => {
     process.env.EXPO_USE_ANDROID_PRECOMPILED_HEADERS = '1';
     withAndroidPrecompiledHeaders(mockConfig, { android: {} });
-    expect(mockWithAppBuildGradle).toHaveBeenCalled();
+    expect(getMockWithAppBuildGradle()).toHaveBeenCalled();
   });
 
   it('should skip when EXPO_USE_ANDROID_PRECOMPILED_HEADERS env var is not 1', () => {
     process.env.EXPO_USE_ANDROID_PRECOMPILED_HEADERS = '0';
     withAndroidPrecompiledHeaders(mockConfig, { android: {} });
-    expect(mockWithAppBuildGradle).not.toHaveBeenCalled();
+    expect(getMockWithAppBuildGradle()).not.toHaveBeenCalled();
   });
 });
 

@@ -43,7 +43,7 @@ it('adds import stack to error', () => {
 
   const result = mutateResolutionError(error, context, 'c', 'ios');
 
-  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+  expect(strip(expoImportStack(result)!)).toMatchInlineSnapshot(`
     "Import stack:
 
      b.js
@@ -88,7 +88,7 @@ it('adds import stack with circular dependencies to error', () => {
 
   const result = mutateResolutionError(error, context, 'foo', 'ios');
 
-  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+  expect(strip(expoImportStack(result)!)).toMatchInlineSnapshot(`
     "Import stack:
 
      bar.js
@@ -139,7 +139,7 @@ it('adds import stack with stack depth limit to error', () => {
 
   const result = mutateResolutionError(error, context, 'missing', 'ios');
 
-  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+  expect(strip(expoImportStack(result)!)).toMatchInlineSnapshot(`
     "Import stack:
 
      d.js
@@ -187,7 +187,7 @@ it('adds import stack with stack count limit to error', () => {
 
   const result = mutateResolutionError(error, context, 'c', 'ios');
 
-  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+  expect(strip(expoImportStack(result)!)).toMatchInlineSnapshot(`
     "Import stack (2):
 
      b.js
@@ -248,7 +248,7 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
 
   const result = mutateResolutionError(error, context, 'missing', 'ios');
 
-  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+  expect(strip(expoImportStack(result)!)).toMatchInlineSnapshot(`
     "Import stack:
 
      utils.js
@@ -298,7 +298,7 @@ it('prioritizes projectRoot stack over server root stack', () => {
 
   const result = mutateResolutionError(error, context, 'missing', 'ios');
 
-  expect(strip(expoImportStack(result))).toMatchInlineSnapshot(`
+  expect(strip(expoImportStack(result)!)).toMatchInlineSnapshot(`
     "Import stack:
 
      project/utils.js

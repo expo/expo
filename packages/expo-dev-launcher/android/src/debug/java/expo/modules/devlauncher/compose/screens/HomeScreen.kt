@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devlauncher.compose.models.HomeState
 import expo.modules.devlauncher.compose.primitives.Accordion
@@ -50,7 +50,7 @@ private fun CrashReport(
   }
 
   Row(modifier = Modifier.padding(top = NewAppTheme.spacing.`6` - NewAppTheme.spacing.`4`)) {
-    Button(onClick = {
+    UnstyledButton(onClick = {
       onClick(crashReport)
     }) {
       Warning(

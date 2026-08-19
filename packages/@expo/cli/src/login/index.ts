@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import type { Command } from '../../bin/cli';
+import type { Command } from '../index';
 import { assertArgs, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
@@ -13,6 +13,7 @@ export const expoLogin: Command = async (argv) => {
       '--otp': String,
       '--sso': Boolean,
       '--browser': Boolean,
+      '--no-browser': Boolean,
       // Aliases
       '-h': '--help',
       '-u': '--username',
@@ -32,13 +33,16 @@ export const expoLogin: Command = async (argv) => {
         `-p, --password <string>  Password ("-" for stdin)`,
         `--otp <string>           One-time password from your 2FA device`,
         `-s, --sso                Log in with SSO`,
-        `-b, --browser            Log in with a browser`,
+        `-b, --browser            Log in with a browser (default)`,
+        `--no-browser             Log in with username and password instead of a browser`,
         `-h, --help               Usage info`,
       ].join('\n')
     );
   }
 
   const password = args['--password'] === '-' ? await readWordFromStdin() : args['--password'];
+
+  const browser = args['--no-browser'] ? false : args['--browser'] ? true : undefined;
 
   const { showLoginPromptAsync } = await import('../api/user/actions.js');
   return showLoginPromptAsync({
@@ -47,7 +51,7 @@ export const expoLogin: Command = async (argv) => {
     password,
     otp: args['--otp'],
     sso: !!args['--sso'],
-    browser: !!args['--browser'],
+    browser,
   }).catch(logCmdError);
 };
 

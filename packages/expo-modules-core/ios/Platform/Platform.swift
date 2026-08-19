@@ -14,6 +14,7 @@ public typealias UIHostingController = NSHostingController
 public typealias UIViewRepresentable = NSViewRepresentable
 public typealias UILabel = NSLabel
 public typealias UIImage = NSImage
+public typealias UIImageView = NSImageView
 public typealias UIPasteboard = NSPasteboard
 
 extension UIApplication {

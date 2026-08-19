@@ -152,7 +152,14 @@ Add `intentFilters` to your app config as [described above](#add-intentfilters-t
 
 Start your dev server with the `--tunnel` flag:
 
-<Terminal cmd={['$ npx expo start --tunnel']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --tunnel'],
+    yarn: ['$ yarn expo start --tunnel'],
+    pnpm: ['$ pnpm expo start --tunnel'],
+    bun: ['$ bun expo start --tunnel'],
+  }}
+/>
 
 </Step>
 
@@ -160,7 +167,14 @@ Start your dev server with the `--tunnel` flag:
 
 Compile the development build on your device:
 
-<Terminal cmd={['$ npx expo run:android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
 
 </Step>
 

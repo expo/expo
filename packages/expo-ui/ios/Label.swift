@@ -16,7 +16,27 @@ public struct LabelView: ExpoSwiftUI.View {
   }
 
   public var body: some View {
-    if let title = props.title {
+    if let customTitle {
+      if let customIcon {
+        Label {
+          customTitle
+        } icon: {
+          customIcon
+        }
+      } else if let systemImage = props.systemImage {
+        Label {
+          customTitle
+        } icon: {
+          Image(systemName: systemImage)
+        }
+      } else {
+        Label {
+          customTitle
+        } icon: {
+          EmptyView()
+        }.labelStyle(.titleOnly)
+      }
+    } else if let title = props.title {
       if let customIcon {
         Label {
           Text(title)
@@ -29,6 +49,10 @@ public struct LabelView: ExpoSwiftUI.View {
         Label(title, systemImage: "").labelStyle(.titleOnly)
       }
     }
+  }
+
+  private var customTitle: SlotView? {
+    props.children?.slot("title")
   }
 
   private var customIcon: SlotView? {

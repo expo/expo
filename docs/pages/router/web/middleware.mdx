@@ -69,7 +69,14 @@ The middleware function must be the default export of the file. It receives an [
 
 Run your development server to test the middleware:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 Your middleware will now run for all requests to your app.
 

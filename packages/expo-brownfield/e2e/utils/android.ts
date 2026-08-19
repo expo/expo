@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { addPlugin, prebuildProject } from './project';
-import { PluginProps } from './types';
 import { listFiles } from './test';
+import { PluginProps } from './types';
 
 // SECTION: Validation functions
 

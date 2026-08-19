@@ -5,8 +5,8 @@ import android.util.Base64
 import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.services.FilePermissionService
-import expo.modules.kotlin.typedarray.TypedArray
 import java.io.FileOutputStream
 import java.security.MessageDigest
 
@@ -84,7 +84,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
   }
 
-  fun write(content: TypedArray, append: Boolean = false) {
+  fun write(content: NativeArrayBuffer, append: Boolean = false) {
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     if (!exists) {
@@ -92,7 +92,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     }
     if (uri.isContentUri) {
       file.outputStream(append).use { outputStream ->
-        val array = ByteArray(content.length)
+        val array = ByteArray(content.size())
         content.toDirectBuffer().get(array)
         outputStream.write(array)
       }

@@ -213,7 +213,14 @@ When we set up EAS Update, we likely ran `eas update:configure` to configure exp
 
 Finally, make sure that `expo-updates` is included in **package.json**. If it's not, run:
 
-<Terminal cmd={['$ npx expo install expo-updates']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-updates'],
+    yarn: ['$ yarn expo install expo-updates'],
+    pnpm: ['$ pnpm expo install expo-updates'],
+    bun: ['$ bun expo install expo-updates'],
+  }}
+/>
 
 #### Inspecting expo-updates configuration after prebuild
 
@@ -449,7 +456,14 @@ It may be helpful to see which assets are included in our update bundle. We can 
 
 Or run locally:
 
-<Terminal cmd={['$ npx expo export']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export'],
+    yarn: ['$ yarn expo export'],
+    pnpm: ['$ pnpm expo export'],
+    bun: ['$ bun expo export'],
+  }}
+/>
 
 ## Mitigation steps
 

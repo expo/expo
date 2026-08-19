@@ -33,7 +33,7 @@ func buildHttpHost(endpoint: NWEndpoint) -> String? {
 private final class AtomicFlag: @unchecked Sendable {
   private var _value = false
   private let lock = NSLock()
-  
+
   func testAndSet() -> Bool {
     lock.lock()
     defer { lock.unlock() }
@@ -51,7 +51,7 @@ func connectionStart(
   try await withTaskCancellationHandler {
     try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
       let didResume = AtomicFlag()
-      
+
       let timeoutWork = DispatchWorkItem { [weak connection] in
         guard didResume.testAndSet() else { return }
         connection?.stateUpdateHandler = nil
@@ -59,7 +59,7 @@ func connectionStart(
         cont.resume(throwing: ConnectionError.failedConnection)
       }
       queue.asyncAfter(deadline: .now() + timeout, execute: timeoutWork)
-      
+
       connection.stateUpdateHandler = { [weak connection] state in
         switch state {
         case .ready:

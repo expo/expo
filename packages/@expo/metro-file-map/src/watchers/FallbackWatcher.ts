@@ -16,9 +16,9 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import type { ChangeEventMetadata } from '../types';
 import { AbstractWatcher, type WatcherBackendChangeEventWithoutRoot } from './AbstractWatcher';
 import * as common from './common';
-import type { ChangeEventMetadata } from '../types';
 
 // NOTE(@kitten): No typings
 const walker = require('walker');

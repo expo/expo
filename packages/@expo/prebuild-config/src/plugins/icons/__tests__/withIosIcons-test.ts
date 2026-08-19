@@ -1,5 +1,5 @@
 import { WarningAggregator } from '@expo/config-plugins';
-import type { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig, IOSIcons } from '@expo/config-types';
 import type * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
@@ -65,9 +65,10 @@ describe('iOS Icons', () => {
       getIcons({
         icon: '',
         ios: {
+          // `any` is not a valid IOSIcons key; this asserts unknown/empty keys are ignored.
           icon: {
             any: '',
-          },
+          } as IOSIcons,
         },
       })
     ).toBe(null);
@@ -76,9 +77,10 @@ describe('iOS Icons', () => {
       getIcons({
         icon: 'icon',
         ios: {
+          // `any` is not a valid IOSIcons key; this asserts unknown/empty keys are ignored.
           icon: {
             any: '',
-          },
+          } as IOSIcons,
         },
       })
     ).toMatch('icon');
@@ -163,7 +165,7 @@ describe('e2e: iOS icons', () => {
 
     // Test the Contents.json file
     const contents = JSON.parse(
-      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']
+      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']!
     );
     expect(contents.images).toMatchSnapshot();
 
@@ -202,7 +204,7 @@ describe('e2e: iOS icons with fallback image', () => {
 
     // Test the Contents.json file
     const contents = JSON.parse(
-      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']
+      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']!
     );
     expect(contents.images).toMatchSnapshot();
 

@@ -2,13 +2,13 @@
 
 import React, { Children, isValidElement } from 'react';
 
+import { shouldLinkExternally } from '../utils/url';
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { LinkWithPreview } from './LinkWithPreview';
 import { LinkMenu, LinkPreview } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
 import type { LinkProps } from './useLinkHooks';
 import { useZoomHref } from './zoom/useZoomHref';
-import { shouldLinkExternally } from '../utils/url';
 import { ZoomTransitionSourceContextProvider } from './zoom/zoom-transition-context-providers';
 
 export function ExpoLink(props: LinkProps) {

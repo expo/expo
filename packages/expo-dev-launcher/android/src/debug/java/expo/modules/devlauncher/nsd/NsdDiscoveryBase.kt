@@ -2,8 +2,10 @@ package expo.modules.devlauncher.nsd
 
 import android.app.Application
 import android.content.Context
+import android.net.NetworkRequest
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
+import android.os.Build
 import android.util.Log
 import expo.modules.devlauncher.helpers.await
 import expo.modules.devlauncher.services.PackagerInfo
@@ -81,13 +83,33 @@ internal abstract class NsdDiscoveryBase(
       return
     }
 
-    val listener = createDiscoveryListener()
-    discoveryListener = listener
-    manager.discoverServices(
-      SERVICE_TYPE,
-      NsdManager.PROTOCOL_DNS_SD,
-      listener
-    )
+    val listener = createDiscoveryListener().also {
+      discoveryListener = it
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      // Matches every network (clearing the default capabilities also drops NET_CAPABILITY_NOT_VPN,
+      // so VPN/proxy networks are included).
+      val discoveryNetworkRequest = NetworkRequest
+        .Builder()
+        .clearCapabilities()
+        .build()
+
+      manager.discoverServices(
+        SERVICE_TYPE,
+        NsdManager.PROTOCOL_DNS_SD,
+        discoveryNetworkRequest,
+        Runnable::run,
+        listener
+      )
+    } else {
+      manager.discoverServices(
+        SERVICE_TYPE,
+        NsdManager.PROTOCOL_DNS_SD,
+        listener
+      )
+    }
+
     isDiscovering = true
   }
 

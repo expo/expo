@@ -125,8 +125,9 @@ export function Code({ className, children, title }: CodeProps) {
     setCollapseBound(undefined);
   }
 
+  const forceWordWrap = params?.wrap === 'true';
   const commonClasses = mergeClasses(
-    wordWrap && 'wrap-break-word! whitespace-pre-wrap!',
+    (wordWrap || forceWordWrap) && 'wrap-break-word! whitespace-pre-wrap!',
     showExpand && !isExpanded && `overflow-y-hidden! [&::-webkit-scrollbar-track]:bg-default!`
   );
 

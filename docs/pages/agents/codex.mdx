@@ -1,0 +1,112 @@
+---
+title: Codex and Expo
+sidebar_title: Codex
+description: Use Codex to build, upgrade, debug, and deploy your Expo and React Native projects.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+Codex is OpenAI's terminal-based AI coding agent. It can read and write files across your project, run terminal commands, and browse the web. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Codex reads directly. It can also check EAS and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
+
+## Quick start
+
+<Step label="1">
+
+### Install Codex
+
+Install Codex, then start it from any project. For other install methods, see the [Codex CLI documentation](https://developers.openai.com/codex/cli).
+
+<Terminal cmd={['$ curl -fsSL https://chatgpt.com/codex/install.sh | sh']} />
+
+</Step>
+
+<Step label="2">
+
+### Create a new Expo project
+
+Create a project with the following command or ensure your existing project has the latest expo package installed.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
+    bun: ['$ bun create expo --template default@sdk-57'],
+  }}
+/>
+
+</Step>
+
+<Step label="3">
+
+### Set up Expo Skills and the Expo MCP Server
+
+Install Expo Skills and connect the Expo MCP Server so Codex knows Expo conventions and can reach your EAS.
+
+<BoxLink
+  title="Expo Skills"
+  description="Install the plugin that teaches agents known-good Expo patterns, and browse the full list of available skills."
+  href="/skills/#install-expo-skills"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Expo MCP Server"
+  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and EAS."
+  href="/mcp/#installation-and-setup"
+  Icon={BookOpen02Icon}
+/>
+
+</Step>
+
+<Step label="4">
+
+### Open your project and start prompting
+
+Run Codex from your project root, then describe what you want to do.
+
+<Terminal cmd={['$ cd my-app', '', '$ codex']} />
+
+</Step>
+
+<Step label="5">
+
+### Verify setup
+
+Paste the following prompt in your Codex session to confirm it can read your project:
+
+```text Example prompt
+Open package.json and tell me which Expo SDK version this project targets.
+```
+
+If the agent replies with the SDK version from **package.json**, the agent is reading your project correctly.
+
+</Step>
+
+## How Codex reads your Expo project
+
+When you start Codex in your project, it reads the scaffolded **AGENTS.md** file. This file points Codex to the documentation for your project's Expo SDK version and holds any project-level instructions you add.
+
+**AGENTS.md** is committed to your project, so a developer's Codex session starts from the same context.
+
+## Example prompts
+
+After setup, describe Expo tasks in plain language. For example:
+
+| Task              | Example prompt                                                                    |
+| ----------------- | --------------------------------------------------------------------------------- |
+| Upgrade the SDK   | Upgrade this project to the latest Expo SDK and fix any breaking changes.         |
+| Add navigation    | Add a tab navigator with Expo Router and a new settings screen.                   |
+| Automate builds   | Create an EAS Workflow that builds the app on every pull request.                 |
+| Debug a build     | My latest iOS build failed. Read the EAS Build logs and tell me what went wrong.  |
+| Add notifications | Configure expo-notifications and show a local notification when the app launches. |
+| Set up CI/CD      | Create a CI/CD workflow that builds on every PR.                                  |
+| Add native UI     | Add a SwiftUI picker component to my Expo app.                                    |
+| Check feedback    | Show TestFlight feedback for my app.                                              |
+| Verify the UI     | Take a screenshot and verify the blue circle view.                                |
+
+For more examples, see the Example prompts sections of [Expo Skills](/skills/#example-prompts) and [Expo MCP Server](/mcp/#what-does-expo-mcp-server-do).

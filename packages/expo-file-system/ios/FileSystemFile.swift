@@ -105,9 +105,11 @@ internal final class FileSystemFile: FileSystemPath {
   }
 
   // TODO: blob support
-  func write(_ content: TypedArray, append: Bool = false) throws {
+  func write(_ content: NativeArrayBuffer, append: Bool = false) throws {
     try withCorrectTypeAndScopedAccess(permission: .write) {
-      let data = Data(bytes: content.rawPointer, count: content.byteLength)
+      let data = content.withUnsafeBytes { rawBuffer in
+        Data(rawBuffer)
+      }
       if append {
         try writeAppending(data)
       } else {

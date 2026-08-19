@@ -3,7 +3,7 @@ import { requireNativeView } from 'expo';
 import { type ViewEvent, type ModifierConfig, type DialogProperties } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type BasicAlertDialogProps = {
+export interface BasicAlertDialogProps {
   /**
    * The content to display inside the dialog.
    */
@@ -21,7 +21,7 @@ export type BasicAlertDialogProps = {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
 type NativeBasicAlertDialogProps = Omit<BasicAlertDialogProps, 'onDismissRequest'> &
   ViewEvent<

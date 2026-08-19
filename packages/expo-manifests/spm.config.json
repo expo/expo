@@ -4,9 +4,7 @@
     {
       "name": "EXManifests",
       "podName": "EXManifests",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -19,18 +17,14 @@
           "name": "EXManifests",
           "path": "ios/EXManifests",
           "pattern": "**/*.swift",
-          "exclude": [
-            "Tests/**"
-          ],
+          "exclude": ["Tests/**"],
           "dependencies": [
             "Hermes",
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation"
-          ]
+          "linkedFrameworks": ["Foundation"]
         }
       ]
     }

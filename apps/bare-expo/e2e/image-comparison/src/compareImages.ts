@@ -136,7 +136,10 @@ export async function compareImages({
 
     if (img2.width !== width || img2.height !== height) {
       return createErrorResult(
-        `Image dimensions don't match: ${width}x${height} vs ${img2.width}x${img2.height}`,
+        `Image dimensions don't match: ${width}x${height} vs ${img2.width}x${img2.height}. ` +
+          `The baseline was most likely captured on a device with a different resolution or ` +
+          `density than this run's device. To regenerate it, copy the viewshot that CI uploads ` +
+          `to its workflow artifacts over the .base file; don't use captures from a local device.`,
         width * height
       );
     }

@@ -18,6 +18,23 @@ public:
     jni::alias_ref<NativeStatePropsGetter::javaobject> self,
     jni::alias_ref<jobject> stateWrapper
   );
+
+  // Synchronously flushes a shadow-node size state update in the current frame
+  // (`UpdateMode::unstable_Immediate`) — the same path iOS uses. This avoids the layout shift an
+  // asynchronous `StateWrapper.updateState` causes for matchContents Hosts in Expo UI Compose views
+  static void updateStyleSizeImmediate(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jni::alias_ref<jobject> stateWrapper,
+    jdouble styleWidth,
+    jdouble styleHeight
+  );
+
+  static void updateViewSizeImmediate(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self,
+    jni::alias_ref<jobject> stateWrapper,
+    jdouble width,
+    jdouble height
+  );
 };
 
 } // namespace expo

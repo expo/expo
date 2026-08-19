@@ -1,6 +1,6 @@
 package expo.modules.kotlin.types.descriptors
 
-import io.github.lukmccall.pika.PIntrospectionData
+import io.github.expo.pika.PIntrospectionData
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 

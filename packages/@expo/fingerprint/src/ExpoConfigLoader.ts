@@ -26,7 +26,9 @@ async function runAsync(programName: string, args: string[] = []) {
   const loadedModulesBefore = new Set(Object.keys(module._cache));
 
   const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
-  const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const config = await getConfig(projectRoot, {
+    skipSDKVersionRequirement: true,
+  });
 
   const virtualModuleNames = new Set<string>();
   const loadedModules: string[] = [];
@@ -91,7 +93,10 @@ async function runAsync(programName: string, args: string[] = []) {
     )
   ).filter((modulePath) => modulePath != null);
 
-  const result = JSON.stringify({ config, loadedModules: existingLoadedModules });
+  const result = JSON.stringify({
+    config,
+    loadedModules: existingLoadedModules,
+  });
 
   if (process.send) {
     process.send(result);
@@ -179,6 +184,9 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
     'ajv-formats',
     'ajv-keywords',
     'ansi-styles',
+    'base64-js',
+    'big-integer',
+    'bplist-creator',
     'chalk',
     'debug',
     'dotenv',
@@ -198,6 +206,7 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
     'parse-png',
     'path-key',
     'picocolors',
+    'plist',
     'pngjs',
     'lines-and-columns',
     'require-from-string',
@@ -205,6 +214,8 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
     'sax',
     'schema-utils',
     'signal-exit',
+    'simple-plist',
+    'stream-buffers',
     'sucrase',
     'supports-color',
     'ts-interface-checker',
@@ -212,5 +223,7 @@ const DEFAULT_CONFIG_LOADING_IGNORE_PATHS = [
     'xml2js',
     'xmlbuilder',
     'which',
+    'uuid',
+    'xcode',
   ].join(',')}}/**/*`,
 ];

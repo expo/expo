@@ -12,7 +12,7 @@ import {
 import { getMaterialColors, HostPaletteContext } from '../colors';
 import { type PrimitiveBaseProps } from '../layout';
 
-export type HostProps = {
+export interface HostProps extends PrimitiveBaseProps {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from Jetpack Compose.
    * Can be only set once on mount.
@@ -65,7 +65,7 @@ export type HostProps = {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
-} & PrimitiveBaseProps;
+}
 
 type NativeHostProps = Omit<HostProps, 'colorScheme'> & {
   matchContentsVertical?: boolean;

@@ -1,3 +1,4 @@
+import { events } from '2g';
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -7,6 +8,10 @@
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
+import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
+import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
 import type { DeltaResult, TransformInputOptions } from '@expo/metro/metro/DeltaBundler/types';
 import type {
@@ -17,10 +22,6 @@ import type { GraphRevision } from '@expo/metro/metro/IncrementalBundler';
 import type MetroServer from '@expo/metro/metro/Server';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import getGraphId from '@expo/metro/metro/lib/getGraphId';
-import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
-import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
-import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
@@ -34,29 +35,6 @@ import {
 } from 'expo-server/private';
 import path from 'path';
 
-import {
-  createServerComponentsMiddleware,
-  fileURLToFilePath,
-} from './createServerComponentsMiddleware';
-import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
-import { fetchManifest, inflateManifest } from './fetchRouterManifest';
-import { instantiateMetroAsync } from './instantiateMetro';
-import {
-  attachImportStackToRootMessage,
-  dropStackIfContainsCodeFrame,
-  getErrorOverlayHtmlAsync,
-  IS_METRO_BUNDLE_ERROR_SYMBOL,
-} from './metroErrorInterface';
-import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
-import {
-  getRouterDirectoryModuleIdWithManifest,
-  hasWarnedAboutApiRoutes,
-  isApiRouteConvention,
-  warnInvalidWebOutput,
-} from './router';
-import { serializeHtmlWithAssets } from './serializeHtml';
-import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { events } from '../../../events';
 import type {
   BundleAssetWithFileHashes,
   ExportAssetDescriptor,
@@ -73,11 +51,6 @@ import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
 import { evalMetroAndWrapFunctions, evalMetroNoHandling } from '../getStaticRenderFunctions';
-import {
-  fromRuntimeManifestRoute,
-  fromServerManifestRoute,
-  type ResolvedLoaderRoute,
-} from './resolveLoader';
 import { ContextModuleSourceMapsMiddleware } from '../middleware/ContextModuleSourceMapsMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
@@ -101,6 +74,33 @@ import { prependMiddleware } from '../middleware/mutations';
 import { createInfoHandler, createOpen } from '../middleware/openHandlers';
 import type { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
+import {
+  createServerComponentsMiddleware,
+  fileURLToFilePath,
+} from './createServerComponentsMiddleware';
+import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
+import { fetchManifest, inflateManifest } from './fetchRouterManifest';
+import { instantiateMetroAsync } from './instantiateMetro';
+import {
+  attachImportStackToRootMessage,
+  dropStackIfContainsCodeFrame,
+  getErrorOverlayHtmlAsync,
+  IS_METRO_BUNDLE_ERROR_SYMBOL,
+} from './metroErrorInterface';
+import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import {
+  fromRuntimeManifestRoute,
+  fromServerManifestRoute,
+  type ResolvedLoaderRoute,
+} from './resolveLoader';
+import {
+  getRouterDirectoryModuleIdWithManifest,
+  hasWarnedAboutApiRoutes,
+  isApiRouteConvention,
+  warnInvalidWebOutput,
+} from './router';
+import { serializeHtmlWithAssets } from './serializeHtml';
+import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 export type ExpoRouterRuntimeManifest = Awaited<
   ReturnType<typeof import('@expo/router-server/build/static/renderStaticContent').getManifest>
@@ -158,21 +158,24 @@ const EXPO_GO_METRO_PORT = 8081;
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
 
-// prettier-ignore
-export const event = events('devserver', (t) => [
-  t.event<'start', {
-    mode: 'production' | 'development';
-    web: boolean;
-    baseUrl: string;
-    asyncRoutes: boolean;
-    routerRoot: string;
-    serverComponents: boolean;
-    serverActions: boolean;
-    serverRendering: boolean;
-    apiRoutes: boolean;
-    exporting: boolean;
-  }>(),
-]);
+declare module '2g' {
+  interface EventRegistry {
+    'devserver:start': {
+      mode: 'production' | 'development';
+      web: boolean;
+      baseUrl: string;
+      asyncRoutes: boolean;
+      routerRoot: string;
+      serverComponents: boolean;
+      serverActions: boolean;
+      serverRendering: boolean;
+      apiRoutes: boolean;
+      exporting: boolean;
+    };
+  }
+}
+
+export const event = events('devserver');
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;
@@ -728,7 +731,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const { artifacts: resources } = await this.getStaticResourcesAsync({
         clientBoundaries: [],
       });
-      const { cssHrefs, inlineCss } = getStreamingCssAssetsFromSerialAssets(resources);
+      const { cssHrefs, externalCss, inlineCss } = getStreamingCssAssetsFromSerialAssets(resources);
       const { loader, metadata } = await this.getDevServerRenderOptionsAsync({
         location,
         route,
@@ -742,6 +745,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         request: request as unknown as Request,
         assets: {
           css: cssHrefs,
+          externalCss,
           inlineCss,
           js: [devBundleUrlPathname],
         },
@@ -1339,6 +1343,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       await instantiateMetroAsync(this, parsedOptions, {
         isExporting: !!options.isExporting,
         exp,
+        devToolsPluginManager: this.devToolsPluginManager,
       });
 
     // Required for symbolication:
@@ -2427,9 +2432,11 @@ function unique<T>(array: T[]): T[] {
 
 function getStreamingCssAssetsFromSerialAssets(resources: SerialAsset[]): {
   cssHrefs: string[];
+  externalCss: NonNullable<GetStreamingContentOptions['assets']>['externalCss'];
   inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'];
 } {
   const cssHrefs: string[] = [];
+  const externalCss: NonNullable<GetStreamingContentOptions['assets']>['externalCss'] = [];
   const inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'] = [];
 
   for (const asset of resources) {
@@ -2439,9 +2446,12 @@ function getStreamingCssAssetsFromSerialAssets(resources: SerialAsset[]): {
         hmrId: asset.metadata.hmrId,
       });
     } else if (asset.type === 'css-external') {
-      cssHrefs.push(asset.filename);
+      externalCss.push({
+        href: asset.filename,
+        media: asset.metadata.media,
+      });
     }
   }
 
-  return { cssHrefs, inlineCss };
+  return { cssHrefs, externalCss, inlineCss };
 }

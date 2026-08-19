@@ -2,7 +2,7 @@ package expo.modules.contacts.next.domain.model.phone
 
 import android.provider.ContactsContract.CommonDataKinds.Phone
 
-sealed class PhoneLabel(val type: Int, val label: String? = null) {
+sealed class PhoneLabel(val type: Int?, val label: String? = null) {
   object Home : PhoneLabel(Phone.TYPE_HOME)
   object Mobile : PhoneLabel(Phone.TYPE_MOBILE)
   object Work : PhoneLabel(Phone.TYPE_WORK)
@@ -24,4 +24,9 @@ sealed class PhoneLabel(val type: Int, val label: String? = null) {
   object Assistant : PhoneLabel(Phone.TYPE_ASSISTANT)
   object Mms : PhoneLabel(Phone.TYPE_MMS)
   class Custom(label: String) : PhoneLabel(Phone.TYPE_CUSTOM, label)
+
+  // Ideally these states would not be necessary, but Android does not enforce
+  // type and label columns as non-null, so malformed label data can exist there.
+  class MalformedType(label: String?) : PhoneLabel(null, label)
+  object MalformedCustom : PhoneLabel(Phone.TYPE_CUSTOM)
 }

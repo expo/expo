@@ -21,3 +21,4 @@ PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_WIDGETS_PACKAGE_DIR/../.."}
 cd "$PROJECT_ROOT" || exit
 
 "${EXPO_WIDGETS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_WIDGETS_PACKAGE_DIR}/scripts/build-bundle.mjs" "$PROJECT_ROOT"
+"${EXPO_WIDGETS_PACKAGE_DIR}/scripts/with-node.sh" "${EXPO_WIDGETS_PACKAGE_DIR}/scripts/build-layout-registry.mjs" "$PROJECT_ROOT" "ios"

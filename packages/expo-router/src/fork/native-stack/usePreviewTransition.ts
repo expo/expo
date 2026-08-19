@@ -1,8 +1,8 @@
 import * as React from 'react';
 
-import type { NativeStackDescriptor, NativeStackDescriptorMap } from './descriptors-context';
 import { useLinkPreviewContext } from '../../link/preview/LinkPreviewContext';
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import type { NativeStackDescriptor, NativeStackDescriptorMap } from './descriptors-context';
 
 /** Mirrors the `describe` function returned by `useNavigationBuilder` */
 type DescribeFn = (

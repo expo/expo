@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Add option to specify targets to use with inline modules, add new option to podfile.properties ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
+
 ### 🐛 Bug fixes
+
+- Generated iOS projects now include a `SceneDelegate` and `UIApplicationSceneManifest` for the scene-based life cycle. ([#46734](https://github.com/expo/expo/pull/46734) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

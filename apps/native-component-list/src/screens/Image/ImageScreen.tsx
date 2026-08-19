@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
@@ -10,6 +10,14 @@ export const ImageScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ImageComparisonScreen'));
+    },
+  },
+  {
+    name: 'Comparison with original image (e2e)',
+    route: 'image/comparison-e2e',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageComparisonE2EScreen'));
     },
   },
   {

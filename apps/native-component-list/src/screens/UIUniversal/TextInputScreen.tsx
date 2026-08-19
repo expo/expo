@@ -60,6 +60,7 @@ export default function TextInputScreen() {
   const [redCursor, setRedCursor] = useState(false);
   const [bluePlaceholder, setBluePlaceholder] = useState(false);
   const [customStyle, setCustomStyle] = useState(false);
+  const [greenNoBorder, setGreenNoBorder] = useState(false);
   const [customTextStyle, setCustomTextStyle] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(false);
   const [autoComplete, setAutoComplete] = useState<(typeof AUTO_COMPLETES)[number]>(undefined);
@@ -129,16 +130,18 @@ export default function TextInputScreen() {
               textAlign={textAlign}
               numberOfLines={numberOfLines}
               style={
-                customStyle
-                  ? {
-                      width: 240,
-                      padding: 12,
-                      backgroundColor: '#f0f0f0',
-                      borderRadius: 8,
-                      borderColor: 'black',
-                      borderWidth: 1,
-                    }
-                  : undefined
+                greenNoBorder
+                  ? { backgroundColor: '#99FF99', borderWidth: 0 }
+                  : customStyle
+                    ? {
+                        width: 240,
+                        padding: 12,
+                        backgroundColor: '#f0f0f0',
+                        borderRadius: 8,
+                        borderColor: 'black',
+                        borderWidth: 1,
+                      }
+                    : undefined
               }
               textStyle={
                 customTextStyle
@@ -197,6 +200,11 @@ export default function TextInputScreen() {
               value={customStyle}
               onValueChange={setCustomStyle}
               label="style (240w, gray bg, rounded)"
+            />
+            <Switch
+              value={greenNoBorder}
+              onValueChange={setGreenNoBorder}
+              label="style (green bg, no border — #46300)"
             />
             <Switch
               value={customTextStyle}

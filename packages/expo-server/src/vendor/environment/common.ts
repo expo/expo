@@ -31,6 +31,10 @@ function initManifestRegExp(manifest: RawManifest): Manifest {
         ...route,
         namedRegex: new RegExp(route.namedRegex),
       })) ?? [],
+    pageHeaders: manifest.pageHeaders?.map((rule) => ({
+      ...rule,
+      namedRegex: new RegExp(rule.namedRegex),
+    }))
   };
 }
 
@@ -235,6 +239,8 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
 function mergeAssets(topLevel?: AssetInfo, routeLevel?: AssetInfo): AssetInfo {
   return {
     css: [...(topLevel?.css ?? []), ...(routeLevel?.css ?? [])],
+    externalCss: [...(topLevel?.externalCss ?? []), ...(routeLevel?.externalCss ?? [])],
     js: [...(topLevel?.js ?? []), ...(routeLevel?.js ?? [])],
+    favicon: topLevel?.favicon,
   };
 }

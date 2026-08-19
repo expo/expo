@@ -270,6 +270,12 @@ public final class ImageView: ExpoView {
         ]
       ])
 
+      appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
+        url: imageUrl?.absoluteString ?? "",
+        width: image.size.width * image.scale,
+        height: image.size.height * image.scale
+      )
+
       let scale = window?.screen.scale ?? UIScreen.main.scale
       imageLayoutSize = idealSize(
         contentPixelSize: image.size * image.scale,

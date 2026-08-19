@@ -271,6 +271,7 @@ not appear on the screen.
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-secondary"
           fill="none"
           role="img"
@@ -1175,6 +1176,7 @@ properties.
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -1377,6 +1379,7 @@ This should come from the user field of an
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-default"
           fill="none"
           role="img"
@@ -1430,6 +1433,7 @@ This should come from the user field of an
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -1584,6 +1588,7 @@ value depending on the state of the credential.
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -1825,6 +1830,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -2129,6 +2135,7 @@ the user, since this remains the same for apps released by the same developer.
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -2416,6 +2423,7 @@ from using
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -2672,6 +2680,7 @@ sign-out operation.
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -2922,6 +2931,7 @@ After calling this function, the listener will no longer receive any events from
             class="flex flex-row items-center gap-2"
           >
             <svg
+              aria-hidden="true"
               class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
               fill="none"
               role="img"
@@ -3101,6 +3111,7 @@ which contains all of the pertinent user and credential information.
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-secondary"
           fill="none"
           role="img"
@@ -4033,6 +4044,7 @@ may be
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-secondary"
           fill="none"
           role="img"
@@ -4224,6 +4236,7 @@ You must include the ID string of the user whose credentials you'd like to refre
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-secondary"
           fill="none"
           role="img"
@@ -4556,6 +4569,7 @@ None of these options are required.
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-secondary"
           fill="none"
           role="img"
@@ -4908,6 +4922,7 @@ You must include the ID string of the user to sign out.
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-secondary"
           fill="none"
           role="img"
@@ -5684,6 +5699,7 @@ OAuth 2.0 protocol
               data-md="platform-badge"
             >
               <svg
+                aria-hidden="true"
                 class="translate-z mt-[-0.5px] icon-2xs shrink-0 text-palette-blue12 opacity-80"
                 fill="none"
                 role="img"
@@ -5805,6 +5821,7 @@ OAuth 2.0 protocol
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-secondary"
           fill="none"
           role="img"
@@ -6499,6 +6516,7 @@ for more details.
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-default"
           fill="none"
           role="img"
@@ -6545,6 +6563,7 @@ You will still need to handle null values for any fields you request.
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-secondary"
           fill="none"
           role="img"
@@ -6790,6 +6809,7 @@ for more details.
         data-testid="callout-container"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-secondary"
           fill="none"
           role="img"
@@ -7165,6 +7185,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -7282,6 +7303,7 @@ exports[`APISection expo-pedometer 1`] = `
             data-md="platform-badge"
           >
             <svg
+              aria-hidden="true"
               class="translate-z mt-[-0.5px] icon-2xs shrink-0 text-palette-blue12 opacity-80"
               fill="none"
               role="img"
@@ -7449,6 +7471,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -7554,6 +7577,7 @@ exports[`APISection expo-pedometer 1`] = `
             data-testid="callout-container"
           >
             <svg
+              aria-hidden="true"
               class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-default"
               fill="none"
               role="img"
@@ -7667,6 +7691,7 @@ a start date that is more than seven days in the past returns only the available
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -7811,6 +7836,7 @@ available on this device.
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -8024,6 +8050,7 @@ provided with a single argument that is
           class="flex flex-row items-center gap-2"
         >
           <svg
+            aria-hidden="true"
             class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
             fill="none"
             role="img"
@@ -8095,6 +8122,7 @@ provided with a single argument that is
             data-testid="callout-container"
           >
             <svg
+              aria-hidden="true"
               class="translate-z shrink-0 select-none mt-0.75 icon-xs text-icon-default"
               fill="none"
               role="img"
@@ -8378,6 +8406,7 @@ After calling this function, the listener will no longer receive any events from
             class="flex flex-row items-center gap-2"
           >
             <svg
+              aria-hidden="true"
               class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
               fill="none"
               role="img"
@@ -8714,6 +8743,7 @@ After calling this function, the listener will no longer receive any events from
         class="flex flex-row items-center gap-2"
       >
         <svg
+          aria-hidden="true"
           class="translate-z shrink-0 relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
           fill="none"
           role="img"

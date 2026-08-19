@@ -3,11 +3,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { View } from 'react-native';
 
-import SelectScreen from './screens/SelectScreen';
-import RunTests from './screens/TestScreen';
 import { useTheme } from '../common/ThemeProvider';
 import ThemeToggler from '../common/ThemeToggler';
 import { routeNames } from './constants/routeNames';
+import SelectScreen from './screens/SelectScreen';
+import RunTests from './screens/TestScreen';
 
 // @tsapeta: This navigator is also being used by `bare-expo` app,
 // so make sure it still works there once you change something here.

@@ -7,8 +7,10 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.core.arguments.ReadableArguments
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.jni.ArrayBuffer
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptArrayBuffer
@@ -64,19 +66,19 @@ inline fun <reified T : Any> obtainTypeConverter(): TypeConverter<T> {
   return TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>()) as TypeConverter<T>
 }
 
-inline fun <reified T> convert(value: Dynamic): T {
+inline fun <reified T> convert(value: Dynamic, context: AppContext? = null): T {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
-  return converter.convert(value) as T
+  return converter.convert(value, context) as T
 }
 
-inline fun <reified T> convert(value: Any?): T {
+inline fun <reified T> convert(value: Any?, context: AppContext? = null): T {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
-  return converter.convert(value) as T
+  return converter.convert(value, context) as T
 }
 
-fun convert(value: Dynamic, type: KType): Any? {
+fun convert(value: Dynamic, type: KType, context: AppContext? = null): Any? {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(type.toTypeDescriptor())
-  return converter.convert(value)
+  return converter.convert(value, context)
 }
 
 object TypeConverterProviderImpl : TypeConverterProvider {
@@ -245,6 +247,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       JavaScriptArrayBuffer::class.java to createTrivialTypeConverter(
         ExpectedType(CppType.JS_ARRAY_BUFFER)
       ),
+      ArrayBuffer::class.java to createTrivialTypeConverter(
+        ExpectedType(CppType.ARRAY_BUFFER)
+      ),
       NativeArrayBuffer::class.java to createTrivialTypeConverter(
         ExpectedType(CppType.NATIVE_ARRAY_BUFFER)
       ),
@@ -275,17 +280,24 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
       Any::class.java to AnyTypeConverter(),
 
+      Color::class.java to ColorTypeConverter(),
+
       // Unit converter doesn't care about nullability.
       // It will always return Unit
       Unit::class.java to UnitTypeConverter(),
 
-      ReadableArguments::class.java to ReadableArgumentsTypeConverter()
+      ReadableArguments::class.java to ReadableArgumentsTypeConverter(),
+
+      // expo-ui modifier prop are converted by ModifierRegistry, so this is just a pass-through.
+      // This converter should not be used in other cases.
+      Dynamic::class.java to createTrivialTypeConverter<Dynamic>(
+        ExpectedType(CppType.NONE)
+      ) { it }
     )
 
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
       return converters + mapOf(
         Path::class.java to PathTypeConverter(),
-        Color::class.java to ColorTypeConverter(),
         LocalDate::class.java to DateTypeConverter()
       )
     }

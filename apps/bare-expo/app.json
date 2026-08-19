@@ -9,7 +9,7 @@
     "facebookDisplayName": "Expo APIs",
     "privacy": "unlisted",
     "version": "1.0.0",
-    "platforms": ["ios", "android", "web"],
+    "platforms": ["ios", "android", "web", "macos"],
     "userInterfaceStyle": "automatic",
     "android": {
       "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
@@ -41,7 +41,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774",
+        "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774"
       }
     },
     "runtimeVersion": "1.0.0",
@@ -106,9 +106,11 @@
       "./plugins/withBenchmarkModules"
     ],
     "experiments": {
+      "outOfTreePlatforms": true,
       "inlineModules": {
         "watchedDirectories": [
-          "../native-component-list/src/screens/inlineModules/inlineModulesExamples"
+          "../native-component-list/src/screens/inlineModules/inlineModulesExamples",
+          "../native-component-list/src/screens/ModulesCore"
         ]
       }
     }

@@ -8,15 +8,16 @@ import type {
 } from 'react';
 import { Children, forwardRef, useMemo } from 'react';
 
-import { useContextKey } from '../Route';
+import { useContextKey, useRouteNode } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
-import type { PickPartial } from '../types';
+import type { Href, PickPartial } from '../types';
 import type { ScreenProps } from '../useScreens';
 import { useSortedScreens } from '../useScreens';
-import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
+import { GuardContextProvider } from './GuardContext';
+import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 
 export function useFilterScreenChildren(
   children: ReactNode,
@@ -33,42 +34,35 @@ export function useFilterScreenChildren(
     const customChildren: any[] = [];
 
     const screens: (ScreenProps & { name: string })[] = [];
-    const protectedScreens = new Set<string>();
+    const guardedRedirects = new Map<string, Href | undefined>();
 
-    function flattenChild(child: ReactNode, exclude = false) {
+    function flattenChild(child: ReactNode, exclude = false, redirectTo?: Href) {
       if (isScreen(child, contextKey)) {
+        screens.push(child.props);
         if (exclude) {
-          protectedScreens.add(child.props.name);
-        } else {
-          screens.push(child.props);
+          guardedRedirects.set(child.props.name, redirectTo);
         }
         return;
       }
 
       if (isNativeTabTrigger(child, contextKey)) {
+        const options = convertTabPropsToOptions(child.props);
+        screens.push({
+          ...child.props,
+          options: exclude ? { ...options, hidden: true } : options,
+        } as ScreenProps & { name: string });
         if (exclude) {
-          protectedScreens.add(child.props.name);
-        } else {
-          const options = convertTabPropsToOptions(child.props);
-          if (options.hidden === false) {
-            screens.push({
-              ...child.props,
-              options,
-            });
-          } else {
-            // - hidden = undefined -> then the route was not specified in navigator
-            // - hidden = true -> then the route is hidden
-            // In this cases we should treat the tab as protected
-            protectedScreens.add(child.props.name);
-          }
+          guardedRedirects.set(child.props.name, redirectTo);
         }
         return;
       }
 
       if (isProtectedReactElement(child)) {
-        const excludeChildren = exclude || !child.props.guard;
+        const guardFails = !child.props.guard;
+        const excludeChildren = exclude || guardFails;
+        const childRedirectTo = guardFails ? child.props.redirectTo : redirectTo;
         Children.forEach(child.props.children, (protectedChild) => {
-          flattenChild(protectedChild, excludeChildren);
+          flattenChild(protectedChild, excludeChildren, childRedirectTo);
         });
         return;
       }
@@ -97,8 +91,7 @@ export function useFilterScreenChildren(
         screens?.map(
           (screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name
         ) ?? [];
-      const protectedScreenNames = Array.from(protectedScreens).map(normalizeName);
-      const allNames = [...screenNames.map(normalizeName), ...protectedScreenNames];
+      const allNames = screenNames.map(normalizeName);
       if (new Set(allNames).size !== allNames.length) {
         throw new Error('Screen names must be unique: ' + allNames);
       }
@@ -107,7 +100,7 @@ export function useFilterScreenChildren(
     return {
       screens,
       children: customChildren,
-      protectedScreens,
+      guardedRedirects,
     };
   }, [children]);
 }
@@ -159,14 +152,15 @@ export function withLayoutContext<
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
+      const node = useRouteNode();
 
-      const { screens, protectedScreens } = useFilterScreenChildren(userDefinedChildren, {
+      const { screens, guardedRedirects } = useFilterScreenChildren(userDefinedChildren, {
         contextKey,
       });
 
       const processed = processor ? processor(screens ?? []) : screens;
 
-      const sorted = useSortedScreens(processed ?? [], protectedScreens, useOnlyUserDefinedScreens);
+      const sorted = useSortedScreens(processed ?? [], guardedRedirects, useOnlyUserDefinedScreens);
 
       // Prevent throwing an error when there are no screens.
       if (!sorted.length) {
@@ -175,7 +169,9 @@ export function withLayoutContext<
 
       return (
         <IsWithinLayoutContext value>
-          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+          <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+            <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+          </GuardContextProvider>
         </IsWithinLayoutContext>
       );
     }),

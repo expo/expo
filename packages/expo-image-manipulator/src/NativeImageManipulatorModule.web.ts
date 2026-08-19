@@ -1,5 +1,4 @@
-import { NativeModule } from 'expo';
-import { registerWebModule } from 'expo-modules-core';
+import { NativeModule, registerWebModule } from 'expo';
 import type { SharedRef } from 'expo-modules-core/types';
 
 import ImageManipulatorContext from './web/ImageManipulatorContext.web';

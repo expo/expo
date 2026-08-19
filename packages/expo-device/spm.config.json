@@ -4,9 +4,7 @@
     {
       "name": "ExpoDevice",
       "podName": "ExpoDevice",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -25,13 +23,8 @@
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ],
-          "resources": [
-            { "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"],
+          "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]
         }
       ]
     }

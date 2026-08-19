@@ -73,7 +73,14 @@ Inspired by [`@react-navigation/devtools`](https://github.com/react-navigation/r
 
 To use the plugin, start by installing the package:
 
-<Terminal cmd={['$ npx expo install @dev-plugins/react-navigation']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @dev-plugins/react-navigation'],
+    yarn: ['$ yarn expo install @dev-plugins/react-navigation'],
+    pnpm: ['$ pnpm expo install @dev-plugins/react-navigation'],
+    bun: ['$ bun expo install @dev-plugins/react-navigation'],
+  }}
+/>
 
 Pass the navigation root to the plugin in your app's entry point:
 
@@ -127,7 +134,14 @@ Inspired by [`react-native-apollo-devtools`](https://github.com/razorpay/react-n
 
 To use the plugin, start by installing the package:
 
-<Terminal cmd={['$ npx expo install @dev-plugins/apollo-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @dev-plugins/apollo-client'],
+    yarn: ['$ yarn expo install @dev-plugins/apollo-client'],
+    pnpm: ['$ pnpm expo install @dev-plugins/apollo-client'],
+    bun: ['$ bun expo install @dev-plugins/apollo-client'],
+  }}
+/>
 
 Then pass your client instance to the plugin in your app's root component or where you wrap the rest of your app in the `ApolloProvider`:
 
@@ -155,7 +169,14 @@ Inspired by [`react-query-native-devtools`](https://github.com/bgaleotti/react-q
 
 To use the plugin, start by installing the package:
 
-<Terminal cmd={['$ npx expo install @dev-plugins/react-query']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @dev-plugins/react-query'],
+    yarn: ['$ yarn expo install @dev-plugins/react-query'],
+    pnpm: ['$ pnpm expo install @dev-plugins/react-query'],
+    bun: ['$ bun expo install @dev-plugins/react-query'],
+  }}
+/>
 
 Then pass your client instance to the plugin in your app's root component or where you wrap the rest of your app in the `QueryClientProvider`:
 
@@ -180,7 +201,14 @@ The `redux-devtools-expo-dev-plugin` is based on the [Redux DevTools](https://gi
 
 To use the plugin, start by installing the package:
 
-<Terminal cmd={['$ npx expo install redux-devtools-expo-dev-plugin']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install redux-devtools-expo-dev-plugin'],
+    yarn: ['$ yarn expo install redux-devtools-expo-dev-plugin'],
+    pnpm: ['$ pnpm expo install redux-devtools-expo-dev-plugin'],
+    bun: ['$ bun expo install redux-devtools-expo-dev-plugin'],
+  }}
+/>
 
 If you're using `@reduxjs/toolkit`, modify the `configureStore` call to disable the built-in dev tools by passing in `devTools: false`. Then, add in the Expo DevTools plugin enhancer by concatenating the `devToolsEnhancer()`. The `configureStore` call is going to look like the following:
 
@@ -204,7 +232,14 @@ The TinyBase dev tools plugin connects the TinyBase Store Inspector to your app,
 
 To use the plugin, start by installing the package:
 
-<Terminal cmd={['$ npx expo install @dev-plugins/tinybase']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @dev-plugins/tinybase'],
+    yarn: ['$ yarn expo install @dev-plugins/tinybase'],
+    pnpm: ['$ pnpm expo install @dev-plugins/tinybase'],
+    bun: ['$ bun expo install @dev-plugins/tinybase'],
+  }}
+/>
 
 Then pass your client instance to the plugin in your app's root component or where you wrap the rest of your app with the store's `Provider`:
 

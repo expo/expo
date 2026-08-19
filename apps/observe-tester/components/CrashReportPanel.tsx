@@ -1,6 +1,7 @@
 import type { CrashReport } from 'expo-app-metrics';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { ExceptionReason } from '@/components/ExceptionReason';
 import { useTheme } from '@/utils/theme';
 
 export function CrashReportPanel({ report }: { report: CrashReport }) {
@@ -25,19 +26,11 @@ export function CrashReportPanel({ report }: { report: CrashReport }) {
       {report.virtualMemoryRegionInfo ? (
         <Field label="VM region" value={report.virtualMemoryRegionInfo} mono />
       ) : null}
-      {report.exceptionReason ? (
-        <View style={styles.exceptionReason}>
-          <Text style={[styles.exceptionMessage, { color: theme.text.default }]}>
-            {report.exceptionReason.composedMessage}
-          </Text>
-          <Text style={[styles.exceptionMeta, { color: theme.text.secondary }]}>
-            {report.exceptionReason.className} · {report.exceptionReason.exceptionType}
-          </Text>
-        </View>
-      ) : null}
+      {report.exceptionReason != null ? <ExceptionReason reason={report.exceptionReason} /> : null}
       <View style={styles.timing}>
         <Text style={[styles.timingText, { color: theme.text.secondary }]}>
-          Window: {formatDate(report.timestampBegin)} → {formatDate(report.timestampEnd)}
+          Window: {formatDate(report.timestampBegin)} →{' '}
+          {report.timestampEnd ? formatDate(report.timestampEnd) : ''}
         </Text>
         <Text style={[styles.timingText, { color: theme.text.secondary }]}>
           Ingested: {formatDate(report.ingestedAt)}
@@ -151,17 +144,6 @@ const styles = StyleSheet.create({
   fieldValueMono: {
     fontFamily: 'Menlo',
     fontSize: 12,
-  },
-  exceptionReason: {
-    gap: 4,
-  },
-  exceptionMessage: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  exceptionMeta: {
-    fontSize: 12,
-    fontWeight: '500',
   },
   timing: {
     gap: 2,

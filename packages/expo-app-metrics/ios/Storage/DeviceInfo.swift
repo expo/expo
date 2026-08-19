@@ -1,9 +1,7 @@
 import SystemConfiguration
 import UIKit
 
-/**
- Provides some basic informations about the device.
- */
+/// Provides some basic informations about the device.
 public struct DeviceInfo: Codable, Equatable, Sendable {
   public let modelName: String
   public let modelIdentifier: String
@@ -35,9 +33,7 @@ public struct DeviceInfo: Codable, Equatable, Sendable {
   }
 }
 
-/**
- Returns a device model name, e.g. "iPhone", "iPad" or "iPhone (Simulator)" when the app is running on the simulator.
- */
+/// Returns a device model name, e.g. "iPhone", "iPad" or "iPhone (Simulator)" when the app is running on the simulator.
 @MainActor
 private func getDeviceModelName(device: UIDevice) -> String {
   #if targetEnvironment(simulator)
@@ -47,9 +43,7 @@ private func getDeviceModelName(device: UIDevice) -> String {
   #endif
 }
 
-/**
- Returns an identifier of the device model, e.g. "iPhone18,2".
- */
+/// Returns an identifier of the device model, e.g. "iPhone18,2".
 private func getDeviceModelIdentifier() -> String? {
   #if targetEnvironment(simulator)
   return ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"]

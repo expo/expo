@@ -6,11 +6,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import countLines from '@expo/metro/metro/lib/countLines';
-import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { relative, dirname } from 'node:path';
 
+import type { ExpoJsOutput } from '../serializer/jsOutput';
+import { toPosixPath } from '../utils/filePath';
 import { getBrowserslistTargets } from './browserslist';
 import { wrapDevelopmentCSS } from './css';
 import {
@@ -24,8 +26,6 @@ import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 import { transformShim } from './transformShim';
-import type { ExpoJsOutput } from '../serializer/jsOutput';
-import { toPosixPath } from '../utils/filePath';
 
 export interface TransformResponse {
   readonly dependencies: readonly TransformResultDependency[];

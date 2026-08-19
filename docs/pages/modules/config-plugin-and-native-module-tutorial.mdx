@@ -23,7 +23,14 @@ This tutorial explains how to create a new config plugin from scratch and read c
 
 Start by initializing a new Expo module project with `create-expo-module`. This sets up scaffolding for Android, iOS, and TypeScript and includes an example project to test the module within an app. Run the following command to get started:
 
-<Terminal cmd={['$ npx create-expo-module expo-native-configuration']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-module expo-native-configuration'],
+    yarn: ['$ yarn create expo-module expo-native-configuration'],
+    pnpm: ['$ pnpm create expo-module expo-native-configuration'],
+    bun: ['$ bun create expo-module expo-native-configuration'],
+  }}
+/>
 
 This guide uses the name `expo-native-configuration`/`ExpoNativeConfiguration` for the module project. However, you can choose any name you prefer.
 
@@ -138,29 +145,83 @@ export default function App() {
 In the root of your project, run the TypeScript compiler to watch for changes and rebuild the module's JavaScript:
 
 <Terminal
-  cmdCopy="npm run build"
-  cmd={[
-    '# Run this in the root of the project to start the TypeScript compiler',
-    '$ npm run build',
-  ]}
+  cmd={{
+    npm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ npm run build',
+    ],
+    yarn: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ yarn run build',
+    ],
+    pnpm: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ pnpm run build',
+    ],
+    bun: [
+      '# Run this in the root of the project to start the TypeScript compiler',
+      '$ bun run build',
+    ],
+  }}
 />
 
 In another terminal window, compile and run the example app:
 
 <Terminal
-  cmd={[
-    '# Navigate to the example project',
-    '$ cd example',
-    '',
-    '# Reinstall the dependencies',
-    '$ rm -rf node_modules && npm install',
-    '',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Navigate to the example project',
+      '$ cd example',
+      '',
+      '# Reinstall the dependencies',
+      '$ rm -rf node_modules && npm install',
+      '',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Navigate to the example project',
+      '$ cd example',
+      '',
+      '# Reinstall the dependencies',
+      '$ rm -rf node_modules && yarn install',
+      '',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Navigate to the example project',
+      '$ cd example',
+      '',
+      '# Reinstall the dependencies',
+      '$ rm -rf node_modules && pnpm install',
+      '',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Navigate to the example project',
+      '$ cd example',
+      '',
+      '# Reinstall the dependencies',
+      '$ rm -rf node_modules && bun install',
+      '',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 You should see a screen with the text "API key: api-key".
@@ -241,8 +302,12 @@ At the root of your project, run `npm run build plugin` to start the TypeScript 
 When you run the `npx expo prebuild` command inside your **example** directory, the terminal logs "my custom plugin" through a console statement.
 
 <Terminal
-  cmd={['$ cd example', '$ npx expo prebuild --clean']}
-  cmdCopy="$ cd example && npx expo prebuild --clean"
+  cmd={{
+    npm: ['$ cd example', '$ npx expo prebuild --clean'],
+    yarn: ['$ cd example', '$ yarn expo prebuild --clean'],
+    pnpm: ['$ cd example', '$ pnpm expo prebuild --clean'],
+    bun: ['$ cd example', '$ bun expo prebuild --clean'],
+  }}
 />
 
 To inject your custom API keys into **AndroidManifest.xml** and **Info.plist**, use helper [`mods` provided by `expo/config-plugins`](/config-plugins/mods/). These make it easy to modify native files. For this example, use `withAndroidManifest` and `withInfoPlist`.
@@ -381,18 +446,56 @@ public class ExpoNativeConfigurationModule: Module {
 With your native modules reading the fields added to the native files, you can now run the example app and access your custom API key using the `ExamplePlugin.getApiKey()` function.
 
 <Terminal
-  cmd={[
-    '$ cd example',
-    '',
-    '# Execute your plugin and update native files',
-    '$ npx expo prebuild',
-    '',
-    '# Run the example app on Android',
-    '$ npx expo run:android',
-    '',
-    '# Run the example app on iOS',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '$ cd example',
+      '',
+      '# Execute your plugin and update native files',
+      '$ npx expo prebuild',
+      '',
+      '# Run the example app on Android',
+      '$ npx expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '$ cd example',
+      '',
+      '# Execute your plugin and update native files',
+      '$ yarn expo prebuild',
+      '',
+      '# Run the example app on Android',
+      '$ yarn expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ cd example',
+      '',
+      '# Execute your plugin and update native files',
+      '$ pnpm expo prebuild',
+      '',
+      '# Run the example app on Android',
+      '$ pnpm expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '$ cd example',
+      '',
+      '# Execute your plugin and update native files',
+      '$ bun expo prebuild',
+      '',
+      '# Run the example app on Android',
+      '$ bun expo run:android',
+      '',
+      '# Run the example app on iOS',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 </Step>

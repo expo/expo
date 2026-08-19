@@ -89,6 +89,7 @@ jest.mock('../ExpoFetchModule', () => {
     ExpoFetchModule: {
       NativeRequest: StubNativeRequest,
       NativeResponse: StubNativeResponse,
+      unstable_createBlobData: jest.fn(async () => 'mock-blob-id'),
     },
   };
 });
@@ -174,6 +175,25 @@ describe('FetchResponse', () => {
       expect(bytes.byteLength).toBe(11);
     });
 
+    it('does not flip bodyUsed on siblings when a second clone is read', async () => {
+      const response = makeResponse();
+      const second = response.clone();
+      const third = response.clone();
+
+      await third.json().catch(() => {});
+
+      expect(response.bodyUsed).toBe(false);
+      expect(second.bodyUsed).toBe(false);
+      expect(third.bodyUsed).toBe(true);
+    });
+
+    it('lets the original be read after being cloned twice', async () => {
+      const response = makeResponse();
+      response.clone();
+      response.clone();
+      expect((await response.arrayBuffer()).byteLength).toBe(11);
+    });
+
     it('throws a TypeError if the body has already been read', async () => {
       const response = makeResponse();
       await response.arrayBuffer();
@@ -232,6 +252,15 @@ describe('FetchResponse', () => {
       const cloned = response.clone();
       const formData = await cloned.formData();
       expect(formData.get('hello world')).toBe('');
+    });
+  });
+
+  describe('blob()', () => {
+    it('should create a blob with type from the content-type header', async () => {
+      const response = makeResponse();
+      const blob = await response.blob();
+      expect(blob.size).toBe(11);
+      expect(blob.type).toBe('text/plain');
     });
   });
 

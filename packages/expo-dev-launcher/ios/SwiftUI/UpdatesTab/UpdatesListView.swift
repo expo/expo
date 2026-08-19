@@ -172,22 +172,44 @@ struct UpdatesListView: View {
   }
 
   private var emptyUpdates: some View {
-    Section {
-      VStack(spacing: 16) {
-        Image(systemName: "tray")
-          .font(.largeTitle)
-          .foregroundColor(.gray)
+    VStack(spacing: 16) {
+      Image(systemName: "tray")
+        .resizable()
+        .scaledToFit()
+        .frame(width: 44, height: 44)
+        .foregroundColor(.gray)
 
-        Text("No updates available")
-          .font(.headline)
+      if filterByCompatibility {
+        VStack(spacing: 8) {
+          Text("No compatible updates")
+            .font(.headline)
+            .multilineTextAlignment(.center)
 
-        Text(filterByCompatibility ? "No compatible updates found for this runtime version." : "No updates found.")
-          .font(.caption)
-          .foregroundStyle(.secondary)
-          .multilineTextAlignment(.center)
+          Text("No updates match this runtime version. Turn off \"Compatible only\" to see all updates.")
+            .font(.system(size: 14))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(.secondary)
+        }
+      } else {
+        VStack(spacing: 8) {
+          Text("No updates yet")
+            .font(.headline)
+            .multilineTextAlignment(.center)
+
+          Text("Publish an update with EAS Update and it will appear here.")
+            .font(.system(size: 14))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(.secondary)
+
+          if let destination = URL(string: "https://docs.expo.dev/eas-update/getting-started/") {
+            Link("Learn how to publish", destination: destination)
+              .font(.system(size: 14))
+              .foregroundColor(.blue)
+          }
+        }
       }
-      .padding()
     }
+    .padding()
   }
 }
 // swiftlint:enable closure_body_length

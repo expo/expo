@@ -44,6 +44,28 @@ struct ExpoRequestCdpInterceptorTests {
   }
 
   @Test
+  func `normalizes content type parameters for cdp response`() {
+    let response = HTTPURLResponse(
+      url: URL(string: "https://example.com/data")!,
+      statusCode: 200,
+      httpVersion: nil,
+      headerFields: ["Content-Type": "application/json; charset=utf-8"]
+    )!
+    let cdpResponse = CdpNetwork.Response(response, encodedDataLength: 2)
+
+    #expect(cdpResponse.mimeType == "application/json")
+    #expect(CdpNetwork.ResourceType.fromMimeType(" image/png; charset=utf-8 ") == .image)
+  }
+
+  @Test
+  func `treats json content type with charset as text`() {
+    #expect(CdpNetwork.isTextContentType("application/json; charset=utf8"))
+    #expect(CdpNetwork.isTextContentType("APPLICATION/JSON; charset=utf-8"))
+    #expect(CdpNetwork.isTextContentType("text/plain; charset=utf-8"))
+    #expect(!CdpNetwork.isTextContentType("image/png"))
+  }
+
+  @Test
   func `simple json data`() async throws {
     mockDelegate.events.removeAll()
 

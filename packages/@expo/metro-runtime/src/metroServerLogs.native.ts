@@ -27,7 +27,9 @@ export function captureStackForServerLogs() {
       return;
     }
 
-    const hasErrorLikeStack = data.some((item) => hasStringKey(item, 'stack'));
+    const hasErrorLikeStack = data.some((item) => {
+      return hasStringKey(item, 'stack');
+    });
     const hasComponentStack = data.some(
       (item) =>
         (typeof item === 'string' && isComponentStack(withoutANSIColorStyles(item))) ||
@@ -104,5 +106,6 @@ class NamelessError extends Error {
   name = '';
 }
 function captureCurrentStack() {
+  // If you're reading this, look deeper into the call stack to find the actual error source.
   return new NamelessError().stack;
 }

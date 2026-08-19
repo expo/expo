@@ -1,11 +1,6 @@
 import { freePortAsync, testPortAsync } from '../freeport';
 import { getRunningProcess } from '../getRunningProcess';
-import {
-  choosePortAsync,
-  ensurePortAvailabilityAsync,
-  getFreePortAsync,
-  resolvePortAsync,
-} from '../port';
+import { choosePortAsync, ensurePortAvailabilityAsync, resolvePortAsync } from '../port';
 import { confirmAsync } from '../prompts';
 
 jest.mock('../freeport', () => ({
@@ -25,7 +20,7 @@ describe(ensurePortAvailabilityAsync, () => {
     expect(await ensurePortAvailabilityAsync('/', { port: 8081 })).toBe(true);
   });
   it(`returns false if the port is unavailable due to running the same process`, async () => {
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/me',
       command: 'npx expo',
@@ -34,7 +29,7 @@ describe(ensurePortAvailabilityAsync, () => {
     expect(await ensurePortAvailabilityAsync('/me', { port: 8081 })).toBe(false);
   });
   it(`asserts if the port is busy because it's running a different process`, async () => {
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/other',
       command: 'npx expo',
@@ -59,7 +54,7 @@ describe(choosePortAsync, () => {
   });
   it(`chooses a new port if the default port is taken and isn't running the same process`, async () => {
     jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/other/project',
       command: 'npx expo',
@@ -71,7 +66,7 @@ describe(choosePortAsync, () => {
   });
   it(`returns null if the new suggested port is rejected`, async () => {
     jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/other/project',
       command: 'npx expo',
@@ -83,7 +78,7 @@ describe(choosePortAsync, () => {
   });
   it(`returns null if the taken port is running the same process`, async () => {
     jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/me',
       command: 'npx expo',

@@ -3,7 +3,6 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
-import { CardStack, getAnimationEnabled } from './CardStack';
 import { HeaderShownContext, SafeAreaProviderCompat } from '../../../elements';
 import {
   CommonActions,
@@ -23,6 +22,7 @@ import type {
 import { ModalPresentationContext } from '../../utils/ModalPresentationContext';
 import { GestureHandlerRootView } from '../GestureHandler';
 import { HeaderContainer, type Props as HeaderContainerProps } from '../Header/HeaderContainer';
+import { CardStack, getAnimationEnabled } from './CardStack';
 
 type Props = StackNavigationConfig & {
   direction: LocaleDirection;

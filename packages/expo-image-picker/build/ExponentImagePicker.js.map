@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentImagePicker.js","sourceRoot":"","sources":["../src/ExponentImagePicker.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,qBAAqB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExponentImagePicker');\n"]}

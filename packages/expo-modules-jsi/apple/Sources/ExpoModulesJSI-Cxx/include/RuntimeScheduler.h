@@ -31,8 +31,9 @@ public:
   using ScheduleTaskCallback = void(^)();
 
   /**
-   Trampoline implemented by the host — casts `nativeScheduler` back to
-   react::RuntimeScheduler* and calls scheduleTask on it. Keeping it as a
+   Trampoline implemented by the host. It resolves `nativeScheduler` (an opaque
+   host-owned handle) to the real react::RuntimeScheduler and calls scheduleTask
+   on it, or drops the task when the scheduler no longer exists. Keeping it as a
    function pointer keeps React types out of this header.
    */
   using ScheduleFn = void (*)(void *nativeScheduler, int priority, ScheduleTaskCallback callback);

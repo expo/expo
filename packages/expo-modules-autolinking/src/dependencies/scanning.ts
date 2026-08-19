@@ -1,13 +1,13 @@
 import fs from 'fs';
 
+import { taskAll } from '../concurrency';
+import { loadPackageJson, maybeRealpath, fastJoin } from '../utils';
 import {
   type ResolutionResult,
   type DependencyResolution,
   DependencyResolutionSource,
 } from './types';
-import { taskAll } from '../concurrency';
 import { defaultShouldIncludeDependency } from './utils';
-import { loadPackageJson, maybeRealpath, fastJoin } from '../utils';
 
 async function resolveDependency(
   basePath: string,

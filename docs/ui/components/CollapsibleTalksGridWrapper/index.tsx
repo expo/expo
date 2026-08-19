@@ -1,5 +1,6 @@
 import { Button } from '@expo/styleguide';
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import { Talk } from '~/public/static/talks';
 import { TalkGridWrapper, TalkGridCell } from '~/ui/components/Home/sections';
@@ -10,6 +11,7 @@ type CollapsibleGridProps = {
 };
 
 export function CollapsibleTalksGridWrapper({ items }: CollapsibleGridProps) {
+  const intl = useIntl();
   const [showAll, setShowAll] = useState(false);
   const initialRowCount = 3;
   const itemsPerRow = 4;
@@ -30,7 +32,7 @@ export function CollapsibleTalksGridWrapper({ items }: CollapsibleGridProps) {
             onClick={() => {
               setShowAll(!showAll);
             }}>
-            {showAll ? 'Show Less' : 'Show More'}
+            {intl.formatMessage({ id: showAll ? 'showLess' : 'showMore' })}
           </Button>
         </div>
       )}

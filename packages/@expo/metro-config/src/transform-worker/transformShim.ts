@@ -1,11 +1,11 @@
 import { parse, type ParseResult } from '@babel/core';
 import generate from '@babel/generator';
-import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
+import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 
-import type { TransformResponse } from './transform-worker';
 import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { countLinesAndTerminateSourceMap, emptySourceMap } from '../serializer/packedMap';
+import type { TransformResponse } from './transform-worker';
 
 /** Synthesizes the `metro-transform-worker` output for a hand-crafted JS shims
  *

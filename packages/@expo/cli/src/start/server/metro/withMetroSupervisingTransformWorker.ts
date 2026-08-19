@@ -1,5 +1,5 @@
-import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 import { unstable_transformerPath, internal_supervisingTransformerPath } from '@expo/metro-config';
+import type { ConfigT as MetroConfig } from '@expo/metro/metro-config';
 
 const debug = require('debug')(
   'expo:metro:withMetroSupervisingTransformWorker'

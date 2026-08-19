@@ -1,10 +1,10 @@
 import escape from 'escape-string-regexp';
 import type * as queryString from 'query-string';
 
-import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
 import type { InitialState } from '../react-navigation/native';
 import { parseUrlUsingCustomBase } from '../utils/url';
+import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 
 export type ExpoOptions = {
   previousSegments?: string[];

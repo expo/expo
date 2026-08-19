@@ -23,6 +23,7 @@ describe('exports static', () => {
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'static-rendering',
           E2E_ROUTER_ASYNC: '',
+          E2E_FAVICON: './assets/icon.png',
         },
       }
     );
@@ -69,6 +70,15 @@ describe('exports static', () => {
     it(`gets a 404`, async () => {
       expect(await server.fetchAsync('/missing-route').then((res) => res.status)).toBe(404);
     });
+
+    it('injects `<link rel="icon">` into statically rendered pages', async () => {
+      for (const route of ['/', '/styled', '/welcome-to-the-universe']) {
+        const html = getHtml(await server.fetchAsync(route).then((res) => res.text()));
+        const icon = html.querySelector('html > head > link[rel="icon"]');
+        expect(icon).not.toBeNull();
+        expect(icon?.attributes.href).toBe('/favicon.ico');
+      }
+    });
   });
 
   it('has expected files', async () => {
@@ -93,6 +103,9 @@ describe('exports static', () => {
     expect(files).toContain('other.html');
 
     expect(files).toContain('_expo/.routes.json');
+
+    // Generated from `web.favicon` in app config
+    expect(files).toContain('favicon.ico');
   });
 
   it('has source maps', async () => {
@@ -194,7 +207,10 @@ describe('exports static', () => {
 
     const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {
       // Fonts are tested elsewhere
-      return link.attributes.as !== 'font';
+      if (link.attributes.as === 'font') return false;
+      // Favicon is tested elsewhere
+      if (link.attributes.rel === 'icon') return false;
+      return true;
     });
     expect(links.length).toBe(
       // Global CSS, CSS Module
@@ -260,7 +276,10 @@ describe('exports static', () => {
     );
 
     expect(
-      fs.readFileSync(path.join(outputDir, links[0]?.attributes.href?.replace(/\?.*$/, '') ?? ''), 'utf-8')
+      fs.readFileSync(
+        path.join(outputDir, links[0]?.attributes.href?.replace(/\?.*$/, '') ?? ''),
+        'utf-8'
+      )
     ).toBeDefined();
 
     // Ensure the font is used

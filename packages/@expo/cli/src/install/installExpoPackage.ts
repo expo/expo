@@ -3,8 +3,8 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
 import * as Log from '../log';
-import type { Options } from './resolveOptions';
 import { getRunningProcess } from '../utils/getRunningProcess';
+import type { Options } from './resolveOptions';
 
 /**
  * Given a list of incompatible packages, installs the correct versions of the packages with the package manager used for the project.

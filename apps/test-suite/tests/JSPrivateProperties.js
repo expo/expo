@@ -1036,7 +1036,7 @@ export function test({ describe, it, xit, expect }) {
         class Foo {
           #x = 1;
           static check(obj) {
-            return (#x in obj) ?? 'never';
+            return #x in obj ?? 'never';
           }
         }
         // #x in obj always returns boolean, never nullish

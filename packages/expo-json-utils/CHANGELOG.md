@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Use `javaObjectType` in `JSONObject.require<T>` so primitive type arms (`Long`/`Int`/`Double`/`Boolean`) match instead of silently falling into the catch-all `else` and throwing `ClassCastException`. ([#46181](https://github.com/expo/expo/pull/46181) by [@jakequade-pc](https://github.com/jakequade-pc))
+
 ### 💡 Others
 
 ## 56.0.0 — 2026-05-05

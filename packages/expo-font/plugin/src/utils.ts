@@ -1,5 +1,14 @@
 import fs from 'fs/promises';
+import Module from 'node:module';
 import path from 'path';
+
+function isErrorWithCode(error: unknown, code: string) {
+  return typeof error === 'object' && error !== null && 'code' in error && error.code === code;
+}
+
+function resolveFontPath(p: string, projectRoot: string) {
+  return Module.createRequire(path.join(projectRoot, 'package.json')).resolve(p);
+}
 
 // rule: File-based resource names must contain only lowercase a-z, 0-9, or underscore
 export function toValidAndroidResourceName(value: string) {
@@ -17,8 +26,19 @@ export function toValidAndroidResourceName(value: string) {
 
 export async function resolveFontPaths(fonts: string[], projectRoot: string) {
   const promises = fonts.map(async (p) => {
-    const resolvedPath = path.resolve(projectRoot, p);
-    const stat = await fs.stat(resolvedPath);
+    let resolvedPath = path.resolve(projectRoot, p);
+    let stat: Awaited<ReturnType<typeof fs.stat>>;
+
+    try {
+      stat = await fs.stat(resolvedPath);
+    } catch (error) {
+      if (!isErrorWithCode(error, 'ENOENT')) {
+        throw error;
+      }
+
+      resolvedPath = resolveFontPath(p, projectRoot);
+      stat = await fs.stat(resolvedPath);
+    }
 
     if (stat.isDirectory()) {
       const dir = await fs.readdir(resolvedPath);

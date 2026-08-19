@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 
-import { buildAndroid, buildIos, mangle, tasksAndroid } from './commands';
 import packageJson from '../../package.json';
+import { buildAndroid, buildIos, mangle, tasksAndroid } from './commands';
 
 const program = new Command();
 
@@ -42,6 +42,10 @@ program
   .option(
     '-p, --package [package]',
     'package artifacts as a Swift Package (with an optionally specified name)'
+  )
+  .option(
+    '--host-provided <frameworks...>',
+    'framework names the host iOS app already provides, these will be stripped from the artifact (e.g. SDWebImage,SDWebImageWebPCoder)'
   )
   .action(async function (this: Command) {
     await buildIos(this);

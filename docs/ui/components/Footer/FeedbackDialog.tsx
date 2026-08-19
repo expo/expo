@@ -72,7 +72,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
               <>
                 <div className="flex flex-col items-center px-6 py-12">
                   <div className="flex size-18 items-center justify-center rounded-full border-2 border-success bg-success">
-                    <CheckIcon className="icon-2xl text-icon-success" />
+                    <CheckIcon aria-hidden="true" className="icon-2xl text-icon-success" />
                   </div>
                   <RawH2 className="mt-5! mb-2!">Feedback received</RawH2>
                   <CALLOUT theme="secondary">
@@ -95,7 +95,11 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                   <div className="flex justify-between">
                     <RawH2 className="my-0!">Share your feedback</RawH2>
                     <Dialog.Close asChild>
-                      <Button theme="quaternary" leftSlot={<XIcon className="icon-md" />} />
+                      <Button
+                        aria-label="Close"
+                        theme="quaternary"
+                        leftSlot={<XIcon aria-hidden="true" className="icon-md" />}
+                      />
                     </Dialog.Close>
                   </div>
                   <CALLOUT theme="secondary">

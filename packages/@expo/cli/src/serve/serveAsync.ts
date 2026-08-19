@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import connect from 'connect';
 import { createRequestHandler } from 'expo-server/adapter/http';
-import http from 'http';
-import path from 'path';
+import http from 'node:http';
+import path from 'node:path';
 import send from 'send';
 
 import * as Log from '../log';
@@ -11,6 +11,7 @@ import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { resolvePortAsync } from '../utils/port';
+import { applyStaticHeaders, loadStaticManifestAsync, resolveStaticHeaders } from './static';
 
 type Options = {
   port?: number;
@@ -59,6 +60,8 @@ export async function serveAsync(inputDir: string, options: Options) {
 }
 
 async function startStaticServerAsync(dist: string, options: Options) {
+  const staticManifest = await loadStaticManifestAsync(dist);
+
   const server = http.createServer((req, res) => {
     // Remove query strings and decode URI
     const filePath = decodeURI(req.url?.split('?')[0] ?? '');
@@ -68,6 +71,18 @@ async function startStaticServerAsync(dist: string, options: Options) {
       index: 'index.html',
       extensions: ['html'],
     })
+      .on('headers', (res: http.ServerResponse, resolvedPath: string) => {
+        // If `headers` and `pageHeaders` don't exist in the manifest, do nothing
+        if (!staticManifest?.headers && !staticManifest?.pageHeaders?.length) {
+          return;
+        }
+        // Headers only apply to page responses and loader data files, never to other static assets.
+        if (!resolvedPath.endsWith('.html') && !filePath.startsWith('/_expo/loaders/')) {
+          return;
+        }
+
+        applyStaticHeaders(res, resolveStaticHeaders(staticManifest, filePath));
+      })
       .on('error', (err: any) => {
         if (err.status === 404) {
           res.statusCode = 404;

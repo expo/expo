@@ -6,6 +6,7 @@
  */
 import { type NodePath, traverse, types } from '@babel/core';
 import generate from '@babel/generator';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
 import type {
   AsyncDependencyType,
   MixedOutput,
@@ -13,18 +14,17 @@ import type {
   ReadOnlyGraph,
 } from '@expo/metro/metro/DeltaBundler/types';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import type { SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 
-import type { ExpoSerializerOptions } from './fork/baseJSBundle';
-import { isExpoJsOutput } from './jsOutput';
-import { sortDependencies } from './reconcileTransformSerializerPlugin';
-import { hasSideEffectWithDebugTrace } from './sideEffects';
 import type {
   DependencyData,
   MutableInternalDependency,
 } from '../transform-worker/collect-dependencies';
 import { collectDependenciesForShaking } from '../transform-worker/metro-transform-worker';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
+import { isExpoJsOutput } from './jsOutput';
+import { sortDependencies } from './reconcileTransformSerializerPlugin';
+import { hasSideEffectWithDebugTrace } from './sideEffects';
 
 const debug = require('debug')('expo:treeshake') as typeof console.log;
 const isDebugEnabled = require('debug').enabled('expo:treeshake');

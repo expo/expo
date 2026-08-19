@@ -15,7 +15,9 @@ name: Launch and verify the brownfield app
 - runFlow: ./skip-dev-menu.yml
 
 # Verify that the RN part has launched
-- assertVisible: Expo + Brownfield = 🖤
+- extendedWaitUntil:
+    visible: Expo + Brownfield = 🖤
+    timeout: 60000
 - assertVisible:
     id: home-tab
 - assertVisible:

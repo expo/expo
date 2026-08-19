@@ -417,6 +417,9 @@ private inline fun <reified T : VideoView> ViewDefinitionBuilder<T>.VideoViewCom
   Prop("useExoShutter") { view: T, useExoShutter: Boolean? ->
     view.useExoShutter = useExoShutter
   }
+  Prop("controllerAutoShow") { view: T, controllerAutoShow: Boolean? ->
+    view.controllerAutoShow = controllerAutoShow ?: true
+  }
   AsyncFunction("enterFullscreen") { view: T ->
     view.enterFullscreen()
   }.runOnQueue(Queues.MAIN)

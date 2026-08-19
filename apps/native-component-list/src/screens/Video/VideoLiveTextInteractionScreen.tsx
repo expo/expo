@@ -2,9 +2,9 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 
+import TitledSwitch from '../../components/TitledSwitch';
 import { forBiggerBlazesSource } from './videoSources';
 import { styles } from './videoStyles';
-import TitledSwitch from '../../components/TitledSwitch';
 
 export default function VideoLiveTextInteractionScreen() {
   const [allowLiveTextInteraction, setAllowLiveTextInteraction] = useState(false);

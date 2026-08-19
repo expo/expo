@@ -1,28 +1,128 @@
 package expo.modules.kotlin.jni
 
+import com.facebook.jni.HybridData
+import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.exception.Exceptions
 import java.nio.ByteBuffer
 
 /**
- * Abstracts common operations that can be done on
- * [NativeArrayBuffer] and [JavaScriptArrayBuffer].
+ * A Kotlin representation of an ArrayBuffer with native-owned or native-retained storage.
+ * Can be created on any thread and safely returned to JavaScript.
  */
-interface ArrayBuffer {
-  fun size(): Int
+@Suppress("KotlinJniMissingFunction")
+@DoNotStrip
+class ArrayBuffer : Destructible {
+  @DoNotStrip private val mHybridData: HybridData
 
-  fun readByte(position: Int): Byte
-  fun read2Byte(position: Int): Short
-  fun read4Byte(position: Int): Int
-  fun read8Byte(position: Int): Long
-  fun readFloat(position: Int): Float
-  fun readDouble(position: Int): Double
+  @DoNotStrip
+  @Suppress("unused")
+  private constructor(hybridData: HybridData) {
+    mHybridData = hybridData
+  }
+
+  constructor(byteBuffer: ByteBuffer) {
+    if (!byteBuffer.isDirect) {
+      throw Exceptions.IllegalArgument("ArrayBuffers can only be created from direct ByteBuffers")
+    }
+    mHybridData = initHybrid(byteBuffer)
+  }
+
+  private external fun initHybrid(buffer: ByteBuffer): HybridData
+
+  fun isValid() = mHybridData.isValid
+
+  external fun size(): Int
+
+  /**
+   * Reads primitive values from the given byte offset.
+   *
+   * Callers are responsible for ensuring the requested value fits within [size].
+   */
+  external fun readByte(position: Int): Byte
+  external fun read2Byte(position: Int): Short
+  external fun read4Byte(position: Int): Int
+  external fun read8Byte(position: Int): Long
+  external fun readFloat(position: Int): Float
+  external fun readDouble(position: Int): Double
 
   /**
    * Returns a direct [ByteBuffer] that wraps this ArrayBuffer's underlying data.
    */
-  fun toDirectBuffer(): ByteBuffer
+  fun toDirectBuffer(): ByteBuffer = toDirectBuffer(copyBorrowed = false)
+
+  /**
+   * Returns a direct [ByteBuffer] for this ArrayBuffer's underlying data.
+   * When [copyBorrowed] is true, borrowed storage is copied into a new direct [ByteBuffer].
+   */
+  external fun toDirectBuffer(copyBorrowed: Boolean): ByteBuffer
+
+  /**
+   * Whether this buffer's visible byte range is backed by native memory that can be accessed
+   * directly from native code without touching JavaScript heap memory.
+   */
+  external fun isNativeBacked(): Boolean
 
   /**
    * Creates a native-owned copy of this ArrayBuffer.
    */
-  fun copy(): NativeArrayBuffer = NativeArrayBuffer.copyOf(this)
+  fun copy(): ArrayBuffer = copyOf(this)
+
+  @Throws(Throwable::class)
+  protected fun finalize() {
+    mHybridData.resetNative()
+  }
+
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
+  }
+
+  companion object {
+    /**
+     * Allocate a new [ArrayBuffer] with the given [size].
+     */
+    fun allocate(size: Int): ArrayBuffer {
+      val buffer = ByteBuffer.allocateDirect(size)
+      return ArrayBuffer(buffer)
+    }
+
+    /**
+     * Wrap the given [ByteBuffer] in a new **owning** `ArrayBuffer`.
+     * The buffer must be direct, otherwise the function throws.
+     * Use [ArrayBuffer.copyOf] for non-direct buffers.
+     */
+    fun wrap(byteBuffer: ByteBuffer): ArrayBuffer =
+      ArrayBuffer(byteBuffer.apply { rewind() })
+
+    /**
+     * Copy given [ArrayBuffer] into a new native-owned `ArrayBuffer`.
+     */
+    fun copyOf(other: ArrayBuffer): ArrayBuffer =
+      copyOf(other.toDirectBuffer())
+
+    /**
+     * Copy given [JavaScriptArrayBuffer] into a new native-owned `ArrayBuffer`.
+     */
+    fun copyOf(other: JavaScriptArrayBuffer): ArrayBuffer =
+      copyOf(other.toDirectBuffer())
+
+    /**
+     * Copy given [NativeArrayBuffer] into a new native-owned `ArrayBuffer`.
+     */
+    @Suppress("DEPRECATION")
+    fun copyOf(other: NativeArrayBuffer): ArrayBuffer =
+      copyOf(other.toDirectBuffer())
+
+    fun copyOf(byteBuffer: ByteBuffer): ArrayBuffer {
+      val size = byteBuffer.run {
+        rewind()
+        remaining()
+      }
+      val newBuffer = ByteBuffer.allocateDirect(size).apply {
+        put(byteBuffer)
+        rewind()
+      }
+      byteBuffer.rewind()
+      return ArrayBuffer(newBuffer)
+    }
+  }
 }

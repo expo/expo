@@ -7,14 +7,7 @@
  */
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { ErrorCodeFrame, Terminal } from './CodeFrame';
-import { LogBoxMessage } from './Message';
-import styles from './Overlay.module.css';
 import { useActions } from '../ContextActions';
-import { SHOW_MORE_MESSAGE_LENGTH } from './Constants';
-import { ErrorOverlayHeader } from './Header';
-import ShowMoreButton from './ShowMoreButton';
-import { StackTraceList } from './StackTraceList';
 import { DevServerContext, useDevServer } from '../ContextDevServer';
 import * as LogBoxData from '../Data/LogBoxData';
 import type { LogBoxLog } from '../Data/LogBoxLog';
@@ -22,6 +15,13 @@ import { useLogs } from '../Data/LogBoxLog';
 import type { Message, LogLevel, StackType } from '../Data/Types';
 import { classNames } from '../utils/classNames';
 import { getFormattedStackTrace } from '../utils/devServerEndpoints';
+import { ErrorCodeFrame, Terminal } from './CodeFrame';
+import { SHOW_MORE_MESSAGE_LENGTH } from './Constants';
+import { ErrorOverlayHeader } from './Header';
+import { LogBoxMessage } from './Message';
+import styles from './Overlay.module.css';
+import ShowMoreButton from './ShowMoreButton';
+import { StackTraceList } from './StackTraceList';
 
 const HEADER_TITLE_MAP: Record<LogLevel, string> = {
   error: 'Console Error',

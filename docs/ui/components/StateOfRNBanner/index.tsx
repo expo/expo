@@ -45,7 +45,10 @@ export function StateOfRNBanner() {
           href="https://survey.stateofreactnative.com/"
           openInNewTab
           rightSlot={
-            <ArrowUpRightIcon className="icon-xs text-palette-white opacity-75 dark:text-[#001a72]" />
+            <ArrowUpRightIcon
+              aria-hidden="true"
+              className="icon-xs text-palette-white opacity-75 dark:text-[#001a72]"
+            />
           }
           className={mergeClasses(
             'gap-1.5 border-[#001a72] bg-[#001a72] text-palette-white',

@@ -74,8 +74,16 @@ Unfortunately, the new build infrastructure is incompatible with E2E tests due t
 This is what the UI of the app created from the default Expo template looks like:
 
 <div style={{ display: 'flex', justifyContent: 'center' }}>
-  <ContentSpotlight src="/static/images/eas-build/tests/01-home.png" className="max-w-[360px]" />
-  <ContentSpotlight src="/static/images/eas-build/tests/02-explore.png" className="max-w-[360px]" />
+  <ContentSpotlight
+    alt="The default Expo template app's Home screen on an iOS simulator, with a 'Welcome!' heading and getting-started steps."
+    src="/static/images/eas-build/tests/01-home.png"
+    className="max-w-[360px]"
+  />
+  <ContentSpotlight
+    alt="The default Expo template app's Explore screen on an iOS simulator, listing collapsible sections such as file-based routing and custom fonts."
+    src="/static/images/eas-build/tests/02-explore.png"
+    className="max-w-[360px]"
+  />
 </div>
 
 Let's create two simple Maestro flows for the example app. Start by creating a directory called **maestro** in the root of your project directory. This directory will contain the flows that you will configure and should be at the same level as **eas.json**.

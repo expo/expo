@@ -1,4 +1,4 @@
-import { CodedError, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import { CodedError, type EventSubscription, UnavailabilityError } from 'expo';
 
 import type {
   AppleAuthenticationCredential,
@@ -163,5 +163,4 @@ export function addRevokeListener(listener: () => void): EventSubscription {
   return ExpoAppleAuthentication.addListener('Expo.appleIdCredentialRevoked', listener);
 }
 
-// TODO(@kitten): Remove re-export from EMC
-export type { EventSubscription as Subscription } from 'expo-modules-core';
+export type { EventSubscription as Subscription } from 'expo';

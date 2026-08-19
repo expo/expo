@@ -51,10 +51,12 @@ The status bar appears at the top of the screen on both Android and iOS. You can
 import { StatusBar } from 'expo-status-bar';
 
 export default function RootLayout() {
-  <>
-    {/* Use light text instead of dark text in the status bar to provide more contrast with a dark background. */}
-    <StatusBar style="light" />
-  </>;
+  return (
+    <>
+      {/* Use light text instead of dark text in the status bar to provide more contrast with a dark background. */}
+      <StatusBar style="light" />
+    </>
+  );
 }
 ```
 

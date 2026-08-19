@@ -10,7 +10,7 @@ const NativeView: React.ComponentType<NativeExposedDropdownMenuBoxProps> = requi
   'ExposedDropdownMenuBoxView'
 );
 
-export type ExposedDropdownMenuBoxProps = {
+export interface ExposedDropdownMenuBoxProps {
   /**
    * Whether the dropdown menu is expanded (visible).
    */
@@ -28,7 +28,7 @@ export type ExposedDropdownMenuBoxProps = {
    * and an `ExposedDropdownMenu` with `DropdownMenuItem` children.
    */
   children?: ReactNode;
-};
+}
 
 type NativeExposedDropdownMenuBoxProps = Omit<
   ExposedDropdownMenuBoxProps,

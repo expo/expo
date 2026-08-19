@@ -1,6 +1,4 @@
-/**
- Context that captures Swift types to pass them to JSI host object as an unmanaged pointer for interoperability with C++.
- */
+/// Context that captures Swift types to pass them to JSI host object as an unmanaged pointer for interoperability with C++.
 internal final class HostObjectContext: Sendable {
   typealias Getter = @JavaScriptActor (_ propertyName: String) throws -> JavaScriptValue
   typealias Setter = @JavaScriptActor (_ propertyName: String, _ value: JavaScriptValue) throws -> Void

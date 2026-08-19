@@ -1,6 +1,6 @@
-import { DownloadTask, File, Directory, Paths, UploadTask } from '../..';
 import { __resetMockFileSystem } from '../../mocks/FileSystem';
 import { FileMode } from '../File.types';
+import { DownloadTask, File, Directory, Paths, UploadTask } from '../index';
 
 beforeEach(() => {
   __resetMockFileSystem();
@@ -65,6 +65,8 @@ describe('expo-file-system new API', () => {
     expect(typeof file.writeSync).toBe('function');
     expect(typeof file.json).toBe('function');
     expect(typeof file.formData).toBe('function');
+    expect(typeof file.canPreview).toBe('function');
+    expect(typeof file.preview).toBe('function');
   });
 
   it('File.json parses file text', async () => {
@@ -90,7 +92,7 @@ describe('expo-file-system new API', () => {
       configurable: true,
       get: () => 'multipart/form-data; boundary=test',
     });
-    global.Response = ResponseMock as typeof Response;
+    global.Response = ResponseMock as unknown as typeof Response;
 
     try {
       await expect(file.formData()).resolves.toBe(formData);
@@ -102,6 +104,29 @@ describe('expo-file-system new API', () => {
       headers: { 'Content-Type': 'multipart/form-data; boundary=test' },
     });
     expect(response.formData).toHaveBeenCalledTimes(1);
+  });
+
+  it('File.canPreview reflects mock file existence', async () => {
+    const file = new File(Paths.cache, 'preview.pdf');
+
+    await expect(file.canPreview()).resolves.toBe(false);
+
+    await file.write('mock pdf');
+
+    await expect(file.canPreview()).resolves.toBe(true);
+  });
+
+  it('File.preview rejects when mock file does not exist', async () => {
+    const file = new File(Paths.cache, 'missing.pdf');
+
+    await expect(file.preview()).rejects.toThrow('File does not exist');
+  });
+
+  it('File.preview resolves when mock file exists', async () => {
+    const file = new File(Paths.cache, 'existing-preview.pdf');
+    await file.write('mock pdf');
+
+    await expect(file.preview()).resolves.toBeUndefined();
   });
 
   it('Directory has inherited methods from native mock', () => {
@@ -196,7 +221,7 @@ describe('expo-file-system behavioral mock', () => {
     const children = dir.list();
     expect(children).toHaveLength(1);
     expect(children[0]).toBeInstanceOf(File);
-    expect(children[0].uri).toBe(file.uri);
+    expect(children[0]!.uri).toBe(file.uri);
   });
 
   it('Directory.info returns child names, size, and deterministic metadata', () => {
@@ -234,6 +259,14 @@ describe('expo-file-system behavioral mock', () => {
     file.writeSync(payload);
     expect(Array.from(file.bytesSync())).toEqual([1, 2, 3, 4, 5]);
     await expect(file.bytes()).resolves.toEqual(payload);
+  });
+
+  it('File.writeSync(ArrayBuffer) and File.bytes() roundtrip byte-for-byte', async () => {
+    const file = new File(Paths.cache, 'bin-buffer.dat');
+    const payload = Uint8Array.from([6, 7, 8, 9]).buffer;
+    file.writeSync(payload);
+    expect(Array.from(file.bytesSync())).toEqual([6, 7, 8, 9]);
+    await expect(file.bytes()).resolves.toEqual(new Uint8Array(payload));
   });
 
   it('File.writeSync with append option appends to existing bytes', () => {
@@ -399,21 +432,21 @@ describe('expo-file-system behavioral mock', () => {
     it('FileMode.ReadOnly rejects writes', () => {
       const file = makeFile('readonly.txt');
       const handle = file.open(FileMode.ReadOnly);
-      expect(() => handle.writeBytes(new Uint8Array([1, 2, 3]))).toThrow();
+      expect(() => handle.writeBytesSync(new Uint8Array([1, 2, 3]))).toThrow();
       handle.close();
     });
 
     it('FileMode.WriteOnly rejects reads', () => {
       const file = makeFile('writeonly.txt');
       const handle = file.open(FileMode.WriteOnly);
-      expect(() => handle.readBytes(1)).toThrow();
+      expect(() => handle.readBytesSync(1)).toThrow();
       handle.close();
     });
 
     it('FileMode.Append positions the cursor at end of file', () => {
       const file = makeFile('append.txt', 'abc');
       const handle = file.open(FileMode.Append);
-      handle.writeBytes(encode('def'));
+      handle.writeBytesSync(encode('def'));
       handle.close();
       expect(file.textSync()).toBe('abcdef');
     });
@@ -421,7 +454,7 @@ describe('expo-file-system behavioral mock', () => {
     it('FileMode.Truncate wipes existing contents on open', () => {
       const file = makeFile('truncate.txt', 'will-be-wiped');
       const handle = file.open(FileMode.Truncate);
-      handle.writeBytes(encode('fresh'));
+      handle.writeBytesSync(encode('fresh'));
       handle.close();
       expect(file.textSync()).toBe('fresh');
     });
@@ -436,7 +469,7 @@ describe('expo-file-system behavioral mock', () => {
       expect(file.type).toBe('text/plain');
 
       const handle = file.open(FileMode.Truncate);
-      handle.writeBytes(encode('fresh'));
+      handle.writeBytesSync(encode('fresh'));
       handle.close();
       expect(file.type).toBe('text/plain');
     });
@@ -444,8 +477,8 @@ describe('expo-file-system behavioral mock', () => {
     it('FileMode.ReadWrite is the default and allows both', () => {
       const file = makeFile('rw.txt', 'seed');
       const handle = file.open();
-      expect(handle.readBytes(4)).toEqual(encode('seed'));
-      handle.writeBytes(encode('!'));
+      expect(handle.readBytesSync(4)).toEqual(encode('seed'));
+      handle.writeBytesSync(encode('!'));
       handle.close();
       expect(file.textSync()).toBe('seed!');
     });
@@ -455,7 +488,7 @@ describe('expo-file-system behavioral mock', () => {
       const handle = file.open(FileMode.ReadOnly);
       expect(handle.offset).toBe(0);
       expect(handle.size).toBe(3);
-      handle.readBytes(2);
+      handle.readBytesSync(2);
       expect(handle.offset).toBe(2);
       handle.close();
       expect(handle.offset).toBeNull();
@@ -466,10 +499,10 @@ describe('expo-file-system behavioral mock', () => {
       const file = makeFile('offset-writes.txt', 'abcd');
       const handle = file.open(FileMode.ReadWrite);
       handle.offset = 1;
-      handle.writeBytes(encode('Z'));
+      handle.writeBytesSync(encode('Z'));
       expect(handle.offset).toBe(2);
       handle.offset = 99;
-      handle.writeBytes(encode('!'));
+      handle.writeBytesSync(encode('!'));
       handle.close();
       expect(file.textSync()).toBe('aZcd!');
     });

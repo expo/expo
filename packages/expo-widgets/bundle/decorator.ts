@@ -1,12 +1,20 @@
 import { ReactElementNode } from './jsx-runtime-stub';
 
+const interactiveTargetTypes = [
+  'Button',
+  'FilledTonalButton',
+  'OutlinedButton',
+  'ElevatedButton',
+  'TextButton',
+];
+
 export function decorateInteractiveTargets(node: unknown) {
   return decorateNode(node, {
     nearestParentKey: null,
     nextTargetIndex: {
       current: 0,
     },
-    typesToDecorate: ['Button'],
+    typesToDecorate: interactiveTargetTypes,
   });
 }
 

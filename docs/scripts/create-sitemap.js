@@ -7,6 +7,35 @@ const IGNORED_PAGES = new Set([
   '/versions', // Skip the redirect to latest, use `/versions/latest` instead
 ]);
 
+const REDIRECT_STUB_MARKERS = new Map([
+  ['.js', 'common/redirect'],
+  ['.mdx', 'components/plugins/Redirect'],
+]);
+
+export function findRedirectStubUrls(pagesDirectory, urls) {
+  const stubUrls = urls.filter(url => {
+    const route = url.replace(/^\/+|\/+$/g, '');
+    if (!route) {
+      return false;
+    }
+
+    const candidates = [
+      path.join(pagesDirectory, route, 'index.js'),
+      path.join(pagesDirectory, route, 'index.mdx'),
+      path.join(pagesDirectory, `${route}.mdx`),
+    ];
+    const pageFile = candidates.find(candidate => fs.existsSync(candidate));
+    if (!pageFile) {
+      return false;
+    }
+
+    const marker = REDIRECT_STUB_MARKERS.get(path.extname(pageFile));
+    return marker ? fs.readFileSync(pageFile, 'utf-8').includes(marker) : false;
+  });
+
+  return new Set(stubUrls);
+}
+
 /**
  * Create a sitemap for crawlers like Algolia Docsearch.
  * This allows crawlers to index _all_ pages, without a full page-link-chain.
@@ -17,6 +46,7 @@ export default function createSitemap({
   output,
   pathsPriority,
   pathsHidden,
+  pagesDirectory,
   modificationDates = {},
 }) {
   if (!pathMap) {
@@ -33,9 +63,19 @@ export default function createSitemap({
   pathsPriority = pathsPriority.map(pathWithStartingSlash);
   pathsHidden = pathsHidden.map(pathWithStartingSlash);
 
+  // Sitemaps should only list canonical content URLs, not redirect stubs
+  const redirectStubs = pagesDirectory
+    ? findRedirectStubUrls(pagesDirectory, Object.keys(pathMap))
+    : new Set();
+
   // Get a list of URLs from the pathMap that we can use in the sitemap
   const urls = Object.keys(pathMap)
-    .filter(url => !IGNORED_PAGES.has(url) && !pathsHidden.some(hidden => url.startsWith(hidden)))
+    .filter(
+      url =>
+        !IGNORED_PAGES.has(url) &&
+        !redirectStubs.has(url) &&
+        !pathsHidden.some(hidden => url.startsWith(hidden))
+    )
     .map(pathWithTrailingSlash)
     .sort((a, b) => pathSortedByPriority(a, b, pathsPriority));
 

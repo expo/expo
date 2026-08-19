@@ -10,7 +10,6 @@ describe('AbstractWatcher.doIgnore', () => {
       dot: true,
       globs: [],
       ignored: null,
-      watchmanDeferStates: [],
     });
 
     expect(watcher.doIgnore('.git/HEAD')).toBe(true);
@@ -24,7 +23,6 @@ describe('AbstractWatcher.doIgnore', () => {
       dot: true,
       globs: [],
       ignored: null,
-      watchmanDeferStates: [],
     });
 
     expect(watcher.doIgnore('src/index.ts')).toBe(false);
@@ -36,7 +34,6 @@ describe('AbstractWatcher.doIgnore', () => {
       dot: true,
       globs: [],
       ignored: /never-matches-anything-xyz/,
-      watchmanDeferStates: [],
     });
 
     expect(watcher.doIgnore('foo/.git/HEAD')).toBe(true);
@@ -47,7 +44,6 @@ describe('AbstractWatcher.doIgnore', () => {
       dot: true,
       globs: [],
       ignored: /__tests__\//,
-      watchmanDeferStates: [],
     });
 
     expect(watcher.doIgnore('src/__tests__/foo.test.js')).toBe(true);

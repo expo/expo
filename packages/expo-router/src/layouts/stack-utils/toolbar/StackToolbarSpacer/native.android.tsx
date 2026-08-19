@@ -2,8 +2,8 @@
 import { Box } from '@expo/ui/jetpack-compose';
 import { width } from '@expo/ui/jetpack-compose/modifiers';
 
-import type { NativeToolbarSpacerProps } from './types';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
+import type { NativeToolbarSpacerProps } from './types';
 
 /**
  * Native toolbar spacer component for Android bottom toolbar.

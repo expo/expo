@@ -4,9 +4,7 @@
     {
       "name": "ExpoImage",
       "podName": "ExpoImage",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -67,13 +65,8 @@
             "SDWebImageWebPCoder",
             "libavif"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ],
-          "exclude": [
-            "Tests/**"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"],
+          "exclude": ["Tests/**"]
         }
       ]
     }

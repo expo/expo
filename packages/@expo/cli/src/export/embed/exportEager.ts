@@ -1,6 +1,6 @@
+import { env } from '../../utils/env';
 import { exportEmbedInternalAsync } from './exportEmbedAsync';
 import { getExportEmbedOptionsKey, resolveEagerOptionsAsync } from './resolveOptions';
-import { env } from '../../utils/env';
 
 const debug = require('debug')('expo:eager');
 

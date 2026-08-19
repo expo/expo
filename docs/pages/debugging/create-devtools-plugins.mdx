@@ -30,7 +30,14 @@ Plugins can be distributed on npm or included inside your app's monorepo. They t
 
 `create-dev-plugin` will set up a new plugin project for you. Run the following command to create a new plugin project:
 
-<Terminal cmd={['$ npx create-dev-plugin@latest']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-dev-plugin@latest'],
+    yarn: ['$ yarn create dev-plugin'],
+    pnpm: ['$ pnpm create dev-plugin'],
+    bun: ['$ bun create dev-plugin'],
+  }}
+/>
 
 `create-dev-plugin` will prompt you for the name of your plugin, a description, and the name of the hook that will be used by consumers of your plugin.
 
@@ -134,7 +141,14 @@ if (process.env.NODE_ENV !== 'production') {
 
 Since the plugin web UI is an Expo app, you can test it just like you would any other Expo app, with `npx expo start`, except that you will run it in the browser only. The template includes a convenience command to run the plugin in local development mode:
 
-<Terminal cmd={['$ npm run web:dev']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run web:dev'],
+    yarn: ['$ yarn run web:dev'],
+    pnpm: ['$ pnpm run web:dev'],
+    bun: ['$ bun run web:dev'],
+  }}
+/>
 
 </Step>
 
@@ -144,7 +158,14 @@ Since the plugin web UI is an Expo app, you can test it just like you would any 
 
 To prepare your plugin for distribution or use within your monorepo, you will need to build the plugin with the following command:
 
-<Terminal cmd={['$ npm run build:all']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run build:all'],
+    yarn: ['$ yarn run build:all'],
+    pnpm: ['$ pnpm run build:all'],
+    bun: ['$ bun run build:all'],
+  }}
+/>
 
 This command will build the hook code into the **build** directory, and the web user interface into the **dist** directory.
 

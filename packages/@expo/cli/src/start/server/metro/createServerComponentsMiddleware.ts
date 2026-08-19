@@ -13,7 +13,6 @@ import { getRscMiddleware } from 'expo-server/private';
 import path from 'node:path';
 import url from 'node:url';
 
-import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
 import { isPossiblyUnableToResolveError } from '../../../export/embed/xcodeCompilerLogger';
 import type { ExportAssetMap } from '../../../export/saveAssets';
 import { stripAnsi } from '../../../utils/ansi';
@@ -26,6 +25,7 @@ import {
   type ExpoMetroOptions,
   getMetroOptionsFromUrl,
 } from '../middleware/metroOptions';
+import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metroErrorInterface';
 
 const debug = require('debug')('expo:rsc') as typeof console.log;
 
@@ -574,9 +574,10 @@ export function createServerComponentsMiddleware(
       ).default;
 
       // Get all the routes to render.
-      const buildConfig = await getBuildConfig!(async () =>
-        // TODO: Rework prefetching code to use Metro runtime.
-        []
+      const buildConfig = await getBuildConfig!(
+        async () =>
+          // TODO: Rework prefetching code to use Metro runtime.
+          []
       );
 
       await Promise.all(

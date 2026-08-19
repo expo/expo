@@ -14,6 +14,14 @@ import {
   iterationsOf,
 } from './benchmarks';
 
+/** A single completed benchmark result, collected per run to print a summary to the console. */
+type BenchmarkLogEntry = {
+  group: string;
+  label: string;
+  timeMs: number;
+  iterations: number;
+};
+
 enum ActionType {
   SetPrevious = 'setPrevious',
   MarkRunning = 'markRunning',
@@ -140,7 +148,7 @@ export default function ModulesBenchmarksScreen() {
     const benchmarkId = benchmarkIdOf(group, benchmark);
     if (!benchmark.available) {
       dispatch({ type: ActionType.MarkSkipped, benchmarkId });
-      return;
+      return null;
     }
 
     dispatch({ type: ActionType.MarkRunning, benchmarkId });
@@ -161,9 +169,16 @@ export default function ModulesBenchmarksScreen() {
       } catch (error) {
         console.warn(`Failed to persist result for ${benchmarkId}:`, error);
       }
+      return {
+        group: group.title,
+        label: benchmark.label,
+        timeMs,
+        iterations,
+      } satisfies BenchmarkLogEntry;
     } catch (error) {
       console.warn(`Benchmark ${benchmarkId} failed:`, error);
       dispatch({ type: ActionType.MarkSkipped, benchmarkId });
+      return null;
     }
   }, []);
 
@@ -178,8 +193,18 @@ export default function ModulesBenchmarksScreen() {
           dispatch({ type: ActionType.ResetGroup, groupId: group.id });
         }
         for (const group of groups) {
+          const lines: string[] = [];
           for (const benchmark of group.benchmarks) {
-            await runBenchmark(group, benchmark);
+            const result = await runBenchmark(group, benchmark);
+            if (result) {
+              const nsPerOp = (result.timeMs * 1e6) / result.iterations;
+              lines.push(
+                `- ${result.label}: ${result.timeMs.toFixed(2)}ms (${result.iterations} iters, ${nsPerOp.toFixed(1)}ns/op)`
+              );
+            }
+          }
+          if (lines.length > 0) {
+            console.log(`[benchmark] ${group.title}:\n${lines.join('\n')}\n`);
           }
         }
       } finally {

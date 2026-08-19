@@ -2,6 +2,7 @@ import { palette } from '@expo/styleguide-base';
 
 export const SnackImage = () => (
   <svg
+    aria-hidden="true"
     className="absolute right-5 bottom-6"
     width="80"
     height="81"

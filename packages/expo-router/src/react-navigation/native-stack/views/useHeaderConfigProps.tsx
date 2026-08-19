@@ -15,7 +15,6 @@ import {
   SearchBar,
 } from 'react-native-screens';
 
-import { processFonts } from './FontProcessor';
 import { Color } from '../../../utils/color';
 import { getHeaderTitle, HeaderTitle } from '../../elements';
 import { type Route, type Theme, useLocale, useTheme } from '../../native';
@@ -26,6 +25,7 @@ import type {
   NativeStackHeaderItemMenuSubmenu,
   NativeStackNavigationOptions,
 } from '../types';
+import { processFonts } from './FontProcessor';
 
 type Props = NativeStackNavigationOptions & {
   headerTopInsetEnabled: boolean;
@@ -196,10 +196,12 @@ export function useHeaderConfigProps({
   title,
   unstable_headerLeftItems: headerLeftItems,
   unstable_headerRightItems: headerRightItems,
+  unstable_nativeProps,
 }: Props): ScreenStackHeaderConfigProps {
   const { direction } = useLocale();
   const { colors, fonts, dark } = useTheme();
   const tintColor = headerTintColor ?? (Platform.OS === 'ios' ? colors.primary : colors.text);
+  const headerNativeProps = unstable_nativeProps?.headerConfig;
 
   const headerBackTitleStyleFlattened =
     StyleSheet.flatten([fonts.regular, headerBackTitleStyle]) || {};
@@ -475,5 +477,6 @@ export function useHeaderConfigProps({
     headerLeftBarButtonItems: processBarButtonItems(leftItems, colors, fonts),
     headerRightBarButtonItems: processBarButtonItems(rightItems, colors, fonts),
     experimental_userInterfaceStyle: dark ? 'dark' : 'light',
+    ...headerNativeProps,
   } as const;
 }

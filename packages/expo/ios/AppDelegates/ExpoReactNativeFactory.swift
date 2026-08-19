@@ -41,46 +41,13 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
 
     let configuration = RCTRootViewFactoryConfiguration(
       bundleURLBlock: bundleUrlBlock,
-      newArchEnabled: weakDelegate.newArchEnabled()
+      newArchEnabled: true
     )
-
-    configuration.createRootViewWithBridge = { bridge, moduleName, initProps in
-      return weakDelegate.createRootView(with: bridge, moduleName: moduleName, initProps: initProps)
-    }
 
     configuration.jsRuntimeConfiguratorDelegate = delegate
 
-    configuration.createBridgeWithDelegate = { delegate, launchOptions in
-      weakDelegate.createBridge(with: delegate, launchOptions: launchOptions)
-    }
-
     configuration.customizeRootView = { rootView in
       weakDelegate.customize(rootView)
-    }
-
-    // NOTE(kudo): `sourceURLForBridge` is not referenced intentionally because it does not support New Architecture.
-    configuration.sourceURLForBridge = nil
-
-    configuration.loadSourceForBridgeWithProgress = { bridge, onProgress, onComplete in
-      weakDelegate.loadSource(for: bridge, onProgress: onProgress, onComplete: onComplete)
-    }
-
-    if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraModules(for:))) {
-      configuration.extraModulesForBridge = { bridge in
-        weakDelegate.extraModules(for: bridge)
-      }
-    }
-
-    if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.extraLazyModuleClasses(for:))) {
-      configuration.extraLazyModuleClassesForBridge = { bridge in
-        weakDelegate.extraLazyModuleClasses(for: bridge)
-      }
-    }
-
-    if weakDelegate.responds(to: #selector(RCTReactNativeFactoryDelegate.bridge(_:didNotFindModule:))) {
-      configuration.bridgeDidNotFindModule = { bridge, moduleName in
-        weakDelegate.bridge(bridge, didNotFindModule: moduleName)
-      }
     }
 
     return ExpoReactRootViewFactory(

@@ -36,13 +36,21 @@ object NotificationManager {
     }
     listeners.add(listener)
     if (pendingNotificationResponses.isNotEmpty()) {
+      var handled = false
       for (pendingResponse in pendingNotificationResponses) {
-        listener.onNotificationResponseReceived(pendingResponse)
+        handled = listener.onNotificationResponseReceived(pendingResponse) || handled
+      }
+      if (handled) {
+        pendingNotificationResponses.clear()
       }
     }
     if (pendingNotificationResponsesFromExtras.isNotEmpty()) {
+      var handled = false
       for (extras in pendingNotificationResponsesFromExtras) {
-        listener.onNotificationResponseIntentReceived(extras)
+        handled = listener.onNotificationResponseIntentReceived(extras) || handled
+      }
+      if (handled) {
+        pendingNotificationResponsesFromExtras.clear()
       }
     }
   }

@@ -1,6 +1,6 @@
 import { act, screen } from '@testing-library/react-native';
+import { expectTypeOf } from 'expect-type';
 import { Text } from 'react-native';
-import { expectAssignable } from 'tsd';
 
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
@@ -734,37 +734,37 @@ describe('singular', () => {
 
 describe('Stack.Screen types', () => {
   it('accepts layout navigation props', () => {
-    expectAssignable<StackScreenProps>({ name: 'home', redirect: true });
-    expectAssignable<StackScreenProps>({ name: 'profile', initialParams: { id: '123' } });
-    expectAssignable<StackScreenProps>({ name: 'settings', dangerouslySingular: true });
-    expectAssignable<StackScreenProps>({
+    expectTypeOf({ name: 'home', redirect: true }).toExtend<StackScreenProps>();
+    expectTypeOf({ name: 'profile', initialParams: { id: '123' } }).toExtend<StackScreenProps>();
+    expectTypeOf({ name: 'settings', dangerouslySingular: true }).toExtend<StackScreenProps>();
+    expectTypeOf({
       name: 'details',
       dangerouslySingular: (name, params) => `${name}-${params.id}`,
-    });
-    expectAssignable<StackScreenProps>({
+    } satisfies StackScreenProps).toExtend<StackScreenProps>();
+    expectTypeOf({
       name: 'page',
       listeners: { transitionStart: () => {} },
-    });
-    expectAssignable<StackScreenProps>({
+    }).toExtend<StackScreenProps>();
+    expectTypeOf({
       name: 'page',
       listeners: ({ route, navigation }) => ({ focus: () => {} }),
-    });
-    expectAssignable<StackScreenProps>({
+    } satisfies StackScreenProps).toExtend<StackScreenProps>();
+    expectTypeOf({
       name: 'page',
       getId: ({ params }) => params?.id,
-    });
+    } satisfies StackScreenProps).toExtend<StackScreenProps>();
   });
 
   it('accepts function-form options', () => {
-    expectAssignable<StackScreenProps>({
+    expectTypeOf({
       options: ({ route }) => ({ title: (route.params as Record<string, string>)?.name }),
-    });
-    expectAssignable<StackScreenProps>({
+    } satisfies StackScreenProps).toExtend<StackScreenProps>();
+    expectTypeOf({
       name: 'profile',
       options: ({ route, navigation }) => ({
         title: `Profile: ${(route.params as Record<string, string>)?.id}`,
       }),
-    });
+    } satisfies StackScreenProps).toExtend<StackScreenProps>();
   });
 });
 

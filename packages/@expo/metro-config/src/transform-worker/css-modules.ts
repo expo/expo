@@ -1,10 +1,10 @@
 import codeFrame from '@babel/code-frame';
 import type { TransformResult, Warning } from 'lightningcss';
 
+import type { CSSMetadata } from '../serializer/jsOutput';
 import { getBrowserslistTargets } from './browserslist';
 import type { CollectedDependencies } from './collect-dependencies';
 import { wrapDevelopmentCSS } from './css';
-import type { CSSMetadata } from '../serializer/jsOutput';
 
 type NotReadonly<T> = {
   -readonly [P in keyof T]: T[P];

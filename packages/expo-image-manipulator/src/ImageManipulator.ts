@@ -1,4 +1,4 @@
-import { useReleasingSharedObject } from 'expo-modules-core';
+import { useReleasingSharedObject } from 'expo';
 import type { SharedRef } from 'expo-modules-core/types';
 
 import type { Action, ImageResult, SaveOptions } from './ImageManipulator.types';

@@ -2,11 +2,11 @@ import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import type { AppIdResolver } from './AppIdResolver';
-import type { DeviceManager } from './DeviceManager';
 import { Log } from '../../log';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
+import type { AppIdResolver } from './AppIdResolver';
+import type { DeviceManager } from './DeviceManager';
 
 const debug = require('debug')('expo:start:platforms:platformManager') as typeof console.log;
 

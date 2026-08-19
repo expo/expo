@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.composeunstyled.Icon
+import com.composeunstyled.UnstyledIcon
 import expo.modules.devlauncher.R
 import expo.modules.devlauncher.compose.Branch
 import expo.modules.devlauncher.compose.Update
@@ -91,7 +91,7 @@ private fun NeedToSignInComponent(
       horizontalAlignment = Alignment.CenterHorizontally,
       modifier = Modifier.fillMaxWidth()
     ) {
-      Icon(
+      UnstyledIcon(
         painter = painterResource(R.drawable.log_in),
         contentDescription = "Log in icon",
         tint = NewAppTheme.colors.icon.info

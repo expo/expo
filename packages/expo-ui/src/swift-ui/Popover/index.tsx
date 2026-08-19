@@ -5,7 +5,7 @@ import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
 
-export type PopoverViewProps = {
+export interface PopoverViewProps extends CommonViewModifierProps {
   children: React.ReactNode;
   /**
    * Whether the popover is presented.
@@ -24,7 +24,7 @@ export type PopoverViewProps = {
    * @default 'none'
    */
   arrowEdge?: 'leading' | 'trailing' | 'top' | 'bottom' | 'none';
-} & CommonViewModifierProps;
+}
 
 type NativePopoverViewProps = Omit<PopoverViewProps, 'onIsPresentedChange'> & {
   onIsPresentedChange?: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;

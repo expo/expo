@@ -7,7 +7,11 @@ export enum SourceSkips {
 
   //#region - ExpoConfig source (e.g., app.json, app.config.js, etc.)
 
-  /** Versions in app.json, including `version`, `android.versionCode`, and `ios.buildNumber`. */
+  /**
+   * Versions in app.json, including `version`, `android.versionCode`, `ios.buildNumber`, and the
+   * platform-specific overrides `ios.version` and `android.version` (which take precedence over
+   * the top-level `version`).
+   */
   ExpoConfigVersions = 1 << 0,
 
   /** `runtimeVersion` in app.json if it is a string. */

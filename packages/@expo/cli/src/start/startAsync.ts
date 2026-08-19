@@ -1,7 +1,10 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import { getLogFile, shouldReduceLogs } from '../events';
+import * as Log from '../log';
+import { env } from '../utils/env';
+import { isInteractive, shouldReduceLogs } from '../utils/interactive';
+import { profile } from '../utils/profile';
 import {
   checkDependencies,
   printDependencyCheckResult,
@@ -10,21 +13,18 @@ import {
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
+import { printDevToolsPluginCliBannersAsync } from './interface/interactiveActions';
 import { startInterfaceAsync } from './interface/startInterface';
 import type { Options } from './resolveOptions';
 import { resolvePortsAsync } from './resolveOptions';
-import * as Log from '../log';
 import type { BundlerStartOptions } from './server/BundlerDevServer';
 import type { MultiBundlerStartOptions } from './server/DevServerManager';
 import { DevServerManager } from './server/DevServerManager';
 import { maybeCreateMCPServerAsync } from './server/MCP';
+import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
 import { openPlatformsAsync } from './server/openPlatforms';
 import type { PlatformBundlers } from './server/platformBundlers';
 import { getPlatformBundlers } from './server/platformBundlers';
-import { env } from '../utils/env';
-import { isInteractive } from '../utils/interactive';
-import { profile } from '../utils/profile';
-import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -77,10 +77,6 @@ export async function startAsync(
 ) {
   if (!shouldReduceLogs()) {
     Log.log(chalk.gray(`Starting project at ${projectRoot}`));
-    const logFile = getLogFile();
-    if (!isInteractive() && logFile) {
-      Log.log(chalk.gray(`Logs: ${logFile}`));
-    }
   }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
@@ -153,6 +149,8 @@ export async function startAsync(
         console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: defaultServerUrl })}`);
       }
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
+      Log.log();
+      await printDevToolsPluginCliBannersAsync(devServerManager);
     }
     // In non-interactive mode, print the check outside of an interface, if it's available
     if (dependencyCheckRef?.result) {

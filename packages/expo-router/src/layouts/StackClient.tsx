@@ -3,7 +3,6 @@ import { nanoid } from 'nanoid/non-secure';
 import type { ComponentProps } from 'react';
 import { Children, useMemo } from 'react';
 
-import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
 import { useLinkPreviewContext } from '../link/preview/LinkPreviewContext';
 import {
@@ -14,19 +13,6 @@ import {
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
-import type { SingularOptions } from '../useScreens';
-import { getSingularId } from '../useScreens';
-import {
-  type StackScreenProps,
-  StackHeader,
-  StackScreen,
-  StackSearchBar,
-  StackTitle,
-  StackToolbar,
-  appendScreenStackPropsToOptions,
-  mapProtectedScreen,
-  validateStackPresentation,
-} from './stack-utils';
 import {
   type CommonNavigationAction,
   type NavigationAction,
@@ -44,8 +30,22 @@ import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '../react-navigation/native-stack';
+import type { SingularOptions } from '../useScreens';
+import { getSingularId } from '../useScreens';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
+import {
+  type StackScreenProps,
+  StackHeader,
+  StackScreen,
+  StackSearchBar,
+  StackTitle,
+  StackToolbar,
+  appendScreenStackPropsToOptions,
+  mapProtectedScreen,
+  validateStackPresentation,
+} from './stack-utils';
+import { withLayoutContext } from './withLayoutContext';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 

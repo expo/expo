@@ -1,8 +1,8 @@
 'use client';
 import { use } from 'react';
 
-import { DrawerStatusContext } from './DrawerStatusContext';
 import type { DrawerStatus } from '../../native';
+import { DrawerStatusContext } from './DrawerStatusContext';
 
 /**
  * Hook to detect if the drawer's status in a parent navigator.

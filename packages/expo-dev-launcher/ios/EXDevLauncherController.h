@@ -1,5 +1,4 @@
 #import <React/RCTBridgeModule.h>
-#import <React/RCTBridgeDelegate.h>
 
 #import <ExpoModulesCore/Platform.h>
 
@@ -31,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class EXDevLauncherRecentlyOpenedAppsRegistry;
 @class EXDevLauncherController;
 @class EXDevLauncherErrorManager;
+@class ExpoDevLauncherReactDelegateHandler;
 
 @protocol EXDevLauncherControllerDelegate <NSObject>
 
@@ -39,12 +39,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <RCTBridgeDelegate, EXUpdatesExternalInterfaceDelegate>
+@interface EXDevLauncherController : RCTDefaultReactNativeFactoryDelegate <EXUpdatesExternalInterfaceDelegate>
 
 @property (nonatomic, weak) EXAppContext * _Nullable appContext;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
 @property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) id<EXUpdatesDevLauncherInterface> updatesInterface;
+@property (nonatomic, weak, nullable) ExpoDevLauncherReactDelegateHandler *delegate;
 
 + (instancetype)sharedInstance;
 

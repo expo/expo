@@ -28,6 +28,14 @@
 
 #pragma mark - RCTHostDelegate
 
+#if TARGET_OS_OSX
+// TODO: remove when bumping react-native-macos to 0.85
+- (void)hostDidStart:(nonnull RCTHost *)host
+{
+  host.runtimeDelegate = self;
+}
+#endif
+
 // [JS thread]
 - (void)host:(nonnull RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
@@ -35,20 +43,25 @@
 
   // Resolve the React runtime scheduler so ExpoModulesJSI can dispatch work onto
   // the JS thread. Doing it here (rather than inside the xcframework) keeps
-  // React-runtimescheduler symbols out of the prebuilt ExpoModulesJSI.framework
-  // — important for source-built RN, where those symbols are hidden after link
+  // React-runtimescheduler symbols out of the prebuilt ExpoModulesJSI.framework.
+  // That matters for source-built RN, where those symbols are hidden after link
   // and unreachable via -undefined dynamic_lookup.
   //
+  // The handle references the scheduler weakly, so dispatching after the React
+  // instance tore it down (e.g. on reload) drops the task instead of calling
+  // into freed memory. See `EXReactSchedulerDispatch.h`.
+  //
   // If RN didn't install a RuntimeSchedulerBinding for some reason, pass nullptr
-  // for both — AppContext.setRuntime falls back to a synchronous no-op scheduler
+  // for both. AppContext.setRuntime falls back to a synchronous no-op scheduler
   // so the app still launches; modules that require async dispatch can gate on
   // `JavaScriptRuntime.supportsAsyncScheduling`.
   auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(runtime);
   auto scheduler = binding ? binding->getRuntimeScheduler() : nullptr;
+  void *schedulerHandle = expo::createReactSchedulerHandle(scheduler);
 
   [_appContext setRuntime:&runtime
-                scheduler:scheduler.get()
-                 dispatch:scheduler ? reinterpret_cast<const void *>(&expo::dispatchOnReactScheduler) : nullptr];
+                scheduler:schedulerHandle
+                 dispatch:schedulerHandle ? reinterpret_cast<const void *>(&expo::dispatchOnReactScheduler) : nullptr];
   [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
   [_appContext registerNativeModules];

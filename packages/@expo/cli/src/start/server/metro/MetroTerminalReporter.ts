@@ -1,8 +1,18 @@
+import { events } from '2g';
 import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
 import path from 'path';
 import { format as utilFormat, stripVTControlCharacters } from 'util';
 
+import { stripAnsi } from '../../../utils/ansi';
+import { env } from '../../../utils/env';
+import { isInteractive, shouldReduceLogs } from '../../../utils/interactive';
+import { learnMore } from '../../../utils/link';
+import {
+  logLikeMetro,
+  maybeSymbolicateAndFormatJSErrorStackLogAsync,
+  parseErrorStringToObject,
+} from '../serverLogLikeMetro';
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import type {
   BuildPhase,
@@ -12,17 +22,7 @@ import type {
   TerminalReportableEvent,
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
-import { env } from '../../../utils/env';
-import { learnMore } from '../../../utils/link';
-import {
-  logLikeMetro,
-  maybeSymbolicateAndFormatJSErrorStackLogAsync,
-  parseErrorStringToObject,
-} from '../serverLogLikeMetro';
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
-import { events, shouldReduceLogs } from '../../../events';
-import { stripAnsi } from '../../../utils/ansi';
-import { isInteractive } from '../../../utils/interactive';
 
 type ClientLogLevel =
   | 'trace'
@@ -37,51 +37,54 @@ type ClientLogLevel =
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
-// prettier-ignore
-export const event = events('metro', (t) => [
-  t.event<'bundling:started', {
-    id: string;
-    platform: null | string;
-    environment: null | string;
-    entry: string;
-  }>(),
-  t.event<'bundling:done', {
-    id: string | null;
-    ms: number | null;
-    total: number;
-  }>(),
-  t.event<'bundling:failed', {
-    id: string | null;
-    filename: string | null;
-    message: string | null;
-    importStack: string | null;
-    targetModuleName: string | null;
-    originModulePath: string | null;
-  }>(),
-  t.event<'bundling:progress', {
-    id: string | null;
-    progress: number;
-    current: number;
-    total: number;
-  }>(),
-  t.event<'server_log', {
-    level: 'info' | 'warn' | 'error' | null;
-    data: string | unknown[] | null;
-  }>(),
-  t.event<'client_log', {
-    level: ClientLogLevel | null;
-    data: unknown[] | null;
-  }>(),
-  t.event<'hmr_client_error', {
-    message: string;
-  }>(),
-  t.event<'cache_write_error', {
-    message: string;
-  }>(),
-  t.event<'cache_read_error', {
-    message: string;
-  }>(),
-]);
+declare module '2g' {
+  interface EventRegistry {
+    'metro:bundling:started': {
+      id: string;
+      platform: null | string;
+      environment: null | string;
+      entry: string;
+    };
+    'metro:bundling:done': {
+      id: string | null;
+      ms: number | null;
+      total: number;
+    };
+    'metro:bundling:failed': {
+      id: string | null;
+      filename: string | null;
+      message: string | null;
+      importStack: string | null;
+      targetModuleName: string | null;
+      originModulePath: string | null;
+    };
+    'metro:bundling:progress': {
+      id: string | null;
+      progress: number;
+      current: number;
+      total: number;
+    };
+    'metro:server_log': {
+      level: 'info' | 'warn' | 'error' | null;
+      data: string | unknown[] | null;
+    };
+    'metro:client_log': {
+      level: ClientLogLevel | null;
+      data: unknown[] | null;
+    };
+    'metro:hmr_client_error': {
+      message: string;
+    };
+    'metro:cache_write_error': {
+      message: string;
+    };
+    'metro:cache_read_error': {
+      message: string;
+    };
+  }
+}
+
+export const event = events('metro');
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -350,7 +353,11 @@ export class MetroTerminalReporter extends TerminalReporter {
       let hasStack = false;
       const parsed = data.map((msg) => {
         // Quick check to see if an unsymbolicated stack is being logged.
-        if (typeof msg === 'string' && msg.includes('.bundle//&platform=')) {
+        if (
+          typeof msg === 'string' &&
+          // Native stack frames use `.bundle//&platform=...`; web stack frames use `.bundle?platform=...`.
+          (msg.includes('.bundle//&platform=') || msg.includes('.bundle?platform='))
+        ) {
           const stack = parseErrorStringToObject(msg);
           if (stack) {
             hasStack = true;

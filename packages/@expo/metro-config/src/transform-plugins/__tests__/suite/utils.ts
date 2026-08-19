@@ -23,7 +23,7 @@ export const makeEval = ({
   plugins?: readonly PluginEntry[];
 } = {}) => {
   return (code: string | { entry: string; [request: string]: string }) => {
-    const input = {
+    const input: Record<string, string> = {
       ...(typeof code !== 'string' ? code : {}),
       entry: typeof code === 'string' ? code : code.entry,
     };
@@ -63,7 +63,7 @@ export const makeEval = ({
         try {
           Reflect.apply(wrapper, exports, [exports, require, mod, request, dirname]);
         } catch (error) {
-          error.message += ` (eval: ${dirname})`;
+          (error as Error).message += ` (eval: ${dirname})`;
           throw error;
         }
       }

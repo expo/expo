@@ -1,7 +1,6 @@
 import type { ConfigAPI, PluginItem } from '@babel/core';
 import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
-import { ReactConfigOptions } from './react';
 import { reactClientReferencesPlugin } from '../plugins/client-module-proxy-plugin';
 import { environmentRestrictedImportsPlugin } from '../plugins/environment-restricted-imports';
 import { expoInlineManifestPlugin } from '../plugins/expo-inline-manifest-plugin';
@@ -16,6 +15,7 @@ import { serverMetadataPlugin } from '../plugins/server-metadata-plugin';
 import { expoUseDomDirectivePlugin } from '../plugins/use-dom-directive-plugin';
 import { widgetsPlugin } from '../plugins/widgets-plugin';
 import { hasModule, resolveModule } from '../utils/resolveModule';
+import { ReactConfigOptions } from './react';
 
 const EXCLUDED_FIRST_PARTY_PATHS = [/[/\\]node_modules[/\\]/];
 
@@ -313,6 +313,13 @@ function getInlinesFromOptions(
 
   if (process.env.NODE_ENV !== 'test') {
     inlines['process.env.EXPO_BASE_URL'] = options.baseUrl;
+  }
+
+  // `EXPO_PUBLIC_USE_RN_FETCH` isn't inlined in `node_modules`
+  // https://github.com/expo/expo/issues/46982
+  // TODO(@kitten): Handle it in `getInlineEnvVarsEnabled` during the env var refactor.
+  if (options.isNodeModule && process.env.EXPO_PUBLIC_USE_RN_FETCH != null) {
+    inlines['process.env.EXPO_PUBLIC_USE_RN_FETCH'] = process.env.EXPO_PUBLIC_USE_RN_FETCH;
   }
 
   return inlines;

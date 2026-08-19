@@ -148,10 +148,6 @@ export class Package {
     return fs.pathExistsSync(path.join(this.path, 'utils'));
   }
 
-  get hasReactServerComponents(): boolean {
-    return 'test:rsc' in this.packageJson.scripts;
-  }
-
   get packageName(): string {
     return this.packageJson.name;
   }
@@ -187,6 +183,27 @@ export class Package {
     );
 
     return podspecPath || null;
+  }
+
+  /**
+   * All podspec paths declared by the package (a package may ship several, e.g.
+   * expo-modules-core ships ExpoModulesCore + ExpoModulesWorklets). Unlike `podspecPath`,
+   * which returns only the first, this returns every entry so callers (e.g. native unit
+   * test discovery) can scan test specs across all of them.
+   */
+  get podspecPaths(): string[] {
+    const iosPodspecPath = this.expoModuleConfig?.ios?.podspecPath;
+    if (iosPodspecPath) {
+      return [iosPodspecPath];
+    }
+
+    const applePodspecPath = this.expoModuleConfig?.apple?.podspecPath;
+    if (applePodspecPath) {
+      return Array.isArray(applePodspecPath) ? applePodspecPath : [applePodspecPath];
+    }
+
+    const fallback = this.podspecPath;
+    return fallback ? [fallback] : [];
   }
 
   get podspecName(): string | null {

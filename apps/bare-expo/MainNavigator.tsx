@@ -1,18 +1,25 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {
+  BottomTabNavigationOptions,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
 import { LinkingOptions } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTheme } from 'ThemeProvider';
 import * as Linking from 'expo-linking';
+import { AppMetrics } from 'expo-observe';
+import { ObserveNavigationContainer } from 'expo-observe/integrations/react-navigation';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Platform } from 'react-native';
-import { TestStackNavigator } from 'test-suite/TestStackNavigator';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AppMetrics } from 'expo-observe';
-import { ObserveNavigationContainer } from 'expo-observe/integrations/react-navigation';
+import { TestStackNavigator } from 'test-suite/TestStackNavigator';
 
-type NavigationRouteConfigMap = React.ComponentType;
+import Playground from './Playground';
+
+type NavigationRouteConfigMap = React.ComponentType & {
+  navigationOptions?: BottomTabNavigationOptions;
+};
 
 const testSuiteRouteName = 'test-suite';
 
@@ -20,6 +27,7 @@ type RoutesConfig = {
   [testSuiteRouteName]: NavigationRouteConfigMap;
   apis?: NavigationRouteConfigMap;
   components?: NavigationRouteConfigMap;
+  playground: NavigationRouteConfigMap;
 };
 
 type NativeComponentListExportsType = null | {
@@ -38,6 +46,7 @@ export function optionalRequire(requirer: () => { default: React.ComponentType }
 }
 const routes: RoutesConfig = {
   [testSuiteRouteName]: TestStackNavigator,
+  playground: Playground,
 };
 
 // TODO vonovak there's potential for skipping the require of APIs tab as it's not used in CI
@@ -108,14 +117,16 @@ function TabNavigator() {
         default: undefined,
       })}
       initialRouteName={testSuiteRouteName}>
-      {Object.keys(routes).map((name) => (
-        <Tab.Screen
-          name={name}
-          key={name}
-          component={routes[name]}
-          options={routes[name].navigationOptions}
-        />
-      ))}
+      {Object.entries(routes).map(([name, component]) =>
+        component ? (
+          <Tab.Screen
+            name={name}
+            key={name}
+            component={component}
+            options={component.navigationOptions}
+          />
+        ) : null
+      )}
     </Tab.Navigator>
   );
 }

@@ -1,9 +1,8 @@
-import { type PermissionResponse, createPermissionHook } from 'expo';
-import { UnavailabilityError } from 'expo-modules-core';
+import { type PermissionResponse, createPermissionHook, UnavailabilityError } from 'expo';
 import { Platform, processColor } from 'react-native';
 
-import ExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate } from '../utils';
+import ExpoCalendar from './ExpoCalendar';
 
 export type {
   PermissionResponse,

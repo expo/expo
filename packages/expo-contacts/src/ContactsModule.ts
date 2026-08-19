@@ -1,5 +1,5 @@
-import { UnavailabilityError } from 'expo-modules-core';
-import type { EventSubscription } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
+import type { EventSubscription } from 'expo';
 
 import expoContactsModule from './ExpoContactsNext';
 import { FallbackContainer } from './types/Container';

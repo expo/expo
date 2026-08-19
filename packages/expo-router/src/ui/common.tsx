@@ -1,18 +1,18 @@
-import type { ExpoTabActionType } from './TabRouter';
 import type { UrlObject } from '../LocationProvider';
 import type { RouteNode } from '../Route';
-import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import { sortRoutesWithInitial } from '../sortRoutes';
-import type { Href } from '../types';
-import { routeToScreen } from '../useScreens';
-import { Slot } from './Slot';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type {
   LinkingOptions,
   ParamListBase,
   PartialRoute,
   Route,
 } from '../react-navigation/native';
+import { sortRoutesWithInitial } from '../sortRoutes';
+import type { Href } from '../types';
+import { routeToScreen } from '../useScreens';
+import { Slot } from './Slot';
+import type { ExpoTabActionType } from './TabRouter';
 
 export const ViewSlot = Slot;
 

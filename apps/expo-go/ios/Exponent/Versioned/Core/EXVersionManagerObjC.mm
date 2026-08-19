@@ -114,18 +114,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 - (void)hostDidStart:(NSURL *)bundleURL
 {
   if ([self _isDevModeEnabledForHost:bundleURL]) {
-    // Set the bundle url for the packager connection manually
-    NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
     RCTBundleURLProvider *settings = [RCTBundleURLProvider sharedSettings];
     settings.packagerScheme = ([bundleURL.scheme isEqualToString:@"https"] || [bundleURL.scheme isEqualToString:@"exps"]) ? @"https" : @"http";
-    
-    RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
-    if (devSettings == nil) {
-      RCTLogWarn(@"Couldn't find the devSettings module when setting packager port; packager connection will not be updated.");
-    } else {
-      [[devSettings packagerConnection] reconnect:packagerServerHostPort];
-    }
-    
+
     RCTInspectorPackagerConnection *inspectorPackagerConnection = [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
 
     NSDictionary<NSString *, id> *buildProps = [self.manifest getPluginPropertiesWithPackageName:@"expo-build-properties"];
@@ -266,18 +257,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 {
   RCTDevSettings *devSettings = [self devSettings:host];
   [devSettings toggleElementInspector];
-}
-
-- (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
-                                    queue:(dispatch_queue_t)queue
-                                forMethod:(NSString *)method
-{
-  RCTDevSettings* devSettings = (RCTDevSettings*)[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevSettings"]];
-  if (devSettings == nil) {
-    RCTLogWarn(@"Couldn't find the devSettings module when setting packager port");
-  }
-  
-  return [[devSettings packagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
 }
 
 #pragma mark - internal

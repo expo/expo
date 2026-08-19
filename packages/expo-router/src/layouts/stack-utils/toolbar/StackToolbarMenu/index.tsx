@@ -3,8 +3,6 @@ import { Children, useMemo, type ReactNode } from 'react';
 import type { ImageSourcePropType } from 'react-native';
 import type { PlatformIconIOS } from 'react-native-screens';
 
-import { NativeToolbarMenu, NativeToolbarMenuAction } from './native';
-import type { StackToolbarMenuProps, StackToolbarMenuActionProps } from './types';
 import type {
   NativeStackHeaderItemMenu,
   NativeStackHeaderItemMenuAction,
@@ -22,6 +20,8 @@ import {
   extractXcassetName,
 } from '../shared';
 import { StackToolbarLabel, StackToolbarIcon, StackToolbarBadge } from '../toolbar-primitives';
+import { NativeToolbarMenu, NativeToolbarMenuAction } from './native';
+import type { StackToolbarMenuProps, StackToolbarMenuActionProps } from './types';
 
 export type {
   StackToolbarMenuProps,
@@ -121,7 +121,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
     }
   }
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (process.env.NODE_ENV !== 'production' && placement === 'bottom') {
     const hasBadge = getFirstChildOfType(props.children, StackToolbarBadge);
     if (hasBadge) {
       console.warn(
@@ -141,6 +141,7 @@ export const StackToolbarMenu: React.FC<StackToolbarMenuProps> = (props) => {
       imageRenderingMode={imageRenderingMode}
       label={computedLabel}
       title={computedMenuTitle}
+      badge={sharedProps?.badge}
       children={validChildren}
     />
   );

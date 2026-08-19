@@ -2,7 +2,6 @@ package expo.modules.devlauncher.services
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import expo.modules.devlauncher.MeQuery
 import expo.modules.devlauncher.compose.Session
 import expo.modules.devlauncher.compose.saveToPreferences
 import kotlinx.coroutines.CoroutineScope
@@ -18,17 +17,17 @@ sealed interface UserState {
   object LoggedOut : UserState
   object Fetching : UserState
   data class LoggedIn(
-    val data: MeQuery.Data,
-    val selectedAccount: MeQuery.Account?
+    val data: MeData,
+    val selectedAccount: UserAccount?
   ) : UserState
 }
 
 class SessionService(
   val sessionStore: SharedPreferences,
-  private val apolloClientService: ApolloClientService,
+  private val graphQLService: GraphQLService,
   private val httpClientService: HttpClientService
 ) {
-  private val _session = MutableStateFlow<Session?>(restoreSession())
+  private val _session = MutableStateFlow(restoreSession())
 
   private val _user = MutableStateFlow<UserState>(UserState.LoggedOut)
   val user
@@ -45,7 +44,7 @@ class SessionService(
 
       _user.update { UserState.Fetching }
 
-      val me = apolloClientService.fetchMe()
+      val me = graphQLService.fetchMe()
       val data = me.data
       if (me.hasErrors() || data == null) {
         // TOOD(@lukmccall): Handle errors properly
@@ -54,8 +53,8 @@ class SessionService(
       }
 
       val selectedAccountId = restoreSelectedAccount()
-      val selectedAccount = data.meUserActor?.accounts?.find { account -> account.id == selectedAccountId }
-        ?: data.meUserActor?.accounts?.firstOrNull()
+      val selectedAccount = data.accounts.find { account -> account.id == selectedAccountId }
+        ?: data.accounts.firstOrNull()
       _user.update {
         UserState.LoggedIn(
           data,
@@ -68,7 +67,6 @@ class SessionService(
 
   fun setSession(newSession: Session?) {
     newSession.saveToPreferences(sessionStore)
-    apolloClientService.setSession(newSession?.sessionSecret)
     httpClientService.setSession(newSession?.sessionSecret)
     _session.update { newSession }
   }
@@ -76,7 +74,10 @@ class SessionService(
   fun switchAccount(accountId: String) {
     _user.update { currentState ->
       if (currentState is UserState.LoggedIn) {
-        val newSelectedAccount = currentState.data.meUserActor?.accounts?.find { account -> account.id == accountId }
+        val newSelectedAccount = currentState
+          .data
+          .accounts
+          .find { account -> account.id == accountId }
         // We cannot find the account with the given ID, so we return the current state
         if (newSelectedAccount == null) {
           return@update currentState
@@ -91,7 +92,6 @@ class SessionService(
 
   private fun restoreSession(): Session? {
     val newSession = Session.loadFromPreferences(sessionStore)
-    apolloClientService.setSession(newSession?.sessionSecret)
     httpClientService.setSession(newSession?.sessionSecret)
     return newSession
   }

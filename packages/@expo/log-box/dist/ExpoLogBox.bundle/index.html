@@ -1,0 +1,87 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        
+        <style id="expo-dom-component-style">
+        /* These styles make the body full-height */
+        html,
+        body {
+          -webkit-overflow-scrolling: touch; /* Enables smooth momentum scrolling */
+        }
+        /* These styles make the root element full-height */
+        #root {
+          display: flex;
+          flex: 1;
+        }
+        </style>
+    <link rel="preload" href="./_expo/static/css/AnsiHighlight.module-fedf6e48c823efc704595e66ae8d0af9.css" as="style">
+<link rel="stylesheet" href="./_expo/static/css/AnsiHighlight.module-fedf6e48c823efc704595e66ae8d0af9.css"><link rel="preload" href="./_expo/static/css/CodeFrame.module-18d59caa124061864265638a07e28753.css" as="style">
+<link rel="stylesheet" href="./_expo/static/css/CodeFrame.module-18d59caa124061864265638a07e28753.css"><link rel="preload" href="./_expo/static/css/Overlay.module-c3d7f93b4b5f23d796731369b109360d.css" as="style">
+<link rel="stylesheet" href="./_expo/static/css/Overlay.module-c3d7f93b4b5f23d796731369b109360d.css"><link rel="preload" href="./_expo/static/css/Header.module-a592345edc49abc03b030327ee8ec5e3.css" as="style">
+<link rel="stylesheet" href="./_expo/static/css/Header.module-a592345edc49abc03b030327ee8ec5e3.css"><link rel="preload" href="./_expo/static/css/LogBoxInspectorSourceMapStatus.module-0324e0bf2289db98d4d06d90697b72b1.css" as="style">
+<link rel="stylesheet" href="./_expo/static/css/LogBoxInspectorSourceMapStatus.module-0324e0bf2289db98d4d06d90697b72b1.css"><link rel="preload" href="./_expo/static/css/StackTraceList.module-5da402f75ccb2c1af9d4205add24827c.css" as="style">
+<link rel="stylesheet" href="./_expo/static/css/StackTraceList.module-5da402f75ccb2c1af9d4205add24827c.css"></head>
+    <body>
+    <noscript>DOM Components require <code>javaScriptEnabled</code></noscript>
+        <!-- Root element for the DOM component. -->
+        <div id="root"></div>
+        <script>
+// Polyfill globalThis
+if (typeof globalThis === "undefined") {
+  var _g = typeof window !== "undefined" ? window : typeof global !== "undefined" ? global : self;
+  _g.globalThis = _g;
+}
+// Polyfill Array.prototype.flat
+if (!Array.prototype.flat) {
+  Array.prototype.flat = function flat(depth) {
+    depth = depth === undefined ? 1 : Math.floor(Number(depth));
+    if (depth < 1) return Array.prototype.slice.call(this);
+    return Array.prototype.reduce.call(
+      this,
+      function (acc, val) {
+        if (Array.isArray(val)) {
+          acc.push.apply(acc, flat.call(val, depth - 1));
+        } else {
+          acc.push(val);
+        }
+        return acc;
+      },
+      []
+    );
+  };
+}
+// Polyfill performance.measure with measureOptions.
+// Legacy WebViews only support performance.measure(name, startMark, endMark) with
+// string mark names. When called with a measureOptions object (e.g., { start, end }),
+// we drop the options and call measure(name) to avoid throwing.
+try {
+  performance.measure("__expo_feature_test", { start: 0 });
+  performance.clearMeasures("__expo_feature_test");
+} catch (e) {
+  var _origMeasure = performance.measure.bind(performance);
+  performance.measure = function (name, startOrOptions, endMark) {
+    if (startOrOptions && typeof startOrOptions === "object") {
+      return _origMeasure(name);
+    }
+    return _origMeasure(name, startOrOptions, endMark);
+  };
+}
+</script>
+        <script>
+          var injectedObject = {};
+          try {
+            injectedObject = JSON.parse(window.ReactNativeWebView.injectedObjectJson());
+          } catch (e) {
+            throw new Error('Failed to parse injectedObjectJson: ' + e.message);
+          }
+          window.$$EXPO_DOM_HOST_OS = injectedObject.EXPO_DOM_HOST_OS;
+          window.$$EXPO_INITIAL_PROPS = injectedObject.initialProps;
+        </script>
+        
+    <script src="./_expo/static/js/web/entry-d41d8cd98f00b204e9800998ecf8427e.js" defer></script>
+</body>
+</html>

@@ -74,7 +74,7 @@ describe(PageHeader, () => {
     expect(linkElement).toBe(undefined);
   });
 
-  test('displays bundled version when packageName provided', async () => {
+  test('displays recommended version when packageName provided', async () => {
     renderWithHeadings(
       <PageHeader
         title="test-title"
@@ -83,7 +83,42 @@ describe(PageHeader, () => {
         testRequire={require}
       />
     );
-    await screen.findByText(/bundled version:/i);
+    await screen.findByText(/recommended version:/i);
+  });
+
+  test('explains the recommended version through an accessible tooltip', async () => {
+    renderWithHeadings(
+      <PageHeader title="test-title" packageName="expo-audio" testRequire={require} />
+    );
+    const infoButton = await screen.findByRole('button', {
+      name: /more information about recommended version/i,
+    });
+
+    fireEvent.focus(infoButton);
+    const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
+    expect(tooltip).toBeInTheDocument();
+    expect(tooltip).toHaveTextContent(/compatible with the expo sdk version/i);
+    expect(tooltip).not.toHaveTextContent(/included in expo go/i);
+    expect(infoButton).toHaveAttribute('aria-describedby', tooltip.id);
+  });
+
+  test('notes the Expo Go library version in the tooltip when included in Expo Go', async () => {
+    renderWithHeadings(
+      <PageHeader
+        title="test-title"
+        packageName="expo-audio"
+        platforms={['ios', 'android', 'expo-go']}
+        testRequire={require}
+      />
+    );
+    const infoButton = await screen.findByRole('button', {
+      name: /more information about recommended version/i,
+    });
+
+    fireEvent.focus(infoButton);
+    const tooltip = await screen.findByRole('tooltip', {}, { timeout: 1000 });
+    expect(tooltip).toHaveTextContent(/compatible with the expo sdk version/i);
+    expect(tooltip).toHaveTextContent(/library version included in expo go/i);
   });
 
   test('displays edit page link for non-API docs', () => {
@@ -96,5 +131,45 @@ describe(PageHeader, () => {
       'https://github.com/expo/expo/edit/main/docs/pages/router/reference/hooks.mdx'
     );
     expect(linkElement.getAttribute('aria-label')).toEqual('Edit content of this page on GitHub');
+  });
+
+  test('hides markdown actions on the hydration render even when the URL has a version pair', () => {
+    renderWithTestRouter(<PageHeader title="Upgrade native project" />, {
+      pathname: '/bare/upgrade',
+      asPath: '/bare/upgrade/?fromSdk=56&toSdk=57',
+      isReady: false,
+    });
+
+    expect(screen.queryAllByText('Copy page')).toHaveLength(0);
+  });
+
+  test('shows markdown actions once the router is ready with a version pair', () => {
+    renderWithTestRouter(<PageHeader title="Upgrade native project" />, {
+      pathname: '/bare/upgrade',
+      asPath: '/bare/upgrade/?fromSdk=56&toSdk=57',
+      isReady: true,
+    });
+
+    expect(screen.queryAllByText('Copy page').length).toBeGreaterThan(0);
+  });
+
+  test('keeps markdown actions hidden on the upgrade helper without a version pair', () => {
+    renderWithTestRouter(<PageHeader title="Upgrade native project" />, {
+      pathname: '/bare/upgrade',
+      asPath: '/bare/upgrade/',
+      isReady: true,
+    });
+
+    expect(screen.queryAllByText('Copy page')).toHaveLength(0);
+  });
+
+  test('shows markdown actions on regular pages during the hydration render', () => {
+    renderWithTestRouter(<PageHeader title="Overview" />, {
+      pathname: '/guides/overview',
+      asPath: '/guides/overview/',
+      isReady: false,
+    });
+
+    expect(screen.queryAllByText('Copy page').length).toBeGreaterThan(0);
   });
 });

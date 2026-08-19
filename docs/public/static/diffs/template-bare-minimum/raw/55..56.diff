@@ -139,34 +139,38 @@ index 8a390c764af..39fa5afe55b 100644
  					/usr/lib/swift,
  					"$(inherited)",
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index 03484edf156..c3158e3fb9b 100644
+index 03484edf156..1a7b1969798 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -13,10 +13,11 @@ def ccache_enabled?(podfile_properties)
+@@ -13,10 +13,14 @@ def ccache_enabled?(podfile_properties)
  end
  
  ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 -ENV['RCT_USE_RN_DEP'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
 -ENV['RCT_USE_PREBUILT_RNCORE'] ||= '1' if podfile_properties['ios.buildReactNativeFromSource'] != 'true'
+-ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
+-platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 +ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
 +ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
- ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
--platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
-+ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] != 'false'
++ENV['RCT_HERMES_V1_ENABLED'] ||= '0' if podfile_properties['expo.useHermesV1'] == 'false'
++# An explicit `ios.usePrecompiledModules: false` must win even when the env var is already set
++# (e.g. EXPO_USE_PRECOMPILED_MODULES exported by EAS Build), so force-disable here before the default.
++ENV['EXPO_USE_PRECOMPILED_MODULES'] = '0' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == 'false'
++ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'
 +platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
  
  prepare_react_native_project!
  
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index 0c1036ba548..6188f97c149 100644
+index c1632a27f75..3f727f1b609 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
    "name": "expo-template-bare-minimum",
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
--  "version": "55.0.38",
-+  "version": "56.0.16",
+-  "version": "55.0.39",
++  "version": "56.0.26",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -174,11 +178,11 @@ index 0c1036ba548..6188f97c149 100644
      "web": "expo start --web"
    },
    "dependencies": {
--    "expo": "~55.0.26",
+-    "expo": "~55.0.27",
 -    "expo-status-bar": "~55.0.6",
 -    "react": "19.2.0",
--    "react-native": "0.83.6"
-+    "expo": "~56.0.2",
+-    "react-native": "0.83.10"
++    "expo": "~56.0.12",
 +    "expo-status-bar": "~56.0.4",
 +    "react": "19.2.3",
 +    "react-native": "0.85.3"

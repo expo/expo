@@ -27,7 +27,10 @@ describe('updateXcodeProject', () => {
     expect(tempProjectRoot).toBeDefined();
     tempProjectRoot = tempProjectRoot as string;
 
-    await updateXcodeProject(tempProjectRoot, { watchedDirectories: ['app'] });
+    await updateXcodeProject(tempProjectRoot, {
+      watchedDirectories: ['app'],
+      name: 'bare-project',
+    });
 
     const pbxProject = IOSConfig.XcodeUtils.getPbxproj(tempProjectRoot);
     const objects = pbxProject.hash.project.objects;
@@ -37,7 +40,7 @@ describe('updateXcodeProject', () => {
     const rootGroupKeys = Object.keys(rootGroups).filter((key) => !key.endsWith('_comment'));
     expect(rootGroupKeys).toHaveLength(1);
 
-    const rootGroupUUID = rootGroupKeys[0];
+    const rootGroupUUID = rootGroupKeys[0]!;
     expect(rootGroups[rootGroupUUID]).toEqual(
       expect.objectContaining({
         isa: 'PBXFileSystemSynchronizedRootGroup',
@@ -60,7 +63,7 @@ describe('updateXcodeProject', () => {
     const contentBefore = await fs.promises.readFile(pbxProjPath, 'utf8');
     expect(contentBefore).toBeTruthy();
 
-    await updateXcodeProject(tempProjectRoot, { watchedDirectories: [] });
+    await updateXcodeProject(tempProjectRoot, { watchedDirectories: [], name: 'bare-project' });
 
     const contentAfter = await fs.promises.readFile(pbxProjPath, 'utf8');
 

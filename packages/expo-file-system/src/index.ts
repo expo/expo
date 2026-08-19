@@ -10,6 +10,8 @@ export {
   type RelocationOptions,
   type FileHandle,
   type FileInfo,
+  type FileCanPreviewOptions,
+  type FilePreviewOptions,
   type FileWriteOptions,
   type InfoOptions,
   type PathInfo,

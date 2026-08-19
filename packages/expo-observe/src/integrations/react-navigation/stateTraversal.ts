@@ -35,7 +35,7 @@ export function collectMountedKeys(state: NavigationStateLike): Map<string, Navi
   for (const route of state.routes) {
     const castedRoute = route as NavigationRouteLike;
     result.set(route.key, castedRoute);
-    if (route.state) {
+    if (castedRoute.state) {
       for (const [key, value] of collectMountedKeys(castedRoute.state)) {
         result.set(key, value);
       }

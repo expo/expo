@@ -1,8 +1,8 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 
-import type { ButtonProps } from './types';
 import { useFocusVisible, useUniversalLifecycle } from '../hooks';
 import { colors, durations, easings, shadows } from '../webUtils';
+import type { ButtonProps } from './types';
 
 const buttonStyles = StyleSheet.create({
   base: {
@@ -34,13 +34,13 @@ const buttonStyles = StyleSheet.create({
   hidden: { display: 'none' },
   hovered: { backgroundColor: colors.primary[600] },
   hoveredOutlined: { backgroundColor: colors.gray[50] },
-  hoveredText: { backgroundColor: colors.primary[50] },
+  hoveredText: { backgroundColor: colors.gray[50] },
   pressed: {
     backgroundColor: colors.primary[700],
     transform: 'translateY(0.5px)',
   },
   pressedOutlined: { backgroundColor: colors.gray[100] },
-  pressedText: { backgroundColor: colors.primary[100] },
+  pressedText: { backgroundColor: colors.gray[100] },
 });
 
 const textStyles = StyleSheet.create({

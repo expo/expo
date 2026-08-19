@@ -6,14 +6,14 @@ import { type CommonViewModifierProps } from '../types';
 
 export type SwipeActionsEdge = 'leading' | 'trailing';
 
-export type SwipeActionsProps = {
+export interface SwipeActionsProps extends CommonViewModifierProps {
   /**
    * The regular content and `SwipeActions.Actions` action groups.
    */
   children: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
-export type SwipeActionsGroupProps = {
+export interface SwipeActionsGroupProps {
   /**
    * The edge where these swipe actions are revealed.
    * @default 'trailing'
@@ -28,7 +28,7 @@ export type SwipeActionsGroupProps = {
    * The buttons revealed when the user swipes from this edge.
    */
   children: React.ReactNode;
-};
+}
 
 type SwipeActionsNativeProps = SwipeActionsProps;
 

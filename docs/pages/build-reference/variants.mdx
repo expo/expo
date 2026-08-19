@@ -7,6 +7,7 @@ description: Learn how to install multiple variants of an app on the same device
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
 
 When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), installing these build variants simultaneously on the same device is common. This allows working in development, previewing the next version of the app, and running the production version on a device without needing to uninstall and reinstall the app.
 
@@ -153,7 +154,51 @@ When you run `eas build --profile production` the `APP_VARIANT` variable environ
 
 > **Note**: If you use EAS Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. See the EAS Build [Environment variables and secrets](/build/updates) for more information.
 
-### In an existing (bare) React Native project
+### Build and run multiple app variants locally
+
+If you [build your app locally](/guides/local-app-overview/) with [`expo run:android|ios`](/workflow/continuous-native-generation/#usage), set the `APP_VARIANT` environment variable when you run the `expo run` command. For example, to compile the `development` variant for iOS as a debug build, run:
+
+<Terminal
+  cmd={{
+    npm: ['$ APP_VARIANT=development npx expo run:ios'],
+    yarn: ['$ APP_VARIANT=development yarn expo run:ios'],
+    pnpm: ['$ APP_VARIANT=development pnpm expo run:ios'],
+    bun: ['$ APP_VARIANT=development bun expo run:ios'],
+  }}
+/>
+
+`APP_VARIANT` changes only the app's name and package name on Android and bundle identifier on iOS. It does not affect how the binary is compiled. When you switch variants, the existing **android** and **ios** directories still reflect the previous variant. If a native directory is already present, `expo run` skips regenerating it and compiles it as-is.
+
+To switch variants, you need to regenerate the native directories again with `prebuild --clean` before compiling the app. In the example below, the `development` variant (existing debug build) is switched to `test`, which is another debug build. To regenerate the **android** and **ios** directories and then compile the `test` variant, set `APP_VARIANT` on both commands so that the clean prebuild and the compilation use the same variant:
+
+<Terminal
+  cmd={{
+    npm: [
+      '$ APP_VARIANT=test npx expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test npx expo run:ios',
+    ],
+    yarn: [
+      '$ APP_VARIANT=test yarn expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test yarn expo run:ios',
+    ],
+    pnpm: [
+      '$ APP_VARIANT=test pnpm expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test pnpm expo run:ios',
+    ],
+    bun: [
+      '$ APP_VARIANT=test bun expo prebuild --clean',
+      '',
+      '$ APP_VARIANT=test bun expo run:ios',
+    ],
+  }}
+/>
+
+The **android** and **ios** directories are managed by [Continuous Native Generation](/workflow/continuous-native-generation/), so regenerating them is safe when they are listed in your **.gitignore**.
+
+### In an existing React Native project
 
 > **info** If you want to use your [app config file](/workflow/configuration/) as the source of truth for your app configuration (including bundle identifiers and package names for variants), you need to migrate to [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/) and add **android** and **ios** directories to your **.gitignore** file. This is especially important if you started with a React Native CLI project and added custom native code. This ensures that the native project configuration doesn't take precedence over your app config, especially when using bundle ID lookup behavior. Without this, you may experience issues where the wrong app variant runs or development builds aren't detected properly. Alternatively, you can explicitly opt for the Android flavors and iOS schemes as described below.
 

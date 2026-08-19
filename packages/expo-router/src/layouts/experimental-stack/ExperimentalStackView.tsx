@@ -3,12 +3,6 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 
-import type {
-  ExperimentalStackDescriptor,
-  ExperimentalStackDescriptorMap,
-  ExperimentalStackNavigationHelpers,
-  ExperimentalStackNavigationOptions,
-} from './types';
 import {
   type ParamListBase,
   type RouteProp,
@@ -17,6 +11,12 @@ import {
   usePreventRemoveContext,
 } from '../../react-navigation/native';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
+import type {
+  ExperimentalStackDescriptor,
+  ExperimentalStackDescriptorMap,
+  ExperimentalStackNavigationHelpers,
+  ExperimentalStackNavigationOptions,
+} from './types';
 
 const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>([
   'title',

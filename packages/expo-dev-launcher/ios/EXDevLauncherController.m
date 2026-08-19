@@ -12,7 +12,6 @@
 #import <EXDevLauncher/EXDevLauncherManifestParser.h>
 #import <EXDevLauncher/EXDevLauncherRCTDevSettings.h>
 #import <EXDevLauncher/EXDevLauncherUpdatesHelper.h>
-#import <EXDevLauncher/RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h>
 
 
 #import <ReactAppDependencyProvider/RCTAppDependencyProvider.h>
@@ -22,10 +21,6 @@
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
 #else
 #import <EXDevLauncher-Swift.h>
-#endif
-
-#ifdef RCT_NEW_ARCH_ENABLED
-#import <React/RCTSurfaceView.h>
 #endif
 
 @import EXManifests;
@@ -42,7 +37,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 @interface EXDevLauncherController ()
 
-@property (nonatomic, weak) ExpoDevLauncherReactDelegateHandler * delegate;
 @property (nonatomic, strong) NSDictionary *launchOptions;
 @property (nonatomic, strong) NSURL *sourceUrl;
 @property (nonatomic, assign) BOOL shouldPreferUpdatesInterfaceSourceUrl;
@@ -91,6 +85,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.defaultLaunchURLString = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_DEFAULT_LAUNCHER_URL"];
     self.useDefaultLaunchUrlFallback = self.defaultLaunchURLString.length != 0;
     self.defaultLaunchURL = [NSURL URLWithString:self.defaultLaunchURLString];
+
+    NSNumber *tryToLaunchLastBundle = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:@{
+      @"EXDevLauncherTryToLaunchLastBundle": tryToLaunchLastBundle ?: @YES
+    }];
   }
   return self;
 }
@@ -183,6 +182,12 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 
 - (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
 {
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
+  // Matches the guard on the declaration in React/Base/RCTBundleURLProvider.h.
+  // The function isn't declared in builds without packager support.
+  RCTBundleURLProviderAllowPackagerServerAccess(NO);
+#endif
+
   _delegate = delegate;
   _launchOptions = launchOptions;
   NSDictionary *lastOpenedApp = [self.recentlyOpenedAppsRegistry mostRecentApp];
@@ -236,8 +241,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return;
   }
 
-  NSNumber *devClientTryToLaunchLastBundleValue = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE"];
-  BOOL shouldTryToLaunchLastOpenedBundle = (devClientTryToLaunchLastBundleValue != nil) ? [devClientTryToLaunchLastBundleValue boolValue] : YES;
+  // Default registered from the config plugin in init; the Settings toggle overrides it.
+  BOOL shouldTryToLaunchLastOpenedBundle = [[NSUserDefaults standardUserDefaults] boolForKey:@"EXDevLauncherTryToLaunchLastBundle"];
   BOOL useDefaultLaunchUrlFallback = self.useDefaultLaunchUrlFallback;
 
   if (!hasGrantedNetworkPermission) {
@@ -388,6 +393,12 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
       onSuccess:(void (^ _Nullable)(void))onSuccess
         onError:(void (^ _Nullable)(NSError *error))onError
 {
+#if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
+  // A dev server has been chosen — re-allow packager access (denied at launcher boot in
+  // `start:launchOptions:`). Replaces the RCTBundleURLProvider.guessPackagerHost swizzle.
+  RCTBundleURLProviderAllowPackagerServerAccess(YES);
+#endif
+
   EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
   NSURL *expoUrl = devLauncherUrl.url;
   _possibleManifestURL = expoUrl;
@@ -424,7 +435,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     RCTDevLoadingViewSetEnabled(NO);
     [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:nil];
     if ([expoUrl.path isEqual:@"/"] || [expoUrl.path isEqual:@""]) {
-      [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:@"index.bundle?platform=ios&dev=true&minify=false" relativeToURL:expoUrl] manifest:nil];
+      NSString *bundlePath = [NSString stringWithFormat:@"index.bundle?platform=%@&dev=true&minify=false", RCTPlatformName];
+      [self _initAppWithUrl:expoUrl bundleUrl:[NSURL URLWithString:bundlePath relativeToURL:expoUrl] manifest:nil];
     } else {
       [self _initAppWithUrl:expoUrl bundleUrl:expoUrl manifest:nil];
     }
@@ -434,10 +446,11 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   };
 
   void (^launchExpoApp)(NSURL *, EXManifestsManifest *) = ^(NSURL *bundleURL, EXManifestsManifest *manifest) {
+    NSURL *resolvedBundleURL = [EXDevLauncherURLHelper bundleURL:bundleURL withResolvedPlatform:RCTPlatformName];
     self->_shouldPreferUpdatesInterfaceSourceUrl = !manifest.isUsingDeveloperTool;
     RCTDevLoadingViewSetEnabled(manifest.isUsingDeveloperTool);
     [self.recentlyOpenedAppsRegistry appWasOpened:[expoUrl absoluteString] queryParams:devLauncherUrl.queryParams manifest:manifest];
-    [self _initAppWithUrl:expoUrl bundleUrl:bundleURL manifest:manifest];
+    [self _initAppWithUrl:expoUrl bundleUrl:resolvedBundleURL manifest:manifest];
     if (onSuccess) {
       onSuccess();
     }
@@ -531,11 +544,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.sourceUrl = bundleUrl;
 
 #if RCT_DEV
-    // Connect to the websocket, ignore downloaded update bundles
-    if (![bundleUrl.scheme isEqualToString:@"file"]) {
-      //[[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
-      RCTLogWarn(@"bundle scheme is file - unable to connect to sharedPackageConnection from EXDevLauncherController.");
-    }
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
@@ -669,7 +677,69 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     [buildInfo setObject:sdkVersion forKey:@"sdkVersion"];
   }
 
+  NSString *appExpirationDate = [self getAppExpirationDate];
+  if (appExpirationDate) {
+    [buildInfo setObject:appExpirationDate forKey:@"appExpirationDate"];
+  }
+
   return buildInfo;
+}
+
+-(nullable NSString *)getAppExpirationDate
+{ 
+  // App Store and Simulator builds don't have mobileprovision
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"embedded" ofType:@"mobileprovision"];
+  if (!path) {
+    return nil;
+  }
+ 
+  NSError *error;
+  NSString *profileString = [NSString stringWithContentsOfFile:path encoding:NSASCIIStringEncoding error:&error];
+  if (!profileString) {
+    return nil;
+  }
+
+  NSScanner *scanner = [NSScanner scannerWithString:profileString];
+  if (![scanner scanUpToString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>" intoString:nil]) {
+    return nil;
+  }
+
+  NSString *plistString;
+  if (![scanner scanUpToString:@"</plist>" intoString:&plistString]) {
+    return nil;
+  }
+  plistString = [plistString stringByAppendingString:@"</plist>"];
+
+  NSData *plistData = [plistString dataUsingEncoding:NSUTF8StringEncoding];
+  id plist = [NSPropertyListSerialization propertyListWithData:plistData
+                                                       options:NSPropertyListImmutable
+                                                        format:NULL
+                                                         error:NULL];
+  NSDate *expiration = [plist isKindOfClass:[NSDictionary class]] ? plist[@"ExpirationDate"] : nil;
+  if (![expiration isKindOfClass:[NSDate class]]) {
+    return nil;
+  }
+
+  NSDateFormatter *formatter = [NSDateFormatter new];
+  formatter.dateStyle = NSDateFormatterMediumStyle;
+  formatter.timeStyle = NSDateFormatterNoStyle;
+  NSString *formattedDate = [formatter stringFromDate:expiration];
+ 
+  NSCalendar *calendar = [NSCalendar currentCalendar];
+  NSDate *today = [calendar startOfDayForDate:[NSDate date]];
+  NSDate *expirationDay = [calendar startOfDayForDate:expiration];
+  NSInteger days = [calendar components:NSCalendarUnitDay fromDate:today toDate:expirationDay options:0].day;
+
+  NSString *relative; 
+  if (days == 0) {
+    relative = @"today";
+  } else if (days == 1) {
+    relative = @"1 day";
+  } else {
+    relative = [NSString stringWithFormat:@"%ld days", (long)days];
+  }
+
+  return relative;
 }
 
 -(NSString *)getAppIcon

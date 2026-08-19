@@ -1,10 +1,10 @@
+import { Log } from '../../log';
 import type { DevServerManager } from './DevServerManager';
 import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 import { DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
 import type { McpServer } from './MCP';
 import { createMCPDevToolsExtensionSchema } from './createMCPDevToolsExtensionSchema';
-import { Log } from '../../log';
 
 const debug = require('debug')('expo:start:server:devtools:mcp');
 

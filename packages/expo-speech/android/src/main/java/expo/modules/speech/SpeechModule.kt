@@ -8,6 +8,7 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.util.ArrayDeque
+import java.util.IllformedLocaleException
 import java.util.Locale
 import java.util.Queue
 
@@ -104,15 +105,19 @@ class SpeechModule : Module() {
     options.rate?.let(textToSpeech::setSpeechRate)
 
     textToSpeech.language = options.language?.let {
-      val locale = Locale(it)
-      val languageAvailable = textToSpeech.isLanguageAvailable(locale)
+      try {
+        val locale = Locale.Builder().setLanguage(it).build()
+        val languageAvailable = textToSpeech.isLanguageAvailable(locale)
 
-      return@let if (
-        languageAvailable != TextToSpeech.LANG_MISSING_DATA &&
-        languageAvailable != TextToSpeech.LANG_NOT_SUPPORTED
-      ) {
-        locale
-      } else {
+        return@let if (
+          languageAvailable != TextToSpeech.LANG_MISSING_DATA &&
+          languageAvailable != TextToSpeech.LANG_NOT_SUPPORTED
+        ) {
+          locale
+        } else {
+          Locale.getDefault()
+        }
+      } catch (_: IllformedLocaleException) {
         Locale.getDefault()
       }
     } ?: Locale.getDefault()

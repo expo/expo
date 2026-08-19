@@ -12,6 +12,33 @@ public final class BlurhashGenerationException: Exception {
   }
 }
 
+/**
+ An exception thrown when `writeToCacheAsync` is given a source that is neither a local file URI nor an image reference.
+ */
+internal final class WriteToCacheSourceException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The image source must be a local file URI or an image reference"
+  }
+}
+
+/**
+ An exception thrown when `writeToCacheAsync` is given a remote URL instead of a local file.
+ */
+internal final class WriteToCacheRemoteSourceException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Cannot write a remote image to the cache from the URL: '\(param)'. Pass a local file URI (for example one returned by 'expo-image-picker' or 'expo-file-system'), or use 'prefetch' to cache a remote image"
+  }
+}
+
+/**
+ An exception thrown when `writeToCacheAsync` fails to read the data of a local file.
+ */
+internal final class WriteToCacheReadException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Unable to read the image file at: '\(param)'. Make sure the file exists and is readable"
+  }
+}
+
 func cacheTypeToString(_ cacheType: SDImageCacheType) -> String {
   switch cacheType {
   case .none:

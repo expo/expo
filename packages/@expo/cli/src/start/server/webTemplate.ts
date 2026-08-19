@@ -16,10 +16,13 @@ export async function createTemplateHtmlFromExpoConfigAsync(
   {
     scripts,
     cssLinks,
+    extraHead,
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
   }: {
     scripts: string[];
     cssLinks?: string[];
+    /** Pre-rendered HTML to inject before `</head>`. Used for caller-owned head assets like favicons. */
+    extraHead?: string;
     exp?: ExpoConfig;
   }
 ) {
@@ -27,6 +30,7 @@ export async function createTemplateHtmlFromExpoConfigAsync(
     langIsoCode: exp.web?.lang ?? 'en',
     scripts,
     cssLinks,
+    extraHead,
     title: getNameFromConfig(exp).webName ?? 'Expo App',
     description: exp.web?.description,
     themeColor: exp.web?.themeColor,
@@ -61,6 +65,7 @@ export async function createTemplateHtmlAsync(
   {
     scripts,
     cssLinks,
+    extraHead,
     description,
     langIsoCode,
     title,
@@ -68,6 +73,8 @@ export async function createTemplateHtmlAsync(
   }: {
     scripts: string[];
     cssLinks?: string[];
+    /** Pre-rendered HTML to inject before `</head>`. */
+    extraHead?: string;
     description?: string;
     langIsoCode: string;
     title: string;
@@ -108,6 +115,10 @@ export async function createTemplateHtmlAsync(
 
   if (description) {
     contents = addMeta(contents, `name="description" content="${description}"`);
+  }
+
+  if (extraHead) {
+    contents = contents.replace('</head>', `${extraHead}</head>`);
   }
 
   return contents;

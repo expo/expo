@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
-import type { Command } from '../../bin/cli';
+import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 
 export const expoServe: Command = async (argv) => {
@@ -38,8 +38,8 @@ export const expoServe: Command = async (argv) => {
   ] = await Promise.all([import('./serveAsync.js'), import('../utils/errors.js')]);
 
   const projectRoot = getProjectRoot(args);
-  const { installEventLogger, getWellKnownTemporaryLogFile } = await import('../events/index.js');
-  installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'serve'));
+  const { installEventLogger } = await import('2g');
+  installEventLogger({ command: 'expo serve', version: process.env.__EXPO_VERSION });
 
   return serveAsync(projectRoot, {
     isDefaultDirectory: !args._[0],

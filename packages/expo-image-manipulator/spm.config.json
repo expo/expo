@@ -4,9 +4,7 @@
     {
       "name": "ExpoImageManipulator",
       "podName": "ExpoImageManipulator",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -43,10 +41,7 @@
             "SDWebImage",
             "SDWebImageWebPCoder"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }

@@ -4,7 +4,7 @@ import type { ExpoModifier } from '../../types';
 import { type ContentPadding } from '../LazyColumn';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type LazyRowProps = {
+export interface LazyRowProps {
   /**
    * The content to display inside the lazy row.
    */
@@ -33,7 +33,7 @@ export type LazyRowProps = {
    * Modifiers for the component.
    */
   modifiers?: ExpoModifier[];
-};
+}
 
 type NativeLazyRowProps = LazyRowProps;
 const LazyRowNativeView: React.ComponentType<NativeLazyRowProps> = requireNativeView(

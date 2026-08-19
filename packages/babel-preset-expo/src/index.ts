@@ -84,6 +84,10 @@ export interface BabelPresetExpoOptions extends BabelPresetExpoPlatformOptions {
   web?: BabelPresetExpoPlatformOptions;
   /** Native-specific settings. */
   native?: BabelPresetExpoPlatformOptions;
+  tvos?: BabelPresetExpoPlatformOptions;
+  macos?: BabelPresetExpoPlatformOptions;
+  ios?: BabelPresetExpoPlatformOptions;
+  android?: BabelPresetExpoPlatformOptions;
 }
 
 function getOptions(
@@ -91,11 +95,19 @@ function getOptions(
   platform: string | null
 ): BabelPresetExpoPlatformOptions {
   const tag = platform === 'web' ? 'web' : 'native';
-
-  return {
+  let output: BabelPresetExpoPlatformOptions = {
     ...options,
     ...options[tag],
   };
+
+  if (
+    (platform === 'tvos' || platform === 'macos' || platform === 'ios' || platform === 'android') &&
+    options[platform]
+  ) {
+    output = { ...output, ...options[platform] };
+  }
+
+  return output;
 }
 
 function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): TransformOptions {

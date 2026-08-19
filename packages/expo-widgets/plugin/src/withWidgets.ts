@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin, withPlugins } from 'expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 import withAndroidWidgets from './android/withAndroidWidgets';
 import withIosWidgets from './ios/withIosWidgets';
@@ -15,16 +15,20 @@ export type ExpoWidgetsConfigPluginProps = {
   enablePushNotifications?: boolean;
   // Enable frequent updates for widgets. Defaults to false.
   frequentUpdates?: boolean;
+  /**
+   * Enable the Android config plugin. Defaults to false.
+   * This option will be removed and Android widget will be enabled by default in the future.
+   */
+  enableAndroid?: boolean;
   widgets?: WidgetConfig[];
 };
 
 const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps | undefined> = (config, props) => {
+  const enableAndroid = props?.enableAndroid ?? false;
   const widgets = props?.widgets ?? [];
 
-  return withPlugins(config, [
-    [withAndroidWidgets, { widgets }],
-    [withIosWidgets, { ...(props ?? {}), widgets }],
-  ]);
+  const nextConfig = enableAndroid ? withAndroidWidgets(config, { widgets }) : config;
+  return withIosWidgets(nextConfig, { ...props, widgets });
 };
 
 export default createRunOncePlugin(withWidgets, pkg.name, pkg.version);

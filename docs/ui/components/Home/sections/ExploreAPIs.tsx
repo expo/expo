@@ -26,22 +26,22 @@ export function ExploreAPIs() {
         <APIGridCell
           title="Image"
           link="/versions/latest/sdk/image/"
-          icon={<Image03DuotoneIcon className="size-16!" />}
+          icon={<Image03DuotoneIcon aria-hidden="true" className="size-16!" />}
         />
         <APIGridCell
           title="Camera"
           link="/versions/latest/sdk/camera"
-          icon={<CameraPlusDuotoneIcon className="size-16!" />}
+          icon={<CameraPlusDuotoneIcon aria-hidden="true" className="size-16!" />}
         />
         <APIGridCell
           title="Notifications"
           link="/versions/latest/sdk/notifications"
-          icon={<NotificationMessageDuotoneIcon className="size-16!" />}
+          icon={<NotificationMessageDuotoneIcon aria-hidden="true" className="size-16!" />}
         />
         <APIGridCell
           title="View all APIs"
           link="/versions/latest/"
-          icon={<DocsLogo className="size-16!" />}
+          icon={<DocsLogo aria-hidden="true" className="size-16!" />}
         />
       </div>
     </>
@@ -71,7 +71,7 @@ function APIGridCell({ icon, title, link, className }: APIGridCellProps) {
       </div>
       <LABEL className="flex min-h-7.5 items-center justify-between bg-default p-4">
         {title}
-        <ArrowRightIcon className="text-icon-secondary" />
+        <ArrowRightIcon aria-hidden="true" className="text-icon-secondary" />
       </LABEL>
     </A>
   );

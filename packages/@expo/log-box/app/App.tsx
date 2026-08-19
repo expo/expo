@@ -1,8 +1,9 @@
 import * as React from 'react';
+import { View, Text } from 'react-native';
+
 import { LogBoxLog } from '../src/Data/LogBoxLog';
 import { parseLogBoxException } from '../src/Data/parseLogBoxLog';
 import LogBoxPolyfillDOM from '../src/logbox-dom-polyfill';
-import { View, Text } from 'react-native';
 
 const logs: LogBoxLog[] = [
   new LogBoxLog(

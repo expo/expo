@@ -3,6 +3,7 @@ title: SQLite
 description: A library that provides access to a database that can be queried through a SQLite API.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sqlite'
 packageName: 'expo-sqlite'
+exampleName: 'with-sqlite'
 iconUrl: '/static/images/packages/expo-sqlite.png'
 platforms: ['android', 'ios', 'macos', 'tvos', 'web', 'expo-go']
 ---
@@ -44,7 +45,7 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
           },
           "ios": {
             // You can also override the shared configurations for iOS
-            "customBuildFlags": ["-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"]
+            "customBuildFlags": "-DSQLITE_ENABLE_DBSTAT_VTAB=1 -DSQLITE_ENABLE_SNAPSHOT=1"
           }
         }
       ]
@@ -383,7 +384,7 @@ const db = await SQLite.openDatabaseAsync('databaseName');
 
 await db.withTransactionAsync(async () => {
   const result = await db.getFirstAsync('SELECT COUNT(*) FROM USERS');
-  console.log('Count:', result.rows[0]['COUNT(*)']);
+  console.log('Count:', result['COUNT(*)']);
 });
 ```
 

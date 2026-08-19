@@ -4,9 +4,7 @@
     {
       "name": "ExpoMediaLibrary",
       "podName": "ExpoMediaLibrary",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -21,23 +19,10 @@
           "path": "ios",
           "pattern": "**/*.m",
           "headerPattern": "**/*.h",
-          "dependencies": [
-            "ReactNativeDependencies",
-            "React",
-            "Hermes"
-          ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "Photos",
-            "PhotosUI"
-          ],
-          "includeDirectories": [
-            "."
-          ],
-          "exclude": [
-            "Tests/**"
-          ]
+          "dependencies": ["ReactNativeDependencies", "React", "Hermes"],
+          "linkedFrameworks": ["Foundation", "UIKit", "Photos", "PhotosUI"],
+          "includeDirectories": ["."],
+          "exclude": ["Tests/**"]
         },
         {
           "type": "swift",
@@ -51,18 +36,9 @@
             "expo-modules-core/ExpoModulesCore",
             "ExpoMediaLibrary_ios_objc"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "Photos",
-            "PhotosUI"
-          ],
-          "exclude": [
-            "Tests/**"
-          ],
-          "resources": [
-            { "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "Photos", "PhotosUI"],
+          "exclude": ["Tests/**"],
+          "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]
         }
       ]
     }

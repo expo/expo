@@ -1,6 +1,7 @@
 import commander from 'commander';
 import path from 'path';
 
+import { generateFullTsInterface } from '../typescriptGeneration';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -10,11 +11,10 @@ import {
   TypeInformationCommandCommonAllArguments,
   writeToStableFile,
 } from './commandUtils';
-import { generateFullTsInterface } from '../typescriptGeneration';
 
 export function moduleInterfaceCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('module-interface'))
-    .summary('Generates a full ts interface for a Swift module.')
+    .summary('generate a full TypeScript interface for a Swift module')
     .description(
       `Generates a full TypeScript interface for a Swift module. It consists of:
 

@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import { type SQLAction } from './SQLAction';
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
 import { type Changeset } from '../src/NativeSession';
 import {
@@ -9,6 +8,7 @@ import {
   type SQLiteColumnNames,
   type SQLiteColumnValues,
 } from '../src/NativeStatement';
+import { type SQLAction } from './SQLAction';
 
 export interface SyncWorkerMessage {
   id: number;

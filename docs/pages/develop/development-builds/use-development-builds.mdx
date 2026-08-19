@@ -13,7 +13,14 @@ Usually, creating a new native build from scratch takes long enough that you'll 
 
 To start developing, run the following command to start the development server:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 To open the project inside your development client:
 

@@ -143,7 +143,14 @@ To use this configuration with Expo CLI commands, set the environment variable e
 
 This is not anything unique to Expo CLI. On Windows you can approximate the above command with:
 
-<Terminal cmd={['$ npx cross-env MY_ENVIRONMENT=production eas update']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx cross-env MY_ENVIRONMENT=production eas update'],
+    yarn: ['$ yarn dlx cross-env MY_ENVIRONMENT=production eas update'],
+    pnpm: ['$ pnpm dlx cross-env MY_ENVIRONMENT=production eas update'],
+    bun: ['$ bunx cross-env MY_ENVIRONMENT=production eas update'],
+  }}
+/>
 
 Or you can use any other mechanism that you are comfortable with for environment variables.
 

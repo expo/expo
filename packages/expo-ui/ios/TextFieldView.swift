@@ -123,13 +123,27 @@ private struct StatefulTextField: View {
   @FocusState.Binding var isFocused: Bool
   let promptText: Text?
 
+  // True only while the current `state.value` change came from the user typing.
+  @State private var userMutatingState = false
+
   private var swiftUIAxis: Axis {
     props.axis == .vertical ? .vertical : .horizontal
   }
 
+  private var textBinding: Binding<String> {
+    Binding(
+      get: { (state.value as? String) ?? "" },
+      set: { newValue in
+        let current = (state.value as? String) ?? ""
+        guard newValue != current else { return }
+        userMutatingState = true
+        state.value = newValue
+      }
+    )
+  }
+
   @ViewBuilder
   var textField: some View {
-    let textBinding = state.binding("")
     if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
         promptText == nil ? props.placeholder : "",
@@ -156,10 +170,12 @@ private struct StatefulTextField: View {
         }
       }
       .onChange(of: state.value as? String) { newValue in
+        guard userMutatingState else { return }
         if let max = props.maxLength, let str = newValue, str.count > max {
           state.value = String(str.prefix(max))
           return
         }
+        userMutatingState = false
         props.onTextChange(["value": newValue])
         props.onTextChangeSync?.invoke(arguments: [newValue])
       }
@@ -184,17 +200,58 @@ private struct StatefulSelectableTextField: View {
   let promptText: Text?
 
   @State private var localSelection: SwiftUI.TextSelection?
+  // See `StatefulTextField.userMutatingState`.
+  @State private var userMutatingState = false
 
   private var swiftUIAxis: Axis {
     props.axis == .vertical ? .vertical : .horizontal
   }
 
+  private var textBinding: Binding<String> {
+    Binding(
+      get: { (state.value as? String) ?? "" },
+      set: { newValue in
+        let current = (state.value as? String) ?? ""
+        guard newValue != current else { return }
+        userMutatingState = true
+        state.value = newValue
+      }
+    )
+  }
+
+  private var selectionBinding: Binding<SwiftUI.TextSelection?> {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+      return $localSelection
+    }
+    return clampedSelectionBinding
+  }
+
+  // iOS 18 SwiftUI can throw an out-of-bounds exception when selection becomes invalid after text is changed programmatically.
+  // Resetting to nil avoids passing SwiftUI the stale selection.
+  // https://github.com/expo/expo/issues/47434
+  // https://github.com/swiftlang/swift/issues/82359#issuecomment-3038538035
+  private var clampedSelectionBinding: Binding<SwiftUI.TextSelection?> {
+    Binding(
+      get: {
+        guard let selection = localSelection,
+              case let .selection(range) = selection.indices else {
+          return localSelection
+        }
+        let text = (state.value as? String) ?? ""
+        if range.lowerBound > text.endIndex || range.upperBound > text.endIndex {
+          return nil
+        }
+        return localSelection
+      },
+      set: { localSelection = $0 }
+    )
+  }
+
   var body: some View {
-    let textBinding = state.binding("")
     TextField(
       promptText == nil ? props.placeholder : "",
       text: textBinding,
-      selection: $localSelection,
+      selection: selectionBinding,
       prompt: promptText,
       axis: swiftUIAxis
     )
@@ -221,10 +278,12 @@ private struct StatefulSelectableTextField: View {
       props.onSelectionChange(["start": start, "end": end])
     }
     .onChange(of: state.value as? String) { newValue in
+      guard userMutatingState else { return }
       if let max = props.maxLength, let str = newValue, str.count > max {
         state.value = String(str.prefix(max))
         return
       }
+      userMutatingState = false
       props.onTextChange(["value": newValue])
       props.onTextChangeSync?.invoke(arguments: [newValue])
     }

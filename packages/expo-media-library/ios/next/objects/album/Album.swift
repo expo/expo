@@ -4,10 +4,12 @@ import UniformTypeIdentifiers
 
 class Album: SharedObject {
   let id: String
+  private let assetMapper: AssetMapper
   private(set) var collection: PHAssetCollection?
 
-  init(id: String) {
+  init(id: String, assetMapper: AssetMapper) {
     self.id = id
+    self.assetMapper = assetMapper
   }
 
   func getCollection() async throws -> PHAssetCollection {
@@ -18,7 +20,7 @@ class Album: SharedObject {
   func getAssets() async throws -> [Asset] {
     let collection = try await requirePHAssetCollection()
     let phAssets = AssetRepository.shared.get(by: collection)
-    return phAssets.map { Asset(localIdentifier: $0.localIdentifier) }
+    return phAssets.map { Asset(localIdentifier: $0.localIdentifier, assetMapper: assetMapper) }
   }
 
   func title() async throws -> String {
@@ -89,8 +91,8 @@ class Album: SharedObject {
     }
   }
 
-  static func getAll() async throws -> [Album] {
+  static func getAll(assetMapper: AssetMapper) async throws -> [Album] {
     AssetCollectionRepository.shared.getAll()
-      .map { Album(id: $0.localIdentifier) }
+      .map { Album(id: $0.localIdentifier, assetMapper: assetMapper) }
   }
 }

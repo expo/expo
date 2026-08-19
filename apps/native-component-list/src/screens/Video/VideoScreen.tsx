@@ -29,11 +29,11 @@ export const VideoScreens = [
     },
   },
   {
-    name: 'Changing VideoPlayer output view',
-    route: 'video/player_prop',
+    name: 'Changing VideoPlayer output view (e2e)',
+    route: 'video/player-output-e2e',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./VideoChangePlayerOutputScreen'));
+      return optionalRequire(() => require('./VideoPlayerOutputE2EScreen'));
     },
   },
   {
@@ -94,7 +94,7 @@ export const VideoScreens = [
   },
   {
     // Note: Renamed "Events" to "Video Events" to avoid conflict with expo-image screens
-    name: 'Video Events',
+    name: 'Video Events (e2e)',
     route: 'video/events',
     options: {},
     getComponent() {

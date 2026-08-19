@@ -22,6 +22,7 @@ describe('exports server', () => {
         env: {
           E2E_ROUTER_ASYNC: '',
           E2E_ROUTER_SERVER_RENDERING: 'true',
+          E2E_FAVICON: './assets/icon.png',
         },
         cliFlags: ['--source-maps'],
       },
@@ -74,6 +75,9 @@ describe('exports server', () => {
       expect(files).toContain('_expo/server/render.js');
       expect(files).toContain('_expo/routes.json');
 
+      // Generated from `web.favicon` in app config
+      expect(findProjectFiles(path.join(server.outputDir, 'client'))).toContain('favicon.ico');
+
       // Rendering and assets config should be embedded in the routes manifest
       const manifest = JSON.parse(
         fs.readFileSync(path.join(server.outputDir, 'server/_expo/routes.json'), 'utf8')
@@ -91,6 +95,17 @@ describe('exports server', () => {
         mode: 'ssr',
         file: '_expo/server/render.js',
       });
+
+      expect(manifest.assets?.favicon).toBe('/favicon.ico');
+    });
+
+    it('injects `<link rel="icon">` into every streamed SSR response', async () => {
+      for (const route of ['/', '/styled', '/welcome-to-the-universe']) {
+        const html = getHtml(await server.fetchAsync(route).then((res) => res.text()));
+        const icon = html.querySelector('html > head > link[rel="icon"]');
+        expect(icon).not.toBeNull();
+        expect(icon?.attributes.href).toBe('/favicon.ico');
+      }
     });
 
     it('routes manifest excludes routes created by `generateStaticParams()`', async () => {
@@ -269,6 +284,8 @@ describe('exports server', () => {
         if (link.attributes.as === 'font') return false;
         // Streaming SSR adds <link rel="preload" as="script"> for bootstrapScripts
         if (link.attributes.as === 'script') return false;
+        // Favicon is tested elsewhere
+        if (link.attributes.rel === 'icon') return false;
         return true;
       });
       expect(links.length).toBe(

@@ -40,7 +40,7 @@ export const wrapNativeEvent = <T,>(nativeEvent: T): NativeSyntheticEvent<T> => 
  * Props for the `PagerView` component.
  * Compatible with `react-native-pager-view`.
  */
-export type PagerViewProps = ViewProps & {
+export interface PagerViewProps extends ViewProps {
   /**
    * Ref handle exposing imperative `setPage`, `setPageWithoutAnimation`,
    * and `setScrollEnabled` methods.
@@ -104,7 +104,7 @@ export type PagerViewProps = ViewProps & {
    * stretched to fill the pager. Each child should have a stable `key`.
    */
   children?: ReactNode;
-};
+}
 
 /**
  * Ref handle for the `PagerView` component.

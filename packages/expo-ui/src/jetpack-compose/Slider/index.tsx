@@ -26,7 +26,7 @@ export type SliderColors = {
   inactiveTickColor?: ColorValue;
 };
 
-export type SliderProps = {
+export interface SliderProps {
   /**
    * The current value of the slider.
    * @default 0
@@ -84,7 +84,7 @@ export type SliderProps = {
    * Slot children for custom thumb and track.
    */
   children?: React.ReactNode;
-};
+}
 
 type NativeSliderProps = Omit<SliderProps, 'onValueChange' | 'onValueChangeFinished' | 'children'> &
   ViewEvent<'onValueChange', { value: number }> &

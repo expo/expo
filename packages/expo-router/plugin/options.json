@@ -153,13 +153,44 @@
             ]
           }
         },
+        "pageHeaders": {
+          "description": "A list of headers that are set on a specific path's response from the server",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["source", "headers"],
+            "properties": {
+              "source": {
+                "description": "The path to match for the headers to apply",
+                "type": "string"
+              },
+              "headers": {
+                "description": "Response headers to apply for matching paths",
+                "type": "object",
+                "additionalProperties": {
+                  "oneOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
         "unstable_useServerMiddleware": {
           "description": "Enable experimental server middleware support with a `+middleware.ts` file. Requires `web.output: 'server'` to be set in app config.",
           "type": "boolean",
           "default": false
         },
         "unstable_useServerDataLoaders": {
-          "description": "Enable experimental data loader support. This is only supported for `web.output: 'static'` outputs at the moment.",
+          "description": "Enable experimental data loader support. Requires `web.output: 'static' | 'server'` to be set in app config.",
           "type": "boolean",
           "default": false
         },

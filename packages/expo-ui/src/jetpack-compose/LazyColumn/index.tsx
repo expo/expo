@@ -25,7 +25,7 @@ export type ContentPadding = {
   bottom?: number;
 };
 
-export type LazyColumnProps = {
+export interface LazyColumnProps {
   /**
    * The content to display inside the lazy column.
    */
@@ -54,7 +54,7 @@ export type LazyColumnProps = {
    * Modifiers for the component.
    */
   modifiers?: ExpoModifier[];
-};
+}
 
 type NativeLazyColumnProps = LazyColumnProps;
 const LazyColumnNativeView: React.ComponentType<NativeLazyColumnProps> = requireNativeView(

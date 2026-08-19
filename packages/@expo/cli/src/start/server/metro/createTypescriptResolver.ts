@@ -5,12 +5,12 @@
 // existence, realpath, and node_modules resolution.
 
 import JsonFile from '@expo/json-file';
-import type Bundler from '@expo/metro/metro/Bundler';
-import type DependencyGraph from '@expo/metro/metro/node-haste/DependencyGraph';
 import type FileMap from '@expo/metro/metro-file-map';
 import type { FileSystem, ChangeEvent } from '@expo/metro/metro-file-map';
 import { RootPathUtils } from '@expo/metro/metro-file-map/lib/RootPathUtils';
 import type { ResolutionContext, Resolution } from '@expo/metro/metro-resolver';
+import type Bundler from '@expo/metro/metro/Bundler';
+import type DependencyGraph from '@expo/metro/metro/node-haste/DependencyGraph';
 import path from 'path';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';

@@ -14,6 +14,7 @@ import expo.modules.medialibrary.next.objects.wrappers.RelativePath
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetDelegate
 import expo.modules.medialibrary.next.objects.asset.delegates.AssetLegacyDelegate
+import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
@@ -30,6 +31,7 @@ import kotlin.coroutines.suspendCoroutine
 class AssetLegacyFactory(
   val assetDeleter: AssetDeleter,
   val assetMover: AssetMover,
+  val assetMapper: AssetMapper,
   val systemPermissionsDelegate: SystemPermissionsDelegate,
   context: Context
 ) : AssetFactory {
@@ -41,7 +43,7 @@ class AssetLegacyFactory(
       .contentResolver ?: throw ContentResolverNotObtainedException()
 
   private fun createAssetDelegate(contentUri: Uri): AssetDelegate {
-    return AssetLegacyDelegate(contentUri, assetDeleter, systemPermissionsDelegate, this, assetMover, contextRef.getOrThrow())
+    return AssetLegacyDelegate(contentUri, assetDeleter, assetMapper, systemPermissionsDelegate, this, assetMover, contextRef.getOrThrow())
   }
 
   override fun create(contentUri: Uri): Asset {

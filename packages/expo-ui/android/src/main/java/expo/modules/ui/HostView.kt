@@ -193,7 +193,6 @@ internal class HostView(context: Context, appContext: AppContext) :
             if (constraints.maxWidth == 0) widthDp else Double.NaN,
             if (constraints.maxHeight == 0) heightDp else Double.NaN
           )
-          flushPendingStateUpdates()
         }
       }
 
@@ -222,7 +221,6 @@ internal class HostView(context: Context, appContext: AppContext) :
         val styleWidth = if (matchContentsHorizontal == true && width > 0) width else null
         val styleHeight = if (matchContentsVertical == true && height > 0) height else null
         shadowNodeProxy.setStyleSize(styleWidth?.toDouble(), styleHeight?.toDouble())
-        flushPendingStateUpdates()
       }
 
       onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble()))

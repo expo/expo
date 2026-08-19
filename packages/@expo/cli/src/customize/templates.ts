@@ -66,7 +66,7 @@ export const TEMPLATES: {
   },
   {
     id: 'metro.config.js',
-    dependencies: ['@expo/metro-config'],
+    dependencies: [],
     destination: () => 'metro.config.js',
     file: (projectRoot) => importFromVendor(projectRoot, 'metro.config.js'),
   },

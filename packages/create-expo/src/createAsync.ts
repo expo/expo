@@ -11,6 +11,7 @@ import {
   promptExamplesAsync,
 } from './Examples';
 import * as Template from './Template';
+import { configureWorkspacesAsync } from './configureWorkspaces';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
@@ -60,6 +61,11 @@ async function resolveProjectRootArgAsync(
 async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
   const shouldInstall = props.install;
   const packageManager = resolvePackageManager();
+
+  // For monorepo templates: normalize workspace-package dependency specs to
+  // the chosen package manager's convention, and write a `pnpm-workspace.yaml`
+  // when pnpm is the resolved manager. No-op for single-app templates.
+  await configureWorkspacesAsync(projectRoot, packageManager);
 
   // Configure package manager, which is unrelated to installing or not
   await configureNodeDependenciesAsync(projectRoot, packageManager);
@@ -126,7 +132,11 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
   });
 
   await withSectionLog(
-    () => Template.extractAndPrepareTemplateAppAsync(projectRoot, { npmPackage: resolvedTemplate }),
+    async () => {
+      await Template.extractAndPrepareTemplateAppAsync(projectRoot, {
+        npmPackage: resolvedTemplate,
+      });
+    },
     {
       pending: chalk.bold('Locating project files.'),
       success: 'Downloaded and extracted project files.',
@@ -138,7 +148,7 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
   await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
-    generateAgentFiles(projectRoot);
+    await generateAgentFiles(projectRoot);
   }
 
   // for now, we will just init a git repo if they have git installed and the
@@ -217,17 +227,22 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     properties: { phase: AnalyticsEventPhases.ATTEMPT, example: resolvedExample },
   });
 
-  await withSectionLog(() => downloadAndExtractExampleAsync(projectRoot, resolvedExample), {
-    pending: chalk.bold('Locating example files...'),
-    success: 'Downloaded and extracted example files.',
-    error: (error) =>
-      `Something went wrong in downloading and extracting the example files: ${error.message}`,
-  });
+  await withSectionLog(
+    async () => {
+      await downloadAndExtractExampleAsync(projectRoot, resolvedExample);
+    },
+    {
+      pending: chalk.bold('Locating example files...'),
+      success: 'Downloaded and extracted example files.',
+      error: (error) =>
+        `Something went wrong in downloading and extracting the example files: ${error.message}`,
+    }
+  );
 
   await setupDependenciesAsync(projectRoot, props);
 
   if (props.agentsMd) {
-    generateAgentFiles(projectRoot);
+    await generateAgentFiles(projectRoot);
   }
 
   // for now, we will just init a git repo if they have git installed and the

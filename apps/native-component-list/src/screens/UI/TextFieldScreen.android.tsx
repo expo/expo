@@ -78,9 +78,6 @@ export default function TextFieldScreen() {
       'worklet';
       console.log('Value changed to:', newValue);
     };
-    return () => {
-      fieldValue.onChange = null;
-    };
   }, []);
 
   const sharedProps = {

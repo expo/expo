@@ -57,9 +57,12 @@ export function CopyTextButton({ children, copyText, className }: CopyTextButton
         aria-label="Copy to clipboard"
         title="Copy to clipboard">
         {copied ? (
-          <CheckIcon className="icon-xs text-success" />
+          <CheckIcon aria-hidden="true" className="icon-xs text-success" />
         ) : (
-          <ClipboardIcon className="icon-xs text-icon-secondary hover:text-icon-default" />
+          <ClipboardIcon
+            aria-hidden="true"
+            className="icon-xs text-icon-secondary hover:text-icon-default"
+          />
         )}
       </button>
     </span>

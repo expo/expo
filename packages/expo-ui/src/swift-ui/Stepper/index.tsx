@@ -4,7 +4,7 @@ import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type StepperProps = {
+export interface StepperProps extends CommonViewModifierProps {
   /**
    * The label text displayed with the stepper.
    */
@@ -29,7 +29,7 @@ export type StepperProps = {
    * Called when the stepper value changes.
    */
   onValueChange: (value: number) => void;
-} & CommonViewModifierProps;
+}
 
 type NativeStepperProps = Omit<StepperProps, 'onValueChange'> &
   ViewEvent<'onValueChange', { value: number }>;

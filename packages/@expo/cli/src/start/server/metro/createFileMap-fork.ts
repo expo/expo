@@ -4,9 +4,9 @@
 // Forks https://github.com/facebook/metro/blob/01b4ad6/packages/metro/src/node-haste/DependencyGraph/createFileMap.js
 // and redirects to `@expo/metro-file-map`
 
-import type MetroServer from '@expo/metro/metro/Server';
-import type { ConfigT } from '@expo/metro/metro-config';
 import FileMap, { DependencyPlugin, DiskCacheManager, HastePlugin } from '@expo/metro-file-map';
+import type { ConfigT } from '@expo/metro/metro-config';
+import type MetroServer from '@expo/metro/metro/Server';
 import ciInfo from 'ci-info';
 import path from 'node:path';
 

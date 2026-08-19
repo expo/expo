@@ -17,8 +17,10 @@ private final class WidgetsJSRuntime {
 
   private init() {}
 
-  func render(layout: String, props: [String: Any], environment: [String: Any]) -> WidgetJavaScriptResult<[String: Any]> {
-    call(layout: layout, functionName: "__expoWidgetRender", arguments: [props, environment]).flatMap { result in
+  func render(layout: String, props: [String: Any]?, environment: [String: Any]) -> WidgetJavaScriptResult<[String: Any]> {
+    call(layout: layout, functionName: "__expoWidgetRender") { context in
+      [props.map { $0 } ?? JSValue(undefinedIn: context) as Any, environment]
+    }.flatMap { result in
       guard let renderedNode = result?.toObject() as? [String: Any] else {
         return .failure(WidgetJavaScriptError(message: "Expo widget render did not produce any results."))
       }
@@ -27,11 +29,15 @@ private final class WidgetsJSRuntime {
   }
 
   func handlePress(layout: String, props: [String: Any], environment: [String: Any]) -> WidgetJavaScriptResult<[String: Any]?> {
-    call(layout: layout, functionName: "__expoWidgetHandlePress", arguments: [props, environment])
+    call(layout: layout, functionName: "__expoWidgetHandlePress") { _ in [props, environment] }
       .map { $0?.toObject() as? [String: Any] }
   }
 
-  private func call(layout: String, functionName: String, arguments: [Any]) -> WidgetJavaScriptResult<JSValue?> {
+  private func call(
+    layout: String,
+    functionName: String,
+    arguments: (JSContext) -> [Any]
+  ) -> WidgetJavaScriptResult<JSValue?> {
     lock.lock()
     defer { lock.unlock() }
 
@@ -50,7 +56,7 @@ private final class WidgetsJSRuntime {
       return .failure(WidgetJavaScriptError(message: "Expo widget runtime function \(functionName) is unavailable."))
     }
 
-    let result = function.call(withArguments: arguments)
+    let result = function.call(withArguments: arguments(context))
     if let exceptionMessage = contextExceptionMessage(context) {
       return .failure(WidgetJavaScriptError(message: exceptionMessage))
     }
@@ -127,7 +133,7 @@ private final class WidgetsJSRuntime {
 
 func evaluateWidgetLayout(
   layout: String,
-  props: [String: Any],
+  props: [String: Any]?,
   environment: [String: Any]
 ) -> WidgetJavaScriptResult<[String: Any]> {
   WidgetsJSRuntime.shared.render(layout: layout, props: props, environment: environment)

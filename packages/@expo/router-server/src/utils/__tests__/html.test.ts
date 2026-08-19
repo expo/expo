@@ -1,4 +1,5 @@
 import {
+  createFaviconAsString,
   createInjectedCssAsString,
   createInjectedScriptsAsString,
   createLoaderDataScriptAsString,
@@ -82,6 +83,18 @@ describe(createInjectedScriptsAsString, () => {
   it('returns multiple defer script tags', () => {
     const result = createInjectedScriptsAsString(['/a.js', '/b.js']);
     expect(result).toBe('<script src="/a.js" defer></script>\n<script src="/b.js" defer></script>');
+  });
+});
+
+describe(createFaviconAsString, () => {
+  it('returns the matching `<link rel="icon" />` markup', () => {
+    expect(createFaviconAsString('/favicon.ico')).toBe('<link rel="icon" href="/favicon.ico"/>');
+  });
+
+  it('escapes attribute-unsafe characters in the href', () => {
+    expect(createFaviconAsString('/icons?size=32&q="x"')).toBe(
+      '<link rel="icon" href="/icons?size=32&amp;q=&quot;x&quot;"/>'
+    );
   });
 });
 

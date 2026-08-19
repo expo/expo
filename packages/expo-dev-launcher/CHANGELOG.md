@@ -6,12 +6,33 @@
 
 ### 🎉 New features
 
+- Add a Settings toggle to switch between auto-launching the most recent app and showing the launcher. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Add build's expiration date to Settings. ([#47190](https://github.com/expo/expo/pull/47190) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
+- [iOS] Use `RCTPlatformName` instead of hardcoding `ios` when requesting bundles from Metro. ([#46443](https://github.com/expo/expo/pull/46443) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Cleared the deep-link URL from cached `launchOptions` after it is consumed ([#46265](https://github.com/expo/expo/pull/46265) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Fixed a crash when cold-launching a development build from a deep link that carries intent categories (e.g. an App Link opened from a browser). ([#46314](https://github.com/expo/expo/pull/46314) by [@lilianchiassai-fc](https://github.com/lilianchiassai-fc) & [#46328](https://github.com/expo/expo/pull/46328) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Discover packagers across all connected networks on Android 33+. ([#46487](https://github.com/expo/expo/pull/46487) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Present Local Network permission as a status row instead of a toggle, and make the Settings debug actions native, full-row-tappable list rows. ([#46758](https://github.com/expo/expo/pull/46758) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Improve the Updates tab empty state with clearer guidance on how to publish an update. ([#46759](https://github.com/expo/expo/pull/46759) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Present the development server info dialog as a native sheet. ([#46760](https://github.com/expo/expo/pull/46760) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Reduce accidental logout in the account selector with a confirmation step and a less prominent button, and add more spacing around the header title. ([#46761](https://github.com/expo/expo/pull/46761) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Make the development server list reliable, keep discovery running across tab switches, periodically re-verify discovered servers, add pull-to-refresh on the Home tab, and show a searching state instead of "No development servers found". ([#46811](https://github.com/expo/expo/pull/46811) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Explain why a project failed to load instead of showing a generic "Failed to connect" message. ([#46866](https://github.com/expo/expo/pull/46866) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix tvOS compile error in DevServersView. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
+- [Android] Fix auto-launching into the most recently opened project on startup. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Forward the launching intent's extras when cold-launching the most recently opened bundle, so launch arguments (e.g. from Maestro/Detox or `adb am start -e`) reach the app and `react-native-launch-arguments` can read them. ([#47352](https://github.com/expo/expo/pull/47352) by [@kanzelm3](https://github.com/kanzelm3))
+- [iOS] Fix Release build failure from an unguarded call to `RCTBundleURLProviderAllowPackagerServerAccess`. ([#47688](https://github.com/expo/expo/pull/47688) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [Android] Fix onUserLeaveHint NPE and lost EAS sign-in redirect. ([#47347](https://github.com/expo/expo/pull/47347) by [@vicprz](https://github.com/vicprz))
 
 ### 💡 Others
+
+- [Android] Remove the legacy (old architecture) dev support manager and dead build configuration. ([#47640](https://github.com/expo/expo/pull/47640) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Remove legacy (old architecture) code paths and dead build configuration. ([#47639](https://github.com/expo/expo/pull/47639) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Replace swizzling and reflection into React Native internals (packager access, RedBox, instance teardown) with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Replace reflection into React Native internals with public 0.86 APIs. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.16 — 2026-05-26
 

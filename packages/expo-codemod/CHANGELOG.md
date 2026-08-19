@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

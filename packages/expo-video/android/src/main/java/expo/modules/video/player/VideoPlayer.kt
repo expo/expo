@@ -591,5 +591,8 @@ private fun Tracks.toVideoTracks(sourceManifest: HlsManifest?): List<VideoTrack>
       videoTracks.add(VideoTrack.fromFormat(format, isSupported, variantUrl))
     }
   }
-  return videoTracks.filterNotNull()
+  // For HLS sources with multiple audio renditions, ExoPlayer creates a separate video
+  // track group for each audio variant, which results in the same video formats being
+  // reported multiple times. Deduplicate by format id to expose each variant only once.
+  return videoTracks.filterNotNull().distinctBy { it.format?.id }
 }

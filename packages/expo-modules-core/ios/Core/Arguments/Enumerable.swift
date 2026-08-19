@@ -3,7 +3,7 @@
 /**
  A protocol that allows converting raw values to enum cases.
  */
-public protocol Enumerable: AnyArgument, CaseIterable {
+public protocol Enumerable: AnyArgument, CaseIterable, JavaScriptDecodable, JavaScriptEncodable {
   /**
    Tries to create an enum case using given raw value.
    May throw errors, e.g. when the raw value doesn't match any case.

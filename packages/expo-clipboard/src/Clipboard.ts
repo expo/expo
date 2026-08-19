@@ -1,4 +1,4 @@
-import { type EventSubscription, UnavailabilityError, Platform } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError, Platform } from 'expo';
 
 import type {
   ClipboardImage,
@@ -6,11 +6,12 @@ import type {
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
+  SetImageOptions,
 } from './Clipboard.types';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
+import { flattenPlatformOptions } from './utils/options';
 
-// TODO(@kitten): Remove re-export from EMC
-export type { EventSubscription as Subscription } from 'expo-modules-core';
+export type { EventSubscription as Subscription } from 'expo';
 
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
@@ -44,7 +45,8 @@ export async function setStringAsync(
   if (!ExpoClipboard.setStringAsync) {
     throw new UnavailabilityError('Clipboard', 'setStringAsync');
   }
-  return ExpoClipboard.setStringAsync(text, options);
+  const flattenedOptions = flattenPlatformOptions(options);
+  return ExpoClipboard.setStringAsync(text, flattenedOptions);
 }
 
 /**
@@ -69,6 +71,7 @@ export function hasStringAsync(): Promise<boolean> {
  *
  * @returns A promise that fulfills to the URL in the clipboard, or null if no URL is present or permission was denied.
  * @platform ios
+ * @platform macos
  */
 export async function getUrlAsync(): Promise<string | null> {
   if (!ExpoClipboard.getUrlAsync) {
@@ -86,6 +89,7 @@ export async function getUrlAsync(): Promise<string | null> {
  *
  * @param url The URL to save to the clipboard.
  * @platform ios
+ * @platform macos
  */
 export async function setUrlAsync(url: string): Promise<void> {
   if (!ExpoClipboard.setUrlAsync) {
@@ -99,6 +103,7 @@ export async function setUrlAsync(url: string): Promise<void> {
  *
  * @returns A promise that fulfills to `true` if clipboard has URL content, resolves to `false` otherwise.
  * @platform ios
+ * @platform macos
  */
 export async function hasUrlAsync(): Promise<boolean> {
   if (!ExpoClipboard.hasUrlAsync) {
@@ -138,6 +143,7 @@ export async function getImageAsync(options: GetImageOptions): Promise<Clipboard
  * Sets an image in the user's clipboard.
  *
  * @param base64Image Image encoded as a base64 string, without MIME type.
+ * @param options Options for the clipboard content to be set.
  *
  * @example
  * ```tsx
@@ -148,11 +154,15 @@ export async function getImageAsync(options: GetImageOptions): Promise<Clipboard
  * await Clipboard.setImageAsync(result.base64);
  * ```
  */
-export async function setImageAsync(base64Image: string): Promise<void> {
+export async function setImageAsync(
+  base64Image: string,
+  options: SetImageOptions = {}
+): Promise<void> {
   if (!ExpoClipboard.setImageAsync) {
     throw new UnavailabilityError('Clipboard', 'setImageAsync');
   }
-  return ExpoClipboard.setImageAsync(base64Image);
+  const flattenedOptions = flattenPlatformOptions(options);
+  return ExpoClipboard.setImageAsync(base64Image, flattenedOptions);
 }
 
 /**
@@ -171,7 +181,7 @@ export async function hasImageAsync(): Promise<boolean> {
 
 /**
  * Adds a listener that will fire whenever the content of the user's clipboard changes. This method
- * is a no-op on Web.
+ * is a no-op on Web and macOS.
  *
  * @param listener Callback to execute when listener is triggered. The callback is provided a
  * single argument that is an object containing information about clipboard contents.

@@ -30,8 +30,8 @@ import type {
 import collectDependencies, { InvalidRequireCallError } from '../collect-dependencies';
 
 const generateOptions = { concise: true, sourceType: 'module' };
-const codeFromAst = (ast) => generate(ast, generateOptions).code;
-const comparableCode = (code) => code.trim().replace(/\s+/g, ' ');
+const codeFromAst = (ast: t.Node) => generate(ast, generateOptions).code;
+const comparableCode = (code: string) => code.trim().replace(/\s+/g, ' ');
 const { any, objectContaining } = expect;
 
 const opts: Options = {
@@ -1534,7 +1534,7 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
   `);
 
   // Verify that dependencies have been inlined into the console.log call.
-  expect(codeFromAst(transformedAst)).toMatch(/^console\.log/);
+  expect(codeFromAst(nullthrows(transformedAst))).toMatch(/^console\.log/);
 });
 
 it('integration: records locations of inlined dependencies (Babel ESM)', () => {
@@ -1648,6 +1648,91 @@ describe('optional dependencies', () => {
 
     const { dependencies } = collectDependencies(ast, opts);
     validateDependencies(dependencies, 4);
+  });
+
+  describe('dynamic import with rejection handler', () => {
+    it('import().catch(handler) is optional', () => {
+      const ast = astFromCode(`
+        import('optional-async-a').catch(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(handler, onReject) is optional', () => {
+      const ast = astFromCode(`
+        import('optional-async-a').then(() => {}, () => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(...).then(...).catch(handler) is optional', () => {
+      const ast = astFromCode(`
+        import('optional-async-a')
+          .then(x => x)
+          .then(x => x)
+          .catch(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('await import().catch(handler) is optional', () => {
+      const ast = astFromCode(`
+        async function f() {
+          await import('optional-async-a').catch(() => {});
+        }
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('try { await import() } catch {} is optional', () => {
+      const ast = astFromCode(`
+        async function f() {
+          try {
+            await import('optional-async-a');
+          } catch (e) {}
+        }
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(handler) without onReject is not optional', () => {
+      const ast = astFromCode(`
+        import('not-optional-async-a').then(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().catch() with no handler argument is not optional', () => {
+      const ast = astFromCode(`
+        import('not-optional-async-a').catch();
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(handler, null) is not optional (null/undefined onReject)', () => {
+      const ast = astFromCode(`
+        import('not-optional-async-a').then(() => {}, null);
+        import('not-optional-async-b').then(() => {}, undefined);
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 3);
+    });
+
+    it('import() detached from chain is not optional', () => {
+      const ast = astFromCode(`
+        const p = import('not-optional-async-a');
+        p.catch(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
   });
 
   describe('isESMImport', () => {

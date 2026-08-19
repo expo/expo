@@ -4,9 +4,9 @@ import spawnAsync from '@expo/spawn-async';
 import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 
-import { BasePackageManager } from './BasePackageManager';
 import { resolveWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeManagers';
 import { createPendingSpawnAsync } from '../utils/spawn';
+import { BasePackageManager } from './BasePackageManager';
 
 export class NpmPackageManager extends BasePackageManager {
   readonly name = 'npm';

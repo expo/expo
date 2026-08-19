@@ -6,7 +6,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { before, describe, it, afterEach } from 'node:test';
 
-import { getVersionsInfoAsync, isNonInteractive, setForceNonInteractive } from './Utils';
+import {
+  getVersionsInfoAsync,
+  isNonInteractive,
+  selectDistributedPackages,
+  setForceNonInteractive,
+  IOS_PREBUILD_PACKAGES,
+} from './Utils';
 import { resolvePackagePath } from './resolvePackage';
 
 // ---------------------------------------------------------------------------
@@ -63,6 +69,34 @@ describe('isNonInteractive', () => {
     process.env.CI = '';
     setForceNonInteractive(false);
     assert.equal(isNonInteractive(), true);
+  });
+});
+
+describe('selectDistributedPackages', () => {
+  const fakePackages = [
+    { packageName: 'expo-modules-core' },
+    { packageName: 'expo-video' },
+    { packageName: 'expo-age-range' },
+    { packageName: 'expo-blur' },
+  ] as any[];
+
+  it('keeps only the distributed set when allPackages is false', () => {
+    const result = selectDistributedPackages(fakePackages, false);
+    assert.deepEqual(
+      result.map((p) => p.packageName),
+      ['expo-modules-core', 'expo-video']
+    );
+  });
+
+  it('returns every package unchanged when allPackages is true', () => {
+    const result = selectDistributedPackages(fakePackages, true);
+    assert.equal(result, fakePackages);
+  });
+
+  it('IOS_PREBUILD_PACKAGES lists the 15 distributed packages', () => {
+    assert.equal(IOS_PREBUILD_PACKAGES.length, 15);
+    assert.ok(IOS_PREBUILD_PACKAGES.includes('expo-modules-core'));
+    assert.ok(!IOS_PREBUILD_PACKAGES.includes('expo-age-range'));
   });
 });
 

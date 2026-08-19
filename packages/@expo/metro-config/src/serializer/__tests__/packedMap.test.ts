@@ -250,7 +250,7 @@ describe('makeProxy', () => {
       Symbol.for('nodejs.util.inspect.custom')
     ];
     expect(typeof fn).toBe('function');
-    expect(fn.call(p)).toBe('PackedMap(count=3)');
+    expect(fn!.call(p)).toBe('PackedMap(count=3)');
   });
 
   it('write attempts throw', () => {

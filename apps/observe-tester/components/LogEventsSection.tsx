@@ -1,5 +1,7 @@
 import AppMetrics, { type LogAttributeValue, type LogSeverity } from 'expo-app-metrics';
-import { StyleSheet, Text } from 'react-native';
+import { Observe } from 'expo-observe';
+import { useState } from 'react';
+import { StyleSheet, Text, TextInput } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { severityColors, usePaletteScheme } from '@/utils/severity';
@@ -99,6 +101,7 @@ const LOG_EVENT_TRIGGERS: LogEventTrigger[] = [
 export function LogEventsSection() {
   const theme = useTheme();
   const paletteScheme = usePaletteScheme();
+  const [displayName, setDisplayName] = useState('');
 
   return (
     <>
@@ -107,6 +110,22 @@ export function LogEventsSection() {
         Record a log event of the chosen severity against the current session. Each tap dispatches
         on the next flush to the OpenTelemetry logs endpoint.
       </Text>
+      <TextInput
+        style={[
+          styles.input,
+          {
+            color: theme.text.default,
+            borderColor: theme.border.default,
+            backgroundColor: theme.background.element,
+          },
+        ]}
+        value={displayName}
+        onChangeText={setDisplayName}
+        placeholder="Display name (optional)"
+        placeholderTextColor={theme.text.tertiary}
+        autoCapitalize="none"
+        autoCorrect={false}
+      />
       {LOG_EVENT_TRIGGERS.map(({ severity, title, description, body, attributes }) => {
         const colors = severityColors(severity, theme, paletteScheme);
         return (
@@ -115,10 +134,11 @@ export function LogEventsSection() {
             title={title}
             description={description}
             onPress={() =>
-              AppMetrics.logEvent(`debug.${severity}_button_pressed`, {
+              Observe.logEvent(`debug.${severity}_button_pressed`, {
                 severity,
                 body,
                 attributes,
+                displayName: displayName.trim() || undefined,
               })
             }
             theme="secondary"
@@ -143,5 +163,13 @@ const styles = StyleSheet.create({
   sectionHint: {
     fontSize: 13,
     marginBottom: 16,
+  },
+  input: {
+    borderWidth: 1,
+    borderRadius: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    marginBottom: 16,
+    fontSize: 16,
   },
 });

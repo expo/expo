@@ -2,9 +2,11 @@ package expo.modules.devlauncher.launcher.loaders
 
 import android.content.Context
 import android.net.Uri
+import androidx.core.net.toUri
 import com.facebook.react.ReactHost
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
+import expo.modules.devlauncher.helpers.DevLauncherUrl
 import expo.modules.devlauncher.helpers.createUpdatesConfigurationWithUrl
 import expo.modules.devlauncher.helpers.loadUpdate
 import expo.modules.devlauncher.launcher.manifest.DevLauncherManifestParser
@@ -12,69 +14,113 @@ import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import expo.modules.updatesinterface.UpdatesInterface
 
-class DevLauncherAppLoaderFactory(
-  val context: Context,
-  val appHost: ReactHost,
-  val updatesInterface: UpdatesInterface?,
-  val controller: DevLauncherController,
-  val installationIDHelper: DevLauncherInstallationIDHelper
-) {
-  private var instanceWasCreated = false
-  private var manifest: Manifest? = null
-  private var useDeveloperSupport = true
+data class AppLoaderResult(
+  val appLoader: DevLauncherAppLoader,
+  val manifest: Manifest?,
+  val manifestURL: Uri?,
+  val resolvedUrl: Uri,
+  val devLauncherUrl: DevLauncherUrl?,
+  val useDeveloperSupport: Boolean
+)
 
-  suspend fun createAppLoader(url: Uri, projectUrl: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader {
-    instanceWasCreated = true
+suspend fun createAppLoader(
+  url: Uri,
+  projectUrl: Uri?,
+  context: Context,
+  appHost: ReactHost,
+  updatesInterface: UpdatesInterface?,
+  controller: DevLauncherController,
+  installationIDHelper: DevLauncherInstallationIDHelper
+): AppLoaderResult {
+  if (isAssetUrl(url)) {
+    (updatesInterface as? UpdatesDevLauncherInterface)?.setIsUsingEmbeddedAssets(true)
+    return AppLoaderResult(
+      appLoader = DevLauncherEmbeddedAppLoader(appHost, context, controller, url.toString()),
+      manifest = null,
+      manifestURL = null,
+      resolvedUrl = url,
+      devLauncherUrl = null,
+      useDeveloperSupport = false
+    )
+  }
 
-    if (!manifestParser.isManifestUrl()) {
-      // It's (maybe) a raw React Native bundle
-      return DevLauncherReactNativeAppLoader(url, appHost, context, controller)
-    }
+  val devLauncherUrl = DevLauncherUrl(url)
+  val parsedUrl = devLauncherUrl.url
+  var parsedProjectUrl = projectUrl ?: url
 
-    val validConfiguration = updatesInterface?.let {
-      val runtimeVersion = it.runtimeVersion
-      if (runtimeVersion == null) {
-        null
-      } else {
-        val configurationCandidate = createUpdatesConfigurationWithUrl(url, projectUrl, runtimeVersion, installationIDHelper.getOrCreateInstallationID(context))
-        if ((it as UpdatesDevLauncherInterface).isValidUpdatesConfiguration(configurationCandidate)) {
-          configurationCandidate
-        } else {
-          null
-        }
-      }
-    }
+  if (isEASUpdateURL(url) && projectUrl == null) {
+    parsedProjectUrl = DevLauncherController.getMetadataValue(context, "expo.modules.updates.EXPO_UPDATE_URL").toUri()
+  }
 
-    return if (validConfiguration == null) {
-      manifest = manifestParser.parseManifest()
-      if (!manifest!!.isUsingDeveloperTool()) {
-        throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")
-      }
-      DevLauncherLocalAppLoader(manifest!!, appHost, context, controller)
+  val manifestParser = DevLauncherManifestParser(controller.httpClient, parsedUrl, installationIDHelper.getOrCreateInstallationID(context))
+
+  if (!manifestParser.isManifestUrl()) {
+    return AppLoaderResult(
+      appLoader = DevLauncherReactNativeAppLoader(parsedUrl, appHost, context, controller),
+      manifest = null,
+      manifestURL = null,
+      resolvedUrl = parsedUrl,
+      devLauncherUrl = devLauncherUrl,
+      useDeveloperSupport = true
+    )
+  }
+
+  val validConfiguration = updatesInterface?.let {
+    val runtimeVersion = it.runtimeVersion ?: return@let null
+    val configurationCandidate = createUpdatesConfigurationWithUrl(parsedUrl, parsedProjectUrl, runtimeVersion, installationIDHelper.getOrCreateInstallationID(context))
+    if ((it as UpdatesDevLauncherInterface).isValidUpdatesConfiguration(configurationCandidate)) {
+      configurationCandidate
     } else {
-      val update = (updatesInterface as UpdatesDevLauncherInterface?)!!.loadUpdate(validConfiguration, context) {
-        manifest = Manifest.fromManifestJson(it) // TODO: might be able to pass actual manifest object in here
-        return@loadUpdate !manifest!!.isUsingDeveloperTool()
-      }
-      if (manifest!!.isUsingDeveloperTool()) {
-        DevLauncherLocalAppLoader(manifest!!, appHost, context, controller)
-      } else {
-        useDeveloperSupport = false
-        val localBundlePath = update.launchAssetPath
-        DevLauncherPublishedAppLoader(manifest!!, localBundlePath, appHost, context, controller)
-      }
+      null
     }
   }
 
-  fun getManifest(): Manifest? = checkIfInstanceWasCreated { manifest }
-
-  fun shouldUseDeveloperSupport(): Boolean = checkIfInstanceWasCreated { useDeveloperSupport }
-
-  private inline fun <T> checkIfInstanceWasCreated(block: () -> T): T {
-    if (!instanceWasCreated) {
-      throw IllegalStateException("You need to create the AppLoader first.")
+  if (validConfiguration == null) {
+    val manifest = manifestParser.parseManifest()
+    if (!manifest.isUsingDeveloperTool()) {
+      throw Exception("expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages.")
     }
-
-    return block()
+    return AppLoaderResult(
+      appLoader = DevLauncherLocalAppLoader(manifest, appHost, context, controller),
+      manifest = manifest,
+      manifestURL = parsedUrl,
+      resolvedUrl = parsedUrl,
+      devLauncherUrl = devLauncherUrl,
+      useDeveloperSupport = true
+    )
   }
+
+  var manifest: Manifest? = null
+  val update = (updatesInterface as UpdatesDevLauncherInterface).loadUpdate(validConfiguration, context) {
+    manifest = Manifest.fromManifestJson(it)
+    return@loadUpdate !manifest.isUsingDeveloperTool()
+  }
+
+  return if (manifest!!.isUsingDeveloperTool()) {
+    AppLoaderResult(
+      appLoader = DevLauncherLocalAppLoader(manifest, appHost, context, controller),
+      manifest = manifest,
+      manifestURL = parsedUrl,
+      resolvedUrl = parsedUrl,
+      devLauncherUrl = devLauncherUrl,
+      useDeveloperSupport = true
+    )
+  } else {
+    AppLoaderResult(
+      appLoader = DevLauncherPublishedAppLoader(manifest, update.launchAssetPath, appHost, context, controller),
+      manifest = manifest,
+      manifestURL = parsedUrl,
+      resolvedUrl = parsedUrl,
+      devLauncherUrl = devLauncherUrl,
+      useDeveloperSupport = false
+    )
+  }
+}
+
+private fun isAssetUrl(url: Uri): Boolean {
+  return url.toString().startsWith("assets://")
+}
+
+private fun isEASUpdateURL(url: Uri): Boolean {
+  return url.host.equals("u.expo.dev") || url.host.equals("staging-u.expo.dev")
 }

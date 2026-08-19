@@ -63,3 +63,5 @@ internal class AudioStreamUnsupportedConfigException(message: String) :
 
 internal class AudioStreamInitializationException(message: String) :
   CodedException(message)
+
+internal class AudioStreamFileException(message: String) : CodedException(message)

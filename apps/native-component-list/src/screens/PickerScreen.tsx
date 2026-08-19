@@ -1,5 +1,5 @@
 import { Picker, PickerProps, PickerIOS } from '@react-native-picker/picker';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 import * as React from 'react';
 import { Button } from 'react-native';
 

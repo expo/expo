@@ -227,6 +227,14 @@ export class FileSystemFile {
     return '';
   }
 
+  canPreview(): Promise<boolean> {
+    return Promise.resolve(this.exists);
+  }
+
+  preview(): Promise<void> {
+    return this.exists ? Promise.resolve() : Promise.reject(new Error('File does not exist'));
+  }
+
   create(options: { intermediates?: boolean; overwrite?: boolean } = {}): void {
     const key = normalizeKey(this.uri);
     const existing = store.get(key);
@@ -247,7 +255,7 @@ export class FileSystemFile {
   }
 
   writeSync(
-    content: string | Uint8Array,
+    content: string | Uint8Array | ArrayBuffer,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): void {
     assertParent(this.uri, false);
@@ -281,7 +289,7 @@ export class FileSystemFile {
   }
 
   async write(
-    content: string | Uint8Array,
+    content: string | Uint8Array | ArrayBuffer,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): Promise<void> {
     this.writeSync(content, options);
@@ -502,7 +510,7 @@ export class FileSystemFileHandle {
     return entry?.bytes?.length ?? 0;
   }
 
-  readBytes(count: number): Uint8Array {
+  readBytesSync(count: number): Uint8Array {
     this.ensureOpen();
     if (this.writeOnly) throw new Error('File handle is write-only');
     const entry = store.get(this.key);
@@ -512,7 +520,11 @@ export class FileSystemFileHandle {
     return slice;
   }
 
-  writeBytes(buffer: Uint8Array): void {
+  async readBytes(count: number): Promise<Uint8Array> {
+    return this.readBytesSync(count);
+  }
+
+  writeBytesSync(buffer: Uint8Array): void {
     this.ensureOpen();
     if (this.readOnly) throw new Error('File handle is read-only');
     const entry = store.get(this.key) ?? {
@@ -534,6 +546,10 @@ export class FileSystemFileHandle {
       modifiedAt: nextMockTimestamp(),
     });
     this.cursor = writeOffset + buffer.length;
+  }
+
+  async writeBytes(buffer: Uint8Array): Promise<void> {
+    this.writeBytesSync(buffer);
   }
 
   close(): void {
@@ -751,7 +767,10 @@ export class FileSystemWatcher {
 // so the handles provide SharedObject APIs while the public tasks expose only
 // their explicit facade methods.
 
-const { SharedObject } = globalThis.expo;
+// Annotate explicitly: the inferred type of the destructured constructor
+// otherwise references expo-modules-core's internal declaration path, which is
+// not portable in the emitted (composite) declarations.
+const SharedObject: (typeof globalThis.expo)['SharedObject'] = globalThis.expo.SharedObject;
 
 export class FileSystemUploadTask extends SharedObject {
   start(_url: string, _file: any, _options: any): Promise<any> {
@@ -770,12 +789,7 @@ export class FileSystemDownloadTask extends SharedObject {
   pause(): { resumeData: string } {
     return { resumeData: 'mock-resume-data' };
   }
-  resume(
-    _url: string,
-    _to: any,
-    _resumeData: string,
-    _options?: any
-  ): Promise<string | null> {
+  resume(_url: string, _to: any, _resumeData: string, _options?: any): Promise<string | null> {
     return Promise.resolve('file:///mock/downloaded-file');
   }
   release(): void {

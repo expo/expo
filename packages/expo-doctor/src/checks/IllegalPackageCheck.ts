@@ -1,6 +1,6 @@
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class IllegalPackageCheck implements DoctorCheck {
   description = 'Check that native modules do not use incompatible support packages';

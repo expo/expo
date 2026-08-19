@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'Label component',
+    route: 'ui/label',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LabelScreen'));
+    },
+  },
+  {
     name: 'Button component',
     route: 'ui/button',
     options: {},

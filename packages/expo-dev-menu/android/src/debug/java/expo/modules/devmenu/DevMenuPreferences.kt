@@ -49,6 +49,11 @@ interface DevMenuPreferences {
    * Whether to show a floating action button that pulls up the DevMenu at launch.
    */
   var showFab: Boolean
+
+  /**
+   * Whether to try to launch the most recently opened project at startup instead of showing the launcher.
+   */
+  var tryToLaunchLastBundle: Boolean
 }
 
 class DevMenuDefaultPreferences(
@@ -68,6 +73,7 @@ class DevMenuDefaultPreferences(
   private val fabDefault = metaDataBool("EXDevMenuShowFloatingActionButton", true)
   private val showsAtLaunchDefault = metaDataBool("EXDevMenuShowsAtLaunch", true)
   private val isOnboardingFinishedDefault = metaDataBool("EXDevMenuIsOnboardingFinished", false)
+  private val tryToLaunchLastBundleDefault = metaDataBool("DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", true)
 
   private val listeners = mutableListOf<() -> Unit>()
 
@@ -108,4 +114,7 @@ class DevMenuDefaultPreferences(
 
   override var showFab: Boolean
     by preferences(sharedPreferences, fabDefault)
+
+  override var tryToLaunchLastBundle: Boolean
+    by preferences(sharedPreferences, tryToLaunchLastBundleDefault)
 }

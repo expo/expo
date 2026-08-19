@@ -1,7 +1,7 @@
 import { Inter_900Black } from '@expo-google-fonts/inter';
 import Constants from 'expo-constants';
 import { ExpoUpdatesManifest } from 'expo-manifests';
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
 import { UpdatesLogEntry } from 'expo-updates';

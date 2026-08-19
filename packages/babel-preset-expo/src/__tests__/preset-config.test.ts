@@ -589,6 +589,59 @@ describe('unstable_transformProfile override', () => {
   });
 });
 
+describe('per-platform option overrides', () => {
+  it('ios options override native options on ios', () => {
+    const keys = getPluginKeys(
+      { name: 'metro', platform: 'ios', isDev: true },
+      {
+        native: { unstable_transformProfile: 'hermes-canary' },
+        ios: { unstable_transformProfile: 'default' },
+      }
+    );
+    expect(keys).toContain('transform-classes');
+    expect(keys).toContain('transform-class-properties');
+  });
+
+  it('falls back to native options when the active platform key is absent', () => {
+    const keys = getPluginKeys(
+      { name: 'metro', platform: 'android', isDev: true },
+      {
+        native: { unstable_transformProfile: 'hermes-canary' },
+        ios: { unstable_transformProfile: 'default' },
+      }
+    );
+    expect(keys).not.toContain('transform-classes');
+    expect(keys).not.toContain('transform-class-properties');
+  });
+
+  it('ignores other-platform option blocks', () => {
+    const keys = getPluginKeys(
+      { name: 'metro', platform: 'ios', isDev: true },
+      { android: { unstable_transformProfile: 'hermes-canary' } }
+    );
+    expect(keys).toContain('transform-classes');
+    expect(keys).toContain('transform-class-properties');
+  });
+
+  it('applies macos options on macos', () => {
+    const keys = getPluginKeys(
+      { name: 'metro', platform: 'macos', isDev: true },
+      { macos: { unstable_transformProfile: 'hermes-canary' } }
+    );
+    expect(keys).not.toContain('transform-classes');
+    expect(keys).not.toContain('transform-class-properties');
+  });
+
+  it('applies tvos options on tvos', () => {
+    const keys = getPluginKeys(
+      { name: 'metro', platform: 'tvos', isDev: true },
+      { tvos: { unstable_transformProfile: 'hermes-canary' } }
+    );
+    expect(keys).not.toContain('transform-classes');
+    expect(keys).not.toContain('transform-class-properties');
+  });
+});
+
 describe('TypeScript overrides', () => {
   const caller = { name: 'metro', platform: 'ios', isDev: true };
 

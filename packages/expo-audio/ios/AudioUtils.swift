@@ -55,18 +55,15 @@ struct RecordingUtils {
 
 struct AudioUtils {
   #if os(iOS)
-  static func createRecorder(directory: URL?, with options: RecordingOptions) -> AVAudioRecorder {
-    if let directory {
-      let fileUrl = createRecordingUrl(from: directory, with: options)
-      do {
-        let recorder = try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
-        recorder.isMeteringEnabled = options.isMeteringEnabled
-        return recorder
-      } catch {
-        return AVAudioRecorder()
-      }
+  static func createRecorder(directory: URL, with options: RecordingOptions) throws -> AVAudioRecorder {
+    let fileUrl = createRecordingUrl(from: directory, with: options)
+    do {
+      let recorder = try AVAudioRecorder(url: fileUrl, settings: AudioUtils.createRecordingOptions(options))
+      recorder.isMeteringEnabled = options.isMeteringEnabled
+      return recorder
+    } catch {
+      throw AudioRecordingException("Failed to create recorder: \(error.localizedDescription)")
     }
-    return AVAudioRecorder()
   }
   #endif
 

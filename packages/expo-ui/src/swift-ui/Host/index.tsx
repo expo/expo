@@ -1,10 +1,10 @@
 import { requireNativeView } from 'expo';
-import { I18nManager, type StyleProp, type ViewStyle } from 'react-native';
+import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type HostProps = {
+export interface HostProps extends CommonViewModifierProps {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
    * Can be only set once on mount.
@@ -31,6 +31,13 @@ export type HostProps = {
   colorScheme?: 'light' | 'dark';
 
   /**
+   * Seed color applied to the SwiftUI content as its tint. It propagates
+   * through the SwiftUI environment to theme interactive elements (buttons,
+   * switches, sliders, and similar controls) rendered by the children.
+   */
+  seedColor?: ColorValue;
+
+  /**
    * The layout direction for the SwiftUI content.
    * Defaults to the current locale direction from I18nManager.
    */
@@ -46,7 +53,7 @@ export type HostProps = {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
-} & CommonViewModifierProps;
+}
 
 const HostNativeView: React.ComponentType<
   HostProps & { matchContentsVertical?: boolean; matchContentsHorizontal?: boolean }
@@ -62,6 +69,7 @@ export function Host(props: HostProps) {
     ignoreSafeArea,
     modifiers,
     layoutDirection,
+    seedColor,
     ...restProps
   } = props;
 
@@ -80,6 +88,7 @@ export function Host(props: HostProps) {
         layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
       }
       ignoreSafeArea={ignoreSafeArea}
+      seedColor={seedColor}
       {...restProps}
     />
   );

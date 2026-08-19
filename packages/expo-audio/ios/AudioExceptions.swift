@@ -47,3 +47,9 @@ internal final class AudioRecordingException: GenericException<String> {
     "Audio recording error: \(param)"
   }
 }
+
+internal final class AudioStreamFileException: GenericException<String> {
+  override var reason: String {
+    param
+  }
+}

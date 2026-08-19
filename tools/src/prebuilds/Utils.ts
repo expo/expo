@@ -146,6 +146,39 @@ export const discoverAllSPMPackagesAsync = async (): Promise<SPMPackageSource[]>
 };
 
 /**
+ * Packages whose iOS prebuilt xcframeworks are distributed by default: built by
+ * `et prebuild-packages` with no arguments and bundled into the published npm tarballs.
+ * Many more packages have an `spm.config.json`; pass `--all-packages` to build those too.
+ */
+export const IOS_PREBUILD_PACKAGES = [
+  'expo-brownfield',
+  'expo-camera',
+  'expo-contacts',
+  'expo-file-system',
+  'expo-font',
+  'expo-image',
+  'expo-image-manipulator',
+  'expo-live-photo',
+  'expo-location',
+  'expo-maps',
+  'expo-media-library',
+  'expo-modules-core',
+  'expo-print',
+  'expo-ui',
+  'expo-video',
+];
+
+export const selectDistributedPackages = <T extends { packageName: string }>(
+  expoPackages: T[],
+  allPackages: boolean
+): T[] => {
+  if (allPackages) {
+    return expoPackages;
+  }
+  return expoPackages.filter((pkg) => IOS_PREBUILD_PACKAGES.includes(pkg.packageName));
+};
+
+/**
  * Builds a map from CocoaPods pod name to SPM dependency string
  * (e.g., "UMAppLoader" -> "unimodules-app-loader/UMAppLoader").
  *
@@ -294,22 +327,30 @@ export const validateAllPodNamesAsync = async (
  * @param packageNames Names of packages to verify (if empty, discovers all SPM packages)
  * @param includeExternal Whether to include external packages in discovery (default: true)
  * @param externalOnly Whether to only include external packages (default: false)
+ * @param allPackages When discovering, build every Expo package with an spm.config.json
+ *   instead of only the default distributed set (default: false)
  * @returns Parsed SPMPackageSources that were verified
  */
 export const verifyAllPackagesAsync = async (
   packageNames: string[],
   includeExternal: boolean = true,
-  externalOnly: boolean = false
+  externalOnly: boolean = false,
+  allPackages: boolean = false
 ): Promise<SPMPackageSource[]> => {
-  // If no package names provided, discover all packages with spm.config.json
+  // If no package names provided, discover packages with spm.config.json. By default
+  // only the distributed set is built; --all-packages widens this to every Expo package.
   if (packageNames.length === 0) {
     let packages: SPMPackageSource[];
     if (externalOnly) {
       packages = await discoverExternalPackagesAsync();
     } else if (includeExternal) {
-      packages = await discoverAllSPMPackagesAsync();
+      const [expoPackages, externalPackages] = await Promise.all([
+        discoverPackagesWithSPMConfigAsync(),
+        discoverExternalPackagesAsync(),
+      ]);
+      packages = [...selectDistributedPackages(expoPackages, allPackages), ...externalPackages];
     } else {
-      packages = await discoverPackagesWithSPMConfigAsync();
+      packages = selectDistributedPackages(await discoverPackagesWithSPMConfigAsync(), allPackages);
     }
 
     if (packages.length === 0) {

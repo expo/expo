@@ -3,12 +3,10 @@
 import Foundation
 import Network
 
-/**
- A `Sendable` snapshot of `NWPath` distilled to the fields we care about. We
- don't pass `NWPath` itself across actor boundaries because it isn't
- `Sendable`, and a stable typed surface decouples downstream code from the
- OS API.
- */
+/// A `Sendable` snapshot of `NWPath` distilled to the fields we care about. We
+/// don't pass `NWPath` itself across actor boundaries because it isn't
+/// `Sendable`, and a stable typed surface decouples downstream code from the
+/// OS API.
 struct NetworkPath: Sendable, Equatable {
   enum Status: String, Sendable {
     case satisfied
@@ -38,24 +36,18 @@ struct NetworkPath: Sendable, Equatable {
   let interfaceType: InterfaceType
   let isExpensive: Bool
   let isConstrained: Bool
-  /**
-   Populated only when `status != .satisfied`. Distinguishes "no usable path"
-   from "user denied cellular/wifi for this app" from "VPN configured but down."
-   */
+  /// Populated only when `status != .satisfied`. Distinguishes "no usable path"
+  /// from "user denied cellular/wifi for this app" from "VPN configured but down."
   let unsatisfiedReason: UnsatisfiedReason?
-  /**
-   `CACurrentMediaTime` of the snapshot. Useful for transition timing once the
-   recorder lands.
-   */
+  /// `CACurrentMediaTime` of the snapshot. Useful for transition timing once the
+  /// recorder lands.
   let timestamp: TimeInterval
 }
 
 extension NetworkPath {
-  /**
-   Builds a snapshot from an `NWPath`. The current implementation reads the
-   primary interface type via `usesInterfaceType(_:)` predicates because
-   `NWPath` doesn't expose a single "preferred type" field.
-   */
+  /// Builds a snapshot from an `NWPath`. The current implementation reads the
+  /// primary interface type via `usesInterfaceType(_:)` predicates because
+  /// `NWPath` doesn't expose a single "preferred type" field.
   static func from(_ path: NWPath, at timestamp: TimeInterval) -> NetworkPath {
     return NetworkPath(
       status: Status.from(path.status),
@@ -68,8 +60,8 @@ extension NetworkPath {
   }
 }
 
-private extension NetworkPath.Status {
-  static func from(_ status: NWPath.Status) -> Self {
+extension NetworkPath.Status {
+  fileprivate static func from(_ status: NWPath.Status) -> Self {
     switch status {
     case .satisfied:
       return .satisfied
@@ -83,8 +75,8 @@ private extension NetworkPath.Status {
   }
 }
 
-private extension NetworkPath.InterfaceType {
-  static func from(_ path: NWPath) -> Self {
+extension NetworkPath.InterfaceType {
+  fileprivate static func from(_ path: NWPath) -> Self {
     if path.status != .satisfied {
       return .none
     }
@@ -105,8 +97,8 @@ private extension NetworkPath.InterfaceType {
   }
 }
 
-private extension NetworkPath.UnsatisfiedReason {
-  static func from(_ reason: NWPath.UnsatisfiedReason) -> Self {
+extension NetworkPath.UnsatisfiedReason {
+  fileprivate static func from(_ reason: NWPath.UnsatisfiedReason) -> Self {
     switch reason {
     case .notAvailable:
       return .notAvailable

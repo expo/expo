@@ -1,6 +1,6 @@
-import { Color, Label, Stack, useLocalSearchParams } from 'expo-router';
-import { SymbolView } from 'expo-symbols';
-import { useState } from 'react';
+import { Color, Label, Stack, useLocalSearchParams } from "expo-router";
+import { SymbolView } from "expo-symbols";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -10,9 +10,14 @@ import {
   Pressable,
   Alert,
   Platform,
-} from 'react-native';
+  TextInput,
+} from "react-native";
 
-import { searchIcon, closeIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
+import {
+  searchIcon,
+  sendIcon,
+  deleteIcon,
+} from "./icons";
 
 export default function HeaderItemsScreen() {
   const params = useLocalSearchParams();
@@ -21,14 +26,20 @@ export default function HeaderItemsScreen() {
   const [showLeftButton1, setShowLeftButton1] = useState(!!params.leftButton1);
   const [showLeftButton2, setShowLeftButton2] = useState(!!params.leftButton2);
   const [leftButton2Selected, setLeftButton2Selected] = useState(false);
-  const [leftButton2SeparateBackground, setLeftButton2SeparateBackground] = useState(false);
-  const [showLeftCustomItem, setShowLeftCustomItem] = useState(!!params.leftCustomItem);
+  const [leftButton2SeparateBackground, setLeftButton2SeparateBackground] =
+    useState(false);
+  const [showLeftCustomItem, setShowLeftCustomItem] = useState(
+    !!params.leftCustomItem,
+  );
   const [showLeftMenu, setShowLeftMenu] = useState(!!params.leftMenu);
+  const [menuBadgeContent, setMenuBadgeContent] = useState("99");
 
   const [showRightButton, setShowRightButton] = useState(!!params.rightButton);
   const [showRightMenu1, setShowRightMenu1] = useState(!!params.rightMenu1);
   const [showRightMenu2, setShowRightMenu2] = useState(false);
-  const [showSearchButton, setShowSearchButton] = useState(!!params.searchButton);
+  const [showSearchButton, setShowSearchButton] = useState(
+    !!params.searchButton,
+  );
   const [showXcassetButton1, setShowXcassetButton1] = useState(false);
   const [showXcassetButton2, setShowXcassetButton2] = useState(false);
   const [showXcassetMenu1, setShowXcassetMenu1] = useState(false);
@@ -37,70 +48,84 @@ export default function HeaderItemsScreen() {
   // State for menu items
   const [emailsArchived, setEmailsArchived] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [viewMode, setViewMode] = useState<'icons' | 'list'>('icons');
-  const [sortBy, setSortBy] = useState<'name' | 'kind' | 'date' | 'size' | 'tags'>('name');
-  const [favoriteColors, setFavoriteColors] = useState<('red' | 'blue' | 'green')[]>(['blue']);
+  const [viewMode, setViewMode] = useState<"icons" | "list">("icons");
+  const [sortBy, setSortBy] = useState<
+    "name" | "kind" | "date" | "size" | "tags"
+  >("name");
+  const [favoriteColors, setFavoriteColors] = useState<
+    ("red" | "blue" | "green")[]
+  >(["blue"]);
 
   // State for header customization
-  const [headerBackgroundColor, setHeaderBackgroundColor] = useState('#fff');
+  const [headerBackgroundColor, setHeaderBackgroundColor] = useState("#fff");
   const [hideBackButton, setHideBackButton] = useState(false);
 
   const handleLeftButton1Press = () => {
-    Alert.alert('Left Button 1', 'First left button pressed');
+    Alert.alert("Left Button 1", "First left button pressed");
   };
 
   const handleLeftButton2Press = () => {
-    Alert.alert('Left Button 2', 'Second left button pressed');
+    Alert.alert("Left Button 2", "Second left button pressed");
   };
 
   const handleRightButtonPress = () => {
-    Alert.alert('Right Button', 'Right button pressed');
+    Alert.alert("Right Button", "Right button pressed");
   };
 
   const handleSearchPress = () => {
-    Alert.alert('Search', 'Search button pressed');
+    Alert.alert("Search", "Search button pressed");
   };
 
   const handleSendEmail = () => {
-    Alert.alert('Send Email', 'Email sent successfully!');
+    Alert.alert("Send Email", "Email sent successfully!");
   };
 
   const handleDeleteEmail = () => {
-    Alert.alert('Delete Email', 'Email deleted!');
+    Alert.alert("Delete Email", "Email deleted!");
   };
 
   const handleArchiveToggle = () => {
     setEmailsArchived(!emailsArchived);
-    Alert.alert('Archive', emailsArchived ? 'Unarchived emails' : 'Archived emails');
+    Alert.alert(
+      "Archive",
+      emailsArchived ? "Unarchived emails" : "Archived emails",
+    );
   };
 
   const handleNotificationsToggle = () => {
     setNotificationsEnabled(!notificationsEnabled);
   };
 
-  const handleViewModeSelect = (mode: 'icons' | 'list') => {
+  const handleViewModeSelect = (mode: "icons" | "list") => {
     setViewMode(mode);
-    Alert.alert('View Mode', `Changed to ${mode} view`);
+    Alert.alert("View Mode", `Changed to ${mode} view`);
   };
 
-  const handleSortBySelect = (sort: 'name' | 'kind' | 'date' | 'size' | 'tags') => {
+  const handleSortBySelect = (
+    sort: "name" | "kind" | "date" | "size" | "tags",
+  ) => {
     setSortBy(sort);
-    Alert.alert('Sort By', `Sorting by ${sort}`);
+    Alert.alert("Sort By", `Sorting by ${sort}`);
   };
 
-  const handleColorSelect = (color: 'red' | 'blue' | 'green') => {
+  const handleColorSelect = (color: "red" | "blue" | "green") => {
     setFavoriteColors((prevColors) =>
-      prevColors.includes(color) ? prevColors.filter((c) => c !== color) : [...prevColors, color]
+      prevColors.includes(color)
+        ? prevColors.filter((c) => c !== color)
+        : [...prevColors, color],
     );
-    Alert.alert('Color Selected', `You selected ${color}`);
+    Alert.alert("Color Selected", `You selected ${color}`);
   };
 
   function CustomHeaderElement() {
     return (
       <Pressable
         testID="custom-header-element"
-        onPress={() => Alert.alert('Custom Element', 'Custom header element pressed!')}
-        style={styles.customHeaderElement}>
+        onPress={() =>
+          Alert.alert("Custom Element", "Custom header element pressed!")
+        }
+        style={styles.customHeaderElement}
+      >
         <SymbolView
           size={20}
           tintColor={Platform.select({
@@ -109,8 +134,8 @@ export default function HeaderItemsScreen() {
           })}
           style={{ width: 20, height: 20 }}
           name={{
-            ios: 'heart.fill',
-            android: 'favorite',
+            ios: "heart.fill",
+            android: "favorite",
           }}
         />
       </Pressable>
@@ -128,21 +153,29 @@ export default function HeaderItemsScreen() {
         <Stack.Toolbar placement="left">
           <Stack.Toolbar.Button
             hidden={!showLeftButton1}
-            icon={process.env.EXPO_OS === 'ios' ? 'arrow.left' : searchIcon}
+            icon={process.env.EXPO_OS === "ios" ? "arrow.left" : searchIcon}
             onPress={handleLeftButton1Press}
           />
           <Stack.Toolbar.Button
             hidden={!showLeftButton2}
             separateBackground={leftButton2SeparateBackground}
             selected={leftButton2Selected}
+            icon={
+              process.env.EXPO_OS === "ios"
+                ? "star"
+                : require("../../../assets/expo-logo.png")
+            }
+            iconRenderingMode={
+              process.env.EXPO_OS === "ios" ? "template" : "original"
+            }
             onPress={handleLeftButton2Press}
             style={{
               fontWeight: 500,
               fontSize: 10,
-              color: '#f0f',
-            }}>
+              color: "#f0f",
+            }}
+          >
             <Stack.Toolbar.Label>Button 2</Stack.Toolbar.Label>
-            <Stack.Toolbar.Icon sf="star" />
             <Stack.Toolbar.Badge>33</Stack.Toolbar.Badge>
           </Stack.Toolbar.Button>
 
@@ -153,51 +186,73 @@ export default function HeaderItemsScreen() {
           <Stack.Toolbar.Menu
             hidden={!showLeftMenu}
             style={{
-              color: '#00f',
-              fontFamily: 'Arial',
-            }}>
+              color: "#00f",
+              fontFamily: "Arial",
+            }}
+            icon={
+              process.env.EXPO_OS === "ios"
+                ? "list.bullet"
+                : require("../../../assets/expo-logo.png")
+            }
+            iconRenderingMode={
+              process.env.EXPO_OS === "ios" ? "template" : "original"
+            }
+          >
             <Stack.Toolbar.Label>Left Menu</Stack.Toolbar.Label>
-            <Stack.Toolbar.Icon sf="list.bullet" />
             <Stack.Toolbar.Badge
               style={{
-                backgroundColor: '#eee',
-                fontFamily: 'Courier New',
+                backgroundColor: "#eee",
+                fontFamily: "Courier New",
                 fontWeight: 100,
-              }}>
-              99
+              }}
+            >
+              {menuBadgeContent}
             </Stack.Toolbar.Badge>
-            <Stack.Toolbar.MenuAction onPress={() => Alert.alert('Option 1')}>
+            <Stack.Toolbar.MenuAction onPress={() => Alert.alert("Option 1")}>
               <Stack.Toolbar.Label>Option 1</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="1.circle" />
             </Stack.Toolbar.MenuAction>
-            <Stack.Toolbar.MenuAction isOn onPress={() => Alert.alert('Option 2')}>
+            <Stack.Toolbar.MenuAction
+              isOn
+              onPress={() => Alert.alert("Option 2")}
+            >
               <Stack.Toolbar.Label>Option 2</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="2.circle" />
             </Stack.Toolbar.MenuAction>
           </Stack.Toolbar.Menu>
 
           <Stack.Toolbar.Menu
-            icon={require('../../../assets/expo-logo.png')}
-            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}
+            icon={require("../../../assets/expo-logo.png")}
+            iconRenderingMode={
+              process.env.EXPO_OS === "ios" ? "template" : "original"
+            }
             title="Actions"
             tintColor={Platform.select({
               ios: Color.ios.systemBrown,
               android: Color.android.dynamic.primary,
-            })}>
+            })}
+          >
             {/* Simple actions */}
             <Stack.Toolbar.MenuAction
-              icon={require('../../../assets/expo-transparent.png')}
+              icon={require("../../../assets/expo-transparent.png")}
               iconRenderingMode="template"
               destructive
-              onPress={() => Alert.alert('Send', 'Email sent!')}>
+              onPress={() => Alert.alert("Send", "Email sent!")}
+            >
               Send email
             </Stack.Toolbar.MenuAction>
 
             {/* Nested menu */}
-            <Stack.Toolbar.Menu title="Preferences" icon={require('../../../assets/expo-logo.png')}>
+            <Stack.Toolbar.Menu
+              title="Preferences"
+              icon={require("../../../assets/expo-logo.png")}
+            >
               <Stack.Toolbar.MenuAction
                 icon="bell"
-                onPress={() => Alert.alert('Notifications', 'Toggling notifications...')}>
+                onPress={() =>
+                  Alert.alert("Notifications", "Toggling notifications...")
+                }
+              >
                 Enable notifications
               </Stack.Toolbar.MenuAction>
             </Stack.Toolbar.Menu>
@@ -208,61 +263,77 @@ export default function HeaderItemsScreen() {
         <Stack.Toolbar placement="right">
           <Stack.Toolbar.Menu
             hidden={!showRightMenu1}
-            icon={process.env.EXPO_OS === 'ios' ? 'ellipsis.circle' : moreVertIcon}
+            icon={
+              process.env.EXPO_OS === "ios"
+                ? "ellipsis.circle"
+                : require("../../../assets/expo-logo.png")
+            }
+            iconRenderingMode={
+              process.env.EXPO_OS === "ios" ? "template" : "original"
+            }
             title="Actions"
             tintColor={Platform.select({
               ios: Color.ios.systemBrown,
               android: Color.android.dynamic.primary,
             })}
             style={{
-              color: '#00f',
-              fontFamily: 'Arial',
-            }}>
+              color: "#00f",
+              fontFamily: "Arial",
+            }}
+          >
             <Stack.Toolbar.Label>Menu</Stack.Toolbar.Label>
             <Stack.Toolbar.Badge
               style={{
-                backgroundColor: '#eee',
-                fontFamily: 'Courier New',
+                backgroundColor: "#eee",
+                fontFamily: "Courier New",
                 fontWeight: 100,
-              }}>
-              99
+              }}
+            >
+              {menuBadgeContent}
             </Stack.Toolbar.Badge>
 
             {/* Simple actions */}
             <Stack.Toolbar.MenuAction
-              icon={process.env.EXPO_OS === 'ios' ? undefined : sendIcon}
-              onPress={handleSendEmail}>
+              icon={process.env.EXPO_OS === "ios" ? undefined : sendIcon}
+              onPress={handleSendEmail}
+            >
               <Stack.Toolbar.Label>Send email</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="paperplane" />
             </Stack.Toolbar.MenuAction>
             <Stack.Toolbar.MenuAction
-              icon={process.env.EXPO_OS === 'ios' ? undefined : deleteIcon}
+              icon={process.env.EXPO_OS === "ios" ? undefined : deleteIcon}
               destructive
-              onPress={handleDeleteEmail}>
+              onPress={handleDeleteEmail}
+            >
               <Stack.Toolbar.Label>Delete email</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="trash" />
             </Stack.Toolbar.MenuAction>
 
             {/* Toggle action */}
-            <Stack.Toolbar.MenuAction isOn={emailsArchived} onPress={handleArchiveToggle}>
+            <Stack.Toolbar.MenuAction
+              isOn={emailsArchived}
+              onPress={handleArchiveToggle}
+            >
               <Stack.Toolbar.Label>
-                {emailsArchived ? 'Unarchive emails' : 'Archive emails'}
+                {emailsArchived ? "Unarchive emails" : "Archive emails"}
               </Stack.Toolbar.Label>
-              <Stack.Toolbar.Icon sf={emailsArchived ? 'tray.full' : 'tray'} />
+              <Stack.Toolbar.Icon sf={emailsArchived ? "tray.full" : "tray"} />
             </Stack.Toolbar.MenuAction>
 
             {/* Nested inline menu - View mode */}
             <Stack.Toolbar.Menu inline>
               <Stack.Toolbar.Label>View Mode</Stack.Toolbar.Label>
               <Stack.Toolbar.MenuAction
-                isOn={viewMode === 'icons'}
-                onPress={() => handleViewModeSelect('icons')}>
+                isOn={viewMode === "icons"}
+                onPress={() => handleViewModeSelect("icons")}
+              >
                 <Stack.Toolbar.Label>Icons</Stack.Toolbar.Label>
                 <Stack.Toolbar.Icon sf="square.grid.2x2" />
               </Stack.Toolbar.MenuAction>
               <Stack.Toolbar.MenuAction
-                isOn={viewMode === 'list'}
-                onPress={() => handleViewModeSelect('list')}>
+                isOn={viewMode === "list"}
+                onPress={() => handleViewModeSelect("list")}
+              >
                 <Stack.Toolbar.Label>List</Stack.Toolbar.Label>
                 <Stack.Toolbar.Icon sf="list.bullet" />
               </Stack.Toolbar.MenuAction>
@@ -272,29 +343,34 @@ export default function HeaderItemsScreen() {
             <Stack.Toolbar.Menu inline>
               <Stack.Toolbar.Label>Sort By</Stack.Toolbar.Label>
               <Stack.Toolbar.MenuAction
-                isOn={sortBy === 'name'}
+                isOn={sortBy === "name"}
                 subtitle="Ascending"
-                onPress={() => handleSortBySelect('name')}>
+                onPress={() => handleSortBySelect("name")}
+              >
                 Name
               </Stack.Toolbar.MenuAction>
               <Stack.Toolbar.MenuAction
-                isOn={sortBy === 'kind'}
-                onPress={() => handleSortBySelect('kind')}>
+                isOn={sortBy === "kind"}
+                onPress={() => handleSortBySelect("kind")}
+              >
                 Kind
               </Stack.Toolbar.MenuAction>
               <Stack.Toolbar.MenuAction
-                isOn={sortBy === 'date'}
-                onPress={() => handleSortBySelect('date')}>
+                isOn={sortBy === "date"}
+                onPress={() => handleSortBySelect("date")}
+              >
                 Date
               </Stack.Toolbar.MenuAction>
               <Stack.Toolbar.MenuAction
-                isOn={sortBy === 'size'}
-                onPress={() => handleSortBySelect('size')}>
+                isOn={sortBy === "size"}
+                onPress={() => handleSortBySelect("size")}
+              >
                 Size
               </Stack.Toolbar.MenuAction>
               <Stack.Toolbar.MenuAction
-                isOn={sortBy === 'tags'}
-                onPress={() => handleSortBySelect('tags')}>
+                isOn={sortBy === "tags"}
+                onPress={() => handleSortBySelect("tags")}
+              >
                 Tags
               </Stack.Toolbar.MenuAction>
             </Stack.Toolbar.Menu>
@@ -303,9 +379,12 @@ export default function HeaderItemsScreen() {
             <Stack.Toolbar.Menu title="Preferences">
               <Stack.Toolbar.MenuAction
                 isOn={notificationsEnabled}
-                onPress={handleNotificationsToggle}>
+                onPress={handleNotificationsToggle}
+              >
                 <Stack.Toolbar.Label>
-                  {notificationsEnabled ? 'Disable notifications' : 'Enable notifications'}
+                  {notificationsEnabled
+                    ? "Disable notifications"
+                    : "Enable notifications"}
                 </Stack.Toolbar.Label>
                 <Stack.Toolbar.Icon sf="bell" />
               </Stack.Toolbar.MenuAction>
@@ -313,20 +392,23 @@ export default function HeaderItemsScreen() {
               {/* Color selection submenu */}
               <Stack.Toolbar.Menu inline title="Favorite Color">
                 <Stack.Toolbar.MenuAction
-                  isOn={favoriteColors.includes('red')}
-                  onPress={() => handleColorSelect('red')}>
+                  isOn={favoriteColors.includes("red")}
+                  onPress={() => handleColorSelect("red")}
+                >
                   <Stack.Toolbar.Label>Red</Stack.Toolbar.Label>
                   <Stack.Toolbar.Icon sf="circle.fill" />
                 </Stack.Toolbar.MenuAction>
                 <Stack.Toolbar.MenuAction
-                  isOn={favoriteColors.includes('blue')}
-                  onPress={() => handleColorSelect('blue')}>
+                  isOn={favoriteColors.includes("blue")}
+                  onPress={() => handleColorSelect("blue")}
+                >
                   <Stack.Toolbar.Label>Blue</Stack.Toolbar.Label>
                   <Stack.Toolbar.Icon sf="circle.fill" />
                 </Stack.Toolbar.MenuAction>
                 <Stack.Toolbar.MenuAction
-                  isOn={favoriteColors.includes('green')}
-                  onPress={() => handleColorSelect('green')}>
+                  isOn={favoriteColors.includes("green")}
+                  onPress={() => handleColorSelect("green")}
+                >
                   <Stack.Toolbar.Label>Green</Stack.Toolbar.Label>
                   <Stack.Toolbar.Icon sf="circle.fill" />
                 </Stack.Toolbar.MenuAction>
@@ -336,13 +418,23 @@ export default function HeaderItemsScreen() {
             {/* Palette menu */}
             <Stack.Toolbar.Menu palette destructive title="quick-actions">
               <Label>Quick Actions</Label>
-              <Stack.Toolbar.MenuAction isOn icon="star" onPress={() => Alert.alert('Star')}>
+              <Stack.Toolbar.MenuAction
+                isOn
+                icon="star"
+                onPress={() => Alert.alert("Star")}
+              >
                 Star
               </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="flag" onPress={() => Alert.alert('Flag')}>
+              <Stack.Toolbar.MenuAction
+                icon="flag"
+                onPress={() => Alert.alert("Flag")}
+              >
                 Flag
               </Stack.Toolbar.MenuAction>
-              <Stack.Toolbar.MenuAction icon="pin" onPress={() => Alert.alert('Pin')}>
+              <Stack.Toolbar.MenuAction
+                icon="pin"
+                onPress={() => Alert.alert("Pin")}
+              >
                 Pin
               </Stack.Toolbar.MenuAction>
             </Stack.Toolbar.Menu>
@@ -360,27 +452,34 @@ export default function HeaderItemsScreen() {
 
           <Stack.Toolbar.Button
             hidden={!showRightButton}
-            style={{ color: 'green' }}
-            onPress={handleRightButtonPress}>
+            style={{ color: "green" }}
+            onPress={handleRightButtonPress}
+          >
             Right
           </Stack.Toolbar.Button>
 
           <Stack.Toolbar.Button
             hidden={!showSearchButton}
-            icon={process.env.EXPO_OS === 'ios' ? 'magnifyingglass' : searchIcon}
+            icon={
+              process.env.EXPO_OS === "ios" ? "magnifyingglass" : searchIcon
+            }
             onPress={handleSearchPress}
           />
 
           {/* Xcasset icon buttons */}
           <Stack.Toolbar.Button
             hidden={!showXcassetButton1}
-            onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
+            onPress={() => Alert.alert("Xcasset Button", "expo-logo pressed")}
+          >
             <Stack.Toolbar.Icon xcasset="expo-logo" />
           </Stack.Toolbar.Button>
           <Stack.Toolbar.Button
             hidden={!showXcassetButton2}
             tintColor={Color.ios.systemTeal}
-            onPress={() => Alert.alert('Xcasset Button', 'expo-transparent pressed')}>
+            onPress={() =>
+              Alert.alert("Xcasset Button", "expo-transparent pressed")
+            }
+          >
             <Stack.Toolbar.Icon xcasset="expo-transparent" />
           </Stack.Toolbar.Button>
 
@@ -389,7 +488,10 @@ export default function HeaderItemsScreen() {
             <Stack.Toolbar.Icon xcasset="expo-logo" />
             <Stack.Toolbar.Label>Expo Logo</Stack.Toolbar.Label>
             <Stack.Toolbar.MenuAction
-              onPress={() => Alert.alert('Action', 'Action from expo-logo menu')}>
+              onPress={() =>
+                Alert.alert("Action", "Action from expo-logo menu")
+              }
+            >
               <Stack.Toolbar.Label>Logo Action</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="star" />
             </Stack.Toolbar.MenuAction>
@@ -397,11 +499,15 @@ export default function HeaderItemsScreen() {
           <Stack.Toolbar.Menu
             hidden={!showXcassetMenu2}
             title="Xcasset Menu 2"
-            tintColor={Color.ios.systemTeal}>
+            tintColor={Color.ios.systemTeal}
+          >
             <Stack.Toolbar.Icon xcasset="expo-transparent" />
             <Stack.Toolbar.Label>Expo Transparent</Stack.Toolbar.Label>
             <Stack.Toolbar.MenuAction
-              onPress={() => Alert.alert('Action', 'Action from expo-transparent menu')}>
+              onPress={() =>
+                Alert.alert("Action", "Action from expo-transparent menu")
+              }
+            >
               <Stack.Toolbar.Label>Transparent Action</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="star" />
             </Stack.Toolbar.MenuAction>
@@ -412,7 +518,8 @@ export default function HeaderItemsScreen() {
       <ScrollView
         style={styles.container}
         contentContainerStyle={styles.contentContainer}
-        contentInsetAdjustmentBehavior="automatic">
+        contentInsetAdjustmentBehavior="automatic"
+      >
         <Text style={styles.title}>Stack Header Items E2E Test Screen</Text>
 
         <View style={styles.section}>
@@ -448,7 +555,9 @@ export default function HeaderItemsScreen() {
               </View>
 
               <View style={styles.switchRow}>
-                <Text style={styles.label}>Left Button 2 Separate Background</Text>
+                <Text style={styles.label}>
+                  Left Button 2 Separate Background
+                </Text>
                 <Switch
                   testID="toggle-left-button-2-separate-background"
                   value={leftButton2SeparateBackground}
@@ -473,6 +582,19 @@ export default function HeaderItemsScreen() {
               testID="toggle-left-menu"
               value={showLeftMenu}
               onValueChange={setShowLeftMenu}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Menu Badge Content</Text>
+            <TextInput
+              testID="input-menu-badge-content"
+              style={styles.textInput}
+              value={menuBadgeContent}
+              onChangeText={setMenuBadgeContent}
+              placeholder="Badge text"
+              autoCapitalize="none"
+              autoCorrect={false}
             />
           </View>
         </View>
@@ -526,7 +648,9 @@ export default function HeaderItemsScreen() {
           </View>
 
           <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Xcasset Button (expo-transparent)</Text>
+            <Text style={styles.label}>
+              Show Xcasset Button (expo-transparent)
+            </Text>
             <Switch
               testID="toggle-xcasset-button-2"
               value={showXcassetButton2}
@@ -544,7 +668,9 @@ export default function HeaderItemsScreen() {
           </View>
 
           <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Xcasset Menu (expo-transparent)</Text>
+            <Text style={styles.label}>
+              Show Xcasset Menu (expo-transparent)
+            </Text>
             <Switch
               testID="toggle-xcasset-menu-2"
               value={showXcassetMenu2}
@@ -570,23 +696,26 @@ export default function HeaderItemsScreen() {
             <View style={styles.colorButtonsRow}>
               <Pressable
                 testID="color-white"
-                style={[styles.colorButton, { backgroundColor: '#fff' }]}
-                onPress={() => setHeaderBackgroundColor('#fff')}
+                style={[styles.colorButton, { backgroundColor: "#fff" }]}
+                onPress={() => setHeaderBackgroundColor("#fff")}
               />
               <Pressable
                 testID="color-transparent"
-                style={[styles.colorButton, { backgroundColor: 'transparent', borderWidth: 1 }]}
-                onPress={() => setHeaderBackgroundColor('transparent')}
+                style={[
+                  styles.colorButton,
+                  { backgroundColor: "transparent", borderWidth: 1 },
+                ]}
+                onPress={() => setHeaderBackgroundColor("transparent")}
               />
               <Pressable
                 testID="color-blue"
-                style={[styles.colorButton, { backgroundColor: '#007AFF' }]}
-                onPress={() => setHeaderBackgroundColor('#007AFF')}
+                style={[styles.colorButton, { backgroundColor: "#007AFF" }]}
+                onPress={() => setHeaderBackgroundColor("#007AFF")}
               />
               <Pressable
                 testID="color-red"
-                style={[styles.colorButton, { backgroundColor: '#FF3B30' }]}
-                onPress={() => setHeaderBackgroundColor('#FF3B30')}
+                style={[styles.colorButton, { backgroundColor: "#FF3B30" }]}
+                onPress={() => setHeaderBackgroundColor("#FF3B30")}
               />
             </View>
           </View>
@@ -596,23 +725,43 @@ export default function HeaderItemsScreen() {
           <Text style={styles.sectionTitle}>Current State</Text>
           <Text style={styles.stateText}>View Mode: {viewMode}</Text>
           <Text style={styles.stateText}>Sort By: {sortBy}</Text>
-          <Text style={styles.stateText}>Emails Archived: {emailsArchived ? 'Yes' : 'No'}</Text>
           <Text style={styles.stateText}>
-            Notifications: {notificationsEnabled ? 'Enabled' : 'Disabled'}
+            Emails Archived: {emailsArchived ? "Yes" : "No"}
           </Text>
-          <Text style={styles.stateText}>Favorite Colors: {favoriteColors.join(', ')}</Text>
-          <Text style={styles.stateText}>Header Background: {headerBackgroundColor}</Text>
+          <Text style={styles.stateText}>
+            Notifications: {notificationsEnabled ? "Enabled" : "Disabled"}
+          </Text>
+          <Text style={styles.stateText}>
+            Favorite Colors: {favoriteColors.join(", ")}
+          </Text>
+          <Text style={styles.stateText}>
+            Header Background: {headerBackgroundColor}
+          </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Instructions</Text>
-          <Text style={styles.instruction}>1. Toggle switches above to show/hide header items</Text>
-          <Text style={styles.instruction}>2. Test left and right header buttons</Text>
-          <Text style={styles.instruction}>3. Test nested menus and submenus</Text>
-          <Text style={styles.instruction}>4. Test menu item states (selected, disabled)</Text>
-          <Text style={styles.instruction}>5. Test custom header element and badge displays</Text>
-          <Text style={styles.instruction}>6. Test palette menu and destructive actions</Text>
-          <Text style={styles.instruction}>7. Observe state changes reflected in menu items</Text>
+          <Text style={styles.instruction}>
+            1. Toggle switches above to show/hide header items
+          </Text>
+          <Text style={styles.instruction}>
+            2. Test left and right header buttons
+          </Text>
+          <Text style={styles.instruction}>
+            3. Test nested menus and submenus
+          </Text>
+          <Text style={styles.instruction}>
+            4. Test menu item states (selected, disabled)
+          </Text>
+          <Text style={styles.instruction}>
+            5. Test custom header element and badge displays
+          </Text>
+          <Text style={styles.instruction}>
+            6. Test palette menu and destructive actions
+          </Text>
+          <Text style={styles.instruction}>
+            7. Observe state changes reflected in menu items
+          </Text>
         </View>
       </ScrollView>
     </>
@@ -622,7 +771,7 @@ export default function HeaderItemsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   contentContainer: {
     padding: 16,
@@ -630,55 +779,64 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 24,
-    textAlign: 'center',
+    textAlign: "center",
   },
   section: {
     marginBottom: 24,
     padding: 16,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
     borderRadius: 8,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 12,
   },
   switchRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 8,
   },
   label: {
     fontSize: 16,
     flex: 1,
   },
+  textInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    minWidth: 100,
+    fontSize: 16,
+  },
   stateText: {
     fontSize: 14,
     marginVertical: 4,
-    color: '#333',
+    color: "#333",
   },
   instruction: {
     fontSize: 14,
     marginVertical: 4,
-    color: '#666',
+    color: "#666",
   },
   customHeaderElement: {
     width: 32,
     height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   colorButtonsRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   colorButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
   },
 });

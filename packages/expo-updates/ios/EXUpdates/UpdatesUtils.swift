@@ -165,6 +165,14 @@ public final class UpdatesUtils: NSObject {
 #endif
   }
 
+  internal static func shouldCopyEmbeddedAssets() -> Bool {
+#if EX_UPDATES_COPY_EMBEDDED_ASSETS
+    return true
+#else
+    return false
+#endif
+  }
+
   internal static func runBlockOnMainThread(_ block: @escaping () -> Void) {
     if Thread.isMainThread {
       block()

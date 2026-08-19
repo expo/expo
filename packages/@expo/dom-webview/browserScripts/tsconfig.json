@@ -3,6 +3,5 @@
   "compilerOptions": {
     "noEmit": true
   },
-  "include": ["./**/*"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "include": ["./**/*"]
 }

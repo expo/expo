@@ -198,8 +198,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
 
           Marker(
             state = state,
-            title = marker.title,
-            snippet = marker.snippet,
+            title = marker.title.takeIf { it.isNotEmpty() },
+            snippet = marker.snippet.takeIf { it.isNotEmpty() },
             draggable = marker.draggable,
             anchor = marker.anchor.toOffset(),
             zIndex = marker.zIndex,

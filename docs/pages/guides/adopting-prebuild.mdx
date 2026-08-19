@@ -15,7 +15,14 @@ Adopting prebuild will automatically add support for developing modules with the
 
 The `expo` package contains the [`npx expo prebuild`](/more/expo-cli/#prebuild) command and indicates which [prebuild template](/workflow/continuous-native-generation#templates) to use:
 
-<Terminal cmd={['$ npm install expo']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install expo'],
+    yarn: ['$ yarn add expo'],
+    pnpm: ['$ pnpm add expo'],
+    bun: ['$ bun add expo'],
+  }}
+/>
 
 Ensure you install the version of `expo` that works for your currently installed [version of `react-native`](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version).
 
@@ -48,18 +55,48 @@ If you're migrating an existing project, then you may want to refer to [**migrat
 
 Run the following command to regenerate the **android** and **ios** directories based on the app config (**app.json/app.config.js**) configuration:
 
-<Terminal cmd={['$ npx expo prebuild --clean']} cmdCopy="npx expo prebuild --clean" />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --clean'],
+    yarn: ['$ yarn expo prebuild --clean'],
+    pnpm: ['$ pnpm expo prebuild --clean'],
+    bun: ['$ bun expo prebuild --clean'],
+  }}
+/>
 
 You can test that everything worked by building the projects locally:
 
 <Terminal
-  cmd={[
-    '# Build your native Android project',
-    '$ npx expo run:android',
-    '',
-    '# Build your native iOS project',
-    '$ npx expo run:ios',
-  ]}
+  cmd={{
+    npm: [
+      '# Build your native Android project',
+      '$ npx expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ npx expo run:ios',
+    ],
+    yarn: [
+      '# Build your native Android project',
+      '$ yarn expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ yarn expo run:ios',
+    ],
+    pnpm: [
+      '# Build your native Android project',
+      '$ pnpm expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ pnpm expo run:ios',
+    ],
+    bun: [
+      '# Build your native Android project',
+      '$ bun expo run:android',
+      '',
+      '# Build your native iOS project',
+      '$ bun expo run:ios',
+    ],
+  }}
 />
 
 > Learn more about [compiling native apps](/more/expo-cli/#compiling).

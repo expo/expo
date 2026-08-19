@@ -11,7 +11,6 @@ describe(envIsWebcontainer, () => {
 
   it('returns true when running in stackblitz', () => {
     process.env.SHELL = '/bin/jsh';
-    // @ts-expect-error
     process.versions.webcontainer = '1.33.7';
 
     expect(envIsWebcontainer()).toBe(true);

@@ -4,14 +4,15 @@ process.env.EXPO_NONINTERACTIVE = 1;
 
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { commandRunner } from '../utils/commandUtils.js';
+import { commandRunner, packageManagerRunAsync } from '../utils/commandUtils.js';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function runAsync() {
   console.log('Preparing module for publishing');
   await commandRunner(path.join(dirname, 'expo-module-clean'));
-  await commandRunner(path.join(dirname, 'expo-module-build'));
+  // Run the package's own `build` script so `expo-build` modules still emit output before publishing.
+  await packageManagerRunAsync(['build']);
 }
 
 (async () => {

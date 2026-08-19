@@ -11,6 +11,7 @@
 import MetroHMRClient from '@expo/metro/metro-runtime/modules/HMRClient';
 import prettyFormat, { plugins } from 'pretty-format';
 
+import type { MarshalledProps } from '../dom/dom-entry';
 import {
   getConnectionError,
   getFullBundlerUrl,
@@ -19,6 +20,12 @@ import {
   resetErrorOverlay,
   showLoading,
 } from './hmrUtils';
+
+declare global {
+  interface Window {
+    $$EXPO_INITIAL_PROPS?: MarshalledProps;
+  }
+}
 
 const pendingEntryPoints: string[] = [];
 

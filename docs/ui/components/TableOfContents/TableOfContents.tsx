@@ -14,6 +14,7 @@ import {
   useEffect,
   SyntheticEvent,
 } from 'react';
+import { useIntl } from 'react-intl';
 
 import { BASE_HEADING_LEVEL, Heading } from '~/common/headingManager';
 import { isVersionedPath } from '~/common/routes';
@@ -44,6 +45,7 @@ export const TableOfContents = forwardRef<
   HeadingManagerProps & TableOfContentsProps
 >(({ headingManager: { headings }, contentRef, selfRef, maxNestingDepth = 4 }, ref) => {
   const router = useRouter();
+  const intl = useIntl();
   const isVersioned = isVersionedPath(router?.pathname ?? '');
   const [activeSlug, setActiveSlug] = useState<string | null>(null);
   const [activeParentSlug, setActiveParentSlug] = useState<string | null>(null);
@@ -374,6 +376,7 @@ export const TableOfContents = forwardRef<
       return (
         <div
           key={heading.slug}
+          role="listitem"
           className={mergeClasses(
             'flex items-center',
             currentH3 && heading.level > BASE_HEADING_LEVEL + 2 && 'ml-0',
@@ -395,6 +398,7 @@ export const TableOfContents = forwardRef<
               className="-mr-2 flex h-full cursor-pointer items-center justify-center self-start pt-0.5 hocus:opacity-75"
               aria-label={`${collapsedH3s.has(heading.slug) ? 'Expand' : 'Collapse'} section ${heading.title}`}>
               <ChevronDownIcon
+                aria-hidden="true"
                 className={mergeClasses(
                   'icon-sm text-icon-secondary transition-transform',
                   collapsedH3s.has(heading.slug) ? '-rotate-90' : 'rotate-0'
@@ -424,7 +428,8 @@ export const TableOfContents = forwardRef<
           'absolute z-100 -mt-13 -ml-6 flex min-h-8 w-68 select-none',
           'items-center gap-2 bg-linear-to-b from-default from-80% to-transparent py-3 pl-6'
         )}>
-        <LayoutAlt03Icon className="icon-sm" /> On this page
+        <LayoutAlt03Icon aria-hidden="true" className="icon-sm" />{' '}
+        {intl.formatMessage({ id: 'onThisPage' })}
         <Button
           theme="quaternary"
           size="xs"
@@ -436,7 +441,7 @@ export const TableOfContents = forwardRef<
           <ArrowCircleUpIcon className="icon-sm text-icon-secondary" aria-label="Scroll to top" />
         </Button>
       </CALLOUT>
-      <div role="tree">{renderTOC()}</div>
+      <div role="list">{renderTOC()}</div>
     </nav>
   );
 });

@@ -1,5 +1,6 @@
 import {
-  TextField as ComposeTextField,
+  BasicTextField,
+  Box,
   Text,
   type TextFieldImeAction,
   type TextFieldKeyboardType,
@@ -7,6 +8,7 @@ import {
   useNativeState,
 } from '@expo/ui/jetpack-compose';
 import {
+  fillMaxWidth,
   onSizeChanged,
   semantics,
   testID as testIDModifier,
@@ -153,7 +155,7 @@ export function TextInput({
     : undefined;
 
   return (
-    <ComposeTextField
+    <BasicTextField
       ref={innerRef}
       modifiers={[
         ...(userModifiers ?? []),
@@ -168,30 +170,7 @@ export function TextInput({
       singleLine={!multiline}
       maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
-      colors={
-        caretHidden || cursorColor || underlineColorAndroid || placeholderTextColor
-          ? {
-              ...(caretHidden
-                ? { cursorColor: 'transparent' }
-                : cursorColor
-                  ? { cursorColor }
-                  : null),
-              ...(underlineColorAndroid
-                ? {
-                    unfocusedIndicatorColor: underlineColorAndroid,
-                    focusedIndicatorColor: underlineColorAndroid,
-                  }
-                : null),
-              ...(placeholderTextColor
-                ? {
-                    unfocusedPlaceholderColor: placeholderTextColor,
-                    focusedPlaceholderColor: placeholderTextColor,
-                    disabledPlaceholderColor: placeholderTextColor,
-                  }
-                : null),
-            }
-          : undefined
-      }
+      cursorColor={caretHidden ? 'transparent' : (cursorColor ?? selectionColor)}
       textStyle={
         textStyle || (textAlign && textAlign !== 'auto')
           ? {
@@ -214,14 +193,28 @@ export function TextInput({
       onValueChange={onChangeText}
       maxLength={maxLength}
       onFocusChanged={handleFocusChanged}
-      selection={selection as Parameters<typeof ComposeTextField>[0]['selection']}
+      selection={selection as Parameters<typeof BasicTextField>[0]['selection']}
       onSelectionChange={onSelectionChange}>
-      {placeholder ? (
-        <ComposeTextField.Placeholder>
-          <Text>{placeholder}</Text>
-        </ComposeTextField.Placeholder>
-      ) : null}
-    </ComposeTextField>
+      <BasicTextField.DecorationBox>
+        <Box
+          modifiers={[fillMaxWidth()]}
+          contentAlignment={
+            textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
+          }>
+          {placeholder != null ? (
+            <BasicTextField.Placeholder>
+              <Text
+                color={placeholderTextColor as string | undefined}
+                modifiers={[fillMaxWidth()]}
+                style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
+                {placeholder}
+              </Text>
+            </BasicTextField.Placeholder>
+          ) : null}
+          <BasicTextField.InnerTextField />
+        </Box>
+      </BasicTextField.DecorationBox>
+    </BasicTextField>
   );
 }
 

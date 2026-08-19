@@ -10,7 +10,7 @@ jest.mock('../JsInspector');
 
 describe('createJsInspectorMiddleware', () => {
   it('should return specific app entity for GET request with given applicationId', async () => {
-    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
     const req = createRequest(`http://localhost:8081/inspector?applicationId=${app.description}`);
     const res = createMockedResponse();
     const next = jest.fn();
@@ -27,7 +27,7 @@ describe('createJsInspectorMiddleware', () => {
   });
 
   it('should handle ipv6 address', async () => {
-    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
     const req = createRequest(
       `http://[::ffff:127.0.0.1]/inspector?applicationId=${app.description}`
     );
@@ -73,7 +73,7 @@ describe('createJsInspectorMiddleware', () => {
   });
 
   it('queries the local server origin even when the request URL is absolute-form', async () => {
-    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
     const req = createRequest(
       `http://localhost:8081/_expo/debugger?applicationId=${app.description}`
     );
@@ -109,7 +109,7 @@ describe('createJsInspectorMiddleware', () => {
   });
 
   it('should open browser for PUT request with given applicationId', async () => {
-    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
+    const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
     const req = createRequest(
       `http://localhost:8081/inspector?applicationId=${app.description}`,
       'PUT'

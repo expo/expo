@@ -4,9 +4,7 @@
     {
       "name": "ExpoSQLite",
       "podName": "ExpoSQLite",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -21,13 +19,8 @@
           "path": "vendor/sqlite3",
           "pattern": "**/*.{cpp,c}",
           "headerPattern": "**/*.h",
-          "dependencies": [
-            "ReactNativeDependencies",
-            "React"
-          ],
-          "includeDirectories": [
-            "."
-          ],
+          "dependencies": ["ReactNativeDependencies", "React"],
+          "includeDirectories": ["."],
           "compilerFlags": [
             "-DHAVE_USLEEP=1",
             "-DSQLITE_ENABLE_LOCKING_STYLE=0",
@@ -53,15 +46,8 @@
             "expo-modules-core/ExpoModulesCore",
             "ExpoSQLite_c"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ],
-          "exclude": [
-            "libsql/**",
-            "libsql.xcframework/**",
-            "SQLiteModuleLibSQL.swift"
-          ],
+          "linkedFrameworks": ["Foundation", "UIKit"],
+          "exclude": ["libsql/**", "libsql.xcframework/**", "SQLiteModuleLibSQL.swift"],
           "compilerFlags": [
             "-DHAVE_USLEEP=1",
             "-DSQLITE_ENABLE_LOCKING_STYLE=0",

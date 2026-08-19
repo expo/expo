@@ -7,7 +7,7 @@ import {
   transformProps,
 } from '../layout-types';
 
-export type BoxProps = {
+export interface BoxProps extends PrimitiveBaseProps {
   children?: React.ReactNode;
   /**
    * Alignment of children within the box.
@@ -17,7 +17,7 @@ export type BoxProps = {
    * Scroll behavior for the floating toolbar exit.
    */
   floatingToolbarExitAlwaysScrollBehavior?: FloatingToolbarExitAlwaysScrollBehavior;
-} & PrimitiveBaseProps;
+}
 
 const BoxNativeView: React.ComponentType<BoxProps> = requireNativeView('ExpoUI', 'BoxView');
 

@@ -1,4 +1,18 @@
 import { XcodeProject } from 'expo/config-plugins';
+import type { PBXFile } from 'xcode';
+
+type BuildPhase = {
+  files: { value: string; comment: string }[];
+};
+
+type BuildPhaseType = 'PBXSourcesBuildPhase' | 'PBXCopyFilesBuildPhase' | 'PBXFrameworksBuildPhase';
+
+type ProductFile = PBXFile & {
+  uuid: string;
+  target: string;
+  basename: string;
+  group: string;
+};
 
 export function addBuildPhases(
   xcodeProject: XcodeProject,
@@ -10,12 +24,7 @@ export function addBuildPhases(
   }: {
     targetUuid: string;
     groupName: string;
-    productFile: {
-      uuid: string;
-      target: string;
-      basename: string;
-      group: string;
-    };
+    productFile: ProductFile;
     widgetFiles: string[];
   }
 ) {
@@ -81,11 +90,12 @@ export function addBuildPhases(
 
 function getBuildPhaseObject(
   xcodeProject: XcodeProject,
-  buildPhaseType: string,
+  buildPhaseType: BuildPhaseType,
   targetUuid: string,
   comment?: string
-) {
-  const buildPhaseSection = xcodeProject.hash.project.objects[buildPhaseType];
+): BuildPhase | null {
+  const objects = xcodeProject.hash.project.objects as Record<string, Record<string, unknown>>;
+  const buildPhaseSection = objects[buildPhaseType];
   const target = xcodeProject.pbxNativeTargetSection()[targetUuid];
   if (!buildPhaseSection || !target?.buildPhases) {
     return null;
@@ -96,5 +106,5 @@ function getBuildPhaseObject(
       (!comment || buildPhase.comment === comment) && buildPhaseSection[buildPhase.value]
   );
 
-  return buildPhase ? buildPhaseSection[buildPhase.value] : null;
+  return buildPhase ? (buildPhaseSection[buildPhase.value] as BuildPhase) : null;
 }

@@ -61,6 +61,9 @@ object DevLauncherPackageDelegate {
         private val currentActivity
           get() = currentActivityHolder.get()
         private var reactHostHolder: WeakReference<ReactHost> = WeakReference(null)
+        private var reactActivityDelegateHolder: WeakReference<ReactActivityDelegate> = WeakReference(null)
+        private var containerHolder: WeakReference<ViewGroup> = WeakReference(null)
+        private var currentModuleName: String? = null
         private val fragment by DevMenuApi.fragment { currentActivity }
 
         override fun onDidCreateReactActivityDelegateNotification(activity: ReactActivity?, delegate: ReactActivityDelegate?) {
@@ -69,6 +72,11 @@ object DevLauncherPackageDelegate {
         }
 
         override fun onDidCreateReactActivityDelegate(activity: ReactActivity, delegate: ReactActivityDelegate): ReactActivityDelegate? {
+          reactActivityDelegateHolder = delegate.weak()
+          // Capture the initial component name so the dev menu can highlight it before
+          // the user ever switches. `ReactActivity.getMainComponentName()` is protected,
+          // but the delegate exposes the same value publicly.
+          currentModuleName = delegate.mainComponentName
           return DevLauncherController.wrapReactActivityDelegate(
             activity,
             object : DevLauncherReactActivityDelegateSupplier {
@@ -80,11 +88,21 @@ object DevLauncherPackageDelegate {
         }
 
         override fun createReactRootViewContainer(activity: Activity): ViewGroup {
-          return DevMenuApi.createFragmentHost(
+          val container = DevMenuApi.createFragmentHost(
             activity,
             reactHostHolder,
             preferences = requireNotNull(DependencyInjection.devMenuPreferences),
             goToHomeAction = { DevLauncherController.instance.navigateToLauncher() },
+            switchToComponentAction = { moduleName ->
+              val ok = DevLauncherComponentSwitcher.switch(
+                activity = currentActivity,
+                delegate = reactActivityDelegateHolder.get(),
+                container = containerHolder.get(),
+                moduleName = moduleName
+              )
+              if (ok) currentModuleName = moduleName
+              ok
+            },
             appInfoProvider = { application, reactHost ->
               val defaultAppInfo = AppInfo.getAppInfo(application, reactHost)
 
@@ -117,10 +135,13 @@ object DevLauncherPackageDelegate {
                 appName = newAppName,
                 appVersion = newAppVersion,
                 runtimeVersion = newRuntimeVersion,
-                hostUrl = hostUrl
+                hostUrl = hostUrl,
+                currentComponentName = currentModuleName
               )
             }
           )
+          containerHolder = container.weak()
+          return container
         }
 
         override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {

@@ -1,7 +1,7 @@
 import { Response, type RequestInfo, type RequestInit } from 'fetch-nodeshim';
 
-import { getRequestCacheKey, getResponseInfo, type ResponseCache } from './ResponseCache';
 import type { FetchLike } from '../client.types';
+import { getRequestCacheKey, getResponseInfo, type ResponseCache } from './ResponseCache';
 
 const debug = require('debug')('expo:fetch-cache');
 

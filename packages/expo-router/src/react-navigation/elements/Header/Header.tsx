@@ -12,6 +12,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import searchIcon from '../../../../assets/react-navigation/elements/search-icon.png';
+import { Color } from '../../../utils/color';
 import { useNavigation, useTheme } from '../../native';
 import type { HeaderOptions, Layout } from '../types';
 import { useFrameSize } from '../useFrameSize';
@@ -23,7 +24,6 @@ import { HeaderSearchBar } from './HeaderSearchBar';
 import { HeaderShownContext } from './HeaderShownContext';
 import { HeaderTitle } from './HeaderTitle';
 import { getDefaultHeaderHeight } from './getDefaultHeaderHeight';
-import { Color } from '../../../utils/color';
 
 // Width of the screen in split layout on portrait mode on iPad Mini
 const IPAD_MINI_MEDIUM_WIDTH = 414;

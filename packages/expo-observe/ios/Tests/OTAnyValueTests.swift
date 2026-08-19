@@ -243,10 +243,11 @@ struct OTAnyValueCodableTests {
 
   @Test
   func `encodes .kvlist as kvlistValue.values with key/value pairs`() throws {
-    let json = try encode(.kvlist([
-      OTKeyValue(key: "a", value: .int(1)),
-      OTKeyValue(key: "b", value: .string("x"))
-    ]))
+    let json = try encode(
+      .kvlist([
+        OTKeyValue(key: "a", value: .int(1)),
+        OTKeyValue(key: "b", value: .string("x")),
+      ]))
     #expect(json.count == 1)
     let kvlistValue = try #require(json["kvlistValue"] as? [String: Any])
     let values = try #require(kvlistValue["values"] as? [[String: Any]])
@@ -263,7 +264,7 @@ struct OTAnyValueCodableTests {
       OTKeyValue(key: "count", value: .int(3)),
       OTKeyValue(key: "ratio", value: .double(0.5)),
       OTKeyValue(key: "ok", value: .bool(true)),
-      OTKeyValue(key: "tags", value: .array([.string("a"), .string("b")]))
+      OTKeyValue(key: "tags", value: .array([.string("a"), .string("b")])),
     ])
     let data = try JSONEncoder().encode(original)
     let decoded = try JSONDecoder().decode(OTAnyValue.self, from: data)

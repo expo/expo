@@ -2,17 +2,11 @@ internal import jsi
 
 // MARK: - JavaScriptRepresentable
 
-/**
- A type whose values can be represented in the JS runtime.
- */
+/// A type whose values can be represented in the JS runtime.
 public protocol JavaScriptRepresentable: Sendable, ~Copyable {
-  /**
-   Creates an instance of this type from the given JS value.
-   */
+  /// Creates an instance of this type from the given JS value.
   static func fromJavaScriptValue(_ value: JavaScriptValue) -> Self
-  /**
-   Creates a JS value representing this value in the given runtime.
-   */
+  /// Creates a JS value representing this value in the given runtime.
   func toJavaScriptValue(in runtime: JavaScriptRuntime) -> JavaScriptValue
 }
 

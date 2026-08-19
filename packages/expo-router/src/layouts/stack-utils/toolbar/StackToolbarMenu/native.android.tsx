@@ -10,16 +10,17 @@ import {
 import { background } from '@expo/ui/jetpack-compose/modifiers';
 import { createContext, use, useCallback, useState } from 'react';
 
-import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './types';
 import { Label } from '../../../../primitives';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { getFirstChildOfType } from '../../../../utils/children';
+import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
 import { useToolbarColors } from '../context';
 import {
   DEFAULT_DESTRUCTIVE_COLOR,
   DEFAULT_TOOLBAR_BACKGROUND_COLOR,
   DEFAULT_TOOLBAR_TINT_COLOR,
 } from '../defaults';
+import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './types';
 
 const arrowRightIcon = require('../../../../../assets/arrow_right.xml');
 const checkmarkIcon = require('../../../../../assets/checkmark.xml');
@@ -41,10 +42,12 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
   const isNested = parentClose !== null;
   const toolbarColors = useToolbarColors();
 
-  const tintColor =
-    props.imageRenderingMode === 'original'
-      ? undefined
-      : (props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
+  const tintColor = props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR();
+  // `tint={null}` tells `<Icon>` to draw the source in its original colors.
+  // `undefined` would fall back to `LocalContentColor` (i.e. still a tint).
+  // Only the user-provided source respects `imageRenderingMode`; internal
+  // ornaments (submenu arrow, action checkmark) are always tinted.
+  const sourceTint = props.imageRenderingMode === 'original' ? null : tintColor;
 
   const backgroundColor = (toolbarColors.backgroundColor ??
     DEFAULT_TOOLBAR_BACKGROUND_COLOR()) as string;
@@ -53,6 +56,12 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     setExpanded(false);
     parentClose?.();
   }, [parentClose]);
+
+  if (process.env.NODE_ENV !== 'production' && isNested && props.badge) {
+    console.warn(
+      'Stack.Toolbar.Badge on a nested Stack.Toolbar.Menu is not supported on Android; it is only rendered on a root menu. The badge will be ignored.'
+    );
+  }
 
   // Inline nested: render children directly with a divider separator
   if (isNested && props.inline) {
@@ -73,7 +82,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     );
     const leadingIcon = props.source ? (
       <DropdownMenuItem.LeadingIcon>
-        <Icon source={props.source} tint={tintColor} size={24} />
+        <Icon source={props.source} tint={sourceTint} size={24} />
       </DropdownMenuItem.LeadingIcon>
     ) : null;
     return (
@@ -119,6 +128,20 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     return null;
   }
 
+  const iconButton = (
+    <IconButton
+      onClick={() => setExpanded(true)}
+      enabled={!props.disabled}
+      modifiers={[background(backgroundColor)]}>
+      <Icon
+        source={props.source}
+        tint={sourceTint}
+        size={24}
+        contentDescription={getBadgeContentDescription(props.accessibilityLabel, props.badge)}
+      />
+    </IconButton>
+  );
+
   return (
     <AnimatedItemContainer visible={!props.hidden}>
       <DropdownMenu
@@ -126,17 +149,9 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
         onDismissRequest={() => setExpanded(false)}
         color={backgroundColor}>
         <DropdownMenu.Trigger>
-          <IconButton
-            onClick={() => setExpanded(true)}
-            enabled={!props.disabled}
-            modifiers={[background(backgroundColor)]}>
-            <Icon
-              source={props.source}
-              tint={tintColor}
-              size={24}
-              contentDescription={props.accessibilityLabel}
-            />
-          </IconButton>
+          <ToolbarItemBadge badge={props.badge} disabled={props.disabled}>
+            {iconButton}
+          </ToolbarItemBadge>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>
           <ToolbarMenuCloseContext value={closeMenu}>{props.children}</ToolbarMenuCloseContext>

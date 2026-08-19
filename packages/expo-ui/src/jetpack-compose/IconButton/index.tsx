@@ -15,7 +15,7 @@ export type IconButtonColors = {
   disabledContentColor?: ColorValue;
 };
 
-export type IconButtonProps = {
+export interface IconButtonProps {
   /**
    * Callback that is called when the icon button is clicked.
    */
@@ -42,7 +42,7 @@ export type IconButtonProps = {
    * Content to display inside the icon button.
    */
   children: React.ReactNode;
-};
+}
 
 type NativeIconButtonProps = Omit<IconButtonProps, 'onClick' | 'shape' | 'children'> & {
   shape?: ShapeRecordProps;

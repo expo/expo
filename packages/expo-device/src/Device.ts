@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 
 import { DeviceType } from './Device.types';
 import ExpoDevice from './ExpoDevice';

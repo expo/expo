@@ -1,4 +1,4 @@
-import { isRunningInExpoGo } from 'expo';
+import { requireNativeModule } from 'expo-modules-core';
 import React, { useMemo } from 'react';
 import { View, DevSettings, Platform, Clipboard, type Modal as ModalInterface } from 'react-native';
 // @ts-ignore
@@ -16,6 +16,18 @@ const Modal = RCTModalHostView as typeof ModalInterface;
 const Colors = {
   background: '#111113',
 };
+
+const NativeExpoGoModule = (() => {
+  try {
+    return requireNativeModule('ExpoGo');
+  } catch {
+    return null;
+  }
+})();
+
+function isRunningInExpoGo(): boolean {
+  return NativeExpoGoModule != null;
+}
 
 function LogBoxRNPolyfill(props: {
   onDismiss: (index: number) => void;

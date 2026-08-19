@@ -14,7 +14,7 @@ public class SymbolModule: Module {
       }
 
       Prop("scale") { (view, scale: SymbolScale?) in
-        view.scale = scale?.imageSymbolScale() ?? .unspecified
+        view.scale = scale?.imageSymbolScale() ?? SymbolView.defaultScale
       }
 
       Prop("tintColor") { (view, color: UIColor?) in
@@ -34,7 +34,7 @@ public class SymbolModule: Module {
       }
 
       Prop("resizeMode") { (view, resizeMode: SymbolContentMode?) in
-        view.imageContentMode = resizeMode?.toContentMode() ?? .scaleAspectFit
+        view.imageContentMode = resizeMode?.toContentMode() ?? SymbolView.defaultContentMode
       }
 
       Prop("animationSpec") { (view, spec: AnimationSpec?) in

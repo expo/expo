@@ -2,12 +2,7 @@ import { getConfig, getPackageJson } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
-import { applyPluginsAsync } from './applyPlugins';
-import { checkPackagesAsync } from './checkPackages';
-import { installExpoPackageAsync } from './installExpoPackage';
-import type { Options } from './resolveOptions';
 import * as Log from '../log';
-import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
 import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
@@ -15,6 +10,11 @@ import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
 import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { joinWithCommasAnd } from '../utils/strings';
+import { applyPluginsAsync } from './applyPlugins';
+import { checkPackagesAsync } from './checkPackages';
+import { installExpoPackageAsync } from './installExpoPackage';
+import type { Options } from './resolveOptions';
+import { checkPackagesCompatibility } from './utils/checkPackagesCompatibility';
 
 /**
  * Installs versions of specified packages compatible with the current Expo SDK version, or

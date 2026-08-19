@@ -104,7 +104,7 @@ export function clearInitialURL(): void {
 
 // @needsAudit
 /**
- * Attempt to open the given URL with an installed app. See the [Linking guide](/guides/linking)
+ * Attempt to open the given URL with an installed app. See the [Linking guide](/linking/overview)
  * for more information.
  * @param url A URL for the operating system to open. For example: `tel:5555555`, `exp://`.
  * @return A `Promise` that is fulfilled with `true` if the link is opened operating system
@@ -124,7 +124,7 @@ export async function openURL(url: string): Promise<true> {
  * @return A `Promise` object that is fulfilled with `true` if the URL can be handled, otherwise it
  * `false` if not.
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
- * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#linking-from-your-app).
+ * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/linking/into-other-apps/#custom-url-schemes).
  */
 export async function canOpenURL(url: string): Promise<boolean> {
   validateURL(url);

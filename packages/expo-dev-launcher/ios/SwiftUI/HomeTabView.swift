@@ -55,13 +55,18 @@ struct HomeTabView: View {
         }
         .padding()
       }
+      #if !os(tvOS)
+      .refreshable {
+        await viewModel.refreshDevServers()
+      }
+      #endif
     }
     #if os(tvOS)
     .background()
     #endif
-    .overlay(
-      DevServerInfoModal(showingInfoDialog: $showingInfoDialog)
-    )
+    .sheet(isPresented: $showingInfoDialog) {
+      DevServerInfoModal()
+    }
   }
 
   private var crashReportBanner: some View {

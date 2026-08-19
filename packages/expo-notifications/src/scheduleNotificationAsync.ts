@@ -1,4 +1,4 @@
-import { Platform, UnavailabilityError, uuid } from 'expo-modules-core';
+import { Platform, UnavailabilityError, uuid } from 'expo';
 
 import NotificationScheduler from './NotificationScheduler';
 import type {

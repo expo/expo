@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 import UAParser from 'ua-parser-js';
 
 import { DeviceType } from './Device.types';

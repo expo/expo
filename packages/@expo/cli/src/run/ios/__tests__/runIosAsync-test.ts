@@ -131,6 +131,7 @@ describe(resolveOptionsAsync, () => {
       deviceType: 'device',
       udid: '00008101-001964A22629003A',
       connectionType: 'USB',
+      osType: 'iOS',
     });
     jest.mocked(isSimulatorDevice).mockReturnValueOnce(false);
     mockPlatform('darwin');
@@ -158,6 +159,7 @@ describe(resolveOptionsAsync, () => {
         osVersion: '15.4.1',
         udid: '00008101-001964A22629003A',
         connectionType: 'USB',
+        osType: 'iOS',
       },
       eagerBundleOptions: undefined,
       isSimulator: false,
@@ -181,6 +183,7 @@ describe(resolveOptionsAsync, () => {
           osVersion: '15.4.1',
           udid: '00008101-001964A22629003A',
           connectionType: 'USB',
+          osType: 'iOS',
         },
         isSimulator: false,
         shouldStartBundler: true,

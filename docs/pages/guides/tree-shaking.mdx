@@ -335,7 +335,14 @@ This will only be used in production mode.
 
 Bundle your app in production mode to see the effects of tree shaking.
 
-<Terminal cmd={['$ npx expo export']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export'],
+    yarn: ['$ yarn expo export'],
+    pnpm: ['$ pnpm expo export'],
+    bun: ['$ bun expo export'],
+  }}
+/>
 
 </Step>
 

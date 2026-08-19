@@ -1,18 +1,18 @@
+import type { Terminal } from '@expo/metro/metro-core';
+import type { WatcherStatus } from '@expo/metro/metro-file-map';
 // This file represents an abstraction on the metro TerminalReporter.
 // We use this abstraction to safely extend the TerminalReporter for our own custom logging.
 import UpstreamTerminalReporter from '@expo/metro/metro/lib/TerminalReporter';
-import type { Terminal } from '@expo/metro/metro-core';
-import type { WatcherStatus } from '@expo/metro/metro-file-map';
 import chalk from 'chalk';
 import util from 'util';
 
+import { stripAnsi } from '../../../utils/ansi';
 import type {
   BundleDetails,
   BundleProgressUpdate,
   TerminalReportableEvent,
   TerminalReporterInterface,
 } from './TerminalReporter.types';
-import { stripAnsi } from '../../../utils/ansi';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 

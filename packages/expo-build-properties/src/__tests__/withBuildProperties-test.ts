@@ -296,6 +296,30 @@ describe(withBuildProperties, () => {
     });
   });
 
+  it('generates the android.cmakeVersion property', async () => {
+    const pluginProps: PluginConfigType = {
+      android: { cmakeVersion: '3.31.6' },
+    };
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps,
+        mod: withGradleProperties,
+        modResults: [],
+      }
+    );
+    expect(androidModResults).toContainEqual({
+      type: 'property',
+      key: 'android.cmakeVersion',
+      value: '3.31.6',
+    });
+  });
+
   it('generates the android.reactNativeReleaseLevel property', async () => {
     const pluginProps: PluginConfigType = {
       android: { reactNativeReleaseLevel: 'canary' },

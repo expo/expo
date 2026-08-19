@@ -63,7 +63,12 @@ function adjustLocForCodeFrame(loc: t.SourceLocation) {
   };
 }
 
-function formatLoc(loc: t.SourceLocation, depIndex: number, dep: Dependency, code: string) {
+function formatLoc(
+  loc: Dependency['data']['locs'][number],
+  depIndex: number,
+  dep: Dependency,
+  code: string
+) {
   return codeFrameColumns(
     code,
     // @ts-ignore-error TODO(@kitten): Unclear why this doesn't match up. Are our @babel/* types misaligned or is this incorrect?

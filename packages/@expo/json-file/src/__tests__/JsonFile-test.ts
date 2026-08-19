@@ -28,12 +28,12 @@ describe(JsonFile, () => {
     'deleteKey',
     'deleteKeys',
     'merge',
-  ];
+  ] as const;
 
   it(`has static methods`, () => {
     for (const method of methodNames) {
       expect(JsonFile[method]).toBeDefined();
-      expect(JsonFile[`${method}Async`]).toBeDefined();
+      expect(JsonFile[`${method}Async` as keyof typeof JsonFile]).toBeDefined();
     }
   });
 
@@ -44,7 +44,7 @@ describe(JsonFile, () => {
 
     for (const method of methodNames) {
       expect(file[method]).toBeDefined();
-      expect(file[`${method}Async`]).toBeDefined();
+      expect(file[`${method}Async` as keyof typeof file]).toBeDefined();
     }
   });
 });

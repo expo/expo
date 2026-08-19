@@ -3,9 +3,7 @@ import chalk from 'chalk';
 import type { Ora } from 'ora';
 import semver from 'semver';
 
-import type { ResolvedTemplateOption } from './resolveOptions';
 import * as Log from '../log';
-import { resolveLocalTemplateAsync } from './resolveLocalTemplate';
 import { createGlobFilter } from '../utils/createFileTransform';
 import { AbortCommandError } from '../utils/errors';
 import { fetch } from '../utils/fetch';
@@ -14,6 +12,8 @@ import {
   extractLocalNpmTarballAsync,
   extractNpmTarballFromUrlAsync,
 } from '../utils/npm';
+import { resolveLocalTemplateAsync } from './resolveLocalTemplate';
+import type { ResolvedTemplateOption } from './resolveOptions';
 
 const debug = require('debug')('expo:prebuild:resolveTemplate') as typeof console.log;
 

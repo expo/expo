@@ -1,0 +1,82 @@
+---
+title: Maestro insights
+sidebar_title: Maestro
+description: Track flow health, flaky flows, and failure patterns for your Maestro end-to-end tests in the Maestro tab of EAS Insights.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **info** Maestro insights is available on the Production and Enterprise plans. Learn more at [EAS pricing](https://expo.dev/pricing).
+
+The **Maestro** tab in the dashboard surfaces results from the [Maestro](https://maestro.dev/) end-to-end (E2E) tests you run in EAS Workflows with the [`maestro` job](/eas/workflows/pre-packaged-jobs/#maestro). It helps you spot which flows fail or flake the most so you can keep your test suite healthy.
+
+- To view insights, open your project in the EAS dashboard, select **Insights** from the navigation menu, and then select the **Maestro** tab.
+- To start sending data, set up E2E tests by following [Run E2E tests on EAS Workflows with Maestro](/eas/workflows/examples/e2e-tests/). Results appear automatically as your tests run.
+
+> **info** Insights are collected from the JUnit test report, which the `maestro` job produces by default (`output_format: junit`). If you set `output_format` to another value such as `html`, results aren't reported and won't appear here.
+
+Each flow run falls into one of three states:
+
+- **Passed**: Passed on the first attempt, with no retries.
+- **Flaky**: Passed, but only after one or more retries.
+- **Failed**: Did not pass.
+
+<ContentSpotlight
+  alt="The Maestro tab in EAS Insights showing run metrics, a runs-over-time chart, and a table of Maestro flows."
+  src="/static/images/eas-insights/insights-maestro-light.webp"
+  darkSrc="/static/images/eas-insights/insights-maestro-dark.webp"
+/>
+
+## Overview
+
+The top of the tab summarizes activity for the selected time range, with each metric compared against the previous period of equal length:
+
+- **Maestro runs**: How many flow runs completed.
+- **Pass rate**: The share of runs that passed (a flaky run still counts as a pass).
+- **Flaky flows**: How many distinct flows flaked at least once.
+- **Avg duration**: Average run time.
+
+## Runs over time
+
+A chart breaks runs down by day (or by hour or minute for shorter time ranges) into passed, flaky, and failed.
+
+## All Maestro flows
+
+A table lists each flow with its **Runs**, **Pass rate**, **Fails**, **Flake rate**, **P90** (90th percentile run duration), and **Last run**. Sort by any column to find the flows that need attention, and search by flow path.
+
+## Filters
+
+Narrow the data down by workflow, status (passed, flaky, failed), tag, or branch.
+
+## Flow details
+
+Select a flow to drill into its history, including its Maestro runs, pass rate, flaky runs, and P90 duration, plus:
+
+- **Error patterns**: Failures grouped by error message, with a sample message and how often each pattern occurred.
+- **Recent runs**: Individual runs with their status, duration, whether they flaked, and the workflow run, branch, and commit they came from.
+
+<ContentSpotlight
+  alt="A Maestro flow detail view in EAS Insights showing the flow's metrics, runs-over-time chart, and top error patterns."
+  src="/static/images/eas-insights/insights-maestro-flow-light.webp"
+  darkSrc="/static/images/eas-insights/insights-maestro-flow-dark.webp"
+/>
+
+## More
+
+<BoxLink
+  title="Run E2E tests on EAS Workflows with Maestro"
+  description="Set up and run Maestro end-to-end tests in EAS Workflows."
+  href="/eas/workflows/examples/e2e-tests/"
+  Icon={Dataflow03Icon}
+/>
+
+<BoxLink
+  title="Maestro documentation"
+  description="Learn more about Maestro flows and how to write them."
+  href="https://docs.maestro.dev/"
+  Icon={BookOpen02Icon}
+/>

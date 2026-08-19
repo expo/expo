@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import klawSync from 'klaw-sync';
+import { assert } from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -7,7 +8,6 @@ import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { pageCollectErrors } from '../page';
-import { assert } from 'node:console';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());

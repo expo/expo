@@ -2,18 +2,20 @@ package expo.modules.kotlin.types
 
 import android.graphics.Color
 import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.core.graphics.toColorInt
+import com.facebook.react.bridge.ColorPropConverter
 import com.facebook.react.bridge.Dynamic
+import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.DynamicCastException
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
-import androidx.core.graphics.toColorInt
-import com.facebook.react.bridge.ReadableArray
 
 /**
  * Color components for named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color)
@@ -262,7 +264,7 @@ private fun hslToColor(h: Float, s: Float, l: Float, a: Float): Color {
     g = hueToRgb(p, q, hue)
     b = hueToRgb(p, q, hue - 1f / 3f)
   }
-  return Color.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), b.coerceIn(0f, 1f), a)
+  return ColorCompat.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), b.coerceIn(0f, 1f), a)
 }
 
 private fun hwbToColor(h: Float, w: Float, b: Float, a: Float): Color {
@@ -272,10 +274,10 @@ private fun hwbToColor(h: Float, w: Float, b: Float, a: Float): Color {
   val white = if (sum > 1f) ww / sum else ww
   val black = if (sum > 1f) bb / sum else bb
   val rgb = hslToColor(h, 1f, 0.5f, 1f)
-  val r = rgb.red() * (1f - white - black) + white
-  val g = rgb.green() * (1f - white - black) + white
-  val bl = rgb.blue() * (1f - white - black) + white
-  return Color.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), bl.coerceIn(0f, 1f), a)
+  val r = ColorCompat.red(rgb) * (1f - white - black) + white
+  val g = ColorCompat.green(rgb) * (1f - white - black) + white
+  val bl = ColorCompat.blue(rgb) * (1f - white - black) + white
+  return ColorCompat.valueOf(r.coerceIn(0f, 1f), g.coerceIn(0f, 1f), bl.coerceIn(0f, 1f), a)
 }
 
 /**
@@ -292,7 +294,7 @@ private fun parseHexColor(value: String): Color? {
     val r = match.groupValues[1].repeat(2).toInt(16)
     val g = match.groupValues[2].repeat(2).toInt(16)
     val b = match.groupValues[3].repeat(2).toInt(16)
-    return Color.valueOf(r / 255f, g / 255f, b / 255f, 1f)
+    return ColorCompat.valueOf(r / 255f, g / 255f, b / 255f, 1f)
   }
 
   // #RGBA → #RRGGBBAA
@@ -301,7 +303,7 @@ private fun parseHexColor(value: String): Color? {
     val g = match.groupValues[2].repeat(2).toInt(16)
     val b = match.groupValues[3].repeat(2).toInt(16)
     val a = match.groupValues[4].repeat(2).toInt(16)
-    return Color.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
+    return ColorCompat.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
   }
 
   // #RRGGBBAA (CSS byte order: alpha is last, unlike Android's #AARRGGBB)
@@ -311,7 +313,7 @@ private fun parseHexColor(value: String): Color? {
     val g = ((hex shr 16) and 0xFF).toInt()
     val b = ((hex shr 8) and 0xFF).toInt()
     val a = (hex and 0xFF).toInt()
-    return Color.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
+    return ColorCompat.valueOf(r / 255f, g / 255f, b / 255f, a / 255f)
   }
 
   return null
@@ -329,7 +331,7 @@ private fun parseCssColorFunction(value: String): Color? {
     val g = parseRgbComponent(match.groupValues[2])
     val b = parseRgbComponent(match.groupValues[3])
     val a = parseAlpha(match.groupValues[4].ifEmpty { null })
-    return Color.valueOf(r, g, b, a)
+    return ColorCompat.valueOf(r, g, b, a)
   }
 
   // hsl/hsla
@@ -355,16 +357,29 @@ private fun parseCssColorFunction(value: String): Color? {
 
 // endregion
 
-@RequiresApi(Build.VERSION_CODES.O)
 class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
   override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Color {
     return when (value.type) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
-      ReadableType.String -> colorFromString(value.asString() ?: throw DynamicCastException(String::class))
+      ReadableType.String -> colorFromString(
+        value.asString() ?: throw DynamicCastException(String::class)
+      )
+
       ReadableType.Array -> {
-        val colorsArray = (value.asArray() ?: throw DynamicCastException(ReadableArray::class)).toArrayList().map { it as Double }.toDoubleArray()
+        val rawArray = value.asArray()
+          ?: throw DynamicCastException(ReadableArray::class)
+        val colorsArray = rawArray
+          .toArrayList()
+          .map { it as Double }
+          .toDoubleArray()
         colorFromDoubleArray(colorsArray)
       }
+
+      ReadableType.Map -> {
+        val colorMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
+        colorFromReadableMap(colorMap, context)
+      }
+
       else -> throw UnexpectedException("Unknown argument type: ${value.type}")
     }
   }
@@ -374,12 +389,19 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       is Int -> {
         colorFromInt(value)
       }
+
       is String -> {
         colorFromString(value)
       }
+
       is DoubleArray -> {
         colorFromDoubleArray(value)
       }
+
+      is ReadableMap -> {
+        colorFromReadableMap(value, context)
+      }
+
       else -> throw UnexpectedException("Unknown argument type: ${value::class}")
     }
   }
@@ -389,18 +411,18 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       throw InvalidColorComponentsException(value.size)
     }
     val alpha = value.getOrNull(3) ?: 1.0
-    return Color.valueOf(value[0].toFloat(), value[1].toFloat(), value[2].toFloat(), alpha.toFloat())
+    return ColorCompat.valueOf(value[0].toFloat(), value[1].toFloat(), value[2].toFloat(), alpha.toFloat())
   }
 
   private fun colorFromInt(value: Int): Color {
-    return Color.valueOf(value)
+    return ColorCompat.valueOf(value)
   }
 
   private fun colorFromString(value: String): Color {
     val normalizedValue = value.trim().lowercase()
     val colorFromString = namedColors[normalizedValue]
     if (colorFromString != null) {
-      return Color.valueOf(
+      return ColorCompat.valueOf(
         colorFromString[0],
         colorFromString[1],
         colorFromString[2],
@@ -411,12 +433,23 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
     if (normalizedValue.startsWith('#')) {
       parseHexColor(normalizedValue)?.let { return it }
       // Fall through to toColorInt() for standard #RRGGBB / #AARRGGBB
-      return Color.valueOf(normalizedValue.toColorInt())
+      return ColorCompat.valueOf(normalizedValue.toColorInt())
     }
 
     parseCssColorFunction(normalizedValue)?.let { return it }
 
-    return Color.valueOf(normalizedValue.toColorInt())
+    return ColorCompat.valueOf(normalizedValue.toColorInt())
+  }
+
+  private fun colorFromReadableMap(value: ReadableMap, context: AppContext?): Color {
+    val reactContext = context?.reactContext ?: throw Exceptions.ReactContextLost()
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      return ColorPropConverter.getColorInstance(value, reactContext)
+        ?: throw UnexpectedException("ColorPropConverter returned null for a non-null color value.")
+    }
+    val colorInt = ColorPropConverter.getColor(value, reactContext)
+      ?: throw UnexpectedException("ColorPropConverter returned null for a non-null color value.")
+    return ColorCompat.valueOf(colorInt)
   }
 
   override fun getCppRequiredTypes(): ExpectedType =
@@ -426,6 +459,9 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
       SingleType(
         CppType.PRIMITIVE_ARRAY,
         arrayOf(ExpectedType(CppType.DOUBLE))
+      ),
+      SingleType(
+        CppType.READABLE_MAP
       )
     )
 

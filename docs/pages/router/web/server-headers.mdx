@@ -44,7 +44,12 @@ Configure headers in the `expo-router` plugin in your [app config](/versions/lat
 Start the development server or export for production:
 
 <Terminal
-  cmd={['$ npx expo start', '', '# Or export for production', '$ npx expo export -p web']}
+  cmd={{
+    npm: ['$ npx expo start', '', '# Or export for production', '$ npx expo export -p web'],
+    yarn: ['$ yarn expo start', '', '# Or export for production', '$ yarn expo export -p web'],
+    pnpm: ['$ pnpm expo start', '', '# Or export for production', '$ pnpm expo export -p web'],
+    bun: ['$ bun expo start', '', '# Or export for production', '$ bun expo export -p web'],
+  }}
 />
 
 Headers are automatically applied to all HTML and API route responses.

@@ -49,7 +49,14 @@ To ensure that the **public/.well-known/apple-app-site-association** file is con
 
 You can use the following command to generate the **apple-app-site-association** file based on your [app config](/versions/latest/config/app/):
 
-<Terminal cmd={['$ npx setup-safari']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx setup-safari'],
+    yarn: ['$ yarn dlx setup-safari'],
+    pnpm: ['$ pnpm dlx setup-safari'],
+    bun: ['$ bunx setup-safari'],
+  }}
+/>
 
 See [Test the deep link](/linking/into-your-app/#test-the-deep-link) guide to test handoff in development.
 
@@ -97,7 +104,14 @@ module.exports = {
 
 After configuring the app config, regenerate your native project with the following command:
 
-<Terminal cmd={['$ npx expo prebuild -p ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild -p ios'],
+    yarn: ['$ yarn expo prebuild -p ios'],
+    pnpm: ['$ pnpm expo prebuild -p ios'],
+    bun: ['$ bun expo prebuild -p ios'],
+  }}
+/>
 
 In development, you must start the website **before installing the app on your device**. This is because when you install the app, the OS will trigger Apple's servers to ping your website for the **.well-known/apple-app-site-association** file. If the website is not running, the OS will not be able to find the file and handoff will not work. If this happens, rebuild the native app with `npx expo run:ios -d`.
 

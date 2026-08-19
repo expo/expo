@@ -3,8 +3,6 @@ package expo.modules.cellular
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.sip.SipManager
-import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
 import expo.modules.interfaces.permissions.Permissions
@@ -26,10 +24,6 @@ class CellularModule : Module() {
         Log.w(moduleName, "READ_PHONE_STATE permission is required to acquire network type", e)
         CellularGeneration.UNKNOWN.value
       }
-    }
-
-    AsyncFunction<Boolean>("allowsVoipAsync") {
-      SipManager.isVoipSupported(context)
     }
 
     AsyncFunction<String?>("getIsoCountryCodeAsync") {
@@ -80,13 +74,8 @@ class CellularModule : Module() {
   private fun getCurrentGeneration(): Int {
     val telephonyManager = telephonyManager()
       ?: return CellularGeneration.UNKNOWN.value
-    val networkType = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-      telephonyManager.dataNetworkType
-    } else {
-      @Suppress("DEPRECATION")
-      telephonyManager.networkType
-    }
-    return when (networkType) {
+    @Suppress("DEPRECATION") // Legacy CDMA constants are deprecated, but can still be returned on older devices, so we keep mapping them instead of returning UNKNOWN
+    return when (telephonyManager.dataNetworkType) {
       TelephonyManager.NETWORK_TYPE_GPRS,
       TelephonyManager.NETWORK_TYPE_EDGE,
       TelephonyManager.NETWORK_TYPE_CDMA,

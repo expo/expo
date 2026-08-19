@@ -12,6 +12,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { useIntl } from 'react-intl';
 
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink';
@@ -38,6 +39,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
     );
     const numberOfRequirements = requirementChildren.length;
     const router = useRouter();
+    const intl = useIntl();
     const [isOpen, setIsOpen] = useState(open);
     const detailsRef = useRef<HTMLDetailsElement>(null);
     const anchorId = 'prerequisites';
@@ -76,7 +78,8 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
         open={isOpen}
         onToggle={event => {
           setIsOpen(event.currentTarget.open);
-        }}>
+        }}
+        data-md="prerequisites">
         <summary
           className={mergeClasses(
             'group m-0 flex cursor-pointer items-center justify-between rounded-md p-1.5 py-3 pr-4',
@@ -86,6 +89,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
           <div className="flex items-center">
             <div className="mt-1.25 mr-2 ml-1.5 self-baseline">
               <TriangleDownIcon
+                aria-hidden="true"
                 className={mergeClasses(
                   'icon-sm text-icon-default',
                   '-rotate-90 transition-transform duration-200',
@@ -94,13 +98,13 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               />
             </div>
             <div className="flex items-center gap-2">
-              <ListIcon className={mergeClasses('icon-sm text-icon-default')} />
+              <ListIcon aria-hidden="true" className={mergeClasses('icon-sm text-icon-default')} />
               <p
                 className={mergeClasses(
                   'relative inline scroll-m-5',
                   'group-hover:text-secondary group-hover:[&_code]:text-secondary'
                 )}>
-                Prerequisites
+                {intl.formatMessage({ id: 'prerequisitesHeading' })}
               </p>
             </div>
             <LinkBase
@@ -115,8 +119,14 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             </LinkBase>
           </div>
           <div>
-            <p className="text-sm text-secondary">
-              {numberOfRequirements} requirement{numberOfRequirements === 1 ? '' : 's'}
+            <p className="text-sm text-secondary" data-md="skip">
+              {numberOfRequirements}{' '}
+              {intl.formatMessage({
+                id:
+                  numberOfRequirements === 1
+                    ? 'prerequisitesRequirementSingular'
+                    : 'prerequisitesRequirementPlural',
+              })}
             </p>
           </div>
         </summary>
@@ -133,7 +143,9 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
                 key={index}
                 className={mergeClasses('flex items-baseline gap-1.5 border-t border-default p-5')}>
                 {numberOfRequirements > 1 && (
-                  <p className="mb-2 text-right font-medium">{index + 1}.</p>
+                  <p className="mb-2 text-right font-medium" data-md="skip">
+                    {index + 1}.
+                  </p>
                 )}
                 {child}
               </div>

@@ -67,7 +67,14 @@ Configure your web output mode. Data loaders work with both [static rendering](/
 
 Start the development server:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Step>
 

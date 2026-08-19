@@ -3,11 +3,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import semver from 'semver';
 
-import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
-import type { Options } from './resolveOptions';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
+import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
+import type { Options } from './resolveOptions';
 
 const debug = require('debug')('expo:lint');
 

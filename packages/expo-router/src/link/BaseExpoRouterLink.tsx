@@ -6,13 +6,13 @@ import React, { useMemo, use } from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { Text, Platform } from 'react-native';
 
+import { Prefetch } from '../Prefetch';
+import { Slot } from '../ui/Slot';
 import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
 import { resolveHref } from './href';
 import type { LinkProps } from './useLinkHooks';
 import { useInteropClassName, useHrefAttrs } from './useLinkHooks';
 import useLinkToPathProps from './useLinkToPathProps';
-import { Prefetch } from '../Prefetch';
-import { Slot } from '../ui/Slot';
 
 export function BaseExpoRouterLink({
   href,

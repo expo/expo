@@ -19,13 +19,21 @@ public final class ModuleRegistry: Sequence {
     if preventModuleOverriding {
       overrideDisallowModules.insert(holder.name)
     }
-    registry.withLock { registry in
+    let didRegister = registry.withLock { registry -> Bool in
       // if overriding is disallowed for this module and the module already registered, don't re-register
       if overrideDisallowModules.contains(holder.name) && registry[holder.name] != nil {
-        log.info("Not re-registering module '\(holder.name)' since a previous registration specified preventModuleOverriding: true")
-        return
+        log.info(
+          "Not re-registering module '\(holder.name)' since a previous registration specified preventModuleOverriding: true"
+        )
+        return false
       }
       registry[holder.name] = holder
+      return true
+    }
+    if didRegister {
+      // Call the `didCreate` lifecycle hook only after the holder is in the registry, so the module
+      // can already look itself up (e.g. through `withEventTarget`). Rejected registrations don't get it.
+      holder.module.didCreate()
     }
   }
 
@@ -37,7 +45,9 @@ public final class ModuleRegistry: Sequence {
       log.error("Unable to register a module '\(module)', the app context is unavailable")
       return
     }
-    register(holder: ModuleHolder(appContext: appContext, module: module, name: name), preventModuleOverriding: preventModuleOverriding)
+    register(
+      holder: ModuleHolder(appContext: appContext, module: module, name: name),
+      preventModuleOverriding: preventModuleOverriding)
   }
 
   /**
@@ -48,7 +58,8 @@ public final class ModuleRegistry: Sequence {
       log.error("Unable to register a module '\(moduleType)', the app context is unavailable")
       return
     }
-    register(module: moduleType.init(appContext: appContext), name: name, preventModuleOverriding: preventModuleOverriding)
+    register(
+      module: moduleType.init(appContext: appContext), name: name, preventModuleOverriding: preventModuleOverriding)
   }
 
   /**
@@ -98,7 +109,7 @@ public final class ModuleRegistry: Sequence {
     }
   }
 
-  internal func getModule<ModuleProtocol>(implementing protocol: ModuleProtocol.Type) -> ModuleProtocol? {
+  public func getModule<ModuleProtocol>(implementing protocol: ModuleProtocol.Type) -> ModuleProtocol? {
     return registry.withLock { registry in
       for holder in registry.values {
         if let module = holder.module as? ModuleProtocol {

@@ -89,7 +89,7 @@ describe(formatStackLikeMetro, () => {
     { SAFE_AREA_CONTEXT_RNW_WARNING },
     { REACT_NAVIGATION_RNW_WARNING },
   ].forEach((fixture) => {
-    const [name, stack] = Object.entries(fixture)[0];
+    const [name, stack] = Object.entries(fixture)[0]!;
     it(`formats stack trace: ${name}`, () => {
       expect(stripAnsi(formatStackLikeMetro(PROJECT_ROOT, stack))).toMatchSnapshot();
     });

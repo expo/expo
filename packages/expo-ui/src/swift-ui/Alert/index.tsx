@@ -8,7 +8,7 @@ import { type CommonViewModifierProps } from '../types';
 /**
  * Props of the `Alert` component.
  */
-export type AlertProps = {
+export interface AlertProps extends CommonViewModifierProps {
   /**
    * The contents of the alert.
    * Should include `Alert.Trigger`, `Alert.Actions`, and optionally `Alert.Message`.
@@ -26,7 +26,7 @@ export type AlertProps = {
    * A callback that is called when the `isPresented` state changes.
    */
   onIsPresentedChange?: (isPresented: boolean) => void;
-} & CommonViewModifierProps;
+}
 
 type NativeAlertProps = Omit<AlertProps, 'onIsPresentedChange'> & {
   onIsPresentedChange?: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;

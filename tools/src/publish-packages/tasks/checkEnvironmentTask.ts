@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import * as Npm from '../../Npm';
 import { Task } from '../../TasksRunner';
-import { TaskArgs } from '../types';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 const { cyan } = chalk;
 
@@ -14,7 +14,14 @@ export const checkEnvironmentTask = new Task<TaskArgs>(
     name: 'checkEnvironmentTask',
     required: true,
   },
-  async (): Promise<void | symbol> => {
+  async (_parcels: Parcel[], options: CommandOptions): Promise<void | symbol> => {
+    // A dry run doesn't publish anything, so it doesn't require NPM auth. Skip
+    // the login check so dry runs work without a token (e.g. on Dependabot
+    // pull requests and forks, which don't have access to repository secrets).
+    if (options.dry) {
+      return;
+    }
+
     const npmUser = await Npm.whoamiAsync();
 
     if (!npmUser) {

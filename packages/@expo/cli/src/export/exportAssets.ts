@@ -3,11 +3,11 @@ import fs from 'fs';
 import path from 'path';
 import picomatch from 'picomatch';
 
-import { getAssetIdForLogGrouping, persistMetroAssetsAsync } from './persistMetroAssets';
-import type { Asset, BundleAssetWithFileHashes, BundleOutput, ExportAssetMap } from './saveAssets';
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
+import { getAssetIdForLogGrouping, persistMetroAssetsAsync } from './persistMetroAssets';
+import type { Asset, BundleAssetWithFileHashes, BundleOutput, ExportAssetMap } from './saveAssets';
 
 const debug = require('debug')('expo:export:exportAssets') as typeof console.log;
 

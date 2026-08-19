@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a crash when a task execution request is evaluated re-entrantly, by making its completion callback fire exactly once. ([#47594](https://github.com/expo/expo/pull/47594) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26

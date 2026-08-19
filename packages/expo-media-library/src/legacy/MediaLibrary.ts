@@ -1,8 +1,12 @@
-import { type PermissionResponse as EXPermissionResponse, createPermissionHook } from 'expo';
-import { UnavailabilityError, type EventSubscription } from 'expo-modules-core';
+import {
+  type PermissionResponse as EXPermissionResponse,
+  createPermissionHook,
+  UnavailabilityError,
+  type EventSubscription,
+} from 'expo';
 import { Platform } from 'react-native';
 
-import MediaLibrary from '../ExpoMediaLibrary';
+import MediaLibrary from './ExpoMediaLibrary';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
 
@@ -366,7 +370,7 @@ export {
   type PermissionResponse as EXPermissionResponse,
   type PermissionHookOptions,
 } from 'expo';
-export { type EventSubscription as Subscription } from 'expo-modules-core';
+export { type EventSubscription as Subscription } from 'expo';
 
 function arrayize<T>(item: T | T[]): T[] {
   if (Array.isArray(item)) {
@@ -711,6 +715,25 @@ export async function getAssetInfoAsync(
     return assetInfo[0];
   }
   return assetInfo;
+}
+
+/**
+ * Returns the `content://` URI for the given legacy asset. Use this when migrating to the new
+ * class-based API — pass the returned URI as the ID to `new Asset(id)`.
+ * @param asset An [`Asset`](#asset) or its ID.
+ * @return A promise which fulfils with the `content://` URI string for the asset.
+ * @platform android
+ */
+export async function getAssetContentUriAsync(asset: AssetRef): Promise<string> {
+  if (Platform.OS !== 'android') {
+    throw new UnavailabilityError('MediaLibrary', 'getAssetContentUriAsync');
+  }
+
+  const assetId = getId(asset);
+
+  checkAssetIds([assetId]);
+
+  return await MediaLibrary.getAssetContentUriAsync(assetId);
 }
 
 // @needsAudit

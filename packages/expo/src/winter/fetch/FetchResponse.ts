@@ -1,5 +1,6 @@
 import { ExpoFetchModule } from './ExpoFetchModule';
 import type { NativeHeadersType, NativeResponse } from './NativeRequest';
+import { createReactNativeBlobAsync, isReactNativeBlobGlobal } from './createBlob';
 
 const ConcreteNativeResponse = ExpoFetchModule.NativeResponse as typeof NativeResponse;
 export type AbortSubscriptionCleanupFunction = () => void;
@@ -20,17 +21,27 @@ interface ResponseMetadata {
 
 const stateKey = Symbol('FetchResponse.state');
 
+let hasWarnedAboutReactNativeBlob = false;
+
+interface ConsumptionWrapper {
+  stream: ReadableStream<Uint8Array<ArrayBuffer>>;
+  // Stops the wrapper from marking its body as consumed. Called by clone()
+  // when reads start coming through tee internals instead of from the user.
+  detach: () => void;
+}
+
 function wrapWithConsumption(
   source: ReadableStream<Uint8Array<ArrayBuffer>>,
   body: Body
-): ReadableStream<Uint8Array<ArrayBuffer>> {
+): ConsumptionWrapper {
   const reader = source.getReader();
   let markedConsumed = false;
+  let markedDetached = false;
 
-  return new ReadableStream(
+  const stream = new ReadableStream(
     {
       async pull(controller) {
-        if (!markedConsumed) {
+        if (!markedConsumed && !markedDetached) {
           markedConsumed = true;
           body.consumed = true;
         }
@@ -50,7 +61,7 @@ function wrapWithConsumption(
         }
       },
       cancel(reason) {
-        if (!markedConsumed) {
+        if (!markedConsumed && !markedDetached) {
           markedConsumed = true;
           body.consumed = true;
         }
@@ -67,6 +78,13 @@ function wrapWithConsumption(
       highWaterMark: 0,
     }
   );
+
+  return {
+    stream,
+    detach: () => {
+      markedDetached = true;
+    },
+  };
 }
 
 // JS-side body state. Held behind the stateKey symbol slot.
@@ -75,6 +93,10 @@ class Body {
   stream: ReadableStream<Uint8Array<ArrayBuffer>> | null = null;
   cloned: boolean;
   consumed = false;
+
+  // Detach fn for the wrapper currently held in `stream`. Null until the
+  // first clone wraps the native stream.
+  detach: (() => void) | null = null;
 
   constructor({ cloned }: { cloned: boolean }) {
     this.cloned = cloned;
@@ -261,13 +283,22 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     return this.status >= 200 && this.status < 300;
   }
 
-  /**
-   * This method is not currently supported by react-native's Blob constructor.
-   */
   async blob(): Promise<Blob> {
     this.checkBodyUsedError('blob');
+    const type = this.headers.get('content-type') ?? '';
     const buffer = await this.arrayBuffer();
-    return new Blob([buffer]);
+
+    if (isReactNativeBlobGlobal()) {
+      if (__DEV__ && !hasWarnedAboutReactNativeBlob) {
+        hasWarnedAboutReactNativeBlob = true;
+        console.warn(
+          "Response.blob() is using React Native's Blob, which copies the response into the native blob store and reads it back through base64 encoding. This may be slow for large responses. Add the `expo-blob` package to your app to avoid the performance overhead."
+        );
+      }
+      return createReactNativeBlobAsync(buffer, type);
+    }
+
+    return new Blob([buffer], { type });
   }
 
   async formData(): Promise<UniversalFormData> {
@@ -364,9 +395,19 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     // Tee so both responses can be read independently. Each branch is wrapped
     // so the first read flips the right consumed flag (otherwise bodyUsed lies).
     if (this.body != null) {
+      // Detach the existing wrapper so reads via the new tee don't flip
+      // this body's consumed flag through it.
+      state.body.detach?.();
+
       const [stream1, stream2] = this.body.tee();
-      state.body.stream = wrapWithConsumption(stream1, state.body);
-      cloneState.body.stream = wrapWithConsumption(stream2, cloneState.body);
+      const own = wrapWithConsumption(stream1, state.body);
+      const sibling = wrapWithConsumption(stream2, cloneState.body);
+
+      state.body.stream = own.stream;
+      state.body.detach = own.detach;
+
+      cloneState.body.stream = sibling.stream;
+      cloneState.body.detach = sibling.detach;
     }
 
     state.body.cloned = true;

@@ -1,8 +1,8 @@
 import tty from 'node:tty';
 import { toQR } from 'toqr';
 
-import { env } from './env';
 import * as Log from '../log';
+import { env } from './env';
 
 export interface QROutput {
   lines: number;
@@ -28,14 +28,13 @@ function supportsSextants() {
   } else if (process.env.COLOR === '0' || process.env.COLOR === 'false') {
     return false;
   }
-  const isWindowsTerminal = process.platform === 'win32' && !!process.env.WT_SESSION?.length;
   const isGhostty = process.env.TERM_PROGRAM === 'ghostty';
   const isWezterm = process.env.TERM_PROGRAM === 'WezTerm';
   // NOTE(@kitten): Zed regressed on rendering sextants
   const isZed = process.env.TERM_PROGRAM === 'zed';
   const isKitty = !!process.env.KITTY_WINDOW_ID?.length;
   const isAlacritty = !!process.env.ALACRITTY_WINDOW_ID?.length && !isZed;
-  return isWindowsTerminal || isGhostty || isWezterm || isKitty || isAlacritty;
+  return isGhostty || isWezterm || isKitty || isAlacritty;
 }
 
 /** ANSI QR code output by using half-blocks (1x2-sized unicode blocks) */

@@ -184,6 +184,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
 
+  // MCP server moved out of the EAS section to the top-level /mcp route
+  '/eas/ai/mcp/': '/mcp/',
+
   // Picker replaced by SegmentedButton
   '/versions/latest/sdk/ui/jetpack-compose/picker/':
     '/versions/latest/sdk/ui/jetpack-compose/segmentedbutton/',
@@ -243,6 +246,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/introduction/installation/': '/get-started/create-a-project/',
   '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
   '/introduction/walkthrough/': '/tutorial/introduction/',
+
+  // Redirects and rewrites guide was consolidated into the reference page
+  '/router/advanced/redirects/': '/router/reference/redirects/',
 
   // Redirects after Expo Router docs reorganization from Home to Guides
   '/routing/next-steps/': '/router/introduction/',
@@ -640,4 +646,20 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/av/': '/versions/v54.0.0/sdk/av/',
   '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
     '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
+
+  // After archiving Configure JS engines guide
+  '/guides/configuring-js-engines/': '/archive/configuring-js-engines/',
+
+  // Trailing-slash variants of `_redirects` rules that only matched the no-slash form
+  '/versions/latest/sdk/admob/': '/versions/latest/',
+  '/versions/latest/workflow/linking/': '/guides/linking/',
+  '/versions/latest/introduction/faq/': '/faq/',
+  '/guides/setting-up-continuous-integration/': '/build/building-on-ci/',
+  '/eas-update/debug-advanced/': '/eas-update/debug/',
+  '/eas-update/publish/': '/eas-update/getting-started/',
+  '/clients/installation/': '/versions/latest/sdk/dev-client/',
+  '/module-api/': '/modules/module-api/',
+  '/module-config/': '/modules/module-config/',
+  '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
+  '/router/advance/router-setttings/': '/router/advanced/router-settings/',
 };

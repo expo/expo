@@ -1,25 +1,26 @@
 import chalk from 'chalk';
 import semver from 'semver';
 
-import { checkEnvironmentTask } from './checkEnvironmentTask';
-import { checkPackageAccess } from './checkPackageAccess';
-import { loadRequestedParcels } from './loadRequestedParcels';
-import { publishAndroidArtifacts } from './publishAndroidPackages';
-import { publishPackages } from './publishPackages';
-import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
-import { updateModuleTemplate } from './updateModuleTemplate';
-import { updatePackageVersions } from './updatePackageVersions';
-import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 import Git from '../../Git';
 import logger from '../../Logger';
 import { sdkVersionAsync } from '../../ProjectVersions';
 import { Task } from '../../TasksRunner';
+import { runTurboTasksAsync } from '../../Turbo';
 import { runWithSpinner } from '../../Utils';
 import { resolveReleaseTypeAndVersion } from '../helpers';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
 import { addTemplateTarball } from './addTemplateTarball';
 import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
+import { checkEnvironmentTask } from './checkEnvironmentTask';
+import { checkPackageAccess } from './checkPackageAccess';
+import { loadRequestedParcels } from './loadRequestedParcels';
+import { publishAndroidArtifacts } from './publishAndroidPackages';
+import { publishPackages } from './publishPackages';
 import { updateAndroidProjects } from './updateAndroidProjects';
+import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
+import { updateModuleTemplate } from './updateModuleTemplate';
+import { updatePackageVersions } from './updatePackageVersions';
+import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 
 const { cyan } = chalk;
 
@@ -72,6 +73,29 @@ export const prepareCanaries = new Task<TaskArgs>(
     } else {
       options.tag = `canary-sdk-${currentSdkMajor}`;
     }
+  }
+);
+
+export const buildCanaryPackages = new Task<TaskArgs>(
+  {
+    name: 'buildCanaryPackages',
+    dependsOn: [loadRequestedParcels],
+  },
+  async (parcels: Parcel[]) => {
+    const packageNames = [
+      ...new Set(
+        parcels.filter((parcel) => parcel.pkg.scripts.build).map((parcel) => parcel.pkg.packageName)
+      ),
+    ];
+    if (packageNames.length === 0) {
+      return;
+    }
+
+    logger.info(
+      `\n🛠️  Building ${cyan(packageNames.length)} package${packageNames.length === 1 ? '' : 's'} with Turbo...`
+    );
+
+    await runTurboTasksAsync(['build'], { filters: packageNames });
   }
 );
 
@@ -130,6 +154,7 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       loadRequestedParcels,
       prepareCanaries,
       checkPackageAccess,
+      buildCanaryPackages,
       updatePackageVersions,
       updateBundledNativeModulesFile,
       updateModuleTemplate,

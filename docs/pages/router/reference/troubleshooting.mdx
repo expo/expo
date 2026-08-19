@@ -27,7 +27,14 @@ If `process.env.EXPO_ROUTER_APP_ROOT` is not defined you'll see the following er
 
 This can happen when the Babel plugin `expo-router/babel` is not used in the project **babel.config.js**. You can try clearing the cache with:
 
-<Terminal cmd={['$ npx expo start --clear']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --clear'],
+    yarn: ['$ yarn expo start --clear'],
+    pnpm: ['$ pnpm expo start --clear'],
+    bun: ['$ bun expo start --clear'],
+  }}
+/>
 
 Alternatively, you can circumvent this issue by creating an **index.js** file in the root of your project with the following contents:
 

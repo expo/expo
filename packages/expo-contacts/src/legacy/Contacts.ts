@@ -1,5 +1,4 @@
-import { type PermissionResponse } from 'expo';
-import { type EventSubscription, UnavailabilityError, uuid } from 'expo-modules-core';
+import { type PermissionResponse, type EventSubscription, UnavailabilityError, uuid } from 'expo';
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
@@ -557,7 +556,6 @@ export type Container = {
   type: ContainerType;
 };
 
-// TODO(@kitten): Remove re-exports from EMC
 export { PermissionStatus, type PermissionResponse, type PermissionExpiration } from 'expo';
 
 /**

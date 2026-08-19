@@ -7,17 +7,17 @@ import { iterableToStream, streamMultipart, multipartContentType, MultipartPart 
 import type { Dictionary } from 'structured-headers';
 import { serializeDictionary } from 'structured-headers';
 
-import type { ManifestRequestInfo } from './ManifestMiddleware';
-import { ManifestMiddleware } from './ManifestMiddleware';
-import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
-import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
-import type { ServerRequest } from './server.types';
 import { getAnonymousIdAsync } from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
 import type { CodeSigningInfo } from '../../../utils/codesigning';
 import { getCodeSigningInfoAsync, signManifestString } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
+import type { ManifestRequestInfo } from './ManifestMiddleware';
+import { ManifestMiddleware } from './ManifestMiddleware';
+import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
+import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
+import type { ServerRequest } from './server.types';
 
 const MULTIPART_TYPE = 'multipart/form-data';
 
@@ -120,7 +120,9 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       (await Updates.getRuntimeVersionAsync(
         this.projectRoot,
         { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
-        requestOptions.platform
+        // TODO(@kitten): Runtime-version resolution only reads ios/android config
+        // tvos/macos fall back to the shared `runtimeVersion` until they get explicit support
+        requestOptions.platform as 'android' | 'ios'
       ));
     if (!runtimeVersion) {
       throw new CommandError(

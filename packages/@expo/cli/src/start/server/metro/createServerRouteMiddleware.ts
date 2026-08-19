@@ -12,6 +12,7 @@ import { ImmutableRequest, type RouteInfo } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { CommandError } from '../../../utils/errors';
 import { fetchManifest } from './fetchRouterManifest';
 import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import {
@@ -19,7 +20,6 @@ import {
   warnInvalidMiddlewareOutput,
   warnInvalidMiddlewareMatcherSettings,
 } from './router';
-import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 

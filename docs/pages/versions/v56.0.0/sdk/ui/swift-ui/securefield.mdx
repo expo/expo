@@ -37,7 +37,7 @@ export default function BasicSecureFieldExample() {
 
   return (
     <Host matchContents>
-      <SecureField placeholder="Password" onValueChange={setPassword} />
+      <SecureField placeholder="Password" onTextChange={setPassword} />
     </Host>
   );
 }
@@ -59,7 +59,7 @@ export default function SecureFieldSubmitExample() {
     <Host matchContents>
       <SecureField
         placeholder="Password"
-        onValueChange={setPassword}
+        onTextChange={setPassword}
         modifiers={[submitLabel('done'), onSubmit(() => console.log('Login submitted'))]}
       />
     </Host>

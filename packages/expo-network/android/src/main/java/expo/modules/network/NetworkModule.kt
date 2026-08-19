@@ -2,12 +2,7 @@ package expo.modules.network
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.net.Network
 import android.net.NetworkCapabilities
-import android.net.NetworkInfo
-import android.net.wifi.WifiInfo
-import android.net.wifi.WifiManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,10 +11,7 @@ import android.util.Log
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.math.BigInteger
-import java.net.InetAddress
-import java.net.UnknownHostException
-import java.nio.ByteOrder
+import java.net.Inet4Address
 
 private val TAG = NetworkModule::class.java.simpleName
 
@@ -138,7 +130,7 @@ class NetworkModule : Module() {
     }
 
     AsyncFunction<String>("getIpAddressAsync") {
-      return@AsyncFunction rawIpToString(wifiInfo.ipAddress)
+      return@AsyncFunction getIpAddress()
     }
 
     AsyncFunction<Boolean>("isAirplaneModeEnabledAsync") {
@@ -188,36 +180,22 @@ class NetworkModule : Module() {
     val result = Bundle()
 
     try {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) { // use getActiveNetworkInfo before api level 29
-        val netInfo = connectivityManager.activeNetworkInfo
-        val connectionType = getConnectionType(netInfo)
-        val isInternetReachable = isInternetReachable(connectivityManager)
+      val network = connectivityManager.activeNetwork
+      val isInternetReachable = isInternetReachable(connectivityManager)
 
-        result.apply {
-          putBoolean("isInternetReachable", isInternetReachable)
-          putString("type", connectionType.value)
-          putBoolean("isConnected", connectionType.isDefined)
-        }
-
-        return result
+      val connectionType = if (network != null) {
+        val netCapabilities = connectivityManager.getNetworkCapabilities(network)
+        getConnectionType(netCapabilities)
       } else {
-        val network = connectivityManager.activeNetwork
-        val isInternetReachable = isInternetReachable(connectivityManager)
-
-        val connectionType = if (network != null) {
-          val netCapabilities = connectivityManager.getNetworkCapabilities(network)
-          getConnectionType(netCapabilities)
-        } else {
-          null
-        }
-
-        result.apply {
-          putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
-          putBoolean("isInternetReachable", isInternetReachable)
-          putBoolean("isConnected", connectionType != null && connectionType.isDefined)
-        }
-        return result
+        null
       }
+
+      result.apply {
+        putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
+        putBoolean("isInternetReachable", isInternetReachable)
+        putBoolean("isConnected", connectionType != null && connectionType.isDefined)
+      }
+      return result
     } catch (e: Exception) {
       result.apply {
         putString("type", NetworkStateType.UNKNOWN.value)
@@ -226,26 +204,6 @@ class NetworkModule : Module() {
       }
       return result
     }
-  }
-
-  private val wifiInfo: WifiInfo
-    get() = try {
-      val manager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
-      manager.connectionInfo
-    } catch (e: Exception) {
-      Log.e(TAG, e.message ?: "expo-network could not acquire Wi-Fi information")
-      throw NetworkWifiException(e)
-    }
-
-  private fun getConnectionType(netInfo: NetworkInfo?): NetworkStateType = when (netInfo?.type) {
-    ConnectivityManager.TYPE_MOBILE,
-    ConnectivityManager.TYPE_MOBILE_DUN -> NetworkStateType.CELLULAR
-    ConnectivityManager.TYPE_WIFI -> NetworkStateType.WIFI
-    ConnectivityManager.TYPE_BLUETOOTH -> NetworkStateType.BLUETOOTH
-    ConnectivityManager.TYPE_ETHERNET -> NetworkStateType.ETHERNET
-    ConnectivityManager.TYPE_WIMAX -> NetworkStateType.WIMAX
-    ConnectivityManager.TYPE_VPN -> NetworkStateType.VPN
-    else -> NetworkStateType.UNKNOWN
   }
 
   private fun getConnectionType(netCapabilities: NetworkCapabilities?): NetworkStateType =
@@ -259,23 +217,18 @@ class NetworkModule : Module() {
       else -> NetworkStateType.UNKNOWN
     }
 
-  private fun rawIpToString(ipAddress: Int): String {
-    // Convert little-endian to big-endian if needed
-    val ip = if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
-      Integer.reverseBytes(ipAddress)
-    } else {
-      ipAddress
-    }
+  private fun getIpAddress(): String {
+    val network = connectivityManager.activeNetwork ?: return "0.0.0.0"
+    val linkProperties = connectivityManager.getLinkProperties(network) ?: return "0.0.0.0"
+    val addresses = linkProperties.linkAddresses
+      .map { it.address }
+      .filterIsInstance<Inet4Address>()
+      .filterNot { it.isLoopbackAddress || it.isMulticastAddress || it.isAnyLocalAddress }
 
-    var ipByteArray = BigInteger.valueOf(ip.toLong()).toByteArray()
-    if (ipByteArray.size < 4) {
-      ipByteArray = frontPadWithZeros(ipByteArray)
-    }
+    val address = addresses
+      .firstOrNull { !it.isLinkLocalAddress }
+      ?: addresses.firstOrNull()
 
-    return try {
-      InetAddress.getByAddress(ipByteArray).hostAddress as String
-    } catch (e: UnknownHostException) {
-      "0.0.0.0"
-    }
+    return address?.hostAddress ?: "0.0.0.0"
   }
 }

@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import type { RouteNode } from './Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';

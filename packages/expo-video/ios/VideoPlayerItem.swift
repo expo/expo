@@ -80,11 +80,24 @@ class VideoPlayerItem: AVPlayerItem {
   // MARK: - HLS Helpers
 
   private func loadHlsTracks(mainUrl: URL) async -> [VideoTrack] {
+    let tracks: [VideoTrack]
+
     if #available(iOS 26.0, tvOS 26, *) {
-      return await loadModernHlsTracks(mainUrl: mainUrl)
+      tracks = await loadModernHlsTracks(mainUrl: mainUrl)
+    } else {
+      tracks = await loadLegacyHlsTracks()
     }
 
-    return await loadLegacyHlsTracks()
+    // For HLS sources with multiple audio renditions, the master playlist lists each video
+    // rendition once per audio group, so the same video track is reported multiple times.
+    // Deduplicate by id (the video playlist URL) to expose each variant only once.
+    var seen: [VideoTrack] = []
+
+    for track in tracks where !seen.contains(track) {
+      seen.append(track)
+    }
+
+    return seen
   }
 
   @available(iOS 26.0, tvOS 26, *)

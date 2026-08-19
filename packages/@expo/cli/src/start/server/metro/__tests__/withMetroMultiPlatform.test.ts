@@ -171,6 +171,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -193,6 +194,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -228,16 +230,17 @@ describe(withExtendedResolver, () => {
 
         const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
           isTsconfigPathsEnabled: false,
+          getMetroBundler: getMetroBundlerGetter(),
         });
 
         modified.resolver.resolveRequest!(
           {
             ...getDefaultRequestContext(),
             dev: true,
-            originModulePath,
+            originModulePath: originModulePath!,
           },
-          targetModulePath,
-          platform
+          targetModulePath!,
+          platform!
         );
 
         expect(getResolveFunc()).not.toHaveBeenCalled();
@@ -249,6 +252,7 @@ describe(withExtendedResolver, () => {
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -270,6 +274,7 @@ describe(withExtendedResolver, () => {
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -290,12 +295,13 @@ describe(withExtendedResolver, () => {
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
       return moduleId === '@expo/vector-icons/package.json'
         ? 'node_modules/@expo/vector-icons'
-        : undefined;
+        : null;
     });
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -316,12 +322,13 @@ describe(withExtendedResolver, () => {
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
       return moduleId === '@expo/vector-icons/package.json'
         ? 'node_modules/@expo/vector-icons'
-        : undefined;
+        : null;
     });
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
         isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -339,7 +346,7 @@ describe(withExtendedResolver, () => {
   });
 
   it(`does not alias react-native-vector-icons if @expo/vector-icons is not installed`, async () => {
-    jest.mocked(resolveFrom).mockReturnValue(undefined);
+    jest.mocked(resolveFrom).mockReturnValue(null);
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -393,6 +400,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -427,6 +435,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -455,6 +464,7 @@ describe(withExtendedResolver, () => {
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
       isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     const platform = 'web';
@@ -698,7 +708,7 @@ describe(withExtendedResolver, () => {
     );
 
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
-      return moduleId === config.transformer.asyncRequireModulePath ? expectedPath : undefined;
+      return moduleId === config.transformer.asyncRequireModulePath ? expectedPath : null;
     });
 
     const config = asMetroConfig({ projectRoot: '/root/' });
@@ -1240,6 +1250,7 @@ describe(withExtendedResolver, () => {
               return {
                 rootPath: '/root/node_modules/my-package',
                 packageJson: { name: 'my-package' },
+                packageRelativePath: 'src/index.js',
               };
             }
             return null;
@@ -1364,6 +1375,7 @@ describe(withExtendedResolver, () => {
           resolvedModulePaths: {
             'expo-router': '/sticky/expo-router',
           },
+          moduleNameRewrites: {},
         },
       });
 

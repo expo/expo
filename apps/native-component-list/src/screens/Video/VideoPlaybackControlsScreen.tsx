@@ -4,10 +4,10 @@ import { useVideoPlayer, VideoAirPlayButton, VideoView } from 'expo-video';
 import React, { useCallback } from 'react';
 import { Platform, ScrollView, Text, View } from 'react-native';
 
-import { bigBuckBunnySource } from './videoSources';
-import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
+import { bigBuckBunnySource } from './videoSources';
+import { styles } from './videoStyles';
 
 const playbackRates: number[] = [0.25, 0.5, 1, 1.5, 2, 16];
 

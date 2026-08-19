@@ -5,18 +5,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { MetroConfig } from '@expo/metro/metro';
+import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
 import type { ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
-import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
+import { env } from '../env';
 import { stringToUUID } from './debugId';
 import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
-import { env } from '../env';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { sourceMapString } from './sourceMap';

@@ -10,12 +10,12 @@ import {
   View,
 } from 'react-native';
 
+import { useTheme } from '../../common/ThemeProvider';
 import Statuses from '../constants/Statuses';
 import { type Suite } from '../types';
 import StatusIndicator from './StatusIndicator';
 import SuiteResult from './SuiteResult';
 import TestStatusHeader from './TestStatusHeader';
-import { useTheme } from '../../common/ThemeProvider';
 
 const supportsGlass = isLiquidGlassAvailable();
 

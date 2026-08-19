@@ -1,5 +1,7 @@
 import React, { Fragment, isValidElement, type ReactNode } from 'react';
 
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
+import { isChildOfType } from '../../../utils/children';
 import {
   convertStackToolbarButtonPropsToRNHeaderItem,
   StackToolbarButton,
@@ -11,8 +13,6 @@ import {
 } from './StackToolbarSpacer';
 import { convertStackToolbarViewPropsToRNHeaderItem, StackToolbarView } from './StackToolbarView';
 import type { ToolbarColors, ToolbarPlacement } from './context';
-import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
-import { isChildOfType } from '../../../utils/children';
 
 function convertToolbarChildrenToUnstableItems(
   children: React.ReactNode,

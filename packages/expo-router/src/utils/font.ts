@@ -28,3 +28,37 @@ export function convertTextStyleToRNTextStyle<BaseStyleType extends Pick<TextSty
 }
 
 export type BasicTextStyle = Pick<TextStyle, 'fontSize' | 'fontWeight' | 'fontFamily' | 'color'>;
+
+export type ComposeFontWeight = 'normal' | 'bold' | `${NumericFontWeight}`;
+
+const SUPPORTED_FONT_WEIGHTS = new Set([
+  '100',
+  '200',
+  '300',
+  '400',
+  '500',
+  '600',
+  '700',
+  '800',
+  '900',
+  'normal',
+  'bold',
+]);
+
+export function convertFontWeightToComposeFontWeight(
+  fontWeight: string | number | undefined
+): ComposeFontWeight | undefined {
+  if (fontWeight == null) {
+    return undefined;
+  }
+  const value = String(fontWeight);
+  if (!SUPPORTED_FONT_WEIGHTS.has(value)) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        `Unsupported fontWeight "${value}". Supported values are 100–900, "normal", and "bold".`
+      );
+    }
+    return undefined;
+  }
+  return value as ComposeFontWeight;
+}

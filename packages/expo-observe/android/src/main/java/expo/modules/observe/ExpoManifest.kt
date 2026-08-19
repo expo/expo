@@ -5,7 +5,6 @@ import expo.modules.interfaces.constants.ConstantsInterface
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonPrimitive
 
@@ -37,12 +36,6 @@ internal value class ExpoManifest(
    */
   val baseUrl: String?
     get() = getProperty("extra.eas.observe.endpointUrl")?.jsonPrimitive?.contentOrNull
-
-  /**
-   * Gets the extra.eas.observe.useOpenTelemetry from the manifest. Defaults to true.
-   */
-  val useOpenTelemetry: Boolean
-    get() = getProperty("extra.eas.observe.useOpenTelemetry")?.jsonPrimitive?.booleanOrNull ?: true
 }
 
 internal fun getManifest(constants: ConstantsInterface?): ExpoManifest? {

@@ -251,6 +251,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'BasicTextField component',
+    route: 'ui/basicTextField',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BasicTextFieldScreen'));
+    },
+  },
+  {
     name: 'Progress component',
     route: 'ui/progress',
     options: {},
