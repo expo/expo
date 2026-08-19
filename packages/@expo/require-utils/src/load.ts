@@ -278,26 +278,19 @@ function containsModuleSyntax(code: string): boolean {
 
 const hasStripTypeScriptTypes = typeof nodeModule.stripTypeScriptTypes === 'function';
 
-function isInvalidStripTypeScriptOptionsError(error: any): boolean {
-  return (
-    error?.code === 'ERR_INVALID_ARG_VALUE' &&
-    typeof error?.message === 'string' &&
-    /\boptions\.(?:mode|sourceMap)\b/.test(error.message)
-  );
+function supportsStripTypeScriptTypesTransform(): boolean {
+  const nodeVersion = process.versions.node.split('.', 1).map(Number);
+  return nodeVersion[0]! < 26;
 }
 
 function stripTypeScriptTypes(code: string): string {
-  try {
-    return nodeModule.stripTypeScriptTypes(code, {
-      mode: 'transform',
-      sourceMap: true,
-    });
-  } catch (error: any) {
-    if (!isInvalidStripTypeScriptOptionsError(error)) {
-      throw error;
-    }
+  if (!supportsStripTypeScriptTypesTransform()) {
     return nodeModule.stripTypeScriptTypes(code);
   }
+  return nodeModule.stripTypeScriptTypes(code, {
+    mode: 'transform',
+    sourceMap: true,
+  });
 }
 
 function evalModule(

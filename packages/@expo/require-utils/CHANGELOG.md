@@ -8,9 +8,9 @@
 
 ### 🐛 Bug fixes
 
-- Fix Node.js 26 fallback loading for TypeScript files when `typescript` is unavailable.
-
 ### 💡 Others
+
+- Support Node 26's `stripTypeScriptTypes` and call without transform-mode, to fix the fallback when TypeScript isn't installed.
 
 ## 57.0.4 - 2026-07-22
 

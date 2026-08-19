@@ -5,7 +5,12 @@ import { evalModule } from '../load';
 const basepath = path.join(__dirname, 'fixtures');
 
 describe('evalModule', () => {
+  const actualNodeVersion = process.versions.node;
+
   afterEach(() => {
+    Object.defineProperty(process.versions, 'node', {
+      value: actualNodeVersion,
+    });
     jest.dontMock('node:module');
     jest.dontMock('typescript');
   });
@@ -127,19 +132,13 @@ describe('evalModule', () => {
     expect(caught).toEqual({ code: 'CUSTOM_THROW' });
   });
 
-  it('falls back to Node TypeScript stripping defaults when transform options are unsupported', () => {
+  it('uses Node TypeScript stripping defaults on Node 26', () => {
     jest.isolateModules(() => {
-      const actualNodeModule = jest.requireActual('node:module');
-      const stripTypeScriptTypes = jest.fn((code: string, options?: { mode?: string }) => {
-        if (options?.mode === 'transform') {
-          const error = new TypeError(
-            "The property 'options.mode' must be one of: 'strip'. Received 'transform'"
-          ) as NodeJS.ErrnoException;
-          error.code = 'ERR_INVALID_ARG_VALUE';
-          throw error;
-        }
-        return code.replace(' as string', '');
+      Object.defineProperty(process.versions, 'node', {
+        value: '26.0.0',
       });
+      const actualNodeModule = jest.requireActual('node:module');
+      const stripTypeScriptTypes = jest.fn((code: string) => code.replace(' as string', ''));
       const moduleNotFoundError = new Error(
         "Cannot find module 'typescript'"
       ) as NodeJS.ErrnoException;
@@ -160,12 +159,8 @@ describe('evalModule', () => {
       );
 
       expect(mod).toEqual({ value: 'test' });
-      expect(stripTypeScriptTypes).toHaveBeenCalledTimes(2);
-      expect(stripTypeScriptTypes).toHaveBeenNthCalledWith(1, expect.any(String), {
-        mode: 'transform',
-        sourceMap: true,
-      });
-      expect(stripTypeScriptTypes).toHaveBeenNthCalledWith(2, expect.any(String));
+      expect(stripTypeScriptTypes).toHaveBeenCalledTimes(1);
+      expect(stripTypeScriptTypes).toHaveBeenCalledWith(expect.any(String));
     });
   });
 });
