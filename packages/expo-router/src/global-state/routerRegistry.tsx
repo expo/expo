@@ -1,6 +1,14 @@
 'use client';
 
-import { createContext, use, useMemo, useState, type PropsWithChildren } from 'react';
+import {
+  createContext,
+  use,
+  useMemo,
+  useRef,
+  useState,
+  type PropsWithChildren,
+  type RefObject,
+} from 'react';
 
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type {
@@ -28,10 +36,15 @@ type RouterRegistrySetters = {
 
 // React components read this map during render, so React state is intentional.
 export const RouterRegistryContext = createContext<RouterRegistry | undefined>(undefined);
+export const RouterRegistryRefContext = createContext<RefObject<RouterRegistry> | undefined>(
+  undefined
+);
 const RouterRegistrySettersContext = createContext<RouterRegistrySetters | undefined>(undefined);
 
 export function RouterRegistryProvider({ children }: PropsWithChildren) {
   const [registry, setRegistry] = useState<RouterRegistry>(() => new Map());
+  const registryRef = useRef(registry);
+  registryRef.current = registry;
   const setters = useMemo<RouterRegistrySetters>(
     () => ({
       register(stateKey, entry) {
@@ -60,7 +73,9 @@ export function RouterRegistryProvider({ children }: PropsWithChildren) {
 
   return (
     <RouterRegistrySettersContext.Provider value={setters}>
-      <RouterRegistryContext.Provider value={registry}>{children}</RouterRegistryContext.Provider>
+      <RouterRegistryRefContext.Provider value={registryRef}>
+        <RouterRegistryContext.Provider value={registry}>{children}</RouterRegistryContext.Provider>
+      </RouterRegistryRefContext.Provider>
     </RouterRegistrySettersContext.Provider>
   );
 }

@@ -83,7 +83,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
                 // Native dismissal (e.g. swipe-to-dismiss). JS state still has the route —
                 // catch up by dispatching pop and arming useDismissedRouteError so a stale
                 // `usePreventRemove` surfaces an actionable console.error.
-                navigation.dispatch({
+                navigation.dispatchSync({
                   ...StackActions.pop(),
                   source: route.key,
                   target: state.key,
@@ -94,7 +94,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
                 if (preventFromContext) {
                   // A real pop runs child-first prevention checks and notifies the nested route
                   // that owns the guard; emitting directly here would only reach this route.
-                  navigation.dispatch({
+                  navigation.dispatchSync({
                     ...StackActions.pop(),
                     source: route.key,
                     target: state.key,

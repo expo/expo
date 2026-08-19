@@ -6,6 +6,7 @@
 
 - Remove the experimental web modal implementation. See the [web modals guide](https://docs.expo.dev/router/advanced/web-modals/). ([#49204](https://github.com/expo/expo/pull/49204) by [@Ubax](https://github.com/Ubax))
 - Remove `NavigationIndependentTree` and `useNavigationIndependentTree` from `expo-router/react-navigation`. To embed an isolated navigation tree in a screen, use `@react-navigation/native`. ([#49172](https://github.com/expo/expo/pull/49172) by [@Ubax](https://github.com/Ubax))
+- Queue `navigation.dispatch` and navigation helper actions until after commit, add synchronous `navigation.dispatchSync`, and require functional actions to use `dispatchSync`.
 - Require complete state in `CommonActions.reset` and `resetRoot`, and remove `Router.getRehydratedState` from `expo-router/react-navigation`.
 - Remove `NavigatorScreenParams`, `getActionFromState`, and `LinkingOptions.getActionFromState` from `expo-router/react-navigation`.
 - Represent nested navigation only as navigation state. The `screen`, `params`, and `initial` params are now ordinary user params

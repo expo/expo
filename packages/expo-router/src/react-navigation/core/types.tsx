@@ -219,12 +219,20 @@ type NavigationHelpersCommon<
   State extends NavigationState = NavigationState,
 > = {
   /**
-   * Dispatch an action or an update function to the router.
-   * The update function will receive the current state,
+   * Queues an action to be dispatched after the current React commit.
    *
-   * @param action Action object or update function.
+   * @param action Action object to dispatch.
    */
-  dispatch(action: NavigationAction | ((state: Readonly<State>) => NavigationAction)): void;
+  dispatch(action: NavigationAction): void;
+
+  /**
+   * Dispatches an action synchronously.
+   * Functional actions receive the current navigation state. Prefer `dispatch` unless the caller
+   * must reconcile state synchronously with a native event or gesture.
+   *
+   * @param action Action object or update function to dispatch synchronously.
+   */
+  dispatchSync(action: NavigationAction | ((state: Readonly<State>) => NavigationAction)): void;
 
   /**
    * Navigate to a screen in the current or parent navigator.

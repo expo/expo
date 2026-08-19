@@ -32,6 +32,15 @@ interface RoutingIntentMetadata {
 export type RoutingIntent =
   | NavigateToHrefIntent
   | {
+      type: 'NAVIGATOR_ACTION';
+      payload: {
+        action: NavigationAction;
+        dispatchSync: (action: NavigationAction) => void;
+      };
+      metadata?: RoutingIntentMetadata;
+      onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
+    }
+  | {
       type: 'ACTION';
       payload: { action: NavigationAction };
       metadata?: RoutingIntentMetadata;
@@ -51,7 +60,7 @@ export const routingQueue = {
     return routingQueue.queue;
   },
   add(intent: RoutingIntent) {
-    routingQueue.queue.push(intent);
+    routingQueue.queue = [...routingQueue.queue, intent];
     for (const callback of routingQueue.subscribers) {
       callback();
     }
@@ -122,7 +131,11 @@ export const routingQueue = {
         }
 
         intent.onDispatch?.(intent.metadata);
-        ref.current.dispatch(dispatchAction);
+        if (intent.type === 'NAVIGATOR_ACTION') {
+          intent.payload.dispatchSync(dispatchAction);
+        } else {
+          ref.current.dispatchSync(dispatchAction);
+        }
       } catch (error) {
         const message =
           typeof error === 'object' && error != null && 'message' in error ? error.message : error;

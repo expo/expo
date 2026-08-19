@@ -11,9 +11,11 @@ import type { NavigationContainerRef, ParamListBase } from './react-navigation/n
 export type { ImperativeRouter };
 export { router };
 
-export function useImperativeApiEmitter(
-  ref: RefObject<NavigationContainerRef<ParamListBase> | null>
-) {
+export function ImperativeApiEmitter({
+  navigationRef,
+}: {
+  navigationRef: RefObject<NavigationContainerRef<ParamListBase> | null>;
+}) {
   const routeInfo = useRouteInfo();
   const registry = use(RouterRegistryContext);
   const store = use(StoreContext);
@@ -31,7 +33,7 @@ export function useImperativeApiEmitter(
   );
   const runQueue = useEffectEvent(() => {
     routingQueue.run(
-      ref,
+      navigationRef,
       routeInfo,
       {
         navigationRef: store.navigationRef,
@@ -42,7 +44,9 @@ export function useImperativeApiEmitter(
     );
   });
   useEffect(() => {
-    runQueue();
+    if (events.length) {
+      runQueue();
+    }
   }, [events]);
   return null;
 }

@@ -121,7 +121,7 @@ describe('Tabs visibility', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen.queryByTestId('third')).toBeNull();
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
   });
 
   it('does not render hidden tabs', () => {
@@ -146,7 +146,7 @@ describe('Tabs visibility', () => {
     expect(screen.queryByTestId('third')).toBeNull();
     expect(screen.queryByTestId('fourth')).toBeNull();
     expect(screen.getByTestId('fifth')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
+    expect(TabsScreen).toHaveBeenCalledTimes(9);
   });
 
   it('does not render tabs, when route does not exist', () => {
@@ -206,10 +206,10 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
     expect(TabsScreen.mock.calls[0][0].screenKey).toBe('index');
     expect(TabsScreen.mock.calls[1][0].screenKey).toBe('second');
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(3);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toBe('index');
   });
 
@@ -247,9 +247,8 @@ describe('First focused tab', () => {
       expect(screen.getByTestId('first')).toBeVisible();
       expect(screen.getByTestId('second')).toBeVisible();
       expect(screen.queryByTestId('index')).toBeNull();
-      // Two renders: the hidden `index` route is registered and initially focused, then the
-      // navigator redirects to the first visible tab.
-      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      // The queued redirect is applied before the native view renders.
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
     });
   });
 

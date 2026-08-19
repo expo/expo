@@ -553,6 +553,7 @@ test('cleans up state when the navigator unmounts', () => {
 });
 
 test('allows state updates by dispatching a function returning an action', () => {
+  let dispatchSync: (action: (state: NavigationState) => NavigationAction) => void;
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -562,14 +563,7 @@ test('allows state updates by dispatching a function returning an action', () =>
   };
 
   const FooScreen = (props: any) => {
-    React.useEffect(() => {
-      props.navigation.dispatch((state: NavigationState) =>
-        state.index === 0
-          ? { type: 'NAVIGATE', payload: { name: state.routeNames[1] } }
-          : { type: 'NOOP' }
-      );
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    dispatchSync = props.navigation.dispatchSync;
 
     return null;
   };
@@ -587,7 +581,15 @@ test('allows state updates by dispatching a function returning an action', () =>
     </BaseNavigationContainer>
   );
 
-  render(element).update(element);
+  const root = render(element);
+  act(() =>
+    dispatchSync((state) =>
+      state.index === 0
+        ? { type: 'NAVIGATE', payload: { name: state.routeNames[1] } }
+        : { type: 'NOOP' }
+    )
+  );
+  root.update(element);
 
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({

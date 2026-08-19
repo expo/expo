@@ -1,7 +1,9 @@
 import * as React from 'react';
 
 import { RouterRegistryProvider } from '../../../../global-state/routerRegistry';
-import type { InitialState } from '../../types';
+import { ImperativeApiEmitter } from '../../../../imperative-api';
+import type { ParamListBase } from '../../../routers';
+import type { InitialState, NavigationContainerRef } from '../../types';
 import { BaseNavigationContainer as BaseNavigationContainerImpl } from '../../BaseNavigationContainer';
 import { MockRouterKey } from './MockRouter';
 
@@ -34,9 +36,29 @@ function completeState(
 export function BaseNavigationContainer(
   props: React.ComponentProps<typeof BaseNavigationContainerImpl>
 ) {
+  const { ref, ...rest } = props;
+  const navigationRef = React.useRef<NavigationContainerRef<ParamListBase> | null>(null);
+
+  const setRef = React.useCallback(
+    (navigation: NavigationContainerRef<ParamListBase> | null) => {
+      navigationRef.current = navigation;
+      if (typeof ref === 'function') {
+        ref(navigation);
+      } else if (ref) {
+        ref.current = navigation;
+      }
+    },
+    [ref]
+  );
+
   return (
     <RouterRegistryProvider>
-      <BaseNavigationContainerImpl {...props} initialState={completeState(props.initialState)} />
+      <ImperativeApiEmitter navigationRef={navigationRef} />
+      <BaseNavigationContainerImpl
+        {...rest}
+        ref={setRef}
+        initialState={completeState(props.initialState)}
+      />
     </RouterRegistryProvider>
   );
 }
