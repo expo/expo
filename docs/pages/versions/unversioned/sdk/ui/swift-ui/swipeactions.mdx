@@ -8,6 +8,7 @@ platforms: ['ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 Expo UI SwipeActions matches the official SwiftUI [swipeActions](<https://developer.apple.com/documentation/swiftui/view/swipeactions(edge:allowsfullswipe:content:)>) modifier and lets you attach leading or trailing actions to row content.
 
@@ -17,7 +18,13 @@ Expo UI SwipeActions matches the official SwiftUI [swipeActions](<https://develo
 
 ## Usage
 
-```tsx SwipeActionsExample.tsx
+<ComponentExample
+  title="SwipeActionsExample.tsx"
+  src="/static/images/expo-ui/examples/swipeactions-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/swipeactions-basic-ios-dark.webp"
+  alt="A list row swiped open to reveal a red Delete action with a trash icon.">
+
+```tsx
 import {
   Button,
   Host,
@@ -60,6 +67,8 @@ export default function SwipeActionsExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
