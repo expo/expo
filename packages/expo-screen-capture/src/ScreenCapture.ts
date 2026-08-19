@@ -46,7 +46,12 @@ export async function preventScreenCaptureAsync(key: string = 'default'): Promis
 
   if (!activeTags.has(key)) {
     activeTags.add(key);
-    await ExpoScreenCapture.preventScreenCapture();
+    try {
+      await ExpoScreenCapture.preventScreenCapture();
+    } catch (error) {
+      activeTags.delete(key);
+      throw error;
+    }
   }
 }
 
