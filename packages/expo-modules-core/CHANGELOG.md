@@ -21,7 +21,6 @@
 
 ### 🐛 Bug fixes
 
-
 - Defer the `useReleasingSharedObject` unmount release by a microtask, so cleanups registered after the hook — such as a `useFocusEffect` cleanup pausing a `useVideoPlayer` player — no longer throw `Unable to find the native shared object associated with given JS object`. ([#30994](https://github.com/expo/expo/issues/30994), [#48678](https://github.com/expo/expo/pull/48678) by [@L65FREAD](https://github.com/L65FREAD))
 - [iOS] Fixed the `ExpoModulesProvider` lookup missing the generated class when the app `name` starts with a digit, which registered no native modules and left release builds on a blank screen. ([#48793](https://github.com/expo/expo/pull/48793) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fixed the tap that closes a SwiftUI menu also pressing the React Native view underneath it. ([#48419](https://github.com/expo/expo/issues/48419) by [@bohdanstefaniuk](https://github.com/bohdanstefaniuk)) ([#48463](https://github.com/expo/expo/pull/48463) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
