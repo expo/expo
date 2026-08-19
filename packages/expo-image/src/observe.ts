@@ -33,7 +33,8 @@ export type ExpoImageIntegrationConfig = {
    * sensitive values such as signing tokens or API keys. Enable this only when your image URLs
    * are safe to send off-device in full. Regardless of this setting, basic-auth credentials are
    * always removed from the URL, and only `http(s)`, `file`, and `android.resource` URLs are
-   * reported (other schemes, such as `data:` or `ph://`, never leave the device).
+   * reported (other schemes, such as `data:` or `ph://`, never leave the device). An event whose
+   * URL was modified before sending carries a `urlSanitized: true` attribute.
    *
    * @default false
    */
@@ -127,6 +128,9 @@ export function reportIfOversized(state: IntegrationState, image: LoadedImage): 
       body: `Image loaded at ${width}×${height}px is far larger than this device's screen (${screenWidth}×${screenHeight}pt @${pixelRatio}x). Constrain it with the maxWidth/maxHeight load options.`,
       attributes: {
         url,
+        // Present only when sanitization changed the URL, mirroring the navigation integration's
+        // `urlHidden` attribute.
+        ...(url !== image.url ? { urlSanitized: true } : {}),
         imageWidth: width,
         imageHeight: height,
         screenWidth,
