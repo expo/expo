@@ -775,10 +775,6 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
       throw GeocodeException("Geocoder is not running")
     }
 
-    if (isMissingForegroundPermissions()) {
-      throw LocationUnauthorizedException()
-    }
-
     if (!Geocoder.isPresent()) {
       throw NoGeocodeException()
     }
@@ -812,10 +808,6 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private suspend fun reverseGeocode(location: ReverseGeocodeLocation): List<ReverseGeocodeResponse> {
     if (mGeocoderPaused) {
       throw GeocodeException("Geocoder is not running")
-    }
-
-    if (isMissingForegroundPermissions()) {
-      throw LocationUnauthorizedException()
     }
 
     if (!Geocoder.isPresent()) {
