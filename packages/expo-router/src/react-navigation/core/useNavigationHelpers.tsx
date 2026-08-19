@@ -21,12 +21,11 @@ PrivateValueStore;
 
 type Options<State extends NavigationState, Action extends NavigationAction> = {
   id: string | undefined;
-  onAction: (action: NavigationAction) => boolean;
-  onUnhandledAction: (action: NavigationAction) => void;
+  // TODO(@ubax): investigate dropping the boolean return, production code never reads it
+  handleAction: (action: NavigationAction) => boolean;
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
-  stateRef: React.RefObject<State | null>;
   registryRef: React.RefObject<RouterRegistry | undefined>;
 };
 
@@ -44,12 +43,10 @@ export function useNavigationHelpers<
   EventMap extends Record<string, any>,
 >({
   id: navigatorId,
-  onAction,
-  onUnhandledAction,
+  handleAction,
   getState,
   emitter,
   router,
-  stateRef,
   registryRef,
 }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
@@ -65,11 +62,7 @@ export function useNavigationHelpers<
 
       const action = typeof op === 'function' ? op(state) : op;
 
-      const handled = onAction(action);
-
-      if (!handled) {
-        onUnhandledAction?.(action);
-      }
+      handleAction(action);
     };
 
     const dispatch = (action: Action) => {
@@ -132,15 +125,6 @@ export function useNavigationHelpers<
         return parentNavigationHelpers;
       },
       getState: (): State => {
-        // FIXME: Workaround for when the state is read during render
-        // By this time, we haven't committed the new state yet
-        // Without this `useSyncExternalStore` will keep reading the old state
-        // This may result in `useNavigationState` or `useIsFocused` returning wrong values
-        // Apart from `useSyncExternalStore`, `getState` should never be called during render
-        if (stateRef.current != null) {
-          return stateRef.current;
-        }
-
         return getState();
       },
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
@@ -151,10 +135,8 @@ export function useNavigationHelpers<
     parentNavigationHelpers,
     emitter.emit,
     getState,
-    onAction,
-    onUnhandledAction,
+    handleAction,
     navigatorId,
-    stateRef,
     registryRef,
   ]);
 }

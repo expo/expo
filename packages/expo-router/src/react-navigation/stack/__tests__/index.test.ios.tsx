@@ -6,7 +6,12 @@ import { Button, View } from 'react-native';
 
 import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
 import { Text } from '../../elements';
-import { createNavigationContainerRef, useFocusEffect, useIsFocused } from '../../native';
+import {
+  createNavigationContainerRef,
+  type NavigationState,
+  useFocusEffect,
+  useIsFocused,
+} from '../../native';
 import { createStackNavigator, type StackScreenProps } from '../index';
 
 type StackParamList = {
@@ -17,6 +22,42 @@ type StackParamList = {
 type NestedStackParamList = {
   C: undefined;
 };
+
+const initialState = {
+  stale: false,
+  key: 'root',
+  index: 0,
+  routeNames: ['A', 'B'],
+  routes: [{ key: 'A', name: 'A' }],
+} satisfies NavigationState;
+
+const nestedInitialState = {
+  ...initialState,
+  routes: [
+    {
+      key: 'A',
+      name: 'A',
+      state: {
+        stale: false,
+        key: 'nested-A',
+        index: 0,
+        routeNames: ['C'],
+        routes: [{ key: 'C-A', name: 'C' }],
+      },
+    },
+    {
+      key: 'B',
+      name: 'B',
+      state: {
+        stale: false,
+        key: 'nested-B',
+        index: 0,
+        routeNames: ['C'],
+        routes: [{ key: 'C-B', name: 'C' }],
+      },
+    },
+  ],
+} satisfies NavigationState;
 
 jest.useFakeTimers();
 
@@ -48,7 +89,7 @@ test('renders a stack navigator with screens', async () => {
   const Stack = createStackNavigator<StackParamList>();
 
   const { getByText, queryByText } = render(
-    <NavigationContainer>
+    <NavigationContainer initialState={initialState}>
       <Stack.Navigator>
         <Stack.Screen name="A" component={Test} />
         <Stack.Screen name="B" component={Test} />
@@ -74,7 +115,7 @@ test("doesn't show back button on the first screen", async () => {
   const Stack = createStackNavigator<StackParamList>();
 
   const { getByText, queryByRole } = render(
-    <NavigationContainer>
+    <NavigationContainer initialState={initialState}>
       <Stack.Navigator>
         <Stack.Screen name="A" component={Test} />
         <Stack.Screen name="B" component={Test} />
@@ -111,7 +152,7 @@ test('fires transition events on navigation', async () => {
   const Stack = createStackNavigator<StackParamList>();
 
   const { getByText } = render(
-    <NavigationContainer>
+    <NavigationContainer initialState={initialState}>
       <Stack.Navigator>
         <Stack.Screen name="A" component={FirstScreen} />
         <Stack.Screen name="B" component={SecondScreen} />
@@ -164,7 +205,7 @@ test('handles screens preloading', async () => {
   const navigation = createNavigationContainerRef<StackParamList>();
 
   const { queryByText } = render(
-    <NavigationContainer ref={navigation}>
+    <NavigationContainer ref={navigation} initialState={initialState}>
       <Stack.Navigator>
         <Stack.Screen name="A">{() => null}</Stack.Screen>
         <Stack.Screen name="B">{() => <Text>Screen B</Text>}</Stack.Screen>
@@ -198,7 +239,7 @@ test('runs focus effect on focus change on preloaded route', () => {
   const navigation = createNavigationContainerRef<StackParamList>();
 
   render(
-    <NavigationContainer ref={navigation}>
+    <NavigationContainer ref={navigation} initialState={initialState}>
       <Stack.Navigator>
         <Stack.Screen name="A">{() => null}</Stack.Screen>
         <Stack.Screen name="B" component={Test} />
@@ -243,7 +284,7 @@ test('renders correct focus state with preloading', () => {
   const navigation = React.createRef<any>();
 
   const { queryByText } = render(
-    <NavigationContainer ref={navigation}>
+    <NavigationContainer ref={navigation} initialState={initialState}>
       <Stack.Navigator>
         <Stack.Screen name="A">{() => null}</Stack.Screen>
         <Stack.Screen name="B" component={Test} />
@@ -286,7 +327,7 @@ test('renders back button in the nested stack', async () => {
   const StackB = createStackNavigator<StackParamList>();
 
   const { getByText, queryByRole } = render(
-    <NavigationContainer>
+    <NavigationContainer initialState={nestedInitialState}>
       <StackB.Navigator screenOptions={{ headerShown: false }}>
         <StackB.Screen name="A" component={StackAScreen} />
         <StackB.Screen name="B" component={StackAScreen} />

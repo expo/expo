@@ -10,7 +10,7 @@ import { NavigationContainer } from '../NavigationContainer';
 import { useLinking } from '../useLinking';
 
 let errorSpy: jest.SpiedFunction<typeof console.error> | undefined;
-let mockRouteNode: RouteNode;
+let mockRouteNode: RouteNode | undefined;
 
 jest.mock('../../global-state/storeContext', () => ({
   useExpoRouterStore: () => ({
@@ -303,9 +303,28 @@ test('seeds the store when a synchronous initial URL is absent', () => {
   expect(mockStoreRef.current.state).toMatchObject({
     stale: false,
     routeNames: ['__root', '+not-found', '_sitemap'],
-    routes: [{ name: '__root' }],
+    routes: [
+      {
+        name: '__root',
+        state: { stale: false, routeNames: ['home'], routes: [{ name: 'home' }] },
+      },
+    ],
   });
-  expect(mockStoreRef.current.routeInfo?.pathname).toBe('/');
+  expect(mockStoreRef.current.routeInfo?.pathname).toBe('/home');
+});
+
+test('throws when linking does not produce an initial state', () => {
+  mockRouteNode = undefined;
+
+  expect(() =>
+    render(
+      <NavigationContainer linking={{ prefixes: [], getInitialURL: () => null }}>
+        {null}
+      </NavigationContainer>
+    )
+  ).toThrow(
+    'Linking did not produce an initial navigation state. Expo Router always seeds a complete initial state before rendering the navigation container, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
+  );
 });
 
 test('throws if multiple instances of useLinking are used', () => {

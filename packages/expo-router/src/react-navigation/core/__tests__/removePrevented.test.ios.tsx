@@ -144,7 +144,17 @@ test('emits beforeRemove in a nested navigator when its parent route is removed'
 
   const ref = createNavigationContainerRef<ParamListBase>();
   render(
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        type: 'stack',
+        index: 0,
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { name: 'foo' },
+          { name: 'bar', state: { type: 'stack', routes: [{ name: 'nested' }] } },
+        ],
+      }}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={NestedNavigator} />

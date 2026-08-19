@@ -31,7 +31,6 @@ function entry(
   routeNames: string[]
 ): RouterRegistryEntry {
   return {
-    routerType: router.type,
     reduce: (state: NavigationState, action: NavigationAction) => {
       // The registry erases each router's narrower state and action unions at this boundary.
       const reduce = router.getStateForAction as (
@@ -277,7 +276,12 @@ test('rebuilds from a router that returns partial state', () => {
   }));
   const registry: RouterRegistry = new Map([
     ['root-stack', entry(StackRouter({}), root.routeNames)],
-    ['child-stack', { routerType: 'stack', reduce: partialReducer }],
+    [
+      'child-stack',
+      {
+        reduce: partialReducer,
+      },
+    ],
   ]);
 
   const action = resolveNavigationDestination({
@@ -325,7 +329,6 @@ test('strips source, target and first-level options from deeper actions', () => 
     [
       'child-stack',
       {
-        routerType: 'stack',
         reduce(state, action) {
           childActions.push(action);
           return entry(childRouter, child.routeNames).reduce(state, action);

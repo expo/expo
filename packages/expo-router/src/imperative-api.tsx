@@ -21,7 +21,7 @@ export function ImperativeApiEmitter({
     routingQueue.snapshot
   );
   useEffect(() => {
-    if (events.length) {
+    if (events.length && navigationRef.current?.isReady()) {
       routingQueue.run(navigationRef, registry);
     }
   }, [events, navigationRef, registry]);

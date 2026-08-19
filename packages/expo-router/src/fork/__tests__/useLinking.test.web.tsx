@@ -13,6 +13,10 @@ import { createMemoryHistory } from '../createMemoryHistory';
 import { useLinking } from '../useLinking';
 
 jest.mock('../createMemoryHistory');
+jest.mock('../../global-state/store', () => ({
+  ...jest.requireActual<typeof import('../../global-state/store')>('../../global-state/store'),
+  syncStoreState: jest.fn(),
+}));
 
 let mockNavigationRef: ReturnType<typeof createNavigationContainerRef>;
 let mockStoreState: NavigationState | undefined;
@@ -254,6 +258,8 @@ test('does not add browser history when preloading a stack route', async () => {
         linking={{
           prefixes: [],
           config: { screens: { home: 'home', details: 'details' } },
+          getInitialURL: () => 'http://localhost/home',
+          getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
         }}>
         <Stack>
           <Screen name="home" component={EmptyScreen} />
