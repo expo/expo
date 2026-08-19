@@ -9,9 +9,11 @@ import type { NavigationContainerRef, ParamListBase } from './react-navigation/n
 export type { ImperativeRouter };
 export { router };
 
-export function useImperativeApiEmitter(
-  ref: RefObject<NavigationContainerRef<ParamListBase> | null>
-) {
+export function ImperativeApiEmitter({
+  navigationRef,
+}: {
+  navigationRef: RefObject<NavigationContainerRef<ParamListBase> | null>;
+}) {
   const registry = use(RouterRegistryContext);
   const events = useSyncExternalStore(
     routingQueue.subscribe,
@@ -19,7 +21,9 @@ export function useImperativeApiEmitter(
     routingQueue.snapshot
   );
   useEffect(() => {
-    routingQueue.run(ref, registry);
-  }, [events, ref, registry]);
+    if (events.length) {
+      routingQueue.run(navigationRef, registry);
+    }
+  }, [events, navigationRef, registry]);
   return null;
 }

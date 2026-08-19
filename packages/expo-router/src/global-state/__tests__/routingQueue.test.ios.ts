@@ -16,6 +16,7 @@ function makeRef(
   return {
     current: {
       dispatch: jest.fn(),
+      dispatchSync: jest.fn(),
       navigate: jest.fn(),
       reset: jest.fn(),
       goBack: jest.fn(),
@@ -107,7 +108,7 @@ describe('routingQueue', () => {
 
     routingQueue.run(ref);
 
-    expect(ref.current!.dispatch).toHaveBeenCalledWith(action);
+    expect(ref.current!.dispatchSync).toHaveBeenCalledWith(action);
   });
 
   it('run() converts NAVIGATE_TO_HREF intents via getNavigateAction then dispatches', () => {
@@ -139,7 +140,7 @@ describe('routingQueue', () => {
       undefined,
       false
     );
-    expect(ref.current!.dispatch).toHaveBeenCalledWith(navigateAction);
+    expect(ref.current!.dispatchSync).toHaveBeenCalledWith(navigateAction);
   });
 
   it('run() dispatches mixed NAVIGATE_TO_HREF and ACTION intents in queue order', () => {
@@ -156,8 +157,55 @@ describe('routingQueue', () => {
 
     routingQueue.run(ref);
 
-    const dispatch = ref.current!.dispatch as jest.Mock;
+    const dispatch = ref.current!.dispatchSync as jest.Mock;
     expect(dispatch.mock.calls).toEqual([[navigateAction], [{ type: 'GO_BACK' }]]);
+  });
+
+  it('run() dispatches NAVIGATOR_ACTION through the dispatcher captured at enqueue', () => {
+    const ref = makeRef();
+    const dispatchSync = jest.fn();
+    const action = { type: 'GO_BACK' };
+
+    routingQueue.add({
+      type: 'NAVIGATOR_ACTION',
+      payload: { action, dispatchSync },
+    });
+
+    routingQueue.run(ref);
+
+    expect(dispatchSync).toHaveBeenCalledWith(action);
+    expect(ref.current!.dispatchSync).not.toHaveBeenCalled();
+  });
+
+  it('run() preserves FIFO across navigator and root actions', () => {
+    const calls: string[] = [];
+    const ref = makeRef({ dispatchSync: jest.fn(() => calls.push('root')) });
+
+    routingQueue.add({
+      type: 'NAVIGATOR_ACTION',
+      payload: {
+        action: { type: 'NAVIGATE' },
+        dispatchSync: () => calls.push('navigator'),
+      },
+    });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
+
+    routingQueue.run(ref);
+
+    expect(calls).toEqual(['navigator', 'root']);
+  });
+
+  it('run() does not re-enqueue root actions', () => {
+    const ref = makeRef({
+      dispatch: jest.fn((action) => routingQueue.add({ type: 'ACTION', payload: { action } })),
+    });
+
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
+
+    routingQueue.run(ref);
+
+    expect(ref.current!.dispatch).not.toHaveBeenCalled();
+    expect(routingQueue.queue).toHaveLength(0);
   });
 
   it('run() reports the queued action when handling fails', () => {
@@ -187,7 +235,7 @@ describe('routingQueue', () => {
 
   it('run() invokes onDispatch immediately before dispatching', () => {
     const calls: string[] = [];
-    const ref = makeRef({ dispatch: jest.fn(() => calls.push('dispatch')) });
+    const ref = makeRef({ dispatchSync: jest.fn(() => calls.push('dispatch')) });
     const action = { type: 'RESET', payload: undefined };
 
     routingQueue.add({
@@ -314,23 +362,23 @@ describe('routingQueue', () => {
 
     routingQueue.run(ref);
 
-    expect(ref.current!.dispatch).toHaveBeenCalledWith(nextAction);
+    expect(ref.current!.dispatchSync).toHaveBeenCalledWith(nextAction);
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('malformed'));
     warn.mockRestore();
   });
 
   it('run() continues after an item throws during dispatch', () => {
-    const dispatch = jest.fn().mockImplementationOnce(() => {
+    const dispatchSync = jest.fn().mockImplementationOnce(() => {
       throw new Error('dispatch failed');
     });
-    const ref = makeRef({ dispatch });
+    const ref = makeRef({ dispatchSync });
     const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
     routingQueue.add({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
 
     routingQueue.run(ref);
 
-    expect(dispatch).toHaveBeenCalledTimes(2);
+    expect(dispatchSync).toHaveBeenCalledTimes(2);
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('dispatch failed'));
     warn.mockRestore();
   });

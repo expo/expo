@@ -5,6 +5,7 @@ import type {
   NavigationContainerRef,
   NavigationContainerRefWithCurrent,
 } from './types';
+import { FUNCTIONAL_DISPATCH_ERROR } from './useNavigationHelpers';
 
 export const NOT_INITIALIZED_ERROR =
   "The 'navigation' object hasn't been initialized yet. This might happen if you don't have a navigator mounted, or if the navigator hasn't finished mounting. See https://reactnavigation.org/docs/navigating-without-navigation-prop#handling-initialization for more details.";
@@ -18,6 +19,7 @@ export function createNavigationContainerRef<
     'removeListener',
     'resetRoot',
     'dispatch',
+    'dispatchSync',
     'isFocused',
     'canGoBack',
     'getRootState',
@@ -61,6 +63,10 @@ export function createNavigationContainerRef<
     },
     ...methods.reduce<any>((acc, name) => {
       acc[name] = (...args: any[]) => {
+        if (name === 'dispatch' && typeof args[0] === 'function') {
+          throw new Error(FUNCTIONAL_DISPATCH_ERROR);
+        }
+
         if (current == null) {
           switch (name) {
             case 'addListener': {

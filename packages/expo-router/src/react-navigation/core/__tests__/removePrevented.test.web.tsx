@@ -8,6 +8,7 @@ import { store } from '../../../global-state/router-store';
 import { router } from '../../../imperative-api';
 import Stack from '../../../layouts/StackClient';
 import { getMockContext } from '../../../testing-library/mock-config';
+import { CommonActions } from '../../routers';
 import { useNavigation } from '../useNavigation';
 import { usePreventRemove } from '../usePreventRemove';
 
@@ -87,7 +88,7 @@ test('throws a descriptive error when beforeRemove calls preventDefault', () => 
   let goBack: () => void;
   const Form = () => {
     const navigation = useNavigation();
-    goBack = navigation.goBack;
+    goBack = () => navigation.dispatchSync(CommonActions.goBack());
     React.useEffect(
       () =>
         navigation.addListener('beforeRemove', (event) => {

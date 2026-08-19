@@ -322,7 +322,7 @@ export class StackView extends React.Component<Props, State> {
     ) {
       // If route isn't present in current state, but was closing, assume that a close animation was cancelled
       // So we need to add this route back to the state
-      navigation.dispatch((state) => {
+      navigation.dispatchSync((state) => {
         const activeRoutes = state.routes
           .slice(0, state.index + 1)
           .filter((r) => r.key !== route.key);
@@ -372,7 +372,7 @@ export class StackView extends React.Component<Props, State> {
       // If a route exists in state, trigger a pop
       // This will happen in when the route was closed from the card component
       // e.g. When the close animation triggered from a gesture ends
-      navigation.dispatch({
+      navigation.dispatchSync({
         ...StackActions.pop(),
         source: route.key,
         target: state.key,

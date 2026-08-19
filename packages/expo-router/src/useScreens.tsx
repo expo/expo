@@ -28,6 +28,7 @@ import {
 import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
+  CommonActions,
   useStateForPath,
   type DescriptorRouteProp,
   type EventConsumer,
@@ -340,8 +341,10 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           // When navigating to a screen, remove the no animation param to re-enable animations
           // Otherwise the navigation back would also have no animation
           if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
-            navigation.replaceParams(
-              removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])
+            navigation.dispatchSync(
+              CommonActions.replaceParams(
+                removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])!
+              )
             );
           }
         }

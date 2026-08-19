@@ -212,10 +212,10 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
             return;
           }
           const action = buildTabAction(config, owningState, registry, options?.resetOnFocus);
-          return navigation?.dispatch(action);
+          return navigation?.dispatchSync(action);
         }
       } else {
-        return navigation?.dispatch({
+        return navigation?.dispatchSync({
           type: 'JUMP_TO',
           payload: {
             name,

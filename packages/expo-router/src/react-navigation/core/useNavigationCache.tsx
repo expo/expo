@@ -13,6 +13,7 @@ import {
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import type { NavigationHelpers, NavigationProp } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
+import { FUNCTIONAL_DISPATCH_ERROR } from './useNavigationHelpers';
 
 type Options<
   State extends NavigationState,
@@ -82,7 +83,7 @@ export function useNavigationCache<
   const createNavigation = (route: { key: string; name: string }) => {
     type Thunk = NavigationAction | ((state: State) => NavigationAction | null | undefined);
 
-    const dispatch = (thunk: Thunk) => {
+    const dispatchSync = (thunk: Thunk) => {
       const state = getState();
 
       if (isRoutePreloadedInStack(state, route)) {
@@ -98,8 +99,26 @@ export function useNavigationCache<
 
       if (action != null) {
         // TODO(@ubax): https://github.com/expo/expo/pull/48618#discussion_r3735996416
-        navigation.dispatch({ source: route.key, ...action });
+        navigation.dispatchSync({ source: route.key, ...action });
       }
+    };
+
+    const dispatch = (action: NavigationAction) => {
+      if (typeof action === 'function') {
+        throw new Error(FUNCTIONAL_DISPATCH_ERROR);
+      }
+
+      const state = getState();
+      if (isRoutePreloadedInStack(state, route)) {
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn(
+            `Ignored a navigation action dispatched from the preloaded screen '${route.name}'. The screen is rendered for preloading and is not focused, so its actions would unexpectedly modify the visible stack. Wait until the screen is focused before dispatching.`
+          );
+        }
+        return;
+      }
+
+      navigation.dispatch({ source: route.key, ...action });
     };
 
     const withStack = (callback: () => void) => {
@@ -143,7 +162,8 @@ export function useNavigationCache<
       ...helpers,
       // FIXME: too much work to fix the types for now
       ...(emitter.create(route.key) as any),
-      dispatch: (thunk: Thunk) => withStack(() => dispatch(thunk)),
+      dispatch: (action: NavigationAction) => withStack(() => dispatch(action)),
+      dispatchSync: (thunk: Thunk) => withStack(() => dispatchSync(thunk)),
       getParent: (id?: string) => {
         if (id !== undefined && id === rest.getId()) {
           // If the passed id is the same as the current navigation id,
