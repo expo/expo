@@ -123,21 +123,14 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     )
   }
 
-  private static func parseHeaders(from httpResponse: HTTPURLResponse) -> [[String]] {
+  static func parseHeaders(from httpResponse: HTTPURLResponse) -> [[String]] {
     var result: [[String]] = []
     for (rawKey, rawValue) in httpResponse.allHeaderFields {
       guard let key = rawKey as? String, let value = rawValue as? String else {
         continue
       }
-      if key.caseInsensitiveCompare("Set-Cookie") == .orderedSame, let url = httpResponse.url {
-        let cookies = HTTPCookie.cookies(withResponseHeaderFields: [key: value], for: url)
-        if cookies.isEmpty {
-          result.append([key, value])
-        } else {
-          for cookie in cookies {
-            result.append([key, Self.reconstructSetCookieHeader(from: cookie)])
-          }
-        }
+      if key.caseInsensitiveCompare("Set-Cookie") == .orderedSame {
+        result.append(contentsOf: splitSetCookieHeader(value).map { [key, $0] })
       } else {
         result.append([key, value])
       }
@@ -145,39 +138,44 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     return result
   }
 
-  /**
-   Reconstructs a `Set-Cookie` header value from a parsed `HTTPCookie`.
-   */
-  private static func reconstructSetCookieHeader(from cookie: HTTPCookie) -> String {
-    var components: [String] = ["\(cookie.name)=\(cookie.value)"]
-    if !cookie.path.isEmpty {
-      components.append("Path=\(cookie.path)")
+  private static func splitSetCookieHeader(_ value: String) -> [String] {
+    // URLSession folds repeated headers with commas. A comma in a cookie attribute (notably
+    // `Expires`) is not a separator unless the following text starts another cookie pair.
+    var result: [String] = []
+    var cookieStartIndex = value.startIndex
+    var searchIndex = value.startIndex
+
+    while let commaIndex = value[searchIndex...].firstIndex(of: ",") {
+      let nextIndex = value.index(after: commaIndex)
+      if isCookiePairStart(in: value, at: nextIndex) {
+        result.append(
+          String(value[cookieStartIndex..<commaIndex]).trimmingCharacters(in: .whitespaces)
+        )
+        cookieStartIndex = nextIndex
+      }
+      searchIndex = nextIndex
     }
-    if !cookie.domain.isEmpty {
-      components.append("Domain=\(cookie.domain)")
-    }
-    if !cookie.isSessionOnly, let expiresDate = cookie.expiresDate {
-      components.append("Expires=\(Self.cookieDateFormatter.string(from: expiresDate))")
-    }
-    if cookie.isSecure {
-      components.append("Secure")
-    }
-    if cookie.isHTTPOnly {
-      components.append("HttpOnly")
-    }
-    if let sameSite = cookie.sameSitePolicy?.rawValue {
-      components.append("SameSite=\(sameSite)")
-    }
-    return components.joined(separator: "; ")
+
+    result.append(String(value[cookieStartIndex...]).trimmingCharacters(in: .whitespaces))
+    return result
   }
 
-  private static let cookieDateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US_POSIX")
-    formatter.timeZone = TimeZone(identifier: "GMT")
-    formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss 'GMT'"
-    return formatter
-  }()
+  private static func isCookiePairStart(in value: String, at startIndex: String.Index) -> Bool {
+    let remainder = value[startIndex...]
+    guard let equalsIndex = remainder.firstIndex(of: "=") else {
+      return false
+    }
+    if let delimiterIndex = remainder.firstIndex(where: { $0 == ";" || $0 == "," }),
+      delimiterIndex < equalsIndex {
+      return false
+    }
+
+    let name = String(value[startIndex..<equalsIndex]).trimmingCharacters(in: .whitespaces)
+    let separators = CharacterSet(charactersIn: "()<>@,;:\\\"/[]?={} \t")
+    return !name.isEmpty && name.unicodeScalars.allSatisfy {
+      $0.value >= 0x21 && $0.value <= 0x7e && !separators.contains($0)
+    }
+  }
 
   // MARK: - ExpoURLSessionTaskDelegate implementations
 
