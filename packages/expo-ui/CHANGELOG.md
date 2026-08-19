@@ -23,8 +23,8 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `Slider` ignoring `value` prop updates after the first drag.
-- [Android] Preserve vector drawable `fillType` values when loading images so even-odd paths render correctly.
+- [iOS] Fix `Slider` ignoring `value` prop updates after the first drag. ([#49085](https://github.com/expo/expo/pull/49085) by [@expo-bot](https://github.com/expo-bot))
+- [Android] Preserve vector drawable `fillType` values when loading images so even-odd paths render correctly. ([#49049](https://github.com/expo/expo/pull/49049) by [@aonan-brex](https://github.com/aonan-brex))
 - [universal] Fix `Cannot use shared object that was already released` when a worklet callback prop closes over an unstable value. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [universal] Add an explicit type annotation to `BottomSheetTextInput` so its type doesn't depend on referencing React Native's internal `TextInputType`. ([#48218](https://github.com/expo/expo/pull/48218) by [@zoontek](https://github.com/zoontek))
 - [iOS] Fix `community/bottom-sheet` close callbacks firing before the sheet finished dismissing. ([#48389](https://github.com/expo/expo/issues/48389) by [@nicklamont](https://github.com/nicklamont)) ([#48436](https://github.com/expo/expo/pull/48436) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
