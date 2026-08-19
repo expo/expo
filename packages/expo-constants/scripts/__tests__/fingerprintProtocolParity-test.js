@@ -40,6 +40,11 @@ describe('app.fingerprint protocol parity', () => {
   // fingerprint options must not drift either. Both declare them locally: the embed script
   // cannot import from @expo/cli, and the CLI resolves the fingerprint package from the
   // user's project at runtime.
+  // TODO: these checks pin the option names, not their equivalence — an option added on one
+  // side keeps both assertions passing. Exporting the options from `@expo/fingerprint`
+  // (reachable as `expo/fingerprint`, which both sides already resolve from the project) would
+  // prevent the drift instead of detecting it. expo-constants ships separately from `expo`, so
+  // the embed script would still need a local fallback for older installs.
   it.each([
     ['the embed script', 'expo-constants/scripts/createFingerprintFile.js'],
     ['the check side (@expo/cli)', '@expo/cli/src/utils/nativeFingerprint.ts'],
