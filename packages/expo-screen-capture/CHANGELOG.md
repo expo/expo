@@ -10,6 +10,7 @@
 
 - [iOS] Fixed the screen-recording overlay staying attached (permanent black screen) after `allowScreenCaptureAsync` is called while a recording is active. ([#48000](https://github.com/expo/expo/pull/48000) by [@bluespore](https://github.com/bluespore))
 - [iOS] Fixed screenshot prevention and the recording overlay attaching to a window in a background scene rather than the one on screen. ([#48372](https://github.com/expo/expo/pull/48372) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed `drawRect`-backed views (for example `react-native-svg` content) staying blank after screenshot prevention re-parents the window layer, and made a failed attach reject instead of silently leaving the app unprotected.
 
 ### 💡 Others
 
