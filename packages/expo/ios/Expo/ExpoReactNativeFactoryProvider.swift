@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import React_RCTAppDelegate
 
 /**
  Conformed to by the application's `AppDelegate` so that the scene delegate can retrieve
