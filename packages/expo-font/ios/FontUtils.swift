@@ -1,4 +1,11 @@
 import CoreGraphics
+import CoreText
+import Foundation
+#if os(iOS) || os(tvOS)
+import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
 
 /**
  * Queries custom native font names from the Info.plist `UIAppFonts`.
