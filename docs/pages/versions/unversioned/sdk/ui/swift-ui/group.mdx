@@ -34,7 +34,7 @@ import { foregroundStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function BasicGroupExample() {
   return (
-    <Host matchContents>
+    <Host matchContents style={{ alignSelf: 'center' }}>
       <VStack spacing={8}>
         <Group modifiers={[foregroundStyle('blue')]}>
           <Text>First item</Text>
