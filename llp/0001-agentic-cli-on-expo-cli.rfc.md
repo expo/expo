@@ -139,6 +139,22 @@ Wider candidate list, grouped by theme. All items [inferred] unless tagged; runt
 - **E3. Module authoring flow.** `create-expo-module` + generate the Swift/Kotlin/TS scaffold, build the example app, and iterate against it — native module development as a guided agentic loop.
 - **E4. Skills as an output, too.** The same skill-from-module contract (Feature 1) exports to other agents' formats, making Expo packages self-documenting for the whole agent ecosystem.
 
+### F. Headless-first: no terminal, no laptop
+
+Seeds from Kudo [confirmed — Slack, 2026-08-18]: Cloudflare Worker compatibility, headless project creation, and the north star — doing all mobile development and deployment from the Claude mobile app.
+
+- **F1. Headless project creation.** `exagent new "<one-line app description>"` scaffolds without a TTY: template choice, `create-expo`, git init, EAS init, first boot check — every step flag- or JSON-driven. Generalize into a design principle: **non-interactive parity** — every interactive prompt in Expo/EAS CLIs must have a programmatic answer path, and the eval suite runs everything with no TTY attached. Prompts that block a pipe are bugs for agents.
+- **F2. Cloudflare Workers compatibility (EAS Hosting).** Expo API routes deploy to the Cloudflare Workers runtime (workerd). Agent tools:
+  - *Compat preflight*: static lint of API routes and server code for Node APIs and packages that do not exist under workerd, before any deploy.
+  - *Local workerd run*: execute routes under the real runtime locally and feed failures back to the agent as structured errors.
+  - *Fix loop*: known-incompatibility → known-substitution mapping (same signature-DB shape as E2), so the agent rewrites Node-isms into Workers-safe code and re-verifies.
+- **F3. Chat-driven development — the phone is the only device.** North star [confirmed — Kudo]: run the whole lifecycle from the Claude mobile app. The agent runs on a cloud machine; the user's phone is both the chat client and the test device. Required pieces, most of which exist in some form:
+  - Remote dev server: tunnel Metro to the device (packager proxy URL) — no QR, the agent sends an install/open link.
+  - Agent eyes without a laptop: cloud simulators (EAS Simulator is an experimental API today) for screenshots and automation when the user's phone is busy being a chat client.
+  - Remote transport: `@expo/mcp-tunnel` already provides WebSocket MCP transport for exactly this shape [observed — expo-mcp repo].
+  - Delivery without a Mac: EAS Build → TestFlight/internal distribution → EAS Update for OTA iteration.
+  - Everything upstream of this (F1 headless creation, A-tools for verification, C guardrails, JSONL events) is a prerequisite; F3 is the composition of them, not a separate system.
+
 ## Open questions
 
 1. Final name: `exagent` vs `ai-expo` vs a scoped `@expo/*` bin.
@@ -147,3 +163,4 @@ Wider candidate list, grouped by theme. All items [inferred] unless tagged; runt
 4. Skill-from-module contract: `package.json` field vs directory convention; and whether `expo/skills` content gets bundled or fetched.
 5. Relationship to `expo-mcp` repo: vendor the tools in-process, or depend on `expo-mcp` as published?
 6. Whether `expo agent` (subcommand alias in `@expo/cli`) ships at all, and when.
+7. F3 hosting: where does the cloud agent run — EAS-provided machines, or bring-your-own (Tuft-style) — and how does it authenticate to the user's EAS account?
