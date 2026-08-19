@@ -44,8 +44,14 @@ function getMismatchAdvice(
   const prefix = `The installed ${platform} app does not match the project`;
   const { status, changes } = getNativeDirectoryStaleness(projectRoot, platform, server);
   if (status === 'stale') {
+    // `formatPrebuildChanges` names only project sources, so it can come back empty — when a
+    // dependency is what changed, say the directory is out of date instead of naming a path the
+    // developer never touched.
+    const named = formatPrebuildChanges(changes);
     return {
-      recommendation: `${prefix} — ${formatPrebuildChanges(changes)} changed after the ${platform} directory was generated.`,
+      recommendation: named
+        ? `${prefix} — ${named} changed after the ${platform} directory was generated.`
+        : `${prefix} — the generated ${platform} directory is out of date.`,
       commands: rebuildCommands(platform, { prebuildFirst: true }),
     };
   }
@@ -85,19 +91,25 @@ export function touchesFingerprintInputs(event: ChangeEvent, projectRoot: string
 }
 
 /**
+ * How long a mismatch warning stays suppressed after it prints. Long enough that one app launch
+ * warns once (the automatic announce plus any explicit `checkFingerprintAsync()` call), short
+ * enough that the next launch warns again.
+ */
+const WARN_THROTTLE_MS = 10_000;
+
+/**
  * Computes and caches the project fingerprint for the dev server. A cache is required: apps
  * announce their embedded fingerprint on every reload, and an uncached computation costs
  * 1–2.5 s of CPU during each rebundle. The cache stores the in-flight promise, so concurrent
  * requests share one computation, and `onFileChange` (any watched file) simply clears it —
  * a computation that resolves after a clear never repopulates the cache.
  */
-
 export function createFingerprintService(
   projectRoot: string,
-  { warn }: { warn: (message: string) => void }
+  { warn, now = Date.now }: { warn: (message: string) => void; now?: () => number }
 ) {
   const cache = new Map<FingerprintPlatform, Promise<ServerFingerprint | null>>();
-  const warnedMismatches = new Set<string>();
+  const warnedMismatches = new Map<string, number>();
 
   async function computeAsync(platform: FingerprintPlatform): Promise<ServerFingerprint | null> {
     const resolved = importFingerprint(projectRoot);
@@ -145,9 +157,9 @@ export function createFingerprintService(
       cache.clear();
     },
     /**
-     * Record the embedded fingerprint a client announced; warn once per distinct mismatch.
+     * Record the embedded fingerprint a client announced; warn at most once per throttle window.
      * Returns the remediation advice on a mismatch — every stale client gets it in the HTTP
-     * response, not just the one that triggered the warning — and `null` on a match.
+     * response, not just the one that triggered a warning — and `null` on a match.
      */
     recordClientFingerprint(
       platform: FingerprintPlatform,
@@ -161,13 +173,17 @@ export function createFingerprintService(
       // Key by (platform, server hash), not the announced hash: the warning text is identical
       // for every mismatch against the same project state, and announced hashes are
       // attacker-controlled input — keying on them would allow unbounded terminal spam.
+      // Suppression is time-bounded rather than permanent, so relaunching a stale app warns
+      // again instead of staying silent until the dev server restarts.
       const key = `${platform}:${server.hash}`;
-      if (!warnedMismatches.has(key)) {
+      const lastWarnedAt = warnedMismatches.get(key);
+      const timestamp = now();
+      if (lastWarnedAt === undefined || timestamp - lastWarnedAt >= WARN_THROTTLE_MS) {
         // Bound the memory across long sessions with many project states.
         if (warnedMismatches.size >= 256) {
           warnedMismatches.clear();
         }
-        warnedMismatches.add(key);
+        warnedMismatches.set(key, timestamp);
         warn(`${advice.recommendation} Run: ${advice.commands.join(', then ')}`);
       }
       return advice;

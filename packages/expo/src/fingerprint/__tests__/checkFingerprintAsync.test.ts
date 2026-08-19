@@ -79,34 +79,32 @@ describe(checkFingerprintAsync, () => {
     });
   });
 
-  itNative(`prefers the server's mismatch commands over the default`, async () => {
-    // The server knows when the generated native directories are stale and prebuild must run
-    // before the rebuild — the client alone cannot tell.
-    mockServerResponse({
-      platform: Platform.OS,
-      hash: 'server-hash',
-      fingerprintVersion: null,
+  // Only the server can tell that the generated native directories are stale and prebuild must
+  // run before the rebuild, so its advice wins — but only when it is well-formed.
+  itNative.each([
+    {
+      name: `prefers the server's mismatch commands over the default`,
       mismatch: {
         recommendation: 'The app config changed after the native directories were generated.',
         commands: [`npx expo prebuild -p ${Platform.OS}`, `npx expo run:${Platform.OS}`],
       },
-    });
-    await expect(checkFingerprintAsync()).resolves.toMatchObject({
-      status: 'rebuild-required',
       commands: [`npx expo prebuild -p ${Platform.OS}`, `npx expo run:${Platform.OS}`],
-    });
-  });
-
-  itNative(`falls back to the default command when the mismatch advice is malformed`, async () => {
+    },
+    {
+      name: 'falls back to the default command when the mismatch advice is malformed',
+      mismatch: { recommendation: 'stale', commands: ['ok', 42] },
+      commands: [`npx expo run:${Platform.OS}`],
+    },
+  ])(`$name`, async ({ mismatch, commands }) => {
     mockServerResponse({
       platform: Platform.OS,
       hash: 'server-hash',
       fingerprintVersion: null,
-      mismatch: { recommendation: 'stale', commands: ['ok', 42] },
+      mismatch,
     });
     await expect(checkFingerprintAsync()).resolves.toMatchObject({
       status: 'rebuild-required',
-      commands: [`npx expo run:${Platform.OS}`],
+      commands,
     });
   });
 
@@ -126,46 +124,55 @@ describe(checkFingerprintAsync, () => {
     });
   });
 
-  itNative(`is not applicable in Expo Go`, async () => {
-    mockEnvironment({ expoGo: true });
+  itNative.each([
+    { name: 'in Expo Go', environment: { expoGo: true }, reason: 'expo-go' },
+    { name: 'without a dev server', environment: { origin: null }, reason: 'no-dev-server' },
+  ])(`is not applicable $name`, async ({ environment, reason }) => {
+    mockEnvironment(environment);
     await expect(checkFingerprintAsync()).resolves.toMatchObject({
       status: 'not-applicable',
-      reason: 'expo-go',
+      reason,
     });
   });
 
-  itNative(`is not applicable without a dev server`, async () => {
-    mockEnvironment({ origin: null });
+  itNative(`resolves rather than rejects when the bundle origin cannot be read`, async () => {
+    // `getBundleUrl` parses the script URL with `new URL(...)`, which throws on a malformed one.
+    // The documented contract is that this promise never rejects.
+    jest.mocked(getBundleOrigin).mockImplementation(() => {
+      throw new Error('Invalid URL');
+    });
     await expect(checkFingerprintAsync()).resolves.toMatchObject({
       status: 'not-applicable',
       reason: 'no-dev-server',
     });
   });
 
-  itNative(`maps a 503 to fingerprint-unavailable`, async () => {
-    mockServerResponse({ code: 'FINGERPRINT_UNAVAILABLE' }, { ok: false, status: 503 });
-    await expect(checkFingerprintAsync()).resolves.toMatchObject({
-      status: 'unknown',
+  // Every failure the check knows about resolves to `unknown`; it never rejects. The last row
+  // arranges a throwing fetch rather than a response, so rows carry a thunk instead of data.
+  itNative.each([
+    {
+      name: 'maps a 503 to fingerprint-unavailable',
+      arrange: () =>
+        mockServerResponse({ code: 'FINGERPRINT_UNAVAILABLE' }, { ok: false, status: 503 }),
       reason: 'fingerprint-unavailable',
-    });
-  });
-
-  itNative(`maps other server errors to check-failed`, async () => {
-    mockServerResponse({}, { ok: false, status: 404 });
-    await expect(checkFingerprintAsync()).resolves.toMatchObject({
-      status: 'unknown',
+    },
+    {
+      name: 'maps other server errors to check-failed',
+      arrange: () => mockServerResponse({}, { ok: false, status: 404 }),
       reason: 'check-failed',
-    });
-  });
-
-  itNative(`maps network failures to check-failed`, async () => {
-    globalThis.fetch = jest.fn(async () => {
-      throw new Error('network down');
-    }) as any;
-    await expect(checkFingerprintAsync()).resolves.toMatchObject({
-      status: 'unknown',
+    },
+    {
+      name: 'maps network failures to check-failed',
+      arrange: () => {
+        globalThis.fetch = jest.fn(async () => {
+          throw new Error('network down');
+        }) as any;
+      },
       reason: 'check-failed',
-    });
+    },
+  ])(`$name`, async ({ arrange, reason }) => {
+    arrange();
+    await expect(checkFingerprintAsync()).resolves.toMatchObject({ status: 'unknown', reason });
   });
 
   if (Platform.OS === 'web') {

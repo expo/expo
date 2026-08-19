@@ -72,6 +72,27 @@ describe(FingerprintMiddleware, () => {
     expect(parseBody(res).code).toBe('FINGERPRINT_UNAVAILABLE');
   });
 
+  it(`reports a failed computation quietly instead of a 500`, async () => {
+    // Computing evaluates the app config and applies config plugins, so a broken plugin throws.
+    // Every app launch announces, so a 500 would print a red error on every reload.
+    const { middleware } = createMiddleware({
+      getFingerprintAsync: jest.fn(async () => {
+        throw new Error('config plugin exploded');
+      }),
+    });
+    const res = createMockResponse();
+    await expect(
+      middleware.handleRequestAsync(
+        asReq({ method: 'GET', url: '/_expo/fingerprint?platform=ios' }),
+        res
+      )
+    ).resolves.toBeUndefined();
+    expect(res.statusCode).toBe(503);
+    const body = parseBody(res);
+    expect(body.code).toBe('FINGERPRINT_FAILED');
+    expect(body.error).toContain('config plugin exploded');
+  });
+
   it(`rejects non-GET methods with Allow`, async () => {
     const { middleware, getFingerprintAsync } = createMiddleware();
     const res = createMockResponse();

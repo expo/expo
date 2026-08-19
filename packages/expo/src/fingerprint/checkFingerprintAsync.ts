@@ -59,7 +59,7 @@ function notApplicable(reason: FingerprintCheckReason): FingerprintCheckResult {
  * not enough — the app must be rebuilt.
  *
  * The check is intended for development: it requires a development build connected to an Expo
- * dev server (SDK 55 or newer). The returned promise never rejects — environments where the
+ * dev server. The returned promise never rejects — environments where the
  * check does not apply produce a `not-applicable` result, and failures produce `check-failed`.
  *
  * @return A promise that resolves to the check result.
@@ -84,7 +84,14 @@ export async function checkFingerprintAsync(): Promise<FingerprintCheckResult> {
   if (isRunningInExpoGo()) {
     return notApplicable('expo-go');
   }
-  const origin = getBundleOrigin();
+  let origin: string | null;
+  try {
+    origin = getBundleOrigin();
+  } catch {
+    // The origin comes from parsing the bundle URL with `new URL(...)`, which throws on a
+    // malformed one. This promise is documented never to reject, so treat it as no dev server.
+    origin = null;
+  }
   if (!origin) {
     return notApplicable('no-dev-server');
   }

@@ -134,8 +134,8 @@ describe(checkNeedsRebuildAsync, () => {
     jest.mocked(getNativeDirectoryStaleness).mockReturnValue({
       status: 'stale',
       changes: [
-        { source: 'app config', change: 'changed' },
-        { source: 'plugins/withFoo.js', change: 'added' },
+        { source: 'app config', change: 'changed', scope: 'project' },
+        { source: 'plugins/withFoo.js', change: 'added', scope: 'project' },
       ],
     });
     // The concurrently started device read must not affect the verdict, even when it fails.
@@ -153,8 +153,8 @@ describe(checkNeedsRebuildAsync, () => {
     // The verdict names what changed, so the developer (or agent) can act without guessing.
     expect(result.platforms.ios!.recommendation).toContain('app config, plugins/withFoo.js');
     expect(result.platforms.ios!.prebuildChanges).toEqual([
-      { source: 'app config', change: 'changed' },
-      { source: 'plugins/withFoo.js', change: 'added' },
+      { source: 'app config', change: 'changed', scope: 'project' },
+      { source: 'plugins/withFoo.js', change: 'added', scope: 'project' },
     ]);
     expect(result.exitCode).toBe(3);
   });
