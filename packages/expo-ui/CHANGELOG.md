@@ -25,7 +25,7 @@
 - [iOS] Fix `community/bottom-sheet` close callbacks firing before the sheet finished dismissing. ([#48389](https://github.com/expo/expo/issues/48389) by [@nicklamont](https://github.com/nicklamont)) ([#48436](https://github.com/expo/expo/pull/48436) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed viewport size measurement reading the main screen instead of the scene the view is in. ([#48170](https://github.com/expo/expo/pull/48170) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix `Toggle` rendering local state instead of `isOn`, which left `community/menu` checkmarks out of sync and dropped every second `onPressAction`. ([#48982](https://github.com/expo/expo/issues/48982) by [@JustJoostNL](https://github.com/JustJoostNL)) ([#49021](https://github.com/expo/expo/pull/49021) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `Toggle` rendering local state instead of `isOn`, which left `community/menu` checkmarks out of sync and dropped every second `onPressAction`. `Toggle` is now fully controlled: when `isOn` is set, it only moves once JS updates the prop. ([#48982](https://github.com/expo/expo/issues/48982) by [@JustJoostNL](https://github.com/JustJoostNL)) ([#49021](https://github.com/expo/expo/pull/49021) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
