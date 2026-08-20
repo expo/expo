@@ -109,6 +109,31 @@ struct CapturedPhotoProcessorTests {
   }
 
   @Test
+  func `syncs a stale nested TIFF orientation with the top-level tag`() throws {
+    // An upright image (e.g. after `normalizeOrientation`) whose source
+    // metadata still carries the sensor's TIFF orientation.
+    let image = makeImage(bufferWidth: 400, bufferHeight: 300, orientation: .up)
+    let request = CaptureRequest(exif: true, quality: 1, imageType: .jpg, additionalExif: nil)
+
+    let result = try CapturedPhotoProcessor().process(
+      image: image,
+      sourceMetadata: [
+        kCGImagePropertyExifDictionary as String: [String: Any](),
+        kCGImagePropertyTIFFDictionary as String: [kCGImagePropertyTIFFOrientation as String: 6]
+      ],
+      request: request
+    )
+
+    let source = try #require(CGImageSourceCreateWithData(result.data as CFData, nil))
+    let props = try #require(CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any])
+    #expect(props[kCGImagePropertyOrientation] as? Int == 1)
+    if let tiff = props[kCGImagePropertyTIFFDictionary] as? [CFString: Any],
+      let tiffOrientation = tiff[kCGImagePropertyTIFFOrientation] as? Int {
+      #expect(tiffOrientation == 1)
+    }
+  }
+
+  @Test
   func `additionalExif is reflected in the returned exif and encoded as GPS metadata`() throws {
     let image = makeImage(bufferWidth: 400, bufferHeight: 300, orientation: .right)
     let additionalExif: [String: Any] = ["GPSLatitude": 37.33, "GPSLongitude": -122.03]

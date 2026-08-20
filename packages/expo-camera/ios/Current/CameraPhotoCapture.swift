@@ -191,6 +191,10 @@ class CameraPhotoCapture: NSObject, AVCapturePhotoCaptureDelegate {
 
     takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
 
+    if options.normalizeOrientation {
+      takenImage = ExpoCameraUtils.bakeOrientation(image: takenImage)
+    }
+
     let request = CaptureRequest(
       exif: options.exif,
       quality: options.quality,

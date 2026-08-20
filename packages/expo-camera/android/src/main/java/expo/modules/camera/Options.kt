@@ -13,6 +13,7 @@ data class PictureOptions(
   @Field val additionalExif: Map<String, Any>? = null,
   @Field val mirror: Boolean = false,
   @Field val skipProcessing: Boolean = false,
+  @Field val normalizeOrientation: Boolean = false,
   @Field val imageType: PictureFormat = PictureFormat.JPEG,
   @Field val fastMode: Boolean = false,
   @Field val id: Int? = null,

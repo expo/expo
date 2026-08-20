@@ -99,7 +99,11 @@ class ResolveTakenPicture(
           ExifInterface.TAG_ORIENTATION,
           ExifInterface.ORIENTATION_NORMAL
         )
-        if (mirror) {
+        if (options.normalizeOrientation) {
+          // Rotation (and mirroring) is baked into the pixels below, so the
+          // output must not carry a transform tag.
+          exifInterface.setAttribute(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL.toString())
+        } else if (mirror) {
           exifInterface.setAttribute(ExifInterface.TAG_ORIENTATION, getMirroredOrientation(orientation).toString())
         }
 
@@ -125,6 +129,15 @@ class ResolveTakenPicture(
         if (bitmap == null) {
           promise.reject(OUT_OF_MEMORY_TAG, OUT_OF_MEMORY_EXCEPTION_MSG, lastError)
           return null
+        }
+
+        // Rotation is baked into the pixels, so the recorded dimensions have to
+        // describe the rotated bitmap rather than the sensor buffer.
+        if (options.normalizeOrientation) {
+          exifInterface.setAttribute(ExifInterface.TAG_PIXEL_X_DIMENSION, bitmap.width.toString())
+          exifInterface.setAttribute(ExifInterface.TAG_PIXEL_Y_DIMENSION, bitmap.height.toString())
+          exifInterface.setAttribute(ExifInterface.TAG_IMAGE_WIDTH, bitmap.width.toString())
+          exifInterface.setAttribute(ExifInterface.TAG_IMAGE_LENGTH, bitmap.height.toString())
         }
 
         // Write Exif data to the response if requested
@@ -240,8 +253,9 @@ class ResolveTakenPicture(
   }
 
   private fun decodeBitmap(imageData: ByteArray, orientation: Int, options: PictureOptions, bitmapOptions: BitmapFactory.Options): Bitmap {
-    // Rotate the bitmap to the proper orientation if needed
-    return if (!options.exif) {
+    // Rotate the bitmap to the proper orientation if needed. With `exif` the
+    // orientation is preserved as a tag instead, unless normalization is requested.
+    return if (!options.exif || options.normalizeOrientation) {
       decodeAndRotateBitmap(imageData, getImageRotation(orientation), bitmapOptions)
     } else {
       BitmapFactory.decodeByteArray(imageData, 0, imageData.size, bitmapOptions)

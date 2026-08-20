@@ -26,6 +26,9 @@ struct TakePictureOptions: Record {
   var additionalExif: [String: Any]?
 
   @Field
+  var normalizeOrientation: Bool = false
+
+  @Field
   var shutterSound: Bool? = true
 
   @Field
