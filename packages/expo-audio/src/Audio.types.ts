@@ -599,11 +599,17 @@ export type AudioMode = {
   /**
    * Determines how the audio session interacts with other audio sessions.
    *
-   * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+   * - `'doNotMix'`: Requests transient exclusive audio focus. Other apps will pause their audio
+   *   and may resume when your app no longer needs focus.
+   * - `'doNotMixPersistent'`: Requests persistent exclusive audio focus. Other apps will pause
+   *   their audio and should not automatically resume when your app no longer needs focus.
    * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
    * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
    *   On Android, this means no audio focus is requested. Best suited for sound effects,
    *   UI feedback, or short audio clips.
+   *
+   * > **Note:** `doNotMixPersistent` does not keep the audio session active after playback
+   * > stops by itself. Set **keepAudioSessionActive** to `true` to keep it active.
    *
    * @default 'mixWithOthers'
    */
@@ -651,7 +657,10 @@ export type AudioMode = {
  *
  * Controls how your app's audio interacts with other apps' audio.
  *
- * - `'doNotMix'`: Requests exclusive audio focus. Other apps will pause their audio.
+ * - `'doNotMix'`: Requests transient exclusive audio focus. Other apps will pause their audio
+ *   and may resume when your app no longer needs focus.
+ * - `'doNotMixPersistent'`: Requests persistent exclusive audio focus. Other apps will pause
+ *   their audio and should not automatically resume when your app no longer needs focus.
  * - `'duckOthers'`: Requests audio focus with ducking. Other apps lower their volume but continue playing.
  * - `'mixWithOthers'`: Audio plays alongside other apps without interrupting them.
  *
@@ -659,11 +668,12 @@ export type AudioMode = {
  *   UI feedback, or short audio clips. Note that on Android your app won't receive
  *   audio focus loss callbacks (for example, during phone calls) when using this mode.
  *
- *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix`.
+ *  > **Note:** When using `setActiveForLockScreen`, this must be set to `doNotMix` or
+ *  > `doNotMixPersistent`.
  *
  * @default 'mixWithOthers'
  */
-export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'duckOthers';
+export type InterruptionMode = 'mixWithOthers' | 'doNotMix' | 'doNotMixPersistent' | 'duckOthers';
 
 /**
  * @deprecated Use `InterruptionMode` instead, which now works on both platforms.
