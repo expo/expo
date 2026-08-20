@@ -2,18 +2,11 @@ import type { ComponentType } from 'react';
 
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
-import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
-import type { Href } from '../types';
 import * as SplashScreen from '../views/Splash';
 import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
 import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
-import type {
-  FocusedRouteState,
-  LinkToOptions,
-  ReactNavigationState,
-  StoreRedirects,
-} from './types';
+import type { FocusedRouteState, ReactNavigationState, StoreRedirects } from './types';
 
 export type RouterStore = typeof store;
 
@@ -68,12 +61,6 @@ export const store = {
   },
   get rootComponent() {
     return storeRef.current.rootComponent;
-  },
-  getStateForHref(href: Href | string, options?: LinkToOptions) {
-    href = resolveHref(href);
-
-    href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
-    return this.linking?.getStateFromPath!(href, this.linking.config);
   },
   get linking() {
     return storeRef.current.linking;

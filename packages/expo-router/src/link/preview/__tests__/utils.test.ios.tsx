@@ -1,3 +1,4 @@
+import { store } from '../../../global-state/router-store';
 import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/index';
 import type { NavigationState } from '../../../react-navigation/native';
@@ -175,7 +176,11 @@ describe(getTabPathFromRootStateByHref, () => {
       ],
     };
     const href = '/faces/1e3a8a';
-    const tabPath = getTabPathFromRootStateByHref(href, state as NavigationState);
+    const tabPath = getTabPathFromRootStateByHref(
+      href,
+      state as NavigationState,
+      store.getRouteInfo()
+    );
     expect(tabPath).toEqual([
       {
         oldTabKey: 'faces-BlzNnnAhZ7c9t5bfSf4kR',
@@ -247,7 +252,11 @@ describe(getTabPathFromRootStateByHref, () => {
       ],
     };
     const href = '/faces/1e3a8a';
-    const tabPath = getTabPathFromRootStateByHref(href, state as NavigationState);
+    const tabPath = getTabPathFromRootStateByHref(
+      href,
+      state as NavigationState,
+      store.getRouteInfo()
+    );
     expect(tabPath).toEqual([
       {
         oldTabKey: 'index-rYeU6j6cRmkJK1pXpEFHs',
@@ -342,7 +351,11 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       ],
     };
     const href = '/faces/1e3a8a';
-    const preloadedRoute = getPreloadedRouteFromRootStateByHref(href, state as NavigationState);
+    const preloadedRoute = getPreloadedRouteFromRootStateByHref(
+      href,
+      state as NavigationState,
+      store.getRouteInfo()
+    );
     expect(preloadedRoute).toEqual({
       key: '[face]-9rms2gdsibY9dVYUGCpZG',
       name: '[face]',
@@ -415,7 +428,11 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       ],
     };
     const href = '/faces/1e3a8a';
-    const preloadedRoute = getPreloadedRouteFromRootStateByHref(href, state as NavigationState);
+    const preloadedRoute = getPreloadedRouteFromRootStateByHref(
+      href,
+      state as NavigationState,
+      store.getRouteInfo()
+    );
     expect(preloadedRoute).toEqual({
       key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
       name: '[face]',

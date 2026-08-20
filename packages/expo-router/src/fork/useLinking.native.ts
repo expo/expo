@@ -2,6 +2,7 @@ import * as ExpoLinking from 'expo-linking';
 import { type RefObject, useEffect, useCallback, useRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
+import { useRouteInfo } from '../global-state/useRouteInfo';
 import {
   type LinkingOptions,
   getActionFromState as getActionFromStateDefault,
@@ -11,10 +12,13 @@ import {
   useNavigationIndependentTree,
 } from '../react-navigation/native';
 import { extractExpoPathFromURL } from './extractPathFromURL';
+import { getStateFromPath as getExpoStateFromPath } from './getStateFromPath';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
-type Options = LinkingOptions<ParamListBase>;
+type Options = Omit<LinkingOptions<ParamListBase>, 'getStateFromPath'> & {
+  getStateFromPath?: typeof getExpoStateFromPath;
+};
 
 const linkingHandlers: symbol[] = [];
 
@@ -50,9 +54,11 @@ export function useLinking(
         }
       };
     });
-  const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
+  const getStateFromPath = (options?.getStateFromPath ??
+    getStateFromPathDefault) as typeof getExpoStateFromPath;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const independent = useNavigationIndependentTree();
+  const { segments } = useRouteInfo();
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -100,6 +106,10 @@ export function useLinking(
   const getInitialURLRef = useRef(getInitialURL);
   const getStateFromPathRef = useRef(getStateFromPath);
   const getActionFromStateRef = useRef(getActionFromState);
+  const segmentsRef = useRef(segments);
+
+  // Keep stable URL listeners in sync with the latest navigation state.
+  segmentsRef.current = segments;
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -119,7 +129,9 @@ export function useLinking(
 
       const path = extractExpoPathFromURL(prefixesRef.current, url);
 
-      return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
+      return path !== undefined
+        ? getStateFromPathRef.current(path, configRef.current, segmentsRef.current)
+        : undefined;
     },
 
     []
