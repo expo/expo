@@ -171,6 +171,9 @@ importers:
       expo-location:
         specifier: workspace:*
         version: link:../../packages/expo-location
+      expo-media-library:
+        specifier: workspace:*
+        version: link:../../packages/expo-media-library
       expo-navigation-bar:
         specifier: workspace:*
         version: link:../../packages/expo-navigation-bar
