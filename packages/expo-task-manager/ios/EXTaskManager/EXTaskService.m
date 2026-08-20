@@ -250,7 +250,6 @@
   // `_events` arrays are appended to by `executeTask:` on the thread that
   // executes the task (e.g. main for location consumers) while this method
   // runs on the JS thread — all access must happen under the lock.
-  BOOL appEventsEmptied = NO;
   @synchronized (self) {
     NSMutableArray *appEvents = _events[appId];
 
@@ -259,20 +258,23 @@
 
       if (appEvents.count == 0) {
         [self->_events removeObjectForKey:appId];
-        appEventsEmptied = YES;
+
+        // Invalidate app record but after 1 second delay so we can still take batched events.
+        // `dispatch_after` only enqueues the block, so scheduling it under the lock is safe.
+        // The block re-checks under the lock but invalidates OUTSIDE it — `@synchronized` is
+        // reentrant, so wrapping the `_invalidateAppWithId` call would run the app-record
+        // teardown with the service lock held despite that method's own outside-the-lock split.
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+          BOOL shouldInvalidate;
+          @synchronized (self) {
+            shouldInvalidate = self->_events[appId] == nil;
+          }
+          if (shouldInvalidate) {
+            [self _invalidateAppWithId:appId];
+          }
+        });
       }
     }
-  }
-
-  if (appEventsEmptied) {
-    // Invalidate app record but after 1 second delay so we can still take batched events.
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-      @synchronized (self) {
-        if (!self->_events[appId]) {
-          [self _invalidateAppWithId:appId];
-        }
-      }
-    });
   }
 }
 
@@ -332,8 +334,10 @@
   // (e.g. main for location updates) while `notifyTaskWithName:` empties the
   // same `_events` arrays from the JS thread. `addObject:` on NSMutableArray
   // computes its insertion index from a count another thread can invalidate,
-  // so all bookkeeping happens under the lock; only the task manager
-  // call-out below stays outside it.
+  // so all bookkeeping happens under the lock; the call-outs below (task
+  // manager, app loader) stay outside it.
+  BOOL shouldLoadApp = NO;
+
   @synchronized (self) {
     taskManager = [self _taskManagerForAppId:task.appId];
 
@@ -343,12 +347,9 @@
     [_events setObject:appEvents forKey:task.appId];
 
     if (taskManager == nil) {
-      if (_appRecords[task.appId] == nil) {
-        // No app record yet - let's spin it up!
-        [self _loadAppWithId:task.appId appUrl:task.appUrl];
-      }
+      shouldLoadApp = _appRecords[task.appId] == nil;
 
-      // App record for that app exists, but it's not fully loaded as its task manager is not there yet.
+      // App record for that app may exist but not be fully loaded, as its task manager is not there yet.
       // We need to add event's body to the queue from which events will be executed once the task manager is ready.
       NSMutableArray *appEventsQueue = _eventsQueues[task.appId] ?: [NSMutableArray new];
       [appEventsQueue addObject:body];
@@ -359,6 +360,11 @@
   if (taskManager != nil) {
     // Task manager is initialized and can execute events
     [taskManager executeWithBody:body];
+  } else if (shouldLoadApp) {
+    // No app record yet - let's spin it up!
+    // The app loader is an external call-out and must not run under the lock;
+    // `_loadAppWithId:` guards its own `_appRecords` mutation.
+    [self _loadAppWithId:task.appId appUrl:task.appUrl];
   }
 }
 
