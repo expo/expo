@@ -3551,6 +3551,45 @@ importers:
         specifier: ^29.7.0
         version: 29.7.0(@types/node@22.20.1)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.20.1)(typescript@6.0.3))
 
+  packages/exagent:
+    devDependencies:
+      2g:
+        specifier: ^0.4.3
+        version: 0.4.3(typescript@6.0.3)
+      '@types/getenv':
+        specifier: ^1.0.0
+        version: 1.0.3
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
+      '@types/prompts':
+        specifier: ^2.4.9
+        version: 2.4.9
+      '@vercel/ncc':
+        specifier: ^0.38.3
+        version: 0.38.4
+      agent-cli-detector:
+        specifier: 0.1.6
+        version: 0.1.6
+      arg:
+        specifier: ^5.0.2
+        version: 5.0.2
+      chalk:
+        specifier: ^4.0.0
+        version: 4.1.2
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+      getenv:
+        specifier: ^2.0.0
+        version: 2.0.0
+      memfs:
+        specifier: ^3.2.0
+        version: 3.6.0
+      prompts:
+        specifier: ^2.3.2
+        version: 2.4.2
+
   packages/expo:
     dependencies:
       '@babel/runtime':

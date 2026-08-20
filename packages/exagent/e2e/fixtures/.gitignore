@@ -1,0 +1,3 @@
+# The fixture projects ship committed `node_modules` directories as test data, so the repository
+# root rule that ignores every `node_modules` directory must not apply below this directory.
+!node_modules/

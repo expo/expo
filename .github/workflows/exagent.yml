@@ -1,0 +1,113 @@
+# @ref llp/0002-testing-and-evals.plan.md
+name: Exagent
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/exagent.yml
+      - packages/exagent/**
+      - pnpm-lock.yaml
+  pull_request:
+    paths:
+      - .github/workflows/exagent.yml
+      - packages/exagent/**
+      - pnpm-lock.yaml
+  schedule:
+    # Weekly, Monday 15:00 UTC — only the report-only tier 1 job runs on this trigger.
+    - cron: 0 15 * * 1
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Tier 0 of LLP 0002: deterministic, model-free, runs on every PR.
+  tier0-linux:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build exagent
+        run: pnpm turbo build --filter exagent...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🔎 Typecheck exagent
+        run: pnpm typecheck
+        working-directory: packages/exagent
+      - name: 🚨 Lint exagent
+        run: pnpm lint
+        working-directory: packages/exagent
+      - name: 🧪 Test exagent
+        run: pnpm test --ci
+        working-directory: packages/exagent
+      - name: 🧪 E2E Test exagent
+        run: pnpm test:e2e --ci --runInBand
+        working-directory: packages/exagent
+      - name: 🎯 Tier 0 evals
+        run: node evals/run.mjs --tier 0
+        working-directory: packages/exagent
+
+  # Tier 1 of LLP 0002: agent-in-the-loop, best-effort, report-only.
+  # `continue-on-error` keeps it non-blocking until its pass rate is stable over a
+  # trailing window (LLP 0002, "Flake containment").
+  tier1-agent-eval:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' && github.repository == 'expo/expo')
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build exagent
+        run: pnpm turbo build --filter exagent...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      # Live inference is not wired up yet. This step validates the scenario set and
+      # prints the tier 1 plan, so the job shape is exercised before a model is picked.
+      #
+      # Two options to spike (LLP 0002, build order step 5) — pick on speed × stability × cost:
+      #
+      # 1. Ollama on the runner, CPU-only. Pin the model tag and quantization, set
+      #    temperature 0 and a fixed seed for near-reproducible runs. Needs an extra
+      #    step to install Ollama and `ollama pull <pinned-model>`, plus a cache for the
+      #    model blob. Expect single-digit tokens/sec on a 4 vCPU runner, so scenarios
+      #    must stay short.
+      #
+      # 2. GitHub Models inference endpoint, reached with the job's GITHUB_TOKEN and
+      #    `models: read` permission. Faster than CPU inference and still free, but the
+      #    rate limits and terms have to be verified, and the served model version is
+      #    not pinnable the way an Ollama tag is.
+      #
+      # Whichever wins, the graders stay programmatic (see evals/schema.md) and the job
+      # stays report-only.
+      - name: 🤖 Tier 1 evals (dry run)
+        run: node evals/run.mjs --tier 1 --dry-run
+        working-directory: packages/exagent
