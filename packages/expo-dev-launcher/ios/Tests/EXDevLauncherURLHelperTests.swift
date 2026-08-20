@@ -36,12 +36,21 @@ class EXDevLauncherURLHelperTests: XCTestCase {
   }
 
   func testDevLauncherUrlQueryParams() {
-    let url = "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081&updateMessage=123"
+    let url = "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081&initialUrl=myapp%3A%2F%2Ffoo%2Fbar%3Fbaz%3D1&updateMessage=123"
     let devLauncherUrl = EXDevLauncherUrl(URL(string: url)!)
     let queryParams = devLauncherUrl.queryParams
 
     XCTAssertEqual(queryParams["updateMessage"], "123")
     XCTAssertEqual(queryParams["url"], "http://localhost:8081")
+    XCTAssertEqual(devLauncherUrl.initialUrl?.absoluteString, "myapp://foo/bar?baz=1")
+  }
+
+  func testDevLauncherUrlInitialURLQueryParamAlias() {
+    let url = "scheme://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081&initialURL=myapp%3A%2F%2Ffoo%2Fbar"
+    let devLauncherUrl = EXDevLauncherUrl(URL(string: url)!)
+
+    XCTAssertEqual(devLauncherUrl.url.absoluteString, "http://localhost:8081")
+    XCTAssertEqual(devLauncherUrl.initialUrl?.absoluteString, "myapp://foo/bar")
   }
 
   //  HELPER
