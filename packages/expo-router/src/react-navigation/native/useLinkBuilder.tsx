@@ -33,10 +33,6 @@ export function useBuildHref() {
 
   const buildHref = React.useCallback(
     (name: string, params?: object) => {
-      if (options?.enabled === false) {
-        return undefined;
-      }
-
       // Check that we're inside:
       // - navigator's context
       // - route context of the navigator (could be a screen, tab, etc.)
@@ -86,14 +82,7 @@ export function useBuildHref() {
 
       return path;
     },
-    [
-      options?.enabled,
-      options?.config,
-      route?.key,
-      navigation,
-      focusedRouteState,
-      getPathFromStateHelper,
-    ]
+    [options?.config, route?.key, navigation, focusedRouteState, getPathFromStateHelper]
   );
 
   return buildHref;
