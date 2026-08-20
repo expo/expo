@@ -121,6 +121,14 @@ export function reportIfOversized(state: IntegrationState, image: LoadedImage): 
   if (!image.url || !(width > 0) || !(height > 0)) {
     return;
   }
+  // Screen area is in points; the decoded image is in pixels, so convert with pixelRatio² to get
+  // the screen's physical pixel count.
+  const budget = screenWidth * screenHeight * pixelRatio * pixelRatio;
+  if (!(budget > 0) || width * height <= budget * state.threshold) {
+    return;
+  }
+  // Sanitizing after the size check keeps the common per-load path cheap: only oversized images
+  // pay for the URL parse.
   const sanitizedUrl = sanitizeUrl(image.url, state.includeUrlParams);
   if (!sanitizedUrl) {
     return;
@@ -129,12 +137,6 @@ export function reportIfOversized(state: IntegrationState, image: LoadedImage): 
   // query parameters (such as rotating signed URLs) into a single event.
   const url = sanitizedUrl.url;
   if (state.reported.has(url)) {
-    return;
-  }
-  // Screen area is in points; the decoded image is in pixels, so convert with pixelRatio² to get
-  // the screen's physical pixel count.
-  const budget = screenWidth * screenHeight * pixelRatio * pixelRatio;
-  if (!(budget > 0) || width * height <= budget * state.threshold) {
     return;
   }
   state.reported.add(url);
