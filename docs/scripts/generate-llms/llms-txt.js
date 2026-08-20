@@ -133,20 +133,23 @@ function processPage(page) {
   return processPageData(page.href, page.name);
 }
 
-function processGroup(group) {
-  const items = (group.children ?? [])
-    .filter(child => child.type === 'page')
-    .map(processPage)
+function collectPages(node) {
+  return (node.children ?? [])
+    .flatMap(child => (child.type === 'page' ? processPage(child) : collectPages(child)))
     .filter(Boolean);
+}
+
+function processGroup(group) {
+  const items = collectPages(group);
 
   return items.length > 0 ? { title: group.name, items } : null;
 }
 
 function hasContent(section) {
-  return section?.items?.length ?? section?.groups?.length ?? section?.sections?.length;
+  return section?.items.length > 0 || section?.groups.length > 0 || section?.sections.length > 0;
 }
 
-const COLLAPSED_SECTIONS = new Set(['Expo UI']);
+export const COLLAPSED_SECTIONS = new Set(['Expo UI']);
 
 function collapseToOverviews(section) {
   if (!COLLAPSED_SECTIONS.has(section.title)) {
@@ -159,6 +162,10 @@ function collapseToOverviews(section) {
     .map(item => ({ ...item, overview: true }));
 
   return { ...section, items: [...section.items, ...overviews], groups: [], sections: [] };
+}
+
+function processNestedSection(node) {
+  return { title: node.name, items: collectPages(node), groups: [], sections: [] };
 }
 
 function processSection(node) {
@@ -190,7 +197,7 @@ function processSection(node) {
         break;
       }
       case 'section': {
-        const sectionData = processSection(child);
+        const sectionData = processNestedSection(child);
         if (hasContent(sectionData)) {
           section.sections.push(sectionData);
         }
@@ -202,21 +209,23 @@ function processSection(node) {
   return section;
 }
 
+export function generateLlmsTxtMarkdown(nodes) {
+  const sections = nodes.map(processSection).filter(Boolean).map(collapseToOverviews);
+
+  return generateFullMarkdown({
+    title: TITLE,
+    description: EXPO_DESCRIPTION,
+    sections,
+  });
+}
+
 export async function generateLlmsTxt() {
   try {
-    const allSections = Object.values({ home, general, learn, eas, reference: reference.latest })
-      .flat()
-      .map(processSection)
-      .filter(Boolean)
-      .map(collapseToOverviews);
+    const nodes = Object.values({ home, general, learn, eas, reference: reference.latest }).flat();
 
     await fs.promises.writeFile(
       path.join(process.cwd(), OUTPUT_DIRECTORY_NAME, OUTPUT_FILENAME_LLMS_TXT),
-      generateFullMarkdown({
-        title: TITLE,
-        description: EXPO_DESCRIPTION,
-        sections: allSections,
-      })
+      generateLlmsTxtMarkdown(nodes)
     );
 
     console.log(` \x1b[1m\x1b[32m✓\x1b[0m Successfully generated ${OUTPUT_FILENAME_LLMS_TXT}`);
