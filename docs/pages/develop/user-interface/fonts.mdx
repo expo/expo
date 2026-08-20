@@ -42,6 +42,8 @@ Each platform decides which faces a file offers in a different way, so check the
 
 For `fontStyle: 'italic'`, Android applies the font's `ital` axis on Android 15 and newer. On earlier versions, Android creates the italic by slanting the upright letters. iOS uses the italic named instances in the file.
 
+On React Native 0.88 and later, you can also set any axis directly on a component with the [`fontVariationSettings`](https://reactnative.dev/docs/text-style-props) style prop, such as `fontVariationSettings: "'wght' 650, 'wdth' 90"`. It works on `<Text>` and `<TextInput>` on both platforms (Android 8 and newer), and the axes you set there take precedence over `fontWeight` and `fontStyle`.
+
 Inspect a file's axes and named instances with a utility such as [fontTools](https://fonttools.readthedocs.io/). If a face you need is out of reach on a platform, use fontTools to extract that axis configuration and save it as a separate static font file.
 
 ### How to choose between OTF and TTF
@@ -169,7 +171,7 @@ For a [variable font](#variable-fonts) on Android, declare the file path once in
 
 `axes` accepts any [variation axis](https://learn.microsoft.com/en-us/typography/opentype/spec/dvaraxisreg) the font declares, such as `wdth` for a condensed face. Tags are four characters and case sensitive: the registered axes (`ital`, `opsz`, `slnt`, `wdth`, `wght`) are lowercase, and a font's own axes are uppercase, such as `GRAD`. `weight` sets `wght` unless you override it in `axes`.
 
-On iOS, `path` and `axes` do not apply. List the variable font file in `ios.fonts` as you would a static font, and the faces available are the [named instances](#variable-fonts) in it.
+On iOS, `path` and `axes` do not apply. List the variable font file in `ios.fonts` as you would a static font, and the faces available are the [named instances](#variable-fonts) in it. To reach other positions on an axis, use the [`fontVariationSettings`](#variable-fonts) style prop on React Native 0.88 and later.
 
 </Step>
 
@@ -294,7 +296,7 @@ If the file you mapped is a [variable font](#variable-fonts), select a face with
 <Text style={{ fontFamily: 'RobotoFlex-variable', fontWeight: '700' }}>Bold</Text>
 ```
 
-`useFonts` reads the weight axis only. To set another axis, such as `wdth` or `slnt`, embed the font with the [config plugin](#with-expo-font-config-plugin) on Android.
+`useFonts` reads the weight axis only. To set another axis, such as `wdth` or `slnt`, embed the font with the [config plugin](#with-expo-font-config-plugin) on Android, or set the [`fontVariationSettings`](#variable-fonts) style prop on React Native 0.88 and later.
 
 </Step>
 
