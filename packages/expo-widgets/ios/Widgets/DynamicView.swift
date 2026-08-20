@@ -158,16 +158,4 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       }
     }
   }
-
-  private func flattenChildNodes(_ children: [Any]) -> [[String: Any]] {
-    return children.flatMap { child -> [[String: Any]] in
-      if let node = child as? [String: Any] {
-        return [node]
-      }
-      if let nested = child as? [Any] {
-        return flattenChildNodes(nested)
-      }
-      return []
-    }
-  }
 }
