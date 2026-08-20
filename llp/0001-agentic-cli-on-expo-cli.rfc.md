@@ -25,8 +25,10 @@ Generic coding agents drive Expo CLI through raw terminal output. They guess whe
 
 1. The code lives in the `expo/expo` repository.
 2. The command can be an entirely new bin (`npx ai-expo`, `npx exagent`, or similar), not necessarily an `expo` subcommand.
-3. Testing must be heavy. An eval suite must gate shipping.
-4. The design should brainstorm agent-friendly features (see §Feature candidates).
+3. Testing must be heavy. An eval suite must gate shipping. Testing infrastructure is built first [confirmed — Kudo, 2026-08-20].
+4. The design should brainstorm agent-friendly features (see §Design documents).
+5. **Process boundary** [confirmed — Kudo, 2026-08-20]: implementation invokes the `expo` CLI as a subprocess as much as possible; it does not import `@expo/cli` code. Details and rationale: [[0005-agent-native-cli-surface]].
+6. Feature areas are documented in separate LLPs [confirmed — Kudo, 2026-08-20]; this document stays the umbrella (decisions, constraints, index).
 
 ## Naming
 
@@ -64,7 +66,7 @@ The intelligence-adjacent surface lives in `expo-mcp` (tools) and `expo/skills` 
 Decision [confirmed — Kudo, 2026-08-18]: Shape 1. Consequences:
 
 - New capabilities land as `expo-mcp` tools and Expo skills, not as an agent loop.
-- Agent-friendly affordances in `@expo/cli` itself (non-interactive parity F1, JSONL events, deterministic decision commands) serve every driving agent.
+- Agent-friendly affordances in `@expo/cli` itself (non-interactive parity, JSONL events, deterministic decision commands) serve every driving agent.
 - The reserved bins (`exagent` / `ai-expo`) can still ship as a thin, model-free launcher: start/connect the MCP server, install skills into the user's agents, print project context. [inferred]
 - F3 (Claude mobile app) needs no Expo-side model either: the Claude app brings the model; Expo provides tools over `@expo/mcp-tunnel`.
 - A standalone embedded-loop agent (the former Shape 2) is deferred; if built later, it wraps the user's existing Claude Code auth rather than handling keys. [inferred]
@@ -75,125 +77,26 @@ Three layers, all machine-readable:
 
 1. **Expo CLI as structured subprocess.** The CLI already emits JSONL events via `installEventLogger` / `LOG_EVENTS` (`packages/@expo/cli/bin/cli.ts`) [observed]. The agent spawns `expo start` / `expo run:*` / `expo export` and consumes events, not text.
 2. **`expo-mcp` tools, reused as-is.** `automation_tap`, `automation_take_screenshot`, `automation_find_view`, `collect_app_logs`, `expo_router_sitemap`, `open_devtools` [observed — expo-mcp repo]. Decision [confirmed — Kudo, 2026-08-18]: reuse the `expo-mcp` infrastructure (Kudo owns that codebase) instead of vendoring. The agent package in `expo/expo` depends on the published `expo-mcp` / `@expo/mcp-tunnel` packages: in-process MCP connection locally, `@expo/mcp-tunnel` WebSocket transport for the remote/F3 case. New agent-facing tools land in `expo-mcp` first, so every MCP client (Claude Code, Cursor) inherits them.
-3. **Expo-specific decision tools** built for the agent (see §Feature candidates): Expo Go compatibility check, post-install impact classifier, project-state probe.
+3. **Expo-specific decision tools** built for the agent (see §Design documents): Expo Go compatibility check, post-install impact classifier, project-state probe.
 
-### The smart start decision engine
+## Design documents
 
-Feature seed [confirmed — Kudo, 2026-08-19]: a single `start` command; agents never reason about prebuild vs build vs start. Design [inferred], built on pieces that exist today:
+Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries its own design, provenance, and testing notes:
 
-**Inputs (project-state probe):**
-- Target: Expo Go, dev client, or web? Is the target app installed on the device/simulator?
-- Native state: bare `ios/`/`android/` dirs vs CNG; `@expo/fingerprint` hash of the native surface [observed — package exists; the CLI's build-cache providers already compute `calculateFingerprintHashAsync` to reuse builds, `src/utils/build-cache-providers/index.ts`].
-- Compatibility: Expo Go check (feature 2); post-install impact classification (feature 3).
+- [[0002-testing-and-evals]] — the layer built **first**: unit/e2e strategy and the 3-tier eval suite (scripted MCP client → small local model on GitHub Actions → frontier model).
+- [[0003-smart-start-and-project-state]] — one deterministic engine for "what must run?": smart `start`, Expo Go compatibility check, post-install impact decisions.
+- [[0004-runtime-loop-tools]] — seeing and driving the running app: runtime eval (CDP), red-screen feed, network inspection, deep-link navigation, performance probe, cross-platform sweep; log-triage and verified-UI loops.
+- [[0005-agent-native-cli-surface]] — the process boundary, JSONL events as the contract, agent-mode dev server output, non-interactive parity, headless CI mode, the `exagent` launcher.
+- [[0006-knowledge-tools-and-skills]] — skills shipped from Expo modules, version-pinned docs lookup, API diff, example transplant, dependency explainer, doctor auto-fix, SDK upgrade workflow.
+- [[0007-deploy-and-headless]] — cross-platform `deploy` (EAS Hosting + launch.expo.dev), headless project creation, Cloudflare Workers compatibility, chat-driven development (the phone as the only device), EAS auth for headless agents.
+- [[0008-guardrails]] — checkpoints/undo, plan-with-cost dry runs, tool impact metadata.
 
-**Decision table (sketch):**
-
-| State | Plan |
-| --- | --- |
-| Expo Go compatible, Go installed | start Metro → open in Expo Go |
-| Dev client installed, fingerprint matches last build | start Metro → open dev client |
-| Fingerprint changed (new native module / config plugin) | prebuild (CNG) → native build → install → start |
-| Build cache hit for current fingerprint | download/install cached build → start Metro |
-| Bare project, native dirs dirty | pod install / gradle sync → build → start |
-| Web | start Metro for web |
-
-**Contract:** the command first *emits the plan* as a structured event (steps + reasons + time-class estimates), then executes, streaming JSONL progress. `--plan` stops after emitting (agents can present it for approval — guardrail C2). Exposed identically as a CLI command for humans and an MCP tool for agents. The same engine answers feature 3's post-install question ("what must rerun?") — it is one classifier consumed at two moments.
-
-**Testing:** the decision table is pure logic over probed state — unit-tested exhaustively (tier 0 material, no model, no device).
-
-## Testing and evals
-
-Shipping is gated on all three layers.
-
-1. **Unit tests (jest).** Same setup as `@expo/cli` (`pnpm test`) [observed — `packages/@expo/cli/package.json`]. Everything deterministic is unit-tested: project-state model, impact classifier, tool input/output schemas, skill discovery.
-2. **E2E CLI tests.** Same pattern as `@expo/cli` (`test:e2e`, `e2e/jest.config.js`) [observed]. Run the bin against fixture projects with the model mocked: scripted tool-call sequences verify wiring, permissions, and JSON output without model cost or nondeterminism.
-3. **Evals (model-driven).** Scenario = fixture project + task prompt + a driving agent + programmatic grader. Constraint [confirmed — Kudo, 2026-08-18]: prefer a free local model that runs on GitHub Actions.
-   - Example scenarios: "make this broken project start", "add expo-camera and get it running", "is this project Expo Go compatible?", "upgrade this SDK 52 fixture".
-   - Graders are programmatic and model-free: dev server responds, app boots (via `automation_take_screenshot`), `expo-doctor` passes, correct files changed.
-   - **Tier 0 — scripted MCP client (every PR, free, deterministic).** No model at all: replay recorded tool-call sequences against the real tools. Catches schema breaks, wiring regressions, and output-format drift. This tier does most of the CI work.
-   - **Tier 1 — small local model (every PR or nightly, free).** Run a quantized open model (e.g. a 4–8B Qwen/Llama class model via llama.cpp or Ollama) as the driving agent on a GitHub-hosted runner, CPU-only. Feasibility [inferred]: standard runners are ~4 vCPU/16 GB, so expect single-digit tokens/sec — keep scenarios short and the suite small. Deliberate side effect: **if a weak model can use the tools, strong models certainly can** — tool/schema ergonomics get evaluated at the hardest setting.
-   - **Tier 2 — frontier model (scheduled + pre-release).** A real agent (e.g. Claude Code headless) drives the full scenario set with an API key from CI secrets. N trials per scenario; gate on pass rate; transcripts stored as artifacts.
-   - Note: `expo/skills` has an empty `eval-harness/` directory [observed]; the harness built here could serve both repos. [inferred]
-
-## Feature candidates
-
-Seed list from Kudo [confirmed — Slack, 2026-08-18], expanded [inferred]:
-
-1. **Skills shipped from Expo modules.** SDK packages carry their own skill (usage, pitfalls, config-plugin notes). Discovery mirrors how `expo-mcp` is resolved from the project: scan `node_modules` for a declared skill entry (for example `expo.skills` in `package.json`, or a `skills/` folder). Installed packages then teach the agent automatically. Also exportable to other agents (Claude Code, Cursor) as a skills provider.
-2. **Expo Go compatibility check.** A tool that answers "can this project run in Expo Go?" with reasons: compare dependencies against `packages/expo/bundledNativeModules.json` [observed — file exists], detect config plugins and custom native code, check SDK version support.
-3. **Post-install impact decisions.** After `npx expo install {pkg}`, the agent classifies the change: JS-only → keep the dev server, maybe reload; new config plugin or native module under CNG → prebuild + new dev build; bare native dirs → pod install / gradle sync. The agent states the classification, then acts. This logic is deterministic and unit-tested; the agent is a consumer.
-4. **Smart `start` — one command, no prebuild/build/start decisions.** [confirmed — Kudo, 2026-08-19, promoted to a core feature] A single deterministic command gets the app running; neither the agent nor the user decides *when* to prebuild, rebuild, or just start Metro. See §Design → The smart start decision engine.
-5. **Agent-native dev server output.** In agent mode: no QR code, no spinner, no interactive keymap. Emit JSONL events (already available [observed]) plus a small status endpoint: bundle state, connected clients, last error. Same interface serves web-based agents; a QR code is meaningless to an agent, but a URL + platform launch tool is not.
-6. **Log triage loop.** On a red screen or crash: pull device/simulator logs (`collect_app_logs`), symbolicate, map to source, propose or apply the fix, verify by screenshot.
-7. **Verified UI changes.** After an edit: reload, `automation_take_screenshot`, compare against the request, iterate. Closes the loop that text-only agents cannot close.
-8. **Doctor auto-fix.** Run `expo-doctor`, then fix findings instead of printing them.
-9. **SDK upgrade workflow.** Drive an SDK upgrade end to end: bump, `expo install --fix`, run codemods, prebuild, build, boot-check — with the eval suite reusing this as a scenario.
-10. **Headless CI mode.** `exagent -p "<task>" --json` with pass/fail exit codes, for CI jobs like "verify the app still boots after this PR".
-11. **Cross-platform `deploy` command.** One command deploys every platform: web via EAS Hosting, native platforms via launch.expo.dev [confirmed — Kudo, 2026-08-19, feature seed]. Deterministic orchestration (export → upload → URL/links back), so it works equally as a human command and as an agent tool; agent mode returns structured URLs and status. Pairs with feature 4: "one command to run" for development, one `deploy` for shipping.
-
-## Extended brainstorm
-
-Wider candidate list, grouped by theme. All items [inferred] unless tagged; runtime hooks named below exist in the repo today [observed where noted]. Not all of these are v1.
-
-### A. Close the loop with the running app
-
-- **A1. Runtime eval tool.** The CLI already speaks CDP to the app (`src/start/server/metro/debugging/messageHandlers/`: `VscodeRuntimeEvaluate`, `VscodeRuntimeCallFunctionOn`, `VscodeRuntimeGetProperties` [observed]). Expose this as an agent tool: run JS inside the live app, read state, trigger navigation, assert on values. This turns "I think the fix works" into "I evaluated it in the app".
-- **A2. Structured red-screen feed.** LogBox symbolication exists in the CLI (`log-box/LogBoxSymbolication.ts` [observed]). Push every runtime error to the agent as a structured event: message, symbolicated stack, source file/line. No screenshot-reading of red screens.
-- **A3. Network inspection.** A CDP `NetworkResponse` handler exists [observed]. Give the agent the app's network log: failing API calls become debuggable without guessing.
-- **A4. Deep-link navigation tool.** Combine `expo_router_sitemap` with `uri-scheme`-style launching: "open route /profile/42 on the simulator". Enables per-route verification and screenshot sweeps.
-- **A5. Performance probe.** `expo-app-metrics` / `expo-insights` exist as packages [observed]. Tool: startup time, slow frames, re-render counts — so "why is this list janky" starts from data.
-- **A6. Cross-platform verification sweep.** Boot iOS + Android + web in parallel, screenshot the same routes, report visual/behavioral divergence. Uniquely valuable for a universal framework.
-
-### B. Deterministic knowledge tools (agents ask, Expo answers)
-
-- **B1. Version-pinned docs lookup.** A `docs_lookup` tool that answers from documentation matching the project's installed SDK version. Wrong-version API usage is a top agent failure mode.
-- **B2. API diff tool.** "What changed in expo-camera between SDK 52 and 54" — generated from changelogs and type diffs; feeds the upgrade workflow.
-- **B3. Example transplant.** Fetch the canonical, version-matched integration from `expo/examples` (Stripe, Clerk, Supabase, ...) and adapt it into the project.
-- **B4. Dependency explainer.** Why is this package in the tree; which native module versions conflict; what does `expo install --fix` intend to change and why.
-
-### C. Guardrails that make autonomy safe
-
-- **C1. Checkpoints.** Auto git snapshot before each agent action batch; `exagent undo` restores. Cheap trust.
-- **C2. Plan-with-cost dry run.** Before acting, show the plan with time estimates ("prebuild ~2 min, pod install ~4 min, dev build ~8 min") and let the user approve once for the batch.
-- **C3. Permission profiles.** `--safe` (JS-only edits, no native rebuilds, no network), default (asks for native/destructive), `--yolo` (CI). Maps to Agent SDK permission modes.
-
-### D. Ecosystem leverage
-
-- **D1. Module authoring flow.** `create-expo-module` + generate the Swift/Kotlin/TS scaffold, build the example app, and iterate against it — native module development as a guided agentic loop.
-- **D2. Skills as an output, too.** The same skill-from-module contract (Feature 1) exports to other agents' formats, making Expo packages self-documenting for the whole agent ecosystem.
-
-**Scoped out** [confirmed — Kudo, 2026-08-19]: the former theme "Ambient and long-running modes" (copilot watch mode, EAS build babysitter, PR verification bot, maintenance agent) — driving-agent behaviors, not tool-layer work, and off scope; likewise the former `exagent mcp` item (subsumed by Shape 1 — being the tool provider *is* the product) and the build-failure signature DB.
-
-### F. Headless-first: no terminal, no laptop
-
-Seeds from Kudo [confirmed — Slack, 2026-08-18]: Cloudflare Worker compatibility, headless project creation, and the north star — doing all mobile development and deployment from the Claude mobile app.
-
-- **F1. Headless project creation.** `exagent new "<one-line app description>"` scaffolds without a TTY: template choice, `create-expo`, git init, EAS init, first boot check — every step flag- or JSON-driven. Generalize into a design principle: **non-interactive parity** — every interactive prompt in Expo/EAS CLIs must have a programmatic answer path, and the eval suite runs everything with no TTY attached. Prompts that block a pipe are bugs for agents.
-- **F2. Cloudflare Workers compatibility (EAS Hosting).** Expo API routes deploy to the Cloudflare Workers runtime (workerd). Agent tools:
-  - *Compat preflight*: static lint of API routes and server code for Node APIs and packages that do not exist under workerd, before any deploy.
-  - *Local workerd run*: execute routes under the real runtime locally and feed failures back to the agent as structured errors.
-  - *Fix loop*: known-incompatibility → known-substitution mapping, so the agent rewrites Node-isms into Workers-safe code and re-verifies.
-- **F3. Chat-driven development — the phone is the only device.** North star [confirmed — Kudo]: run the whole lifecycle from the Claude mobile app. The agent runs on a cloud machine; the user's phone is both the chat client and the test device. Required pieces, most of which exist in some form:
-  - Remote dev server: tunnel Metro to the device (packager proxy URL) — no QR, the agent sends an install/open link.
-  - Agent eyes without a laptop: cloud simulators (EAS Simulator is an experimental API today) for screenshots and automation when the user's phone is busy being a chat client.
-  - Remote transport: `@expo/mcp-tunnel` already provides WebSocket MCP transport for exactly this shape [observed — expo-mcp repo].
-  - Delivery without a Mac: EAS Build → TestFlight/internal distribution → EAS Update for OTA iteration.
-  - Everything upstream of this (F1 headless creation, A-tools for verification, C guardrails, JSONL events) is a prerequisite; F3 is the composition of them, not a separate system.
-- **F4. EAS auth for headless agents.** Decision [confirmed — Kudo, 2026-08-18]: use EAS as the delivery rails for F3. Auth is the gap. What exists today [observed — `packages/@expo/cli/src/api/user/`]:
-  - password + OTP login (`actions.ts`, `otp.ts`);
-  - browser OAuth: PKCE authorization-code flow with a **localhost redirect** — `expoSsoLauncher.ts` starts a local HTTP server, opens the browser, exchanges the code at `auth/token` (client_id `expo-cli`);
-  - `EXPO_TOKEN` env for CI (`UserSettings.ts`).
-
-  Fit for a cloud agent, where the approving browser is on the user's phone and the CLI is on a remote machine:
-  - *Localhost-redirect PKCE does not work remotely* — the redirect lands on the phone, not on the agent machine. It stays the right flow for laptop-local interactive use only.
-  - *`EXPO_TOKEN` works today* and is the pragmatic bootstrap: CI mode (feature 10) and early F3 use it. Downsides: long-lived, broad scope, manual provisioning — wrong end-state for a consumer chat flow.
-  - *Recommended end state [inferred]: OAuth device authorization grant* (device-code flow). The agent posts a URL + code into the chat; the user taps it on the phone, approves on expo.dev; the agent polls `auth/token` for the session. Purpose-built for input-constrained/remote clients, and incremental to build since the `auth/token` grant exchange already exists — the www side adds a `device_code` grant and an approval page.
-  - Harden either path with *scoped, expiring agent sessions*: tokens carry scopes (read, build, update, submit), show up in the dashboard as revocable "agent sessions", and default to short expiry with refresh while the chat session is active.
+**Scoped out** [confirmed — Kudo, 2026-08-19]: ambient/long-running modes (copilot watch mode, EAS build babysitter, PR verification bot, maintenance agent) — driving-agent behaviors, not tool-layer work; a separate `exagent mcp` feature (subsumed by Shape 1); the build-failure signature DB.
 
 ## Open questions
 
 1. Final name: `exagent` vs `ai-expo` vs a scoped `@expo/*` bin.
-2. ~~Model auth and billing~~ — resolved [confirmed — Kudo, 2026-08-18]: Shape 1, no model in the product; CI-only models for evals (§Testing).
+2. ~~Model auth and billing~~ — resolved [confirmed — Kudo, 2026-08-18]: Shape 1, no model in the product; CI-only models for evals ([[0002-testing-and-evals]]).
 3. ~~Engine commitment~~ — moot under Shape 1; revisit only if a standalone bin is built later.
 4. Skill-from-module contract: `package.json` field vs directory convention; and whether `expo/skills` content gets bundled or fetched.
 5. ~~Relationship to `expo-mcp` repo~~ — resolved [confirmed — Kudo, 2026-08-18]: depend on and extend `expo-mcp`; do not vendor. See §Tool surface.

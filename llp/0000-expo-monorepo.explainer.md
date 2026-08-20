@@ -31,4 +31,13 @@ Root LLP for the `expo/expo` monorepo. It orients readers and agents, and indexe
 
 ## Index
 
-- [[0001-agentic-cli-on-expo-cli]] — RFC: an agentic CLI built on top of Expo CLI.
+Agentic tool layer (umbrella + feature areas):
+
+- [[0001-agentic-cli-on-expo-cli]] — umbrella RFC: decisions, constraints, naming, index of the feature LLPs.
+- [[0002-testing-and-evals]] — plan: unit/e2e strategy and the 3-tier eval suite; built first.
+- [[0003-smart-start-and-project-state]] — RFC: smart `start`, Expo Go check, post-install decisions.
+- [[0004-runtime-loop-tools]] — RFC: runtime eval, red-screen feed, network/deep-link/perf tools.
+- [[0005-agent-native-cli-surface]] — RFC: process boundary, JSONL events, non-interactive parity.
+- [[0006-knowledge-tools-and-skills]] — RFC: skills from modules, docs lookup, API diff, upgrade.
+- [[0007-deploy-and-headless]] — RFC: cross-platform deploy, headless creation, workerd compat, chat-driven dev, EAS auth.
+- [[0008-guardrails]] — RFC: checkpoints, plan dry runs, tool impact metadata.
