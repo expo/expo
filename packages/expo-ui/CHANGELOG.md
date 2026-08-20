@@ -23,6 +23,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix an empty `RNHostView` (e.g. one hosting a hidden RN `Modal`, which renders null until `visible` is true) taking up space in SwiftUI containers — such as a spurious empty row in a `FieldGroup`/`Form` section that shifts the other components. It now renders nothing until a child is mounted, which also lets the touch handler attach when the child mounts after the host appeared. ([#48666](https://github.com/expo/expo/issues/48666) by [@lochnessopensource](https://github.com/lochnessopensource)) ([#48735](https://github.com/expo/expo/pull/48735) by [@brentvatne](https://github.com/brentvatne))
 - [iOS] Fix `Toggle` rendering local state instead of `isOn`, which left `community/menu` checkmarks out of sync and dropped every second `onPressAction`. `Toggle` is now fully controlled: when `isOn` is set, it only moves once JS updates the prop. ([#48982](https://github.com/expo/expo/issues/48982) by [@JustJoostNL](https://github.com/JustJoostNL)) ([#49021](https://github.com/expo/expo/pull/49021) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Preserve vector drawable `fillType` values when loading images so even-odd paths render correctly.
 - [universal] Fix `Cannot use shared object that was already released` when a worklet callback prop closes over an unstable value. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
