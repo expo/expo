@@ -18,6 +18,7 @@
 - [Android] Replaced the deprecated RenderScript-based `blurRadius` blur with a software stack blur to fix a use-after-free crash under concurrent image loads (aborts under GrapheneOS hardened_malloc). ([#PR](https://github.com/expo/expo/pull/PR) by [@DimitrisTzimikas](https://github.com/DimitrisTzimikas))
 - [Web] Use `textContent` instead of `innerHTML` when injecting image styles, so the style tag is not a Trusted Types sink. ([#48649](https://github.com/expo/expo/pull/48649) by [@VoulgarisLeoni](https://github.com/VoulgarisLeoni))
 - [iOS] Fixed `generateBlurhashAsync` and `generateThumbhashAsync` never settling when the image could not be downloaded. ([#PR](https://github.com/expo/expo/pull/PR) ([#48894](https://github.com/expo/expo/pull/48894) by [@vonovak](https://github.com/vonovak))
+- [Android] Fixed the expo-observe integration measuring the downscaled bitmap instead of the source image, which prevented oversized images from being reported. ([#49084](https://github.com/expo/expo/pull/49084) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
