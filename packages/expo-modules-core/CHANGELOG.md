@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed an infinite main-thread layout loop (frozen UI, watchdog kill on backgrounding) when a SwiftUI host with `matchContents` and Yoga persistently disagree on the content size, e.g. with the Button Shapes accessibility setting enabled. Synchronous size commits are now budgeted per run-loop turn; over-budget updates are coalesced on the view and committed asynchronously on the next turn, and no-op size updates no longer dirty the layout. ([#48058](https://github.com/expo/expo/issues/48058), [#48059](https://github.com/expo/expo/pull/48059) by [@focux](https://github.com/focux))
 - [iOS] Fixed the `ExpoModulesProvider` lookup missing the generated class when the app `name` starts with a digit, which registered no native modules and left release builds on a blank screen. ([#48793](https://github.com/expo/expo/pull/48793) by [@expo-bot](https://github.com/expo-bot))
 
 ### 💡 Others
