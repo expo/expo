@@ -58,6 +58,12 @@ describe('unstable_nativeProps', () => {
     expect(props.gestureEnabled).toBe(false);
   });
 
+  it('disables screen freezing', () => {
+    const props = renderStack({ freezeOnBlur: true });
+
+    expect(props.freezeOnBlur).toBe(false);
+  });
+
   it('forwards raw stack host props from Stack', () => {
     const onFinishTransitioning = jest.fn();
     const nativeContainerStyle = { backgroundColor: 'red' } as const;
