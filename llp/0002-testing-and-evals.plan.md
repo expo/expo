@@ -19,8 +19,12 @@ Testing infrastructure is built **first**, before feature work [confirmed — Ku
 
 ## Eval tiers
 
-- **Tier 0 — scripted MCP client (every PR, free, deterministic).** No model: replay recorded tool-call sequences against the real MCP tools and the real `expo` subprocess. Catches schema breaks, wiring regressions, output-format drift. This tier does most of the CI work.
-- **Tier 1 — small local model (every PR or nightly, free).** A quantized open model (4–8B Qwen/Llama class via llama.cpp or Ollama) drives short scenarios on a GitHub-hosted runner, CPU-only. Feasibility [inferred]: standard runners are ~4 vCPU/16 GB → single-digit tokens/sec; keep the suite small and scenarios short. Deliberate side effect: if a weak model can use the tools, strong models certainly can — tool ergonomics get evaluated at the hardest setting.
+- **Tier 0 — deterministic (every PR, free).** Unit tests + subprocess e2e with JSONL-event assertions (layers 1–2 above). *Scripted MCP client replay is an optional add-on, deferred* [confirmed — Kudo, 2026-08-20: not necessary in the meantime]; revisit when the MCP tool surface grows enough that schema drift becomes a real regression class.
+- **Tier 1 — agent-in-the-loop, best-effort (primary early investment).** Requirement [confirmed — Kudo, 2026-08-20]: test real "call from an agent" behavior — unpredictable and best-effort by nature — while staying free, cheap, and as stable as possible. Approach [inferred]:
+  - *Model*: a pinned quantized open model (4–8B Qwen/Llama class) via llama.cpp/Ollama on a GitHub-hosted runner, CPU-only (~4 vCPU/16 GB → single-digit tokens/sec; keep scenarios short). Alternative to spike: the GitHub Models free inference endpoint available inside Actions — faster than CPU inference and still free [inferred — rate limits and terms to verify].
+  - *Stability levers*: temperature 0 / greedy decoding, fixed seed, pinned model + quantization + prompt → near-reproducible runs on identical inputs; short single-goal scenarios; outcome graders with tolerance (any valid tool sequence that reaches the goal passes).
+  - *Flake containment*: pass@k over k cheap trials instead of single-shot; the job starts **report-only** (non-blocking) and only becomes a gate once its pass rate is stable over a trailing window.
+  - Deliberate side effect: if a weak model can use the tools, strong models certainly can — ergonomics get evaluated at the hardest setting.
 - **Tier 2 — frontier model (scheduled + pre-release).** A real agent (e.g. Claude Code headless) drives the full scenario set with an API key from CI secrets. N trials per scenario; gate on pass rate; store transcripts as artifacts for regression triage.
 
 ## Graders
@@ -37,12 +41,13 @@ Programmatic and model-free: dev server responds; app boots (via `automation_tak
 
 ## Build order (M0)
 
-1. Fixture projects (minimal Expo Go app; dev-client app; bare app; broken variants).
+1. Fixture projects (minimal Expo Go app; dev-client app; broken variant).
 2. Scenario/grader schema + runner skeleton.
-3. Tier 0: scripted MCP client + JSONL-event assertions against the real `expo` subprocess.
+3. Tier 0: subprocess e2e with JSONL-event assertions against the real `expo` CLI.
 4. GH Actions workflow for tier 0 on PRs.
-5. Tier 1 runner (Ollama/llama.cpp setup action, small suite).
+5. Tier 1 spike: llama.cpp/Ollama (temp 0, pinned seed/model) vs GitHub Models endpoint; pick on speed × stability × cost; land as report-only job.
 6. Tier 2 runner behind CI secrets.
+7. (Optional, deferred) scripted MCP client replay when the tool surface warrants it.
 
 ## Resolved decisions
 

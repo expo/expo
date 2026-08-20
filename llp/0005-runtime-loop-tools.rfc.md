@@ -27,4 +27,4 @@ Tools that let a driving agent observe and manipulate the running app, closing t
 
 ## Testing
 
-Each tool: schema unit tests + tier-0 scripted sequences against a fixture app on a simulator ([[0002-testing-and-evals]]). The composite loops are tier-1/2 eval scenarios.
+Each tool: schema unit tests + tier-0 e2e coverage against a fixture app on a simulator ([[0002-testing-and-evals]]; scripted MCP replay is optional/deferred there). The composite loops are tier-1/2 eval scenarios.

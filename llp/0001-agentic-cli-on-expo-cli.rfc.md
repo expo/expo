@@ -83,7 +83,7 @@ Three layers, all machine-readable:
 
 Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries its own design, provenance, and testing notes. Document numbers reflect implementation priority order [confirmed — Kudo, 2026-08-20: knowledge/skills comes first after testing]:
 
-- [[0002-testing-and-evals]] — the layer built **first**: unit/e2e strategy and the 3-tier eval suite (scripted MCP client → small local model on GitHub Actions → frontier model).
+- [[0002-testing-and-evals]] — the layer built **first**: unit/e2e strategy and the 3-tier eval suite (deterministic subprocess tests → best-effort agent-in-the-loop with a free/local model → frontier model; scripted MCP replay optional/deferred).
 - [[0003-knowledge-tools-and-skills]] — **second**: skills shipped from Expo modules, version-pinned docs lookup, API diff, example transplant, dependency explainer, doctor auto-fix, SDK upgrade workflow.
 - [[0004-smart-start-and-project-state]] — one deterministic engine for "what must run?": smart `start`, Expo Go compatibility check, post-install impact decisions.
 - [[0005-runtime-loop-tools]] — seeing and driving the running app: runtime eval (CDP), red-screen feed, network inspection, deep-link navigation, performance probe, cross-platform sweep; log-triage and verified-UI loops.
