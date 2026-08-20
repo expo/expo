@@ -8,8 +8,24 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 `Collapsible` is a primitive that shows or hides its content with a tap on a labelled header. Controlled via [`isOpen`](#isopen) and [`onOpenChange`](#onopenchange) — each `Collapsible` manages independent state.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/collapsible/android-light.webp',
+    darkSrc: '/static/images/expo-ui/collapsible/android-dark.webp',
+    alt: 'An expanded About section with a chevron and description text',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/collapsible/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/collapsible/ios-dark.webp',
+    alt: 'An expanded About section with a chevron and description text',
+  }}
+/>
 
 ## Installation
 
@@ -87,3 +103,5 @@ import { Collapsible } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/collapsible" apiName="Collapsible" />
+
+</PlatformTabsGroup>

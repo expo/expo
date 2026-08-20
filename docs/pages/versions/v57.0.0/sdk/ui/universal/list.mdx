@@ -8,10 +8,26 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 `List` provides a virtualized vertical container of rows, typically populated with [`ListItem`](#listitem) children. It provides the platform-native chrome (separators, inset styling, pull-to-refresh). `ListItem` is a tappable row with `leading`/`trailing`/`supportingText` slots.
 
 > **info** `List` does not lazily render rows yet: React creates every row up front, so large lists can be slow to mount. We are working on improving this. For large lists, we recommend [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list).
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/list/android-light.webp',
+    darkSrc: '/static/images/expo-ui/list/android-dark.webp',
+    alt: 'A list with Wi-Fi, Bluetooth, and Cellular rows, each with a blue icon',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/list/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/list/ios-dark.webp',
+    alt: 'A List with Favorites and Recents sections, each row showing a colored SF Symbol icon and a label',
+  }}
+/>
 
 ## Installation
 
@@ -146,3 +162,5 @@ import { List, ListItem } from '@expo/ui';
 <APISection packageName="expo-ui/universal/list" apiName="List" />
 
 <APISection packageName="expo-ui/universal/listitem" apiName="ListItem" />
+
+</PlatformTabsGroup>

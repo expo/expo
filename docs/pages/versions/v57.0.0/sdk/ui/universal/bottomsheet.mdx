@@ -8,8 +8,24 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A modal sheet that slides up from the bottom of the screen. The sheet's visibility is controlled — toggle [`isPresented`](#ispresented) from React state and dismiss it from [`onDismiss`](#ondismiss) (called when the user swipes down or taps the overlay).
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/bottomsheet/android-light.webp',
+    darkSrc: '/static/images/expo-ui/bottomsheet/android-dark.webp',
+    alt: 'Modal bottom sheet with title, description, and action buttons',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/bottomsheet/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/bottomsheet/ios-dark.webp',
+    alt: 'A BottomSheet at medium detent showing a Sort By list with Most Recent selected',
+  }}
+/>
 
 ## Installation
 
@@ -107,3 +123,5 @@ import { BottomSheet } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/bottomsheet" apiName="BottomSheet" />
+
+</PlatformTabsGroup>

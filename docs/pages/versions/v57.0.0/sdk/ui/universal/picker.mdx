@@ -8,10 +8,26 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 `Picker` is a single-selection input. You can use `<Picker.Item label value />` children to declare options so that the parent `Picker` reads them and renders a platform-appropriate dropdown or rotor.
 
 The universal `Picker` is independent of [`@expo/ui/community/picker`](../drop-in-replacements/picker), which remains a compat shim for `@react-native-picker/picker`. Prefer this universal `Picker` for new code unless you specifically need the RN-Picker API surface.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/picker/android-light.webp',
+    darkSrc: '/static/images/expo-ui/picker/android-dark.webp',
+    alt: 'Three labeled rows with dropdown pickers set to Apple, Medium, and Blue',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/picker/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/picker/ios-dark.webp',
+    alt: 'Menu-style Picker showing fruit options with the current selection checked',
+  }}
+/>
 
 ## Installation
 
@@ -88,3 +104,5 @@ import { Picker } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/picker" apiName="Picker" />
+
+</PlatformTabsGroup>

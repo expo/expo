@@ -8,11 +8,27 @@ platforms: ['android', 'ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 import { Terminal } from '~/ui/components/Snippet';
 
 A platform-native icon. On Android, it renders a Material Symbol XML vector drawable (recommended source: [`@expo/material-symbols`](https://www.npmjs.com/package/@expo/material-symbols)). On iOS, it renders an [SF Symbol](https://developer.apple.com/sf-symbols/).
 
 > **Note:** `Icon` does not render on web.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/icon/android-light.webp',
+    darkSrc: '/static/images/expo-ui/icon/android-dark.webp',
+    alt: 'Wi-Fi, Bluetooth, mail, and person icons rendered with the Material 3 Icon component',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/icon/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/icon/ios-dark.webp',
+    alt: 'Wi-Fi, radio waves, mail, and person icons rendered with SF Symbols',
+  }}
+/>
 
 ## Installation
 
@@ -108,3 +124,5 @@ import { Icon } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/icon" apiName="Icon" />
+
+</PlatformTabsGroup>

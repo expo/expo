@@ -8,8 +8,24 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A vertical layout container that arranges its children from top to bottom. Delegates to SwiftUI's [`VStack`](../swift-ui/vstack) on iOS, Jetpack Compose's [`Column`](../jetpack-compose/column) on Android, and a flex `View` on web.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/column/android-light.webp',
+    darkSrc: '/static/images/expo-ui/column/android-dark.webp',
+    alt: 'Three colored boxes stacked vertically inside a Column',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/column/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/column/ios-dark.webp',
+    alt: 'Three colored boxes stacked vertically inside a Column',
+  }}
+/>
 
 ## Installation
 
@@ -61,3 +77,5 @@ import { Column } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/column" apiName="Column" />
+
+</PlatformTabsGroup>

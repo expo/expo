@@ -8,8 +8,24 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A scrollable container, defaulting to vertical scrolling. Use [`direction="horizontal"`](#direction) for horizontal lists.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/scrollview/android-light.webp',
+    darkSrc: '/static/images/expo-ui/scrollview/android-dark.webp',
+    alt: 'A vertical list of six items inside a scroll view',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/scrollview/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/scrollview/ios-dark.webp',
+    alt: 'A vertical list of items inside a scroll view',
+  }}
+/>
 
 ## Installation
 
@@ -64,3 +80,5 @@ import { ScrollView } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/scrollview" apiName="ScrollView" />
+
+</PlatformTabsGroup>

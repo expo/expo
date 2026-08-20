@@ -8,8 +8,24 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A layout spacer that produces empty space between siblings inside a [`Row`](row) or [`Column`](column). Use [`size`](#size) for a fixed gap, or [`flexible`](#flexible) to fill the remaining main-axis space.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/spacer/android-light.webp',
+    darkSrc: '/static/images/expo-ui/spacer/android-dark.webp',
+    alt: 'Two boxes pushed to opposite ends of a Row by a Spacer with weight modifier',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/spacer/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/spacer/ios-dark.webp',
+    alt: 'A red A square at the leading edge and a blue B square at the trailing edge of an HStack, separated by a Spacer',
+  }}
+/>
 
 ## Installation
 
@@ -62,3 +78,5 @@ import { Spacer } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/spacer" apiName="Spacer" />
+
+</PlatformTabsGroup>

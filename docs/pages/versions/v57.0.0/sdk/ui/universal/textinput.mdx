@@ -8,10 +8,26 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A text input that routes to [`TextField`](../jetpack-compose/textfield) from `@expo/ui/jetpack-compose` on Android, [`TextField`](../swift-ui/textfield) from `@expo/ui/swift-ui` on iOS, and React Native's [`TextInput`](https://reactnative.dev/docs/textinput) on web.
 
 The API mirrors React Native's [`TextInput`](https://reactnative.dev/docs/textinput), with two changes: [`value`](#value) and [`selection`](#selection) are observable state objects (created with `useNativeState`), and [`onChangeText`](#onchangetext) can be a worklet for synchronously updating the state on the UI thread.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/textinput/android-light.webp',
+    darkSrc: '/static/images/expo-ui/textinput/android-dark.webp',
+    alt: 'A text field containing hello above a Clear button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/textinput/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/textinput/ios-dark.webp',
+    alt: 'A text field containing hello above a Clear button',
+  }}
+/>
 
 ## Installation
 
@@ -133,3 +149,5 @@ import { TextInput, useNativeState } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/textinput" apiName="TextInput" />
+
+</PlatformTabsGroup>

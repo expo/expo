@@ -8,8 +8,24 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A horizontal layout container that arranges its children from start to end. Delegates to Jetpack Compose's [`Row`](../jetpack-compose/row) on Android, SwiftUI's [`HStack`](../swift-ui/hstack) on iOS, and a flex `View` on web.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/row/android-light.webp',
+    darkSrc: '/static/images/expo-ui/row/android-dark.webp',
+    alt: 'Three colored boxes laid out horizontally inside a Row',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/row/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/row/ios-dark.webp',
+    alt: 'Three colored boxes laid out horizontally inside a Row',
+  }}
+/>
 
 ## Installation
 
@@ -81,3 +97,5 @@ import { Row } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/row" apiName="Row" />
+
+</PlatformTabsGroup>

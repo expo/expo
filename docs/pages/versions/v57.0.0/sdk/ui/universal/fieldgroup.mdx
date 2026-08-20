@@ -8,8 +8,24 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A scrollable container for grouped settings-style rows, mirroring the look of an iOS Settings screen. Compose `FieldGroup.Section` (for explicit groups), `FieldGroup.SectionHeader`, and `FieldGroup.SectionFooter` slots inside.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/fieldgroup/android-light.webp',
+    darkSrc: '/static/images/expo-ui/fieldgroup/android-dark.webp',
+    alt: 'A Notifications section with Push and Email switch rows',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/fieldgroup/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/fieldgroup/ios-dark.webp',
+    alt: 'A Notifications section with Push and Email switch rows',
+  }}
+/>
 
 ## Installation
 
@@ -84,3 +100,5 @@ import { FieldGroup } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/fieldgroup" apiName="FieldGroup" />
+
+</PlatformTabsGroup>

@@ -8,8 +8,24 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 Hosts a React Native view subtree inside a universal `@expo/ui` layout. On Android and iOS, it re-exports the platform-native [`RNHostView` for Jetpack Compose](../jetpack-compose/rnhostview)/[`RNHostView` for SwiftUI](../swift-ui/rnhostview), so React Native children bridge into the surrounding Compose/SwiftUI tree. On web, there is no native host tree to bridge into, so it falls back to a React Native [`View`](https://reactnative.dev/docs/view) that wraps the children.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/rnhostview/android-light.webp',
+    darkSrc: '/static/images/expo-ui/rnhostview/android-dark.webp',
+    alt: 'A bold label above a purple React Native chip',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/rnhostview/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/rnhostview/ios-dark.webp',
+    alt: 'A bold label above a purple React Native chip',
+  }}
+/>
 
 ## Installation
 
@@ -97,3 +113,5 @@ import { RNHostView } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/rnhostview" apiName="RNHostView" />
+
+</PlatformTabsGroup>
