@@ -142,7 +142,6 @@ function ContextNavigator({
           ref={store.navigationRef}
           linking={store.linking as LinkingOptions<any>}
           onUnhandledAction={onUnhandledAction}
-          onStateChange={store.onStateChange}
           documentTitle={documentTitle}
           onReady={onNavigationReady}>
           <WrapperComponent>

@@ -1,4 +1,3 @@
-import type { UrlObject } from '../LocationProvider';
 import {
   findRouteNodeByName,
   getValidInitialRouteName,
@@ -6,6 +5,7 @@ import {
   type RouteNode,
 } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
+import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
 import type { RouterRegistry } from '../global-state/routerRegistry';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';

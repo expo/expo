@@ -15,7 +15,7 @@ import { useLinking } from '../useLinking';
 jest.mock('../createMemoryHistory');
 jest.mock('../../global-state/store', () => ({
   ...jest.requireActual<typeof import('../../global-state/store')>('../../global-state/store'),
-  syncStoreState: jest.fn(),
+  syncStoreNavigationState: jest.fn(),
 }));
 
 let mockNavigationRef: ReturnType<typeof createNavigationContainerRef>;

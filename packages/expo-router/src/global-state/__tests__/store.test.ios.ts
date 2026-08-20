@@ -1,6 +1,5 @@
 import { INTERNAL_SLOT_NAME } from '../../constants';
-import { routeInfoSubscribers } from '../routeInfoCache';
-import { store, storeRef, syncStoreState } from '../store';
+import { store, storeRef, syncStoreNavigationState } from '../store';
 import type { ReactNavigationState } from '../types';
 
 const state: ReactNavigationState = {
@@ -25,30 +24,32 @@ const state: ReactNavigationState = {
   ],
 };
 
+const secondState: ReactNavigationState = {
+  ...state,
+  key: 'second-root',
+  routes: [
+    {
+      key: 'second-slot',
+      name: INTERNAL_SLOT_NAME,
+      state: {
+        stale: false,
+        routeKeySeq: 0,
+        key: 'second-layout',
+        index: 0,
+        routeNames: ['second'],
+        routes: [{ key: 'second', name: 'second', path: '/second' }],
+      },
+    },
+  ],
+};
+
 afterEach(() => {
-  routeInfoSubscribers.clear();
   storeRef.current.state = undefined;
-  storeRef.current.routeInfo = undefined;
 });
 
-it('synchronizes state and route info without notifying subscribers', () => {
-  const subscriber = jest.fn();
-  routeInfoSubscribers.add(subscriber);
+it('derives route info from the current state', () => {
+  syncStoreNavigationState(state);
+  storeRef.current.state = secondState;
 
-  syncStoreState(state);
-
-  expect(store.state).toBe(state);
-  expect(store.getRouteInfo().pathname).toBe('/');
-  expect(subscriber).not.toHaveBeenCalled();
-});
-
-it('notifies subscribers only from the layout state-change callback', () => {
-  const subscriber = jest.fn();
-  routeInfoSubscribers.add(subscriber);
-  syncStoreState(state);
-
-  store.onStateChange(state);
-
-  expect(store.state).toBe(state);
-  expect(subscriber).toHaveBeenCalledTimes(1);
+  expect(store.getRouteInfo().pathname).toBe('/second');
 });
