@@ -108,13 +108,19 @@ describe(getNavigateAction, () => {
 
   it('throws when store.linking is falsy', () => {
     const originalLinking = store.linking;
-    Object.defineProperty(store, 'linking', { value: null, configurable: true });
+    Object.defineProperty(store, 'linking', {
+      value: null,
+      configurable: true,
+    });
 
     expect(() => getNavigateAction('/home', {})).toThrow(
       'Attempted to link to route when no routes are present'
     );
 
-    Object.defineProperty(store, 'linking', { value: originalLinking, configurable: true });
+    Object.defineProperty(store, 'linking', {
+      value: originalLinking,
+      configurable: true,
+    });
   });
 
   it('returns undefined when applyRedirects returns undefined', () => {
@@ -139,7 +145,9 @@ describe(getNavigateAction, () => {
   });
 
   it('logs error and returns undefined when getStateFromPath returns empty routes', () => {
-    (store.linking!.getStateFromPath as jest.Mock).mockReturnValueOnce({ routes: [] });
+    (store.linking!.getStateFromPath as jest.Mock).mockReturnValueOnce({
+      routes: [],
+    });
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     const result = getNavigateAction('/bad-path', {});
@@ -153,6 +161,8 @@ describe(getNavigateAction, () => {
 
   it('returns action with type NAVIGATE by default', () => {
     const result = getNavigateAction('/home', {});
+
+    expect(store.linking!.getStateFromPath).toHaveBeenCalledWith('/home', {}, []);
 
     expect(result).toEqual(
       expect.objectContaining({

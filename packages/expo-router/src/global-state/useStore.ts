@@ -58,7 +58,7 @@ export function useStore(
 
   if (routeNode) {
     // We have routes, so get the linking config and the root component
-    linking = getLinkingConfig(routeNode, context, () => store.getRouteInfo(), {
+    linking = getLinkingConfig(routeNode, context, {
       metaOnly: linkingConfigOptions.metaOnly,
       serverUrl,
       redirects,
