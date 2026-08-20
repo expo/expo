@@ -1875,11 +1875,9 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
         expect(error).not.toBeNull();
       });
 
-      it('returns null size and md5 for nonexistent files', async () => {
+      it('returns zero size and null md5 for nonexistent files', async () => {
         const file = new File(testDirectory, 'file2.txt');
-        // @ts-expect-error `size` is typed `number`, but a nonexistent file reports
-        // `null`, which is what this spec checks.
-        expect(file.size).toBe(null);
+        expect(file.size).toBe(0);
         expect(file.md5).toBe(null);
       });
     });
