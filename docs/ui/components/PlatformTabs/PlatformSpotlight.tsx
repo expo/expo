@@ -20,7 +20,7 @@ export function PlatformSpotlight({ android, ios }: Props) {
 
   return (
     <div className="mt-6 flex flex-col items-center">
-      <PlatformTabs available={available} active={active} select={select} />
+      <PlatformTabs available={available} active={active} select={select} className="-mb-3" />
       <ContentSpotlight
         variant="component"
         aspect="landscape"
