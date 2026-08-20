@@ -135,21 +135,26 @@ public final class SecureStoreModule: Module {
   private func update(value: String, with key: String, options: SecureStoreOptions) throws -> Bool {
     var query = query(with: key, options: options, requireAuthentication: options.requireAuthentication)
 
-    var updateDictionary: [String: Any] = [kSecValueData as String: Data(value.utf8)]
+    let valueData = Data(value.utf8)
 
     // An existing item keeps the accessibility it was created with unless the update
-    // names the attribute, so `keychainAccessible` was silently ignored on every write
-    // to a key that already existed. Mirrors `set(value:with:options:)`, where an
-    // authenticated item carries its accessibility in `kSecAttrAccessControl` instead.
-    if !options.requireAuthentication {
-      updateDictionary[kSecAttrAccessible as String] = attributeWith(options: options)
+    // names the attribute, so apply `keychainAccessible` when it was explicitly provided.
+    // Only the unauthenticated path applies it here, mirroring `set(value:with:options:)`,
+    // where an authenticated item carries its accessibility inside `kSecAttrAccessControl`.
+    let updateDictionary = if !options.requireAuthentication, options.keychainAccessible != nil {
+      [
+        kSecValueData: valueData,
+        kSecAttrAccessible: attributeWith(options: options)
+      ] as CFDictionary
+    } else {
+      [kSecValueData: valueData] as CFDictionary
     }
 
     if let authPrompt = options.authenticationPrompt {
       query[kSecUseOperationPrompt as String] = authPrompt
     }
 
-    let status = SecItemUpdate(query as CFDictionary, updateDictionary as CFDictionary)
+    let status = SecItemUpdate(query as CFDictionary, updateDictionary)
 
     if status == errSecSuccess {
       return true
@@ -207,7 +212,7 @@ public final class SecureStoreModule: Module {
   }
 
   private func attributeWith(options: SecureStoreOptions) -> CFString {
-    switch options.keychainAccessible {
+    switch options.keychainAccessible ?? .whenUnlocked {
     case .afterFirstUnlock:
       return kSecAttrAccessibleAfterFirstUnlock
     case .afterFirstUnlockThisDeviceOnly:
