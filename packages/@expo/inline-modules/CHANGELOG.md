@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve the main Xcode target from the project on disk instead of deriving it from the app name, so projects that were renamed or prebuilt with `--no-clean` match correctly.
+
 ### 💡 Others
 
 ## 0.1.4 — 2026-07-29

@@ -52,7 +52,12 @@ export const withInlineModules = (config: ExpoConfig, props: any) => {
         propValueGetter: (conf) => {
           const xcodeProjectTargets = conf.experiments?.inlineModules?.xcodeProjectTargets;
           if (!xcodeProjectTargets) {
-            return JSON.stringify({ mainTarget: getMainTargetName(config), targets: [] });
+            const modProjectName = (conf as ExpoConfig & { modRequest?: { projectName?: string } })
+              .modRequest?.projectName;
+            return JSON.stringify({
+              mainTarget: modProjectName ?? getMainTargetName(config),
+              targets: [],
+            });
           }
           return JSON.stringify({ targets: xcodeProjectTargets });
         },

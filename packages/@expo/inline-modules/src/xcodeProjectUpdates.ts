@@ -32,12 +32,16 @@ function escapeXMLCharacters(original: string): string {
   return noApos.replace("'", "\\'");
 }
 
-// Note that this main target name is based on how `@expo/cli/src/prebuild/renameTemplateAppNameAsync.ts` preprocesses the ios project template.
-// It is necessary to match the target name in the path to ExpoModulesProvider.swift for the main target as is used when generating it.
-function getMainTargetName(config: InlineModulesXcodeParams): string {
-  const name = config.name;
-  const safeName = escapeXMLCharacters(name);
-  return IOSConfig.XcodeUtils.sanitizedName(safeName);
+// The on-disk project name is the source of truth: it can differ from the name
+// derived from the app config (older sanitizer output, or a manual rename).
+function getMainTargetName(projectRoot: string, config: InlineModulesXcodeParams): string {
+  try {
+    return IOSConfig.XcodeUtils.getProjectName(projectRoot);
+  } catch {
+    // Note that this main target name is based on how `@expo/cli/src/prebuild/renameTemplateAppNameAsync.ts` preprocesses the ios project template.
+    // It is necessary to match the target name in the path to ExpoModulesProvider.swift for the main target as is used when generating it.
+    return IOSConfig.XcodeUtils.sanitizedName(escapeXMLCharacters(config.name));
+  }
 }
 
 function getNativeTargetSynchronizedGroupsMap(pbxProject: XcodeProject) {
@@ -158,7 +162,7 @@ export async function updateXcodeProject(
       }
       if (!xcodeProjectTargets) {
         // If the xcodeProjectTargets are not provided, default to the main target
-        return targetName === getMainTargetName(inlineModulesXcodeParams);
+        return targetName === getMainTargetName(projectRoot, inlineModulesXcodeParams);
       }
       return xcodeProjectTargets.has(targetName);
     });
