@@ -80,6 +80,8 @@ class ContentFitDownsampleStrategy(
     if (!wasTriggered) {
       target.sourceWidth = sourceWidth
       target.sourceHeight = sourceHeight
+      target.decodeSourceWidth = sourceWidth
+      target.decodeSourceHeight = sourceHeight
       wasTriggered = true
     }
 
