@@ -25,23 +25,19 @@ it('can push a hash url', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 4,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -230,17 +226,14 @@ it('navigating to the same route with a hash will only rerender the screen', () 
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index'],
           routes: [
             {

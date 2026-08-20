@@ -226,15 +226,26 @@ export type FileInfo = {
   creationTime?: number;
   /**
    * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+   *
+   * @deprecated Use `await file.digest('MD5')` instead.
    */
   md5?: string;
 };
 
+/**
+ * Algorithm used to calculate a file digest.
+ */
+export type FileDigestAlgorithm = 'MD5' | 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512';
+
+/**
+ * @deprecated Use `await file.digest('MD5')` to calculate an MD5 digest.
+ */
 export type InfoOptions = {
   /**
    * Whether to return the MD5 hash of the file.
    *
    * @default false
+   * @deprecated Use `await file.digest('MD5')` instead.
    */
   md5?: boolean;
 };

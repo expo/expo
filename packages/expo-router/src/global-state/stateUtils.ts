@@ -27,7 +27,10 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
     payload = payload.params;
     params = payload;
 
-    actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
+    actionStateRoute =
+      actionStateRoute.state?.routes[
+        actionStateRoute.state.index ?? actionStateRoute.state.routes.length - 1
+      ];
   }
   return rootPayload;
 }
@@ -55,7 +58,9 @@ export function findDivergentState(
   const navigationRoutes = [];
   while (actionState && navigationState) {
     // TODO(@kitten): Review invalid indexed access into undefined
-    actionStateRoute = actionState.routes[actionState.routes.length - 1]!;
+    actionStateRoute = actionState.routes[actionState.index ?? actionState.routes.length - 1]!;
+    // TODO(ENG-22021): Resolve navigator types independently of state for the tab checks in this loop.
+    // https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
     const stateRoute = (() => {
       if (navigationState.type === 'tab' && lookThroughAllTabs) {
         return (

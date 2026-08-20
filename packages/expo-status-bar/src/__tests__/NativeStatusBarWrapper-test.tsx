@@ -1,5 +1,5 @@
-import { mockAppearance, renderedPropValue } from './Helpers';
 import { StatusBar as ExpoStatusBar } from '../NativeStatusBarWrapper';
+import { mockAppearance, renderedPropValue } from './Helpers';
 
 describe('StatusBar', () => {
   describe('style', () => {

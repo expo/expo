@@ -6,9 +6,21 @@
 
 ### 🎉 New features
 
+- Add an Android-only `requireConfirmation` option for authenticated reads and writes.
+
 ### 🐛 Bug fixes
 
+- [iOS] Reject `deleteItemAsync` when the keychain refuses the delete, instead of resolving as if the item was removed.
+
 ### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.4 — 2026-05-21
 

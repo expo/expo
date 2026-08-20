@@ -151,11 +151,11 @@ You can use the `Icon` component to customize the icon displayed in the tab bar 
 
 Alternatively, you can pass `{default: ..., selected: ...}` to the `sf`, `xcasset`, `drawable`, `md`, or `src` prop to specify different icons for the default and selected states.
 
-> **info** On Android, distinct selected icons for `src`, `drawable` and `md` require SDK 56 or later (powered by `react-native-screens` 4.25+). On earlier SDKs the selected variant is ignored and the default icon is used in both states.
+> **info** On Android, distinct selected icons require SDK 56 or later (powered by `react-native-screens` 4.25+). On SDK 55, `src` accepts the object form but the selected variant is ignored and the default icon is used in both states. The `drawable` and `md` props accept only a string on SDK 55, so pass a single icon name that is used for both states.
 
 <Tabs>
 
-<Tab label="SDK 55 and later">
+<Tab label="SDK 56 and later">
 
 ```tsx src/app/_layout.tsx
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
@@ -168,6 +168,27 @@ export default function TabLayout() {
           sf={{ default: 'house', selected: 'house.fill' }}
           md={{ default: 'home', selected: 'home_filled' }}
         />
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Icon src={require('../../../assets/setting_icon.png')} />
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55">
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <NativeTabs.Trigger.Icon src={require('../../../assets/setting_icon.png')} />
@@ -1050,6 +1071,8 @@ const styles = StyleSheet.create({
 
 ### Keyboard avoidance on Android
 
+> **info** This feature is available in SDK 56 and later.
+
 By default on Android, the keyboard overlays the native tab bar. To have the tab bar lift above the keyboard instead, pass the `tabBarRespectsIMEInsets` prop on `NativeTabs`:
 
 ```tsx app/_layout.tsx
@@ -1260,11 +1283,12 @@ Extract the tab UI into a component with platform-specific extensions. A single 
 />
 
 ```tsx app/_layout.tsx
+import { ThemeProvider, DefaultTheme } from 'expo-router';
 import AppTabs from '@/components/app-tabs';
 
 export default function Layout() {
   return (
-    <ThemeProvider>
+    <ThemeProvider value={DefaultTheme}>
       <AppTabs />
     </ThemeProvider>
   );
@@ -1403,6 +1427,8 @@ export default function HomeScreen() {
 
 This happens because the default theme uses a white background color. To fix this, wrap your app in Expo Router's `ThemeProvider` with the appropriate theme.
 
+> **info** `ThemeProvider`, `DarkTheme`, and `DefaultTheme` are exported from `expo-router` in SDK 56 and later. For SDK 55, import them from `@react-navigation/native` instead.
+
 **For apps supporting both light and dark modes:**
 
 ```tsx src/app/_layout.tsx
@@ -1453,6 +1479,16 @@ If you need a specific background color that doesn't match the default themes, y
 
 </Collapsible>
 
+<Collapsible summary="The tab bar background props have no effect on iOS 26">
+
+On iOS 26 and later, the system draws the tab bar with Liquid Glass and derives its background from the content behind it. The `backgroundColor`, `blurEffect`, `shadowColor`, and `disableTransparentOnScrollEdge` props affect the iOS tab bar only on iOS 18 and earlier.
+
+This also means the tab bar does not follow a color scheme that exists only in JavaScript. Setting the color scheme with [`Appearance.setColorScheme`](https://reactnative.dev/docs/appearance#setcolorscheme) changes the interface style that other native views resolve against, but it does not change the tab bar background either.
+
+To make the tab bar match a dark UI on iOS 26, make the content behind the tab bar dark, as described in [White background flashes when switching tabs on iOS 26](#white-background-flashes-when-switching-tabs-on).
+
+</Collapsible>
+
 <Collapsible summary="Scroll to top does not work when tapping a tab">
 
 Tapping an active tab should scroll the content to the top, but this may not work if the `ScrollView` is not the first child of the screen component.
@@ -1478,6 +1514,8 @@ export default function HomeScreen() {
 Header buttons with liquid glass styling may flicker or flash their background when switching tabs in dark mode on iOS 26. This happens because the default theme doesn't match the system dark mode, causing visual artifacts in the liquid glass rendering.
 
 The fix is the same as for the white background flash issue: wrap your layout with `<ThemeProvider>` from `expo-router` using the appropriate theme.
+
+> **info** `ThemeProvider`, `DarkTheme`, and `DefaultTheme` are exported from `expo-router` in SDK 56 and later. For SDK 55, import them from `@react-navigation/native` instead.
 
 **For apps supporting both light and dark modes:**
 

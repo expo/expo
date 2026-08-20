@@ -5,6 +5,7 @@ description: Track per-screen render and interactive timings by enabling the Rea
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
@@ -131,7 +132,7 @@ export default function Home() {
 }
 ```
 
-> **info** If the integration is disabled or `@react-navigation/native` is not installed, `useObserve()` falls back to the global `AppMetrics.markInteractive`. You can leave the hook in place regardless of integration state.
+> **info** If the integration is disabled or `@react-navigation/native` is not installed, `useObserve()` falls back to the global `Observe.markInteractive`. You can leave the hook in place regardless of integration state.
 
 </Step>
 
@@ -196,6 +197,24 @@ Emitted at most once per screen instance within a session.
 | `urlHidden`   | `boolean` | Present as `true` when a route parameter was filtered.   |
 | `routeParams` | `object`  | Focused route params.                                    |
 | `...`         | `any`     | Any custom params passed via `markInteractive({ ... })`. |
+
+## View navigation metrics
+
+In the dashboard, open your project, navigate to [**Observe**](https://expo.dev/accounts/[account]/projects/[project]/observe), and select the **Navigation** tab. It shows per-screen navigation timings with cold and warm time to first render and time to interactive.
+
+In the CLI, you can run the following commands:
+
+<Terminal
+  cmd={[
+    '# Navigation metrics grouped by route name',
+    '$ eas observe:routes',
+    '',
+    '# Filter to specific metrics or routes',
+    '$ eas observe:routes --metric cold_ttr --route-name /Tabs/Sessions',
+  ]}
+/>
+
+Run `eas observe:routes --help` for the full list of flags (time range, platform, app version, and more). See [Querying with EAS CLI](/eas/observe/eas-cli/) for the other `eas observe` commands.
 
 ## Notes and troubleshooting
 

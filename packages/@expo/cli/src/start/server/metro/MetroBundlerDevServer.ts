@@ -91,6 +91,7 @@ import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   fromRuntimeManifestRoute,
   fromServerManifestRoute,
+  SSG_LOADER_HEADER_ALLOWLIST,
   type ResolvedLoaderRoute,
 } from './resolveLoader';
 import {
@@ -99,7 +100,7 @@ import {
   isApiRouteConvention,
   warnInvalidWebOutput,
 } from './router';
-import { serializeHtmlWithAssets } from './serializeHtml';
+import { serialAssetsToStaticContentAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 export type ExpoRouterRuntimeManifest = Awaited<
@@ -736,40 +737,30 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return { content };
     }
 
-    const bundleStaticHtml = async (): Promise<string> => {
-      const { getStaticContent } = await this.ssrLoadModule<
-        typeof import('@expo/router-server/build/static/renderStaticContent')
-      >(require.resolve('@expo/router-server/node/render.js'), {
-        // This must always use the legacy rendering resolution (no `react-server`) because it leverages
-        // the previous React SSG utilities which aren't available in React 19.
-        environment: 'node',
-        minify: false,
-        isExporting,
-        platform,
-      });
-
-      const { loader } = await this.getDevServerRenderOptionsAsync({
-        location,
-        route,
-        request,
-      });
-
-      return await getStaticContent(location, loader ? { loader } : undefined);
-    };
-
-    const [{ artifacts: resources }, staticHtml] = await Promise.all([
-      this.getStaticResourcesAsync({
-        clientBoundaries: [],
-      }),
-      bundleStaticHtml(),
+    const [{ artifacts: resources }, { getStaticContent }, { loader }] = await Promise.all([
+      this.getStaticResourcesAsync({ clientBoundaries: [] }),
+      this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
+        require.resolve('@expo/router-server/node/render.js'),
+        {
+          // This must always use the legacy rendering resolution (no `react-server`) because it leverages
+          // the previous React SSG utilities which aren't available in React 19.
+          environment: 'node',
+          minify: false,
+          isExporting,
+          platform,
+        }
+      ),
+      this.getDevServerRenderOptionsAsync({ location, route, request }),
     ]);
-    const content = serializeHtmlWithAssets({
-      isExporting,
-      resources,
-      template: staticHtml,
-      devBundleUrl: devBundleUrlPathname,
-      baseUrl,
+
+    const content = await getStaticContent(location, {
+      ...(loader ? { loader } : {}),
       hydrate: env.EXPO_WEB_DEV_HYDRATE,
+      assets: serialAssetsToStaticContentAssets(resources, {
+        isExporting: false,
+        baseUrl,
+        bundleUrl: devBundleUrlPathname,
+      }),
     });
     return {
       content,
@@ -1230,16 +1221,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return;
     }
 
+    const mode = this.instanceMetroOptions.mode ?? 'development';
+
     observeFileChanges(
       {
         metro: this.metro,
         server: this.instance.server,
       },
-      getEnvFiles(this.projectRoot),
+      getEnvFiles(this.projectRoot, mode),
       () => {
         debugEvent('env_reload', {});
         // Force reload the environment variables.
-        reloadEnvFiles(this.projectRoot);
+        reloadEnvFiles(this.projectRoot, mode);
       }
     );
   }
@@ -1303,7 +1296,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const parsedOptions = {
       host: options.location.hostType === 'localhost' ? 'localhost' : undefined,
-      port: options.port,
+      port: this.getPort(),
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
     };
@@ -1329,7 +1322,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     // Required for symbolication:
-    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${address?.port ?? options.port}`;
+    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${this.getPort()}`;
     process.env.EXPO_DEV_SERVER_ORIGIN = serverBaseUrl;
 
     if (!options.isExporting) {
@@ -1357,12 +1350,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
 
       const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
-        getLocation: ({ runtime }) => {
+        getLocation: ({ runtime, forwarded }) => {
           if (runtime === 'custom') {
-            return this.urlCreator?.constructDevClientUrl();
+            return this.urlCreator?.constructDevClientUrl({ forwarded });
           } else {
             return this.urlCreator?.constructUrl({
-              scheme: 'exp',
+              // Expo Go maps the `exps` scheme to HTTPS, which `exp` can't express.
+              scheme: forwarded?.protocol === 'https' ? 'exps' : 'exp',
+              forwarded,
             });
           }
         },
@@ -1603,7 +1598,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       server,
       location: {
         // The port is the main thing we want to send back.
-        port: address?.port ?? options.port,
+        port: this.getPort(),
         // localhost isn't always correct.
         host: 'localhost',
         url: serverBaseUrl,
@@ -1906,19 +1901,27 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
+        let headers: Headers | undefined;
         if (maybeResponse instanceof Response) {
           // In SSR, preserve `Response` from the loader
           if (exp.web?.output === 'server' && unstable_useServerRendering) {
             return maybeResponse;
           }
 
-          // In SSG, extract body
+          // In SSG, extract the body and the allowlisted headers
           data = await maybeResponse.json();
+          headers = new Headers();
+          for (const name of SSG_LOADER_HEADER_ALLOWLIST) {
+            const value = maybeResponse.headers.get(name);
+            if (value) {
+              headers.set(name, value);
+            }
+          }
         } else {
           data = maybeResponse;
         }
 
-        return Response.json(data ?? null);
+        return Response.json(data ?? null, { headers });
       }
 
       return undefined;

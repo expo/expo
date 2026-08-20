@@ -6,20 +6,83 @@
 
 ### 🎉 New features
 
+- Add a JavaScript API to show or hide the floating Tools button at runtime. ([#47746](https://github.com/expo/expo/pull/47746) by [@KevinvdBurg](https://github.com/KevinvdBurg))
 - Add Components section to swap the active AppRegistry component ([#46613](https://github.com/expo/expo/pull/46613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Add a `tryToLaunchLastBundle` preference backing the dev launcher auto-launch toggle. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix the dev menu not closing when the keyboard shortcut is pressed while it's already open. ([#47640](https://github.com/expo/expo/pull/47640) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Restore the "Open React Native dev menu" entry in the dev menu's Tools section (regressed in [#38759](https://github.com/expo/expo/pull/38759)). ([#47047](https://github.com/expo/expo/pull/47047) by [@lindboe](https://github.com/lindboe))
-- [Android] Re-enable the Fast Refresh toggle in the dev menu's Tools section. ([#47136](https://github.com/expo/expo/pull/47136) by [@lukmccall](https://github.com/lukmccall))
-- [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner. ([#46762](https://github.com/expo/expo/pull/46762) by [@alanjhughes](https://github.com/alanjhughes))
 - [macOS] Fix build failure from `RCTDevMenu.devMenuEnabled` / `keyboardShortcutsEnabled` access, which react-native-macos does not have. ([#47693](https://github.com/expo/expo/pull/47693) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Fixed the dev menu sizing itself from the main screen instead of the app's own window, and the FAB choosing its slide-in edge from the screen rather than its window. ([#48171](https://github.com/expo/expo/pull/48171) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed the dev menu and FAB resolving their scene by filtering all scene types before casting, which could miss a real window scene. ([#48317](https://github.com/expo/expo/pull/48317) by [@alanjhughes](https://github.com/alanjhughes))
+- Open the JS inspector on the origin the bundle was loaded from, keeping its scheme and port ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
 - [iOS] Replace dev-menu swizzling and reflection into React Native internals with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Remove the manual packager socket reconnect now that the bundle configuration resolves the dev server host. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
+
+## 57.0.10 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.9 - 2026-07-23
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.8 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.7 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-25
+
+### 🎉 New features
+
+- Add a `tryToLaunchLastBundle` preference backing the dev launcher auto-launch toggle. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner. ([#46762](https://github.com/expo/expo/pull/46762) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- [Android] Restore the "Open React Native dev menu" entry in the dev menu's Tools section (regressed in [#38759](https://github.com/expo/expo/pull/38759)). ([#47047](https://github.com/expo/expo/pull/47047) by [@lindboe](https://github.com/lindboe)) ([#38759](https://github.com/expo/expo/pull/38759), [#47047](https://github.com/expo/expo/pull/47047) by [@lindboe](https://github.com/lindboe))
+- [Android] Re-enable the Fast Refresh toggle in the dev menu's Tools section. ([#47136](https://github.com/expo/expo/pull/47136) by [@lukmccall](https://github.com/lukmccall))
+
+## 56.0.17 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.15 — 2026-05-26
 

@@ -20,8 +20,7 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.interfaces.fabric.ReactSurface
-import com.facebook.react.runtime.ReactHostImpl
-import com.facebook.react.runtime.ReactSurfaceImpl
+import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
@@ -37,7 +36,6 @@ import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.LauncherActivity
 import host.exp.exponent.RNObject
-import host.exp.exponent.ReactNativeStaticHelpers
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
@@ -49,10 +47,10 @@ import host.exp.exponent.experience.HomeActivity
 import host.exp.exponent.experience.KernelData
 import host.exp.exponent.experience.KernelReactNativeHost
 import host.exp.exponent.factories.ReactHostFactory
-import host.exp.exponent.headless.InternalHeadlessAppLoader
 import host.exp.exponent.kernel.ExponentErrorMessage.Companion.developerErrorMessage
 import host.exp.exponent.kernel.ExponentUrls.toHttp
 import host.exp.exponent.kernel.KernelConstants.ExperienceOptions
+import host.exp.exponent.network.ExpoGoOkHttpClientFactory
 import host.exp.exponent.network.ExponentNetwork
 import host.exp.exponent.notifications.ExponentNotification
 import host.exp.exponent.notifications.ExponentNotificationManager
@@ -138,7 +136,7 @@ class Kernel : KernelInterface() {
   private var hasError = false
 
   private fun updateKernelRNOkHttp() {
-    ReactNativeStaticHelpers.setExponentNetwork(exponentNetwork)
+    OkHttpClientProvider.setOkHttpClientFactory(ExpoGoOkHttpClientFactory(exponentNetwork))
   }
 
   private val kernelInitialURL: String?
@@ -242,11 +240,7 @@ class Kernel : KernelInterface() {
           if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
             manifest.isDevelopmentMode()
           ) {
-            Exponent.enableDeveloperSupport(
-              manifest.getDebuggerHost(),
-              manifest.getMainModuleName(),
-              nativeHost
-            )
+            Exponent.enableDeveloperSupport(manifest.getMainModuleName(), nativeHost)
           }
 
           reactHost = ReactHostFactory.getDefaultReactHost(
@@ -254,7 +248,8 @@ class Kernel : KernelInterface() {
             packageList = nativeHost.packages,
             jsMainModulePath = nativeHost.jsMainModuleName,
             jsBundleFilePath = nativeHost.jsBundleFile,
-            useDevSupport = nativeHost.useDeveloperSupport
+            useDevSupport = nativeHost.useDeveloperSupport,
+            devServerBundleUrl = toHttp(manifest.getBundleURL())
           )
 
           reactNativeHost = nativeHost
@@ -329,12 +324,14 @@ class Kernel : KernelInterface() {
 
   val surface: ReactSurface
     get() {
-      val surface = ReactSurfaceImpl.createWithView(
+      val host = checkNotNull(reactHost) {
+        "Kernel React host must be created before requesting its surface"
+      }
+      val surface = host.createSurface(
         context,
         KernelConstants.HOME_MODULE_NAME,
         kernelLaunchOptions
       )
-      surface.attach(reactHost as ReactHostImpl)
       surface.start()
       return surface
     }
@@ -696,7 +693,7 @@ class Kernel : KernelInterface() {
     manifest: Manifest,
     existingTask: AppTask?
   ) {
-    val bundleUrl = toHttp(manifest.getBundleURL())
+    val bundleUrl = ExponentUrls.bundleUrlFromManifest(manifest, manifestUrl)
     val task = getExperienceActivityTask(manifestUrl)
     task.bundleUrl = bundleUrl
     if (existingTask == null) {
@@ -945,50 +942,8 @@ class Kernel : KernelInterface() {
       }
     }
 
-    // Called from DevServerHelper via ReactNativeStaticHelpers
-    @JvmStatic
-    @DoNotStrip
-    fun getManifestUrlForActivityId(activityId: Int): String? {
+    private fun getManifestUrlForActivityId(activityId: Int): String? {
       return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.manifestUrl
-    }
-
-    // Called from DevServerHelper via ReactNativeStaticHelpers
-    @JvmStatic
-    @DoNotStrip
-    fun getBundleUrlForActivityId(
-      activityId: Int,
-      host: String,
-      mainModuleId: String?,
-      bundleTypeId: String?,
-      devMode: Boolean,
-      jsMinify: Boolean
-    ): String? {
-      // NOTE: This current implementation doesn't look at the bundleTypeId (see RN's private
-      // BundleType enum for the possible values) but may need to
-      if (activityId == -1) {
-        // This is the kernel
-        return instance.bundleUrl
-      }
-      if (InternalHeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
-        return InternalHeadlessAppLoader.getBundleUrlForActivityId(activityId)
-      }
-      return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.bundleUrl
-    }
-
-    // <= SDK 25
-    @DoNotStrip
-    fun getBundleUrlForActivityId(
-      activityId: Int,
-      host: String,
-      jsModulePath: String?,
-      devMode: Boolean,
-      jsMinify: Boolean
-    ): String? {
-      if (activityId == -1) {
-        // This is the kernel
-        return instance.bundleUrl
-      }
-      return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.bundleUrl
     }
 
     /*
@@ -996,26 +951,7 @@ class Kernel : KernelInterface() {
      * Error handling
      *
      */
-    // Called using reflection from ReactAndroid.
-    @DoNotStrip
     fun handleReactNativeError(
-      errorMessage: String?,
-      detailsUnversioned: Any?,
-      exceptionId: Int?,
-      isFatal: Boolean
-    ) {
-      handleReactNativeError(
-        developerErrorMessage(errorMessage),
-        detailsUnversioned,
-        exceptionId,
-        isFatal
-      )
-    }
-
-    // Called using reflection from ReactAndroid.
-    @DoNotStrip
-    fun handleReactNativeError(
-      throwable: Throwable?,
       errorMessage: String?,
       detailsUnversioned: Any?,
       exceptionId: Int?,

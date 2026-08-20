@@ -8,17 +8,12 @@
 - [Android] Removed the deprecated `AppContext.errorManager` property. Use `AppContext.jsLogger` instead. ([#46964](https://github.com/expo/expo/pull/46964) by [@wenszel](https://github.com/wenszel))
 - [Android] Replaced the old `ArrayBuffer` interface with a concrete class, so `NativeArrayBuffer` and `JavaScriptArrayBuffer` no longer share a common `ArrayBuffer` supertype. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
 - [Android] Introduce `ConverterContext`. ([#47850](https://github.com/expo/expo/pull/47850) by [@jakex7](https://github.com/jakex7))
+- [iOS] Removed `EXUtilities.screenScale`, which cached the main screen's scale for the process lifetime. Read the scale from the view's trait collection instead. ([#48528](https://github.com/expo/expo/pull/48528) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🎉 New features
 
-- [iOS] `ExpoSwiftUI.IgnoreSafeArea` that ignores the device and container safe area regions. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Added the `@Event` macro that turns a function-typed `var` on a module or shared object into a typed JavaScript event. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] `@ExpoModule` now synthesizes the module's JavaScript name from the class name or its `@ExpoModule("CustomName")` argument, so a `Name(…)` definition entry is no longer required. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Added `Module.emit` that sends an event directly to the module's own JavaScript object, mirroring `SharedObject.emit`. Both now share an `EventEmitter` protocol. ([#46555](https://github.com/expo/expo/pull/46555) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Added a `loadImageForManipulationFromURL` overload to `ImageLoaderInterface` that decodes the image within the given `maxWidth`/`maxHeight` bounds. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))
-- [iOS] Added `SharedObject.native(from:)` that recovers the native shared object paired with a JavaScript object, with a generic overload that returns the concrete subclass directly. ([#47054](https://github.com/expo/expo/pull/47054) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] `@SharedObject` now binds `@JS` methods, properties and the `@JS init` directly onto the class prototype, so they no longer need `Function(…)` / `Property(…)` / `Constructor { … }` definition entries. ([#47107](https://github.com/expo/expo/pull/47107) by [@tsapeta](https://github.com/tsapeta))
 - Added `ArrayBuffer` as the preferred safe native module argument and return type, and deprecated `NativeArrayBuffer` in favor of it. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
 - [iOS] Added module lifecycle hooks that replace the `OnCreate`, `OnDestroy`, `OnStartObserving` and `OnStopObserving` DSL components: `didCreate`, `willDestroy`, `didStartListening` and `didStopListening`. ([#47542](https://github.com/expo/expo/pull/47542) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Support `PlatformColor` as Color. ([#47632](https://github.com/expo/expo/pull/47632) by [@jakex7](https://github.com/jakex7))
@@ -26,53 +21,150 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix SwiftUI-hosted React views corrupting Fabric rendering after unmount: `UIViewHost` now hands SwiftUI a disposable isolation container instead of the React-managed view, so leaked `autoresizingMask`/frame/visibility mutations (including deferred ones from `Menu`/`ContextMenu` teardown) can no longer zero-size or hide unrelated components. ([#47707](https://github.com/expo/expo/pull/47707) by [@cvburgess](https://github.com/cvburgess))
-- [Android] Fix Compose-hosted React Native content (e.g. the `@expo/ui` community `BottomSheet`) keeping a stale size after a rapid resize such as dismissing the software keyboard, leaving bottom-anchored content stranded mid-view. The final shadow node size update could be dropped when its one-shot pre-draw listener fired without a following draw pass; the pending update is now also posted to the view so the latest size always flushes. ([#47778](https://github.com/expo/expo/issues/47778) by [@zayyartun-cgm](https://github.com/zayyartun-cgm)) ([#47810](https://github.com/expo/expo/pull/47810) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Fixed a crash when the runtime is reloaded while async function calls are still suspended in their native body. Concurrent functions now decode `this` and the arguments buffer synchronously inside the host call and schedule only converted native values, so no JSI-owned wrappers are destroyed off the JS thread after the runtime is torn down. ([#47716](https://github.com/expo/expo/issues/47716), [#47717](https://github.com/expo/expo/pull/47717) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
+- [iOS] Fixed an infinite main-thread layout loop (frozen UI, watchdog kill on backgrounding) when a SwiftUI host with `matchContents` and Yoga persistently disagree on the content size, e.g. with the Button Shapes accessibility setting enabled. Synchronous size commits are now budgeted per run-loop turn; over-budget updates are coalesced on the view and committed asynchronously on the next turn, and no-op size updates no longer dirty the layout. ([#48058](https://github.com/expo/expo/issues/48058), [#48059](https://github.com/expo/expo/pull/48059) by [@focux](https://github.com/focux))
+- [iOS] Fixed the `ExpoModulesProvider` lookup missing the generated class when the app `name` starts with a digit, which registered no native modules and left release builds on a blank screen. ([#48793](https://github.com/expo/expo/pull/48793) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Fixed the tap that closes a SwiftUI menu also pressing the React Native view underneath it. ([#48419](https://github.com/expo/expo/issues/48419) by [@bohdanstefaniuk](https://github.com/bohdanstefaniuk)) ([#48463](https://github.com/expo/expo/pull/48463) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fixed hosted Compose views missing layout after reattachment or in-place configuration changes. ([#48370](https://github.com/expo/expo/issues/48370) by [@lujjjh](https://github.com/lujjjh))
+- [iOS] Fixed infinite recursion and `EXC_BAD_ACCESS` when encoding native `Date` values to JavaScript. ([#48239](https://github.com/expo/expo/issues/48239), [#48240](https://github.com/expo/expo/pull/48240) by [@samuelcorsan](https://github.com/samuelcorsan))
 - [iOS] Concurrent functions build on the new two-phase `createAsyncFunction` from `expo-modules-jsi` again, instead of wiring the promise themselves. This also restores rejecting the returned promise (rather than throwing synchronously) when the app context is lost or argument decoding fails. ([#47755](https://github.com/expo/expo/pull/47755) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Support `android.graphics.Color` arguments and props on Android below API 26 by adding a `ColorCompat` wrapper, since the class-based `Color` API (`Color.valueOf` and the float accessors) only exists on API 26 and above. `PlatformColor` values now resolve below API 26 too, via React Native's ARGB-int color path. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Fix a `SIGABRT` crash when unmounting a SwiftUI view tree that still holds a focused field nested inside a container (e.g. an `@expo/ui` `TextField` inside an `HStack` or `LabeledContent` in a `Form`), such as dismissing a modal from a native header button. Resigning the first responder on unmount now recurses through the removed subtree instead of only handling a top-level focusable view. ([#47682](https://github.com/expo/expo/issues/47682) by [@andreavrr](https://github.com/andreavrr)) ([#47709](https://github.com/expo/expo/pull/47709) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Fix `hsl()`/`hsla()` color strings failing to parse on some OS versions (observed on the iOS 27.0 beta), caused by regex-literal fragments composed in `RegexBuilder` blocks. The CSS color patterns are now built from `RegexBuilder` primitives only. ([#47543](https://github.com/expo/expo/pull/47543) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Fixed a potential use-after-free when native code scheduled work onto the JS thread (e.g. settling an async function's promise from a background queue) while the React instance was concurrently tearing down the runtime scheduler on reload. The dispatch trampoline now references the scheduler weakly and drops the task once the scheduler is gone. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Fix a reload deadlock on the new architecture where reloading (from pressing `r` in the iOS simulator) would freeze the app until the watchdog killed it. `reloadAppAsync` now triggers the reload synchronously when already on the main thread instead of always deferring via `DispatchQueue.main.async`. ([#47392](https://github.com/expo/expo/pull/47392) by [@brentvatne](https://github.com/brentvatne))
-- [iOS] Pair a native shared object with one JavaScript object per runtime, so a shared object exposed to several runtimes (e.g. the main and UI runtimes, or worklet contexts) keeps a live pairing in each instead of only the one paired last. ([#47238](https://github.com/expo/expo/pull/47238) by [@tsapeta](https://github.com/tsapeta))
-- [Android][compose] Guard `onLayout` against detached window to prevent `LayoutNode should be attached to an owner` crash. ([#47085](https://github.com/expo/expo/pull/47085) by [@roitium](https://github.com/roitium))
-- [Android] Fix Jetpack Compose `Host` content disappearing before a react-native-screens pop animation finishes, by deferring composition disposal to window detach while the view is still on-screen for a transition. ([#45914](https://github.com/expo/expo/issues/45914), [#47086](https://github.com/expo/expo/issues/47086) by [@aubrey-wodonga](https://github.com/aubrey-wodonga)) ([#47099](https://github.com/expo/expo/pull/47099) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix `Record` arguments crashing with a `NullPointerException` in R8-optimized release builds when converted through the reflection fallback path. ([#46852](https://github.com/expo/expo/pull/46852) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Keep the `Record` marker interface so its consumer ProGuard rule keeps matching after R8 optimization removes empty marker interfaces. ([#46852](https://github.com/expo/expo/pull/46852) by [@lukmccall](https://github.com/lukmccall))
-- [iOS] Fix `ExpoModulesProvider` lookup failing for bundle names with non-identifier characters (e.g. dots). ([#46424](https://github.com/expo/expo/pull/46424) by [@shawnthye-guru](https://github.com/shawnthye-guru))
-- [android] Add a synchronous shadow node size update path, fixing a layout shift for `Host` `matchContents` views. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway))
-- [Android] Fix `NullPointerException` crash when a `matchContents` view is unmounted while a shadow node size update is pending (e.g. closing a bottom sheet mid-resize). ([#46785](https://github.com/expo/expo/pull/46785) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Accept JS `Double` timestamps in `Date` Convertible. JS numbers arrive across the JSI bridge as Swift `Double`; the prior `as? Int` branch never matched, throwing `ConvertingException<Date>` whenever a JS caller passed `someDate.getTime()` to a `Date` / `Date?` argument. ([#46340](https://github.com/expo/expo/pull/46340) by [@kyleasaff](https://github.com/kyleasaff))
-- [Android] Fix events being silently dropped for Compose views in custom modules. ([#46623](https://github.com/expo/expo/issues/46623) by [@benjaminkomen](https://github.com/benjaminkomen)) ([#46624](https://github.com/expo/expo/pull/46624) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix nested `Host` double-composing children. ([#46282](https://github.com/expo/expo/issues/46282) by [@sadbytes](https://github.com/sadbytes)) ([#46304](https://github.com/expo/expo/pull/46304) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Propagate async-function promise construction failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong))
-- [iOS] Read iPad-specific supported orientations from `UISupportedInterfaceOrientations~ipad`. ([#46281](https://github.com/expo/expo/issues/46281) by [@bryandent](https://github.com/bryandent)) ([#46306](https://github.com/expo/expo/pull/46306) by [@mvincentong](https://github.com/mvincentong))
-- [iOS] Throw an actionable error when a worklet is used but `react-native-worklets`'s native adapter isn't linked, instead of a misleading "not an instance of Worklet" failure. ([#46571](https://github.com/expo/expo/pull/46571) by [@chrfalch](https://github.com/chrfalch))
-- [Android] Fix `canAskAgain` returning `false` for re-requestable permissions in the "Ask every time" state. ([#46683](https://github.com/expo/expo/pull/46683) by [@alanjhughes](https://github.com/alanjhughes))
 - [Internal] Remove `EventEmitter` re-export global type indirection ([#46719](https://github.com/expo/expo/pull/46719) by [@kitten](https://github.com/kitten))
-- [Android] Fixed Expo UI re-compose when switching screens in react-native-screens. ([#46650](https://github.com/expo/expo/pull/46650) by [@kudo](https://github.com/kudo))
 - [iOS] Fix Expo DevTools Network response bodies for JSON content types with parameters. ([#46336](https://github.com/expo/expo/pull/46336) by [@SJvaca30](https://github.com/SJvaca30))
-- [iOS] Resolve the key window across connected scenes in `currentViewController()` so it keeps working with multiple scenes, and expose `Utilities.keyWindow()` for modules to reuse. ([#46956](https://github.com/expo/expo/pull/46956) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix a crash on `Updates.reloadAsync()` where the previous `AppContext` could deallocate before the old runtime finished tearing down, releasing cached JSI objects against a dying runtime on the wrong thread. Its lifetime is now tied to the runtime via native state attached to the `global.expo` object. ([#47051](https://github.com/expo/expo/issues/47051) by [@HaiyiMei](https://github.com/HaiyiMei)) ([#47080](https://github.com/expo/expo/pull/47080), [#47098](https://github.com/expo/expo/pull/47098) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Resolve the key window from the foregrounded scene in `currentViewController()` so it keeps working with multiple scenes, and expose `Utilities.keyWindow()` for modules to reuse. ([#46956](https://github.com/expo/expo/pull/46956) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed a stack overflow crash when converting to JavaScript a `Convertible` value that keeps the default `convertResult` implementation, such as `CMTime`. The value now converts to `undefined` and logs a warning. ([#48266](https://github.com/expo/expo/pull/48266) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
 - [iOS] Bumped `@expo/expo-modules-macros-plugin` to `0.8.0`, which emits the two-phase async `@JS` bindings. ([#47755](https://github.com/expo/expo/pull/47755) by [@tsapeta](https://github.com/tsapeta))
-- Allow `react-native-worklets` `^0.9.0` in peer dependencies. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - [Android] Make `expo-module-gradle-plugin` compatible with Android Gradle Plugin 9. ([#46769](https://github.com/expo/expo/pull/46769) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Ignore already-settled promises. ([#46770](https://github.com/expo/expo/pull/46770) by [@jakex7](https://github.com/jakex7))
+- iOS Turn `getModule(implementing:)` into a public function ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
+- [iOS] Added `SceneGeometry` for reading bounds, safe area, display scale and interface orientation from the scene a view belongs to. ([#48168](https://github.com/expo/expo/pull/48168) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Added `SceneGeometry.foregroundScene()`, which returns nil when no scene is on screen so callers can avoid presenting UI into a background scene. ([#48318](https://github.com/expo/expo/pull/48318) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
+- Migrated from deprecated react-native-worklets WorkletRuntime API `executeSync` to up-to-date `runSync`. `runSync` is available since 0.7.0. ([#48691](https://github.com/expo/expo/pull/48691) by [@tjzel](https://github.com/tjzel))
+
+## 57.0.8 - 2026-07-29
+
+### 🎉 New features
+
+- Added a `layoutRoot` prop to Expo views that marks the shadow node with the `RootNodeKind` trait, so `measure()` reports coordinates relative to that node — for views that dispatch touch events from their own root view, like `RNHostView` in `@expo/ui`. ([#48217](https://github.com/expo/expo/pull/48217) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 57.0.7 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-17
+
+### 🎉 New features
+
+- [iOS] `ExpoSwiftUI.IgnoreSafeArea` that ignores the device and container safe area regions. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47619](https://github.com/expo/expo/pull/47619) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
+- [Android] Fix `canAskAgain` returning `false` for re-requestable permissions in the "Ask every time" state. ([#46683](https://github.com/expo/expo/pull/46683) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+### 🎉 New features
+
+- [iOS] `@SharedObject` now binds `@JS` methods, properties and the `@JS init` directly onto the class prototype, so they no longer need `Function(…)` / `Property(…)` / `Constructor { … }` definition entries. ([#47107](https://github.com/expo/expo/pull/47107) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix SwiftUI-hosted React views corrupting Fabric rendering after unmount: `UIViewHost` now hands SwiftUI a disposable isolation container instead of the React-managed view, so leaked `autoresizingMask`/frame/visibility mutations (including deferred ones from `Menu`/`ContextMenu` teardown) can no longer zero-size or hide unrelated components. ([#47707](https://github.com/expo/expo/pull/47707) by [@cvburgess](https://github.com/cvburgess))
+- [Android] Fix Compose-hosted React Native content (e.g. the `@expo/ui` community `BottomSheet`) keeping a stale size after a rapid resize such as dismissing the software keyboard, leaving bottom-anchored content stranded mid-view. The final shadow node size update could be dropped when its one-shot pre-draw listener fired without a following draw pass; the pending update is now also posted to the view so the latest size always flushes. ([#47778](https://github.com/expo/expo/issues/47778) by [@zayyartun-cgm](https://github.com/zayyartun-cgm)) ([#47810](https://github.com/expo/expo/pull/47810) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed a crash when the runtime is reloaded while async function calls are still suspended in their native body. Concurrent functions now decode `this` and the arguments buffer synchronously inside the host call and schedule only converted native values, so no JSI-owned wrappers are destroyed off the JS thread after the runtime is torn down. ([#47716](https://github.com/expo/expo/issues/47716), [#47717](https://github.com/expo/expo/pull/47717) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
+- [iOS] Fix a `SIGABRT` crash when unmounting a SwiftUI view tree that still holds a focused field nested inside a container (e.g. an `@expo/ui` `TextField` inside an `HStack` or `LabeledContent` in a `Form`), such as dismissing a modal from a native header button. Resigning the first responder on unmount now recurses through the removed subtree instead of only handling a top-level focusable view. ([#47682](https://github.com/expo/expo/issues/47682) by [@andreavrr](https://github.com/andreavrr)) ([#47709](https://github.com/expo/expo/pull/47709) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#47709](https://github.com/expo/expo/pull/47709) by [@andreavrr](https://github.com/andreavrr), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Pair a native shared object with one JavaScript object per runtime, so a shared object exposed to several runtimes (e.g. the main and UI runtimes, or worklet contexts) keeps a live pairing in each instead of only the one paired last. ([#47238](https://github.com/expo/expo/pull/47238) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix `hsl()`/`hsla()` color strings failing to parse on some OS versions (observed on the iOS 27.0 beta), caused by regex-literal fragments composed in `RegexBuilder` blocks. The CSS color patterns are now built from `RegexBuilder` primitives only. ([#47543](https://github.com/expo/expo/pull/47543) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed a potential use-after-free when native code scheduled work onto the JS thread (e.g. settling an async function's promise from a background queue) while the React instance was concurrently tearing down the runtime scheduler on reload. The dispatch trampoline now references the scheduler weakly and drops the task once the scheduler is gone. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
+
+## 57.0.3 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-03
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `ExpoModulesProvider` lookup failing for bundle names with non-identifier characters (e.g. dots). ([#46424](https://github.com/expo/expo/pull/46424) by [@shawnthye-guru](https://github.com/shawnthye-guru))
+
+## 57.0.1 - 2026-06-30
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a reload deadlock on the new architecture where reloading (from pressing `r` in the iOS simulator) would freeze the app until the watchdog killed it. `reloadAppAsync` now triggers the reload synchronously when already on the main thread instead of always deferring via `DispatchQueue.main.async`. ([#47392](https://github.com/expo/expo/pull/47392) by [@brentvatne](https://github.com/brentvatne))
+
+## 57.0.0 - 2026-06-25
+
+### 🎉 New features
+
+- [iOS] Added the `@Event` macro that turns a function-typed `var` on a module or shared object into a typed JavaScript event. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `@ExpoModule` now synthesizes the module's JavaScript name from the class name or its `@ExpoModule("CustomName")` argument, so a `Name(…)` definition entry is no longer required. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added `SharedObject.native(from:)` that recovers the native shared object paired with a JavaScript object, with a generic overload that returns the concrete subclass directly. ([#47054](https://github.com/expo/expo/pull/47054) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added `Module.emit` that sends an event directly to the module's own JavaScript object, mirroring `SharedObject.emit`. Both now share an `EventEmitter` protocol. ([#46555](https://github.com/expo/expo/pull/46555) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- [Android][compose] Guard `onLayout` against detached window to prevent `LayoutNode should be attached to an owner` crash. ([#47085](https://github.com/expo/expo/pull/47085) by [@roitium](https://github.com/roitium))
+- [Android] Fix Jetpack Compose `Host` content disappearing before a react-native-screens pop animation finishes, by deferring composition disposal to window detach while the view is still on-screen for a transition. ([#45914](https://github.com/expo/expo/issues/45914), [#47086](https://github.com/expo/expo/issues/47086) by [@aubrey-wodonga](https://github.com/aubrey-wodonga)) ([#47099](https://github.com/expo/expo/pull/47099) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47099](https://github.com/expo/expo/pull/47099) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix a crash on `Updates.reloadAsync()` where the previous `AppContext` could deallocate before the old runtime finished tearing down, releasing cached JSI objects against a dying runtime on the wrong thread. Its lifetime is now tied to the runtime via native state attached to the `global.expo` object. ([#47051](https://github.com/expo/expo/issues/47051) by [@HaiyiMei](https://github.com/HaiyiMei)) ([#47080](https://github.com/expo/expo/pull/47080), [#47098](https://github.com/expo/expo/pull/47098) by [@tsapeta](https://github.com/tsapeta)) ([#47080](https://github.com/expo/expo/pull/47080), [#47098](https://github.com/expo/expo/pull/47098) by [@HaiyiMei](https://github.com/HaiyiMei), [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Allow `react-native-worklets` `^0.9.0` in peer dependencies. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
+- Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
 - [iOS] Added `JavaScriptDecodable` / `JavaScriptEncodable` (composed as `JavaScriptCodable`), a statically-dispatched, non-erasing conversion path between JavaScript and native values for Expo Modules v2, with conformances for primitives, containers, records, enumerables and `Data`. ([#46893](https://github.com/expo/expo/pull/46893) by [@tsapeta](https://github.com/tsapeta))
 - [Internal] [iOS] Dropped the unused `appContext` parameter from the `JavaScriptCodable` conversions; conversions that need the app context now recover it from the runtime via the new public `AppContext.from(runtime:)`. ([#47111](https://github.com/expo/expo/pull/47111) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptCodable` now maps `Int64`/`UInt64` to a JS `BigInt` for lossless 64-bit round-tripping, and `Int`/`UInt` throw when encoding a value outside JavaScript's safe-integer range. ([#46939](https://github.com/expo/expo/pull/46939) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] `@ExpoModule` now synthesizes a `_decorateModule` that binds the module's `@JS` functions directly onto the JS object, letting the module holder skip the dynamic definition path for synthesized modules. ([#46612](https://github.com/expo/expo/pull/46612) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added the public `Exceptions.ArgumentsRangeMismatch` exception, thrown by synthesized `@JS` function bindings when a JavaScript caller passes a number of arguments outside the accepted range. ([#46901](https://github.com/expo/expo/pull/46901) by [@tsapeta](https://github.com/tsapeta))
-- Update edge-to-edge package to call `updateEdgeToEdgeFeatureFlag` ([#46335](https://github.com/expo/expo/pull/46335) by [@zoontek](https://github.com/zoontek))
-- `NativeArrayBuffer` arguments no longer copy the buffer when it's already native-backed. ([#46448](https://github.com/expo/expo/pull/46448) by [@barthap](https://github.com/barthap))
 - [iOS] `SharedObject::NativeState` now derives from `expo::NativeState` so the Swift wrapper can be recovered from the JS side via `getNativeState`, laying the groundwork for native-state-based shared object lookup. ([#46330](https://github.com/expo/expo/pull/46330) by [@tsapeta](https://github.com/tsapeta))
-- [Android] Ignore already-settled promises. ([#46770](https://github.com/expo/expo/pull/46770) by [@jakex7](https://github.com/jakex7))
 - [iOS] `SharedObject` is now paired with its JS counterpart through a `SharedObjectNativeState` attached to the JS object, so registry lookups in both directions go through the native state and fall back to the legacy id-based path. ([#46712](https://github.com/expo/expo/pull/46712) by [@tsapeta](https://github.com/tsapeta))
-- [iOS][android] Resolve the worklet UI runtime from its `react-native-worklets` holder instead of the reanimated `_WORKLET_RUNTIME` global; `installOnUIRuntime` now takes the holder from `getUIRuntimeHolder()`. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway))
-- iOS Turn `getModule(implementing:)` into a public function ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
+- `NativeArrayBuffer` arguments no longer copy the buffer when it's already native-backed. ([#46448](https://github.com/expo/expo/pull/46448) by [@barthap](https://github.com/barthap))
+- [iOS][android] Resolve the worklet UI runtime from its `react-native-worklets` holder instead of the reanimated `_WORKLET_RUNTIME` global; `installOnUIRuntime` now takes the holder from `getUIRuntimeHolder()`. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 56.0.17 - 2026-06-15
+
+### 🐛 Bug fixes
+
+- [Android] Fixed Expo UI re-compose when switching screens in react-native-screens. ([#46650](https://github.com/expo/expo/pull/46650) by [@kudo](https://github.com/kudo))
+
+## 56.0.16 - 2026-06-10
+
+### 🎉 New features
+
+- [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- [android] Add a synchronous shadow node size update path, fixing a layout shift for `Host` `matchContents` views. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46604](https://github.com/expo/expo/pull/46604) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix `NullPointerException` crash when a `matchContents` view is unmounted while a shadow node size update is pending (e.g. closing a bottom sheet mid-resize). ([#46785](https://github.com/expo/expo/pull/46785) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46785](https://github.com/expo/expo/pull/46785) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Accept JS `Double` timestamps in `Date` Convertible. JS numbers arrive across the JSI bridge as Swift `Double`; the prior `as? Int` branch never matched, throwing `ConvertingException<Date>` whenever a JS caller passed `someDate.getTime()` to a `Date` / `Date?` argument. ([#46340](https://github.com/expo/expo/pull/46340) by [@kyleasaff](https://github.com/kyleasaff))
+- [Android] Fix events being silently dropped for Compose views in custom modules. ([#46623](https://github.com/expo/expo/issues/46623) by [@benjaminkomen](https://github.com/benjaminkomen)) ([#46624](https://github.com/expo/expo/pull/46624) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46624](https://github.com/expo/expo/pull/46624) by [@benjaminkomen](https://github.com/benjaminkomen), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 💡 Others
+
+- [iOS] `@ExpoModule` now synthesizes a `_decorateModule` that binds the module's `@JS` functions directly onto the JS object, letting the module holder skip the dynamic definition path for synthesized modules. ([#46612](https://github.com/expo/expo/pull/46612) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.15 - 2026-06-05
+
+### 🐛 Bug fixes
+
+- [iOS] Propagate async-function promise construction failures instead of trapping the app. ([#46106](https://github.com/expo/expo/issues/46106) by [@qutrek](https://github.com/qutrek)) ([#46145](https://github.com/expo/expo/pull/46145) by [@mvincentong](https://github.com/mvincentong)) ([#46145](https://github.com/expo/expo/pull/46145) by [@qutrek](https://github.com/qutrek), [@mvincentong](https://github.com/mvincentong))
+- [iOS] Read iPad-specific supported orientations from `UISupportedInterfaceOrientations~ipad`. ([#46281](https://github.com/expo/expo/issues/46281) by [@bryandent](https://github.com/bryandent)) ([#46306](https://github.com/expo/expo/pull/46306) by [@mvincentong](https://github.com/mvincentong)) ([#46306](https://github.com/expo/expo/pull/46306) by [@bryandent](https://github.com/bryandent), [@mvincentong](https://github.com/mvincentong))
+- [iOS] Throw an actionable error when a worklet is used but `react-native-worklets`'s native adapter isn't linked, instead of a misleading "not an instance of Worklet" failure. ([#46571](https://github.com/expo/expo/pull/46571) by [@chrfalch](https://github.com/chrfalch))
+
+## 56.0.14 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.13 — 2026-05-26
 

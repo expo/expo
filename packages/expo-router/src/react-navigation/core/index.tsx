@@ -12,7 +12,7 @@ export { CurrentRenderContext } from './CurrentRenderContext';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { findFocusedRoute } from './findFocusedRoute';
+export { findFocusedRoute } from '../../fork/findFocusedRoute';
 /**
  * @deprecated Will be removed in a future SDK.
  */
@@ -24,11 +24,11 @@ export { getFocusedRouteNameFromRoute } from './getFocusedRouteNameFromRoute';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { getPathFromState } from './getPathFromState';
+export { getPathFromState } from '../../fork/getPathFromState';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { getStateFromPath } from './getStateFromPath';
+export { getStateFromPath } from '../../fork/getStateFromPath';
 /**
  * @deprecated Will be removed in a future SDK.
  */
@@ -46,47 +46,13 @@ export { NavigationIndependentTree } from './NavigationIndependentTree';
  * @deprecated Will be removed in a future SDK.
  */
 export { NavigationMetaContext } from './NavigationMetaContext';
+export { NavigatorTypeContext } from './NavigatorTypeContext';
 export { NavigationProvider } from './NavigationProvider';
 /**
  * @deprecated Will be removed in a future SDK.
  */
 export { NavigationRouteContext } from './NavigationProvider';
 export { PreventRemoveContext } from './PreventRemoveContext';
-export { PreventRemoveProvider } from './PreventRemoveProvider';
-export {
-  /**
-   * @deprecated Expo Router builds components from the file-based route tree. Will be removed in a future SDK.
-   */
-  createComponentForStaticNavigation,
-  /**
-   * @deprecated Expo Router generates path config from the file-based route tree. Will be removed in a future SDK.
-   */
-  createPathConfigForStaticNavigation,
-  /**
-   * @deprecated Expo Router infers route types from the file-based route tree. Will be removed in a future SDK.
-   */
-  type StaticConfig,
-  /**
-   * @deprecated Will be removed in a future SDK.
-   */
-  type StaticConfigGroup,
-  /**
-   * @deprecated Will be removed in a future SDK.
-   */
-  type StaticConfigScreens,
-  /**
-   * @deprecated Will be removed in a future SDK.
-   */
-  type StaticNavigation,
-  /**
-   * @deprecated Use the typed routes API from `expo-router`. Will be removed in a future SDK.
-   */
-  type StaticParamList,
-  /**
-   * @deprecated Will be removed in a future SDK.
-   */
-  type StaticScreenProps,
-} from './StaticNavigation';
 /**
  * @deprecated Will be removed in a future SDK.
  */
@@ -130,5 +96,5 @@ export { useStateForPath } from './useStateForPath';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { validatePathConfig } from './validatePathConfig';
+export { validatePathConfig } from '../../fork/validatePathConfig';
 export * from '../routers';

@@ -8,6 +8,7 @@ import { debugEvent as event } from './events';
 import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
 import { getAgentTelemetryContext } from './utils/agent';
 import { createContext } from './utils/context';
+import { getSandboxTelemetryContext } from './utils/sandbox';
 
 type TelemetryOptions = {
   /** A locally generated ID, untraceable to an actual user */
@@ -91,6 +92,7 @@ export class Telemetry {
 
   private recordInternal(records: TelemetryRecord[]) {
     const agent = getAgentTelemetryContext();
+    const sandboxProvider = getSandboxTelemetryContext();
 
     return this.client.record(
       records.map((record) => ({
@@ -103,6 +105,7 @@ export class Telemetry {
         context: {
           ...this.context,
           sessionId: this.actor.sessionId,
+          ...(sandboxProvider ? { sandbox_provider: sandboxProvider } : {}),
           ...(agent ? { agent } : {}),
           client: { mode: this.client.strategy },
         },

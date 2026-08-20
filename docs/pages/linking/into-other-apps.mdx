@@ -162,9 +162,9 @@ If your don't specify this list, `Linking.canOpenURL` may return `false` even if
 
 ## Create URLs
 
-You can use [`Linking.createURL`](/versions/latest/sdk/linking/#linkingcreateurlurl) to create a URL that can be used to open or redirect back to your app. This method resolves to the following:
+You can use [`Linking.createURL`](/versions/latest/sdk/linking/#linkingcreateurlpath-namedparameters) to create a URL that can be used to open or redirect back to your app. This method resolves to the following:
 
-- **Production and development builds**: `myapp://`, where `myapp` is the [custom scheme](/linking/into-your-app/#add-a-scheme-in-app-config) defined in the app config
+- **Production and development builds**: `myapp://`, where `myapp` is the [custom scheme](/linking/into-your-app/#add-a-custom-scheme-in-app-config) defined in the app config
 - **Development in Expo Go**: `exp://127.0.0.1:8081`
 
 Using `Linking.createURL` helps you avoid hardcoding URLs. You can modify the returned URL by passing optional parameters to this method.

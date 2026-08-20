@@ -229,6 +229,12 @@ class FileSystemModule : Module() {
         file.info(options)
       }
 
+      AsyncFunction("digest") Coroutine { file: FileSystemFile, algorithm: String ->
+        withContext(Dispatchers.IO) {
+          file.digest(algorithm)
+        }
+      }
+
       Property("exists") { file: FileSystemFile ->
         file.exists
       }
@@ -287,9 +293,9 @@ class FileSystemModule : Module() {
 
       Property("size") { file ->
         try {
-          file.size
+          file.size ?: 0
         } catch (e: Exception) {
-          null
+          0
         }
       }
 

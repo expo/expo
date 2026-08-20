@@ -100,6 +100,7 @@ class AppLauncherWithDatabaseTests {
       logger: UpdatesLogger()
     )
 
+    let beforeLaunch = Date(timeIntervalSince1970: floor(Date().timeIntervalSince1970 * 1000) / 1000)
     let success = await withCheckedContinuation { continuation in
       launcher.launchUpdate(withSelectionPolicy: SelectionPolicyFactory.filterAwarePolicy(withRuntimeVersion: "1", config: config)) { error, success in
         continuation.resume(returning: success)
@@ -110,10 +111,9 @@ class AppLauncherWithDatabaseTests {
 
     db.databaseQueue.sync {
       let sameUpdate = try! db.update(withId: testUpdate.updateId, config: config)
-      #expect(yesterday != sameUpdate?.lastAccessed)
-      // `lastAccessed` should have been bumped to roughly "now". Use a generous tolerance
-      // so the assertion doesn't flake on slow CI runners where `launchUpdate` takes longer.
-      #expect(abs(sameUpdate!.lastAccessed.timeIntervalSinceNow) < 60)
+      // `lastAccessed` should have been bumped from yesterday to launch time. Bounding from
+      // `beforeLaunch` keeps the assertion valid however long the launch takes on CI.
+      #expect(sameUpdate!.lastAccessed >= beforeLaunch)
     }
   }
 }

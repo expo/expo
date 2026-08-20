@@ -1,8 +1,6 @@
-/* eslint-env jest */
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
@@ -11,6 +9,7 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { findProjectFiles, getHtml, getPageAndLoaderData } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -258,6 +257,13 @@ describe.each(
 
     const data = await response.json();
     expect(data).toEqual({ foo: 'bar' });
+  });
+
+  it('defaults a headerless server loader to no-store', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/index');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
   });
 
   it('sets custom headers on response using `setResponseHeaders()`', async () => {

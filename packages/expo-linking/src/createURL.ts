@@ -1,11 +1,28 @@
 import Constants from 'expo-constants';
+import { getBundleOrigin } from 'expo/internal/bundle-origin';
 
 import type { CreateURLOptions, ParsedURL } from './Linking.types';
 import { hasCustomScheme, resolveScheme } from './Schemes';
 import { validateURL } from './validateURL';
 
-function getHostUri(): string | null {
-  if (Constants.expoConfig?.hostUri) {
+function getDevServerLocation(): { authority: string; isSecure: boolean } | null {
+  // A published app in Expo Go also loads its bundle from a server, so its origin is not a
+  // development server to link back to.
+  if (!Constants.expoGoConfig?.developer) {
+    return null;
+  }
+  const bundleOrigin = getBundleOrigin();
+  if (!bundleOrigin) {
+    return null;
+  }
+  const { host, protocol } = new URL(bundleOrigin);
+  return { authority: host, isSecure: protocol === 'https:' };
+}
+
+function getHostUri(devServer = getDevServerLocation()): string | null {
+  if (devServer) {
+    return devServer.authority;
+  } else if (Constants.expoConfig?.hostUri) {
     return Constants.expoConfig.hostUri;
   } else if (!hasCustomScheme()) {
     // we're probably not using up-to-date xdl, so just fake it for now
@@ -16,8 +33,7 @@ function getHostUri(): string | null {
   }
 }
 
-function isExpoHosted(): boolean {
-  const hostUri = getHostUri();
+function isExpoHosted(hostUri = getHostUri()): boolean {
   return !!(
     hostUri &&
     (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test|expo\.dev)(:.*)?(\/.*)?$/.test(hostUri) ||
@@ -79,16 +95,24 @@ export function createURL(
   path: string,
   { scheme, queryParams = {}, isTripleSlashed = false }: CreateURLOptions = {}
 ): string {
-  const resolvedScheme = resolveScheme({ scheme });
+  const devServer = getDevServerLocation();
+  let resolvedScheme = resolveScheme({ scheme });
 
-  let hostUri = getHostUri() || '';
+  // Expo Go maps the `exps` scheme to HTTPS, which `exp` can't express, so an HTTPS development
+  // server needs it to be reached over the scheme it's actually served on.
+  if (!scheme && resolvedScheme === 'exp' && devServer?.isSecure) {
+    resolvedScheme = 'exps';
+  }
 
-  if (hasCustomScheme() && isExpoHosted()) {
+  let hostUri = getHostUri(devServer) || '';
+  const expoHosted = isExpoHosted(hostUri);
+
+  if (hasCustomScheme() && expoHosted) {
     hostUri = '';
   }
 
   if (path) {
-    if (isExpoHosted() && hostUri) {
+    if (expoHosted && hostUri) {
       path = `/--/${removeLeadingSlash(path)}`;
     }
     if (isTripleSlashed && !path.startsWith('/')) {

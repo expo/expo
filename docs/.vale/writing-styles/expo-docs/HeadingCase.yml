@@ -15,13 +15,20 @@ exceptions:
   - '.*app\.plugin\.js.*'
   - '.*app directory.*'
   - '.*assets.*'
+  - '.*build\.yml.*'
   - '.*create-expo-app.*'
   - '.*create-react-native-app.*'
+  - '.*e2e-test.*'
+  - '.*get-build.*'
+  - '.*hello\.yml.*'
   - '.*^iOS(.*)'
   - '.*iPhone.*'
+  - '.*preview\.yml.*'
+  - '.*production\.yml.*'
   - '.*web.*'
   - '.*AASA.*'
   - '.*AES.*'
+  - '.*AGENTS\.md.*'
   - '.*\bAI\b.*'
   - '.*API.*'
   - '.*APIs.*'
@@ -62,6 +69,7 @@ exceptions:
   - '.*CLI.*'
   - '.*TTI.*'
   - '.*Classic Updates.*'
+  - '.*CLAUDE\.md.*'
   - '.*Claude Code.*'
   - '.*Clerk.*'
   - '.*CNG.*'
@@ -104,7 +112,6 @@ exceptions:
   - '.*FileSystem.*'
   - '.*FlatList.*'
   - '.*Flipper.*'
-  - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
   - '.*FAB.*'
   - '.*FAQ.*'
@@ -148,6 +155,7 @@ exceptions:
   - '.*Link component.*'
   - '.*Linking.*'
   - '.*MCP*'
+  - '.*Mac Catalyst.*'
   - '.*Material Symbols.*'
   - '.*MultiBrowse.*'
   - '.*macOS.*'
@@ -156,7 +164,6 @@ exceptions:
   - '.*Maven.*'
   - '.*Netlify.*'
   - '.*Node\.js.*'
-  - '.*Node Package Managers.*'
   - '.*NavigationContainer.*'
   - '.*Next\.js.*'
   - '.*New Architecture.*'
@@ -207,6 +214,7 @@ exceptions:
   - '.*Storage Access Framework.*'
   - '.*Strict-Transport-Security.*'
   - '.*SSO.*'
+  - '.*Supabase.*'
   - '.*Suspense.*'
   - '.*Swift.*'
   - '.*Terser.*'
@@ -240,7 +248,7 @@ exceptions:
   # Standalone Expo UI component names
   - '^(?:BottomSheet|Button|Chip|CircularProgress|ColorPicker|ContextMenu|DatePicker|DateTimePicker|DisclosureGroup|Divider|DropdownMenu|Form|Gauge|Host|LinearProgress|List|Menu|Modifiers|Namespace|Picker|Popover|ProgressView|Section|Slider|Switch|TextField|TextInput|Toggle)(?:\s*\([^)]+\))?$'
   # Component, service and product names that are proper nouns
-  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|Vexo|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer|Popover|HStack|VStack)(?:\s*\([^)]+\))?$'
+  - '^(?:TinyBase|LiveStore|LaunchDarkly|OneSignal|CleverTap|LogRocket|BugSnag|Meta|Vercel|TabTrigger|TabList|Tabs|Drawer|TextEncoder|TextDecoder|AudioPlayer|VideoPlayer|Popover|HStack|VStack)(?:\s*\([^)]+\))?$'
   # Specific edge cases
   - two-factor
   - (deprecated)
@@ -296,7 +304,6 @@ exceptions:
   - Maestro
   - Maestro Cloud
   - Require Approval
-  - Asset Caching
   - Getting Started
   - Keyboard Controller
   - PR
@@ -318,7 +325,6 @@ exceptions:
   - 'Prerequisite: Creating a widget'
   - 'Prerequisite: Creating a Live Activity'
   - Hiding the Tab bar
-  - Integrated vs Isolated
   - Expo Skills
   - DSL
   - TriStateCheckbox

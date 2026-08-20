@@ -1,3 +1,8 @@
 # Next.js hashed assets - immutable, cache forever
 /_next/*
   Cache-Control: public, max-age=31536000, immutable
+
+# llms.txt discovery for AI agents that fetch pages without content negotiation
+/*
+  Link: </llms.txt>; rel="llms-txt"
+  X-Llms-Txt: /llms.txt

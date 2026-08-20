@@ -5,6 +5,7 @@ description: Track per-route render and interactive timings by enabling the Expo
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/) that collects per-route metrics tagged with the route pattern (for example, `/(tabs)/sessions/[sessionId]`). This lets you compare navigation performance by route in the dashboard instead of looking only at app-wide aggregates.
@@ -133,6 +134,24 @@ Emitted at most once per screen instance within a session.
 | `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
 | `routeParams` | `object`  | Resolved route params.                                                    |
 | `...`         | `any`     | Any custom params passed via `markInteractive({ params: { ... } })`.      |
+
+## View navigation metrics
+
+In the dashboard, open your project, navigate to [**Observe**](https://expo.dev/accounts/[account]/projects/[project]/observe), and select the **Navigation** tab. It shows per-route navigation timings with cold and warm time to first render and time to interactive.
+
+In the CLI, you can run the following commands:
+
+<Terminal
+  cmd={[
+    '# Navigation metrics grouped by route name',
+    '$ eas observe:routes',
+    '',
+    '# Filter to specific metrics or routes',
+    '$ eas observe:routes --metric cold_ttr --route-name "/(tabs)/sessions/[sessionId]"',
+  ]}
+/>
+
+Run `eas observe:routes --help` for the full list of flags (time range, platform, app version, and more). See [Querying with EAS CLI](/eas/observe/eas-cli/) for the other `eas observe` commands.
 
 ## Notes and troubleshooting
 

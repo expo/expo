@@ -10,18 +10,37 @@
 ### 🎉 New features
 
 - Add `File.preview()` and `File.canPreview()` methods for opening files with platform-native preview flows. (by [@eliotgevers](https://github.com/eliotgevers))
+- Added `File.digest()` for asynchronously calculating MD5, SHA-1, SHA-256, SHA-384 and SHA-512 file digests. ([#48089](https://github.com/expo/expo/pull/48089) by [@wh201906](https://github.com/wh201906))
 
 ### 🐛 Bug fixes
 
+- [Android][iOS] Fix `File.size` returning `null` for a missing or unreadable file. ([#49086](https://github.com/expo/expo/pull/49086)) by [@ACHP](https://github.com/ACHP))
+- [iOS] Fix wrong permissions for text() and bytes(). ([#42422](https://github.com/expo/expo/pull/42422)) by [@simoneldevig](https://github.com/simoneldevig))
+- Fixed `copyAsync` on iOS copying the unedited original when a `ph://` asset has edits applied in Photos. ([#48248](https://github.com/expo/expo/pull/48248) by [@CoffeeFlux](https://github.com/CoffeeFlux))
 - Fixed iOS file previews rejecting a new preview while the previous Quick Look dismissal animation is still finishing. ([#47947](https://github.com/expo/expo/pull/47947) by [@eliotgevers](https://github.com/eliotgevers))
 - Added `./next` subpath to package `exports` field to resolve Metro bundler warning. ([#44793](https://github.com/expo/expo/pull/44793) by [@chang-in](https://github.com/chang-in))
 - Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
 - Fixed potential file offset races when asynchronous and synchronous `FileHandle` operations overlap on Android and iOS. ([#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
+- Fixed `readAsStringAsync` to respect `position` and `length` when reading UTF-8 strings. ([#20291](https://github.com/expo/expo/issues/20291) by [@mvincentong](https://github.com/mvincentong)) ([#45714](https://github.com/expo/expo/pull/45714) by [@mvincentong](https://github.com/mvincentong))
+- [android] Fixed `rename()` storing an unencoded URI, so reading `.uri` afterwards threw for names containing a space. ([#48496](https://github.com/expo/expo/issues/48496) by [@yagiz2000](https://github.com/yagiz2000), [#48510](https://github.com/expo/expo/pull/48510) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
+- Marked `File.md5` and the MD5-related `File.info()` types (`InfoOptions`, `InfoOptions.md5` and `FileInfo.md5`) as deprecated. ([#48089](https://github.com/expo/expo/pull/48089) by [@wh201906](https://github.com/wh201906))
 - Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376), [#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
 - Improved `FileHandle` docs. ([#46849](https://github.com/expo/expo/pull/46849) by [@barthap](https://github.com/barthap))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.7 — 2026-05-20
 

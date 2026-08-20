@@ -1,6 +1,8 @@
 import type * as CommonActions from './CommonActions';
 
-export type CommonNavigationAction = CommonActions.Action;
+export type CommonNavigationAction =
+  | CommonActions.Action
+  | CommonActions.InternalRouteNamesChangedAction;
 
 export type NavigationRoute<
   ParamList extends ParamListBase,
@@ -33,9 +35,11 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
   /**
    * Custom type for the state, whether it's for tab, stack, drawer etc.
    * During rehydration, the state will be discarded if type doesn't match with router type.
-   * It can also be used to detect the type of the navigator we're dealing with.
+   * It can also be used to detect the type of the navigator we're dealing with. Note that initial
+   * state does not include type, so an action needs to be dispatched in a navigator, in order
+   * for the type to be set
    */
-  type: string;
+  type?: string;
   /**
    * Whether the navigation state has been rehydrated.
    */
@@ -132,34 +136,31 @@ export type RouterFactory<
 
 export type RouterConfigOptions = {
   routeNames: string[];
-  routeParamList: ParamListBase;
   routeGetIdList: Record<
     string,
     ((options: { params?: Record<string, any> }) => string | undefined) | undefined
   >;
 };
 
-export type Router<State extends NavigationState, Action extends NavigationAction> = {
-  /**
-   * Type of the router. Should match the `type` property in state.
-   * If the type doesn't match, the state will be discarded during rehydration.
-   */
-  type: State['type'];
+/**
+ * Type of the router. Should match the `type` property in state.
+ * If the type doesn't match, the state will be discarded during rehydration.
+ * Only routers whose state has no `type` may omit it, since a state without a `type`
+ * is accepted by every router.
+ */
+type RouterType<State extends NavigationState> = undefined extends State['type']
+  ? { type?: State['type'] }
+  : { type: State['type'] };
 
-  /**
-   * Initialize the navigation state.
-   *
-   * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
-   */
-  getInitialState(options: RouterConfigOptions): State;
-
+export type Router<
+  State extends NavigationState,
+  Action extends NavigationAction,
+> = RouterType<State> & {
   /**
    * Rehydrate the full navigation state from a given partial state.
    *
    * @param partialState Navigation state to rehydrate from.
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
    */
   getRehydratedState(
     partialState: PartialState<State> | State,
@@ -167,22 +168,18 @@ export type Router<State extends NavigationState, Action extends NavigationActio
   ): State;
 
   /**
-   * Take the current state and updated list of route names, and return a new state.
+   * Take the current state and the route names the navigator declares, and return the state to
+   * render until `ROUTE_NAMES_CHANGED` has been reconciled.
    *
-   * @param state State object to update.
-   * @param options.routeNames New list of route names.
-   * @param options.routeParamsList Object containing params for each route.
+   * This is a render-phase fallback, not a state change. Return `state` when nothing was removed,
+   * and set `index` to `-1` when no declared route is left to focus.
+   *
+   * This function will only be called in development, when route file is removed.
+   *
+   * @param state State object to filter.
+   * @param routeNames Route names currently declared by the navigator.
    */
-  getStateForRouteNamesChange(
-    state: State,
-    options: RouterConfigOptions & {
-      /**
-       * List of routes whose key has changed even if they still have the same name.
-       * This allows to remove screens declaratively.
-       */
-      routeKeyChanges: string[];
-    }
-  ): State;
+  getStateForDeclaredRoutes(state: State, routeNames: string[]): State;
 
   /**
    * Take the current state and key of a route, and return a new state with the route focused
@@ -194,12 +191,12 @@ export type Router<State extends NavigationState, Action extends NavigationActio
 
   /**
    * Take the current state and action, and return a new state.
-   * If the action cannot be handled, return `null`.
+   * If the action cannot be handled, return `null`. Custom routers must explicitly handle
+   * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
    *
    * @param state State object to apply the action on.
    * @param action Action object to apply.
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
    */
   getStateForAction(
     state: State,

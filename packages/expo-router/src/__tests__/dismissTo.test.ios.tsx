@@ -21,7 +21,6 @@ it('should go back to a previous route in the same stack', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -31,7 +30,6 @@ it('should go back to a previous route in the same stack', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
@@ -51,7 +49,6 @@ it('should go back to a previous route in the same stack', () => {
               state: {
                 index: 2,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', 'c'],
                 routes: [
                   {
@@ -92,7 +89,6 @@ it('should go back to a previous route in the same stack', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -102,7 +98,6 @@ it('should go back to a previous route in the same stack', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
@@ -122,7 +117,6 @@ it('should go back to a previous route in the same stack', () => {
               state: {
                 index: 0,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', 'c'],
                 routes: [
                   {
@@ -169,7 +163,6 @@ it('should go back to a previous route in different stacks', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -179,7 +172,6 @@ it('should go back to a previous route in different stacks', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
@@ -199,7 +191,6 @@ it('should go back to a previous route in different stacks', () => {
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', '2'],
                 routes: [
                   {
@@ -219,7 +210,6 @@ it('should go back to a previous route in different stacks', () => {
                     state: {
                       index: 1,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['c', 'd', '3'],
                       routes: [
                         {
@@ -239,7 +229,6 @@ it('should go back to a previous route in different stacks', () => {
                           state: {
                             index: 0,
                             key: expect.any(String),
-                            preloadedRoutes: [],
                             routeNames: ['e', 'd'],
                             routes: [
                               {
@@ -250,7 +239,6 @@ it('should go back to a previous route in different stacks', () => {
                               },
                             ],
                             stale: false,
-                            type: 'stack',
                           },
                         },
                       ],
@@ -278,7 +266,6 @@ it('should go back to a previous route in different stacks', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -288,7 +275,6 @@ it('should go back to a previous route in different stacks', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
@@ -308,7 +294,6 @@ it('should go back to a previous route in different stacks', () => {
               state: {
                 index: 0,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', '2'],
                 routes: [
                   {
@@ -356,7 +341,6 @@ it('will replace the route if the provided href is not in the history', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -366,7 +350,6 @@ it('will replace the route if the provided href is not in the history', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '1'],
           routes: [
             {
@@ -386,7 +369,6 @@ it('will replace the route if the provided href is not in the history', () => {
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['a', 'b', '2'],
                 routes: [
                   {
@@ -406,7 +388,6 @@ it('will replace the route if the provided href is not in the history', () => {
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['c', 'd', '3'],
                       routes: [
                         {
@@ -419,7 +400,6 @@ it('will replace the route if the provided href is not in the history', () => {
                           state: {
                             index: 0,
                             key: expect.any(String),
-                            preloadedRoutes: [],
                             routeNames: ['e', 'd'],
                             routes: [
                               {
@@ -430,7 +410,6 @@ it('will replace the route if the provided href is not in the history', () => {
                               },
                             ],
                             stale: false,
-                            type: 'stack',
                           },
                         },
                       ],

@@ -47,7 +47,7 @@ jobs:
       packages: ${{ steps.detect.outputs.packages }}
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: false
           # Start shallow; the detect step fetches the event base if needed.
@@ -99,6 +99,24 @@ jobs:
           config_root="packages/expo-modules-autolinking/external-configs/ios"
           manifest="apps/bare-expo/package.json"
           changed=()
+
+          # A React Native bump changes the <rnVersion>/<hermesVersion> segments of
+          # every external artifact path, so the whole published set must be rebuilt.
+          # Read the version from `dependencies` only, mirroring the producer's source
+          # of truth in tools/src/prebuilds/Utils.ts (getVersionsInfoAsync).
+          # `|| true` keeps a base commit without the manifest falling through to
+          # build_all; without it `pipefail` aborts the step with git's status.
+          before_rn="$(git show "$base:$manifest" 2>/dev/null \
+            | jq -r '.dependencies["react-native"] // empty' || true)"
+          after_rn="$(jq -r '.dependencies["react-native"] // empty' "$manifest")"
+
+          if [ -z "$after_rn" ]; then
+            build_all "Could not read the react-native version from $manifest; building all external packages."
+          fi
+
+          if [ "$before_rn" != "$after_rn" ]; then
+            build_all "React Native changed (${before_rn:-unknown} -> $after_rn); every external artifact path is invalidated. Building all external packages."
+          fi
 
           # Derive the package -> patch-file map from pnpm's own source of truth
           # (the `patchedDependencies` block in pnpm-workspace.yaml) so adding a
@@ -167,7 +185,7 @@ jobs:
         flavor: [Debug, Release]
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
 
@@ -175,12 +193,12 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
 
       - name: Install pnpm
-        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
           version: 10
 
       - name: Setup Node
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: 'pnpm'

@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
-import format from 'date-format';
+import { format } from 'date-fns';
 import {
   getStatusAsync,
   registerTaskAsync,
@@ -8,6 +7,7 @@ import {
   BackgroundFetchResult,
   BackgroundFetchStatus,
 } from 'expo-background-fetch';
+import { useFocusEffect } from 'expo-router';
 import * as TaskManager from 'expo-task-manager';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -72,7 +72,7 @@ export default function BackgroundFetchScreen() {
     return (
       <View style={{ flexDirection: 'column', alignItems: 'center' }}>
         <BodyText>Last background fetch was invoked at:</BodyText>
-        <BodyText style={styles.boldText}>{format('yyyy-MM-dd hh:mm:ss:SSS', fetchDate)}</BodyText>
+        <BodyText style={styles.boldText}>{format(fetchDate, 'yyyy-MM-dd hh:mm:ss:SSS')}</BodyText>
       </View>
     );
   };

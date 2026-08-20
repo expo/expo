@@ -5,6 +5,7 @@ import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shar
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
+import type { EnvironmentMode } from '../../../utils/nodeEnv';
 import { debugEvent } from '../metro/metroDebugEvents';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
@@ -21,7 +22,7 @@ export type MetroEnvironment = 'node' | 'react-server' | 'client';
 export type ExpoMetroOptions = {
   platform: string;
   mainModuleName: string;
-  mode: string;
+  mode: EnvironmentMode;
   minify?: boolean;
   environment?: MetroEnvironment;
   serializerOutput?: 'static';
@@ -119,7 +120,11 @@ export function getBaseUrlFromExpoConfig(exp: ExpoConfig) {
   return exp.experiments?.baseUrl?.trim().replace(/\/+$/, '') ?? '';
 }
 
-export function getAsyncRoutesFromExpoConfig(exp: ExpoConfig, mode: string, platform: string) {
+export function getAsyncRoutesFromExpoConfig(
+  exp: ExpoConfig,
+  mode: EnvironmentMode,
+  platform: string
+) {
   let asyncRoutesSetting;
 
   if (exp.extra?.router?.asyncRoutes) {

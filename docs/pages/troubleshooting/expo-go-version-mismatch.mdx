@@ -1,0 +1,61 @@
+---
+title: '"Project is incompatible with this version of Expo Go" error'
+sidebar_title: Expo Go version mismatch
+description: Learn why an Expo project is incompatible with the installed version of Expo Go and how to install a compatible version.
+---
+
+Expo Go displays this error when the Expo SDK version in a project does not match the SDK version included in the installed Expo Go app:
+
+```text
+Project is incompatible with this version of Expo Go
+```
+
+You may also see one of these messages:
+
+```text
+The project you requested requires a newer version of Expo Go.
+This project requires a newer version of Expo Go.
+```
+
+## Why this happens
+
+Each build of Expo Go includes one Expo SDK version. The `expo` package version in **package.json** sets the project's SDK version. The project and Expo Go SDK versions must match.
+
+Expo Go on the Apple App Store stops at SDK 54, and SDK 55 and later are not available there. The Google Play version can also lag behind a new SDK release. If your project uses a newer SDK than the store build, use one of the options below instead of waiting for a store update.
+
+## Install a compatible version of Expo Go
+
+Use the instructions for the device where you are testing your project.
+
+### Physical iPhone or iPad
+
+For projects using SDK 55 or later, open [sign.expo.dev](https://sign.expo.dev/), select the SDK version used by your project, and follow the steps to install that Expo Go build on your device.
+
+This installer uses your Apple ID's free developer provisioning, so it does not require a paid Apple Developer Program membership. The certificate is valid for about seven days. Return to [sign.expo.dev](https://sign.expo.dev/) to re-sign and reinstall Expo Go when the certificate expires.
+
+For projects using SDK 54, install Expo Go from the Apple App Store. You can also use [`eas go`](https://expo.fyi/deploy-expo-go-testflight) to build Expo Go for SDK 54 or later and distribute it through your TestFlight internal team, which needs an Apple Developer Program membership.
+
+For projects using SDK 53 or earlier, you cannot install an older version of Expo Go on a physical iOS device. Upgrade the project, use an Android device or iOS Simulator, or create a development build.
+
+### Android device, Android Emulator, or iOS Simulator
+
+Visit [expo.dev/go](https://expo.dev/go), select the SDK version used by your project and your target platform, then install the compatible Expo Go build.
+
+You can also use the [`expo-go` CLI](/develop/tools/#expo-go-cli) to download a specific version.
+
+After installing the compatible build, restart the development server with `npx expo start` and open the project again.
+
+## Check the project's SDK version
+
+If the error remains after installing the correct Expo Go build:
+
+1. Check the `expo` dependency in **package.json** to confirm the project's SDK version.
+2. If your [app config](/workflow/configuration/) contains an `sdkVersion` field, remove it or make sure that it matches the `expo` dependency.
+3. Run `npx expo-doctor@latest` to check for dependency version issues.
+4. Run `npx expo install --fix` to align package versions with the installed Expo SDK.
+
+## Upgrade the project or use a development build
+
+You can [upgrade the project to a newer Expo SDK](/workflow/upgrading-expo-sdk-walkthrough/) instead of installing another version of Expo Go.
+
+Expo Go is a learning environment and sandbox. For a production project, [create a development build](/develop/development-builds/introduction/) so the native app and its dependencies are controlled by your project.

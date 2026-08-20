@@ -6,12 +6,28 @@
 
 ### 🎉 New features
 
+- Add `Circle` type to the `GoogleMaps` namespace. ([#49124](https://github.com/expo/expo/pull/49124) by [@CatLover01](https://github.com/CatLover01))
+
 ### 🐛 Bug fixes
 
 - [Android] Return the `Promise` from `GoogleMaps.View`'s imperative `setCameraPosition` so callers can `await` it and catch the `Animation cancelled` rejection (matches iOS). ([#46421](https://github.com/expo/expo/pull/46421) by [@chownation](https://github.com/chownation))
 - [Android] Fixed Google Maps marker info windows reserving blank snippet space when `snippet` is omitted. ([#47271](https://github.com/expo/expo/pull/47271) by [@eliotgevers](https://github.com/eliotgevers))
 
 ### 💡 Others
+
+- Promote Expo Maps from alpha to stable. ([#47338](https://github.com/expo/expo/pull/47338) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.6 — 2026-05-21
 

@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "https://developer.android.com/reference/android/Manifest.permission",
-    "scrapedAt": "2026-07-02T09:06:47.354Z"
+    "scrapedAt": "2026-08-15T08:06:18.690Z"
   },
   "data": {
     "ACCEPT_HANDOVER": {
@@ -378,6 +378,28 @@
       "protection": "signature",
       "warning": null
     },
+    "BIND_CONTENT_RESTRICTION_SERVICE": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "BIND_CONTENT_RESTRICTION_SERVICE",
+      "description": "Permission required to bind content restriction service",
+      "explanation": null,
+      "constant": "android.permission.BIND_CONTENT_RESTRICTION_SERVICE",
+      "protection": "signature",
+      "warning": null
+    },
+    "BIND_CONTENT_SAFETY_SERVICE": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "BIND_CONTENT_SAFETY_SERVICE",
+      "description": "Ensures only the platform can bind to the content safety service.",
+      "explanation": null,
+      "constant": "android.permission.BIND_CONTENT_SAFETY_SERVICE",
+      "protection": "signature",
+      "warning": null
+    },
     "BIND_CONTROLS": {
       "apiAdded": 30,
       "apiDeprecated": null,
@@ -486,6 +508,17 @@
       "explanation": "Must be required by an <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/service/notification/NotificationListenerService\">NotificationListenerService</a></code>, to ensure that only the system can bind to it.",
       "constant": "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE",
       "protection": "signature",
+      "warning": null
+    },
+    "BIND_PCC_EGRESS_SERVICE": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "BIND_PCC_EGRESS_SERVICE",
+      "description": "Allows a system application to bind to the Private Compute Core egress service.",
+      "explanation": null,
+      "constant": "android.permission.BIND_PCC_EGRESS_SERVICE",
+      "protection": "internal",
       "warning": null
     },
     "BIND_PRINT_SERVICE": {
@@ -1090,7 +1123,7 @@
       "description": "Allows an application to perform actions on behalf of users inside of applications.",
       "explanation": null,
       "constant": "android.permission.EXECUTE_APP_FUNCTIONS",
-      "protection": "internal|privileged|knownSigner",
+      "protection": "normal",
       "warning": null
     },
     "EXPAND_STATUS_BAR": {
@@ -1368,6 +1401,17 @@
       "protection": null,
       "warning": null
     },
+    "INSTALL_PACKAGES_AS_REGISTERED_APP_STORE": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "INSTALL_PACKAGES_AS_REGISTERED_APP_STORE",
+      "description": "Permission to allow installing and updating apps as a registered app store.",
+      "explanation": null,
+      "constant": "android.permission.INSTALL_PACKAGES_AS_REGISTERED_APP_STORE",
+      "protection": null,
+      "warning": null
+    },
     "INSTALL_SHORTCUT": {
       "apiAdded": 19,
       "apiDeprecated": null,
@@ -1465,6 +1509,39 @@
       "explanation": null,
       "constant": "android.permission.LOCATION_HARDWARE",
       "protection": null,
+      "warning": null
+    },
+    "LOCK_APPS": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "LOCK_APPS",
+      "description": "Permission granted to apps holding the RoleManager.ROLE_HOME role that allows them to enable app lock.",
+      "explanation": "Permission granted to apps holding the <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/app/role/RoleManager#ROLE_HOME\">RoleManager.ROLE_HOME</a></code> role that allows them to enable app lock. This is also granted to the recents component, which is typically the system launcher, to ensure a consistent user experience. App Lock is a feature that allows users to require authentication before opening apps.",
+      "constant": "android.permission.LOCK_APPS",
+      "protection": "internal|role|recents",
+      "warning": null
+    },
+    "MANAGE_ASSISTANT_AUDIO": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_ASSISTANT_AUDIO",
+      "description": "Allows control of audio behavior related to Assistant experiences, including routing, mode change and volume control of the Assistant audio stream.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_ASSISTANT_AUDIO",
+      "protection": "signature|preinstalled|role|appop",
+      "warning": null
+    },
+    "MANAGE_CONTACTS": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_CONTACTS",
+      "description": "Allows an application to manage user's contacts.",
+      "explanation": "Intended to be used by a limited number of apps that need full management capabilities.",
+      "constant": "android.permission.MANAGE_CONTACTS",
+      "protection": "signature|preinstalled|appop",
       "warning": null
     },
     "MANAGE_DEVICE_LOCK_STATE": {
@@ -2303,6 +2380,17 @@
       "protection": "internal|role",
       "warning": null
     },
+    "MANAGE_DEVICE_POLICY_UNIVERSAL_CLIPBOARD": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_DEVICE_POLICY_UNIVERSAL_CLIPBOARD",
+      "description": "Allows an application to manage policy related to Universal Clipboard feature.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_DEVICE_POLICY_UNIVERSAL_CLIPBOARD",
+      "protection": "internal|role",
+      "warning": null
+    },
     "MANAGE_DEVICE_POLICY_USB_DATA_SIGNALLING": {
       "apiAdded": 34,
       "apiDeprecated": null,
@@ -2730,6 +2818,17 @@
       "explanation": null,
       "constant": "android.permission.QUERY_ALL_PACKAGES",
       "protection": "normal",
+      "warning": null
+    },
+    "QUERY_APP_USAGE": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "QUERY_APP_USAGE",
+      "description": "Allows the holder to query app usage stats.",
+      "explanation": null,
+      "constant": "android.permission.QUERY_APP_USAGE",
+      "protection": "internal|role",
       "warning": null
     },
     "RANGING": {
@@ -3431,7 +3530,7 @@
       "apiReplaced": null,
       "name": "SET_PROCESS_LIMIT",
       "description": "Allows an application to set the maximum number of (not needed) application processes that can be running.",
-      "explanation": null,
+      "explanation": "Allows an application to configure the memory limits and budgets of processes other than itself.",
       "constant": "android.permission.SET_PROCESS_LIMIT",
       "protection": null,
       "warning": null

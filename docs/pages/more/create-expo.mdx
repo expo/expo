@@ -22,7 +22,7 @@ To create a new project, run the following command:
   }}
 />
 
-> **Note:** During the SDK 57 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-57` to create an SDK 57 project.
+> **Note:** Without `--template`, `create-expo-app` prompts which Expo SDK version to use. Select **Latest (SDK 57)** for most projects, or **for learning with Expo Go (SDK 54)**, which matches the Google Play Store and Apple App Store versions of Expo Go.
 
 Running the above command will prompt you to enter the app name of your project. This app name is also used in the app config's [`name`](/versions/latest/config/app/#name) property.
 
@@ -46,7 +46,7 @@ Skips generating **AGENTS.md**, **CLAUDE.md**, and **.claude/settings.json**. By
 
 ### `--template`
 
-Running `create-expo-app` with a [Node Package Manager](#node-package-managers-support) initializes and sets up a new Expo project using the default template.
+Running `create-expo-app` with a [Node package manager](#node-package-managers-support) initializes and sets up a new Expo project using the default template.
 
 You can use the `--template` option to select one of the following templates or pass it as an argument to the option. For example, `--template default`.
 
@@ -84,9 +84,9 @@ Prints the version number and exits.
 
 Prints the list of available options and exits.
 
-## Node Package Managers support
+## Node package managers support
 
-Creating a new project with `create-expo-app` also handles setting up additional configuration needed for a specific Node Package Manager.
+Creating a new project with `create-expo-app` also handles setting up additional configuration needed for a specific Node package manager.
 
 **If you are migrating from one package manager to another**, you've to manually carry out the additional configuration in your project. **If you are using [EAS](/eas/)**, you also have to configure your project for any additional required steps manually.
 
