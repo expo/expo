@@ -109,12 +109,7 @@ public final class SecureStoreModule: Module {
         throw MissingPlistKeyException()
       }
 
-      var error: Unmanaged<CFError>? = nil
-      guard let accessOptions = SecAccessControlCreateWithFlags(kCFAllocatorDefault, accessibility, .biometryCurrentSet, &error) else {
-        let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
-        throw SecAccessControlError(errorCode)
-      }
-      setItemQuery[kSecAttrAccessControl as String] = accessOptions
+      setItemQuery[kSecAttrAccessControl as String] = try accessControlWith(options: options)
     }
 
     let status = SecItemAdd(setItemQuery as CFDictionary, nil)
@@ -137,24 +132,23 @@ public final class SecureStoreModule: Module {
 
     let valueData = Data(value.utf8)
 
-    // An existing item keeps the accessibility it was created with unless the update
-    // names the attribute, so apply `keychainAccessible` when it was explicitly provided.
-    // Only the unauthenticated path applies it here, mirroring `set(value:with:options:)`,
-    // where an authenticated item carries its accessibility inside `kSecAttrAccessControl`.
-    let updateDictionary = if !options.requireAuthentication, options.keychainAccessible != nil {
-      [
-        kSecValueData: valueData,
-        kSecAttrAccessible: attributeWith(options: options)
-      ] as CFDictionary
-    } else {
-      [kSecValueData: valueData] as CFDictionary
+    var updateDictionary: [CFString: Any] = [kSecValueData: valueData]
+
+    // Keychain updates keep the existing access settings by default, so include the
+    // requested accessibility setting when one is provided.
+    if options.keychainAccessible != nil {
+      if options.requireAuthentication {
+        updateDictionary[kSecAttrAccessControl] = try accessControlWith(options: options)
+      } else {
+        updateDictionary[kSecAttrAccessible] = attributeWith(options: options)
+      }
     }
 
     if let authPrompt = options.authenticationPrompt {
       query[kSecUseOperationPrompt as String] = authPrompt
     }
 
-    let status = SecItemUpdate(query as CFDictionary, updateDictionary)
+    let status = SecItemUpdate(query as CFDictionary, updateDictionary as CFDictionary)
 
     if status == errSecSuccess {
       return true
@@ -228,6 +222,20 @@ public final class SecureStoreModule: Module {
     case .whenUnlockedThisDeviceOnly:
       return kSecAttrAccessibleWhenUnlockedThisDeviceOnly
     }
+  }
+
+  private func accessControlWith(options: SecureStoreOptions) throws -> SecAccessControl {
+    var error: Unmanaged<CFError>?
+    guard let accessControl = SecAccessControlCreateWithFlags(
+      kCFAllocatorDefault,
+      attributeWith(options: options),
+      .biometryCurrentSet,
+      &error
+    ) else {
+      let errorCode = error.map { CFErrorGetCode($0.takeRetainedValue()) }
+      throw SecAccessControlError(errorCode)
+    }
+    return accessControl
   }
 
   private func validate(for key: String) -> String? {
