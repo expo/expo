@@ -103,7 +103,7 @@ Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries 
 1. ~~Final name~~ — resolved [confirmed — Kudo, 2026-08-20]: `exagent` (package `packages/exagent/`, bin `exagent`); `ai-expo` stays reserved as an alias.
 2. ~~Model auth and billing~~ — resolved [confirmed — Kudo, 2026-08-18]: Shape 1, no model in the product; CI-only models for evals ([[0002-testing-and-evals]]).
 3. ~~Engine commitment~~ — moot under Shape 1; revisit only if a standalone bin is built later.
-4. ~~Skill-from-module contract~~ — partially resolved [confirmed — Kudo's reference PRs, 2026-08-20]: directory convention `skills/*/SKILL.md` discovered via autolinking (see [[0003-knowledge-tools-and-skills]]). Still open: whether general `expo/skills` content gets bundled or fetched.
+4. ~~Skill-from-module contract~~ — resolved [confirmed — Kudo, 2026-08-20]: directory convention `skills/*/SKILL.md` discovered via autolinking (see [[0003-knowledge-tools-and-skills]]). Scope is **co-located module skills** (e.g. `expo-sqlite/skills/`); distributing the general `expo/skills` repo content is out of scope for `exagent`.
 5. ~~Relationship to `expo-mcp` repo~~ — resolved [confirmed — Kudo, 2026-08-18]: depend on and extend `expo-mcp`; do not vendor. See §Tool surface.
 6. Whether `expo agent` (subcommand alias in `@expo/cli`) ships at all, and when.
 7. Chat-driven hosting: where does the cloud agent run — EAS-provided machines, or bring-your-own (Tuft-style)? (EAS auth itself: resolved direction in [[0007-deploy-and-headless]] §EAS auth — `EXPO_TOKEN` now, device-code grant as end state.)

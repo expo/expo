@@ -22,7 +22,7 @@ Deterministic tools that answer questions agents otherwise guess at, plus the di
 - [expo/expo#48973](https://github.com/expo/expo/pull/48973) — auto-sync all skills shortly after `expo start` reaches idle (~3 s).
 - [expo/expo#49018](https://github.com/expo/expo/pull/49018) — when a known agent CLI is detected, dump the installed module's `SKILL.md` into the agent's context on `expo install`, avoiding a manual `/reload-skills`.
 
-This settles the discovery contract [confirmed — by the PR implementation]: a **directory convention, `skills/*/SKILL.md`**, discovered via autolinking — not a `package.json` field.
+This settles the discovery contract [confirmed — by the PR implementation]: a **directory convention, `skills/*/SKILL.md`**, discovered via autolinking — not a `package.json` field. Scope [confirmed — Kudo, 2026-08-20]: **co-located module skills** (e.g. `expo-sqlite/skills/`); distributing the general `expo/skills` repo content is out of scope for `exagent`.
 
 **Migration** [confirmed — Kudo, 2026-08-20]: everything lands in `exagent`; the four PRs stay unmerged as proof-of-concept and the code is copied over. `exagent` ships its own `install` and `start` commands that wrap `expo install` / `expo start` as subprocesses and run skill sync (and later the smart-start engine, [[0004-smart-start-and-project-state]]) around them. `@expo/cli` gets no hooks.
 
