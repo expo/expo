@@ -99,6 +99,8 @@ export type SecureStoreOptions = {
   authenticationPrompt?: string;
   /**
    * Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible` property.
+   * When an existing entry is overwritten, passing this option updates the entry's accessibility,
+   * and omitting it keeps the accessibility the entry was stored with.
    * @see Apple's documentation on [keychain item accessibility](https://developer.apple.com/documentation/security/ksecattraccessible/).
    * @default SecureStore.WHEN_UNLOCKED
    * @platform ios
