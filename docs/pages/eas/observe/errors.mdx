@@ -28,7 +28,7 @@ This only affects unhandled errors. Errors caught by `ObserveErrorBoundary` or r
 
 ## Render errors
 
-Errors thrown while rendering never reach the global error handler. Wrap a subtree with `ObserveErrorBoundary` to record them together with the React component stack and show a fallback UI in place of the subtree that threw:
+Without an error boundary, an error thrown while rendering is recorded by the global error handler as an unhandled error. Wrap a subtree with `ObserveErrorBoundary` to record it together with the React component stack and show a fallback UI in place of the subtree that threw:
 
 ```tsx
 import { ObserveErrorBoundary } from 'expo-observe';
