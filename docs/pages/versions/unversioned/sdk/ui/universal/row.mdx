@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A horizontal layout container that arranges its children from start to end. Delegates to Jetpack Compose's [`Row`](../jetpack-compose/row) on Android, SwiftUI's [`HStack`](../swift-ui/hstack) on iOS, and a flex `View` on web.
@@ -35,60 +36,117 @@ A horizontal layout container that arranges its children from start to end. Dele
 
 ### Basic row
 
-```tsx RowExample.tsx
+<ComponentExample
+  title="RowExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-row-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-basic-android-dark.webp',
+    alt: 'Three text labels in a horizontal row',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-row-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-basic-ios-dark.webp',
+    alt: 'Three text labels in a horizontal row',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Row, Text } from '@expo/ui';
 
 export default function RowExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
     <Host matchContents>
       <Row spacing={8}>
-        <Text>One</Text>
-        <Text>Two</Text>
-        <Text>Three</Text>
+        <Text textStyle={ink}>One</Text>
+        <Text textStyle={ink}>Two</Text>
+        <Text textStyle={ink}>Three</Text>
       </Row>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Alignment
 
 Use [`alignment`](#alignment) to position children along the cross (vertical) axis.
 
-```tsx RowAlignmentExample.tsx
+<ComponentExample
+  title="RowAlignmentExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-row-alignment-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-alignment-android-dark.webp',
+    alt: 'A large label and a small label sharing a center line',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-row-alignment-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-alignment-ios-dark.webp',
+    alt: 'A large label and a small label sharing a center line',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Row, Text } from '@expo/ui';
 
 export default function RowAlignmentExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
-    <Host style={{ flex: 1 }}>
+    <Host style={{ width: '100%', height: 160 }}>
       <Row spacing={8} alignment="center">
-        <Text>Centered</Text>
-        <Text>Centered</Text>
+        <Text textStyle={{ ...ink, fontSize: 30 }}>Large</Text>
+        <Text textStyle={ink}>centered</Text>
       </Row>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Pushing content apart with Spacer
 
 Pair `Row` with a flexible [`Spacer`](spacer) to push its children to the opposite ends.
 
-```tsx RowSpacerExample.tsx
+<ComponentExample
+  title="RowSpacerExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-row-spacer-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-spacer-android-dark.webp',
+    alt: 'Leading and trailing labels pushed to opposite edges',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-row-spacer-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-row-spacer-ios-dark.webp',
+    alt: 'Leading and trailing labels pushed to opposite edges',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Row, Text, Spacer } from '@expo/ui';
 
 export default function RowSpacerExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Row>
-        <Text>Leading</Text>
+        <Text textStyle={ink}>Leading</Text>
         <Spacer flexible />
-        <Text>Trailing</Text>
+        <Text textStyle={ink}>Trailing</Text>
       </Row>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A scrollable container for grouped settings-style rows, mirroring the look of an iOS Settings screen. Compose `FieldGroup.Section` (for explicit groups), `FieldGroup.SectionHeader`, and `FieldGroup.SectionFooter` slots inside.
@@ -37,13 +38,29 @@ A scrollable container for grouped settings-style rows, mirroring the look of an
 
 ### Sectioned form
 
-```tsx FieldGroupExample.tsx
+<ComponentExample
+  title="FieldGroupExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-fieldgroup-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-fieldgroup-basic-android-dark.webp',
+    alt: 'A Notifications section with Push on and Email off, above an About section',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-fieldgroup-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-fieldgroup-basic-ios-dark.webp',
+    alt: 'A Notifications section with Push on and Email off, above an About section',
+  }}>
+
+```tsx
 import { useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { Host, FieldGroup, Switch, Text } from '@expo/ui';
 
 export default function FieldGroupExample() {
   const [notifications, setNotifications] = useState(true);
   const [analytics, setAnalytics] = useState(false);
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
 
   return (
     <Host style={{ flex: 1 }}>
@@ -54,7 +71,7 @@ export default function FieldGroupExample() {
         </FieldGroup.Section>
 
         <FieldGroup.Section title="About">
-          <Text>Version 1.0.0</Text>
+          <Text textStyle={ink}>Version 1.0.0</Text>
         </FieldGroup.Section>
       </FieldGroup>
     </Host>
@@ -62,23 +79,41 @@ export default function FieldGroupExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom section header and footer
 
 Use `FieldGroup.SectionHeader` and `FieldGroup.SectionFooter` to render fully styled header/footer slots in place of the default `title` text.
 
-```tsx FieldGroupSlotsExample.tsx
+<ComponentExample
+  title="FieldGroupSlotsExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-fieldgroup-slots-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-fieldgroup-slots-android-dark.webp',
+    alt: 'A Privacy section with a Share usage switch and a footnote below it',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-fieldgroup-slots-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-fieldgroup-slots-ios-dark.webp',
+    alt: 'A Privacy section with a Share usage switch and a footnote below it',
+  }}>
+
+```tsx
 import { useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { Host, FieldGroup, Switch, Text } from '@expo/ui';
 
 export default function FieldGroupSlotsExample() {
   const [enabled, setEnabled] = useState(false);
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
 
   return (
     <Host style={{ flex: 1 }}>
       <FieldGroup>
         <FieldGroup.Section>
           <FieldGroup.SectionHeader>
-            <Text textStyle={{ fontSize: 16, fontWeight: '700' }}>Privacy</Text>
+            <Text textStyle={{ ...ink, fontSize: 16, fontWeight: '700' }}>Privacy</Text>
           </FieldGroup.SectionHeader>
 
           <Switch label="Share usage" value={enabled} onValueChange={setEnabled} />
@@ -94,6 +129,8 @@ export default function FieldGroupSlotsExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -51,7 +52,20 @@ Optionally, install [`@expo/material-symbols`](https://www.npmjs.com/package/@ex
 
 [`Icon.select`](#selectspec) picks the right asset for the current platform. Pair it with [`@expo/ui/babel-plugin`](https://github.com/expo/expo/tree/main/packages/expo-ui/plugin) (auto-loaded by `babel-preset-expo`) so Metro can tree-shake the unused side per platform.
 
-```tsx IconSelectExample.tsx
+<ComponentExample
+  title="IconSelectExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-icon-select-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-icon-select-android-dark.webp',
+    alt: 'A large orange star drawn as a Material Symbol',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-icon-select-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-icon-select-ios-dark.webp',
+    alt: 'A large orange star drawn as an SF Symbol',
+  }}>
+
+```tsx
 import { Host, Icon } from '@expo/ui';
 
 export default function IconSelectExample() {
@@ -70,11 +84,26 @@ export default function IconSelectExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Hoisted `Icon.select`
 
 Hoist the [`Icon.select`](#selectspec) call when reusing the same icon across multiple call sites.
 
-```tsx HoistedIconExample.tsx
+<ComponentExample
+  title="HoistedIconExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-icon-hoisted-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-icon-hoisted-android-dark.webp',
+    alt: 'A row of three small gold stars drawn as Material Symbols',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-icon-hoisted-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-icon-hoisted-ios-dark.webp',
+    alt: 'A row of three small gold stars drawn as SF Symbols',
+  }}>
+
+```tsx
 import { Host, Row, Icon } from '@expo/ui';
 
 const STAR = Icon.select({
@@ -94,6 +123,8 @@ export default function HoistedIconExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ### Platform-specific files
 

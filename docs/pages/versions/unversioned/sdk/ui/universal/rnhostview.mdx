@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 Hosts a React Native view subtree inside a universal `@expo/ui` layout. On Android and iOS, it re-exports the platform-native [`RNHostView` for Jetpack Compose](../jetpack-compose/rnhostview)/[`RNHostView` for SwiftUI](../swift-ui/rnhostview), so React Native children bridge into the surrounding Compose/SwiftUI tree. On web, there is no native host tree to bridge into, so it falls back to a React Native [`View`](https://reactnative.dev/docs/view) that wraps the children.
@@ -37,15 +38,33 @@ Hosts a React Native view subtree inside a universal `@expo/ui` layout. On Andro
 
 Place a React Native view subtree anywhere inside a universal `@expo/ui` layout.
 
-```tsx RNHostViewExample.tsx
+<ComponentExample
+  title="RNHostViewExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-rnhostview-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-rnhostview-basic-android-dark.webp',
+    alt: 'A bold label above a purple React Native chip',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-rnhostview-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-rnhostview-basic-ios-dark.webp',
+    alt: 'A bold label above a purple React Native chip',
+  }}>
+
+```tsx
 import { Host, Column, RNHostView, Text } from '@expo/ui';
-import { Text as RNText, View } from 'react-native';
+import { Text as RNText, View, useColorScheme } from 'react-native';
 
 export default function RNHostViewExample() {
+  const colorScheme = useColorScheme();
+
   return (
     <Host matchContents>
       <Column spacing={12} style={{ padding: 16 }}>
-        <Text textStyle={{ fontWeight: 'bold' }}>Native UI label</Text>
+        <Text
+          textStyle={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000', fontWeight: 'bold' }}>
+          Native UI label
+        </Text>
         <RNHostView matchContents>
           <View
             style={{
@@ -63,20 +82,38 @@ export default function RNHostViewExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Fill parent vs. match child
 
 By default `RNHostView` fills its native parent. Set `matchContents` to have it shrink to fit its React Native children instead.
 
-```tsx RNHostViewExample.tsx
-import { Host, Column, Row, Text, RNHostView } from '@expo/ui';
-import { View } from 'react-native';
+<ComponentExample
+  title="RNHostViewSizingExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-rnhostview-sizing-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-rnhostview-sizing-android-dark.webp',
+    alt: 'Two sections comparing a purple square that fills a 100 by 100 frame with a smaller 50 by 50 square',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-rnhostview-sizing-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-rnhostview-sizing-ios-dark.webp',
+    alt: 'Two sections comparing a purple square that fills a 100 by 100 frame with a smaller 50 by 50 square',
+  }}>
 
-export default function RNHostViewExample() {
+```tsx
+import { Host, Column, Row, Text, RNHostView } from '@expo/ui';
+import { View, useColorScheme } from 'react-native';
+
+export default function RNHostViewSizingExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
     <Host matchContents>
       <Column spacing={24} style={{ padding: 16 }}>
         <Column spacing={8}>
-          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Fill parent size</Text>
+          <Text textStyle={{ ...ink, fontSize: 18, fontWeight: 'bold' }}>Fill parent size</Text>
           <Text textStyle={{ fontSize: 12, color: '#666666' }}>
             The RNHostView fills the native parent's 100×100 frame.
           </Text>
@@ -88,7 +125,7 @@ export default function RNHostViewExample() {
         </Column>
 
         <Column spacing={8}>
-          <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Match child size</Text>
+          <Text textStyle={{ ...ink, fontSize: 18, fontWeight: 'bold' }}>Match child size</Text>
           <Text textStyle={{ fontSize: 12, color: '#666666' }}>
             The RNHostView shrinks to wrap its 50×50 child.
           </Text>
@@ -105,6 +142,8 @@ export default function RNHostViewExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

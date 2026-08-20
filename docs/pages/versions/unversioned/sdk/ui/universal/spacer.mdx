@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A layout spacer that produces empty space between siblings inside a [`Row`](row) or [`Column`](column). Use [`size`](#size) for a fixed gap, or [`flexible`](#flexible) to fill the remaining main-axis space.
@@ -35,41 +36,79 @@ A layout spacer that produces empty space between siblings inside a [`Row`](row)
 
 ### Fixed-size spacer
 
-```tsx FixedSpacerExample.tsx
+<ComponentExample
+  title="FixedSpacerExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-spacer-fixed-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-spacer-fixed-android-dark.webp',
+    alt: 'Two labels separated by a fixed vertical gap',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-spacer-fixed-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-spacer-fixed-ios-dark.webp',
+    alt: 'Two labels separated by a fixed vertical gap',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Column, Text, Spacer } from '@expo/ui';
 
 export default function FixedSpacerExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
     <Host matchContents>
       <Column>
-        <Text>Top</Text>
+        <Text textStyle={ink}>Top</Text>
         <Spacer size={32} />
-        <Text>Bottom</Text>
+        <Text textStyle={ink}>Bottom</Text>
       </Column>
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Flexible spacer
 
 A flexible spacer fills the remaining space along its parent's main axis, pushing the surrounding content to opposite ends.
 
-```tsx FlexibleSpacerExample.tsx
+<ComponentExample
+  title="FlexibleSpacerExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-spacer-flexible-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-spacer-flexible-android-dark.webp',
+    alt: 'Leading and trailing labels pushed to opposite edges',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-spacer-flexible-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-spacer-flexible-ios-dark.webp',
+    alt: 'Leading and trailing labels pushed to opposite edges',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Row, Text, Spacer } from '@expo/ui';
 
 export default function FlexibleSpacerExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Row>
-        <Text>Leading</Text>
+        <Text textStyle={ink}>Leading</Text>
         <Spacer flexible />
-        <Text>Trailing</Text>
+        <Text textStyle={ink}>Trailing</Text>
       </Row>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

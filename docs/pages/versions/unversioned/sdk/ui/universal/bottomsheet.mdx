@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A modal sheet that slides up from the bottom of the screen. The sheet's visibility is controlled — toggle [`isPresented`](#ispresented) from React state and dismiss it from [`onDismiss`](#ondismiss) (called when the user swipes down or taps the overlay).
@@ -37,52 +38,92 @@ A modal sheet that slides up from the bottom of the screen. The sheet's visibili
 
 ### Basic bottom sheet
 
-```tsx BottomSheetExample.tsx
+<ComponentExample
+  title="BottomSheetExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-basic-android-dark.webp',
+    alt: 'An open sheet titled Sheet contents with a Close button, over a dimmed screen',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-basic-ios-dark.webp',
+    alt: 'An open sheet titled Sheet contents with a Close button, over a dimmed screen',
+  }}>
+
+```tsx
 import { useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { Host, Column, Button, BottomSheet, Text } from '@expo/ui';
 
 export default function BottomSheetExample() {
   const [isPresented, setIsPresented] = useState(false);
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
 
   return (
-    <Host style={{ flex: 1 }}>
-      <Button label="Open sheet" onPress={() => setIsPresented(true)} />
+    <>
+      <Host matchContents>
+        <Button label="Open sheet" onPress={() => setIsPresented(true)} />
+      </Host>
       <BottomSheet isPresented={isPresented} onDismiss={() => setIsPresented(false)}>
         <Column spacing={12}>
-          <Text textStyle={{ fontSize: 18, fontWeight: '700' }}>Sheet contents</Text>
-          <Text>Drag down or tap the overlay to dismiss.</Text>
+          <Text textStyle={{ ...ink, fontSize: 18, fontWeight: '700' }}>Sheet contents</Text>
+          <Text textStyle={ink}>Drag down or tap the overlay to dismiss.</Text>
           <Button label="Close" onPress={() => setIsPresented(false)} />
         </Column>
       </BottomSheet>
-    </Host>
+    </>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Hiding the drag indicator
 
 Pass [`showDragIndicator={false}`](#showdragindicator) for sheets without a handle.
 
-```tsx BottomSheetNoIndicatorExample.tsx
+<ComponentExample
+  title="BottomSheetNoIndicatorExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-no-indicator-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-no-indicator-android-dark.webp',
+    alt: 'A short sheet with no drag handle at the bottom of a dimmed screen',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-no-indicator-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-no-indicator-ios-dark.webp',
+    alt: 'A short sheet with no drag handle at the bottom of a dimmed screen',
+  }}>
+
+```tsx
 import { useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { Host, Button, BottomSheet, Text } from '@expo/ui';
 
 export default function BottomSheetNoIndicatorExample() {
   const [isPresented, setIsPresented] = useState(false);
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
 
   return (
-    <Host style={{ flex: 1 }}>
-      <Button label="Open" onPress={() => setIsPresented(true)} />
+    <>
+      <Host matchContents>
+        <Button label="Open" onPress={() => setIsPresented(true)} />
+      </Host>
       <BottomSheet
         isPresented={isPresented}
         onDismiss={() => setIsPresented(false)}
         showDragIndicator={false}>
-        <Text>No drag handle.</Text>
+        <Text textStyle={ink}>No drag handle.</Text>
       </BottomSheet>
-    </Host>
+    </>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Content padding
 
@@ -96,20 +137,22 @@ export default function BottomSheetContentPaddingExample() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
-    <Host style={{ flex: 1 }}>
-      <Button label="Open" onPress={() => setIsPresented(true)} />
+    <>
+      <Host matchContents>
+        <Button label="Open" onPress={() => setIsPresented(true)} />
+      </Host>
       <BottomSheet
         isPresented={isPresented}
         onDismiss={() => setIsPresented(false)}
         contentPadding={0}>
         <Column>
           <Column style={{ backgroundColor: '#0a84ff', padding: 16 }}>
-            <Text>This banner reaches the sheet's edge.</Text>
+            <Text textStyle={{ color: '#FFFFFF' }}>This banner reaches the sheet's edge.</Text>
           </Column>
           <Button label="Close" onPress={() => setIsPresented(false)} />
         </Column>
       </BottomSheet>
-    </Host>
+    </>
   );
 }
 ```
@@ -120,31 +163,51 @@ Pass [`snapPoints`](#snappoints) to let the user drag the sheet between multiple
 
 When sheet content can be taller than the smallest snap point, wrap it in a `ScrollView` so the overflow scrolls correctly.
 
-```tsx BottomSheetSnapPointsExample.tsx
+<ComponentExample
+  title="BottomSheetSnapPointsExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-snap-points-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-snap-points-android-dark.webp',
+    alt: 'A half-height sheet titled Half / full sheet',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-snap-points-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-snap-points-ios-dark.webp',
+    alt: 'A half-height sheet titled Half / full sheet',
+  }}>
+
+```tsx
 import { useState } from 'react';
+import { useColorScheme } from 'react-native';
 import { Host, BottomSheet, Button, Column, ScrollView, Text } from '@expo/ui';
 
 export default function BottomSheetSnapPointsExample() {
   const [isPresented, setIsPresented] = useState(false);
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
 
   return (
-    <Host style={{ flex: 1 }}>
-      <Button label="Open" onPress={() => setIsPresented(true)} />
+    <>
+      <Host matchContents>
+        <Button label="Open" onPress={() => setIsPresented(true)} />
+      </Host>
       <BottomSheet
         isPresented={isPresented}
         onDismiss={() => setIsPresented(false)}
         snapPoints={['half', 'full']}>
         <ScrollView>
           <Column spacing={12}>
-            <Text textStyle={{ fontSize: 20, fontWeight: '700' }}>Half / full sheet</Text>
-            <Text>Drag the sheet between half and full screen height.</Text>
+            <Text textStyle={{ ...ink, fontSize: 20, fontWeight: '700' }}>Half / full sheet</Text>
+            <Text textStyle={ink}>Drag the sheet between half and full screen height.</Text>
           </Column>
         </ScrollView>
       </BottomSheet>
-    </Host>
+    </>
   );
 }
 ```
+
+</ComponentExample>
 
 > On Android, `{ fraction }` and `{ height }` snap to the nearest of `'half'` / `'full'` — the underlying `ModalBottomSheet` only supports two resting states. The partial state is only visible when content is tall enough to exceed Material's partial threshold; give the content an explicit height or fill the available space if you need the half state on short content.
 
@@ -152,19 +215,36 @@ export default function BottomSheetSnapPointsExample() {
 
 The bottom sheet supports a React Native list such as `FlatList` (or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list)) as a child when wrapped in [`RNHostView`](rnhostview). [`snapPoints`](#snappoints) sizes the sheet, and the list scrolls within that height. With `nestedScrollEnabled`, the list scrolls its own content first; once it reaches the top edge, the remaining drag moves the sheet.
 
-```tsx BottomSheetScrollableExample.tsx
+<ComponentExample
+  title="BottomSheetScrollableExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-scrollable-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-scrollable-android-dark.webp',
+    alt: 'A half-height sheet holding a scrollable list of items',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-bottomsheet-scrollable-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-bottomsheet-scrollable-ios-dark.webp',
+    alt: 'A half-height sheet holding a scrollable list of items',
+  }}>
+
+```tsx
 import { useState } from 'react';
-import { FlatList, Text } from 'react-native';
+import { FlatList, Text, useColorScheme } from 'react-native';
 import { Host, BottomSheet, Button, RNHostView } from '@expo/ui';
 
 const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
 
 export default function BottomSheetScrollableExample() {
   const [isPresented, setIsPresented] = useState(false);
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
 
   return (
-    <Host matchContents>
-      <Button label="Open" onPress={() => setIsPresented(true)} />
+    <>
+      <Host matchContents>
+        <Button label="Open" onPress={() => setIsPresented(true)} />
+      </Host>
       <BottomSheet
         isPresented={isPresented}
         onDismiss={() => setIsPresented(false)}
@@ -175,14 +255,16 @@ export default function BottomSheetScrollableExample() {
             style={{ flex: 1 }}
             data={DATA}
             keyExtractor={item => item}
-            renderItem={({ item }) => <Text style={{ padding: 16 }}>{item}</Text>}
+            renderItem={({ item }) => <Text style={[ink, { padding: 16 }]}>{item}</Text>}
           />
         </RNHostView>
       </BottomSheet>
-    </Host>
+    </>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 

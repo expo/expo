@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 ---
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 
 The universal components in `@expo/ui` are a single-API layer over the platform-native UI toolkits. On Android, they delegate to [`@expo/ui/jetpack-compose`](../jetpack-compose). On iOS, they delegate to [`@expo/ui/swift-ui`](../swift-ui). On web, they're JS implementations using `react-dom` or `react-native-web` and are picked per component to suit the control.
 
@@ -19,20 +20,40 @@ The universal components in `@expo/ui` are a single-API layer over the platform-
 
 Universal components must still be wrapped in a [`Host`](host), but you import everything, including `Host`, from the package root. The universal `Host` dispatches to the platform-native host on Android and iOS, so there's no need to reach for [`@expo/ui/swift-ui`](../swift-ui) or [`@expo/ui/jetpack-compose`](../jetpack-compose) directly.
 
-```tsx UniversalExample.tsx
+<ComponentExample
+  title="UniversalExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-index-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-index-basic-android-dark.webp',
+    alt: 'A Hello world label above a filled Material 3 button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-index-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-index-basic-ios-dark.webp',
+    alt: 'A Hello world label above a filled button',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Column, Button, Text } from '@expo/ui';
 
 export default function Example() {
+  const colorScheme = useColorScheme();
+
   return (
     <Host style={{ flex: 1 }}>
       <Column spacing={12} alignment="center">
-        <Text>Hello, world!</Text>
+        <Text textStyle={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
+          Hello, world!
+        </Text>
         <Button label="Press me" onPress={() => alert('Pressed')} />
       </Column>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## Available components
 
