@@ -134,14 +134,16 @@
     @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:errorInfo];
   }
   
-  NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy];
-  
-  [appTasks removeObjectForKey:taskName];
-  
-  if (appTasks.count == 0) {
-    [_tasks removeObjectForKey:appId];
-  } else {
-    [_tasks setObject:appTasks forKey:appId];
+  @synchronized (self) {
+    NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy];
+
+    [appTasks removeObjectForKey:taskName];
+
+    if (appTasks.count == 0) {
+      [_tasks removeObjectForKey:appId];
+    } else {
+      [_tasks setObject:appTasks forKey:appId];
+    }
   }
   
   if ([task.consumer respondsToSelector:@selector(didUnregister)]) {
@@ -155,18 +157,27 @@
  */
 - (void)unregisterAllTasksForAppId:(NSString *)appId
 {
-  NSDictionary *appTasks = _tasks[appId];
-  
-  if (appTasks) {
+  // This is called from the app loader's failure callback (arbitrary queue) —
+  // detach the app's tasks under the lock, then run consumer call-outs outside it.
+  NSArray<EXTask *> *tasksToUnregister = nil;
+
+  @synchronized (self) {
+    NSDictionary *appTasks = _tasks[appId];
+
+    if (appTasks) {
+      tasksToUnregister = [appTasks allValues];
+      [_tasks removeObjectForKey:appId];
+    }
+  }
+
+  if (tasksToUnregister) {
     // Call `didUnregister` on task consumers
-    for (EXTask *task in [appTasks allValues]) {
+    for (EXTask *task in tasksToUnregister) {
       if ([task.consumer respondsToSelector:@selector(didUnregister)]) {
         [task.consumer didUnregister];
       }
     }
-    
-    [_tasks removeObjectForKey:appId];
-    
+
     // Remove the app from the config in user defaults.
     [self _removeFromConfigAppWithId:appId];
   }
@@ -214,37 +225,54 @@
   id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
   NSString *eventId = response[@"eventId"];
   id result = response[@"result"];
-  
+
   if ([task.consumer respondsToSelector:@selector(normalizeTaskResult:)]) {
     result = @([task.consumer normalizeTaskResult:result]);
   }
   if ([task.consumer respondsToSelector:@selector(didFinish)]) {
     [task.consumer didFinish];
   }
-  
-  // Inform requests about finished tasks
-  for (EXTaskExecutionRequest *request in [_requests copy]) {
+
+  // Inform requests about finished tasks.
+  // Snapshot `_requests` under the lock — it is mutated by the launch path
+  // (`_runTasksSupportingLaunchReason:`) on other threads.
+  NSArray<EXTaskExecutionRequest *> *requests;
+  @synchronized (self) {
+    requests = [_requests copy];
+  }
+  for (EXTaskExecutionRequest *request in requests) {
     if ([request isIncludingTask:task]) {
       [request task:task didFinishWithResult:result];
     }
   }
-  
-  // Remove event and maybe invalidate related app record
-  NSMutableArray *appEvents = _events[appId];
-  
-  if (appEvents) {
-    [appEvents removeObject:eventId];
-    
-    if (appEvents.count == 0) {
-      [self->_events removeObjectForKey:appId];
-      
-      // Invalidate app record but after 1 second delay so we can still take batched events.
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+
+  // Remove event and maybe invalidate related app record.
+  // `_events` arrays are appended to by `executeTask:` on the thread that
+  // executes the task (e.g. main for location consumers) while this method
+  // runs on the JS thread — all access must happen under the lock.
+  BOOL appEventsEmptied = NO;
+  @synchronized (self) {
+    NSMutableArray *appEvents = _events[appId];
+
+    if (appEvents) {
+      [appEvents removeObject:eventId];
+
+      if (appEvents.count == 0) {
+        [self->_events removeObjectForKey:appId];
+        appEventsEmptied = YES;
+      }
+    }
+  }
+
+  if (appEventsEmptied) {
+    // Invalidate app record but after 1 second delay so we can still take batched events.
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      @synchronized (self) {
         if (!self->_events[appId]) {
           [self _invalidateAppWithId:appId];
         }
-      });
-    }
+      }
+    });
   }
 }
 
@@ -256,23 +284,27 @@
   // Having two tables for them is to prevent race condition problems,
   // when both foreground and background apps are launching at the same time.
   BOOL isHeadless = [taskManager isRunningInHeadlessMode];
-  NSMapTable *taskManagersTable = isHeadless ? _headlessTaskManagers : _taskManagers;
-  
-  // Set task manager in appropriate table.
-  [taskManagersTable setObject:taskManager forKey:appId];
-  
-  // Execute events waiting for the task manager.
-  NSMutableArray *appEventQueue = _eventsQueues[appId];
-  
+  NSMutableArray *appEventQueue;
+
+  @synchronized (self) {
+    NSMapTable *taskManagersTable = isHeadless ? _headlessTaskManagers : _taskManagers;
+
+    // Set task manager in appropriate table.
+    [taskManagersTable setObject:taskManager forKey:appId];
+
+    // Detach the events queue for that app — once removed from `_eventsQueues`
+    // nothing else references it, so it can be drained outside the lock.
+    appEventQueue = _eventsQueues[appId];
+    [_eventsQueues removeObjectForKey:appId];
+  }
+
+  // Execute events that were waiting for the task manager.
   if (appEventQueue) {
     for (NSDictionary *body in appEventQueue) {
       [taskManager executeWithBody:body];
     }
   }
-  
-  // Remove events queue for that app.
-  [_eventsQueues removeObjectForKey:appId];
-  
+
   if (!isHeadless) {
     // Maybe update app url in user defaults. It might change only in non-headless mode.
     [self _maybeUpdateAppUrl:appUrl forAppId:appId];
@@ -285,38 +317,49 @@
            withData:(nullable NSDictionary *)data
           withError:(nullable NSError *)error
 {
-  id<EXTaskManagerInterface> taskManager = [self _taskManagerForAppId:task.appId];
   NSDictionary *executionInfo = [self _executionInfoForTask:task];
   NSDictionary *body = @{
     @"executionInfo": executionInfo,
     @"data": data ?: @{},
     @"error": EXNullIfNil([self _exportError:error]),
   };
-  
+
   NSLog(@"EXTaskService: Executing task '%@' for app '%@'.", task.name, task.appId);
-  
-  // Save an event so we can keep tracking events for this app
-  NSMutableArray *appEvents = _events[task.appId] ?: [NSMutableArray new];
-  [appEvents addObject:executionInfo[@"eventId"]];
-  [_events setObject:appEvents forKey:task.appId];
-  
+
+  id<EXTaskManagerInterface> taskManager;
+
+  // This method is entered from whichever thread the task consumer fires on
+  // (e.g. main for location updates) while `notifyTaskWithName:` empties the
+  // same `_events` arrays from the JS thread. `addObject:` on NSMutableArray
+  // computes its insertion index from a count another thread can invalidate,
+  // so all bookkeeping happens under the lock; only the task manager
+  // call-out below stays outside it.
+  @synchronized (self) {
+    taskManager = [self _taskManagerForAppId:task.appId];
+
+    // Save an event so we can keep tracking events for this app
+    NSMutableArray *appEvents = _events[task.appId] ?: [NSMutableArray new];
+    [appEvents addObject:executionInfo[@"eventId"]];
+    [_events setObject:appEvents forKey:task.appId];
+
+    if (taskManager == nil) {
+      if (_appRecords[task.appId] == nil) {
+        // No app record yet - let's spin it up!
+        [self _loadAppWithId:task.appId appUrl:task.appUrl];
+      }
+
+      // App record for that app exists, but it's not fully loaded as its task manager is not there yet.
+      // We need to add event's body to the queue from which events will be executed once the task manager is ready.
+      NSMutableArray *appEventsQueue = _eventsQueues[task.appId] ?: [NSMutableArray new];
+      [appEventsQueue addObject:body];
+      [_eventsQueues setObject:appEventsQueue forKey:task.appId];
+    }
+  }
+
   if (taskManager != nil) {
     // Task manager is initialized and can execute events
     [taskManager executeWithBody:body];
-    return;
   }
-  
-  if (_appRecords[task.appId] == nil) {
-    // No app record yet - let's spin it up!
-    [self _loadAppWithId:task.appId appUrl:task.appUrl];
-  }
-  
-  // App record for that app exists, but it's not fully loaded as its task manager is not there yet.
-  // We need to add event's body to the queue from which events will be executed once the task manager is ready.
-  NSMutableArray *appEventsQueue = _eventsQueues[task.appId] ?: [NSMutableArray new];
-  [appEventsQueue addObject:body];
-  [_eventsQueues setObject:appEventsQueue forKey:task.appId];
-  return;
 }
 
 # pragma mark - statics
@@ -382,7 +425,12 @@
  */
 - (NSDictionary<NSString *, EXTask *> *)_getTasksForAppId:(NSString *)appId
 {
-  return _tasks[appId];
+  // The per-app dictionaries are replaced wholesale (copy-on-write) by the
+  // register/unregister paths, so callers may safely enumerate the returned
+  // snapshot; only the lookup itself needs the lock.
+  @synchronized (self) {
+    return _tasks[appId];
+  }
 }
 
 /**
@@ -394,16 +442,21 @@
                             consumerClass:(Class)consumerClass
                                   options:(nullable NSDictionary *)options
 {
-  NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy] ?: [NSMutableDictionary new];
   EXTask *task = [[EXTask alloc] initWithName:taskName
                                         appId:appId
                                        appUrl:appUrl
                                 consumerClass:consumerClass
                                       options:options
                                      delegate:self];
-  
-  [appTasks setObject:task forKey:task.name];
-  [_tasks setObject:appTasks forKey:appId];
+
+  @synchronized (self) {
+    NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy] ?: [NSMutableDictionary new];
+    [appTasks setObject:task forKey:task.name];
+    [_tasks setObject:appTasks forKey:appId];
+  }
+
+  // Inform the consumer outside the lock — consumer call-outs may re-enter
+  // the service (e.g. immediately executing a task).
   [task.consumer didRegisterTask:task];
   return task;
 }
@@ -413,18 +466,22 @@
  */
 - (void)_addTaskToConfig:(nonnull id<EXTaskInterface>)task
 {
-  NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy] ?: [NSMutableDictionary new];
-  NSMutableDictionary *appDict = [dict[task.appId] mutableCopy] ?: [NSMutableDictionary new];
-  NSMutableDictionary *tasks = [appDict[@"tasks"] mutableCopy] ?: [NSMutableDictionary new];
-  NSDictionary *taskDict = [self _dictionaryFromTask:task];
-  
-  [tasks setObject:taskDict forKey:task.name];
-  [appDict setObject:tasks forKey:@"tasks"];
-  if (task.appUrl) {
-    [appDict setObject:task.appUrl forKey:@"appUrl"];
+  // The config read-modify-write below races other config writers on other
+  // threads; hold the lock across it so no update is lost.
+  @synchronized (self) {
+    NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy] ?: [NSMutableDictionary new];
+    NSMutableDictionary *appDict = [dict[task.appId] mutableCopy] ?: [NSMutableDictionary new];
+    NSMutableDictionary *tasks = [appDict[@"tasks"] mutableCopy] ?: [NSMutableDictionary new];
+    NSDictionary *taskDict = [self _dictionaryFromTask:task];
+
+    [tasks setObject:taskDict forKey:task.name];
+    [appDict setObject:tasks forKey:@"tasks"];
+    if (task.appUrl) {
+      [appDict setObject:task.appUrl forKey:@"appUrl"];
+    }
+    [dict setObject:appDict forKey:task.appId];
+    [self _saveConfigWithDictionary:dict];
   }
-  [dict setObject:appDict forKey:task.appId];
-  [self _saveConfigWithDictionary:dict];
 }
 
 /**
@@ -432,30 +489,34 @@
  */
 - (void)_removeTaskFromConfig:(NSString *)taskName appId:(NSString *)appId
 {
-  NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
-  NSMutableDictionary *appDict = [dict[appId] mutableCopy];
-  NSMutableDictionary *tasks = [appDict[@"tasks"] mutableCopy];
-  
-  if (tasks != nil) {
-    [tasks removeObjectForKey:taskName];
-    
-    if ([tasks count] > 0) {
-      [appDict setObject:tasks forKey:@"tasks"];
-      [dict setObject:appDict forKey:appId];
-    } else {
-      [dict removeObjectForKey:appId];
+  @synchronized (self) {
+    NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
+    NSMutableDictionary *appDict = [dict[appId] mutableCopy];
+    NSMutableDictionary *tasks = [appDict[@"tasks"] mutableCopy];
+
+    if (tasks != nil) {
+      [tasks removeObjectForKey:taskName];
+
+      if ([tasks count] > 0) {
+        [appDict setObject:tasks forKey:@"tasks"];
+        [dict setObject:appDict forKey:appId];
+      } else {
+        [dict removeObjectForKey:appId];
+      }
+      [self _saveConfigWithDictionary:dict];
     }
-    [self _saveConfigWithDictionary:dict];
   }
 }
 
 - (void)_removeFromConfigAppWithId:(nonnull NSString *)appId
 {
-  NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
-  
-  if (dict[appId]) {
-    [dict removeObjectForKey:appId];
-    [self _saveConfigWithDictionary:dict];
+  @synchronized (self) {
+    NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
+
+    if (dict[appId]) {
+      [dict removeObjectForKey:appId];
+      [self _saveConfigWithDictionary:dict];
+    }
   }
 }
 
@@ -472,13 +533,28 @@
 
 - (void)_iterateTasksUsingBlock:(void(^)(id<EXTaskInterface> task))block
 {
-  for (NSString *appId in _tasks) {
-    NSDictionary *appTasks = [self _getTasksForAppId:appId];
-    
-    for (NSString *taskName in appTasks) {
-      id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
-      block(task);
+  // Snapshot the tasks under the lock, then call out to the block outside it —
+  // `_tasks` is mutated by the register/unregister paths on other threads (the
+  // app loader's failure callback among them), and fast enumeration over a
+  // mutating dictionary throws.
+  NSMutableArray<id<EXTaskInterface>> *tasksSnapshot = [NSMutableArray new];
+
+  @synchronized (self) {
+    for (NSString *appId in _tasks) {
+      NSDictionary *appTasks = _tasks[appId];
+
+      for (NSString *taskName in appTasks) {
+        id<EXTaskInterface> task = appTasks[taskName];
+
+        if (task != nil) {
+          [tasksSnapshot addObject:task];
+        }
+      }
     }
+  }
+
+  for (id<EXTaskInterface> task in tasksSnapshot) {
+    block(task);
   }
 }
 
@@ -522,18 +598,22 @@
                                callback:(void(^)(NSArray * _Nonnull results))callback
 {
   __block EXTaskExecutionRequest *request;
-  
+
   request = [[EXTaskExecutionRequest alloc] initWithCallback:^(NSArray * _Nonnull results) {
     if (callback != nil) {
       callback(results);
     }
-    
-    [self->_requests removeObject:request];
+
+    @synchronized (self) {
+      [self->_requests removeObject:request];
+    }
     request = nil;
   }];
-  
-  [_requests addObject:request];
-  
+
+  @synchronized (self) {
+    [_requests addObject:request];
+  }
+
   [self _iterateTasksUsingBlock:^(id<EXTaskInterface> task) {
     if ([task.consumer.class respondsToSelector:@selector(supportsLaunchReason:)] && [task.consumer.class supportsLaunchReason:launchReason]) {
       [self _addTask:task toRequest:request withInfo:userInfo];
@@ -557,16 +637,20 @@
     appRecord = [appLoader loadAppWithUrl:appUrl options:nil callback:^(BOOL success, NSError *error) {
       if (!success) {
         NSLog(@"EXTaskService: Loading app '%@' from url '%@' failed. Error description: %@", appId, appUrl, error.description);
-        [self->_events removeObjectForKey:appId];
-        [self->_eventsQueues removeObjectForKey:appId];
-        [self->_appRecords removeObjectForKey:appId];
-        
+        @synchronized (self) {
+          [self->_events removeObjectForKey:appId];
+          [self->_eventsQueues removeObjectForKey:appId];
+          [self->_appRecords removeObjectForKey:appId];
+        }
+
         // Host unreachable? Unregister all tasks for that app.
         [self unregisterAllTasksForAppId:appId];
       }
     }];
-    
-    [_appRecords setObject:appRecord forKey:appId];
+
+    @synchronized (self) {
+      [_appRecords setObject:appRecord forKey:appId];
+    }
   }
 }
 
@@ -575,8 +659,10 @@
  */
 - (id<EXTaskManagerInterface>)_taskManagerForAppId:(NSString *)appId
 {
-  id<EXTaskManagerInterface> taskManager = [_taskManagers objectForKey:appId];
-  return taskManager ?: [_headlessTaskManagers objectForKey:appId];
+  @synchronized (self) {
+    id<EXTaskManagerInterface> taskManager = [_taskManagers objectForKey:appId];
+    return taskManager ?: [_headlessTaskManagers objectForKey:appId];
+  }
 }
 
 /**
@@ -586,13 +672,15 @@
 - (void)_maybeUpdateAppUrl:(NSString *)appUrl
                   forAppId:(NSString *)appId
 {
-  NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
-  NSMutableDictionary *appDict = [dict[appId] mutableCopy];
-  
-  if (appDict != nil && ![appDict[@"appUrl"] isEqualToString:appUrl]) {
-    appDict[@"appUrl"] = appUrl;
-    dict[appId] = appDict;
-    [self _saveConfigWithDictionary:dict];
+  @synchronized (self) {
+    NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy];
+    NSMutableDictionary *appDict = [dict[appId] mutableCopy];
+
+    if (appDict != nil && ![appDict[@"appUrl"] isEqualToString:appUrl]) {
+      appDict[@"appUrl"] = appUrl;
+      dict[appId] = appDict;
+      [self _saveConfigWithDictionary:dict];
+    }
   }
 }
 
@@ -667,13 +755,19 @@
 
 - (void)_invalidateAppWithId:(NSString *)appId
 {
-  id<UMAppRecordInterface> appRecord = _appRecords[appId];
-  
-  if (appRecord) {
-    [appRecord invalidate];
-    [_appRecords removeObjectForKey:appId];
-    [_headlessTaskManagers removeObjectForKey:appId];
+  id<UMAppRecordInterface> appRecord;
+
+  @synchronized (self) {
+    appRecord = _appRecords[appId];
+
+    if (appRecord) {
+      [_appRecords removeObjectForKey:appId];
+      [_headlessTaskManagers removeObjectForKey:appId];
+    }
   }
+
+  // Invalidate outside the lock — it tears down the headless app record.
+  [appRecord invalidate];
 }
 
 - (nullable NSDictionary *)_exportError:(nullable NSError *)error
