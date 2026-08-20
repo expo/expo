@@ -13,7 +13,18 @@ Deterministic tools that answer questions agents otherwise guess at, plus the di
 
 ## Skills shipped from Expo modules
 
-[confirmed — Kudo seed, 2026-08-18] SDK packages carry their own skill (usage, pitfalls, config-plugin notes). Discovery mirrors how `expo-mcp` is resolved from the project [observed — `resolveFrom.silent` pattern in `packages/@expo/cli/src/start/server/MCP.ts`]: scan `node_modules` for a declared skill entry — `expo.skills` in `package.json` or a `skills/` directory (contract TBD, open question in [[0001-agentic-cli-on-expo-cli]]). Installed packages then teach the driving agent automatically. The same contract exports to other agents' formats (Claude Code, Cursor), making Expo packages self-documenting for the whole ecosystem. [inferred]
+[confirmed — Kudo seed, 2026-08-18] SDK packages carry their own skill (usage, pitfalls, config-plugin notes); installed packages teach the driving agent automatically.
+
+**Reference implementation exists** [observed — open PRs against `@expo/cli`, read 2026-08-20]: Kudo has built this as four PRs; direction [confirmed — Kudo, 2026-08-20]: copy most of that code, but move it out of `@expo/cli` into our CLI (`exagent`).
+
+- [expo/expo#48592](https://github.com/expo/expo/pull/48592) — `npx expo skills` command (`sync`/`list`/`show`/`clean`): autolinking-based discovery of `skills/*/SKILL.md` in packages; symlinks into `.claude/skills`, `.agents/skills`, etc.; `.gitignore` maintenance; Windows junction handling. Unit + e2e tests included.
+- [expo/expo#48972](https://github.com/expo/expo/pull/48972) — auto-sync the installed package's skills on `expo install` (`--no-agent-skills` opt-out).
+- [expo/expo#48973](https://github.com/expo/expo/pull/48973) — auto-sync all skills shortly after `expo start` reaches idle (~3 s).
+- [expo/expo#49018](https://github.com/expo/expo/pull/49018) — when a known agent CLI is detected, dump the installed module's `SKILL.md` into the agent's context on `expo install`, avoiding a manual `/reload-skills`.
+
+This settles the discovery contract [confirmed — by the PR implementation]: a **directory convention, `skills/*/SKILL.md`**, discovered via autolinking — not a `package.json` field.
+
+**Migration note** [inferred]: the sync engine, discovery, linking, and agent-detection code move to `packages/exagent`. The auto-sync *trigger points* currently live inside `expo install` / `expo start` (#48972/#48973); under the process boundary, either `@expo/cli` keeps a thin hook that invokes `exagent` when present, or `exagent` wraps those commands. Open question below.
 
 ## Knowledge tool candidates
 
@@ -32,4 +43,9 @@ All [inferred]:
 
 ## Testing
 
-Skill discovery and doc/diff lookups are deterministic: unit tests + fixtures. Doctor auto-fix and upgrade are eval scenarios with programmatic graders.
+Skill discovery and doc/diff lookups are deterministic: unit tests + fixtures. The four reference PRs already carry unit + e2e tests [observed]; they migrate with the code. Doctor auto-fix and upgrade are eval scenarios with programmatic graders.
+
+## Open questions
+
+1. Where do the auto-sync triggers live after the move: a thin hook in `expo install`/`expo start` that calls `exagent` when present, or `exagent`-wrapped commands? (The `--no-agent-skills` opt-out should survive either way.)
+2. Do PRs #48592–#49018 land in `@expo/cli` first and migrate later, or move to `packages/exagent` before merge?
