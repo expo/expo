@@ -1804,22 +1804,6 @@ module Expo
       # Reverse of `prebuilt_dependency_pods` over 3rd-party pods: maps a pod to the
       # pods that declare it as a dependency.
       #
-      # An edge only needs this coupling when the dependent reads the dependency's headers
-      # from `Pods/Headers/Public/<dep>`, which CocoaPods populates only while the
-      # dependency builds from source. `RNReanimated.podspec:69,85` hardcodes
-      # `"$(PODS_ROOT)/Headers/Public/RNWorklets"`, which is why reanimated breaks against
-      # a prebuilt RNWorklets. Pods that resolve those headers elsewhere are immune:
-      # ExpoModulesWorkletsAdapter points at the npm tree
-      # (`node_modules/react-native-worklets/Common/cpp`), and the ~60 edges onto
-      # ExpoModulesCore are covered by `configure_header_search_paths`, which puts the
-      # prebuilt ExpoModulesCore headers on every target.
-      #
-      # Restricting both ends to 3rd-party pods is a proxy for that condition — Expo's own
-      # pods do not use the pattern today, and coupling them would pull the whole set to
-      # source, as most Expo packages ship no prebuilt artifact while nearly all depend on
-      # ExpoModulesCore. Revisit if an Expo pod ever includes an external pod's headers
-      # through `Pods/Headers/Public`.
-      #
       # @return [Hash<String, Array<String>>] Pod name to the pods depending on it
       def prebuilt_dependent_pods
         @prebuilt_dependent_pods ||= begin
