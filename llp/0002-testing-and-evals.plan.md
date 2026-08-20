@@ -31,6 +31,10 @@ Programmatic and model-free: dev server responds; app boots (via `automation_tak
 
 "Make this broken project start", "add expo-camera and get it running", "is this project Expo Go compatible?", "upgrade this SDK 52 fixture", "deploy this app's web build".
 
+## Real-world failure telemetry feeds the suite
+
+[confirmed — Kudo accepted, 2026-08-20; design inferred] Opt-in reports when an agent gets stuck on an Expo task become eval-scenario candidates. The `submit-expo-feedback` channel already exists in the `expo/skills` repo [observed — expo-skill-feedback skill]. Pipeline: report → triage → minimal fixture reproducing the failure → scenario + grader. The suite grows from field data, not imagination.
+
 ## Build order (M0)
 
 1. Fixture projects (minimal Expo Go app; dev-client app; bare app; broken variants).

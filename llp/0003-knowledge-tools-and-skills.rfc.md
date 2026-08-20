@@ -19,7 +19,7 @@ Deterministic tools that answer questions agents otherwise guess at, plus the di
 
 All [inferred]:
 
-- **Version-pinned docs lookup.** Answers from documentation matching the project's installed SDK version. Wrong-version API usage is a top agent failure mode.
+- **Version-pinned docs lookup.** Answers from documentation matching the project's installed SDK version. Wrong-version API usage is a top agent failure mode. Concrete mechanism [confirmed — Kudo accepted, 2026-08-20; design inferred]: docs.expo.dev serves `llms.txt` / `llms-full.txt`-style files **per SDK version**; the lookup tool fetches the file matching the project's SDK. This also serves agents that never speak MCP.
 - **API diff.** "What changed in expo-camera between SDK 52 and 54" — from changelogs and type diffs; feeds the upgrade workflow.
 - **Example transplant.** Fetch the canonical, version-matched integration from `expo/examples` and adapt it into the project.
 - **Dependency explainer.** Why a package is in the tree; which native module versions conflict; what `expo install --fix` intends to change and why.

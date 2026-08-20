@@ -27,6 +27,9 @@ Consequence: gaps discovered while building tools become upstream `@expo/cli` im
 - **Agent-mode dev server output** [confirmed — Kudo seed, 2026-08-18]: no QR code, no spinner, no interactive keymap. JSONL events plus a small status endpoint: bundle state, connected clients, last error. A QR code is meaningless to an agent; a URL + platform-launch tool is not.
 - **Non-interactive parity** [confirmed — Kudo direction via headless creation seed, 2026-08-18]: every interactive prompt in Expo/EAS CLIs must have a programmatic answer path (flag or JSON). The eval suite ([[0002-testing-and-evals]]) runs everything with no TTY attached; a prompt that blocks a pipe is a bug.
 - **Headless CI mode.** Structured pass/fail invocations with `--json` and exit codes, for CI jobs like "verify the app still boots after this PR".
+- **Errors are prompts** [confirmed — Kudo accepted, 2026-08-20; design inferred]. The repo already has a what/why/how error-message guideline [observed — `.claude/CLAUDE.md` §Error messages]. For a driving agent, every CLI error is literally its next prompt. Systematize: every error event carries machine-readable fields — cause classification and a `suggestedCommand`/next step — so the agent's recovery path is one hop, not a search.
+- **MCP resources + versioned tool schemas** [confirmed — Kudo accepted, 2026-08-20; design inferred]. Expose cheap-to-read context (resolved config, router sitemap, doctor report, project brief) as MCP *resources*, not only tools. Version the tool/event schemas and negotiate capabilities on connect, so older driving agents keep working against newer servers.
+- **AGENTS.md generation** [confirmed — Kudo accepted, 2026-08-20; design inferred]. `exagent setup` writes and maintains a managed section in the project's `AGENTS.md`: SDK version, targets, the right commands, project quirks. Orients every agent — including ones that never call a tool.
 
 ## The `exagent` launcher
 
