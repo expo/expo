@@ -4,7 +4,7 @@ sidebar_title: Errors
 description: Record JavaScript errors from your app and investigate symbolicated stack traces in the EAS Observe dashboard.
 ---
 
-> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Source maps for EAS Update, iOS symbolication, and more are still to come.
+> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Source maps for EAS Update, native crash reporting, and more are still to come.
 
 The `expo-observe` library records JavaScript errors from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the EAS Observe dashboard.
 
@@ -98,7 +98,6 @@ Open your project and navigate to [**Observe > Errors**](https://expo.dev/accoun
 Error reporting is in preview, and the following are not available yet:
 
 - **Source maps for EAS Update**: errors from an app running an OTA update show the unsymbolicated stack trace.
-- **iOS symbolication**
-- Native crash reporting, and more.
+- **Native crash reporting**, including iOS symbolication, and more.
 
 For native crash reporting today, use a service such as [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/).
