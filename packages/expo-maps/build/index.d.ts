@@ -17,6 +17,7 @@ export declare namespace GoogleMaps {
     type MapProps = GoogleTypes.GoogleMapsViewProps;
     type MapView = GoogleTypes.GoogleMapsViewType;
     type StreetViewProps = GoogleTypes.GoogleStreetViewProps;
+    type Circle = GoogleTypes.GoogleMapsCircle;
 }
 /**
  * @hidden

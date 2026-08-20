@@ -20,6 +20,8 @@ const STANDARD_NAVIGATOR_TYPE = 'standard';
  * Creates a [`standard-navigation`](https://www.npmjs.com/package/standard-navigation) navigator and
  * wires it into Expo Router in one step. Use `unstable_integrateWithRouter` instead if you already
  * have a navigator from `createStandardNavigator`.
+ * Props declared in both `NavigatorProps` and `CreateProps` are intersected, so incompatible types
+ * produce `never` rather than a type error at this call.
  *
  * @param NavigatorContent Renders the navigator UI; receives the standard-navigation `state`,
  * `descriptors`, `actions`, and `emitter`.
@@ -33,9 +35,9 @@ const STANDARD_NAVIGATOR_TYPE = 'standard';
  * export const Tabs = unstable_createStandardRouterNavigator(MyTabsContent, TabRouter);
  * ```
  */
-function unstable_createStandardRouterNavigator(NavigatorContent, router, options) {
+function unstable_createStandardRouterNavigator(NavigatorContent, router, ...options) {
     const navigator = (0, standard_navigation_1.createStandardNavigator)(NavigatorContent);
-    return unstable_integrateWithRouter(navigator, router, options);
+    return unstable_integrateWithRouter(navigator, router, ...options);
 }
 /**
  * > **warning** This API is unstable and may change between minor releases.
@@ -57,7 +59,7 @@ function unstable_createStandardRouterNavigator(NavigatorContent, router, option
  * export const Tabs = unstable_integrateWithRouter(navigator, TabRouter);
  * ```
  */
-function unstable_integrateWithRouter(navigator, router, options) {
+function unstable_integrateWithRouter(navigator, router, ...[options]) {
     assertStandardNavigator(navigator);
     const { NavigatorContent } = navigator;
     function StandardRouterNavigator(props) {
