@@ -6,7 +6,7 @@ description: Record JavaScript errors from your app and investigate symbolicated
 
 > **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Source maps for EAS Update, iOS symbolication, and more are still to come.
 
-The `expo-observe` library records JavaScript errors from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** tab of the EAS Observe dashboard.
+The `expo-observe` library records JavaScript errors from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the EAS Observe dashboard.
 
 Errors are captured through three paths: unhandled errors are recorded automatically, render errors are caught by `ObserveErrorBoundary`, and handled errors can be reported with `Observe.reportError`.
 
@@ -91,7 +91,7 @@ Symbolication is applied when you view an error in the dashboard. If no source m
 
 ## View errors
 
-Open your project and navigate to [**Observe > Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors). The tab lists the errors recorded in the selected time range. Click an error to see its stack trace and details.
+Open your project and navigate to [**Observe > Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors). The page lists the errors recorded in the selected time range. Click an error to see its stack trace and details.
 
 ## Still to come
 

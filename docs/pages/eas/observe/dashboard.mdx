@@ -27,9 +27,9 @@ Filters control which events are included in the metrics below.
 - **Time range**: 1 hour, 12 hours, 1 day, 3 days, 7 days, 14 days, 21 days, 30 days, or 60 days. Defaults to **Last 14 Days**.
 - **Release**: filter to a specific app version, a specific native build, or a specific OTA update.
 
-## Tabs
+## Pages
 
-The dashboard groups data into five tabs:
+The dashboard groups data into five pages:
 
 - **App startup**: startup performance metrics (cold launch, warm launch, bundle load time, time to first render, time to interactive). See the [Metrics reference](/eas/observe/reference/metrics/) for full descriptions.
 - **EAS Update**: download time for OTA updates and a per-update table. See [EAS Update download performance](/eas/observe/eas-update/) for details.
@@ -46,7 +46,7 @@ Each metric appears as a card with a chart and statistical breakdowns. For every
 - **Min** and **Max**: the fastest and slowest recorded values.
 - **P90** and **P99**: values below which 90% or 99% of events fall, useful for identifying tail latency.
 
-On the App startup tab, switch between a list layout (one chart per row) and a grid layout. Use the **Show builds** and **Show updates** toggles to control whether release markers appear on charts.
+On the App startup page, switch between a list layout (one chart per row) and a grid layout. Use the **Show builds** and **Show updates** toggles to control whether release markers appear on charts.
 
 ## Release markers and comparison
 
@@ -58,7 +58,7 @@ Without a release filter, App startup cards also show the metric for the **lates
 
 ## Investigating sessions
 
-When something looks off, drill into individual sessions from the **Events** tab or from a release marker popover. A session timeline shows:
+When something looks off, drill into individual sessions from the **Events** page or from a release marker popover. A session timeline shows:
 
 - All events recorded during that session (startup, user-defined, and update download events).
 - Device metadata: platform, app version, build number, OS, and timestamps.
