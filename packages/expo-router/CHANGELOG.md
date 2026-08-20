@@ -8,7 +8,8 @@
 - Remove `NavigationIndependentTree` and `useNavigationIndependentTree` from `expo-router/react-navigation`. To embed an isolated navigation tree in a screen, use `@react-navigation/native`. ([#49172](https://github.com/expo/expo/pull/49172) by [@Ubax](https://github.com/Ubax))
 - Generate deterministic navigation state and route keys, and require `routeKeySeq` in complete navigation states.
 - Queue `navigation.dispatch` and navigation helper actions until after commit, add synchronous `navigation.dispatchSync`, and require functional actions to use `dispatchSync`.
-- Require complete state in `CommonActions.reset` and `resetRoot`, and remove `Router.getRehydratedState` from `expo-router/react-navigation`.
+- Require complete state in `CommonActions.reset` and remove `Router.getRehydratedState` from `expo-router/react-navigation`.
+- Remove `resetRoot` from `NavigationContainerRef` and `createNavigationContainerRef`.
 - Remove `NavigatorScreenParams`, `getActionFromState`, and `LinkingOptions.getActionFromState` from `expo-router/react-navigation`.
 - Represent nested navigation only as navigation state. The `screen`, `params`, and `initial` params are now ordinary user params
 - Remove the deprecated `Link` and `useLinkProps` exports from `expo-router/react-navigation`. Use `Link` from `expo-router` with an `href` instead. ([#48895](https://github.com/expo/expo/pull/48895) by [@Ubax](https://github.com/Ubax))

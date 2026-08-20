@@ -17,7 +17,6 @@ export function createNavigationContainerRef<
     ...Object.keys(CommonActions),
     'addListener',
     'removeListener',
-    'resetRoot',
     'dispatch',
     'dispatchSync',
     'isFocused',

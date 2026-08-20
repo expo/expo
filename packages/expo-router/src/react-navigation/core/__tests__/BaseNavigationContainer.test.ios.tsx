@@ -349,7 +349,7 @@ test('handles resetting to a complete state with ref', () => {
   };
 
   act(() => {
-    ref.current?.resetRoot(state);
+    ref.current?.dispatch({ ...CommonActions.reset(state), target: state.key });
     routingQueue.run(ref);
   });
 

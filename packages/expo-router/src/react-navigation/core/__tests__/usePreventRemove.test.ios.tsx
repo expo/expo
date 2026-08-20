@@ -937,7 +937,7 @@ test("prevents removing by multiple screens with 'usePreventRemove' hook", () =>
   });
 });
 
-test("prevents removing a child screen with 'usePreventRemove' hook with 'resetRoot'", () => {
+test("prevents removing a child screen with 'usePreventRemove' hook with targeted reset", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -1001,13 +1001,16 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
   expect(onStateChange).toHaveBeenLastCalledWith(preventedState);
 
   act(() =>
-    ref.current?.resetRoot({
-      index: 0,
-      key: preventedState.key,
-      routeNames: preventedState.routeNames,
-      routes: [preventedState.routes[0]!],
-      stale: false,
-      routeKeySeq: 0,
+    ref.current?.dispatch({
+      ...CommonActions.reset({
+        index: 0,
+        key: preventedState.key,
+        routeNames: preventedState.routeNames,
+        routes: [preventedState.routes[0]!],
+        stale: false,
+        routeKeySeq: 0,
+      }),
+      target: preventedState.key,
     })
   );
 

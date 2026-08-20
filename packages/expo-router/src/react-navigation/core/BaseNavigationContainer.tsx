@@ -14,7 +14,6 @@ import {
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
-  type PartialState,
   type Route,
 } from '../routers';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
@@ -157,19 +156,6 @@ function BaseNavigationContainerInner({
     }
   });
 
-  const resetRoot = useLatestCallback((state?: PartialState<NavigationState> | NavigationState) => {
-    const target = state?.key ?? getState().key;
-
-    if (target == null) {
-      console.error(NOT_INITIALIZED_ERROR);
-    } else {
-      handleAction({
-        ...CommonActions.reset(state),
-        target,
-      });
-    }
-  });
-
   const getRootState = useLatestCallback(() => {
     return getState();
   });
@@ -203,7 +189,6 @@ function BaseNavigationContainerInner({
       ...emitter.create('root'),
       dispatch,
       dispatchSync,
-      resetRoot,
       isFocused: () => true,
       canGoBack,
       getParent: () => undefined,
@@ -226,7 +211,6 @@ function BaseNavigationContainerInner({
       getRootState,
       getState,
       isReady,
-      resetRoot,
     ]
   );
 
