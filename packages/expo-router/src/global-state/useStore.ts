@@ -17,8 +17,6 @@ import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 import { createSeededRootState } from './createSeededNavigationState';
-import { getRouteInfoFromState } from './getRouteInfoFromState';
-import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
 import { storeRef, getSplashScreenAnimationFrame, setSplashScreenAnimationFrame } from './store';
 import type { StoreContextValue } from './storeContext';
 import type { StoreRedirects } from './types';
@@ -94,10 +92,6 @@ export function useStore(
     state,
   };
 
-  if (state) {
-    storeRef.current.routeInfo = getCachedRouteInfo(state);
-  }
-
   const storeValue = useMemo(
     () => ({
       navigationRef,
@@ -109,6 +103,7 @@ export function useStore(
     }),
     [navigationRef, linking, owner, rootComponent, redirects, routeNode]
   );
+
 
   useEffect(() => {
     return () => {
@@ -143,10 +138,5 @@ function seedInitialState(
   // It does not matter if the path starts with a `/`, but this keeps parsing consistent.
   if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
 
-  const initialState = createSeededRootState(
-    linking.getStateFromPath!(initialPath, linking.config),
-    routeNode
-  );
-  setCachedRouteInfo(initialState, getRouteInfoFromState(initialState));
-  return initialState;
+  return createSeededRootState(linking.getStateFromPath!(initialPath, linking.config), routeNode);
 }

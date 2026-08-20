@@ -4,7 +4,7 @@ import { Text } from 'react-native';
 
 import type { RouteNode } from '../../Route';
 import { routingQueue } from '../../global-state/routingQueue';
-import { storeRef as mockStoreRef } from '../../global-state/store';
+import { store, storeRef as mockStoreRef } from '../../global-state/store';
 import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
 import { NavigationContainer } from '../NavigationContainer';
 import { useLinking } from '../useLinking';
@@ -49,7 +49,6 @@ beforeEach(() => {
   routingQueue.queue = [];
   mockRouteNode = node('root', [node('home', [node('[id]')])]);
   mockStoreRef.current.state = undefined;
-  mockStoreRef.current.routeInfo = undefined;
 });
 
 afterEach(() => {
@@ -136,7 +135,6 @@ test('resolves a completed state from an async initial URL without writing to th
     routeNames: ['[id]'],
   });
   expect(mockStoreRef.current.state).toBeUndefined();
-  expect(mockStoreRef.current.routeInfo).toBeUndefined();
 });
 
 test('calls getInitialURL only once across re-renders', () => {
@@ -312,7 +310,7 @@ test('seeds the store when a synchronous initial URL is absent', () => {
       },
     ],
   });
-  expect(mockStoreRef.current.routeInfo?.pathname).toBe('/home');
+  expect(store.getRouteInfo().pathname).toBe('/home');
 });
 
 test('throws when linking does not produce an initial state', () => {

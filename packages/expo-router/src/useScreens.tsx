@@ -10,7 +10,6 @@ import {
   sortRoutesWithInitial,
   useRouteNode,
 } from './Route';
-import { store } from './global-state/store';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
@@ -29,7 +28,6 @@ import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
   CommonActions,
-  useStateForPath,
   type DescriptorRouteProp,
   type EventConsumer,
   type EventMapBase,
@@ -299,7 +297,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       getState(): NavigationState | undefined;
     };
   }) {
-    const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const redirectHref = useGuardRedirect(value.route);
@@ -313,26 +310,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       value.type === 'layout'
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
-
-    if (isFocused && !isGuarded) {
-      const state = navigation.getState();
-      const isLeaf = !(state && 'state' in state.routes[state.index]!);
-      if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
-    }
-
-    useEffect(
-      () =>
-        navigation.addListener('focus', () => {
-          const state = navigation.getState();
-          const isLeaf = !(state && 'state' in state.routes[state.index]!);
-          // Because setFocusedState caches the route info, this call will only trigger rerenders
-          // if the component itself didn’t rerender and the route info changed.
-          // Otherwise, the update from the `if` above will handle it,
-          // and this won’t cause a redundant second update.
-          if (isLeaf && stateForPath && !isGuarded) store.setFocusedState(stateForPath);
-        }),
-      [navigation, isGuarded]
-    );
 
     useEffect(() => {
       return navigation.addListener('transitionEnd', (e) => {

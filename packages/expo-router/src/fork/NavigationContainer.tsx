@@ -1,7 +1,7 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
 
-import { syncStoreState } from '../global-state/store';
+import { syncStoreNavigationState } from '../global-state/store';
 import { useExpoRouterStore } from '../global-state/storeContext';
 import { ImperativeApiEmitter } from '../imperative-api';
 import type {
@@ -159,7 +159,7 @@ function NavigationContainerInner(
   ) {
     // TODO(@ubax): remove this when we migrate to global state
     // Children read route info during this render, so an effect would update the store too late.
-    syncStoreState(initialState);
+    syncStoreNavigationState(initialState);
   }
 
   React.useImperativeHandle(ref, () => refContainer.current!);
@@ -187,7 +187,7 @@ function NavigationContainerInner(
             onStateChange={onStateChangeForLinkingHandling}
             initialState={initialState}
             UNSTABLE_routeNode={store?.routeNode ?? undefined}
-            UNSTABLE_onStateChangeInsertion={store ? syncStoreState : undefined}
+            UNSTABLE_onStateChangeInsertion={store ? syncStoreNavigationState : undefined}
             ref={refContainer}
           />
           <ImperativeApiEmitter navigationRef={refContainer} />

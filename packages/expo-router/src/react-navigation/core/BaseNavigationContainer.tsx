@@ -5,6 +5,8 @@ import { use } from 'react';
 
 import type { RouteNode } from '../../Route';
 import { findFocusedRoute } from '../../fork/findFocusedRoute';
+import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
+import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterRegistryContext, RouterRegistryProvider } from '../../global-state/routerRegistry';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
 import useLatestCallback from '../../utils/useLatestCallback';
@@ -60,10 +62,9 @@ const duplicateNameWarnings: string[] = [];
  */
 export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
   const registry = use(RouterRegistryContext);
-  const independent = useNavigationIndependentTree();
 
   // TODO(@ubax): investigate if this is really needed
-  if (registry === undefined || independent) {
+  if (registry === undefined) {
     return (
       <RouterRegistryProvider>
         <BaseNavigationContainerInner {...props} />
@@ -86,6 +87,8 @@ function BaseNavigationContainerInner({
   children,
 }: InternalNavigationContainerProps) {
   const parent = use(NavigationStateContext);
+  const inheritedRouteInfo = use(RouteInfoContext);
+
   if (!parent.isDefault) {
     throw new Error(
       "Looks like you have nested a 'NavigationContainer' inside another. Normally you need only one container at the root of the app, so this was probably an error. If you need to render an isolated navigation tree inside a screen, install '@react-navigation/native' and use its NavigationContainer instead."
@@ -252,6 +255,12 @@ function BaseNavigationContainerInner({
     }),
     [state, addOptionsGetter]
   );
+  const nextRouteInfo = React.useMemo(
+    () => (UNSTABLE_routeNode ? getRouteInfoFromState(state) : inheritedRouteInfo),
+    [state, UNSTABLE_routeNode, inheritedRouteInfo]
+  );
+  const routeInfoString = JSON.stringify(nextRouteInfo);
+  const routeInfo = React.useMemo(() => nextRouteInfo, [routeInfoString]);
 
   const onReadyRef = React.useRef(onReady);
   const onStateChangeRef = React.useRef(onStateChange);
@@ -357,9 +366,11 @@ function BaseNavigationContainerInner({
     <NavigationContainerRefContext.Provider value={navigation}>
       <NavigationBuilderContext.Provider value={builderContext}>
         <NavigationStateContext.Provider value={context}>
-          <EnsureSingleNavigator>
-            <ThemeProvider value={theme}>{children}</ThemeProvider>
-          </EnsureSingleNavigator>
+          <RouteInfoContext.Provider value={routeInfo}>
+            <EnsureSingleNavigator>
+              <ThemeProvider value={theme}>{children}</ThemeProvider>
+            </EnsureSingleNavigator>
+          </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>
       </NavigationBuilderContext.Provider>
     </NavigationContainerRefContext.Provider>

@@ -145,7 +145,6 @@ function ContextNavigator({
           ref={navigationRef}
           linking={linkingConfig as LinkingOptions<any>}
           onUnhandledAction={onUnhandledAction}
-          onStateChange={store.onStateChange}
           documentTitle={documentTitle}
           onReady={onNavigationReady}>
           <WrapperComponent>
