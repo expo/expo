@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed `toolbarColor` being applied as the secondary toolbar color, and being discarded entirely when `secondaryToolbarColor` was also set. ([#48900](https://github.com/expo/expo/issues/48900) by [@MUSE-CODE-SPACE](https://github.com/MUSE-CODE-SPACE))
+
 ### 💡 Others
 
 ## 56.0.5 — 2026-05-21
