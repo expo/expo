@@ -6,6 +6,8 @@ import type { LoadedRoute, RouteNode } from './Route';
 import {
   findRouteNodeByName,
   getValidInitialRouteName,
+  LayoutScreenErrorBoundaryContext,
+  NavigatorScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
   sortRoutesWithInitial,
@@ -48,6 +50,7 @@ import {
   type SuspenseFallbackProps,
 } from './views/SuspenseFallback';
 import { Try } from './views/Try';
+import type { ErrorBoundaryProps } from './views/Try';
 
 declare module 'react' {
   export function lazy<T extends React.ComponentType<any>>(
@@ -76,6 +79,8 @@ export type ScreenProps<
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 
   dangerouslySingular?: SingularOptions;
+  /** A component to render when this screen throws an error. */
+  errorBoundary?: React.ComponentType<ErrorBoundaryProps>;
 };
 
 export type SingularOptions =
@@ -96,14 +101,16 @@ function getSortedChildren<
   routeSource: RouteSource;
 }[] {
   if (!order?.length) {
-    return children
-      .sort(sortRoutesWithInitial(initialRouteName))
-      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }));
+    return children.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({
+      route,
+      props: {},
+      routeSource: 'filesystem' as const,
+    }));
   }
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, listeners, options, getId, dangerouslySingular: singular }) => {
+    .map(({ name, listeners, options, getId, dangerouslySingular: singular, errorBoundary }) => {
       if (!entries.length) {
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
@@ -139,7 +146,7 @@ function getSortedChildren<
 
         return {
           route: match,
-          props: { listeners, options, getId },
+          props: { listeners, options, getId, errorBoundary },
           routeSource: 'layout' as const,
         };
       }
@@ -152,9 +159,11 @@ function getSortedChildren<
 
   // Add any remaining children
   ordered.push(
-    ...entries
-      .sort(sortRoutesWithInitial(initialRouteName))
-      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }))
+    ...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({
+      route,
+      props: {},
+      routeSource: 'filesystem' as const,
+    }))
   );
 
   return ordered;
@@ -190,20 +199,33 @@ export function useSortedScreens<
 
 function fromImport(
   value: RouteNode,
-  { ErrorBoundary, SuspenseFallback, ...component }: LoadedRoute
+  { ErrorBoundary, SuspenseFallback, unstable_settings, ...component }: LoadedRoute
 ) {
   // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
   if (component?.default && __DEV__) {
     component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
   }
 
-  if (ErrorBoundary) {
+  const LayoutScreenErrorBoundary =
+    value.type === 'layout' ? unstable_settings?.screenErrorBoundary : undefined;
+
+  if (ErrorBoundary || LayoutScreenErrorBoundary) {
     const Wrapped = React.forwardRef((props: any, ref: any) => {
-      const children = React.createElement(component.default || EmptyRoute, {
+      let children = React.createElement(component.default || EmptyRoute, {
         ...props,
         ref,
       });
-      return <Try catch={ErrorBoundary}>{children}</Try>;
+      if (ErrorBoundary) {
+        children = <Try catch={ErrorBoundary}>{children}</Try>;
+      }
+      if (LayoutScreenErrorBoundary) {
+        children = (
+          <LayoutScreenErrorBoundaryContext value={LayoutScreenErrorBoundary}>
+            {children}
+          </LayoutScreenErrorBoundaryContext>
+        );
+      }
+      return children;
     });
 
     if (__DEV__) {
@@ -301,6 +323,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
+    const LayoutScreenErrorBoundary = use(LayoutScreenErrorBoundaryContext);
+    const NavigatorScreenErrorBoundary = use(NavigatorScreenErrorBoundaryContext);
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
 
@@ -312,6 +336,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       value.type === 'layout'
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
+    const ScreenErrorBoundary = NavigatorScreenErrorBoundary ?? LayoutScreenErrorBoundary;
 
     if (isFocused && !isGuarded) {
       const state = navigation.getState();
@@ -385,12 +410,23 @@ export function getQualifiedRouteComponent(value: RouteNode) {
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              <WrappedScreenComponent
-                {...props}
-                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-                // the intention is to make it possible to deduce shared routes.
-                segment={value.route}
-              />
+              {ScreenErrorBoundary ? (
+                <Try catch={ScreenErrorBoundary}>
+                  <WrappedScreenComponent
+                    {...props}
+                    // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+                    // the intention is to make it possible to deduce shared routes.
+                    segment={value.route}
+                  />
+                </Try>
+              ) : (
+                <WrappedScreenComponent
+                  {...props}
+                  // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+                  // the intention is to make it possible to deduce shared routes.
+                  segment={value.route}
+                />
+              )}
             </React.Suspense>
           </ZoomTransitionTargetContextProvider>
         </SuspenseFallbackContext>
@@ -529,10 +565,24 @@ export function routeToScreen<
   TEventMap extends EventMapBase,
 >(
   route: RouteNode,
-  { options, getId, ...props }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
+  {
+    options,
+    getId,
+    errorBoundary,
+    ...props
+  }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
   isGuarded?: boolean,
   routeSource?: RouteSource
 ) {
+  const QualifiedRouteComponent = getQualifiedRouteComponent(route);
+  const ScreenComponent = errorBoundary
+    ? (componentProps: object) => (
+        <NavigatorScreenErrorBoundaryContext value={errorBoundary}>
+          <QualifiedRouteComponent {...(componentProps as any)} />
+        </NavigatorScreenErrorBoundaryContext>
+      )
+    : QualifiedRouteComponent;
+
   return (
     <Screen
       {...props}
@@ -541,7 +591,7 @@ export function routeToScreen<
       getId={getId}
       routeSource={routeSource}
       options={screenOptionsFactory(route, options, isGuarded)}
-      getComponent={() => getQualifiedRouteComponent(route)}
+      getComponent={() => ScreenComponent}
     />
   );
 }
