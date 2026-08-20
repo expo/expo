@@ -512,13 +512,7 @@ class SQLiteModule : Module() {
     if (databasePath == MEMORY_DB_NAME) {
       return
     }
-    val dbFile = File(ensureDatabasePathExists(databasePath))
-    if (!dbFile.exists()) {
-      throw DatabaseNotFoundException(databasePath)
-    }
-    if (!dbFile.delete()) {
-      throw DeleteDatabaseFileException(databasePath)
-    }
+    deleteDatabaseFiles(File(ensureDatabasePathExists(databasePath)), databasePath)
   }
 
   @Throws(AccessClosedResourceException::class, SQLiteErrorException::class)

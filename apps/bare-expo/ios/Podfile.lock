@@ -633,6 +633,8 @@ PODS:
     - ExpoModulesCore
   - ExpoSQLite (57.0.1):
     - ExpoModulesCore
+  - ExpoSQLite/Tests (57.0.1):
+    - ExpoModulesCore
   - ExpoStoreReview (57.0.1):
     - ExpoModulesCore
   - ExpoSymbols (57.0.1):
@@ -3425,6 +3427,7 @@ DEPENDENCIES:
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
   - ExpoSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
+  - ExpoSQLite/Tests (from `../../../packages/expo-sqlite/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
   - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
@@ -4092,7 +4095,7 @@ SPEC CHECKSUMS:
   ExpoSMS: ac35f6c85b72ee5b18a7c6bb06550fbd4a683775
   ExpoSpeech: 0e90904e2af5d6f166d4d2ffbdab535686597938
   ExpoSplashScreen: 247464c0fe484f766892db0d66c3fe54f92a624e
-  ExpoSQLite: 7ea4f5b0ebd0b6f15927c2349db7624a5abf6beb
+  ExpoSQLite: 73ec3c3dd0c5e8c6592c341edf00efa6271c51a8
   ExpoStoreReview: 2a0f6b8e04112aea2f6e3e1cb84109d78f4d041f
   ExpoSymbols: 7c7c7bd3c52f0b6dcbba6e8af4088b0dc1ea7d29
   ExpoSystemUI: ff3142b323ae7b4d11dc0b1dc4acfa30d92be7dc
