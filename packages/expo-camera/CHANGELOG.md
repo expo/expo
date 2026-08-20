@@ -10,7 +10,7 @@
 
 - [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
 - Added `CameraView.scanDocumentAsync` to scan multi-page documents on Android and iOS. ([#47362](https://github.com/expo/expo/pull/47362) by [@alanjhughes](https://github.com/alanjhughes))
-- Added a `normalizeOrientation` option to `takePictureAsync` that rotates the captured pixels upright so the returned image is always EXIF `Orientation` 1, for consumers that ignore the orientation tag. ([#TBD](https://github.com/expo/expo/pull/TBD) by [@boojamya](https://github.com/boojamya))
+- Added a `normalizeOrientation` option to `takePictureAsync` that rotates the captured pixels upright so the returned image is always EXIF `Orientation` 1, for consumers that ignore the orientation tag. ([#49175](https://github.com/expo/expo/pull/49175) by [@boojamya](https://github.com/boojamya))
 
 ### 🐛 Bug fixes
 
