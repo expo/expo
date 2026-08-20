@@ -50,7 +50,7 @@ export default function SteppedSliderExample() {
   return (
     <Host style={{ flex: 1 }}>
       <Column spacing={8}>
-        <Text>Volume: {volume}</Text>
+        <Text>{`Volume: ${volume}`}</Text>
         <Slider value={volume} onValueChange={setVolume} min={0} max={100} step={10} />
       </Column>
     </Host>
