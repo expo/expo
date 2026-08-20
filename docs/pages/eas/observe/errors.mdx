@@ -36,9 +36,7 @@ import { ObserveErrorBoundary } from 'expo-observe';
 export default function FeedScreen() {
   return (
     <ObserveErrorBoundary
-      fallback={({ error, resetError }) => (
-        <ErrorScreen error={error} onRetry={resetError} />
-      )}>
+      fallback={({ error, resetError }) => <ErrorScreen error={error} onRetry={resetError} />}>
       <Feed />
     </ObserveErrorBoundary>
   );
