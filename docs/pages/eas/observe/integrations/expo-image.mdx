@@ -41,14 +41,14 @@ No other setup is needed. Once enabled, the integration observes every image loa
 
 ## How it works
 
-On every image load, the integration compares the image's decoded pixel size with the number of physical pixels on the device's screen. That pixel count is the screen's point size multiplied by the square of the device pixel ratio. When the decoded area exceeds the screen's pixel count by more than the configured threshold, the integration logs an `expo-image.oversized` event with `warn` severity.
+On every image load, the integration compares the image's decoded pixel size with the number of physical pixels on the device's screen. When the decoded area exceeds the screen's pixel count by more than the configured threshold, the integration logs an `expo-image.oversized` event with `warn` severity.
 
 The decoded size that the integration sees differs between platforms for images rendered with the `<Image>` component:
 
 - On Android, the `<Image>` component downscales images to the component's size at decode time, so a large source displayed in a small component is usually not reported.
 - On iOS, the integration reports the source's decoded size before `expo-image` downscales it for rendering, so a large source displayed in a small component is still reported, even with `allowDownscaling` enabled.
 
-Images loaded with the `useImage` hook or `Image.loadAsync` decode at the source's full size on both platforms unless you set the `maxWidth` and `maxHeight` load options, so they are reported consistently.
+Images loaded with the `useImage` hook or `Image.loadAsync` decode at the source's full size on both platforms by default. You can limit the decoded size with the `maxWidth` and `maxHeight` load options. This makes the reported image dimensions consistent across platforms.
 
 Each image URL is reported at most once per app session.
 
