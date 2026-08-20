@@ -70,6 +70,22 @@ struct DispatchUtilsRetryGateTests {
     #expect(next.dispatchAfterDate == state.dispatchAfterDate)
   }
 
+  @Test
+  func `payloadTooLarge resets the counter and leaves the gate alone`() {
+    let state = DispatchUtils.RetryGateState(
+      dispatchAfterDate: now.addingTimeInterval(60),
+      consecutiveRetryableFailures: 2
+    )
+    let next = DispatchUtils.nextRetryGateState(
+      result: .payloadTooLarge,
+      currentState: state,
+      now: now,
+      backoff: stubbedBackoff
+    )
+    #expect(next.consecutiveRetryableFailures == 0)
+    #expect(next.dispatchAfterDate == state.dispatchAfterDate)
+  }
+
   /// First retryable failure (from .initial): counter goes to 1, gate is now + backoff(1).
   /// `Retry-After` is `nil`, so we fall through to `computeBackoffDelay` (the stubbed value
   /// of 10 s here).

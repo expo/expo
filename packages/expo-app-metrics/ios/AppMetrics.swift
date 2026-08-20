@@ -67,17 +67,17 @@ public struct AppMetrics {
 
   /// Returns metric rows whose `id` is greater than `cursor`, in ascending id order. Consumers persist
   /// the largest seen id and pass it back on subsequent calls to fetch only newer rows. Empty when the
-  /// database failed to open.
+  /// database failed to open. Pass `limit` to return at most that many of the oldest rows.
   @AppMetricsActor
-  public static func getMetrics(afterId cursor: Int64) throws -> [MetricRow] {
-    return try database?.getMetrics(afterId: cursor) ?? []
+  public static func getMetrics(afterId cursor: Int64, limit: Int? = nil) throws -> [MetricRow] {
+    return try database?.getMetrics(afterId: cursor, limit: limit) ?? []
   }
 
   /// Returns log rows whose `id` is greater than `cursor`, in ascending id order. Empty when the
-  /// database failed to open.
+  /// database failed to open. Pass `limit` to return at most that many of the oldest rows.
   @AppMetricsActor
-  public static func getLogs(afterId cursor: Int64) throws -> [LogRow] {
-    return try database?.getLogs(afterId: cursor) ?? []
+  public static func getLogs(afterId cursor: Int64, limit: Int? = nil) throws -> [LogRow] {
+    return try database?.getLogs(afterId: cursor, limit: limit) ?? []
   }
 
   /// Hydrates session rows for the given ids. Used to attach session metadata to a batch of metrics

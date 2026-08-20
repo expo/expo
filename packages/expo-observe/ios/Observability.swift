@@ -61,6 +61,9 @@ internal struct ObservabilityManager {
   }
 
   private static func dispatchMetrics(shouldDispatch: Bool) async {
+    guard let endpointUrl = metricsEndpointUrl else {
+      return
+    }
     if retryGateBlocks(metricsRetryGate, signal: "metrics") {
       return
     }
@@ -68,62 +71,70 @@ internal struct ObservabilityManager {
     repairMetricCursorIfStale()
 
     let cursor = ObserveUserDefaults.lastDispatchedMetricId
-    let pendingMetrics: [MetricRow]
-    do {
-      pendingMetrics = try AppMetrics.getMetrics(afterId: cursor)
-    } catch {
-      observeLogger.warn("[EAS Observe] Failed to read pending metrics: \(error.localizedDescription)")
-      return
-    }
-    guard !pendingMetrics.isEmpty, let endpointUrl = metricsEndpointUrl else {
-      observeLogger.debug("[EAS Observe] No new metrics to dispatch")
-      return
-    }
-    let highestId = pendingMetrics.last?.id ?? cursor
     if !shouldDispatch {
-      ObserveUserDefaults.lastDispatchedMetricId = highestId
+      do {
+        if let highestId = try AppMetrics.getMaxMetricId() {
+          ObserveUserDefaults.lastDispatchedMetricId = highestId
+        }
+      } catch {
+        observeLogger.warn("[EAS Observe] Failed to read pending metrics: \(error.localizedDescription)")
+      }
       return
     }
-    let events: [Event]
-    do {
-      events = try buildEvents(forMetrics: pendingMetrics)
-    } catch {
-      observeLogger.warn("[EAS Observe] Failed to assemble metric events: \(error.localizedDescription)")
-      return
-    }
-    if events.isEmpty {
-      ObserveUserDefaults.lastDispatchedMetricId = highestId
-      return
-    }
-    let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
-    let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
-    applyRetryOutcome(result, to: &metricsRetryGate)
-    ObserveUserDefaults.lastDispatchedMetricId = DispatchUtils.nextCursor(
-      for: result,
-      currentCursor: cursor,
-      highestId: highestId
+
+    await DispatchLoop.drain(
+      startCursor: cursor,
+      fetchBatch: { cursor, limit in
+        let metrics = try AppMetrics.getMetrics(afterId: cursor, limit: limit)
+        if metrics.isEmpty {
+          observeLogger.debug("[EAS Observe] No new metrics to dispatch")
+        }
+        return metrics
+      },
+      rowId: { $0.id },
+      send: { metrics in
+        let events = try buildEvents(forMetrics: metrics)
+        guard !events.isEmpty else {
+          return nil
+        }
+        let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
+        return await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+      },
+      onResult: { result, batchCount, highestId in
+        applyRetryOutcome(result, to: &metricsRetryGate)
+        switch result {
+        case .success:
+          ObserveUserDefaults.lastDispatchDate = Date.now
+        case .partialSuccess(let partial):
+          ObserveUserDefaults.lastDispatchDate = Date.now
+          observeLogger.warn(
+            "[EAS Observe] Partial success on batch of \(batchCount) metric row(s) past "
+              + "id \(highestId): server rejected \(partial.rejectedCount) "
+              + "(\(partial.errorMessage ?? "no error message"))"
+          )
+        case .retryableFailure:
+          break
+        case .nonRetryableFailure(let reason):
+          observeLogger.warn(
+            "[EAS Observe] Dropping batch of \(batchCount) metric row(s) past id "
+              + "\(highestId): \(reason)"
+          )
+        case .payloadTooLarge where batchCount == 1:
+          observeLogger.warn(
+            "[EAS Observe] Dropping metric row id \(highestId) because it exceeds the server payload limit"
+          )
+        case .payloadTooLarge:
+          break
+        }
+      },
+      persistCursor: { ObserveUserDefaults.lastDispatchedMetricId = $0 }
     )
-    switch result {
-    case .success:
-      ObserveUserDefaults.lastDispatchDate = Date.now
-    case .partialSuccess(let partial):
-      ObserveUserDefaults.lastDispatchDate = Date.now
-      observeLogger.warn(
-        "[EAS Observe] Partial success on batch of \(events.count) metric event(s) past "
-          + "id \(highestId): server rejected \(partial.rejectedCount) "
-          + "(\(partial.errorMessage ?? "no error message"))"
-      )
-    case .retryableFailure:
-      break
-    case .nonRetryableFailure(let reason):
-      observeLogger.warn(
-        "[EAS Observe] Dropping batch of \(events.count) metric event(s) past id "
-          + "\(highestId): \(reason)"
-      )
-    }
   }
 
   private static func dispatchLogs(shouldDispatch: Bool) async {
+    guard let endpointUrl = logsEndpointUrl else {
+      return
+    }
     if retryGateBlocks(logsRetryGate, signal: "logs") {
       return
     }
@@ -131,63 +142,68 @@ internal struct ObservabilityManager {
     repairLogCursorIfStale()
 
     let cursor = ObserveUserDefaults.lastDispatchedLogId
-    let pendingLogs: [LogRow]
-    do {
-      pendingLogs = try AppMetrics.getLogs(afterId: cursor)
-    } catch {
-      observeLogger.warn("[EAS Observe] Failed to read pending logs: \(error.localizedDescription)")
-      return
-    }
-    guard !pendingLogs.isEmpty, let endpointUrl = logsEndpointUrl else {
-      observeLogger.debug("[EAS Observe] No new logs to dispatch")
-      return
-    }
-    let highestId = pendingLogs.last?.id ?? cursor
     if !shouldDispatch {
-      ObserveUserDefaults.lastDispatchedLogId = highestId
-      return
-    }
-    let events: [Event]
-    do {
-      events = try buildEvents(forLogs: pendingLogs)
-    } catch {
-      observeLogger.warn("[EAS Observe] Failed to assemble log events: \(error.localizedDescription)")
-      return
-    }
-    let resourceLogs = events.compactMap { event -> OTResourceLogs? in
-      guard !event.logs.isEmpty else {
-        return nil
+      do {
+        if let highestId = try AppMetrics.getMaxLogId() {
+          ObserveUserDefaults.lastDispatchedLogId = highestId
+        }
+      } catch {
+        observeLogger.warn("[EAS Observe] Failed to read pending logs: \(error.localizedDescription)")
       }
-      return event.toOTResourceLogs(easClientId)
-    }
-    if resourceLogs.isEmpty {
-      ObserveUserDefaults.lastDispatchedLogId = highestId
       return
     }
-    let body = OTLogsRequestBody(resourceLogs: resourceLogs)
-    let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
-    applyRetryOutcome(result, to: &logsRetryGate)
-    ObserveUserDefaults.lastDispatchedLogId = DispatchUtils.nextCursor(
-      for: result,
-      currentCursor: cursor,
-      highestId: highestId
+
+    await DispatchLoop.drain(
+      startCursor: cursor,
+      fetchBatch: { cursor, limit in
+        let logs = try AppMetrics.getLogs(afterId: cursor, limit: limit)
+        if logs.isEmpty {
+          observeLogger.debug("[EAS Observe] No new logs to dispatch")
+        }
+        return logs
+      },
+      rowId: { $0.id },
+      send: { logs in
+        let events = try buildEvents(forLogs: logs)
+        let resourceLogs = events.compactMap { event -> OTResourceLogs? in
+          guard !event.logs.isEmpty else {
+            return nil
+          }
+          return event.toOTResourceLogs(easClientId)
+        }
+        guard !resourceLogs.isEmpty else {
+          return nil
+        }
+        let body = OTLogsRequestBody(resourceLogs: resourceLogs)
+        return await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+      },
+      onResult: { result, batchCount, highestId in
+        applyRetryOutcome(result, to: &logsRetryGate)
+        switch result {
+        case .success, .retryableFailure:
+          ObserveUserDefaults.lastDispatchDate = Date.now
+        case .partialSuccess(let partial):
+          ObserveUserDefaults.lastDispatchDate = Date.now
+          observeLogger.warn(
+            "[EAS Observe] Partial success on batch of \(batchCount) log row(s) past "
+              + "id \(highestId): server rejected \(partial.rejectedCount) "
+              + "(\(partial.errorMessage ?? "no error message"))"
+          )
+        case .nonRetryableFailure(let reason):
+          observeLogger.warn(
+            "[EAS Observe] Dropping batch of \(batchCount) log row(s) past id "
+              + "\(highestId): \(reason)"
+          )
+        case .payloadTooLarge where batchCount == 1:
+          observeLogger.warn(
+            "[EAS Observe] Dropping log row id \(highestId) because it exceeds the server payload limit"
+          )
+        case .payloadTooLarge:
+          break
+        }
+      },
+      persistCursor: { ObserveUserDefaults.lastDispatchedLogId = $0 }
     )
-    switch result {
-    case .success, .retryableFailure:
-      ObserveUserDefaults.lastDispatchDate = Date.now
-    case .partialSuccess(let partial):
-      ObserveUserDefaults.lastDispatchDate = Date.now
-      observeLogger.warn(
-        "[EAS Observe] Partial success on batch of \(resourceLogs.count) log event(s) past "
-          + "id \(highestId): server rejected \(partial.rejectedCount) "
-          + "(\(partial.errorMessage ?? "no error message"))"
-      )
-    case .nonRetryableFailure(let reason):
-      observeLogger.warn(
-        "[EAS Observe] Dropping batch of \(resourceLogs.count) log event(s) past id "
-          + "\(highestId): \(reason)"
-      )
-    }
   }
 
   /// Groups `metrics` by `sessionId`, hydrates the matching session rows, and emits one `Event` per
