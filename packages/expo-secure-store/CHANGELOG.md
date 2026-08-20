@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `deleteItemAsync` resolving when a retried delete left the value on disk. ([#49151](https://github.com/expo/expo/pull/49151) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 57.0.1 - 2026-07-15
