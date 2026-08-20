@@ -75,6 +75,7 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests'
     test_spec.pod_target_xcconfig = {
+      # The test bundle links the static ExpoModulesCore dependency chain, which contains C++.
       'OTHER_LDFLAGS' => '-lc++'
     }
   end

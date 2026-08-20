@@ -1,18 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import XCTest
+import Testing
 
 @testable import ExpoSQLite
 
-class DatabaseFileUtilsTests: XCTestCase {
-  private var tempDir: URL!
+@Suite("DatabaseFileUtils")
+final class DatabaseFileUtilsTests {
+  private let tempDir: URL
 
-  override func setUpWithError() throws {
+  init() throws {
     tempDir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
     try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
   }
 
-  override func tearDownWithError() throws {
+  deinit {
     try? FileManager.default.removeItem(at: tempDir)
   }
 
@@ -22,15 +23,17 @@ class DatabaseFileUtilsTests: XCTestCase {
     return path
   }
 
-  func testDeletesTheMainDatabaseFile() throws {
+  @Test
+  func `deletes the main database file`() throws {
     let dbPath = createFile("test.db")
 
     try DatabaseFileUtils.deleteDatabaseFiles(atPath: dbPath)
 
-    XCTAssertFalse(FileManager.default.fileExists(atPath: dbPath))
+    #expect(!FileManager.default.fileExists(atPath: dbPath))
   }
 
-  func testDeletesJournalWalAndShmSidecarFilesAlongWithTheDatabase() throws {
+  @Test
+  func `deletes journal wal and shm sidecar files along with the database`() throws {
     let dbPath = createFile("test.db")
     let journalPath = createFile("test.db-journal")
     let walPath = createFile("test.db-wal")
@@ -38,29 +41,31 @@ class DatabaseFileUtilsTests: XCTestCase {
 
     try DatabaseFileUtils.deleteDatabaseFiles(atPath: dbPath)
 
-    XCTAssertFalse(FileManager.default.fileExists(atPath: dbPath))
-    XCTAssertFalse(FileManager.default.fileExists(atPath: journalPath))
-    XCTAssertFalse(FileManager.default.fileExists(atPath: walPath))
-    XCTAssertFalse(FileManager.default.fileExists(atPath: shmPath))
+    #expect(!FileManager.default.fileExists(atPath: dbPath))
+    #expect(!FileManager.default.fileExists(atPath: journalPath))
+    #expect(!FileManager.default.fileExists(atPath: walPath))
+    #expect(!FileManager.default.fileExists(atPath: shmPath))
   }
 
-  func testKeepsUnrelatedFilesIntact() throws {
+  @Test
+  func `keeps unrelated files intact`() throws {
     let dbPath = createFile("test.db")
     let otherDbPath = createFile("test2.db")
     let otherWalPath = createFile("test2.db-wal")
 
     try DatabaseFileUtils.deleteDatabaseFiles(atPath: dbPath)
 
-    XCTAssertFalse(FileManager.default.fileExists(atPath: dbPath))
-    XCTAssertTrue(FileManager.default.fileExists(atPath: otherDbPath))
-    XCTAssertTrue(FileManager.default.fileExists(atPath: otherWalPath))
+    #expect(!FileManager.default.fileExists(atPath: dbPath))
+    #expect(FileManager.default.fileExists(atPath: otherDbPath))
+    #expect(FileManager.default.fileExists(atPath: otherWalPath))
   }
 
-  func testThrowsWhenTheMainDatabaseFileDoesNotExist() {
+  @Test
+  func `throws when the main database file does not exist`() {
     let dbPath = tempDir.appendingPathComponent("missing.db").path
 
-    XCTAssertThrowsError(try DatabaseFileUtils.deleteDatabaseFiles(atPath: dbPath)) { error in
-      XCTAssertTrue(error is DatabaseNotFoundException)
+    #expect(throws: DatabaseNotFoundException.self) {
+      try DatabaseFileUtils.deleteDatabaseFiles(atPath: dbPath)
     }
   }
 }
