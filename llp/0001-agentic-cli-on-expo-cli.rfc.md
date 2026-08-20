@@ -2,18 +2,18 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** new package (name TBD, see §Naming); `packages/@expo/cli`; `expo-mcp` (external repo)
+**Systems:** `packages/exagent` (new); `packages/@expo/cli`; `expo-mcp` (external repo)
 **Author:** Kudo (drafted with Tuft agent)
-**Date:** 2026-08-18
+**Date:** 2026-08-18 (updated 2026-08-20)
 **Related:** [[0000-expo-monorepo]]
 
 ## Summary
 
-Make Expo the best framework to develop *through an agent*. Decision [confirmed — Kudo, 2026-08-18]: **Shape 1 — Expo ships the tool layer, not the model.** The product is deterministic, agent-facing tools (extending `expo-mcp`) plus official skills; the intelligence comes from whatever agent the user already runs (Claude Code, Cursor, the Claude mobile app). No model, no API key, and no billing anywhere in the product. Models appear only in CI, to run the eval suite. A standalone agent bin (`npx exagent`) remains a possible later wrapper, not v1. Shipping is gated on heavy tests and evals.
+Make Expo the best framework to develop *through an agent*. Decision [confirmed — Kudo, 2026-08-18]: **Shape 1 — Expo ships the tool layer, not the model.** The product is deterministic, agent-facing tools (extending `expo-mcp`) plus official skills; the intelligence comes from whatever agent the user already runs (Claude Code, Cursor, the Claude mobile app). No model, no API key, and no billing anywhere in the product. Models appear only in CI, to run the eval suite. The `exagent` bin ships in v1 as a thin, model-free launcher; an embedded-loop agent remains a possible later wrapper, not v1. Shipping is gated on heavy tests and evals.
 
 ## Motivation
 
-Generic coding agents drive Expo CLI through raw terminal output. They guess when to prebuild, when to rebuild, and when a restart is enough. Expo owns the ground truth for these decisions. An Expo-built agent can:
+Generic coding agents drive Expo CLI through raw terminal output. They guess when to prebuild, when to rebuild, and when a restart is enough. Expo owns the ground truth for these decisions. An Expo-built tool layer lets any driving agent:
 
 - read structured CLI state instead of scraping spinners and QR codes,
 - encode Expo-specific decision rules (CNG, dev clients, Expo Go),
@@ -38,13 +38,13 @@ Generic coding agents drive Expo CLI through raw terminal output. They guess whe
 - `expo-agent` is reserved by `laraelmas`; `expo-ai` is owned by `bycedric`.
 - Scoped names under `@expo/` remain available to the org.
 
-Recommendation [inferred]: use `exagent` as the bin and package name. It is short, unique, and already reserved. Keep `ai-expo` as a reserved alias. Decision pending (§Open questions).
+Decision [confirmed — Kudo, 2026-08-20]: `exagent` is the bin and package name (`packages/exagent/`); `ai-expo` stays reserved as an alias.
 
 ## Design
 
 ### Package layout
 
-New workspace package `packages/exagent/` (final name per §Naming):
+New workspace package `packages/exagent/`:
 
 ```
 packages/exagent/       # thin, model-free launcher (Shape 1)
@@ -52,7 +52,7 @@ packages/exagent/       # thin, model-free launcher (Shape 1)
 ├── src/
 │   ├── setup/          # install Expo skills + register MCP server into Claude Code/Cursor/Codex
 │   ├── context/        # project-state probe: machine-readable project brief
-│   └── new/            # F1 headless project creation
+│   └── new/            # headless project creation ([[0007-deploy-and-headless]])
 ├── e2e/
 └── evals/              # eval scenarios, fixtures, graders (tiers 0–2)
 ```
@@ -68,7 +68,7 @@ Decision [confirmed — Kudo, 2026-08-18]: Shape 1. Consequences:
 - New capabilities land as `expo-mcp` tools and Expo skills, not as an agent loop.
 - Agent-friendly affordances in `@expo/cli` itself (non-interactive parity, JSONL events, deterministic decision commands) serve every driving agent.
 - The reserved bins (`exagent` / `ai-expo`) can still ship as a thin, model-free launcher: start/connect the MCP server, install skills into the user's agents, print project context. [inferred]
-- F3 (Claude mobile app) needs no Expo-side model either: the Claude app brings the model; Expo provides tools over `@expo/mcp-tunnel`.
+- Chat-driven development ([[0007-deploy-and-headless]]) needs no Expo-side model either: the Claude app brings the model; Expo provides tools over `@expo/mcp-tunnel`.
 - A standalone embedded-loop agent (the former Shape 2) is deferred; if built later, it wraps the user's existing Claude Code auth rather than handling keys. [inferred]
 
 ### Tool surface
@@ -76,7 +76,7 @@ Decision [confirmed — Kudo, 2026-08-18]: Shape 1. Consequences:
 Three layers, all machine-readable:
 
 1. **The Expo CLI family as structured subprocesses.** Not just `expo`: the tool layer orchestrates `expo`, `eas-cli`, `expo-doctor`, `@expo/fingerprint`, `create-expo`, and more [confirmed — Kudo, 2026-08-20]. `expo` already emits JSONL events via `installEventLogger` / `LOG_EVENTS` (`packages/@expo/cli/bin/cli.ts`) [observed]; the tool layer spawns commands and consumes events, not text. Sibling CLIs without structured output get wrapped (parse + normalize) until they emit events natively.
-2. **`expo-mcp` tools, reused as-is.** `automation_tap`, `automation_take_screenshot`, `automation_find_view`, `collect_app_logs`, `expo_router_sitemap`, `open_devtools` [observed — expo-mcp repo]. Decision [confirmed — Kudo, 2026-08-18]: reuse the `expo-mcp` infrastructure (Kudo owns that codebase) instead of vendoring. The agent package in `expo/expo` depends on the published `expo-mcp` / `@expo/mcp-tunnel` packages: in-process MCP connection locally, `@expo/mcp-tunnel` WebSocket transport for the remote/F3 case. New agent-facing tools land in `expo-mcp` first, so every MCP client (Claude Code, Cursor) inherits them.
+2. **`expo-mcp` tools, reused as-is.** `automation_tap`, `automation_take_screenshot`, `automation_find_view`, `collect_app_logs`, `expo_router_sitemap`, `open_devtools` [observed — expo-mcp repo]. Decision [confirmed — Kudo, 2026-08-18]: reuse the `expo-mcp` infrastructure (Kudo owns that codebase) instead of vendoring. The `exagent` package in `expo/expo` depends on the published `expo-mcp` / `@expo/mcp-tunnel` packages: in-process MCP connection locally, `@expo/mcp-tunnel` WebSocket transport for the remote/chat-driven case ([[0007-deploy-and-headless]]). New agent-facing tools land in `expo-mcp` first, so every MCP client (Claude Code, Cursor) inherits them.
 3. **Expo-specific decision tools** built for the agent (see §Design documents): Expo Go compatibility check, post-install impact classifier, project-state probe.
 
 ## Design documents
@@ -101,5 +101,5 @@ Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries 
 4. Skill-from-module contract: `package.json` field vs directory convention; and whether `expo/skills` content gets bundled or fetched.
 5. ~~Relationship to `expo-mcp` repo~~ — resolved [confirmed — Kudo, 2026-08-18]: depend on and extend `expo-mcp`; do not vendor. See §Tool surface.
 6. Whether `expo agent` (subcommand alias in `@expo/cli`) ships at all, and when.
-7. F3 hosting: where does the cloud agent run — EAS-provided machines, or bring-your-own (Tuft-style)? (EAS auth itself: resolved direction in F4 — `EXPO_TOKEN` now, device-code grant as end state.)
+7. Chat-driven hosting: where does the cloud agent run — EAS-provided machines, or bring-your-own (Tuft-style)? (EAS auth itself: resolved direction in [[0007-deploy-and-headless]] §EAS auth — `EXPO_TOKEN` now, device-code grant as end state.)
 8. Does the device-code grant + scoped agent sessions land in www/expo.dev auth, and who owns that work?
