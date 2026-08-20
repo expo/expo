@@ -68,17 +68,24 @@ Each per-agent guide covers install, setup, and example prompts for that agent:
   Icon={CursorLogoIcon}
 />
 
+<BoxLink
+  title="Grok Build"
+  description="Set up xAI's terminal agent with Expo, including project context and example prompts."
+  href="/agents/grok/"
+  Icon={BookOpen02Icon}
+/>
+
 ## Project context files for agents
 
 Each agent looks for project context in a different place. Instead of forcing one convention, `create-expo-app` CLI adds the following configuration files to a project's root when you create a new Expo project using the CLI:
 
-| File                      | Read by                                                       | Purpose                                                                                                                             |
-| ------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **AGENTS.md**             | Codex and Cursor directly. Claude Code through **CLAUDE.md**. | Points the agent to the Expo documentation matching your project's SDK. This is the source of truth for project-level instructions. |
-| **CLAUDE.md**             | Claude Code on startup.                                       | Contains `@AGENTS.md`, which imports **AGENTS.md** into Claude Code's context.                                                      |
-| **.claude/settings.json** | Claude Code on startup.                                       | Pre-enables the official Expo plugin from the Claude Code plugin marketplace.                                                       |
+| File                      | Read by                                                                    | Purpose                                                                                                                             |
+| ------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **AGENTS.md**             | Codex, Cursor, and Grok Build directly. Claude Code through **CLAUDE.md**. | Points the agent to the Expo documentation matching your project's SDK. This is the source of truth for project-level instructions. |
+| **CLAUDE.md**             | Claude Code on startup.                                                    | Contains `@AGENTS.md`, which imports **AGENTS.md** into Claude Code's context.                                                      |
+| **.claude/settings.json** | Claude Code on startup.                                                    | Pre-enables the official Expo plugin from the Claude Code plugin marketplace.                                                       |
 
-Each file targets a different agent convention, so the same project works with Claude Code, Codex, or Cursor without per-agent configuration.
+Each file targets a different agent convention, so the same project works with Claude Code, Codex, Cursor, or Grok Build without per-agent configuration.
 
 ## Set up an existing project
 
