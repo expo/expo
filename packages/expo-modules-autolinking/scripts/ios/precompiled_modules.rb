@@ -72,6 +72,10 @@ module Expo
     # so it is not resolved through the Expo precompiled tarball pipeline.
     CUSTOM_XCFRAMEWORK_DEPENDENCIES = %w[ExpoModulesJSI].freeze
 
+    # Unavailability reasons where the pod's own artifact is fine and an interdependent
+    # pod pulled it to source. The expected-tarball hint is misleading for these.
+    CASCADED_UNAVAILABLE_REASONS = %i[dependency_unavailable dependent_unavailable].freeze
+
     # Module-level caches (initialized lazily)
     @pod_lookup_map = nil
     @repo_root = nil
@@ -81,6 +85,7 @@ module Expo
     @hermes_version = nil
     @claimed_vendored_frameworks = nil  # Set<String> — xcframework names already claimed by a prebuilt pod
     @framework_owner_map = nil          # Hash: framework_name -> owning_pod_name
+    @prebuilt_dependent_pods = nil      # Hash: pod_name -> pods declaring it as a dependency
     @failed_remote_downloads = Set.new
     @warned_no_prebuilt_react = false
     @target_platform = nil
@@ -130,6 +135,7 @@ module Expo
 
       def build_from_source=(patterns)
         @build_from_source_patterns = (patterns || []).map { |p| Regexp.new("^#{p}$") }
+        @prebuilt_dependent_pods = nil
         @status_cache = {}
       end
 
@@ -142,6 +148,7 @@ module Expo
         @claimed_vendored_frameworks = nil
         @framework_owner_map = nil
         @xcframework_slice_cache = nil
+        @prebuilt_dependent_pods = nil
         @status_cache = {}
       end
 
@@ -637,7 +644,7 @@ module Expo
       def patch_spec_for_prebuilt(spec)
         resolution = resolve_prebuilt_status(spec.name)
         unless resolution[:available]
-          log_linking_status(spec.name, false, resolution) if resolution[:reason] == :dependency_unavailable
+          log_linking_status(spec.name, false, resolution) if CASCADED_UNAVAILABLE_REASONS.include?(resolution[:reason])
           return spec
         end
 
@@ -1641,6 +1648,24 @@ module Expo
         end.uniq
       end
 
+      # Reverse of `prebuilt_dependency_pods` over 3rd-party pods: maps a pod to the
+      # pods that declare it as a dependency.
+      #
+      # @return [Hash<String, Array<String>>] Pod name to the pods depending on it
+      def prebuilt_dependent_pods
+        @prebuilt_dependent_pods ||= begin
+          dependents = {}
+          pod_lookup_map.each do |pod_name, info|
+            next unless info[:type] == :external
+            (info[:prebuilt_dependency_pods] || []).each do |dep_name|
+              next unless pod_lookup_map.dig(dep_name, :type) == :external
+              (dependents[dep_name] ||= []) << pod_name
+            end
+          end
+          dependents
+        end
+      end
+
       # Resolves the codegen module name. For external packages, prefers codegenConfig.name
       # from the installed package.json over spm.config.json's codegenName.
       def resolve_codegen_name(product, pod_name, npm_package, type, repo_root)
@@ -1765,11 +1790,15 @@ module Expo
         pod_lookup_map.each do |pod_name, info|
           next unless info[:type] == :external
 
-          unless has_prebuilt_xcframework?(pod_name)
-            product_name = info[:product_name] || pod_name
-            expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
-            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: prebuilt xcframework unavailable; building from source".yellow}"
-            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  Expected tarball: #{expected}")}"
+          resolution = resolve_prebuilt_status(pod_name)
+          unless resolution[:available]
+            reason = format_prebuilt_unavailable_reason(resolution)
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: building from source (#{reason})".yellow}"
+            unless CASCADED_UNAVAILABLE_REASONS.include?(resolution[:reason])
+              product_name = info[:product_name] || pod_name
+              expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
+              Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  Expected tarball: #{expected}")}"
+            end
             next
           end
 
@@ -1896,7 +1925,8 @@ module Expo
       end
 
       # A pod may use a prebuilt xcframework only when its own prebuilt artifact
-      # exists and every local Expo dependency also uses prebuilt.
+      # exists and every pod it is interdependent with also uses prebuilt — in either
+      # direction, so a set of interdependent pods is all prebuilt or all from source.
       def resolve_prebuilt_status(pod_name, visiting = Set.new)
         return _resolve_prebuilt_status_uncached(pod_name, visiting) unless visiting.empty?
         @status_cache[pod_name] ||= _resolve_prebuilt_status_uncached(pod_name, visiting)
@@ -1920,8 +1950,22 @@ module Expo
             available: false,
             reason: :dependency_unavailable,
             dependency: dep_name,
-            dependency_reason: dep_resolution[:reason],
-            dependency_path: dep_resolution[:path]
+            dependency_resolution: dep_resolution
+          }
+        end
+
+        # Unavailability propagates to dependencies too: a source-built dependent
+        # includes its dependency's headers from `Pods/Headers/Public/<dep>`, which
+        # CocoaPods only populates while the dependency builds from source.
+        prebuilt_dependent_pods.fetch(pod_name, []).each do |dependent_name|
+          dependent_resolution = resolve_prebuilt_status(dependent_name, next_visiting)
+          next if dependent_resolution[:available]
+
+          return {
+            available: false,
+            reason: :dependent_unavailable,
+            dependent: dependent_name,
+            dependent_resolution: dependent_resolution
           }
         end
 
@@ -2339,8 +2383,11 @@ module Expo
         when :missing_platform_slice
           "prebuilt xcframework does not contain a slice for #{@target_platform}"
         when :dependency_unavailable
-          reason = format_prebuilt_unavailable_reason(reason: info[:dependency_reason], path: info[:dependency_path])
+          reason = format_prebuilt_unavailable_reason(info[:dependency_resolution])
           "dependency #{info[:dependency]} is not using prebuilt: #{reason}"
+        when :dependent_unavailable
+          reason = format_prebuilt_unavailable_reason(info[:dependent_resolution])
+          "dependent #{info[:dependent]} is not using prebuilt: #{reason}"
         else
           info[:path] || 'prebuilt unavailable'
         end

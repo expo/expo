@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Pull a 3rd-party pod's prebuilt XCFramework to source when a dependent 3rd-party pod builds from source, fixing `'worklets/Compat/StableApi.h' file not found`. ([#49147](https://github.com/expo/expo/pull/49147) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 56.0.22 — 2026-08-17
