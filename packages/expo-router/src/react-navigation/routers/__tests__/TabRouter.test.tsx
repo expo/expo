@@ -220,7 +220,6 @@ test('gets rehydrated state from partial state', () => {
 
 test.each([
   CommonActions.navigate('baz', { value: 2 }),
-  CommonActions.navigateDeprecated('baz', { value: 2 }),
   TabActions.jumpTo('baz', { value: 2 }),
   TabActions.replace('baz', { value: 2 }),
 ])('$type mints and focuses an absent declared route', (action) => {

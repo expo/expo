@@ -102,8 +102,6 @@ export const BaseRouter = {
   },
 
   shouldActionChangeFocus(action: NavigationAction) {
-    return (
-      action.type === 'PUSH' || action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED'
-    );
+    return action.type === 'PUSH' || action.type === 'NAVIGATE';
   },
 };
