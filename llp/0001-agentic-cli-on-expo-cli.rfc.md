@@ -27,7 +27,7 @@ Generic coding agents drive Expo CLI through raw terminal output. They guess whe
 2. The command can be an entirely new bin (`npx ai-expo`, `npx exagent`, or similar), not necessarily an `expo` subcommand.
 3. Testing must be heavy. An eval suite must gate shipping. Testing infrastructure is built first [confirmed — Kudo, 2026-08-20].
 4. The design should brainstorm agent-friendly features (see §Design documents).
-5. **Process boundary** [confirmed — Kudo, 2026-08-20]: implementation invokes the `expo` CLI as a subprocess as much as possible; it does not import `@expo/cli` code. Details and rationale: [[0006-agent-native-cli-surface]].
+5. **Process boundary** [confirmed — Kudo, 2026-08-20]: implementation invokes the `expo` CLI as a subprocess as much as possible; it does not import `@expo/cli` code. The same boundary generalizes across the whole Expo CLI family [confirmed — Kudo, 2026-08-20]: the new CLI builds on top of and across `expo`, `eas-cli`, `expo-doctor` (bin `expo-doctor` [observed — `packages/expo-doctor/package.json`]), `@expo/fingerprint` (bin `fingerprint` [observed — `packages/@expo/fingerprint/package.json`]), `create-expo`, and more — orchestrating them as subprocesses. Details and rationale: [[0006-agent-native-cli-surface]].
 6. Feature areas are documented in separate LLPs [confirmed — Kudo, 2026-08-20]; this document stays the umbrella (decisions, constraints, index).
 
 ## Naming
@@ -75,7 +75,7 @@ Decision [confirmed — Kudo, 2026-08-18]: Shape 1. Consequences:
 
 Three layers, all machine-readable:
 
-1. **Expo CLI as structured subprocess.** The CLI already emits JSONL events via `installEventLogger` / `LOG_EVENTS` (`packages/@expo/cli/bin/cli.ts`) [observed]. The agent spawns `expo start` / `expo run:*` / `expo export` and consumes events, not text.
+1. **The Expo CLI family as structured subprocesses.** Not just `expo`: the tool layer orchestrates `expo`, `eas-cli`, `expo-doctor`, `@expo/fingerprint`, `create-expo`, and more [confirmed — Kudo, 2026-08-20]. `expo` already emits JSONL events via `installEventLogger` / `LOG_EVENTS` (`packages/@expo/cli/bin/cli.ts`) [observed]; the tool layer spawns commands and consumes events, not text. Sibling CLIs without structured output get wrapped (parse + normalize) until they emit events natively.
 2. **`expo-mcp` tools, reused as-is.** `automation_tap`, `automation_take_screenshot`, `automation_find_view`, `collect_app_logs`, `expo_router_sitemap`, `open_devtools` [observed — expo-mcp repo]. Decision [confirmed — Kudo, 2026-08-18]: reuse the `expo-mcp` infrastructure (Kudo owns that codebase) instead of vendoring. The agent package in `expo/expo` depends on the published `expo-mcp` / `@expo/mcp-tunnel` packages: in-process MCP connection locally, `@expo/mcp-tunnel` WebSocket transport for the remote/F3 case. New agent-facing tools land in `expo-mcp` first, so every MCP client (Claude Code, Cursor) inherits them.
 3. **Expo-specific decision tools** built for the agent (see §Design documents): Expo Go compatibility check, post-install impact classifier, project-state probe.
 
