@@ -360,8 +360,6 @@ The `children` prop is automatically populated based on the files in the **app**
 
 Expo Router does not support [`independent`](https://reactnavigation.org/docs/navigation-container/#independent) containers. This is because the router is responsible for managing the single `<NavigationContainer />`. Any additional containers will not be automatically managed by Expo Router.
 
-To embed an isolated navigation tree inside a screen, install `@react-navigation/native` and render that package's `NavigationContainer` in the screen with linking disabled. Expo Router remains responsible for deep links and, on web, the URL. Deep links into the embedded tree must be bridged by the host screen, and Expo Router `Link` cannot target routes inside it. Expo Router hooks rendered in the embedded tree still address the host router.
-
 #### `documentTitle`
 
 Use the [Head component](/router/web/static-rendering#meta-tags) to set the webpage title.
