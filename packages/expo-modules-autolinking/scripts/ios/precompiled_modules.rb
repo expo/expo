@@ -72,6 +72,9 @@ module Expo
     # so it is not resolved through the Expo precompiled tarball pipeline.
     CUSTOM_XCFRAMEWORK_DEPENDENCIES = %w[ExpoModulesJSI].freeze
 
+    # How many symbols and pod names to name before summarizing in the ABI warning.
+    ABI_REPORT_LIMIT = 5
+
     # Module-level caches (initialized lazily)
     @pod_lookup_map = nil
     @repo_root = nil
@@ -86,6 +89,11 @@ module Expo
     @target_platform = nil
     @xcframework_slice_cache = nil
     @status_cache = {}                  # Hash: pod_name -> resolve_prebuilt_status result
+    @core_abi_status = nil              # Hash: :incompatible, :mismatches — see core_abi_incompatible?
+    @core_abi_scanning = false          # Re-entrancy guard for the ABI scan
+    @core_abi_symbol_cache = nil        # Hash: [tarball, kind] -> Set<String> of symbol names
+    @core_exports = nil                 # Set<String> — exports of the prebuilt ExpoModulesCore
+    @core_exports_resolved = false
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -131,6 +139,7 @@ module Expo
       def build_from_source=(patterns)
         @build_from_source_patterns = (patterns || []).map { |p| Regexp.new("^#{p}$") }
         @status_cache = {}
+        reset_core_abi_caches
       end
 
       def target_platform=(platform)
@@ -143,6 +152,14 @@ module Expo
         @framework_owner_map = nil
         @xcframework_slice_cache = nil
         @status_cache = {}
+        reset_core_abi_caches
+      end
+
+      def reset_core_abi_caches
+        @core_abi_status = nil
+        @core_abi_symbol_cache = nil
+        @core_exports = nil
+        @core_exports_resolved = false
       end
 
       # Checks if a pod is configured to be built from source via buildFromSource.
@@ -727,7 +744,9 @@ module Expo
           end
         end
 
-        if @linked_pods.none? { |_, info| info[:found] }
+        # The ABI gate already explained itself in detail, and the artifacts were
+        # found — they were rejected — so this generic notice would misdirect.
+        if @linked_pods.none? { |_, info| info[:found] } && !core_abi_incompatible?
           Pod::UI.warn "#{prefix}⚠️  Precompiled modules enabled but no xcframeworks found. All modules will build from source."
         end
       end
@@ -2095,6 +2114,8 @@ module Expo
         own_resolution = resolve_own_prebuilt_info(pod_name)
         return own_resolution unless own_resolution[:available]
 
+        return { available: false, reason: :core_abi_mismatch } if core_abi_mismatch_for?(pod_name)
+
         pod_info = own_resolution[:resolved][0]
         next_visiting = visiting.dup.add(pod_name)
 
@@ -2117,6 +2138,218 @@ module Expo
         end
 
         own_resolution
+      end
+
+      # ──────────────────────────────────────────────────────────────────────
+      # Helpers: ExpoModulesCore ABI compatibility
+      # ──────────────────────────────────────────────────────────────────────
+
+      # Whether any prebuilt module binds ExpoModulesCore symbols that the resolved
+      # prebuilt ExpoModulesCore artifact does not export. Runs the scan once and
+      # reports it once; `core_abi_mismatch_for?` then gates the affected pods.
+      #
+      # Symbols are compared rather than versions because the skew breaks in both
+      # directions: core both adds and removes exports between patch releases, so no
+      # version comparison describes compatibility.
+      def core_abi_incompatible?
+        return false if @core_abi_scanning
+        return @core_abi_status[:incompatible] if @core_abi_status
+
+        @core_abi_scanning = true
+        begin
+          mismatches = scan_core_abi_mismatches
+          @core_abi_status = { incompatible: mismatches.any?, mismatches: mismatches }
+          warn_core_abi_incompatible(mismatches) if mismatches.any?
+        rescue StandardError => e
+          Pod::UI.warn "[Expo-precompiled] Skipped the ExpoModulesCore ABI check: #{e.message}"
+          @core_abi_status = { incompatible: false, mismatches: [] }
+        ensure
+          @core_abi_scanning = false
+        end
+        @core_abi_status[:incompatible]
+      end
+
+      # Whether this specific pod is the one carrying the skew. A pod rebuilt from
+      # source compiles against the installed core, so it cannot carry the skew —
+      # which is why only the affected pods need to fall back, and every compatible
+      # module keeps its prebuilt xcframework.
+      def core_abi_mismatch_for?(pod_name)
+        return false unless core_abi_incompatible?
+
+        @core_abi_status[:mismatches].any? { |mismatch| mismatch[:pod_name] == pod_name }
+      end
+
+      # Every prebuilt pod whose binary needs core symbols the resolved core artifact
+      # lacks, as [{ pod_name:, missing: [symbol, ...] }]. Empty when core is not
+      # itself prebuilt, since the dependency cascade already sends every module to
+      # source.
+      def scan_core_abi_mismatches
+        core_exports = prebuilt_core_exported_symbols
+        return [] if core_exports.nil? || core_exports.empty?
+
+        pod_lookup_map.keys.sort.filter_map do |pod_name|
+          next if pod_name == 'ExpoModulesCore'
+          next if build_from_source?(pod_name)
+
+          resolution = resolve_own_prebuilt_info(pod_name)
+          next unless resolution[:available]
+
+          _pod_info, product_name, tarball = resolution[:resolved]
+          bound = core_symbols_bound_by_prebuilt(tarball, product_name)
+          next if bound.nil? || bound.empty?
+
+          missing = bound.reject { |symbol| core_exports.include?(symbol) }
+          next if missing.empty?
+
+          { pod_name: pod_name, missing: missing.sort }
+        end
+      end
+
+      # Exported symbols of the resolved prebuilt ExpoModulesCore binary, or nil when
+      # core is not prebuilt or cannot be inspected. Memoized for the whole install.
+      def prebuilt_core_exported_symbols
+        unless @core_exports_resolved
+          @core_exports_resolved = true
+          @core_exports =
+            if build_from_source?('ExpoModulesCore')
+              nil
+            else
+              resolution = resolve_own_prebuilt_info('ExpoModulesCore')
+              if resolution[:available]
+                _pod_info, product_name, tarball = resolution[:resolved]
+                exported_symbols_from_prebuilt(tarball, product_name)
+              end
+            end
+        end
+        @core_exports
+      end
+
+      # Symbols the prebuilt binary binds from ExpoModulesCore. Attribution comes from
+      # the linker's recorded bind target, not the mangled name: conformances core
+      # declares on foreign types (`Foundation.URL : ExpoModulesCore.AnyArgument`)
+      # mangle under the conforming type's module, so matching the name misses those
+      # and core's ObjC exports besides.
+      def core_symbols_bound_by_prebuilt(tarball, product_name)
+        inspect_prebuilt_binary(tarball, product_name, :core_binds) do |binary_path|
+          output, status = Open3.capture2('xcrun', 'dyld_info', '-fixups', binary_path)
+          status.success? ? parse_core_bind_targets(output) : nil
+        end
+      end
+
+      def exported_symbols_from_prebuilt(tarball, product_name)
+        inspect_prebuilt_binary(tarball, product_name, :exports) do |binary_path|
+          output, status = Open3.capture2('xcrun', 'nm', '-gjU', binary_path)
+          status.success? ? output.lines.map(&:strip).reject(&:empty?).to_set : nil
+        end
+      end
+
+      # Parses `dyld_info -fixups` output into the set of symbols bound from
+      # ExpoModulesCore. Bind rows look like:
+      #   __DATA_CONST  __got  0x000BC468  bind  ExpoModulesCore/_$s15ExpoModulesCore...
+      # A mangled symbol never contains a slash, so the last one separates the target
+      # library from the symbol.
+      def parse_core_bind_targets(output)
+        output.lines.each_with_object(Set.new) do |line, symbols|
+          fields = line.split
+          next unless fields.length >= 5 && fields[3] == 'bind'
+
+          next if fields[5] == '[weak-import]'
+
+          library, _, symbol = fields[4].rpartition('/')
+          symbols << symbol if library == 'ExpoModulesCore' && !symbol.empty?
+        end
+      end
+
+      # Extracts a product's framework binary from its tarball into a temporary file
+      # and yields the path. Returns nil on any failure, which callers treat as "skip
+      # the check", so a tooling problem can never block an install.
+      def inspect_prebuilt_binary(tarball, product_name, kind)
+        @core_abi_symbol_cache ||= {}
+        cache_key = [tarball, kind]
+        return @core_abi_symbol_cache[cache_key] if @core_abi_symbol_cache.key?(cache_key)
+
+        @core_abi_symbol_cache[cache_key] = begin
+          member = framework_binary_member_in_tarball(tarball, product_name)
+          if member.nil?
+            nil
+          else
+            binary, status = Open3.capture2('tar', 'xOzf', tarball, member)
+            if status.success?
+              Tempfile.create(['expo-prebuilt-abi', '.bin']) do |file|
+                file.binmode
+                file.write(binary)
+                file.flush
+                yield file.path
+              end
+            end
+          end
+        end
+      rescue StandardError => e
+        Pod::UI.warn "[Expo-precompiled] Failed to inspect symbols of #{File.basename(tarball)}: #{e.message}"
+        @core_abi_symbol_cache[cache_key] = nil
+      end
+
+      # Locates a product's framework binary inside its xcframework tarball. Either
+      # slice answers the compatibility question: on our artifacts the device and
+      # simulator slices export and bind identical symbol sets.
+      def framework_binary_member_in_tarball(tarball, product_name)
+        entries_output, status = Open3.capture2e('tar', 'tzf', tarball)
+        unless status.success?
+          Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{entries_output.strip}"
+          return nil
+        end
+
+        suffix = "/#{product_name}.framework/#{product_name}"
+        candidates = entries_output.lines.map(&:strip).select do |entry|
+          entry.end_with?(suffix) && !entry.include?('.dSYM/')
+        end
+        candidates.find { |entry| entry.include?('/ios-arm64/') } || candidates.first
+      end
+
+      def demangle_symbol(symbol)
+        output, status = Open3.capture2('xcrun', 'swift-demangle', '--compact', symbol)
+        return symbol unless status.success?
+
+        demangled = output.strip
+        demangled.empty? ? symbol : demangled
+      rescue StandardError
+        symbol
+      end
+
+      def warn_core_abi_incompatible(mismatches)
+        core_version = installed_version_for('ExpoModulesCore')
+        core_label = core_version ? "expo-modules-core #{core_version}" : 'the installed expo-modules-core'
+
+        listed = mismatches.first(ABI_REPORT_LIMIT).map { |mismatch|
+          "#{mismatch[:pod_name]} (#{mismatch[:missing].size})"
+        }
+        listed << "and #{mismatches.size - ABI_REPORT_LIMIT} more" if mismatches.size > ABI_REPORT_LIMIT
+        example = demangle_symbol(mismatches.first[:missing].first)
+        count = mismatches.size
+
+        Pod::UI.warn <<~WARNING
+          [Expo-precompiled] #{count} prebuilt Expo #{count == 1 ? 'module needs' : 'modules need'} ExpoModulesCore symbols that #{core_label} does not provide, so #{count == 1 ? 'it' : 'they'} will be built from source:
+
+              #{listed.join(', ')}
+
+          For example: #{example}
+
+          Every compatible Expo module keeps its prebuilt xcframework. Linking the
+          mismatched #{count == 1 ? 'binary' : 'binaries'} instead would build with no error, then crash at launch
+          with dyld `Symbol not found`, and App Store Connect would reject the upload as
+          ITMS-90863.
+
+          A source build is slower, and for a wide version gap it may not compile either,
+          because these packages' sources can call core APIs this version does not have.
+          Aligning your versions is the actual fix:
+
+            npx expo install --fix
+
+          If that does not change the versions, something is pinning them. Check for an
+          `overrides` or `resolutions` block in package.json, then delete your lockfile and
+          node_modules and install again. A lockfile keeps an old version while the range
+          still allows it.
+        WARNING
       end
 
       # Candidate parent dirs (each holds <flavor>/<Name>.xcframework subtrees) for
@@ -2529,6 +2762,8 @@ module Expo
           'prebuilt tarball not found'
         when :missing_platform_slice
           "prebuilt xcframework does not contain a slice for #{@target_platform}"
+        when :core_abi_mismatch
+          'a prebuilt module is ABI-incompatible with the installed expo-modules-core'
         when :dependency_unavailable
           reason = format_prebuilt_unavailable_reason(reason: info[:dependency_reason], path: info[:dependency_path])
           "dependency #{info[:dependency]} is not using prebuilt: #{reason}"
