@@ -231,6 +231,13 @@ const screenProps = MockedComponent.mock.calls[1][0];
 
 ## Key Concepts
 
+### Expo Router Semantics
+
+- Evaluate all features exclusively from the Expo Router perspective. If a behavior is unavailable through Expo Router, React Navigation support for that behavior is irrelevant.
+- `expo-router/react-navigation` is only a compatibility layer. Do not treat its capabilities as Expo Router features unless Expo Router exposes them.
+- Protected routes are implemented as redirects and do not depend on `routeNames`.
+- `routeNames` are stable in Expo Router except during HMR.
+
 ### File-Based Routing Conventions
 
 - `page/index.tsx` → `/page`

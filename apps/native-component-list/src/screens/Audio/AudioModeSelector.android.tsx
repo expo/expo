@@ -118,6 +118,10 @@ export default function AudioModeSelector() {
         value: 'doNotMix',
       })}
       {renderModeSelector({
+        title: 'Do not mix (persistent)',
+        value: 'doNotMixPersistent',
+      })}
+      {renderModeSelector({
         title: 'Duck others',
         value: 'duckOthers',
       })}
