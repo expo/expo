@@ -14,7 +14,7 @@ import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/Con
 `expo-dev-client` adds various useful development tools to your debug builds:
 
 - A configurable launcher UI, so you can launch updates (such as from [PR previews](/develop/development-builds/development-workflows#pr-previews)) and switch between development servers without needing to recompile the native app
-- Improved debugging tools (such as support for [inspecting network requests](/debugging/tools/#inspecting-network-requests))
+- Improved debugging tools (such as support for [inspecting network requests](/debugging/tools/#inspecting-network-requests-expo-only))
 - [A powerful and extensible developer menu UI](/debugging/tools#developer-menu)
 
 Expo documentation refers to debug builds that include `expo-dev-client` as [development builds](/develop/development-builds/introduction/).
@@ -99,7 +99,8 @@ You can configure development client launcher using its built-in [config plugin]
     },
     {
       name: 'toolsButton',
-      description: 'Whether to show the floating tools button.',
+      description:
+        'Whether to show the floating, movable gear button that opens the developer menu. Set this to `false` to hide the button.',
       default: 'true',
     },
     {
