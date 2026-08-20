@@ -15,6 +15,7 @@
 
 - [Internal] Prevent `ncc` from removing dynamic requires where we need them ([#48887](https://github.com/expo/expo/pull/48887) by [@kitten](https://github.com/kitten))
 - Keep loaded `.env` values out of `expo install --check`. ([#48845](https://github.com/expo/expo/pull/48845) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Don't report copies of one version in an isolated package manager store as duplicate dependencies ([#49177](https://github.com/expo/expo/pull/49177) by [@ajaysingh56656](https://github.com/ajaysingh56656))
 
 ### 💡 Others
 
