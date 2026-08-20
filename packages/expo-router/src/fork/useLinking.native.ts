@@ -1,5 +1,6 @@
-import { type RefObject, useEffect, useEffectEvent, useCallback, useRef } from 'react';
-import { Linking } from 'react-native';
+import * as ExpoLinking from 'expo-linking';
+import { type RefObject, useEffect, useCallback, useRef } from 'react';
+import { Linking, Platform } from 'react-native';
 
 import { useRouteInfo } from '../global-state/useRouteInfo';
 import {
@@ -8,14 +9,16 @@ import {
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
   type ParamListBase,
+  useNavigationIndependentTree,
 } from '../react-navigation/native';
 import { extractExpoPathFromURL } from './extractPathFromURL';
-import { getInitialURLWithTimeout } from './getInitialURLWithTimeout';
 import { getStateFromPath as getExpoStateFromPath } from './getStateFromPath';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
-type Options = LinkingOptions<ParamListBase>;
+type Options = Omit<LinkingOptions<ParamListBase>, 'getStateFromPath'> & {
+  getStateFromPath?: typeof getExpoStateFromPath;
+};
 
 const linkingHandlers: symbol[] = [];
 
@@ -51,11 +54,18 @@ export function useLinking(
         }
       };
     });
-  const getStateFromPath = options?.getStateFromPath ?? getExpoStateFromPath;
+  const getStateFromPath = (options?.getStateFromPath ??
+    getStateFromPathDefault) as typeof getExpoStateFromPath;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
+  const independent = useNavigationIndependentTree();
   const { segments } = useRouteInfo();
+
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
+      return undefined;
+    }
+
+    if (independent) {
       return undefined;
     }
 
@@ -84,7 +94,7 @@ export function useLinking(
         linkingHandlers.splice(index, 1);
       }
     };
-  }, [enabled]);
+  }, [enabled, independent]);
 
   // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
   // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
@@ -96,6 +106,10 @@ export function useLinking(
   const getInitialURLRef = useRef(getInitialURL);
   const getStateFromPathRef = useRef(getStateFromPath);
   const getActionFromStateRef = useRef(getActionFromState);
+  const segmentsRef = useRef(segments);
+
+  // Keep stable URL listeners in sync with the latest navigation state.
+  segmentsRef.current = segments;
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -116,13 +130,12 @@ export function useLinking(
       const path = extractExpoPathFromURL(prefixesRef.current, url);
 
       return path !== undefined
-        ? getStateFromPathRef.current(path, configRef.current, segments)
+        ? getStateFromPathRef.current(path, configRef.current, segmentsRef.current)
         : undefined;
     },
 
-    [segments]
+    []
   );
-  const getStateFromURLInEffect = useEffectEvent(getStateFromURL);
 
   const getInitialState = useCallback(() => {
     let state: ResultState | undefined;
@@ -169,7 +182,7 @@ export function useLinking(
       }
 
       const navigation = ref.current;
-      const state = navigation ? getStateFromURLInEffect(url) : undefined;
+      const state = navigation ? getStateFromURL(url) : undefined;
 
       if (navigation && state) {
         // If the link were handled, it gets cleared in NavigationContainer
@@ -200,9 +213,28 @@ export function useLinking(
     };
 
     return subscribe(listener);
-  }, [enabled, onUnhandledLinking, prefixes, ref, subscribe]);
+  }, [enabled, getStateFromURL, onUnhandledLinking, prefixes, ref, subscribe]);
 
   return {
     getInitialState,
   };
+}
+
+export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
+  if (typeof window === 'undefined') {
+    return '';
+  } else if (Platform.OS === 'ios') {
+    // Use the new Expo API for iOS. This has better support for App Clips and handoff.
+    return ExpoLinking.getLinkingURL();
+  }
+
+  return Promise.race([
+    // TODO: Phase this out in favor of expo-linking on Android.
+    Linking.getInitialURL(),
+    new Promise<null>((resolve) =>
+      // Timeout in 150ms if `getInitialState` doesn't resolve
+      // Workaround for https://github.com/facebook/react-native/issues/25675
+      setTimeout(() => resolve(null), 150)
+    ),
+  ]);
 }

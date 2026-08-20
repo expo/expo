@@ -2,7 +2,6 @@ import type { UrlObject } from '../LocationProvider';
 import type { RouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import { getStateFromPath } from '../link/linking';
 import type {
   LinkingOptions,
   ParamListBase,
@@ -90,7 +89,8 @@ export function useTriggersToScreens(
       { relativeToDirectory: true }
     );
 
-    let state = getStateFromPath(resolvedHref, linking.config, routeInfo.segments)?.routes[0];
+    let state = linking.getStateFromPath?.(resolvedHref, linking.config, routeInfo.segments)
+      ?.routes[0];
 
     if (!state) {
       // This shouldn't occur, as you should get the global +not-found

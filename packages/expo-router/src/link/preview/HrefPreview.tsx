@@ -24,10 +24,10 @@ import { getPathFromState } from '../linking';
 import { PreviewRouteContext } from './PreviewRouteContext';
 
 export function HrefPreview({ href }: { href: Href }) {
-  const { segments: routeSegments } = useRouteInfo();
+  const routeInfo = useRouteInfo();
   const hrefState = useMemo(
-    () => getStateForHref(href, { segments: routeSegments }),
-    [href, routeSegments]
+    () => getStateForHref(href, routeInfo, store.linking),
+    [href, routeInfo]
   );
   const index = hrefState?.index ?? 0;
 
