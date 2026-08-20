@@ -28,7 +28,9 @@ import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.FilledIconButtonContent
 import expo.modules.ui.button.FilledTonalIconButtonContent
 import expo.modules.ui.button.OutlinedIconButtonContent
+import expo.modules.ui.graphics.ImageLoader
 import expo.modules.ui.icon.IconView
+import expo.modules.ui.image.ImageView
 import expo.modules.ui.menu.DropdownMenuContent
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
@@ -55,15 +57,23 @@ import okhttp3.OkHttpClient
 class ExpoUIModule : Module() {
   var okHttpClient: OkHttpClient? = null
     private set
+  var imageLoader: ImageLoader? = null
+    private set
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUI")
 
     OnCreate {
-      okHttpClient = OkHttpClient.Builder().build()
+      val context = requireNotNull(appContext.reactContext) {
+        "ExpoUIModule requires an active React context"
+      }
+      okHttpClient = appContext.createOkHttpClientBuilder().build()
+      imageLoader = ImageLoader(context, requireNotNull(okHttpClient))
     }
 
     OnDestroy {
+      imageLoader?.close()
+      imageLoader = null
       okHttpClient?.dispatcher?.executorService?.shutdown()
       okHttpClient?.connectionPool?.evictAll()
       okHttpClient?.cache?.close()
@@ -77,6 +87,13 @@ class ExpoUIModule : Module() {
         val callback = WorkletCallback()
         callback.worklet = worklet
         callback
+      }
+
+      Function("setWorklet") { callback: WorkletCallback, worklet: Worklet ->
+        // Dispatch on main thread as callback is read on the main thread
+        appContext.mainQueue.launch {
+          callback.worklet = worklet
+        }
       }
 
       Property("__expo_ui_shared_object__") { _: WorkletCallback ->
@@ -167,6 +184,9 @@ class ExpoUIModule : Module() {
     View(InnerTextFieldView::class)
     View(PlaceholderView::class)
     View(IconView::class)
+    View(ImageView::class) {
+      Events("onLoad", "onError")
+    }
     View(LazyColumnView::class)
     View(LazyRowView::class)
 

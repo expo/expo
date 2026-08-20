@@ -5,7 +5,7 @@ internal struct SecureStoreOptions: Record {
   var authenticationPrompt: String?
 
   @Field
-  var keychainAccessible: SecureStoreAccessible = .whenUnlocked
+  var keychainAccessible: SecureStoreAccessible?
 
   @Field
   var keychainService: String?

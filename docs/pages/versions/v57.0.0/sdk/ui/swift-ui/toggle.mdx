@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Switch`](../universal/switch) — it renders the appropriate native component per platform.
@@ -30,24 +31,43 @@ Expo UI Toggle matches the official SwiftUI [Toggle API](https://developer.apple
 
 ### Basic toggle
 
-```tsx BasicToggleExample.tsx
+<ComponentExample
+  title="BasicToggleExample.tsx"
+  src="/static/images/expo-ui/examples/toggle-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/toggle-basic-ios-dark.webp"
+  alt="A row labeled Enable feature with a switch turned off at the trailing edge">
+
+```tsx
 import { useState } from 'react';
 import { Host, Toggle } from '@expo/ui/swift-ui';
 
 export default function BasicToggleExample() {
   const [isOn, setIsOn] = useState(false);
 
+  // A toggle row stretches to the width it is given, so give the host a size.
   return (
-    <Host matchContents>
-      <Toggle isOn={isOn} onIsOnChange={setIsOn} label="Enable feature" />
+    <Host style={{ flex: 1 }}>
+      <Toggle
+        isOn={isOn}
+        onIsOnChange={setIsOn}
+        label="Enable feature"
+      />
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Toggle with system image
 
-```tsx ToggleWithImageExample.tsx
+<ComponentExample
+  title="ToggleWithImageExample.tsx"
+  src="/static/images/expo-ui/examples/toggle-system-image-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/toggle-system-image-ios-dark.webp"
+  alt="A row with an airplane icon labeled Airplane Mode and a switch turned off">
+
+```tsx
 import { useState } from 'react';
 import { Host, Toggle } from '@expo/ui/swift-ui';
 
@@ -55,7 +75,7 @@ export default function ToggleWithImageExample() {
   const [airplaneMode, setAirplaneMode] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Toggle
         isOn={airplaneMode}
         onIsOnChange={setAirplaneMode}
@@ -67,22 +87,30 @@ export default function ToggleWithImageExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Toggle styles
 
 Use the `toggleStyle` modifier to change the toggle's appearance. Available styles are: `automatic`, `switch`, and `button`.
 
 > **Note:** The `button` style is not available on tvOS.
 
-```tsx ToggleStylesExample.tsx
+<ComponentExample
+  title="ToggleStylesExample.tsx"
+  src="/static/images/expo-ui/examples/toggle-styles-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/toggle-styles-ios-dark.webp"
+  alt="A Switch Style row with its switch turned on, above a Button Style toggle in its selected filled state">
+
+```tsx
 import { useState } from 'react';
 import { Host, Toggle, VStack } from '@expo/ui/swift-ui';
 import { toggleStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function ToggleStylesExample() {
-  const [isOn, setIsOn] = useState(false);
+  const [isOn, setIsOn] = useState(true);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack spacing={8}>
         <Toggle
           isOn={isOn}
@@ -102,11 +130,19 @@ export default function ToggleStylesExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Tinted toggle
 
 Use the `tint` modifier to change the toggle's color.
 
-```tsx TintedToggleExample.tsx
+<ComponentExample
+  title="TintedToggleExample.tsx"
+  src="/static/images/expo-ui/examples/toggle-tinted-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/toggle-tinted-ios-dark.webp"
+  alt="A row labeled Custom Color with a switch turned on and tinted orange">
+
+```tsx
 import { useState } from 'react';
 import { Host, Toggle } from '@expo/ui/swift-ui';
 import { tint } from '@expo/ui/swift-ui/modifiers';
@@ -115,7 +151,7 @@ export default function TintedToggleExample() {
   const [isOn, setIsOn] = useState(true);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Toggle
         isOn={isOn}
         onIsOnChange={setIsOn}
@@ -127,11 +163,19 @@ export default function TintedToggleExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom label content
 
 You can pass custom components as `children` for more complex toggle labels. Use multiple `Text` views where the first represents the title and the second represents the subtitle.
 
-```tsx CustomLabelExample.tsx
+<ComponentExample
+  title="CustomLabelExample.tsx"
+  src="/static/images/expo-ui/examples/toggle-custom-label-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/toggle-custom-label-ios-dark.webp"
+  alt="A toggle row with the title Vibrate on ring above a grey subtitle line">
+
+```tsx
 import { useState } from 'react';
 import { Host, Toggle, Text } from '@expo/ui/swift-ui';
 
@@ -139,7 +183,7 @@ export default function CustomLabelExample() {
   const [vibrateOnRing, setVibrateOnRing] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Toggle isOn={vibrateOnRing} onIsOnChange={setVibrateOnRing}>
         <Text>Vibrate on ring</Text>
         <Text>Enable vibration when the phone rings</Text>
@@ -149,11 +193,19 @@ export default function CustomLabelExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Hidden label
 
 Use the [`labelsHidden`](modifiers/#labelshidden) modifier to hide the label while keeping it for accessibility.
 
-```tsx HiddenLabelExample.tsx
+<ComponentExample
+  title="HiddenLabelExample.tsx"
+  src="/static/images/expo-ui/examples/toggle-hidden-label-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/toggle-hidden-label-ios-dark.webp"
+  alt="A switch on its own, with no visible label text">
+
+```tsx
 import { useState } from 'react';
 import { Host, Toggle } from '@expo/ui/swift-ui';
 import { labelsHidden } from '@expo/ui/swift-ui/modifiers';
@@ -162,7 +214,7 @@ export default function HiddenLabelExample() {
   const [isOn, setIsOn] = useState(false);
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <Toggle
         isOn={isOn}
         onIsOnChange={setIsOn}
@@ -174,10 +226,15 @@ export default function HiddenLabelExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { Toggle } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/toggle" apiName="Toggle" />
+<APISection
+  packageName="expo-ui/swift-ui/toggle"
+  apiName="Toggle"
+/>

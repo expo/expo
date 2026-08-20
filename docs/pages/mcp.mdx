@@ -5,19 +5,21 @@ description: A guide on integrating Model Context Protocol with Expo projects to
 hasVideoLink: true
 ---
 
+import { Button } from '@expo/styleguide';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
+import { ClaudeLogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { ExpoMCPToolsTable, ExpoMCPPromptsTable } from '~/ui/components/ExpoMCPToolsTable';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Model Context Protocol (MCP) is a standard protocol that allows AI models to integrate with external data sources, providing enhanced context for more precise responses. It enables AI-assisted tools like agents to understand your development environment more deeply, allowing them to provide better assistance with your codebase.
 
-Expo MCP Server is a remote MCP server hosted by Expo that integrates with popular AI-assisted tools such as Claude Code, Cursor, VS Code, and others, enabling them to interact directly with your Expo projects.
+Expo MCP Server is a remote MCP server hosted by Expo that integrates with popular AI-assisted tools such as Claude, Claude Code, Cursor, VS Code, and others, enabling them to interact directly with your Expo projects. Expo MCP is also available in [Claude Connectors](https://claude.ai/directory/expo), so you can connect from Claude on the web, desktop, and mobile apps with no local installation.
 
 <VideoBoxLink
   videoId="dp9dpIgDxZQ"
@@ -76,7 +78,7 @@ The complete table of [MCP capabilities](#available-mcp-capabilities) documents 
     existing project has the latest `expo` package installed.
   </Requirement>
   <Requirement title="An AI-assisted tool with remote MCP support">
-    Claude Code, Cursor, VS Code, or any other tool with remote MCP server support.
+    Claude, Claude Code, Cursor, VS Code, or any other tool with remote MCP server support.
   </Requirement>
 </Prerequisites>
 
@@ -92,15 +94,34 @@ Expo MCP Server supports integration with various AI-assisted tools. Use the gen
 - **URL**: `https://mcp.expo.dev/mcp`
 - **Authentication**: OAuth
 
-<Collapsible summary="Claude Code setup">
+<Tabs>
+
+<Tab label="Claude">
+
+**Claude on the web, desktop, and mobile apps**
+
+Expo MCP is available in [Claude Connectors](https://claude.ai/directory/expo). This setup requires no installation on your machine. Click the following button and follow the prompts to add the Expo connector to your Claude account:
+
+<Button
+  theme="secondary"
+  href="https://claude.ai/directory/expo"
+  openInNewTab
+  className="mb-4"
+  leftSlot={<ClaudeLogoIcon className="icon-md text-button-secondary-icon" />}>
+  {'Add Expo connector to Claude'}
+</Button>
+
+On a Claude Team or Enterprise plan, the Expo connector can be enabled for the entire organization. Members of that organization can then use it on any device, including their phone, without a manual install.
+
+**Claude Code**
 
 <Terminal cmd={['$ claude mcp add --transport http expo https://mcp.expo.dev/mcp']} />
 
 After installation, run `/mcp` in your Claude Code session to authenticate.
 
-</Collapsible>
+</Tab>
 
-<Collapsible summary="Cursor setup">
+<Tab label="Cursor">
 
 Click the following link to install the MCP server for Cursor:
 
@@ -117,9 +138,9 @@ Click the following link to install the MCP server for Cursor:
   />
 </a>
 
-</Collapsible>
+</Tab>
 
-<Collapsible summary="VS Code setup">
+<Tab label="VS Code">
 
 1. Open Command Palette (<kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd> or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>P</kbd>)
 2. Run **MCP: Add Server**
@@ -128,15 +149,17 @@ Click the following link to install the MCP server for Cursor:
    - **URL**: `https://mcp.expo.dev/mcp`
    - **Name**: expo
 
-</Collapsible>
+</Tab>
 
-<Collapsible summary="Codex setup">
+<Tab label="Codex">
 
 <Terminal cmd={['$ codex mcp add expo --url https://mcp.expo.dev/mcp']} />
 
 The above command adds the MCP server to your Codex configuration file and prompts you to authenticate with your Expo account.
 
-</Collapsible>
+</Tab>
+
+</Tabs>
 
 </Step>
 
@@ -261,7 +284,7 @@ The current implementation has the following limitations:
 
 ## Data privacy
 
-Expo does not use data sent to Expo MCP Server to train AI models. Expo MCP Server does not run an AI model itself. It provides MCP tools and prompts to the AI-assisted tool you connect, such as Claude Code, Cursor, or VS Code.
+Expo does not use data sent to Expo MCP Server to train AI models. Expo MCP Server does not run an AI model itself. It provides MCP tools and prompts to the AI-assisted tool you connect, such as Claude, Claude Code, Cursor, or VS Code.
 
 For server capabilities, Expo MCP Server may access Expo account and project data needed to complete the requested tool call, such as build, workflow, documentation, or TestFlight-related data. The result is returned to your AI-assisted tool over the MCP connection.
 
@@ -271,7 +294,7 @@ For local capabilities, data from your development machine is proxied through Ex
 2. The screenshot is sent to Expo MCP Server.
 3. Expo MCP Server returns the screenshot to your local MCP client or AI-assisted tool.
 
-Expo MCP Server returns data to the MCP client you connect, such as Claude Code, Cursor, VS Code, or Codex. From there, the client and its model provider may apply their own retention, zero data retention (ZDR), and training policies. Review those policies before enabling MCP access for projects that handle sensitive data, including HIPAA, SOC 2, or other regulated workloads.
+Expo MCP Server returns data to the MCP client you connect, such as Claude, Claude Code, Cursor, VS Code, or Codex. From there, the client and its model provider may apply their own retention, zero data retention (ZDR), and training policies. Review those policies before enabling MCP access for projects that handle sensitive data, including HIPAA, SOC 2, or other regulated workloads.
 
 ## Additional resources
 

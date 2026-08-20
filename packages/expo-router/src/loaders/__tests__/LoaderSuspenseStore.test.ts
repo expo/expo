@@ -73,16 +73,4 @@ describe(LoaderSuspenseStore, () => {
     store.teardown('/inactive');
     expect(store.get('/inactive')).toEqual({ data: 'new' });
   });
-
-  it('drops all entries and marks on reset', () => {
-    const store = new LoaderSuspenseStore();
-    store.set('/a', { data: 1 });
-    store.dispose('/a');
-
-    store.reset();
-    store.set('/a', { data: 2 });
-    store.teardown('/a');
-
-    expect(store.get('/a')).toEqual({ data: 2 });
-  });
 });

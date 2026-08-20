@@ -4,6 +4,8 @@ import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
+import { useComponent } from '../../fork/useComponent';
+import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -22,9 +24,11 @@ import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
 import { NavigationStateContext } from './NavigationStateContext';
+import { NavigatorTypeContext } from './NavigatorTypeContext';
 import { PreventRemoveContext } from './PreventRemoveContext';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
+import { createInitialState } from './createInitialState';
 import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
 import {
@@ -38,7 +42,6 @@ import {
 } from './types';
 import { useChildListeners } from './useChildListeners';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
-import { useComponent } from './useComponent';
 import { useCurrentRender } from './useCurrentRender';
 import { type ScreenConfigWithParent, useDescriptors } from './useDescriptors';
 import { useEventEmitter } from './useEventEmitter';
@@ -240,24 +243,6 @@ const getRouteConfigsFromChildren = <
   return configs;
 };
 
-const getStateFromParams = (params: NavigatorRoute['params']) => {
-  if (params?.state != null) {
-    return params.state;
-  } else if (typeof params?.screen === 'string' && params?.initial !== false) {
-    return {
-      routes: [
-        {
-          name: params.screen,
-          params: params.params,
-          path: params.path,
-        },
-      ],
-    };
-  }
-
-  return undefined;
-};
-
 /**
  * Hook for building navigators.
  *
@@ -342,11 +327,6 @@ export function useNavigationBuilder<
   }, {});
 
   const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
-    const { initialParams } = screens[curr]!.props;
-    acc[curr] = initialParams;
-    return acc;
-  }, {});
   const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
     (acc, curr) =>
       Object.assign(acc, {
@@ -409,35 +389,13 @@ export function useNavigationBuilder<
           ? lastStateRef.current
           : router.getRehydratedState(lastStateRef.current, {
               routeNames,
-              routeParamList,
               routeGetIdList,
             });
 
         return [state, false, undefined];
       }
 
-      const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
-        (acc, curr) => {
-          const { initialParams } = screens[curr]!.props;
-          const initialParamsFromParams =
-            route?.params?.state == null &&
-            route?.params?.initial !== false &&
-            route?.params?.screen === curr
-              ? route.params.params
-              : undefined;
-
-          acc[curr] =
-            initialParams !== undefined || initialParamsFromParams !== undefined
-              ? {
-                  ...initialParams,
-                  ...initialParamsFromParams,
-                }
-              : undefined;
-
-          return acc;
-        },
-        {}
-      );
+      const routeParamsForInitialization = isNestedParamsConsumed ? undefined : route?.params;
 
       // If the current state isn't initialized on first render, we initialize it
       // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
@@ -445,47 +403,35 @@ export function useNavigationBuilder<
       // So we need to rehydrate it to make it usable
       if (
         (currentState === undefined || !isStateValid(currentState)) &&
-        route?.params?.state == null &&
-        !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
-        !isNestedParamsConsumed
+        routeParamsForInitialization?.state == null
       ) {
         return [
-          router.getInitialState({
+          createInitialState<State>({
             routeNames,
-            routeParamList: initialRouteParamList,
-            routeGetIdList,
+            initialRouteName: rest.initialRouteName,
+            routeParams: routeParamsForInitialization,
           }),
           true,
-          undefined,
+          typeof routeParamsForInitialization?.screen === 'string'
+            ? routeParamsForInitialization
+            : undefined,
         ];
       } else {
-        const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
-        const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
-
-        const stateBeforeInitialization = (stateFromParams ?? currentState) as
+        // The branch above handles the only case where both sources can be absent.
+        const stateBeforeInitialization = (routeParamsForInitialization?.state ?? currentState) as
           | PartialState<State>
-          | undefined;
+          | State;
+        const hydratedState = router.getRehydratedState(stateBeforeInitialization, {
+          routeNames,
+          routeGetIdList,
+        });
 
-        const hydratedState =
-          stateBeforeInitialization == null
-            ? router.getInitialState({
-                routeNames,
-                routeParamList: initialRouteParamList,
-                routeGetIdList,
-              })
-            : router.getRehydratedState(stateBeforeInitialization, {
-                routeNames,
-                routeParamList: initialRouteParamList,
-                routeGetIdList,
-              });
-
-        return [hydratedState, false, paramsForState];
+        return [hydratedState, false, routeParamsForInitialization];
       }
       // We explicitly don't include routeNames, route.params etc. in the dep list
       // below. We want to avoid forcing a new state to be calculated in those cases
       // Instead, we handle changes to these in the nextState code below. Note
-      // that some changes to routeConfigs are explicitly ignored, such as changes
-      // to initialParams
+      // that some changes to routeConfigs are explicitly ignored.
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentState, router, isStateValid]);
 
@@ -531,7 +477,6 @@ export function useNavigationBuilder<
     const updatedState = action
       ? router.getStateForAction(nextState, action, {
           routeNames,
-          routeParamList,
           routeGetIdList,
         })
       : null;
@@ -540,7 +485,6 @@ export function useNavigationBuilder<
       updatedState !== null
         ? router.getRehydratedState(updatedState, {
             routeNames,
-            routeParamList,
             routeGetIdList,
           })
         : nextState;
@@ -575,6 +519,32 @@ export function useNavigationBuilder<
   // decides which survivor takes focus, so the interim render agrees with the state that
   // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
   state = router.getStateForDeclaredRoutes(state, routeNames);
+
+  // TODO(@ubax): find a better way to implement this then ref approach
+  const registryConfigRef = React.useRef({ routeNames, routeGetIdList });
+  useClientLayoutEffect(() => {
+    registryConfigRef.current = { routeNames, routeGetIdList };
+  });
+  // Screen-list changes invalidate render consumers even though the reducer reads committed config.
+  const routeNamesKey = routeNames.join('\0');
+  const reduce = React.useCallback<RouterRegistryEntry['reduce']>(
+    (registryState, action) =>
+      // The registry stores states from different router types; this entry only receives its own state key.
+      router.getStateForAction(registryState as State, action, {
+        routeNames: registryConfigRef.current.routeNames,
+        routeGetIdList: registryConfigRef.current.routeGetIdList,
+      }),
+    [routeNamesKey, router]
+  );
+  const registryEntry = React.useMemo<RouterRegistryEntry>(
+    () => ({ reduce, routerType: router.type, contextKey: options.id }),
+    [options.id, reduce, router.type]
+  );
+
+  // TODO(@ubax): Nested navigators must stay mounted. Hide screen content with `<Activity>` instead.
+  // TODO(@ubax): Move registration to a fork-level context like `UnhandledActionContext` so
+  // vendored core no longer imports expo-router global state.
+  useRegisterRouter(state.key, registryEntry);
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
@@ -642,7 +612,7 @@ export function useNavigationBuilder<
       const config = screens[e.target];
 
       if (!route && config) {
-        route = { key: e.target, name: e.target, params: config.props.initialParams };
+        route = { key: e.target, name: e.target };
         isPlaceholder = true;
       }
 
@@ -718,7 +688,6 @@ export function useNavigationBuilder<
     isRoutePrevented,
     routerConfigOptions: {
       routeNames,
-      routeParamList,
       routeGetIdList,
     },
     emitter,
@@ -809,7 +778,9 @@ export function useNavigationBuilder<
           <NavigationStateListenerProvider state={state}>
             <FocusedRouteKeyContext.Provider value={state.routes[state.index]?.key}>
               <PreventRemoveContext.Provider value={preventRemoveContextValue}>
-                {element}
+                <NavigatorTypeContext.Provider value={router.type}>
+                  {element}
+                </NavigatorTypeContext.Provider>
               </PreventRemoveContext.Provider>
             </FocusedRouteKeyContext.Provider>
           </NavigationStateListenerProvider>

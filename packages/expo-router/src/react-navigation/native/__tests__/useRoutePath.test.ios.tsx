@@ -93,12 +93,22 @@ test('gets path for route in nested navigator screen', () => {
   const navigation = createNavigationContainerRef<AStackParamList>();
 
   render(
-    <NavigationContainer ref={navigation} linking={config}>
+    <NavigationContainer
+      ref={navigation}
+      linking={config}
+      initialState={{
+        routes: [
+          {
+            name: 'a',
+            state: { routes: [{ name: 'b', params: { id: 'apple' } }] },
+          },
+        ],
+      }}>
       <StackA.Navigator>
         <StackA.Screen name="a">
           {() => (
             <StackB.Navigator>
-              <StackB.Screen name="b" component={Test} initialParams={{ id: 'apple' }} />
+              <StackB.Screen name="b" component={Test} />
               <StackB.Screen name="c" component={Test} />
             </StackB.Navigator>
           )}

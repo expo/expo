@@ -12,7 +12,6 @@ import type {
 } from '../../react-navigation/native-stack';
 
 export type ModalStackNavigatorProps = {
-  initialRouteName?: string;
   screenOptions?: ExtendedStackNavigationOptions;
   children: React.ReactNode;
 };

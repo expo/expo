@@ -659,7 +659,7 @@ public class AudioModule: Module {
         case .duckOthers:
           playerVolumes[playable.id] = playable.volume
           playable.volume *= 0.5
-        case .doNotMix, .mixWithOthers:
+        case .doNotMix, .doNotMixPersistent, .mixWithOthers:
           playable.pause()
         }
       }
@@ -748,7 +748,7 @@ public class AudioModule: Module {
           if let originalVolume = playerVolumes[playable.id] {
             playable.volume = originalVolume
           }
-        case .doNotMix, .mixWithOthers:
+        case .doNotMix, .doNotMixPersistent, .mixWithOthers:
           playable.resumePlayback()
         }
       }
@@ -820,7 +820,7 @@ public class AudioModule: Module {
 
     do {
       try sessionQueue.sync {
-        try AVAudioSession.sharedInstance().setActive(isActive, options: isActive ? [] : [.notifyOthersOnDeactivation])
+        try AVAudioSession.sharedInstance().setActive(isActive, options: activationOptions(isActive: isActive))
         self.sessionIsActive = isActive
       }
     } catch {
@@ -856,7 +856,7 @@ public class AudioModule: Module {
     #endif
 
     if !mode.playsInSilentMode {
-      if mode.interruptionMode == .doNotMix {
+      if mode.interruptionMode.preventsMixing {
         category = .soloAmbient
       } else {
         category = .ambient
@@ -867,7 +867,7 @@ public class AudioModule: Module {
 
       var categoryOptions: AVAudioSession.CategoryOptions = []
       switch mode.interruptionMode {
-      case .doNotMix:
+      case .doNotMix, .doNotMixPersistent:
         break
       case .duckOthers:
         categoryOptions.insert(.duckOthers)
@@ -915,6 +915,14 @@ public class AudioModule: Module {
     }
   }
 
+  private func activationOptions(isActive: Bool) -> AVAudioSession.SetActiveOptions {
+    guard !isActive, interruptionMode.shouldNotifyOthersOnDeactivation else {
+      return []
+    }
+
+    return [.notifyOthersOnDeactivation]
+  }
+
   private func deactivateSession() {
     sessionQueue.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
       guard let self, self.sessionIsActive, !self.isSessionInUse else {
@@ -927,7 +935,7 @@ public class AudioModule: Module {
   @discardableResult
   private func applySessionActive(_ isActive: Bool) -> Bool {
     do {
-      try AVAudioSession.sharedInstance().setActive(isActive, options: isActive ? [] : [.notifyOthersOnDeactivation])
+      try AVAudioSession.sharedInstance().setActive(isActive, options: activationOptions(isActive: isActive))
       sessionIsActive = isActive
       return true
     } catch {

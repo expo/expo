@@ -4,15 +4,21 @@ import { ImmutableRequest } from 'expo-server/private';
 import { vol } from 'memfs';
 
 import type { ExportAssetMap } from '../../../../export/saveAssets';
+import { getEnvFiles, reloadEnvFiles } from '../../../../utils/nodeEnv';
 import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
 import { warnInvalidWebOutput } from '../router';
-import { observeAnyFileChanges } from '../waitForMetroToObserveTypeScriptFile';
+import { observeAnyFileChanges, observeFileChanges } from '../waitForMetroToObserveTypeScriptFile';
 
 jest.mock('../waitForMetroToObserveTypeScriptFile', () => ({
   observeAnyFileChanges: jest.fn(),
+  observeFileChanges: jest.fn(),
+}));
+jest.mock('../../../../utils/nodeEnv', () => ({
+  getEnvFiles: jest.fn(() => []),
+  reloadEnvFiles: jest.fn(),
 }));
 jest.mock('../router', () => {
   return {
@@ -144,6 +150,24 @@ describe('startAsync', () => {
     expect(devServer.getUrlCreator().constructUrl({ hostType: 'localhost' })).toBe(
       'http://127.0.0.1:3000'
     );
+  });
+});
+
+describe('watchEnvironmentVariables', () => {
+  it('keeps the Metro mode when env files reload', async () => {
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    devServer['instance'] = { server: {} } as any;
+    devServer['metro'] = {} as any;
+    devServer['instanceMetroOptions'] = { mode: 'production' };
+
+    await devServer.watchEnvironmentVariables();
+
+    expect(getEnvFiles).toHaveBeenCalledWith('/', 'production');
+    jest.mocked(observeFileChanges).mock.calls[0]![2]();
+    expect(reloadEnvFiles).toHaveBeenCalledWith('/', 'production');
   });
 });
 
@@ -372,10 +396,14 @@ describe('getStaticPageAsync', () => {
 
     expect(typeof result.content).toBe('string');
     expect(result.resources).toEqual([]);
-    expect(getStaticContent).toHaveBeenCalledWith(
-      new URL('http://localhost:8081/posts/123'),
-      undefined
-    );
+    expect(getStaticContent).toHaveBeenCalledWith(new URL('http://localhost:8081/posts/123'), {
+      hydrate: false,
+      assets: {
+        css: [],
+        js: [expect.stringContaining('/index.bundle?')],
+        favicon: undefined,
+      },
+    });
   });
 
   it('normalizes loader Response data and passes dynamic params to metadata', async () => {

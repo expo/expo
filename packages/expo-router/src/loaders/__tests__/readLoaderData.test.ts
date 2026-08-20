@@ -8,7 +8,6 @@ const read = <T>(ctx: LoaderContextValue, path: string, fetcher: (path: string) 
   readLoaderData(ctx, path, fetcher);
 const revalidate = ({ client, store }: LoaderContextValue) => {
   store.retain(client.revalidate());
-  client.notify();
 };
 
 describe(readLoaderData, () => {

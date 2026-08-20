@@ -22,4 +22,4 @@ if [[ "$tool" != "ecr" && "$tool" != "review-research-mcp" ]]; then
 fi
 shift
 
-exec npx --yes -p "@expo/code-review-cli@$version" "$tool" "$@"
+exec env npm_config_loglevel=error npx --yes -p "@expo/code-review-cli@$version" "$tool" "$@"

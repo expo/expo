@@ -20,13 +20,17 @@ const linkingHandlers: symbol[] = [];
 
 export function useLinking(
   ref: RefObject<NavigationContainerRef<ParamListBase>>,
-  {
-    enabled = true,
-    prefixes,
-    filter,
-    config,
-    getInitialURL = () => getInitialURLWithTimeout(),
-    subscribe = (listener) => {
+  options: Options | undefined,
+  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
+) {
+  const enabled = options !== undefined;
+  const prefixes = options?.prefixes ?? [];
+  const filter = options?.filter;
+  const config = options?.config;
+  const getInitialURL = options?.getInitialURL ?? (() => getInitialURLWithTimeout());
+  const subscribe =
+    options?.subscribe ??
+    ((listener) => {
       const callback = ({ url }: { url: string }) => listener(url);
 
       const subscription = Linking.addEventListener('url', callback) as
@@ -45,12 +49,9 @@ export function useLinking(
           removeEventListener?.('url', callback);
         }
       };
-    },
-    getStateFromPath = getStateFromPathDefault,
-    getActionFromState = getActionFromStateDefault,
-  }: Options,
-  onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
-) {
+    });
+  const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
+  const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const independent = useNavigationIndependentTree();
 
   useEffect(() => {
@@ -62,24 +63,21 @@ export function useLinking(
       return undefined;
     }
 
-    if (enabled !== false && linkingHandlers.length) {
-      // TODO(@ubax): This check should be removed
-      if (linkingHandlers.length > 1) {
-        console.error(
-          [
-            'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
-            "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
-            '- Only a single instance of the root component is rendered',
-          ]
-            .join('\n')
-            .trim()
-        );
-      }
+    if (enabled && linkingHandlers.length) {
+      console.error(
+        [
+          'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
+          "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
+          '- Only a single instance of the root component is rendered',
+        ]
+          .join('\n')
+          .trim()
+      );
     }
 
     const handler = Symbol();
 
-    if (enabled !== false) {
+    if (enabled) {
       linkingHandlers.push(handler);
     }
 

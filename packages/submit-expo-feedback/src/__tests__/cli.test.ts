@@ -7,7 +7,6 @@ import packageJson from '../../package.json';
 import {
   createFeedbackMetadataAsync,
   getProjectMetadata,
-  getUserMetadataAsync,
   resolveFeedbackAsync,
   resolveFeedbackId,
   runExpoFeedbackAsync,
@@ -40,6 +39,7 @@ jest.mock('ci-info', () => ({
 jest.mock('prompts');
 
 const mockPrompts = prompts as unknown as jest.Mock;
+const VALID_FEEDBACK = 'Please improve how error messages explain actionable next steps.';
 
 function createTempDir(): string {
   return mkdtemp(path.join(tmpdir(), 'submit-expo-feedback-test-'));
@@ -81,9 +81,18 @@ describe('help output', () => {
         '| unknown    | Concise Expo product, package, feature, or topic, or leave empty'
       );
       expect(helpOutput).toContain('--resume <feedbackId>');
-      expect(helpOutput).toContain('Feedback messages can be up to 5,000 characters.');
+      expect(helpOutput).toContain('npx submit-expo-feedback --message <message>');
+      expect(helpOutput).toContain('--message, -m <message>');
+      expect(helpOutput).toContain('Feedback messages must be between 40 and 5,000 characters.');
       expect(helpOutput).toContain(
-        'Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected'
+        'Positional messages are temporarily supported for backwards compatibility.'
+      );
+      expect(helpOutput).toContain(
+        'Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to prevent feedback submission'
+      );
+      expect(helpOutput).toContain('and all network requests.');
+      expect(helpOutput).toContain(
+        'Authenticated submissions are associated\n    with your Expo account.'
       );
     } finally {
       process.argv = originalArgv;
@@ -114,33 +123,55 @@ describe('feedback message resolution', () => {
     mockPrompts.mockReset();
   });
 
-  it('uses positional arguments as the feedback message', async () => {
-    await expect(resolveFeedbackAsync(['please', 'improve', 'errors'])).resolves.toEqual({
+  it('uses the explicit message option as the feedback message', async () => {
+    await expect(resolveFeedbackAsync([], undefined, `  ${VALID_FEEDBACK}  `)).resolves.toEqual({
       category: 'unknown',
-      feedback: 'please improve errors',
+      feedback: VALID_FEEDBACK,
     });
   });
 
-  it('uses a category supplied on the command line', async () => {
-    await expect(
-      resolveFeedbackAsync(['improve', 'the', 'controls'], 'simulator')
-    ).resolves.toEqual({
+  it('temporarily accepts positional arguments as the feedback message', async () => {
+    await expect(resolveFeedbackAsync(VALID_FEEDBACK.split(' '), 'simulator')).resolves.toEqual({
       category: 'simulator',
-      feedback: 'improve the controls',
+      feedback: VALID_FEEDBACK,
     });
   });
+
+  it('rejects feedback provided both explicitly and positionally', async () => {
+    await expect(resolveFeedbackAsync([VALID_FEEDBACK], undefined, VALID_FEEDBACK)).rejects.toThrow(
+      'Provide feedback with either --message or a positional argument, not both.'
+    );
+  });
+
+  it('accepts feedback at the minimum length', async () => {
+    const feedback = 'a'.repeat(40);
+
+    await expect(resolveFeedbackAsync([], undefined, feedback)).resolves.toEqual({
+      category: 'unknown',
+      feedback,
+    });
+  });
+
+  it.each(['init', 'connect', 'start', 'submit-expo-feedback', 'a'.repeat(39)])(
+    'rejects feedback under the minimum length: %p',
+    async (feedback) => {
+      await expect(resolveFeedbackAsync([], undefined, feedback)).rejects.toThrow(
+        'Feedback must be at least 40 characters.'
+      );
+    }
+  );
 
   it('accepts feedback at the maximum length', async () => {
     const feedback = 'a'.repeat(5_000);
 
-    await expect(resolveFeedbackAsync([feedback])).resolves.toEqual({
+    await expect(resolveFeedbackAsync([], undefined, feedback)).resolves.toEqual({
       category: 'unknown',
       feedback,
     });
   });
 
   it('rejects feedback over the maximum length', async () => {
-    await expect(resolveFeedbackAsync(['a'.repeat(5_001)])).rejects.toThrow(
+    await expect(resolveFeedbackAsync([], undefined, 'a'.repeat(5_001))).rejects.toThrow(
       'Feedback cannot exceed 5,000 characters.'
     );
   });
@@ -154,12 +185,12 @@ describe('feedback message resolution', () => {
   it('prompts for a category and message in interactive environments', async () => {
     const originalIsTTY = process.stdin.isTTY;
     Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: true });
-    mockPrompts.mockResolvedValueOnce({ category: 'docs', feedback: 'Clarify this example.' });
+    mockPrompts.mockResolvedValueOnce({ category: 'docs', feedback: VALID_FEEDBACK });
 
     try {
       await expect(resolveFeedbackAsync([])).resolves.toEqual({
         category: 'docs',
-        feedback: 'Clarify this example.',
+        feedback: VALID_FEEDBACK,
       });
       expect(mockPrompts).toHaveBeenCalledWith(
         expect.arrayContaining([
@@ -182,7 +213,7 @@ describe('feedback message resolution', () => {
 
     try {
       await expect(resolveFeedbackAsync([])).rejects.toThrow(
-        'Feedback message is required in non-interactive environments.'
+        'Feedback message is required in non-interactive environments. Pass it with --message or -m.'
       );
       expect(mockPrompts).not.toHaveBeenCalled();
     } finally {
@@ -260,7 +291,6 @@ describe('project metadata', () => {
     await expect(
       createFeedbackMetadataAsync(
         projectRoot,
-        null,
         'docs',
         ' https://docs.expo.dev/router/introduction/ '
       )
@@ -277,37 +307,9 @@ describe('project metadata', () => {
       version: '1.0.0',
     });
 
-    const metadata = await createFeedbackMetadataAsync(projectRoot, null, 'docs', '   ');
+    const metadata = await createFeedbackMetadataAsync(projectRoot, 'docs', '   ');
 
     expect(metadata).not.toHaveProperty('subject');
-  });
-});
-
-describe('user metadata', () => {
-  it('includes username and id from the local session state', async () => {
-    await expect(
-      getUserMetadataAsync({
-        sessionSecret: 'secret',
-        userId: 'user-id',
-        username: 'expo-user',
-      })
-    ).resolves.toEqual({
-      authType: 'session',
-      id: 'user-id',
-      username: 'expo-user',
-    });
-  });
-
-  it('does not shell out to expo whoami when username is missing', async () => {
-    await expect(
-      getUserMetadataAsync({
-        sessionSecret: 'secret',
-        userId: 'user-id',
-      })
-    ).resolves.toEqual({
-      authType: 'session',
-      id: 'user-id',
-    });
   });
 });
 
@@ -323,6 +325,7 @@ describe('feedback submission', () => {
       EXPO_LOCAL: '1',
     };
     delete env.EXPO_STAGING;
+    delete env.EXPO_FEEDBACK_API_BASE_URL;
     delete env.EXPO_TOKEN;
     delete env.DO_NOT_TRACK;
     delete env.EXPO_NO_TELEMETRY;
@@ -346,13 +349,11 @@ describe('feedback submission', () => {
     jest.spyOn(AbortSignal, 'timeout').mockReturnValue(timeoutSignal);
     const session = {
       sessionSecret: 'session-secret',
-      userId: 'user-id',
-      username: 'expo-user',
     };
-    const metadata = await createFeedbackMetadataAsync(projectRoot, session, 'mcp', 'expo-mcp');
+    const metadata = await createFeedbackMetadataAsync(projectRoot, 'mcp', 'expo-mcp');
 
     await sendFeedbackAsync({
-      feedback: 'please make errors clearer',
+      feedback: VALID_FEEDBACK,
       metadata,
       session,
     });
@@ -366,7 +367,7 @@ describe('feedback submission', () => {
         'expo-session': 'session-secret',
       }),
       body: JSON.stringify({
-        feedback: 'please make errors clearer',
+        feedback: VALID_FEEDBACK,
         metadata,
       }),
     });
@@ -393,12 +394,37 @@ describe('feedback submission', () => {
       project: {
         isExpoProject: false,
       },
-      user: {
-        authType: 'session',
-        id: 'user-id',
-        username: 'expo-user',
-      },
     });
+    expect(metadata).not.toHaveProperty('user');
+  });
+
+  it('uses the feedback API base URL override in local mode', async () => {
+    process.env.EXPO_FEEDBACK_API_BASE_URL = 'http://127.0.0.1:43210';
+
+    await sendFeedbackAsync({
+      feedback: VALID_FEEDBACK,
+      metadata: await createFeedbackMetadataAsync(projectRoot),
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:43210/v2/feedback/cli-send',
+      expect.any(Object)
+    );
+  });
+
+  it('ignores the feedback API base URL override outside local mode', async () => {
+    delete process.env.EXPO_LOCAL;
+    process.env.EXPO_FEEDBACK_API_BASE_URL = 'http://127.0.0.1:43210';
+
+    await sendFeedbackAsync({
+      feedback: VALID_FEEDBACK,
+      metadata: await createFeedbackMetadataAsync(projectRoot),
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.expo.dev/v2/feedback/cli-send',
+      expect.any(Object)
+    );
   });
 
   it('does not submit feedback over the maximum length', async () => {
@@ -412,6 +438,33 @@ describe('feedback submission', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('does not submit feedback under the minimum length', async () => {
+    await expect(
+      sendFeedbackAsync({
+        feedback: 'init',
+        metadata: await createFeedbackMetadataAsync(projectRoot),
+      })
+    ).rejects.toThrow('Feedback must be at least 40 characters.');
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('does not submit when telemetry is disabled at the submission boundary', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+    const metadata = await createFeedbackMetadataAsync(projectRoot);
+    process.env.DO_NOT_TRACK = '1';
+
+    await sendFeedbackAsync({
+      feedback: VALID_FEEDBACK,
+      metadata,
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Feedback was not sent because telemetry is off. The user has indicated that they do not want to send feedback. Do not enable telemetry or ask the user to enable it.'
+    );
+  });
+
   it('resumes a feedback session and prints instructions using the provided ID', async () => {
     const originalArgv = process.argv;
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
@@ -421,7 +474,8 @@ describe('feedback submission', () => {
       'submit-expo-feedback',
       '--resume',
       'session_ABC-123',
-      'one more detail',
+      '--message',
+      VALID_FEEDBACK,
     ];
 
     try {
@@ -429,16 +483,38 @@ describe('feedback submission', () => {
 
       const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
       expect(requestBody).toMatchObject({
-        feedback: 'one more detail',
+        feedback: VALID_FEEDBACK,
         metadata: {
           feedbackId: 'session_ABC-123',
         },
       });
       expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
-        'To continue the feedback session use:\nnpx submit-expo-feedback@latest --resume session_ABC-123'
+        'To continue the feedback session use:\nnpx submit-expo-feedback@latest --resume session_ABC-123 --message "<message>"'
       );
     } finally {
       process.argv = originalArgv;
+    }
+  });
+
+  it('temporarily submits positional feedback with a deprecation warning', async () => {
+    const originalArgv = process.argv;
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
+    process.argv = ['node', 'submit-expo-feedback', VALID_FEEDBACK];
+
+    try {
+      await runExpoFeedbackAsync();
+
+      const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+      expect(requestBody.feedback).toBe(VALID_FEEDBACK);
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        'Passing feedback as a positional argument is deprecated. Use --message or -m instead.'
+      );
+    } finally {
+      process.argv = originalArgv;
+      consoleLogSpy.mockRestore();
+      consoleWarnSpy.mockRestore();
     }
   });
 
@@ -446,7 +522,7 @@ describe('feedback submission', () => {
     const originalArgv = process.argv;
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
     jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
-    process.argv = ['node', 'submit-expo-feedback', '--resume', 'invalid/id', 'one more detail'];
+    process.argv = ['node', 'submit-expo-feedback', '--resume', 'invalid/id', '-m', VALID_FEEDBACK];
 
     try {
       await runExpoFeedbackAsync();
@@ -458,7 +534,7 @@ describe('feedback submission', () => {
         `The provided feedback ID is invalid, so a new one was generated: ${feedbackId}`
       );
       expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
-        `npx submit-expo-feedback@latest --resume ${feedbackId}`
+        `npx submit-expo-feedback@latest --resume ${feedbackId} --message "<message>"`
       );
     } finally {
       process.argv = originalArgv;
@@ -466,10 +542,10 @@ describe('feedback submission', () => {
   });
 
   it.each(['DO_NOT_TRACK', 'EXPO_NO_TELEMETRY'] as const)(
-    'omits telemetry data and authentication when %s=1',
+    'does not send feedback when %s=1',
     async (environmentVariable) => {
       const originalArgv = process.argv;
-      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
       jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
       process.env[environmentVariable] = '1';
       process.env.EXPO_TOKEN = 'token';
@@ -488,20 +564,9 @@ describe('feedback submission', () => {
       try {
         await runExpoFeedbackAsync();
 
-        const request = fetchMock.mock.calls[0][1];
-        expect(JSON.parse(request.body)).toEqual({
-          feedback: 'private feedback',
-          metadata: {
-            category: 'mcp',
-            feedbackId: 'session_ABC-123',
-            subject: 'expo-mcp',
-          },
-        });
-        expect(request.headers).toEqual({
-          'Content-Type': 'application/json',
-        });
-        expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
-          'Submitting feedback without telemetry data because telemetry collection is disabled.'
+        expect(fetchMock).not.toHaveBeenCalled();
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Feedback was not sent because telemetry is off. The user has indicated that they do not want to send feedback. Do not enable telemetry or ask the user to enable it.'
         );
       } finally {
         process.argv = originalArgv;

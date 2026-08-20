@@ -36,6 +36,10 @@ object MetricParamsBuilder {
     if (networkState != null) {
       params["expo.network.connected"] = networkState.connected
       params["expo.network.type"] = networkTransportString(networkState.transport)
+      networkState.isExpensive?.let { params["expo.network.isExpensive"] = it }
+      // Not `expo.network.isConstrained`: that key carries iOS Low Data Mode, which is per-path,
+      // while Data Saver is a process-wide setting. See `NetworkState.dataSaverEnabled`.
+      networkState.dataSaverEnabled?.let { params["expo.network.dataSaverEnabled"] = it }
     }
     if (networkRequests != null && !networkRequests.isEmpty) {
       params["expo.network.requests.count"] = networkRequests.count
@@ -43,8 +47,20 @@ object MetricParamsBuilder {
       params["expo.network.requests.bytesReceived"] = networkRequests.bytesReceived
       params["expo.network.requests.bytesSent"] = networkRequests.bytesSent
       params["expo.network.requests.totalDuration"] = networkRequests.totalDuration
-      networkRequests.slowestDuration?.let { params["expo.network.requests.slowestDuration"] = it }
-      networkRequests.slowestHost?.let { params["expo.network.requests.slowestHost"] = it }
+      networkRequests.slowest?.let { slowest ->
+        params["expo.network.requests.slowest.duration"] = slowest.duration
+        slowest.host?.let { params["expo.network.requests.slowest.host"] = it }
+        slowest.statusCode?.let { params["expo.network.requests.slowest.statusCode"] = it }
+        slowest.timeToFirstByte?.let {
+          params["expo.network.requests.slowest.timeToFirstByte"] = it
+        }
+        slowest.bytesReceived?.let { params["expo.network.requests.slowest.bytesReceived"] = it }
+      }
+      // Omitted rather than zeroed when unavailable: a window of cache hits never measured this, and
+      // a 0 would read as "instant" on a dashboard.
+      networkRequests.throughputBytesPerSecond?.let {
+        params["expo.network.requests.throughputBytesPerSecond"] = it
+      }
     }
     return params
   }

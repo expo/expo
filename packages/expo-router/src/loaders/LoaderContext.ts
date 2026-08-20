@@ -29,7 +29,6 @@ if (__DEV__ && typeof window !== 'undefined') {
 
       const { client, store } = defaultLoaderContextValue;
       store.retain(client.revalidate());
-      client.notify();
     });
   }
 }

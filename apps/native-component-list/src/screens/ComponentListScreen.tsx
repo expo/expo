@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { useObserve } from 'expo-observe';
 import { Link } from 'expo-router';
 import React from 'react';

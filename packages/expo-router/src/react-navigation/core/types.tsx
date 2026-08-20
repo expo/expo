@@ -278,39 +278,6 @@ type NavigationHelpersCommon<
   ): void;
 
   /**
-   * Navigate to a route in current navigation tree.
-   *
-   * @deprecated Use `navigate` instead.
-   *
-   * @param screen Name of the route to navigate to.
-   * @param [params] Params object for the route.
-   */
-  navigateDeprecated<RouteName extends keyof ParamList>(
-    ...args: RouteName extends unknown
-      ? undefined extends ParamList[RouteName]
-        ? [screen: RouteName, params?: ParamList[RouteName]]
-        : [screen: RouteName, params: ParamList[RouteName]]
-      : never
-  ): void;
-
-  /**
-   * Navigate to a route in current navigation tree.
-   *
-   * @deprecated Use `navigate` instead.
-   *
-   * @param options Object with `name` for the route to navigate to, and a `params` object.
-   */
-  navigateDeprecated<RouteName extends keyof ParamList>(
-    options: RouteName extends unknown
-      ? {
-          name: RouteName;
-          params: ParamList[RouteName];
-          merge?: boolean;
-        }
-      : never
-  ): void;
-
-  /**
    * Preloads the route in current navigation tree.
    *
    * @param screen Name of the route to preload.
@@ -422,16 +389,6 @@ export type NavigationContainerProps = {
    * Callback which is called when an action is not handled.
    */
   onUnhandledAction?: (action: Readonly<NavigationAction>) => void;
-  /**
-   * Whether child navigator should handle a navigation action.
-   * The child navigator needs to be mounted before it can handle the action.
-   * Defaults to `false`.
-   *
-   * This will be removed in the next major release.
-   *
-   * @deprecated Use nested navigation API instead
-   */
-  navigationInChildEnabled?: boolean;
   /**
    * Theme object for the UI elements.
    */
@@ -697,11 +654,6 @@ export type RouteConfigProps<
    * If `undefined` is returned, it acts same as no `getId` being specified.
    */
   getId?: ({ params }: { params: Readonly<ParamList[RouteName]> }) => string | undefined;
-
-  /**
-   * Initial params object for the route.
-   */
-  initialParams?: Partial<ParamList[RouteName]>;
 
   /**
    * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
@@ -1039,10 +991,6 @@ export type PathConfig<ParamList extends {}> = Partial<PathConfigAlias> & {
    * ```
    */
   stringify?: Record<string, (value: any) => string>;
-  /**
-   * Additional path alias that will be matched to the same screen.
-   */
-  alias?: (string | PathConfigAlias)[];
   /**
    * Path configuration for child screens.
    */
