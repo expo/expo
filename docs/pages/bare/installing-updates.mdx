@@ -139,9 +139,9 @@ Using Xcode, add **Expo.plist** file to **ios/your-project/Supporting** with the
 
 ## Configuring the update channel at build time
 
-The channel property on a build allows you to point updates at specific types of builds. For example, it allows you to publish updates to a preview build without impacting your production deployment. 
+The channel property on a build allows you to point updates at specific types of builds. For example, it allows you to publish updates to a preview build without impacting your production deployment.
 
-This property is also ultimately set in the **AndroidManifest.xml** and **Expo.plist** files that we modified above. It is usually set right before build, so you can flexibly switch between production and non-production builds. If you build your project with EAS Build, the channel is set in the **eas.json** build profile and then applied to these files right before the native build step. 
+This property is also ultimately set in the **AndroidManifest.xml** and **Expo.plist** files that we modified above. It is usually set right before build, so you can flexibly switch between production and non-production builds. If you build your project with EAS Build, the channel is set in the **eas.json** build profile and then applied to these files right before the native build step.
 
 When you build locally or with another service, you will need to set the channel yourself in these files:
 
