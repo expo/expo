@@ -41,7 +41,6 @@ export { NavigationContext } from './NavigationContext';
  * @deprecated Will be removed in a future SDK.
  */
 export { NavigationHelpersContext } from './NavigationHelpersContext';
-export { NavigationIndependentTree } from './NavigationIndependentTree';
 /**
  * @deprecated Will be removed in a future SDK.
  */
@@ -84,7 +83,6 @@ export { useNavigationBuilder } from './useNavigationBuilder';
  * @deprecated Import `useNavigationContainerRef` from `expo-router` instead. Will be removed in a future SDK.
  */
 export { useNavigationContainerRef } from './useNavigationContainerRef';
-export { useNavigationIndependentTree } from './useNavigationIndependentTree';
 export { useNavigationState } from './useNavigationState';
 export { usePreventRemove } from './usePreventRemove';
 export { usePreventRemoveContext } from './usePreventRemoveContext';
