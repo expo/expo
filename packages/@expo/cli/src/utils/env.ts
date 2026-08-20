@@ -245,11 +245,6 @@ class Env {
     return getOriginalEnvValue('__EXPO_EAGER_BUNDLE_OPTIONS') || '';
   }
 
-  /** @internal Mode passed to `expo config` or `expo prebuild` by another tool. */
-  get EXPO_CONFIG_MODE(): string | undefined {
-    return getOriginalEnvValue('EXPO_CONFIG_MODE') || undefined;
-  }
-
   /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */
   get EXPO_NO_DEPLOY(): boolean {
     return boolish('EXPO_NO_DEPLOY', false);

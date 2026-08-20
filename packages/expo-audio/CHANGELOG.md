@@ -27,6 +27,7 @@
 ### 💡 Others
 
 - [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`). ([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
+- [iOS] Fix the microphone permissions test not compiling. ([#49027](https://github.com/expo/expo/pull/49027) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 57.0.3 - 2026-07-22
 

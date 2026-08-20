@@ -13,10 +13,12 @@
 ### 🐛 Bug fixes
 
 - [android] Fix `UnsupportedOperationException` and `NoSuchMethodError` on Android 7.x ([#48577](https://github.com/expo/expo/pull/48577) by [@Ubax](https://github.com/Ubax))
+- [iOS] Retry the OTA `AppInfo` patch on updates state changes, so a launch where the module registry is created before `expo-updates` has assigned its startup procedure no longer keeps the embedded build's update attribution for the whole session. ([#48899](https://github.com/expo/expo/pull/48899) by [@spsaucier](https://github.com/spsaucier))
 - [iOS] Fix a crash on FirebaseAuth's first token refresh. GTMSessionFetcher branches on the class of `session.delegate`, so our network-observing delegate proxy now answers class and protocol checks for the delegate it wraps. ([#48360](https://github.com/expo/expo/pull/48360) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
+- [Android] Load only requested metric and log rows when preparing observability payloads. ([#49011](https://github.com/expo/expo/pull/49011) by [@Ubax](https://github.com/Ubax))
 - Rename the no-update `downloadComplete` state event to `downloadCompleteUnavailable`. ([#47902](https://github.com/expo/expo/pull/47902) by [@kudo](https://github.com/kudo))
 - [iOS] Measure the JS bundle load time against the app startup end marker to stay compatible with upcoming React Native versions. ([#47782](https://github.com/expo/expo/pull/47782) by [@tsapeta](https://github.com/tsapeta))
 - Add a `caught` source to the private `reportError` for errors reported from user code. ([#47871](https://github.com/expo/expo/pull/47871) by [@tsapeta](https://github.com/tsapeta))

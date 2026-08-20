@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Pass the config mode through an internal variable and remove inherited dotenv values from Expo subprocesses. ([#48938](https://github.com/expo/expo/pull/48938) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 2.4.2 - 2026-07-15
 
 _This version does not introduce any user-facing changes._

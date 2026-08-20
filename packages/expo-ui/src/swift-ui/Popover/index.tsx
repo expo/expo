@@ -56,6 +56,7 @@ export function Popover(props: PopoverViewProps) {
   return (
     <PopoverNativeView
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      modifiers={modifiers}
       {...restProps}
       isPresented={isPresented}
       onIsPresentedChange={handleIsPresentedChange}>

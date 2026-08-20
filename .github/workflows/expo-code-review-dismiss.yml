@@ -21,17 +21,19 @@ permissions:
 jobs:
   dismiss:
     # PR comments starting with /dismiss, /undismiss, or the @expo-bot forms.
+    # PREFIX matching, deliberately loose (see agent-commands.yml): expression
+    # literals cannot express a newline, so an exact-body match misses
+    # `@expo-bot dismiss\n<ids>` and the command dies without a trace. This
+    # gate only decides "command-shaped, from a maintainer"; the parse step
+    # owns exact shapes and replies to the thread when it rejects a shape
+    # nothing else owns.
     if: >-
       github.event.issue.pull_request != null &&
       github.event.comment.user.login != 'expo-bot' &&
-      (github.event.comment.body == '/dismiss' ||
-      startsWith(github.event.comment.body, '/dismiss ') ||
-      github.event.comment.body == '/undismiss' ||
-      startsWith(github.event.comment.body, '/undismiss ') ||
-      github.event.comment.body == '@expo-bot dismiss' ||
-      startsWith(github.event.comment.body, '@expo-bot dismiss ') ||
-      github.event.comment.body == '@expo-bot undismiss' ||
-      startsWith(github.event.comment.body, '@expo-bot undismiss ')) &&
+      (startsWith(github.event.comment.body, '/dismiss') ||
+      startsWith(github.event.comment.body, '/undismiss') ||
+      startsWith(github.event.comment.body, '@expo-bot dismiss') ||
+      startsWith(github.event.comment.body, '@expo-bot undismiss')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     # Job-level, NOT workflow-level: `issue_comment` fires for EVERY comment in
@@ -52,6 +54,15 @@ jobs:
           # Via env (never inline ${{ }}) so an untrusted comment can't inject shell.
           COMMENT: ${{ github.event.comment.body }}
         run: |
+          # Reject an ill-formed command out loud (same contract as
+          # agent-commands.yml): the reply step below posts `reject` to the
+          # thread. Reasons must be single-line — they pass through
+          # GITHUB_OUTPUT.
+          fail_cmd() {
+            echo "::error::$1"
+            echo "reject=$1" >> "$GITHUB_OUTPUT"
+            exit 1
+          }
           line=$(printf '%s' "$COMMENT" | head -n1 | tr -d '\r')
           first=$(printf '%s' "$line" | awk '{print tolower($1)}')
           second=$(printf '%s' "$line" | awk '{print tolower($2)}')
@@ -59,14 +70,23 @@ jobs:
             case "$second" in
               dismiss) sub=dismiss ;;
               undismiss) sub=undismiss ;;
-              *) echo "run=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
+              *)
+                # Prefix-matched but not this workflow's verb: a work task
+                # (`dismiss-flaky-test`) or prose (`dismissed`).
+                # agent-commands.yml owns those shapes — stay silent.
+                echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+                ;;
             esac
             rest=$(printf '%s' "$line" | awk '{for (i=3;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":"")}')
           else
             case "$first" in
               /dismiss) sub=dismiss ;;
               /undismiss) sub=undismiss ;;
-              *) echo "run=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
+              *)
+                # The prefix-loose gate admits mangled slash forms
+                # (`/dismissx`). Nothing else owns them, so reply.
+                fail_cmd "\`$first\` is not a command — did you mean \`/dismiss\` or \`/undismiss\`?"
+                ;;
             esac
             rest=$(printf '%s' "$line" | cut -s -d' ' -f2-)
           fi
@@ -80,7 +100,10 @@ jobs:
           ids=$(printf '%s' "$ids_part" | tr -cd 'a-f0-9 ' | tr -s ' ')
           reason=$(printf '%s' "$reason" | tr -d '\r\n' | cut -c1-200)
           if [ -z "$(printf '%s' "$ids" | tr -d ' ')" ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+            # A real dismiss/undismiss command with no usable ids. This also
+            # catches ids placed on the next line — only the first line is
+            # parsed — so say where the ids must go.
+            fail_cmd "\`$sub\` needs at least one finding id, on the same line as the command — e.g. \`/$sub ab12cd\`. Each finding in the reviewer comment shows its id."
           fi
           {
             echo "run=true"
@@ -88,6 +111,17 @@ jobs:
             echo "ids=$ids"
             echo "reason=$reason"
           } >> "$GITHUB_OUTPUT"
+
+      # A maintainer typed a command and it did not launch — say so where it
+      # was typed (same contract as agent-commands.yml). Silent skips stay
+      # silent: those shapes belong to agent-commands.yml.
+      - name: Reply to a rejected command
+        if: always() && steps.cmd.outputs.reject != ''
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          REJECT: ${{ steps.cmd.outputs.reject }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: gh issue comment "${{ github.event.issue.number }}" -R "${{ github.repository }}" --body "⚠️ $REJECT ([run log]($RUN_URL))"
 
       - name: Acknowledge
         if: steps.cmd.outputs.run == 'true'
