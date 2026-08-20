@@ -11,6 +11,7 @@ Observe.configure({
     'expo-router': { filteredParams: ['accountId', 'firstName'] },
     'expo-image': {
       oversizeThreshold: 1.5,
+      includeUrlParams: false,
     },
   },
 });

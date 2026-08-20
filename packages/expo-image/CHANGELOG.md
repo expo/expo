@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added an `includeUrlParams` option to the expo-observe integration; reported image URLs now have their query string and fragment removed unless it is enabled, basic-auth credentials are always removed, and only `http(s)`, `file`, and `android.resource` URLs are reported. ([#49083](https://github.com/expo/expo/pull/49083) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - [Android] Fixed a URL staying permanently broken after the server answered an image request with `200 OK` and a non-image body, such as an HTML error page. ([#48442](https://github.com/expo/expo/issues/48442) by [@julian-dueck](https://github.com/julian-dueck), [#48456](https://github.com/expo/expo/pull/48456) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))

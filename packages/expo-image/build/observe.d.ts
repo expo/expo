@@ -21,10 +21,24 @@ export type ExpoImageIntegrationConfig = {
      * @default 1.5
      */
     oversizeThreshold?: number;
+    /**
+     * Whether reported events include the image URL's query string and fragment. By default the URL
+     * is truncated at them before it leaves the device, because query parameters often carry
+     * sensitive values such as signing tokens or API keys. Enable this only when your image URLs
+     * are safe to send off-device in full. Regardless of this setting, basic-auth credentials are
+     * always removed from the URL, and only `http(s)`, `file`, and `android.resource` URLs are
+     * reported (other schemes, such as `data:` or `ph://`, never leave the device). URLs are
+     * reported in normalized (WHATWG) form, and the event's `urlSanitized` attribute tells whether
+     * the URL was modified beyond that.
+     *
+     * @default false
+     */
+    includeUrlParams?: boolean;
 };
 export type IntegrationState = {
     enabled: boolean;
     threshold: number;
+    includeUrlParams: boolean;
     reported: Set<string>;
     subscription: {
         remove: () => void;
