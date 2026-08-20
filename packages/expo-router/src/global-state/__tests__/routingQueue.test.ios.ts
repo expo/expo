@@ -43,7 +43,6 @@ function makeRef(
       getCurrentRoute: jest.fn(),
       getCurrentOptions: jest.fn(),
       getId: jest.fn(),
-      resetRoot: jest.fn(),
       ...overrides,
     } as unknown as NavigationContainerRef<ParamListBase>,
   };

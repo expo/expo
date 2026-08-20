@@ -2,6 +2,7 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import {
+  CommonActions,
   type DefaultRouterOptions,
   type NavigationAction,
   type NavigationState,
@@ -1026,7 +1027,7 @@ test("prevents removing by multiple screens with 'removePrevented' event", () =>
   expect(ref.current?.getRootState()).toEqual(preventedState);
 });
 
-test("prevents removing a child screen with 'removePrevented' event with 'resetRoot'", () => {
+test("prevents removing a child screen with 'removePrevented' event with targeted reset", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
 
@@ -1094,13 +1095,16 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
   expect(onStateChange).toHaveBeenLastCalledWith(preventedState);
 
   act(() =>
-    ref.current?.resetRoot({
-      index: 0,
-      key: preventedState.key,
-      routeNames: preventedState.routeNames,
-      routes: [preventedState.routes[0]!],
-      stale: false,
-      routeKeySeq: 0,
+    ref.current?.dispatch({
+      ...CommonActions.reset({
+        index: 0,
+        key: preventedState.key,
+        routeNames: preventedState.routeNames,
+        routes: [preventedState.routes[0]!],
+        stale: false,
+        routeKeySeq: 0,
+      }),
+      target: preventedState.key,
     })
   );
 

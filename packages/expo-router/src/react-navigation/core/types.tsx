@@ -776,12 +776,6 @@ type MaybeParamListRoute<ParamList extends {}> = ParamList extends ParamListBase
 export type NavigationContainerRef<ParamList extends {}> = NavigationHelpers<ParamList> &
   EventConsumer<NavigationContainerEventMap> & {
     /**
-     * Reset the navigation state of the root navigator to the provided state.
-     *
-     * @param state Navigation state object.
-     */
-    resetRoot(state?: PartialState<NavigationState> | NavigationState): void;
-    /**
      * Get the current state of the navigation tree.
      */
     getRootState(): NavigationState;
