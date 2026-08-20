@@ -20,9 +20,18 @@ type PlatformContextValue = {
 
 const PlatformContext = createContext<PlatformContextValue | null>(null);
 
+/**
+ * Idempotent on purpose: a component that needs shared platform state can wrap itself, and the
+ * page-wide group still wins when one is already present. Nesting a second provider would split
+ * the page into two independent selections, which is never what a page wants.
+ */
 export function PlatformTabsGroup({ children }: PropsWithChildren) {
+  const existing = useContext(PlatformContext);
   const [platform, setPlatform] = useState<Platform>(PLATFORM_ORDER[0]);
   const value = useMemo(() => ({ platform, setPlatform }), [platform]);
+  if (existing) {
+    return children;
+  }
   return <PlatformContext.Provider value={value}>{children}</PlatformContext.Provider>;
 }
 
