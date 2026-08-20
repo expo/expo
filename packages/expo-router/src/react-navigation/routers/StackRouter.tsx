@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid/non-secure';
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { createRouteFromAction } from './createRouteFromAction';
+import { ensureStateType } from './ensureStateType';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -190,6 +191,7 @@ export function StackRouter(options: StackRouterOptions) {
   > = {
     ...BaseRouter,
 
+    // TODO: Keep this value in sync with the `ensureStateType` calls below.
     type: 'stack',
 
     getRehydratedState(partialState, { routeNames }) {
@@ -231,14 +233,16 @@ export function StackRouter(options: StackRouterOptions) {
         });
       }
 
-      return {
-        stale: false,
-        type: 'stack',
-        key: `stack-${nanoid()}`,
-        index: routes.length - 1,
-        routeNames,
-        routes: routes.concat(preloadedRoutes),
-      };
+      return ensureStateType(
+        {
+          stale: false,
+          key: `stack-${nanoid()}`,
+          index: routes.length - 1,
+          routeNames,
+          routes: routes.concat(preloadedRoutes),
+        },
+        'stack'
+      );
     },
 
     getStateForDeclaredRoutes(state, routeNames) {
@@ -258,7 +262,8 @@ export function StackRouter(options: StackRouterOptions) {
       return { ...filteredState, index: Math.max(0, survivingActiveCount - 1) };
     },
 
-    getStateForRouteFocus(state, key) {
+    getStateForRouteFocus(inputState, key) {
+      const state = ensureStateType(inputState, 'stack');
       const { activeRoutes } = getStackRoutes(state);
       const index = activeRoutes.findIndex((r) => r.key === key);
 
@@ -273,7 +278,8 @@ export function StackRouter(options: StackRouterOptions) {
       };
     },
 
-    getStateForAction(state, action, options) {
+    getStateForAction(inputState, action, options) {
+      const state = ensureStateType(inputState, 'stack');
       const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
 
       switch (action.type) {
@@ -614,7 +620,6 @@ export function StackRouter(options: StackRouterOptions) {
           if (route) {
             return {
               ...state,
-              type: 'stack',
               routes: state.routes.map((r) => {
                 if (r.key !== route?.key) {
                   return r;
@@ -636,13 +641,19 @@ export function StackRouter(options: StackRouterOptions) {
                   )
                   .concat(createRouteFromAction({ action }))
               ),
-              type: 'stack',
             };
           }
         }
 
-        default:
-          return BaseRouter.getStateForAction(state, action);
+        default: {
+          const result = BaseRouter.getStateForAction(state, action);
+
+          if (result === null || result.stale !== false) {
+            return result;
+          }
+
+          return ensureStateType(result, 'stack');
+        }
       }
     },
 

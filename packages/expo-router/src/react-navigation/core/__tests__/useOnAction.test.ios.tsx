@@ -675,6 +675,7 @@ test("prevents removing a screen with 'removePrevented' event", () => {
       { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -695,6 +696,7 @@ test("prevents removing a screen with 'removePrevented' event", () => {
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -712,6 +714,7 @@ test("prevents removing a screen with 'removePrevented' event", () => {
       { key: 'baz-7', name: 'baz' },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => {
@@ -725,6 +728,7 @@ test("prevents removing a screen with 'removePrevented' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });
 
@@ -795,6 +799,7 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
       { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -822,6 +827,7 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -849,6 +855,7 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => {
@@ -862,6 +869,7 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });
 
@@ -937,6 +945,7 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
       { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -976,6 +985,7 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -1015,6 +1025,7 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => {
@@ -1028,6 +1039,7 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });
 
@@ -1144,6 +1156,7 @@ test("prevents removing by multiple screens with 'removePrevented' event", () =>
     routeNames: ['foo', 'bar', 'baz', 'bax'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });
 
@@ -1217,6 +1230,7 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() =>
@@ -1251,6 +1265,7 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => {
@@ -1274,5 +1289,6 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });
