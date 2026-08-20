@@ -48,6 +48,9 @@ module Expo
     # Environment variable for a shared remote base URL used by external prebuilt packages.
     EXTERNAL_MODULES_BASE_URL_ENV_VAR = 'EXPO_PRECOMPILED_MODULES_BASE_URL'.freeze
 
+    # When set to a file path, `pod install` writes the derivations dump there.
+    DUMP_ENV_VAR = 'EXPO_PRECOMPILED_DUMP'.freeze
+
     # Subdirectory within each pod dir for tarballs and build state
     ARTIFACTS_DIR_NAME = 'artifacts'.freeze
 
@@ -178,6 +181,7 @@ module Expo
       #
       # @param installer [Pod::Installer] The CocoaPods installer instance
       def perform_post_install(installer)
+        dump_derivations(ENV[DUMP_ENV_VAR]) unless ENV[DUMP_ENV_VAR].to_s.empty?
         print_linking_summary
         disable_swift_interface_verification(installer)
         configure_use_frameworks(installer)
@@ -223,6 +227,38 @@ module Expo
             end
           end
         end
+      end
+
+      # Canonical JSON dump (one pod per line) of the pure derivations behind
+      # pod_lookup_map — the ENG-25370 snapshot/differential baseline.
+      # build_output_dir is excluded: it depends on which artifacts exist locally.
+      def dump_derivations(output_path)
+        repo_root = memoized_repo_root
+        lines = pod_lookup_map.sort_by { |pod_name, _| pod_name }.map do |pod_name, info|
+          entry = {
+            'type' => info[:type].to_s,
+            'npmPackage' => info[:npm_package],
+            'packageRoot' => repo_relative_path(info[:package_root], repo_root),
+            'podspecDir' => repo_relative_path(info[:podspec_dir], repo_root),
+            'productName' => info[:product_name],
+            'codegenName' => info[:codegen_name],
+            'spmDependencyFrameworks' => info[:spm_dependency_frameworks] || [],
+            'spmDependencyVersions' => (info[:spm_dependency_versions] || {}).sort.to_h,
+            'dependencyProducts' => info[:prebuilt_dependency_pods] || [],
+            'autolinkWhen' => info[:autolink_when],
+          }
+          "  #{pod_name.to_json}: #{JSON.generate(entry)}"
+        end
+        FileUtils.mkdir_p(File.dirname(output_path))
+        File.write(output_path, "{\n#{lines.join(",\n")}\n}\n")
+        Pod::UI.puts "[Expo-precompiled] Wrote derivations dump (#{lines.size} pods) to #{output_path}"
+      end
+
+      # pnpm store segments are collapsed: their names embed version and patch
+      # hashes, which would churn the fixture on every dependency bump.
+      def repo_relative_path(path, repo_root)
+        return path unless path && repo_root && path.start_with?(repo_root + File::SEPARATOR)
+        path[(repo_root.length + 1)..].sub(%r{\Anode_modules/\.pnpm/[^/]+/node_modules/}, 'node_modules/')
       end
 
       # Symlinks each shared SPM dependency xcframework (e.g. SDWebImage) into the
