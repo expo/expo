@@ -1,10 +1,10 @@
 ---
-title: Manage EAS Workflow runs
+title: Manage workflow runs in EAS Workflows
 sidebar_title: Manage workflow runs
-description: View, cancel, and re-run EAS Workflow runs.
+description: Learn how to view, cancel, and re-run workflow runs in EAS Workflows.
 ---
 
-Each time a workflow is triggered, EAS creates a workflow run. You can use the EAS dashboard to follow the run, inspect its jobs, cancel work that is in progress, or create a new run from a completed attempt.
+Each time a workflow is triggered, EAS creates a workflow run. Use the EAS dashboard to follow a run and inspect its jobs. You can also cancel a run that is in progress, or create a new run from one that already finished.
 
 ## Workflow run statuses
 
@@ -13,9 +13,11 @@ A workflow run has one of the following statuses:
 - **New**: EAS created the run, but it has not started yet.
 - **In progress**: One or more jobs are running.
 - **Action required**: A job is waiting for a manual action, such as an approval.
-- **Success**: All jobs completed successfully. This status is terminal.
-- **Failure**: At least one job failed. This status is terminal.
-- **Canceled**: The run was canceled before it completed. This status is terminal.
+- **Success**: All jobs completed successfully.
+- **Failure**: At least one job failed.
+- **Canceled**: The run was canceled before it completed.
+
+Success, failure, and canceled are terminal statuses.
 
 For the status values returned by the EAS REST API, see [Get a workflow run](/eas/workflows/rest-api/#get-a-workflow-run).
 
@@ -23,13 +25,17 @@ For the status values returned by the EAS REST API, see [Get a workflow run](/ea
 
 Open your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows) and select a run. The run details show the status of each job, its logs and errors, and any outputs or artifacts that it produced.
 
+You can also use EAS CLI to view a run. Run `eas workflow:view` to select a recent run, or provide a workflow run ID to view a specific run. Use `eas workflow:logs` to inspect logs. Use `eas workflow:status WORKFLOW_RUN_ID --wait` to follow a run until it completes.
+
 ## Cancel a workflow run
 
 Open a run with a non-terminal status and select **Cancel workflow**. Jobs that already completed keep their final status. EAS stops the remaining work and marks the run as canceled.
 
+To cancel a run with EAS CLI, run `eas workflow:cancel WORKFLOW_RUN_ID`. You can provide multiple workflow run IDs. If you do not provide an ID, select one or more in-progress runs from the prompt.
+
 ## Re-run a workflow
 
-A re-run creates a new workflow run from the same workflow revision, project source, event data, and inputs as the original run. The dashboard links the attempts so that you can review their results.
+A re-run creates a new workflow run from the same workflow revision, project source, event data, and inputs as the original run. The dashboard links the related runs so that you can review their results. Re-running a workflow is only available on the EAS dashboard.
 
 ### Re-run from failed jobs
 
