@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.13 — 2026-08-20
+
+### 💡 Others
+
 - [Android] Load only requested metric and log rows when preparing observability payloads. ([#49011](https://github.com/expo/expo/pull/49011) by [@Ubax](https://github.com/Ubax))
 
 ## 57.0.12 — 2026-08-17

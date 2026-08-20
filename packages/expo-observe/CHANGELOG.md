@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.15 — 2026-08-20
+
+### 💡 Others
+
 - [Android] Retry a dispatch that gets HTTP 413 ([#49016](https://github.com/expo/expo/pull/49016) by [@Ubax](https://github.com/Ubax))
 - [Android] Dispatch pending metrics and logs in bounded, oldest-first chunks without replacing active background work. ([#49012](https://github.com/expo/expo/pull/49012) by [@Ubax](https://github.com/Ubax))
 

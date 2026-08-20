@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [Android] Add `setFakeAgeSignals` to fake age signals from JS, through Google Play's `FakeAgeSignalsManager`. ([#48909](https://github.com/expo/expo/pull/48909) by [@kmadden84](https://github.com/kmadden84))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.4 — 2026-08-20
+
+### 🎉 New features
+
+- [Android] Add `setFakeAgeSignals` to fake age signals from JS, through Google Play's `FakeAgeSignalsManager`. ([#48909](https://github.com/expo/expo/pull/48909) by [@kmadden84](https://github.com/kmadden84))
 
 ## 57.0.3 — 2026-08-10
 

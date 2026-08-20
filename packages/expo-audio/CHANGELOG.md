@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.4 — 2026-08-20
+
+### 🐛 Bug fixes
+
 - [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
 - [iOS] Fix the microphone permissions test not compiling. ([#49027](https://github.com/expo/expo/pull/49027) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 57.0.3 — 2026-07-22
 

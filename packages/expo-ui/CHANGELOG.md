@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.12 — 2026-08-20
+
+### 🎉 New features
+
 - [iOS] Added `'default'` as a value for every edge of the `padding` modifier, so a single edge can use the system default padding while the other edges use explicit lengths. ([#48903](https://github.com/expo/expo/pull/48903) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [android] Add `shouldDismissOnBackPress` prop to the universal `BottomSheet` component, forwarding it to `ModalBottomSheet` via `properties.shouldDismissOnBackPress`. When false, the back press does not dismiss the sheet (and the press still does not reach BackHandler). ([#48987](https://github.com/expo/expo/pull/48987) by [@webdevsamran](https://github.com/webdevsamran))
 - [universal] Added a `contentPadding` prop to `BottomSheet`, so sheet content can reach the sheet's edges instead of always sitting inside a hardcoded 16-unit inset. ([#48902](https://github.com/expo/expo/issues/48902) by [@kilarsky](https://github.com/kilarsky))
@@ -16,8 +24,6 @@
 - [iOS] Fixed `Overlay`, `Alert`, `ConfirmationDialog` and `Popover` silently ignoring the `modifiers` prop, which never reached the native view. ([#48949](https://github.com/expo/expo/pull/48949) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Fix `Slider` ignoring `value` prop updates after the first drag. ([#49075](https://github.com/expo/expo/issues/49075) by [@matinzd](https://github.com/matinzd)) ([#49139](https://github.com/expo/expo/pull/49139) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `Toggle` rendering local state instead of `isOn`, which left `community/menu` checkmarks out of sync and dropped every second `onPressAction`. `Toggle` is now fully controlled: when `isOn` is set, it only moves once JS updates the prop. ([#48982](https://github.com/expo/expo/issues/48982) by [@JustJoostNL](https://github.com/JustJoostNL)) ([#49021](https://github.com/expo/expo/pull/49021) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 57.0.11 — 2026-08-14
 

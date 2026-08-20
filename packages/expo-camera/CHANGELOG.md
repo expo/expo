@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix repeatedly mounting and unmounting `CameraView` freezing the UI when the capture session cannot start, such as on a simulator. The session is now stopped before it is torn down and before the preview layer detaches from it, and it is no longer started at all when no capture device is available. ([#49028](https://github.com/expo/expo/pull/49028) by [@barthap](https://github.com/barthap))
-
 ### 💡 Others
+
+## 57.0.4 — 2026-08-20
+
+### 🐛 Bug fixes
+
+- [iOS] Fix repeatedly mounting and unmounting `CameraView` freezing the UI when the capture session cannot start, such as on a simulator. The session is now stopped before it is torn down and before the preview layer detaches from it, and it is no longer started at all when no capture device is available. ([#49028](https://github.com/expo/expo/pull/49028) by [@barthap](https://github.com/barthap))
 
 ## 57.0.3 — 2026-07-16
 

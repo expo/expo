@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add `Circle` type to the `GoogleMaps` namespace. ([#49124](https://github.com/expo/expo/pull/49124) by [@CatLover01](https://github.com/CatLover01))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.2 — 2026-08-20
+
+### 🎉 New features
+
+- Add `Circle` type to the `GoogleMaps` namespace. ([#49124](https://github.com/expo/expo/pull/49124) by [@CatLover01](https://github.com/CatLover01))
 
 ## 57.0.1 — 2026-07-15
 
