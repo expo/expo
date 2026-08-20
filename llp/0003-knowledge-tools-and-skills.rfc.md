@@ -24,7 +24,7 @@ Deterministic tools that answer questions agents otherwise guess at, plus the di
 
 This settles the discovery contract [confirmed — by the PR implementation]: a **directory convention, `skills/*/SKILL.md`**, discovered via autolinking — not a `package.json` field.
 
-**Migration note** [inferred]: the sync engine, discovery, linking, and agent-detection code move to `packages/exagent`. The auto-sync *trigger points* currently live inside `expo install` / `expo start` (#48972/#48973); under the process boundary, either `@expo/cli` keeps a thin hook that invokes `exagent` when present, or `exagent` wraps those commands. Open question below.
+**Migration** [confirmed — Kudo, 2026-08-20]: everything lands in `exagent`; the four PRs stay unmerged as proof-of-concept and the code is copied over. `exagent` ships its own `install` and `start` commands that wrap `expo install` / `expo start` as subprocesses and run skill sync (and later the smart-start engine, [[0004-smart-start-and-project-state]]) around them. `@expo/cli` gets no hooks.
 
 ## Knowledge tool candidates
 
@@ -45,7 +45,9 @@ All [inferred]:
 
 Skill discovery and doc/diff lookups are deterministic: unit tests + fixtures. The four reference PRs already carry unit + e2e tests [observed]; they migrate with the code. Doctor auto-fix and upgrade are eval scenarios with programmatic graders.
 
-## Open questions
+## Resolved
 
-1. Where do the auto-sync triggers live after the move: a thin hook in `expo install`/`expo start` that calls `exagent` when present, or `exagent`-wrapped commands? (The `--no-agent-skills` opt-out should survive either way.)
-2. Do PRs #48592–#49018 land in `@expo/cli` first and migrate later, or move to `packages/exagent` before merge?
+[confirmed — Kudo, 2026-08-20]
+
+1. Auto-sync triggers live in `exagent`'s own `install` and `start` commands (which wrap the `expo` equivalents as subprocesses). The `--no-agent-skills` opt-out survives.
+2. PRs #48592–#49018 will not merge; they are proof-of-concept. The code is copied into `packages/exagent`.

@@ -33,7 +33,7 @@ Consequence: gaps discovered while building tools become upstream `@expo/cli` im
 
 ## The `exagent` launcher
 
-The reserved bins (`exagent` / `ai-expo` [observed — npm, reserved by kudochien 2026-08-18]) ship as a thin, model-free launcher: `setup` (install Expo skills + register the MCP server into Claude Code/Cursor/Codex), `mcp` (start/connect), `context` (machine-readable project brief), `new` (headless creation, [[0007-deploy-and-headless]]). [inferred — layout under Shape 1]
+The reserved bins (`exagent` / `ai-expo` [observed — npm, reserved by kudochien 2026-08-18]) ship as a model-free CLI: `setup` (install Expo skills + register the MCP server into Claude Code/Cursor/Codex), `skills` (sync/list/show/clean, [[0003-knowledge-tools-and-skills]]), `install` and `start` (wrapping the `expo` equivalents as subprocesses, with skill sync and — later — the smart-start engine [confirmed — Kudo, 2026-08-20]), `mcp` (start/connect), `context` (machine-readable project brief), `new` (headless creation, [[0007-deploy-and-headless]]).
 
 ## Testing
 

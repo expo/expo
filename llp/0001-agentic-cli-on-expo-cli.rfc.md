@@ -47,15 +47,20 @@ Decision [confirmed — Kudo, 2026-08-20]: `exagent` is the bin and package name
 New workspace package `packages/exagent/`:
 
 ```
-packages/exagent/       # thin, model-free launcher (Shape 1)
-├── bin/cli.ts          # `npx exagent setup|mcp|context|new` — no agent loop
+packages/exagent/       # model-free CLI (Shape 1) — no agent loop
+├── bin/cli.ts          # `npx exagent setup|skills|install|start|mcp|context|new`
 ├── src/
 │   ├── setup/          # install Expo skills + register MCP server into Claude Code/Cursor/Codex
+│   ├── skills/         # skills sync/list/show/clean (code from PoC PRs, [[0003-knowledge-tools-and-skills]])
+│   ├── install/        # wraps `expo install` subprocess + skill sync + impact classification
+│   ├── start/          # wraps `expo start` subprocess + skill sync; later smart start ([[0004-smart-start-and-project-state]])
 │   ├── context/        # project-state probe: machine-readable project brief
 │   └── new/            # headless project creation ([[0007-deploy-and-headless]])
 ├── e2e/
 └── evals/              # eval scenarios, fixtures, graders (tiers 0–2)
 ```
+
+`exagent install` / `exagent start` wrap the `expo` equivalents as subprocesses [confirmed — Kudo, 2026-08-20]; `@expo/cli` gets no hooks.
 
 The intelligence-adjacent surface lives in `expo-mcp` (tools) and `expo/skills` (knowledge); this package wires a user's existing agents to them. [inferred — layout sketch under Shape 1]
 
