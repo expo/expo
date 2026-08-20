@@ -20,6 +20,23 @@ export async function notificationAsync(
   await ExpoHaptics.notificationAsync(type);
 }
 
+/**
+ * The synchronous counterpart of [`notificationAsync`](#hapticsnotificationasynctype). It triggers the feedback
+ * without a round trip through the promise queue, which makes it well suited for haptics that are tightly
+ * coupled to user interactions.
+ * @param type A notification feedback type that on Android is simulated using [`Vibrator`](https://developer.android.com/reference/android/os/Vibrator)
+ * and iOS is directly mapped to [`UINotificationFeedbackType`](https://developer.apple.com/documentation/uikit/uinotificationfeedbacktype).
+ * You can use one of `Haptics.NotificationFeedbackType.{Success, Warning, Error}`.
+ */
+export function notification(
+  type: NotificationFeedbackType = NotificationFeedbackType.Success
+): void {
+  if (!ExpoHaptics?.notification) {
+    throw new UnavailabilityError('Haptics', 'notification');
+  }
+  ExpoHaptics.notification(type);
+}
+
 // @needsAudit
 /**
  * @param style A collision indicator that on Android is simulated using [`Vibrator`](https://developer.android.com/reference/android/os/Vibrator)
@@ -39,6 +56,24 @@ export async function impactAsync(
   await ExpoHaptics.impactAsync(style);
 }
 
+/**
+ * The synchronous counterpart of [`impactAsync`](#hapticsimpactasyncstyle). It triggers the feedback
+ * without a round trip through the promise queue, which makes it well suited for haptics that are tightly
+ * coupled to user interactions.
+ * @param style A collision indicator that on Android is simulated using [`Vibrator`](https://developer.android.com/reference/android/os/Vibrator)
+ * and on iOS, it is directly mapped to [`UIImpactFeedbackStyle`](https://developer.apple.com/documentation/uikit/uiimpactfeedbackgenerator/feedbackstyle).
+ * You can use one of `Haptics.ImpactFeedbackStyle.{Light, Medium, Heavy, Rigid, Soft}`.
+ * @see Android's `Vibrator` API is not recommended for implementing haptics feedback. **Instead, you should use
+ * [`performAndroidHaptics`](#hapticsperformandroidhapticstype), which is similar to iOS haptic feedback and does not require
+ * `VIBRATE` permission.**
+ */
+export function impact(style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium): void {
+  if (!ExpoHaptics?.impact) {
+    throw new UnavailabilityError('Haptic', 'impact');
+  }
+  ExpoHaptics.impact(style);
+}
+
 // @needsAudit
 /**
  * Used to let a user know when a selection change has been registered.
@@ -52,6 +87,18 @@ export async function selectionAsync(): Promise<void> {
 }
 
 /**
+ * The synchronous counterpart of [`selectionAsync`](#hapticsselectionasync). It triggers the feedback
+ * without a round trip through the promise queue, which makes it well suited for haptics that are tightly
+ * coupled to user interactions.
+ */
+export function selection(): void {
+  if (!ExpoHaptics?.selection) {
+    throw new UnavailabilityError('Haptic', 'selection');
+  }
+  ExpoHaptics.selection();
+}
+
+/**
  * Use the device haptics engine to provide physical feedback to the user.
  *
  * @platform android
@@ -61,6 +108,20 @@ export async function performAndroidHapticsAsync(type: AndroidHaptics) {
     return;
   }
   await ExpoHaptics.performHapticsAsync(type);
+}
+
+/**
+ * The synchronous counterpart of [`performAndroidHapticsAsync`](#hapticsperformandroidhapticsasynctype).
+ * It triggers the feedback without a round trip through the promise queue, which makes it well suited
+ * for haptics that are tightly coupled to user interactions.
+ *
+ * @platform android
+ */
+export function performAndroidHaptics(type: AndroidHaptics): void {
+  if (Platform.OS !== 'android') {
+    return;
+  }
+  ExpoHaptics.performHaptics(type);
 }
 
 export { NotificationFeedbackType, ImpactFeedbackStyle, AndroidHaptics };

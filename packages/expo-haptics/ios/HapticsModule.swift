@@ -1,29 +1,73 @@
 import ExpoModulesCore
 
 public class HapticsModule: Module {
+  // Generators are cached and re-prepared after each use so that the Taptic Engine
+  // stays warm during rapid successive calls (such as haptics driven by a gesture),
+  // which reduces the latency and inconsistency of the feedback.
+  private lazy var notificationGenerator = UINotificationFeedbackGenerator()
+  private lazy var selectionGenerator = UISelectionFeedbackGenerator()
+  private lazy var impactGenerators = [ImpactStyle: UIImpactFeedbackGenerator]()
+
   public func definition() -> ModuleDefinition {
     Name("ExpoHaptics")
 
     AsyncFunction("notificationAsync") { (notificationType: NotificationType) in
-      let generator = UINotificationFeedbackGenerator()
-      generator.prepare()
-      generator.notificationOccurred(notificationType.toFeedbackType())
+      self.playNotification(notificationType)
     }
     .runOnQueue(.main)
+
+    Function("notification") { (notificationType: NotificationType) in
+      DispatchQueue.main.async {
+        self.playNotification(notificationType)
+      }
+    }
 
     AsyncFunction("impactAsync") { (style: ImpactStyle) in
-      let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
-      generator.prepare()
-      generator.impactOccurred()
+      self.playImpact(style)
     }
     .runOnQueue(.main)
 
+    Function("impact") { (style: ImpactStyle) in
+      DispatchQueue.main.async {
+        self.playImpact(style)
+      }
+    }
+
     AsyncFunction("selectionAsync") {
-      let generator = UISelectionFeedbackGenerator()
-      generator.prepare()
-      generator.selectionChanged()
+      self.playSelection()
     }
     .runOnQueue(.main)
+
+    Function("selection") {
+      DispatchQueue.main.async {
+        self.playSelection()
+      }
+    }
+  }
+
+  private func playNotification(_ notificationType: NotificationType) {
+    notificationGenerator.notificationOccurred(notificationType.toFeedbackType())
+    notificationGenerator.prepare()
+  }
+
+  private func playImpact(_ style: ImpactStyle) {
+    let generator = impactGenerator(for: style)
+    generator.impactOccurred()
+    generator.prepare()
+  }
+
+  private func playSelection() {
+    selectionGenerator.selectionChanged()
+    selectionGenerator.prepare()
+  }
+
+  private func impactGenerator(for style: ImpactStyle) -> UIImpactFeedbackGenerator {
+    if let generator = impactGenerators[style] {
+      return generator
+    }
+    let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
+    impactGenerators[style] = generator
+    return generator
   }
 
   enum NotificationType: String, Enumerable {

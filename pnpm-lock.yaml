@@ -4622,6 +4622,9 @@ importers:
 
   packages/expo-haptics:
     devDependencies:
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       expo:
         specifier: workspace:*
         version: link:../expo

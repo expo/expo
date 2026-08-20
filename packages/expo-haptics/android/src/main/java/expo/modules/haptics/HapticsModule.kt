@@ -32,7 +32,15 @@ class HapticsModule : Module() {
       vibrate(HapticsNotificationType.fromString(type))
     }
 
+    Function("notification") { type: String ->
+      vibrate(HapticsNotificationType.fromString(type))
+    }
+
     AsyncFunction<Unit>("selectionAsync") {
+      vibrate(HapticsSelectionType)
+    }
+
+    Function<Unit>("selection") {
       vibrate(HapticsSelectionType)
     }
 
@@ -40,10 +48,22 @@ class HapticsModule : Module() {
       vibrate(HapticsImpactType.fromString(style))
     }
 
-    AsyncFunction("performHapticsAsync") { type: HapticType ->
-      val view = appContext.currentActivity?.findViewById<View>(android.R.id.content)
-      view?.performHapticFeedback(type.toHapticFeedbackType())
+    Function("impact") { style: String ->
+      vibrate(HapticsImpactType.fromString(style))
     }
+
+    AsyncFunction("performHapticsAsync") { type: HapticType ->
+      performHaptics(type)
+    }
+
+    Function("performHaptics") { type: HapticType ->
+      performHaptics(type)
+    }
+  }
+
+  private fun performHaptics(type: HapticType) {
+    val view = appContext.currentActivity?.findViewById<View>(android.R.id.content)
+    view?.performHapticFeedback(type.toHapticFeedbackType())
   }
 
   private fun vibrate(type: HapticsVibrationType) {

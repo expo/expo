@@ -65,27 +65,40 @@ function hapticWithVibrateFallback(pattern: VibratePattern): void {
   }
 }
 
+async function performNotification(type: NotificationFeedbackType): Promise<void> {
+  if (isVibrationAvailable()) {
+    navigator.vibrate(vibrationPatterns[type]);
+    return;
+  }
+  if (!supportsCoarsePointer) return;
+
+  // Map notification types to repeated haptic pulses
+  const count = type === NotificationFeedbackType.Error ? 3 : 2;
+  for (let i = 0; i < count; i++) {
+    if (i > 0) {
+      await new Promise((resolve) => setTimeout(resolve, 120));
+    }
+    iOSSwitchHaptic();
+  }
+}
+
 export default {
   async notificationAsync(type: NotificationFeedbackType): Promise<void> {
-    if (isVibrationAvailable()) {
-      navigator.vibrate(vibrationPatterns[type]);
-      return;
-    }
-    if (!supportsCoarsePointer) return;
-
-    // Map notification types to repeated haptic pulses
-    const count = type === NotificationFeedbackType.Error ? 3 : 2;
-    for (let i = 0; i < count; i++) {
-      if (i > 0) {
-        await new Promise((resolve) => setTimeout(resolve, 120));
-      }
-      iOSSwitchHaptic();
-    }
+    await performNotification(type);
+  },
+  notification(type: NotificationFeedbackType): void {
+    performNotification(type);
   },
   async impactAsync(style: ImpactFeedbackStyle): Promise<void> {
     hapticWithVibrateFallback(vibrationPatterns[style]);
   },
+  impact(style: ImpactFeedbackStyle): void {
+    hapticWithVibrateFallback(vibrationPatterns[style]);
+  },
   async selectionAsync(): Promise<void> {
+    hapticWithVibrateFallback(vibrationPatterns.selection);
+  },
+  selection(): void {
     hapticWithVibrateFallback(vibrationPatterns.selection);
   },
 };

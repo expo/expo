@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added synchronous `notification`, `impact`, `selection`, and `performAndroidHaptics` functions, which trigger feedback without a round trip through the promise queue for haptics tightly coupled to user interactions. On iOS, feedback generators are now also cached and kept prepared, which reduces the latency and inconsistency of successive haptics.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

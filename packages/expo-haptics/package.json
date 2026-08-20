@@ -37,6 +37,7 @@
     "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
+    "test": "jest",
     "format": "expo-module format",
     "swift:format": "../../scripts/swift-format.sh",
     "swift:lint": "../../scripts/swift-format.sh --lint",
@@ -46,10 +47,14 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@types/jest": "^29.2.1",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }
