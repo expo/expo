@@ -162,4 +162,110 @@ describe('AutolinkingDependencyDuplicatesCheck', () => {
       ]
     `);
   });
+  const isolatedResolution = (
+    name: string,
+    entries: { version: string; path: string; originPath?: string }[]
+  ) =>
+    Promise.resolve(
+      new Map([
+        [
+          name,
+          {
+            source: 0 as any,
+            depth: 0,
+            name,
+            version: entries[0].version,
+            path: entries[0].path,
+            originPath: entries[0].originPath ?? entries[0].path,
+            duplicates: entries.slice(1).map((entry) => ({
+              name,
+              version: entry.version,
+              path: entry.path,
+              originPath: entry.originPath ?? entry.path,
+            })),
+          },
+        ],
+      ])
+    );
+
+  const projectProps = {
+    pkg: { name: 'test-project', version: '1.0.0', dependencies: { 'expo-constants': '*' } },
+    ...additionalProjectProps,
+  };
+
+  it('ignores same-version copies that all live in an isolated store', async () => {
+    const check = new AutolinkingDependencyDuplicatesCheck();
+    const result = await check.runAsync(projectProps, {
+      resolutions: isolatedResolution('expo-constants', [
+        {
+          version: '18.0.2',
+          path: '/tmp/root/node_modules/.bun/expo-constants@18.0.2+aaa/node_modules/expo-constants',
+          originPath: '/tmp/root/node_modules/expo-constants',
+        },
+        {
+          version: '18.0.2',
+          path: '/tmp/root/node_modules/.bun/expo@54.0.0+bbb/node_modules/expo-constants',
+        },
+      ]),
+    });
+
+    expect(result.isSuccessful).toBe(true);
+    expect(result.issues).toEqual([]);
+    expect(result.advice).toEqual([]);
+  });
+
+  it('ignores same-version copies in a pnpm store', async () => {
+    const check = new AutolinkingDependencyDuplicatesCheck();
+    const result = await check.runAsync(projectProps, {
+      resolutions: isolatedResolution('expo-constants', [
+        {
+          version: '18.0.2',
+          path: '/tmp/root/node_modules/.pnpm/expo-constants@18.0.2/node_modules/expo-constants',
+          originPath: '/tmp/root/node_modules/expo-constants',
+        },
+        {
+          version: '18.0.2',
+          path: '/tmp/root/node_modules/.pnpm/expo@54.0.0/node_modules/expo-constants',
+        },
+      ]),
+    });
+
+    expect(result.isSuccessful).toBe(true);
+    expect(result.issues).toEqual([]);
+  });
+
+  it('still reports differing versions inside an isolated store', async () => {
+    const check = new AutolinkingDependencyDuplicatesCheck();
+    const result = await check.runAsync(projectProps, {
+      resolutions: isolatedResolution('expo-constants', [
+        {
+          version: '18.0.2',
+          path: '/tmp/root/node_modules/.bun/expo-constants@18.0.2+aaa/node_modules/expo-constants',
+        },
+        {
+          version: '17.0.0',
+          path: '/tmp/root/node_modules/.bun/expo-constants@17.0.0+bbb/node_modules/expo-constants',
+        },
+      ]),
+    });
+
+    expect(result.isSuccessful).toBe(false);
+    expect(result.issues.join('\n')).toContain('Found duplicates for expo-constants');
+  });
+
+  it('still reports a leftover copy resolving outside the store as corrupted', async () => {
+    const check = new AutolinkingDependencyDuplicatesCheck();
+    const result = await check.runAsync(projectProps, {
+      resolutions: isolatedResolution('expo-constants', [
+        { version: '18.0.2', path: '/tmp/root/node_modules/expo-constants' },
+        {
+          version: '18.0.2',
+          path: '/tmp/root/node_modules/.bun/expo@54.0.0+bbb/node_modules/expo-constants',
+        },
+      ]),
+    });
+
+    expect(result.isSuccessful).toBe(false);
+    expect(result.advice.join('\n')).toContain('Your node_modules folder may be corrupted');
+  });
 });

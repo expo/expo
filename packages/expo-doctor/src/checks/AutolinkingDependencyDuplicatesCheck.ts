@@ -55,14 +55,6 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
       }
     }
 
-    const issues: string[] = [];
-    if (packagesWithIssues.size) {
-      issues.unshift(
-        'Your project contains duplicate native module dependencies, which should be de-duplicated.\n' +
-          'Native builds may only contain one version of any given native module, and having multiple versions of a single Native module installed may lead to unexpected build errors.'
-      );
-    }
-
     function getDependencyVersion(dependency: BaseDependencyResolution): string | null {
       if (!dependency.version) {
         const pkgContents = fs.readFileSync(path.join(dependency.path, 'package.json'), 'utf8');
@@ -91,6 +83,37 @@ export class AutolinkingDependencyDuplicatesCheck implements DoctorCheck<DoctorC
       return version
         ? `${dependency.name}@${version} (at: ${relative})`
         : `${dependency.name} at: ${relative}`;
+    }
+
+    // NOTE(@ajaysingh56656): Isolated linkers (Bun and pnpm) keep one copy of a package in
+    // their store per unique peer dependency resolution, so several store entries of the same
+    // version are the expected layout rather than a broken install, and autolinking only ever
+    // links one of them. Requiring *every* copy to resolve inside the store keeps genuinely
+    // corrupted trees reported: a leftover copy from an earlier hoisted install resolves to a
+    // real directory outside of it.
+    function isIsolatedStoreLayout(dependency: DependencyResolution): boolean {
+      const versions = [dependency, ...(dependency.duplicates ?? [])];
+      if (!versions.every((version) => STORE_PATH.test(version.path))) {
+        return false;
+      }
+      const version = getDependencyVersion(dependency);
+      return (
+        version != null && versions.every((duplicate) => getDependencyVersion(duplicate) === version)
+      );
+    }
+
+    for (const [dependencyName, dependency] of packagesWithIssues) {
+      if (isIsolatedStoreLayout(dependency)) {
+        packagesWithIssues.delete(dependencyName);
+      }
+    }
+
+    const issues: string[] = [];
+    if (packagesWithIssues.size) {
+      issues.unshift(
+        'Your project contains duplicate native module dependencies, which should be de-duplicated.\n' +
+          'Native builds may only contain one version of any given native module, and having multiple versions of a single Native module installed may lead to unexpected build errors.'
+      );
     }
 
     const corruptedInstallations: BaseDependencyResolution[] = [];
