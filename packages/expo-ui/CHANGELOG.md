@@ -15,6 +15,7 @@
 - [Android] Preserve vector drawable `fillType` values when loading images so even-odd paths render correctly. ([#49049](https://github.com/expo/expo/pull/49049) by [@aonan-brex](https://github.com/aonan-brex))
 - [iOS] Fixed `Overlay`, `Alert`, `ConfirmationDialog` and `Popover` silently ignoring the `modifiers` prop, which never reached the native view. ([#48949](https://github.com/expo/expo/pull/48949) by [@Den1Marshall](https://github.com/Den1Marshall))
 - [iOS] Fix `Slider` ignoring `value` prop updates after the first drag. ([#49075](https://github.com/expo/expo/issues/49075) by [@matinzd](https://github.com/matinzd)) ([#49139](https://github.com/expo/expo/pull/49139) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `Toggle` rendering local state instead of `isOn`, which left `community/menu` checkmarks out of sync and dropped every second `onPressAction`. `Toggle` is now fully controlled: when `isOn` is set, it only moves once JS updates the prop. ([#48982](https://github.com/expo/expo/issues/48982) by [@JustJoostNL](https://github.com/JustJoostNL)) ([#49021](https://github.com/expo/expo/pull/49021) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
