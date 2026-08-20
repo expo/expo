@@ -19,7 +19,7 @@ Beyond app startup metrics, the library can also:
 - Collect per-route navigation metrics with the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/) integration.
 - Log [user-defined events](/eas/observe/events/) with `Observe.logEvent`.
 - Track [EAS Update download times](/eas/observe/eas-update/) automatically.
-- Record JavaScript errors with `ObserveErrorBoundary` and `reportError`. The EAS Observe dashboard and the EAS CLI do not display these errors yet.
+- Record [JavaScript errors](/eas/observe/errors/) with `ObserveErrorBoundary` and `Observe.reportError`, and view them with symbolicated stack traces in the EAS Observe dashboard (in [preview](/more/release-statuses/#preview)).
 - Let third-party packages [register their own integrations](/eas/observe/integrations/third-party/) with `Observe.registerIntegration`.
 
 > **warning** `expo-observe` is not available in Expo Go. To use it, create a [development build](/develop/development-builds/introduction/).

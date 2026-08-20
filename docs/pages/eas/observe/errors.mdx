@@ -1,0 +1,104 @@
+---
+title: Error reporting
+sidebar_title: Errors
+description: Record JavaScript errors from your app and investigate symbolicated stack traces in the EAS Observe dashboard.
+---
+
+> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Source maps for EAS Update, iOS symbolication, and more are still to come.
+
+The `expo-observe` library records JavaScript errors from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** tab of the EAS Observe dashboard.
+
+Errors are captured through three paths: unhandled errors are recorded automatically, render errors are caught by `ObserveErrorBoundary`, and handled errors can be reported with `Observe.reportError`.
+
+## Unhandled errors
+
+Unhandled JavaScript errors are recorded automatically. The library installs a global error handler when it is first imported, so no setup is required. React Native's own behavior is unchanged: the red box still appears in development, and fatal errors still terminate the app in production.
+
+To turn off automatic recording, set `errorHandlingEnabled` to `false` via [`configure()`](/versions/latest/sdk/observe/#configureconfig):
+
+```tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  errorHandlingEnabled: false,
+});
+```
+
+This only affects unhandled errors. Errors caught by `ObserveErrorBoundary` or reported with `Observe.reportError` are still recorded.
+
+## Render errors
+
+Errors thrown while rendering never reach the global error handler. Wrap a subtree with `ObserveErrorBoundary` to record them together with the React component stack and show a fallback UI in place of the subtree that threw:
+
+```tsx
+import { ObserveErrorBoundary } from 'expo-observe';
+
+export default function FeedScreen() {
+  return (
+    <ObserveErrorBoundary
+      fallback={({ error, resetError }) => (
+        <ErrorScreen error={error} onRetry={resetError} />
+      )}>
+      <Feed />
+    </ObserveErrorBoundary>
+  );
+}
+```
+
+The `fallback` prop accepts a React element, `null`, or a function that receives the thrown `error` and a `resetError` callback. Calling `resetError()` clears the caught error and re-mounts the children, so they restart from a clean state.
+
+To place a boundary around your whole app, pass `errorBoundaryFallback` to the `ObserveRoot` component instead of wrapping it manually:
+
+```tsx src/app/_layout.tsx
+import { ObserveRoot } from 'expo-observe';
+
+export default function RootLayout() {
+  return (
+    <ObserveRoot errorBoundaryFallback={<FallbackScreen />}>
+      <Stack />
+    </ObserveRoot>
+  );
+}
+```
+
+Render errors that no boundary catches are still recorded by the global error handler.
+
+## Handled errors
+
+Errors your code catches and recovers from reach neither the global handler nor an error boundary. Report them with `Observe.reportError`:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+async function handleSync() {
+  try {
+    await syncCart();
+  } catch (error) {
+    Observe.reportError(error);
+  }
+}
+```
+
+`reportError` accepts any thrown value. An `Error` contributes its name, message, and stack trace. Any other value (a string, a plain object, a number) is stringified into the message without a stack trace.
+
+Avoid Personally Identifiable Information (PII) in error messages. Everything you report is visible in the dashboard and is dispatched off-device.
+
+## Symbolicated stack traces
+
+Stack traces from production apps point at locations in the generated JavaScript bundle. To make them readable, EAS Build uploads your app's source map when the build is created. The dashboard uses the stored source map to show the original file, line, and column for each frame, and links the build the error came from next to the stack trace.
+
+Symbolication is applied when you view an error in the dashboard. If no source map is stored for the build, the dashboard shows the reported stack trace as-is.
+
+## View errors
+
+Open your project and navigate to [**Observe > Errors**](https://expo.dev/accounts/[account]/projects/[project]/observe/errors). The tab lists the errors recorded in the selected time range. Click an error to see its stack trace and details.
+
+## Still to come
+
+Error reporting is in preview, and the following are not available yet:
+
+- **Source maps for EAS Update**: errors from an app running an OTA update show the unsymbolicated stack trace.
+- **iOS symbolication**
+- Native crash reporting, and more.
+
+For native crash reporting today, use a service such as [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/).

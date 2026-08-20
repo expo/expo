@@ -71,6 +71,7 @@ Traditional development-time profiling tools show how your app performs on your 
 - **Per-route navigation metrics**: Compare render and interactive timings by route with the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/) integration
 - **Session investigation**: Drill into individual user sessions to understand why certain devices or conditions lead to slower performance
 - **User-defined events**: Log custom signals from your app with `Observe.logEvent` and analyze them alongside performance data
+- **Error reporting** (in preview): Record JavaScript errors with [`ObserveErrorBoundary` and `Observe.reportError`](/eas/observe/errors/) and investigate symbolicated stack traces in the dashboard
 - **CLI and dashboard access**: Query metrics from the terminal with `eas observe:` commands or view them in the EAS dashboard
 
 ## When to use EAS Observe
@@ -84,12 +85,15 @@ Traditional development-time profiling tools show how your app performs on your 
 | Track EAS Update download times                     | <YesIcon />    |
 | Query performance metrics from the CLI              | <YesIcon />    |
 | Track user-defined events from your app             | <YesIcon />    |
+| Track JavaScript errors in production (in preview)  | <YesIcon />    |
 | Development-time profiling and debugging            | <NoIcon />     |
-| Crash reporting and error tracking                  | <NoIcon />     |
+| Native crash reporting                              | <NoIcon />     |
 
 **Development-time profiling and debugging**: Use [React Native DevTools](/debugging/tools/#debugging-with-react-native-devtools) for debugging and [Expo Atlas](/guides/analyzing-bundles/) for bundle inspection.
 
-**Crash reporting and error tracking**: On SDK 57 and later, the [`expo-observe`](/versions/latest/sdk/observe/) library can record JavaScript errors with `ObserveErrorBoundary` and `reportError`. However, the EAS Observe dashboard and the EAS CLI do not display these errors yet. Until they do, we suggest a crash reporting service such as [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/).
+**JavaScript errors**: On SDK 57 and later, EAS Observe records JavaScript errors and shows them in the dashboard with symbolicated stack traces. This feature is in [preview](/more/release-statuses/#preview). See [Error reporting](/eas/observe/errors/) for setup and current limitations.
+
+**Native crash reporting**: EAS Observe does not capture native crashes yet. Until it does, we suggest a crash reporting service such as [Sentry](/guides/using-sentry/) or [BugSnag](/guides/using-bugsnag/).
 
 ## Frequently asked questions (FAQ)
 
@@ -97,7 +101,7 @@ Traditional development-time profiling tools show how your app performs on your 
 
 <Collapsible summary="What metrics does EAS Observe track?">
 
-EAS Observe tracks startup metrics (cold launch time, warm launch time, time to first render, time to interactive, and bundle load time) and [EAS Update download time](/eas/observe/eas-update/). On SDK 56 and later, the [navigation integrations](/eas/observe/integrations/expo-router/) add per-route render and interactive timings. See the [Metrics reference](/eas/observe/reference/metrics/) for detailed descriptions of each metric. You can also log your own signals as [user-defined events](/eas/observe/events/).
+EAS Observe tracks startup metrics (cold launch time, warm launch time, time to first render, time to interactive, and bundle load time) and [EAS Update download time](/eas/observe/eas-update/). On SDK 56 and later, the [navigation integrations](/eas/observe/integrations/expo-router/) add per-route render and interactive timings. See the [Metrics reference](/eas/observe/reference/metrics/) for detailed descriptions of each metric. You can also log your own signals as [user-defined events](/eas/observe/events/) and record [JavaScript errors](/eas/observe/errors/) (in preview).
 
 </Collapsible>
 
@@ -159,6 +163,13 @@ Metric data is retained for a minimum of 60 days.
   title="User-defined events"
   description="Log named events from your app and view them in the dashboard or query them from the CLI."
   href="/eas/observe/events"
+  Icon={ActivityIcon}
+/>
+
+<BoxLink
+  title="Error reporting"
+  description="Record JavaScript errors and investigate symbolicated stack traces in the dashboard."
+  href="/eas/observe/errors"
   Icon={ActivityIcon}
 />
 
