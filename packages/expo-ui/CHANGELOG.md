@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix an empty `RNHostView` (e.g. one hosting a hidden RN `Modal`, which renders null until `visible` is true) taking up space in SwiftUI containers — such as a spurious empty row in a `FieldGroup`/`Form` section that shifts the other components. It now renders nothing until a child is mounted, which also lets the touch handler attach when the child mounts after the host appeared. ([#48666](https://github.com/expo/expo/issues/48666) by [@lochnessopensource](https://github.com/lochnessopensource)) ([#48735](https://github.com/expo/expo/pull/48735) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 ## 57.0.12 — 2026-08-20
