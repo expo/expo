@@ -19,7 +19,7 @@
 
 ### 💡 Others
 
-- [iOS] Add an optional limit when reading pending metric and log rows.
+- [iOS] Add an optional limit when reading pending metric and log rows. ([#49121](https://github.com/expo/expo/pull/49121) by [@Ubax](https://github.com/Ubax))
 - [Android] Load only requested metric and log rows when preparing observability payloads. ([#49011](https://github.com/expo/expo/pull/49011) by [@Ubax](https://github.com/Ubax))
 - Rename the no-update `downloadComplete` state event to `downloadCompleteUnavailable`. ([#47902](https://github.com/expo/expo/pull/47902) by [@kudo](https://github.com/kudo))
 - [iOS] Measure the JS bundle load time against the app startup end marker to stay compatible with upcoming React Native versions. ([#47782](https://github.com/expo/expo/pull/47782) by [@tsapeta](https://github.com/tsapeta))
