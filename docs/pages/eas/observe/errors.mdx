@@ -83,9 +83,29 @@ Avoid Personally Identifiable Information (PII) in error messages. Everything yo
 
 ## Symbolicated stack traces
 
-Stack traces from production apps point at locations in the generated JavaScript bundle. To make them readable, EAS Build uploads your app's source map when the build is created. The dashboard uses the stored source map to show the original file, line, and column for each frame, and links the build the error came from next to the stack trace.
+In a production app, your JavaScript is bundled and minified. Stack traces point at line and column positions in the generated bundle, not in your source files. A source map translates those positions back. When a source map is stored for a build, the dashboard shows the original file, line, and column for each frame, and links the build the error came from next to the stack trace.
 
-Symbolication is applied when you view an error in the dashboard. If no source map is stored for the build, the dashboard shows the reported stack trace as-is.
+If no source map is stored for the build, the dashboard shows the reported stack trace as-is. Frames then reference positions in the minified bundle, such as `index.android.bundle:1:481231`, and are difficult to map back to your code.
+
+### Upload source maps with EAS Build
+
+To store a source map for each build, set `uploadSourceMaps` to `true` in the build profile in **eas.json**:
+
+```json eas.json
+{
+  "build": {
+    "production": {
+      "uploadSourceMaps": true
+    }
+  }
+}
+```
+
+With this setting, EAS Build uploads the source map produced when your app's JavaScript is bundled. Symbolication then works for every error reported from that build. No changes to your app code are required.
+
+> **Note**: Source map upload requires EAS CLI version 22.0.0 or later and only works for builds that run on EAS Build servers. Local builds created with `eas build --local` do not upload source maps.
+
+The source code embedded in the source map (`sourcesContent`) is removed before upload. Only file names and position mappings are stored. If the upload fails, the build still completes and shows a warning in the build logs.
 
 ## View errors
 
