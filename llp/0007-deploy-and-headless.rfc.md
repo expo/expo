@@ -5,7 +5,7 @@
 **Systems:** EAS Hosting; launch.expo.dev; EAS auth; `@expo/mcp-tunnel`; `create-expo`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
-**Related:** [[0001-agentic-cli-on-expo-cli]], [[0005-agent-native-cli-surface]]
+**Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]]
 
 ## Summary
 
@@ -13,11 +13,11 @@ Ship and develop without a terminal or a laptop. Seeds [confirmed — Kudo, 2026
 
 ## Cross-platform `deploy`
 
-[confirmed — Kudo seed, 2026-08-19] One command deploys every platform: web via EAS Hosting, native platforms via launch.expo.dev. Deterministic orchestration (export → upload → URLs back) so it works equally as a human command and an agent tool; agent mode returns structured URLs and status. Pairs with smart `start` ([[0003-smart-start-and-project-state]]): one command to run, one to ship.
+[confirmed — Kudo seed, 2026-08-19] One command deploys every platform: web via EAS Hosting, native platforms via launch.expo.dev. Deterministic orchestration (export → upload → URLs back) so it works equally as a human command and an agent tool; agent mode returns structured URLs and status. Pairs with smart `start` ([[0004-smart-start-and-project-state]]): one command to run, one to ship.
 
 ## Headless project creation
 
-[confirmed — Kudo seed, 2026-08-18] `exagent new "<one-line app description>"`: template choice, `create-expo`, git init, EAS init, first boot check — every step flag- or JSON-driven, zero TTY. Depends on non-interactive parity ([[0005-agent-native-cli-surface]]).
+[confirmed — Kudo seed, 2026-08-18] `exagent new "<one-line app description>"`: template choice, `create-expo`, git init, EAS init, first boot check — every step flag- or JSON-driven, zero TTY. Depends on non-interactive parity ([[0006-agent-native-cli-surface]]).
 
 ## Cloudflare Workers compatibility (EAS Hosting)
 

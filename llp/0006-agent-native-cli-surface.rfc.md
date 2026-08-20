@@ -1,4 +1,4 @@
-# 0005: Agent-Native CLI Surface
+# 0006: Agent-Native CLI Surface
 
 **Type:** RFC
 **Status:** Draft

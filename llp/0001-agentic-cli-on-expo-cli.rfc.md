@@ -27,7 +27,7 @@ Generic coding agents drive Expo CLI through raw terminal output. They guess whe
 2. The command can be an entirely new bin (`npx ai-expo`, `npx exagent`, or similar), not necessarily an `expo` subcommand.
 3. Testing must be heavy. An eval suite must gate shipping. Testing infrastructure is built first [confirmed — Kudo, 2026-08-20].
 4. The design should brainstorm agent-friendly features (see §Design documents).
-5. **Process boundary** [confirmed — Kudo, 2026-08-20]: implementation invokes the `expo` CLI as a subprocess as much as possible; it does not import `@expo/cli` code. Details and rationale: [[0005-agent-native-cli-surface]].
+5. **Process boundary** [confirmed — Kudo, 2026-08-20]: implementation invokes the `expo` CLI as a subprocess as much as possible; it does not import `@expo/cli` code. Details and rationale: [[0006-agent-native-cli-surface]].
 6. Feature areas are documented in separate LLPs [confirmed — Kudo, 2026-08-20]; this document stays the umbrella (decisions, constraints, index).
 
 ## Naming
@@ -81,13 +81,13 @@ Three layers, all machine-readable:
 
 ## Design documents
 
-Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries its own design, provenance, and testing notes:
+Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries its own design, provenance, and testing notes. Document numbers reflect implementation priority order [confirmed — Kudo, 2026-08-20: knowledge/skills comes first after testing]:
 
 - [[0002-testing-and-evals]] — the layer built **first**: unit/e2e strategy and the 3-tier eval suite (scripted MCP client → small local model on GitHub Actions → frontier model).
-- [[0003-smart-start-and-project-state]] — one deterministic engine for "what must run?": smart `start`, Expo Go compatibility check, post-install impact decisions.
-- [[0004-runtime-loop-tools]] — seeing and driving the running app: runtime eval (CDP), red-screen feed, network inspection, deep-link navigation, performance probe, cross-platform sweep; log-triage and verified-UI loops.
-- [[0005-agent-native-cli-surface]] — the process boundary, JSONL events as the contract, agent-mode dev server output, non-interactive parity, headless CI mode, the `exagent` launcher.
-- [[0006-knowledge-tools-and-skills]] — skills shipped from Expo modules, version-pinned docs lookup, API diff, example transplant, dependency explainer, doctor auto-fix, SDK upgrade workflow.
+- [[0003-knowledge-tools-and-skills]] — **second**: skills shipped from Expo modules, version-pinned docs lookup, API diff, example transplant, dependency explainer, doctor auto-fix, SDK upgrade workflow.
+- [[0004-smart-start-and-project-state]] — one deterministic engine for "what must run?": smart `start`, Expo Go compatibility check, post-install impact decisions.
+- [[0005-runtime-loop-tools]] — seeing and driving the running app: runtime eval (CDP), red-screen feed, network inspection, deep-link navigation, performance probe, cross-platform sweep; log-triage and verified-UI loops.
+- [[0006-agent-native-cli-surface]] — the process boundary, JSONL events as the contract, agent-mode dev server output, non-interactive parity, headless CI mode, the `exagent` launcher.
 - [[0007-deploy-and-headless]] — cross-platform `deploy` (EAS Hosting + launch.expo.dev), headless project creation, Cloudflare Workers compatibility, chat-driven development (the phone as the only device), EAS auth for headless agents.
 - [[0008-guardrails]] — checkpoints/undo, plan-with-cost dry runs, tool impact metadata.
 

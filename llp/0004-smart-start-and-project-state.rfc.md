@@ -1,4 +1,4 @@
-# 0003: Smart Start and the Project-State Engine
+# 0004: Smart Start and the Project-State Engine
 
 **Type:** RFC
 **Status:** Draft

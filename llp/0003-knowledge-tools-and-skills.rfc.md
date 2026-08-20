@@ -1,4 +1,4 @@
-# 0006: Knowledge Tools and Skills Distribution
+# 0003: Knowledge Tools and Skills Distribution
 
 **Type:** RFC
 **Status:** Draft
