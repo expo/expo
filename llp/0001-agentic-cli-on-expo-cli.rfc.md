@@ -95,7 +95,7 @@ Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries 
 
 ## Open questions
 
-1. Final name: `exagent` vs `ai-expo` vs a scoped `@expo/*` bin.
+1. ~~Final name~~ — resolved [confirmed — Kudo, 2026-08-20]: `exagent` (package `packages/exagent/`, bin `exagent`); `ai-expo` stays reserved as an alias.
 2. ~~Model auth and billing~~ — resolved [confirmed — Kudo, 2026-08-18]: Shape 1, no model in the product; CI-only models for evals ([[0002-testing-and-evals]]).
 3. ~~Engine commitment~~ — moot under Shape 1; revisit only if a standalone bin is built later.
 4. Skill-from-module contract: `package.json` field vs directory convention; and whether `expo/skills` content gets bundled or fetched.

@@ -40,8 +40,16 @@ Programmatic and model-free: dev server responds; app boots (via `automation_tak
 5. Tier 1 runner (Ollama/llama.cpp setup action, small suite).
 6. Tier 2 runner behind CI secrets.
 
+## Resolved decisions
+
+[confirmed — Kudo, 2026-08-20]
+
+- Harness home: `expo/expo`, under `packages/exagent/evals/`.
+- CI split: `tier0-linux` on every PR (subprocess + JSONL + schema tests, no simulator); simulator scenarios on macOS runners — `expo/expo` GitHub Actions already runs macOS jobs [confirmed — Kudo].
+- First fixture matrix: latest stable SDK only; three fixtures (Expo Go app, dev-client app, broken variant); iOS-first for simulator scenarios, Android after the harness works.
+- Sequencing: feature-set review happens before implementation starts [confirmed — Kudo, 2026-08-20].
+
 ## Open questions
 
-1. Harness home: `expo/expo` (beside fixtures) vs `expo-mcp` (beside tools) vs `expo/skills` (its `eval-harness/` directory exists and is empty [observed]).
-2. Which small model/quantization for tier 1 — needs a benchmark spike on a real runner.
-3. Pass-rate thresholds and trial counts for tiers 1–2.
+1. Which small model/quantization for tier 1 — needs a benchmark spike on a real runner.
+2. Pass-rate thresholds and trial counts for tiers 1–2.
