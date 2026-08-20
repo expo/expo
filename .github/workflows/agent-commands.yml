@@ -148,6 +148,17 @@ jobs:
   # which is why the @expo-bot form appears here too. It still filters to
   # command-shaped maintainer comments, or every unrelated comment on the
   # repository would spin up a runner.
+  #
+  # PREFIX matching, deliberately loose: expression literals cannot express
+  # a newline, so an exact-body or trailing-space match misses `@expo-bot
+  # verify\n` — Ubax hit exactly that on issue 39514 (2026-08-18) and the
+  # command died without a trace. The gate only decides "command-shaped,
+  # from a maintainer"; the parse step owns exact-shape validation and
+  # replies to the thread when it rejects. The `@expo-bot verify`/`check`
+  # forms need no branches of their own here: the generic `@expo-bot `
+  # branch covers them. The reserved-verb exclusions keep their exact and
+  # trailing-space forms because wider prefixes would swallow real work
+  # tasks (`@expo-bot review-feedback`).
   slot:
     # Display name, NOT a key rename: the key `slot` anchors `needs:` and the
     # concurrency group, while this name is what the run graph and the jobs
@@ -156,12 +167,7 @@ jobs:
     name: Assign queue slot
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      ((github.event.comment.body == '/verify' ||
-      startsWith(github.event.comment.body, '/verify ') ||
-      github.event.comment.body == '@expo-bot verify' ||
-      startsWith(github.event.comment.body, '@expo-bot verify ') ||
-      github.event.comment.body == '@expo-bot check' ||
-      startsWith(github.event.comment.body, '@expo-bot check ') ||
+      ((startsWith(github.event.comment.body, '/verify') ||
       (startsWith(github.event.comment.body, '@expo-bot ') &&
       github.event.comment.body != '@expo-bot review' &&
       !startsWith(github.event.comment.body, '@expo-bot review ') &&
@@ -225,33 +231,30 @@ jobs:
       group: verify-target-${{ github.event.issue.number || inputs.target }}
       cancel-in-progress: false
     # Commands must begin the comment: incidental mentions do not launch work.
-    # The work form is `@expo-bot <task>` with a SPACE — expression literals
-    # cannot express a newline, so `@expo-bot` followed by a line break does
-    # not trigger. Deliberate: matching a bare `@expo-bot` prefix would fire
-    # on `@expo-bot!` and similar asides, and each false fire ends in a
-    # public parse-failure comment.
-    # `@expo-bot verify` is /verify, so it must run on issues as well as PRs.
-    # `@expo-bot check` is verify plus a one-shot review; its verify half runs
-    # on issues too, so it sits beside verify here (the review half's own
-    # workflow gates itself to PRs).
-    # Other `@expo-bot …` forms stay PR-only (work mode), except reserved
-    # verbs (review, dismiss, undismiss, help) which other workflows own.
-    # Help is excluded as a prefix (`@expo-bot help…`, plus the two-space
-    # typo) so a newline after `help` cannot start this job.
-    # Excluding expo-bot itself prevents a result comment from forming a loop.
+    # The work form is `@expo-bot <task>` with a SPACE. Matching a bare
+    # `@expo-bot` prefix would fire on `@expo-bot!` and similar asides.
+    # This gate mirrors slot's on purpose (minus the expo-bot self-exclusion,
+    # which keeps a result comment from forming a loop): it decides only
+    # "command-shaped, from a maintainer". Everything shape-specific —
+    # exact verbs, flags, and the PR-only rule for work mode — lives in the
+    # parse step, which REPLIES to the thread when it rejects. It used to
+    # live here as exact-body and trailing-space matches, and every miss was
+    # invisible: `@expo-bot verify\n` (a trailing newline, issue 39514) and
+    # work-form comments on plain issues skipped this job with no reaction,
+    # no comment, and a green run.
+    # Reserved verbs (review, dismiss, undismiss, help) stay excluded here —
+    # other workflows own them. Help is excluded as a prefix (`@expo-bot
+    # help…`, plus the two-space typo) so a newline after `help` cannot
+    # start this job. The other exclusions keep their exact and
+    # trailing-space forms because wider prefixes would swallow real work
+    # tasks (`@expo-bot review-feedback`).
     # The authoritative write-access check is the step below.
     # (Runs are backed by the expo-verification-bot service account.)
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event.comment.user.login != 'expo-bot' &&
-      (github.event.comment.body == '/verify' ||
-      startsWith(github.event.comment.body, '/verify ') ||
-      github.event.comment.body == '@expo-bot verify' ||
-      startsWith(github.event.comment.body, '@expo-bot verify ') ||
-      github.event.comment.body == '@expo-bot check' ||
-      startsWith(github.event.comment.body, '@expo-bot check ') ||
-      (github.event.issue.pull_request != null &&
-      startsWith(github.event.comment.body, '@expo-bot ') &&
+      (startsWith(github.event.comment.body, '/verify') ||
+      (startsWith(github.event.comment.body, '@expo-bot ') &&
       github.event.comment.body != '@expo-bot review' &&
       !startsWith(github.event.comment.body, '@expo-bot review ') &&
       github.event.comment.body != '@expo-bot dismiss' &&
@@ -335,6 +338,21 @@ jobs:
           INPUT_MODEL: ${{ inputs.model }}
           REQUEST: ${{ github.event.comment.body || inputs.request }}
         run: |
+          # Reject an ill-formed command. On the comment path the reason also
+          # lands in the `reject` output, which the reply step below posts to
+          # the thread — a maintainer typed a command, so a rejection must
+          # never be silent (a trailing newline in `@expo-bot verify` once
+          # died without a trace; the gates are prefix-loose now and THIS
+          # step owns exact shapes). The dispatch path is quiet by contract
+          # and gets only the log error. Reasons must be single-line: they
+          # pass through GITHUB_OUTPUT.
+          fail_cmd() {
+            echo "::error::$1"
+            if [ "$QUIET" != "true" ]; then
+              echo "reject=$1" >> "$GITHUB_OUTPUT"
+            fi
+            exit 1
+          }
           if [ "$QUIET" = "true" ]; then
             # The dispatch `target` input is free text, and it flows into API
             # paths and the scoped-token mint request. Digits only, before it
@@ -387,22 +405,22 @@ jobs:
                 esac
                 ;;
               *)
-                echo "::error::The first token must be /verify or @expo-bot."
-                exit 1
+                # The gate admits any `/verify` prefix, so this is a mangled
+                # form like `/verify-fix` or `/verifyx` (an exact `@expo-bot`
+                # first token never lands here).
+                fail_cmd "\`$first\` is not a command — did you mean \`/verify\`? Flags go after a space, e.g. \`/verify --fix\`."
                 ;;
             esac
           fi
-          # route=true means "this comment really is a command for THIS
-          # workflow". Every later step gates on it, so any `exit 0` above —
-          # a mention another workflow owns, or prose that merely starts with
-          # a reserved verb — leaves it unset and stops the job dead. Without
-          # it, `exit 0` counted as success and the run continued with an
+          # route=true is written at the very END of this step and means
+          # "this command is valid and launching". Every later step gates on
+          # it, so any exit above leaves it unset and stops the job dead:
+          # `exit 0` for prose and mentions other workflows own (silently),
+          # fail_cmd for rejected commands (with a thread reply, no generic
+          # end-of-job failure comment on top). Without the unset-stops-all
+          # rule, `exit 0` counted as success and the run continued with an
           # empty mode, which the prompt selector reads as verify: a comment
           # asking for help launched a full investigation.
-          echo "route=true" >> "$GITHUB_OUTPUT"
-          # Write mode before validating the task so the always-run failure
-          # reporter still names an empty @expo-bot request correctly.
-          echo "mode=$mode" >> "$GITHUB_OUTPUT"
           if [ "$mode" = "work" ]; then
             fix=true
             if [ "$QUIET" = "true" ]; then
@@ -411,12 +429,10 @@ jobs:
               task=$(printf '%s' "$COMMENT" | sed '1s/^[^[:space:]]*[[:space:]]*//')
             fi
             if [ -z "$(printf '%s' "$task" | tr -d '[:space:]')" ]; then
-              echo "::error::Work mode requires a task after @expo-bot (or in the dispatch request input)."
-              exit 1
+              fail_cmd "\`@expo-bot\` needs a task after the mention (or a request input on dispatch) — or use \`@expo-bot verify\` to investigate."
             fi
             if [ "$IS_PR" != "true" ]; then
-              echo "::error::@expo-bot work commands run only on pull requests authored by expo-bot."
-              exit 1
+              fail_cmd "\`@expo-bot <task>\` work commands run only on an open pull request authored by expo-bot. On an issue, use \`@expo-bot verify\`."
             fi
             bot_login=$(gh api user --jq .login)
             pr=$(gh api "repos/${{ github.repository }}/pulls/$TARGET_NUMBER")
@@ -427,13 +443,11 @@ jobs:
             head_repo=$(printf '%s' "$pr" | jq -r '.head.repo.full_name // empty')
             if [ "$author" != "$bot_login" ] || [ "$state" != "open" ] || \
                [ -z "$head_sha" ] || [ -z "$head_ref" ] || [ -z "$head_repo" ]; then
-              echo "::error::@expo-bot work commands require an open PR authored by the authenticated bot ($bot_login); found author=$author state=$state head=$head_repo:$head_ref."
-              exit 1
+              fail_cmd "\`@expo-bot <task>\` work commands require an open PR authored by the authenticated bot ($bot_login); found author=$author state=$state head=$head_repo:$head_ref."
             fi
             can_push=$(gh api "repos/$head_repo" --jq '.permissions.push // false')
             if [ "$can_push" != "true" ]; then
-              echo "::error::The authenticated bot cannot push to $head_repo, so it cannot update this PR directly."
-              exit 1
+              fail_cmd "The authenticated bot cannot push to $head_repo, so it cannot update this PR directly."
             fi
             {
               echo "bot_login=$bot_login"
@@ -482,22 +496,36 @@ jobs:
             case "$model" in
               claude-*)
                 if [ -n "$(printf '%s' "$model" | tr -d 'A-Za-z0-9._-')" ]; then
-                  echo "::error::Invalid model override: $model"
-                  exit 1
+                  fail_cmd "Invalid model override: $model"
                 fi
                 ;;
               *)
-                echo "::error::Unknown model override '$model' (use fable/opus/sonnet/haiku or a full claude-* id)."
-                exit 1
+                fail_cmd "Unknown model override '$model' (use fable/opus/sonnet/haiku or a full claude-* id)."
                 ;;
             esac
           fi
           {
+            # route last: everything before this line can still reject.
+            echo "mode=$mode"
             echo "fix=$fix"
             echo "is_pr=$IS_PR"
             echo "model=$model"
+            echo "route=true"
           } >> "$GITHUB_OUTPUT"
           echo "mode: $mode; fix mode: $fix; model: ${model:-default} (target is $([ "$IS_PR" = true ] && echo 'a pull request' || echo 'an issue'))"
+
+      # A maintainer typed a command and it did not launch — say so where it
+      # was typed. Rejections used to surface two bad ways: a red step in a
+      # run nobody watches (mangled commands), or nothing at all (the old
+      # job gate silently skipping shapes like a work command on an issue).
+      # Gate failures (no write access) stay silent on purpose, as before.
+      - name: Reply to a rejected command
+        if: always() && steps.gate.outputs.ok == 'true' && env.QUIET != 'true' && steps.cmd.outputs.reject != ''
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          REJECT: ${{ steps.cmd.outputs.reject }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: gh issue comment "$TARGET_NUMBER" -R "${{ github.repository }}" --body "⚠️ $REJECT ([run log]($RUN_URL))"
 
       - name: Acknowledge
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && env.QUIET != 'true'
@@ -2018,6 +2046,49 @@ jobs:
             echo "::error::gh pr create failed; the branch $branch was pushed but no pull request was opened."
             exit 1
           }
+          # The changelog convention wants each entry to end in one link
+          # group, but the agent writes the entry before this pull request
+          # exists (prompt.md tells it to omit the group), and the review
+          # bot's link suggestion never reaches these PRs — they come from
+          # the bot fork, where the ai-review label path does not run. So
+          # link-less entries were merging as-is (PR 49085 and neighbors).
+          # The number exists NOW: append the suffix to every entry line the
+          # publish commit added without one, as a follow-up commit — no
+          # history rewrite seconds after the PR opened. Best-effort: a
+          # failure leaves a link-less entry, never a broken publish.
+          pr_number=${url##*/}
+          case "$pr_number" in
+            ''|*[!0-9]*)
+              echo "::warning::could not parse a pull-request number from $url; the changelog entry keeps no link group."
+              ;;
+            *)
+              suffix=" ([#${pr_number}](https://github.com/${GITHUB_REPOSITORY}/pull/${pr_number}) by [@expo-bot](https://github.com/expo-bot))"
+              linked=0
+              for f in $(git diff --name-only HEAD~1..HEAD -- '*CHANGELOG.md'); do
+                # Entry lines this commit added that carry no link group.
+                git diff HEAD~1..HEAD -- "$f" | sed -n 's/^+\(- .*\)/\1/p' | grep -vF '([#' > "$RUNNER_TEMP/unlinked-entries" || true
+                # Matching goes through ENVIRON, not awk -v: -v expands
+                # backslash escapes and would corrupt the exact-line match.
+                while IFS= read -r entry; do
+                  [ -n "$entry" ] || continue
+                  TGT="$entry" SFX="$suffix" awk '
+                    !done && $0 == ENVIRON["TGT"] { print $0 ENVIRON["SFX"]; done=1; next }
+                    { print }' "$f" > "$RUNNER_TEMP/changelog-linked" && mv "$RUNNER_TEMP/changelog-linked" "$f"
+                  linked=$((linked+1))
+                done < "$RUNNER_TEMP/unlinked-entries"
+              done
+              if [ "$linked" -gt 0 ]; then
+                git add -- '*CHANGELOG.md'
+                if git -c user.name='expo-bot' -c user.email='expo-bot@users.noreply.github.com' \
+                     commit -q -m "Add the pull request link to the changelog entry" \
+                   && git push "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
+                  echo "appended the pull-request link group to $linked changelog entry line(s)"
+                else
+                  echo "::warning::could not push the changelog link follow-up; the entry keeps no link group."
+                fi
+              fi
+              ;;
+          esac
           gh issue comment "$ISSUE_NUMBER" --body "🔧 Opened $url with the $change_name — agent-authored, unreviewed, and queued for AI review. [$run_name]($RUN_URL)"
 
       # Last line of defence against a total loss. `if: always()` genuinely
