@@ -45,9 +45,17 @@ public final class SecureStoreModule: Module {
       let authSearchDictionary = query(with: key, options: options, requireAuthentication: true)
       let legacySearchDictionary = query(with: key, options: options)
 
-      SecItemDelete(legacySearchDictionary as CFDictionary)
-      SecItemDelete(authSearchDictionary as CFDictionary)
-      SecItemDelete(noAuthSearchDictionary as CFDictionary)
+      // Delete all three aliases before reporting a failure, so that a failing alias
+      // cannot leave the remaining entries behind.
+      let statuses = [
+        SecItemDelete(legacySearchDictionary as CFDictionary),
+        SecItemDelete(authSearchDictionary as CFDictionary),
+        SecItemDelete(noAuthSearchDictionary as CFDictionary)
+      ]
+
+      if let failure = statuses.first(where: { $0 != errSecSuccess && $0 != errSecItemNotFound }) {
+        throw KeyChainException(failure)
+      }
     }
 
     Function("canUseBiometricAuthentication") {() -> Bool in
