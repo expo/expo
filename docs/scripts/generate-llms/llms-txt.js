@@ -149,7 +149,7 @@ function hasContent(section) {
   return section?.items.length > 0 || section?.groups.length > 0 || section?.sections.length > 0;
 }
 
-export const COLLAPSED_SECTIONS = new Set(['Expo UI']);
+const COLLAPSED_SECTIONS = new Set(['Expo UI']);
 
 function collapseToOverviews(section) {
   if (!COLLAPSED_SECTIONS.has(section.title)) {
@@ -209,23 +209,21 @@ function processSection(node) {
   return section;
 }
 
-export function generateLlmsTxtMarkdown(nodes) {
-  const sections = nodes.map(processSection).filter(Boolean).map(collapseToOverviews);
-
-  return generateFullMarkdown({
-    title: TITLE,
-    description: EXPO_DESCRIPTION,
-    sections,
-  });
-}
-
 export async function generateLlmsTxt() {
   try {
-    const nodes = Object.values({ home, general, learn, eas, reference: reference.latest }).flat();
+    const allSections = Object.values({ home, general, learn, eas, reference: reference.latest })
+      .flat()
+      .map(processSection)
+      .filter(Boolean)
+      .map(collapseToOverviews);
 
     await fs.promises.writeFile(
       path.join(process.cwd(), OUTPUT_DIRECTORY_NAME, OUTPUT_FILENAME_LLMS_TXT),
-      generateLlmsTxtMarkdown(nodes)
+      generateFullMarkdown({
+        title: TITLE,
+        description: EXPO_DESCRIPTION,
+        sections: allSections,
+      })
     );
 
     console.log(` \x1b[1m\x1b[32m✓\x1b[0m Successfully generated ${OUTPUT_FILENAME_LLMS_TXT}`);
