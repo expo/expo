@@ -23,6 +23,7 @@
 
 ### 🐛 Bug fixes
 
+- Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
 - Show the Xcode build log path when `run:ios` fails. ([#48624](https://github.com/expo/expo/pull/48624) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [Internal] Fix `LogStream.destroy()` racing a pending write and dropping log data ([#47181](https://github.com/expo/expo/pull/47181) by [@kitten](https://github.com/kitten))
@@ -38,6 +39,7 @@
 
 ### 💡 Others
 
+- [Internal] Use `@expo/env` to read the EAS config mode and keep older EAS Build versions in production mode. ([#48938](https://github.com/expo/expo/pull/48938) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Add sandbox detection to telemetry context ([#47928](https://github.com/expo/expo/pull/47928) by [@davidmokos](https://github.com/davidmokos))
 - [Internal] Remove the unreachable port fallbacks and increase consistency in port selection logic ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
 - Add experimental `tvos` and `macos` autolinking gated by `expriments.outOfTreePlatforms` ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))

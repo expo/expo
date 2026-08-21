@@ -201,7 +201,12 @@ open class SecureStoreModule : Module() {
        back a value.
        */
       val secretKeyEntry: SecretKeyEntry = getOrCreateKeyEntry(SecretKeyEntry::class.java, mAESEncryptor, options, options.requireAuthentication)
-      val encryptedItem = mAESEncryptor.createEncryptedItem(value, secretKeyEntry, options.requireAuthentication, options.authenticationPrompt, authenticationHelper)
+      val encryptedItem = mAESEncryptor.createEncryptedItem(
+        value,
+        secretKeyEntry,
+        options,
+        authenticationHelper
+      )
       encryptedItem.put(SCHEME_PROPERTY, AESEncryptor.NAME)
       saveEncryptedItem(encryptedItem, prefs, keychainAwareKey, options.requireAuthentication, options.keychainService)
 

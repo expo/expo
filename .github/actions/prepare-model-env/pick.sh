@@ -50,6 +50,19 @@ normalize_token() {
   printf '%s' "$v"
 }
 
+# Classify an arbitrary CLI log for a caller. The verify canary hits the
+# same failure modes this probe does, but later in the job — after this
+# step already passed — so its reporter cannot lean on model-env-reason.
+# One classifier, exposed here, keeps the two verdicts from drifting.
+if [ "${1:-}" = --classify ]; then
+  if [ -z "${2:-}" ] || [ ! -f "$2" ]; then
+    echo other
+    exit 0
+  fi
+  classify_failure "$2"
+  exit 0
+fi
+
 if [ "${1:-}" = --self-test ]; then
   tmp=$(mktemp)
   printf '%s\n' 'HTTP 429 rate_limit_error: rate limit exceeded' >"$tmp"
@@ -62,6 +75,10 @@ if [ "${1:-}" = --self-test ]; then
   [ "$(classify_failure "$tmp")" = auth ]
   printf '%s\n' 'ECONNRESET connection reset by peer' >"$tmp"
   [ "$(classify_failure "$tmp")" = other ]
+  printf '%s\n' 'API Error: 529 Overloaded. This is a server-side issue, usually temporary.' >"$tmp"
+  [ "$(classify_failure "$tmp")" = other ]
+  [ "$(bash "$0" --classify "$tmp")" = other ]
+  [ "$(bash "$0" --classify /nonexistent-classify-input)" = other ]
   rm -f "$tmp"
   [ "$(token_shape "sk-ant-oat01-aaaa")" = oat ]
   [ "$(token_shape "sk-ant-api03-aaaa")" = api ]

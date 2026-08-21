@@ -91,7 +91,7 @@ export default function AudioPlaylistScreen() {
   useEffect(() => {
     setAudioModeAsync({
       shouldPlayInBackground: true,
-      interruptionMode: 'doNotMix',
+      interruptionMode: 'doNotMixPersistent',
       playsInSilentMode: true,
       allowsRecording: false,
     }).catch((error: unknown) =>

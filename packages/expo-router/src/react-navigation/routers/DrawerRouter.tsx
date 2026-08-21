@@ -9,6 +9,7 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
+import { ensureStateType } from './ensureStateType';
 import type { CommonNavigationAction, ParamListBase, PartialState, Router } from './types';
 export type DrawerStatus = 'open' | 'closed';
 
@@ -87,9 +88,9 @@ export function DrawerRouter({
 
   // `ensureStateHistory` is typed for the tab state. The drawer state differs only by the extra
   // drawer entries in `history`, which reconstruction never produces.
-  const ensureDrawerStateHistory = (state: DrawerNavigationState<ParamListBase>) =>
+  const ensureDrawerStateOptionalProperties = (state: DrawerNavigationState<ParamListBase>) =>
     ensureStateHistory(
-      state as unknown as TabNavigationState<ParamListBase>,
+      ensureStateType(state, 'drawer') as unknown as TabNavigationState<ParamListBase>,
       backBehavior,
       initialRouteName
     ) as unknown as DrawerNavigationState<ParamListBase>;
@@ -179,14 +180,14 @@ export function DrawerRouter({
     },
 
     getStateForRouteFocus(state, key) {
-      const result = router.getStateForRouteFocus(state, key);
+      const result = router.getStateForRouteFocus(ensureDrawerStateOptionalProperties(state), key);
 
       return closeDrawer(result);
     },
 
     getStateForAction(inputState, action, options) {
       // Restore route history before drawer actions can add drawer-only history.
-      const state = ensureDrawerStateHistory(inputState);
+      const state = ensureDrawerStateOptionalProperties(inputState);
 
       switch (action.type) {
         case 'OPEN_DRAWER':
@@ -205,8 +206,7 @@ export function DrawerRouter({
         case 'PUSH':
         case 'REPLACE':
         case 'JUMP_TO':
-        case 'NAVIGATE':
-        case 'NAVIGATE_DEPRECATED': {
+        case 'NAVIGATE': {
           const result = router.getStateForAction(state, action, options);
 
           if (result != null && result.index !== state.index) {

@@ -13,6 +13,71 @@ import { createInitialState } from '../../core/createInitialState';
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
 
+test('actions return drawer metadata for state without router metadata', () => {
+  const router = DrawerRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: {},
+  };
+  const createState = (): DrawerNavigationState<ParamListBase> => ({
+    stale: false,
+    key: 'root',
+    index: 1,
+    routeNames: options.routeNames,
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
+    ],
+  });
+  const resetState = createState();
+  const actions = [
+    DrawerActions.jumpTo('bar'),
+    DrawerActions.openDrawer(),
+    CommonActions.goBack(),
+    CommonActions.reset({ ...resetState, index: 0, routes: [resetState.routes[0]!] }),
+  ];
+
+  for (const action of actions) {
+    const result = router.getStateForAction(createState(), action, options);
+    expect(result).toMatchObject({ type: 'drawer', history: expect.any(Array) });
+  }
+});
+
+test('route focus returns drawer metadata for state without router metadata', () => {
+  const state: DrawerNavigationState<ParamListBase> = {
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['bar', 'baz'],
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
+    ],
+  };
+
+  expect(DrawerRouter({}).getStateForRouteFocus(state, 'baz')).toMatchObject({
+    type: 'drawer',
+    history: expect.any(Array),
+  });
+});
+
+test('passes partial RESET state through unchanged', () => {
+  const partialState = { routes: [{ name: 'bar' }] };
+  const state: DrawerNavigationState<ParamListBase> = {
+    stale: false,
+    key: 'root',
+    index: 0,
+    routeNames: ['bar'],
+    routes: [{ key: 'bar', name: 'bar' }],
+  };
+  const result = DrawerRouter({}).getStateForAction(state, CommonActions.reset(partialState), {
+    routeNames: ['bar'],
+    routeGetIdList: {},
+  });
+
+  expect(result).toBe(partialState);
+});
+
 type DrawerHistory = NonNullable<DrawerNavigationState<ParamListBase>['history']>;
 
 const stateWithoutHistory = (): DrawerNavigationState<ParamListBase> => ({

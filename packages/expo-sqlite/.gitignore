@@ -2,5 +2,7 @@
 /ios/sqlite3.c
 /ios/sqlite3.h
 
-# DevTools plugin temporary output
+# DevTools plugin web UI output. Generated on demand during native builds and at
+# publish time, so it is not committed.
 /dev-plugin-webui/dist
+/dev-plugin-dist

@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Use development mode when loading Expo config and `.env` files. ([#48882](https://github.com/expo/expo/pull/48882) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Skip applying a CNG patch that is already applied to the native project, e.g. when running `npx expo prebuild --no-clean` more than once. ([#47605](https://github.com/expo/expo/issues/47605) by [@MUSE-CODE-SPACE](https://github.com/MUSE-CODE-SPACE))
+
 ### 💡 Others
 
 ## 57.0.9 - 2026-07-29

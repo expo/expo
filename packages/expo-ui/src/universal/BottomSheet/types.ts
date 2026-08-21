@@ -16,6 +16,19 @@ import type { ModifierConfig } from '../../types';
 export type SnapPoint = 'half' | 'full' | { fraction: number } | { height: number };
 
 /**
+ * Padding between a [`BottomSheet`](#bottomsheet) and its content — a single value applied to every
+ * edge, or per-edge values where an edge that is left out is `0`.
+ */
+export type BottomSheetContentPadding =
+  | number
+  | {
+      top?: number;
+      bottom?: number;
+      left?: number;
+      right?: number;
+    };
+
+/**
  * Props for the [`BottomSheet`](#bottomsheet) component, a modal sheet that slides up from the bottom of the screen.
  */
 export interface BottomSheetProps {
@@ -51,9 +64,29 @@ export interface BottomSheetProps {
   snapPoints?: SnapPoint[];
 
   /**
+   * Padding between the sheet and [`children`](#children), in dp on Android, points on iOS, and
+   * CSS pixels on web. Pass `0` for content that reaches the sheet's edges.
+   *
+   * When omitted, each platform keeps the inset it applies by default.
+   *
+   * @example `contentPadding={0}` — full-bleed content
+   * @example `contentPadding={{ top: 8, bottom: 24 }}` — no horizontal inset
+   */
+  contentPadding?: BottomSheetContentPadding;
+
+  /**
    * Identifier used to locate the component in end-to-end tests.
    */
   testID?: string;
+
+  /**
+   * Whether pressing the Android hardware back button (or back gesture) dismisses the bottom sheet.
+   * When `false`, the back press does not dismiss the sheet (note: the press still does not reach
+   * React Native's `BackHandler`).
+   * @default true
+   * @platform android
+   */
+  shouldDismissOnBackPress?: boolean;
 
   /**
    * Platform-specific modifier escape hatch. Pass an array of modifier configs

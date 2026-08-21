@@ -114,7 +114,7 @@ describe('handleRequestAsync', () => {
     );
     expect(getLocation).toHaveBeenCalledWith({
       runtime: 'expo',
-      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https', viaForwardedHeader: true },
     });
   });
 });

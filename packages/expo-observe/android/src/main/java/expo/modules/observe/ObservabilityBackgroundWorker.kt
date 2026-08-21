@@ -119,7 +119,8 @@ class ObservabilityBackgroundWorker(
         .getInstance(context)
         .enqueueUniqueWork(
           WORK_NAME,
-          ExistingWorkPolicy.REPLACE,
+          // Keep an in-flight dispatch; cancelling it can duplicate a request the server received.
+          ExistingWorkPolicy.KEEP,
           periodicWork
         )
     }
