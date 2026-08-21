@@ -45,7 +45,7 @@ Programmatic and model-free: dev server responds; app boots (via `automation_tak
 2. Scenario/grader schema + runner skeleton.
 3. Tier 0: subprocess e2e with JSONL-event assertions against the real `expo` CLI.
 4. GH Actions workflow for tier 0 on PRs.
-5. Tier 1 spike: llama.cpp/Ollama (temp 0, pinned seed/model) vs GitHub Models endpoint; pick on speed × stability × cost; land as report-only job.
+5. ~~Tier 1 spike~~ — done [observed — local run, 2026-08-21]: Ollama + `qwen3:4b`, temperature 0, seed 42, minimal JSON tool-call loop in `evals/run.mjs`. Result: `skills-sync` passes 5/5 with one correct command per run, ~23.5 s/run on an Apple M4 (expect a few multiples slower on a 4 vCPU GitHub runner). Decision: Ollama-pinned is the canonical tier-1 driver; no model cache (weekly job loses the LRU race for the shared 10 GB pool; cold pull is minutes). Hosted free tiers (Groq/Gemini/OpenRouter) stay optional fast lanes behind a repo secret; GitHub Models is retired [observed — GitHub changelog 2026-07-30]. The `tier1-agent-eval` job now runs live inference, still report-only.
 6. Tier 2 runner behind CI secrets.
 7. (Optional, deferred) scripted MCP client replay when the tool surface warrants it.
 

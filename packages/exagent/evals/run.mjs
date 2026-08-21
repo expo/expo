@@ -9,7 +9,8 @@
 //   node evals/run.mjs --dry-run                  Validate every scenario and print the plan
 //   node evals/run.mjs --tier 0                   Run the tier 0 scenarios
 //   node evals/run.mjs --tier 0 --scenario <id>   Run one scenario
-//   node evals/run.mjs --tier 1 --dry-run         Print the tier 1 plan (no live inference yet)
+//   node evals/run.mjs --tier 1                   Run the tier 1 scenarios with a local model
+//                                                 via Ollama (OLLAMA_HOST, EXAGENT_EVAL_MODEL)
 
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
@@ -33,6 +34,14 @@ const DRIVING_AGENTS = {
 };
 const GRADER_TYPES = ['exit-code', 'path-exists', 'jsonl-event', 'http-probe'];
 const DEFAULT_TIMEOUT_MS = 120_000;
+
+// Tier 1: best-effort agent-in-the-loop with a local model (LLP 0002). The model is pinned and
+// decoding is greedy (temperature 0, fixed seed) so runs are as reproducible as inference gets.
+const OLLAMA_HOST = process.env.OLLAMA_HOST ?? 'http://127.0.0.1:11434';
+const TIER1_MODEL = process.env.EXAGENT_EVAL_MODEL ?? 'qwen3:4b';
+const TIER1_MAX_TURNS = 8;
+const TIER1_OUTPUT_LIMIT = 2000;
+const TIER1_SEED = 42;
 
 const USAGE = `Run the exagent eval scenarios.
 
@@ -466,6 +475,185 @@ function indent(text, prefix) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Tier 1 execution — local model over Ollama                                 */
+/* -------------------------------------------------------------------------- */
+
+const TIER1_SYSTEM_PROMPT = `You are an autonomous agent completing a task in an Expo project using the \`exagent\` CLI.
+
+Available commands:
+  exagent skills sync --agent <agent>   Link agent skills from installed packages (agents: claude-code, cursor, codex)
+  exagent skills list [--json]          List discovered skills
+  exagent skills show <package>         Print a package's skill
+  exagent skills clean                  Remove managed skill links
+  exagent install <packages..>          Install packages with expo, then sync skills
+  exagent start                         Start the dev server
+
+Respond with EXACTLY ONE JSON object and nothing else:
+  {"run": ["skills", "sync", "--agent", "claude-code"]}   to execute an exagent command
+  {"done": true, "summary": "<what you accomplished>"}    when the task is complete
+
+Rules: one command per turn; wait for the result before deciding the next step; prefer the fewest commands that complete the task; never invent flags not listed above.`;
+
+async function chatOllama(messages) {
+  const response = await fetch(`${OLLAMA_HOST}/api/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: TIER1_MODEL,
+      messages,
+      stream: false,
+      format: 'json',
+      options: { temperature: 0, seed: TIER1_SEED },
+    }),
+  });
+  if (!response.ok) {
+    throw new Error(`Ollama /api/chat responded ${response.status}: ${await response.text()}`);
+  }
+  const payload = await response.json();
+  return payload?.message?.content ?? '';
+}
+
+async function checkOllamaAsync() {
+  let tags;
+  try {
+    const response = await fetch(`${OLLAMA_HOST}/api/tags`);
+    tags = await response.json();
+  } catch {
+    return (
+      `Ollama is not reachable at ${OLLAMA_HOST}, so the tier 1 model driver cannot run. ` +
+      `Start it with \`ollama serve\`, or point OLLAMA_HOST at a running instance.`
+    );
+  }
+  const models = (tags?.models ?? []).map((model) => model.name);
+  const found = models.some((name) => name === TIER1_MODEL || name === `${TIER1_MODEL}:latest`);
+  if (!found) {
+    return (
+      `The pinned tier 1 model "${TIER1_MODEL}" is not available in Ollama (installed: ${models.join(', ') || 'none'}). ` +
+      `Pull it first with \`ollama pull ${TIER1_MODEL}\`, or override EXAGENT_EVAL_MODEL.`
+    );
+  }
+  return undefined;
+}
+
+/** Parse the model's reply into {run} | {done} | undefined. Tolerates fenced or wrapped JSON. */
+function parseTier1Action(content) {
+  const candidates = [content];
+  const fenced = content.match(/```(?:json)?\s*([\s\S]*?)```/);
+  if (fenced) {
+    candidates.push(fenced[1]);
+  }
+  const braced = content.match(/\{[\s\S]*\}/);
+  if (braced) {
+    candidates.push(braced[0]);
+  }
+  for (const candidate of candidates) {
+    let action;
+    try {
+      action = JSON.parse(candidate.trim());
+    } catch {
+      continue;
+    }
+    if (action && typeof action === 'object') {
+      if (Array.isArray(action.run) && action.run.every((part) => typeof part === 'string')) {
+        return { run: action.run };
+      }
+      if (action.done === true) {
+        return { done: true, summary: typeof action.summary === 'string' ? action.summary : '' };
+      }
+    }
+  }
+  return undefined;
+}
+
+function truncate(text, limit) {
+  return text.length > limit ? `${text.slice(0, limit)}\n[truncated]` : text;
+}
+
+async function runTier1Scenario(scenario) {
+  const fixtureDir = path.join(PACKAGE_ROOT, scenario.fixture);
+  if (!fs.existsSync(fixtureDir)) {
+    return { pass: false, reason: `fixture not found: ${scenario.fixture}` };
+  }
+
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `exagent-eval1-${scenario.id}-`));
+  copyFixture(fixtureDir, workspace);
+
+  const messages = [
+    { role: 'system', content: TIER1_SYSTEM_PROMPT },
+    { role: 'user', content: `Task: ${scenario.taskPrompt}\nWorking directory: the project root.` },
+  ];
+
+  const startedAt = Date.now();
+  let lastResult;
+  let commandsRun = 0;
+  let done = false;
+
+  for (let turn = 1; turn <= TIER1_MAX_TURNS; turn++) {
+    const content = await chatOllama(messages);
+    messages.push({ role: 'assistant', content });
+
+    const action = parseTier1Action(content);
+    if (!action) {
+      messages.push({
+        role: 'user',
+        content:
+          'Your reply was not a single valid JSON action. Respond with {"run": [...]} or {"done": true, "summary": "..."} only.',
+      });
+      console.log(`    turn ${turn}: unparseable reply`);
+      continue;
+    }
+
+    if (action.done) {
+      done = true;
+      console.log(`    turn ${turn}: done — ${action.summary || '(no summary)'}`);
+      break;
+    }
+
+    commandsRun++;
+    const result = await runCli(action.run, {
+      cwd: workspace,
+      env: { ...process.env, CI: '1' },
+      timeoutMs: DEFAULT_TIMEOUT_MS,
+    });
+    lastResult = result;
+    console.log(`    turn ${turn}: exagent ${action.run.join(' ')} (exit ${result.exitCode})`);
+    messages.push({
+      role: 'user',
+      content: JSON.stringify({
+        exitCode: result.exitCode,
+        stdout: truncate(result.stdout, TIER1_OUTPUT_LIMIT),
+        stderr: truncate(result.stderr, TIER1_OUTPUT_LIMIT),
+      }),
+    });
+  }
+
+  const elapsedSeconds = ((Date.now() - startedAt) / 1000).toFixed(1);
+  console.log(
+    `    model: ${TIER1_MODEL}, ${commandsRun} command(s), done=${done}, ${elapsedSeconds}s`
+  );
+
+  const grades = [];
+  for (const grader of scenario.graders) {
+    const grade = await applyGrader(grader, {
+      workspace,
+      result: lastResult ?? { exitCode: -1, stdout: '', stderr: '' },
+    });
+    grades.push({ grader, ...grade });
+    console.log(`    ${grade.pass ? 'PASS' : 'FAIL'} ${describeGrader(grader)} — ${grade.detail}`);
+  }
+
+  const pass = grades.every((grade) => grade.pass);
+  if (pass) {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  } else {
+    console.log(`    workspace kept for triage: ${workspace}`);
+    console.log(indent(JSON.stringify(messages, null, 2), '    transcript: '));
+  }
+
+  return { pass, reason: pass ? undefined : 'one or more graders failed' };
+}
+
+/* -------------------------------------------------------------------------- */
 /* Main                                                                       */
 /* -------------------------------------------------------------------------- */
 
@@ -548,7 +736,10 @@ async function main() {
           console.log(`    grader:       ${describeGrader(grader)}`);
         }
       }
-      if (tier !== 0 && tierScenarios.length) {
+      if (tier === 1 && tierScenarios.length) {
+        console.log(`  (tier 1 runs with model ${TIER1_MODEL} via Ollama at ${OLLAMA_HOST})`);
+      }
+      if (tier === 2 && tierScenarios.length) {
         console.log(`  (tier ${tier} execution is not implemented yet — dry run only)`);
       }
       console.log('');
@@ -559,11 +750,11 @@ async function main() {
   const tier = options.tier;
   const selected = plan[0].scenarios;
 
-  if (tier !== 0) {
+  if (tier === 2) {
     console.error(
-      `Tier ${tier} execution is not implemented yet, so there is nothing to run. The model driver ` +
-        `is still a spike (see llp/0002-testing-and-evals.plan.md, build order step 5). Re-run with ` +
-        `--dry-run to validate the scenarios and print the tier ${tier} plan.`
+      `Tier 2 execution is not implemented yet, so there is nothing to run. It needs a frontier ` +
+        `agent and an API key in CI secrets (see llp/0002-testing-and-evals.plan.md). Re-run with ` +
+        `--dry-run to validate the scenarios and print the tier 2 plan.`
     );
     return 1;
   }
@@ -581,12 +772,25 @@ async function main() {
     return 1;
   }
 
-  console.log(`exagent evals — tier ${tier}, ${selected.length} scenario(s)\n`);
+  if (tier === 1) {
+    const problem = await checkOllamaAsync();
+    if (problem) {
+      console.error(problem);
+      return 1;
+    }
+  }
+
+  console.log(
+    `exagent evals — tier ${tier}, ${selected.length} scenario(s)` +
+      (tier === 1 ? ` — model ${TIER1_MODEL} via ${OLLAMA_HOST}` : '') +
+      '\n'
+  );
 
   const failures = [];
   for (const scenario of selected) {
     console.log(`  ${scenario.id} — ${scenario.taskPrompt}`);
-    const outcome = await runTier0Scenario(scenario);
+    const outcome =
+      tier === 1 ? await runTier1Scenario(scenario) : await runTier0Scenario(scenario);
     if (!outcome.pass) {
       failures.push({ scenario, reason: outcome.reason });
       console.log(`  FAIL ${scenario.id}: ${outcome.reason}\n`);

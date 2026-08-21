@@ -90,25 +90,28 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
-      # Live inference is not wired up yet. This step validates the scenario set and
-      # prints the tier 1 plan, so the job shape is exercised before a model is picked.
-      #
-      # Two options to spike (LLP 0002, build order step 5) — pick on speed × stability × cost:
-      #
-      # 1. Ollama on the runner, CPU-only. Pin the model tag and quantization, set
-      #    temperature 0 and a fixed seed for near-reproducible runs. Needs an extra
-      #    step to install Ollama and `ollama pull <pinned-model>`, plus a cache for the
-      #    model blob. Expect single-digit tokens/sec on a 4 vCPU runner, so scenarios
-      #    must stay short.
-      #
-      # 2. A hosted free-tier API via a repo secret (GitHub Models retired 2026-07-30).
-      #    Candidates: Groq (Llama 3.3 70B, ~30 RPM / 1000 req/day), Gemini Flash free
-      #    tier, OpenRouter free models (50 req/day). Much faster than CPU inference,
-      #    but the served model is not pinnable the way an Ollama tag is, and free-tier
-      #    limits shift — acceptable only because this job stays report-only.
-      #
-      # Whichever wins, the graders stay programmatic (see evals/schema.md) and the job
-      # stays report-only.
-      - name: 🤖 Tier 1 evals (dry run)
-        run: node evals/run.mjs --tier 1 --dry-run
+      # Tier 1 driver: Ollama on the runner, CPU-only (chosen over hosted free tiers —
+      # GitHub Models retired 2026-07-30; Groq/Gemini/OpenRouter remain optional fast
+      # lanes behind a repo secret). Model pinned, temperature 0, fixed seed. Spike
+      # numbers (Apple M4, local): skills-sync passes 5/5 at ~23.5 s/run with a single
+      # correct command per run; expect a few multiples slower on a 4 vCPU runner.
+      # No model cache on purpose: a weekly job would lose the LRU race for the shared
+      # 10 GB pool, and a cold pull costs only a few minutes (LLP 0002).
+      # The graders stay programmatic (see evals/schema.md) and the job stays report-only.
+      - name: 🦙 Install Ollama
+        run: curl -fsSL https://ollama.com/install.sh | sh
+      - name: 🦙 Start Ollama and pull the pinned model
+        run: |
+          ollama serve > /tmp/ollama-serve.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/version && break
+            sleep 1
+          done
+          ollama pull "$EXAGENT_EVAL_MODEL"
+        env:
+          EXAGENT_EVAL_MODEL: qwen3:4b
+      - name: 🤖 Tier 1 evals (report-only)
+        run: node evals/run.mjs --tier 1
         working-directory: packages/exagent
+        env:
+          EXAGENT_EVAL_MODEL: qwen3:4b
