@@ -2868,7 +2868,7 @@ importers:
   packages/@expo/plist:
     dependencies:
       '@xmldom/xmldom':
-        specifier: ^0.8.8
+        specifier: ^0.8.8 || ^0.9.0
         version: 0.8.11
       base64-js:
         specifier: ^1.5.1

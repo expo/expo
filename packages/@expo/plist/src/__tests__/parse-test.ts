@@ -186,6 +186,26 @@ U=</data>
   });
 
   describe('integration', function () {
+    it('should parse a plist file with a leading newline before the XML declaration', function () {
+      const xml = `
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+          <key>com.apple.developer.associated-domains</key>
+          <array>
+            <string>applinks:example.com</string>
+          </array>
+        </dict>
+        </plist>
+        `;
+
+      const parsed = plist.parse('\n' + xml);
+      assert.deepEqual(parsed, {
+        'com.apple.developer.associated-domains': ['applinks:example.com'],
+      });
+    });
+
     it('should parse a plist file with XML comments', function () {
       const xml = `
 <?xml version="1.0" encoding="UTF-8"?>
