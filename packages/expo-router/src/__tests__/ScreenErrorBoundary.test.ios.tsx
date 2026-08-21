@@ -49,7 +49,7 @@ it('uses the navigator boundary before the layout boundary', async () => {
 
   await renderRouterAsync({
     _layout: {
-      default: () => <Stack screenErrorBoundary={NavigatorBoundary} />,
+      default: () => <Stack unstable_screenErrorBoundary={NavigatorBoundary} />,
       unstable_settings: { screenErrorBoundary: LayoutBoundary },
     },
     index: ThrowingRoute,
@@ -68,8 +68,8 @@ it('uses the route boundary before screen, navigator, and layout boundaries', as
   await renderRouterAsync({
     _layout: {
       default: () => (
-        <Stack screenErrorBoundary={NavigatorBoundary}>
-          <Stack.Screen name="index" errorBoundary={ScreenBoundary} />
+        <Stack unstable_screenErrorBoundary={NavigatorBoundary}>
+          <Stack.Screen name="index" unstable_errorBoundary={ScreenBoundary} />
         </Stack>
       ),
       unstable_settings: { screenErrorBoundary: LayoutBoundary },

@@ -225,5 +225,5 @@ export type StandardRouterNavigatorProps<
   Omit<NavigatorProps, 'initialRouteName'> &
   Omit<RouterOptions, 'initialRouteName'> & {
     /** A component to render when an individual screen in this navigator throws an error. */
-    screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+    unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
   };

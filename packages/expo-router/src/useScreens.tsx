@@ -79,7 +79,7 @@ export type ScreenProps<
 
   dangerouslySingular?: SingularOptions;
   /** A component to render when this screen throws an error. */
-  errorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  unstable_errorBoundary?: React.ComponentType<ErrorBoundaryProps>;
 };
 
 export type SingularOptions =
@@ -107,47 +107,60 @@ function getSortedChildren<
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, listeners, options, getId, dangerouslySingular: singular, errorBoundary }) => {
-      if (!entries.length) {
-        console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
-        return null;
-      }
-      const match = findRouteNodeByName(entries, name);
-      if (!match) {
-        console.warn(
-          `[Layout children]: No route named "${name}" exists in nested children:`,
-          children.map(({ route }) => route)
-        );
-        return null;
-      } else {
-        // Get match and remove from entries
-        entries.splice(entries.indexOf(match), 1);
-
-        if (getId) {
+    .map(
+      ({
+        name,
+        listeners,
+        options,
+        getId,
+        dangerouslySingular: singular,
+        unstable_errorBoundary,
+      }) => {
+        if (!entries.length) {
           console.warn(
-            `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
+            `[Layout children]: Too many screens defined. Route "${name}" is extraneous.`
           );
-          if (singular) {
-            console.warn(`Screen ${name} cannot use both getId and dangerouslySingular together.`);
-          }
-        } else if (singular) {
-          // If singular is set, use it as the getId function.
-          if (typeof singular === 'string') {
-            getId = () => singular;
-          } else if (typeof singular === 'function' && name) {
-            getId = (options) => singular(name, options.params || {});
-          } else if (singular === true && name) {
-            getId = (options) => getSingularId(name, options);
-          }
+          return null;
         }
+        const match = findRouteNodeByName(entries, name);
+        if (!match) {
+          console.warn(
+            `[Layout children]: No route named "${name}" exists in nested children:`,
+            children.map(({ route }) => route)
+          );
+          return null;
+        } else {
+          // Get match and remove from entries
+          entries.splice(entries.indexOf(match), 1);
 
-        return {
-          route: match,
-          props: { listeners, options, getId, errorBoundary },
-          routeSource: 'layout' as const,
-        };
+          if (getId) {
+            console.warn(
+              `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
+            );
+            if (singular) {
+              console.warn(
+                `Screen ${name} cannot use both getId and dangerouslySingular together.`
+              );
+            }
+          } else if (singular) {
+            // If singular is set, use it as the getId function.
+            if (typeof singular === 'string') {
+              getId = () => singular;
+            } else if (typeof singular === 'function' && name) {
+              getId = (options) => singular(name, options.params || {});
+            } else if (singular === true && name) {
+              getId = (options) => getSingularId(name, options);
+            }
+          }
+
+          return {
+            route: match,
+            props: { listeners, options, getId, unstable_errorBoundary },
+            routeSource: 'layout' as const,
+          };
+        }
       }
-    })
+    )
     .filter(Boolean) as {
     route: RouteNode;
     props: Partial<ScreenProps<TOptions, TState, TEventMap>>;
@@ -570,16 +583,16 @@ export function routeToScreen<
   {
     options,
     getId,
-    errorBoundary,
+    unstable_errorBoundary,
     ...props
   }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
   isGuarded?: boolean,
   routeSource?: RouteSource
 ) {
   const QualifiedRouteComponent = getQualifiedRouteComponent(route);
-  const ScreenComponent = errorBoundary
+  const ScreenComponent = unstable_errorBoundary
     ? (componentProps: object) => (
-        <ScreenErrorBoundaryContext value={errorBoundary}>
+        <ScreenErrorBoundaryContext value={unstable_errorBoundary}>
           <QualifiedRouteComponent {...(componentProps as any)} />
         </ScreenErrorBoundaryContext>
       )

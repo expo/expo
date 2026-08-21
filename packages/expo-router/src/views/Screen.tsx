@@ -17,22 +17,24 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
   name?: string;
   options?: TOptions;
   /** A component to render when this screen throws an error. Only supported inside a Layout. */
-  errorBoundary?: ComponentType<ErrorBoundaryProps>;
+  unstable_errorBoundary?: ComponentType<ErrorBoundaryProps>;
 };
 
 /** Component for setting the current screen's options dynamically. */
 export function Screen<TOptions extends object = object>({
   name,
   options,
-  errorBoundary,
+  unstable_errorBoundary,
 }: ScreenProps<TOptions>) {
   if (name) {
     throw new Error(
       `The name prop on the Screen component may only be used when it is inside a Layout route`
     );
   }
-  if (process.env.NODE_ENV !== 'production' && errorBoundary) {
-    console.warn('The errorBoundary prop on Screen is only supported inside a Layout component.');
+  if (process.env.NODE_ENV !== 'production' && unstable_errorBoundary) {
+    console.warn(
+      'The unstable_errorBoundary prop on Screen is only supported inside a Layout component.'
+    );
   }
   const navigation = useNavigation();
 

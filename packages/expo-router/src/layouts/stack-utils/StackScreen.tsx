@@ -60,7 +60,7 @@ export interface StackScreenProps extends PropsWithChildren {
    *
    * Only supported when used inside a Layout component.
    */
-  errorBoundary?: StackBaseScreenProps['errorBoundary'];
+  unstable_errorBoundary?: StackBaseScreenProps['unstable_errorBoundary'];
 }
 
 /**

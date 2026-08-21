@@ -39,7 +39,7 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   router?: T;
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
   /** A component to render when an individual screen in this navigator throws an error. */
-  screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
 };
 
 // TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
@@ -54,7 +54,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   children,
   router,
   routerOptions,
-  screenErrorBoundary,
+  unstable_screenErrorBoundary,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
@@ -101,8 +101,8 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {screenErrorBoundary ? (
-        <ScreenErrorBoundaryContext value={screenErrorBoundary}>
+      {unstable_screenErrorBoundary ? (
+        <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
           {content}
         </ScreenErrorBoundaryContext>
       ) : (
@@ -123,7 +123,7 @@ export function useNavigatorContext() {
   return context;
 }
 
-function SlotNavigator({ screenErrorBoundary, ...props }: NavigatorProps<any>) {
+function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProps<any>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
 
@@ -148,8 +148,10 @@ function SlotNavigator({ screenErrorBoundary, ...props }: NavigatorProps<any>) {
     </GuardContextProvider>
   );
 
-  return screenErrorBoundary ? (
-    <ScreenErrorBoundaryContext value={screenErrorBoundary}>{content}</ScreenErrorBoundaryContext>
+  return unstable_screenErrorBoundary ? (
+    <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+      {content}
+    </ScreenErrorBoundaryContext>
   ) : (
     content
   );

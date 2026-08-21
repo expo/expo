@@ -174,7 +174,7 @@ export function unstable_integrateWithRouter<
   >;
 
   function StandardRouterNavigator(allProps: NavPropsType) {
-    const { screenErrorBoundary, ...rest } = allProps;
+    const { unstable_screenErrorBoundary, ...rest } = allProps;
     const props = rest as NavPropsType;
     const routeNode = useRouteNode();
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
@@ -237,7 +237,9 @@ export function unstable_integrateWithRouter<
     );
 
     return (
-      <ScreenErrorBoundaryContext value={screenErrorBoundary}>{content}</ScreenErrorBoundaryContext>
+      <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+        {content}
+      </ScreenErrorBoundaryContext>
     );
   }
 
