@@ -246,22 +246,12 @@ open class SecureStoreModule : Module() {
   }
 
   private fun deleteItemImpl(key: String, options: SecureStoreOptions) {
-    var success = true
-    val prefs = getSharedPreferences()
-    val keychainAwareKey = createKeychainAwareKey(key, options.keychainService)
-    val legacyPrefs = PreferenceManager.getDefaultSharedPreferences(reactContext)
-
-    if (prefs.contains(keychainAwareKey)) {
-      success = prefs.edit().remove(keychainAwareKey).commit()
-    }
-
-    if (prefs.contains(key)) {
-      success = prefs.edit().remove(key).commit() && success
-    }
-
-    if (legacyPrefs.contains(key)) {
-      success = legacyPrefs.edit().remove(key).commit() && success
-    }
+    val success = removeItem(
+      getSharedPreferences(),
+      PreferenceManager.getDefaultSharedPreferences(reactContext),
+      key,
+      createKeychainAwareKey(key, options.keychainService)
+    )
 
     if (!success) {
       throw DeleteException("Could not delete the item from SecureStore", key, options.keychainService)
@@ -391,4 +381,24 @@ open class SecureStoreModule : Module() {
     const val AUTHENTICATED_KEYSTORE_SUFFIX = "keystoreAuthenticated"
     const val UNAUTHENTICATED_KEYSTORE_SUFFIX = "keystoreUnauthenticated"
   }
+}
+
+/**
+ * Removes an item saved under the current key format, under the legacy one, and under the even
+ * older default preferences, then reports whether the removals reached the disk.
+ *
+ * The removals are unconditional and use `commit`, not `apply`. `contains` reads the in-memory map,
+ * which a failed `commit` has already changed, so gating on it makes a retried delete skip the
+ * `commit` and report success while the entry is still in the file. Only `commit` reports the disk
+ * result, and from API 26 on it retries a write that an earlier failed `commit` left pending.
+ */
+internal fun removeItem(
+  prefs: SharedPreferences,
+  legacyPrefs: SharedPreferences,
+  key: String,
+  keychainAwareKey: String
+): Boolean {
+  val removedFromPrefs = prefs.edit().remove(keychainAwareKey).remove(key).commit()
+  val removedFromLegacyPrefs = legacyPrefs.edit().remove(key).commit()
+  return removedFromPrefs && removedFromLegacyPrefs
 }
