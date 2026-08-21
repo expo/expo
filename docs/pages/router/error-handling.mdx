@@ -78,6 +78,33 @@ function Route({ ErrorBoundary, Component }) {
 
 When `ErrorBoundary` is not present, the error will be thrown to the nearest parent's `ErrorBoundary` and accepts [`error`](/versions/latest/sdk/router/#error) and [`retry`](/versions/latest/sdk/router/#retry) props.
 
+### Boundaries for screens in a layout
+
+You can keep navigator UI such as headers and tab bars mounted when a screen fails by providing an error boundary for the screens it renders. Configure it on a layout, navigator, or individual screen:
+
+```tsx src/app/_layout.tsx
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
+import { Text } from 'react-native';
+
+function ScreenErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return <Text onPress={retry}>Try again: {error.message}</Text>;
+}
+
+export const unstable_settings = {
+  screenErrorBoundary: ScreenErrorBoundary,
+};
+
+export default function Layout() {
+  return (
+    <Stack unstable_screenErrorBoundary={ScreenErrorBoundary}>
+      <Stack.Screen name="profile" unstable_errorBoundary={ScreenErrorBoundary} />
+    </Stack>
+  );
+}
+```
+
+An individual route's `ErrorBoundary` export takes precedence, followed by its `unstable_settings.screenErrorBoundary`, `Stack.Screen`'s `unstable_errorBoundary`, the navigator's `unstable_screenErrorBoundary`, and then the nearest layout's `unstable_settings.screenErrorBoundary`. Layout settings apply to descendant screens, while navigator boundaries apply only to that navigator's screens.
+
 ### Work in progress
 
 React Native LogBox needs to be presented less aggressively to develop with errors. Currently, it shows for `console.error` and `console.warn`. However, it should ideally only show for uncaught errors.

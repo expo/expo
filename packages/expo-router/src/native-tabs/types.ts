@@ -16,6 +16,7 @@ import type {
 } from '../react-navigation/native';
 import type { StandardUseNavigationBuilderOptions } from '../standard-navigation';
 import type { ScreenProps } from '../useScreens';
+import type { ErrorBoundaryProps } from '../views/Try';
 
 /**
  * Event map for `NativeTabs` navigation events.
@@ -581,6 +582,8 @@ export interface NativeTabTriggerProps {
    * When used in a route it has no effect.
    */
   name?: string;
+  /** A component to render when this tab's screen throws an error. */
+  unstable_errorBoundary?: React.ComponentType<ErrorBoundaryProps>;
   /**
    * If true, the tab will be hidden from the tab bar.
    *
