@@ -224,7 +224,10 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathname).toBe('/feed');
   });
 
-  it('decodes URI-encoded params', () => {
+  // Params reach the state already decoded: `getStateFromPath()` decodes path segments and reads
+  // search params through `URLSearchParams`. Anything still percent-encoded at this point is a
+  // literal value the caller passed in, so it is returned unchanged.
+  it('returns params without decoding them again', () => {
     const result = getRouteInfoFromState({
       routes: [
         {
@@ -238,8 +241,8 @@ describe('getRouteInfoFromState', () => {
       index: 0,
     });
 
-    expect(result.params.name).toBe('hello world');
-    expect(result.pathname).toBe('/hello world');
+    expect(result.params.name).toBe('hello%20world');
+    expect(result.pathname).toBe('/hello%20world');
   });
 
   it('handles malformed URI component (returns as-is)', () => {
@@ -309,7 +312,7 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathname).toBe('/dashboard');
   });
 
-  it('decodes array params in catch-all', () => {
+  it('returns array params in a catch-all without decoding them again', () => {
     const result = getRouteInfoFromState({
       routes: [
         {
@@ -323,7 +326,7 @@ describe('getRouteInfoFromState', () => {
       index: 0,
     });
 
-    expect(result.params.path).toEqual(['hello world', 'foo/bar']);
+    expect(result.params.path).toEqual(['hello%20world', 'foo%2Fbar']);
   });
 
   it('uses index 0 when state has no index property', () => {
