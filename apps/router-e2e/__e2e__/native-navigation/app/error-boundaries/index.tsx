@@ -1,0 +1,24 @@
+import { Link } from 'expo-router';
+import { Pressable, ScrollView, Text } from 'react-native';
+
+const examples = [
+  ['Layout boundary', '/error-boundaries/layout'],
+  ['Navigator boundary', '/error-boundaries/navigator'],
+  ['Screen boundary', '/error-boundaries/screen'],
+  ['Route boundary', '/error-boundaries/route'],
+] as const;
+
+export default function ErrorBoundaryExamples() {
+  return (
+    <ScrollView contentContainerStyle={{ gap: 16, padding: 24 }}>
+      <Text>Production error boundary examples</Text>
+      {examples.map(([label, href]) => (
+        <Link key={href} href={href} asChild>
+          <Pressable style={{ backgroundColor: '#0b6caf', padding: 16, borderRadius: 8 }}>
+            <Text style={{ color: '#fff' }}>{label}</Text>
+          </Pressable>
+        </Link>
+      ))}
+    </ScrollView>
+  );
+}

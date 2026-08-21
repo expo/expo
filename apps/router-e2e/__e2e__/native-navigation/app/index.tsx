@@ -36,6 +36,7 @@ const HomeIndex = () => {
       <CaseLink href="/experimental-stack" text="Experimental Stack" />
       <CaseLink href="/drawer" text="Drawer" />
       <CaseLink href="/drawer-open" text="Drawer (default open)" />
+      <CaseLink href="/error-boundaries" text="Error boundaries" />
     </ScrollView>
   );
 };
