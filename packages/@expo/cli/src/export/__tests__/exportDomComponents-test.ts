@@ -439,3 +439,158 @@ describe('Multiple DOM components metadata accumulation', () => {
     expect(allPaths).not.toContain('www.bundle/_expo/static/js/web/entry-dom2.js');
   });
 });
+
+describe('Concurrent DOM component metadata accumulation (race condition)', () => {
+  // The spread-accumulation fix (`domComponentAssetsMetadata[platform] =
+  // [...(domComponentAssetsMetadata[platform] || []), ...newEntries]`) is a
+  // non-atomic read-modify-write. `exportApp.ts` processes DOM components via
+  // `Promise.all(expoDomComponentReferences.map(async (filePath) => { ... }))`,
+  // so multiple callbacks can be in flight at once. If callback A reads the
+  // array (to spread it) before callback B has written its own update back,
+  // A's write clobbers B's — even though the accumulation *logic* is correct
+  // in isolation, it is not safe under concurrent execution.
+  //
+  // This suite exercises that scenario directly by staggering resolution
+  // order (the component processed *first* finishes *last*, as commonly
+  // happens when component export cost varies), which the previous
+  // sequential-only tests (see suite above) do not cover.
+  // See: https://github.com/expo/expo/issues/37269
+
+  const makeBundle = (n: number): BundleOutput => ({
+    artifacts: [
+      {
+        filename: `_expo/static/js/web/entry-dom${n}.js`,
+        originFilename: `components/Editor${n}.js`,
+        type: 'js',
+        metadata: {},
+        source: `console.log("dom${n}")`,
+      },
+    ],
+    assets: [],
+  });
+
+  // A delayed variant of `addDomBundleToMetadataAsync` — standing in for
+  // real-world variance in how long each DOM component's own bundling takes.
+  const addDomBundleToMetadataAfterDelay = async (bundle: BundleOutput, delayMs: number) => {
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+    return addDomBundleToMetadataAsync(bundle);
+  };
+
+  // Mirrors the exact shape of the accumulation statement in `exportApp.ts`:
+  // the existing array is READ as the first spread element (synchronously),
+  // then the function SUSPENDS mid-expression on
+  // `...(await addDomBundleToMetadataAsync(...))`, and only WRITES the
+  // result back once that resolves. Critically, the `await` sits *inside*
+  // the array literal, between the read and the write — putting the delay
+  // before this statement (as if awaiting a slow `exportDomComponentAsync`
+  // call first) would NOT reproduce the bug, because by the time the
+  // statement itself runs, it executes as a single synchronous read+write
+  // with no interleaving opportunity. The race exists only because
+  // `exportApp.ts` awaits *while already inside* the assignment expression.
+  const accumulate = async (
+    domComponentAssetsMetadata: Record<string, any[]>,
+    platform: string,
+    bundle: BundleOutput,
+    htmlOutputName: string,
+    files: ExportAssetMap,
+    delayMs: number
+  ) => {
+    domComponentAssetsMetadata[platform] = [
+      ...(domComponentAssetsMetadata[platform] || []),
+      ...(await addDomBundleToMetadataAfterDelay(bundle, delayMs)),
+      ...transformDomEntryForMd5Filename({ files, htmlOutputName }),
+    ];
+  };
+
+  it('drops entries when processed concurrently via Promise.all (demonstrates the race)', async () => {
+    const domComponentAssetsMetadata: Record<string, any[]> = {};
+    const platform = 'ios';
+
+    const files1: ExportAssetMap = new Map([
+      ['www.bundle/dom1.html', { contents: '<html>DOM1</html>' }],
+    ]);
+    const files2: ExportAssetMap = new Map([
+      ['www.bundle/dom2.html', { contents: '<html>DOM2</html>' }],
+    ]);
+    const files3: ExportAssetMap = new Map([
+      ['www.bundle/dom3.html', { contents: '<html>DOM3</html>' }],
+    ]);
+
+    // Component 1 starts first but is the slowest to resolve — component 3
+    // starts last but resolves first. This out-of-order resolution is what
+    // triggers the lost-update race, even though every callback runs the
+    // "fixed" spread-accumulation logic from the suite above.
+    await Promise.all([
+      accumulate(
+        domComponentAssetsMetadata,
+        platform,
+        makeBundle(1),
+        'www.bundle/dom1.html',
+        files1,
+        30
+      ),
+      accumulate(
+        domComponentAssetsMetadata,
+        platform,
+        makeBundle(2),
+        'www.bundle/dom2.html',
+        files2,
+        20
+      ),
+      accumulate(
+        domComponentAssetsMetadata,
+        platform,
+        makeBundle(3),
+        'www.bundle/dom3.html',
+        files3,
+        10
+      ),
+    ]);
+
+    // With `Promise.all(map(...))`, this is fewer than the 6 entries (3 JS +
+    // 3 HTML) all three components should have contributed — some were lost
+    // to the race, reproducing the "missing DOM component after EAS Update"
+    // bug even with the accumulation-logic fix from #38290 in place.
+    expect(domComponentAssetsMetadata[platform].length).toBeLessThan(6);
+  });
+
+  it('accumulates every entry when processed sequentially (the fix)', async () => {
+    const domComponentAssetsMetadata: Record<string, any[]> = {};
+    const platform = 'ios';
+
+    const filesByIndex: ExportAssetMap[] = [
+      new Map([['www.bundle/dom1.html', { contents: '<html>DOM1</html>' }]]),
+      new Map([['www.bundle/dom2.html', { contents: '<html>DOM2</html>' }]]),
+      new Map([['www.bundle/dom3.html', { contents: '<html>DOM3</html>' }]]),
+    ];
+    const delays = [30, 20, 10];
+
+    // Same staggered latencies as the failing test above, but processed with
+    // a sequential `for...of` + `await` (the actual fix applied to
+    // `exportApp.ts`) instead of `Promise.all(map(...))`. Because each
+    // component's read-modify-write completes fully before the next one
+    // starts, there is no window for a lost update regardless of how long
+    // any individual component's export takes.
+    for (let i = 0; i < 3; i++) {
+      await accumulate(
+        domComponentAssetsMetadata,
+        platform,
+        makeBundle(i + 1),
+        `www.bundle/dom${i + 1}.html`,
+        filesByIndex[i],
+        delays[i]
+      );
+    }
+
+    // All 3 components contribute 1 JS + 1 HTML entry each = 6 total, with
+    // none lost, regardless of per-component export latency.
+    expect(domComponentAssetsMetadata[platform]).toHaveLength(6);
+
+    const jsEntries = domComponentAssetsMetadata[platform].filter((entry) => entry.ext === 'js');
+    expect(jsEntries.map((e) => e.path)).toEqual([
+      'www.bundle/_expo/static/js/web/entry-dom1.js',
+      'www.bundle/_expo/static/js/web/entry-dom2.js',
+      'www.bundle/_expo/static/js/web/entry-dom3.js',
+    ]);
+  });
+});
