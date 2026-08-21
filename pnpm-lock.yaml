@@ -189,6 +189,9 @@ importers:
       expo-router:
         specifier: workspace:*
         version: link:../../packages/expo-router
+      expo-secure-store:
+        specifier: workspace:*
+        version: link:../../packages/expo-secure-store
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../packages/expo-splash-screen
@@ -17992,7 +17995,9 @@ snapshots:
       metro-runtime: 0.84.5
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
