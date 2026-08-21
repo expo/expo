@@ -2,6 +2,7 @@ import { Column, Host, Text as UIText } from '@expo/ui';
 import React from 'react';
 import { View } from 'react-native';
 
+import type { JasmineInterface, TestPortal } from '../types';
 import { mountAndWaitForWithTimeout } from './helpers';
 
 export const name = 'ExpoUI Host size';
@@ -64,8 +65,8 @@ function HostSizeProbe({
 }
 
 export async function test(
-  { it, describe, expect, afterEach }: any,
-  { setPortalChild, cleanupPortal }: any
+  { it, describe, expect, afterEach }: JasmineInterface,
+  { setPortalChild, cleanupPortal }: TestPortal
 ) {
   const measure = (matchContents: boolean | { vertical?: boolean; horizontal?: boolean }) =>
     mountAndWaitForWithTimeout<Measured>(
