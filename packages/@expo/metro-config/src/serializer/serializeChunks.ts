@@ -95,8 +95,7 @@ export async function graphToSerialAssetsAsync(
 
   // Create chunks for splitting.
   const chunks = new Set<Chunk>();
-
-  gatherChunks(
+  const entryChunks = gatherChunks(
     preModules,
     chunks,
     { test: pathToRegex(entryFile) },
@@ -107,8 +106,10 @@ export async function graphToSerialAssetsAsync(
     true
   );
 
-  const entryChunk = findEntryChunk(chunks, entryFile);
-
+  // TODO(@kitten): We know that the returned `entryChunks` should only have a single value
+  // with `!isAsync` and matching `.hasAbsolutePath(entryFile)` due to us only starting with
+  // an entry module. This is temporarily implicit and not enforced by an invariant
+  const entryChunk = entryChunks.values().next().value;
   if (entryChunk) {
     removeEntryDepsFromAsyncChunks(entryChunk, chunks);
 
@@ -762,10 +763,6 @@ function gatherChunks(
   }
 
   return entryChunks;
-}
-
-function findEntryChunk(chunks: Set<Chunk>, entryFile: string): Chunk | undefined {
-  return [...chunks.values()].find((chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile));
 }
 
 function removeEntryDepsFromAsyncChunks(entryChunk: Chunk, chunks: Set<Chunk>): void {
