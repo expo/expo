@@ -316,7 +316,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     if (isFocused && !isGuarded) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]!);
-      if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
+      if (isLeaf && stateForPath) store.store.setFocusedState(stateForPath);
     }
 
     useEffect(
@@ -328,7 +328,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,
           // and this won’t cause a redundant second update.
-          if (isLeaf && stateForPath && !isGuarded) store.setFocusedState(stateForPath);
+          if (isLeaf && stateForPath && !isGuarded) store.store.setFocusedState(stateForPath);
         }),
       [navigation, isGuarded]
     );

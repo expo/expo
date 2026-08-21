@@ -375,7 +375,7 @@ export function useLinking(
       // Instead of using the rootState (which might be stale) we should use the focused state
       // const state = ref.current.getRootState();
       const rootState = ref.current.getRootState();
-      const state = store.state as NavigationState;
+      const state = store.store.state as NavigationState;
 
       // END FORK
 
@@ -406,7 +406,7 @@ export function useLinking(
       // Instead of using the rootState (which might be stale) we should use the focused state
       // const state = navigation.getRootState();
       const rootState = navigation.getRootState();
-      const state = store.state as NavigationState;
+      const state = store.store.state as NavigationState;
 
       // END FORK
 
