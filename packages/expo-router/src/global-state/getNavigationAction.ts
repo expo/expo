@@ -33,7 +33,6 @@ export function getNavigateAction(
   }
   const rootState = navigationRef.getRootState();
 
-  // Resolve and parse with the same route snapshot so relative paths use consistent segments.
   const routeInfo = store.getRouteInfo();
   href = resolveHrefStringWithSegments(href, routeInfo, options);
   href = applyRedirects(href, store.redirects) ?? undefined;
