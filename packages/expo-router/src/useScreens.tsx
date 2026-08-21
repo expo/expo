@@ -6,8 +6,6 @@ import type { LoadedRoute, RouteNode } from './Route';
 import {
   findRouteNodeByName,
   getValidInitialRouteName,
-  LayoutScreenErrorBoundaryContext,
-  NavigatorScreenErrorBoundaryContext,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
@@ -241,10 +239,12 @@ function fromImport(
         children = <Try catch={screenErrorBoundary}>{children}</Try>;
       }
       if (value.type === 'layout' && screenErrorBoundary) {
+        const inheritedErrorBoundaries = use(ScreenErrorBoundaryContext);
         children = (
-          <LayoutScreenErrorBoundaryContext value={screenErrorBoundary}>
+          <ScreenErrorBoundaryContext
+            value={{ ...inheritedErrorBoundaries, layout: screenErrorBoundary }}>
             {children}
-          </LayoutScreenErrorBoundaryContext>
+          </ScreenErrorBoundaryContext>
         );
       }
       return children;
@@ -345,9 +345,11 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
-    const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
-    const NavigatorScreenErrorBoundary = use(NavigatorScreenErrorBoundaryContext);
-    const LayoutScreenErrorBoundary = use(LayoutScreenErrorBoundaryContext);
+    const {
+      layout: LayoutScreenErrorBoundary,
+      navigator: NavigatorScreenErrorBoundary,
+      screen: ScreenErrorBoundary,
+    } = use(ScreenErrorBoundaryContext);
     const InheritedScreenErrorBoundary =
       ScreenErrorBoundary ?? NavigatorScreenErrorBoundary ?? LayoutScreenErrorBoundary;
     const redirectHref = useGuardRedirect(value.route);
@@ -597,11 +599,15 @@ export function routeToScreen<
 ) {
   const QualifiedRouteComponent = getQualifiedRouteComponent(route);
   const ScreenComponent = unstable_errorBoundary
-    ? (componentProps: object) => (
-        <ScreenErrorBoundaryContext value={unstable_errorBoundary}>
-          <QualifiedRouteComponent {...(componentProps as any)} />
-        </ScreenErrorBoundaryContext>
-      )
+    ? (componentProps: object) => {
+        const inheritedErrorBoundaries = use(ScreenErrorBoundaryContext);
+        return (
+          <ScreenErrorBoundaryContext
+            value={{ ...inheritedErrorBoundaries, screen: unstable_errorBoundary }}>
+            <QualifiedRouteComponent {...(componentProps as any)} />
+          </ScreenErrorBoundaryContext>
+        );
+      }
     : QualifiedRouteComponent;
 
   return (

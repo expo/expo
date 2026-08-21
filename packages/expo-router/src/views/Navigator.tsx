@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   getValidInitialRouteName,
-  NavigatorScreenErrorBoundaryContext,
+  ScreenErrorBoundaryContext,
   useContextKey,
   useRouteNode,
 } from '../Route';
@@ -58,6 +58,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
+  const inheritedErrorBoundaries = React.use(ScreenErrorBoundaryContext);
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
   const {
@@ -101,9 +102,14 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      <NavigatorScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+      <ScreenErrorBoundaryContext
+        value={{
+          ...inheritedErrorBoundaries,
+          navigator: unstable_screenErrorBoundary,
+          screen: undefined,
+        }}>
         {content}
-      </NavigatorScreenErrorBoundaryContext>
+      </ScreenErrorBoundaryContext>
     </NavigatorContext.Provider>
   );
 }
@@ -122,6 +128,7 @@ export function useNavigatorContext() {
 function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProps<any>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
+  const inheritedErrorBoundaries = React.use(ScreenErrorBoundaryContext);
 
   // Allows adding Screen components as children to configure routes.
   const { screens, guardedRedirects } = useFilterScreenChildren([], {
@@ -145,9 +152,14 @@ function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProp
   );
 
   return (
-    <NavigatorScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+    <ScreenErrorBoundaryContext
+      value={{
+        ...inheritedErrorBoundaries,
+        navigator: unstable_screenErrorBoundary,
+        screen: undefined,
+      }}>
       {content}
-    </NavigatorScreenErrorBoundaryContext>
+    </ScreenErrorBoundaryContext>
   );
 }
 

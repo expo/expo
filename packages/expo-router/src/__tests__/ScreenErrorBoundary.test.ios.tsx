@@ -88,18 +88,44 @@ it('uses the route boundary before screen, navigator, and layout boundaries', as
   expect(screen.queryByTestId('layout-boundary')).toBeNull();
 });
 
-it.each([
-  ['Stack', Stack],
-  ['Tabs', Tabs],
-  ['TopTabs', TopTabs],
-])('uses an individual screen boundary with %s', async (_name, Navigator: typeof Stack) => {
+it('uses an individual screen boundary with Stack', async () => {
   const ScreenBoundary = boundary('screen-boundary');
 
   await renderRouterAsync({
     _layout: () => (
-      <Navigator>
-        <Navigator.Screen name="index" unstable_errorBoundary={ScreenBoundary} />
-      </Navigator>
+      <Stack>
+        <Stack.Screen name="index" unstable_errorBoundary={ScreenBoundary} />
+      </Stack>
+    ),
+    index: ThrowingRoute,
+  });
+
+  expect(screen.getByTestId('screen-boundary')).toBeOnTheScreen();
+});
+
+it('uses an individual screen boundary with Tabs', async () => {
+  const ScreenBoundary = boundary('screen-boundary');
+
+  await renderRouterAsync({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" unstable_errorBoundary={ScreenBoundary} />
+      </Tabs>
+    ),
+    index: ThrowingRoute,
+  });
+
+  expect(screen.getByTestId('screen-boundary')).toBeOnTheScreen();
+});
+
+it('uses an individual screen boundary with TopTabs', async () => {
+  const ScreenBoundary = boundary('screen-boundary');
+
+  await renderRouterAsync({
+    _layout: () => (
+      <TopTabs>
+        <TopTabs.Screen name="index" unstable_errorBoundary={ScreenBoundary} />
+      </TopTabs>
     ),
     index: ThrowingRoute,
   });

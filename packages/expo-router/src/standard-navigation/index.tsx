@@ -4,11 +4,7 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
-import {
-  getValidInitialRouteName,
-  NavigatorScreenErrorBoundaryContext,
-  useRouteNode,
-} from '../Route';
+import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -180,6 +176,7 @@ export function unstable_integrateWithRouter<
   function StandardRouterNavigator(allProps: NavPropsType) {
     const { unstable_screenErrorBoundary, ...rest } = allProps;
     const props = rest as NavPropsType;
+    const inheritedErrorBoundaries = use(ScreenErrorBoundaryContext);
     const routeNode = useRouteNode();
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
       NavigatorOptions,
@@ -241,9 +238,14 @@ export function unstable_integrateWithRouter<
     );
 
     return (
-      <NavigatorScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+      <ScreenErrorBoundaryContext
+        value={{
+          ...inheritedErrorBoundaries,
+          navigator: unstable_screenErrorBoundary,
+          screen: undefined,
+        }}>
         {content}
-      </NavigatorScreenErrorBoundaryContext>
+      </ScreenErrorBoundaryContext>
     );
   }
 

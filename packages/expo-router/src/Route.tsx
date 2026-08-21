@@ -70,18 +70,13 @@ const CurrentRouteContext = createContext<RouteNode | null>(null);
 export const SuspenseFallbackContext = createContext<
   ComponentType<SuspenseFallbackProps> | undefined
 >(undefined);
-/** This context carries the error boundary configured by the nearest layout. */
-export const LayoutScreenErrorBoundaryContext = createContext<
-  ComponentType<ErrorBoundaryProps> | undefined
->(undefined);
-/** This context carries the error boundary configured by the nearest navigator. */
-export const NavigatorScreenErrorBoundaryContext = createContext<
-  ComponentType<ErrorBoundaryProps> | undefined
->(undefined);
-/** This context carries the error boundary configured by the current screen. */
-export const ScreenErrorBoundaryContext = createContext<
-  ComponentType<ErrorBoundaryProps> | undefined
->(undefined);
+export type ScreenErrorBoundaryContextValue = {
+  layout?: ComponentType<ErrorBoundaryProps>;
+  navigator?: ComponentType<ErrorBoundaryProps>;
+  screen?: ComponentType<ErrorBoundaryProps>;
+};
+/** This context carries the error boundaries configured by the active layout, navigator, and screen. */
+export const ScreenErrorBoundaryContext = createContext<ScreenErrorBoundaryContextValue>({});
 export const LocalRouteParamsContext = createContext<object | undefined>({});
 
 if (process.env.NODE_ENV !== 'production') {
