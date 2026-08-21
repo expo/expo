@@ -1,5 +1,6 @@
 import type { RefObject } from 'react';
 
+import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type {
   NavigationAction,
   ParamListBase,
@@ -7,7 +8,7 @@ import type {
 } from '../react-navigation/native';
 import { getNavigateAction } from './getNavigationAction';
 import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
-import type { LinkToOptions } from './types';
+import type { LinkToOptions, StoreRedirects } from './types';
 
 export interface LinkAction {
   type: 'ROUTER_LINK';
@@ -37,7 +38,9 @@ export const routingQueue = {
   },
   run(
     ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
-    routeInfo: UrlObject = defaultRouteInfo
+    routeInfo: UrlObject = defaultRouteInfo,
+    linking?: ExpoLinkingOptions,
+    redirects: StoreRedirects[] = []
   ) {
     // Reset the identity of the queue.
     const events = routingQueue.queue;
@@ -58,7 +61,9 @@ export const routingQueue = {
             options.withAnchor,
             options.dangerouslySingular,
             !!options.__internal__PreviewKey,
-            routeInfo
+            routeInfo,
+            linking,
+            redirects
           );
           // TODO: Consider warning when getNavigateAction returns undefined
           if (action) {

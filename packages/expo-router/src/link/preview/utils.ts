@@ -1,6 +1,6 @@
 import type { ExpoLinkingOptions } from '../../getLinkingConfig';
 import type { UrlObject } from '../../global-state/getRouteInfoFromState';
-import { store, type ReactNavigationState } from '../../global-state/router-store';
+import type { ReactNavigationState } from '../../global-state/router-store';
 import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
 import type {
@@ -19,7 +19,7 @@ export function getTabPathFromRootStateByHref(
   href: Href,
   rootState: ReactNavigationState,
   routeInfo: UrlObject,
-  linking: ExpoLinkingOptions | undefined = store.linking
+  linking: ExpoLinkingOptions | undefined
 ): TabPath[] {
   const hrefState = getStateForHref(resolveHref(href), routeInfo, linking);
   const state: ReactNavigationState | undefined = rootState;
@@ -56,7 +56,7 @@ export function getPreloadedRouteFromRootStateByHref(
   href: Href,
   rootState: ReactNavigationState,
   routeInfo: UrlObject,
-  linking: ExpoLinkingOptions | undefined = store.linking
+  linking: ExpoLinkingOptions | undefined
 ): NavigationRoute<ParamListBase, string> | undefined {
   const hrefState = getStateForHref(resolveHref(href), routeInfo, linking);
   const state: ReactNavigationState | undefined = rootState;

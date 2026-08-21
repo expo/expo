@@ -1,3 +1,4 @@
+import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
 import {
@@ -10,7 +11,7 @@ import type { SingularOptions } from '../useScreens';
 import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
 import { store } from './store';
-import type { LinkToOptions } from './types';
+import type { LinkToOptions, StoreRedirects } from './types';
 
 export function getNavigateAction(
   baseHref: string,
@@ -19,7 +20,9 @@ export function getNavigateAction(
   withAnchor?: boolean,
   singular?: SingularOptions,
   isPreviewNavigation?: boolean,
-  routeInfo: UrlObject = defaultRouteInfo
+  routeInfo: UrlObject = defaultRouteInfo,
+  linking?: ExpoLinkingOptions,
+  redirects: StoreRedirects[] = []
 ) {
   let href: string | undefined = baseHref;
   store.assertIsReady();
@@ -30,20 +33,20 @@ export function getNavigateAction(
       "Couldn't find a navigation object. Is your component inside NavigationContainer?"
     );
   }
-  if (!store.linking) {
+  if (!linking) {
     throw new Error('Attempted to link to route when no routes are present');
   }
   const rootState = navigationRef.getRootState();
 
   href = resolveHrefStringWithSegments(href, routeInfo, options);
-  href = applyRedirects(href, store.redirects) ?? undefined;
+  href = applyRedirects(href, redirects) ?? undefined;
 
   // If the href is undefined, it means that the redirect has already been handled by the navigation
   if (!href) {
     return;
   }
 
-  const state = store.linking.getStateFromPath!(href, store.linking.config, routeInfo.segments);
+  const state = linking.getStateFromPath!(href, linking.config, routeInfo.segments);
 
   if (!state || state.routes.length === 0) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);

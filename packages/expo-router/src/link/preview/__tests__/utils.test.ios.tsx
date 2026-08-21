@@ -179,7 +179,8 @@ describe(getTabPathFromRootStateByHref, () => {
     const tabPath = getTabPathFromRootStateByHref(
       href,
       state as NavigationState,
-      store.getRouteInfo()
+      store.getRouteInfo(),
+      store.linking
     );
     expect(tabPath).toEqual([
       {
@@ -255,7 +256,8 @@ describe(getTabPathFromRootStateByHref, () => {
     const tabPath = getTabPathFromRootStateByHref(
       href,
       state as NavigationState,
-      store.getRouteInfo()
+      store.getRouteInfo(),
+      store.linking
     );
     expect(tabPath).toEqual([
       {
@@ -354,7 +356,8 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(
       href,
       state as NavigationState,
-      store.getRouteInfo()
+      store.getRouteInfo(),
+      store.linking
     );
     expect(preloadedRoute).toEqual({
       key: '[face]-9rms2gdsibY9dVYUGCpZG',
@@ -431,7 +434,8 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(
       href,
       state as NavigationState,
-      store.getRouteInfo()
+      store.getRouteInfo(),
+      store.linking
     );
     expect(preloadedRoute).toEqual({
       key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
