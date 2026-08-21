@@ -13,13 +13,7 @@ private const val DEFAULT_WEIGHT = 400
 object FontFamilyFaces {
   private fun isItalic(style: String?) = style == "italic"
 
-  /**
-   * Validates that no two faces of the family claim the same weight+style pair, and that every
-   * declared weight is within the 1..1000 range accepted by Android's FontStyle.
-   */
-  fun assertNoDuplicateFaces(fontFamilyName: String, faces: List<FontFaceRecord>) {
-    val seenFaces = mutableMapOf<Pair<Int, Boolean>, String>()
-
+  fun assertWeightsInRange(fontFamilyName: String, faces: List<FontFaceRecord>) {
     for (face in faces) {
       val weight = face.weight ?: DEFAULT_WEIGHT
       if (weight !in MIN_WEIGHT..MAX_WEIGHT) {
@@ -29,7 +23,18 @@ object FontFamilyFaces {
             "Set the 'weight' of this face to a value in that range."
         )
       }
+    }
+  }
 
+  /**
+   * Call only with resolved values (after `setWeight`/`setSlant`): unset weight/style resolves
+   * from the font file, so two undeclared faces may not actually collide.
+   */
+  fun assertNoDuplicateFaces(fontFamilyName: String, faces: List<FontFaceRecord>) {
+    val seenFaces = mutableMapOf<Pair<Int, Boolean>, String>()
+
+    for (face in faces) {
+      val weight = face.weight ?: DEFAULT_WEIGHT
       val italic = isItalic(face.style)
       val key = weight to italic
       val conflictingUri = seenFaces[key]

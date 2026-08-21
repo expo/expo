@@ -32,7 +32,6 @@ class FontFamilyFacesTest {
       FontFaceRecord(localUri = "italic.ttf", weight = 400, style = "italic")
     )
 
-    // should not throw
     FontFamilyFaces.assertNoDuplicateFaces("MyFamily", faces)
   }
 
@@ -42,18 +41,38 @@ class FontFamilyFacesTest {
     val tooHigh = listOf(FontFaceRecord(localUri = "b.ttf", weight = 1001, style = null))
 
     try {
-      FontFamilyFaces.assertNoDuplicateFaces("MyFamily", tooLow)
+      FontFamilyFaces.assertWeightsInRange("MyFamily", tooLow)
       fail("Expected an exception for weight below 1")
     } catch (e: Exception) {
       assertTrue(e.message!!.contains("a.ttf"))
     }
 
     try {
-      FontFamilyFaces.assertNoDuplicateFaces("MyFamily", tooHigh)
+      FontFamilyFaces.assertWeightsInRange("MyFamily", tooHigh)
       fail("Expected an exception for weight above 1000")
     } catch (e: Exception) {
       assertTrue(e.message!!.contains("b.ttf"))
     }
+  }
+
+  @Test
+  fun unsetWeightAndStylePassUpFrontValidation() {
+    val faces = listOf(
+      FontFaceRecord(localUri = "regular.ttf", weight = null, style = null),
+      FontFaceRecord(localUri = "italic.ttf", weight = null, style = null)
+    )
+
+    FontFamilyFaces.assertWeightsInRange("MyFamily", faces)
+  }
+
+  @Test
+  fun unsetWeightAndDefaultWeightPassUpFrontValidation() {
+    val faces = listOf(
+      FontFaceRecord(localUri = "bold.ttf", weight = null, style = null),
+      FontFaceRecord(localUri = "regular.ttf", weight = 400, style = null)
+    )
+
+    FontFamilyFaces.assertWeightsInRange("MyFamily", faces)
   }
 
   @Test

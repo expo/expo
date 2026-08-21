@@ -51,7 +51,7 @@ open class FontLoaderModule : Module() {
             "least one face with a 'localUri' pointing to a font file."
         )
       }
-      FontFamilyFaces.assertNoDuplicateFaces(fontFamilyName, faces)
+      FontFamilyFaces.assertWeightsInRange(fontFamilyName, faces)
 
       registerTypeface(fontFamilyName, familyTypeface(fontFamilyName, faces))
     }
