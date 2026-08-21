@@ -236,10 +236,8 @@ export function unstable_integrateWithRouter<
       </NavigationContent>
     );
 
-    return screenErrorBoundary ? (
+    return (
       <ScreenErrorBoundaryContext value={screenErrorBoundary}>{content}</ScreenErrorBoundaryContext>
-    ) : (
-      content
     );
   }
 
