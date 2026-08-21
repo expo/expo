@@ -1,6 +1,5 @@
-import * as ExpoLinking from 'expo-linking';
-import { type RefObject, useEffect, useCallback, useRef } from 'react';
-import { Linking, Platform } from 'react-native';
+import { type RefObject, useEffect, useEffectEvent, useCallback, useRef } from 'react';
+import { Linking } from 'react-native';
 
 import { useRouteInfo } from '../global-state/useRouteInfo';
 import {
@@ -11,6 +10,7 @@ import {
   type ParamListBase,
 } from '../react-navigation/native';
 import { extractExpoPathFromURL } from './extractPathFromURL';
+import { getInitialURLWithTimeout } from './getInitialURLWithTimeout';
 import { getStateFromPath as getExpoStateFromPath } from './getStateFromPath';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
@@ -100,11 +100,6 @@ export function useLinking(
   const getInitialURLRef = useRef(getInitialURL);
   const getStateFromPathRef = useRef(getStateFromPath);
   const getActionFromStateRef = useRef(getActionFromState);
-  const segmentsRef = useRef(segments);
-
-  // Linking listeners stay subscribed across navigation updates, but relative URLs must be parsed
-  // against the route that was current when the URL was received.
-  segmentsRef.current = segments;
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -125,12 +120,13 @@ export function useLinking(
       const path = extractExpoPathFromURL(prefixesRef.current, url);
 
       return path !== undefined
-        ? getStateFromPathRef.current(path, configRef.current, segmentsRef.current)
+        ? getStateFromPathRef.current(path, configRef.current, segments)
         : undefined;
     },
 
-    []
+    [segments]
   );
+  const getStateFromURLInEffect = useEffectEvent(getStateFromURL);
 
   const getInitialState = useCallback(() => {
     let state: ResultState | undefined;
@@ -177,7 +173,7 @@ export function useLinking(
       }
 
       const navigation = ref.current;
-      const state = navigation ? getStateFromURL(url) : undefined;
+      const state = navigation ? getStateFromURLInEffect(url) : undefined;
 
       if (navigation && state) {
         // If the link were handled, it gets cleared in NavigationContainer
@@ -208,28 +204,9 @@ export function useLinking(
     };
 
     return subscribe(listener);
-  }, [enabled, getStateFromURL, onUnhandledLinking, prefixes, ref, subscribe]);
+  }, [enabled, onUnhandledLinking, prefixes, ref, subscribe]);
 
   return {
     getInitialState,
   };
-}
-
-export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
-  if (typeof window === 'undefined') {
-    return '';
-  } else if (Platform.OS === 'ios') {
-    // Use the new Expo API for iOS. This has better support for App Clips and handoff.
-    return ExpoLinking.getLinkingURL();
-  }
-
-  return Promise.race([
-    // TODO: Phase this out in favor of expo-linking on Android.
-    Linking.getInitialURL(),
-    new Promise<null>((resolve) =>
-      // Timeout in 150ms if `getInitialState` doesn't resolve
-      // Workaround for https://github.com/facebook/react-native/issues/25675
-      setTimeout(() => resolve(null), 150)
-    ),
-  ]);
 }

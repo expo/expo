@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 
-import { store } from '../../global-state/router-store';
+import { store, type ReactNavigationState } from '../../global-state/router-store';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { useRouter } from '../../hooks';
 import type { Href } from '../../types';
@@ -17,26 +17,22 @@ export function useNextScreenId(): [
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
   const currentHref = useRef<Href | undefined>(undefined);
-  const routeInfoRef = useRef(routeInfo);
-  // The navigation listener is stable, so read the current route when prefetch updates its state.
-  routeInfoRef.current = routeInfo;
   const [tabPath, setTabPath] = useState<TabPath[]>([]);
 
-  useEffect(() => {
-    // When screen is prefetched, then the root state is updated with the preloaded route.
-    return store.navigationRef.addListener('state', ({ data: { state } }) => {
+  const onNavigationStateChange = useEffectEvent(
+    ({ data: { state } }: { data: { state?: ReactNavigationState } }) => {
       // If we have the current href, it means that we prefetched the route
       if (currentHref.current && state) {
         const preloadedRoute = getPreloadedRouteFromRootStateByHref(
           currentHref.current,
           state,
-          routeInfoRef.current
+          routeInfo
         );
         const routeKey = preloadedRoute?.key;
         const tabPathFromRootState = getTabPathFromRootStateByHref(
           currentHref.current,
           state,
-          routeInfoRef.current
+          routeInfo
         );
         // Without this timeout react-native does not have enough time to mount the new screen
         // and thus it will not be found on the native side
@@ -51,7 +47,12 @@ export function useNextScreenId(): [
         // to prevent unnecessary processing
         currentHref.current = undefined;
       }
-    });
+    }
+  );
+
+  useEffect(() => {
+    // When screen is prefetched, then the root state is updated with the preloaded route.
+    return store.navigationRef.addListener('state', onNavigationStateChange);
   }, []);
 
   const prefetch = useCallback(

@@ -1,5 +1,13 @@
 import isEqual from 'fast-deep-equal';
-import { type RefObject, useEffect, useState, useCallback, useRef, use } from 'react';
+import {
+  type RefObject,
+  useEffect,
+  useEffectEvent,
+  useState,
+  useCallback,
+  useRef,
+  use,
+} from 'react';
 
 import { ServerContext } from '../global-state/serverLocationContext';
 import { useExpoRouterStore } from '../global-state/storeContext';
@@ -135,11 +143,6 @@ export function useLinking(
   const getStateFromPathRef = useRef(getStateFromPath);
   const getPathFromStateRef = useRef(getPathFromState);
   const getActionFromStateRef = useRef(getActionFromState);
-  const segmentsRef = useRef(segments);
-
-  // Segments are navigation state, so keep this ref current during render. The
-  // linking listeners intentionally remain stable across navigation updates.
-  segmentsRef.current = segments;
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -148,6 +151,12 @@ export function useLinking(
     getPathFromStateRef.current = getPathFromState;
     getActionFromStateRef.current = getActionFromState;
   });
+
+  const getStateFromPathForCurrentSegments = useCallback(
+    (path: string) => getStateFromPathRef.current(path, configRef.current, segments),
+    [segments]
+  );
+  const getStateFromPathInEffect = useEffectEvent(getStateFromPathForCurrentSegments);
 
   const validateRoutesNotExistInRootState = useCallback(
     (state: ResultState) => {
@@ -182,7 +191,7 @@ export function useLinking(
         : undefined;
 
       if (path) {
-        value = getStateFromPathRef.current(path, configRef.current, segmentsRef.current);
+        value = getStateFromPathForCurrentSegments(path);
       }
 
       // If the link were handled, it gets cleared in NavigationContainer
@@ -200,7 +209,7 @@ export function useLinking(
 
     return thenable as PromiseLike<ResultState | undefined>;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getStateFromPathForCurrentSegments, onUnhandledLinking, server]);
 
   const previousIndexRef = useRef<number | undefined>(undefined);
   const previousStateRef = useRef<NavigationState | undefined>(undefined);
@@ -236,7 +245,7 @@ export function useLinking(
         return;
       }
 
-      const state = getStateFromPathRef.current(path, configRef.current, segmentsRef.current);
+      const state = getStateFromPathInEffect(path);
 
       // We should only dispatch an action when going forward
       // Otherwise the action will likely add items to history, which would mess things up
@@ -314,11 +323,7 @@ export function useLinking(
       // If the `route` object contains a `path`, use that path as long as `route.name` and `params` still match
       // This makes sure that we preserve the original URL for wildcard routes
       if (route?.path) {
-        const stateForPath = getStateFromPathRef.current(
-          route.path,
-          configRef.current,
-          segmentsRef.current
-        );
+        const stateForPath = getStateFromPathInEffect(route.path);
 
         if (stateForPath) {
           const focusedRoute = findFocusedRoute(stateForPath);
@@ -485,8 +490,4 @@ export function useLinking(
   return {
     getInitialState,
   };
-}
-
-export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
-  return typeof window === 'undefined' ? '' : window.location.href;
 }
