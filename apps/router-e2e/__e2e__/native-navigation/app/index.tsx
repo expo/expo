@@ -45,7 +45,10 @@ function CaseLink({ href, text }: { href: Href; text: string }) {
   return (
     <Link href={href} asChild>
       <Link.Trigger>
-        <Pressable style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={text}
+          style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
           <Text style={{ color: '#fff' }}>{text}</Text>
         </Pressable>
       </Link.Trigger>

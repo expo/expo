@@ -14,7 +14,10 @@ export default function ErrorBoundaryExamples() {
       <Text>Production error boundary examples</Text>
       {examples.map(([label, href]) => (
         <Link key={href} href={href} asChild>
-          <Pressable style={{ backgroundColor: '#0b6caf', padding: 16, borderRadius: 8 }}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={label}
+            style={{ backgroundColor: '#0b6caf', padding: 16, borderRadius: 8 }}>
             <Text style={{ color: '#fff' }}>{label}</Text>
           </Pressable>
         </Link>
