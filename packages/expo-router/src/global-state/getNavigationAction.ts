@@ -7,6 +7,7 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { SingularOptions } from '../useScreens';
+import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
 import { store } from './store';
 import type { LinkToOptions } from './types';
@@ -17,7 +18,8 @@ export function getNavigateAction(
   type = 'NAVIGATE',
   withAnchor?: boolean,
   singular?: SingularOptions,
-  isPreviewNavigation?: boolean
+  isPreviewNavigation?: boolean,
+  routeInfo: UrlObject = defaultRouteInfo
 ) {
   let href: string | undefined = baseHref;
   store.assertIsReady();
@@ -33,8 +35,6 @@ export function getNavigateAction(
   }
   const rootState = navigationRef.getRootState();
 
-  // Resolve and parse with the same route snapshot so relative paths use consistent segments.
-  const routeInfo = store.getRouteInfo();
   href = resolveHrefStringWithSegments(href, routeInfo, options);
   href = applyRedirects(href, store.redirects) ?? undefined;
 

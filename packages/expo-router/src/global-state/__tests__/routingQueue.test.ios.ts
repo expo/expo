@@ -104,6 +104,15 @@ describe('routingQueue', () => {
 
   it('run() converts ROUTER_LINK actions via getNavigateAction then dispatches', () => {
     const ref = makeRef();
+    const routeInfo = {
+      pathname: '/current',
+      pathnameWithParams: '/current',
+      segments: ['current'],
+      params: {},
+      searchParams: new URLSearchParams(),
+      unstable_globalHref: '',
+      isIndex: false,
+    };
     const navigateAction = {
       type: 'NAVIGATE',
       payload: { name: 'home', params: {}, singular: false },
@@ -116,7 +125,7 @@ describe('routingQueue', () => {
       payload: { href: '/home', options: { event: 'NAVIGATE' } },
     });
 
-    routingQueue.run(ref);
+    routingQueue.run(ref, routeInfo);
 
     expect(mockGetNavigateAction).toHaveBeenCalledWith(
       '/home',
@@ -124,7 +133,8 @@ describe('routingQueue', () => {
       'NAVIGATE',
       undefined,
       undefined,
-      false
+      false,
+      routeInfo
     );
     expect(ref.current!.dispatch).toHaveBeenCalledWith(navigateAction);
   });
