@@ -84,6 +84,7 @@ export function getTestModules() {
   }
 
   if (['android', 'ios'].includes(Platform.OS)) {
+    modules.push(optionalRequire(() => require('./tests/ExpoUIHostSize')));
     modules.push(require('./tests/AppMetrics'));
     modules.push(require('./tests/Blob'));
     modules.push(require('./tests/FileSystem'));
