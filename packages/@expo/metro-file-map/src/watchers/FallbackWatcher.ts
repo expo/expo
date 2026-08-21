@@ -43,6 +43,7 @@ export default class FallbackWatcher extends AbstractWatcher {
     [directory: string]: { [file: string]: true };
   } = Object.create(null);
   readonly #watched: { [key: string]: FSWatcher } = Object.create(null);
+  #longPathRoot: string | null = null;
 
   async startWatching(): Promise<void> {
     this.#watchdir(this.root);
@@ -159,13 +160,43 @@ export default class FallbackWatcher extends AbstractWatcher {
   };
 
   /**
+   * The path to give `fs.watch` for a directory.
+   *
+   * On Windows, a watch on a path with an 8.3 short-name component, such as
+   * `C:\Users\RUNNER~1`, crashes Node on libuv 1.52.x (bundled since
+   * Node 24.4): when the watch reports an event, libuv resolves the long form
+   * of the changed path and aborts on the prefix mismatch with the short
+   * watch path. See https://github.com/libuv/libuv/issues/5010.
+   *
+   * Expand the root to its long form once, and give `fs.watch` every
+   * directory through the expanded prefix. All bookkeeping and all reported
+   * events keep the original paths.
+   */
+  #watchablePath(dir: string): string {
+    if (platform !== 'win32') {
+      return dir;
+    }
+    if (this.#longPathRoot == null) {
+      try {
+        // Unlike `fs.realpathSync`, the native variant expands short names.
+        this.#longPathRoot = fs.realpathSync.native(this.root);
+      } catch {
+        this.#longPathRoot = this.root;
+      }
+    }
+    return this.#longPathRoot === this.root
+      ? dir
+      : this.#longPathRoot + dir.slice(this.root.length);
+  }
+
+  /**
    * Watch a directory.
    */
   #watchdir: (dir: string) => boolean = (dir: string) => {
     if (this.#watched[dir]) {
       return false;
     }
-    const watcher = fs.watch(dir, { persistent: true }, (event, filename) =>
+    const watcher = fs.watch(this.#watchablePath(dir), { persistent: true }, (event, filename) =>
       this.#normalizeChange(dir, event, filename as string)
     );
     this.#watched[dir] = watcher;
