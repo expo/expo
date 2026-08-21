@@ -27,7 +27,7 @@ class WidgetStub {
 }
 
 class LiveActivityStub {
-  async update(_props?: string): Promise<void> {}
+  async update(_props?: string, _staleDate?: number, _contentDate?: number): Promise<void> {}
   async end(
     _dismissalPolicy?: string,
     _afterDate?: number,

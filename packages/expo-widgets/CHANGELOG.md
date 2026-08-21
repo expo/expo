@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Expose ActivityKit's `contentDate` on `LiveActivity.update()` to prevent older local updates from replacing newer local or push updates. ([#49017](https://github.com/expo/expo/pull/49017) by [@LouisRaverdy](https://github.com/LouisRaverdy))
 - [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
 - [iOS] Expose ActivityKit's `staleDate` on `LiveActivity.start()` and `LiveActivity.update()`. ([#46343](https://github.com/expo/expo/pull/46343) by [@KyleAsaff](https://github.com/KyleAsaff))
 - Add an initial layout registry for widgets. ([#46501](https://github.com/expo/expo/pull/46501) by [@jakex7](https://github.com/jakex7))

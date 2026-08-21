@@ -107,9 +107,15 @@ export class LiveActivity<T extends object = object> {
    * Updates the Live Activity's content. The UI reflects the new properties immediately.
    * @param props The updated content properties.
    * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
+   * @param contentDate The time the data in the update was generated. On iOS 17.2 and later, the
+   *   system ignores this update if it is older than a previous update or push payload.
    */
-  update(props: T, staleDate?: Date): Promise<void> {
-    return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime());
+  update(props: T, staleDate?: Date, contentDate?: Date): Promise<void> {
+    return this.nativeLiveActivity.update(
+      JSON.stringify(props),
+      staleDate?.getTime(),
+      contentDate?.getTime()
+    );
   }
 
   /**
