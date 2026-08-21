@@ -34,6 +34,10 @@ export declare class LiveActivity<T extends object = object> {
     private nativeLiveActivity;
     constructor(nativeLiveActivity: NativeLiveActivity);
     /**
+     * Returns the stable ActivityKit identifier for this Live Activity.
+     */
+    getId(): string;
+    /**
      * Updates the Live Activity's content. The UI reflects the new properties immediately.
      * @param props The updated content properties.
      * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.

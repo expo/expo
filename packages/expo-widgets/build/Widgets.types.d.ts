@@ -265,6 +265,7 @@ export declare class NativeLiveActivityFactory extends SharedObject {
     getInstances(): NativeLiveActivity[];
 }
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
+    getId(): string;
     update(props: string, staleDate?: number): Promise<void>;
     end(dismissalPolicy?: string, afterDate?: number, state?: string, contentDate?: number): Promise<void>;
     getPushToken(): Promise<string | null>;

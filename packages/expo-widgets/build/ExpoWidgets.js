@@ -9,6 +9,9 @@ class WidgetStub {
     }
 }
 class LiveActivityStub {
+    getId() {
+        return '';
+    }
     async update(_props) { }
     async end(_dismissalPolicy, _afterDate, _state, _contentDate) { }
     async getPushToken() {

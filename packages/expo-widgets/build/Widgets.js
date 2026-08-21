@@ -48,6 +48,12 @@ export class LiveActivity {
         this.nativeLiveActivity = nativeLiveActivity;
     }
     /**
+     * Returns the stable ActivityKit identifier for this Live Activity.
+     */
+    getId() {
+        return this.nativeLiveActivity.getId();
+    }
+    /**
      * Updates the Live Activity's content. The UI reflects the new properties immediately.
      * @param props The updated content properties.
      * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
