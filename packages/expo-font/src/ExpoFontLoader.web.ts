@@ -71,6 +71,28 @@ function getFontFaceRulesMatchingResource(
   );
 }
 
+// Exported for testing, like `_matchesFontFaceOptions` above.
+export function _fontFaceRuleSrcMatches(
+  rule: Pick<CSSFontFaceRule, 'style'>,
+  uri: string | number | undefined
+): boolean {
+  const src = rule.style.getPropertyValue('src');
+  const match = src.match(/url\((['"]?)([^'")]*)\1\)/);
+  if (!match) {
+    // Every rule in our style element carries a `url(...)`, so an unreadable `src` means the
+    // engine doesn't expose the descriptor. Fall back to descriptor-only dedup (the pre-`src`
+    // behavior) rather than injecting a duplicate rule on every call.
+    return true;
+  }
+  let ruleUri = match[2] ?? '';
+  try {
+    ruleUri = decodeURIComponent(ruleUri);
+  } catch {
+    // Malformed percent-encoding: compare the raw value instead of throwing.
+  }
+  return ruleUri === String(uri);
+}
+
 const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>> = {
   async unloadAllAsync(): Promise<void> {
     if (typeof window === 'undefined') return;
@@ -85,7 +107,9 @@ const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>
     const sheet = getFontFaceStyleSheet();
     if (!sheet) return;
     const items = getFontFaceRulesMatchingResource(fontFamilyName, options);
-    for (const item of items) {
+    // Descending: `deleteRule` shifts every later index down by one.
+    const descending = [...items].sort((a, b) => b.index - a.index);
+    for (const item of descending) {
       sheet.deleteRule(item.index);
     }
   },
@@ -157,8 +181,12 @@ const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>
     const style = getStyleElement();
     document.head!.appendChild(style);
 
-    const res = getFontFaceRulesMatchingResource(fontFamilyName, resource);
-    if (!res.length) {
+    // `_matchesFontFaceOptions` skips unset descriptors, so an under-specified resource matches
+    // any rule of the family — comparing `src` keeps a differently-sourced face from being dropped.
+    const alreadyLoaded = getFontFaceRulesMatchingResource(fontFamilyName, resource).some(
+      ({ rule }) => _fontFaceRuleSrcMatches(rule, resource.uri)
+    );
+    if (!alreadyLoaded) {
       _createWebStyle(fontFamilyName, resource);
     }
 
@@ -201,6 +229,7 @@ function getStyleElement(): HTMLStyleElement {
 }
 
 const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
+const CSS_WEIGHT_NUMERIC_RE = /^\d{1,4}$/;
 
 // An unset `display`/`weight`/`style` omits the descriptor, letting the browser default apply —
 // forcing e.g. `font-weight: 400` would pin a variable font's face to that one weight.
@@ -210,21 +239,46 @@ export function _createWebFontTemplate(fontFamily: string, resource: FontResourc
     `src:url(${JSON.stringify(resource.uri)})`,
   ];
 
-  if (typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)) {
-    declarations.push(`font-display:${resource.display}`);
+  if (resource.display != null) {
+    if (typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)) {
+      declarations.push(`font-display:${resource.display}`);
+    } else {
+      warnDroppedDescriptor('display', resource.display);
+    }
   }
 
-  if (typeof resource.weight === 'number' && Number.isFinite(resource.weight)) {
-    declarations.push(`font-weight:${resource.weight}`);
-  } else if (typeof resource.weight === 'string' && CSS_IDENT_RE.test(resource.weight)) {
-    declarations.push(`font-weight:${resource.weight}`);
+  if (resource.weight != null) {
+    if (typeof resource.weight === 'number' && Number.isFinite(resource.weight)) {
+      declarations.push(`font-weight:${resource.weight}`);
+    } else if (
+      typeof resource.weight === 'string' &&
+      (CSS_IDENT_RE.test(resource.weight) || CSS_WEIGHT_NUMERIC_RE.test(resource.weight))
+    ) {
+      declarations.push(`font-weight:${resource.weight}`);
+    } else {
+      warnDroppedDescriptor('weight', resource.weight);
+    }
   }
 
-  if (typeof resource.style === 'string' && CSS_IDENT_RE.test(resource.style)) {
-    declarations.push(`font-style:${resource.style}`);
+  if (resource.style != null) {
+    if (typeof resource.style === 'string' && CSS_IDENT_RE.test(resource.style)) {
+      declarations.push(`font-style:${resource.style}`);
+    } else {
+      warnDroppedDescriptor('style', resource.style);
+    }
   }
 
   return `@font-face{${declarations.join(';')}}`;
+}
+
+// `display`/`weight`/`style` are interpolated into the stylesheet without further escaping, so a
+// value that fails sanitization is dropped rather than emitted. Warn so the drop isn't silent.
+function warnDroppedDescriptor(name: 'display' | 'weight' | 'style', value: unknown): void {
+  if (__DEV__) {
+    console.warn(
+      `expo-font: Dropped invalid font-${name} value ${JSON.stringify(value)}. It won't be applied to the generated @font-face rule.`
+    );
+  }
 }
 
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {

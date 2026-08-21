@@ -191,10 +191,9 @@ Then select the loaded face with the `fontWeight` and `fontStyle` style props:
 
 Platform notes:
 
-- **iOS** matches faces by the weight and style metadata embedded in the font files. It does not use the declared `weight` and `style` values for matching.
 - **Android** uses the declared `weight` and `style` values, and falls back to the values in the font file when not declared. Below API 29 (Android 10), only the default face loads (closest to weight 400, upright).
+- **iOS** matches faces by the weight and style metadata embedded in the font files. It does not use the declared `weight` and `style` values for matching.
 - **Web** generates one CSS `@font-face` rule per face, with the declared `weight` and `style` values.
-
 
 ## API
 

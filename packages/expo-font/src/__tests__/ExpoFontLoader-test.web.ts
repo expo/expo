@@ -1,4 +1,8 @@
-import { _createWebFontTemplate, _matchesFontFaceOptions } from '../ExpoFontLoader.web';
+import {
+  _createWebFontTemplate,
+  _fontFaceRuleSrcMatches,
+  _matchesFontFaceOptions,
+} from '../ExpoFontLoader.web';
 import { FontDisplay } from '../Font.types';
 
 function rule(style: Partial<CSSStyleDeclaration>): { style: CSSStyleDeclaration } {
@@ -32,6 +36,12 @@ describe('_createWebFontTemplate', () => {
     );
   });
 
+  it('includes font-weight when a numeric-string weight is provided', () => {
+    expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', weight: '700' })).toBe(
+      '@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-weight:700}'
+    );
+  });
+
   it('includes font-style when a style is provided', () => {
     expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', style: 'italic' })).toBe(
       '@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-style:italic}'
@@ -52,14 +62,20 @@ describe('_createWebFontTemplate', () => {
   });
 
   it('omits font-weight/font-style that fail CSS identifier sanitization', () => {
-    expect(
-      _createWebFontTemplate('Wix Madefor Text', {
-        uri: 'font.woff2',
-        weight: '400}; body{display:none} @font-face{font-family:"x',
-        // @ts-expect-error: testing sanitization of untrusted input
-        style: 'italic}//',
-      })
-    ).toBe('@font-face{font-family:"Wix Madefor Text";src:url("font.woff2")}');
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      expect(
+        _createWebFontTemplate('Wix Madefor Text', {
+          uri: 'font.woff2',
+          weight: '400}; body{display:none} @font-face{font-family:"x',
+          // @ts-expect-error: testing sanitization of untrusted input
+          style: 'italic}//',
+        })
+      ).toBe('@font-face{font-family:"Wix Madefor Text";src:url("font.woff2")}');
+      expect(warnSpy).toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
   });
 
   it('reproduces the reported multi-face family output, one rule per face', () => {
@@ -129,5 +145,38 @@ describe('_matchesFontFaceOptions', () => {
     expect(
       _matchesFontFaceOptions(bold, 'Wix Madefor Text', { weight: 400, style: 'italic' })
     ).toBe(false);
+  });
+});
+
+describe('_fontFaceRuleSrcMatches', () => {
+  function ruleWithSrc(src: string): { style: CSSStyleDeclaration } {
+    return {
+      style: {
+        getPropertyValue: (property: string) => (property === 'src' ? src : ''),
+      } as any,
+    };
+  }
+
+  it('matches when the rule references the same uri', () => {
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc('url("bold.ttf")'), 'bold.ttf')).toBe(true);
+  });
+
+  it('does not match when the rule references a different uri', () => {
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc('url("bold.ttf")'), 'regular.ttf')).toBe(false);
+  });
+
+  it('falls back to matching when the engine does not expose the src descriptor', () => {
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc(''), 'regular.ttf')).toBe(true);
+  });
+
+  it('matches single-quoted and unquoted url() forms', () => {
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc("url('bold.ttf')"), 'bold.ttf')).toBe(true);
+    expect(_fontFaceRuleSrcMatches(ruleWithSrc('url(bold.ttf)'), 'bold.ttf')).toBe(true);
+  });
+
+  it('decodes a percent-encoded uri before comparing', () => {
+    expect(
+      _fontFaceRuleSrcMatches(ruleWithSrc('url("bold%20italic.ttf")'), 'bold italic.ttf')
+    ).toBe(true);
   });
 });
