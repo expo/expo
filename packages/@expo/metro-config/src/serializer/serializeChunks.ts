@@ -174,6 +174,14 @@ export class Chunk {
   // These are included in the HTML as <script> tags.
   public requiredChunks: Set<Chunk> = new Set();
 
+  /** Whether this chunk owns an isolated module registry and must retain all of its dependencies.
+   * @remarks
+   * When a chunk is sealed, its `deps` and `preModules` shouldn't be altered, and it doesn't qualify
+   * for bundle/chunk splitting. This is the case for web workers, which must form a "closed" and
+   * self-sufficient entry bundle.
+   */
+  public sealed = false;
+
   constructor(
     public name: string,
     public entries: Module<MixedOutput>[],
@@ -184,6 +192,10 @@ export class Chunk {
     public isEntry: boolean = false
   ) {
     this.deps = new Set(entries);
+  }
+
+  seal(): void {
+    this.sealed = true;
   }
 
   private getPlatform() {
@@ -658,16 +670,23 @@ function gatherChunks(
   isEntry: boolean = false
 ): Set<Chunk> {
   let entryModules = getEntryModulesForChunkSettings(graph, settings);
-
-  const existingChunks = [...chunks.values()];
-
-  entryModules = entryModules.filter((module) => {
-    return !existingChunks.find((chunk) => chunk.entries.includes(module));
-  });
-
-  // Prevent processing the same entry file twice.
+  const entryChunks = new Set<Chunk>();
   if (!entryModules.length) {
-    return chunks;
+    return entryChunks;
+  }
+
+  for (const chunk of chunks) {
+    entryModules = entryModules.filter((module) => {
+      if (chunk.entries.includes(module)) {
+        entryChunks.add(chunk);
+        return false;
+      }
+      return true;
+    });
+    // Prevent processing the same entry file twice.
+    if (!entryModules.length) {
+      return entryChunks;
+    }
   }
 
   const entryChunk = new Chunk(
@@ -689,6 +708,7 @@ function gatherChunks(
   }
 
   chunks.add(entryChunk);
+  entryChunks.add(entryChunk);
 
   function includeModule(entryModule: Module<MixedOutput>) {
     for (const dependency of entryModule.dependencies.values()) {
@@ -699,18 +719,25 @@ function gatherChunks(
         // Support disabling multiple chunks.
         entryChunk.options.serializerOptions?.splitChunks !== false
       ) {
-        const isEntry = dependency.data.data.asyncType === 'worker';
-
-        gatherChunks(
+        const isWorker = dependency.data.data.asyncType === 'worker';
+        const asyncChunks = gatherChunks(
           runtimePremodules,
           chunks,
           { test: pathToRegex(dependency.absolutePath) },
-          isEntry ? runtimePremodules : [],
+          isWorker ? runtimePremodules : [],
           graph,
           options,
           true,
-          isEntry
+          isWorker
         );
+
+        // Seal all chunks that are for web workers, as these must be self-sufficient chunks
+        if (isWorker) {
+          assert(asyncChunks.size, `Worker chunk not found for: ${dependency.absolutePath}`);
+          for (const chunk of asyncChunks) {
+            chunk.seal();
+          }
+        }
       } else {
         const module = graph.dependencies.get(dependency.absolutePath);
         if (module) {
@@ -728,7 +755,7 @@ function gatherChunks(
     includeModule(entryModule);
   }
 
-  return chunks;
+  return entryChunks;
 }
 
 function findEntryChunk(chunks: Set<Chunk>, entryFile: string): Chunk | undefined {
