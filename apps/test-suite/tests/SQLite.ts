@@ -16,6 +16,17 @@ interface UserEntity {
   j: number;
 }
 
+// Only some Hermes builds and browsers expose `globalThis.gc()`.
+const globalGC = (globalThis as unknown as { gc?: () => void }).gc;
+
+// Collection is not immediate, so run a few passes before giving up.
+async function forceGC(ref: WeakRef<object>) {
+  for (let i = 0; i < 10 && ref.deref() !== undefined; i++) {
+    globalGC?.();
+    await delayAsync(0);
+  }
+}
+
 export function test({
   describe,
   expect,
@@ -312,6 +323,40 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
       expect(results.length).toBe(1);
       await srcDb.closeAsync();
       await destDb.closeAsync();
+    });
+  });
+
+  describe('Shared connections', () => {
+    // Nothing other than GC can force a shared object release.
+    const gcIt = globalGC ? it : t.xit;
+
+    gcIt('should keep other instances usable after one is collected', async () => {
+      let db: SQLite.SQLiteDatabase | null = await SQLite.openDatabaseAsync('sharedconn.db');
+      const db2 = await SQLite.openDatabaseAsync('sharedconn.db');
+      const collected = new WeakRef(db);
+      db = null;
+      await forceGC(collected);
+      expect(collected.deref()).toBeUndefined();
+
+      await db2.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
+`);
+      const results = await db2.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(1);
+    });
+
+    gcIt('should be able to reopen a database after its only instance is collected', async () => {
+      let db: SQLite.SQLiteDatabase | null = await SQLite.openDatabaseAsync('sharedconn2.db');
+      const collected = new WeakRef(db);
+      db = null;
+      await forceGC(collected);
+      expect(collected.deref()).toBeUndefined();
+
+      const db2 = await SQLite.openDatabaseAsync('sharedconn2.db');
+      const row = await db2.getFirstAsync<{ value: number }>('SELECT 1 as value');
+      expect(requireNotNull(row).value).toBe(1);
     });
   });
 

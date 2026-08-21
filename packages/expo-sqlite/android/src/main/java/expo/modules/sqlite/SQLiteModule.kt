@@ -498,10 +498,11 @@ class SQLiteModule : Module() {
   private fun closeDatabase(database: NativeDatabase) {
     maybeFinalizeAllStatements(database)
     val ret = database.ref.sqlite3_close()
+    // Mark it closed even when sqlite3_close() fails, the database is already out of the cache.
+    database.isClosed = true
     if (ret != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
-    database.isClosed = true
   }
 
   private fun deleteDatabase(databasePath: String) {
