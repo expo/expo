@@ -140,6 +140,65 @@ struct ExpoCameraUtilsTests {
     #expect(cropped.scale == 1)
   }
 
+  @Test(arguments: [
+    UIImage.Orientation.down,
+    .left,
+    .right,
+    .upMirrored,
+    .downMirrored,
+    .leftMirrored,
+    .rightMirrored
+  ] as [UIImage.Orientation])
+  func `bakeOrientation returns an upright image at display dimensions`(orientation: UIImage.Orientation) {
+    let image = makeImage(bufferWidth: 400, bufferHeight: 300, orientation: orientation)
+
+    let baked = ExpoCameraUtils.bakeOrientation(image: image)
+
+    let swaps = [UIImage.Orientation.left, .leftMirrored, .right, .rightMirrored].contains(orientation)
+    #expect(baked.imageOrientation == .up)
+    #expect(baked.cgImage?.width == (swaps ? 300 : 400))
+    #expect(baked.cgImage?.height == (swaps ? 400 : 300))
+    // UIImage.size is display-oriented, so it must not change across the bake.
+    #expect(baked.size == image.size)
+  }
+
+  @Test
+  func `bakeOrientation returns the same instance when already upright`() {
+    let image = makeImage(bufferWidth: 100, bufferHeight: 80, orientation: .up)
+
+    #expect(ExpoCameraUtils.bakeOrientation(image: image) === image)
+  }
+
+  @Test
+  func `bakeOrientation rotates the pixels, not just the tag`() throws {
+    // Displayed via .right (EXIF 6), the buffer's white left half is at the
+    // top — so it must end up at the top of the baked pixels.
+    let image = makeHalfWhiteImage(orientation: .right)
+
+    let baked = try #require(ExpoCameraUtils.bakeOrientation(image: image).cgImage)
+
+    #expect(baked.width == 2)
+    #expect(baked.height == 4)
+    let pixels = try #require(rgba(of: baked))
+    #expect(pixels[0] == 255) // top-left is white
+    #expect(pixels[(baked.height - 1) * baked.width * 4] == 0) // bottom-left is black
+  }
+
+  @Test
+  func `bakeOrientation applies mirrored orientations`() throws {
+    // .upMirrored (EXIF 2) flips horizontally: the buffer's white left half
+    // displays on the right.
+    let image = makeHalfWhiteImage(orientation: .upMirrored)
+
+    let baked = try #require(ExpoCameraUtils.bakeOrientation(image: image).cgImage)
+
+    #expect(baked.width == 4)
+    #expect(baked.height == 2)
+    let pixels = try #require(rgba(of: baked))
+    #expect(pixels[0] == 0) // top-left is black
+    #expect(pixels[(baked.width - 1) * 4] == 255) // top-right is white
+  }
+
   @Test
   func `encodeForSave writes the capture orientation and returns display dimensions`() throws {
     let image = makeImage(bufferWidth: 400, bufferHeight: 300, orientation: .right)
@@ -177,5 +236,41 @@ struct ExpoCameraUtilsTests {
       context.fill(CGRect(x: 0, y: 0, width: bufferWidth, height: bufferHeight))
     }
     return UIImage(cgImage: base.cgImage!, scale: 1, orientation: orientation)
+  }
+
+  // A 4x2 buffer with the left half white and the right half black.
+  private func makeHalfWhiteImage(orientation: UIImage.Orientation) -> UIImage {
+    let format = UIGraphicsImageRendererFormat()
+    format.scale = 1
+    let base = UIGraphicsImageRenderer(size: CGSize(width: 4, height: 2), format: format).image { context in
+      UIColor.black.setFill()
+      context.fill(CGRect(x: 0, y: 0, width: 4, height: 2))
+      UIColor.white.setFill()
+      context.fill(CGRect(x: 0, y: 0, width: 2, height: 2))
+    }
+    return UIImage(cgImage: base.cgImage!, scale: 1, orientation: orientation)
+  }
+
+  // RGBA8 bytes of the image, rows top to bottom.
+  private func rgba(of cgImage: CGImage) -> [UInt8]? {
+    let width = cgImage.width
+    let height = cgImage.height
+    var data = [UInt8](repeating: 0, count: width * height * 4)
+    let drawn = data.withUnsafeMutableBytes { buffer -> Bool in
+      guard let context = CGContext(
+        data: buffer.baseAddress,
+        width: width,
+        height: height,
+        bitsPerComponent: 8,
+        bytesPerRow: width * 4,
+        space: CGColorSpaceCreateDeviceRGB(),
+        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+      ) else {
+        return false
+      }
+      context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+      return true
+    }
+    return drawn ? data : nil
   }
 }

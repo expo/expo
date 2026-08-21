@@ -46,6 +46,14 @@ struct CapturedPhotoProcessor {
     var updatedMetadata = sourceMetadata
     updatedMetadata[kCGImagePropertyOrientation as String] =
       ExpoCameraUtils.toExifOrientation(orientation: image.imageOrientation)
+    // Keep a nested TIFF orientation in sync with the top-level tag so a stale
+    // value can't survive into the serialized file.
+    if var tiffDict = updatedMetadata[kCGImagePropertyTIFFDictionary as String] as? [String: Any],
+      tiffDict[kCGImagePropertyTIFFOrientation as String] != nil {
+      tiffDict[kCGImagePropertyTIFFOrientation as String] =
+        ExpoCameraUtils.toExifOrientation(orientation: image.imageOrientation)
+      updatedMetadata[kCGImagePropertyTIFFDictionary as String] = tiffDict
+    }
 
     if let additionalExif = request.additionalExif {
       for (key, value) in additionalExif {

@@ -179,6 +179,85 @@ struct ExpoCameraUtils {
     return UIImage(cgImage: croppedCgImage, scale: image.scale, orientation: image.imageOrientation)
   }
 
+  /**
+   Redraws the image so its pixels are upright and `imageOrientation` is `.up` (EXIF orientation 1).
+   Draws through a raw `CGContext` in the source color space at scale 1 to preserve wide-gamut captures
+   (a `UIGraphicsImageRenderer` pass would flatten Display P3 to sRGB at screen scale). Returns the image
+   unchanged when it is already upright or when no bitmap context can be created for its pixel format.
+   */
+  static func bakeOrientation(image: UIImage) -> UIImage {
+    guard image.imageOrientation != .up, let cgImage = image.cgImage else {
+      return image
+    }
+
+    let sourceWidth = CGFloat(cgImage.width)
+    let sourceHeight = CGFloat(cgImage.height)
+    let swapsDimensions: Bool
+    switch image.imageOrientation {
+    case .left, .leftMirrored, .right, .rightMirrored:
+      swapsDimensions = true
+    default:
+      swapsDimensions = false
+    }
+    let outputWidth = swapsDimensions ? sourceHeight : sourceWidth
+    let outputHeight = swapsDimensions ? sourceWidth : sourceHeight
+
+    var transform = CGAffineTransform.identity
+    switch image.imageOrientation {
+    case .down, .downMirrored:
+      transform = transform.translatedBy(x: outputWidth, y: outputHeight).rotated(by: .pi)
+    case .left, .leftMirrored:
+      transform = transform.translatedBy(x: outputWidth, y: 0).rotated(by: .pi / 2)
+    case .right, .rightMirrored:
+      transform = transform.translatedBy(x: 0, y: outputHeight).rotated(by: -.pi / 2)
+    default:
+      break
+    }
+    switch image.imageOrientation {
+    case .upMirrored, .downMirrored:
+      transform = transform.translatedBy(x: outputWidth, y: 0).scaledBy(x: -1, y: 1)
+    case .leftMirrored, .rightMirrored:
+      transform = transform.translatedBy(x: outputHeight, y: 0).scaledBy(x: -1, y: 1)
+    default:
+      break
+    }
+
+    return autoreleasepool { () -> UIImage in
+      // Prefer the source pixel format; fall back to 8-bit RGBA in device RGB
+      // for formats that can't back a bitmap context.
+      guard let context = CGContext(
+        data: nil,
+        width: Int(outputWidth),
+        height: Int(outputHeight),
+        bitsPerComponent: cgImage.bitsPerComponent,
+        bytesPerRow: 0,
+        space: cgImage.colorSpace ?? CGColorSpaceCreateDeviceRGB(),
+        bitmapInfo: cgImage.bitmapInfo.rawValue
+      ) ?? CGContext(
+        data: nil,
+        width: Int(outputWidth),
+        height: Int(outputHeight),
+        bitsPerComponent: 8,
+        bytesPerRow: 0,
+        space: CGColorSpaceCreateDeviceRGB(),
+        bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+      ) else {
+        return image
+      }
+
+      // Exact quarter/half turns map pixels one-to-one; pin nearest-neighbor
+      // so no resampling path can soften the render.
+      context.interpolationQuality = .none
+      context.concatenate(transform)
+      context.draw(cgImage, in: CGRect(x: 0, y: 0, width: sourceWidth, height: sourceHeight))
+
+      guard let uprightImage = context.makeImage() else {
+        return image
+      }
+      return UIImage(cgImage: uprightImage, scale: image.scale, orientation: .up)
+    }
+  }
+
   static func write(data: Data, to path: String) -> String? {
     let url = URL(fileURLWithPath: path)
     do {

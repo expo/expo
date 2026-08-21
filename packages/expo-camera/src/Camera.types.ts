@@ -160,6 +160,22 @@ export type CameraPictureOptions = {
    */
   skipProcessing?: boolean;
   /**
+   * If set to `true`, the resulting image is normalized at capture: the pixels are rotated upright (and mirrored,
+   * when the `mirror` option is enabled) inside the existing processing pipeline, and the EXIF `Orientation` tag is
+   * always `1`. Use this when the image bytes are consumed by tooling that ignores EXIF orientation — server-side
+   * processing, hashing or signing, or `Image` components that don't apply the stored orientation. This is the
+   * counterpart to `skipProcessing`: where that option skips orientation adjustment entirely, this one applies it
+   * permanently to the pixel data. It is ignored when `skipProcessing` is enabled.
+   *
+   * Has no effect when the capture is already upright. On iOS, this temporarily allocates one additional
+   * full-resolution bitmap while the upright copy is drawn. On web, captures are always upright, so the option is
+   * a no-op there.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  normalizeOrientation?: boolean;
+  /**
    * @platform web
    */
   scale?: number;
