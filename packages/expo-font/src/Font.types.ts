@@ -51,28 +51,28 @@ export type FontFaceDefinition = {
    */
   path: FontSource;
   /**
-   * On web, maps to the CSS `font-weight` property. Leave unset for a variable font file that
-   * covers a range of weights. Setting a single value restricts the face to only that weight.
-   *
-   * On Android, this is the declared weight used to select the face when the font file itself
-   * doesn't carry weight metadata. On Android API levels below 29, only the default face
-   * (closest to a regular, upright weight and style) is loaded.
+   * On Android, the declared weight used to select this face. When unset, the weight read from
+   * the font file applies. On API levels below 29, only the family's default face (closest to a
+   * regular, upright weight and style) is loaded.
    *
    * On iOS, this value isn't used to select the face; iOS reads the weight embedded in the font
    * file's own metadata instead.
+   *
+   * On web, maps to the CSS `font-weight` property. Leave unset for a variable font file that
+   * covers a range of weights &mdash; a single value restricts the face to only that weight.
    */
   weight?: number | string;
   /**
-   * On web, maps to the CSS `font-style` property. Leave unset for a variable font file that
-   * covers both upright and italic/oblique styles &mdash; setting a single value restricts the
-   * face to only that style.
-   *
-   * On Android, this is the declared style used to select the face when the font file itself
-   * doesn't carry style metadata. On Android API levels below 29, only the default face
-   * (closest to a regular, upright weight and style) is loaded.
+   * On Android, the declared style used to select this face. When unset, the style read from
+   * the font file applies. On API levels below 29, only the family's default face (closest to a
+   * regular, upright weight and style) is loaded.
    *
    * On iOS, this value isn't used to select the face; iOS reads the style embedded in the font
    * file's own metadata instead.
+   *
+   * On web, maps to the CSS `font-style` property. Leave unset for a variable font file that
+   * covers both upright and italic/oblique styles &mdash; a single value restricts the face to
+   * only that style.
    */
   style?: 'normal' | 'italic' | 'oblique';
   /**
