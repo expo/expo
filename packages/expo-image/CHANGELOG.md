@@ -9,6 +9,7 @@
 - Added an `imageLoaded` module event emitted with the decoded pixel size from every load path. ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
 - add expo-observe integration ([#47145](https://github.com/expo/expo/pull/47145) by [@Ubax](https://github.com/Ubax))
 - [iOS][Android] Added a `skipOnCacheHit` field to `transition` that skips the fade the first time a cached image appears (`'memory'` for memory-cache hits, `'all'` for any cache hit), so already-loaded images don't re-animate on mount, tab change, or when scrolling back into view. A transition from a `source` change still plays. ([#48181](https://github.com/expo/expo/pull/48181) by [@janicduplessis](https://github.com/janicduplessis))
+- Added an `includeUrlParams` option to the expo-observe integration; reported image URLs now have their query string and fragment removed unless it is enabled, basic-auth credentials are always removed, and only `http(s)`, `file`, and `android.resource` URLs are reported. ([#49083](https://github.com/expo/expo/pull/49083) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -61,6 +62,7 @@ _This version does not introduce any user-facing changes._
 
 - Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
 - [Android] Fixed `useImage` crashing on SVG sources, and made `maxWidth`/`maxHeight` preserve the SVG's aspect ratio. ([#46077](https://github.com/expo/expo/pull/46077) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Support the `accessibilityElementsHidden` prop. ([#46105](https://github.com/expo/expo/pull/46105) by [@marcshilling](https://github.com/marcshilling))
 
 ## 56.0.7 — 2026-05-21
 

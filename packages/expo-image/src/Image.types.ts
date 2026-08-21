@@ -388,6 +388,14 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   accessible?: boolean;
 
   /**
+   * A Boolean value indicating whether the accessibility elements contained within the image
+   * are hidden from the screen reader.
+   * @default false
+   * @platform ios
+   */
+  accessibilityElementsHidden?: boolean;
+
+  /**
    * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal.
    * @default undefined
    */

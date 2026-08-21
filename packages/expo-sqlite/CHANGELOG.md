@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
+- Removed libSQL support. `syncLibSQL()` and the `libSQLOptions` open option are gone, and the `useLibSQL` config plugin property is deprecated: it warns during prebuild and no longer has any effect. ([#48543](https://github.com/expo/expo/pull/48543) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- [Android][iOS] Fix `deleteDatabaseAsync` and `deleteDatabaseSync` leaving `-journal`, `-wal` and `-shm` sidecar files behind. ([#49125](https://github.com/expo/expo/pull/49125) by [@sbaiahmed1](https://github.com/sbaiahmed1))
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
+- Fixed the devtools plugin bundle missing its `wa-sqlite.wasm` asset. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Changed native implementation to use the unified `ArrayBuffer` type. ([#47168](https://github.com/expo/expo/pull/47168) by [@barthap](https://github.com/barthap))
+- Build the devtools plugin web UI from the monorepo workspace instead of a standalone project. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
+- Updated SQLite to 3.53.3 and SQLCipher to 4.17.0 on all platforms, including the web WebAssembly build. ([#48544](https://github.com/expo/expo/pull/48544) by [@kudo](https://github.com/kudo))
 
 ## 57.0.1 - 2026-07-15
 

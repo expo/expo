@@ -177,7 +177,6 @@ const navigationPropWithWarnings: NavigationProp<ParamListBase> = {
   push: createNOOPWithWarning('push'),
   pop: createNOOPWithWarning('pop'),
   popToTop: createNOOPWithWarning('popToTop'),
-  navigateDeprecated: createNOOPWithWarning('navigateDeprecated'),
   preload: createNOOPWithWarning('preload'),
   getId: () => {
     displayWarningForProp('getId');

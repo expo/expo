@@ -87,7 +87,7 @@ export default function App() {
       });
       setResult(ageRange);
     } catch (error) {
-      setResult({ error: error.message });
+      setResult({ error: error instanceof Error ? error.message : String(error) });
     }
   };
 

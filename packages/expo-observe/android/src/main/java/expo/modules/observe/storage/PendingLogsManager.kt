@@ -17,7 +17,11 @@ class PendingLogsManager(
     database.pendingLogDao().insertAll(pendingLogs)
   }
 
-  suspend fun getAllPendingLogIds(): List<String> = database.pendingLogDao().getAllLogIds()
+  suspend fun getPendingLogIds(limit: Int): List<String> = database.pendingLogDao().getLogIds(limit)
+
+  suspend fun hasPendingLogs(): Boolean = database.pendingLogDao().hasLogIds()
+
+  suspend fun removeAllPendingLogs() = database.pendingLogDao().deleteAll()
 
   suspend fun removePendingLogs(logIds: List<String>) {
     database.withTransaction {

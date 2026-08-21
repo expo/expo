@@ -1,31 +1,23 @@
-import { getPermissionsAsync } from 'expo-notifications';
 import { useRouter } from 'expo-router';
-import { Alert, Button } from 'react-native';
+import { Button, Text } from 'react-native';
 
-import { Notifier } from '../Notifier';
 import { ScrollView } from '../misc/Themed';
+import { setAppNotificationHandler } from '../registerTaskAsync';
 
 export default function IndexPage() {
   const router = useRouter();
   return (
     <ScrollView contentContainerStyle={{ rowGap: 10, padding: 10 }}>
       <Button title="Run on-device tests" onPress={() => router.push('/run')} />
+      <Text>Runs the tests before this app sets a notification handler.</Text>
       <Button
-        title="Go to NCL NotificationScreen"
-        onPress={() => router.push('/ncl-notification-screen')}
-      />
-      <Button title="Go to playground" onPress={() => router.push('/playground')} />
-      <Button title="See Expo ui" onPress={() => router.push('/expo-ui')} />
-      <Button title="Go to test scenarios" onPress={() => router.push('/scenarios')} />
-      <Button
-        title="Get Notification permissions"
+        title="Open the tester app"
         onPress={() => {
-          getPermissionsAsync()
-            .then((permissions) => Alert.alert(JSON.stringify(permissions, null, 2)))
-            .catch((error) => console.error(error));
+          setAppNotificationHandler();
+          router.push('/tester');
         }}
       />
-      <Notifier />
+      <Text>Sets the notification handler of this app, then opens it.</Text>
     </ScrollView>
   );
 }

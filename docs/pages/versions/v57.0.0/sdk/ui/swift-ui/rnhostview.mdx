@@ -29,22 +29,41 @@ Use `matchContents` when you want the SwiftUI parent to size itself based on the
 ```tsx RNHostView with matchContents
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Host, BottomSheet, Button, RNHostView } from '@expo/ui/swift-ui';
+import {
+  Host,
+  BottomSheet,
+  Button,
+  RNHostView,
+} from '@expo/ui/swift-ui';
 
 function Example() {
   const [isPresented, setIsPresented] = useState(false);
 
   return (
     <Host style={{ flex: 1 }}>
-      <Button label="Open sheet" onPress={() => setIsPresented(true)} />
-      <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+      <Button
+        label="Open sheet"
+        onPress={() => setIsPresented(true)}
+      />
+      <BottomSheet
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}>
         <RNHostView matchContents>
           <View style={{ padding: 24 }}>
-            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>React Native Content</Text>
+            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+              React Native Content
+            </Text>
             <Pressable
-              style={{ backgroundColor: '#007AFF', padding: 12, borderRadius: 8, marginTop: 16 }}
+              style={{
+                backgroundColor: '#007AFF',
+                padding: 12,
+                borderRadius: 8,
+                marginTop: 16,
+              }}
               onPress={() => setIsPresented(false)}>
-              <Text style={{ color: 'white', textAlign: 'center' }}>Close</Text>
+              <Text style={{ color: 'white', textAlign: 'center' }}>
+                Close
+              </Text>
             </Pressable>
           </View>
         </RNHostView>
@@ -61,7 +80,13 @@ When using `flex: 1` in your React Native content, omit the `matchContents` prop
 ```tsx RNHostView with flex content
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { Host, BottomSheet, Button, Group, RNHostView } from '@expo/ui/swift-ui';
+import {
+  Host,
+  BottomSheet,
+  Button,
+  Group,
+  RNHostView,
+} from '@expo/ui/swift-ui';
 import { presentationDetents } from '@expo/ui/swift-ui/modifiers';
 
 function Example() {
@@ -69,11 +94,22 @@ function Example() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Button label="Open sheet" onPress={() => setIsPresented(true)} />
-      <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
-        <Group modifiers={[presentationDetents(['medium', 'large'])]}>
+      <Button
+        label="Open sheet"
+        onPress={() => setIsPresented(true)}
+      />
+      <BottomSheet
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}>
+        <Group
+          modifiers={[presentationDetents(['medium', 'large'])]}>
           <RNHostView>
-            <View style={{ flex: 1, backgroundColor: '#007AFF', padding: 24 }}>
+            <View
+              style={{
+                flex: 1,
+                backgroundColor: '#007AFF',
+                padding: 24,
+              }}>
               <Text style={{ color: 'white', fontSize: 18 }}>
                 This content fills the available space
               </Text>
@@ -93,7 +129,12 @@ function Example() {
 ```tsx RNHostView in Popover
 import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Host, Button, Popover, RNHostView } from '@expo/ui/swift-ui';
+import {
+  Host,
+  Button,
+  Popover,
+  RNHostView,
+} from '@expo/ui/swift-ui';
 
 function Example() {
   const [isPresented, setIsPresented] = useState(false);
@@ -101,17 +142,29 @@ function Example() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Popover isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+      <Popover
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}>
         <Popover.Trigger>
-          <Button onPress={() => setIsPresented(true)} label="Show Popover" />
+          <Button
+            onPress={() => setIsPresented(true)}
+            label="Show Popover"
+          />
         </Popover.Trigger>
         <Popover.Content>
           <RNHostView matchContents>
             <View style={{ padding: 24 }}>
-              <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 8 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  marginBottom: 8,
+                }}>
                 React Native Content
               </Text>
-              <Text style={{ color: '#666', marginBottom: 12 }}>Counter: {counter}</Text>
+              <Text style={{ color: '#666', marginBottom: 12 }}>
+                Counter: {counter}
+              </Text>
               <Pressable
                 style={{
                   backgroundColor: '#007AFF',
@@ -120,7 +173,9 @@ function Example() {
                   alignItems: 'center',
                 }}
                 onPress={() => setCounter(counter + 1)}>
-                <Text style={{ color: 'white', fontWeight: '600' }}>Increment</Text>
+                <Text style={{ color: 'white', fontWeight: '600' }}>
+                  Increment
+                </Text>
               </Pressable>
             </View>
           </RNHostView>
@@ -137,4 +192,7 @@ function Example() {
 import { RNHostView } from '@expo/ui/swift-ui';
 ```
 
-<APISection packageName="expo-ui/swift-ui/rnhostview" apiName="RNHostView" />
+<APISection
+  packageName="expo-ui/swift-ui/rnhostview"
+  apiName="RNHostView"
+/>
