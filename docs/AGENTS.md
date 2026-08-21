@@ -1,6 +1,6 @@
 # Agent instructions for docs
 
-These instructions apply to changes inside `docs/`.
+These instructions apply to changes inside `docs/`. Always use `pnpm` as the package manager.
 
 ## Check what CI checks before pushing
 
@@ -11,9 +11,10 @@ pnpm test                     # docs unit tests
 pnpm test:worker              # Cloudflare worker and route tests
 NODE_ENV=production pnpm lint --max-warnings 0
 pnpm lint-prose               # Vale prose lint (same rules as CI)
+pnpm lint                          # Run tests
 ```
 
-All four must pass. CI fails the PR on any Vale error in added lines.
+All five must pass. CI fails the PR on any Vale error in added lines.
 
 ## Vale prose rules to know
 
@@ -23,5 +24,6 @@ All four must pass. CI fails the PR on any Vale error in added lines.
 ## Other conventions
 
 - New pages must be registered in `docs/constants/navigation.js` or they will not appear in the sidebar.
-- There is no Prettier config in this repo. Do not run `npx prettier` on docs files — it rewrites quote style across whole files. Match the existing formatting of the file you are editing (single quotes in JS and MDX imports).
+- There are Oxlint and Oxfmt rules and conventions. Match the existing formatting of the file you are editing (single quotes in JS and MDX imports).
 - Follow the structure of an existing sibling page when adding a page (for example, a new page in `pages/agents/` should mirror `pages/agents/codex.mdx`).
+- When snapshots test files are affected, run `pnpm test -u` to update the snapshot tests.
