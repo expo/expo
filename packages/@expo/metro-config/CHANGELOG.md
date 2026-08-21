@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump to `@expo/metro@56.0.2` and `metro@0.84.5` ([#49161](https://github.com/expo/expo/pull/49161) by [@kitten](https://github.com/kitten))
+
 ## 56.0.18 — 2026-07-23
 
 ### 🐛 Bug fixes
