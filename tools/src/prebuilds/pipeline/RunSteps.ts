@@ -20,7 +20,11 @@ import { getBundledVersionsAsync } from '../../ProjectVersions';
 import { Artifacts } from '../Artifacts';
 import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
-import { getExternalPackageByProductName, isExternalPackage } from '../ExternalPackage';
+import {
+  getExternalPackageByName,
+  getExternalPackageByProductName,
+  isExternalPackage,
+} from '../ExternalPackage';
 import { Frameworks } from '../Frameworks';
 import type { BuildFlavor } from '../Prebuilder.types';
 import { buildSharedSPMDependencyAsync } from '../SPMBuild';
@@ -397,6 +401,7 @@ export function expandWithUnbuiltDependencies(
         for (const dep of product.externalDependencies) {
           let depPackageName: string;
           let depProductName: string;
+          let depExternalPkg: SPMPackageSource | null = null;
 
           if (dep.includes('/')) {
             // Parse package name and product name (handle scoped: @expo/ui/ExpoUI)
@@ -411,6 +416,7 @@ export function expandWithUnbuiltDependencies(
             if (!externalPkg) continue;
             depPackageName = externalPkg.packageName;
             depProductName = dep;
+            depExternalPkg = externalPkg;
           }
 
           // Skip cache deps and deps already in the build set
@@ -418,8 +424,12 @@ export function expandWithUnbuiltDependencies(
           if (packagesByName.has(depPackageName) || added.has(depPackageName)) continue;
 
           // Resolve the dep package once — needed for both the customBuild check
-          // and the auto-add below.
-          const depPkg = resolvePackageByName(depPackageName);
+          // and the auto-add below. External packages live in node_modules, so
+          // the Expo-package resolver cannot find them.
+          const depPkg =
+            depExternalPkg ??
+            resolvePackageByName(depPackageName) ??
+            getExternalPackageByName(depPackageName);
           if (!depPkg) continue;
           let depConfig;
           try {

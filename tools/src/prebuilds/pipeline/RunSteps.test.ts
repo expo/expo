@@ -11,6 +11,8 @@ import { describe, it } from 'node:test';
 import os from 'os';
 import path from 'path';
 
+import type { SPMPackageSource } from '../ExternalPackage';
+import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
 import {
   resolveFlavorTemplatedPath,
   sortPackagesByDependencies,
@@ -19,8 +21,6 @@ import {
   expandWithUnbuiltDependencies,
   rebindExternalPackagesToBundledVersions,
 } from './RunSteps';
-import type { SPMPackageSource } from '../ExternalPackage';
-import type { SPMProduct, SPMPackageDependencyConfig } from '../SPMConfig.types';
 
 // ---------------------------------------------------------------------------
 // Stub helpers
@@ -591,6 +591,32 @@ describe('expandWithUnbuiltDependencies', () => {
       assert.deepEqual(
         result.map((pkg) => pkg.packageName),
         ['consumer', 'dep']
+      );
+    });
+  });
+
+  it('auto-adds an external package referenced by bare product name', () => {
+    withTempDir((dir) => {
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['RNWorklets'])],
+        new Date('2026-01-01T00:00:00Z')
+      );
+
+      // No resolvePackageByName override: this must go through the production
+      // resolver, which has to reach external packages in node_modules and not
+      // only the Expo packages in packages/.
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        clean: true,
+      });
+
+      assert.ok(
+        result.some((pkg) => pkg.packageName === 'react-native-worklets'),
+        `expected react-native-worklets in the build set, got: ${result
+          .map((pkg) => pkg.packageName)
+          .join(', ')}`
       );
     });
   });
