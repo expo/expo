@@ -50,18 +50,30 @@ export function WebModal({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  const dismiss = () => router.canGoBack() ? router.back() : router.replace('/');
+  const dismiss = () => (router.canGoBack() ? router.back() : router.replace('/'));
 
   return (
     <View style={styles.overlay}>
-      <Pressable accessibilityLabel="Dismiss modal" onPress={dismiss} style={StyleSheet.absoluteFill} />
-      <View role="dialog" style={styles.dialog}>{children}</View>
+      <Pressable
+        accessibilityLabel="Dismiss modal"
+        onPress={dismiss}
+        style={StyleSheet.absoluteFill}
+      />
+      <View role="dialog" style={styles.dialog}>
+        {children}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: 24 },
+  overlay: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    padding: 24,
+  },
   dialog: { width: '100%', maxWidth: 640, borderRadius: 16, backgroundColor: 'white', padding: 24 },
 });
 ```
@@ -81,19 +93,24 @@ For a draggable sheet, install a web sheet library such as [Vaul](https://vaul.e
 Build a custom navigator when modal routes need to be removed from the underlying stack state. A web-only `_layout.web.tsx` can use `unstable_createStandardRouterNavigator` with `StackRouter`, render the last non-modal route through `descriptors[key].render()`, and render later routes as overlays. Dismiss an overlay with `actions.back()`.
 
 ```tsx src/components/ModalStack.web.tsx
-import { StackRouter, unstable_createStandardRouterNavigator, type NavigatorContentProps } from 'expo-router';
+import {
+  StackRouter,
+  unstable_createStandardRouterNavigator,
+  type NavigatorContentProps,
+} from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 type Options = { modal?: boolean };
 
 function ModalStackContent({ state, descriptors, actions }: NavigatorContentProps<Options>) {
-  const firstModal = state.routes.findIndex(route => descriptors[route.key].options.modal);
-  const baseRoute = state.routes[firstModal === -1 ? state.index : Math.max(0, firstModal - 1)];
-  const modalRoutes = firstModal === -1 ? [] : state.routes.slice(firstModal);
+  const activeRoutes = state.routes.slice(0, state.index + 1);
+  const firstModal = activeRoutes.findIndex(route => descriptors[route.key].options.modal);
+  const baseRoute = firstModal === -1 ? activeRoutes[state.index] : activeRoutes[firstModal - 1];
+  const modalRoutes = firstModal === -1 ? [] : activeRoutes.slice(firstModal);
 
   return (
     <View style={{ flex: 1 }}>
-      {descriptors[baseRoute.key].render()}
+      {baseRoute && descriptors[baseRoute.key].render()}
       {modalRoutes.map(route => (
         <View key={route.key} style={styles.overlay}>
           <Pressable onPress={actions.back} style={StyleSheet.absoluteFill} />
@@ -107,13 +124,21 @@ function ModalStackContent({ state, descriptors, actions }: NavigatorContentProp
 export const ModalStack = unstable_createStandardRouterNavigator(ModalStackContent, StackRouter);
 
 const styles = StyleSheet.create({
-  overlay: { ...StyleSheet.absoluteFillObject, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0, 0, 0, 0.4)', padding: 24 },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    padding: 24,
+  },
   dialog: { width: '100%', maxWidth: 640, backgroundColor: 'white', padding: 24 },
 });
 ```
 
 ```tsx src/app/_layout.web.tsx
 import { ModalStack } from '../components/ModalStack.web';
+
+export const unstable_settings = { anchor: 'index' };
 
 export default function Layout() {
   return (

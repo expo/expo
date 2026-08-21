@@ -37,10 +37,8 @@ import {
   validateStackPresentation,
 } from './stack-utils';
 
-export type ExtendedStackNavigationOptions = NativeStackNavigationOptions;
-
 const RNStack = unstable_integrateWithRouter<
-  ExtendedStackNavigationOptions,
+  NativeStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardNativeStackEventMap,
   NativeStackNavigationConfig,
