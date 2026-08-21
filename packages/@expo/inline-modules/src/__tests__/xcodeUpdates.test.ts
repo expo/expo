@@ -49,6 +49,34 @@ describe('updateXcodeProject', () => {
     );
   });
 
+  it('resolves the main target from the actual project when it differs from the app name', async () => {
+    expect(tempProjectRoot).toBeTruthy();
+    expect(tempProjectRoot).toBeDefined();
+    tempProjectRoot = tempProjectRoot as string;
+
+    // The fixture's on-disk main target is named "HelloWorld", but the sanitized
+    // form of this app name does not match it.
+    await updateXcodeProject(tempProjectRoot, {
+      watchedDirectories: ['app'],
+      name: 'Sömething Élse',
+    });
+
+    const pbxProject = IOSConfig.XcodeUtils.getPbxproj(tempProjectRoot);
+    const objects = pbxProject.hash.project.objects;
+    const nativeTargets = objects.PBXNativeTarget;
+    const mainTargetUUID = Object.keys(nativeTargets).find(
+      (key) => !key.endsWith('_comment') && nativeTargets[key]?.name === 'HelloWorld'
+    );
+    expect(mainTargetUUID).toBeTruthy();
+
+    const mainTarget = nativeTargets[mainTargetUUID!] as unknown as {
+      fileSystemSynchronizedGroups?: { value: string; comment?: string }[];
+    };
+    expect(mainTarget.fileSystemSynchronizedGroups).toEqual(
+      expect.arrayContaining([expect.objectContaining({ comment: 'app' })])
+    );
+  });
+
   it('does nothing if watchedDirectories is empty', async () => {
     expect(tempProjectRoot).toBeTruthy();
     expect(tempProjectRoot).toBeDefined();

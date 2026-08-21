@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Normalize accented characters instead of stripping them when deriving iOS project names from the app name (e.g. 'Árbók' now becomes 'Arbok' instead of 'rbk'). ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
 - Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
 
 ### 💡 Others

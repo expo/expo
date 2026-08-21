@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve the main Xcode target from the project on disk instead of deriving it from the app name, so projects that were renamed or prebuilt with `--no-clean` match correctly. ([#49143](https://github.com/expo/expo/pull/49143) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 0.1.4 — 2026-07-29

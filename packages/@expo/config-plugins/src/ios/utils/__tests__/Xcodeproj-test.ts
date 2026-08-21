@@ -10,6 +10,12 @@ describe(sanitizedName, () => {
   it(`uses slugify for better name support`, () => {
     expect(sanitizedName('\u2665')).toBe('love');
   });
+  it(`keeps latin letters with diacritics`, () => {
+    expect(sanitizedName('\u00c1rb\u00f3k')).toBe('Arbok');
+    expect(sanitizedName('Árbók')).toBe('Arbok');
+    expect(sanitizedName('Pěkná applikačka')).toBe('Peknaapplikacka');
+    expect(sanitizedName('Caf\u00e9')).toBe('Cafe');
+  });
 });
 
 describe(resolveXcodeBuildSetting, () => {
