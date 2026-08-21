@@ -40,6 +40,40 @@ function getFontFaceRules(): RuleItem[] {
   return [];
 }
 
+const QUOTED_FONT_FAMILY_RE = /^(["'])([\s\S]*)\1$/;
+
+/**
+ * Returns the bare family name from a CSS `font-family` value.
+ *
+ * Rules written by this module always quote the family name (see `_createWebFontTemplate`), but
+ * engines disagree about how they serialize it back through `CSSFontFaceRule.style.fontFamily`:
+ * Firefox preserves the quotes for every rule, while Chromium and WebKit strip them only for names
+ * that are valid CSS identifiers — a name such as `DIN 2014` reads back quoted everywhere.
+ * Comparing the raw serialization against a caller's name therefore fails for every font on Firefox,
+ * and for quote-requiring names in every engine.
+ */
+export function _normalizeFontFamilyName(fontFamily: string): string {
+  const trimmed = fontFamily.trim();
+  const unquoted = trimmed.match(QUOTED_FONT_FAMILY_RE)?.[2];
+  if (unquoted === undefined) {
+    return trimmed;
+  }
+  return unquoted.replace(/\\([\s\S])/g, '$1');
+}
+
+/**
+ * Whether a rule's serialized `font-family` names the family a caller asked for.
+ *
+ * Only the rule's side is normalized. The two strings are not the same kind of value: the rule
+ * holds a CSS component value, which an engine may quote and escape, while `fontFamilyName` is the
+ * literal family name the caller loaded the font under. Normalizing the caller's name too would
+ * strip quotes and whitespace that are part of the name itself, so a family such as `"Weird"` or
+ * `  Padded  ` would stop matching the very rule this module wrote for it.
+ */
+export function _fontFamilyMatchesRule(ruleFontFamily: string, fontFamilyName: string): boolean {
+  return _normalizeFontFamilyName(ruleFontFamily) === fontFamilyName;
+}
+
 function getFontFaceRulesMatchingResource(
   fontFamilyName: string,
   options?: UnloadFontOptions
@@ -47,7 +81,7 @@ function getFontFaceRulesMatchingResource(
   const rules = getFontFaceRules();
   return rules.filter(({ rule }) => {
     return (
-      rule.style.fontFamily === fontFamilyName &&
+      _fontFamilyMatchesRule(rule.style.fontFamily, fontFamilyName) &&
       (options && options.display ? options.display === (rule.style as any).fontDisplay : true)
     );
   });
@@ -98,7 +132,7 @@ const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
       return getLoadedServerFonts();
     }
     const rules = getFontFaceRules();
-    return rules.map(({ rule }) => rule.style.fontFamily);
+    return rules.map(({ rule }) => _normalizeFontFamilyName(rule.style.fontFamily));
   },
 
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
