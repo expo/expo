@@ -1,4 +1,5 @@
 import { Link, type ErrorBoundaryProps } from 'expo-router';
+import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 export function createErrorBoundary(approach: string) {
@@ -21,5 +22,21 @@ export function createErrorBoundary(approach: string) {
 }
 
 export function ThrowingRoute() {
-  throw new Error('Intentional production error boundary test');
+  const [shouldThrow, setShouldThrow] = useState(false);
+
+  if (shouldThrow) {
+    throw new Error('Intentional production error boundary test');
+  }
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Throw error"
+        onPress={() => setShouldThrow(true)}
+        style={{ backgroundColor: '#b00020', padding: 12 }}>
+        <Text style={{ color: '#fff' }}>Throw error</Text>
+      </Pressable>
+    </View>
+  );
 }

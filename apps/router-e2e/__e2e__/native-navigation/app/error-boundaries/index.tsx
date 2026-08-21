@@ -1,4 +1,4 @@
-import { Link } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, Text } from 'react-native';
 
 const examples = [
@@ -9,18 +9,20 @@ const examples = [
 ] as const;
 
 export default function ErrorBoundaryExamples() {
+  const router = useRouter();
+
   return (
     <ScrollView contentContainerStyle={{ gap: 16, padding: 24 }}>
       <Text>Production error boundary examples</Text>
       {examples.map(([label, href]) => (
-        <Link key={href} href={href} asChild>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={label}
-            style={{ backgroundColor: '#0b6caf', padding: 16, borderRadius: 8 }}>
-            <Text style={{ color: '#fff' }}>{label}</Text>
-          </Pressable>
-        </Link>
+        <Pressable
+          key={href}
+          accessibilityRole="button"
+          accessibilityLabel={label}
+          onPress={() => router.push(href)}
+          style={{ backgroundColor: '#0b6caf', padding: 16, borderRadius: 8 }}>
+          <Text style={{ color: '#fff' }}>{label}</Text>
+        </Pressable>
       ))}
     </ScrollView>
   );

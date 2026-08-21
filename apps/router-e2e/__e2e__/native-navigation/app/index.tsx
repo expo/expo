@@ -1,9 +1,10 @@
-import { Link, usePathname, type Href } from 'expo-router';
+import { Link, usePathname, useRouter, type Href } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Text, Pressable, ScrollView, View } from 'react-native';
 
 const HomeIndex = () => {
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     console.log(
@@ -36,7 +37,13 @@ const HomeIndex = () => {
       <CaseLink href="/experimental-stack" text="Experimental Stack" />
       <CaseLink href="/drawer" text="Drawer" />
       <CaseLink href="/drawer-open" text="Drawer (default open)" />
-      <CaseLink href="/error-boundaries" text="Error boundaries" />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Error boundaries"
+        onPress={() => router.push('/error-boundaries')}
+        style={{ backgroundColor: 'rgb(11, 103, 175)', padding: 16, borderRadius: 8 }}>
+        <Text style={{ color: '#fff' }}>Error boundaries</Text>
+      </Pressable>
     </ScrollView>
   );
 };
