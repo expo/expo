@@ -147,6 +147,36 @@ it(`supports worker bundle`, async () => {
   expect(artifacts[1].source).toMatch('TEST_RUN_MODULE');
 });
 
+it('emits workers as standalone bundles when ordinary chunk splitting is disabled', async () => {
+  const [, artifacts] = await serializeShakingAsync(
+    {
+      'index.js': `
+        import('./async');
+        const worker = require.unstable_resolveWorker('./worker');
+        console.log(worker);
+      `,
+      'async.js': `
+        console.log('ordinary async module');
+      `,
+      'worker.js': `
+        console.log('worker module');
+      `,
+    },
+    {
+      splitChunks: false,
+      mockRuntime: true,
+    }
+  );
+  const serialAssets = artifacts as SerialAsset[];
+  const entryChunk = getChunkContaining(serialAssets, '/app/index.js');
+  const ordinaryAsyncChunk = getChunkContaining(serialAssets, '/app/async.js');
+  const workerChunk = getChunkContaining(serialAssets, '/app/worker.js');
+
+  expect(ordinaryAsyncChunk).toBe(entryChunk);
+  expect(workerChunk.metadata.modulePaths).toEqual(['/app/worker.js']);
+  expect(workerChunk).not.toBe(entryChunk);
+});
+
 it(`supports worker bundle with nested async chunk`, async () => {
   // TODO: Add actual support for eliminating code from async imports.
   const [[, , graph], artifacts] = await serializeShakingAsync(
