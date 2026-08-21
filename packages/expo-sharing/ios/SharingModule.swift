@@ -18,10 +18,16 @@ public final class SharingModule: Module {
         throw FilePermissionException()
       }
 
-      let activityController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+      let shareURL = try prepareShareUrl(url: url, options: options)
+      let stagedDirectory = shareURL == url ? nil : shareURL.deletingLastPathComponent()
+      let activityController = UIActivityViewController(activityItems: [shareURL], applicationActivities: nil)
       activityController.title = options.dialogTitle
 
-      activityController.completionWithItemsHandler = { _, _, _, _ in
+      // Strong self capture because we don't want to skip the deletion of the staging item, also
+      // the .runOnMain captures strong self leading to warnings with weak self
+      activityController.completionWithItemsHandler = { [self] _, _, _, _ in
+        self.deleteStagedItemOrWarn(at: stagedDirectory)
+
         // Resolve unconditionally. UIActivityViewController invokes this once
         // on dismissal for every (activityType, completed) permutation. The
         // previous implementation only resolved two of four cases, leaking
@@ -32,6 +38,7 @@ public final class SharingModule: Module {
       }
 
       guard let currentViewcontroller = appContext?.utilities?.currentViewController() else {
+        self.deleteStagedItemOrWarn(at: stagedDirectory)
         throw MissingCurrentViewControllerException()
       }
 
@@ -101,5 +108,87 @@ public final class SharingModule: Module {
     }
 
     return rawPayloads
+  }
+
+  private func prepareShareUrl(url: URL, options: SharingOptions) throws -> URL {
+    guard let contentType = declaredContentType(options), let ext = contentType.preferredFilenameExtension, ext != url.pathExtension else {
+      return url
+    }
+
+    guard let appContext else {
+      throw Exceptions.AppContextLost()
+    }
+
+    guard let stagingDirectory = appContext.config.cacheDirectory?.appendingPathComponent("expo-sharing-tmp", isDirectory: true) else {
+      appContext.jsLogger.warn(
+        "expo-sharing: Failed to access app's cache directory. Sharing with the original url: \(url), which will ignore the passed type: \(contentType) "
+      )
+      return url
+    }
+
+    // An explicitly declared type intentionally takes precedence over a conflicting filename extension.
+    let baseName = url.lastPathComponent
+    let linkDirectory = stagingDirectory
+      .appendingPathComponent(UUID().uuidString, isDirectory: true)
+
+    let linkURL = linkDirectory
+      .appendingPathComponent(baseName.isEmpty ? "expo-sharing-item" : baseName)
+      .appendingPathExtension(ext)
+
+    do {
+      try FileManager.default.createDirectory(at: linkDirectory, withIntermediateDirectories: true)
+    } catch {
+      appContext.jsLogger.warn(
+        "expo-sharing: Failed to create a temporary directory at \(linkDirectory) used for applying the requested content type." +
+        " The declared type of \(contentType) will be ignored. Error: \(error.localizedDescription)"
+      )
+      return url
+    }
+
+    do {
+      try linkOrCopyItem(at: url, to: linkURL)
+      return linkURL
+    } catch {
+      try? FileManager.default.removeItem(at: linkDirectory)
+      appContext.jsLogger.warn(
+        "expo-sharing: Failed to stage '\(url.lastPathComponent)' with the declared type: \(contentType)." +
+        " The provided type will be ignored. Error: \(error.localizedDescription)"
+      )
+    }
+    return url
+  }
+
+  private func declaredContentType(_ options: SharingOptions) -> UTType? {
+    if let uti = options.UTI, let type = UTType(uti), type.preferredFilenameExtension != nil {
+      return type
+    }
+    if let mimeType = options.mimeType, let type = UTType(mimeType: mimeType), type.preferredFilenameExtension != nil {
+      return type
+    }
+    return nil
+  }
+
+  private func linkOrCopyItem(at url: URL, to linkOrCopyUrl: URL) throws {
+    do {
+      try FileManager.default.linkItem(at: url, to: linkOrCopyUrl)
+    } catch {
+      // Hard links cannot span volumes (`EXDEV`), which is reachable for URLs
+      // vended by a file provider. Copying costs an actual duplicate of the
+      // file, but it is the only way to honor the declared type in that case.
+      try FileManager.default.copyItem(at: url, to: linkOrCopyUrl)
+    }
+  }
+
+  func deleteStagedItemOrWarn(at url: URL?) {
+    guard let url else {
+      return
+    }
+    do {
+      try FileManager.default.removeItem(at: url)
+    } catch {
+      appContext?.jsLogger.warn(
+        "expo-sharing: Failed to remove temporary sharing item at '\(url.absoluteString)': \(error.localizedDescription)"
+      )
+    }
   }
 }
