@@ -21,9 +21,11 @@
 - [Android] Fix SIGABRT when loading a development server URL that has no path (e.g. `http://192.168.1.2:8081`): Android's `URI.resolve` omits the path separator for an empty-path base, so the first segment of a relative asset URL was spliced onto the port and the resulting authority failed to parse. ([#48625](https://github.com/expo/expo/pull/48625) by [@tsapeta](https://github.com/tsapeta))
 - Reject updates whose asset key or file extension contains a path separator, which previously let a manifest write and delete files outside the updates directory. ([#48762](https://github.com/expo/expo/pull/48762), [#48763](https://github.com/expo/expo/pull/48763) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
+- [Android] Register the embedded update in a single transaction. An interrupted registration previously left an update row with no launch asset, which is treated as launchable and then fails every cold start with "Launch asset not found for update"; it now leaves no row, so the next launch registers it cleanly. ([#49130](https://github.com/expo/expo/pull/49130) by [@gwdp](https://github.com/gwdp))
 
 ### 💡 Others
 
+- [Android] Replace the "this should never happen" wording in the missing launch asset error with the likely cause and how the state resolves. ([#49130](https://github.com/expo/expo/pull/49130) by [@gwdp](https://github.com/gwdp))
 - Rename the no-update `downloadComplete` state to `downloadCompleteUnavailable` in native update events. ([#47902](https://github.com/expo/expo/pull/47902) by [@kudo](https://github.com/kudo))
 - [Android] Use `OkHttpClientProvider` instead of raw `OkHttpClient` in `FileDownloader` so React Native's shared client and its interceptors are applied. ([#46926](https://github.com/expo/expo/pull/46926) by [@cortinico](https://github.com/cortinico))
 - [Android] Log purge completion errors via `android.util.Log.e` directly instead of `logger.error`, so the failure path doesn't re-enter the `PersistentFileLog` dispatch queue from inside one of its own tasks. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
