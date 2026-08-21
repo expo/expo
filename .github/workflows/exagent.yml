@@ -101,10 +101,11 @@ jobs:
       #    model blob. Expect single-digit tokens/sec on a 4 vCPU runner, so scenarios
       #    must stay short.
       #
-      # 2. GitHub Models inference endpoint, reached with the job's GITHUB_TOKEN and
-      #    `models: read` permission. Faster than CPU inference and still free, but the
-      #    rate limits and terms have to be verified, and the served model version is
-      #    not pinnable the way an Ollama tag is.
+      # 2. A hosted free-tier API via a repo secret (GitHub Models retired 2026-07-30).
+      #    Candidates: Groq (Llama 3.3 70B, ~30 RPM / 1000 req/day), Gemini Flash free
+      #    tier, OpenRouter free models (50 req/day). Much faster than CPU inference,
+      #    but the served model is not pinnable the way an Ollama tag is, and free-tier
+      #    limits shift — acceptable only because this job stays report-only.
       #
       # Whichever wins, the graders stay programmatic (see evals/schema.md) and the job
       # stays report-only.
