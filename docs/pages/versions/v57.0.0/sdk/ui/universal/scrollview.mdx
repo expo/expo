@@ -11,6 +11,14 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 A scrollable container, defaulting to vertical scrolling. Use [`direction="horizontal"`](#direction) for horizontal lists.
 
+## Native implementations
+
+| Platform | Backing component                                                                                                                                                                                                                                                         |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Android  | A Jetpack Compose `Column` or `Row` with the [`verticalScroll` or `horizontalScroll` modifier](https://developer.android.com/develop/ui/compose/touch-input/pointer-input/scroll#scroll-modifiers). This implementation renders all children and is not a lazy container. |
+| iOS      | SwiftUI [`ScrollView`](https://developer.apple.com/documentation/swiftui/scrollview).                                                                                                                                                                                     |
+| Web      | React Native [`ScrollView`](https://reactnative.dev/docs/scrollview).                                                                                                                                                                                                     |
+
 ## Installation
 
 <APIInstallSection />
