@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 
-import { store, type ReactNavigationState } from '../../global-state/router-store';
+import type { ReactNavigationState } from '../../global-state/router-store';
+import { useExpoRouterStore } from '../../global-state/storeContext';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { useRouter } from '../../hooks';
 import type { Href } from '../../types';
@@ -14,6 +15,7 @@ export function useNextScreenId(): [
 ] {
   const router = useRouter();
   const routeInfo = useRouteInfo();
+  const { navigationRef, linking } = useExpoRouterStore();
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
   const currentHref = useRef<Href | undefined>(undefined);
@@ -26,13 +28,15 @@ export function useNextScreenId(): [
         const preloadedRoute = getPreloadedRouteFromRootStateByHref(
           currentHref.current,
           state,
-          routeInfo
+          routeInfo,
+          linking
         );
         const routeKey = preloadedRoute?.key;
         const tabPathFromRootState = getTabPathFromRootStateByHref(
           currentHref.current,
           state,
-          routeInfo
+          routeInfo,
+          linking
         );
         // Without this timeout react-native does not have enough time to mount the new screen
         // and thus it will not be found on the native side
@@ -52,8 +56,8 @@ export function useNextScreenId(): [
 
   useEffect(() => {
     // When screen is prefetched, then the root state is updated with the preloaded route.
-    return store.navigationRef.addListener('state', onNavigationStateChange);
-  }, []);
+    return navigationRef.addListener('state', onNavigationStateChange);
+  }, [navigationRef]);
 
   const prefetch = useCallback(
     (href: Href): void => {
