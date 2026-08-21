@@ -51,6 +51,9 @@ public final class FontLoaderModule: Module {
         throw FontFamilyEmptyFacesException(fontFamilyAlias)
       }
 
+      // No alias-registry writes in the loop: a face that throws partway through must not leave
+      // a partial, unordered family committed.
+      var faceEntries = [(url: URL, names: [String])]()
       var faceInfos = [FaceInfo]()
 
       for (index, face) in faces.enumerated() {
@@ -62,13 +65,13 @@ public final class FontLoaderModule: Module {
         // The registry survives JS reloads, so the same file may arrive again — unregister it
         // first. A failed unregister is fine: `registerFont` tolerates duplicates.
         if FontFamilyAliasManager.hasRegisteredUrl(localUri, forAlias: fontFamilyAlias) {
-          _ = try unregisterFont(url: fontUrl)
+          _ = try? unregisterFont(url: fontUrl)
         }
 
         try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
 
         let names = try postScriptNames(inFileAt: fontUrl, alias: fontFamilyAlias)
-        FontFamilyAliasManager.setNames(names, forURL: localUri, alias: fontFamilyAlias)
+        faceEntries.append((url: localUri, names: names))
 
         let traits = fontTraits(inFileAt: fontUrl)
         faceInfos.append(FaceInfo(
@@ -81,7 +84,12 @@ public final class FontLoaderModule: Module {
         ))
       }
 
-      FontFamilyAliasManager.moveToFront(url: defaultFace(among: faceInfos).url, alias: fontFamilyAlias)
+      let defaultUrl = defaultFace(among: faceInfos).url
+      if let defaultIndex = faceEntries.firstIndex(where: { $0.url == defaultUrl }), defaultIndex != 0 {
+        let defaultEntry = faceEntries.remove(at: defaultIndex)
+        faceEntries.insert(defaultEntry, at: 0)
+      }
+      FontFamilyAliasManager.setFaces(faceEntries, alias: fontFamilyAlias)
 
       // Report only the alias, matching `loadAsync`'s `getLoadedFonts` policy above.
       registeredFonts = Array(Set(registeredFonts).union([fontFamilyAlias]))

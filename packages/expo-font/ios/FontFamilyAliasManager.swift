@@ -34,51 +34,26 @@ internal struct FontFamilyAliasManager {
   }
 
   /**
-   Replaces the alias's whole entry with this one font — `loadAsync`'s "last call wins" contract,
-   unlike the per-face `setNames`.
+   Replaces the alias's whole entry with these faces, in the given order — `loadFontFamilyAsync`'s
+   "last call wins" contract. This also clears stale faces left over from a previous registration
+   under the same alias that had more faces.
+   */
+  internal static func setFaces(_ faces: [(url: URL, names: [String])], alias familyNameAlias: String) {
+    maybeSwizzleUIFont()
+    queue.sync(flags: .barrier) {
+      fontFamilyAliases[familyNameAlias] = faces
+    }
+  }
+
+  /**
+   Replaces the alias's whole entry with this one font — `loadAsync`'s "last call wins" contract.
    */
   internal static func setAlias(
     _ familyNameAlias: String,
     forPostScriptNames postScriptNames: [String],
     url: URL
   ) {
-    maybeSwizzleUIFont()
-    queue.sync(flags: .barrier) {
-      fontFamilyAliases[familyNameAlias] = [(url: url, names: postScriptNames)]
-    }
-  }
-
-  /**
-   Records the file's `names` as a face of `alias`. A face with the same `url` is replaced in
-   place, so re-registering it (e.g. after a JS reload) doesn't duplicate the face.
-   */
-  internal static func setNames(_ names: [String], forURL url: URL, alias familyNameAlias: String) {
-    maybeSwizzleUIFont()
-    queue.sync(flags: .barrier) {
-      var faces = fontFamilyAliases[familyNameAlias] ?? []
-      if let index = faces.firstIndex(where: { $0.url == url }) {
-        faces[index] = (url: url, names: names)
-      } else {
-        faces.append((url: url, names: names))
-      }
-      fontFamilyAliases[familyNameAlias] = faces
-    }
-  }
-
-  /**
-   Moves the face registered for `url` to the front, making its names the first ones reported.
-   */
-  internal static func moveToFront(url: URL, alias familyNameAlias: String) {
-    queue.sync(flags: .barrier) {
-      guard var faces = fontFamilyAliases[familyNameAlias],
-        let index = faces.firstIndex(where: { $0.url == url }),
-        index != 0 else {
-        return
-      }
-      let face = faces.remove(at: index)
-      faces.insert(face, at: 0)
-      fontFamilyAliases[familyNameAlias] = faces
-    }
+    setFaces([(url: url, names: postScriptNames)], alias: familyNameAlias)
   }
 
   /**
