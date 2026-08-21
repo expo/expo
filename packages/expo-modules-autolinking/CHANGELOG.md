@@ -22,6 +22,7 @@
 - [iOS] Stop discarding xcconfig changes made by other `post_install` hooks, which broke builds against React Native nightlies with `include of non-modular header inside framework module 'React.…'`. ([#49038](https://github.com/expo/expo/pull/49038) by [@kudo](https://github.com/kudo))
 - [iOS] Fix `'React/RCTBridge.h' file not found` with `ios.useFrameworks: "dynamic"` by reverting the dynamic-framework linkage guard from [#47500](https://github.com/expo/expo/pull/47500). Under `:dynamic` linkage every pod target is already a dynamic framework, so the guard skipped the whole `USE_FRAMEWORKS` downgrade. `@rnmapbox/maps` 10.3.2 no longer needs the guard because it skips its own dynamic flip when precompiled modules are enabled. ([#48869](https://github.com/expo/expo/pull/48869) by [@kudo](https://github.com/kudo))
 - [iOS] Pull a 3rd-party pod's prebuilt XCFramework to source when a dependent 3rd-party pod builds from source, fixing `'worklets/Compat/StableApi.h' file not found`. ([#49147](https://github.com/expo/expo/pull/49147) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add a prebuilt dependency's XCFramework header directories to the `HEADER_SEARCH_PATHS` of source-built pods that depend on it, fixing missing header file errors. ([#49203](https://github.com/expo/expo/pull/49203) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
