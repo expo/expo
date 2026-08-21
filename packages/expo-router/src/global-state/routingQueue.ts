@@ -1,12 +1,4 @@
-import type { RefObject } from 'react';
-
-import type {
-  NavigationAction,
-  ParamListBase,
-  NavigationContainerRef,
-} from '../react-navigation/native';
-import { getNavigateAction } from './getNavigationAction';
-import type { RouterRegistry } from './routerRegistry';
+import type { NavigationAction } from '../react-navigation/native';
 import type { LinkToOptions } from './types';
 
 interface NavigateToHrefIntent {
@@ -40,7 +32,7 @@ export type RoutingIntent =
     }
   | {
       type: 'ACTION';
-      payload: { action: NavigationAction };
+      payload: { action: NavigationAction; originKey?: string };
       metadata?: RoutingIntentMetadata;
       onDispatch?: (metadata: RoutingIntentMetadata | undefined) => void;
     };
@@ -63,62 +55,11 @@ export const routingQueue = {
       callback();
     }
   },
-  run(
-    ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
-    registry: RouterRegistry = new Map()
-  ) {
-    // Reset the identity of the queue.
-    const events = routingQueue.queue;
-    routingQueue.queue = [];
-    let intent: RoutingIntent | undefined;
-    while ((intent = events.shift())) {
-      if (!ref.current) {
-        // TODO: Wait for the root navigator to mount instead of dropping the action.
-        console.warn(
-          'Navigation action was dropped because the navigation container is not mounted.'
-        );
-        continue;
-      }
-
-      try {
-        let dispatchAction: NavigationAction;
-        if (intent.type === 'NAVIGATE_TO_HREF') {
-          const {
-            payload: { href, options },
-          } = intent;
-
-          const resolution = getNavigateAction(
-            href,
-            options,
-            registry,
-            options.event,
-            options.withAnchor,
-            options.dangerouslySingular,
-            !!options.__internal__PreviewKey
-          );
-          if (resolution.status === 'invalid') {
-            const href = intent.payload.originalHref ?? resolution.href;
-            console.warn(`Could not generate a valid navigation state for the given path: ${href}`);
-            continue;
-          }
-          dispatchAction = resolution.action;
-        } else {
-          dispatchAction = intent.payload.action;
-        }
-
-        intent.onDispatch?.(intent.metadata);
-        if (intent.type === 'NAVIGATOR_ACTION') {
-          intent.payload.dispatchSync(dispatchAction);
-        } else {
-          ref.current.dispatchSync(dispatchAction);
-        }
-      } catch (error) {
-        const message =
-          typeof error === 'object' && error != null && 'message' in error ? error.message : error;
-        console.warn(
-          `An error occurred when trying to handle navigation action ${JSON.stringify(intent)}: ${message}`
-        );
-      }
+  drain(snapshot: RoutingIntent[]) {
+    if (snapshot !== routingQueue.queue) {
+      return [];
     }
+    routingQueue.queue = [];
+    return snapshot;
   },
 };

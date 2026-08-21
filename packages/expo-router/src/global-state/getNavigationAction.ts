@@ -6,7 +6,9 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { NavigationAction } from '../react-navigation/native';
+import type { NavigationState } from '../react-navigation/routers';
 import type { SingularOptions } from '../useScreens';
+import { getRouteInfoFromState } from './getRouteInfoFromState';
 import { resolveNavigationDestination } from './resolveNavigationDestination';
 import type { RouterRegistry } from './routerRegistry';
 import { store } from './store';
@@ -20,25 +22,19 @@ export function getNavigateAction(
   baseHref: string,
   options: LinkToOptions,
   registry: RouterRegistry,
-  type = 'NAVIGATE',
-  withAnchor?: boolean,
-  singular?: SingularOptions,
-  isPreviewNavigation?: boolean
+  type: string | undefined,
+  withAnchor: boolean | undefined,
+  singular: SingularOptions | undefined,
+  isPreviewNavigation: boolean | undefined,
+  navigationState: NavigationState
 ): NavigationResolution {
-  store.assertIsReady();
-  const navigationRef = store.navigationRef.current;
-
-  if (navigationRef == null) {
-    throw new Error(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
-    );
-  }
   if (!store.linking || !store.routeNode) {
     throw new Error('Attempted to link to route when no routes are present');
   }
 
+  // TODO(@ubax): make sure calling getRouteInfoFromState is performant here
   const href = applyRedirects(
-    resolveHrefStringWithSegments(baseHref, store.getRouteInfo(), options),
+    resolveHrefStringWithSegments(baseHref, getRouteInfoFromState(navigationState), options),
     store.redirects
   )!;
 
@@ -55,10 +51,10 @@ export function getNavigateAction(
     : {};
   const action = resolveNavigationDestination({
     targetState: state,
-    navigationState: navigationRef.getRootState(),
+    navigationState,
     routeNode: store.routeNode,
     registry,
-    action: { type, payload: { singular } },
+    action: { type: type ?? 'NAVIGATE', payload: { singular } },
     withAnchor,
     internalParams,
   });

@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 
 import type { RouteNode } from '../../Route';
-import type { NavigationAction, NavigationState } from '../../react-navigation/routers';
+import type { NavigationState } from '../../react-navigation/routers';
 import type { RouterRegistry, RouterRegistryEntry } from '../routerRegistry';
 import { useNavigationTreeReducer } from '../useNavigationTreeReducer';
 
@@ -37,11 +37,9 @@ function createEntry(reduce: RouterRegistryEntry['reduce']): RouterRegistryEntry
 
 function renderReducer({
   registry,
-  onUnhandledAction = jest.fn(),
   onStateChangeInsertion = jest.fn(),
 }: {
   registry: RouterRegistry;
-  onUnhandledAction?: (action: NavigationAction) => void;
   onStateChangeInsertion?: (state: NavigationState) => void;
 }) {
   return renderHook<ReturnType<typeof useNavigationTreeReducer>, { registry: RouterRegistry }>(
@@ -49,7 +47,6 @@ function renderReducer({
       useNavigationTreeReducer({
         initialState,
         registry,
-        onUnhandledAction,
         onStateChangeInsertion,
       }),
     { initialProps: { registry } }
@@ -78,22 +75,44 @@ it('reduces consecutive actions against accumulated state with one committed upd
   expect(onStateChangeInsertion).toHaveBeenCalledTimes(2);
 });
 
-it('reports an action dispatched before its router registers', () => {
-  const onUnhandledAction = jest.fn();
-  const result = renderReducer({ registry: new Map(), onUnhandledAction });
-  const action = { type: 'TEST' };
+it('reduces consecutive queued intents against accumulated state', () => {
+  const reduce = jest.fn((state: NavigationState) => ({
+    state: { ...state, index: state.index + 1 },
+    affectedRouteKey: state.routes[state.index + 1]!.key,
+  }));
+  const result = renderReducer({
+    registry: new Map([['root', createEntry(reduce)]]),
+  });
 
-  act(() =>
-    expect(result.result.current.handleAction(action)).toEqual({
-      handled: false,
-    })
-  );
+  act(() => {
+    result.result.current.processIntent({
+      type: 'ACTION',
+      payload: { action: { type: 'NEXT' } },
+    });
+    result.result.current.processIntent({
+      type: 'ACTION',
+      payload: { action: { type: 'NEXT' } },
+    });
+  });
 
-  expect(onUnhandledAction).toHaveBeenCalledWith(action);
+  expect(reduce).toHaveBeenCalledTimes(2);
+  expect(reduce.mock.calls[1]![0].index).toBe(1);
+  expect(result.result.current.state.index).toBe(2);
 });
 
-it('reports a later action after a same-batch reset changes the registered state key', () => {
-  const onUnhandledAction = jest.fn();
+it('warns when an action is dispatched before its router registers', () => {
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const result = renderReducer({ registry: new Map() });
+
+  act(() => expect(result.result.current.handleAction({ type: 'TEST' })).toBeUndefined());
+
+  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'TEST'"));
+  expect(result.result.current.state).toBe(initialState);
+  error.mockRestore();
+});
+
+it('warns for a later action after a same-batch reset changes the registered state key', () => {
+  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
   const entry = createEntry((state, action) =>
     action.type === 'RESET_KEY'
       ? {
@@ -104,18 +123,16 @@ it('reports a later action after a same-batch reset changes the registered state
   );
   const result = renderReducer({
     registry: new Map([['root', entry]]),
-    onUnhandledAction,
   });
 
   act(() => {
-    expect(result.result.current.handleAction({ type: 'RESET_KEY' }).handled).toBe(true);
-    expect(result.result.current.handleAction({ type: 'NEXT' })).toEqual({
-      handled: false,
-    });
+    result.result.current.handleAction({ type: 'RESET_KEY' });
+    result.result.current.handleAction({ type: 'NEXT' });
   });
 
-  expect(onUnhandledAction).toHaveBeenCalledWith({ type: 'NEXT' });
+  expect(error).toHaveBeenCalledWith(expect.stringContaining("The action 'NEXT'"));
   expect(result.result.current.state.key).toBe('next-root');
+  error.mockRestore();
 });
 
 it('resets a state slice when its router unregisters', () => {

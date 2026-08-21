@@ -32,16 +32,11 @@ export type ChildPreventRemoveListener = (action: NavigationAction) => boolean;
 
 export type ChildBeforeRemoveListener = (action: NavigationAction) => void;
 
-export type HandleActionResult = {
-  handled: boolean;
-  originStateKey?: string;
-};
-
 /**
  * Context which holds the required helpers needed to build nested navigators.
  */
 export const NavigationBuilderContext = React.createContext<{
-  handleAction: (action: NavigationAction, originKey?: string) => HandleActionResult;
+  handleAction: (action: NavigationAction, originKey?: string) => void;
   getStateForKey: (key: string) => NavigationState | undefined;
   addListener?: AddListener;
   addKeyedListener?: AddKeyedListener;
@@ -49,7 +44,7 @@ export const NavigationBuilderContext = React.createContext<{
   onOptionsChange: (options: object) => void;
   stackRef?: React.MutableRefObject<string | undefined>;
 }>({
-  handleAction: () => ({ handled: false }),
+  handleAction: () => undefined,
   getStateForKey: () => undefined,
   onDispatchAction: () => undefined,
   onOptionsChange: () => undefined,

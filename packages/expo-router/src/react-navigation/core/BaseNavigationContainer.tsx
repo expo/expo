@@ -5,6 +5,7 @@ import { use } from 'react';
 
 import type { RouteNode } from '../../Route';
 import { findFocusedRoute } from '../../fork/findFocusedRoute';
+import { RoutingQueueDrainer } from '../../global-state/RoutingQueueDrainer';
 import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterRegistryContext, RouterRegistryProvider } from '../../global-state/routerRegistry';
@@ -79,7 +80,6 @@ function BaseNavigationContainerInner({
   initialState,
   onStateChange,
   onReady,
-  onUnhandledAction,
   UNSTABLE_routeNode,
   UNSTABLE_onStateChangeInsertion,
   theme,
@@ -106,14 +106,14 @@ function BaseNavigationContainerInner({
   });
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, getState, getStateForKey, handleAction } = useNavigationTreeReducer({
-    initialState,
-    routeNode: UNSTABLE_routeNode,
-    registry,
-    onUnhandledAction: onUnhandledAction ?? defaultOnUnhandledAction,
-    onDispatchAction,
-    onStateChangeInsertion: UNSTABLE_onStateChangeInsertion,
-  });
+  const { state, getState, getStateForKey, handleAction, processIntent } = useNavigationTreeReducer(
+    {
+      initialState,
+      routeNode: UNSTABLE_routeNode,
+      registry,
+      onStateChangeInsertion: UNSTABLE_onStateChangeInsertion,
+    }
+  );
 
   const hasNotifiedInitialStateRef = React.useRef(false);
   const lastNotifiedStateRef = React.useRef<NavigationState | undefined>(undefined);
@@ -131,11 +131,7 @@ function BaseNavigationContainerInner({
   });
 
   const dispatchSync = useLatestCallback((action: NavigationAction) => {
-    if (listeners.focus[0] == null) {
-      console.error(NOT_INITIALIZED_ERROR);
-    } else {
-      listeners.focus[0]((navigation) => navigation.dispatchSync(action));
-    }
+    handleAction(action);
   });
 
   const canGoBack = useLatestCallback(() => {
@@ -363,49 +359,10 @@ function BaseNavigationContainerInner({
             <EnsureSingleNavigator>
               <ThemeProvider value={theme}>{children}</ThemeProvider>
             </EnsureSingleNavigator>
+            <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>
       </NavigationBuilderContext.Provider>
     </NavigationContainerRefContext.Provider>
   );
-}
-
-// TODO(@ubax): investigate if this is really needed and if v57 approach is not better
-function defaultOnUnhandledAction(action: NavigationAction): void {
-  if (process.env.NODE_ENV === 'production') {
-    return;
-  }
-
-  const payload: Record<string, any> | undefined = action.payload;
-  let message = `The action '${action.type}'${
-    payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
-  } was not handled by any navigator.`;
-
-  switch (action.type) {
-    case 'PRELOAD':
-    case 'NAVIGATE':
-    case 'PUSH':
-    case 'REPLACE':
-    case 'POP_TO':
-    case 'JUMP_TO':
-      if (payload?.name) {
-        message += `\n\nDo you have a screen named '${payload.name}'?\n\nIf you're trying to navigate to a screen in a nested navigator, see https://reactnavigation.org/docs/nesting-navigators#navigating-to-a-screen-in-a-nested-navigator.\n\nIf you're using conditional rendering, navigation will happen automatically and you shouldn't navigate manually, see.`;
-      } else {
-        message += `\n\nYou need to pass the name of the screen to navigate to.\n\nSee https://reactnavigation.org/docs/navigation-actions for usage.`;
-      }
-      break;
-    case 'GO_BACK':
-    case 'POP':
-    case 'POP_TO_TOP':
-      message += `\n\nIs there any screen to go back to?`;
-      break;
-    case 'OPEN_DRAWER':
-    case 'CLOSE_DRAWER':
-    case 'TOGGLE_DRAWER':
-      message += `\n\nIs your screen inside a Drawer navigator?`;
-      break;
-  }
-
-  message += `\n\nThis is a development-only warning and won't be shown in production.`;
-  console.error(message);
 }

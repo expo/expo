@@ -3,7 +3,6 @@ import { I18nManager } from 'react-native';
 
 import { syncStoreNavigationState } from '../global-state/store';
 import { useExpoRouterStore } from '../global-state/storeContext';
-import { ImperativeApiEmitter } from '../imperative-api';
 import type {
   DocumentTitleOptions,
   LinkingOptions,
@@ -190,7 +189,6 @@ function NavigationContainerInner(
             UNSTABLE_onStateChangeInsertion={store ? syncStoreNavigationState : undefined}
             ref={refContainer}
           />
-          <ImperativeApiEmitter navigationRef={refContainer} />
         </LinkingContext.Provider>
       </UnhandledLinkingContext.Provider>
     </LocaleDirContext.Provider>

@@ -1,31 +1,16 @@
 import { applyRedirects } from '../../getRoutesRedirects';
+import type { NavigationState } from '../../react-navigation/routers';
 import { getNavigateAction } from '../getNavigationAction';
 import { resolveNavigationDestination } from '../resolveNavigationDestination';
 import { store } from '../store';
 
 jest.mock('../store', () => ({
   store: {
-    assertIsReady: jest.fn(),
-    navigationRef: {
-      isReady: jest.fn(() => true),
-      current: {
-        getRootState: jest.fn(() => ({
-          routes: [{ key: 'home-key', name: 'home' }],
-          index: 0,
-          key: 'root-nav',
-          type: 'stack',
-          routeNames: ['home'],
-          stale: false,
-          routeKeySeq: 0,
-        })),
-      },
-    },
     routeNode: { route: 'root', children: [] },
     linking: {
       getStateFromPath: jest.fn(() => ({ routes: [{ name: 'home' }] })),
       config: {},
     },
-    getRouteInfo: jest.fn(() => ({ pathname: '/', segments: [], params: {} })),
     redirects: [],
   },
 }));
@@ -51,6 +36,15 @@ const mockResolveNavigationDestination = resolveNavigationDestination as jest.Mo
   typeof resolveNavigationDestination
 >;
 
+const navigationState: NavigationState = {
+  stale: false,
+  routeKeySeq: 0,
+  key: 'root-nav',
+  index: 0,
+  routeNames: ['__root'],
+  routes: [{ key: 'root-route', name: '__root' }],
+};
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockApplyRedirects.mockImplementation((href) => href);
@@ -60,31 +54,6 @@ beforeEach(() => {
 });
 
 describe(getNavigateAction, () => {
-  it('throws when navigation is not ready', () => {
-    (store.assertIsReady as jest.Mock).mockImplementationOnce(() => {
-      throw new Error('Not ready');
-    });
-
-    expect(() => getNavigateAction('/home', {}, new Map())).toThrow('Not ready');
-  });
-
-  it('throws when the navigation ref is null', () => {
-    const current = store.navigationRef.current;
-    Object.defineProperty(store.navigationRef, 'current', {
-      value: null,
-      configurable: true,
-    });
-
-    expect(() => getNavigateAction('/home', {}, new Map())).toThrow(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
-    );
-
-    Object.defineProperty(store.navigationRef, 'current', {
-      value: current,
-      configurable: true,
-    });
-  });
-
   it('throws when routes are unavailable', () => {
     const routeNode = store.routeNode;
     Object.defineProperty(store, 'routeNode', {
@@ -92,9 +61,18 @@ describe(getNavigateAction, () => {
       configurable: true,
     });
 
-    expect(() => getNavigateAction('/home', {}, new Map())).toThrow(
-      'Attempted to link to route when no routes are present'
-    );
+    expect(() =>
+      getNavigateAction(
+        '/home',
+        {},
+        new Map(),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        navigationState
+      )
+    ).toThrow('Attempted to link to route when no routes are present');
 
     Object.defineProperty(store, 'routeNode', {
       value: routeNode,
@@ -105,7 +83,18 @@ describe(getNavigateAction, () => {
   it.each([null, { routes: [] }])('returns invalid for an unparseable path', (state) => {
     (store.linking!.getStateFromPath as jest.Mock).mockReturnValueOnce(state);
 
-    expect(getNavigateAction('/bad-path', {}, new Map())).toEqual({
+    expect(
+      getNavigateAction(
+        '/bad-path',
+        {},
+        new Map(),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        navigationState
+      )
+    ).toEqual({
       status: 'invalid',
       href: '/bad-path',
     });
@@ -121,7 +110,8 @@ describe(getNavigateAction, () => {
       'PUSH',
       true,
       true,
-      true
+      true,
+      navigationState
     );
 
     expect(result).toEqual({
@@ -131,6 +121,7 @@ describe(getNavigateAction, () => {
     expect(mockResolveNavigationDestination).toHaveBeenCalledWith(
       expect.objectContaining({
         registry,
+        navigationState,
         action: { type: 'PUSH', payload: { singular: true } },
         withAnchor: true,
         internalParams: {
@@ -142,7 +133,7 @@ describe(getNavigateAction, () => {
   });
 
   it('passes singular through to the resolver action', () => {
-    getNavigateAction('/home', {}, new Map(), 'NAVIGATE', false, true);
+    getNavigateAction('/home', {}, new Map(), 'NAVIGATE', false, true, false, navigationState);
 
     expect(mockResolveNavigationDestination).toHaveBeenCalledWith(
       expect.objectContaining({
