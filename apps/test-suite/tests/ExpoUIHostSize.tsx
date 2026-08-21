@@ -7,17 +7,8 @@ import { mountAndWaitForWithTimeout } from './helpers';
 export const name = 'ExpoUI Host size';
 export const route = 'expo-ui-host-size';
 
-/**
- * A `matchContents` Host reports the size its native content measured, and that size has to reach
- * the Yoga node for the host to be laid out at it. So on every matched axis these must agree:
- *
- *   content - what SwiftUI or Compose measured, from `onLayoutContent`
- *   laid    - what Yoga laid the host out at, from `onLayout`
- *
- * This is the invariant that https://github.com/expo/expo/pull/48059 broke. Note that reproducing
- * that particular regression needs shadow tree commit contention, which this test does not create.
- */
-
+// Tests Host matchContents behavior on iOS and Android. Uses onLayoutContent and onLayout callback to
+// assert that the Host's size matches its content size when matchContents is true
 const SETTLE_MS = 250;
 const TIMEOUT_MS = 10000;
 // Anything under a point is rounding between the two measurement systems.
