@@ -25,7 +25,7 @@ function sortLongest(obj: string[]): string[] {
  *   - filter on known Expo schemes, starting with `exp+`, avoiding 3rd party schemes.
  *   - filter on longest to ensure uniqueness.
  */
-function resolveExpoOrLongestScheme(schemes: string[]): string[] {
+export function resolveExpoOrLongestScheme(schemes: string[]): string[] {
   const expoOnlySchemes = schemes.filter((scheme) => scheme.startsWith('exp+'));
   return expoOnlySchemes.length > 0 ? sortLongest(expoOnlySchemes) : sortLongest(schemes);
 }

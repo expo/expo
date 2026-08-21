@@ -23,6 +23,7 @@
 
 ### 🐛 Bug fixes
 
+- Resolve the dev client URL scheme from the built binary in `run:ios`, so projects with several iOS application targets no longer open the scheme of the first target in the pbxproj. (by [@Shywim](https://github.com/Shywim))
 - Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
 - Show the Xcode build log path when `run:ios` fails. ([#48624](https://github.com/expo/expo/pull/48624) by [@ramonclaudio](https://github.com/ramonclaudio))
