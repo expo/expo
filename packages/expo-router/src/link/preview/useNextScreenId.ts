@@ -18,6 +18,7 @@ export function useNextScreenId(): [
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
   const currentHref = useRef<Href | undefined>(undefined);
   const routeInfoRef = useRef(routeInfo);
+  // The navigation listener is stable, so read the current route when prefetch updates its state.
   routeInfoRef.current = routeInfo;
   const [tabPath, setTabPath] = useState<TabPath[]>([]);
 
