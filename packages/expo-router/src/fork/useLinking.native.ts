@@ -54,8 +54,8 @@ export function useLinking(
         }
       };
     });
-  const getStateFromPath: typeof getExpoStateFromPath =
-    options?.getStateFromPath ?? ((path, options) => getStateFromPathDefault(path, options));
+  const getStateFromPath = (options?.getStateFromPath ??
+    getStateFromPathDefault) as typeof getExpoStateFromPath;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const independent = useNavigationIndependentTree();
   const { segments } = useRouteInfo();
@@ -108,8 +108,7 @@ export function useLinking(
   const getActionFromStateRef = useRef(getActionFromState);
   const segmentsRef = useRef(segments);
 
-  // Linking listeners stay subscribed across navigation updates, but relative URLs must be parsed
-  // against the route that was current when the URL was received.
+  // Keep stable URL listeners in sync with the latest navigation state.
   segmentsRef.current = segments;
 
   useEffect(() => {
