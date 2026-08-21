@@ -15,13 +15,13 @@ import {
 import {
   type DescriptorRouteProp,
   type ParamListBase,
-  StackActions,
   type StackNavigationState,
   type StackRouterOptions,
 } from '../react-navigation/native';
 import { makePopAction, type NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import type { NativeStackNavigationConfig } from '../react-navigation/native-stack/types';
 import { unstable_integrateWithRouter } from '../standard-navigation';
+import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
 import { StackRouter } from './stack-router';
@@ -50,21 +50,7 @@ const RNStack = unstable_integrateWithRouter<
   createProps: ({ state, dispatch, navigation }) => ({
     pop: makePopAction(dispatch, state.key),
     removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
-    subscribePopToTopOnParentTabPress: () =>
-      // @ts-expect-error: there may not be a tab navigator in parent
-      navigation.addListener?.('tabPress', (e) => {
-        const isFocused = navigation.isFocused();
-        requestAnimationFrame(() => {
-          if (
-            state.index > 0 &&
-            isFocused &&
-            !e.defaultPrevented &&
-            e.data?.__internalTabsType !== 'native'
-          ) {
-            dispatch({ ...StackActions.popToTop(), target: state.key });
-          }
-        });
-      }),
+    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
   }),
 });
 

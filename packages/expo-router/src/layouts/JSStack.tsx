@@ -2,23 +2,40 @@
 
 import type { ComponentProps } from 'react';
 
-import { getValidInitialRouteName, useRouteNode } from '../Route';
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
-import type { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
-import { createStackNavigator } from '../react-navigation/stack';
+import { StackRouter } from '../react-navigation/native';
+import {
+  createStandardStackNavigator,
+  type StackNavigationOptions,
+} from '../react-navigation/stack';
+import type { StandardStackNavigationEventMap } from '../react-navigation/stack/navigators/createStackNavigator';
+import type {
+  StackNavigationConfig,
+  StackNavigationHelpers,
+} from '../react-navigation/stack/types';
+import { unstable_integrateWithRouter } from '../standard-navigation';
+import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
-import { withLayoutContext } from './withLayoutContext';
-
-const JSStackNavigator = createStackNavigator().Navigator;
-
-// TODO(@ubax): Update docs/pages/router/migrate/from-react-navigation.mdx:387 for the removed prop.
-const JSStack = withLayoutContext<
+const JSStack = unstable_integrateWithRouter<
   StackNavigationOptions,
-  typeof JSStackNavigator,
   StackNavigationState<ParamListBase>,
-  StackNavigationEventMap
->(JSStackNavigator);
+  StandardStackNavigationEventMap,
+  StackNavigationConfig,
+  object,
+  {
+    navigation: StackNavigationHelpers;
+    stackState: StackNavigationState<ParamListBase>;
+    subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
+  }
+>(createStandardStackNavigator, StackRouter, {
+  createProps: ({ navigation, state }) => ({
+    // `useNavigationBuilder` returns base helpers, while StackView needs stack helpers at runtime.
+    navigation: navigation as StackNavigationHelpers,
+    stackState: state,
+    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
+  }),
+});
 
 /**
  * Renders a JavaScript-based stack navigator.
@@ -26,10 +43,7 @@ const JSStack = withLayoutContext<
  * @hideType
  */
 const Stack = Object.assign(
-  (props: Omit<ComponentProps<typeof JSStack>, 'initialRouteName'>) => {
-    const routeNode = useRouteNode();
-    return <JSStack {...props} initialRouteName={getValidInitialRouteName(routeNode)} />;
-  },
+  (props: Omit<ComponentProps<typeof JSStack>, 'initialRouteName'>) => <JSStack {...props} />,
   {
     Screen,
     Protected,

@@ -1,13 +1,14 @@
 'use client';
 import * as React from 'react';
+import { createStandardNavigator } from 'standard-navigation';
 
+import type { NavigatorContentProps } from '../../../standard-navigation';
+import { subscribePopToTopOnParentTabPress } from '../../../standard-navigation/subscribePopToTopOnParentTabPress';
 import {
   createNavigatorFactory,
-  type EventArg,
   type NavigatorTypeBagBase,
   type ParamListBase,
   type StackActionHelpers,
-  StackActions,
   type StackNavigationState,
   StackRouter,
   type StackRouterOptions,
@@ -17,11 +18,64 @@ import {
 } from '../../native';
 import type {
   StackNavigationEventMap,
+  StackDescriptorMap,
+  StackNavigationConfig,
+  StackNavigationHelpers,
   StackNavigationOptions,
   StackNavigationProp,
   StackNavigatorProps,
 } from '../types';
 import { StackView } from '../views/Stack/StackView';
+
+export interface StackNavigatorCreateProps {
+  navigation: StackNavigationHelpers;
+  stackState: StackNavigationState<ParamListBase>;
+  subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
+}
+
+export type StandardStackNavigationEventMap = {
+  [Event in keyof StackNavigationEventMap]: StackNavigationEventMap[Event] & {
+    canPreventDefault: false;
+  };
+};
+
+type StackNavigatorContentProps = NavigatorContentProps<
+  StackNavigationOptions,
+  StandardStackNavigationEventMap,
+  StackNavigationConfig,
+  StackNavigatorCreateProps
+>;
+
+function StackNavigatorContent({
+  state,
+  stackState,
+  descriptors,
+  navigation,
+  subscribePopToTopOnParentTabPress,
+  ...rest
+}: StackNavigatorContentProps) {
+  const { direction } = useLocale();
+
+  React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
+
+  if (state.routes.length === 0) {
+    return null;
+  }
+
+  return (
+    <StackView
+      {...rest}
+      direction={direction}
+      state={stackState}
+      descriptors={descriptors as unknown as StackDescriptorMap}
+      navigation={navigation}
+    />
+  );
+}
+
+const LegacyStackNavigatorContent = StackNavigatorContent as React.ComponentType<
+  Omit<StackNavigatorContentProps, 'actions' | 'emitter'>
+>;
 
 function StackNavigator({
   id,
@@ -34,8 +88,6 @@ function StackNavigator({
   UNSTABLE_router,
   ...rest
 }: StackNavigatorProps) {
-  const { direction } = useLocale();
-
   const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
@@ -53,48 +105,28 @@ function StackNavigator({
     UNSTABLE_router,
   });
 
-  React.useEffect(
-    () =>
-      // @ts-expect-error: there may not be a tab navigator in parent
-      navigation.addListener?.('tabPress', (e) => {
-        const isFocused = navigation.isFocused();
-
-        // Run the operation in the next frame so we're sure all listeners have been run
-        // This is necessary to know if preventDefault() has been called
-        requestAnimationFrame(() => {
-          if (
-            state.index > 0 &&
-            isFocused &&
-            !(e as unknown as EventArg<'tabPress', true>).defaultPrevented
-          ) {
-            // When user taps on already focused tab and we're inside the tab,
-            // reset the stack to replicate native behaviour
-            navigation.dispatch({
-              ...StackActions.popToTop(),
-              target: state.key,
-            });
-          }
-        });
-      }),
-    [navigation, state.index, state.key]
-  );
-
-  if (state.routes.length === 0) {
-    return <NavigationContent>{null}</NavigationContent>;
-  }
-
   return (
     <NavigationContent>
-      <StackView
+      <LegacyStackNavigatorContent
         {...rest}
-        direction={direction}
-        state={state}
+        // Standard-navigation state carries the same runtime shape as the builder state.
+        state={state as unknown as StackNavigatorContentProps['state']}
+        stackState={state}
         descriptors={descriptors}
         navigation={navigation}
+        subscribePopToTopOnParentTabPress={() =>
+          subscribePopToTopOnParentTabPress(navigation, state)
+        }
       />
     </NavigationContent>
   );
 }
+
+export const createStandardStackNavigator = createStandardNavigator<
+  StackNavigationOptions,
+  StandardStackNavigationEventMap,
+  StackNavigatorCreateProps
+>(StackNavigatorContent);
 
 export function createStackNavigator<
   const ParamList extends ParamListBase,
