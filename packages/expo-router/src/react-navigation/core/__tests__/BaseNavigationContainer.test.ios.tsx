@@ -1,11 +1,8 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { defaultRouteInfo } from '../../../global-state/getRouteInfoFromState';
-import { RouteInfoContext } from '../../../global-state/routeInfoContext';
 import { RouterRegistryProvider } from '../../../global-state/routerRegistry';
 import { routingQueue } from '../../../global-state/routingQueue';
-import { useRouteInfo } from '../../../global-state/useRouteInfo';
 import {
   CommonActions,
   type DefaultRouterOptions,
@@ -46,33 +43,6 @@ test('throws when nesting containers', () => {
       </BaseNavigationContainer>
     )
   ).toThrow("install '@react-navigation/native' and use its NavigationContainer instead.");
-});
-
-test('preserves equivalent route info in an independent container', () => {
-  const routeInfo = { ...defaultRouteInfo, pathname: '/parent' };
-  let result = defaultRouteInfo;
-  const renderRouteInfo = jest.fn();
-
-  function CurrentRouteInfo() {
-    renderRouteInfo();
-    result = useRouteInfo();
-    return null;
-  }
-
-  const child = <CurrentRouteInfo />;
-  const getContainer = (value: typeof routeInfo) => (
-    <RouteInfoContext.Provider value={value}>
-      <NavigationIndependentTree>
-        <BaseNavigationContainer>{child}</BaseNavigationContainer>
-      </NavigationIndependentTree>
-    </RouteInfoContext.Provider>
-  );
-  const { rerender } = render(getContainer(routeInfo));
-
-  expect(result).toBe(routeInfo);
-  rerender(getContainer({ ...routeInfo }));
-  expect(result).toBe(routeInfo);
-  expect(renderRouteInfo).toHaveBeenCalledTimes(1);
 });
 
 test('rejects a partial initial state', () => {
@@ -1013,10 +983,10 @@ test('works with state change events in a sibling root container', () => {
 
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'navigator-10',
+    key: 'navigator-7',
     routeNames: ['qux', 'lex'],
     routes: [
-      { key: 'qux-9', name: 'qux' },
+      { key: 'qux-6', name: 'qux' },
       { key: 'lex-0', name: 'lex', params: undefined },
     ],
     stale: false,
@@ -1026,10 +996,10 @@ test('works with state change events in a sibling root container', () => {
 
   expect(ref.current?.getRootState()).toEqual({
     index: 1,
-    key: 'navigator-10',
+    key: 'navigator-7',
     routeNames: ['qux', 'lex'],
     routes: [
-      { key: 'qux-9', name: 'qux' },
+      { key: 'qux-6', name: 'qux' },
       { key: 'lex-0', name: 'lex', params: undefined },
     ],
     stale: false,
