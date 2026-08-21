@@ -718,15 +718,17 @@ function gatherChunks(
   entryChunks.add(entryChunk);
 
   function includeModule(entryModule: Module<MixedOutput>) {
+    const splitChunks = entryChunk.options.serializerOptions?.splitChunks !== false;
     for (const dependency of entryModule.dependencies.values()) {
+      const asyncType = dependency.data.data.asyncType;
+      const isWorker = asyncType === 'worker';
       if (!isResolvedDependency(dependency)) {
         continue;
       } else if (
-        dependency.data.data.asyncType &&
-        // Support disabling multiple chunks.
-        entryChunk.options.serializerOptions?.splitChunks !== false
+        asyncType &&
+        // Workers require standalone bundles even when ordinary chunk splitting is disabled.
+        (isWorker || splitChunks)
       ) {
-        const isWorker = dependency.data.data.asyncType === 'worker';
         const asyncChunks = gatherChunks(
           runtimePremodules,
           chunks,
