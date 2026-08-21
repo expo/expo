@@ -26,7 +26,6 @@ func stringifyAlbumType(type: PHAssetCollectionType) -> String {
 
 func exportAssetInfo(asset: PHAsset) -> [String: Any?] {
   var assetDict = exportAsset(asset: asset)
-  assetDict["location"] = exportLocation(location: asset.location)
   assetDict["isFavorite"] = asset.isFavorite
   assetDict["isHidden"] = asset.isHidden
   return assetDict
@@ -47,18 +46,21 @@ func exportAsset(asset: PHAsset) -> [String: Any?] {
     // Uses required reason API based on the following reason: 0A2A.1
     "modificationTime": exportDate(asset.modificationDate),
     "duration": asset.duration,
+    // `PHAsset.location` is already loaded; including it here avoids N calls to
+    // `getAssetInfoAsync` when batch-fetching assets that need GPS coordinates.
+    "location": exportLocation(location: asset.location),
     "pairedVideoAsset": nil
   ]
 }
 
-func exportLocation(location: CLLocation?) -> [String: String]? {
+func exportLocation(location: CLLocation?) -> [String: Double]? {
   guard let location else {
     return nil
   }
 
   return [
-    "latitude": "\(location.coordinate.latitude)",
-    "longitude": "\(location.coordinate.longitude)"
+    "latitude": location.coordinate.latitude,
+    "longitude": location.coordinate.longitude
   ]
 }
 
