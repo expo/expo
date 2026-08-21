@@ -36,8 +36,6 @@ export default function Layout() {
 
 Use a [platform-specific component](/router/advanced/platform-specific-modules/) for the visual treatment. The web implementation handles the backdrop, the Escape key, and dismissal. The native implementation returns `children` unchanged, so **modal.tsx** can wrap its content in `WebModal` on every platform.
 
-The backdrop blocks pointer events, but it does not prevent keyboard focus from reaching the route behind it. While the modal is open, set [`inert`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert) on the element that contains your app's background content. Do not set `inert` on the dialog or an ancestor of the dialog.
-
 ```tsx src/components/WebModal.web.tsx
 import { router } from 'expo-router';
 import { useEffect, type ReactNode } from 'react';
