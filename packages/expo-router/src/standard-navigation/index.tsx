@@ -13,7 +13,6 @@ import {
   type NavigationState,
   type RouterFactory,
 } from '../react-navigation/native';
-import type { ErrorBoundaryProps } from '../views/Try';
 import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
@@ -25,11 +24,6 @@ import type {
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
-
-type ScreenErrorBoundaryProps = {
-  /** A component to render when an individual screen in this navigator throws an error. */
-  screenErrorBoundary?: ComponentType<ErrorBoundaryProps>;
-};
 
 export type {
   IntegrateWithRouterOptions,
@@ -63,14 +57,7 @@ type StandardRouterNavigatorComponent<
   typeof withLayoutContext<
     NavigatorOptions,
     ComponentType<
-      StandardRouterNavigatorProps<
-        State,
-        NavigatorOptions,
-        EventMap,
-        NavigatorProps,
-        RouterOptions
-      > &
-        ScreenErrorBoundaryProps
+      StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>
     >,
     State,
     EventMap
@@ -186,7 +173,7 @@ export function unstable_integrateWithRouter<
     RouterOptions
   >;
 
-  function StandardRouterNavigator(allProps: NavPropsType & ScreenErrorBoundaryProps) {
+  function StandardRouterNavigator(allProps: NavPropsType) {
     const { screenErrorBoundary, ...rest } = allProps;
     const props = rest as NavPropsType;
     const routeNode = useRouteNode();

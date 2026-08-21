@@ -59,10 +59,11 @@ it('uses the navigator boundary before the layout boundary', async () => {
   expect(screen.queryByTestId('layout-boundary')).toBeNull();
 });
 
-it('uses a screen boundary before navigator and layout boundaries', async () => {
+it('uses the route boundary before screen, navigator, and layout boundaries', async () => {
   const LayoutBoundary = boundary('layout-boundary');
   const NavigatorBoundary = boundary('navigator-boundary');
   const ScreenBoundary = boundary('screen-boundary');
+  const RouteBoundary = boundary('route-boundary');
 
   await renderRouterAsync({
     _layout: {
@@ -73,10 +74,14 @@ it('uses a screen boundary before navigator and layout boundaries', async () => 
       ),
       unstable_settings: { screenErrorBoundary: LayoutBoundary },
     },
-    index: ThrowingRoute,
+    index: {
+      default: ThrowingRoute,
+      unstable_settings: { screenErrorBoundary: RouteBoundary },
+    },
   });
 
-  expect(screen.getByTestId('screen-boundary')).toBeOnTheScreen();
+  expect(screen.getByTestId('route-boundary')).toBeOnTheScreen();
+  expect(screen.queryByTestId('screen-boundary')).toBeNull();
   expect(screen.queryByTestId('navigator-boundary')).toBeNull();
   expect(screen.queryByTestId('layout-boundary')).toBeNull();
 });
