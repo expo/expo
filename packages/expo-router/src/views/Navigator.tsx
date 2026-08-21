@@ -58,7 +58,6 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
-  const inheritedErrorBoundaries = React.use(ScreenErrorBoundaryContext);
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
   const {
@@ -102,14 +101,13 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      <ScreenErrorBoundaryContext
-        value={{
-          ...inheritedErrorBoundaries,
-          navigator: unstable_screenErrorBoundary,
-          screen: undefined,
-        }}>
-        {content}
-      </ScreenErrorBoundaryContext>
+      {unstable_screenErrorBoundary ? (
+        <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+          {content}
+        </ScreenErrorBoundaryContext>
+      ) : (
+        content
+      )}
     </NavigatorContext.Provider>
   );
 }
@@ -128,7 +126,6 @@ export function useNavigatorContext() {
 function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProps<any>) {
   const contextKey = useContextKey();
   const node = useRouteNode();
-  const inheritedErrorBoundaries = React.use(ScreenErrorBoundaryContext);
 
   // Allows adding Screen components as children to configure routes.
   const { screens, guardedRedirects } = useFilterScreenChildren([], {
@@ -151,15 +148,12 @@ function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProp
     </GuardContextProvider>
   );
 
-  return (
-    <ScreenErrorBoundaryContext
-      value={{
-        ...inheritedErrorBoundaries,
-        navigator: unstable_screenErrorBoundary,
-        screen: undefined,
-      }}>
+  return unstable_screenErrorBoundary ? (
+    <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
       {content}
     </ScreenErrorBoundaryContext>
+  ) : (
+    content
   );
 }
 

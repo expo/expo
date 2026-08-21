@@ -176,7 +176,6 @@ export function unstable_integrateWithRouter<
   function StandardRouterNavigator(allProps: NavPropsType) {
     const { unstable_screenErrorBoundary, ...rest } = allProps;
     const props = rest as NavPropsType;
-    const inheritedErrorBoundaries = use(ScreenErrorBoundaryContext);
     const routeNode = useRouteNode();
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
       NavigatorOptions,
@@ -237,15 +236,12 @@ export function unstable_integrateWithRouter<
       </NavigationContent>
     );
 
-    return (
-      <ScreenErrorBoundaryContext
-        value={{
-          ...inheritedErrorBoundaries,
-          navigator: unstable_screenErrorBoundary,
-          screen: undefined,
-        }}>
+    return unstable_screenErrorBoundary ? (
+      <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
         {content}
       </ScreenErrorBoundaryContext>
+    ) : (
+      content
     );
   }
 
