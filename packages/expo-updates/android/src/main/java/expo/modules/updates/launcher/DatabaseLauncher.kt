@@ -87,7 +87,7 @@ class DatabaseLauncher(
     // verify that we have all assets on disk
     // according to the database, we should, but something could have gone wrong on disk
     val launchAsset = database.updateDao().loadLaunchAssetForUpdate(launchedUpdate!!.id)
-      ?: throw Exception("Launch asset not found for update, so the app will launch the update embedded in the binary. An interrupted registration in an older version of expo-updates can leave an update in this state; it is replaced once a newer update is downloaded. Debug info: ${launchedUpdate!!.debugInfo()}")
+      ?: throw Exception("Launch asset not found for update. The update row has no launch asset; an interrupted registration in an older version of expo-updates can leave an update in this state, and it is replaced once a newer update is downloaded. Debug info: ${launchedUpdate!!.debugInfo()}")
 
     if (launchAsset.relativePath == null) {
       throw Exception("Launch asset relative path should not be null. Debug info: ${launchedUpdate!!.debugInfo()}")
