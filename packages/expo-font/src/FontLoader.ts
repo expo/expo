@@ -116,5 +116,5 @@ export async function loadFontFamilyAsync(
     return face;
   });
 
-  await ExpoFontLoader.loadFontFamilyAsync!(fontFamily, faces);
+  await ExpoFontLoader.loadFontFamilyAsync(fontFamily, faces);
 }
