@@ -7,13 +7,16 @@ import {
 } from '../fork/extractPathFromURL';
 import { getPathFromState } from '../fork/getPathFromState';
 import { getStateFromPath } from '../fork/getStateFromPath';
-import { getInitialURLWithTimeout } from '../fork/useLinking';
 import { applyRedirects } from '../getRoutesRedirects';
 import type { StoreRedirects } from '../global-state/router-store';
 import type { LinkingOptions } from '../react-navigation/native';
 import type { NativeIntent } from '../types';
 
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
+
+function getInitialURLWithTimeout(): string | null | Promise<string | null> {
+  return typeof window === 'undefined' ? '' : window.location.href;
+}
 
 // A custom getInitialURL is used on native to ensure the app always starts at
 // the root path if it's launched from something other than a deep link.
