@@ -72,6 +72,33 @@ it(`should only load web routes`, () => {
   });
 });
 
+it.each([
+  ['web', 'web', './(website)/blog/[...slug].web.tsx'],
+  ['iOS', 'ios', './(website)/blog/[...slug].ios.tsx'],
+  ['Android', 'android', './(website)/blog/[...slug].android.tsx'],
+  ['a platform-neutral build', undefined, './(website)/blog/[...slug].tsx'],
+])('resolves a platform-specific deep dynamic route on %s', (_, platform, contextKey) => {
+  const routes = getRoutes(
+    inMemoryContext({
+      './(website)/blog/[...slug].tsx': () => null,
+      './(website)/blog/[...slug].android.tsx': () => null,
+      './(website)/blog/[...slug].ios.tsx': () => null,
+      './(website)/blog/[...slug].native.tsx': () => null,
+      './(website)/blog/[...slug].web.tsx': () => null,
+    }),
+    { internal_stripLoadRoute: true, platform, skipGenerated: true }
+  );
+
+  expect(routes?.children).toEqual([
+    expect.objectContaining({
+      contextKey,
+      dynamic: [{ deep: true, name: 'slug' }],
+      route: '(website)/blog/[...slug]',
+      type: 'route',
+    }),
+  ]);
+});
+
 it(`should skip platform routes when no platform has been provided`, () => {
   expect(
     getRoutes(
