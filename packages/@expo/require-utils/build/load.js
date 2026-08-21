@@ -280,6 +280,19 @@ function containsModuleSyntax(code) {
   }
 }
 const hasStripTypeScriptTypes = typeof nodeModule().stripTypeScriptTypes === 'function';
+function supportsStripTypeScriptTypesTransform() {
+  const nodeVersion = process.versions.node.split('.', 1).map(Number);
+  return nodeVersion[0] < 26;
+}
+function stripTypeScriptTypes(code) {
+  if (!supportsStripTypeScriptTypesTransform()) {
+    return nodeModule().stripTypeScriptTypes(code);
+  }
+  return nodeModule().stripTypeScriptTypes(code, {
+    mode: 'transform',
+    sourceMap: true
+  });
+}
 function evalModule(code, filename, opts = {}, format = toFormat(filename, true)) {
   const shouldCache = opts.cache ?? true;
   let inputCode = code;
@@ -321,10 +334,7 @@ function evalModule(code, filename, opts = {}, format = toFormat(filename, true)
     }
     if (hasStripTypeScriptTypes && inputCode === code) {
       // This may throw its own error, but this contains a code-frame already
-      inputCode = nodeModule().stripTypeScriptTypes(code, {
-        mode: 'transform',
-        sourceMap: true
-      });
+      inputCode = stripTypeScriptTypes(code);
       if (format.mode === 'commonjs-typescript') {
         inputCode = (0, _transform().toCommonJS)(filename, inputCode);
       }
