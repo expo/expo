@@ -2,7 +2,10 @@
 
 package expo.modules.ui
 
+import android.app.Activity
+import android.app.Dialog
 import android.graphics.Color
+import android.view.KeyEvent
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -10,8 +13,11 @@ import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
@@ -40,6 +46,32 @@ data class ModalBottomSheetViewProps(
   val properties: ModalBottomSheetPropertiesRecord = ModalBottomSheetPropertiesRecord(),
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
+
+/**
+ * Material3 shows [ModalBottomSheet] in its own dialog window. Android sends key events to the
+ * focused window, so the activity does not get them while the sheet is open. Key triggers that
+ * the activity owns then stop working, for example KEYCODE_MENU, which opens the dev menu.
+ * React Native's own Modal sends every other key up to the activity for this reason. Do the same.
+ */
+@Composable
+private fun ForwardKeyEventsToActivity(activity: Activity?) {
+  val dialog = (LocalView.current.parent as? DialogWindowProvider)?.window?.callback as? Dialog
+  if (dialog == null || activity == null) {
+    return
+  }
+
+  DisposableEffect(dialog, activity) {
+    dialog.setOnKeyListener { _, keyCode, event ->
+      val isForwardable = event.action == KeyEvent.ACTION_UP &&
+        keyCode != KeyEvent.KEYCODE_BACK &&
+        keyCode != KeyEvent.KEYCODE_ESCAPE
+      isForwardable && activity.onKeyUp(keyCode, event)
+    }
+    onDispose {
+      dialog.setOnKeyListener(null)
+    }
+  }
+}
 
 @Composable
 fun FunctionalComposableScope.ModalBottomSheetContent(
@@ -112,6 +144,7 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
     ),
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
+    ForwardKeyEventsToActivity(appContext.currentActivity)
     Children(UIComposableScope(), filter = { !isSlotView(it) })
   }
 
