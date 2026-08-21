@@ -1,8 +1,6 @@
 import AesCryptoModule from '../ExpoCryptoAES.web';
 
-// `registerWebModule` returns an instance of the module class, so the default
-// export carries the instance members even though it is typed as the class.
-const { SealedData } = AesCryptoModule as unknown as InstanceType<typeof AesCryptoModule>;
+const { SealedData } = AesCryptoModule;
 
 const IV = new Uint8Array(12).fill(0xaa);
 const CIPHERTEXT = new Uint8Array(20).fill(0xbb);
