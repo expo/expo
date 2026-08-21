@@ -5,7 +5,7 @@ import type {
   ParamListBase,
   NavigationContainerRef,
 } from '../react-navigation/native';
-import { getNavigateAction } from './getNavigationAction';
+import { getNavigateAction, type NavigationActionContext } from './getNavigationAction';
 import type { LinkToOptions } from './types';
 
 export interface LinkAction {
@@ -34,7 +34,10 @@ export const routingQueue = {
       callback();
     }
   },
-  run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>) {
+  run(
+    ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
+    context?: NavigationActionContext
+  ) {
     // Reset the identity of the queue.
     const events = routingQueue.queue;
     routingQueue.queue = [];
@@ -47,14 +50,24 @@ export const routingQueue = {
             payload: { href, options },
           } = action as LinkAction;
 
-          action = getNavigateAction(
-            href,
-            options,
-            options.event,
-            options.withAnchor,
-            options.dangerouslySingular,
-            !!options.__internal__PreviewKey
-          );
+          action = context
+            ? getNavigateAction(
+                context,
+                href,
+                options,
+                options.event,
+                options.withAnchor,
+                options.dangerouslySingular,
+                !!options.__internal__PreviewKey
+              )
+            : getNavigateAction(
+                href,
+                options,
+                options.event,
+                options.withAnchor,
+                options.dangerouslySingular,
+                !!options.__internal__PreviewKey
+              );
           // TODO: Consider warning when getNavigateAction returns undefined
           if (action) {
             ref.current.dispatch(action);

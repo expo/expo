@@ -1,3 +1,4 @@
+import type { ExpoLinkingOptions } from '../../getLinkingConfig';
 import type { UrlObject } from '../../global-state/getRouteInfoFromState';
 import { store, type ReactNavigationState } from '../../global-state/router-store';
 import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
@@ -17,9 +18,10 @@ import type { TabPath } from './native';
 export function getTabPathFromRootStateByHref(
   href: Href,
   rootState: ReactNavigationState,
-  routeInfo: UrlObject
+  routeInfo: UrlObject,
+  linking: ExpoLinkingOptions | undefined = store.linking
 ): TabPath[] {
-  const hrefState = getStateForHref(resolveHref(href), routeInfo, store.linking);
+  const hrefState = getStateForHref(resolveHref(href), routeInfo, linking);
   const state: ReactNavigationState | undefined = rootState;
   if (!hrefState || !state) {
     return [];
@@ -53,9 +55,10 @@ export function getTabPathFromRootStateByHref(
 export function getPreloadedRouteFromRootStateByHref(
   href: Href,
   rootState: ReactNavigationState,
-  routeInfo: UrlObject
+  routeInfo: UrlObject,
+  linking: ExpoLinkingOptions | undefined = store.linking
 ): NavigationRoute<ParamListBase, string> | undefined {
-  const hrefState = getStateForHref(resolveHref(href), routeInfo, store.linking);
+  const hrefState = getStateForHref(resolveHref(href), routeInfo, linking);
   const state: ReactNavigationState | undefined = rootState;
   if (!hrefState || !state) {
     return undefined;
