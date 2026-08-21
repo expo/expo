@@ -15,9 +15,9 @@ describe('_createWebFontTemplate', () => {
   it('does not default font-display/font-weight/font-style, so a variable font file is not restricted to a single weight or style', () => {
     // A variable font file covers a range of weights/styles; forcing e.g. `font-weight: 400`
     // on it would incorrectly restrict the face to only that one weight.
-    expect(
-      _createWebFontTemplate('Wix Madefor Text Variable', { uri: 'variable.woff2' })
-    ).toBe('@font-face{font-family:"Wix Madefor Text Variable";src:url("variable.woff2")}');
+    expect(_createWebFontTemplate('Wix Madefor Text Variable', { uri: 'variable.woff2' })).toBe(
+      '@font-face{font-family:"Wix Madefor Text Variable";src:url("variable.woff2")}'
+    );
   });
 
   it('includes font-display when specified', () => {
@@ -33,9 +33,9 @@ describe('_createWebFontTemplate', () => {
   });
 
   it('includes font-style when a style is provided', () => {
-    expect(
-      _createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', style: 'italic' })
-    ).toBe('@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-style:italic}');
+    expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', style: 'italic' })).toBe(
+      '@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-style:italic}'
+    );
   });
 
   it('includes font-display, font-weight, and font-style together when all are provided', () => {

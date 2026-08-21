@@ -71,7 +71,7 @@ function getFontFaceRulesMatchingResource(
   );
 }
 
-const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
+const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>> = {
   async unloadAllAsync(): Promise<void> {
     if (typeof window === 'undefined') return;
 
@@ -202,10 +202,8 @@ function getStyleElement(): HTMLStyleElement {
 
 const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
 
-// None of `display`/`weight`/`style` are given a hardcoded default: omitting a descriptor lets
-// the browser fall back to its own default, which matters for variable fonts (a single file can
-// cover a range of weights/styles; forcing e.g. `font-weight: 400` on it would incorrectly
-// restrict the face to only that one weight).
+// An unset `display`/`weight`/`style` omits the descriptor, letting the browser default apply —
+// forcing e.g. `font-weight: 400` would pin a variable font's face to that one weight.
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
   const declarations = [
     `font-family:${JSON.stringify(fontFamily)}`,

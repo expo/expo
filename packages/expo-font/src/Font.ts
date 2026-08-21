@@ -10,7 +10,7 @@ import type {
   FontSource,
   UnloadFontOptions,
 } from './Font.types';
-import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
+import { getAssetForSource, loadFontFamilyAsync, loadSingleFontAsync } from './FontLoader';
 import {
   isLoadedInCache,
   isLoadedNative,
@@ -105,7 +105,9 @@ export function loadAsync(fontFamilyOrFontMap: FontMap, source?: FontSource): Pr
       return Promise.resolve();
     }
 
-    return Promise.all(definitions.map(loadFontFamilyInNamespaceAsync)).then(() => {});
+    return Promise.all(definitions.map(loadFontFamilyInNamespaceAsync)).then(() => {
+      // return void, not void[]
+    });
   }
 
   if (typeof fontFamilyOrFontMap === 'object') {
@@ -138,12 +140,8 @@ export function loadAsync(fontFamilyOrFontMap: FontMap, source?: FontSource): Pr
   return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
 }
 
-// Merges a face's `weight`/`style`/`display`/`testString` onto its `path`, falling back to
-// values already present on `path` when it's a `FontResource`-shaped object. None of these are
-// given a hardcoded default: leaving a property unset lets the generated `@font-face` rule omit
-// that descriptor entirely, which is required for variable fonts (a single file can cover a
-// range of weights/styles; forcing e.g. `font-weight: 400` on it would incorrectly restrict the
-// face to only that one weight).
+// Merges a face's descriptors onto its `path`. Nothing gets a default: an unset property must
+// stay unset, or a variable font's face would be pinned to a single weight/style.
 function fontSourceFromFace(face: FontFaceDefinition): FontSource {
   const { path, weight, style, display, testString } = face;
 
@@ -170,46 +168,22 @@ async function loadFontFamilyInNamespaceAsync(definition: FontFamilyDefinition):
     return loadPromises[fontFamily];
   }
 
-  const promise = Promise.all(
-    fontDefinitions.map((face) => loadFontFaceInNamespaceAsync(fontFamily, face))
-  ).then(() => {});
-
-  loadPromises[fontFamily] = promise;
-  promise.finally(() => {
-    delete loadPromises[fontFamily];
-  });
-
-  return promise;
-}
-
-// Faces of the same `fontFamily` are cached and awaited individually (keyed by weight/style)
-// since native and the JS-level cache in `memory.ts` can only track loaded state per name.
-async function loadFontFaceInNamespaceAsync(
-  fontFamily: string,
-  face: FontFaceDefinition
-): Promise<void> {
-  const cacheKey = `${fontFamily}\0${face.weight ?? ''}\0${face.style ?? ''}`;
-
-  if (isLoadedInCache(cacheKey)) {
+  // consulting the native module is slower than the cache, but avoids reloading the same font
+  if (isLoaded(fontFamily)) {
     return;
   }
 
-  if (loadPromises.hasOwnProperty(cacheKey)) {
-    return loadPromises[cacheKey];
-  }
-
-  const asset = getAssetForSource(fontSourceFromFace(face));
-  loadPromises[cacheKey] = (async () => {
+  // Create the promise synchronously — concurrent callers must all await the same one.
+  loadPromises[fontFamily] = (async () => {
     try {
-      await loadSingleFontAsync(fontFamily, asset);
+      await loadFontFamilyAsync(fontFamily, fontDefinitions);
       markLoaded(fontFamily);
-      markLoaded(cacheKey);
     } finally {
-      delete loadPromises[cacheKey];
+      delete loadPromises[fontFamily];
     }
   })();
 
-  await loadPromises[cacheKey];
+  await loadPromises[fontFamily];
 }
 
 async function loadFontInNamespaceAsync(
@@ -223,14 +197,14 @@ async function loadFontInNamespaceAsync(
     );
   }
 
+  if (loadPromises.hasOwnProperty(fontFamily)) {
+    return loadPromises[fontFamily];
+  }
+
   // we consult the native module to see if the font is already loaded
   // this is slower than checking the cache but can help avoid loading the same font n times
   if (isLoaded(fontFamily)) {
     return;
-  }
-
-  if (loadPromises.hasOwnProperty(fontFamily)) {
-    return loadPromises[fontFamily];
   }
 
   // Important: we want all callers that concurrently try to load the same font to await the same

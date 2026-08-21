@@ -243,3 +243,117 @@ describe('in bare app', () => {
     expect(ExpoFontLoader.getLoadedFonts).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('loadAsync with an array of FontFamilyDefinitions (native)', () => {
+  afterEach(() => {
+    clearMemory();
+    jest.restoreAllMocks();
+  });
+
+  function multiFaceDefinition(fontFamily = 'MultiFace'): Font.FontFamilyDefinition {
+    return {
+      fontFamily,
+      fontDefinitions: [
+        { path: _createMockAsset({ localUri: 'file:/regular.ttf' }), weight: 400 },
+        {
+          path: _createMockAsset({ localUri: 'file:/bold.ttf' }),
+          weight: 'bold',
+          style: 'normal',
+        },
+      ],
+    };
+  }
+
+  it('calls native loadFontFamilyAsync exactly once, after all assets download, with normalized faces', async () => {
+    const definition = multiFaceDefinition();
+
+    await Font.loadAsync([definition]);
+
+    expect(ExpoFontLoader.loadFontFamilyAsync).toHaveBeenCalledTimes(1);
+    expect(ExpoFontLoader.loadAsync).not.toHaveBeenCalled();
+    expect(ExpoFontLoader.loadFontFamilyAsync).toHaveBeenCalledWith('MultiFace', [
+      { localUri: 'file:/regular.ttf', weight: 400 },
+      { localUri: 'file:/bold.ttf', weight: 700, style: 'normal' },
+    ]);
+
+    for (const face of definition.fontDefinitions) {
+      expect((face.path as any).downloaded).toBe(true);
+    }
+  });
+
+  it('rejects if any face fails to download, and never calls loadFontFamilyAsync', async () => {
+    const failingAsset = {
+      downloaded: false,
+      downloadAsync: jest.fn(async () => {}),
+    };
+    const definition: Font.FontFamilyDefinition = {
+      fontFamily: 'BrokenFamily',
+      fontDefinitions: [
+        { path: _createMockAsset({ localUri: 'file:/ok.ttf' }) },
+        { path: failingAsset as any },
+      ],
+    };
+
+    await expect(Font.loadAsync([definition])).rejects.toBeDefined();
+    expect(ExpoFontLoader.loadFontFamilyAsync).not.toHaveBeenCalled();
+    expect(Font.isLoaded('BrokenFamily')).toBe(false);
+    expect(Font.isLoading('BrokenFamily')).toBe(false);
+
+    const retryDefinition: Font.FontFamilyDefinition = {
+      fontFamily: 'BrokenFamily',
+      fontDefinitions: [
+        { path: _createMockAsset({ localUri: 'file:/ok.ttf' }) },
+        { path: _createMockAsset({ localUri: 'file:/ok2.ttf' }) },
+      ],
+    };
+    await Font.loadAsync([retryDefinition]);
+    expect(Font.isLoaded('BrokenFamily')).toBe(true);
+  });
+
+  it('rejects if the native call fails, cleans up loadPromises, and allows a retry with no unhandled rejection', async () => {
+    jest
+      .spyOn(ExpoFontLoader, 'loadFontFamilyAsync')
+      .mockRejectedValueOnce(new Error('native failure'));
+
+    const unhandled: unknown[] = [];
+    const onUnhandled = (reason: unknown) => unhandled.push(reason);
+    process.on('unhandledRejection', onUnhandled);
+
+    const definition = multiFaceDefinition('RetryFamily');
+    await expect(Font.loadAsync([definition])).rejects.toThrow('native failure');
+    expect(Font.isLoading('RetryFamily')).toBe(false);
+    expect(Font.isLoaded('RetryFamily')).toBe(false);
+
+    // Let any unhandled-rejection microtask flush before asserting.
+    await new Promise((resolve) => setImmediate(resolve));
+    process.off('unhandledRejection', onUnhandled);
+    expect(unhandled).toHaveLength(0);
+
+    const retry = multiFaceDefinition('RetryFamily');
+    await Font.loadAsync([retry]);
+    expect(Font.isLoaded('RetryFamily')).toBe(true);
+    expect(ExpoFontLoader.loadFontFamilyAsync).toHaveBeenCalledTimes(2);
+  });
+
+  it('coalesces concurrent loads of the same family into a single native call', async () => {
+    const definition1 = multiFaceDefinition('ConcurrentFamily');
+    const definition2 = multiFaceDefinition('ConcurrentFamily');
+
+    const promise1 = Font.loadAsync([definition1]);
+    expect(Font.isLoading('ConcurrentFamily')).toBe(true);
+    const promise2 = Font.loadAsync([definition2]);
+
+    await Promise.all([promise1, promise2]);
+
+    expect(ExpoFontLoader.loadFontFamilyAsync).toHaveBeenCalledTimes(1);
+    expect(Font.isLoaded('ConcurrentFamily')).toBe(true);
+  });
+
+  it('uses a single family-level loadPromises key, never composite weight/style keys', async () => {
+    const definition = multiFaceDefinition('KeyFamily');
+    const promise = Font.loadAsync([definition]);
+    expect(Object.keys(loadPromises)).toEqual(['KeyFamily']);
+    await promise;
+    expect(Object.keys(loadPromises)).toEqual([]);
+  });
+});
