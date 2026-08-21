@@ -88,8 +88,6 @@ export function WebModal({ children }: { children: ReactNode }) {
 }
 ```
 
-For a draggable sheet, install a web sheet library such as [Vaul](https://vaul.emilkowal.ski/) in your app and render it inside the transparent route. Use `window.matchMedia('(min-width: 768px)')` to choose a desktop dialog or small-screen sheet.
-
 ## Build a custom navigator
 
 When you have multiple web modals or want the experience to be as close to the experimental web modal as possible, create a [custom navigator](/router/advanced/custom-navigators/) with `StackRouter`. This basic implementation preserves the built-in stack view behind the modals; customize the overlay for your app's look and feel.
@@ -106,9 +104,19 @@ import {
   unstable_createStandardRouterNavigator,
   type NavigatorContentProps,
 } from 'expo-router';
+import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 type Options = NativeStackNavigationOptions & { modal?: boolean };
+
+function YourModal({ children, onDismiss }: { children: ReactNode; onDismiss: () => void }) {
+  return (
+    <View style={styles.overlay}>
+      <Pressable onPress={onDismiss} style={StyleSheet.absoluteFill} />
+      <View style={styles.dialog}>{children}</View>
+    </View>
+  );
+}
 
 function ModalStackContent({ state, descriptors, actions }: NavigatorContentProps<Options>) {
   // Filter preloaded routes.
@@ -140,10 +148,9 @@ function ModalStackContent({ state, descriptors, actions }: NavigatorContentProp
     <View style={{ flex: 1 }}>
       <NativeStackView state={baseStackState} descriptors={nativeStackDescriptors} />
       {modalRoutes.map(route => (
-        <View key={route.key} style={styles.overlay}>
-          <Pressable onPress={actions.back} style={StyleSheet.absoluteFill} />
-          <View style={styles.dialog}>{descriptors[route.key].render()}</View>
-        </View>
+        <YourModal key={route.key} onDismiss={actions.back}>
+          {descriptors[route.key].render()}
+        </YourModal>
       ))}
     </View>
   );
