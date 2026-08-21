@@ -36,6 +36,8 @@ export default function Layout() {
 
 Use a platform-specific component for the visual treatment. The web implementation handles the backdrop, Escape key, and dismissal; the native implementation can return `children`.
 
+The backdrop blocks pointer events, but it does not prevent keyboard focus from reaching the route behind it. While the modal is open, set [`inert`](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes/inert) on the element that contains your app's background content. Do not set `inert` on the dialog or an ancestor of the dialog.
+
 ```tsx src/components/WebModal.web.tsx
 import { router } from 'expo-router';
 import { useEffect, type ReactNode } from 'react';
@@ -90,27 +92,53 @@ For a draggable sheet, install a web sheet library such as [Vaul](https://vaul.e
 
 ## Build a custom navigator
 
-Build a custom navigator when modal routes need to be removed from the underlying stack state. A web-only `_layout.web.tsx` can use `unstable_createStandardRouterNavigator` with `StackRouter`, render the last non-modal route through `descriptors[key].render()`, and render later routes as overlays. Dismiss an overlay with `actions.back()`.
+When you have multiple web modals or want the experience to be as close to the experimental web modal as possible, create a [custom navigator](/router/advanced/custom-navigators/) with `StackRouter`. This basic implementation preserves the built-in stack view behind the modals; customize the overlay for your app's look and feel.
+
+> **important** `NativeStackView` is available in SDK 58 and later.
 
 ```tsx src/components/ModalStack.web.tsx
 import {
+  NativeStackView,
+  type NativeStackDescriptorMap,
+  type NativeStackNavigationOptions,
+  type NativeStackViewState,
   StackRouter,
   unstable_createStandardRouterNavigator,
   type NavigatorContentProps,
 } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-type Options = { modal?: boolean };
+type Options = NativeStackNavigationOptions & { modal?: boolean };
 
 function ModalStackContent({ state, descriptors, actions }: NavigatorContentProps<Options>) {
+  // Filter preloaded routes.
   const activeRoutes = state.routes.slice(0, state.index + 1);
-  const firstModal = activeRoutes.findIndex(route => descriptors[route.key].options.modal);
-  const baseRoute = firstModal === -1 ? activeRoutes[state.index] : activeRoutes[firstModal - 1];
-  const modalRoutes = firstModal === -1 ? [] : activeRoutes.slice(firstModal);
+  const lastNonModalRouteIndex = activeRoutes.findLastIndex(
+    route => !descriptors[route.key].options.modal
+  );
+  const hasModals = lastNonModalRouteIndex < state.index;
+
+  // Standard navigation descriptors use the same runtime shape as NativeStackView descriptors.
+  const nativeStackDescriptors = descriptors as unknown as NativeStackDescriptorMap;
+
+  if (!hasModals) {
+    return (
+      <NativeStackView state={state as NativeStackViewState} descriptors={nativeStackDescriptors} />
+    );
+  }
+
+  const baseStackRoutes = activeRoutes.slice(0, lastNonModalRouteIndex + 1);
+  const baseStackPreloadedRoutes = state.routes.slice(state.index + 1);
+  const baseStackState = {
+    ...state,
+    index: lastNonModalRouteIndex,
+    routes: [...baseStackRoutes, ...baseStackPreloadedRoutes],
+  } as NativeStackViewState;
+  const modalRoutes = activeRoutes.slice(lastNonModalRouteIndex + 1);
 
   return (
     <View style={{ flex: 1 }}>
-      {baseRoute && descriptors[baseRoute.key].render()}
+      <NativeStackView state={baseStackState} descriptors={nativeStackDescriptors} />
       {modalRoutes.map(route => (
         <View key={route.key} style={styles.overlay}>
           <Pressable onPress={actions.back} style={StyleSheet.absoluteFill} />
@@ -149,9 +177,3 @@ export default function Layout() {
   );
 }
 ```
-
-The [custom navigator API](/router/advanced/custom-navigators/) is alpha and available in SDK 56 and later. This approach does not use Expo Router's internal native stack view, so it does not provide built-in stack headers, transitions, or `preventRemove`; render your own chrome and confirm dismissal in the handler when needed.
-
-## Deep links and dismissal
-
-Export `unstable_settings.anchor` from the layout when a modal route can be opened directly. The anchor keeps a base route behind the overlay. Always handle a directly loaded modal route: `router.canGoBack()` is false, so use `router.replace('/')` or another known route instead of `router.back()`. Wait for any exit animation before navigating back.

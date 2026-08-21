@@ -25,8 +25,8 @@ type Props = {
   state: NativeStackViewState;
   descriptors: NativeStackDescriptorMap;
   // These are used for the native implementation of the stack.
-  emit: NativeStackViewEmit;
-  pop: (count: number, sourceRouteKey: string) => void;
+  emit?: NativeStackViewEmit;
+  pop?: (count: number, sourceRouteKey: string) => void;
 } & NativeStackNavigationConfig;
 
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
