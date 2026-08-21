@@ -175,6 +175,8 @@ abstract class Loader protected constructor(
       if (existingUpdateEntity == null) {
         // no update already exists with this ID, so we need to download everything.
         updateEntity = newUpdateEntity
+        // EMBEDDED is already in the launchable set, so a row inserted before its launch asset exists
+        // gets picked as launchable and then fails every launch.
         insertUpdateEntityOnFinish = newUpdateEntity.status == UpdateStatus.EMBEDDED
         if (!insertUpdateEntityOnFinish) {
           database.updateDao().insertUpdate(updateEntity!!)
