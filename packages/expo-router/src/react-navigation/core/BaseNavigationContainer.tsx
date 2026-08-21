@@ -35,7 +35,6 @@ import { useChildListeners } from './useChildListeners';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useEventEmitter } from './useEventEmitter';
 import { useKeyedChildListeners } from './useKeyedChildListeners';
-import { FUNCTIONAL_DISPATCH_ERROR } from './useNavigationHelpers';
 import { useOptionsGetters } from './useOptionsGetters';
 
 type InternalNavigationContainerProps = Omit<NavigationContainerProps, 'initialState'> & {
@@ -124,10 +123,6 @@ function BaseNavigationContainerInner({
   const { addKeyedListener } = useKeyedChildListeners();
 
   const dispatch = useLatestCallback((action: NavigationAction) => {
-    if (typeof action === 'function') {
-      throw new Error(FUNCTIONAL_DISPATCH_ERROR);
-    }
-
     if (listeners.focus[0] == null) {
       console.error(NOT_INITIALIZED_ERROR);
     } else {
@@ -135,15 +130,13 @@ function BaseNavigationContainerInner({
     }
   });
 
-  const dispatchSync = useLatestCallback(
-    (action: NavigationAction | ((state: NavigationState) => NavigationAction)) => {
-      if (listeners.focus[0] == null) {
-        console.error(NOT_INITIALIZED_ERROR);
-      } else {
-        listeners.focus[0]((navigation) => navigation.dispatchSync(action));
-      }
+  const dispatchSync = useLatestCallback((action: NavigationAction) => {
+    if (listeners.focus[0] == null) {
+      console.error(NOT_INITIALIZED_ERROR);
+    } else {
+      listeners.focus[0]((navigation) => navigation.dispatchSync(action));
     }
-  );
+  });
 
   const canGoBack = useLatestCallback(() => {
     if (listeners.focus[0] == null) {

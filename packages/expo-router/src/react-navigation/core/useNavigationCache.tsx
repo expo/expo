@@ -13,7 +13,6 @@ import {
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import type { NavigationHelpers, NavigationProp } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
-import { FUNCTIONAL_DISPATCH_ERROR } from './useNavigationHelpers';
 
 type Options<
   State extends NavigationState,
@@ -81,9 +80,7 @@ export function useNavigationCache<
   );
 
   const createNavigation = (route: { key: string; name: string }) => {
-    type Thunk = NavigationAction | ((state: State) => NavigationAction | null | undefined);
-
-    const dispatchSync = (thunk: Thunk) => {
+    const dispatchSync = (action: NavigationAction) => {
       const state = getState();
 
       if (isRoutePreloadedInStack(state, route)) {
@@ -95,19 +92,11 @@ export function useNavigationCache<
         return;
       }
 
-      const action = typeof thunk === 'function' ? thunk(state) : thunk;
-
-      if (action != null) {
-        // TODO(@ubax): https://github.com/expo/expo/pull/48618#discussion_r3735996416
-        navigation.dispatchSync({ source: route.key, ...action });
-      }
+      // TODO(@ubax): https://github.com/expo/expo/pull/48618#discussion_r3735996416
+      navigation.dispatchSync({ source: route.key, ...action });
     };
 
     const dispatch = (action: NavigationAction) => {
-      if (typeof action === 'function') {
-        throw new Error(FUNCTIONAL_DISPATCH_ERROR);
-      }
-
       const state = getState();
       if (isRoutePreloadedInStack(state, route)) {
         if (process.env.NODE_ENV !== 'production') {
@@ -163,7 +152,7 @@ export function useNavigationCache<
       // FIXME: too much work to fix the types for now
       ...(emitter.create(route.key) as any),
       dispatch: (action: NavigationAction) => withStack(() => dispatch(action)),
-      dispatchSync: (thunk: Thunk) => withStack(() => dispatchSync(thunk)),
+      dispatchSync: (action: NavigationAction) => withStack(() => dispatchSync(action)),
       getParent: (id?: string) => {
         if (id !== undefined && id === rest.getId()) {
           // If the passed id is the same as the current navigation id,

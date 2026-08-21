@@ -227,12 +227,10 @@ type NavigationHelpersCommon<
 
   /**
    * Dispatches an action synchronously.
-   * Functional actions receive the current navigation state. Prefer `dispatch` unless the caller
-   * must reconcile state synchronously with a native event or gesture.
    *
-   * @param action Action object or update function to dispatch synchronously.
+   * @param action Action object to dispatch synchronously.
    */
-  dispatchSync(action: NavigationAction | ((state: Readonly<State>) => NavigationAction)): void;
+  dispatchSync(action: NavigationAction): void;
 
   /**
    * Navigate to a screen in the current or parent navigator.

@@ -279,35 +279,6 @@ test('handle dispatching with ref', () => {
   expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['baz', 'bar']);
 });
 
-test('rejects functional ref dispatch and supports functional dispatchSync', () => {
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  const RootNavigator = (props: any) => {
-    const { descriptors, state, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  render(
-    <BaseNavigationContainer ref={ref}>
-      <RootNavigator>
-        <Screen name="foo">{() => null}</Screen>
-      </RootNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(() =>
-    // @ts-expect-error: Functional dispatch is rejected at runtime with migration guidance.
-    ref.current?.dispatch((state) => ({ type: 'SET_STATE', payload: state }))
-  ).toThrow('dispatchSync');
-
-  expect(() => act(() => ref.current?.dispatchSync(() => ({ type: 'NOOP' })))).not.toThrow();
-});
-
 test('handles resetting to a complete state with ref', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
