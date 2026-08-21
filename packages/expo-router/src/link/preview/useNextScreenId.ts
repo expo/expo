@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { store } from '../../global-state/router-store';
+import { useExpoRouterStore } from '../../global-state/storeContext';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { useRouter } from '../../hooks';
 import type { Href } from '../../types';
@@ -14,6 +14,7 @@ export function useNextScreenId(): [
 ] {
   const router = useRouter();
   const routeInfo = useRouteInfo();
+  const { navigationRef, linking } = useExpoRouterStore();
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
   const currentHref = useRef<Href | undefined>(undefined);
@@ -24,19 +25,21 @@ export function useNextScreenId(): [
 
   useEffect(() => {
     // When screen is prefetched, then the root state is updated with the preloaded route.
-    return store.navigationRef.addListener('state', ({ data: { state } }) => {
+    return navigationRef.addListener('state', ({ data: { state } }) => {
       // If we have the current href, it means that we prefetched the route
       if (currentHref.current && state) {
         const preloadedRoute = getPreloadedRouteFromRootStateByHref(
           currentHref.current,
           state,
-          routeInfoRef.current
+          routeInfoRef.current,
+          linking
         );
         const routeKey = preloadedRoute?.key;
         const tabPathFromRootState = getTabPathFromRootStateByHref(
           currentHref.current,
           state,
-          routeInfoRef.current
+          routeInfoRef.current,
+          linking
         );
         // Without this timeout react-native does not have enough time to mount the new screen
         // and thus it will not be found on the native side
@@ -52,7 +55,7 @@ export function useNextScreenId(): [
         currentHref.current = undefined;
       }
     });
-  }, []);
+  }, [navigationRef, linking]);
 
   const prefetch = useCallback(
     (href: Href): void => {

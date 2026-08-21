@@ -2,6 +2,10 @@
 
 ## Unpublished
 
+### 🐛 Bug fixes
+
+- Move Expo Router store values into React context. ([#49176](https://github.com/expo/expo/pull/49176) by [@jakub-agent](https://github.com/jakub-agent))
+
 ### 🛠 Breaking changes
 
 - Remove the deprecated `Link` and `useLinkProps` exports from `expo-router/react-navigation`. Use `Link` from `expo-router` with an `href` instead. ([#48895](https://github.com/expo/expo/pull/48895) by [@Ubax](https://github.com/Ubax))
