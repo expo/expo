@@ -6,7 +6,7 @@
             "podName": "RNCAsyncStorage",
             "codegenName": "rnasyncstorage",
             "platforms": [
-                "iOS(.v16)"
+                "iOS(\"16.4\")"
             ],
             "externalDependencies": [
                 "ReactNativeDependencies",

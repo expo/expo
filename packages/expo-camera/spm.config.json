@@ -5,7 +5,7 @@
       "name": "ExpoCamera",
       "podName": "ExpoCamera",
       "platforms": [
-        "iOS(.v16)"
+        "iOS(\"16.4\")"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -38,7 +38,7 @@
       "name": "ExpoCameraBarcodeScanning",
       "podName": "ExpoCameraBarcodeScanning",
       "platforms": [
-        "iOS(.v16)"
+        "iOS(\"16.4\")"
       ],
       "autolinkWhen": {
         "podfileProperty": "expo.camera.barcode-scanner-enabled",

@@ -5,7 +5,7 @@
       "name": "ExpoModulesCore",
       "podName": "ExpoModulesCore",
       "platforms": [
-        "iOS(.v16)"
+        "iOS(\"16.4\")"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -117,7 +117,7 @@
       "name": "ExpoModulesWorklets",
       "podName": "ExpoModulesWorklets",
       "platforms": [
-        "iOS(.v16)"
+        "iOS(\"16.4\")"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -175,7 +175,7 @@
       "podName": "ExpoModulesWorkletsAdapter",
       "sourceOnly": true,
       "platforms": [
-        "iOS(.v16)"
+        "iOS(\"16.4\")"
       ],
       "autolinkWhen": {
         "podName": "RNWorklets"

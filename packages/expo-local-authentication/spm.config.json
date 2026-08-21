@@ -5,7 +5,7 @@
       "name": "ExpoLocalAuthentication",
       "podName": "ExpoLocalAuthentication",
       "platforms": [
-        "iOS(.v16)"
+        "iOS(\"16.4\")"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

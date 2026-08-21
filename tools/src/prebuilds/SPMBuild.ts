@@ -4,6 +4,8 @@ import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { getExpoRepositoryRootDir } from '../Directories';
+import logger from '../Logger';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
@@ -17,8 +19,6 @@ import { SPMGenerator } from './SPMGenerator';
 import { assertSafeSPMIdentifier } from './SPMIdentifier';
 import { createAsyncSpinner } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
-import { getExpoRepositoryRootDir } from '../Directories';
-import logger from '../Logger';
 
 export const SPMBuild = {
   /**
@@ -427,19 +427,19 @@ async function resolveSPMDependenciesAndPatch(packageDir: string): Promise<void>
 export const getBuildPlatformsFromProductPlatform = (
   platform: ProductPlatform
 ): BuildPlatform[] => {
-  switch (platform) {
-    case 'iOS(.v15)':
-    case 'iOS(.v16)':
-      return ['iOS', 'iOS Simulator'];
-    case 'macOS(.v11)':
-      return ['macOS'];
-    case 'tvOS(.v15)':
-      return ['tvOS', 'tvOS Simulator'];
-    case 'macCatalyst(.v15)':
-      return ['macOS,variant=Mac Catalyst'];
-    default:
-      return [];
+  if (platform.startsWith('iOS(')) {
+    return ['iOS', 'iOS Simulator'];
   }
+  if (platform.startsWith('macOS(')) {
+    return ['macOS'];
+  }
+  if (platform.startsWith('tvOS(')) {
+    return ['tvOS', 'tvOS Simulator'];
+  }
+  if (platform.startsWith('macCatalyst(')) {
+    return ['macOS,variant=Mac Catalyst'];
+  }
+  return [];
 };
 
 /**
@@ -807,7 +807,7 @@ let package = Package(
     name: "${dep.productName}-standalone",
 
     platforms: [
-        .iOS(.v16)
+        .iOS("16.4")
     ],
 
     products: [

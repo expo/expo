@@ -411,7 +411,7 @@ et prebuild --local-react-native-tarball "/path/to/{flavor}/React.xcframework.ta
 | `name`                 | string | Product/XCFramework name (required)                                                             |
 | `podName`              | string | CocoaPods pod name from podspec (required)                                                      |
 | `codegenName`          | string | Codegen module name from `codegenConfig.name` in package.json (optional, for Fabric components) |
-| `platforms`            | array  | SPM platforms, e.g., `["iOS(.v15)"]`. Supported: `iOS(.v15)`, `macOS(.v11)`, `tvOS(.v15)`, `macCatalyst(.v15)`, `iOS(.v15_1)`, `tvOS(.v15_1)` |
+| `platforms`            | array  | SPM platforms, e.g., `["iOS(\"16.4\")"]`. Supported: `iOS(.v15)`, `iOS(.v16)`, `iOS("16.4")`, `macOS(.v11)`, `tvOS(.v15)`, `macCatalyst(.v15)` |
 | `externalDependencies` | array  | External package dependencies (React, Hermes, other expo packages)                              |
 | `spmPackages`          | array  | Third-party SPM package dependencies (see below)                                                |
 | `swiftLanguageVersions`| array  | Swift language versions supported                                                               |
