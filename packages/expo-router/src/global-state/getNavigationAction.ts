@@ -7,6 +7,7 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { SingularOptions } from '../useScreens';
+import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
 import { store } from './store';
 import type { LinkToOptions } from './types';
@@ -17,7 +18,8 @@ export function getNavigateAction(
   type = 'NAVIGATE',
   withAnchor?: boolean,
   singular?: SingularOptions,
-  isPreviewNavigation?: boolean
+  isPreviewNavigation?: boolean,
+  routeInfo: UrlObject = defaultRouteInfo
 ) {
   let href: string | undefined = baseHref;
   store.assertIsReady();
@@ -33,7 +35,7 @@ export function getNavigateAction(
   }
   const rootState = navigationRef.getRootState();
 
-  href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
+  href = resolveHrefStringWithSegments(href, routeInfo, options);
   href = applyRedirects(href, store.redirects) ?? undefined;
 
   // If the href is undefined, it means that the redirect has already been handled by the navigation
@@ -41,7 +43,7 @@ export function getNavigateAction(
     return;
   }
 
-  const state = store.linking.getStateFromPath!(href, store.linking.config);
+  const state = store.linking.getStateFromPath!(href, store.linking.config, routeInfo.segments);
 
   if (!state || state.routes.length === 0) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);

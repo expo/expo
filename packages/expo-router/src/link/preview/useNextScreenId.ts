@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { store } from '../../global-state/router-store';
+import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { useRouter } from '../../hooks';
 import type { Href } from '../../types';
 import { useLinkPreviewContext } from './LinkPreviewContext';
@@ -12,9 +13,13 @@ export function useNextScreenId(): [
   (href: Href) => void,
 ] {
   const router = useRouter();
+  const routeInfo = useRouteInfo();
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
   const currentHref = useRef<Href | undefined>(undefined);
+  const routeInfoRef = useRef(routeInfo);
+  // The navigation listener is stable, so read the current route when prefetch updates its state.
+  routeInfoRef.current = routeInfo;
   const [tabPath, setTabPath] = useState<TabPath[]>([]);
 
   useEffect(() => {
@@ -22,9 +27,17 @@ export function useNextScreenId(): [
     return store.navigationRef.addListener('state', ({ data: { state } }) => {
       // If we have the current href, it means that we prefetched the route
       if (currentHref.current && state) {
-        const preloadedRoute = getPreloadedRouteFromRootStateByHref(currentHref.current, state);
+        const preloadedRoute = getPreloadedRouteFromRootStateByHref(
+          currentHref.current,
+          state,
+          routeInfoRef.current
+        );
         const routeKey = preloadedRoute?.key;
-        const tabPathFromRootState = getTabPathFromRootStateByHref(currentHref.current, state);
+        const tabPathFromRootState = getTabPathFromRootStateByHref(
+          currentHref.current,
+          state,
+          routeInfoRef.current
+        );
         // Without this timeout react-native does not have enough time to mount the new screen
         // and thus it will not be found on the native side
         if (routeKey || tabPathFromRootState.length) {

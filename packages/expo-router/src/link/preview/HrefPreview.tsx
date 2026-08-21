@@ -8,6 +8,7 @@ import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '..
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
 import { store } from '../../global-state/router-store';
+import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
 import {
@@ -18,11 +19,16 @@ import {
 import type { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
+import { getStateForHref } from '../getStateForHref';
 import { getPathFromState } from '../linking';
 import { PreviewRouteContext } from './PreviewRouteContext';
 
 export function HrefPreview({ href }: { href: Href }) {
-  const hrefState = useMemo(() => getHrefState(href), [href]);
+  const routeInfo = useRouteInfo();
+  const hrefState = useMemo(
+    () => getStateForHref(href, routeInfo, store.linking),
+    [href, routeInfo]
+  );
   const index = hrefState?.index ?? 0;
 
   let isProtected = false;
@@ -114,11 +120,6 @@ function PreviewForInternalRoutes() {
       <Text style={{ fontWeight: '200', fontSize: 14 }}>{pathname}</Text>
     </View>
   );
-}
-
-function getHrefState(href: Href) {
-  const hrefState = store.getStateForHref(href as any);
-  return hrefState;
 }
 
 function getParamsAndNodeFromHref(hrefState: ResultState) {
