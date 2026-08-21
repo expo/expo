@@ -158,10 +158,12 @@ public final class VideoView: ExpoView, AVPlayerViewControllerDelegate {
   #endif
 
   public func playerViewControllerDidStartPictureInPicture(_ playerViewController: AVPlayerViewController) {
+    VideoManager.shared.setPictureInPictureActive(self, active: true)
     onPictureInPictureStart()
   }
 
   public func playerViewControllerDidStopPictureInPicture(_ playerViewController: AVPlayerViewController) {
+    VideoManager.shared.setPictureInPictureActive(self, active: false)
     onPictureInPictureStop()
   }
 
