@@ -175,6 +175,22 @@ describe(getNavigateAction, () => {
     );
   });
 
+  it('uses route information provided by the caller', () => {
+    const routeInfo = {
+      pathname: '/current',
+      pathnameWithParams: '/current',
+      segments: ['current'],
+      params: {},
+      searchParams: new URLSearchParams(),
+      unstable_globalHref: '',
+      isIndex: false,
+    };
+
+    getNavigateAction('/home', {}, 'NAVIGATE', undefined, undefined, false, routeInfo);
+
+    expect(store.linking!.getStateFromPath).toHaveBeenCalledWith('/home', {}, ['current']);
+  });
+
   it('preserves PUSH when target navigator is tab', () => {
     mockFindDivergentState.mockReturnValue({
       actionState: { routes: [{ name: 'tab1' }] },
