@@ -76,6 +76,13 @@ describe('e2e: iOS locales', () => {
             app_name: 'de-name',
           },
         }),
+        // nested objects are invalid and must not be written as "[object Object]"
+        'lang/pt.json': JSON.stringify({
+          NSCameraUsageDescription: 'pt-camera',
+          plugins: {
+            'expo-camera': { cameraPermission: 'pt-camera-nested' },
+          },
+        }),
       },
       projectRoot
     );
@@ -143,6 +150,28 @@ describe('e2e: iOS locales', () => {
       'ios',
       'locales.xx',
       'Failed to parse JSON of locale file for language: xx',
+      'https://docs.expo.dev/guides/localization/#translating-app-metadata'
+    );
+  });
+
+  it('skips non-string values instead of writing "[object Object]"', async () => {
+    let project = getPbxproj(projectRoot);
+
+    project = await setLocalesAsync(
+      { locales: { pt: 'lang/pt.json' } },
+      { project, projectRoot }
+    );
+    fs.writeFileSync(project.filepath, project.writeSync());
+
+    const after = getDirFromFS(vol.toJSON(), projectRoot);
+    const infoPlist = after['ios/testproject/Supporting/pt.lproj/InfoPlist.strings'];
+    expect(infoPlist).toBe('NSCameraUsageDescription = "pt-camera";');
+    expect(infoPlist).not.toMatch(/object Object/);
+
+    expect(WarningAggregator.addWarningForPlatform).toHaveBeenCalledWith(
+      'ios',
+      'locales.pt',
+      'Skipped locale keys with invalid values: plugins. Values must be strings.',
       'https://docs.expo.dev/guides/localization/#translating-app-metadata'
     );
   });
