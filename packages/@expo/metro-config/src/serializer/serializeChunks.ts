@@ -766,9 +766,9 @@ function gatherChunks(
 }
 
 function removeEntryDepsFromAsyncChunks(entryChunk: Chunk, chunks: Set<Chunk>): void {
-  for (const chunk of chunks.values()) {
-    if (!chunk.isEntry && chunk.isAsync) {
-      for (const dep of chunk.deps.values()) {
+  for (const chunk of chunks) {
+    if (!chunk.sealed && !chunk.isEntry && chunk.isAsync) {
+      for (const dep of chunk.deps) {
         if (entryChunk.deps.has(dep)) {
           // Remove the dependency from the async chunk since it will be loaded in the main chunk.
           chunk.deps.delete(dep);
@@ -783,8 +783,7 @@ function extractCommonChunk(
   graph: ReadOnlyGraph,
   options: SerializerOptions
 ): Chunk | undefined {
-  const toCompare = [...chunks.values()];
-
+  const toCompare = [...chunks.values()].filter((chunk) => !chunk.sealed);
   const commonDependencies = new Set<Module<MixedOutput>>();
 
   while (toCompare.length) {
@@ -818,7 +817,7 @@ function deduplicateAgainstKnownChunks(
   // TODO: Optimize this pass more.
   // Remove all dependencies from async chunks that are already in the common chunk.
   for (const chunk of chunks) {
-    if (!chunk.isEntry && chunk !== commonChunk) {
+    if (!chunk.sealed && !chunk.isEntry && chunk !== commonChunk) {
       for (const dep of chunk.deps) {
         if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
           chunk.deps.delete(dep);
@@ -830,7 +829,7 @@ function deduplicateAgainstKnownChunks(
 
 function removeEmptyChunks(chunks: Set<Chunk>): void {
   for (const chunk of chunks) {
-    if (!chunk.isEntry && chunk.deps.size === 0) {
+    if (!chunk.sealed && !chunk.isEntry && chunk.deps.size === 0) {
       chunks.delete(chunk);
     }
   }
