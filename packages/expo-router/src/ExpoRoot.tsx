@@ -8,12 +8,14 @@ import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import type { ExpoLinkingOptions } from './getLinkingConfig';
-import { store, useStore } from './global-state/router-store';
+import { useStore } from './global-state/router-store';
 import { RouterRegistryProvider } from './global-state/routerRegistry';
 import type { ServerContextType } from './global-state/serverLocationContext';
 import { ServerContext } from './global-state/serverLocationContext';
+import { maybeHideSplashScreen, store } from './global-state/store';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
+import { useImperativeApiEmitter } from './imperative-api';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
@@ -90,12 +92,12 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
-// TODO(@ubax): Refactor onReady logic and use listeners pattern
 function onNavigationReady() {
   handleNavigationOnReady();
-  store.onReady();
+  maybeHideSplashScreen();
 }
 
+// TODO(@ubax): Refactor onReady logic and use listeners pattern
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
@@ -134,11 +136,18 @@ function ContextNavigator({
     ? `${serverContext.location.pathname}${serverContext.location.search}${serverContext.location.hash ?? ''}`
     : undefined;
 
-  const store = useStore(context, linking, serverUrl);
-
+  const storeValue = useStore(context, linking, serverUrl);
+  const {
+    navigationRef,
+    initialState,
+    rootComponent,
+    linking: linkingConfig,
+    routeNode,
+  } = storeValue;
   useDomComponentNavigation();
 
-  if (store.shouldShowTutorial()) {
+  // TODO(@ubax): Revisit onboarding once route creation is React-owned.
+  if (process.env.NODE_ENV === 'development' && !routeNode) {
     SplashScreen.hideAsync();
     if (process.env.NODE_ENV === 'development') {
       const Tutorial = require('./onboard/Tutorial').Tutorial;
@@ -154,19 +163,20 @@ function ContextNavigator({
   }
 
   return (
-    <StoreContext.Provider value={store}>
+    <StoreContext.Provider value={storeValue}>
       <RouterRegistryProvider>
         <UpstreamNavigationContainer
-          ref={store.navigationRef}
-          initialState={store.state}
-          linking={store.linking as LinkingOptions<any>}
+          ref={navigationRef}
+          initialState={initialState}
+          linking={linkingConfig as LinkingOptions<any>}
           onUnhandledAction={onUnhandledAction}
           onStateChange={store.onStateChange}
           documentTitle={documentTitle}
           onReady={onNavigationReady}>
+          <ImperativeApiEmitter />
           <ServerContext.Provider value={serverContext}>
             <WrapperComponent>
-              <Content />
+              <Content rootComponent={rootComponent} />
             </WrapperComponent>
           </ServerContext.Provider>
         </UpstreamNavigationContainer>
@@ -175,10 +185,13 @@ function ContextNavigator({
   );
 }
 
-function Content() {
-  const children = [
-    <Screen key="SLOT" name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
-  ];
+function ImperativeApiEmitter() {
+  useImperativeApiEmitter();
+  return null;
+}
+
+function Content({ rootComponent }: { rootComponent: ComponentType<any> }) {
+  const children = [<Screen key="SLOT" name={INTERNAL_SLOT_NAME} component={rootComponent} />];
   if (shouldAppendNotFound()) {
     children.push(<Screen key="NOT-FOUND" name={NOT_FOUND_ROUTE_NAME} component={RootUnmatched} />);
   }

@@ -1,6 +1,7 @@
 import { act, render, waitFor } from '@testing-library/react-native';
 
 import { RouterRegistryProvider } from '../../global-state/routerRegistry';
+import { store } from '../../global-state/store';
 import { Screen } from '../../react-navigation/core/Screen';
 import { createNavigationContainerRef } from '../../react-navigation/core/createNavigationContainerRef';
 import { useNavigationBuilder } from '../../react-navigation/core/useNavigationBuilder';
@@ -11,14 +12,6 @@ import { createMemoryHistory } from '../createMemoryHistory';
 jest.mock('../createMemoryHistory');
 
 let mockNavigationRef: ReturnType<typeof createNavigationContainerRef>;
-
-jest.mock('../../global-state/storeContext', () => ({
-  useExpoRouterStore: () => ({
-    get state() {
-      return mockNavigationRef.current?.getRootState();
-    },
-  }),
-}));
 
 const history = {
   index: 0,
@@ -37,6 +30,9 @@ function EmptyScreen() {
 
 beforeEach(() => {
   jest.mocked(createMemoryHistory).mockReturnValue(history);
+  jest
+    .spyOn(store, 'state', 'get')
+    .mockImplementation(() => mockNavigationRef.current?.getRootState());
   Object.defineProperty(globalThis, 'location', {
     configurable: true,
     value: { hash: '' },

@@ -12,7 +12,6 @@ import { Slot } from '../../views/Navigator';
 import { Pressable } from '../../views/Pressable';
 import { Link } from '../Link';
 import { HrefPreview } from '../preview/HrefPreview';
-import { LinkPreviewContextProvider } from '../preview/LinkPreviewContext';
 import {
   type NativeLinkPreviewActionProps,
   type NativeLinkPreviewContentProps,
@@ -714,13 +713,13 @@ describe('Preview', () => {
   });
   it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
     expect(() => {
-      render(
-        <LinkPreviewContextProvider>
+      renderRouter({
+        index: () => (
           <Link href="/foo">
             <Link.Preview />
           </Link>
-        </LinkPreviewContextProvider>
-      );
+        ),
+      });
     }).toThrow(
       'When you use Link.Preview, you must use Link.Trigger to specify the trigger element'
     );
@@ -930,8 +929,8 @@ describe('Preview', () => {
   });
 
   it('correctly passes props to child component with asChild, Preview and trigger', () => {
-    const { getByText, getByTestId } = render(
-      <LinkPreviewContextProvider>
+    const { getByText, getByTestId } = renderRouter({
+      index: () => (
         <Link asChild href="/foo">
           <Link.Preview />
           <Link.Trigger>
@@ -940,8 +939,8 @@ describe('Preview', () => {
             </View>
           </Link.Trigger>
         </Link>
-      </LinkPreviewContextProvider>
-    );
+      ),
+    });
     const node = getByText('Button');
     expect(node.props).toEqual({
       children: 'Button',

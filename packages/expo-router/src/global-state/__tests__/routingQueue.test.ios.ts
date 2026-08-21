@@ -1,9 +1,14 @@
-import type { RefObject } from 'react';
-
-import type { NavigationContainerRef, ParamListBase } from '../../react-navigation/native';
-import { getNavigateAction } from '../getNavigationAction';
+import { getNavigateAction, type NavigationActionContext } from '../getNavigationAction';
 import { defaultRouteInfo } from '../getRouteInfoFromState';
 import { routingQueue } from '../routingQueue';
+
+const navigationActionContext = (
+  navigationRef: NavigationActionContext['navigationRef']
+): NavigationActionContext => ({
+  navigationRef,
+  linking: undefined,
+  redirects: [],
+});
 
 jest.mock('../getNavigationAction', () => ({
   getNavigateAction: jest.fn(),
@@ -12,30 +17,29 @@ jest.mock('../getNavigationAction', () => ({
 const mockGetNavigateAction = getNavigateAction as jest.MockedFunction<typeof getNavigateAction>;
 
 function makeRef(
-  overrides: Partial<NavigationContainerRef<ParamListBase>> = {}
-): RefObject<NavigationContainerRef<ParamListBase>> {
-  return {
-    current: {
-      dispatch: jest.fn(),
-      navigate: jest.fn(),
-      reset: jest.fn(),
-      goBack: jest.fn(),
-      isFocused: jest.fn(),
-      canGoBack: jest.fn(),
-      getState: jest.fn(),
-      getRootState: jest.fn(),
-      getParent: jest.fn(),
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
-      isReady: jest.fn(() => true),
-      setParams: jest.fn(),
-      getCurrentRoute: jest.fn(),
-      getCurrentOptions: jest.fn(),
-      getId: jest.fn(),
-      resetRoot: jest.fn(),
-      ...overrides,
-    } as unknown as NavigationContainerRef<ParamListBase>,
-  };
+  overrides: Partial<NonNullable<NavigationActionContext['navigationRef']['current']>> = {}
+): NavigationActionContext['navigationRef'] {
+  const ref = {
+    dispatch: jest.fn(),
+    navigate: jest.fn(),
+    reset: jest.fn(),
+    goBack: jest.fn(),
+    isFocused: jest.fn(),
+    canGoBack: jest.fn(),
+    getState: jest.fn(),
+    getRootState: jest.fn(),
+    getParent: jest.fn(),
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    isReady: jest.fn(() => true),
+    setParams: jest.fn(),
+    getCurrentRoute: jest.fn(),
+    getCurrentOptions: jest.fn(),
+    getId: jest.fn(),
+    resetRoot: jest.fn(),
+    ...overrides,
+  } as unknown as NonNullable<NavigationActionContext['navigationRef']['current']>; // Only navigation APIs exercised by these tests are mocked.
+  return { ...ref, current: ref };
 }
 
 beforeEach(() => {
@@ -49,9 +53,11 @@ describe('routingQueue', () => {
   it('add() pushes action to queue and notifies subscribers', () => {
     const callback = jest.fn();
     routingQueue.subscribe(callback);
+    const previousSnapshot = routingQueue.snapshot();
 
     routingQueue.add({ type: 'GO_BACK' });
 
+    expect(routingQueue.snapshot()).not.toBe(previousSnapshot);
     expect(routingQueue.queue).toHaveLength(1);
     expect(routingQueue.queue[0]).toEqual({ type: 'GO_BACK' });
     expect(callback).toHaveBeenCalledTimes(1);
@@ -88,7 +94,7 @@ describe('routingQueue', () => {
     routingQueue.add({ type: 'GO_BACK' });
     routingQueue.add({ type: 'POP_TO_TOP' });
 
-    routingQueue.run(ref, defaultRouteInfo);
+    routingQueue.run(defaultRouteInfo, navigationActionContext(ref));
 
     expect(routingQueue.queue).toHaveLength(0);
   });
@@ -98,7 +104,7 @@ describe('routingQueue', () => {
 
     routingQueue.add({ type: 'GO_BACK' });
 
-    routingQueue.run(ref, defaultRouteInfo);
+    routingQueue.run(defaultRouteInfo, navigationActionContext(ref));
 
     expect(ref.current!.dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
   });
@@ -123,16 +129,17 @@ describe('routingQueue', () => {
 
     routingQueue.add({
       type: 'ROUTER_LINK',
-      payload: { href: '/home', options: { event: 'NAVIGATE' } },
+      payload: { href: '/home', options: {} },
     });
 
-    routingQueue.run(ref, routeInfo);
+    routingQueue.run(routeInfo, navigationActionContext(ref));
 
     expect(mockGetNavigateAction).toHaveBeenCalledWith(
       '/home',
-      { event: 'NAVIGATE' },
+      {},
       routeInfo,
-      'NAVIGATE',
+      navigationActionContext(ref),
+      undefined,
       undefined,
       undefined,
       false
@@ -149,20 +156,30 @@ describe('routingQueue', () => {
       payload: { href: '/redirect', options: { event: 'NAVIGATE' } },
     });
 
-    routingQueue.run(ref, defaultRouteInfo);
+    routingQueue.run(defaultRouteInfo, navigationActionContext(ref));
 
     expect(ref.current!.dispatch).not.toHaveBeenCalled();
   });
 
-  it('run() does nothing when ref.current is null', () => {
-    const ref = { current: null };
+  it('run() preserves the queue when ref.current is null', () => {
+    const ref = makeRef();
+    ref.current = null;
 
     routingQueue.add({ type: 'GO_BACK' });
 
-    routingQueue.run(ref as any, defaultRouteInfo);
+    routingQueue.run(defaultRouteInfo, navigationActionContext(ref));
 
-    // Queue should still be drained (reset identity happens before dispatch loop)
-    expect(routingQueue.queue).toHaveLength(0);
+    expect(routingQueue.queue).toEqual([{ type: 'GO_BACK' }]);
+  });
+
+  it('run() preserves the queue until navigation is ready', () => {
+    const ref = makeRef({ isReady: jest.fn(() => false) });
+
+    routingQueue.add({ type: 'GO_BACK' });
+    routingQueue.run(defaultRouteInfo, navigationActionContext(ref));
+
+    expect(routingQueue.queue).toEqual([{ type: 'GO_BACK' }]);
+    expect(ref.current!.dispatch).not.toHaveBeenCalled();
   });
 
   it('run() resets queue identity so new actions during run go to a fresh array', () => {
@@ -172,7 +189,7 @@ describe('routingQueue', () => {
 
     const oldQueue = routingQueue.queue;
 
-    routingQueue.run(ref, defaultRouteInfo);
+    routingQueue.run(defaultRouteInfo, navigationActionContext(ref));
 
     // The queue should be a new array reference
     expect(routingQueue.queue).not.toBe(oldQueue);

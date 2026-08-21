@@ -1,23 +1,19 @@
-import type { ComponentType } from 'react';
-
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
 import * as SplashScreen from '../views/Splash';
 import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
 import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
-import type { FocusedRouteState, ReactNavigationState, StoreRedirects } from './types';
+import type { FocusedRouteState, ReactNavigationState } from './types';
 
 export type RouterStore = typeof store;
 
 type StoreRef = {
   navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   routeNode: RouteNode | null;
-  rootComponent: ComponentType<any>;
   state?: ReactNavigationState;
   linking?: ExpoLinkingOptions;
   config: any;
-  redirects: StoreRedirects[];
   routeInfo?: UrlObject;
 };
 
@@ -40,10 +36,18 @@ export function setHasAttemptedToHideSplash(value: boolean) {
   hasAttemptedToHideSplash = value;
 }
 
+export function maybeHideSplashScreen() {
+  if (!hasAttemptedToHideSplash) {
+    setHasAttemptedToHideSplash(true);
+    setSplashScreenAnimationFrame(
+      requestAnimationFrame(() => {
+        SplashScreen._internal_maybeHideAsync?.();
+      })
+    );
+  }
+}
+
 export const store = {
-  shouldShowTutorial() {
-    return !storeRef.current.routeNode && process.env.NODE_ENV === 'development';
-  },
   get state() {
     return storeRef.current.state;
   },
@@ -56,30 +60,12 @@ export const store = {
   getRouteInfo(): UrlObject {
     return storeRef.current.routeInfo || defaultRouteInfo;
   },
-  get redirects() {
-    return storeRef.current.redirects || [];
-  },
-  get rootComponent() {
-    return storeRef.current.rootComponent;
-  },
   get linking() {
     return storeRef.current.linking;
   },
   setFocusedState(state: FocusedRouteState) {
     const routeInfo = getCachedRouteInfo(state);
     storeRef.current.routeInfo = routeInfo;
-  },
-  // TODO(@ubax): Refactor onReady logic as it probably should live somewhere else then store
-  onReady() {
-    if (!hasAttemptedToHideSplash) {
-      setHasAttemptedToHideSplash(true);
-      // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-      setSplashScreenAnimationFrame(
-        requestAnimationFrame(() => {
-          SplashScreen._internal_maybeHideAsync?.();
-        })
-      );
-    }
   },
   onStateChange(newState: ReactNavigationState | undefined) {
     if (!newState) {
@@ -112,13 +98,6 @@ export const store = {
 
     for (const callback of routeInfoSubscribers) {
       callback();
-    }
-  },
-  assertIsReady() {
-    if (!storeRef.current.navigationRef.isReady()) {
-      throw new Error(
-        'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
-      );
     }
   },
 };

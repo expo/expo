@@ -10,7 +10,7 @@ import {
 } from 'react';
 
 import { ServerContext } from '../global-state/serverLocationContext';
-import { useExpoRouterStore } from '../global-state/storeContext';
+import { store } from '../global-state/store';
 import { useRouteInfo } from '../global-state/useRouteInfo';
 import { getRootStackRouteNames } from '../global-state/utils';
 import {
@@ -95,7 +95,7 @@ export function useLinking(
   const getStateFromPath = options?.getStateFromPath ?? getExpoStateFromPath;
   const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
-  const store = useExpoRouterStore();
+
   const { segments } = useRouteInfo();
 
   useEffect(() => {

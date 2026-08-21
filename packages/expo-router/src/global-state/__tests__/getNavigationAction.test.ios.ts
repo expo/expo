@@ -1,42 +1,65 @@
 import { applyRedirects } from '../../getRoutesRedirects';
 import { getStateFromPath } from '../../link/linking';
-import { getNavigateAction } from '../getNavigationAction';
-import { defaultRouteInfo } from '../getRouteInfoFromState';
+import type { SingularOptions } from '../../useScreens';
+import {
+  getNavigateAction as getNavigateActionImplementation,
+  type NavigationActionContext,
+} from '../getNavigationAction';
+import { defaultRouteInfo, type UrlObject } from '../getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
-import { store } from '../store';
+import type { LinkToOptions } from '../types';
 
-jest.mock('../store', () => ({
-  store: {
-    assertIsReady: jest.fn(),
-    navigationRef: {
-      isReady: jest.fn(() => true),
-      current: {
-        canGoBack: jest.fn(),
-        setParams: jest.fn(),
-        goBack: jest.fn(),
-        getRootState: jest.fn(() => ({
-          routes: [{ key: 'root-key', name: '__root' }],
-          index: 0,
-          key: 'root-nav',
-          type: 'stack',
-          routeNames: ['__root'],
-          stale: false,
-        })),
-        dispatch: jest.fn(),
-      },
-    },
-    state: undefined as any,
-    linking: {
-      config: {},
-    },
-    getRouteInfo: jest.fn(() => ({
-      pathname: '/',
-      segments: [],
-      params: {},
+const mockIsReady = jest.fn(() => true);
+const navigationRef = {
+  isReady: mockIsReady,
+  current: {
+    canGoBack: jest.fn(),
+    setParams: jest.fn(),
+    goBack: jest.fn(),
+    getRootState: jest.fn(() => ({
+      routes: [{ key: 'root-key', name: '__root' }],
+      index: 0,
+      key: 'root-nav',
+      type: 'stack',
+      routeNames: ['__root'],
+      stale: false,
     })),
-    redirects: [],
+    dispatch: jest.fn(),
   },
-}));
+} as unknown as NavigationActionContext['navigationRef']; // Only navigation APIs exercised by these tests are mocked.
+
+let linking: NavigationActionContext['linking'] = {
+  prefixes: [],
+  config: { screens: {} },
+  getPathFromState: jest.fn(),
+};
+
+let redirects: NavigationActionContext['redirects'] = [];
+
+function getNavigateAction(
+  baseHref: string,
+  options: LinkToOptions,
+  routeInfo: Pick<UrlObject, 'segments' | 'params'> = defaultRouteInfo,
+  type = 'NAVIGATE',
+  withAnchor?: boolean,
+  singular?: SingularOptions,
+  isPreviewNavigation?: boolean
+) {
+  return getNavigateActionImplementation(
+    baseHref,
+    options,
+    routeInfo,
+    {
+      navigationRef,
+      linking,
+      redirects,
+    },
+    type,
+    withAnchor,
+    singular,
+    isPreviewNavigation
+  );
+}
 
 jest.mock('../stateUtils', () => ({
   findDivergentState: jest.fn(),
@@ -89,44 +112,64 @@ function setupDefaultMocks() {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockIsReady.mockReturnValue(true);
+  linking = {
+    prefixes: [],
+    config: { screens: {} },
+    getPathFromState: jest.fn(),
+  };
+  redirects = [];
   setupDefaultMocks();
 });
 
 describe(getNavigateAction, () => {
-  it('throws when navigation is not ready (assertIsReady throws)', () => {
-    (store.assertIsReady as jest.Mock).mockImplementationOnce(() => {
-      throw new Error('Not ready');
-    });
+  it('throws when navigation is not ready', () => {
+    mockIsReady.mockReturnValueOnce(false);
 
-    expect(() => getNavigateAction('/home', {}, defaultRouteInfo)).toThrow('Not ready');
+    expect(() => getNavigateAction('/home', {})).toThrow(
+      'Attempted to navigate before mounting the Root Layout component'
+    );
   });
 
   it('throws when navigationRef.current is null', () => {
-    const originalCurrent = store.navigationRef.current;
-    (store.navigationRef as any).current = null;
+    const originalCurrent = navigationRef.current;
+    navigationRef.current = null;
 
     expect(() => getNavigateAction('/home', {}, defaultRouteInfo)).toThrow(
       "Couldn't find a navigation object. Is your component inside NavigationContainer?"
     );
 
-    (store.navigationRef as any).current = originalCurrent;
+    navigationRef.current = originalCurrent;
   });
 
-  it('throws when store.linking is falsy', () => {
-    const originalLinking = store.linking;
-    Object.defineProperty(store, 'linking', {
-      value: null,
-      configurable: true,
-    });
+  it('throws when linking is falsy', () => {
+    linking = undefined;
 
     expect(() => getNavigateAction('/home', {}, defaultRouteInfo)).toThrow(
       'Attempted to link to route when no routes are present'
     );
+  });
 
-    Object.defineProperty(store, 'linking', {
-      value: originalLinking,
-      configurable: true,
-    });
+  it('forwards the redirects from the context to applyRedirects', () => {
+    redirects = [
+      [
+        /^\/from$/,
+        { source: '/from', destination: '/to', destinationContextKey: './to.tsx' },
+        false,
+      ],
+    ];
+
+    getNavigateAction('/from', {}, defaultRouteInfo);
+
+    expect(mockApplyRedirects).toHaveBeenCalledWith('/from', redirects);
+  });
+
+  it('navigates to the href returned by applyRedirects', () => {
+    mockApplyRedirects.mockReturnValueOnce('/redirected');
+
+    getNavigateAction('/from', {}, defaultRouteInfo);
+
+    expect(mockGetStateFromPath).toHaveBeenCalledWith('/redirected', { screens: {} }, []);
   });
 
   it('returns undefined when applyRedirects returns undefined', () => {
@@ -168,7 +211,7 @@ describe(getNavigateAction, () => {
   it('returns action with type NAVIGATE by default', () => {
     const result = getNavigateAction('/home', {}, defaultRouteInfo);
 
-    expect(mockGetStateFromPath).toHaveBeenCalledWith('/home', {}, []);
+    expect(mockGetStateFromPath).toHaveBeenCalledWith('/home', { screens: {} }, []);
 
     expect(result).toEqual(
       expect.objectContaining({
@@ -194,7 +237,7 @@ describe(getNavigateAction, () => {
 
     getNavigateAction('/home', {}, routeInfo, 'NAVIGATE', undefined, undefined, false);
 
-    expect(mockGetStateFromPath).toHaveBeenCalledWith('/home', {}, ['current']);
+    expect(mockGetStateFromPath).toHaveBeenCalledWith('/home', { screens: {} }, ['current']);
   });
 
   it('preserves PUSH when target navigator is tab', () => {

@@ -2,7 +2,7 @@
 
 import Constants from 'expo-constants';
 import type { ComponentType } from 'react';
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
@@ -18,93 +18,97 @@ import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 import { getRouteInfoFromState } from './getRouteInfoFromState';
 import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
-import {
-  store,
-  storeRef,
-  getSplashScreenAnimationFrame,
-  setSplashScreenAnimationFrame,
-} from './store';
+import { storeRef, getSplashScreenAnimationFrame, setSplashScreenAnimationFrame } from './store';
+import type { StoreContextValue } from './storeContext';
 import type { ReactNavigationState, StoreRedirects } from './types';
 
 export function useStore(
   context: RequireContext,
   linkingConfigOptions: LinkingConfigOptions,
   serverUrl?: string
-) {
+): StoreContextValue {
   const navigationRef = useNavigationContainerRef();
   const config = Constants.expoConfig?.extra?.router;
-
-  let linking: ExpoLinkingOptions | undefined;
-  let rootComponent: ComponentType<any> = Fragment;
-  let initialState: ReactNavigationState | undefined;
-
-  const routeNode = getRoutes(context, {
-    ...config,
-    skipGenerated: true,
-    ignoreEntryPoints: true,
-    platform: Platform.OS,
-    preserveRedirectAndRewrites: true,
-  });
-
-  const redirects: StoreRedirects[] = [config?.redirects, config?.rewrites]
-    .filter(Boolean)
-    .flat()
-    .map((route) => {
-      return [
-        routePatternToRegex(parseRouteSegments(route.source)),
-        route,
-        shouldLinkExternally(route.destination),
-      ];
+  const storeValue = useMemo(() => {
+    let linking: ExpoLinkingOptions | undefined;
+    let rootComponent: ComponentType<any> = Fragment;
+    let initialState: ReactNavigationState | undefined;
+    const routeNode = getRoutes(context, {
+      ...config,
+      skipGenerated: true,
+      ignoreEntryPoints: true,
+      platform: Platform.OS,
+      preserveRedirectAndRewrites: true,
     });
 
-  if (routeNode) {
-    // We have routes, so get the linking config and the root component
-    linking = getLinkingConfig(routeNode, context, {
-      metaOnly: linkingConfigOptions.metaOnly,
-      serverUrl,
+    const redirects: StoreRedirects[] = [config?.redirects, config?.rewrites]
+      .filter(Boolean)
+      .flat()
+      .map((route) => {
+        return [
+          routePatternToRegex(parseRouteSegments(route.source)),
+          route,
+          shouldLinkExternally(route.destination),
+        ];
+      });
+
+    if (routeNode) {
+      // We have routes, so get the linking config and the root component
+      linking = getLinkingConfig(routeNode, context, {
+        metaOnly: linkingConfigOptions.metaOnly,
+        serverUrl,
+        redirects,
+        skipGenerated: config?.skipGenerated ?? false,
+        sitemap: config?.sitemap ?? true,
+        notFound: config?.notFound ?? true,
+      });
+      rootComponent = getQualifiedRouteComponent(routeNode);
+
+      // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
+      // This will cause static rendering to fail, which once performs a single pass.
+      // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
+      const initialURL = linking?.getInitialURL?.();
+      if (typeof initialURL === 'string') {
+        let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);
+
+        // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
+        if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
+
+        initialState = getStateFromPath(initialPath, linking.config);
+        const initialRouteInfo = getRouteInfoFromState(initialState);
+        setCachedRouteInfo(initialState as any, initialRouteInfo);
+      }
+    } else {
+      // Only error in production, in development we will show the onboarding screen
+      if (process.env.NODE_ENV === 'production') {
+        throw new Error('No routes found');
+      }
+
+      // In development, we will show the onboarding screen
+      rootComponent = Fragment;
+    }
+
+    return {
+      navigationRef,
+      linking,
+      initialState,
+      rootComponent,
       redirects,
-      skipGenerated: config?.skipGenerated ?? false,
-      sitemap: config?.sitemap ?? true,
-      notFound: config?.notFound ?? true,
-    });
-    rootComponent = getQualifiedRouteComponent(routeNode);
+      routeNode,
+    };
+  }, [config, context, linkingConfigOptions, navigationRef, serverUrl]);
 
-    // By default React Navigation is async and does not render anything in the first pass as it waits for `getInitialURL`
-    // This will cause static rendering to fail, which once performs a single pass.
-    // If the initialURL is a string, we can prefetch the state and routeInfo, skipping React Navigation's async behavior.
-    const initialURL = linking?.getInitialURL?.();
-    if (typeof initialURL === 'string') {
-      let initialPath = extractExpoPathFromURL(linking.prefixes, initialURL);
-
-      // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
-      if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
-
-      initialState = getStateFromPath(initialPath, linking.config, []);
-      const initialRouteInfo = getRouteInfoFromState(initialState);
-      setCachedRouteInfo(initialState as any, initialRouteInfo);
-    }
-  } else {
-    // Only error in production, in development we will show the onboarding screen
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('No routes found');
-    }
-
-    // In development, we will show the onboarding screen
-    rootComponent = Fragment;
-  }
-
+  // TODO(@ubax): Check whether updating the store ref during every render is safe and needed.
   storeRef.current = {
     navigationRef,
-    routeNode,
+    routeNode: storeValue.routeNode,
     config,
-    rootComponent,
-    linking,
-    redirects,
-    state: initialState,
+    linking: storeValue.linking,
+    state: storeValue.initialState,
   };
 
-  if (initialState) {
-    storeRef.current.routeInfo = getCachedRouteInfo(initialState);
+  if (storeValue.initialState) {
+    storeRef.current.routeInfo = getCachedRouteInfo(storeValue.initialState);
   }
 
   useEffect(() => {
@@ -119,5 +123,5 @@ export function useStore(
     };
   });
 
-  return store;
+  return storeValue;
 }
