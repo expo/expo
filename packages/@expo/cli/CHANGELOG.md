@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `EXPO_UNSTABLE_WEB_MODAL` environment variable and its Expo Router module alias.
 - Use the Expo command mode to set `NODE_ENV` and load **.env** files. ([#48741](https://github.com/expo/expo/pull/48741) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Make browser-based login the default for `expo login`. Use `--no-browser` (or pass `--username`/`--password`) for username/password login. Non-interactive environments such as CI continue to use username/password login. ([#46832](https://github.com/expo/expo/pull/46832) by [@byronkarlen](https://github.com/byronkarlen))
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))

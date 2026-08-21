@@ -450,7 +450,6 @@ export function withExtendedResolver(
   ];
 
   const skipMetroMainFieldOverride = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE;
-  const useExpoUnstableWebModule = env.EXPO_UNSTABLE_WEB_MODAL;
   const useExpoUnstableLogBox = env.EXPO_UNSTABLE_LOG_BOX;
   const disableReactNavigationCheck = env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK;
   const disableNativeTabsMaterialSymbols = env.EXPO_ROUTER_DISABLE_NATIVE_TABS_MD;
@@ -709,16 +708,6 @@ export function withExtendedResolver(
         });
       const doReplaceStrict = (from: string, to: string | undefined) =>
         doReplace(from, to, { throws: true });
-
-      if (useExpoUnstableWebModule) {
-        const webModalModule = doReplace(
-          'expo-router/build/layouts/_web-modal.js',
-          'expo-router/build/layouts/ExperimentalModalStack.js'
-        );
-        if (webModalModule) {
-          return webModalModule;
-        }
-      }
 
       if (disableNativeTabsMaterialSymbols && platform === 'android') {
         const materialIconConverterModule = doReplace(
