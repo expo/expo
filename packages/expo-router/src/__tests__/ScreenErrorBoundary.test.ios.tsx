@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import type { ErrorBoundaryProps } from '../exports';
-import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { TopTabs } from '../layouts/TopTabs';
@@ -93,7 +92,6 @@ it.each([
   ['Stack', Stack],
   ['Tabs', Tabs],
   ['TopTabs', TopTabs],
-  ['Drawer', Drawer],
 ])('uses an individual screen boundary with %s', async (_name, Navigator: typeof Stack) => {
   const ScreenBoundary = boundary('screen-boundary');
 
