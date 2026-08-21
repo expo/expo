@@ -8,6 +8,7 @@ import {
   cleanStaleModuleBuildDirsAsync,
   clearBundledPrebuildsAsync,
   ensureSupportedToolchainAsync,
+  isBundledPrebuildFile,
   parseXcodeVersion,
   SUPPORTED_XCODE_VERSION,
 } from './bundleIOSPrebuilds';
@@ -27,6 +28,23 @@ describe('parseXcodeVersion', () => {
 
   it('returns null when the expected prefix is missing', () => {
     assert.equal(parseXcodeVersion('something else entirely'), null);
+  });
+});
+
+describe('isBundledPrebuildFile', () => {
+  it('bundles the product tarballs', () => {
+    assert.equal(isBundledPrebuildFile('ExpoModulesCore.tar.gz'), true);
+  });
+
+  // Without it the consumer cannot tell which React Native these binaries were built
+  // against, and links them against whatever the app has installed.
+  it('bundles the versions record the consumer checks during pod install', () => {
+    assert.equal(isBundledPrebuildFile('prebuilt-versions.properties'), true);
+  });
+
+  it('leaves build leftovers out of the npm package', () => {
+    assert.equal(isBundledPrebuildFile('ExpoModulesCore.xcframework'), false);
+    assert.equal(isBundledPrebuildFile('.version-stamp'), false);
   });
 });
 

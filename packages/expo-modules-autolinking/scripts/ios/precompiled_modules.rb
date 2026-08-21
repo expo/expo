@@ -76,6 +76,11 @@ module Expo
     # pod pulled it to source. The expected-tarball hint is misleading for these.
     CASCADED_UNAVAILABLE_REASONS = %i[dependency_unavailable dependent_unavailable].freeze
 
+    # Written next to the tarballs by the prebuild pipeline, recording the React Native
+    # and Hermes versions the artifacts in that directory were compiled against. Artifacts
+    # published before this file existed have none, and are accepted as before.
+    PREBUILT_VERSIONS_FILENAME = 'prebuilt-versions.properties'.freeze
+
     # Module-level caches (initialized lazily)
     @pod_lookup_map = nil
     @repo_root = nil
@@ -2075,6 +2080,34 @@ module Expo
         props
       end
 
+      # Describes how a prebuilt artifact disagrees with the installed React Native,
+      # or nil when it agrees — or when it carries no record of what it was built
+      # against, which is every artifact published before PREBUILT_VERSIONS_FILENAME
+      # existed and every artifact resolved through a version-keyed path.
+      #
+      # React Native's C++ types are not ABI-stable across patch releases, so an
+      # xcframework compiled against a different one is not a slower build, it is
+      # memory corruption at runtime that no compile or link step can see.
+      def prebuilt_version_skew(tarball)
+        versions_path = File.join(File.dirname(tarball), PREBUILT_VERSIONS_FILENAME)
+        return nil unless File.exist?(versions_path)
+
+        built_for = parse_version_properties(versions_path)
+        installed = {
+          'reactNativeVersion' => ['React Native', react_native_version],
+          'hermesVersion' => ['Hermes', hermes_version]
+        }
+
+        skew = installed.filter_map do |key, (label, installed_version)|
+          built_version = built_for[key]
+          next if built_version.nil? || built_version.empty? || installed_version.nil?
+          next if built_version == installed_version
+          "#{label} #{built_version} (installed: #{installed_version})"
+        end
+
+        skew.empty? ? nil : skew.join(', ')
+      end
+
       # Returns the version prefix path for a 3rd-party package.
       # Format: "<packageVersion>/<reactNativeVersion>/<hermesVersion>"
       # Returns nil if versions cannot be resolved.
@@ -2106,6 +2139,9 @@ module Expo
         tarball = resolve_prebuilt_tarball(pod_info, product_name, build_flavor, pod_name)
         return { available: false, reason: :missing_tarball, path: tarball } unless File.exist?(tarball)
         return { available: false, reason: :missing_platform_slice, path: tarball } unless xcframework_supports_target_platform?(tarball)
+
+        skew = prebuilt_version_skew(tarball)
+        return { available: false, reason: :version_mismatch, path: tarball, skew: skew } if skew
 
         { available: true, resolved: [pod_info, product_name, tarball] }
       end
@@ -2573,6 +2609,8 @@ module Expo
           'prebuilt tarball not found'
         when :missing_platform_slice
           "prebuilt xcframework does not contain a slice for #{@target_platform}"
+        when :version_mismatch
+          "prebuilt xcframework was built against #{info[:skew]}"
         when :dependency_unavailable
           reason = format_prebuilt_unavailable_reason(info[:dependency_resolution])
           "dependency #{info[:dependency]} is not using prebuilt: #{reason}"
