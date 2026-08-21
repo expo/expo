@@ -39,7 +39,7 @@ export function binaryInputBytes(input) {
         return new Uint8Array(input);
     }
     if (ArrayBuffer.isView(input)) {
-        return new Uint8Array(input.buffer);
+        return new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
     }
     if (typeof input === 'string') {
         return base64ToUintArray(input);

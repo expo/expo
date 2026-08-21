@@ -12,7 +12,7 @@ declare class EncryptionKey {
     get size(): AESKeySize;
 }
 declare class SealedData {
-    private buffer;
+    private bytes;
     private config;
     private constructor();
     static fromCombined(combined: BinaryInput, config?: AESSealedDataConfig): SealedData;
