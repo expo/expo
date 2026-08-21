@@ -181,34 +181,24 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
 
   // MARK: - UpdatesInterface
 
-  // Native subscribers (e.g. expo-app-metrics) subscribe from the module-registry thread while the
-  // state machine iterates this dictionary on its own queue, so every access is locked. Listeners
-  // are invoked outside the lock, off a snapshot: re-entrant subscribe/unsubscribe from inside
-  // `updatesStateDidChange` cannot deadlock, but `remove()` does not cancel a notification already
-  // in flight, so a listener must stay safe to call after it unsubscribes.
-  private var stateChangeListeners: [String: any UpdatesStateChangeListener] = [:]
-  private let stateChangeListenersLock = NSLock()
+  // Subscribed from the module-registry thread, iterated on the state machine's queue. Listeners are
+  // notified off a snapshot, so one must stay safe to call after it unsubscribes.
+  private let stateChangeListeners = Mutex<[String: any UpdatesStateChangeListener]>([:])
 
   public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> UpdatesStateChangeSubscription {
     let subscriptionId = UUID().uuidString
     let subscription = EnabledUpdatesStateChangeSubscription(subscriptionId)
 
-    stateChangeListenersLock.lock()
-    defer { stateChangeListenersLock.unlock() }
-    stateChangeListeners[subscriptionId] = listener
+    stateChangeListeners.withLock { $0[subscriptionId] = listener }
     return subscription
   }
 
   internal func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String) {
-    stateChangeListenersLock.lock()
-    defer { stateChangeListenersLock.unlock() }
-    stateChangeListeners.removeValue(forKey: subscriptionId)
+    stateChangeListeners.withLock { $0.removeValue(forKey: subscriptionId) }
   }
 
   internal func stateChangeListenersSnapshot() -> [any UpdatesStateChangeListener] {
-    stateChangeListenersLock.lock()
-    defer { stateChangeListenersLock.unlock() }
-    return Array(stateChangeListeners.values)
+    return stateChangeListeners.withLock { Array($0.values) }
   }
 
   internal func getNativeInterfaceContext() -> UpdatesNativeInterfaceStateContext {
@@ -227,9 +217,8 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     return config.requestHeaders
   }
 
-  // `startupProcedure` is only assigned in `start()`, but the controller is published to
-  // `UpdatesControllerRegistry` by `initializeWithoutStarting()`, so a native consumer can read
-  // this first. `isStarted` is not a usable guard — it is set before the assignment.
+  // The controller is registered before `start()` assigns `startupProcedure`, so a native consumer
+  // can read this first. `isStarted` can't guard it — that is set before the assignment.
   public var launchedUpdateId: UUID? {
     return startupProcedure?.launchedUpdate()?.updateId
   }
