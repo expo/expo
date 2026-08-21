@@ -4110,7 +4110,7 @@ SPEC CHECKSUMS:
   EXUpdates: e8c071fa483afb3d9d1de09e8f4f9427278af0a1
   EXUpdatesInterface: 92d2aa5194b6fb93ca8ab749db75665cb28b2e60
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: dd9a9191125ffe9f57c224173db85afb0210cd23
+  hermes-engine: 4c998771d5218e20701b63d8358199a520a54447
   JestMockSchema: 96b4cfec246644f6323d1c30693b6a02044be1e6
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f

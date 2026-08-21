@@ -473,6 +473,7 @@ public class AudioModule: Module {
       }
 
       AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
+        try AudioRecordingRequester.requireUsageDescription()
         try recorder.prepare(options: options, sessionOptions: sessionOptions)
       }
 
@@ -963,6 +964,8 @@ public class AudioModule: Module {
 
   private func checkPermissions() throws {
     #if os(iOS)
+    try AudioRecordingRequester.requireUsageDescription()
+
     if #available(iOS 17.0, *) {
       switch AVAudioApplication.shared.recordPermission {
       case .denied, .undetermined:
