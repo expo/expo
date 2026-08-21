@@ -18,6 +18,7 @@ import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -267,6 +268,8 @@ abstract class Loader protected constructor(
         database.assetDao().insertAssets(finishedAssetList, updateEntity!!)
         database.updateDao().markUpdateFinished(updateEntity!!)
       }
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       throw IOException("Error while adding new update to database", e)
     }
