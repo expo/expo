@@ -37,7 +37,7 @@ const routerWithWarnings: ImperativeRouter = {
 
 /**
  *
- * Returns the [Router](#router) object for imperative navigation.
+ * Returns the [Router](#imperativerouter) object for imperative navigation.
  *
  * @example
  *```tsx

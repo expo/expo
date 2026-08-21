@@ -1,6 +1,6 @@
 ---
 title: EAS Update download performance
-sidebar_title: EAS Update
+sidebar_title: Update downloads
 description: Track how long EAS Update OTA bundles take to download on real user devices, with per-update breakdowns in the EAS Observe dashboard.
 ---
 
@@ -47,8 +47,8 @@ From the CLI:
     '$ eas observe:metrics-summary --metric update_download',
     '',
     '# Slowest individual update downloads',
-    '$ eas observe:metrics update_download --order desc',
+    '$ eas observe:metrics update_download --sort slowest',
   ]}
 />
 
-Run `eas observe:metrics-summary --help` or `eas observe:metrics --help` for the full list of flags (time range, platform, app version, update ID, and more).
+Run `eas observe:metrics-summary --help` or `eas observe:metrics --help` for the full list of flags (time range, platform, app version, update ID, and more). See [Querying with EAS CLI](/eas/observe/eas-cli/) for the other `eas observe` commands.

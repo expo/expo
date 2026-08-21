@@ -11,6 +11,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
+import { EASFunctionDescription } from '~/ui/components/EASFunctionDescription';
 
 A workflow is a configurable automated process made up of one or more jobs. You must create a YAML file to define your workflow configuration.
 
@@ -18,7 +19,7 @@ To get started with workflows, see [Get Started with EAS Workflows](/eas/workflo
 
 ## Workflow files
 
-Workflow files use YAML syntax and must have either a `.yml` or `.yaml` file extension. If you're new to YAML and want to learn more, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
+Workflow files use YAML syntax, must have either a `.yml` or `.yaml` file extension, and must be 16 KiB or smaller. If you're new to YAML and want to learn more, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
 
 Workflow files are located in the **.eas/workflows** directory in your project. The **.eas** directory should be at the same level as your [**eas.json**](/build/eas-json/) file.
 
@@ -448,11 +449,11 @@ jobs:
 
 Sets the [EAS environment variable](/eas/environment-variables/) environment for the job. There are three possible values:
 
-- `production` (default)
+- `production`
 - `preview`
 - `development`
 
-The `environment` key is available on all jobs.
+The `environment` key is available on all jobs. When you omit it, the default depends on the job type: `build` jobs infer it from the build profile's `environment` in **eas.json**, `submit` jobs inherit it from the submitted build, `maestro` and `maestro-cloud` jobs default to `preview`, and all other jobs default to `production`. See [The job environment](/eas/workflows/environment/#the-job-environment) for details.
 
 ```yaml
 jobs:
@@ -479,7 +480,7 @@ jobs:
 
 ### `jobs.<job_id>.hooks`
 
-Some pre-packaged jobs support hooks to run additional steps before or after the main job action (for example, `maestro-cloud`, `maestro`, and `submit`). Hook names are job-specific. See the job's documentation for the available hook keys.
+The following pre-packaged jobs support hooks to run additional steps before or after the main job action: `build`, `deploy`, `fingerprint`, `maestro`, `maestro-cloud`, `repack`, `submit`, `testflight`, and `update`. Hook names are job-specific. See the job's documentation for the available hook keys. To set default hooks for all jobs in the workflow, use [`defaults.hooks`](#defaultshooks). Hook steps can call [custom functions](/eas/workflows/custom-functions/) just as job steps can.
 
 ```yaml
 jobs:
@@ -516,6 +517,28 @@ jobs:
 ## `defaults`
 
 Parameters to use as defaults for all jobs defined in the workflow configuration.
+
+### `defaults.hooks`
+
+Default [hooks](#jobsjob_idhooks) for all jobs in the workflow. Each job runs the hook keys that apply to it and ignores the rest. A job-level hook key overrides the same key from `defaults.hooks`. To opt a single job out of a default hook, set the key to an empty array. Default hook steps can also call [custom functions](/eas/workflows/custom-functions/).
+
+```yaml
+defaults:
+  hooks:
+    before_install_node_modules:
+      - name: Configure private registry
+        run: echo "//npm.pkg.github.com/:_authToken=$GITHUB_TOKEN" >> .npmrc
+
+jobs:
+  build_app:
+    type: build
+    params:
+      platform: ios
+  publish_update:
+    type: update
+    hooks:
+      before_install_node_modules: [] # opt this job out of the default hook
+```
 
 ### `defaults.image`
 
@@ -878,6 +901,10 @@ type AppStoreConnectContext = {
     id: string;
     state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
     cf_bundle_version?: string;
+    cf_bundle_short_version_string?: string;
+    platform?: string;
+    uploaded_date?: string;
+    created_date?: string;
     build?: {
       id: string;
     };
@@ -918,6 +945,7 @@ jobs:
         Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
         Upload ID: ${{ app_store_connect.build_upload.id }}
         Upload state: ${{ app_store_connect.build_upload.state }}
+        Version: ${{ app_store_connect.build_upload.cf_bundle_short_version_string }} (${{ app_store_connect.build_upload.cf_bundle_version }})
 ```
 
 Use `build_upload.build.id` as the `asc_build_id` for a `testflight` job:
@@ -1135,6 +1163,9 @@ jobs:
       profile: string # optional, default: production
       message: string # optional
       refresh_ad_hoc_provisioning_profile: boolean # optional
+    hooks:
+      before_install_node_modules: step[] # optional
+      after_install_node_modules: step[] # optional
 ```
 
 This job outputs the following properties:
@@ -1171,6 +1202,10 @@ jobs:
       alias: string # optional
       prod: boolean # optional
       source_maps: boolean # optional
+    hooks:
+      after_checkout: step[] # optional
+      before_install_node_modules: step[] # optional
+      after_install_node_modules: step[] # optional
 ```
 
 This job outputs the following properties:
@@ -1197,6 +1232,10 @@ jobs:
     type: fingerprint
     # @end #
     environment: production # Should match your build profile
+    hooks:
+      after_checkout: step[] # optional
+      before_install_node_modules: step[] # optional
+      after_install_node_modules: step[] # optional
 ```
 
 This job outputs the following properties:
@@ -1271,6 +1310,9 @@ jobs:
       profile: string # optional, default: production
       groups: string[] # optional
     hooks:
+      after_checkout: step[] # optional
+      before_install_node_modules: step[] # optional
+      after_install_node_modules: step[] # optional
       before_submit: step[] # optional
       after_submit: step[] # optional
 ```
@@ -1304,22 +1346,19 @@ jobs:
       external_groups: string[] # optional
       changelog: string # optional
       submit_beta_review: boolean # optional
+    hooks: # only when uploading and submitting with build_id
+      after_checkout: step[] # optional
+      before_install_node_modules: step[] # optional
+      after_install_node_modules: step[] # optional
 ```
 
-When uploading and submitting with `build_id`, this job outputs the following properties:
+This job outputs the following properties, where `asc_build_id` is only set when submitting an already uploaded build:
 
 ```json
 {
   "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
-  "ios_bundle_identifier": string | null // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
-}
-```
-
-When submitting an already uploaded build with `asc_build_id`, this job outputs the following properties:
-
-```json
-{
-  "asc_build_id": string | null // App Store Connect build ID
+  "ios_bundle_identifier": string | null, // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+  "asc_build_id": string | null // App Store Connect build ID. Only when submitting an already uploaded build.
 }
 ```
 
@@ -1341,6 +1380,12 @@ jobs:
       rollout_percentage: number # optional - 0 to 100, defaults to 100
       private_key_path: string # optional
       upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
+    hooks:
+      after_checkout: step[] # optional
+      before_install_node_modules: step[] # optional
+      after_install_node_modules: step[] # optional
+      before_update: step[] # optional
+      after_update: step[] # optional
 ```
 
 This job outputs the following properties:
@@ -1431,6 +1476,7 @@ jobs:
       output_format: string # optional, defaults to junit. Maestro test report format. Will be passed to Maestro as `--format`. Can be `junit` or other supported formats.
       skip_build_check: boolean # optional, defaults to false. Skip validation of the build (whether an iOS build is a simulator build).
     hooks:
+      after_checkout: step[] # optional
       before_maestro_tests: step[] # optional
       after_maestro_tests: step[] # optional
 ```
@@ -1466,6 +1512,7 @@ jobs:
       branch: string # optional. Override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional. Run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, *not* whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
     hooks:
+      after_checkout: step[] # optional. Steps to run after the job checks out your project.
       before_maestro_cloud: step[] # optional. Steps to run before the Maestro Cloud upload.
       after_maestro_cloud: step[] # optional. Steps to run after the Maestro Cloud upload.
 ```
@@ -1519,7 +1566,7 @@ This job outputs the following properties:
 
 #### `apple-device-registration-request`
 
-Pauses the workflow until an iOS device enrolls for an Apple Team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
+Pauses the workflow until an iOS device enrolls for an Apple team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1576,6 +1623,10 @@ jobs:
       message: string # optional
       repack_version: string # optional
       repack_package: string # optional
+    hooks:
+      after_checkout: step[] # optional
+      before_install_node_modules: step[] # optional
+      after_install_node_modules: step[] # optional
     # @end #
 ```
 
@@ -1772,6 +1823,8 @@ jobs:
       # @end #
 ```
 
+You can define reusable step sequences in your project and call them with a path that starts with `./` or `../`, such as `./.eas/functions/setup`. See the [custom function schema](#custom-functions) and the guide to [using custom functions in EAS Workflows](/eas/workflows/custom-functions/).
+
 Below is a list of built-in functions you can use in your workflow steps.
 
 #### `eas/checkout`
@@ -1787,12 +1840,30 @@ jobs:
         # @end #
 ```
 
-<BoxLink
-  title="eas/checkout source code"
-  description="View the source code for the eas/checkout function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/checkout.ts"
-/>
+For jobs with Git-based project sources, the step uses the job's recorded commit by default. Use `ref` to check out a different branch, tag, or commit:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/checkout
+        with:
+          ref: feature/add-icon
+        # @end #
+```
+
+`ref` accepts:
+
+- A branch, as a bare name such as `feature/add-icon` or a qualified ref such as `refs/heads/feature/add-icon`. The repository ends up on that branch.
+- A tag, as a qualified ref such as `refs/tags/v1.2.3`. The repository ends up on a detached `HEAD`.
+- A full commit SHA. The repository ends up on a detached `HEAD`.
+
+The step runs a shallow fetch (`--depth 1`) from the source repository's `origin`, so the ref must be reachable there.
+
+`ref` only works when your project sources come from a Git repository, for example a job triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Set `ref` on the job's first `eas/checkout` step. Setting it on a later step fails, because the project is already checked out.
+
+<EASFunctionDescription name="checkout" />
 
 #### `eas/install_node_modules`
 
@@ -1808,12 +1879,7 @@ jobs:
       # @end #
 ```
 
-<BoxLink
-  title="eas/install_node_modules source code"
-  description="View the source code for the eas/install_node_modules function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/installNodeModules.ts"
-/>
+<EASFunctionDescription name="install_node_modules" />
 
 #### `eas/download_build`
 
@@ -1829,14 +1895,7 @@ jobs:
           extensions: [apk, aab, ipa, app] # Optional. List of file extensions to look for. Defaults to ["apk", "aab", "ipa", "app"].
 ```
 
-| Property     | Type     | Required    | Default                        | Description                                                                |
-| ------------ | -------- | ----------- | ------------------------------ | -------------------------------------------------------------------------- |
-| `build_id`   | string   | <YesIcon /> | –                              | The ID of the build to download. Must be a valid UUID.                     |
-| `extensions` | string[] | <NoIcon />  | `["apk", "aab", "ipa", "app"]` | List of file extensions to look for in the downloaded artifact or archive. |
-
-**Outputs:**
-
-- `artifact_path`: The absolute path to the matching application archive. This output can be used as input into other steps in your workflow. For example, to upload or process the artifact further.
+<EASFunctionDescription name="download_build" />
 
 Example usage:
 
@@ -1859,13 +1918,6 @@ jobs:
         run: |
           echo "Artifact path: ${{ steps.download_build.outputs.artifact_path }}"
 ```
-
-<BoxLink
-  title="eas/download_build source code"
-  description="View the source code for the eas/download_build function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
-/>
 
 #### `eas/prebuild`
 
@@ -1898,17 +1950,7 @@ jobs:
       # @end #
 ```
 
-| Property        | Type      | Description                                                                                                                                 |
-| --------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `clean`         | `boolean` | Optional property defining whether the function should use `--clean` flag when running the command. Defaults to false.                      |
-| `apple_team_id` | `string`  | Optional property defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
-
-<BoxLink
-  title="eas/prebuild source code"
-  description="View the source code for the eas/prebuild function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
-/>
+<EASFunctionDescription name="prebuild" />
 
 #### `eas/restore_cache`
 
@@ -1945,18 +1987,7 @@ jobs:
       # @end #
 ```
 
-| Property       | Type     | Required    | Description                                                                                                                                              |
-| -------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `key`          | `string` | <YesIcon /> | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
-| `restore_keys` | `string` | <NoIcon />  | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
-| `path`         | `string` | <YesIcon /> | The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
-
-<BoxLink
-  title="eas/restore_cache source code"
-  description="View the source code for the eas/restore_cache function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/restoreCache.ts"
-/>
+<EASFunctionDescription name="restore_cache" />
 
 #### `eas/save_cache`
 
@@ -1983,23 +2014,13 @@ jobs:
       # @end #
 ```
 
-| Property | Type     | Required    | Description                                                                                                                                                                                                       |
-| -------- | -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `key`    | `string` | <YesIcon /> | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
-| `path`   | `string` | <YesIcon /> | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
-
-<BoxLink
-  title="eas/save_cache source code"
-  description="View the source code for the eas/save_cache function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/saveCache.ts"
-/>
+<EASFunctionDescription name="save_cache" />
 
 #### `eas/send_slack_message`
 
 Sends a specified message to a configured [Slack webhook URL](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks), which then posts it in the related Slack channel. The message can be specified as plaintext or as a [Slack Block Kit](https://docs.slack.dev/block-kit) message.
 
-With both cases, you can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: https://expo.dev/builds/${{ needs.build_ios.outputs.build_id }}`, `Build finished with status: ${{ after.build_android.status }}`.
+You can reference build job properties and [use other steps outputs](#jobsjob_idoutputs) in the message for dynamic evaluation. For example, `Build URL: https://expo.dev/builds/${{ needs.build_ios.outputs.build_id }}`, `Build finished with status: ${{ after.build_android.status }}`.
 
 Either `message` or `payload` has to be specified, but not both.
 
@@ -2015,18 +2036,7 @@ jobs:
           slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}
 ```
 
-| Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `message`        | `string` | The text of the message you want to send. For example, `'This is the content of the message'`.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                                                  |
-| `payload`        | `json`   | The contents of the message you want to send which are defined using [Slack Block Kit](https://docs.slack.dev/block-kit) layout.<br /> <br />**Note:** Either `message` or `payload` needs to be provided, but not both.                                                                                                                                                                                                                                |
-| `slack_hook_url` | `string` | The previously configured Slack webhook URL, which will post your message to the specified channel. Provide it using [EAS Environment Variables](/eas/environment-variables/manage/#manage-environment-variables) like `slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}`, or set the `SLACK_HOOK_URL` Environment Variable, which will serve as a default webhook URL (in this last case, there is no need to provide the `slack_hook_url` property). |
-
-<BoxLink
-  title="eas/send_slack_message source code"
-  description="View the source code for the eas/send_slack_message function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/sendSlackMessage.ts"
-/>
+<EASFunctionDescription name="send_slack_message" />
 
 #### `eas/use_npm_token`
 
@@ -2047,12 +2057,7 @@ jobs:
         run: npm install # <---- Can now install private packages
 ```
 
-<BoxLink
-  title="eas/use_npm_token source code"
-  description="View the source code for the eas/use_npm_token function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/useNpmToken.ts"
-/>
+<EASFunctionDescription name="use_npm_token" />
 
 #### `eas/upload_artifact`
 
@@ -2080,26 +2085,7 @@ jobs:
 
 ##### Properties
 
-| Property       | Type    | Required    | Description                                                                                                                                                                                                                                                     |
-| -------------- | ------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `path`         | string  | <YesIcon /> | Path or newline-delimited list of paths to upload. Supports `*` and other [glob patterns](https://github.com/isaacs/node-glob#glob-primer).                                                                                                                     |
-| `type`         | string  | <NoIcon />  | Artifact type. In custom jobs use `other` (a generic artifact). Defaults to `other` when the job has no build platform, and to `application-archive` in build jobs. The build-scoped values `application-archive` and `build-artifact` only work in build jobs. |
-| `name`         | string  | <NoIcon />  | Name for the artifact, used to reference it from [`eas/download_artifact`](#easdownload_artifact).                                                                                                                                                              |
-| `metadata`     | json    | <NoIcon />  | Arbitrary metadata to attach to a generic (`other`) artifact.                                                                                                                                                                                                   |
-| `ignore_error` | boolean | <NoIcon />  | When `true`, an upload failure is logged but does not fail the step. Defaults to `false`.                                                                                                                                                                       |
-
-##### Outputs
-
-| Property      | Type   | Description                                                                                         |
-| ------------- | ------ | --------------------------------------------------------------------------------------------------- |
-| `artifact_id` | string | The ID of the uploaded artifact. Can be passed to [`eas/download_artifact`](#easdownload_artifact). |
-
-<BoxLink
-  title="eas/upload_artifact source code"
-  description="View the source code for the eas/upload_artifact function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadArtifact.ts"
-/>
+<EASFunctionDescription name="upload_artifact" />
 
 #### `eas/download_artifact`
 
@@ -2117,16 +2103,7 @@ jobs:
 
 ##### Properties
 
-| Property      | Type   | Required   | Description                                                                      |
-| ------------- | ------ | ---------- | -------------------------------------------------------------------------------- |
-| `name`        | string | <NoIcon /> | The name of the artifact to download. Required if `artifact_id` is not provided. |
-| `artifact_id` | string | <NoIcon /> | The ID of the artifact to download. Required if `name` is not provided.          |
-
-##### Outputs
-
-| Property        | Type   | Description                                                                                                                                            |
-| --------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `artifact_path` | string | The path to the downloaded artifact. This output can be used as input into other steps in your workflow. For example, to send or process the artifact. |
+<EASFunctionDescription name="download_artifact" />
 
 ##### Example
 
@@ -2148,18 +2125,11 @@ jobs:
         run: echo ${{ steps.download_artifact.outputs.artifact_path }}
 ```
 
-<BoxLink
-  title="eas/download_artifact source code"
-  description="View the source code for the eas/download_artifact function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
-/>
-
 The following functions connect your workflow to [PostHog](/guides/using-posthog/). Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key, while the other functions use a PostHog personal API key with the scopes noted for each one. For setup, see [Using PostHog](/guides/using-posthog/), and for complete workflows, see [PostHog recipes for EAS Workflows](/guides/using-posthog/recipes).
 
 #### `eas/posthog_capture_event`
 
-Sends an analytics event to PostHog. Use it to mark deploys, updates, and other workflow milestones on your PostHog timeline.
+Sends an analytics event to [PostHog](https://posthog.com/). Use it to mark builds, releases, and other milestones on your PostHog timeline.
 
 When you do not provide a `distinct_id`, the event is sent anonymously and does not create a PostHog [person profile](https://posthog.com/docs/data/persons), which keeps workflow events out of your list of people.
 
@@ -2178,21 +2148,7 @@ jobs:
 
 ##### Properties
 
-| Property       | Type    | Required    | Description                                                                                                                                                                                  |
-| -------------- | ------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `event`        | string  | <YesIcon /> | The name of the event to send.                                                                                                                                                               |
-| `distinct_id`  | string  | <NoIcon />  | The person to attribute the event to. When omitted, the event is sent anonymously and does not create a person profile.                                                                      |
-| `properties`   | json    | <NoIcon />  | Properties to attach to the event.                                                                                                                                                           |
-| `api_key`      | string  | <NoIcon />  | PostHog project API key. Defaults to the `EXPO_PUBLIC_POSTHOG_API_KEY` environment variable set by `eas integrations:posthog:connect`, falling back to `POSTHOG_API_KEY` if that is not set. |
-| `host`         | string  | <NoIcon />  | PostHog host. Defaults to the `EXPO_PUBLIC_POSTHOG_HOST` environment variable, or `https://us.posthog.com`.                                                                                  |
-| `ignore_error` | boolean | <NoIcon />  | When `true`, a failure to send the event is logged but does not fail the step. Defaults to `false`.                                                                                          |
-
-<BoxLink
-  title="eas/posthog_capture_event source code"
-  description="View the source code for the eas/posthog_capture_event function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/capturePosthogEvent.ts"
-/>
+<EASFunctionDescription name="posthog_capture_event" />
 
 #### `eas/posthog_flag_rollout`
 
@@ -2212,23 +2168,7 @@ jobs:
 
 ##### Properties
 
-| Property             | Type    | Required    | Description                                                                                                                                                                                                                                                             |
-| -------------------- | ------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `flag`               | string  | <YesIcon /> | The key of the feature flag to update.                                                                                                                                                                                                                                  |
-| `active`             | boolean | <NoIcon />  | Whether the flag is enabled.                                                                                                                                                                                                                                            |
-| `rollout_percentage` | number  | <NoIcon />  | Percentage of users the flag rolls out to, as an integer from `0` to `100`. The function applies it to the flag's catch-all release condition and preserves other conditions. When the flag has no catch-all condition, the function applies it to the first condition. |
-| `payload`            | json    | <NoIcon />  | Payload to attach to the flag.                                                                                                                                                                                                                                          |
-| `variant`            | string  | <NoIcon />  | Variant key to store the `payload` under on a multivariate flag. Defaults to the flag's `true` payload.                                                                                                                                                                 |
-| `api_key`            | string  | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `feature_flag:read` and `feature_flag:write` scopes.                                                                                                                 |
-| `project_id`         | string  | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                                                                                                                                      |
-| `ignore_error`       | boolean | <NoIcon />  | When `true`, a network error, a missing flag, or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error, or invalid input such as an out-of-range `rollout_percentage`, always fails the step.                           |
-
-<BoxLink
-  title="eas/posthog_flag_rollout source code"
-  description="View the source code for the eas/posthog_flag_rollout function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/rolloutPosthogFlag.ts"
-/>
+<EASFunctionDescription name="posthog_flag_rollout" />
 
 #### `eas/posthog_wait_for_metric`
 
@@ -2253,28 +2193,7 @@ jobs:
 
 ##### Properties
 
-| Property           | Type   | Required    | Description                                                                                                             |
-| ------------------ | ------ | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `query`            | string | <YesIcon /> | A HogQL query. The first column of the first row must be a single number.                                               |
-| `operator`         | string | <YesIcon /> | Comparison operator. One of `lt`, `lte`, `gt`, `gte`, or `eq`. The step clears when `value <operator> threshold` holds. |
-| `threshold`        | number | <YesIcon /> | The value to compare the query result against.                                                                          |
-| `timeout_seconds`  | number | <NoIcon />  | Maximum time to wait, in seconds. Defaults to `600`.                                                                    |
-| `interval_seconds` | number | <NoIcon />  | Time between checks, in seconds. Defaults to `30`.                                                                      |
-| `api_key`          | string | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope.  |
-| `project_id`       | string | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                      |
-
-##### Outputs
-
-| Property | Type   | Description                                     |
-| -------- | ------ | ----------------------------------------------- |
-| `value`  | string | The metric value that satisfied the comparison. |
-
-<BoxLink
-  title="eas/posthog_wait_for_metric source code"
-  description="View the source code for the eas/posthog_wait_for_metric function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogMetric.ts"
-/>
+<EASFunctionDescription name="posthog_wait_for_metric" />
 
 #### `eas/posthog_wait_for_query`
 
@@ -2297,24 +2216,11 @@ jobs:
 
 ##### Properties
 
-| Property           | Type   | Required    | Description                                                                                                            |
-| ------------------ | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `query`            | string | <YesIcon /> | A HogQL query. The step clears when the first column of the first row is `true` or a nonzero number.                   |
-| `timeout_seconds`  | number | <NoIcon />  | Maximum time to wait, in seconds. Defaults to `600`.                                                                   |
-| `interval_seconds` | number | <NoIcon />  | Time between checks, in seconds. Defaults to `30`.                                                                     |
-| `api_key`          | string | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope. |
-| `project_id`       | string | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                     |
-
-<BoxLink
-  title="eas/posthog_wait_for_query source code"
-  description="View the source code for the eas/posthog_wait_for_query function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogQuery.ts"
-/>
+<EASFunctionDescription name="posthog_wait_for_query" />
 
 #### `eas/posthog_annotation`
 
-Creates a [PostHog annotation](https://posthog.com/docs/data/annotations) on the project timeline. Annotations show up on your PostHog charts, which makes them useful for marking deploys and releases next to the metrics they affect.
+Creates a [PostHog annotation](https://posthog.com/docs/data/annotations) on the project timeline. Annotations show up on your PostHog charts, which makes them useful for marking builds, releases, and other milestones next to the metrics they affect.
 
 ```yaml
 jobs:
@@ -2329,20 +2235,7 @@ jobs:
 
 ##### Properties
 
-| Property       | Type    | Required    | Description                                                                                                                                                  |
-| -------------- | ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `content`      | string  | <YesIcon /> | The annotation text.                                                                                                                                         |
-| `date_marker`  | string  | <NoIcon />  | The ISO 8601 timestamp the annotation is pinned to. Defaults to the current time.                                                                            |
-| `api_key`      | string  | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `annotation:write` scope.                                 |
-| `project_id`   | string  | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                                                           |
-| `ignore_error` | boolean | <NoIcon />  | When `true`, a network error or an unexpected response is logged but does not fail the step. Defaults to `false`. A permissions error always fails the step. |
-
-<BoxLink
-  title="eas/posthog_annotation source code"
-  description="View the source code for the eas/posthog_annotation function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/createPosthogAnnotation.ts"
-/>
+<EASFunctionDescription name="posthog_annotation" />
 
 #### `eas/posthog_upload_sourcemaps`
 
@@ -2366,19 +2259,92 @@ jobs:
 
 ##### Properties
 
-| Property       | Type    | Required   | Description                                                                                                              |
-| -------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `directory`    | string  | <NoIcon /> | The directory that contains the bundle and source maps, relative to the working directory. Defaults to `dist`.           |
-| `api_key`      | string  | <NoIcon /> | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires source map upload access. |
-| `project_id`   | string  | <NoIcon /> | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                       |
-| `ignore_error` | boolean | <NoIcon /> | When `true`, a failed upload is logged but does not fail the step. Defaults to `false`.                                  |
+<EASFunctionDescription name="posthog_upload_sourcemaps" />
 
-<BoxLink
-  title="eas/posthog_upload_sourcemaps source code"
-  description="View the source code for the eas/posthog_upload_sourcemaps function on GitHub."
-  Icon={GithubIcon}
-  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadPosthogSourcemaps.ts"
-/>
+## Custom functions
+
+Define reusable step sequences in your project and call them with a relative path through [`uses`](#jobsjob_idstepsstepuses). The path must be a static, literal string. It cannot contain `${{ }}` interpolation or backslashes. Custom function calls accept the same fields as built-in function calls: `id`, `name`, `with`, `if`, and `env`. Do not set `working_directory` on the call step. Set it on the function's inner steps instead. Store each custom function in a directory that contains a **function.yml** or **function.yaml** file. Steps inside a custom function use the same format as [custom job steps](#jobsjob_idsteps). For details about organizing files, nesting functions, and calling functions from jobs or hooks, see [Custom functions in EAS Workflows](/eas/workflows/custom-functions/).
+
+Your **function.yml** file supports the following top-level properties: `name`, `description`, `inputs`, `outputs`, and `runs`. EAS Workflows rejects unknown top-level properties.
+
+### Function `name`
+
+An optional display name for the custom function that appears in job logs.
+
+```yaml
+name: Greet
+```
+
+### Function `description`
+
+An optional description of what the custom function does.
+
+```yaml
+description: Prints a greeting for the given name.
+```
+
+### Function `inputs`
+
+Input values a caller can pass to the custom function with `with:`. You can declare inputs two ways.
+
+The shorthand form is a list of names. Each input becomes an optional string input with no default value:
+
+```yaml
+inputs:
+  - who
+```
+
+The full form is a list of objects with the following properties:
+
+| Property         | Type      | Required    | Description                                                                     |
+| ---------------- | --------- | ----------- | ------------------------------------------------------------------------------- |
+| `name`           | `string`  | <YesIcon /> | The input's name. Use it to access the input as `${{ inputs.<name> }}`.         |
+| `type`           | `string`  | <NoIcon />  | The input type: `string`, `boolean`, `number`, or `json`. Defaults to `string`. |
+| `default_value`  | varies    | <NoIcon />  | The value EAS Workflows uses when you do not provide one. Must match `type`.    |
+| `allowed_values` | array     | <NoIcon />  | The values you can pass for this input.                                         |
+| `required`       | `boolean` | <NoIcon />  | Whether you must provide this input. Defaults to `false`.                       |
+
+```yaml
+inputs:
+  - name: who
+    type: string
+    default_value: world
+  - name: platform
+    type: string
+    allowed_values: [android, ios]
+    required: true
+```
+
+Inside the custom function's steps, read an input with `${{ inputs.<name> }}`.
+
+### Function `outputs`
+
+Declare the output values that the custom function exposes to its caller as a map keyed by output name:
+
+| Property      | Required    | Description                                                                                    |
+| ------------- | ----------- | ---------------------------------------------------------------------------------------------- |
+| `value`       | <YesIcon /> | An expression that resolves to the output's value, such as `${{ steps.<id>.outputs.<name> }}`. |
+| `description` | <NoIcon />  | A description of the output.                                                                   |
+
+```yaml
+outputs:
+  message:
+    value: '${{ steps.make.outputs.message }}'
+    description: The rendered greeting.
+```
+
+EAS Workflows exposes each output as a string. Read the output as `${{ steps.<call_id>.outputs.<name> }}`. Use the `id` from the call step. The caller cannot reference the function's internal step identifiers.
+
+### Function `runs.steps`
+
+`runs.steps` is required and must contain at least one step. Steps use the same format as [custom job steps](#jobsjob_idsteps), including `id`, `run`, `uses`, `if`, and `working_directory`. Currently, custom functions cannot call `eas/build` or `eas/maestro_test`.
+
+```yaml
+runs:
+  steps:
+    - id: make
+      run: set-output message "Hello, ${{ inputs.who }}!"
+```
 
 ## Built-in shell functions
 

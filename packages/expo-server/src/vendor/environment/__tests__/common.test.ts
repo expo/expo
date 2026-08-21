@@ -6,7 +6,7 @@ import type {
   RenderingConfiguration,
   RouteInfo,
 } from '../../../manifest';
-import type { ServerRenderModule } from '../../../rendering';
+import type { LegacyServerRenderModule, ServerRenderModule } from '../../../rendering';
 import { createEnvironment } from '../common';
 
 describe('getRoutesManifest', () => {
@@ -293,6 +293,48 @@ describe('getHtml', () => {
     );
 
     expect(input.loadModule).toHaveBeenCalledTimes(2);
+  });
+
+  it('uses the legacy SSR renderer for SDK 55 exports', async () => {
+    const mockLegacySSRModule = createMockLegacySSRModule();
+    const input = createMockInput({
+      manifest: {
+        rendering: { mode: 'ssr', file: '_expo/server/render.js' },
+        assets: { css: ['/style.css'], js: ['/app.js'] },
+      },
+      modules: { '_expo/server/render.js': mockLegacySSRModule },
+    });
+    const env = createEnvironment(input);
+    const request = new Request('http://localhost/path?query=1');
+
+    const result = await env.getHtml(
+      request,
+      createMockRoute({
+        file: './path.tsx',
+        page: '/path',
+        namedRegex: new RegExp('^/path(?:/)?$'),
+      })
+    );
+    expect(result).toEqual('<html>Legacy SSR content</html>');
+
+    expect(mockLegacySSRModule.getStaticContent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pathname: '/path',
+        search: '?query=1',
+      }),
+      expect.objectContaining({
+        request,
+        assets: { css: ['/style.css'], externalCss: [], js: ['/app.js'] },
+      })
+    );
+    expect(mockLegacySSRModule.getStaticContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        request: expect.objectContaining({
+          signal: request.signal,
+        }),
+      })
+    );
   });
 
   it('passes location, request, and assets to `getStreamingContent()`', async () => {
@@ -876,6 +918,15 @@ function createMockRoute<T extends string | RegExp = string>(
     page: '',
     namedRegex: '' as T,
     routeKeys: {},
+    ...overrides,
+  };
+}
+
+function createMockLegacySSRModule(
+  overrides: Partial<LegacyServerRenderModule> = {}
+): LegacyServerRenderModule {
+  return {
+    getStaticContent: jest.fn().mockResolvedValue('<html>Legacy SSR content</html>'),
     ...overrides,
   };
 }

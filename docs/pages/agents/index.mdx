@@ -12,6 +12,8 @@ import {
   CursorLogoIcon,
   OpenAILogoIcon,
 } from '~/ui/components/CustomIcons/AIProviderIcons';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 Claude Code, Codex, Cursor, and other AI coding agents can help you build, upgrade, debug, and deploy your Expo and React Native projects. When you use [`create-expo-app`](/more/create-expo/) to create a new project, that new project is already set up with the configuration files required by an AI agent. This setup is also committed to your project, so everyone on your team starts from the same SDK version and project instructions, and their agents read the same project context.
 
@@ -77,6 +79,54 @@ Each agent looks for project context in a different place. Instead of forcing on
 | **.claude/settings.json** | Claude Code on startup.                                       | Pre-enables the official Expo plugin from the Claude Code plugin marketplace.                                                       |
 
 Each file targets a different agent convention, so the same project works with Claude Code, Codex, or Cursor without per-agent configuration.
+
+## Set up an existing project
+
+`create-expo-app` writes the project context files only when it creates a new project. For an existing project, add the same files at the project root yourself.
+
+<Step label="1">
+
+### Download AGENTS.md
+
+Download the canonical **AGENTS.md** that `create-expo-app` ships at the root of your Expo project:
+
+<Terminal
+  cmd={[
+    '$ curl -o AGENTS.md https://raw.githubusercontent.com/expo/expo/main/packages/create-expo/template/agent-files/AGENTS.md',
+  ]}
+/>
+
+If your project already has an **AGENTS.md**, append the downloaded content to it instead of replacing the file.
+
+</Step>
+
+<Step label="2">
+
+### Create CLAUDE.md
+
+If you use Claude Code, create **CLAUDE.md** with a single line that imports **AGENTS.md**:
+
+<Terminal cmd={["$ echo '@AGENTS.md' > CLAUDE.md"]} />
+
+</Step>
+
+<Step label="3">
+
+### Enable the Expo plugin for Claude Code
+
+Create **.claude/settings.json** to enable the official Expo plugin from the Claude Code plugin marketplace:
+
+```json .claude/settings.json
+{
+  "enabledPlugins": {
+    "expo@claude-plugins-official": true
+  }
+}
+```
+
+</Step>
+
+Commit all three files so every agent session on your team starts from the same project context. Codex and Cursor need only **AGENTS.md**, so steps 2 and 3 apply to Claude Code only.
 
 ## Verify the setup
 

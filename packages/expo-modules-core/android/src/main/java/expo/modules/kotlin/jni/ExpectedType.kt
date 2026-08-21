@@ -106,7 +106,7 @@ class ExpectedType(
   constructor(vararg expectedTypes: CppType) : this(*expectedTypes.map { SingleType(it) }.toTypedArray())
 
   /**
-   * A convenient property to return combined int value of expected types.
+   * A convenient property to return the combined int value of expected types.
    */
   private val innerCombinedTypes: Int = innerPossibleTypes.fold(0) { acc, current -> acc or current.getCppType() }
 

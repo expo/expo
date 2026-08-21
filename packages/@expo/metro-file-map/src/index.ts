@@ -237,7 +237,7 @@ const WATCHMAN_REQUIRED_CAPABILITIES = [
  *       the `FileMap`.
  *
  *  3. visit and extract metadata from changed files, including sha1,
- *     depedendencies, and any plugins.
+ *     dependencies, and any plugins.
  *     * this is done in parallel over worker processes to improve performance.
  *     * the worst case is to visit all files.
  *     * the best case is no file system access and retrieving all data from
@@ -624,7 +624,7 @@ export default class FileMap extends EventEmitter {
 
     for (const [normalFilePath, fileData] of changedFiles) {
       // A crawler may preserve the H.VISITED flag to indicate that the file
-      // contents are unchaged and it doesn't need visiting again.
+      // contents are unchanged and it doesn't need visiting again.
       if (fileData[H.VISITED] === 1) {
         continue;
       }

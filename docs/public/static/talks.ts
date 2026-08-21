@@ -1,5 +1,37 @@
 export const TALKS = [
   {
+    title: 'The future of mobile development with Expo',
+    event: 'Chain React 2026',
+    description: 'Charlie Cheever',
+    videoId: 'jTZWOS9-JTw',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
+    title: 'How is your app actually doing in production',
+    event: 'Chain React 2026',
+    description: 'Kadi Kraman',
+    videoId: 'G9RoD_QpJYQ',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
+    title: 'Go All The Way',
+    event: 'Chain React 2026',
+    description: 'Seth Webster',
+    videoId: 'SWQtWHsAMk0',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
+    title: 'Prompt Once: Scaling Expo Brownfield Across 100+ Apps',
+    event: 'Chain React 2026',
+    description: 'Gabriel Donadel',
+    videoId: 'Yk5KjVx6i54',
+    uploadDate: '2026-08-19',
+    home: true,
+  },
+  {
     title: 'Expo keynote',
     event: 'App.js Conf 2026',
     description: 'Charlie Cheever',
@@ -37,7 +69,6 @@ export const TALKS = [
     description: 'Charlie Cheever, Jon Samp',
     videoId: 'lnxanzsP1rM',
     uploadDate: '2025-06-04',
-    home: true,
   },
   {
     title: 'Deploy Everywhere with Expo Router',
@@ -326,6 +357,12 @@ export const LIVE_STREAMS = [
     uploadDate: '2025-11-21',
   },
   {
+    title: 'Introducing Expo Router v6: link previews, native tabs, and more for modern apps',
+    event: 'Expo Live Stream',
+    videoId: 'bO7ZoQWa9ic',
+    uploadDate: '2025-09-24',
+  },
+  {
     title: "What's new in Expo SDK 54?",
     event: 'Expo Live Stream',
     videoId: 'KBlbkjqxNbM',
@@ -479,7 +516,32 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
-    title: 'The 3 tools you need to build mobile apps with AI',
+    title: 'From React Web to React Native in 60 Seconds',
+    event: 'Expo Tutorials',
+    videoId: '8ExmJ7gqVaw',
+    uploadDate: '2026-08-08',
+  },
+  {
+    title: 'Fable 5 vs GPT 5.6: I spent $2,000 to find out',
+    event: 'Expo Tutorials',
+    description: 'Rami Maalouf',
+    videoId: 'SLWl53sizHs',
+    uploadDate: '2026-08-05',
+  },
+  {
+    title: 'Solo dev highlight: How to build and ship an app as a one person company',
+    event: 'Expo Tutorials',
+    videoId: 'NvCk0e89Hsc',
+    uploadDate: '2026-08-04',
+  },
+  {
+    title: 'How to build an iOS widget',
+    event: 'Expo Tutorials',
+    videoId: '3r_OHePTCcI',
+    uploadDate: '2026-07-27',
+  },
+  {
+    title: 'How to Build Real Mobile Apps with AI in 2026 (Not Another No-Code Toy)',
     event: 'Expo Tutorials',
     videoId: 'WLGAuwagI8o',
     uploadDate: '2026-07-13',

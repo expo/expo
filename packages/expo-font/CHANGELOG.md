@@ -4,6 +4,29 @@
 
 ### 🛠 Breaking changes
 
+- [ios] `getLoadedFonts()` no longer reports the PostScript name read out of a font loaded with `loadAsync`, only the name (the alias) it was loaded under. ([#48432](https://github.com/expo/expo/pull/48432) by [@vonovak](https://github.com/vonovak))
+
+### 🎉 New features
+
+- [android] Added an `axes` field to the config plugin's font definitions, so one variable font file can also back a slanted or condensed face through its `slnt`, `wdth` and other variation axes. ([#48621](https://github.com/expo/expo/pull/48621) by [@vonovak](https://github.com/vonovak))
+- [android] Support variable weight fonts in the config plugin ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))
+- [ios] Apply `fontWeight` to variable fonts loaded with `useFonts`. ([#48432](https://github.com/expo/expo/pull/48432) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- [android] Apply `fontWeight` and `fontStyle` to fonts loaded with `useFonts`, instancing a variable font's `wght` axis at each weight. Bold and italic text previously fell back to a system font. ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))
+- [iOS] Fixed `renderToImageAsync` reporting the main screen's scale rather than the scale the image was rendered at. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🛠 Breaking changes
+
 - [web] Removed `Server.resetServerContext()`. Server-side font state is now scoped per-render via `AsyncLocalStorage`. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🎉 New features
@@ -11,11 +34,15 @@
 - [web] Added `Server.withServerContext(callback)` which scopes server-side font loads per render. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
 - Support loading multiple font weights and styles per `fontFamily` in `useFonts`/`loadAsync`, and generate correct `font-weight`/`font-style` `@font-face` rules on web. (by [@bryanmylee](https://github.com/bryanmylee))
 
-### 🐛 Bug fixes
+## 56.0.7 - 2026-06-15
 
 ### 💡 Others
 
 - Resolve package-style font paths. ([#46784](https://github.com/expo/expo/pull/46784) by [@maxlapides](https://github.com/maxlapides))
+
+## 56.0.6 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.5 — 2026-05-19
 

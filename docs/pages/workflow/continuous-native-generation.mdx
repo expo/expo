@@ -143,7 +143,7 @@ The `--clean` option deletes any existing native directories before generating. 
 
 For example, some config plugins aren't idempotent. When a project utilizes multiple "dangerous modifiers" to add regex changes to an app's code, it can lead to unexpected behavior. This is why using the `--clean` option is the safest way to use the prebuild command and is generally recommended in most cases.
 
-#### Using `--clean` option
+### Using `--clean` option
 
 When using the `--clean` option, you'll be warned if you have any uncommitted changes to your git code repository, as this option will delete and recreate all of your native project files. This prompt is optional and will be skipped when encountered in CI. You can disable this check by enabling the environment variable `EXPO_NO_GIT_STATUS=1`.
 

@@ -70,15 +70,19 @@ public:
       bool changedStyle = false;
 
       if (!isnan(styleWidth)) {
-        style.setDimension(facebook::yoga::Dimension::Width,
-                           facebook::yoga::StyleSizeLength::points(styleWidth));
-        changedStyle = true;
+        auto expectedWidth = facebook::yoga::StyleSizeLength::points(styleWidth);
+        if (style.dimension(facebook::yoga::Dimension::Width) != expectedWidth) {
+          style.setDimension(facebook::yoga::Dimension::Width, expectedWidth);
+          changedStyle = true;
+        }
       }
 
       if (!isnan(styleHeight)) {
-        style.setDimension(facebook::yoga::Dimension::Height,
-                           facebook::yoga::StyleSizeLength::points(styleHeight));
-        changedStyle = true;
+        auto expectedHeight = facebook::yoga::StyleSizeLength::points(styleHeight);
+        if (style.dimension(facebook::yoga::Dimension::Height) != expectedHeight) {
+          style.setDimension(facebook::yoga::Dimension::Height, expectedHeight);
+          changedStyle = true;
+        }
       }
 
       // Update yoga props and dirty layout if we changed the style

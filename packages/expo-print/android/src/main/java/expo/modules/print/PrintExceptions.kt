@@ -18,7 +18,7 @@ internal class NullUriException :
   CodedException("Given URI is null")
 
 internal class PdfWriteException(cause: Throwable? = null) :
-  CodedException("An error occured while writing the PDF data", cause)
+  CodedException("An error occurred while writing the PDF data", cause)
 
 internal class FileNotFoundException(cause: Throwable? = null) :
   CodedException("Cannot create or open a file", cause)

@@ -214,11 +214,19 @@ extension ExpoSwiftUI {
     public override func didMoveToWindow() {
       super.didMoveToWindow()
 
+      #if os(iOS)
+      if let window {
+        // SwiftUI content can open a menu, and UIKit passes the tap that closes it through to
+        // React Native underneath. The gate stops that tap from reaching the view below.
+        SystemMenuTouchGate.install(in: window)
+      }
+      #endif
+
       if window != nil, let parentController = reactViewController() {
         #if !os(macOS)
         if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
           // Swift automatically adds the hostingController in the correct place when the parentController
-          // is UINavigationController, since it's children are supposed to be only screens.
+          // is UINavigationController, since its children are supposed to be only screens.
           // Similarly, for UITabBarController we expect its children to be only tabs.
           parentController.addChild(hostingController)
         }

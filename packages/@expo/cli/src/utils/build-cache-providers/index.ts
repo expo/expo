@@ -28,7 +28,7 @@ export const resolveBuildCacheProvider = async (
         isProjectMutable: true,
         installMessage:
           'eas-build-cache-provider package is required to use the EAS build cache.\n',
-        warningMessage: 'Unable to to use the EAS remote build cache.',
+        warningMessage: 'Unable to use the EAS remote build cache.',
         requiredPackages: [
           {
             pkg: 'eas-build-cache-provider',

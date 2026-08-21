@@ -83,31 +83,75 @@ internal struct FrameModifier: ViewModifier, Record {
 }
 
 internal struct PaddingModifier: ViewModifier, Record {
-  @Field var all: CGFloat?
-  @Field var horizontal: CGFloat?
-  @Field var vertical: CGFloat?
+  @Field var all: PaddingValue?
+  @Field var horizontal: PaddingValue?
+  @Field var vertical: PaddingValue?
 
-  @Field var top: CGFloat?
-  @Field var leading: CGFloat?
-  @Field var bottom: CGFloat?
-  @Field var trailing: CGFloat?
+  @Field var top: PaddingValue?
+  @Field var leading: PaddingValue?
+  @Field var bottom: PaddingValue?
+  @Field var trailing: PaddingValue?
+
+  /**
+   The value of each edge, where a value set for a specific edge wins over the shorthands
+   covering that edge. A `nil` edge was not set at all and gets no padding.
+   */
+  private var resolvedEdges: (top: PaddingValue?, leading: PaddingValue?, bottom: PaddingValue?, trailing: PaddingValue?) {
+    (
+      top: top ?? vertical ?? all,
+      leading: leading ?? horizontal ?? all,
+      bottom: bottom ?? vertical ?? all,
+      trailing: trailing ?? horizontal ?? all
+    )
+  }
+
+  /**
+   The edges left to the system, which `EdgeInsets` cannot express.
+   */
+  private var defaultEdges: Edge.Set {
+    let edges = resolvedEdges
+    var result: Edge.Set = []
+
+    if edges.top?.isDefault == true {
+      result.insert(.top)
+    }
+    if edges.leading?.isDefault == true {
+      result.insert(.leading)
+    }
+    if edges.bottom?.isDefault == true {
+      result.insert(.bottom)
+    }
+    if edges.trailing?.isDefault == true {
+      result.insert(.trailing)
+    }
+    return result
+  }
+
+  private var insets: EdgeInsets {
+    let edges = resolvedEdges
+
+    return EdgeInsets(
+      top: edges.top?.length ?? 0,
+      leading: edges.leading?.length ?? 0,
+      bottom: edges.bottom?.length ?? 0,
+      trailing: edges.trailing?.length ?? 0
+    )
+  }
 
   func body(content: Content) -> some View {
-    let hasCustomPadding = [
-      all, horizontal, vertical, top, leading, bottom, trailing
-    ].contains { $0 != nil }
+    let edges = resolvedEdges
 
-    if !hasCustomPadding {
+    if edges.top == nil && edges.leading == nil && edges.bottom == nil && edges.trailing == nil {
       // Default SwiftUI padding (system spacing)
       content.padding()
     } else {
-      let insets = EdgeInsets(
-        top: top ?? vertical ?? all ?? 0,
-        leading: leading ?? horizontal ?? all ?? 0,
-        bottom: bottom ?? vertical ?? all ?? 0,
-        trailing: trailing ?? horizontal ?? all ?? 0
-      )
-      content.padding(insets)
+      // `EdgeInsets` can only carry lengths, so the edges left to the system are applied by a
+      // second call. Padding modifiers add up and these two cover disjoint edges.
+      if defaultEdges.isEmpty {
+        content.padding(insets)
+      } else {
+        content.padding(insets).padding(defaultEdges)
+      }
     }
   }
 }
@@ -957,6 +1001,23 @@ internal struct ListRowSeparator: ViewModifier, Record {
   }
 }
 
+internal struct ListRowSeparatorTint: ViewModifier, Record {
+  @Field var color: Color?
+  @Field var edges: VerticalEdgeOptions?
+
+  func body(content: Content) -> some View {
+#if os(tvOS)
+    content
+#else
+    if let edges {
+      content.listRowSeparatorTint(color, edges: edges.toVerticalEdges())
+    } else {
+      content.listRowSeparatorTint(color)
+    }
+#endif
+  }
+}
+
 internal struct ListRowSpacing: ViewModifier, Record {
   @Field var spacing: Double?
 
@@ -1541,13 +1602,46 @@ public class ViewModifierRegistry {
   }
 }
 
+internal enum MatchedGeometryPropertiesOptions: String, Enumerable {
+  case frame
+  case position
+  case size
+
+  var toMatchedGeometryProperties: MatchedGeometryProperties {
+    switch self {
+    case .frame: return .frame
+    case .position: return .position
+    case .size: return .size
+    }
+  }
+}
+
 internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   @Field var id: String?
   @Field var namespaceId: String?
+  @Field var properties: MatchedGeometryPropertiesOptions = .frame
+  @Field var anchor: UnitPointOptions = .center
+  @Field var isSource: Bool = true
 
   func body(content: Content) -> some View {
     if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
-      content.matchedGeometryEffect(id: id, in: namespace)
+      content.matchedGeometryEffect(
+        id: id,
+        in: namespace,
+        properties: properties.toMatchedGeometryProperties,
+        anchor: anchor.toUnitPoint,
+        isSource: isSource
+      )
+    } else {
+      content
+    }
+  }
+}
+
+internal struct GeometryGroupModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+      content.geometryGroup()
     } else {
       content
     }
@@ -1880,6 +1974,10 @@ extension ViewModifierRegistry {
       return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
     }
 
+    register("geometryGroup") { params, appContext, _ in
+      return try GeometryGroupModifier(from: params, appContext: appContext)
+    }
+
     register("fixedSize") { params, appContext, _ in
       return try FixedSizeModifier(from: params, appContext: appContext)
     }
@@ -1934,6 +2032,10 @@ extension ViewModifierRegistry {
 
     register("listRowSeparator") { params, appContext, _ in
       return try ListRowSeparator(from: params, appContext: appContext)
+    }
+
+    register("listRowSeparatorTint") { params, appContext, _ in
+      return try ListRowSeparatorTint(from: params, appContext: appContext)
     }
 
     register("listRowSpacing") { params, appContext, _ in
@@ -2066,6 +2168,18 @@ extension ViewModifierRegistry {
 
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("menuOrder") { params, appContext, _ in
+      return try MenuOrderModifier(from: params, appContext: appContext)
+    }
+
+    register("menuStyle") { params, appContext, _ in
+      return try MenuStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("menuIndicator") { params, appContext, _ in
+      return try MenuIndicatorModifier(from: params, appContext: appContext)
     }
 
     register("submitLabel") { params, appContext, _ in

@@ -13,6 +13,8 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { debugEvent } from './events';
+
 type ExpoAssetData = AssetData & {
   fileHashes?: string[];
 };
@@ -33,15 +35,22 @@ function getMD5ForData(data: string[]) {
   return hash.digest('hex');
 }
 
-function getMD5ForFilePathAsync(path: string) {
-  return new Promise<string>((resolve, reject) => {
+function debugEventPaths(files: readonly string[]) {
+  return { toJSON: () => files.map((file) => debugEvent.path(file).toJSON()) };
+}
+
+async function getMD5ForFilePathAsync(filePath: string) {
+  const done = debugEvent.span();
+  const hash = await new Promise<string>((resolve, reject) => {
     const output = crypto.createHash('md5');
-    const input = fs.createReadStream(path);
+    const input = fs.createReadStream(filePath);
     input.on('error', (err) => reject(err));
     output.on('error', (err) => reject(err));
     output.once('readable', () => resolve(output.read().toString('hex')));
     input.pipe(output);
   });
+  done('asset_hash_file', { file: debugEvent.path(filePath) });
+  return hash;
 }
 
 function isHashedAssetData(asset: ExpoAssetData): asset is HashedAssetData {
@@ -97,6 +106,7 @@ export async function getUniversalAssetData(
   publicPath: string,
   isHosted: boolean = false
 ): Promise<HashedAssetData> {
+  const assetDataDone = debugEvent.span();
   const metroAssetData = await getAssetData(
     assetPath,
     localPath,
@@ -104,7 +114,18 @@ export async function getUniversalAssetData(
     platform,
     publicPath
   );
+  assetDataDone('asset_data', {
+    file: debugEvent.path(assetPath),
+    platform: platform ?? null,
+    files: debugEventPaths(metroAssetData.files),
+  });
+
+  const assetHashesDone = debugEvent.span();
   const data = await ensureOtaAssetHashesAsync(metroAssetData);
+  assetHashesDone('asset_hashes', {
+    file: debugEvent.path(assetPath),
+    files: debugEventPaths(data.files),
+  });
 
   // NOTE(EvanBacon): This is where we modify the asset to include a hash in the name for web cache invalidation.
   if ((isHosted || platform === 'web') && publicPath.includes('?export_path=')) {

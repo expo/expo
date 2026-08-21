@@ -144,7 +144,7 @@ export default function App() {
     }
   }, [isUpdateAvailable]);
 
-  // Record if checking an downloading happen in parallel (they shouldn't)
+  // Record if checking and downloading happen in parallel (they shouldn't)
   React.useEffect(() => {
     if (isChecking && isDownloading) {
       setDidCheckAndDownloadHappenInParallel(true);

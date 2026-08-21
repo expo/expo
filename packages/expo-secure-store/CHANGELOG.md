@@ -6,9 +6,22 @@
 
 ### 🎉 New features
 
+- Add an Android-only `requireConfirmation` option for authenticated reads and writes.
+
 ### 🐛 Bug fixes
 
+- [iOS] Reject `deleteItemAsync` when the keychain refuses the delete, instead of resolving as if the item was removed.
+- [iOS] Apply `keychainAccessible` when overwriting an existing item, instead of silently keeping the accessibility it was first stored with. ([#49128](https://github.com/expo/expo/pull/49128) by [@JoRo-Code](https://github.com/JoRo-Code) and [@behenate](https://github.com/behenate))
+
 ### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.4 — 2026-05-21
 

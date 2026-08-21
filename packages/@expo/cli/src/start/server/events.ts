@@ -12,6 +12,12 @@ declare module '2g' {
     'devserver:dev_client_url_invalid_protocol': { protocol: string };
     'devserver:dev_client_url': { url: string; manifestUrl: string };
     'devserver:devices_saved': { ids: string[] };
+    'devserver:send_command': {
+      method: string;
+      commandName?: string;
+      bundler: string;
+      receiverCount: number | null;
+    };
   }
 }
 

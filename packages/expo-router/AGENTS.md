@@ -42,7 +42,7 @@ File-based routing library for React Native and web applications. It provides au
 │   │
 │   ├── native-tabs/           # Native bottom tabs (iOS UITabBar, Android BottomNav)
 │   │   ├── NativeTabs.tsx            # Assignment of Trigger and BottomAccessory to NativeTabs component
-│   │   ├── NativeTabTrigger.tsx      # Tab trigger component for configuring individual tabs. Includes function which convert sub-components (Icon, Label, etc) to options.
+│   │   ├── NativeTabTrigger.tsx      # Tab trigger component for configuring individual tabs. Includes function which converts sub-components (Icon, Label, etc) to options.
 │   │   ├── NativeTabsView.tsx        # Native implementation of tabs using React Native Screens
 │   │   ├── NativeTabsView.web.tsx    # Web fallback implementation
 │   │   ├── NativeBottomTabsNavigator.tsx  # Native bottom tabs navigator common for native and web. Utilizes useNavigationBuilder.
@@ -61,7 +61,7 @@ File-based routing library for React Native and web applications. It provides au
 │   │   ├── preview/           # Link preview UI (iOS peek/pop style)
 │   │   └── zoom/              # Apple-style zoom transitions
 │   │
-│   ├── head/                  # On web a wrapper around react-helmet. On iOs a JS layer for ExpoHeadModule. On Android a no-op.
+│   ├── head/                  # On web a wrapper around react-helmet. On iOS a JS layer for ExpoHeadModule. On Android a no-op.
 │   │
 │   ├── ui/                    # Headless tabs components
 │   │
@@ -112,20 +112,6 @@ File-based routing library for React Native and web applications. It provides au
 ├── android/                   # Native Android code (Kotlin)
 │   └── ExpoRouterModule.kt            # Material 3 dynamic and static color resolution
 ├── entry.js                   # Module entry point
-├── head.js                    # Head/meta tags entrypoint - import Head from "expo-router/head"
-├── server.js                  # Deprecated server entrypoint. Use @expo/server instead.
-├── server.d.ts                # Re-exports types from `@expo/router-server`
-├── drawer.js                  # Drawer navigator - import { Drawer } from "expo-router/drawer"
-├── stack.js                   # Stack navigator - import { Stack } from "expo-router/stack"
-├── js-stack.js                # JS stack navigator - import { Stack } from "expo-router/js-stack"
-├── tabs.js                    # JS tab navigator (deprecated) - import { Tabs } from "expo-router/tabs"
-├── js-tabs.js                 # JS tab navigator - import { Tabs } from "expo-router/js-tabs"
-├── js-top-tabs.js             # JS top tab navigator - import { TopTabs } from "expo-router/js-top-tabs"
-├── html.js                    # HTML document wrapper for web - import { Html } from "expo-router/html"
-├── ui.js                      # Headless UI tabs components - import { Tabs } from "expo-router/ui"
-├── unstable-native-tabs.js    # Native bottom tabs - import { NativeTabs } from "expo-router/unstable-native-tabs"
-├── unstable-split-view.js     # Split view layout - import { SplitView } from "expo-router/unstable-split-view"
-├── testing-library.js         # Testing utilities - import { renderRouter } from "expo-router/testing-library"
 └── build/                     # Compiled JavaScript output
 ```
 
@@ -245,6 +231,13 @@ const screenProps = MockedComponent.mock.calls[1][0];
 
 ## Key Concepts
 
+### Expo Router Semantics
+
+- Evaluate all features exclusively from the Expo Router perspective. If a behavior is unavailable through Expo Router, React Navigation support for that behavior is irrelevant.
+- `expo-router/react-navigation` is only a compatibility layer. Do not treat its capabilities as Expo Router features unless Expo Router exposes them.
+- Protected routes are implemented as redirects and do not depend on `routeNames`.
+- `routeNames` are stable in Expo Router except during HMR.
+
 ### File-Based Routing Conventions
 
 - `page/index.tsx` → `/page`
@@ -302,7 +295,7 @@ After developing a feature, run these commands in `packages/expo-router`:
 
 Then test the feature on the simulator using one of the `apps/router-e2e/__e2e__/` projects. For android, use the `/android-e2e-testing` skill for testing on emulators.
 
-Lastly, span a new fresh senior engineer agent to challenge the implementation, how it fits into general expo-router architecture and find edge cases.
+Lastly, spawn a new fresh senior engineer agent to challenge the implementation, how it fits into general expo-router architecture and find edge cases.
 
 When adding dependencies or changing static/server rendering, run e2e tests in `packages/@expo/cli` (time-consuming, run only when necessary).
 

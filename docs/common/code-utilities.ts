@@ -2,7 +2,7 @@ import partition from 'lodash/partition';
 import { Language, Prism } from 'prism-react-renderer';
 import { Children, ReactElement, ReactNode, PropsWithChildren, isValidElement } from 'react';
 
-import sdkVersions from '~/ui/components/SDKTables/sdk-versions.json';
+import { sdkVersionValues } from '~/ui/components/SDKTables/utils';
 
 import { toString } from './utilities';
 
@@ -10,7 +10,7 @@ import { toString } from './utilities';
  * Build the code block variables map for a given SDK version entry.
  * Variables can be used in fenced code blocks with the `{{variableName}}` syntax.
  */
-function buildVariablesForSdk(sdk: (typeof sdkVersions.sdkVersions)[0]): Record<string, string> {
+function buildVariablesForSdk(sdk: (typeof sdkVersionValues)[0]): Record<string, string> {
   return {
     '{{iosDeploymentTarget}}': sdk.ios.replace('+', ''),
     '{{androidVersion}}': sdk.android.replace('+', ''),
@@ -35,10 +35,10 @@ function getVariablesForVersion(version?: string): Record<string, string> {
     return cached;
   }
 
-  let sdk = sdkVersions.sdkVersions[0];
+  let sdk = sdkVersionValues[0];
   if (version && version !== 'latest' && version !== 'unversioned') {
     const normalized = version.replace(/^v/, '');
-    const match = sdkVersions.sdkVersions.find(s => s.sdk === normalized);
+    const match = sdkVersionValues.find(s => s.sdk === normalized);
     if (match) {
       sdk = match;
     }

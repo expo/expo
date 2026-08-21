@@ -69,6 +69,8 @@ export function isLoading(fontFamily: string): boolean {
  *
  * > **Note**: We recommend using the [config plugin](#configuration-in-app-config) instead whenever possible.
  *
+ * > **Note**: When the `fontFamily` is already loaded, this method resolves without replacing it.
+ *
  * @param fontFamilyOrFontMap String, map of values that can be used as the `fontFamily`
  * [style prop](https://reactnative.dev/docs/text#style) with React Native `Text` elements, or an
  * array of [`FontFamilyDefinition`](#fontfamilydefinition)s for loading multiple faces per family.

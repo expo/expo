@@ -16,7 +16,7 @@ function browserSupportsWebGL() {
   }
 }
 
-function optionalRequire(requirer) {
+function optionalRequire<T>(requirer: () => T): T | undefined {
   try {
     return requirer();
   } catch {

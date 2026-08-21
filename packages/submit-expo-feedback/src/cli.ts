@@ -4,21 +4,36 @@ import { detectAgent } from 'agent-cli-detector';
 import arg from 'arg';
 import chalk from 'chalk';
 import * as ciInfo from 'ci-info';
+import { randomBytes } from 'crypto';
 import { existsSync, readFileSync } from 'fs';
 import { homedir } from 'os';
 import path from 'path';
 import prompts from 'prompts';
+import { detectSandbox } from 'sandbox-cli-detector';
+
+import {
+  CLI_FEEDBACK_CATEGORIES,
+  CLI_FEEDBACK_MAX_LENGTH,
+  CLI_FEEDBACK_MIN_LENGTH,
+  type CliFeedbackCategory,
+  type CliFeedbackContextMetadata,
+  type CliFeedbackMetadata,
+  type CliFeedbackProjectMetadata,
+  type CliFeedbackRequest,
+  type CliFeedbackTelemetryMetadata,
+} from './types';
 
 const CLI_NAME = 'submit-expo-feedback';
 const FEEDBACK_TIMEOUT_MS = 15_000;
-const FEEDBACK_CATEGORIES = ['skills', 'expo-cli', 'eas-cli', 'mcp', 'docs', 'unknown'] as const;
-
-type FeedbackCategory = (typeof FEEDBACK_CATEGORIES)[number];
+const GENERATED_FEEDBACK_ID_BYTES = 6;
+const MIN_FEEDBACK_ID_LENGTH = 6;
+const MAX_FEEDBACK_ID_LENGTH = 64;
+const FEEDBACK_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+const TELEMETRY_DISABLED_MESSAGE =
+  'Feedback was not sent because telemetry is off. The user has indicated that they do not want to send feedback. Do not enable telemetry or ask the user to enable it.';
 
 type UserSession = {
   sessionSecret?: string;
-  userId?: string;
-  username?: string;
 };
 
 type PackageJson = {
@@ -30,43 +45,6 @@ type PackageJson = {
 type ConfigFilePaths = {
   staticConfigPath: string | null;
   dynamicConfigPath: string | null;
-};
-
-type FeedbackMetadata = {
-  category: FeedbackCategory;
-  subject?: string;
-  cli: {
-    name: typeof CLI_NAME;
-    version: string;
-  };
-  agentEnvironment: ReturnType<typeof getAgentEnvironment>;
-  ci?: {
-    name: string | null;
-    isPr: boolean | null;
-  };
-  device: {
-    arch: string;
-    platform: NodeJS.Platform;
-  };
-  node: {
-    version: string;
-  };
-  packageManager: string | null;
-  project: {
-    isExpoProject: boolean;
-    name?: string;
-    slug?: string;
-    sdkVersion?: string;
-    platforms?: string[];
-    expoPackageVersion?: string;
-    reactNativePackageVersion?: string;
-    expoRouterPackageVersion?: string;
-  };
-  user?: {
-    id?: string;
-    username?: string;
-    authType: 'token' | 'session';
-  };
 };
 
 export async function runExpoFeedbackAsync(): Promise<void> {
@@ -90,10 +68,13 @@ async function runAsync(): Promise<void> {
     {
       '--help': Boolean,
       '--version': Boolean,
+      '--message': String,
       '--category': String,
       '--subject': String,
+      '--resume': String,
       '-h': '--help',
       '-v': '--version',
+      '-m': '--message',
       '-c': '--category',
       '-s': '--subject',
     },
@@ -113,18 +94,42 @@ async function runAsync(): Promise<void> {
     return;
   }
 
-  const { category, feedback } = await resolveFeedbackAsync(args._, args['--category']);
+  if (isTelemetryDisabled()) {
+    console.error(TELEMETRY_DISABLED_MESSAGE);
+    return;
+  }
+
+  if (args._.length > 0 && args['--message'] === undefined) {
+    console.warn(
+      chalk.yellow(
+        'Passing feedback as a positional argument is deprecated. Use --message or -m instead.'
+      )
+    );
+  }
+
+  const { category, feedback } = await resolveFeedbackAsync(
+    args._,
+    args['--category'],
+    args['--message']
+  );
   const session = getSession();
   const metadata = await createFeedbackMetadataAsync(
     process.cwd(),
-    session,
     category,
-    args['--subject']
+    args['--subject'],
+    args['--resume']
   );
+  if (args['--resume'] !== undefined && metadata.feedbackId !== args['--resume']) {
+    console.log(
+      chalk.yellow(
+        `The provided feedback ID is invalid, so a new one was generated: ${metadata.feedbackId}`
+      )
+    );
+  }
 
   console.log(
     chalk.dim(
-      'Submitting feedback with available agent, environment, project, and Expo account metadata.'
+      'Submitting feedback with detected agent, sandbox, environment, and project metadata. Authenticated submissions are associated with your Expo account.'
     )
   );
   await sendFeedbackAsync({
@@ -134,20 +139,39 @@ async function runAsync(): Promise<void> {
   });
 
   console.log(chalk.green('Thanks for the feedback!'));
+  console.log(
+    `To continue the feedback session use:\nnpx submit-expo-feedback@latest --resume ${metadata.feedbackId} --message "<message>"`
+  );
 }
 
 export async function resolveFeedbackAsync(
   messageParts: string[],
-  categoryValue?: string
-): Promise<{ category: FeedbackCategory; feedback: string }> {
+  categoryValue?: string,
+  messageValue?: string
+): Promise<{ category: CliFeedbackCategory; feedback: string }> {
   const category = resolveFeedbackCategory(categoryValue);
-  const feedback = messageParts.join(' ').trim();
-  if (feedback) {
+  const positionalFeedback = messageParts.join(' ').trim();
+  if (messageValue !== undefined && positionalFeedback) {
+    throw new CommandError(
+      'Provide feedback with either --message or a positional argument, not both.'
+    );
+  }
+
+  if (messageValue !== undefined) {
+    const feedback = messageValue.trim();
+    validateFeedback(feedback);
     return { category, feedback };
   }
 
+  if (positionalFeedback) {
+    validateFeedback(positionalFeedback);
+    return { category, feedback: positionalFeedback };
+  }
+
   if (ciInfo.isCI || !process.stdin.isTTY) {
-    throw new CommandError('Feedback message is required in non-interactive environments.');
+    throw new CommandError(
+      'Feedback message is required in non-interactive environments. Pass it with --message or -m.'
+    );
   }
 
   const response = await prompts(
@@ -156,8 +180,13 @@ export async function resolveFeedbackAsync(
         type: categoryValue ? null : 'select',
         name: 'category',
         message: 'What is your feedback about?',
-        choices: FEEDBACK_CATEGORIES.map((value) => ({
-          title: value === 'unknown' ? 'Other / unknown' : value,
+        choices: CLI_FEEDBACK_CATEGORIES.map((value) => ({
+          title:
+            value === 'unknown'
+              ? 'Other / unknown'
+              : value === 'evals'
+                ? 'evals (a task an AI agent failed at)'
+                : value,
           value,
         })),
       },
@@ -165,7 +194,7 @@ export async function resolveFeedbackAsync(
         type: 'text',
         name: 'feedback',
         message: 'Share feedback with Expo',
-        validate: (value) => (value.trim() ? true : 'Feedback cannot be empty.'),
+        validate: (value) => getFeedbackValidationError(value.trim()) ?? true,
       },
     ],
     {
@@ -179,6 +208,7 @@ export async function resolveFeedbackAsync(
   if (!promptedFeedback) {
     throw new CommandError('Feedback message cannot be empty.');
   }
+  validateFeedback(promptedFeedback);
   return {
     category: response.category ?? category,
     feedback: promptedFeedback,
@@ -187,20 +217,30 @@ export async function resolveFeedbackAsync(
 
 export async function createFeedbackMetadataAsync(
   projectRoot: string,
-  session = getSession(),
-  category: FeedbackCategory = 'unknown',
-  subjectValue?: string
-): Promise<FeedbackMetadata> {
+  category: CliFeedbackCategory = 'unknown',
+  subjectValue?: string,
+  feedbackIdValue?: string
+): Promise<CliFeedbackMetadata> {
   const subject = normalizeSubject(subjectValue);
+  const feedbackId = resolveFeedbackId(feedbackIdValue);
+  const context: CliFeedbackContextMetadata = {
+    category,
+    feedbackId,
+    ...(subject ? { subject } : {}),
+  };
+
+  if (isTelemetryDisabled()) {
+    return context;
+  }
 
   return {
-    category,
-    ...(subject ? { subject } : {}),
+    ...context,
     cli: {
       name: CLI_NAME,
       version: getPackageVersion(),
     },
     agentEnvironment: getAgentEnvironment(),
+    sandboxEnvironment: getSandboxEnvironment(),
     ci: ciInfo.isCI
       ? {
           name: ciInfo.name ?? null,
@@ -216,43 +256,32 @@ export async function createFeedbackMetadataAsync(
     },
     packageManager: resolvePackageManager(projectRoot),
     project: getProjectMetadata(projectRoot),
-    user: await getUserMetadataAsync(session),
   };
 }
 
-function getAgentEnvironment() {
+function getAgentEnvironment(): CliFeedbackTelemetryMetadata['agentEnvironment'] {
   const result = detectAgent();
 
-  return {
-    detected: result.detected,
-    agent: result.agent,
-  };
+  return result.detected && result.agent
+    ? {
+        detected: true,
+        agent: result.agent,
+      }
+    : { detected: false };
 }
 
-export async function getUserMetadataAsync(
-  session: UserSession | null
-): Promise<FeedbackMetadata['user']> {
-  const authType = process.env.EXPO_TOKEN ? 'token' : session?.sessionSecret ? 'session' : null;
-  if (!authType) {
-    return undefined;
-  }
+function getSandboxEnvironment(): CliFeedbackTelemetryMetadata['sandboxEnvironment'] {
+  const result = detectSandbox();
 
-  const username = session?.username;
-  if (username) {
-    return {
-      id: session?.userId,
-      username,
-      authType,
-    };
-  }
-
-  return {
-    id: session?.userId,
-    authType,
-  };
+  return result.detected && result.sandbox
+    ? {
+        detected: true,
+        sandbox: result.sandbox,
+      }
+    : { detected: false };
 }
 
-export function getProjectMetadata(projectRoot: string): FeedbackMetadata['project'] {
+export function getProjectMetadata(projectRoot: string): CliFeedbackProjectMetadata {
   const pkg = getPackageJson(projectRoot);
   const paths = getConfigFilePaths(projectRoot);
 
@@ -349,23 +378,25 @@ export async function sendFeedbackAsync({
   feedback,
   metadata,
   session,
-}: {
-  feedback: string;
-  metadata: FeedbackMetadata;
+}: CliFeedbackRequest & {
   session?: UserSession | null;
 }): Promise<void> {
+  validateFeedback(feedback);
+  if (isTelemetryDisabled()) {
+    console.error(TELEMETRY_DISABLED_MESSAGE);
+    return;
+  }
+
+  const request: CliFeedbackRequest = { feedback, metadata };
   const response = await fetch(new URL('/v2/feedback/cli-send', getExpoApiBaseUrl()).toString(), {
     method: 'POST',
     signal: AbortSignal.timeout(FEEDBACK_TIMEOUT_MS),
     headers: {
-      ...getAuthHeaders(session),
       'Content-Type': 'application/json',
+      ...getAuthHeaders(session),
       'User-Agent': `${CLI_NAME}/${getPackageVersion()}`,
     },
-    body: JSON.stringify({
-      feedback,
-      metadata,
-    }),
+    body: JSON.stringify(request),
   });
 
   if (!response.ok) {
@@ -429,7 +460,9 @@ export function getExpoHomeDirectory(): string {
 }
 
 function getExpoApiBaseUrl(): string {
-  if (process.env.EXPO_STAGING) {
+  if (process.env.EXPO_LOCAL && process.env.EXPO_FEEDBACK_API_BASE_URL) {
+    return process.env.EXPO_FEEDBACK_API_BASE_URL;
+  } else if (process.env.EXPO_STAGING) {
     return 'https://staging-api.expo.dev';
   } else if (process.env.EXPO_LOCAL) {
     return 'http://127.0.0.1:3000';
@@ -440,37 +473,93 @@ function getExpoApiBaseUrl(): string {
 function printHelp(): void {
   console.log(chalk`
   {bold Usage}
-    {dim $} npx submit-expo-feedback {dim <message>}
+    {dim $} npx submit-expo-feedback {dim --message <message>}
 
   {bold Info}
     Send feedback to the Expo team. If no message is provided, you will be prompted.
+    Feedback messages must be between ${CLI_FEEDBACK_MIN_LENGTH.toLocaleString('en-US')} and ${CLI_FEEDBACK_MAX_LENGTH.toLocaleString('en-US')} characters.
+    Positional messages are temporarily supported for backwards compatibility.
 
   {bold Data collection}
-    Feedback includes available agent/session identifiers, environment details,
-    Expo project metadata, and Expo account identifiers.
+    Feedback includes detected agent, sandbox and environment
+    details, and Expo project metadata. Authenticated submissions are associated
+    with your Expo account.
+    Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to prevent feedback submission
+    and all network requests.
 
   {bold Options}
-    --category, -c <category>  Feedback category (${FEEDBACK_CATEGORIES.join(', ')})
-    --subject, -s <subject>    Specific docs URL, skill, CLI command, MCP server, or other subject
-                               the feedback is about
+    --message, -m <message>    Feedback message
+    --category, -c <category>  Feedback category (${CLI_FEEDBACK_CATEGORIES.join(', ')})
+    --subject, -s <subject>    Exact item the feedback is about, based on the category
+    --resume <feedbackId>      Continue a feedback session using its ID
     --version, -v              Version number
     --help, -h                 Usage info
+
+  {bold Subject by category}
+    | Category   | Subject                                                           |
+    | ---------- | ----------------------------------------------------------------- |
+    | skills     | Exact skill name, such as expo-router                             |
+    | docs       | Full Expo documentation URL                                       |
+    | mcp        | Exact MCP tool name used                                          |
+    | expo-cli   | Full Expo CLI command, such as npx expo install                   |
+    | eas-cli    | Full EAS CLI command, such as eas build                           |
+    | evals      | Expo package, command, or capability the task involves            |
+    | simulator  | EAS Simulator feature or workflow involved                       |
+    | unknown    | Concise Expo product, package, feature, or topic, or leave empty  |
 `);
 }
 
-function resolveFeedbackCategory(value?: string): FeedbackCategory {
+function resolveFeedbackCategory(value?: string): CliFeedbackCategory {
   const category = value?.trim().toLowerCase() || 'unknown';
-  if (FEEDBACK_CATEGORIES.includes(category as FeedbackCategory)) {
-    return category as FeedbackCategory;
+  if (CLI_FEEDBACK_CATEGORIES.includes(category as CliFeedbackCategory)) {
+    return category as CliFeedbackCategory;
   }
   throw new CommandError(
-    `Invalid feedback category "${value}". Expected one of: ${FEEDBACK_CATEGORIES.join(', ')}.`
+    `Invalid feedback category "${value}". Expected one of: ${CLI_FEEDBACK_CATEGORIES.join(', ')}.`
   );
 }
 
 function normalizeSubject(value?: string): string | undefined {
   const subject = value?.trim();
   return subject || undefined;
+}
+
+function validateFeedback(feedback: string): void {
+  const error = getFeedbackValidationError(feedback);
+  if (error) {
+    throw new CommandError(error);
+  }
+}
+
+function getFeedbackValidationError(feedback: string): string | null {
+  const trimmedFeedback = feedback.trim();
+  if (!trimmedFeedback) {
+    return 'Feedback cannot be empty.';
+  }
+  if (trimmedFeedback.length < CLI_FEEDBACK_MIN_LENGTH) {
+    return `Feedback must be at least ${CLI_FEEDBACK_MIN_LENGTH.toLocaleString('en-US')} characters.`;
+  }
+  if (feedback.length > CLI_FEEDBACK_MAX_LENGTH) {
+    return `Feedback cannot exceed ${CLI_FEEDBACK_MAX_LENGTH.toLocaleString('en-US')} characters.`;
+  }
+  return null;
+}
+
+function isTelemetryDisabled(): boolean {
+  return process.env.DO_NOT_TRACK === '1' || process.env.EXPO_NO_TELEMETRY === '1';
+}
+
+export function resolveFeedbackId(value?: string): string {
+  if (
+    value === undefined ||
+    value.length < MIN_FEEDBACK_ID_LENGTH ||
+    value.length > MAX_FEEDBACK_ID_LENGTH ||
+    !FEEDBACK_ID_PATTERN.test(value)
+  ) {
+    return randomBytes(GENERATED_FEEDBACK_ID_BYTES).toString('hex');
+  }
+
+  return value;
 }
 
 function getPackageVersion(): string {

@@ -1,0 +1,168 @@
+# @ref LLP 0009#guard-step-ordering-and-job-budgets — no model call, so no model secret and a 10-minute cap
+name: AI code review (dismiss)
+
+# Maintainer PR-comment command to hide/restore a reviewer finding on this PR:
+#   /dismiss <id> [<id> …] [-- reason]   hide finding(s); they move to a collapsed
+#   @expo-bot dismiss <id> …             "Dismissed" section and stay there on re-review
+#   /undismiss <id> [<id> …]             restore finding(s)
+#   @expo-bot undismiss <id> …
+# <id> is the short `id:` shown on each finding in the reviewer comment. This only
+# edits the reviewer's comment (no review run, no model secret).
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  dismiss:
+    # PR comments starting with /dismiss, /undismiss, or the @expo-bot forms.
+    # PREFIX matching, deliberately loose (see agent-commands.yml): expression
+    # literals cannot express a newline, so an exact-body match misses
+    # `@expo-bot dismiss\n<ids>` and the command dies without a trace. This
+    # gate only decides "command-shaped, from a maintainer"; the parse step
+    # owns exact shapes and replies to the thread when it rejects a shape
+    # nothing else owns.
+    if: >-
+      github.event.issue.pull_request != null &&
+      github.event.comment.user.login != 'expo-bot' &&
+      (startsWith(github.event.comment.body, '/dismiss') ||
+      startsWith(github.event.comment.body, '/undismiss') ||
+      startsWith(github.event.comment.body, '@expo-bot dismiss') ||
+      startsWith(github.event.comment.body, '@expo-bot undismiss')) &&
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    # Job-level, NOT workflow-level: `issue_comment` fires for EVERY comment in
+    # the repository, and a workflow-level group is claimed at run creation,
+    # before the `if:` above can skip the job. A group holds one pending run, so
+    # unrelated chatter on a PR could displace a real /dismiss waiting its turn.
+    concurrency:
+      group: ai-code-review-dismiss-${{ github.event.issue.number }}
+      cancel-in-progress: false
+    # @ref LLP 0009#guard-step-ordering-and-job-budgets [constrained-by] — no review budget to cover; capped low regardless
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      # @ref LLP 0009#workflow-security-posture [implements] — ids restricted to fingerprint alphabet; reason trimmed, newlines stripped
+      - name: Parse command
+        id: cmd
+        env:
+          # Via env (never inline ${{ }}) so an untrusted comment can't inject shell.
+          COMMENT: ${{ github.event.comment.body }}
+        run: |
+          # Reject an ill-formed command out loud (same contract as
+          # agent-commands.yml): the reply step below posts `reject` to the
+          # thread. Reasons must be single-line — they pass through
+          # GITHUB_OUTPUT.
+          fail_cmd() {
+            echo "::error::$1"
+            echo "reject=$1" >> "$GITHUB_OUTPUT"
+            exit 1
+          }
+          line=$(printf '%s' "$COMMENT" | head -n1 | tr -d '\r')
+          first=$(printf '%s' "$line" | awk '{print tolower($1)}')
+          second=$(printf '%s' "$line" | awk '{print tolower($2)}')
+          if [ "$first" = "@expo-bot" ]; then
+            case "$second" in
+              dismiss) sub=dismiss ;;
+              undismiss) sub=undismiss ;;
+              *)
+                # Prefix-matched but not this workflow's verb: a work task
+                # (`dismiss-flaky-test`) or prose (`dismissed`).
+                # agent-commands.yml owns those shapes — stay silent.
+                echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
+                ;;
+            esac
+            rest=$(printf '%s' "$line" | awk '{for (i=3;i<=NF;i++) printf "%s%s", $i, (i<NF?" ":"")}')
+          else
+            case "$first" in
+              /dismiss) sub=dismiss ;;
+              /undismiss) sub=undismiss ;;
+              *)
+                # The prefix-loose gate admits mangled slash forms
+                # (`/dismissx`). Nothing else owns them, so reply.
+                fail_cmd "\`$first\` is not a command — did you mean \`/dismiss\` or \`/undismiss\`?"
+                ;;
+            esac
+            rest=$(printf '%s' "$line" | cut -s -d' ' -f2-)
+          fi
+          # Optional reason after ' -- '.
+          reason=""
+          ids_part="$rest"
+          case "$rest" in
+            *" -- "*) ids_part="${rest%% -- *}"; reason="${rest#* -- }" ;;
+          esac
+          # ids: fingerprint alphabet + spaces only. reason: trimmed, bounded, no newlines.
+          ids=$(printf '%s' "$ids_part" | tr -cd 'a-f0-9 ' | tr -s ' ')
+          reason=$(printf '%s' "$reason" | tr -d '\r\n' | cut -c1-200)
+          if [ -z "$(printf '%s' "$ids" | tr -d ' ')" ]; then
+            # A real dismiss/undismiss command with no usable ids. This also
+            # catches ids placed on the next line — only the first line is
+            # parsed — so say where the ids must go.
+            fail_cmd "\`$sub\` needs at least one finding id, on the same line as the command — e.g. \`/$sub ab12cd\`. Each finding in the reviewer comment shows its id."
+          fi
+          {
+            echo "run=true"
+            echo "sub=$sub"
+            echo "ids=$ids"
+            echo "reason=$reason"
+          } >> "$GITHUB_OUTPUT"
+
+      # A maintainer typed a command and it did not launch — say so where it
+      # was typed (same contract as agent-commands.yml). Silent skips stay
+      # silent: those shapes belong to agent-commands.yml.
+      - name: Reply to a rejected command
+        if: always() && steps.cmd.outputs.reject != ''
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          REJECT: ${{ steps.cmd.outputs.reject }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: gh issue comment "${{ github.event.issue.number }}" -R "${{ github.repository }}" --body "⚠️ $REJECT ([run log]($RUN_URL))"
+
+      - name: Acknowledge
+        if: steps.cmd.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+        run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
+
+      # Base ref only (issue_comment runs with base-repo context). Dismiss just edits
+      # the reviewer's comment via the published CLI + gh; it needs no repo code and
+      # no model secret.
+      - name: Checkout (base ref only)
+        if: steps.cmd.outputs.run == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          # Dismiss never fetches; gh authenticates from GH_TOKEN. Keep the token
+          # out of .git/config.
+          persist-credentials: false
+
+      - name: Set up Node
+        if: steps.cmd.outputs.run == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          # No package-manager install here (runs via npx) — disable the auto cache so
+          # the post step doesn't error trying to save an empty cache.
+          package-manager-cache: false
+
+      # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — GitHub token only, no OPENAI_API_KEY or model credential
+      - name: Apply dismissal
+        if: steps.cmd.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          SUB: ${{ steps.cmd.outputs.sub }}
+          IDS: ${{ steps.cmd.outputs.ids }}
+          REASON: ${{ steps.cmd.outputs.reason }}
+          BY: ${{ github.event.comment.user.login }}
+          PR: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          ARGS=(--pr "$PR" --repo "$REPO" --by "$BY")
+          [ -n "$REASON" ] && ARGS+=(--reason "$REASON")
+          for id in $IDS; do ARGS+=("$id"); done
+          ./scripts/expo-code-review ecr "$SUB" "${ARGS[@]}"

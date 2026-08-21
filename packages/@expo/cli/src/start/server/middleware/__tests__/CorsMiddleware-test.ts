@@ -58,6 +58,42 @@ describe(createCorsMiddleware, () => {
     expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
   });
 
+  it('should allow requests from origin same as the forwarded host', () => {
+    const origin = 'https://proxy.test';
+    middleware(
+      asRequest({
+        url: 'http://localhost:8081/',
+        headers: {
+          host: 'localhost:8081',
+          origin,
+          forwarded: 'host=proxy.test;proto=https',
+        },
+      }),
+      res,
+      next
+    );
+    expect(next).toHaveBeenCalled();
+    expect(next.mock.calls[0][0]).not.toBeInstanceOf(Error);
+    // The dev server is the origin here, so it doesn't widen CORS beyond the browser's default.
+    expect(resHeaders['Access-Control-Allow-Origin']).toBeUndefined();
+  });
+
+  it('should reject requests from an origin other than the forwarded host', () => {
+    middleware(
+      asRequest({
+        url: 'http://localhost:8081/',
+        headers: {
+          host: 'localhost:8081',
+          origin: 'https://evil.test',
+          forwarded: 'host=proxy.test;proto=https',
+        },
+      }),
+      res,
+      next
+    );
+    expect(next.mock.calls[0][0]).toBeInstanceOf(Error);
+  });
+
   it('should allow CORS from devtools://devtools', () => {
     const origin = 'devtools://devtools';
     middleware(asRequest({ url: 'http://localhost:8081/', headers: { origin } }), res, next);

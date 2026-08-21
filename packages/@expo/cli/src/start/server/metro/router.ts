@@ -10,6 +10,7 @@ import { directoryExistsSync, isPathInside } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { learnMore } from '../../../utils/link';
+import type { EnvironmentMode } from '../../../utils/nodeEnv';
 import { event } from './routerEvents';
 
 /**
@@ -94,10 +95,10 @@ export function getApiRoutesForDirectory(cwd: string) {
 }
 
 /**
- * Gets the +middleware file for a given directory. In
+ * Gets the +middleware file for a given directory.
  * @param cwd
  */
-export function getMiddlewareForDirectory(cwd: string): string | null {
+export function getMiddlewareForDirectory(cwd: string, mode: EnvironmentMode): string | null {
   const files = globSync('+middleware.@(ts|tsx|js|jsx)', {
     cwd,
     absolute: true,
@@ -108,7 +109,7 @@ export function getMiddlewareForDirectory(cwd: string): string | null {
 
   if (files.length > 1) {
     // In development, throw an error if there are multiple root-level middleware files
-    if (process.env.NODE_ENV !== 'production') {
+    if (mode === 'development') {
       const relativePaths = files.map((f) => './' + path.relative(cwd, f)).sort();
       throw new Error(
         `Only one middleware file is allowed. Keep one of the conflicting files: ${relativePaths.map((p) => `"${p}"`).join(' or ')}`

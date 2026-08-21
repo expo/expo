@@ -173,7 +173,7 @@ export type AppleAuthenticationCredential = {
 
 // @needsAudit @docsMissing
 /**
- * An object representing the tokenized portions of the user's full name. Any of all of the fields
+ * An object representing the tokenized portions of the user's full name. Any or all of the fields
  * may be `null`. Only applicable fields that the user has allowed your app to access will be nonnull.
  */
 export type AppleAuthenticationFullName = {

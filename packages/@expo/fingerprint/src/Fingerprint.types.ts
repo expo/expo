@@ -408,7 +408,7 @@ export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
   ignorePathMatchObjects: Minimatch[];
 
   /**
-   * A ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
+   * An ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
    */
   ignoreDirMatchObjects: Minimatch[];
 

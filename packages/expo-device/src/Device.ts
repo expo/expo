@@ -155,7 +155,7 @@ export const osVersion: string | null = ExpoDevice ? ExpoDevice.osVersion : null
 
 /**
  * The build ID of the OS that more precisely identifies the version of the OS. On Android, this corresponds to `Build.DISPLAY` (not `Build.ID`)
- * and currently is a string as described [here](https://source.android.com/setup/start/build-numbers). On iOS, this corresponds to `kern.osversion`
+ * and currently is a string as described in [Android's build numbers documentation](https://source.android.com/setup/start/build-numbers). On iOS, this corresponds to `kern.osversion`
  * and is the detailed OS version sometimes displayed next to the more human-readable version. On web, this value is always `null`.
  *
  * @example
@@ -195,8 +195,8 @@ export const osBuildFingerprint: string | null = ExpoDevice
 
 /**
  * The Android SDK version of the software currently running on this hardware device. This value never changes while a device is booted,
- * but it may increase when the hardware manufacturer provides an OS update. See [here](https://developer.android.com/reference/android/os/Build.VERSION_CODES.html)
- * to see all possible version codes and corresponding versions. On iOS and web, this value is always `null`.
+ * but it may increase when the hardware manufacturer provides an OS update. See [`Build.VERSION_CODES`](https://developer.android.com/reference/android/os/Build.VERSION_CODES.html)
+ * for all possible version codes and corresponding versions. On iOS and web, this value is always `null`.
  *
  * @example
  * ```js

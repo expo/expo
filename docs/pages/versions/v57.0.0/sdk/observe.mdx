@@ -1,0 +1,68 @@
+---
+title: Observe
+description: A library that collects app performance metrics and user-defined events and dispatches them to EAS Observe.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-57/packages/expo-observe'
+packageName: 'expo-observe'
+platforms: ['android', 'ios', 'tvos']
+isBeta: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+> **important** **EAS Observe** is in [Open Beta](/more/release-statuses/#beta). The first 10,000 monthly active users are free. For higher usage, contact [sales@expo.dev](mailto:sales@expo.dev).
+
+`expo-observe` is a library that collects performance metrics and user-defined events from your app and dispatches them to [EAS Observe](/eas/observe/introduction/), a performance monitoring service from Expo, or to your preferred OpenTelemetry (OTEL)-compliant backend. It measures real-world startup performance, such as [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render-ttr) and [Time to Interactive (TTI)](/eas/observe/reference/metrics/#time-to-interactive-tti), from apps running in production.
+
+Beyond app startup metrics, the library can also:
+
+- Collect per-route navigation metrics with the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/) integration.
+- Log [user-defined events](/eas/observe/events/) with `Observe.logEvent`.
+- Track [EAS Update download times](/eas/observe/eas-update/) automatically.
+- Record JavaScript errors with `ObserveErrorBoundary` and `reportError`. The EAS Observe dashboard and the EAS CLI do not display these errors yet.
+- Let third-party packages [register their own integrations](/eas/observe/integrations/third-party/) with `Observe.registerIntegration`.
+
+> **warning** `expo-observe` is not available in Expo Go. To use it, create a [development build](/develop/development-builds/introduction/).
+
+## Installation
+
+<APIInstallSection />
+
+## Configuration
+
+In release builds, installing the `expo-observe` library is all that is needed to configure the library to start sending startup metrics (though you will need to follow the usage instructions below to call `markInteractive` to track TTI). The library will not dispatch events in debug builds, but you can change this and other config options such as sample rate, environment name and enabling integrations with the `Observe.configure({})` call. For all available options, see the [EAS Observe configuration guide](/eas/observe/configuration/).
+
+## Usage
+
+Wrap your root layout with `ObserveRoot` to measure Time to First Render automatically. Then, call `markInteractive` when your app is ready for user interaction to record Time to Interactive:
+
+```tsx src/app/_layout.tsx
+import { ObserveRoot, useObserve } from 'expo-observe';
+import { Stack } from 'expo-router';
+import { useEffect } from 'react';
+
+function RootLayout() {
+  const { markInteractive } = useObserve();
+
+  useEffect(() => {
+    // Replace this effect with your own readiness signal: only call
+    // markInteractive() after initialization work behind the splash screen
+    // (such as loading initial data) completes.
+    markInteractive();
+  }, [markInteractive]);
+
+  return <Stack />;
+}
+
+export default ObserveRoot.wrap(RootLayout);
+```
+
+For step-by-step instructions, including a complete splash screen example and how to handle apps with multiple entry screens, see the [EAS Observe Get started guide](/eas/observe/get-started/). To send custom events from your app, see [User-defined events](/eas/observe/events/).
+
+## API
+
+```ts
+import { Observe, ObserveRoot, useObserve } from 'expo-observe';
+```
+
+<APISection packageName="expo-observe" apiName="Observe" />

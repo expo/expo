@@ -1,10 +1,13 @@
 'use strict';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import { File, Directory, Paths, FileMode } from 'expo-file-system';
+import { File, Directory, Paths, FileMode, type FileDigestAlgorithm } from 'expo-file-system';
 import * as FS from 'expo-file-system/legacy';
 import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
+
+import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'FileSystem';
 const shouldSkipTestsRequiringPermissions = true;
@@ -13,7 +16,7 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function test({ describe, expect, it, ...t }) {
+export async function test({ describe, expect, it, ...t }: JasmineInterface) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   const testDirectory = FS.documentDirectory + 'tests/';
@@ -52,7 +55,7 @@ export async function test({ describe, expect, it, ...t }) {
     }
 
     describeWithPermissions('picker operations', () => {
-      let originalTimeout;
+      let originalTimeout: number;
       t.beforeAll(async () => {
         originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
         t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
@@ -212,12 +215,16 @@ export async function test({ describe, expect, it, ...t }) {
       });
     });
 
-    it('Allows reading files from assets', () => {
+    it('Allows reading files from assets', async () => {
       const dir = new Directory(Paths.bundle);
 
       if (Platform.OS === 'ios') {
         expect(dir.list().map((i) => i.name)).toContain('Info.plist');
         expect(new File(Paths.bundle, 'Info.plist').size > 2000).toBe(true);
+
+        const privacyManifest = new File(Paths.bundle, 'PrivacyInfo.xcprivacy');
+        expect(await privacyManifest.text()).toContain('<key>NSPrivacyAccessedAPITypes</key>');
+        expect((await privacyManifest.bytes()).length).toBeGreaterThan(100);
       } else {
         expect(dir.list().map((i) => i.name)).toContain('expo-root.pem');
         expect(new File(Paths.bundle, 'expo-root.pem').size > 1000).toBe(true);
@@ -225,7 +232,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     describe('watching files and directories', () => {
-      let originalTimeout;
+      let originalTimeout: number;
 
       t.beforeAll(() => {
         originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -789,7 +796,7 @@ export async function test({ describe, expect, it, ...t }) {
         expect(src.exists).toBe(true);
       });
 
-      it('Can copy from cache to documents', () => {
+      it('Can copy from cache to documents', async () => {
         const src = new File(Paths.cache, 'file.txt');
         const dst = new File(Paths.document, 'file.txt');
         // cleanup
@@ -803,7 +810,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.copySync(dst);
         expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
         expect(dst.exists).toBe(true);
-        expect(dst.md5).toBe(src.md5);
+        expect(await dst.digest('MD5')).toBe(await src.digest('MD5'));
       });
 
       it('throws when destination file exists and overwrite is not set', () => {
@@ -1004,14 +1011,14 @@ export async function test({ describe, expect, it, ...t }) {
         expect(() => file.rename('shouldNotWork.txt')).toThrow();
       });
 
-      it('renames a file and preserves file metadata', () => {
+      it('renames a file and preserves file metadata', async () => {
         const file = new File(testDirectory, 'metadata.txt');
         file.writeSync('Content');
         const originalSize = file.size;
-        const originalMd5 = file.md5;
+        const originalMd5 = await file.digest('MD5');
         file.rename('metadataRenamed.txt');
         expect(file.size).toBe(originalSize);
-        expect(file.md5).toBe(originalMd5);
+        expect(await file.digest('MD5')).toBe(originalMd5);
       });
 
       it('throws an error when renaming to an empty string', () => {
@@ -1574,13 +1581,13 @@ export async function test({ describe, expect, it, ...t }) {
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory, 'image.jpeg');
         file.create();
-        let error;
+        let error: unknown;
         try {
           await File.downloadFileAsync(url, file);
         } catch (e) {
           error = e;
         }
-        expect(error.message.includes('Destination already exists')).toBe(true);
+        expect((error as Error).message.includes('Destination already exists')).toBe(true);
       });
 
       it('downloads file when headers are set', async () => {
@@ -1597,7 +1604,7 @@ export async function test({ describe, expect, it, ...t }) {
         const response = await fetch(url);
         const src = new File(testDirectory, 'file.pdf');
         src.writeSync(await response.bytes());
-        expect(src.md5).toEqual(md5);
+        expect(await src.digest('MD5')).toEqual(md5);
       });
 
       it('reports download progress via onProgress callback', async () => {
@@ -1802,7 +1809,7 @@ export async function test({ describe, expect, it, ...t }) {
         file.writeSync('Hello world');
         expect(file.creationTime).not.toBeNull();
         expect(file.modificationTime).not.toBeNull();
-        expect(file.creationTime).toBeLessThanOrEqual(file.modificationTime);
+        expect(file.creationTime).toBeLessThanOrEqual(file.modificationTime!);
       });
 
       it('computes md5', async () => {
@@ -1811,9 +1818,66 @@ export async function test({ describe, expect, it, ...t }) {
         expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
       });
 
-      it('returns null size and md5 for nonexistent files', async () => {
+      it('computes digest asynchronously', async () => {
+        const file = new File(testDirectory, 'digest.txt');
+        file.writeSync('Hello world');
+        const expectedDigests: [FileDigestAlgorithm, string][] = [
+          ['MD5', '3e25960a79dbc69b674cd4ec67a72c62'],
+          ['SHA-1', '7b502c3a1f48c8609ae212cdfb639dee39673f5e'],
+          ['SHA-256', '64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c'],
+          [
+            'SHA-384',
+            '9203b0c4439fd1e6ae5878866337b7c532acd6d9260150c80318e8ab8c27ce330189f8df94fb890df1d298ff360627e1',
+          ],
+          [
+            'SHA-512',
+            'b7f783baed8297f0db917462184ff4f08e69c2d5e5f79a942600f9725f58ce1f29c18139bf80b06c0fff2bdd34738452ecf40c488c22a7e3d80cdf6f9c1c0d47',
+          ],
+        ];
+        for (const [algorithm, expected] of expectedDigests) {
+          expect(await file.digest(algorithm)).toBe(expected);
+        }
+      });
+
+      it('computes digest across multiple chunks', async () => {
+        const bufferSize = 65536; // Update this if the bufferSize in FileSystemFile.swift/.kt are changed
+        const file = new File(testDirectory, 'chunked-digest.txt');
+        file.writeSync('a'.repeat(bufferSize + 10));
+
+        expect(await file.digest('MD5')).toBe('dddb00524349012a468de4f34fd7bad3');
+        expect(await file.digest('SHA-256')).toBe(
+          '60a6f1743f9405aa728afbe26ac3b294914341e6aa867f4542c5c116cb816a4f'
+        );
+      });
+
+      it('rejects digest for a nonexistent file', async () => {
+        const file = new File(testDirectory, 'missing-digest.txt');
+        let error: Error | null = null;
+        try {
+          await file.digest('MD5');
+        } catch (caughtError) {
+          error = caughtError as Error;
+        }
+        expect(error).not.toBeNull();
+      });
+
+      it('rejects digest when the path points to a directory', async () => {
+        const directoryUri = `${testDirectory}digest-directory`;
+        const directory = new Directory(directoryUri);
+        directory.create();
+        const file = new File(directoryUri);
+        let error: Error | null = null;
+        try {
+          await file.digest('MD5');
+        } catch (caughtError) {
+          error = caughtError as Error;
+        }
+        expect(error).not.toBeNull();
+      });
+
+      it('returns zero size and null md5 for nonexistent files', async () => {
         const file = new File(testDirectory, 'file2.txt');
-        expect(file.size).toBe(null);
+        expect(file.size).toBe(0);
         expect(file.md5).toBe(null);
       });
     });
@@ -1923,11 +1987,11 @@ export async function test({ describe, expect, it, ...t }) {
     describe('Exposes common app directories', () => {
       it('exposes cache directory', () => {
         expect(Paths.cache instanceof Directory).toBe(true);
-        expect(Paths.cache.uri).toBe(FS.cacheDirectory);
+        expect(Paths.cache.uri).toBe(FS.cacheDirectory!);
       });
       it('exposes document directory', () => {
         expect(Paths.document instanceof Directory).toBe(true);
-        expect(Paths.document.uri).toBe(FS.documentDirectory);
+        expect(Paths.document.uri).toBe(FS.documentDirectory!);
       });
       it('can be easily used with joining paths', () => {
         const file = new File(Paths.document, 'file.txt');
@@ -2235,11 +2299,11 @@ export async function test({ describe, expect, it, ...t }) {
       expect((await reader.read(array1)).done).toBe(false);
       const result = await reader.read(array2);
       expect(result.done).toBe(false);
-      expect(result.value[4999]).toBe(alphabet.charCodeAt(9999));
+      expect(result.value?.[4999]).toBe(alphabet.charCodeAt(9999));
 
       const result2 = await reader.read(array3);
       expect(result2.done).toBe(true);
-      expect(result2.value.length).toBe(0);
+      expect(result2.value?.length).toBe(0);
     });
 
     it('Provides a WriteableStream', async () => {
@@ -2255,7 +2319,7 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Returns correct file type', async () => {
       const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
-      const src = new File(asset.localUri);
+      const src = new File(requireNotNull(asset.localUri));
       expect(src.type).toBe('image/jpeg');
       const src2 = new File(testDirectory, 'file.txt');
       src2.writeSync('abcde');
@@ -2317,7 +2381,7 @@ export async function test({ describe, expect, it, ...t }) {
   addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
 }
 
-function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
+function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }: JasmineInterface) {
   const firstContainer = Object.values(Paths.appleSharedContainers)?.[0];
   const sharedContainerTestDir = firstContainer ? firstContainer.uri + 'test/' : null;
   const scopedIt = sharedContainerTestDir ? it : t.xit;
@@ -2336,14 +2400,16 @@ function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
     });
 
     scopedIt('Writes a string to a file reference', () => {
-      const outputFile = new File(sharedContainerTestDir, 'file.txt');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const outputFile = new File(containerDir, 'file.txt');
       expect(outputFile.exists).toBe(false);
       outputFile.writeSync('Hello world');
       expect(outputFile.exists).toBe(true);
     });
 
     scopedIt('Deletes a file reference', () => {
-      const outputFile = new File(sharedContainerTestDir, 'file3.txt');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const outputFile = new File(containerDir, 'file3.txt');
       outputFile.writeSync('Hello world');
       expect(outputFile.exists).toBe(true);
 
@@ -2352,13 +2418,15 @@ function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
     });
 
     scopedIt('Creates a folder', () => {
-      const folder = new Directory(sharedContainerTestDir, 'newFolder');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const folder = new Directory(containerDir, 'newFolder');
       folder.create();
       expect(folder.exists).toBe(true);
     });
 
     scopedIt('Deletes a folder', () => {
-      const folder = new Directory(sharedContainerTestDir, 'newFolder');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const folder = new Directory(containerDir, 'newFolder');
       folder.create();
       expect(folder.exists).toBe(true);
 

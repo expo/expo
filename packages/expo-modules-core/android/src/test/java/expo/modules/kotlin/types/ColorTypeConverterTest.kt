@@ -9,7 +9,6 @@ import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
 import expo.modules.assertThrows
-import expo.modules.kotlin.AppContext
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
@@ -20,8 +19,9 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [24, 30])
 internal class ColorTypeConverterTest {
-  private val appContext = mockk<AppContext> {
-    every { reactContext } returns ApplicationProvider.getApplicationContext<Application>()
+  private val androidContext = ApplicationProvider.getApplicationContext<Application>()
+  private val converterContext = mockk<ConverterContext> {
+    every { applicationContext } returns androidContext
   }
 
   @Test
@@ -115,7 +115,7 @@ internal class ColorTypeConverterTest {
   fun `converts from Android PlatformColor color`() {
     val platformColor = DynamicFromObject(platformColor("@android:color/white"))
 
-    val color = convert<Color>(platformColor, appContext)
+    val color = convert<Color>(platformColor, converterContext)
 
     Truth.assertThat(ColorCompat.toArgb(color)).isEqualTo(Color.WHITE)
   }
@@ -124,9 +124,9 @@ internal class ColorTypeConverterTest {
   fun `converts from Android PlatformColor attr`() {
     val platformColor = DynamicFromObject(platformColor("?android:attr/textColorPrimary"))
 
-    val color = convert<Color>(platformColor, appContext)
+    val color = convert<Color>(platformColor, converterContext)
     val expectedColor = TypedValue().let {
-      appContext.reactContext?.theme?.resolveAttribute(android.R.attr.textColorPrimary, it, true)
+      converterContext.applicationContext.theme.resolveAttribute(android.R.attr.textColorPrimary, it, true)
       it.data
     }
 

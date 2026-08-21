@@ -6,6 +6,7 @@ import { loadUserConfig } from '@expo/metro-config';
 import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
 import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import type { Reporter } from '@expo/metro/metro';
+import getMaxWorkers from '@expo/metro/metro-config/defaults/getMaxWorkers';
 import { Terminal } from '@expo/metro/metro-core';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
@@ -61,6 +62,7 @@ declare module '2g' {
       host: string | null;
       port: number | null;
     };
+    'metro:prewarm': { workers: number };
   }
 }
 
@@ -255,6 +257,12 @@ export async function loadMetroConfigAsync(
       },
     },
   };
+
+  // TODO(@kitten): Add type once we stabilise this
+  const enableNativeTransformWorker: boolean = !!(exp.experiments as any)
+    ?.noxcturnalTransformWorker;
+  asWritable(config.transformer as any).unstable_noxcturnalTransformWorker =
+    enableNativeTransformWorker;
 
   // On-Demand Filesystem is enabled by default
   // TODO(@kitten): Add to config-types JSON schema
@@ -528,6 +536,11 @@ export async function instantiateMetroAsync(
   patchTransformFileForPackedMaps(metro.getBundler().getBundler());
   patchMetroSourceMapStringForPackedMaps();
 
+  // Warm the transform worker pool during the idle window before the first bundle request
+  if (!isExporting) {
+    prewarmTransformPool(metro.getBundler().getBundler(), metroConfig.maxWorkers);
+  }
+
   setEventReporter(eventsSocket.reportMetroEvent);
 
   // This function ensures that modules in source maps are sorted in the same
@@ -643,6 +656,45 @@ export async function instantiateMetroAsync(
   };
 }
 
+export async function prewarmTransformPool(
+  bundler: Bundler,
+  maxWorkers: number | undefined
+): Promise<void> {
+  const workers = getMaxWorkers(maxWorkers);
+  if (workers <= 1) {
+    return;
+  }
+
+  const warmOptions: TransformOptions = {
+    customTransformOptions: {
+      prewarm: '1',
+      bytecode: '1',
+      engine: 'hermes',
+    },
+    dev: true,
+    experimentalImportSupport: true,
+    inlinePlatform: true,
+    inlineRequires: false,
+    minify: false,
+    platform: 'ios',
+    type: 'module',
+    unstable_transformProfile: 'hermes-stable',
+  };
+
+  const done = event.span();
+  const defaultSource = Buffer.from('export const a = 1; export function b(x) { return x + a; }');
+  await Promise.allSettled(
+    Array.from({ length: workers }, (_, i) =>
+      // Defer each invocation so synchronous transform errors are settled as well. Prewarming is
+      // opportunistic and must never prevent the dev server from starting.
+      Promise.resolve().then(() =>
+        bundler.transformFile(`/__prewarm__/${i}.js`, warmOptions, defaultSource)
+      )
+    )
+  );
+  done('prewarm', { workers });
+}
+
 // TODO: Fork the entire transform function so we can simply regex the file contents for keywords instead.
 function pruneCustomTransformOptions(
   projectRoot: string,
@@ -698,7 +750,7 @@ function pruneCustomTransformOptions(
 }
 
 /**
- * Simplify and communicate if Metro is running without watching file updates,.
+ * Simplify and communicate if Metro is running without watching file updates.
  * Exposed for testing.
  */
 export function isWatchEnabled() {

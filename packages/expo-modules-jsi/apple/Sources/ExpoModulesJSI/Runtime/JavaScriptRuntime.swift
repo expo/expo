@@ -193,7 +193,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     }
 
     func setter(
-      context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>, valuePointer: UnsafeMutableRawPointer
+      context: UnsafeMutableRawPointer,
+      propertyName: UnsafePointer<CChar>,
+      valuePointer: UnsafeMutableRawPointer
     ) {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
 
@@ -255,7 +257,12 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     // Pass a null setter to C++ when the Swift setter is nil so that JS assignment
     // raises a `jsi::JSError` directly, without crossing the Swift boundary.
     let callbacks = expo.HostObjectCallbacks(
-      context, getter, set == nil ? nil : setterPointer, propertyNamesGetter, deallocate)
+      context,
+      getter,
+      set == nil ? nil : setterPointer,
+      propertyNamesGetter,
+      deallocate
+    )
     let hostObject = expo.HostObject.makeObject(pointee, consume callbacks)
 
     return JavaScriptObject(self, hostObject)
@@ -300,7 +307,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// Creates a class with the given name and native constructor.
   @JavaScriptActor
   public func createClass(
-    name: String, inheriting baseClass: consuming JavaScriptFunction? = nil,
+    name: String,
+    inheriting baseClass: consuming JavaScriptFunction? = nil,
     _ constructor: @escaping SyncFunctionClosure
   ) throws -> JavaScriptFunction {
     // Host functions are not standard functions, thus cannot be used as class constructors.
@@ -314,7 +322,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 
     let klassValue = try eval(
       label: "\(name).\(nativeConstructorKey)",
-      "(function \(name)(...args) { return this.\(nativeConstructorKey)(...args); })")
+      "(function \(name)(...args) { return this.\(nativeConstructorKey)(...args); })"
+    )
     let klassObject = klassValue.getObject()
 
     // Create a host function that is called by the constructor
@@ -384,7 +393,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   @_disfavoredOverload
   @JavaScriptActor
   public func createFunction(
-    _ name: String, _ function: sending @escaping UnownedThisSyncFunctionClosure
+    _ name: String,
+    _ function: sending @escaping UnownedThisSyncFunctionClosure
   ) -> JavaScriptFunction {
     let closure = createFunctionClosure(runtime: self, name: name, function)
     let hostFunction = expo.createHostFunction(pointee, name, closure)
@@ -598,6 +608,19 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     }
   }
 
+  /// Runs a closure synchronously when already on the JavaScript thread, or schedules it
+  /// asynchronously otherwise. Unlike ``schedule(priority:_:)``, this can reenter the caller.
+  public func runOrSchedule(
+    priority: SchedulerPriority = .normal,
+    @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> Void
+  ) {
+    if isOnJavaScriptThread() {
+      JavaScriptActor.assumeIsolated(closure)
+    } else {
+      schedule(priority: priority, closure)
+    }
+  }
+
   /// Checks whether the function is called on the JavaScript thread.
   @inline(__always)
   public final func isOnJavaScriptThread() -> Bool {
@@ -661,6 +684,22 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   public func evalAsync(label: String? = nil, _ source: String) async throws -> JavaScriptValue {
     let result = try eval(label: label, source)
     return result.is("Promise") ? try await result.getPromise().await() : result
+  }
+
+  // MARK: - Garbage collection
+
+  /// Requests a full, synchronous garbage collection of the JavaScript heap.
+  ///
+  /// Intended for tests and memory diagnostics. The engine collects on its own, so calling this in
+  /// production code usually costs more than it saves.
+  ///
+  /// - Note: This is a no-op on engines whose runtime doesn't implement GC instrumentation. JSI's
+  ///   default implementation does nothing; Hermes overrides it with a real collection.
+  /// - Parameter cause: Reason for the collection, as the engine should report it in its logs.
+  ///   Defaults to the calling function's name.
+  @JavaScriptActor
+  public func collectGarbage(cause: String = #function) {
+    expo.collectGarbage(pointee, std.string(cause))
   }
 
   // MARK: - Equatable
@@ -744,13 +783,17 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
 }
 
 private func createFunctionClosure(
-  runtime: JavaScriptRuntime, name: String? = nil, _ closure: @escaping JavaScriptRuntime.SyncFunctionClosure
+  runtime: JavaScriptRuntime,
+  name: String? = nil,
+  _ closure: @escaping JavaScriptRuntime.SyncFunctionClosure
 ) -> expo.HostFunctionClosure {
   let context = Unmanaged.passRetained(HostFunctionContext(runtime: runtime, name: name, closure)).toOpaque()
 
   func call(
-    context: UnsafeMutableRawPointer, thisPtr: UnsafePointer<facebook.jsi.Value>,
-    argumentsPtr: UnsafePointer<facebook.jsi.Value>, argumentsCount: Int
+    context: UnsafeMutableRawPointer,
+    thisPtr: UnsafePointer<facebook.jsi.Value>,
+    argumentsPtr: UnsafePointer<facebook.jsi.Value>,
+    argumentsCount: Int
   ) -> facebook.jsi.Value {
     let context = Unmanaged<HostFunctionContext>.fromOpaque(context).takeUnretainedValue()
 
@@ -788,14 +831,17 @@ private func createFunctionClosure(
 }
 
 private func createFunctionClosure(
-  runtime: JavaScriptRuntime, name: String? = nil,
+  runtime: JavaScriptRuntime,
+  name: String? = nil,
   _ closure: @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
 ) -> expo.HostFunctionClosure {
   let context = Unmanaged.passRetained(UnownedThisHostFunctionContext(runtime: runtime, name: name, closure)).toOpaque()
 
   func call(
-    context: UnsafeMutableRawPointer, thisPtr: UnsafePointer<facebook.jsi.Value>,
-    argumentsPtr: UnsafePointer<facebook.jsi.Value>, argumentsCount: Int
+    context: UnsafeMutableRawPointer,
+    thisPtr: UnsafePointer<facebook.jsi.Value>,
+    argumentsPtr: UnsafePointer<facebook.jsi.Value>,
+    argumentsCount: Int
   ) -> facebook.jsi.Value {
     let context = Unmanaged<UnownedThisHostFunctionContext>.fromOpaque(context).takeUnretainedValue()
 

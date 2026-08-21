@@ -77,7 +77,7 @@ export function setStyle(style: NavigationBarStyle) {
 
   if (resolvedStyle !== currentValues.style) {
     currentValues.style = resolvedStyle;
-    ExpoNavigationBar.setStyle(resolvedStyle);
+    ExpoNavigationBar.setStyle(resolvedStyle).catch(() => {});
   }
 }
 
@@ -86,7 +86,7 @@ function setHidden(hidden: boolean) {
 
   if (hidden !== currentValues.hidden) {
     currentValues.hidden = hidden;
-    ExpoNavigationBar.setHidden(hidden);
+    ExpoNavigationBar.setHidden(hidden).catch(() => {});
   }
 }
 
@@ -147,8 +147,8 @@ export function NavigationBar({ style, hidden }: NavigationBarProps) {
   const stackEntryRef = useRef<NavigationBarProps | null>(null);
 
   useEffect(() => {
-    // Every time a NavigationBar component is mounted, we push it's prop to a stack
-    // and always update the native navigation bar with the props from the top of then
+    // Every time a NavigationBar component is mounted, we push its prop to a stack
+    // and always update the native navigation bar with the props from the top of the
     // stack. This allows having multiple NavigationBar components and the one that is
     // added last or is deeper in the view hierarchy will have priority.
     stackEntryRef.current = pushStackEntry(stableProps);

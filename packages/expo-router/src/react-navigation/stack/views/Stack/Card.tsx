@@ -366,7 +366,7 @@ function Card({
     if (!didInitiallyAnimate.current) {
       // Animate the card in on initial mount
       // Wrap in setTimeout to ensure animation starts after
-      // rending of the screen is done. This is especially important
+      // rendering of the screen is done. This is especially important
       // in the new architecture
       // cf., https://github.com/react-navigation/react-navigation/issues/12401
       clearTimeout(timeoutRef.current);

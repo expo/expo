@@ -1,0 +1,100 @@
+---
+title: 次のステップ
+description: EAS Workflows を使いこなすための次のステップを紹介します。
+---
+
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+おめでとうございます。CI/CD チュートリアルを完了し、[EAS Workflows](/eas/workflows/introduction/) で Expo プロジェクトの完全なパイプラインを構築できました。これで、すべてのプッシュ・プルリクエスト・バージョンタグが、開発ビルドから本番リリース、web デプロイまで、それぞれ適切な自動処理を実行します。
+
+## EAS Workflows のリファレンス
+
+<BoxLink
+  title="EAS Workflows の構文リファレンス"
+  description="トリガー、ジョブ、式、条件付き実行など、ワークフローファイルの完全な構文リファレンスを確認できます。"
+  href="/eas/workflows/syntax/"
+  Icon={Dataflow03Icon}
+/>
+
+<BoxLink
+  title="事前パッケージ済みジョブ"
+  description="ビルド、アップデート、フィンガープリント、提出、デプロイ、Slack 通知など、事前パッケージ済みジョブタイプの一覧を確認できます。"
+  href="/eas/workflows/pre-packaged-jobs/"
+  Icon={Dataflow03Icon}
+/>
+
+<BoxLink
+  title="EAS の環境変数"
+  description="シークレット、設定、環境ごとの値のために、EAS Workflows で環境変数を定義して使用する方法を学べます。"
+  href="/eas/environment-variables/"
+  Icon={BookOpen02Icon}
+/>
+
+## 関連する EAS のサービス
+
+<BoxLink
+  title="EAS Build"
+  description="Android と iOS アプリのコンパイルと署名について、EAS Build のドキュメントで詳しく学べます。"
+  href="/build/introduction/"
+  Icon={BuildIcon}
+/>
+
+<BoxLink
+  title="EAS Update"
+  description="無線経由のアップデートの公開と、柔軟なロールアウト戦略について、EAS Update のドキュメントで詳しく学べます。"
+  href="/eas-update/introduction/"
+  Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="EAS Submit"
+  description="1 つの CLI コマンドでアプリバイナリを Google Play Store と Apple App Store にアップロードする方法について、EAS Submit のドキュメントで詳しく学べます。"
+  href="/deploy/submit-to-app-stores/"
+  Icon={EasSubmitIcon}
+/>
+
+<BoxLink
+  title="EAS Hosting"
+  description="Expo Router と React Native の web アプリのデプロイについて、EAS Hosting のドキュメントで詳しく学べます。"
+  href="/eas/hosting/introduction/"
+  Icon={Cloud01Icon}
+/>
+
+## 関連するガイド
+
+<BoxLink
+  title="提出の自動化"
+  description="EAS Build のたびにアプリストアへ自動的に提出できるようにする方法を、提出の自動化ガイドで確認できます。"
+  href="/build/automate-submissions/"
+  Icon={BuildIcon}
+/>
+
+<BoxLink
+  title="アプリの認証情報"
+  description="Android と iOS の本番ビルドおよび提出に必要な認証情報について、アプリの認証情報ガイドで詳しく学べます。"
+  href="/app-signing/app-credentials/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="カスタムビルド"
+  description="独自の設定やビルドステップで EAS Build を拡張する方法を、カスタムビルドのドキュメントで確認できます。"
+  href="/custom-builds/get-started/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="GitHub Actions と EAS Update"
+  description="GitHub Actions のワークフローから EAS Update でアップデートを公開する方法を、GitHub Actions のガイドで確認できます。"
+  href="/eas-update/github-actions/"
+  Icon={LayersTwo02Icon}
+/>
+
+このチュートリアルを楽しんでいただけたなら幸いです。質問やフィードバックがあれば、[Discord](https://chat.expo.dev/) でお気軽にお知らせください。感想を [X](https://x.com/expo) で共有していただくのも歓迎です。

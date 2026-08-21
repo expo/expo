@@ -15,6 +15,7 @@ import {
   type ParamListBase,
   useNavigationIndependentTree,
 } from '../react-navigation/native';
+import { getHistoryLength } from '../utils/stack';
 import { createMemoryHistory } from './createMemoryHistory';
 import { appendBaseUrl } from './getPathFromState';
 
@@ -33,8 +34,8 @@ const findMatchingState = <T extends NavigationState>(
   }
 
   // Tab and drawer will have `history` property, but stack will have history in `routes`
-  const aHistoryLength = a.history ? a.history.length : a.routes.length;
-  const bHistoryLength = b.history ? b.history.length : b.routes.length;
+  const aHistoryLength = getHistoryLength(a);
+  const bHistoryLength = getHistoryLength(b);
 
   const aRoute = a.routes[a.index]!;
   const bRoute = b.routes[b.index]!;
@@ -77,15 +78,14 @@ type Options = LinkingOptions<ParamListBase>;
 
 export function useLinking(
   ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
-  {
-    enabled = true,
-    config,
-    getStateFromPath = getStateFromPathDefault,
-    getPathFromState = getPathFromStateDefault,
-    getActionFromState = getActionFromStateDefault,
-  }: Options,
+  options: Options | undefined,
   onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
 ) {
+  const enabled = options !== undefined;
+  const config = options?.config;
+  const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
+  const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
+  const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const independent = useNavigationIndependentTree();
 
   const store = useExpoRouterStore();
@@ -99,7 +99,7 @@ export function useLinking(
       return undefined;
     }
 
-    if (enabled !== false && linkingHandlers.length) {
+    if (enabled && linkingHandlers.length) {
       console.error(
         [
           'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
@@ -113,7 +113,7 @@ export function useLinking(
 
     const handler = Symbol();
 
-    if (enabled !== false) {
+    if (enabled) {
       linkingHandlers.push(handler);
     }
 
@@ -424,10 +424,7 @@ export function useLinking(
         path !== pendingPath
       ) {
         const historyDelta =
-          (focusedState.history ? focusedState.history.length : focusedState.routes.length) -
-          (previousFocusedState.history
-            ? previousFocusedState.history.length
-            : previousFocusedState.routes.length);
+          getHistoryLength(focusedState) - getHistoryLength(previousFocusedState);
 
         if (historyDelta > 0) {
           // If history length is increased, we should pushState

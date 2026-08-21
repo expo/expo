@@ -59,11 +59,6 @@ export type LocaleDirection = 'ltr' | 'rtl';
 
 export type LinkingOptions<ParamList extends object> = {
   /**
-   * Whether deep link handling should be enabled.
-   * Defaults to true.
-   */
-  enabled?: boolean;
-  /**
    * The prefixes are stripped from the URL before parsing them.
    * Usually they are the `scheme` + `host` (e.g. `myapp://chat?user=jane`)
    *
@@ -144,7 +139,7 @@ export type LinkingOptions<ParamList extends object> = {
    */
   getInitialURL?: () => string | null | undefined | Promise<string | null | undefined>;
   /**
-   * Custom function to get subscribe to URL updates.
+   * Custom function to subscribe to URL updates.
    * Uses `Linking.addEventListener('url', callback)` by default.
    *
    * This is not supported on Web.

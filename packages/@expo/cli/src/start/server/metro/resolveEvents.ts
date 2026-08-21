@@ -12,10 +12,16 @@ declare module '2g' {
     'resolve:tsconfig_baseurl': { module: string; resolved: string };
     'resolve:tsconfig_parse_failed': { path: string; error: string };
     'resolve:resolvers_appended': { count: number; hasCustom: boolean };
-    'resolve:module': { module: string; platform: string | null; type: string };
+    'resolve:module': {
+      module: string;
+      originModulePath: string;
+      platform: string | null;
+      type: string;
+    };
     'resolve:resolver_threw': {
       name: string;
       module: string;
+      originModulePath: string;
       platform: string | null;
       env: string;
       origin: string;

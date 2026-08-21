@@ -155,7 +155,7 @@ class CachedResource {
 
   private func urlResponseSupportsByteRangeAcces(_ urlResponse: HTTPURLResponse) -> Bool {
     // The first option is the standard-correct one, but we can check for some more in case someone
-    // didn't follow the documention fully when implementing the server
+    // didn't follow the documentation fully when implementing the server
     return urlResponse.allHeaderFields["Accept-Ranges"] as? String == "bytes" ||
       urlResponse.allHeaderFields["Accept-Ranges"] as? String == "Bytes" ||
       urlResponse.allHeaderFields["accept-ranges"] as? String == "bytes" ||

@@ -67,6 +67,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Image component',
+    route: 'ui/image',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageScreen'));
+    },
+  },
+  {
     name: 'Radio Button component',
     route: 'ui/radio-button',
     options: {},

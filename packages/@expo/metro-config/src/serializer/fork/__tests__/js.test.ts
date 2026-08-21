@@ -1,5 +1,5 @@
-import { parseModule, projectRoot } from './mini-metro';
 import { wrapModule } from '../js';
+import { parseModule, projectRoot } from './mini-metro';
 
 jest.mock('fs');
 

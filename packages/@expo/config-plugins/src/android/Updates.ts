@@ -1,15 +1,5 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import { createBuildGradlePropsConfigPlugin } from './BuildProperties';
-import type { AndroidManifest } from './Manifest';
-import {
-  addMetaDataItemToMainApplication,
-  findMetaDataItem,
-  getMainApplicationOrThrow,
-  removeMetaDataItemFromMainApplication,
-} from './Manifest';
-import { buildResourceItem, type ResourceXML } from './Resources';
-import { removeStringItem, setStringItem } from './Strings';
 import type { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
 import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
 import { withPlugins } from '../plugins/withPlugins';
@@ -29,6 +19,16 @@ import {
   getUpdatesUseEmbeddedUpdate,
 } from '../utils/Updates';
 import { addWarningAndroid } from '../utils/warnings';
+import { createBuildGradlePropsConfigPlugin } from './BuildProperties';
+import type { AndroidManifest } from './Manifest';
+import {
+  addMetaDataItemToMainApplication,
+  findMetaDataItem,
+  getMainApplicationOrThrow,
+  removeMetaDataItemFromMainApplication,
+} from './Manifest';
+import { buildResourceItem, type ResourceXML } from './Resources';
+import { removeStringItem, setStringItem } from './Strings';
 
 export enum Config {
   ENABLED = 'expo.modules.updates.ENABLED',

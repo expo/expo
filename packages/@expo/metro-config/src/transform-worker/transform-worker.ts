@@ -62,6 +62,11 @@ export async function transform(
   const done = debugEvent.span();
   try {
     const result = await transformImpl(config, projectRoot, filename, data, options);
+    if (options.customTransformOptions?.prewarm === '1') {
+      for (const output of result.output) {
+        (output as ExpoJsOutput).data.skipCache = true;
+      }
+    }
     done('file', {
       file: toPosixPath(filename),
       platform: options.platform ?? null,
@@ -270,7 +275,7 @@ async function transformCss(
   // in development and a static CSS file in production.
   if (matchCssModule(filename)) {
     const results = await transformCssModuleWeb({
-      // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
+      // NOTE(cedric): use POSIX-formatted filename for consistent CSS module class names.
       // This affects the content hashes, which should be stable across platforms.
       filename: toPosixPath(filename),
       src: code,
@@ -291,6 +296,7 @@ async function transformCss(
         type: 'js/module',
         data: {
           ...jsModuleResults.output[0]!.data,
+          skipCache: !!postcssResults.hasPostcss || undefined,
 
           // Append additional css metadata for static extraction.
           css: {
@@ -372,6 +378,7 @@ async function transformCss(
       data: {
         ...(jsModuleResults.output[0] as ExpoJsOutput).data,
         css: cssOutput,
+        skipCache: !!postcssResults.hasPostcss || undefined,
       },
     },
   ];

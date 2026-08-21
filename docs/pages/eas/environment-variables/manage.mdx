@@ -50,12 +50,12 @@ In the above example list:
 
 ### Create variables with EAS CLI
 
-Use `eas env:create` to add variables and `eas env:list` to verify what is set.
+Use `eas env:set` to add variables and `eas env:list` to verify what is set.
 
 <Terminal
   cmd={[
     '# Example to create a new plain text environment variable for the preview environment',
-    '$ eas env:create --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment preview --visibility plaintext',
+    '$ eas env:set --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment preview --visibility plaintext',
     '',
     '# Example to list all environment variables for the preview environment',
     '$ eas env:list --environment preview',
@@ -163,11 +163,8 @@ You can also use EAS CLI to manage them. The following commands are provided as 
 
 <Terminal
   cmd={[
-    '# To create a new environment variable',
-    '$ eas env:create --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment production --visibility plaintext',
-    '',
-    '# To update an existing environment variable',
-    '$ eas env:update --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment production --visibility plaintext',
+    '# To create or update an environment variable',
+    '$ eas env:set --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment production --visibility plaintext',
     '',
     '# To delete an existing environment variable',
     '$ eas env:delete',
@@ -239,6 +236,6 @@ To assign an environment variable to custom environments, use your custom enviro
 
 <Terminal
   cmd={[
-    '$ eas env:create --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment staging --visibility plaintext',
+    '$ eas env:set --name EXPO_PUBLIC_API_URL --value https://example.app/staging --environment staging --visibility plaintext',
   ]}
 />

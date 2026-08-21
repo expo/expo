@@ -29,7 +29,7 @@ type Options<State extends NavigationState, Action extends NavigationAction> = {
 
 /**
  * Navigation object with helper methods to be used by a navigator.
- * This object includes methods for common actions as well as methods the parent screen's navigation object.
+ * This object includes methods for common actions as well as methods from the parent screen's navigation object.
  */
 export function useNavigationHelpers<
   State extends NavigationState,
@@ -81,7 +81,6 @@ export function useNavigationHelpers<
         return (
           router.getStateForAction(state, CommonActions.goBack() as Action, {
             routeNames: state.routeNames,
-            routeParamList: {},
             routeGetIdList: {},
           }) !== null ||
           parentNavigationHelpers?.canGoBack() ||

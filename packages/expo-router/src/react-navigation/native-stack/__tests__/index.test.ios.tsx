@@ -6,6 +6,9 @@ import { NavigationContainer } from '../../../fork/NavigationContainer';
 import { Text, useHeaderHeight } from '../../elements';
 import { createNativeStackNavigator, type NativeStackScreenProps } from '../index';
 
+// The native screens debug container mounts React Native's unrelated LogBox subscription UI.
+jest.mock('react-native/Libraries/LogBox/LogBoxNotificationContainer', () => () => null);
+
 type StackParamList = {
   A: undefined;
   B: undefined;
