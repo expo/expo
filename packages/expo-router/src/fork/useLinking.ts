@@ -86,8 +86,8 @@ export function useLinking(
 ) {
   const enabled = options !== undefined;
   const config = options?.config;
-  const getStateFromPath = (options?.getStateFromPath ??
-    getStateFromPathDefault) as typeof getExpoStateFromPath;
+  const getStateFromPath: typeof getExpoStateFromPath =
+    options?.getStateFromPath ?? ((path, options) => getStateFromPathDefault(path, options));
   const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const store = useExpoRouterStore();
