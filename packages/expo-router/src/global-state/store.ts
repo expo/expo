@@ -3,7 +3,7 @@ import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
 import * as SplashScreen from '../views/Splash';
 import { defaultRouteInfo, getRouteInfoFromState, type UrlObject } from './getRouteInfoFromState';
-import type { ReactNavigationState } from './types';
+import type { ReactNavigationState, StoreRedirects } from './types';
 
 export type RouterStore = typeof store;
 
@@ -15,6 +15,7 @@ type StoreRef = {
   linking?: ExpoLinkingOptions;
   // TODO(@ubax): dead code, remove in a follow-up. Written by useStore but never read.
   config: any;
+  redirects?: StoreRedirects[];
 };
 
 export const storeRef = {
@@ -88,5 +89,8 @@ export const store = {
   },
   get linking() {
     return storeRef.current.linking;
+  },
+  get redirects() {
+    return storeRef.current.redirects || [];
   },
 };

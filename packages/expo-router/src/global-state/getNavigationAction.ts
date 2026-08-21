@@ -6,18 +6,13 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { NavigationAction } from '../react-navigation/native';
+import type { NavigationState } from '../react-navigation/routers';
 import type { SingularOptions } from '../useScreens';
-import type { UrlObject } from './getRouteInfoFromState';
+import { getRouteInfoFromState } from './getRouteInfoFromState';
 import { resolveNavigationDestination } from './resolveNavigationDestination';
 import type { RouterRegistry } from './routerRegistry';
 import { store } from './store';
-import type { StoreContextValue } from './storeContext';
 import type { LinkToOptions } from './types';
-
-export type NavigationActionContext = Pick<
-  StoreContextValue,
-  'navigationRef' | 'linking' | 'redirects'
->;
 
 export type NavigationResolution =
   | { status: 'action'; action: NavigationAction }
@@ -27,30 +22,23 @@ export function getNavigateAction(
   baseHref: string,
   options: LinkToOptions,
   registry: RouterRegistry,
-  type: string,
+  type: string | undefined,
   withAnchor: boolean | undefined,
   singular: SingularOptions | undefined,
   isPreviewNavigation: boolean | undefined,
-  { segments, params: routeParams }: Pick<UrlObject, 'segments' | 'params'>,
-  { navigationRef, linking, redirects }: NavigationActionContext
+  navigationState: NavigationState
 ): NavigationResolution {
-  // TODO(@ubax): Check whether callers can guarantee a navigation ref.
-  const ref = navigationRef.current;
-  if (ref == null) {
-    throw new Error(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
-    );
-  }
-  if (!linking || !store.routeNode) {
+  if (!store.linking || !store.routeNode) {
     throw new Error('Attempted to link to route when no routes are present');
   }
 
+  // TODO(@ubax): make sure calling getRouteInfoFromState is performant here
   const href = applyRedirects(
-    resolveHrefStringWithSegments(baseHref, { segments, params: routeParams }, options),
-    redirects
+    resolveHrefStringWithSegments(baseHref, getRouteInfoFromState(navigationState), options),
+    store.redirects
   )!;
 
-  const state = linking.getStateFromPath!(href, linking.config, segments);
+  const state = store.linking.getStateFromPath!(href, store.linking.config);
   if (!state || state.routes.length === 0) {
     return { status: 'invalid', href };
   }
@@ -63,10 +51,10 @@ export function getNavigateAction(
     : {};
   const action = resolveNavigationDestination({
     targetState: state,
-    navigationState: ref.getRootState(),
+    navigationState,
     routeNode: store.routeNode,
     registry,
-    action: { type, payload: { singular } },
+    action: { type: type ?? 'NAVIGATE', payload: { singular } },
     withAnchor,
     internalParams,
   });

@@ -2,7 +2,6 @@ import * as React from 'react';
 import { nanoid } from 'nanoid/non-secure';
 
 import { RouterRegistryProvider } from '../../../../global-state/routerRegistry';
-import { ImperativeApiEmitter } from '../../../../imperative-api';
 import type { NavigationState, ParamListBase, PartialState } from '../../../routers';
 import type { NavigationContainerRef } from '../../types';
 import { BaseNavigationContainer as BaseNavigationContainerImpl } from '../../BaseNavigationContainer';
@@ -146,7 +145,6 @@ export function BaseNavigationContainer(props: Props) {
         ref={setRef}
         initialState={completeState(rest.initialState, rest.children)}
       />
-      <ImperativeApiEmitter navigationRef={navigationRef} />
     </RouterRegistryProvider>
   );
 }

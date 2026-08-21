@@ -3,7 +3,6 @@
 import * as React from 'react';
 
 import type { RouteNode } from '../Route';
-import type { HandleActionResult } from '../react-navigation/core/NavigationBuilderContext';
 import { deepFreeze } from '../react-navigation/core/deepFreeze';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type { InitialState, NavigationAction, NavigationState } from '../react-navigation/routers';
@@ -13,33 +12,173 @@ import {
   completeNavigationState,
   createSeededNavigationState,
 } from './createSeededNavigationState';
+import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
+import type { RoutingIntent } from './routingQueue';
 
-type PendingInternalAction = {
-  action: NavigationAction;
-  originKey?: string;
+type ReducerConfig = {
+  registry: RouterRegistry;
+  routeNode?: RouteNode;
 };
+
+type TreeOperation =
+  | RoutingIntent
+  | {
+      type: 'NAVIGATOR_UNMOUNTED';
+      stateKey: string;
+      routeNode: RouteNode;
+    };
 
 type Options = {
   initialState: InitialState | undefined;
   routeNode?: RouteNode;
   registry: RouterRegistry;
-  onUnhandledAction: (action: NavigationAction) => void;
-  onDispatchAction?: (action: NavigationAction, noop: boolean) => void;
   onStateChangeInsertion?: (state: NavigationState) => void;
 };
+
+const warnedActions = new WeakSet<NavigationAction>();
+
+function warnUnhandledAction(action: NavigationAction) {
+  if (process.env.NODE_ENV === 'production' || warnedActions.has(action)) {
+    return;
+  }
+  warnedActions.add(action);
+
+  const payload =
+    typeof action.payload === 'object' && action.payload !== null ? action.payload : undefined;
+  let message = `The action '${action.type}'${
+    payload ? ` with payload ${JSON.stringify(payload)}` : ''
+  } was not handled by any navigator.`;
+
+  switch (action.type) {
+    case 'NAVIGATE':
+    case 'PUSH':
+    case 'REPLACE':
+    case 'JUMP_TO':
+      if (payload && 'name' in payload && typeof payload.name === 'string') {
+        message += `\n\nDo you have a route named '${payload.name}'?`;
+      } else {
+        message += '\n\nYou need to pass the name of the screen to navigate to. This may be a bug.';
+      }
+      break;
+    case 'GO_BACK':
+    case 'POP':
+    case 'POP_TO_TOP':
+      message += '\n\nIs there any screen to go back to?';
+      break;
+    case 'OPEN_DRAWER':
+    case 'CLOSE_DRAWER':
+    case 'TOGGLE_DRAWER':
+      message += '\n\nIs your screen inside a Drawer navigator?';
+      break;
+  }
+
+  console.error(
+    `${message}\n\nThis is a development-only warning and won't be shown in production.`
+  );
+}
+
+function navigationTreeReducer(
+  state: NavigationState,
+  { operation, config }: { operation: TreeOperation; config: ReducerConfig }
+): NavigationState {
+  switch (operation.type) {
+    case 'NAVIGATE_TO_HREF': {
+      const { href, options } = operation.payload;
+      let resolution: ReturnType<typeof getNavigateAction>;
+      try {
+        resolution = getNavigateAction(
+          href,
+          options,
+          config.registry,
+          options.event,
+          options.withAnchor,
+          options.dangerouslySingular,
+          !!options.__internal__PreviewKey,
+          state
+        );
+      } catch (error) {
+        const message =
+          typeof error === 'object' && error != null && 'message' in error ? error.message : error;
+        console.warn(
+          `An error occurred when trying to handle navigation action ${JSON.stringify(operation)}: ${message}`
+        );
+        return state;
+      }
+      if (resolution.status === 'invalid') {
+        const invalidHref = operation.payload.originalHref ?? resolution.href;
+        console.warn(
+          `Could not generate a valid navigation state for the given path: ${invalidHref}`
+        );
+        return state;
+      }
+      return navigationTreeReducer(state, {
+        operation: { type: 'ACTION', payload: { action: resolution.action } },
+        config,
+      });
+    }
+    case 'ACTION': {
+      const tree = indexNavigationTree(state);
+      const origin = resolveOrigin(
+        tree.rootNode,
+        tree.nodes,
+        config.registry,
+        operation.payload.originKey
+      );
+      if (!origin) {
+        // TODO(@ubax): call onUnhandledAction.
+        warnUnhandledAction(operation.payload.action);
+        return state;
+      }
+
+      const result = reduceNavigationTree(state, operation.payload.action, config.registry, {
+        origin,
+        tree,
+        routeNode: config.routeNode,
+      });
+      if (!result.handled) {
+        // TODO(@ubax): call onUnhandledAction.
+        warnUnhandledAction(operation.payload.action);
+        return state;
+      }
+      if (!result.treeChanged) {
+        return state;
+      }
+
+      const nextState = config.routeNode
+        ? completeNavigationState(result.nextState, config.routeNode)
+        : result.nextState;
+      return deepFreeze(nextState);
+    }
+    case 'NAVIGATOR_ACTION':
+      throw new Error('NAVIGATOR_ACTION must be dispatched through its navigator.');
+    case 'NAVIGATOR_UNMOUNTED': {
+      if (!findStateByKey(state, operation.stateKey)) {
+        return state;
+      }
+      const replacement = createSeededNavigationState(
+        undefined,
+        operation.routeNode,
+        getChainFromStateKey(operation.stateKey)
+      );
+      const nextState = replaceNavigationState(state, operation.stateKey, replacement);
+      const completeState = config.routeNode
+        ? completeNavigationState(nextState, config.routeNode)
+        : nextState;
+      return deepFreeze(completeState);
+    }
+  }
+}
 
 export function useNavigationTreeReducer({
   initialState,
   routeNode,
   registry,
-  onUnhandledAction,
-  onDispatchAction,
   onStateChangeInsertion,
 }: Options) {
   const [state, reactDispatch] = React.useReducer(
-    (_: NavigationState, next: NavigationState) => next,
+    navigationTreeReducer,
     initialState,
     (value): NavigationState => {
       validateInitialState(value == null ? undefined : value);
@@ -52,157 +191,50 @@ export function useNavigationTreeReducer({
       return deepFreeze(value as NavigationState);
     }
   );
-  const completedState = React.useMemo(
-    () => (routeNode ? completeNavigationState(state, routeNode) : state),
-    [routeNode, state]
-  );
-  // TODO(@ubax): investigate if this is still needed and if we can find a way to remove it
-  const pendingStateRef = React.useRef<NavigationState | undefined>(undefined);
-  const pendingInternalActionsRef = React.useRef<PendingInternalAction[]>([]);
-  const isMountedRef = React.useRef(true);
+  const config = React.useMemo(() => ({ registry, routeNode }), [registry, routeNode]);
+  const stateRef = React.useRef(state);
   const previousRegistryRef = React.useRef(registry);
 
-  const getState = useLatestCallback(() => pendingStateRef.current ?? completedState);
-  const getStateForKey = useLatestCallback((key: string) => findStateByKey(getState(), key));
-  const commitState = useLatestCallback((nextState: NavigationState) => {
-    const completeState = routeNode ? completeNavigationState(nextState, routeNode) : nextState;
-    pendingStateRef.current = deepFreeze(completeState);
-    reactDispatch(pendingStateRef.current);
-  });
-  const resetState = useLatestCallback((stateKey: string, nextSlice: NavigationState) => {
-    if (!isMountedRef.current) {
-      return;
-    }
-    const currentState = getState();
-    const nextState = replaceNavigationState(currentState, stateKey, nextSlice);
-    if (nextState !== currentState) {
-      commitState(nextState);
-    }
-  });
-
-  const handleActionImpl = React.useCallback(
-    (
-      operation: NavigationAction | ((state: NavigationState) => NavigationAction),
-      originKey?: string
-    ): HandleActionResult => {
-      if (!isMountedRef.current) {
-        return { handled: false };
-      }
-      const currentState = getState();
-      const tree = indexNavigationTree(currentState);
-      const origin = resolveOrigin(tree.rootNode, tree.nodes, registry, originKey);
-      if (!origin) {
-        // This also covers synchronous actions dispatched before layout-effect registration.
-        if (typeof operation !== 'function') {
-          const targetKey = typeof operation.target === 'string' ? operation.target : undefined;
-          if (
-            isDeferredInternalAction(operation) ||
-            (originKey !== undefined && tree.nodes.has(originKey)) ||
-            (targetKey !== undefined && tree.nodes.has(targetKey) && !registry.has(targetKey))
-          ) {
-            pendingInternalActionsRef.current.push({ action: operation, originKey });
-          } else {
-            onUnhandledAction(operation);
-          }
-        }
-        return { handled: false };
-      }
-
-      const action = typeof operation === 'function' ? operation(origin.state) : operation;
-      const result = reduceNavigationTree(currentState, action, registry, {
-        origin,
-        tree,
-        routeNode,
-      });
-      if (!result.handled) {
-        onUnhandledAction(action);
-        return { handled: false };
-      }
-
-      onDispatchAction?.(action, result.handlerNoop);
-      if (result.treeChanged) {
-        const entry = registry.get(result.target.stateKey);
-        if (
-          action.type !== 'ROUTE_NAMES_CHANGED' &&
-          entry?.shouldPreventRemove?.(result.target.prevSlice, result.target.nextSlice, action)
-        ) {
-          return { handled: true, originStateKey: origin.state.key };
-        }
-        entry?.emitBeforeRemove?.(result.target.prevSlice, result.target.nextSlice, action);
-        commitState(result.nextState);
-      }
-      return { handled: true, originStateKey: result.originStateKey };
-    },
-    [commitState, getState, onDispatchAction, onUnhandledAction, registry, routeNode]
+  const processAction = React.useCallback(
+    (operation: TreeOperation) => reactDispatch({ operation, config }),
+    [config]
   );
-  const handleActionRef = React.useRef(handleActionImpl);
-  React.useInsertionEffect(() => {
-    handleActionRef.current = handleActionImpl;
-  }, [handleActionImpl]);
-  const handleAction = React.useCallback(
-    (
-      operation: NavigationAction | ((state: NavigationState) => NavigationAction),
-      originKey?: string
-    ) => handleActionRef.current(operation, originKey),
+  const process = React.useEffectEvent(processAction);
+  const processIntent = React.useCallback(
+    (intent: RoutingIntent) => processAction(intent),
+    [processAction]
+  );
+  const handleAction = useLatestCallback((action: NavigationAction, originKey?: string) =>
+    process({ type: 'ACTION', payload: { action, originKey } })
+  );
+  const getState = React.useCallback(() => stateRef.current, []);
+  const getStateForKey = React.useCallback(
+    (key: string) => findStateByKey(stateRef.current, key),
     []
   );
 
   React.useInsertionEffect(() => {
-    pendingStateRef.current = completedState;
-    onStateChangeInsertion?.(completedState);
-  }, [completedState, onStateChangeInsertion]);
-
-  useClientLayoutEffect(() => {
-    if (completedState !== state) {
-      reactDispatch(completedState);
-    }
-  }, [completedState, state]);
-
-  useClientLayoutEffect(() => {
-    if (registry.size === 0 || pendingInternalActionsRef.current.length === 0) {
-      return;
-    }
-    const pendingActions = pendingInternalActionsRef.current;
-    pendingInternalActionsRef.current = [];
-    for (const { action, originKey } of pendingActions) {
-      handleAction(action, originKey);
-    }
-  }, [handleAction, registry]);
+    stateRef.current = state;
+    onStateChangeInsertion?.(state);
+  }, [onStateChangeInsertion, state]);
 
   useClientLayoutEffect(() => {
     const previousRegistry = previousRegistryRef.current;
     previousRegistryRef.current = registry;
     for (const [stateKey, entry] of previousRegistry) {
-      if (!registry.has(stateKey) && entry.routeNode && findStateByKey(completedState, stateKey)) {
-        resetState(
-          stateKey,
-          createSeededNavigationState(undefined, entry.routeNode, getChainFromStateKey(stateKey))
-        );
+      if (!registry.has(stateKey) && entry.routeNode) {
+        process({ type: 'NAVIGATOR_UNMOUNTED', stateKey, routeNode: entry.routeNode });
       }
     }
-  }, [completedState, registry, resetState]);
-
-  React.useEffect(() => {
-    isMountedRef.current = true;
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+  }, [registry]);
 
   return {
-    state: completedState,
+    state,
     getState,
     getStateForKey,
     handleAction,
+    processIntent,
   };
-}
-
-function isDeferredInternalAction(action: NavigationAction): boolean {
-  return (
-    action.type === 'PRELOAD' ||
-    action.type === 'REMOVE_ROUTES' ||
-    action.type === 'ROUTE_NAMES_CHANGED'
-  );
 }
 
 function validateInitialState(state: InitialState | undefined): void {

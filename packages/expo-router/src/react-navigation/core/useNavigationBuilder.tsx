@@ -12,6 +12,7 @@ import {
   type RouterRegistryEntry,
   useRegisterRouter,
 } from '../../global-state/routerRegistry';
+import { routingQueue } from '../../global-state/routingQueue';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -479,13 +480,7 @@ export function useNavigationBuilder<
   });
 
   const onAction = React.useCallback(
-    (action: NavigationAction) => {
-      const result = handleAction(action, stateKeyRef.current);
-      if (result.originStateKey !== undefined) {
-        stateKeyRef.current = result.originStateKey;
-      }
-      return result.handled;
-    },
+    (action: NavigationAction) => handleAction(action, stateKeyRef.current),
     [handleAction]
   );
 
@@ -523,10 +518,17 @@ export function useNavigationBuilder<
     const committed = getState();
 
     if (!isArrayEqual(committed.routeNames, routeNames)) {
-      onAction({
-        type: 'ROUTE_NAMES_CHANGED',
-        payload: { routeNames },
-        target: committed.key,
+      // TODO(@ubax): rework the HMR logic after the global state is merged.
+      routingQueue.add({
+        type: 'ACTION',
+        payload: {
+          action: {
+            type: 'ROUTE_NAMES_CHANGED',
+            payload: { routeNames },
+            target: committed.key,
+          },
+          originKey: committed.key,
+        },
       });
     }
   });

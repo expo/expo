@@ -1,66 +1,16 @@
 import { applyRedirects } from '../../getRoutesRedirects';
-import { getStateFromPath } from '../../link/linking';
-import type { SingularOptions } from '../../useScreens';
-import {
-  getNavigateAction as getNavigateActionImplementation,
-  type NavigationActionContext,
-} from '../getNavigationAction';
-import { defaultRouteInfo } from '../getRouteInfoFromState';
-import type { UrlObject } from '../getRouteInfoFromState';
+import type { NavigationState } from '../../react-navigation/routers';
+import { getNavigateAction } from '../getNavigationAction';
 import { resolveNavigationDestination } from '../resolveNavigationDestination';
-import type { RouterRegistry } from '../routerRegistry';
 import { store } from '../store';
-import type { LinkToOptions } from '../types';
-
-function getNavigateAction(
-  baseHref: string,
-  options: LinkToOptions,
-  registry: RouterRegistry = new Map(),
-  type = 'NAVIGATE',
-  withAnchor?: boolean,
-  singular?: SingularOptions,
-  isPreviewNavigation?: boolean,
-  routeInfo: Pick<UrlObject, 'segments' | 'params'> = defaultRouteInfo
-) {
-  return getNavigateActionImplementation(
-    baseHref,
-    options,
-    registry,
-    type,
-    withAnchor,
-    singular,
-    isPreviewNavigation,
-    routeInfo,
-    {
-      // The mocked ref includes `current` at runtime but its mocked type omits it.
-      navigationRef: store.navigationRef as NavigationActionContext['navigationRef'],
-      linking: store.linking,
-      redirects: [],
-    }
-  );
-}
 
 jest.mock('../store', () => ({
   store: {
-    navigationRef: {
-      isReady: jest.fn(() => true),
-      current: {
-        getRootState: jest.fn(() => ({
-          routes: [{ key: 'home-key', name: 'home' }],
-          index: 0,
-          key: 'root-nav',
-          type: 'stack',
-          routeNames: ['home'],
-          stale: false,
-          routeKeySeq: 0,
-        })),
-      },
-    },
     routeNode: { route: 'root', children: [] },
     linking: {
+      getStateFromPath: jest.fn(() => ({ routes: [{ name: 'home' }] })),
       config: {},
     },
-    getRouteInfo: jest.fn(() => ({ pathname: '/', segments: [], params: {} })),
     redirects: [],
   },
 }));
@@ -81,22 +31,24 @@ jest.mock('../../link/href', () => ({
   resolveHrefStringWithSegments: jest.fn((href: string) => href),
 }));
 
-jest.mock('../../link/linking', () => ({
-  getStateFromPath: jest.fn(),
-}));
-
 const mockApplyRedirects = applyRedirects as jest.MockedFunction<typeof applyRedirects>;
-const mockGetStateFromPath = getStateFromPath as jest.MockedFunction<typeof getStateFromPath>;
 const mockResolveNavigationDestination = resolveNavigationDestination as jest.MockedFunction<
   typeof resolveNavigationDestination
 >;
 
+const navigationState: NavigationState = {
+  stale: false,
+  routeKeySeq: 0,
+  key: 'root-nav',
+  index: 0,
+  routeNames: ['__root'],
+  routes: [{ key: 'root-route', name: '__root' }],
+};
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockApplyRedirects.mockImplementation((href) => href);
-  // The module mock is narrower than `ExpoLinkingOptions` but supports the exercised parser.
-  (store.linking as any).getStateFromPath = mockGetStateFromPath;
-  mockGetStateFromPath.mockReturnValue({
+  (store.linking!.getStateFromPath as jest.Mock).mockReturnValue({
     routes: [{ name: 'home' }],
   });
 });
@@ -109,9 +61,18 @@ describe(getNavigateAction, () => {
       configurable: true,
     });
 
-    expect(() => getNavigateAction('/home', {}, new Map())).toThrow(
-      'Attempted to link to route when no routes are present'
-    );
+    expect(() =>
+      getNavigateAction(
+        '/home',
+        {},
+        new Map(),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        navigationState
+      )
+    ).toThrow('Attempted to link to route when no routes are present');
 
     Object.defineProperty(store, 'routeNode', {
       value: routeNode,
@@ -120,9 +81,20 @@ describe(getNavigateAction, () => {
   });
 
   it.each([null, { routes: [] }])('returns invalid for an unparseable path', (state) => {
-    mockGetStateFromPath.mockReturnValueOnce(state as any);
+    (store.linking!.getStateFromPath as jest.Mock).mockReturnValueOnce(state);
 
-    expect(getNavigateAction('/bad-path', {}, new Map())).toEqual({
+    expect(
+      getNavigateAction(
+        '/bad-path',
+        {},
+        new Map(),
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        navigationState
+      )
+    ).toEqual({
       status: 'invalid',
       href: '/bad-path',
     });
@@ -138,7 +110,8 @@ describe(getNavigateAction, () => {
       'PUSH',
       true,
       true,
-      true
+      true,
+      navigationState
     );
 
     expect(result).toEqual({
@@ -148,6 +121,7 @@ describe(getNavigateAction, () => {
     expect(mockResolveNavigationDestination).toHaveBeenCalledWith(
       expect.objectContaining({
         registry,
+        navigationState,
         action: { type: 'PUSH', payload: { singular: true } },
         withAnchor: true,
         internalParams: {
@@ -159,7 +133,7 @@ describe(getNavigateAction, () => {
   });
 
   it('passes singular through to the resolver action', () => {
-    getNavigateAction('/home', {}, new Map(), 'NAVIGATE', false, true);
+    getNavigateAction('/home', {}, new Map(), 'NAVIGATE', false, true, false, navigationState);
 
     expect(mockResolveNavigationDestination).toHaveBeenCalledWith(
       expect.objectContaining({

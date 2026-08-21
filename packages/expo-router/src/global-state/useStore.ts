@@ -89,6 +89,7 @@ export function useStore(
     routeNode,
     config,
     linking,
+    redirects,
     state,
   };
 
