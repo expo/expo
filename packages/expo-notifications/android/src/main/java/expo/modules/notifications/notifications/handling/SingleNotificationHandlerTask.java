@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 
+import java.io.Serializable;
+
 import expo.modules.kotlin.Promise;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.notifications.notifications.NotificationSerializer;
@@ -98,7 +100,8 @@ public class SingleNotificationHandlerTask {
             if (resultCode == NotificationsService.SUCCESS_CODE) {
               promise.resolve();
             } else {
-              Exception e = (Exception) resultData.getSerializable(NotificationsService.EXCEPTION_KEY);
+              Serializable serialized = resultData == null ? null : resultData.getSerializable(NotificationsService.EXCEPTION_KEY);
+              Exception e = serialized instanceof Exception ? (Exception) serialized : null;
               promise.reject("ERR_NOTIFICATION_PRESENTATION_FAILED", "Notification presentation failed.", e);
             }
           }

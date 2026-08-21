@@ -55,7 +55,7 @@ open class NotificationScheduler : Module() {
               promise.resolve(serializeScheduledNotificationRequests(requests))
             }
           } else {
-            val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as Exception
+            val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
             promise.reject("ERR_NOTIFICATIONS_FAILED_TO_FETCH", "Failed to fetch scheduled notifications.", e)
           }
         }
