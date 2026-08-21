@@ -13,7 +13,6 @@ import {
   type PartialState,
   type Route,
 } from '../routers';
-import { DeprecatedNavigationInChildContext } from './DeprecatedNavigationInChildContext';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
@@ -89,7 +88,6 @@ export function BaseNavigationContainer({
   onStateChange,
   onReady,
   onUnhandledAction,
-  navigationInChildEnabled = false,
   theme,
   children,
 }: NavigationContainerProps & { ref?: React.Ref<NavigationContainerRef<ParamListBase>> }) {
@@ -414,11 +412,9 @@ export function BaseNavigationContainer({
         <NavigationBuilderContext.Provider value={builderContext}>
           <NavigationStateContext.Provider value={context}>
             <UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
-              <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
-                <EnsureSingleNavigator>
-                  <ThemeProvider value={theme}>{children}</ThemeProvider>
-                </EnsureSingleNavigator>
-              </DeprecatedNavigationInChildContext.Provider>
+              <EnsureSingleNavigator>
+                <ThemeProvider value={theme}>{children}</ThemeProvider>
+              </EnsureSingleNavigator>
             </UnhandledActionContext.Provider>
           </NavigationStateContext.Provider>
         </NavigationBuilderContext.Provider>

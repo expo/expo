@@ -1,4 +1,4 @@
-import { expect, jest, test } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 
 import {
   CommonActions,
@@ -11,6 +11,71 @@ import {
 import { createInitialState } from '../../core/createInitialState';
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
+
+describe('state without router type', () => {
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: { bar: ({ params }) => params?.id },
+  };
+  const createState = (index = 1): StackNavigationState<ParamListBase> => ({
+    stale: false,
+    key: 'root',
+    index,
+    routeNames: options.routeNames,
+    routes: [
+      { key: 'bar', name: 'bar', params: { id: 'one' } },
+      { key: 'baz', name: 'baz' },
+    ],
+  });
+
+  test.each([
+    StackActions.push('bar'),
+    CommonActions.navigate('bar'),
+    CommonActions.goBack(),
+    CommonActions.preload('bar', { id: 'one' }),
+    CommonActions.preload('baz', { id: 'new' }),
+    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: options.routeNames } } as const,
+  ])('$type returns stack state', (action) => {
+    expect(StackRouter({}).getStateForAction(createState(), action, options)?.type).toBe('stack');
+  });
+
+  test('stamps stack state on route focus', () => {
+    expect(StackRouter({}).getStateForRouteFocus(createState(0), 'baz').type).toBe('stack');
+  });
+
+  test('stamps complete RESET state', () => {
+    const state = createState();
+    const result = StackRouter({}).getStateForAction(
+      state,
+      CommonActions.reset({ ...state, index: 0, routes: [state.routes[0]!] }),
+      options
+    );
+
+    expect(result?.type).toBe('stack');
+  });
+
+  test('preserves the type from complete RESET state', () => {
+    const state = createState();
+    const result = StackRouter({}).getStateForAction(
+      state,
+      CommonActions.reset({ ...state, type: 'stack' }),
+      options
+    );
+
+    expect(result?.type).toBe('stack');
+  });
+
+  test('passes partial RESET state through unchanged', () => {
+    const partialState = { routes: [{ name: 'bar' }] };
+    const result = StackRouter({}).getStateForAction(
+      createState(),
+      CommonActions.reset(partialState),
+      options
+    );
+
+    expect(result).toBe(partialState);
+  });
+});
 
 test('gets rehydrated state from partial state', () => {
   const router = StackRouter({});
@@ -265,11 +330,14 @@ test('gets state on route names change with initialRouteName', () => {
   });
 });
 
-test('returns the same stack state when route names already match', () => {
+test('returns the same complete stack state when route names already match', () => {
   const router = StackRouter({});
-  const state = createInitialState<StackNavigationState<ParamListBase>>({
-    routeNames: ['bar', 'baz'],
-  });
+  const state = {
+    ...createInitialState<StackNavigationState<ParamListBase>>({
+      routeNames: ['bar', 'baz'],
+    }),
+    type: 'stack' as const,
+  };
 
   expect(
     router.getStateForAction(
@@ -333,6 +401,7 @@ test('handles navigate action', () => {
     )
   ).toEqual({
     stale: false,
+    type: 'stack',
     key: 'root',
     index: 2,
     routeNames: ['baz', 'bar', 'qux'],
@@ -817,327 +886,6 @@ test('goes back to matching ID for navigate if pop: true', () => {
       { key: 'bar', name: 'bar' },
       { key: 'bar-a', name: 'bar', params: { foo: 'a' } },
       { key: 'bar-b', name: 'bar', params: { foo: 'b' } },
-    ],
-  });
-});
-
-test('handles navigate action (legacy)', () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated('qux', { answer: 42 }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 2,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar' },
-      {
-        key: 'qux-test',
-        name: 'qux',
-        params: { answer: 42 },
-      },
-    ],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated('baz', { answer: 42 }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 0,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [{ key: 'baz', name: 'baz', params: { answer: 42 } }],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { answer: 42 } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { answer: 96 }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 1,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar', params: { answer: 96 } },
-    ],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated('unknown'),
-      options
-    )
-  ).toBeNull();
-});
-
-test("doesn't navigate to nonexistent screen (legacy)", () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar', 'qux'],
-    routeGetIdList: {},
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated('far', { answer: 42 }),
-      options
-    )
-  ).toBeNull();
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar' },
-        ],
-      },
-      CommonActions.navigateDeprecated({
-        name: 'far',
-        params: { answer: 42 },
-      }),
-      options
-    )
-  ).toBeNull();
-});
-
-test('ensures unique ID for navigate (legacy)', () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar', 'qux'],
-    routeGetIdList: {
-      bar: ({ params }) => params?.foo,
-      qux: ({ params }) => params?.fux,
-    },
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 0,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [{ key: 'bar', name: 'bar' }],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'a' }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 1,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-    ],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'a' }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 1,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-    ],
-  });
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'bar', name: 'bar' },
-          { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'b' }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 2,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'bar', name: 'bar' },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'b' } },
-    ],
-  });
-});
-
-test('ignores legacy navigate when the matching route is preloaded', () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar'],
-    routeGetIdList: {
-      bar: ({ params }) => params?.foo,
-    },
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 0,
-        routeNames: ['baz', 'bar'],
-        routes: [
-          { key: 'baz', name: 'baz' },
-          { key: 'bar', name: 'bar', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'a' }),
-      options
-    )
-  ).toBeNull();
-});
-
-test('ensure unique ID is only per route name for navigate (legacy)', () => {
-  const router = StackRouter({});
-  const options: RouterConfigOptions = {
-    routeNames: ['baz', 'bar', 'qux'],
-    routeGetIdList: {
-      baz: ({ params }) => params?.foo,
-      bar: ({ params }) => params?.foo,
-      qux: ({ params }) => params?.test,
-    },
-  };
-
-  expect(
-    router.getStateForAction(
-      {
-        stale: false,
-        type: 'stack',
-        key: 'root',
-        index: 1,
-        routeNames: ['baz', 'bar', 'qux'],
-        routes: [
-          { key: 'qux-test', name: 'qux', params: { test: 'a' } },
-          { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-        ],
-      },
-      CommonActions.navigateDeprecated('bar', { foo: 'a' }),
-      options
-    )
-  ).toEqual({
-    stale: false,
-    type: 'stack',
-    key: 'root',
-    index: 2,
-    routeNames: ['baz', 'bar', 'qux'],
-    routes: [
-      { key: 'qux-test', name: 'qux', params: { test: 'a' } },
-      { key: 'baz-test', name: 'baz', params: { foo: 'a' } },
-      { key: 'bar-test', name: 'bar', params: { foo: 'a' } },
     ],
   });
 });

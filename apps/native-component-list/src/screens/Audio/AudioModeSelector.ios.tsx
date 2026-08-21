@@ -131,6 +131,10 @@ export default function AudioModeSelector() {
         value: 'doNotMix',
       })}
       {renderModeSelector({
+        title: 'Do not mix (persistent)',
+        value: 'doNotMixPersistent',
+      })}
+      {renderModeSelector({
         disabled: state.next.playsInSilentMode === false,
         title: 'Duck others',
         value: 'duckOthers',

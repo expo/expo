@@ -4,6 +4,7 @@ import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { createRouteFromAction } from './createRouteFromAction';
+import { ensureStateType } from './ensureStateType';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -329,15 +330,17 @@ export function TabRouter({
       const history = state.history?.filter((it) => routeKeys.includes(it.key)) ?? [];
 
       return changeIndex(
-        {
-          stale: false,
-          type: 'tab',
-          key: `tab-${nanoid()}`,
-          index,
-          routeNames,
-          history,
-          routes,
-        },
+        ensureStateType(
+          {
+            stale: false,
+            key: `tab-${nanoid()}`,
+            index,
+            routeNames,
+            history,
+            routes,
+          },
+          'tab'
+        ),
         index,
         backBehavior,
         initialRouteName
@@ -345,7 +348,10 @@ export function TabRouter({
     },
 
     getStateForRouteFocus(inputState, key) {
-      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
+      const state = ensureStateType(
+        ensureStateHistory(inputState, backBehavior, initialRouteName),
+        'tab'
+      );
       const index = state.routes.findIndex((r) => r.key === key);
 
       if (index === -1 || index === state.index) {
@@ -356,7 +362,10 @@ export function TabRouter({
     },
 
     getStateForAction(inputState, action, { routeGetIdList }) {
-      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
+      const state = ensureStateType(
+        ensureStateHistory(inputState, backBehavior, initialRouteName),
+        'tab'
+      );
 
       if (action.target && action.target !== state.key) {
         return null;
@@ -451,8 +460,7 @@ export function TabRouter({
         case 'PUSH':
         case 'REPLACE':
         case 'JUMP_TO':
-        case 'NAVIGATE':
-        case 'NAVIGATE_DEPRECATED': {
+        case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
             return null;
           }
@@ -481,11 +489,7 @@ export function TabRouter({
 
                 let params;
 
-                if (
-                  (action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED') &&
-                  action.payload.merge &&
-                  currentId === nextId
-                ) {
+                if (action.type === 'NAVIGATE' && action.payload.merge && currentId === nextId) {
                   params =
                     action.payload.params !== undefined
                       ? {
@@ -687,8 +691,18 @@ export function TabRouter({
           };
         }
 
-        default:
-          return BaseRouter.getStateForAction(state, action);
+        default: {
+          const result = BaseRouter.getStateForAction(state, action);
+
+          if (result === null || result.stale !== false) {
+            return result;
+          }
+
+          return ensureStateType(
+            ensureStateHistory(result, backBehavior, initialRouteName),
+            state.type
+          );
+        }
       }
     },
 

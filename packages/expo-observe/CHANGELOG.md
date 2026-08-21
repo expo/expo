@@ -17,6 +17,9 @@
 
 ### 💡 Others
 
+- [iOS] Dispatch pending metrics and logs in chunks of 200 and retry HTTP 413 responses with smaller batches. ([#49121](https://github.com/expo/expo/pull/49121) by [@Ubax](https://github.com/Ubax))
+- [Android] Retry a dispatch that gets HTTP 413 ([#49016](https://github.com/expo/expo/pull/49016) by [@Ubax](https://github.com/Ubax))
+- [Android] Dispatch pending metrics and logs in bounded, oldest-first chunks without replacing active background work. ([#49012](https://github.com/expo/expo/pull/49012) by [@Ubax](https://github.com/Ubax))
 - Mark the `AppMetrics` export as deprecated in favor of `Observe`. ([#48901](https://github.com/expo/expo/pull/48901) by [@kadikraman](https://github.com/kadikraman))
 
 ## 57.0.9 — 2026-07-29

@@ -43,6 +43,7 @@
     "node": ">=24"
   },
   "dependencies": {
+    "@expo/sdk-compatibility": "link:../packages/@expo/sdk-compatibility",
     "@expo/styleguide": "^14.2.1",
     "@expo/styleguide-base": "^3.1.6",
     "@expo/styleguide-cookie-consent": "^2.1.7",
