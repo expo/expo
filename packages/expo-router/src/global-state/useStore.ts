@@ -2,7 +2,7 @@
 
 import Constants from 'expo-constants';
 import type { ComponentType } from 'react';
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 
 import { extractExpoPathFromURL } from '../fork/extractPathFromURL';
@@ -119,12 +119,15 @@ export function useStore(
     };
   });
 
-  return {
-    ...store,
-    navigationRef,
-    linking,
-    initialState,
-    rootComponent,
-    redirects,
-  };
+  return useMemo(
+    () => ({
+      ...store,
+      navigationRef,
+      linking,
+      initialState,
+      rootComponent,
+      redirects,
+    }),
+    [navigationRef, linking, initialState, rootComponent, redirects]
+  );
 }

@@ -26,6 +26,7 @@ import { PreviewRouteContext } from './PreviewRouteContext';
 
 export function HrefPreview({ href }: { href: Href }) {
   const routeInfo = useRouteInfo();
+  // TODO(@ubax): Check if using more granular context would improve performance here.
   const { linking } = useExpoRouterStore();
   const hrefState = useMemo(
     () => getStateForHref(href, routeInfo, linking),
