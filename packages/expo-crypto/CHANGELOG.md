@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Respect the bounds of typed-array views in `Crypto.AES`, so sealed data passed as a `Uint8Array` that views part of a larger buffer no longer reads the wrong bytes and fails to decrypt. ([#49196](https://github.com/expo/expo/pull/49196) by [@dennytosp](https://github.com/dennytosp))
+- [Web] Reject sealed data that is too short to hold its IV and authentication tag in `AESSealedData.fromCombined()`, matching iOS and Android. ([#49196](https://github.com/expo/expo/pull/49196) by [@dennytosp](https://github.com/dennytosp))
+
 ### 💡 Others
 
 ## 57.0.1 — 2026-07-15

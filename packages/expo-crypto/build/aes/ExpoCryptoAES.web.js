@@ -1,4 +1,5 @@
 import { registerWebModule, NativeModule } from 'expo';
+import { CodedError } from 'expo-modules-core';
 import { AESKeySize } from './aes.types';
 import { base64ToUintArray, binaryInputBytes, bytesToHex, hexToUintArray, uint8ArrayToBase64, } from './web-utils';
 const DEFAULT_IV_LENGTH = 12;
@@ -48,15 +49,20 @@ class EncryptionKey {
     }
 }
 class SealedData {
-    buffer;
+    bytes;
     config;
-    constructor(buffer, config) {
-        this.buffer = buffer;
+    constructor(bytes, config) {
+        this.bytes = bytes;
         this.config = config;
     }
     static fromCombined(combined, config) {
-        const buffer = binaryInputBytes(combined).buffer;
-        return new SealedData(buffer, config ?? defaultConfig);
+        const bytes = binaryInputBytes(combined);
+        const sealedConfig = config ?? defaultConfig;
+        const minimumLength = sealedConfig.ivLength + sealedConfig.tagLength;
+        if (bytes.byteLength < minimumLength) {
+            throw new CodedError('ERR_INVALID_SEALED_DATA_CONFIG', `Sealed data is ${bytes.byteLength} bytes, which is too short to hold a ${sealedConfig.ivLength}-byte IV and a ${sealedConfig.tagLength}-byte authentication tag. Pass the whole combined output of encryptAsync, or set ivLength and tagLength in the config to match how the data was sealed.`);
+        }
+        return new SealedData(bytes, sealedConfig);
     }
     static fromParts(iv, ciphertext, tag) {
         const ciphertextBytes = binaryInputBytes(ciphertext);
@@ -74,7 +80,7 @@ class SealedData {
                 ivLength,
                 tagLength: tag,
             };
-            return new SealedData(combined.buffer, config);
+            return new SealedData(combined, config);
         }
         const tagBytes = binaryInputBytes(tag);
         const tagLength = tagBytes.byteLength;
@@ -83,7 +89,7 @@ class SealedData {
         combined.set(ivBytes);
         combined.set(ciphertextBytes, ivLength);
         combined.set(tagBytes, totalLength - tagLength);
-        return new SealedData(combined.buffer, { ivLength, tagLength });
+        return new SealedData(combined, { ivLength, tagLength });
     }
     get ivSize() {
         return this.config.ivLength;
@@ -92,22 +98,22 @@ class SealedData {
         return this.config.tagLength;
     }
     get combinedSize() {
-        return this.buffer.byteLength;
+        return this.bytes.byteLength;
     }
     async iv(encoding) {
         const useBase64 = encoding === 'base64';
-        const bytes = new Uint8Array(this.buffer, 0, this.ivSize);
+        const bytes = this.bytes.subarray(0, this.ivSize);
         return useBase64 ? uint8ArrayToBase64(bytes) : bytes;
     }
     async tag(encoding) {
         const useBase64 = encoding === 'base64';
         const offset = this.combinedSize - this.tagSize;
-        const bytes = new Uint8Array(this.buffer, offset, this.tagSize);
+        const bytes = this.bytes.subarray(offset, offset + this.tagSize);
         return useBase64 ? uint8ArrayToBase64(bytes) : bytes;
     }
     async combined(encoding) {
         const useBase64 = encoding === 'base64';
-        const bytes = new Uint8Array(this.buffer);
+        const bytes = this.bytes.subarray();
         return useBase64 ? uint8ArrayToBase64(bytes) : bytes;
     }
     async ciphertext(options) {
@@ -117,7 +123,7 @@ class SealedData {
         const ciphertextLength = includeTag
             ? taggedCiphertextLength
             : taggedCiphertextLength - this.tagSize;
-        const bytes = new Uint8Array(this.buffer, this.ivSize, ciphertextLength);
+        const bytes = this.bytes.subarray(this.ivSize, this.ivSize + ciphertextLength);
         return useBase64 ? uint8ArrayToBase64(bytes) : bytes;
     }
 }
