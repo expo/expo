@@ -867,10 +867,32 @@ function createRuntimeChunk(
 
 function makeChunkByPathLookupMap(chunks: Set<Chunk>): Map<string, Chunk> {
   const chunkByPath = new Map<string, Chunk>();
+  // First, we populate chunks with entry module paths
   for (const chunk of chunks) {
-    for (const module of chunk.deps) {
-      if (!chunkByPath.has(module.path)) {
-        chunkByPath.set(module.path, chunk);
+    for (const entry of chunk.entries) {
+      if (!chunkByPath.has(entry.path)) {
+        chunkByPath.set(entry.path, chunk);
+      }
+    }
+  }
+  // We then populate the chunks' module paths, excluding sealed chunks...
+  for (const chunk of chunks) {
+    if (!chunk.sealed) {
+      for (const module of chunk.deps) {
+        if (!chunkByPath.has(module.path)) {
+          chunkByPath.set(module.path, chunk);
+        }
+      }
+    }
+  }
+  // ...then populate with missing paths from sealed chunks.
+  // This gives precedence for modules from unsealed chunks after entry modules
+  for (const chunk of chunks) {
+    if (chunk.sealed) {
+      for (const module of chunk.deps) {
+        if (!chunkByPath.has(module.path)) {
+          chunkByPath.set(module.path, chunk);
+        }
       }
     }
   }
