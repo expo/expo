@@ -159,6 +159,21 @@ function containsModuleSyntax(code: string): boolean {
 
 const hasStripTypeScriptTypes = typeof nodeModule.stripTypeScriptTypes === 'function';
 
+function supportsStripTypeScriptTypesTransform(): boolean {
+  const nodeVersion = process.versions.node.split('.', 1).map(Number);
+  return nodeVersion[0]! < 26;
+}
+
+function stripTypeScriptTypes(code: string): string {
+  if (!supportsStripTypeScriptTypesTransform()) {
+    return nodeModule.stripTypeScriptTypes(code);
+  }
+  return nodeModule.stripTypeScriptTypes(code, {
+    mode: 'transform',
+    sourceMap: true,
+  });
+}
+
 function evalModule(
   code: string,
   filename: string,
@@ -210,10 +225,7 @@ function evalModule(
 
     if (hasStripTypeScriptTypes && inputCode === code) {
       // This may throw its own error, but this contains a code-frame already
-      inputCode = nodeModule.stripTypeScriptTypes(code, {
-        mode: 'transform',
-        sourceMap: true,
-      });
+      inputCode = stripTypeScriptTypes(code);
       if (format.mode === 'commonjs-typescript') {
         inputCode = toCommonJS(filename, inputCode);
       }
