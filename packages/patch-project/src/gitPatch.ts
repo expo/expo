@@ -103,8 +103,14 @@ export async function isPatchAppliedAsync(
   }
 }
 
-export async function getPatchChangedLinesAsync(patchFilePath: string): Promise<number> {
-  const stdout = await runGitAsync(['apply', '--numstat', patchFilePath]);
+export async function getPatchChangedLinesAsync(
+  projectRoot: string,
+  patchFilePath: string
+): Promise<number> {
+  const pathArgs = await getPatchPathArgsAsync(projectRoot);
+  const stdout = await runGitAsync(['apply', '--numstat', ...pathArgs, patchFilePath], {
+    cwd: projectRoot,
+  });
   const lines = stdout.split(/\r?\n/);
   let changedLines = 0;
   for (const line of lines) {

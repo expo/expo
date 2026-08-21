@@ -119,25 +119,62 @@ describe(getPatchChangedLinesAsync, () => {
     const mockPatchContent = `\
 1\t1\tandroid/app/build.gradle
 1\t3\tandroid/app/src/main/java/com/helloworld/MainApplication.kt`;
+    mockedSpawnAsync.mockReset();
+    // @ts-expect-error: `git rev-parse --show-prefix` reports no prefix
+    mockedSpawnAsync.mockResolvedValueOnce({ stdout: '', stderr: '' });
     // @ts-expect-error
     mockedSpawnAsync.mockResolvedValueOnce({ stdout: mockPatchContent, stderr: '' });
-    const changedLines = await getPatchChangedLinesAsync('/app/test.patch');
+    const changedLines = await getPatchChangedLinesAsync('/app', '/app/test.patch');
     expect(changedLines).toBe(6);
   });
 
   it('should support movement semantic', async () => {
     const mockPatchContent = `0\t0\tbabel.config.js => babel.config.cjs`;
+    mockedSpawnAsync.mockReset();
+    // @ts-expect-error: `git rev-parse --show-prefix` reports no prefix
+    mockedSpawnAsync.mockResolvedValueOnce({ stdout: '', stderr: '' });
     // @ts-expect-error
     mockedSpawnAsync.mockResolvedValueOnce({ stdout: mockPatchContent, stderr: '' });
-    const changedLines = await getPatchChangedLinesAsync('/app/test.patch');
+    const changedLines = await getPatchChangedLinesAsync('/app', '/app/test.patch');
     expect(changedLines).toBe(0);
+  });
+
+  it('should count changed lines from the project directory inside a monorepo', async () => {
+    mockedSpawnAsync.mockReset();
+    // @ts-expect-error: `git rev-parse --show-prefix` reports the nested project path
+    mockedSpawnAsync.mockResolvedValueOnce({ stdout: 'apps/mobile/', stderr: '' });
+    // @ts-expect-error
+    mockedSpawnAsync.mockResolvedValueOnce({
+      stdout: '1\t0\tapps/mobile/ios/mobile/Info.plist',
+      stderr: '',
+    });
+
+    const changedLines = await getPatchChangedLinesAsync(
+      '/repo/apps/mobile',
+      '/repo/apps/mobile/cng-patches/ios+.patch'
+    );
+
+    expect(changedLines).toBe(1);
+    expect(mockedSpawnAsync).toHaveBeenLastCalledWith(
+      'git',
+      [
+        'apply',
+        '--numstat',
+        '--directory=apps/mobile/',
+        '/repo/apps/mobile/cng-patches/ios+.patch',
+      ],
+      { cwd: '/repo/apps/mobile' }
+    );
   });
 
   it('should support movement semantic with extra changes', async () => {
     const mockPatchContent = `2\t0\tbabel.config.js => babel.config.cjs`;
+    mockedSpawnAsync.mockReset();
+    // @ts-expect-error: `git rev-parse --show-prefix` reports no prefix
+    mockedSpawnAsync.mockResolvedValueOnce({ stdout: '', stderr: '' });
     // @ts-expect-error
     mockedSpawnAsync.mockResolvedValueOnce({ stdout: mockPatchContent, stderr: '' });
-    const changedLines = await getPatchChangedLinesAsync('/app/test.patch');
+    const changedLines = await getPatchChangedLinesAsync('/app', '/app/test.patch');
     expect(changedLines).toBe(2);
   });
 });
