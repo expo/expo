@@ -5395,9 +5395,6 @@ importers:
       standard-navigation:
         specifier: ^0.0.5
         version: 0.0.5
-      vaul:
-        specifier: ^1.1.2
-        version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
     devDependencies:
       '@jest/globals':
         specifier: ^29.7.0

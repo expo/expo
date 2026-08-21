@@ -32,8 +32,6 @@
     "android:native-navigation": "E2E_ROUTER_SRC=native-navigation expo run:android",
     "export:native-navigation": "EXPO_ATLAS=1 E2E_ROUTER_SRC=native-navigation expo export",
     "start:headless": "E2E_ROUTER_SRC=headless expo",
-    "start:web-modal": "E2E_ROUTER_SRC=web-modal EXPO_WEB_DEV_HYDRATE=1 expo start",
-    "export:web-modal": "E2E_ROUTER_SRC=web-modal expo export -p web",
     "start:fast-refresh": "E2E_ROUTER_SRC=fast-refresh expo start -w",
     "start:middleware-async": "E2E_ROUTER_SRC=server-middleware-async EXPO_USE_STATIC=server E2E_ROUTER_SERVER_MIDDLEWARE=true expo start",
     "export:middleware-async": "E2E_ROUTER_SRC=server-middleware-async EXPO_USE_STATIC=server E2E_ROUTER_SERVER_MIDDLEWARE=true expo export -p web",

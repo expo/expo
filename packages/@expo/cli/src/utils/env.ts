@@ -285,11 +285,6 @@ class Env {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
   }
 
-  /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
-  get EXPO_UNSTABLE_WEB_MODAL(): boolean {
-    return boolish('EXPO_UNSTABLE_WEB_MODAL', false);
-  }
-
   /** Disable @react-navigation checks for expo-router projects */
   get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
     return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
