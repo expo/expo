@@ -13,7 +13,6 @@ import {
   type NavigationContainerRef,
   type NavigationState,
   type ParamListBase,
-  useNavigationIndependentTree,
 } from '../react-navigation/native';
 import { getHistoryLength } from '../utils/stack';
 import { createMemoryHistory } from './createMemoryHistory';
@@ -86,16 +85,10 @@ export function useLinking(
   const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
   const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
-  const independent = useNavigationIndependentTree();
-
   const store = useExpoRouterStore();
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
-      return undefined;
-    }
-
-    if (independent) {
       return undefined;
     }
 
@@ -124,7 +117,7 @@ export function useLinking(
         linkingHandlers.splice(index, 1);
       }
     };
-  }, [enabled, independent]);
+  }, [enabled]);
 
   const [history] = useState(createMemoryHistory);
 
