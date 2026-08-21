@@ -12,7 +12,11 @@ import {
 } from '../../core/__tests__/__fixtures__/renderTestState';
 import { Text } from '../../elements';
 import { createNavigationContainerRef, useFocusEffect, useIsFocused } from '../../native';
-import { createStackNavigator, type StackScreenProps } from '../index';
+import {
+  createStackNavigator,
+  createStandardStackNavigator,
+  type StackScreenProps,
+} from '../index';
 
 type StackParamList = {
   A: undefined;
@@ -29,6 +33,10 @@ const interactionManagerWarning =
   "InteractionManager has been deprecated and will be removed in a future release. Please refactor long tasks into smaller ones, and  use 'requestIdleCallback' instead.";
 
 expectNoUnexpectedWarnings([interactionManagerWarning]);
+
+it('creates a standard navigator', () => {
+  expect(createStandardStackNavigator.NavigatorContent).toBeDefined();
+});
 
 test('renders a stack navigator with screens', async () => {
   const Test = ({ route, navigation }: StackScreenProps<StackParamList>) => (

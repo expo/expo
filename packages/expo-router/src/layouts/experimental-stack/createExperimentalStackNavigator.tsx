@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { use, useMemo } from 'react';
+import { createStandardNavigator } from 'standard-navigation';
 
 import { getValidInitialRouteName, useRouteNode } from '../../Route';
 import {
@@ -10,25 +11,87 @@ import {
 } from '../../fork/native-stack/composition-options';
 import {
   createNavigatorFactory,
-  type EventArg,
   NavigationMetaContext,
   type NavigatorTypeBagBase,
   type ParamListBase,
   type StackActionHelpers,
-  StackActions,
   type StackNavigationState,
   StackRouter,
   type StackRouterOptions,
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../react-navigation/native';
+import type { NavigatorContentProps } from '../../standard-navigation';
+import { subscribePopToTopOnParentTabPress } from '../../standard-navigation/subscribePopToTopOnParentTabPress';
 import { ExperimentalStackView } from './ExperimentalStackView';
 import type {
   ExperimentalStackNavigationEventMap,
+  ExperimentalStackDescriptorMap,
+  ExperimentalStackNavigationHelpers,
   ExperimentalStackNavigationOptions,
   ExperimentalStackNavigationProp,
   ExperimentalStackNavigatorProps,
 } from './types';
+
+export interface ExperimentalStackNavigatorCreateProps {
+  navigation: ExperimentalStackNavigationHelpers;
+  stackState: StackNavigationState<ParamListBase>;
+  subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
+}
+
+export type StandardExperimentalStackNavigationEventMap = {
+  [Event in keyof ExperimentalStackNavigationEventMap]: ExperimentalStackNavigationEventMap[Event] & {
+    canPreventDefault: false;
+  };
+};
+
+type ExperimentalStackNavigatorContentProps = NavigatorContentProps<
+  ExperimentalStackNavigationOptions,
+  StandardExperimentalStackNavigationEventMap,
+  Omit<ExperimentalStackNavigatorProps, 'children' | 'id' | 'initialRouteName'>,
+  ExperimentalStackNavigatorCreateProps
+>;
+
+function ExperimentalStackNavigatorContent({
+  state,
+  stackState,
+  descriptors,
+  navigation,
+  subscribePopToTopOnParentTabPress,
+  ...rest
+}: ExperimentalStackNavigatorContentProps) {
+  const { registry, contextValue } = useCompositionRegistry();
+
+  const mergedDescriptors = useMemo(
+    () => mergeOptions(descriptors, registry, stackState),
+    [descriptors, registry, stackState]
+  );
+
+  const meta = use(NavigationMetaContext);
+
+  React.useEffect(() => {
+    if (meta && 'type' in meta && meta.type === 'native-tabs') {
+      return;
+    }
+    return subscribePopToTopOnParentTabPress();
+  }, [meta, subscribePopToTopOnParentTabPress]);
+
+  return (
+    <CompositionContext value={contextValue}>
+      <ExperimentalStackView
+        {...rest}
+        state={stackState}
+        navigation={navigation}
+        descriptors={mergedDescriptors as unknown as ExperimentalStackDescriptorMap}
+      />
+    </CompositionContext>
+  );
+}
+
+const LegacyExperimentalStackNavigatorContent =
+  ExperimentalStackNavigatorContent as React.ComponentType<
+    Omit<ExperimentalStackNavigatorContentProps, 'actions' | 'emitter'>
+  >;
 
 function ExperimentalStackNavigator({
   id,
@@ -58,49 +121,29 @@ function ExperimentalStackNavigator({
     UNSTABLE_router,
   });
 
-  const { registry, contextValue } = useCompositionRegistry();
-
-  const mergedDescriptors = useMemo(
-    () => mergeOptions(descriptors, registry, state),
-    [descriptors, registry, state]
-  );
-
-  const meta = use(NavigationMetaContext);
-
-  React.useEffect(() => {
-    if (meta && 'type' in meta && meta.type === 'native-tabs') {
-      // Inside native tabs, popToTop is handled natively.
-      return;
-    }
-
-    // @ts-expect-error: there may not be a tab navigator in parent
-    return navigation?.addListener?.('tabPress', (e: any) => {
-      const isFocused = navigation.isFocused();
-
-      requestAnimationFrame(() => {
-        if (state.index > 0 && isFocused && !(e as EventArg<'tabPress', true>).defaultPrevented) {
-          navigation.dispatch({
-            ...StackActions.popToTop(),
-            target: state.key,
-          });
-        }
-      });
-    });
-  }, [meta, navigation, state.index, state.key]);
-
   return (
     <NavigationContent>
-      <CompositionContext value={contextValue}>
-        <ExperimentalStackView
-          {...rest}
-          state={state}
-          navigation={navigation}
-          descriptors={mergedDescriptors}
-        />
-      </CompositionContext>
+      <LegacyExperimentalStackNavigatorContent
+        {...rest}
+        // Standard-navigation state carries the same runtime shape as the builder state.
+        state={state as unknown as ExperimentalStackNavigatorContentProps['state']}
+        stackState={state}
+        // The builder creates the full event-emitting stack navigation object at runtime.
+        navigation={navigation as unknown as ExperimentalStackNavigationHelpers}
+        descriptors={descriptors}
+        subscribePopToTopOnParentTabPress={() =>
+          subscribePopToTopOnParentTabPress(navigation, state)
+        }
+      />
     </NavigationContent>
   );
 }
+
+export const createStandardExperimentalStackNavigator = createStandardNavigator<
+  ExperimentalStackNavigationOptions,
+  StandardExperimentalStackNavigationEventMap,
+  ExperimentalStackNavigatorCreateProps
+>(ExperimentalStackNavigatorContent);
 
 export function createExperimentalStackNavigator<
   const ParamList extends ParamListBase,
