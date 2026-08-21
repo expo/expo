@@ -69,7 +69,11 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
     contextKey,
   });
 
-  const sortedScreens = useSortedScreens(screens ?? [], guardedRedirects);
+  const sortedScreens = useSortedScreens(
+    screens ?? [],
+    guardedRedirects,
+    unstable_screenErrorBoundary
+  );
 
   router ||= StackRouter as unknown as T;
 
@@ -135,7 +139,7 @@ function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProp
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     ...props,
     id: contextKey,
-    children: useSortedScreens(screens ?? [], guardedRedirects),
+    children: useSortedScreens(screens ?? [], guardedRedirects, unstable_screenErrorBoundary),
     initialRouteName: getValidInitialRouteName(node),
   });
   const focusedRouteKey = state.routes[state.index]?.key;

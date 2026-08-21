@@ -186,7 +186,8 @@ export function useSortedScreens<
   TEventMap extends EventMapBase,
 >(
   order: ScreenProps<TOptions, TState, TEventMap>[],
-  guardedRedirects: GuardedRedirects = new Map()
+  guardedRedirects: GuardedRedirects = new Map(),
+  screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>
 ): React.ReactNode[] {
   const node = useRouteNode();
 
@@ -200,9 +201,17 @@ export function useSortedScreens<
       return { ...value, isGuarded: isRouteGuarded(route, guardedRedirects) };
     });
     return screensWithGuarded.map((value) => {
-      return routeToScreen(value.route, value.props, value.isGuarded, value.routeSource);
+      return routeToScreen(
+        value.route,
+        {
+          ...value.props,
+          unstable_errorBoundary: value.props.unstable_errorBoundary ?? screenErrorBoundary,
+        },
+        value.isGuarded,
+        value.routeSource
+      );
     });
-  }, [sorted, guardedRedirects]);
+  }, [sorted, guardedRedirects, screenErrorBoundary]);
 }
 
 function fromImport(
@@ -273,6 +282,35 @@ function fromImport(
 // TODO: Maybe there's a more React-y way to do this?
 // Without this store, the process enters a recursive loop.
 const qualifiedStore = new WeakMap<RouteNode, React.ComponentType<any>>();
+const screenErrorBoundaryStore = new WeakMap<
+  RouteNode,
+  WeakMap<React.ComponentType<ErrorBoundaryProps>, React.ComponentType<any>>
+>();
+
+function getScreenComponent(
+  route: RouteNode,
+  ErrorBoundary?: React.ComponentType<ErrorBoundaryProps>
+) {
+  if (!ErrorBoundary) {
+    return getQualifiedRouteComponent(route);
+  }
+
+  let boundaries = screenErrorBoundaryStore.get(route);
+  if (!boundaries) {
+    boundaries = new WeakMap();
+    screenErrorBoundaryStore.set(route, boundaries);
+  }
+
+  let ScreenComponent = boundaries.get(ErrorBoundary);
+  if (!ScreenComponent) {
+    ScreenComponent = (props) => {
+      const QualifiedRouteComponent = getQualifiedRouteComponent(route);
+      return <QualifiedRouteComponent {...props} __screenErrorBoundary={ErrorBoundary} />;
+    };
+    boundaries.set(ErrorBoundary, ScreenComponent);
+  }
+  return ScreenComponent;
+}
 
 /** Wrap the component with various enhancements and add access to child routes. */
 export function getQualifiedRouteComponent(value: RouteNode) {
@@ -320,6 +358,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     // enforce usage of expo-router hooks (where the query params are correct).
     route,
     navigation,
+    __screenErrorBoundary,
 
     // Pass all other props to the component
     ...props
@@ -338,12 +377,14 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     > & {
       getState(): NavigationState | undefined;
     };
+    __screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
   }) {
     const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
-    const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+    const inheritedScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+    const ScreenErrorBoundary = __screenErrorBoundary ?? inheritedScreenErrorBoundary;
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
 
@@ -589,17 +630,6 @@ export function routeToScreen<
   isGuarded?: boolean,
   routeSource?: RouteSource
 ) {
-  const QualifiedRouteComponent = getQualifiedRouteComponent(route);
-  const ScreenComponent = unstable_errorBoundary
-    ? (componentProps: object) => {
-        return (
-          <ScreenErrorBoundaryContext value={unstable_errorBoundary}>
-            <QualifiedRouteComponent {...(componentProps as any)} />
-          </ScreenErrorBoundaryContext>
-        );
-      }
-    : QualifiedRouteComponent;
-
   return (
     <Screen
       {...props}
@@ -608,7 +638,7 @@ export function routeToScreen<
       getId={getId}
       routeSource={routeSource}
       options={screenOptionsFactory(route, options, isGuarded)}
-      getComponent={() => ScreenComponent}
+      getComponent={() => getScreenComponent(route, unstable_errorBoundary)}
     />
   );
 }
