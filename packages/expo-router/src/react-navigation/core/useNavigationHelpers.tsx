@@ -2,7 +2,6 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import type { RouterRegistry } from '../../global-state/routerRegistry';
 import { routingQueue } from '../../global-state/routingQueue';
 import {
   CommonActions,
@@ -25,7 +24,6 @@ type Options<State extends NavigationState, Action extends NavigationAction> = {
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
-  registryRef: React.RefObject<RouterRegistry | undefined>;
 };
 
 /**
@@ -37,25 +35,11 @@ export function useNavigationHelpers<
   ActionHelpers extends Record<string, () => void>,
   Action extends NavigationAction,
   EventMap extends Record<string, any>,
->({
-  id: navigatorId,
-  handleAction,
-  getState,
-  emitter,
-  router,
-  registryRef,
-}: Options<State, Action>) {
+>({ id: navigatorId, handleAction, getState, emitter, router }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
 
   return React.useMemo(() => {
     const dispatchSync = (action: Action) => {
-      const state = getState();
-      if (!registryRef.current?.has(state.key)) {
-        throw new Error(
-          `Cannot dispatch synchronously because navigator '${state.key}' is not registered. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.`
-        );
-      }
-
       handleAction(action);
     };
 
@@ -120,13 +104,5 @@ export function useNavigationHelpers<
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;
-  }, [
-    router,
-    parentNavigationHelpers,
-    emitter.emit,
-    getState,
-    handleAction,
-    navigatorId,
-    registryRef,
-  ]);
+  }, [router, parentNavigationHelpers, emitter.emit, getState, handleAction, navigatorId]);
 }

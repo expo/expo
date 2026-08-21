@@ -6,12 +6,7 @@ import { isValidElementType } from 'react-is';
 
 import { useRouteNode } from '../../Route';
 import { useComponent } from '../../fork/useComponent';
-import {
-  RouterRegistryRefContext,
-  type RouterRegistry,
-  type RouterRegistryEntry,
-  useRegisterRouter,
-} from '../../global-state/routerRegistry';
+import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { routingQueue } from '../../global-state/routingQueue';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
@@ -66,10 +61,6 @@ import { useRegisterNavigator } from './useRegisterNavigator';
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
 PrivateValueStore;
-
-const EMPTY_ROUTER_REGISTRY_REF: React.RefObject<RouterRegistry | undefined> = {
-  current: undefined,
-};
 
 const isScreen = (
   child: React.ReactElement<unknown>
@@ -269,7 +260,6 @@ export function useNavigationBuilder<
   > &
     RouterOptions
 ) {
-  const registryRef = use(RouterRegistryRefContext);
   useRegisterNavigator();
   const routeNode = useRouteNode();
 
@@ -539,7 +529,6 @@ export function useNavigationBuilder<
     getState,
     emitter,
     router,
-    registryRef: registryRef ?? EMPTY_ROUTER_REGISTRY_REF,
   });
 
   useFocusedListenersChildrenAdapter({
