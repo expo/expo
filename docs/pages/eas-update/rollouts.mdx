@@ -31,15 +31,42 @@ You will be guided through the process of selecting the update to edit and asked
 
 ### Ending
 
-When ending an update-based rollout, you have two options:
+When ending an update-based rollout, you have three options:
 
 - **Roll out fully**: To accomplish this end state, progress the rollout as detailed above and set the percentage to 100.
 - **Revert back to previous state**: To accomplish this, run `eas update:revert-update-rollout` which will guide you through reverting back to the previous state.
+- **Supersede it with a new update**: To accomplish this, publish over the rollout as described in [Publishing while a rollout is in progress](#publishing-while-a-rollout-is-in-progress).
+
+### Publishing while a rollout is in progress
+
+Sometimes you need to ship a change before a rollout finishes. A crash report arrives, or the rollout itself turns out to be the problem.
+
+While a rollout is in progress, EAS Update rejects a new update for the same runtime version. This protects the rollout from ending by accident. Pick the option that matches your intent:
+
+| Your intent                                   | What to do                                |
+| --------------------------------------------- | ----------------------------------------- |
+| You trust the update you are rolling out      | Progress it to 100%                       |
+| You want everyone back on the previous update | Run `eas update:revert-update-rollout`    |
+| You need to ship something else now           | Publish with `--force-end-active-rollout` |
+
+Reverting deletes the rollout update group, so links to that update stop working. Publishing over the rollout leaves it in place. Prefer the flag when you reference update URLs in release notes or incident reports.
+
+<Terminal cmd={['$ eas update:roll-back-to-embedded --force-end-active-rollout']} />
+
+The flag works with `eas update`, `eas update:republish`, `eas update:roll-back-to-embedded`, and `eas update:rollback`.
+
+Without the flag, each command names the rollout in progress and asks you to confirm. In non-interactive mode, the command fails and tells you to pass the flag.
+
+The rollout ends once clients can receive your new update. For an update that uses code signing, this happens when you attach the signature, so the rollout continues until then.
+
+After the rollout ends, your update is the latest, so every user receives it. The update that was rolling out stops being served.
+
+You cannot use `--rollout-percentage` at the same time. Rolling out a new update over one already in progress would make the update being rolled out the control update, so it would reach more users rather than fewer. Finish or revert the rollout in progress first.
 
 ### Additional notes
 
 - Only one update can be rolled out on a branch at one time.
-- When a rollout is in progress, it must be ended using one of the options above before a new update (with the same runtime version) can be published. This prevents accidentally clobbering the rollout.
+- When a rollout is in progress, a new update for the same runtime version needs one of the options above. See [Publishing while a rollout is in progress](#publishing-while-a-rollout-is-in-progress).
 - To see the state of the rollout, use the `eas update:list` or `eas update:view` commands.
 - Reverting a rollout that is created on a branch with an existing update will republish the control update. This ensures that all clients are reverted back to the previous state.
 - A rollout can be started on a branch with no current update, in which case the first update will be rolled out to the specified percentage of users. When reverted, a rollback-to-embedded update will be created, which will revert the clients to their previous state (embedded update).
