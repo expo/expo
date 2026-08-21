@@ -21,16 +21,12 @@ PrivateValueStore;
 
 type Options<State extends NavigationState, Action extends NavigationAction> = {
   id: string | undefined;
-  // TODO(@ubax): investigate dropping the boolean return, production code never reads it
-  handleAction: (action: NavigationAction) => boolean;
+  handleAction: (action: NavigationAction) => void;
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
   registryRef: React.RefObject<RouterRegistry | undefined>;
 };
-
-export const FUNCTIONAL_DISPATCH_ERROR =
-  '`navigation.dispatch` only accepts plain actions because actions are queued until after React commits. Functional actions depend on synchronous state. Use `navigation.dispatchSync((state) => action)` instead.';
 
 /**
  * Navigation object with helper methods to be used by a navigator.
@@ -52,7 +48,7 @@ export function useNavigationHelpers<
   const parentNavigationHelpers = use(NavigationContext);
 
   return React.useMemo(() => {
-    const dispatchSync = (op: Action | ((state: State) => Action)) => {
+    const dispatchSync = (action: Action) => {
       const state = getState();
       if (!registryRef.current?.has(state.key)) {
         throw new Error(
@@ -60,16 +56,10 @@ export function useNavigationHelpers<
         );
       }
 
-      const action = typeof op === 'function' ? op(state) : op;
-
       handleAction(action);
     };
 
     const dispatch = (action: Action) => {
-      if (typeof action === 'function') {
-        throw new Error(FUNCTIONAL_DISPATCH_ERROR);
-      }
-
       routingQueue.add({
         type: 'NAVIGATOR_ACTION',
         payload: {

@@ -90,7 +90,7 @@ export const BaseRouter = {
 
           const minter = createRouteKeyMinter({
             key: nextState.key,
-            routeKeySeq: nextState.routeKeySeq ?? 0,
+            routeKeySeq: Math.max(state.routeKeySeq, nextState.routeKeySeq ?? 0),
           });
           const result = {
             ...nextState,

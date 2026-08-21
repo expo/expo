@@ -58,12 +58,3 @@ test('removal of non-existing listener should not break updating ref', () => {
     ref.current = createNavigationContainerRef<ParamListBase>();
   }).not.toThrow();
 });
-
-test('rejects functional dispatch before the container is mounted', () => {
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  expect(() =>
-    // @ts-expect-error: Functional dispatch is rejected at runtime with migration guidance.
-    ref.dispatch(() => ({ type: 'NOOP' }))
-  ).toThrow('dispatchSync');
-});

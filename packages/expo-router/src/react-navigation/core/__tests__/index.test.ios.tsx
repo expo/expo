@@ -473,60 +473,6 @@ test('does not reseed state when a raw navigator without a route node unmounts',
   expect(onStateChange).toHaveBeenCalledTimes(1);
 });
 
-test('allows state updates by dispatching a function returning an action', () => {
-  let dispatchSync: (action: (state: NavigationState) => NavigationAction) => void;
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-    );
-  };
-
-  const FooScreen = (props: any) => {
-    dispatchSync = props.navigation.dispatchSync;
-
-    return null;
-  };
-
-  const BarScreen = () => null;
-
-  const onStateChange = jest.fn();
-
-  const element = (
-    <BaseNavigationContainer onStateChange={onStateChange}>
-      <TestNavigator initialRouteName="foo">
-        <Screen name="foo" component={FooScreen} />
-        <Screen name="bar" component={BarScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  const root = render(element);
-  act(() =>
-    dispatchSync((state) =>
-      state.index === 0
-        ? { type: 'NAVIGATE', payload: { name: state.routeNames[1] } }
-        : { type: 'NOOP' }
-    )
-  );
-  root.update(element);
-
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    routeKeySeq: 0,
-    type: 'test',
-    index: 1,
-    key: 'navigator-2',
-    routeNames: ['foo', 'bar'],
-    routes: [
-      { key: 'foo-1', name: 'foo' },
-      { key: 'bar-0', name: 'bar', params: undefined },
-    ],
-  });
-});
-
 test('reconciles state when a conditional navigator changes', () => {
   const TestNavigatorA = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);

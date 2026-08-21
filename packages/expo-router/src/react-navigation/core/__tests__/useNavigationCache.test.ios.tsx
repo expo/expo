@@ -322,8 +322,6 @@ test('ignores dispatches from a preloaded stack screen until it is promoted', ()
   expect(add).not.toHaveBeenCalled();
   expect(ref.current?.getRootState()).toEqual(preloadedState);
 
-  expect(() => preloadedNavigation.dispatch(() => CommonActions.goBack())).toThrow('dispatchSync');
-
   act(() => ref.current?.navigate('second'));
 
   expect(navigation).toBe(preloadedNavigation);
