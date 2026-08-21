@@ -2,6 +2,10 @@
 
 ## Unpublished
 
+### 🐛 Bug fixes
+
+- Move Expo Router store values into React context. ([#49176](https://github.com/expo/expo/pull/49176) by [@jakub-agent](https://github.com/jakub-agent))
+
 ### 🛠 Breaking changes
 
 - Remove the experimental web modal implementation. See the [web modals guide](https://docs.expo.dev/router/advanced/web-modals/). ([#49204](https://github.com/expo/expo/pull/49204) by [@Ubax](https://github.com/Ubax))

@@ -24,13 +24,14 @@ import {
   getSplashScreenAnimationFrame,
   setSplashScreenAnimationFrame,
 } from './store';
+import type { StoreContextValue } from './storeContext';
 import type { ReactNavigationState, StoreRedirects } from './types';
 
 export function useStore(
   context: RequireContext,
   linkingConfigOptions: LinkingConfigOptions,
   serverUrl?: string
-) {
+): StoreContextValue {
   const navigationRef = useNavigationContainerRef();
   const config = Constants.expoConfig?.extra?.router;
 
@@ -119,5 +120,12 @@ export function useStore(
     };
   });
 
-  return store;
+  return {
+    ...store,
+    navigationRef,
+    linking,
+    initialState,
+    rootComponent,
+    redirects,
+  };
 }
