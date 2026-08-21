@@ -184,7 +184,7 @@ export class Chunk {
 
   constructor(
     public name: string,
-    public entries: Module<MixedOutput>[],
+    public entries: Set<Module<MixedOutput>>,
     public graph: ReadOnlyGraph<MixedOutput>,
     public options: ExpoSerializerOptions,
     public isAsync: boolean = false,
@@ -646,19 +646,26 @@ function collectOutputReferences(modules: Iterable<Module>, key: string): string
   ].filter((value): value is string => typeof value === 'string');
 }
 
-function getEntryModulesForChunkSettings(graph: ReadOnlyGraph, settings: ChunkSettings) {
-  return [...graph.dependencies.entries()]
-    .filter(([path]) => settings.test.test(path))
-    .map(([, module]) => module);
+function getEntryModulesForChunkSettings(
+  graph: ReadOnlyGraph,
+  settings: ChunkSettings
+): Set<Module<MixedOutput>> {
+  const modules = new Set<Module<MixedOutput>>();
+  for (const entry of graph.dependencies) {
+    if (settings.test.test(entry[0])) {
+      modules.add(entry[1]);
+    }
+  }
+  return modules;
 }
 
-function chunkIdForModules(modules: Module[]) {
-  return modules
-    .map((module) => module.path)
-    .sort()
-    .join('=>');
+function chunkIdForModules(modules: Iterable<Module>) {
+  const modPaths: string[] = [];
+  for (const mod of modules) modPaths.push(mod.path);
+  return modPaths.sort().join('=>');
 }
 
+// TODO(@kitten): The recursion is starting to hurt clarity here a bit
 function gatherChunks(
   runtimePremodules: readonly Module[],
   chunks: Set<Chunk>,
@@ -669,22 +676,21 @@ function gatherChunks(
   isAsync: boolean = false,
   isEntry: boolean = false
 ): Set<Chunk> {
-  let entryModules = getEntryModulesForChunkSettings(graph, settings);
+  const entryModules = getEntryModulesForChunkSettings(graph, settings);
   const entryChunks = new Set<Chunk>();
-  if (!entryModules.length) {
+  if (!entryModules.size) {
     return entryChunks;
   }
 
   for (const chunk of chunks) {
-    entryModules = entryModules.filter((module) => {
-      if (chunk.entries.includes(module)) {
+    for (const entry of chunk.entries) {
+      // Remove already processed entries
+      if (entryModules.delete(entry)) {
         entryChunks.add(chunk);
-        return false;
       }
-      return true;
-    });
+    }
     // Prevent processing the same entry file twice.
-    if (!entryModules.length) {
+    if (!entryModules.size) {
       return entryChunks;
     }
   }
@@ -782,28 +788,26 @@ function extractCommonChunk(
 ): Chunk | undefined {
   const toCompare = [...chunks.values()];
 
-  const commonDependencies = [];
+  const commonDependencies = new Set<Module<MixedOutput>>();
 
   while (toCompare.length) {
     const chunk = toCompare.shift()!;
     for (const chunk2 of toCompare) {
       if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
-        const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
-
-        for (const dep of commonDeps) {
-          chunk.deps.delete(dep);
-          chunk2.deps.delete(dep);
+        for (const dep of chunk.deps) {
+          if (chunk2.deps.has(dep)) {
+            chunk.deps.delete(dep);
+            chunk2.deps.delete(dep);
+            commonDependencies.add(dep);
+          }
         }
-
-        commonDependencies.push(...commonDeps);
       }
     }
   }
 
   // If common dependencies were found, extract them to the shared chunk.
-  if (commonDependencies.length) {
-    const commonDependenciesUnique = [...new Set(commonDependencies)];
-    return new Chunk('/__common.js', commonDependenciesUnique, graph, options, false, true);
+  if (commonDependencies.size) {
+    return new Chunk('/__common.js', commonDependencies, graph, options, false, true);
   }
 
   return undefined;
@@ -816,7 +820,7 @@ function deduplicateAgainstKnownChunks(
 ): void {
   // TODO: Optimize this pass more.
   // Remove all dependencies from async chunks that are already in the common chunk.
-  for (const chunk of [...chunks.values()]) {
+  for (const chunk of chunks) {
     if (!chunk.isEntry && chunk !== commonChunk) {
       for (const dep of chunk.deps) {
         if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
@@ -828,7 +832,7 @@ function deduplicateAgainstKnownChunks(
 }
 
 function removeEmptyChunks(chunks: Set<Chunk>): void {
-  for (const chunk of [...chunks.values()]) {
+  for (const chunk of chunks) {
     if (!chunk.isEntry && chunk.deps.size === 0) {
       chunks.delete(chunk);
     }
@@ -841,7 +845,14 @@ function createRuntimeChunk(
   graph: ReadOnlyGraph,
   options: SerializerOptions
 ): void {
-  const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
+  const runtimeChunk = new Chunk(
+    '/__expo-metro-runtime.js',
+    new Set(),
+    graph,
+    options,
+    false,
+    true
+  );
 
   // All premodules (including metro-runtime) should load first
   for (const preModule of entryChunk.preModules) {
