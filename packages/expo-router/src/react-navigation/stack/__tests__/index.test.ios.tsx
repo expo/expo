@@ -7,7 +7,11 @@ import { Button, View } from 'react-native';
 import { NavigationContainer } from '../../../fork/NavigationContainer';
 import { Text } from '../../elements';
 import { createNavigationContainerRef, useFocusEffect, useIsFocused } from '../../native';
-import { createStackNavigator, type StackScreenProps } from '../index';
+import {
+  createStackNavigator,
+  createStandardStackNavigator,
+  type StackScreenProps,
+} from '../index';
 
 type StackParamList = {
   A: undefined;
@@ -19,6 +23,10 @@ type NestedStackParamList = {
 };
 
 jest.useFakeTimers();
+
+it('creates a standard navigator', () => {
+  expect(createStandardStackNavigator.NavigatorContent).toBeDefined();
+});
 
 test('renders a stack navigator with screens', async () => {
   const Test = ({ route, navigation }: StackScreenProps<StackParamList>) => (
