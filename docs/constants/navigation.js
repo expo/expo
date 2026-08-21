@@ -386,6 +386,7 @@ export const general = [
     makeGroup('Authentication', [
       makePage('guides/using-authentication.mdx'),
       makePage('guides/using-clerk.mdx'),
+      makePage('guides/using-neon-auth.mdx'),
       makePage('guides/facebook-authentication.mdx'),
       makePage('guides/google-authentication.mdx'),
     ]),
