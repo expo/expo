@@ -1,0 +1,3 @@
+# The repo-wide `node_modules` ignore rule also matches the patch directories below,
+# which are patch files for a nightly project's `node_modules`, not installed packages.
+!node_modules/
