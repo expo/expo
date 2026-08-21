@@ -43,11 +43,6 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
   applySelectedColor(options, props.selectedColor);
 }
 
-/**
- * Resolves the rendering mode an icon will be displayed with, or `undefined` when the icon isn't
- * image-based. An explicit `renderingMode` always wins; otherwise an icon color implies
- * `template`, because a color can only take effect on a template image.
- */
 export function resolveIconRenderingMode(
   icon: AwaitedIcon | undefined,
   iconColor?: ColorValue
