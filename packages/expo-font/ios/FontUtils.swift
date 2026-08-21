@@ -73,7 +73,7 @@ internal func postScriptNames(inFileAt url: CFURL, alias: String) throws -> [Str
 
   // ``CGFont`` reports the PostScript name of the file's default instance, which is the one to
   // move up front.
-  let defaultPostScriptName = CGDataProvider(url: url).flatMap { CGFont($0)?.postScriptName as String? }
+  let defaultPostScriptName = defaultInstancePostScriptName(url: url)
 
   let hasVariationAxes = fontDescriptors.contains { descriptor in
     let axes = CTFontDescriptorCopyAttribute(descriptor, kCTFontVariationAxesAttribute) as? [Any]
@@ -100,13 +100,33 @@ internal func postScriptNames(inFileAt url: CFURL, alias: String) throws -> [Str
 }
 
 /**
+ The PostScript name ``CGFont`` reports for the file's default instance (its variation axes'
+ default location), or `nil` when it can't be read. Shared by ``postScriptNames(inFileAt:alias:)``
+ and ``fontTraits(inFileAt:)`` so both agree on which descriptor is the default one.
+ */
+internal func defaultInstancePostScriptName(url: CFURL) -> String? {
+  return CGDataProvider(url: url).flatMap { CGFont($0)?.postScriptName as String? }
+}
+
+/**
  The italic flag and raw `kCTFontWeightTrait` (0.0 = regular, negative lighter, positive bolder)
- from the file's first font descriptor, or `nil` when the file has no readable traits.
+ from the file's default-instance font descriptor (falling back to the first descriptor when the
+ default instance's name can't be read or matched), or `nil` when the file has no readable traits.
  */
 internal func fontTraits(inFileAt url: CFURL) -> (isItalic: Bool, weightTrait: CGFloat)? {
   guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(url) as? [CTFontDescriptor],
-    let descriptor = fontDescriptors.first,
-    let traits = CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute) as? [String: Any] else {
+    !fontDescriptors.isEmpty else {
+    return nil
+  }
+
+  let defaultPostScriptName = defaultInstancePostScriptName(url: url)
+  let descriptor = defaultPostScriptName.flatMap { defaultName in
+    fontDescriptors.first { descriptor in
+      (CTFontDescriptorCopyAttribute(descriptor, kCTFontNameAttribute) as? String) == defaultName
+    }
+  } ?? fontDescriptors[0]
+
+  guard let traits = CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute) as? [String: Any] else {
     return nil
   }
 
