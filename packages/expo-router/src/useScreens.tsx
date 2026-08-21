@@ -227,7 +227,7 @@ function fromImport(
     );
   }
 
-  if (ErrorBoundary || screenErrorBoundary) {
+  if (ErrorBoundary || screenErrorBoundary || value.type === 'layout') {
     const Wrapped = React.forwardRef((props: any, ref: any) => {
       let children = React.createElement(component.default || EmptyRoute, {
         ...props,
@@ -238,11 +238,10 @@ function fromImport(
       } else if (value.type !== 'layout' && screenErrorBoundary) {
         children = <Try catch={screenErrorBoundary}>{children}</Try>;
       }
-      if (value.type === 'layout' && screenErrorBoundary) {
-        const inheritedErrorBoundaries = use(ScreenErrorBoundaryContext);
+      if (value.type === 'layout') {
         children = (
           <ScreenErrorBoundaryContext
-            value={{ ...inheritedErrorBoundaries, layout: screenErrorBoundary }}>
+            value={screenErrorBoundary ? { layout: screenErrorBoundary } : {}}>
             {children}
           </ScreenErrorBoundaryContext>
         );
