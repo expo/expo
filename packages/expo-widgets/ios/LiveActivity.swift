@@ -62,7 +62,10 @@ final class LiveActivity: SharedObject {
       return
     }
 
-    pushTokenObserverTask?.cancel()
+    guard pushTokenObserverTask == nil else {
+      return
+    }
+
     pushTokenObserverTask = Task {
       for await data in activity.pushTokenUpdates {
         let token = data.reduce("") { $0 + String(format: "%02x", $1) }
