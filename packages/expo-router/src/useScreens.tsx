@@ -6,6 +6,8 @@ import type { LoadedRoute, RouteNode } from './Route';
 import {
   findRouteNodeByName,
   getValidInitialRouteName,
+  LayoutScreenErrorBoundaryContext,
+  NavigatorScreenErrorBoundaryContext,
   ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
@@ -240,9 +242,9 @@ function fromImport(
       }
       if (value.type === 'layout' && screenErrorBoundary) {
         children = (
-          <ScreenErrorBoundaryContext value={screenErrorBoundary}>
+          <LayoutScreenErrorBoundaryContext value={screenErrorBoundary}>
             {children}
-          </ScreenErrorBoundaryContext>
+          </LayoutScreenErrorBoundaryContext>
         );
       }
       return children;
@@ -344,6 +346,10 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+    const NavigatorScreenErrorBoundary = use(NavigatorScreenErrorBoundaryContext);
+    const LayoutScreenErrorBoundary = use(LayoutScreenErrorBoundaryContext);
+    const InheritedScreenErrorBoundary =
+      ScreenErrorBoundary ?? NavigatorScreenErrorBoundary ?? LayoutScreenErrorBoundary;
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
 
@@ -437,8 +443,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              {ScreenErrorBoundary ? (
-                <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+              {InheritedScreenErrorBoundary ? (
+                <Try catch={InheritedScreenErrorBoundary}>{screenComponent}</Try>
               ) : (
                 screenComponent
               )}

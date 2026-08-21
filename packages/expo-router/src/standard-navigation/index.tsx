@@ -4,7 +4,11 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
-import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
+import {
+  getValidInitialRouteName,
+  NavigatorScreenErrorBoundaryContext,
+  useRouteNode,
+} from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -237,9 +241,9 @@ export function unstable_integrateWithRouter<
     );
 
     return (
-      <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+      <NavigatorScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
         {content}
-      </ScreenErrorBoundaryContext>
+      </NavigatorScreenErrorBoundaryContext>
     );
   }
 

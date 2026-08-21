@@ -2,7 +2,10 @@ import { screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import type { ErrorBoundaryProps } from '../exports';
+import { Drawer } from '../layouts/Drawer';
 import { Stack } from '../layouts/Stack';
+import { Tabs } from '../layouts/Tabs';
+import { TopTabs } from '../layouts/TopTabs';
 import { renderRouterAsync } from '../testing-library';
 
 function ThrowingRoute(): never {
@@ -84,4 +87,24 @@ it('uses the route boundary before screen, navigator, and layout boundaries', as
   expect(screen.queryByTestId('screen-boundary')).toBeNull();
   expect(screen.queryByTestId('navigator-boundary')).toBeNull();
   expect(screen.queryByTestId('layout-boundary')).toBeNull();
+});
+
+it.each([
+  ['Stack', Stack],
+  ['Tabs', Tabs],
+  ['TopTabs', TopTabs],
+  ['Drawer', Drawer],
+])('uses an individual screen boundary with %s', async (_name, Navigator: typeof Stack) => {
+  const ScreenBoundary = boundary('screen-boundary');
+
+  await renderRouterAsync({
+    _layout: () => (
+      <Navigator>
+        <Navigator.Screen name="index" unstable_errorBoundary={ScreenBoundary} />
+      </Navigator>
+    ),
+    index: ThrowingRoute,
+  });
+
+  expect(screen.getByTestId('screen-boundary')).toBeOnTheScreen();
 });

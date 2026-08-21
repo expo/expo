@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   getValidInitialRouteName,
-  ScreenErrorBoundaryContext,
+  NavigatorScreenErrorBoundaryContext,
   useContextKey,
   useRouteNode,
 } from '../Route';
@@ -101,13 +101,9 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {unstable_screenErrorBoundary ? (
-        <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
-          {content}
-        </ScreenErrorBoundaryContext>
-      ) : (
-        content
-      )}
+      <NavigatorScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+        {content}
+      </NavigatorScreenErrorBoundaryContext>
     </NavigatorContext.Provider>
   );
 }
@@ -148,12 +144,10 @@ function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProp
     </GuardContextProvider>
   );
 
-  return unstable_screenErrorBoundary ? (
-    <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+  return (
+    <NavigatorScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
       {content}
-    </ScreenErrorBoundaryContext>
-  ) : (
-    content
+    </NavigatorScreenErrorBoundaryContext>
   );
 }
 
