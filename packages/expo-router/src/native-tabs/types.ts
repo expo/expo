@@ -1,4 +1,4 @@
-import type { ComponentType, PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import type {
   ColorValue,
   ImageSourcePropType,
@@ -16,7 +16,6 @@ import type {
 } from '../react-navigation/native';
 import type { StandardUseNavigationBuilderOptions } from '../standard-navigation';
 import type { ScreenProps } from '../useScreens';
-import type { ErrorBoundaryProps } from '../views/Try';
 
 /**
  * Event map for `NativeTabs` navigation events.
@@ -297,8 +296,6 @@ export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 
 export interface NativeTabsProps extends PropsWithChildren {
   // #region common props
-  /** A component to render when an individual tab screen throws an error. */
-  screenErrorBoundary?: ComponentType<ErrorBoundaryProps>;
   /**
    * The style of the every tab label in the tab bar.
    */

@@ -100,11 +100,9 @@ function getSortedChildren<
   routeSource: RouteSource;
 }[] {
   if (!order?.length) {
-    return children.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({
-      route,
-      props: {},
-      routeSource: 'filesystem' as const,
-    }));
+    return children
+      .sort(sortRoutesWithInitial(initialRouteName))
+      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }));
   }
   const entries = [...children];
 
@@ -158,11 +156,9 @@ function getSortedChildren<
 
   // Add any remaining children
   ordered.push(
-    ...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({
-      route,
-      props: {},
-      routeSource: 'filesystem' as const,
-    }))
+    ...entries
+      .sort(sortRoutesWithInitial(initialRouteName))
+      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }))
   );
 
   return ordered;
@@ -214,7 +210,7 @@ function fromImport(
     value.type !== 'layout'
   ) {
     console.warn(
-      `Route "${value.contextKey}" exports an ErrorBoundary, which takes precedence over unstable_settings.screenErrorBoundary.`
+      `Route "${value.contextKey}" exports both ErrorBoundary and unstable_settings.screenErrorBoundary. Only use one in a single screen.`
     );
   }
 
