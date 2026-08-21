@@ -36,10 +36,17 @@ internal object VariableTypefaces {
       ?: buildInstancedFamily(fontData)
       ?: return null
 
-    return Typeface.CustomFallbackBuilder(family)
+    return wrapWithSystemFallback(family)
+  }
+
+  /**
+   * Wraps [family] in a [Typeface] that falls back to the system sans-serif font for glyphs the
+   * family doesn't cover.
+   */
+  fun wrapWithSystemFallback(family: FontFamily): Typeface =
+    Typeface.CustomFallbackBuilder(family)
       .setSystemFallback(SYSTEM_FALLBACK)
       .build()
-  }
 
   /**
    * The family that Android builds. It covers the axis continuously, not at nine fixed steps. It

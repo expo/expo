@@ -1,4 +1,5 @@
 import CoreGraphics
+import Foundation
 
 /**
  * Queries custom native font names from the Info.plist `UIAppFonts`.
@@ -96,6 +97,24 @@ internal func postScriptNames(inFileAt url: CFURL, alias: String) throws -> [Str
   }
 
   return [defaultPostScriptName ?? postScriptNames[0]]
+}
+
+/**
+ The italic flag and raw `kCTFontWeightTrait` (0.0 = regular, negative lighter, positive bolder)
+ from the file's first font descriptor, or `nil` when the file has no readable traits.
+ */
+internal func fontTraits(inFileAt url: CFURL) -> (isItalic: Bool, weightTrait: CGFloat)? {
+  guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(url) as? [CTFontDescriptor],
+    let descriptor = fontDescriptors.first,
+    let traits = CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute) as? [String: Any] else {
+    return nil
+  }
+
+  let symbolicTraits = (traits[kCTFontSymbolicTrait as String] as? NSNumber)?.uint32Value ?? 0
+  let isItalic = symbolicTraits & CTFontSymbolicTraits.traitItalic.rawValue != 0
+  let weightTrait = (traits[kCTFontWeightTrait as String] as? NSNumber)?.doubleValue ?? 0
+
+  return (isItalic: isItalic, weightTrait: CGFloat(weightTrait))
 }
 
 /**
