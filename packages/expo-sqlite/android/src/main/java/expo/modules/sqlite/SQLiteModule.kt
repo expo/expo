@@ -360,7 +360,11 @@ class SQLiteModule : Module() {
   private fun prepareStatement(database: NativeDatabase, statement: NativeStatement, source: String) {
     maybeThrowForClosedDatabase(database)
     maybeThrowForFinalizedStatement(statement)
-    if (database.ref.sqlite3_prepare_v2(source, statement.ref) != NativeDatabaseBinding.SQLITE_OK) {
+    val ret = database.ref.sqlite3_prepare_v2(source, statement.ref)
+    if (ret == NativeDatabaseBinding.NULL_STATEMENT) {
+      throw EmptyStatementException()
+    }
+    if (ret != NativeDatabaseBinding.SQLITE_OK) {
       throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
     }
   }

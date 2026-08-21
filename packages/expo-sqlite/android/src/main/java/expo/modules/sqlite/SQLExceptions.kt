@@ -29,6 +29,13 @@ internal class InvalidConvertibleException(message: String) :
 internal class UnsupportedOperationException(message: String) :
   CodedException(if (message.isNotEmpty()) "Unsupported operations: $message" else "Unsupported operations")
 
+internal class EmptyStatementException :
+  CodedException(
+    "ERR_SQLITE_EMPTY_STATEMENT",
+    "Cannot prepare an empty SQL statement. SQLite found no statement to run in the given string because it is empty, whitespace-only, or comment-only. To run a .sql file, pass the whole file to execAsync() instead of splitting it on ';'.",
+    null
+  )
+
 internal class AccessClosedResourceException :
   CodedException("Access to closed resource")
 
