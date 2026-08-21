@@ -1,16 +1,9 @@
-import { Asset } from 'expo-asset';
 import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import type {
-  FontFaceDefinition,
-  FontFamilyDefinition,
-  FontMap,
-  FontResource,
-  FontSource,
-  UnloadFontOptions,
-} from './Font.types';
+import type { FontFamilyDefinition, FontMap, FontSource, UnloadFontOptions } from './Font.types';
 import { getAssetForSource, loadFontFamilyAsync, loadSingleFontAsync } from './FontLoader';
+import { fontSourceFromFace } from './fontSourceFromFace';
 import {
   isLoadedInCache,
   isLoadedNative,
@@ -138,27 +131,6 @@ export function loadAsync(fontFamilyOrFontMap: FontMap, source?: FontSource): Pr
   }
 
   return loadFontInNamespaceAsync(fontFamilyOrFontMap, source);
-}
-
-// Merges a face's descriptors onto its `path`. Nothing gets a default: an unset property must
-// stay unset, or a variable font's face would be pinned to a single weight/style.
-function fontSourceFromFace(face: FontFaceDefinition): FontSource {
-  const { path, weight, style, display, testString } = face;
-
-  if (path instanceof Asset) {
-    return path;
-  }
-
-  const base: FontResource =
-    typeof path === 'string' || typeof path === 'number' ? { uri: path } : path;
-
-  return {
-    ...base,
-    weight: weight ?? base.weight,
-    style: style ?? base.style,
-    display: display ?? base.display,
-    testString: testString ?? base.testString,
-  };
 }
 
 async function loadFontFamilyInNamespaceAsync(definition: FontFamilyDefinition): Promise<void> {
