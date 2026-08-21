@@ -40,3 +40,410 @@ Expo Go is a playground for students and learners to try Expo quickly. A develop
 ## Next step
 
 You have a project and a development environment. Now it's time to start developing.
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+// User & Worker Model
+class UserModel {
+  final String uid;
+  final String name;
+  final String phoneNumber;
+  final String role; // 'Seeker', 'Worker', 'Admin'
+  final String category; // 'Car Mechanic', 'Editor', 'Normal Work'
+  final bool isOnline;
+  final GeoPoint? position;
+  final bool isUnitStaff; // Help Job Unit Verified
+
+  UserModel({
+    required this.uid,
+    required this.name,
+    required this.phoneNumber,
+    required this.role,
+    required this.category,
+    this.isOnline = false,
+    this.position,
+    this.isUnitStaff = false,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'uid': uid,
+    'name': name,
+    'phoneNumber': phoneNumber,
+    'role': role,
+    'category': category,
+    'isOnline': isOnline,
+    'position': position,
+    'isUnitStaff': isUnitStaff,
+  };
+}
+
+// Work / Job Post Model
+class WorkModel {
+  final String id;
+  final String seekerId;
+  final String title;
+  final String description;
+  final String jobType; // 'part_time' or 'full_time'
+  final String category; // 'Car Mechanic', 'Editor', 'Normal Work'
+  final double amount; // Part-time rate or Monthly salary
+  final String? carDetails; // e.g. Car Model, Issue
+  final String? editorDetails; // e.g. Video length, Software
+  final GeoPoint? location;
+  final String status; // 'open', 'assigned', 'completed'
+  final String? assignedWorkerId;
+
+  WorkModel({
+    required this.id,
+    required this.seekerId,
+    required this.title,
+    required this.description,
+    required this.jobType,
+    required this.category,
+    required this.amount,
+    this.carDetails,
+    this.editorDetails,
+    this.location,
+    this.status = 'open',
+    this.assignedWorkerId,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'seekerId': seekerId,
+    'title': title,
+    'description': description,
+    'jobType': jobType,
+    'category': category,
+    'amount': amount,
+    'carDetails': carDetails,
+    'editorDetails': editorDetails,
+    'location': location,
+    'status': status,
+    'assignedWorkerId': assignedWorkerId,
+    'createdAt': FieldValue.serverTimestamp(),
+  };
+}
+
+// Help Job Unit (Monthly Agency Contract Request)
+class UnitContractRequest {
+  final String id;
+  final String seekerId;
+  final String workerCategory;
+  final int monthsRequired;
+  final double monthlyBudgetOffered;
+  final double adminApprovedSalary;
+  final String? assignedWorkerId;
+  final String status; // 'pending', 'active', 'completed'
+
+  UnitContractRequest({
+    required this.id,
+    required this.seekerId,
+    required this.workerCategory,
+    required this.monthsRequired,
+    required this.monthlyBudgetOffered,
+    this.adminApprovedSalary = 0.0,
+    this.assignedWorkerId,
+    this.status = 'pending',
+  });
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'seekerId': seekerId,
+    'workerCategory': workerCategory,
+    'monthsRequired': monthsRequired,
+    'monthlyBudgetOffered': monthlyBudgetOffered,
+    'adminApprovedSalary': adminApprovedSalary,
+    'assignedWorkerId': assignedWorkerId,
+    'status': status,
+  };
+}
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class WorkService {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Part-time Work Instant Lock
+  Future<bool> acceptPartTimeWork(String workId, String workerId) async {
+    final workRef = _firestore.collection('works').doc(workId);
+
+    try {
+      return await _firestore.runTransaction((transaction) async {
+        DocumentSnapshot snapshot = await transaction.get(workRef);
+
+        if (!snapshot.exists) {
+          throw Exception("काम मौजूद नहीं है!");
+        }
+
+        if (snapshot['status'] == 'assigned') {
+          return false; // पहले ही किसी और ने ले लिया
+        }
+
+        transaction.update(workRef, {
+          'status': 'assigned',
+          'assignedWorkerId': workerId,
+          'assignedAt': FieldValue.serverTimestamp(),
+        });
+
+        return true;
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Help Job Unit: Admin द्वारा फुल-टाइम वर्कर और सैलरी तय करना
+  Future<void> assignUnitWorker({
+    required String contractId,
+    required String workerId,
+    required double workerSalary,
+  }) async {
+    await _firestore.collection('unit_contracts').doc(contractId).update({
+      'assignedWorkerId': workerId,
+      'adminApprovedSalary': workerSalary,
+      'status': 'active',
+    });
+  }
+}
+
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class PostWorkScreen extends StatefulWidget {
+  final String seekerId;
+  const PostWorkScreen({super.key, required this.seekerId});
+
+  @override
+  State<PostWorkScreen> createState() => _PostWorkScreenState();
+}
+
+class _PostWorkScreenState extends State<PostWorkScreen> {
+  String _jobType = 'part_time'; // 'part_time' or 'full_time'
+  String _category = 'Car Mechanic'; // 'Car Mechanic', 'Editor', 'Normal Work'
+  final _titleController = TextEditingController();
+  final _descController = TextEditingController();
+  final _amountController = TextEditingController();
+  final _carDetailController = TextEditingController();
+  final _editorDetailController = TextEditingController();
+
+  void _submitWork() async {
+    final docRef = FirebaseFirestore.instance.collection('works').doc();
+    await docRef.set({
+      'id': docRef.id,
+      'seekerId': widget.seekerId,
+      'title': _titleController.text.trim(),
+      'description': _descController.text.trim(),
+      'jobType': _jobType,
+      'category': _category,
+      'amount': double.tryParse(_amountController.text) ?? 0.0,
+      'carDetails': _category == 'Car Mechanic' ? _carDetailController.text.trim() : null,
+      'editorDetails': _category == 'Editor' ? _editorDetailController.text.trim() : null,
+      'status': 'open',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+    if (mounted) Navigator.pop(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Help Job - Post Work")),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Job Type Selector
+            Row(
+              children: [
+                Expanded(
+                  child: ChoiceChip(
+                    label: const Center(child: Text("Part-Time")),
+                    selected: _jobType == 'part_time',
+                    onSelected: (val) => setState(() => _jobType = 'part_time'),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: ChoiceChip(
+                    label: const Center(child: Text("Full-Time")),
+                    selected: _jobType == 'full_time',
+                    onSelected: (val) => setState(() => _jobType = 'full_time'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
+            // Category Selector
+            DropdownButtonFormField<String>(
+              value: _category,
+              items: ['Car Mechanic', 'Editor', 'Normal Work']
+                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                  .toList(),
+              onChanged: (val) => setState(() => _category = val!),
+              decoration: const InputDecoration(labelText: "काम की कैटेगरी"),
+            ),
+            const SizedBox(height: 12),
+
+            TextField(
+              controller: _titleController,
+              decoration: const InputDecoration(labelText: "काम का शीर्षक (Title)"),
+            ),
+            const SizedBox(height: 12),
+
+            TextField(
+              controller: _descController,
+              maxLines: 3,
+              decoration: const InputDecoration(labelText: "काम का विवरण (Description)"),
+            ),
+            const SizedBox(height: 12),
+
+            // Dynamic Fields by Category
+            if (_category == 'Car Mechanic')
+              TextField(
+                controller: _carDetailController,
+                decoration: const InputDecoration(labelText: "गाड़ी का मॉडल और समस्या"),
+              ),
+            if (_category == 'Editor')
+              TextField(
+                controller: _editorDetailController,
+                decoration: const InputDecoration(labelText: "वीडियो लंबाई / एडिटिंग टाइप (Reels/YT)"),
+              ),
+
+            const SizedBox(height: 12),
+            TextField(
+              controller: _amountController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: _jobType == 'part_time' ? "तय भुगतान (₹ Fixed Rate)" : "मासिक वेतन (₹ Monthly Salary)",
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            ElevatedButton(
+              onPressed: _submitWork,
+              style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+              child: const Text("काम पोस्ट करें"),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+class WorkerHomeScreen extends StatefulWidget {
+  final String workerId;
+  const WorkerHomeScreen({super.key, required this.workerId});
+
+  @override
+  State<WorkerHomeScreen> createState() => _WorkerHomeScreenState();
+}
+
+class _WorkerHomeScreenState extends State<WorkerHomeScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  String _selectedCategory = 'All';
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  Widget _buildJobList(String jobType) {
+    Query query = FirebaseFirestore.instance
+        .collection('works')
+        .where('jobType', isEqualTo: jobType)
+        .where('status', isEqualTo: 'open');
+
+    if (_selectedCategory != 'All') {
+      query = query.where('category', isEqualTo: _selectedCategory);
+    }
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: query.snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        final docs = snapshot.data!.docs;
+
+        if (docs.isEmpty) {
+          return const Center(child: Text("कोई काम उपलब्ध नहीं है।"));
+        }
+
+        return ListView.builder(
+          itemCount: docs.length,
+          itemBuilder: (context, index) {
+            final data = docs[index].data() as Map<String, dynamic>;
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              child: ListTile(
+                title: Text(data['title'] ?? ''),
+                subtitle: Text("${data['category']} • ₹${data['amount']}\n${data['description']}"),
+                isThreeLine: true,
+                trailing: ElevatedButton(
+                  onPressed: () async {
+                    final success = await WorkService().acceptPartTimeWork(data['id'], widget.workerId);
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(success ? "काम स्वीकार हो गया!" : "यह काम पहले ही किसी ने ले लिया!")),
+                    );
+                  },
+                  child: const Text("Accept"),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Help Job - Worker Feed"),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: "Part-Time Work"),
+            Tab(text: "Full-Time Work"),
+          ],
+        ),
+      ),
+      body: Column(
+        children: [
+          // Category Filter Bar
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Row(
+              children: ['All', 'Car Mechanic', 'Editor', 'Normal Work'].map((cat) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: ChoiceChip(
+                    label: Text(cat),
+                    selected: _selectedCategory == cat,
+                    onSelected: (val) => setState(() => _selectedCategory = cat),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildJobList('part_time'),
+                _buildJobList('full_time'),
+              ], 
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
