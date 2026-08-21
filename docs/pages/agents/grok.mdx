@@ -7,7 +7,7 @@ description: Use Grok Build to build, upgrade, debug, and deploy your Expo and R
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-Grok Build is xAI's terminal-based AI coding agent. It can read and write files across your project, run terminal commands, and browse the web. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Grok Build reads directly. Installing the official Expo plugin from the Grok Build plugin marketplace adds Expo Skills and the Expo MCP Server, so Grok Build can apply known-good Expo patterns, fetch documentation from the Expo Model Context Protocol (MCP) Server, manage your EAS deployment workflow, and more.
+Grok Build is xAI's terminal-based AI coding agent. It can read and write files across your project, run terminal commands, and browse the web. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Grok Build reads directly. With the official Expo plugin installed, it can also check EAS and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
 
 ## Quick start
 
@@ -42,7 +42,7 @@ Create a project with the following command or ensure your existing project has 
 
 ### Install the Expo plugin
 
-Install the official Expo plugin from the Grok Build plugin marketplace. The plugin bundles Expo Skills and the Expo MCP Server, so this single install teaches Grok Build known-good Expo patterns and gives it live access to Expo documentation and EAS.
+Install the official Expo plugin from the Grok Build plugin marketplace. The plugin bundles [Expo Skills](/skills/) and the [Expo MCP Server](/mcp/), so this single install teaches Grok Build known-good Expo patterns and gives it live access to Expo documentation and EAS.
 
 <Terminal cmd={['$ grok plugin install expo --trust']} />
 
