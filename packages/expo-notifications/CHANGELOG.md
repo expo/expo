@@ -23,6 +23,7 @@
 
 ### 💡 Others
 
+- [Android] Remove an unreachable legacy JSON null-stripping fallback. ([#49272](https://github.com/expo/expo/pull/49272) by [@vonovak](https://github.com/vonovak))
 - [Android] Correct native-value lookup semantics for audio usage and content type enums. ([#49270](https://github.com/expo/expo/pull/49270) by [@vonovak](https://github.com/vonovak))
 - Drop usage of the deprecated `LegacyEventEmitter`. ([#49080](https://github.com/expo/expo/pull/49080) by [@vonovak](https://github.com/vonovak))
 
