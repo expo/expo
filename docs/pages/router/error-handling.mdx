@@ -103,7 +103,7 @@ export default function Layout() {
 }
 ```
 
-An individual route's `ErrorBoundary` export takes precedence, followed by `Stack.Screen`'s `errorBoundary`, the navigator's `screenErrorBoundary`, and then the nearest layout's `unstable_settings.screenErrorBoundary`. Layout settings apply to descendant screens, while navigator boundaries apply only to that navigator's screens.
+An individual route's `ErrorBoundary` export takes precedence, followed by its `unstable_settings.screenErrorBoundary`, `Stack.Screen`'s `errorBoundary`, the navigator's `screenErrorBoundary`, and then the nearest layout's `unstable_settings.screenErrorBoundary`. Layout settings apply to descendant screens, while navigator boundaries apply only to that navigator's screens.
 
 ### Work in progress
 

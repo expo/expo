@@ -8,11 +8,7 @@ import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
 import type { ErrorBoundaryProps } from './views/Try';
 
-export type DynamicConvention = {
-  name: string;
-  deep: boolean;
-  notFound?: boolean;
-};
+export type DynamicConvention = { name: string; deep: boolean; notFound?: boolean };
 
 type Params = Record<string, string | string[]>;
 
@@ -74,12 +70,8 @@ const CurrentRouteContext = createContext<RouteNode | null>(null);
 export const SuspenseFallbackContext = createContext<
   ComponentType<SuspenseFallbackProps> | undefined
 >(undefined);
-/** This context allows a `_layout.tsx` to provide an error boundary for its child routes. */
-export const LayoutScreenErrorBoundaryContext = createContext<
-  ComponentType<ErrorBoundaryProps> | undefined
->(undefined);
-/** This context carries the error boundary configured by the current navigator. */
-export const NavigatorScreenErrorBoundaryContext = createContext<
+/** This context carries the error boundary configured by the nearest layout, navigator, or screen. */
+export const ScreenErrorBoundaryContext = createContext<
   ComponentType<ErrorBoundaryProps> | undefined
 >(undefined);
 export const LocalRouteParamsContext = createContext<object | undefined>({});

@@ -6,8 +6,7 @@ import type { LoadedRoute, RouteNode } from './Route';
 import {
   findRouteNodeByName,
   getValidInitialRouteName,
-  LayoutScreenErrorBoundaryContext,
-  NavigatorScreenErrorBoundaryContext,
+  ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
   sortRoutesWithInitial,
@@ -206,10 +205,9 @@ function fromImport(
     component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
   }
 
-  const LayoutScreenErrorBoundary =
-    value.type === 'layout' ? unstable_settings?.screenErrorBoundary : undefined;
+  const screenErrorBoundary = unstable_settings?.screenErrorBoundary;
 
-  if (ErrorBoundary || LayoutScreenErrorBoundary) {
+  if (ErrorBoundary || screenErrorBoundary) {
     const Wrapped = React.forwardRef((props: any, ref: any) => {
       let children = React.createElement(component.default || EmptyRoute, {
         ...props,
@@ -217,12 +215,14 @@ function fromImport(
       });
       if (ErrorBoundary) {
         children = <Try catch={ErrorBoundary}>{children}</Try>;
+      } else if (value.type !== 'layout' && screenErrorBoundary) {
+        children = <Try catch={screenErrorBoundary}>{children}</Try>;
       }
-      if (LayoutScreenErrorBoundary) {
+      if (value.type === 'layout' && screenErrorBoundary) {
         children = (
-          <LayoutScreenErrorBoundaryContext value={LayoutScreenErrorBoundary}>
+          <ScreenErrorBoundaryContext value={screenErrorBoundary}>
             {children}
-          </LayoutScreenErrorBoundaryContext>
+          </ScreenErrorBoundaryContext>
         );
       }
       return children;
@@ -323,8 +323,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
-    const LayoutScreenErrorBoundary = use(LayoutScreenErrorBoundaryContext);
-    const NavigatorScreenErrorBoundary = use(NavigatorScreenErrorBoundaryContext);
+    const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
 
@@ -336,8 +335,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       value.type === 'layout'
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
-    const ScreenErrorBoundary = NavigatorScreenErrorBoundary ?? LayoutScreenErrorBoundary;
-
     if (isFocused && !isGuarded) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]!);
@@ -577,9 +574,9 @@ export function routeToScreen<
   const QualifiedRouteComponent = getQualifiedRouteComponent(route);
   const ScreenComponent = errorBoundary
     ? (componentProps: object) => (
-        <NavigatorScreenErrorBoundaryContext value={errorBoundary}>
+        <ScreenErrorBoundaryContext value={errorBoundary}>
           <QualifiedRouteComponent {...(componentProps as any)} />
-        </NavigatorScreenErrorBoundaryContext>
+        </ScreenErrorBoundaryContext>
       )
     : QualifiedRouteComponent;
 

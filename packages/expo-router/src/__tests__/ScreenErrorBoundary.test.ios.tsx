@@ -1,7 +1,8 @@
 import { screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
-import { Stack, type ErrorBoundaryProps } from '../exports';
+import type { ErrorBoundaryProps } from '../exports';
+import { Stack } from '../layouts/Stack';
 import { renderRouterAsync } from '../testing-library';
 
 function ThrowingRoute(): never {
@@ -26,6 +27,20 @@ it('uses a layout screen error boundary for a child route', async () => {
   });
 
   expect(screen.getByTestId('layout-boundary')).toBeOnTheScreen();
+});
+
+it('uses a route screen error boundary configured with unstable settings', async () => {
+  const RouteBoundary = boundary('route-boundary');
+
+  await renderRouterAsync({
+    _layout: () => <Stack />,
+    index: {
+      default: ThrowingRoute,
+      unstable_settings: { screenErrorBoundary: RouteBoundary },
+    },
+  });
+
+  expect(screen.getByTestId('route-boundary')).toBeOnTheScreen();
 });
 
 it('uses the navigator boundary before the layout boundary', async () => {

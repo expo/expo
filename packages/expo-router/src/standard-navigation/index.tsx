@@ -4,7 +4,7 @@ import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
 
-import { getValidInitialRouteName, useRouteNode } from '../Route';
+import { getValidInitialRouteName, ScreenErrorBoundaryContext, useRouteNode } from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
@@ -13,6 +13,7 @@ import {
   type NavigationState,
   type RouterFactory,
 } from '../react-navigation/native';
+import type { ErrorBoundaryProps } from '../views/Try';
 import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
@@ -24,6 +25,11 @@ import type {
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
+
+type ScreenErrorBoundaryProps = {
+  /** A component to render when an individual screen in this navigator throws an error. */
+  screenErrorBoundary?: ComponentType<ErrorBoundaryProps>;
+};
 
 export type {
   IntegrateWithRouterOptions,
@@ -57,7 +63,14 @@ type StandardRouterNavigatorComponent<
   typeof withLayoutContext<
     NavigatorOptions,
     ComponentType<
-      StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>
+      StandardRouterNavigatorProps<
+        State,
+        NavigatorOptions,
+        EventMap,
+        NavigatorProps,
+        RouterOptions
+      > &
+        ScreenErrorBoundaryProps
     >,
     State,
     EventMap
@@ -173,7 +186,9 @@ export function unstable_integrateWithRouter<
     RouterOptions
   >;
 
-  function StandardRouterNavigator(props: NavPropsType) {
+  function StandardRouterNavigator(allProps: NavPropsType & ScreenErrorBoundaryProps) {
+    const { screenErrorBoundary, ...rest } = allProps;
+    const props = rest as NavPropsType;
     const routeNode = useRouteNode();
     const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps<
       NavigatorOptions,
@@ -216,7 +231,7 @@ export function unstable_integrateWithRouter<
       emitter: useStandardEmitter(navigation),
     };
 
-    return (
+    const content = (
       <NavigationContent>
         <NavigatorContent
           // `extraProps` is everything that is not a `useNavigationBuilder` option, which is the
@@ -232,6 +247,12 @@ export function unstable_integrateWithRouter<
           {...standardArgs}
         />
       </NavigationContent>
+    );
+
+    return screenErrorBoundary ? (
+      <ScreenErrorBoundaryContext value={screenErrorBoundary}>{content}</ScreenErrorBoundaryContext>
+    ) : (
+      content
     );
   }
 

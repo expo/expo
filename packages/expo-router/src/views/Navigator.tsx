@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   getValidInitialRouteName,
-  NavigatorScreenErrorBoundaryContext,
+  ScreenErrorBoundaryContext,
   useContextKey,
   useRouteNode,
 } from '../Route';
@@ -38,7 +38,7 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   children?: UseNavigationBuilderOptions['children'];
   router?: T;
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
-  /** A component to render when any screen in this navigator throws an error. */
+  /** A component to render when an individual screen in this navigator throws an error. */
   screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
 };
 
@@ -88,6 +88,12 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
     return null;
   }
 
+  const content = (
+    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+      {nonScreenChildren}
+    </GuardContextProvider>
+  );
+
   return (
     <NavigatorContext.Provider
       value={{
@@ -95,11 +101,13 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      <NavigatorScreenErrorBoundaryContext value={screenErrorBoundary}>
-        <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-          {nonScreenChildren}
-        </GuardContextProvider>
-      </NavigatorScreenErrorBoundaryContext>
+      {screenErrorBoundary ? (
+        <ScreenErrorBoundaryContext value={screenErrorBoundary}>
+          {content}
+        </ScreenErrorBoundaryContext>
+      ) : (
+        content
+      )}
     </NavigatorContext.Provider>
   );
 }
@@ -132,14 +140,18 @@ function SlotNavigator({ screenErrorBoundary, ...props }: NavigatorProps<any>) {
   });
   const focusedRouteKey = state.routes[state.index]?.key;
 
-  return (
-    <NavigatorScreenErrorBoundaryContext value={screenErrorBoundary}>
-      <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-        <NavigationContent>
-          {focusedRouteKey ? descriptors[focusedRouteKey]!.render() : null}
-        </NavigationContent>
-      </GuardContextProvider>
-    </NavigatorScreenErrorBoundaryContext>
+  const content = (
+    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+      <NavigationContent>
+        {focusedRouteKey ? descriptors[focusedRouteKey]!.render() : null}
+      </NavigationContent>
+    </GuardContextProvider>
+  );
+
+  return screenErrorBoundary ? (
+    <ScreenErrorBoundaryContext value={screenErrorBoundary}>{content}</ScreenErrorBoundaryContext>
+  ) : (
+    content
   );
 }
 

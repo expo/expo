@@ -32,6 +32,7 @@
 
 ### 🎉 New features
 
+- [api] Add screen error boundaries ([#49174](https://github.com/expo/expo/pull/49174) by [@Ubax](https://github.com/Ubax))
 - Add global registry for routers. ([#48707](https://github.com/expo/expo/pull/48707) by [@Ubax](https://github.com/Ubax))
 - Improve withLayoutContext types ([#48356](https://github.com/expo/expo/pull/48356) by [@Ubax](https://github.com/Ubax))
 - Expose `unstable_nativeProps` props from Stack component ([#48152](https://github.com/expo/expo/pull/48152) by [@Ubax](https://github.com/Ubax))

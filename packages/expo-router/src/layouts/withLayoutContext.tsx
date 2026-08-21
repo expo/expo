@@ -8,7 +8,7 @@ import type {
 } from 'react';
 import { Children, forwardRef, useMemo } from 'react';
 
-import { NavigatorScreenErrorBoundaryContext, useContextKey, useRouteNode } from '../Route';
+import { useContextKey, useRouteNode } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { Href, PickPartial } from '../types';
@@ -16,7 +16,6 @@ import type { ScreenProps } from '../useScreens';
 import { useSortedScreens } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
-import type { ErrorBoundaryProps } from '../views/Try';
 import { GuardContextProvider, normalizeRouteName, type GuardedRedirects } from './GuardContext';
 import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 
@@ -38,18 +37,12 @@ export function useFilterScreenChildren<
   return useMemo(() => {
     const customChildren: any[] = [];
 
-    const screens: (ScreenProps<TOptions, TState, TEventMap> & {
-      name: string;
-    })[] = [];
+    const screens: (ScreenProps<TOptions, TState, TEventMap> & { name: string })[] = [];
     const guardedRedirects: GuardedRedirects = new Map();
 
     function flattenChild(child: ReactNode, exclude = false, redirectTo?: Href) {
       if (isScreen(child, contextKey)) {
-        screens.push(
-          child.props as ScreenProps<TOptions, TState, TEventMap> & {
-            name: string;
-          }
-        );
+        screens.push(child.props as ScreenProps<TOptions, TState, TEventMap> & { name: string });
         if (exclude) {
           guardedRedirects.set(child.props.name, redirectTo);
         }
@@ -162,7 +155,7 @@ export function withLayoutContext<
   ) => (ScreenProps<TOptions, TState, TEventMap> & { name: string })[]
 ) {
   return Object.assign(
-    forwardRef(({ children: userDefinedChildren, screenErrorBoundary, ...props }: any, ref) => {
+    forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
       const node = useRouteNode();
 
@@ -203,9 +196,7 @@ export function withLayoutContext<
       return (
         <IsWithinLayoutContext value>
           <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-            <NavigatorScreenErrorBoundaryContext value={screenErrorBoundary}>
-              <Nav {...props} id={contextKey} ref={ref} children={sorted} />
-            </NavigatorScreenErrorBoundaryContext>
+            <Nav {...props} id={contextKey} ref={ref} children={sorted} />
           </GuardContextProvider>
         </IsWithinLayoutContext>
       );
@@ -217,8 +208,6 @@ export function withLayoutContext<
   ) as ForwardRefExoticComponent<
     PropsWithoutRef<PickPartial<ComponentProps<T>, 'children'>> & RefAttributes<unknown>
   > & {
-    /** A component to render when any screen in this navigator throws an error. */
-    screenErrorBoundary?: ComponentType<ErrorBoundaryProps>;
     Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
     Protected: typeof Protected;
   };
