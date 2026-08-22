@@ -19,6 +19,7 @@ describe('expo-app-intents on unsupported platforms', () => {
     await expect(
       AppIntents.setEntityCatalogAsync('dish', [{ id: 'margherita', title: 'Margherita Pizza' }])
     ).resolves.toBeUndefined();
+    await expect(AppIntents.reindexEntitiesAsync()).resolves.toBeUndefined();
   });
 
   it('rejects refreshShortcutsAsync with UnavailabilityError', async () => {

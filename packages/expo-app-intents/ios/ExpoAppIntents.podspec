@@ -20,6 +20,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
+  s.dependency 'ExpoUI'
 
   s.source_files = "**/*.{h,m,swift}"
   s.pod_target_xcconfig = {
@@ -31,5 +32,8 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Tests/**/*.{m,swift}'
+    # ExpoUI pulls in C++ through React, so the test target has to link the C++ runtime or the
+    # link step fails on operator new and the __cxa_* personality symbols.
+    test_spec.libraries = 'c++'
   end
 end

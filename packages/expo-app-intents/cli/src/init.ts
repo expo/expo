@@ -15,6 +15,12 @@ export type InitOptions = {
   directory: string;
   examples: InitExample[];
   templatesDir: string;
+  /**
+   * Adds Spotlight indexing, a `Transferable` export, and an open intent on top of the mail
+   * example, and has the setup module register the entity kind so `appEntityIdentifier()` works
+   * from JavaScript.
+   */
+  visualIntelligence?: boolean;
 };
 
 export const DEFAULT_DIRECTORY = 'app-intents';
@@ -45,23 +51,64 @@ const EXAMPLE_TEMPLATE_FILES: Record<InitExample, string[]> = {
   ],
 };
 
+/** The example that `--visual-intelligence` extends. */
+export const VISUAL_INTELLIGENCE_EXAMPLE: InitExample = 'mail';
+
+const VISUAL_INTELLIGENCE_DESCRIPTION =
+  'Allows Siri to more intelligently read the on-screen contents of your app.';
+
+/**
+ * Added on top of the mail example by `--visual-intelligence`. These are all extensions of the
+ * base types, so the mail example itself is unchanged whether or not the flag is used.
+ */
+const VISUAL_INTELLIGENCE_TEMPLATE_FILES = [
+  'examples/mail-visual-intelligence/OpenMailDraftIntent.swift',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Spotlight.swift',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Transferable.swift',
+  'examples/mail-visual-intelligence/Queries/MailDraftEntityQuery+Indexed.swift',
+];
+
+/**
+ * The `OnCreate` statement that turns the visual intelligence files into a working layer.
+ * `registerIndexed` also mirrors the catalog published with `setEntityCatalogAsync` into Spotlight,
+ * so nothing has to index the drafts by hand.
+ *
+ * Indented for the body of `OnCreate`, because it is both rendered into a new setup module and
+ * offered to the user for pasting into one this run kept.
+ */
+const VISUAL_INTELLIGENCE_REGISTRATION = `      if #available(iOS 18.0, *) {
+        AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
+      }`;
+
+/** Finds the registration in an `AppIntentsSetup.swift` on disk, however it is formatted around. */
+const VISUAL_INTELLIGENCE_REGISTRATION_PATTERN = /registerIndexed\s*\(\s*["']mailDraft["']/;
+
 /**
  * Builds the setup module. It is generated rather than copied because what it wires up depends on
- * the selection: it may only refer to `AppShortcuts` when a provider is actually written.
+ * the selection: it may only refer to `AppShortcuts` when a provider is actually written, and it
+ * registers the entity kind only for visual intelligence.
  */
-function renderAppIntentsSetup(options: { hasShortcuts: boolean }): string {
-  const body: string[] = ['    Name("AppIntentsSetup")'];
+function renderAppIntentsSetup(options: {
+  hasShortcuts: boolean;
+  visualIntelligence: boolean;
+}): string {
+  const onCreate: string[] = [];
+  if (options.visualIntelligence) {
+    onCreate.push(VISUAL_INTELLIGENCE_REGISTRATION);
+  }
   if (options.hasShortcuts) {
-    body.push(`    OnCreate {
-      Task {
+    onCreate.push(`      Task {
         await AppIntentDispatcher.shared.setShortcutsRefreshHandler {
           AppShortcuts.updateAppShortcutParameters()
         }
         AppShortcuts.updateAppShortcutParameters()
-      }
-    }`);
+      }`);
   }
 
+  const body: string[] = ['    Name("AppIntentsSetup")'];
+  if (onCreate.length > 0) {
+    body.push(`    OnCreate {\n${onCreate.join('\n\n')}\n    }`);
+  }
   return `internal import ExpoAppIntents
 internal import ExpoModulesCore
 
@@ -194,7 +241,7 @@ export function getExamplesPrompt(): PromptObject {
   return {
     type: 'multiselect',
     name: 'examples',
-    message: 'Which App Intents examples should be included?',
+    message: 'Which examples should be scaffolded?',
     choices: ALL_INIT_EXAMPLES.map((example) => ({
       title: example,
       value: example,
@@ -205,21 +252,50 @@ export function getExamplesPrompt(): PromptObject {
   };
 }
 
+/**
+ * Asked only after the example it extends has been selected, which is why it is a follow-up prompt
+ * rather than an entry in the picker: a `prompts` multiselect cannot enable a choice in response to
+ * another choice being selected.
+ */
+export function getVisualIntelligencePrompt(): PromptObject {
+  return {
+    type: 'confirm',
+    name: 'visualIntelligence',
+    message: `Add visual intelligence support? ${VISUAL_INTELLIGENCE_DESCRIPTION}`,
+    initial: false,
+  };
+}
+
+export type ResolvedExamples = {
+  examples: InitExample[];
+  visualIntelligence: boolean;
+};
+
 export async function resolveExamplesAsync(
   interactive: boolean,
-  values: readonly string[] | undefined
-): Promise<InitExample[]> {
+  values: readonly string[] | undefined,
+  visualIntelligence: boolean = false
+): Promise<ResolvedExamples> {
   if (values && values.length > 0) {
-    return resolveExamples(values);
+    return { examples: resolveExamples(values), visualIntelligence };
   }
   if (!interactive) {
-    return DEFAULT_EXAMPLES;
+    return { examples: DEFAULT_EXAMPLES, visualIntelligence };
   }
 
   const { examples } = await prompts(getExamplesPrompt(), {
     onCancel: () => process.exit(0),
   });
-  return resolveExamples(examples);
+  const selected = resolveExamples(examples);
+
+  if (visualIntelligence || !selected.includes(VISUAL_INTELLIGENCE_EXAMPLE)) {
+    return { examples: selected, visualIntelligence };
+  }
+
+  const answer = await prompts(getVisualIntelligencePrompt(), {
+    onCancel: () => process.exit(0),
+  });
+  return { examples: selected, visualIntelligence: answer.visualIntelligence === true };
 }
 
 export function normalizeDirectory(directory: string | undefined): string {
@@ -378,10 +454,73 @@ async function warnAboutMissingShortcutRefreshAsync(
   );
 }
 
-function getTemplateFiles(examples: readonly InitExample[]): string[] {
+/**
+ * Warns when visual intelligence was requested but the `AppIntentsSetup.swift` this run kept does
+ * not register the entity kind.
+ *
+ * `init` never overwrites the setup module, so adding the flag to a setup scaffolded earlier copies
+ * the Spotlight, `Transferable` and open-intent files but leaves the registration out. That one call
+ * is what gives `appEntityIdentifier()` a kind to resolve and what mirrors the catalog into
+ * Spotlight, so without it every file is in place and nothing works.
+ */
+async function warnAboutMissingEntityRegistrationAsync(
+  filePath: string,
+  directory: string
+): Promise<void> {
+  const contents = await fs.readFile(filePath, 'utf8');
+  if (VISUAL_INTELLIGENCE_REGISTRATION_PATTERN.test(contents)) {
+    return;
+  }
+
+  // A setup module that already has an `OnCreate` - one that refreshes a shortcuts provider, or one
+  // the user wrote - needs the statement alone; a module without one needs the block around it too.
+  const hasOnCreate = contents.includes('OnCreate');
+  const snippet = hasOnCreate
+    ? VISUAL_INTELLIGENCE_REGISTRATION
+    : `    OnCreate {\n${VISUAL_INTELLIGENCE_REGISTRATION}\n    }`;
+  const location = hasOnCreate
+    ? `the OnCreate block in ${directory}/AppIntentsSetup.swift`
+    : `the definition() body in ${directory}/AppIntentsSetup.swift`;
+
+  console.warn(
+    `${directory}/AppIntentsSetup.swift already exists and init never overwrites it, so the visual ` +
+      `intelligence layer is scaffolded but not registered. Its Swift files are compiled into the ` +
+      `app, and the MailDraftEntity kind is only usable once the setup module registers it: until ` +
+      `then appEntityIdentifier() resolves nothing and no draft reaches Spotlight, so the feature ` +
+      `is inert with no error to go on. Add this to ${location}:\n\n${snippet}\n`
+  );
+}
+
+/**
+ * Throws when `--visual-intelligence` was requested without the example it extends, rather than
+ * scaffolding the flag away silently.
+ *
+ * The flag reaches this check from the interactive picker too — it is passed on the command line
+ * while the examples are chosen in the prompt — so the message cannot assume that passing
+ * `--examples` is the only way out.
+ */
+export function assertVisualIntelligenceSelection(
+  examples: readonly InitExample[],
+  visualIntelligence: boolean
+): void {
+  if (visualIntelligence && !examples.includes(VISUAL_INTELLIGENCE_EXAMPLE)) {
+    throw new Error(
+      `--visual-intelligence extends the ${VISUAL_INTELLIGENCE_EXAMPLE} example with Spotlight ` +
+        `indexing and on-screen entity support, and the selected examples ` +
+        `(${examples.join(', ')}) do not include it. Add the ${VISUAL_INTELLIGENCE_EXAMPLE} ` +
+        `example — select it in the picker, or pass ` +
+        `--examples ${VISUAL_INTELLIGENCE_EXAMPLE} — or run again without --visual-intelligence.`
+    );
+  }
+}
+
+function getTemplateFiles(examples: readonly InitExample[], visualIntelligence: boolean): string[] {
   const files: string[] = [];
   for (const example of examples) {
     files.push(...EXAMPLE_TEMPLATE_FILES[example]);
+  }
+  if (visualIntelligence) {
+    files.push(...VISUAL_INTELLIGENCE_TEMPLATE_FILES);
   }
   return files;
 }
@@ -715,6 +854,8 @@ function getConfigModifications(
  */
 export async function runInit(options: InitOptions): Promise<void> {
   const { projectRoot, directory, examples, templatesDir } = options;
+  const visualIntelligence = options.visualIntelligence ?? false;
+  assertVisualIntelligenceSelection(examples, visualIntelligence);
 
   const config = readAppConfig(projectRoot, directory);
   await assertDirectoryIsNotAlreadyConfiguredAsync(projectRoot, config, directory);
@@ -749,13 +890,16 @@ export async function runInit(options: InitOptions): Promise<void> {
     appIntentsSetupPath,
     // A provider kept from an earlier run counts too: the setup module has to refresh it even when
     // this run's selection contributes no phrase and writes none.
-    renderAppIntentsSetup({ hasShortcuts }),
+    renderAppIntentsSetup({
+      hasShortcuts,
+      visualIntelligence,
+    }),
     written,
     skipped,
     'AppIntentsSetup.swift'
   );
 
-  for (const templateFile of getTemplateFiles(examples)) {
+  for (const templateFile of getTemplateFiles(examples, visualIntelligence)) {
     const destinationPath = getDestinationPath(templateFile);
     const destination = path.join(intentsDir, destinationPath);
     if (existsSync(destination)) {
@@ -795,9 +939,11 @@ export async function runInit(options: InitOptions): Promise<void> {
       );
     }
   }
-  console.log(`Selected examples: ${examples.join(', ')}`);
+  console.log(
+    `Selected examples: ${examples.join(', ')}${visualIntelligence ? ' (+ visual intelligence)' : ''}`
+  );
   if (written.length) {
-    console.log(`Created ${directory}/: ${written.join(', ')}`);
+    console.log(`Created in ${directory}/: ${written.join(', ')}`);
   }
   if (skipped.length) {
     console.log(`Skipped existing files: ${skipped.join(', ')}`);
@@ -808,5 +954,14 @@ export async function runInit(options: InitOptions): Promise<void> {
   if (keptExistingAppIntentsSetup && hasShortcuts) {
     await warnAboutMissingShortcutRefreshAsync(appIntentsSetupPath, directory);
   }
-  console.log(`\nNext steps:\n  1. npx expo prebuild -p ios\n  2. npx expo run:ios`);
+  if (visualIntelligence && keptExistingAppIntentsSetup) {
+    await warnAboutMissingEntityRegistrationAsync(appIntentsSetupPath, directory);
+  }
+  console.log(
+    `\nNext steps:\n` +
+      `  1. npx expo prebuild -p ios\n` +
+      `  2. npx expo run:ios\n` +
+      `  3. Learn how to receive intent invocations in your JavaScript code\n` +
+      `     https://docs.expo.dev/versions/latest/sdk/app-intents/#usage`
+  );
 }
