@@ -43,7 +43,7 @@ export function buildInstallFollowUps({
   } else {
     followups.push({
       id: 'reload-app',
-      command: 'npx exagent runtime errors',
+      command: 'npx exagent runtime:errors',
       why: 'Only JavaScript changed, so reloading the app is enough; this reports what the reloaded app throws.',
     });
   }
@@ -51,13 +51,13 @@ export function buildInstallFollowUps({
   if (packagesWithSkills.length === 1) {
     followups.push({
       id: 'skills-show',
-      command: `npx exagent skills show ${packagesWithSkills[0]}`,
+      command: `npx exagent skills:show ${packagesWithSkills[0]}`,
       why: `${packagesWithSkills[0]} ships an agent skill: read it before writing code against the package.`,
     });
   } else if (packagesWithSkills.length > 1) {
     followups.push({
       id: 'skills-list',
-      command: 'npx exagent skills list',
+      command: 'npx exagent skills:list',
       why: `${packagesWithSkills.length} of the installed packages ship agent skills: read them before writing code against the packages.`,
     });
   }

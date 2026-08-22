@@ -90,10 +90,10 @@ describe(generateAgentsMdBlock, () => {
       'exagent dev --plan',
       '`npx exagent start` — `expo start` and nothing else',
       'exagent install',
-      'exagent runtime eval',
-      'exagent runtime errors',
+      'exagent runtime:eval',
+      'exagent runtime:errors',
       'exagent navigate',
-      'exagent skills list',
+      'exagent skills:list',
     ]) {
       expect(block).toContain(command);
     }
@@ -106,7 +106,7 @@ describe(generateAgentsMdBlock, () => {
       skillsDirs: [],
     });
 
-    expect(block).toContain('exagent setup');
+    expect(block).toContain('exagent agents:setup');
     expect(block).not.toContain('.claude/skills');
   });
 

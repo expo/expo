@@ -78,7 +78,7 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
   // told that it does not have to read these files itself.
   if (followUpsEnabled(options.followups)) {
     reportFollowUps(
-      'skills sync',
+      'skills:sync',
       buildSkillsSyncFollowUps({
         skillPackages,
         agentId: getAgentTelemetryContext()?.id ?? null,
@@ -148,7 +148,7 @@ export async function showSkillsAsync(
   if (!packageSkills.length) {
     throw new CommandError(
       'BAD_ARGS',
-      `No skills found for "${packageName}". The package is not installed, or it ships no skills/<name>/SKILL.md directory. Run ${chalk.bold('npx exagent skills list')} to see the packages that provide skills.`
+      `No skills found for "${packageName}". The package is not installed, or it ships no skills/<name>/SKILL.md directory. Run ${chalk.bold('npx exagent skills:list')} to see the packages that provide skills.`
     );
   }
 
@@ -228,7 +228,7 @@ export async function autoSyncSkillsAsync(
       Log.log(
         chalk.gray(
           `Synced agent skills: ${created.length} linked, ${pruned.length} removed. Run ${chalk.bold(
-            'npx exagent skills list'
+            'npx exagent skills:list'
           )} for details.`
         )
       );

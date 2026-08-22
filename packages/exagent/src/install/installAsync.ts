@@ -22,7 +22,7 @@ import type { InstallPlan } from './resolveOptions';
  */
 export async function installAsync(projectRoot: string, plan: InstallPlan): Promise<number> {
   // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints: taken before the mutating phase, so
-  // `exagent undo` puts back the manifest and lockfile `expo install` is about to rewrite.
+  // `exagent checkpoint:undo` puts back the manifest and lockfile `expo install` is about to rewrite.
   await checkpointBeforeAsync(projectRoot, {
     label: 'exagent install',
     enabled: plan.checkpoint,

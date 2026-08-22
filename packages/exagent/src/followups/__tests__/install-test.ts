@@ -68,7 +68,7 @@ describe(buildInstallFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['reload-app']);
-    expect(followups[0]!.command).toBe('npx exagent runtime errors');
+    expect(followups[0]!.command).toBe('npx exagent runtime:errors');
     expect(followups[0]!.why).toContain('reload');
   });
 
@@ -88,7 +88,7 @@ describe(buildInstallFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['reload-app', 'skills-show']);
-    expect(followups[1]!.command).toBe('npx exagent skills show @expo/ui');
+    expect(followups[1]!.command).toBe('npx exagent skills:show @expo/ui');
   });
 
   it(`should list the skills when more than one package ships one`, () => {
@@ -98,7 +98,7 @@ describe(buildInstallFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['reload-app', 'skills-list']);
-    expect(followups[1]!.command).toBe('npx exagent skills list');
+    expect(followups[1]!.command).toBe('npx exagent skills:list');
   });
 
   it(`should keep the skill pointer next to the build warning`, () => {

@@ -70,7 +70,7 @@ describe(checkpointBeforeAsync, () => {
     expect(result.record?.id).toBe('c0ffee1234567890');
     expect(createCheckpointAsync).toHaveBeenCalledWith(projectRoot, { label: 'exagent install' });
     expect(printed()).toContain('c0ffee1');
-    expect(printed()).toContain('npx exagent undo');
+    expect(printed()).toContain('npx exagent checkpoint:undo');
   });
 
   it(`should snapshot without printing when the caller owns stdout`, async () => {

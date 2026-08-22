@@ -37,8 +37,8 @@ export function buildNewFollowUps({ directory, installed }: NewFollowUpInput): F
       why: 'Runs the app, deciding between Expo Go, a development build and a plain dev server from the project state.',
     },
     {
-      id: 'setup',
-      command: inProject('npx exagent setup'),
+      id: 'agents-setup',
+      command: inProject('npx exagent agents:setup'),
       why: 'Links the agent skills of the installed packages and writes the managed AGENTS.md block.',
     }
   );

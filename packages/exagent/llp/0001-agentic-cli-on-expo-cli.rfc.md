@@ -48,9 +48,9 @@ New workspace package `packages/exagent/`:
 
 ```
 packages/exagent/       # model-free CLI (Shape 1) — no agent loop
-├── bin/cli.ts          # `npx exagent setup|skills|install|start|mcp|context|new`
+├── bin/cli.ts          # flat commands + colon groups (runtime:*, skills:*, checkpoint:*, agents:*)
 ├── src/
-│   ├── setup/          # install Expo skills + register MCP server into Claude Code/Cursor/Codex
+│   ├── agents/         # agents:setup — sync module skills + write the AGENTS.md managed block
 │   ├── skills/         # skills sync/list/show/clean (code from PoC PRs, [[0003-knowledge-tools-and-skills]])
 │   ├── install/        # wraps `expo install` subprocess + skill sync + impact classification
 │   ├── start/          # wraps `expo start` subprocess + skill sync; later smart start ([[0004-smart-start-and-project-state]])

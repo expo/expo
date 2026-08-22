@@ -87,7 +87,7 @@ describe(createCheckpointAsync, () => {
   it(`should skip a project where git tracks no file`, async () => {
     jest.mocked(writeSnapshotTreeAsync).mockResolvedValue({ tree: 'empty-tree', files: 0 });
 
-    const result = await createCheckpointAsync(projectRoot, { label: 'exagent setup' });
+    const result = await createCheckpointAsync(projectRoot, { label: 'exagent agents:setup' });
 
     expect(result.skipped).toBe('no-files');
     expect(commitSnapshotTreeAsync).not.toHaveBeenCalled();
@@ -114,7 +114,7 @@ describe(printCheckpointAsync, () => {
     expect(printed()).toContain('c0ffee1');
     expect(printed()).toContain('before refactor');
     expect(printed()).toContain('12 files');
-    expect(printed()).toContain('npx exagent undo');
+    expect(printed()).toContain('npx exagent checkpoint:undo');
   });
 
   it(`should print one JSON object with a stable key set`, async () => {

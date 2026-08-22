@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import type { Command } from '../types';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
 
-export const exagentSetup: Command = async (argv) => {
+export const exagentAgentsSetup: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -22,7 +22,7 @@ export const exagentSetup: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Set this project up for coding agents`,
-      chalk`npx exagent setup`,
+      chalk`npx exagent agents:setup`,
       [
         `--agent <agent>     Set up for specific agents (can be used multiple times)`,
         `--no-agents-md      Do not create or update AGENTS.md`,
@@ -35,7 +35,7 @@ export const exagentSetup: Command = async (argv) => {
         '',
         chalk`  Two things, both safe to run again at any time:`,
         '',
-        chalk`  1. Links the agent skills the installed packages ship, like {bold npx exagent skills sync}.`,
+        chalk`  1. Links the agent skills the installed packages ship, like {bold npx exagent skills:sync}.`,
         chalk`  2. Maintains one managed block in the project's {bold AGENTS.md}: what this project is,`,
         chalk`     whether Expo Go can run it, and the commands that answer in a machine-readable shape.`,
         '',
@@ -46,7 +46,7 @@ export const exagentSetup: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx exagent setup -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx exagent agents:setup -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');

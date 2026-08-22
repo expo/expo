@@ -101,7 +101,7 @@ describe(startAsync, () => {
     // streaming survives in a terminal a person or an agent reads.
     expect(printed()).toContain('Next:');
     expect(printed()).toContain('exp://192.168.1.5:8081');
-    expect(printed()).toContain('npx exagent runtime errors');
+    expect(printed()).toContain('npx exagent runtime:errors');
     expect(printed()).toContain('npx eas build:configure');
 
     end(0);

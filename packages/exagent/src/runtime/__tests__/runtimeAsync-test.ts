@@ -192,7 +192,7 @@ describe(runtimeEvalAsync, () => {
     expect(error.message).toContain('Expo Go for Android');
     expect(error.message).toContain('report an empty window');
     expect(error.message).not.toMatch(/--timeout/);
-    expect(error.suggestedCommand).toBe('npx exagent runtime errors');
+    expect(error.suggestedCommand).toBe('npx exagent runtime:errors');
   });
 
   it(`should report a failed evaluate request with the reason and a next step`, async () => {
@@ -257,7 +257,7 @@ describe(runtimeErrorsAsync, () => {
       followups: [
         {
           id: 'runtime-errors-reproduce',
-          command: 'npx exagent runtime errors --duration 4000',
+          command: 'npx exagent runtime:errors --duration 4000',
           why: expect.stringContaining('reproduce'),
         },
       ],
@@ -291,7 +291,7 @@ describe(runtimeErrorsAsync, () => {
     await runtimeErrorsAsync(errorsOptions);
 
     expect(printed()).toContain('Next:');
-    expect(printed()).toContain('npx exagent runtime errors --duration 2000');
+    expect(printed()).toContain('npx exagent runtime:errors --duration 2000');
   });
 
   it(`should ask for a longer window when nothing was reported`, async () => {
@@ -299,7 +299,7 @@ describe(runtimeErrorsAsync, () => {
 
     await runtimeErrorsAsync(errorsOptions);
 
-    expect(printed()).toContain('npx exagent runtime errors --duration 4000');
+    expect(printed()).toContain('npx exagent runtime:errors --duration 4000');
   });
 
   it(`should print no Next section with --no-followups`, async () => {
@@ -391,7 +391,7 @@ describe(runtimeNetworkAsync, () => {
       followups: [
         {
           id: 'runtime-network-clean',
-          command: 'npx exagent runtime errors --duration 5000',
+          command: 'npx exagent runtime:errors --duration 5000',
           why: expect.stringContaining('answered'),
         },
       ],
@@ -423,7 +423,7 @@ describe(runtimeNetworkAsync, () => {
 
     expect(printed()).toContain('1 of them failed');
     expect(printed()).toContain('Next:');
-    expect(printed()).toContain('npx exagent runtime errors --duration 5000');
+    expect(printed()).toContain('npx exagent runtime:errors --duration 5000');
   });
 
   // Live behavior: a `fetch` to a closed port is reported as a request the runtime never answered,
@@ -434,7 +434,7 @@ describe(runtimeNetworkAsync, () => {
     await runtimeNetworkAsync(networkOptions);
 
     expect(printed()).toContain('1 of them never answered');
-    expect(printed()).toContain('npx exagent runtime errors --duration 5000');
+    expect(printed()).toContain('npx exagent runtime:errors --duration 5000');
     expect(printed()).not.toContain('Every request answered');
   });
 
@@ -458,7 +458,7 @@ describe(runtimeNetworkAsync, () => {
     expect(error.code).toBe('NETWORK_DOMAIN_UNAVAILABLE');
     expect(error.message).toContain('Network.enable');
     expect(error.message).toContain(`'Network.enable' wasn't found`);
-    expect(error.suggestedCommand).toBe('npx exagent runtime errors');
+    expect(error.suggestedCommand).toBe('npx exagent runtime:errors');
     expect(printed()).not.toContain('No network requests were reported');
   });
 

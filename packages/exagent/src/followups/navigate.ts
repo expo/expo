@@ -23,7 +23,7 @@ export function buildNavigateFollowUps({ platform, deviceId }: NavigateFollowUpI
     },
     {
       id: 'runtime-errors',
-      command: 'npx exagent runtime errors',
+      command: 'npx exagent runtime:errors',
       why: 'Reads the errors the app reported while rendering this route.',
     },
   ]);

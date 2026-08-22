@@ -198,7 +198,7 @@ describe(navigateAsync, () => {
         },
         {
           id: 'runtime-errors',
-          command: 'npx exagent runtime errors',
+          command: 'npx exagent runtime:errors',
           why: expect.any(String),
         },
       ],
@@ -250,7 +250,7 @@ describe(navigateAsync, () => {
 
       expect(printed()).toContain('Next:');
       expect(printed()).toContain('xcrun simctl io IOS-1 screenshot screen.png');
-      expect(printed()).toContain('npx exagent runtime errors');
+      expect(printed()).toContain('npx exagent runtime:errors');
     });
 
     it(`should offer the adb screenshot for an Android device`, async () => {

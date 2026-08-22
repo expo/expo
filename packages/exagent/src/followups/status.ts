@@ -12,7 +12,7 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
   if (report.devServer?.running && report.devServer.appsConnected > 0) {
     followups.push({
       id: 'runtime-errors',
-      command: 'npx exagent runtime errors',
+      command: 'npx exagent runtime:errors',
       why: 'An app is connected to the dev server, so what it throws can be read from here.',
     });
   }
@@ -20,7 +20,7 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
   if (report.skills && report.skills.discovered > report.skills.linked) {
     followups.push({
       id: 'skills-sync',
-      command: 'npx exagent skills sync',
+      command: 'npx exagent skills:sync',
       why: `Only ${report.skills.linked} of ${report.skills.discovered} discovered skills are linked, so the rest are invisible to the agent.`,
     });
   }

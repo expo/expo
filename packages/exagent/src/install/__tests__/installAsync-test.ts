@@ -159,7 +159,7 @@ describe(installAsync, () => {
       await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
 
       expect(printed()).toContain('Next:');
-      expect(printed()).toContain('npx exagent runtime errors');
+      expect(printed()).toContain('npx exagent runtime:errors');
       expect(printed()).toContain('reload');
     });
 
@@ -184,7 +184,7 @@ describe(installAsync, () => {
       await installAsync(projectRoot, resolveInstallPlan(['@expo/ui@~1.0.0']));
 
       expect(listSkillPackagesAsync).toHaveBeenCalledWith(projectRoot, ['@expo/ui@~1.0.0']);
-      expect(printed()).toContain('npx exagent skills show @expo/ui');
+      expect(printed()).toContain('npx exagent skills:show @expo/ui');
     });
 
     it(`should not look for skills when the skill sync is off`, async () => {

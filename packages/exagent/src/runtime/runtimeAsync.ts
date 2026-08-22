@@ -104,11 +104,11 @@ function evaluateUnsupportedError(devServerUrl: string): CommandError {
     'RUNTIME_EVALUATE_UNSUPPORTED',
     [
       `The app connected to ${devServerUrl} cannot evaluate JavaScript.`,
-      `Why: its runtime answered Runtime.evaluate with "method not found". Expo Go for Android ships a JavaScript engine built without the Chrome DevTools Protocol debugger, so nothing can be evaluated in it, and "npx exagent runtime errors" and "npx exagent runtime network" connect to it but report an empty window. Expo Go on iOS answers all three.`,
-      `How: run "npx exagent runtime errors" to see whether this runtime reports anything at all. If that window is empty too, open the app in a development build ("npx exagent dev" prints the plan) or on iOS, either of which carries a debuggable engine.`,
+      `Why: its runtime answered Runtime.evaluate with "method not found". Expo Go for Android ships a JavaScript engine built without the Chrome DevTools Protocol debugger, so nothing can be evaluated in it, and "npx exagent runtime:errors" and "npx exagent runtime:network" connect to it but report an empty window. Expo Go on iOS answers all three.`,
+      `How: run "npx exagent runtime:errors" to see whether this runtime reports anything at all. If that window is empty too, open the app in a development build ("npx exagent dev" prints the plan) or on iOS, either of which carries a debuggable engine.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent runtime errors';
+  error.suggestedCommand = 'npx exagent runtime:errors';
   return error;
 }
 
@@ -154,7 +154,7 @@ export async function runtimeErrorsAsync(options: RuntimeErrorsOptions): Promise
   } else {
     Log.log(formatRuntimeErrors(devServerUrl, durationMs, errors));
   }
-  reportFollowUps('runtime errors', followups, { json });
+  reportFollowUps('runtime:errors', followups, { json });
 
   // Collected errors are a report, not a failure of the command: the app was reached and
   // answered. A caller that wants to fail on errors reads `count` from `--json`.
@@ -220,7 +220,7 @@ export async function runtimeNetworkAsync(options: RuntimeNetworkOptions): Promi
   } else {
     Log.log(formatNetworkRequests(devServerUrl, durationMs, requests));
   }
-  reportFollowUps('runtime network', followups, { json });
+  reportFollowUps('runtime:network', followups, { json });
 
   // Failed requests are a report, not a failure of the command: the app was reached and answered.
   // A caller that wants to fail on them reads the `failure` field of each request from `--json`.
@@ -246,9 +246,9 @@ function networkDomainUnavailableError(
     [
       `The app connected to ${devServerUrl} cannot report its network requests.`,
       `Why: it answered Network.enable with an error (${cause.reason}). Network inspection is an unstable part of the React Native debugger, so a runtime built without it has no request log to read. The dev server ${advertised ? 'does offer' : 'does not offer'} the network panel for this app.`,
-      `How: read the app's runtime errors instead — a request that fails almost always throws or logs there — or wrap the call in your own logging and read the value with "npx exagent runtime eval". Upgrading the app to a newer Expo SDK is what adds the domain.`,
+      `How: read the app's runtime errors instead — a request that fails almost always throws or logs there — or wrap the call in your own logging and read the value with "npx exagent runtime:eval". Upgrading the app to a newer Expo SDK is what adds the domain.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent runtime errors';
+  error.suggestedCommand = 'npx exagent runtime:errors';
   return error;
 }

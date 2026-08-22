@@ -117,7 +117,7 @@ describe(undoAsync, () => {
 
     await expect(undoAsync(projectRoot, { id: 'nope' })).rejects.toMatchObject({
       code: 'CHECKPOINT_NOT_FOUND',
-      suggestedCommand: 'npx exagent undo --list',
+      suggestedCommand: 'npx exagent checkpoint:list',
     });
   });
 
@@ -127,7 +127,7 @@ describe(undoAsync, () => {
 
     await expect(undoAsync(projectRoot, {})).rejects.toMatchObject({
       code: 'CHECKPOINT_OBJECT_MISSING',
-      suggestedCommand: 'npx exagent undo --list',
+      suggestedCommand: 'npx exagent checkpoint:list',
     });
     expect(restoreTreeAsync).not.toHaveBeenCalled();
   });
@@ -195,14 +195,14 @@ describe(printUndoAsync, () => {
 describe(printCheckpointListAsync, () => {
   it(`should print the stored checkpoints without touching git`, async () => {
     seedCheckpoints([
-      record({ id: 'aaaaaaa111', label: 'exagent setup' }),
+      record({ id: 'aaaaaaa111', label: 'exagent agents:setup' }),
       record({ id: 'bbbbbbb222', label: 'manual', argv: ['exagent', 'checkpoint'] }),
     ]);
 
     await printCheckpointListAsync(projectRoot, {});
 
     expect(printed()).toContain('aaaaaaa');
-    expect(printed()).toContain('exagent setup');
+    expect(printed()).toContain('exagent agents:setup');
     expect(printed()).toContain('exagent checkpoint');
     expect(resolveWorkTreeAsync).not.toHaveBeenCalled();
   });

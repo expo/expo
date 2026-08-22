@@ -66,7 +66,7 @@ declare module '2g' {
      * @see llp/0009-smart-followups.rfc.md §Design
      */
     'cli:followups': {
-      /** The CLI command the follow-ups belong to, e.g. `start` or `runtime errors`. */
+      /** The CLI command the follow-ups belong to, e.g. `start` or `runtime:errors`. */
       command: string;
       followups: FollowUp[];
     };

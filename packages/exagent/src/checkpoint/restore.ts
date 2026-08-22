@@ -57,7 +57,7 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
   if (!records.length) {
     const error = new CommandError(
       'NO_CHECKPOINTS',
-      `No checkpoint is recorded for this project. "exagent install", "exagent setup" and "exagent dev" record one before they change anything, and "exagent checkpoint" records one now.`
+      `No checkpoint is recorded for this project. "exagent install", "exagent agents:setup" and "exagent dev" record one before they change anything, and "exagent checkpoint" records one now.`
     );
     error.suggestedCommand = 'npx exagent checkpoint';
     throw error;
@@ -67,9 +67,9 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
   if (!record) {
     const error = new CommandError(
       'CHECKPOINT_NOT_FOUND',
-      `No checkpoint of this project has the id "${options.id}". The ids of the ${records.length} recorded checkpoints are listed by "exagent undo --list".`
+      `No checkpoint of this project has the id "${options.id}". The ids of the ${records.length} recorded checkpoints are listed by "exagent checkpoint:list".`
     );
-    error.suggestedCommand = 'npx exagent undo --list';
+    error.suggestedCommand = 'npx exagent checkpoint:list';
     throw error;
   }
 
@@ -86,7 +86,7 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
       'CHECKPOINT_OBJECT_MISSING',
       `Git no longer has the snapshot ${shortId(record.id)}. A checkpoint is an unreferenced git object, so "git gc --prune=now" deletes it. Restore an older checkpoint, or recover the files from git history.`
     );
-    error.suggestedCommand = 'npx exagent undo --list';
+    error.suggestedCommand = 'npx exagent checkpoint:list';
     throw error;
   }
 
@@ -131,7 +131,7 @@ export interface PrintUndoOptions extends UndoOptions {
   followups?: boolean;
 }
 
-/** The `exagent undo` command: restore a checkpoint, then say what changed and what is left. */
+/** The `exagent checkpoint:undo` command: restore a checkpoint, then say what changed and what is left. */
 export async function printUndoAsync(
   projectRoot: string,
   options: PrintUndoOptions
@@ -162,7 +162,7 @@ export async function printUndoAsync(
         2
       )
     );
-    reportFollowUps('undo', followups, { json: true });
+    reportFollowUps('checkpoint:undo', followups, { json: true });
     return;
   }
 
@@ -184,7 +184,7 @@ export async function printUndoAsync(
     row('Files', formatPaths(result.paths));
   }
 
-  reportFollowUps('undo', followups);
+  reportFollowUps('checkpoint:undo', followups);
 }
 
 /** The restored paths, capped so a large restore stays one readable line. */
@@ -199,7 +199,7 @@ export interface PrintCheckpointListOptions {
 }
 
 /**
- * The `exagent undo --list` command: the checkpoints this project has.
+ * The `exagent checkpoint:list` command: the checkpoints this project has.
  *
  * Reads the store only. It answers in a project whose repository is gone, and never spawns git.
  */

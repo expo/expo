@@ -136,7 +136,7 @@ describe(runSetupAsync, () => {
     await runSetupAsync(projectRoot, options());
 
     expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
-      label: 'exagent setup',
+      label: 'exagent agents:setup',
       enabled: undefined,
       silent: undefined,
     });
@@ -198,7 +198,7 @@ describe(printSetupAsync, () => {
   it('should emit the summary event', async () => {
     await printSetupAsync(projectRoot, options());
 
-    expect(event).toHaveBeenCalledWith('completed', {
+    expect(event).toHaveBeenCalledWith('setup_completed', {
       agents: ['claude-code'],
       skillsSynced: true,
       skillsDiscovered: 1,

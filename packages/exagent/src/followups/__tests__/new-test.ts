@@ -8,7 +8,10 @@ describe(buildNewFollowUps, () => {
         id: 'dev',
         command: 'cd my-app && npx exagent dev',
       }),
-      expect.objectContaining({ id: 'setup', command: 'cd my-app && npx exagent setup' }),
+      expect.objectContaining({
+        id: 'agents-setup',
+        command: 'cd my-app && npx exagent agents:setup',
+      }),
     ]);
   });
 

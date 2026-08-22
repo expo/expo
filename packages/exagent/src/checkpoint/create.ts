@@ -14,7 +14,7 @@ import type { CheckpointResult, CheckpointSkipReason } from './types';
 /** Label of a checkpoint the user asked for without naming one. */
 export const DEFAULT_LABEL = 'manual';
 
-/** Width of the label column of the text output, matching `exagent setup` and `exagent context`. */
+/** Width of the label column of the text output, matching `exagent agents:setup` and `exagent context`. */
 const LABEL_WIDTH = 12;
 
 export interface CreateCheckpointOptions {
@@ -130,7 +130,7 @@ export async function printCheckpointAsync(
   row('Checkpoint', chalk.bold(shortId(record.id)));
   row('Label', record.label);
   row('Covers', result.detail);
-  row('Undo', chalk.bold(`npx exagent undo --id ${shortId(record.id)}`));
+  row('Undo', chalk.bold(`npx exagent checkpoint:undo --id ${shortId(record.id)}`));
 }
 
 /** Turn a skip into the error and the next action that fit it. */

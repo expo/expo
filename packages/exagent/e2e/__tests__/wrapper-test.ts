@@ -243,6 +243,18 @@ describe('expo passthrough', () => {
     expect(fs.existsSync(skillLink)).toBe(false);
   });
 
+  // A name with a colon is one of exagent's own groups, whatever comes after it, so an unknown one
+  // is an error here instead of an `expo` invocation that could not mean anything.
+  it('never forwards a colon command, known group or not', async () => {
+    const known = await executeExagentAsync(projectRoot, ['skills:nope'], { reject: false });
+    const unknown = await executeExagentAsync(projectRoot, ['export:web'], { reject: false });
+
+    expect(known.exitCode).not.toBe(0);
+    expect(unknown.exitCode).not.toBe(0);
+    expect(unknown.all).toContain('export');
+    expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+  });
+
   it('names the forwarding rule in the top-level help', async () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 

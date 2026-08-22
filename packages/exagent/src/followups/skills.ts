@@ -1,4 +1,4 @@
-// @ref llp/0009-smart-followups.rfc.md §Examples per command — `skills sync`.
+// @ref llp/0009-smart-followups.rfc.md §Examples per command — `skills:sync`.
 // @ref llp/0009-smart-followups.rfc.md §Wider ideas — agent-aware rendering: a detected agent gets
 // the note that it does not have to load these files itself.
 
@@ -18,7 +18,7 @@ export function buildSkillsSyncFollowUps({
   const followups: FollowUp[] = [
     {
       id: 'skills-list',
-      command: 'npx exagent skills list',
+      command: 'npx exagent skills:list',
       why: 'Lists every discovered skill and the agent directories it is linked into.',
     },
   ];
@@ -26,7 +26,7 @@ export function buildSkillsSyncFollowUps({
   if (agentId && skillPackages.length) {
     followups.push({
       id: 'skills-show',
-      command: `npx exagent skills show ${skillPackages[0]}`,
+      command: `npx exagent skills:show ${skillPackages[0]}`,
       why: `${agentId} loads the linked skills automatically, so nothing has to read them here; this prints one on demand.`,
     });
   }

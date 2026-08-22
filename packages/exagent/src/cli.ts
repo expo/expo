@@ -1,10 +1,16 @@
 #!/usr/bin/env node
 import { installEventLogger } from '2g';
 import arg from 'arg';
-import chalk from 'chalk';
 import { boolish } from 'getenv';
 
-import type { Command } from './types';
+import {
+  formatGroupHelp,
+  formatTopLevelHelp,
+  resolveCommand,
+  unknownActionMessage,
+  unknownGroupMessage,
+} from './commandRegistry';
+import * as Log from './log';
 
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG`, the same way
 // `@expo/cli` does, so the two CLIs share one debug switch. This must run before
@@ -15,23 +21,6 @@ if (boolish('EXPO_DEBUG', false) || /(^|[,\s])expo(:|\*|$)/.test(process.env.DEB
 }
 
 const { version } = require('../package.json') as { version: string };
-
-const commands: { [command: string]: () => Promise<Command> } = {
-  // Add a new command here.
-  checkpoint: () => import('./checkpoint').then((i) => i.exagentCheckpoint),
-  context: () => import('./context').then((i) => i.exagentContext),
-  deploy: () => import('./deploy').then((i) => i.exagentDeploy),
-  dev: () => import('./dev').then((i) => i.exagentDev),
-  install: () => import('./install').then((i) => i.exagentInstall),
-  navigate: () => import('./navigate').then((i) => i.exagentNavigate),
-  runtime: () => import('./runtime').then((i) => i.exagentRuntime),
-  setup: () => import('./setup').then((i) => i.exagentSetup),
-  start: () => import('./start').then((i) => i.exagentStart),
-  skills: () => import('./skills').then((i) => i.exagentSkills),
-  new: () => import('./new').then((i) => i.exagentNew),
-  status: () => import('./status').then((i) => i.exagentStatus),
-  undo: () => import('./checkpoint').then((i) => i.exagentUndo),
-};
 
 const args = arg(
   {
@@ -48,25 +37,41 @@ const args = arg(
   }
 );
 
-// Check if we are running `npx exagent <subcommand>` or `npx exagent`.
+// Check if we are running `npx exagent <command>` or `npx exagent`.
 const subcommand = args._[0] ?? null;
-// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher — anything not in the map
-// above is one of the `expo` CLI's own commands, and is forwarded to it as a subprocess.
-const command = subcommand && commands[subcommand] ? subcommand : null;
 
-// Subcommand arguments come from the raw argv, not from `args._`: `arg` drops the `--`
-// separator, and `install`/`start` forward everything after it to the package manager.
+// Command arguments come from the raw argv, not from `args._`: `arg` drops the `--` separator,
+// and `install`/`start` forward everything after it to the package manager.
 const rawArgv = process.argv.slice(2);
 const commandArgs = subcommand == null ? [] : rawArgv.slice(rawArgv.indexOf(subcommand) + 1);
 
+// Push the help flag onto the command args, e.g. for `npx exagent --help skills`. This runs before
+// the command is resolved, so `exagent --help runtime` is the same request as `exagent runtime -h`.
+if (
+  subcommand != null &&
+  args['--help'] &&
+  !commandArgs.includes('--help') &&
+  !commandArgs.includes('-h')
+) {
+  commandArgs.push('--help');
+}
+
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher — the registry in
+// `commandRegistry.ts` owns which names exist; anything it does not know is one of the `expo`
+// CLI's own commands, and is forwarded to it as a subprocess.
+const resolution = subcommand == null ? null : resolveCommand(subcommand, commandArgs);
+
 // Set up event logger output before any console output, so agents driving `exagent` read
-// JSONL events instead of scraping the terminal.
+// JSONL events instead of scraping the terminal. The canonical name of the command is logged,
+// so `runtime eval` and `runtime:eval` are one command on the event stream.
 installEventLogger({
   command: args['--version']
     ? 'exagent --version'
-    : subcommand == null
+    : resolution == null
       ? 'exagent --help'
-      : `exagent ${subcommand}`,
+      : resolution.kind === 'command'
+        ? `exagent ${resolution.name}`
+        : `exagent ${subcommand}`,
   version,
 });
 
@@ -75,35 +80,51 @@ if (args['--version']) {
   process.exit(0);
 }
 
-if (subcommand == null) {
-  console.log(chalk`
-  {bold Usage}
-    {dim $} npx exagent <command>
-
-  {bold Commands}
-    ${Object.keys(commands).join(', ')}
-
-    Any other command is forwarded to {bold expo <command>}.
-
-  {bold Options}
-    --version, -v   Version number
-    --help, -h      Usage info
-
-  For more info run a command with the {bold --help} flag
-    {dim $} npx exagent skills --help
-`);
-  process.exit(0);
-}
-
-// Push the help flag to the subcommand args, e.g. for `npx exagent --help skills`.
-if (args['--help'] && !commandArgs.includes('--help') && !commandArgs.includes('-h')) {
-  commandArgs.push('--help');
+if (resolution == null) {
+  Log.exit(formatTopLevelHelp(), 0);
 }
 
 // No signal hooks are installed here. `install`, `start` and the `expo` passthrough hand the
 // terminal to the `expo` subprocess and forward the signals to it, in `utils/expoCli.ts`.
-if (command == null) {
-  import('./passthrough').then((i) => i.exagentExpoPassthrough(subcommand)(commandArgs));
-} else {
-  commands[command]!().then((exec) => exec(commandArgs));
+switch (resolution.kind) {
+  case 'command':
+    resolution.load().then((exec) => exec(resolution.argv));
+    break;
+
+  case 'group-help':
+    Log.exit(formatGroupHelp(resolution.group), 0);
+    break;
+
+  // The two error cases print the listing first and the error last: the last line is what a
+  // driving agent acts on (llp/0006 "errors are prompts").
+  case 'unknown-action': {
+    const { CommandError, logCmdError } =
+      require('./utils/errors') as typeof import('./utils/errors');
+    Log.log(formatGroupHelp(resolution.group));
+    const error = new CommandError(
+      'UNKNOWN_ACTION',
+      unknownActionMessage(resolution.group, resolution.action)
+    );
+    error.suggestedCommand = `npx exagent ${resolution.group} --help`;
+    logCmdError(error);
+    break;
+  }
+
+  case 'unknown-group': {
+    const { CommandError, logCmdError } =
+      require('./utils/errors') as typeof import('./utils/errors');
+    const error = new CommandError(
+      'UNKNOWN_COMMAND',
+      unknownGroupMessage(resolution.command, resolution.group)
+    );
+    error.suggestedCommand = 'npx exagent --help';
+    logCmdError(error);
+    break;
+  }
+
+  case 'passthrough':
+    import('./passthrough').then((i) =>
+      i.exagentExpoPassthrough(resolution.command)(resolution.argv)
+    );
+    break;
 }

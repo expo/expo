@@ -8,7 +8,7 @@ jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 
 const followups: FollowUp[] = [
-  { id: 'runtime-errors', command: 'npx exagent runtime errors', why: 'Reads the app errors.' },
+  { id: 'runtime-errors', command: 'npx exagent runtime:errors', why: 'Reads the app errors.' },
   { id: 'eas-build', command: 'npx eas build', why: 'Ships the app.' },
 ];
 
@@ -88,7 +88,7 @@ describe(formatFollowUps, () => {
     // The section trails whatever the command printed, so it opens with a blank line.
     expect(lines[0]).toBe('');
     expect(lines[1]).toContain('Next:');
-    expect(lines[2]).toContain('npx exagent runtime errors');
+    expect(lines[2]).toContain('npx exagent runtime:errors');
     expect(lines[2]).toContain('— Reads the app errors.');
     expect(lines[3]).toContain('npx eas build');
   });

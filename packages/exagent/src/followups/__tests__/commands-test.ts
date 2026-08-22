@@ -83,7 +83,7 @@ describe(buildStatusFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['runtime-errors']);
-    expect(followups[0]!.command).toBe('npx exagent runtime errors');
+    expect(followups[0]!.command).toBe('npx exagent runtime:errors');
   });
 
   it(`should not offer the runtime loop for a dev server without an app`, () => {
@@ -102,7 +102,7 @@ describe(buildStatusFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['skills-sync']);
-    expect(followups[0]!.command).toBe('npx exagent skills sync');
+    expect(followups[0]!.command).toBe('npx exagent skills:sync');
     expect(followups[0]!.why).toContain('1 of 3');
   });
 
@@ -172,7 +172,7 @@ describe(buildRuntimeErrorsFollowUps, () => {
     const followups = buildRuntimeErrorsFollowUps({ count: 2, durationMs: 2000 });
 
     expect(ids(followups)).toEqual(['runtime-errors-rerun']);
-    expect(followups[0]!.command).toBe('npx exagent runtime errors --duration 2000');
+    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 2000');
     expect(followups[0]!.why).toContain('empty');
   });
 
@@ -181,7 +181,7 @@ describe(buildRuntimeErrorsFollowUps, () => {
 
     expect(ids(followups)).toEqual(['runtime-errors-reproduce']);
     // A longer window, because the failure was not reproduced inside the last one.
-    expect(followups[0]!.command).toBe('npx exagent runtime errors --duration 4000');
+    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 4000');
     expect(followups[0]!.why).toContain('reproduce');
   });
 });
@@ -196,8 +196,8 @@ describe(buildRuntimeNetworkFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['runtime-network-errors', 'runtime-network-rerun']);
-    expect(followups[0]!.command).toBe('npx exagent runtime errors --duration 5000');
-    expect(followups[1]!.command).toBe('npx exagent runtime network --duration 5000');
+    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 5000');
+    expect(followups[1]!.command).toBe('npx exagent runtime:network --duration 5000');
   });
 
   it(`should ask for a longer window when the app made no request`, () => {
@@ -209,7 +209,7 @@ describe(buildRuntimeNetworkFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['runtime-network-reproduce']);
-    expect(followups[0]!.command).toBe('npx exagent runtime network --duration 10000');
+    expect(followups[0]!.command).toBe('npx exagent runtime:network --duration 10000');
     expect(followups[0]!.why).toContain('trigger');
   });
 
@@ -225,9 +225,9 @@ describe(buildRuntimeNetworkFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['runtime-network-pending', 'runtime-network-rerun']);
-    expect(followups[0]!.command).toBe('npx exagent runtime errors --duration 5000');
+    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 5000');
     expect(followups[0]!.why).toContain('connection');
-    expect(followups[1]!.command).toBe('npx exagent runtime network --duration 10000');
+    expect(followups[1]!.command).toBe('npx exagent runtime:network --duration 10000');
   });
 
   // Every request answered, so a wrong screen is not a network problem: look at the app instead.
@@ -240,7 +240,7 @@ describe(buildRuntimeNetworkFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['runtime-network-clean']);
-    expect(followups[0]!.command).toBe('npx exagent runtime errors --duration 5000');
+    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 5000');
   });
 });
 
@@ -249,7 +249,7 @@ describe(buildSkillsSyncFollowUps, () => {
     const followups = buildSkillsSyncFollowUps({ skillPackages: [], agentId: null });
 
     expect(ids(followups)).toEqual(['skills-list']);
-    expect(followups[0]!.command).toBe('npx exagent skills list');
+    expect(followups[0]!.command).toBe('npx exagent skills:list');
   });
 
   it(`should note that a detected agent loads the linked skills by itself`, () => {
@@ -259,7 +259,7 @@ describe(buildSkillsSyncFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['skills-list', 'skills-show']);
-    expect(followups[1]!.command).toBe('npx exagent skills show @expo/ui');
+    expect(followups[1]!.command).toBe('npx exagent skills:show @expo/ui');
     expect(followups[1]!.why).toContain('claude-code');
     expect(followups[1]!.why).toContain('automatically');
   });

@@ -1,9 +1,10 @@
 /* eslint-env jest */
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
 //
-// `exagent checkpoint` snapshots the project with git plumbing, and `exagent undo` puts a snapshot
-// back. These tests run both through the CLI, against a real git repository made from a copy of
-// the `skills-app` fixture: the point of the feature is what git does, so nothing here is mocked.
+// `exagent checkpoint` snapshots the project with git plumbing, `exagent checkpoint:undo` puts a
+// snapshot back, and `exagent checkpoint:list` says which ones there are. These tests run all three
+// through the CLI, against a real git repository made from a copy of the `skills-app` fixture: the
+// point of the feature is what git does, so nothing here is mocked.
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -90,13 +91,24 @@ describe('exagent checkpoint', () => {
     projectRoot = await setupFixtureAsync('skills-app');
   });
 
-  it('prints usage with `checkpoint --help`', async () => {
+  it('lists the actions of the group with `checkpoint --help`', async () => {
     const result = await executeExagentAsync(projectRoot, ['checkpoint', '--help']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.all).toContain('checkpoint:create');
+    expect(result.all).toContain('checkpoint:list');
+    expect(result.all).toContain('checkpoint:undo');
+    // The bare command is the snapshot, which the listing says out loud.
+    expect(result.all).toContain('npx exagent checkpoint');
+  });
+
+  it('prints the options of the snapshot with `checkpoint:create --help`', async () => {
+    const result = await executeExagentAsync(projectRoot, ['checkpoint:create', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--label');
     expect(result.all).toContain('--json');
-    expect(result.all).toContain('exagent undo');
+    expect(result.all).toContain('exagent checkpoint:undo');
   });
 
   it('snapshots the project without changing anything git shows', async () => {
@@ -107,7 +119,7 @@ describe('exagent checkpoint', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('by hand');
-    expect(result.stdout).toContain('npx exagent undo');
+    expect(result.stdout).toContain('npx exagent checkpoint:undo');
 
     const [record, ...rest] = readStore(projectRoot);
     expect(rest).toEqual([]);
@@ -161,7 +173,7 @@ describe('exagent checkpoint', () => {
   });
 });
 
-describe('exagent undo', () => {
+describe('exagent checkpoint:undo', () => {
   let projectRoot: string;
 
   beforeEach(async () => {
@@ -181,7 +193,7 @@ describe('exagent undo', () => {
     await fs.promises.rm(path.join(projectRoot, 'index.js'));
     await fs.promises.writeFile(path.join(projectRoot, 'notes.md'), 'written after the checkpoint');
 
-    const result = await executeExagentAsync(projectRoot, ['undo']);
+    const result = await executeExagentAsync(projectRoot, ['checkpoint:undo']);
 
     expect(result.exitCode).toBe(0);
     // The changed file is back, and so is the deleted one.
@@ -212,7 +224,7 @@ describe('exagent undo', () => {
     await fs.promises.writeFile(path.join(projectRoot, 'index.js'), '// changed twice\n');
 
     const result = await executeExagentAsync(projectRoot, [
-      'undo',
+      'checkpoint:undo',
       '--id',
       first!.id.slice(0, 7),
       '--json',
@@ -235,27 +247,6 @@ describe('exagent undo', () => {
     expect(readProjectFile(projectRoot, 'index.js')).not.toContain('changed');
   });
 
-  it('lists the checkpoints of the project', async () => {
-    await initGitRepoAsync(projectRoot);
-    await executeExagentAsync(projectRoot, ['checkpoint', '--label', 'first']);
-    await executeExagentAsync(projectRoot, ['checkpoint', '--label', 'second']);
-
-    const result = await executeExagentAsync(projectRoot, ['undo', '--list']);
-
-    expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('first');
-    expect(result.stdout).toContain('second');
-    expect(result.stdout).toContain('exagent checkpoint --label');
-
-    const json = await executeExagentAsync(projectRoot, ['undo', '--list', '--json']);
-    const report = JSON.parse(json.stdout);
-    expect(Object.keys(report)).toEqual(['checkpoints']);
-    expect(report.checkpoints.map((entry: CheckpointRecord) => entry.label)).toEqual([
-      'second',
-      'first',
-    ]);
-  });
-
   it('never restores an older copy of the checkpoint store', async () => {
     // A project that does not gitignore `.expo` would otherwise snapshot the store itself, and
     // an undo would put back a list of checkpoints from before the ones it just read.
@@ -267,7 +258,7 @@ describe('exagent undo', () => {
     await executeExagentAsync(projectRoot, ['checkpoint', '--label', 'first']);
     await executeExagentAsync(projectRoot, ['checkpoint', '--label', 'second']);
 
-    await executeExagentAsync(projectRoot, ['undo']);
+    await executeExagentAsync(projectRoot, ['checkpoint:undo']);
 
     expect(readStore(projectRoot).map((entry) => entry.label)).toEqual(['second', 'first']);
   });
@@ -275,15 +266,44 @@ describe('exagent undo', () => {
   it('suggests making a checkpoint when the project has none', async () => {
     await initGitRepoAsync(projectRoot);
 
-    const result = await executeExagentAsync(projectRoot, ['undo'], { reject: false });
+    const result = await executeExagentAsync(projectRoot, ['checkpoint:undo'], { reject: false });
 
     expect(result.exitCode).not.toBe(0);
     expect(result.all).toContain('No checkpoint');
     expect(result.all).toContain('Try: npx exagent checkpoint');
   });
+});
+
+describe('exagent checkpoint:list', () => {
+  let projectRoot: string;
+
+  beforeEach(async () => {
+    projectRoot = await setupFixtureAsync('skills-app');
+  });
+
+  it('lists the checkpoints of the project', async () => {
+    await initGitRepoAsync(projectRoot);
+    await executeExagentAsync(projectRoot, ['checkpoint', '--label', 'first']);
+    await executeExagentAsync(projectRoot, ['checkpoint', '--label', 'second']);
+
+    const result = await executeExagentAsync(projectRoot, ['checkpoint:list']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain('first');
+    expect(result.stdout).toContain('second');
+    expect(result.stdout).toContain('exagent checkpoint --label');
+
+    const json = await executeExagentAsync(projectRoot, ['checkpoint:list', '--json']);
+    const report = JSON.parse(json.stdout);
+    expect(Object.keys(report)).toEqual(['checkpoints']);
+    expect(report.checkpoints.map((entry: CheckpointRecord) => entry.label)).toEqual([
+      'second',
+      'first',
+    ]);
+  });
 
   it('lists nothing for a project outside git, without failing', async () => {
-    const result = await executeExagentAsync(projectRoot, ['undo', '--list']);
+    const result = await executeExagentAsync(projectRoot, ['checkpoint:list']);
 
     expect(result.exitCode).toBe(0);
     expect(result.stdout).toContain('No checkpoint');
@@ -337,17 +357,21 @@ describe('checkpoints of a mutating command', () => {
     expect(result.all).not.toContain('Checkpoint');
   });
 
-  it('are taken before `exagent setup` writes AGENTS.md', async () => {
+  it('are taken before `exagent agents:setup` writes AGENTS.md', async () => {
     await initGitRepoAsync(projectRoot);
 
-    const result = await executeExagentAsync(projectRoot, ['setup', '--agent', 'claude-code']);
+    const result = await executeExagentAsync(projectRoot, [
+      'agents:setup',
+      '--agent',
+      'claude-code',
+    ]);
 
     expect(result.exitCode).toBe(0);
-    expect(readStore(projectRoot)[0]).toMatchObject({ label: 'exagent setup' });
+    expect(readStore(projectRoot)[0]).toMatchObject({ label: 'exagent agents:setup' });
 
     // The documented limit: AGENTS.md did not exist in the checkpoint, and an undo only writes
     // files, so the undo reports it as kept instead of deleting it.
-    const undo = await executeExagentAsync(projectRoot, ['undo']);
+    const undo = await executeExagentAsync(projectRoot, ['checkpoint:undo']);
     expect(undo.exitCode).toBe(0);
     expect(readProjectFile(projectRoot, 'AGENTS.md')).not.toBeNull();
     expect(undo.stdout).toContain('created since the checkpoint');
@@ -356,7 +380,12 @@ describe('checkpoints of a mutating command', () => {
   it('are not taken by a setup that only syncs skills', async () => {
     await initGitRepoAsync(projectRoot);
 
-    await executeExagentAsync(projectRoot, ['setup', '--agent', 'claude-code', '--no-agents-md']);
+    await executeExagentAsync(projectRoot, [
+      'agents:setup',
+      '--agent',
+      'claude-code',
+      '--no-agents-md',
+    ]);
 
     expect(readStore(projectRoot)).toEqual([]);
   });

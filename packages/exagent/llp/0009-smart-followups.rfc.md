@@ -23,11 +23,11 @@ Seed [confirmed — Kudo, 2026-08-22]: the CLI should be smart about attaching w
 
 ## Examples per command
 
-- `start` (Metro up, Expo Go): → real device: how to open on a physical phone (tunnel/LAN URL); → `exagent runtime errors` while reproducing an issue; → production: `eas build --profile production` (only when `eas.json` exists, else `eas build:configure` first).
+- `start` (Metro up, Expo Go): → real device: how to open on a physical phone (tunnel/LAN URL); → `exagent runtime:errors` while reproducing an issue; → production: `eas build --profile production` (only when `eas.json` exists, else `eas build:configure` first).
 - `install <native module>` while targeting Expo Go: → warning + `exagent dev` (Go cannot load it) — the impact classifier already knows this.
-- `install <js-only>`: → "reload is enough"; → the module's skill was dumped to context / `exagent skills show <pkg>`.
+- `install <js-only>`: → "reload is enough"; → the module's skill was dumped to context / `exagent skills:show <pkg>`.
 - `dev --plan`: → `exagent dev` to execute; → what would make the plan cheaper ("record a build to make ios fresh").
-- `navigate`: → `xcrun simctl io … screenshot` or the screenshot tool; → `exagent runtime errors` to check the landing.
+- `navigate`: → `xcrun simctl io … screenshot` or the screenshot tool; → `exagent runtime:errors` to check the landing.
 - `run/build success`: → freshness recorded; → `eas build` to ship, `eas update` for OTA.
 - `new`: → `exagent start`; → `exagent status` to orient.
 - `status`: already carries "next" by design ([[0004-smart-start-and-project-state]]).
@@ -37,7 +37,7 @@ Seed [confirmed — Kudo, 2026-08-22]: the CLI should be smart about attaching w
 1. **Agent-aware rendering.** `agent-cli-detector` is already a dependency: when a known agent drives the CLI, render follow-ups machine-tight (exact commands, no prose); for humans, friendlier text.
 2. **State deltas.** git-status-style change awareness: "fingerprint changed since the last recorded build → the next start rebuilds" — surfacing _why_ the world moved under the agent.
 3. **Teachable warnings.** When a command detects a mismatch (installing an unbundled native module while targeting Expo Go; navigating with no dev server), attach the correction as a follow-up rather than only failing later.
-4. **Version-pinned doc pointers.** Follow-ups may reference the installed module's co-located skill or SDK-pinned docs ([[0003-knowledge-tools-and-skills]]) — "read `exagent skills show expo-camera` before using it".
+4. **Version-pinned doc pointers.** Follow-ups may reference the installed module's co-located skill or SDK-pinned docs ([[0003-knowledge-tools-and-skills]]) — "read `exagent skills:show expo-camera` before using it".
 5. **Escalation ladders.** Each follow-up can name the next rung: dev (simulator) → real device (dev build/tunnel) → internal distribution (EAS) → store. The agent always knows the path upward without knowing EAS.
 6. **First-run richness.** Optionally richer follow-ups the first time a command runs in a project (seen-state in `.expo/`), terse afterwards — agents don't need repetition. (May be overkill; measure in evals first.)
 

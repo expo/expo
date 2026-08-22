@@ -1,12 +1,12 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md
-// Argument resolution for `exagent runtime`. Pure: argv in, options out, `CommandError` for
-// anything a user can get wrong, so every flag combination is unit-testable.
+// Argument resolution for the `exagent runtime:<action>` commands. Pure: argv in, options out,
+// `CommandError` for anything a user can get wrong, so every flag combination is unit-testable.
 
 import { parseArgsOrThrow } from '../utils/args';
 import { CommandError } from '../utils/errors';
 import { resolveDevServerUrlFlag } from './devServer';
 
-/** Actions of `exagent runtime`, in the order the help prints them. */
+/** Actions of the `runtime` group, in the order the help prints them. */
 export const RUNTIME_ACTIONS = ['eval', 'errors', 'network'] as const;
 
 export type RuntimeAction = (typeof RUNTIME_ACTIONS)[number];
@@ -81,7 +81,10 @@ const DEFAULT_WINDOW_MS: Record<'errors' | 'network', number> = {
 };
 
 /**
- * Resolve the arguments of `exagent runtime <action>`.
+ * Resolve the arguments of `exagent runtime:<action>`.
+ *
+ * The action arrives as the first argument, whichever spelling the caller used: the command
+ * registry hands `runtime:eval` and `runtime eval` over the same way.
  *
  * Each action has its own flag set, so a flag that belongs to the other action is reported as
  * unknown instead of silently ignored.
@@ -93,7 +96,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   if (action == null) {
     throw new CommandError(
       'BAD_ARGS',
-      `Missing action. Usage: npx exagent runtime <${RUNTIME_ACTIONS.join('|')}>`
+      `Missing action. Usage: npx exagent runtime:<${RUNTIME_ACTIONS.join('|')}>`
     );
   }
   if (!RUNTIME_ACTIONS.includes(action as RuntimeAction)) {
@@ -109,13 +112,13 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     if (positional.length === 0) {
       throw new CommandError(
         'BAD_ARGS',
-        `Missing expression. Usage: npx exagent runtime eval "<expression>"`
+        `Missing expression. Usage: npx exagent runtime:eval "<expression>"`
       );
     }
     if (positional.length > 1) {
       throw new CommandError(
         'BAD_ARGS',
-        `Expected one expression, but got ${positional.length} arguments (${positional.join(' ')}). Quote the expression so the shell passes it as one argument: npx exagent runtime eval "${positional.join(' ')}"`
+        `Expected one expression, but got ${positional.length} arguments (${positional.join(' ')}). Quote the expression so the shell passes it as one argument: npx exagent runtime:eval "${positional.join(' ')}"`
       );
     }
 
@@ -135,7 +138,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   if (positional.length > 0) {
     throw new CommandError(
       'BAD_ARGS',
-      `Unexpected argument: ${positional[0]}. Usage: npx exagent runtime ${windowAction} [--duration <ms>]`
+      `Unexpected argument: ${positional[0]}. Usage: npx exagent runtime:${windowAction} [--duration <ms>]`
     );
   }
 

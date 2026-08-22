@@ -21,10 +21,13 @@ export const exagentSkills: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Link agent skills from installed npm packages`,
-      chalk`npx exagent skills {dim [action]}`,
+      chalk`npx exagent skills:{dim <action>}`,
       [
-        chalk`[action]                 Action to perform: sync, list, show, clean {dim (default: sync)}`,
-        chalk`{dim $} npx exagent skills show <package> [skill]  Print SKILL.md contents of a package`,
+        chalk`{bold skills:sync}              Link the skills of the installed packages {dim (npx exagent skills)}`,
+        chalk`{bold skills:list}              List the skills the installed packages ship`,
+        chalk`{bold skills:show} <package> [skill]  Print the SKILL.md contents of a package`,
+        chalk`{bold skills:clean}             Remove the managed skill links`,
+        '',
         `--agent <agent>          Link skills for specific agents (can be used multiple times)`,
         `--dry-run                Print planned changes without modifying the project`,
         `--json                   Output the skill list as JSON (with ${'`'}list${'`'})`,
@@ -34,7 +37,7 @@ export const exagentSkills: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx exagent skills -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx exagent skills:sync -h` shows as fast as possible.
   const { logCmdError, CommandError } =
     require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
@@ -43,6 +46,8 @@ export const exagentSkills: Command = async (argv) => {
 
   try {
     const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    // The registry hands the action over as the first argument, whichever spelling was used
+    // (`skills:list`, `skills list`, or the `sync` default of the bare `skills`).
     const action = args._[0] ?? 'sync';
     const options = {
       agents: args['--agent'] ?? [],
@@ -60,7 +65,7 @@ export const exagentSkills: Command = async (argv) => {
         if (!packageName) {
           throw new CommandError(
             'BAD_ARGS',
-            `Missing package name. Usage: npx exagent skills show <package> [skill]`
+            `Missing package name. Usage: npx exagent skills:show <package> [skill]`
           );
         }
         return await skillsAsync.showSkillsAsync(projectRoot, packageName, args._[2]);
@@ -70,7 +75,7 @@ export const exagentSkills: Command = async (argv) => {
       default:
         throw new CommandError(
           'BAD_ARGS',
-          `Unknown action: ${action}. Expected one of: sync, list, show, clean`
+          `Unknown action: ${action}. Expected one of: skills:sync, skills:list, skills:show, skills:clean`
         );
     }
   } catch (error: any) {

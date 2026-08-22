@@ -311,7 +311,7 @@ const HIDE_FROM_INSPECTOR_ENV = 'globalThis.__expo_hide_from_inspector__';
  * evaluate handler therefore cannot be classified at all, and "cannot classify" must not read as
  * "exclude": Expo Go on Android answers `Runtime.evaluate` with `-32601`
  * [observed — Expo Go 57.0.9 on an Android emulator, 2026-08-22], and excluding it made *every*
- * runtime command report "No target found" there, including `runtime errors` and `runtime network`,
+ * runtime command report "No target found" there, including `runtime:errors` and `runtime:network`,
  * which never evaluate anything. Such a target is kept as a fallback instead: it is used when no
  * target answered the probe, so a runtime that can be driven still wins when there is one.
  *

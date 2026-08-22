@@ -192,7 +192,7 @@ describe('syncSkillsAsync', () => {
     });
   });
 
-  // @ref llp/0009-smart-followups.rfc.md §Examples per command — `skills sync`.
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — `skills:sync`.
   describe('follow-ups', () => {
     /** A sync that linked one skill of one package for one agent. */
     function mockSuccessfulSync() {
@@ -209,7 +209,7 @@ describe('syncSkillsAsync', () => {
       await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
       expect(printed()).toContain('Next:');
-      expect(printed()).toContain('npx exagent skills list');
+      expect(printed()).toContain('npx exagent skills:list');
     });
 
     it('should note that a detected agent loads the linked skills by itself', async () => {
@@ -221,7 +221,7 @@ describe('syncSkillsAsync', () => {
 
       await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
-      expect(printed()).toContain('npx exagent skills show @acme/tool');
+      expect(printed()).toContain('npx exagent skills:show @acme/tool');
       expect(printed()).toContain('claude-code');
     });
 
@@ -230,7 +230,7 @@ describe('syncSkillsAsync', () => {
 
       await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
-      expect(printed()).not.toContain('skills show');
+      expect(printed()).not.toContain('skills:show');
     });
 
     it('should print nothing with --no-followups', async () => {

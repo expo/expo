@@ -1,5 +1,5 @@
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
-// The two commands of the checkpoint guardrail: take a snapshot, and put one back.
+// The three commands of the checkpoint guardrail: take a snapshot, list them, and put one back.
 // `create.ts` makes them, `restore.ts` restores them, and `git.ts` documents the mechanism.
 
 import chalk from 'chalk';
@@ -7,7 +7,7 @@ import chalk from 'chalk';
 import type { Command } from '../types';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
 
-export const exagentCheckpoint: Command = async (argv) => {
+export const exagentCheckpointCreate: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
@@ -25,7 +25,7 @@ export const exagentCheckpoint: Command = async (argv) => {
       `Snapshot the project, so a later change can be undone`,
       chalk`npx exagent checkpoint`,
       [
-        `--label <label>   Why the snapshot exists, printed by "exagent undo --list"`,
+        `--label <label>   Why the snapshot exists, printed by "exagent checkpoint:list"`,
         `--json            Print the result as JSON`,
         `-h, --help        Usage info`,
       ].join('\n'),
@@ -35,11 +35,12 @@ export const exagentCheckpoint: Command = async (argv) => {
         chalk`  without touching your index, your branches, or {bold HEAD}: nothing is committed, and`,
         chalk`  {bold git status} and {bold git log} do not change.`,
         '',
-        chalk`  {bold exagent install}, {bold exagent setup} and {bold exagent dev} take one`,
+        chalk`  {bold exagent install}, {bold exagent agents:setup} and {bold exagent dev} take one`,
         chalk`  before they change anything. Pass {bold --no-checkpoint}, or set {bold EXAGENT_NO_CHECKPOINT},`,
         chalk`  to turn that off.`,
         '',
-        chalk`  Restore the newest one with {bold npx exagent undo}.`,
+        chalk`  Restore the newest one with {bold npx exagent checkpoint:undo}, and see the recorded ones`,
+        chalk`  with {bold npx exagent checkpoint:list}.`,
         '',
       ].join('\n')
     );
@@ -60,18 +61,55 @@ export const exagentCheckpoint: Command = async (argv) => {
   })().catch(logCmdError);
 };
 
-export const exagentUndo: Command = async (argv) => {
+export const exagentCheckpointList: Command = async (argv) => {
   const args = assertWithOptionsArgs(
     {
       // Types
       '--help': Boolean,
       '--json': Boolean,
-      '--list': Boolean,
+      // Aliases
+      '-h': '--help',
+    },
+    { argv }
+  );
+
+  if (args['--help']) {
+    printHelp(
+      `List the checkpoints recorded for this project`,
+      chalk`npx exagent checkpoint:list`,
+      [`--json            Print the result as JSON`, `-h, --help        Usage info`].join('\n'),
+      [
+        '',
+        chalk`  Reads the record in {bold .expo/exagent-checkpoints.json} only: it answers in a project`,
+        chalk`  whose repository is gone, and never spawns git. One line per checkpoint, newest first,`,
+        chalk`  with the id {bold npx exagent checkpoint:undo --id <id>} takes.`,
+        '',
+      ].join('\n')
+    );
+  }
+
+  // Load modules after the help prompt so `npx exagent checkpoint:list -h` shows as fast as possible.
+  const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+  const { findUpProjectRootOrAssert } =
+    require('../utils/findUp') as typeof import('../utils/findUp');
+  const restore = require('./restore') as typeof import('./restore');
+
+  return (async () => {
+    const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    await restore.printCheckpointListAsync(projectRoot, { json: !!args['--json'] });
+  })().catch(logCmdError);
+};
+
+export const exagentCheckpointUndo: Command = async (argv) => {
+  const args = assertWithOptionsArgs(
+    {
+      // Types
+      '--help': Boolean,
+      '--json': Boolean,
       '--id': String,
       '--no-followups': Boolean,
       // Aliases
       '-h': '--help',
-      '-l': '--list',
     },
     { argv }
   );
@@ -79,9 +117,8 @@ export const exagentUndo: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Restore the project to a checkpoint`,
-      chalk`npx exagent undo`,
+      chalk`npx exagent checkpoint:undo`,
       [
-        `--list, -l        List the checkpoints of this project instead of restoring one`,
         `--id <id>         Checkpoint to restore (default: the most recent one)`,
         `--json            Print the result as JSON`,
         `--no-followups    Skip the "Next:" section of suggested follow-up commands`,
@@ -96,11 +133,13 @@ export const exagentUndo: Command = async (argv) => {
         chalk`  Files git ignores — {bold node_modules}, {bold ios/Pods}, {bold .env} — are in no checkpoint,`,
         chalk`  so a restored {bold package.json} needs an install afterwards.`,
         '',
+        chalk`  The recorded checkpoints and their ids are listed by {bold npx exagent checkpoint:list}.`,
+        '',
       ].join('\n')
     );
   }
 
-  // Load modules after the help prompt so `npx exagent undo -h` shows as fast as possible.
+  // Load modules after the help prompt so `npx exagent checkpoint:undo -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');
@@ -108,10 +147,7 @@ export const exagentUndo: Command = async (argv) => {
 
   return (async () => {
     const projectRoot = findUpProjectRootOrAssert(process.cwd());
-    if (args['--list']) {
-      return await restore.printCheckpointListAsync(projectRoot, { json: !!args['--json'] });
-    }
-    return await restore.printUndoAsync(projectRoot, {
+    await restore.printUndoAsync(projectRoot, {
       id: args['--id'],
       json: !!args['--json'],
       followups: !args['--no-followups'],

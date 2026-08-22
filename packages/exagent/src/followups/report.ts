@@ -34,7 +34,7 @@ export function followUpsEnabled(flag: boolean | undefined): boolean {
  * Emit the follow-ups of one command: always the event, and the `Next:` section unless the
  * caller owns stdout.
  *
- * @param command The CLI command name the follow-ups belong to, e.g. `start` or `runtime errors`.
+ * @param command The CLI command name the follow-ups belong to, e.g. `start` or `runtime:errors`.
  * @returns the capped list, for the caller to embed in its `--json` payload.
  */
 export function reportFollowUps(

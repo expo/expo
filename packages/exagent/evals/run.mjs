@@ -488,8 +488,9 @@ function indent(text, prefix) {
 /* -------------------------------------------------------------------------- */
 
 // The command list below duplicates the CLI surface, so it drifts whenever a command or flag is
-// added. Source of truth: the `commands` registry in src/cli.ts and the `printHelp` block of each
-// command's index.ts. Update this prompt and TIER2_COMMAND_SUMMARY together when either changes.
+// added. Source of truth: `topLevelCommands` and `commandGroups` in src/commandRegistry.ts, and the
+// `printHelp` block of each command's index.ts. Update this prompt and TIER2_COMMAND_SUMMARY
+// together when either changes.
 // The `--help` escape hatch keeps a stale list from being a dead end for the model.
 const TIER1_SYSTEM_PROMPT = `You are an autonomous agent completing a task in an Expo project using the \`exagent\` CLI.
 
@@ -498,16 +499,18 @@ Available commands:
   exagent dev                           Print what must run to get the app running, then run it
   exagent dev --plan                    Print what must run to get the app running, then exit without running it
   exagent start                         Start the dev server with expo start, without planning anything
-  exagent skills sync --agent <agent>   Link agent skills from installed packages
-  exagent skills list [--json]          List discovered skills
-  exagent skills show <package>         Print a package's skill
-  exagent skills clean                  Remove managed skill links
+  exagent skills:sync --agent <agent>   Link agent skills from installed packages
+  exagent skills:list [--json]          List discovered skills
+  exagent skills:show <package>         Print a package's skill
+  exagent skills:clean                  Remove managed skill links
   exagent install <packages..>          Install packages with expo, then sync skills
+
+A command with a colon is a group and an action, e.g. \`skills:list\` lists the skills of the \`skills\` group.
 
 Valid --agent values: claude-code, cursor, codex, opencode, windsurf, gemini-cli
 
 Respond with EXACTLY ONE JSON object and nothing else:
-  {"run": ["skills", "sync", "--agent", "claude-code"]}   to execute an exagent command
+  {"run": ["skills:sync", "--agent", "claude-code"]}      to execute an exagent command
   {"done": true, "summary": "<what you accomplished>"}    when the task is complete
 
 Any command not listed above is forwarded to the project's \`expo\` CLI, e.g. \`exagent prebuild --clean\` runs \`expo prebuild --clean\`.
@@ -725,8 +728,8 @@ async function runTier1Scenario(scenario) {
 /** Kept next to TIER1_SYSTEM_PROMPT's list on purpose — see the drift note above it. */
 const TIER2_COMMAND_SUMMARY =
   'Available commands: context [--json], dev [--plan] (dev alone prints the plan and runs it), ' +
-  'start (expo start, no planning), skills [sync|list|show|clean] ' +
-  '(sync takes --agent claude-code|cursor|codex|opencode|windsurf|gemini-cli), install <pkg..>. ' +
+  'start (expo start, no planning), skills:sync|skills:list|skills:show|skills:clean ' +
+  '(skills:sync takes --agent claude-code|cursor|codex|opencode|windsurf|gemini-cli), install <pkg..>. ' +
   'Any other command is forwarded to expo <command>.';
 
 function checkTier2() {

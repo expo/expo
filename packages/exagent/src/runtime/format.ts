@@ -8,7 +8,7 @@ import type { NetworkRequestRecord } from './networkCollector';
 import type { RuntimeErrorRecord } from './runtimeErrorCollector';
 import { wrapUntrustedAppOutput } from './untrusted';
 
-/** Machine shape of `exagent runtime eval --json`. */
+/** Machine shape of `exagent runtime:eval --json`. */
 export interface EvaluateResultJson {
   devServerUrl: string;
   expression: string;
@@ -26,7 +26,7 @@ export interface EvaluateResultJson {
   untrusted: string[];
 }
 
-/** Machine shape of `exagent runtime errors --json`. */
+/** Machine shape of `exagent runtime:errors --json`. */
 export interface RuntimeErrorsJson {
   devServerUrl: string;
   durationMs: number;
@@ -36,7 +36,7 @@ export interface RuntimeErrorsJson {
   untrusted: string[];
 }
 
-/** Machine shape of `exagent runtime network --json`. */
+/** Machine shape of `exagent runtime:network --json`. */
 export interface NetworkRequestsJson {
   devServerUrl: string;
   durationMs: number;

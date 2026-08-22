@@ -1,7 +1,7 @@
 // @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher, §AGENTS.md generation
-// `exagent setup` is the one command a project runs once: it links the agent skills the installed
-// packages ship, and maintains the managed block in the project's AGENTS.md that orients every
-// agent — including the ones that never call a tool.
+// `exagent agents:setup` is the one command a project runs once: it links the agent skills the
+// installed packages ship, and maintains the managed block in the project's AGENTS.md that orients
+// every agent — including the ones that never call a tool.
 import chalk from 'chalk';
 
 import { checkpointBeforeAsync } from '../checkpoint/integration';
@@ -30,7 +30,7 @@ const LABEL_WIDTH = 12;
 export async function printSetupAsync(projectRoot: string, options: SetupOptions): Promise<void> {
   const report = await runSetupAsync(projectRoot, options);
 
-  event('completed', {
+  event('setup_completed', {
     agents: report.agents,
     skillsSynced: report.skills?.synced ?? false,
     skillsDiscovered: report.skills?.discovered ?? 0,
@@ -71,7 +71,7 @@ export async function runSetupAsync(
     agents = resolved.agents;
 
     const discovered = await discoverSkillsAsync(projectRoot);
-    // The sync itself is `exagent skills sync`: composed, never reimplemented. Its text summary
+    // The sync itself is `exagent skills:sync`: composed, never reimplemented. Its text summary
     // is moved to stderr under `--json`, where it cannot break the one-object contract.
     const syncAsync = () =>
       syncSkillsAsync(projectRoot, { agents: agents.map((agent) => agent.id), dryRun: false });
@@ -95,7 +95,7 @@ export async function runSetupAsync(
     // file git tracks. The skill links live in directories a project gitignores, so a run that
     // only syncs skills has nothing to snapshot.
     await checkpointBeforeAsync(projectRoot, {
-      label: 'exagent setup',
+      label: 'exagent agents:setup',
       enabled: options.checkpoint,
       silent: options.json,
     });

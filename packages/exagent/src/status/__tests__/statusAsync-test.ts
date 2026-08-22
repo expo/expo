@@ -321,7 +321,7 @@ describe(printStatusAsync, () => {
         followups: [
           {
             id: 'runtime-errors',
-            command: 'npx exagent runtime errors',
+            command: 'npx exagent runtime:errors',
             why: expect.any(String),
           },
         ],
@@ -334,7 +334,7 @@ describe(printStatusAsync, () => {
 
       expect(Log.log).toHaveBeenCalledTimes(1);
       expect(JSON.parse(output()).followups).toEqual([
-        { id: 'runtime-errors', command: 'npx exagent runtime errors', why: expect.any(String) },
+        { id: 'runtime-errors', command: 'npx exagent runtime:errors', why: expect.any(String) },
       ]);
     });
 

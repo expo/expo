@@ -1,5 +1,5 @@
 // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints
-// The shared contract of `exagent checkpoint` and `exagent undo`: what one snapshot is, and what
+// The shared contract of `exagent checkpoint` and `exagent checkpoint:undo`: what one snapshot is, and what
 // creating or restoring one reports.
 
 /** One snapshot of the project, stored in `.expo/exagent-checkpoints.json`. */
@@ -41,7 +41,7 @@ export interface CheckpointResult {
   detail: string;
 }
 
-/** What one `exagent undo` run put back. */
+/** What one `exagent checkpoint:undo` run put back. */
 export interface UndoResult {
   record: CheckpointRecord;
   /** Files whose contents the restore wrote, including the ones it recreated. */

@@ -5,7 +5,7 @@
   "drivingAgent": "deterministic",
   "tiers": [0, 1, 2],
   "command": {
-    "argv": ["skills", "sync", "--agent", "claude-code"],
+    "argv": ["skills:sync", "--agent", "claude-code"],
     "timeoutMs": 60000
   },
   "graders": [

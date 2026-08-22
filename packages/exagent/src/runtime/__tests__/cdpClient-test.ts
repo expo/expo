@@ -366,7 +366,7 @@ describe(createDefaultTargetSelector, () => {
     });
 
     // Android is listed first, but a target that answered the probe is the safer answer: it is the
-    // only one `runtime eval` can drive.
+    // only one `runtime:eval` can drive.
     await expect(selector([android, ios])).resolves.toBe(ios);
   });
 

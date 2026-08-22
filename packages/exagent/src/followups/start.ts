@@ -33,7 +33,7 @@ export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
   }
   followups.push({
     id: 'runtime-errors',
-    command: 'npx exagent runtime errors',
+    command: 'npx exagent runtime:errors',
     why: 'Reads the errors the running app reports; reproduce the problem while it listens.',
   });
   followups.push(easFollowUp(input.easJson));
