@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Ship an agent skill (`skills/expo-sqlite/`) in the npm package, discoverable by `npx expo skills`. ([#48796](https://github.com/expo/expo/pull/48796) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - [Android][iOS] Fix `deleteDatabaseAsync` and `deleteDatabaseSync` leaving `-journal`, `-wal` and `-shm` sidecar files behind. ([#49125](https://github.com/expo/expo/pull/49125) by [@sbaiahmed1](https://github.com/sbaiahmed1))
