@@ -20,6 +20,12 @@ const os = jest.requireActual<typeof import('os')>('os');
  * a bindable socket. Windows named pipes have no such limit, and its `os.tmpdir()` is short.
  */
 function temporaryRoot(): string {
+  // Named pipes have no path-length concern and `\tmp` is drive-relative on Windows
+  // (its existence check can pass while creation fails on another drive) — the real
+  // tmpdir is short enough there and always correct.
+  if (process.platform === 'win32') {
+    return os.tmpdir();
+  }
   const short = path.join(path.sep, 'tmp');
   try {
     fs.accessSync(short, fs.constants.W_OK);
