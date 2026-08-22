@@ -127,6 +127,25 @@ struct LiveActivityUserInteraction: LiveActivityIntent {
       "timestamp": Int(Date().timeIntervalSince1970 * 1000)
     ])
 
+    // The system suspends the app as soon as this intent returns (observed ~100 ms
+    // of "running-active" per tap). A JS runtime resumed from suspension needs
+    // longer than that to receive the event and call `update()`, so the first
+    // tap after idling was silently lost. Ask for a short background grace period
+    // so the process outlives the intent long enough for JS to respond.
+    keepProcessAlive(seconds: 3)
+
     return .result()
+  }
+}
+
+/// Holds a background activity assertion for up to `seconds`, or until the system
+/// says time is up. The block runs synchronously on a background queue, which is
+/// how `performExpiringActivity` expects to be used; it never blocks the caller.
+private func keepProcessAlive(seconds: TimeInterval) {
+  ProcessInfo.processInfo.performExpiringActivity(withReason: "expo-widgets: deliver user interaction to JS") { expired in
+    guard !expired else {
+      return
+    }
+    Thread.sleep(forTimeInterval: seconds)
   }
 }

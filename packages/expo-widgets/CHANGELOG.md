@@ -25,6 +25,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Keep SwiftUI view identity stable across widget and Live Activity updates so system update animations, `contentTransition`, and `animation` modifiers work, and keep the app alive long enough for JS to handle a Live Activity button tap. (by [@mahdidavoodi7](https://github.com/mahdidavoodi7))
 - [iOS] Fix XCFramework precompilation failing on the unguarded `ActivityViewContext` parameter of `getLiveActivityEnvironment`, which requires iOS 16.1. ([#49076](https://github.com/expo/expo/pull/49076) by [@brentvatne](https://github.com/brentvatne))
 - [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fix `LiveActivityFactory.getInstances()` returning live activities that belong to other factories or that have already ended. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
