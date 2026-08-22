@@ -18,14 +18,18 @@ const { version } = require('../package.json') as { version: string };
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here.
+  checkpoint: () => import('./checkpoint').then((i) => i.exagentCheckpoint),
   context: () => import('./context').then((i) => i.exagentContext),
+  deploy: () => import('./deploy').then((i) => i.exagentDeploy),
   install: () => import('./install').then((i) => i.exagentInstall),
   navigate: () => import('./navigate').then((i) => i.exagentNavigate),
   runtime: () => import('./runtime').then((i) => i.exagentRuntime),
   setup: () => import('./setup').then((i) => i.exagentSetup),
   start: () => import('./start').then((i) => i.exagentStart),
   skills: () => import('./skills').then((i) => i.exagentSkills),
+  new: () => import('./new').then((i) => i.exagentNew),
   status: () => import('./status').then((i) => i.exagentStatus),
+  undo: () => import('./checkpoint').then((i) => i.exagentUndo),
 };
 
 const args = arg(
