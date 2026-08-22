@@ -62,6 +62,38 @@ jobs:
         run: node evals/run.mjs --tier 0
         working-directory: packages/exagent
 
+  # Windows coverage: the skills linker uses directory junctions instead of symlinks on
+  # win32 and nothing else exercises that path (junction code shipped untested until now).
+  tier0-windows:
+    if: github.event_name != 'schedule'
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build exagent
+        run: pnpm turbo build --filter exagent...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🧪 Test exagent
+        run: pnpm test --ci
+        working-directory: packages/exagent
+      - name: 🧪 E2E Test exagent
+        run: pnpm test:e2e --ci --runInBand
+        working-directory: packages/exagent
+
   # Tier 1 of LLP 0002: agent-in-the-loop, best-effort, report-only.
   # `continue-on-error` keeps it non-blocking until its pass rate is stable over a
   # trailing window (LLP 0002, "Flake containment").
