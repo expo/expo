@@ -40,11 +40,10 @@ async function initRepositoryAsync(repoRoot: string): Promise<void> {
   await spawnAsync('git', ['init'], { cwd: repoRoot });
 }
 
-function readInfoPlistAsync(projectRoot: string): Promise<string> {
-  return fs
-    .readFile(path.join(projectRoot, INFO_PLIST_PATH), 'utf8')
-    // `git apply` writes CRLF when global `core.autocrlf` is true, the Git for Windows default.
-    .then((contents) => contents.replace(/\r\n/g, '\n'));
+async function readInfoPlistAsync(projectRoot: string): Promise<string> {
+  const contents = await fs.readFile(path.join(projectRoot, INFO_PLIST_PATH), 'utf8');
+  // `git apply` writes CRLF when global `core.autocrlf` is true, the Git for Windows default.
+  return contents.replace(/\r\n/g, '\n');
 }
 
 describe('gitPatch against real repositories', () => {
