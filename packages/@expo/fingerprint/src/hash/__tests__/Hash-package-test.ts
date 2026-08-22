@@ -48,6 +48,16 @@ describe('package sources', () => {
     expect(after).not.toBe(before);
   });
 
+  it('should hash a package installed in a virtual store', async () => {
+    const result = await hashPackageAsync({
+      ...baseSource,
+      filePath:
+        '../../node_modules/.pnpm/expo-camera@1.0.0_react-native@0.86.0/node_modules/expo-camera/package.json',
+    });
+
+    expect(result.hash).toBeTruthy();
+  });
+
   it('should return a null hash when the package is ignored', async () => {
     const options = await normalizeOptionsAsync('/app', {
       ignorePaths: ['node_modules/expo-camera/package.json'],
