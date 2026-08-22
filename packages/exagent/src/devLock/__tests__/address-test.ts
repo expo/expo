@@ -62,7 +62,9 @@ describe(lockAddressFor, () => {
     const { kind, address } = lockAddressFor(deep, posix);
 
     expect(kind).toBe('unix');
-    expect(path.dirname(address)).toBe(os.tmpdir());
+    // Normalized: on a Windows host the forced-posix branch still joins with host separators,
+    // so the mocked '/tmp' comes back as '\\tmp'. Same directory either way.
+    expect(path.normalize(path.dirname(address))).toBe(path.normalize(os.tmpdir()));
     expect(path.basename(address)).toMatch(
       new RegExp(`^${DEV_LOCK_PIPE_PREFIX}[0-9a-f]{16}\\.sock$`)
     );
