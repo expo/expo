@@ -5,6 +5,9 @@
 // connected to it. Both are checked before a CDP connection is attempted, so the failure the
 // user reads names the missing piece instead of the socket error it caused.
 
+import fs from 'fs';
+import path from 'path';
+
 import { CommandError } from '../utils/errors';
 import type { CdpTarget } from './cdpClient';
 
@@ -44,6 +47,105 @@ export function resolveDevServerUrlFlag(value: unknown): string {
     );
   }
   return url;
+}
+
+/** Ports `discoverDevServerAsync` scans when no explicit URL was given: Metro's default and
+ * the ports `expo start` walks to when 8081 is taken. */
+export const DEV_SERVER_SCAN_PORTS = [8081, 8082, 8083, 8084, 8085];
+
+/** Last `metro:instantiate` port from `projectRoot/.expo/dev/logs/start.log`, or null. */
+export function readLastLoggedDevServerPort(projectRoot: string): number | null {
+  let contents: string;
+  try {
+    contents = fs.readFileSync(path.join(projectRoot, '.expo', 'dev', 'logs', 'start.log'), 'utf8');
+  } catch {
+    return null;
+  }
+  let port: number | null = null;
+  for (const line of contents.split('\n')) {
+    if (!line.includes('"metro:instantiate"')) {
+      continue;
+    }
+    try {
+      const entry = JSON.parse(line) as { _e?: string; port?: unknown };
+      if (entry._e === 'metro:instantiate' && typeof entry.port === 'number') {
+        port = entry.port;
+      }
+    } catch {
+      // A torn write is not an answer; keep scanning.
+    }
+  }
+  return port;
+}
+
+export interface DevServerDiscovery extends DevServerProbe {
+  /** The dev server origin the probe answered on (the explicit URL, or the discovered one). */
+  devServerUrl: string;
+  /** True when the URL came from the port scan rather than a flag/default hit. */
+  discovered: boolean;
+}
+
+/**
+ * Probe for a dev server. An explicit URL is probed alone (the user named it, so no guessing);
+ * without one, 8081 is tried first and, only when it does not answer, the next few ports
+ * `expo start` falls back to are scanned in parallel with a short timeout each.
+ *
+ * Caveat (documented, accepted): the scan cannot prove the server belongs to *this* project —
+ * on a machine running two Metros, the first answering port wins. `--dev-server-url` is the
+ * precise spelling.
+ */
+export async function discoverDevServerAsync(
+  explicitUrl?: string,
+  { timeoutMs = 800, projectRoot }: { timeoutMs?: number; projectRoot?: string } = {}
+): Promise<DevServerDiscovery> {
+  if (explicitUrl != null) {
+    const probe = await probeDevServerAsync(explicitUrl);
+    return { ...probe, devServerUrl: normalizeDevServerUrl(explicitUrl), discovered: false };
+  }
+
+  const withTimeout = async (url: string): Promise<DevServerProbe> => {
+    return await Promise.race([
+      probeDevServerAsync(url),
+      new Promise<DevServerProbe>((resolve) =>
+        setTimeout(
+          () =>
+            resolve({ reachable: false, targets: [], reason: `no answer within ${timeoutMs}ms` }),
+          timeoutMs
+        )
+      ),
+    ]);
+  };
+
+  // Step 0 — the project's own record: `expo start` logs a `metro:instantiate` event with the
+  // port into `.expo/dev/logs/start.log`. Project-scoped, but carries no liveness (the log
+  // outlives the server) and no PID, so the port is only a candidate until it answers a probe.
+  // A dedicated `.expo/dev-server.json` lock (url + pid) is the recorded upstream ask.
+  const loggedPort = projectRoot != null ? readLastLoggedDevServerPort(projectRoot) : null;
+  if (loggedPort != null && loggedPort !== 8081) {
+    const loggedUrl = `http://127.0.0.1:${loggedPort}`;
+    const loggedProbe = await withTimeout(loggedUrl);
+    if (loggedProbe.reachable) {
+      return { ...loggedProbe, devServerUrl: loggedUrl, discovered: true };
+    }
+  }
+
+  const defaultProbe = await withTimeout(DEFAULT_DEV_SERVER_URL);
+  if (defaultProbe.reachable) {
+    return { ...defaultProbe, devServerUrl: DEFAULT_DEV_SERVER_URL, discovered: false };
+  }
+
+  const candidates = DEV_SERVER_SCAN_PORTS.slice(1).map((port) => `http://127.0.0.1:${port}`);
+  const probes = await Promise.all(
+    candidates.map(async (url) => ({ url, probe: await withTimeout(url) }))
+  );
+  const hit =
+    probes.find(({ probe }) => probe.reachable && probe.targets.length > 0) ??
+    probes.find(({ probe }) => probe.reachable);
+  if (hit) {
+    return { ...hit.probe, devServerUrl: hit.url, discovered: true };
+  }
+
+  return { ...defaultProbe, devServerUrl: DEFAULT_DEV_SERVER_URL, discovered: false };
 }
 
 export interface DevServerProbe {

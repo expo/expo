@@ -46,7 +46,7 @@ Emit the plan first as a structured event (steps + reasons + time-class estimate
 - **Project**: name/slug, SDK version, CNG vs bare, dev-client/web deps.
 - **Expo Go**: compatible or not, with reason count (the reasons themselves in the `probe` key of `--json`).
 - **Freshness**: current fingerprint vs `.expo/exagent-last-build.json` per platform → `fresh` / `stale` / `unknown` (no fingerprint tool).
-- **Dev server**: running or not (probe the configured/default port), and how many CDP targets are connected (app open?).
+- **Dev server**: running or not, and how many CDP targets are connected (app open?). Discovery order [observed — 2026-08-22]: explicit `--dev-server-url` → the port the project's own `.expo/dev/logs/start.log` names (`metro:instantiate` event; project-scoped but carries no liveness/PID, so it is probed, never trusted) → 8081 → a short scan of the ports `expo start` falls back to. Recorded upstream ask: revive a `.expo/dev-server.json` lock (url + pid, removed on exit) in `@expo/cli` so tools get the port and liveness without scanning — the legacy `packager-info.json` is gone from the modern CLI [observed].
 - **Skills**: agent selection cached? linked skill count vs discovered count (out-of-sync hint).
 - **Next action**: the smart-start rule that would fire, as one line (e.g. "`exagent dev` → expo-go: start Metro and open in Expo Go").
 

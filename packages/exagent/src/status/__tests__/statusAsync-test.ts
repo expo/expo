@@ -6,7 +6,7 @@ import * as Log from '../../log';
 import { readLastBuildFingerprints } from '../../plan/lastBuild';
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
-import { probeDevServerAsync } from '../../runtime/devServer';
+import { discoverDevServerAsync } from '../../runtime/devServer';
 import { getPersistedAgentIdsAsync } from '../../skills/agents';
 import { discoverSkillsAsync } from '../../skills/discovery';
 import type { DiscoveredSkill } from '../../skills/types';
@@ -18,7 +18,7 @@ jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 jest.mock('../../project/probe', () => ({ probeProjectStateAsync: jest.fn() }));
 jest.mock('../../plan/lastBuild', () => ({ readLastBuildFingerprints: jest.fn(() => ({})) }));
-jest.mock('../../runtime/devServer', () => ({ probeDevServerAsync: jest.fn() }));
+jest.mock('../../runtime/devServer', () => ({ discoverDevServerAsync: jest.fn() }));
 jest.mock('../../skills/discovery', () => ({ discoverSkillsAsync: jest.fn(async () => []) }));
 jest.mock('../../skills/agents', () => ({
   ...jest.requireActual('../../skills/agents'),
@@ -56,7 +56,9 @@ beforeEach(() => {
   vol.fromJSON({ '/project/package.json': JSON.stringify({ name: 'my-app' }) });
   mockState();
   jest.mocked(readLastBuildFingerprints).mockReturnValue({});
-  jest.mocked(probeDevServerAsync).mockResolvedValue({ reachable: true, targets: [{} as any] });
+  jest
+    .mocked(discoverDevServerAsync)
+    .mockResolvedValue({ reachable: true, targets: [{} as any], devServerUrl, discovered: false });
   jest.mocked(discoverSkillsAsync).mockResolvedValue([]);
   jest.mocked(getPersistedAgentIdsAsync).mockResolvedValue(null);
 });
@@ -142,9 +144,13 @@ describe(collectStatusReportAsync, () => {
   });
 
   it(`should report a dev server that does not answer`, async () => {
-    jest
-      .mocked(probeDevServerAsync)
-      .mockResolvedValue({ reachable: false, targets: [], reason: 'fetch failed' });
+    jest.mocked(discoverDevServerAsync).mockResolvedValue({
+      reachable: false,
+      targets: [],
+      reason: 'fetch failed',
+      devServerUrl,
+      discovered: false,
+    });
 
     const report = await collectStatusReportAsync(projectRoot, options);
 
@@ -160,7 +166,7 @@ describe(collectStatusReportAsync, () => {
   });
 
   it(`should stop waiting for a dev server that never answers`, async () => {
-    jest.mocked(probeDevServerAsync).mockReturnValue(new Promise(() => {}));
+    jest.mocked(discoverDevServerAsync).mockReturnValue(new Promise(() => {}));
 
     const report = await collectStatusReportAsync(projectRoot, {
       ...options,

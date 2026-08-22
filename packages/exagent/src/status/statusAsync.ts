@@ -17,7 +17,7 @@ import type { NativePlatform, PlanPlatform } from '../plan/types';
 import { readProjectPackageJsonAsync } from '../project/nodeModules';
 import { probeProjectStateAsync } from '../project/probe';
 import type { ProjectState } from '../project/types';
-import { probeDevServerAsync, type DevServerProbe } from '../runtime/devServer';
+import { discoverDevServerAsync, type DevServerProbe } from '../runtime/devServer';
 import { getAllAgents, getPersistedAgentIdsAsync } from '../skills/agents';
 import { discoverSkillsAsync } from '../skills/discovery';
 import type { DiscoveredSkill } from '../skills/types';
@@ -46,8 +46,8 @@ import type {
 export const DEV_SERVER_PROBE_TIMEOUT_MS = 1500;
 
 export interface StatusOptions {
-  /** The dev server to probe, from `--dev-server-url` or the default. */
-  devServerUrl: string;
+  /** Explicit --dev-server-url; null lets the probe scan the ports `expo start` uses. */
+  devServerUrl: string | null;
   /** Print the report as JSON instead of one line per section. */
   json?: boolean;
   /** Platform the next action targets. Resolved from the project when omitted. */
@@ -99,7 +99,7 @@ export async function collectStatusReportAsync(
 ): Promise<StatusReport> {
   const [project, devServer, skills] = await Promise.all([
     attemptAsync(() => readProjectAsync(projectRoot)),
-    attemptAsync(() => probeDevServerStatusAsync(options)),
+    attemptAsync(() => probeDevServerStatusAsync(projectRoot, options)),
     attemptAsync(() => readSkillsStatusAsync(projectRoot)),
   ]);
 
@@ -169,15 +169,25 @@ async function readProjectAsync(
  * request that timed out is abandoned rather than cancelled: the probe takes no abort signal, and
  * status has already printed by the time a black-holed request gives up.
  */
-async function probeDevServerStatusAsync(options: StatusOptions): Promise<DevServerStatus> {
+async function probeDevServerStatusAsync(
+  projectRoot: string,
+  options: StatusOptions
+): Promise<DevServerStatus> {
   const timeoutMs = options.devServerTimeoutMs ?? DEV_SERVER_PROBE_TIMEOUT_MS;
-  const probe = await raceWithTimeoutAsync(probeDevServerAsync(options.devServerUrl), timeoutMs);
-  const timedOut: DevServerProbe = {
-    reachable: false,
-    targets: [],
-    reason: `the dev server did not answer within ${timeoutMs}ms`,
-  };
-  return buildDevServerStatus(options.devServerUrl, probe ?? timedOut);
+  // No explicit URL: 8081 first, then the ports `expo start` walks to (see devServer.ts).
+  const discovery = await raceWithTimeoutAsync(
+    discoverDevServerAsync(options.devServerUrl ?? undefined, { timeoutMs, projectRoot }),
+    timeoutMs * 2
+  );
+  if (discovery == null) {
+    const timedOut: DevServerProbe = {
+      reachable: false,
+      targets: [],
+      reason: `the dev server did not answer within ${timeoutMs}ms`,
+    };
+    return buildDevServerStatus(options.devServerUrl ?? 'http://127.0.0.1:8081', timedOut);
+  }
+  return buildDevServerStatus(discovery.devServerUrl, discovery);
 }
 
 /** Which agents are configured, how many skills the project ships, and how many are linked. */

@@ -23,7 +23,7 @@ export const exagentStatus: Command = async (argv) => {
       chalk`npx exagent status`,
       [
         `--json                    Print the whole report as JSON, raw project probe included`,
-        `--dev-server-url <url>    Dev server to probe (default: http://127.0.0.1:8081)`,
+        `--dev-server-url <url>    Dev server to probe (default: scan ports 8081-8085)`,
         `--no-followups            Leave the suggested follow-up commands out of the report`,
         `-h, --help                Usage info`,
       ].join('\n'),
@@ -55,8 +55,10 @@ export const exagentStatus: Command = async (argv) => {
 
   return (async () => {
     const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    const explicitDevServerUrl =
+      args['--dev-server-url'] != null ? resolveDevServerUrlFlag(args['--dev-server-url']) : null;
     await printStatusAsync(projectRoot, {
-      devServerUrl: resolveDevServerUrlFlag(args['--dev-server-url']),
+      devServerUrl: explicitDevServerUrl,
       json: !!args['--json'],
       followups: !args['--no-followups'],
     });
