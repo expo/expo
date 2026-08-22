@@ -229,22 +229,6 @@ open class SecureStoreModule : Module() {
     }
   }
 
-  private fun saveEncryptedItem(encryptedItem: JSONObject, prefs: SharedPreferences, key: String, requireAuthentication: Boolean, keychainService: String): Boolean {
-    // We need a way to recognize entries that have been saved under an alias created with getExtendedKeychain
-    encryptedItem.put(USES_KEYSTORE_SUFFIX_PROPERTY, true)
-    // In order to be able to have the same keys under different keychains
-    // we need a way to recognize what is the keychain of the item when we read it
-    encryptedItem.put(KEYSTORE_ALIAS_PROPERTY, keychainService)
-    encryptedItem.put(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, requireAuthentication)
-
-    val encryptedItemString = encryptedItem.toString()
-    if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
-      throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
-    }
-
-    return prefs.edit().putString(key, encryptedItemString).commit()
-  }
-
   private fun deleteItemImpl(key: String, options: SecureStoreOptions) {
     var success = true
     val prefs = getSharedPreferences()
@@ -385,10 +369,42 @@ open class SecureStoreModule : Module() {
     private const val SHARED_PREFERENCES_NAME = "SecureStore"
     private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
     private const val SCHEME_PROPERTY = "scheme"
-    private const val KEYSTORE_ALIAS_PROPERTY = "keystoreAlias"
+    internal const val KEYSTORE_ALIAS_PROPERTY = "keystoreAlias"
     const val USES_KEYSTORE_SUFFIX_PROPERTY = "usesKeystoreSuffix"
     const val DEFAULT_KEYSTORE_ALIAS = "key_v1"
     const val AUTHENTICATED_KEYSTORE_SUFFIX = "keystoreAuthenticated"
     const val UNAUTHENTICATED_KEYSTORE_SUFFIX = "keystoreUnauthenticated"
+  }
+}
+
+/**
+ * Writes an encrypted item to shared preferences, throwing if it could not be persisted.
+ *
+ * [SharedPreferences.Editor.commit] returns `false` when the write never reached disk — AOSP takes
+ * that path when it can't rename the backing file, for instance. The in-memory map is still updated,
+ * so reads in the same process keep succeeding and the failure is invisible until the process dies.
+ * Reporting it as a [WriteException] keeps a resolved `setItemAsync` meaning "persisted".
+ */
+internal fun saveEncryptedItem(
+  encryptedItem: JSONObject,
+  prefs: SharedPreferences,
+  key: String,
+  requireAuthentication: Boolean,
+  keychainService: String
+) {
+  // We need a way to recognize entries that have been saved under an alias created with getExtendedKeychain
+  encryptedItem.put(SecureStoreModule.USES_KEYSTORE_SUFFIX_PROPERTY, true)
+  // In order to be able to have the same keys under different keychains
+  // we need a way to recognize what is the keychain of the item when we read it
+  encryptedItem.put(SecureStoreModule.KEYSTORE_ALIAS_PROPERTY, keychainService)
+  encryptedItem.put(AuthenticationHelper.REQUIRE_AUTHENTICATION_PROPERTY, requireAuthentication)
+
+  val encryptedItemString = encryptedItem.toString()
+  if (encryptedItemString.isNullOrEmpty()) { // JSONObject#toString() may return null
+    throw WriteException("Could not JSON-encode the encrypted item for SecureStore - the string $encryptedItemString is null or empty", key, keychainService)
+  }
+
+  if (!prefs.edit().putString(key, encryptedItemString).commit()) {
+    throw WriteException("Could not write the encrypted item to SecureStore", key, keychainService)
   }
 }
