@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "name": "broken-app",
+    "slug": "broken-app",
+    "sdkVersion": "54.0.0",
+    "platforms": ["ios", "android"]
+  }
+}

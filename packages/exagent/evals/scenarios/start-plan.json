@@ -1,0 +1,12 @@
+{
+  "id": "start-plan",
+  "fixture": "e2e/fixtures/dev-client-app",
+  "taskPrompt": "figure out the plan to get this app running on iOS without executing it",
+  "drivingAgent": "deterministic",
+  "tiers": [0, 1, 2],
+  "command": {
+    "argv": ["start", "--plan"],
+    "timeoutMs": 60000
+  },
+  "graders": [{ "type": "exit-code", "expect": 0 }]
+}

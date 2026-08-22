@@ -1,0 +1,4 @@
+# Local state a command may create in the temporary copy of this fixture.
+.expo/
+.stub-bin/
+stub-expo-invocations.jsonl

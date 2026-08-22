@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "name": "bare-app",
+    "slug": "bare-app",
+    "sdkVersion": "54.0.0",
+    "platforms": ["ios", "android"]
+  }
+}

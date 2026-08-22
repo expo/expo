@@ -1,0 +1,7 @@
+# Marker file: a committed `ios/` directory is what makes this project bare instead of CNG.
+# No pod is ever installed from it; the fixture only needs the directory to exist.
+platform :ios, '15.1'
+
+target 'bareapp' do
+  use_expo_modules!
+end

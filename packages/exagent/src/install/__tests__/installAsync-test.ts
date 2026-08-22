@@ -1,10 +1,12 @@
 import { autoSyncSkillsAsync, printSkillsForAgentAsync } from '../../skills/skillsAsync';
 import { runExpoAsync } from '../../utils/expoCli';
+import { reportInstallImpactAsync } from '../impactReport';
 import { installAsync } from '../installAsync';
 import { resolveInstallPlan } from '../resolveOptions';
 
 jest.mock('../../log');
 jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
+jest.mock('../impactReport', () => ({ reportInstallImpactAsync: jest.fn() }));
 jest.mock('../../skills/skillsAsync', () => ({
   autoSyncSkillsAsync: jest.fn(),
   printSkillsForAgentAsync: jest.fn(),
@@ -61,6 +63,34 @@ describe(installAsync, () => {
 
     await expect(installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']))).resolves.toBe(1);
     expect(autoSyncSkillsAsync).not.toHaveBeenCalled();
+  });
+
+  it(`should report the impact of the installed packages`, async () => {
+    await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
+
+    expect(reportInstallImpactAsync).toHaveBeenCalledWith(projectRoot, ['expo-sqlite']);
+  });
+
+  it(`should report the impact even when the skill sync is off`, async () => {
+    await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--no-agent-skills']));
+
+    expect(reportInstallImpactAsync).toHaveBeenCalledWith(projectRoot, ['expo-sqlite']);
+    expect(autoSyncSkillsAsync).not.toHaveBeenCalled();
+  });
+
+  it(`should skip the impact report with --no-impact`, async () => {
+    await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--no-impact']));
+
+    expect(reportInstallImpactAsync).not.toHaveBeenCalled();
+    expect(autoSyncSkillsAsync).toHaveBeenCalled();
+  });
+
+  it(`should skip the impact report when the install fails`, async () => {
+    jest.mocked(runExpoAsync).mockResolvedValue(1);
+
+    await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
+
+    expect(reportInstallImpactAsync).not.toHaveBeenCalled();
   });
 
   it(`should return the exit code of a successful install`, async () => {

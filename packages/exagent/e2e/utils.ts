@@ -77,6 +77,37 @@ async function installStubExpoAsync(projectRoot: string): Promise<void> {
   }
 }
 
+/**
+ * Write the `node_modules/.bin/fingerprint` shims for a fixture that ships the stub
+ * `@expo/fingerprint` package, so the project-state probe finds a fingerprint CLI to spawn.
+ *
+ * A no-op for fixtures without that package: the probe reports a null hash for those, which is
+ * the case most fixtures are there to cover.
+ *
+ * @returns whether the shims were written
+ */
+export async function installStubFingerprintAsync(projectRoot: string): Promise<boolean> {
+  const stubScript = path.join(projectRoot, 'node_modules', '@expo', 'fingerprint', 'bin', 'cli');
+  if (!fs.existsSync(stubScript)) {
+    return false;
+  }
+
+  const binDir = path.join(projectRoot, 'node_modules', '.bin');
+  await fs.promises.mkdir(binDir, { recursive: true });
+  const shPath = path.join(binDir, 'fingerprint');
+  await fs.promises.writeFile(
+    shPath,
+    `#!/bin/sh\nexec "${process.execPath}" "${stubScript}" "$@"\n`
+  );
+  await fs.promises.chmod(shPath, 0o755);
+  // Windows resolves the bin through the `.cmd` shim, mirroring what npm/pnpm write.
+  await fs.promises.writeFile(
+    path.join(binDir, 'fingerprint.cmd'),
+    `@echo off\r\n"${process.execPath}" "${stubScript}" %*\r\n`
+  );
+  return true;
+}
+
 /** Environment that makes any bare `expo` spawn resolve to the fixture's stub bin. */
 export function stubExpoEnv(projectRoot: string): Record<string, string> {
   return {

@@ -18,6 +18,7 @@ const { version } = require('../package.json') as { version: string };
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here.
+  context: () => import('./context').then((i) => i.exagentContext),
   install: () => import('./install').then((i) => i.exagentInstall),
   start: () => import('./start').then((i) => i.exagentStart),
   skills: () => import('./skills').then((i) => i.exagentSkills),

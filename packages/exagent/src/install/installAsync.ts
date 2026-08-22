@@ -1,18 +1,30 @@
 import { autoSyncSkillsAsync, printSkillsForAgentAsync } from '../skills/skillsAsync';
 import { runExpoAsync } from '../utils/expoCli';
+import { reportInstallImpactAsync } from './impactReport';
 import type { InstallPlan } from './resolveOptions';
 
 /**
- * Run `expo install` as a subprocess, then link the skills of what it installed.
+ * Run `expo install` as a subprocess, then report what it changed and link the skills of what it
+ * installed.
  *
- * The sync runs after the subprocess, never inside `@expo/cli`. Both sync steps are
- * best-effort and never throw, so a skill problem cannot fail a good install.
+ * Both post-install steps run after the subprocess, never inside `@expo/cli`. They are
+ * best-effort and never throw, so neither a skill problem nor an unclassifiable package can fail
+ * a good install.
  *
  * @returns the exit code of the `expo install` subprocess.
  */
 export async function installAsync(projectRoot: string, plan: InstallPlan): Promise<number> {
   const exitCode = await runExpoAsync(projectRoot, ['install', ...plan.expoArgs]);
-  if (exitCode !== 0 || plan.syncScope === 'none') {
+  if (exitCode !== 0) {
+    return exitCode;
+  }
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Sub-features — post-install impact
+  if (plan.impact) {
+    await reportInstallImpactAsync(projectRoot, plan.packages);
+  }
+
+  if (plan.syncScope === 'none') {
     return exitCode;
   }
 

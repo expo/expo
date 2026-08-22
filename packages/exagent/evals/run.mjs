@@ -486,21 +486,30 @@ function indent(text, prefix) {
 /* Tier 1 execution — local model over Ollama                                 */
 /* -------------------------------------------------------------------------- */
 
+// The command list below duplicates the CLI surface, so it drifts whenever a command or flag is
+// added. Source of truth: the `commands` registry in src/cli.ts and the `printHelp` block of each
+// command's index.ts. Update this prompt and TIER2_COMMAND_SUMMARY together when either changes.
+// The `--help` escape hatch keeps a stale list from being a dead end for the model.
 const TIER1_SYSTEM_PROMPT = `You are an autonomous agent completing a task in an Expo project using the \`exagent\` CLI.
 
 Available commands:
-  exagent skills sync --agent <agent>   Link agent skills from installed packages (agents: claude-code, cursor, codex)
+  exagent context [--json]              Print project state: SDK version, native state, Expo Go support, fingerprint
+  exagent start                         Start the dev server
+  exagent start --plan                  Print what must run to get the app running, then exit without running it
+  exagent start --smart                 Print that plan, then run its steps
+  exagent skills sync --agent <agent>   Link agent skills from installed packages
   exagent skills list [--json]          List discovered skills
   exagent skills show <package>         Print a package's skill
   exagent skills clean                  Remove managed skill links
   exagent install <packages..>          Install packages with expo, then sync skills
-  exagent start                         Start the dev server
+
+Valid --agent values: claude-code, cursor, codex, opencode, windsurf, gemini-cli
 
 Respond with EXACTLY ONE JSON object and nothing else:
   {"run": ["skills", "sync", "--agent", "claude-code"]}   to execute an exagent command
   {"done": true, "summary": "<what you accomplished>"}    when the task is complete
 
-Rules: one command per turn; wait for the result before deciding the next step; prefer the fewest commands that complete the task; never invent flags not listed above.`;
+Rules: one command per turn; wait for the result before deciding the next step; prefer the fewest commands that complete the task. Do not invent flags: if you need a flag that is not listed above, run the command with --help first and read the real flags from the output.`;
 
 async function chatOllama(messages) {
   const response = await fetch(`${OLLAMA_HOST}/api/chat`, {
@@ -665,6 +674,11 @@ async function runTier1Scenario(scenario) {
 /* Tier 2 execution — frontier agent (Claude Code headless)                   */
 /* -------------------------------------------------------------------------- */
 
+/** Kept next to TIER1_SYSTEM_PROMPT's list on purpose — see the drift note above it. */
+const TIER2_COMMAND_SUMMARY =
+  'Available commands: context [--json], start [--plan|--smart], skills [sync|list|show|clean] ' +
+  '(sync takes --agent claude-code|cursor|codex|opencode|windsurf|gemini-cli), install <pkg..>.';
+
 function checkTier2() {
   if (!process.env.ANTHROPIC_API_KEY && !process.env.CLAUDE_CODE_OAUTH_TOKEN) {
     return (
@@ -689,7 +703,8 @@ async function runTier2Scenario(scenario) {
     `Complete this task: ${scenario.taskPrompt}\n\n` +
     `Use the exagent CLI by running it with node, for example:\n` +
     `  node ${CLI_BIN} skills --help\n` +
-    `Available commands: skills [sync|list|show|clean], install <pkg..>, start. ` +
+    `${TIER2_COMMAND_SUMMARY} ` +
+    `Any command accepts --help; read the real flags from it rather than guessing. ` +
     `When the task is complete, stop and summarize what you did in one sentence.`;
 
   const startedAt = Date.now();

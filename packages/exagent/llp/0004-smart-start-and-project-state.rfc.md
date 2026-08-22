@@ -39,6 +39,18 @@ Emit the plan first as a structured event (steps + reasons + time-class estimate
 - **Expo Go compatibility check** [confirmed — Kudo seed, 2026-08-18]: answer "can this run in Expo Go?" with reasons — compare dependencies against `packages/expo/bundledNativeModules.json` [observed — file exists], detect config plugins and custom native code, check SDK support.
 - **Post-install impact decisions** [confirmed — Kudo seed, 2026-08-18]: after `npx expo install {pkg}`: JS-only → keep dev server, maybe reload; new config plugin or native module under CNG → prebuild + new dev build; bare native dirs → pod install / gradle sync. Same classifier as the decision table, consumed at a second moment.
 
+## Implemented in v1 as
+
+[observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/context/`, `exagent start --plan|--smart`) with these deliberate approximations of the table above:
+
+1. **No device probe.** "Go/dev client installed on the device" is unobservable without simctl/adb; those rows are dropped — `expo start` prompts for Go itself and `expo run:*` installs what it builds.
+2. **No build-cache lookup.** Freshness = probe fingerprint vs `.expo/exagent-last-build.json` (written after a successful `run:*` step). Unrecorded ⇒ stale: v1 over-plans a build at worst, never under-plans.
+3. The recorded hash is the pre-build probe hash (what an unchanged project re-probes to).
+4. The `web` rule fires only on an explicit `--web`; `ProjectState` cannot prove "web-only".
+5. Bare-vs-CNG uses "any native dir present"; the argv uses the resolved platform.
+6. `sdkVersion: null` never forces a rule; `expoGo.compatible` is the single Go verdict.
+7. Config plugins are read from static config only (`app.json`); dynamic `app.config.js/ts` yields a debug event and best-effort skip — resolving it needs an `expo config` subprocess (follow-up).
+
 ## Testing
 
 The decision table is pure logic over probed state: exhaustively unit-tested, no model, no device (tier 0 in [[0002-testing-and-evals]]). Probe and execution paths get e2e coverage against fixtures via subprocess + JSONL assertions.

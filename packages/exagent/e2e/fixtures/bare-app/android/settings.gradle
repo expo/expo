@@ -1,0 +1,2 @@
+// Marker file, see ./build.gradle.
+rootProject.name = 'bare-app'

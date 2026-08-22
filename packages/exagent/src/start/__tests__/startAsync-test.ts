@@ -1,7 +1,7 @@
 import { autoSyncSkillsAsync } from '../../skills/skillsAsync';
 import { runExpoAsync } from '../../utils/expoCli';
-import { resolveStartPlan } from '../resolveOptions';
-import { SKILLS_SYNC_IDLE_DELAY_MS, startAsync } from '../startAsync';
+import { resolveStartOptions } from '../resolveOptions';
+import { runDevServerAsync, SKILLS_SYNC_IDLE_DELAY_MS, startAsync } from '../startAsync';
 
 jest.mock('../../log');
 jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
@@ -32,7 +32,7 @@ afterEach(() => {
 describe(startAsync, () => {
   it(`should run expo start with the forwarded arguments`, async () => {
     const end = mockLongRunningStart();
-    const promise = startAsync(projectRoot, resolveStartPlan(['--web']));
+    const promise = startAsync(projectRoot, resolveStartOptions(['--web']));
 
     expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['start', '--web']);
 
@@ -42,7 +42,7 @@ describe(startAsync, () => {
 
   it(`should not sync skills before the idle delay elapses`, async () => {
     const end = mockLongRunningStart();
-    const promise = startAsync(projectRoot, resolveStartPlan([]));
+    const promise = startAsync(projectRoot, resolveStartOptions([]));
 
     jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS - 1);
     expect(autoSyncSkillsAsync).not.toHaveBeenCalled();
@@ -53,7 +53,7 @@ describe(startAsync, () => {
 
   it(`should sync skills after the idle delay while the dev server runs`, async () => {
     const end = mockLongRunningStart();
-    const promise = startAsync(projectRoot, resolveStartPlan([]));
+    const promise = startAsync(projectRoot, resolveStartOptions([]));
 
     jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS);
     expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot);
@@ -64,7 +64,7 @@ describe(startAsync, () => {
 
   it(`should not sync skills with --no-agent-skills`, async () => {
     const end = mockLongRunningStart();
-    const promise = startAsync(projectRoot, resolveStartPlan(['--no-agent-skills']));
+    const promise = startAsync(projectRoot, resolveStartOptions(['--no-agent-skills']));
 
     jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS * 2);
     expect(autoSyncSkillsAsync).not.toHaveBeenCalled();
@@ -75,12 +75,37 @@ describe(startAsync, () => {
 
   it(`should cancel the pending sync when the dev server exits early`, async () => {
     const end = mockLongRunningStart();
-    const promise = startAsync(projectRoot, resolveStartPlan([]));
+    const promise = startAsync(projectRoot, resolveStartOptions([]));
 
     end(1);
     await expect(promise).resolves.toBe(1);
 
     jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS * 2);
     expect(autoSyncSkillsAsync).not.toHaveBeenCalled();
+  });
+});
+
+describe(runDevServerAsync, () => {
+  it(`should run any dev server command and sync skills`, async () => {
+    const end = mockLongRunningStart();
+    const promise = runDevServerAsync(projectRoot, ['run:ios'], { agentSkills: true });
+
+    expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['run:ios']);
+    jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS);
+    expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot);
+
+    end(0);
+    await promise;
+  });
+
+  it(`should skip the sync when agent skills are off`, async () => {
+    const end = mockLongRunningStart();
+    const promise = runDevServerAsync(projectRoot, ['run:android'], { agentSkills: false });
+
+    jest.advanceTimersByTime(SKILLS_SYNC_IDLE_DELAY_MS * 2);
+    expect(autoSyncSkillsAsync).not.toHaveBeenCalled();
+
+    end(0);
+    await promise;
   });
 });
