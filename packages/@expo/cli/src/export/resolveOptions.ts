@@ -1,5 +1,6 @@
 import type { Platform } from '@expo/config';
 import { getConfig, getPlatformsFromConfig } from '@expo/config';
+import { KNOWN_PLATFORMS } from '@expo/platform-metadata';
 
 import type { PlatformBundlers } from '../start/server/platformBundlers';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
@@ -55,7 +56,7 @@ export function resolvePlatformOption(
     return platform;
   };
 
-  const knownPlatforms = ['android', 'ios', 'web', 'tvos', 'macos'] as Platform[];
+  const knownPlatforms = KNOWN_PLATFORMS as readonly Platform[];
   const assertPlatformIsKnown = (platform: string): Platform => {
     if (!knownPlatforms.includes(platform as Platform)) {
       throw new CommandError(

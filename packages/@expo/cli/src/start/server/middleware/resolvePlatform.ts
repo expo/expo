@@ -1,4 +1,5 @@
 import type { NativePlatform } from '@expo/config';
+import { KNOWN_PLATFORMS } from '@expo/platform-metadata';
 import { parse } from 'url';
 
 import { CommandError } from '../../../utils/errors';
@@ -51,7 +52,7 @@ export function assertMissingRuntimePlatform(platform?: any): asserts platform {
 /** Assert if the runtime platform is not correct. */
 export function assertRuntimePlatform(platform: string): asserts platform is RuntimePlatform {
   const stringifiedPlatform = String(platform);
-  if (!['android', 'ios', 'web', 'tvos', 'macos'].includes(stringifiedPlatform)) {
+  if (!(KNOWN_PLATFORMS as readonly string[]).includes(stringifiedPlatform)) {
     throw new CommandError(
       'PLATFORM_HEADER',
       `platform must be "android", "ios", "web", "tvos", or "macos". Received: "${platform}"`

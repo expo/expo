@@ -1,4 +1,5 @@
 import JsonFile from '@expo/json-file';
+import { getReactNativeHostPackage } from '@expo/platform-metadata';
 import { resolveFrom } from '@expo/require-utils';
 import semver from 'semver';
 
@@ -6,7 +7,7 @@ import { env } from '../../../utils/env';
 import { fetch } from '../../../utils/fetch';
 import { debugEvent } from '../events';
 
-export const REACT_NATIVE_TVOS_PACKAGE_NAME = 'react-native-tvos';
+export const REACT_NATIVE_TVOS_PACKAGE_NAME = getReactNativeHostPackage('tvos')!;
 
 const NPM_DIST_TAGS_URL = `https://registry.npmjs.org/-/package/${REACT_NATIVE_TVOS_PACKAGE_NAME}/dist-tags`;
 

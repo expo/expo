@@ -1828,6 +1828,9 @@ importers:
       '@expo/package-manager':
         specifier: workspace:^1.12.0
         version: link:../package-manager
+      '@expo/platform-metadata':
+        specifier: workspace:^0.1.0
+        version: link:../platform-metadata
       '@expo/plist':
         specifier: workspace:^0.7.0
         version: link:../plist

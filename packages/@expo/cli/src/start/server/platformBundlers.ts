@@ -1,4 +1,6 @@
 import type { ExpoConfig, ExpoConfigWeb, Platform } from '@expo/config';
+import type { OutOfTreePlatformName } from '@expo/platform-metadata';
+import { OUT_OF_TREE_PLATFORMS } from '@expo/platform-metadata';
 import resolveFrom from 'resolve-from';
 
 /** Which bundler each platform should use. */
@@ -25,7 +27,10 @@ export function getPlatformBundlers(
     ios: (exp.ios as WithBundlerConfig)?.bundler ?? 'metro',
     android: (exp.android as WithBundlerConfig)?.bundler ?? 'metro',
     web,
-    tvos: 'metro',
-    macos: 'metro',
+    // Out-of-tree platforms always bundle with Metro.
+    ...(Object.fromEntries(OUT_OF_TREE_PLATFORMS.map((platform) => [platform, 'metro'])) as Record<
+      OutOfTreePlatformName,
+      'metro'
+    >),
   };
 }

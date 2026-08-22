@@ -16,6 +16,7 @@ import type MetroHmrServer from '@expo/metro/metro/HmrServer';
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
+import { isOutOfTreePlatform } from '@expo/platform-metadata';
 import chalk from 'chalk';
 import type http from 'http';
 import path from 'path';
@@ -204,8 +205,8 @@ export async function loadMetroConfigAsync(
 
   // Out-of-tree platforms (tvos/macos) rely on the autolinking module resolver to remap the
   // react-native package to their support package, and require autolinking module resolution
-  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some(
-    (platform) => platform === 'tvos' || platform === 'macos'
+  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some((platform) =>
+    isOutOfTreePlatform(platform)
   );
 
   // Autolinking Module Resolution is enabled by default in a monorepo or for out-of-tree platforms.

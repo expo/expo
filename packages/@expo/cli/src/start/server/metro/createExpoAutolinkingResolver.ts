@@ -1,5 +1,6 @@
 import type { Platform } from '@expo/config';
 import type { ResolutionContext } from '@expo/metro/metro-resolver';
+import { KNOWN_PLATFORMS } from '@expo/platform-metadata';
 import type { ResolutionResult as AutolinkingResolutionResult } from 'expo-modules-autolinking/exports';
 
 import { event } from './resolveEvents';
@@ -36,7 +37,7 @@ const KNOWN_STICKY_DEPENDENCIES = [
   '@react-navigation/native',
 ];
 
-const AUTOLINKING_PLATFORMS: readonly Platform[] = ['android', 'ios', 'web', 'tvos', 'macos'];
+const AUTOLINKING_PLATFORMS: readonly Platform[] = KNOWN_PLATFORMS;
 
 export type AutolinkingPlatform = Platform;
 
