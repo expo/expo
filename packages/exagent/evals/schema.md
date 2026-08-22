@@ -10,17 +10,20 @@ validates it against the shape below, and runs the ones that belong to the reque
 
 ```jsonc
 {
-  "id": "skills-sync",              // required, unique, kebab-case; matches the file name
-  "fixture": "e2e/fixtures/...",    // required, path relative to packages/exagent
-  "taskPrompt": "sync agent ...",   // required, the natural-language task given to a model
-  "drivingAgent": "deterministic",  // required, see below
-  "tiers": [0, 1],                  // required, non-empty, values from 0 | 1 | 2
-  "command": {                      // required for tier 0, ignored by tiers 1 and 2
-    "argv": ["skills", "sync"],     //   argv passed to bin/exagent.js
-    "env": { "CI": "1" },           //   optional extra environment variables
-    "timeoutMs": 60000              //   optional, defaults to 120000
+  "id": "skills-sync", // required, unique, kebab-case; matches the file name
+  "fixture": "e2e/fixtures/...", // required, path relative to packages/exagent
+  "taskPrompt": "sync agent ...", // required, the natural-language task given to a model
+  "drivingAgent": "deterministic", // required, see below
+  "tiers": [0, 1], // required, non-empty, values from 0 | 1 | 2
+  "command": {
+    // required for tier 0, ignored by tiers 1 and 2
+    "argv": ["skills", "sync"], //   argv passed to bin/exagent.js
+    "env": { "CI": "1" }, //   optional extra environment variables
+    "timeoutMs": 60000, //   optional, defaults to 120000
   },
-  "graders": [ /* see below */ ]    // required, non-empty
+  "graders": [
+    /* see below */
+  ], // required, non-empty
 }
 ```
 
@@ -30,11 +33,11 @@ Who performs the task at the scenario's lowest tier. Higher tiers substitute the
 hand it `taskPrompt`, and reuse the same graders — the outcome checks do not change with the
 driver, which is the point of listing a scenario in more than one tier.
 
-| Value | Tier | Meaning |
-| --- | --- | --- |
-| `deterministic` | 0 | No model. The runner spawns `command.argv` directly. |
-| `local-model` | 1 | A pinned small open model drives the CLI. Not implemented yet. |
-| `frontier-agent` | 2 | A real agent (e.g. Claude Code headless) drives the CLI. Not implemented yet. |
+| Value            | Tier | Meaning                                                                       |
+| ---------------- | ---- | ----------------------------------------------------------------------------- |
+| `deterministic`  | 0    | No model. The runner spawns `command.argv` directly.                          |
+| `local-model`    | 1    | A pinned small open model drives the CLI. Not implemented yet.                |
+| `frontier-agent` | 2    | A real agent (e.g. Claude Code headless) drives the CLI. Not implemented yet. |
 
 ### Execution model
 
@@ -79,7 +82,12 @@ and defaults to `1`. This is the check that makes the event stream the API under
 ### `http-probe`
 
 ```jsonc
-{ "type": "http-probe", "url": "http://localhost:8081/status", "expectStatus": 200, "timeoutMs": 15000 }
+{
+  "type": "http-probe",
+  "url": "http://localhost:8081/status",
+  "expectStatus": 200,
+  "timeoutMs": 15000,
+}
 ```
 
 Sends one GET request. `expectStatus` is optional and defaults to `200`. `timeoutMs` is optional

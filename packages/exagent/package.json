@@ -3,8 +3,8 @@
   "version": "0.0.2",
   "description": "Agent-native CLI on top of the Expo CLI family",
   "keywords": [
-    "expo",
     "agent",
+    "expo",
     "mcp",
     "skills"
   ],
@@ -24,6 +24,9 @@
     "build"
   ],
   "main": "build/cli/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "ncc build ./src/cli.ts -o build/cli/",
     "build:prod": "ncc build ./src/cli.ts -o build/cli/ --minify --no-cache --no-source-map-register",
@@ -36,11 +39,11 @@
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
+    "2g": "^0.4.3",
     "@types/getenv": "^1.0.0",
     "@types/node": "^22.14.0",
     "@types/prompts": "^2.4.9",
     "@vercel/ncc": "^0.38.3",
-    "2g": "^0.4.3",
     "agent-cli-detector": "0.1.6",
     "arg": "^5.0.2",
     "chalk": "^4.0.0",
@@ -48,8 +51,5 @@
     "getenv": "^2.0.0",
     "memfs": "^3.2.0",
     "prompts": "^2.3.2"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

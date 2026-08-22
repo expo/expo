@@ -19,11 +19,11 @@ Testing infrastructure is built **first**, before feature work [confirmed — Ku
 
 ## Eval tiers
 
-- **Tier 0 — deterministic (every PR, free).** Unit tests + subprocess e2e with JSONL-event assertions (layers 1–2 above). *Scripted MCP client replay is an optional add-on, deferred* [confirmed — Kudo, 2026-08-20: not necessary in the meantime]; revisit when the MCP tool surface grows enough that schema drift becomes a real regression class.
+- **Tier 0 — deterministic (every PR, free).** Unit tests + subprocess e2e with JSONL-event assertions (layers 1–2 above). _Scripted MCP client replay is an optional add-on, deferred_ [confirmed — Kudo, 2026-08-20: not necessary in the meantime]; revisit when the MCP tool surface grows enough that schema drift becomes a real regression class.
 - **Tier 1 — agent-in-the-loop, best-effort (primary early investment).** Requirement [confirmed — Kudo, 2026-08-20]: test real "call from an agent" behavior — unpredictable and best-effort by nature — while staying free, cheap, and as stable as possible. Approach [inferred]:
-  - *Model*: a pinned quantized open model (4–8B Qwen/Llama class) via llama.cpp/Ollama on a GitHub-hosted runner, CPU-only (~4 vCPU/16 GB → single-digit tokens/sec; keep scenarios short). GitHub Models is NOT an option — fully retired 2026-07-30 [observed — GitHub changelog]. Hosted free-tier alternatives to spike (all need an API-key secret; limits shift, so report-only use only): Groq free tier (Llama 3.3 70B, ~30 RPM / 1000 req/day [observed — provider comparisons, 2026-08]), Google Gemini Flash free tier, OpenRouter free models (50 req/day), Cloudflare Workers AI. A weekly suite of 2–3 scenarios × pass@5 fits comfortably inside those budgets. Cheap-paid fallback with the best tool-calling reliability: Claude Haiku (cents per run, folds into tier 2's key).
-  - *Stability levers*: temperature 0 / greedy decoding, fixed seed, pinned model + quantization + prompt → near-reproducible runs on identical inputs; short single-goal scenarios; outcome graders with tolerance (any valid tool sequence that reaches the goal passes).
-  - *Flake containment*: pass@k over k cheap trials instead of single-shot; the job starts **report-only** (non-blocking) and only becomes a gate once its pass rate is stable over a trailing window.
+  - _Model_: a pinned quantized open model (4–8B Qwen/Llama class) via llama.cpp/Ollama on a GitHub-hosted runner, CPU-only (~4 vCPU/16 GB → single-digit tokens/sec; keep scenarios short). GitHub Models is NOT an option — fully retired 2026-07-30 [observed — GitHub changelog]. Hosted free-tier alternatives to spike (all need an API-key secret; limits shift, so report-only use only): Groq free tier (Llama 3.3 70B, ~30 RPM / 1000 req/day [observed — provider comparisons, 2026-08]), Google Gemini Flash free tier, OpenRouter free models (50 req/day), Cloudflare Workers AI. A weekly suite of 2–3 scenarios × pass@5 fits comfortably inside those budgets. Cheap-paid fallback with the best tool-calling reliability: Claude Haiku (cents per run, folds into tier 2's key).
+  - _Stability levers_: temperature 0 / greedy decoding, fixed seed, pinned model + quantization + prompt → near-reproducible runs on identical inputs; short single-goal scenarios; outcome graders with tolerance (any valid tool sequence that reaches the goal passes).
+  - _Flake containment_: pass@k over k cheap trials instead of single-shot; the job starts **report-only** (non-blocking) and only becomes a gate once its pass rate is stable over a trailing window.
   - Deliberate side effect: if a weak model can use the tools, strong models certainly can — ergonomics get evaluated at the hardest setting.
 - **Tier 2 — frontier model (scheduled + pre-release).** A real agent (e.g. Claude Code headless) drives the full scenario set with an API key from CI secrets. N trials per scenario; gate on pass rate; store transcripts as artifacts for regression triage.
 
@@ -60,5 +60,5 @@ Programmatic and model-free: dev server responds; app boots (via `automation_tak
 
 ## Open questions
 
-1. Which small model/quantization for tier 1 — needs a benchmark spike on a real runner.
+1. ~~Which small model for tier 1~~ — resolved [observed — spike, 2026-08-21]: `qwen3:4b` via Ollama (see build order step 5). Quantization pinning by digest still worth adding once CI timing data exists.
 2. Pass-rate thresholds and trial counts for tiers 1–2.

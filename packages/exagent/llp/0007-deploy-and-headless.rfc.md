@@ -23,9 +23,9 @@ Ship and develop without a terminal or a laptop. Seeds [confirmed — Kudo, 2026
 
 [confirmed — Kudo seed, 2026-08-18] Expo API routes deploy to the Workers runtime (workerd). Tools:
 
-- *Compat preflight*: static lint of API routes and server code for Node APIs/packages absent under workerd, before any deploy.
-- *Local workerd run*: execute routes under the real runtime locally; structured errors back to the agent.
-- *Fix loop*: known-incompatibility → known-substitution mapping, so the agent rewrites Node-isms and re-verifies.
+- _Compat preflight_: static lint of API routes and server code for Node APIs/packages absent under workerd, before any deploy.
+- _Local workerd run_: execute routes under the real runtime locally; structured errors back to the agent.
+- _Fix loop_: known-incompatibility → known-substitution mapping, so the agent rewrites Node-isms and re-verifies.
 
 ## Chat-driven development — the phone is the only device
 

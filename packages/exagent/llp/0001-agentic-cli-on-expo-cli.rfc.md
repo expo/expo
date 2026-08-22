@@ -9,7 +9,7 @@
 
 ## Summary
 
-Make Expo the best framework to develop *through an agent*. Decision [confirmed — Kudo, 2026-08-18]: **Shape 1 — Expo ships the tool layer, not the model.** The product is deterministic, agent-facing tools (extending `expo-mcp`) plus official skills; the intelligence comes from whatever agent the user already runs (Claude Code, Cursor, the Claude mobile app). No model, no API key, and no billing anywhere in the product. Models appear only in CI, to run the eval suite. The `exagent` bin ships in v1 as a thin, model-free launcher; an embedded-loop agent remains a possible later wrapper, not v1. Shipping is gated on heavy tests and evals.
+Make Expo the best framework to develop _through an agent_. Decision [confirmed — Kudo, 2026-08-18]: **Shape 1 — Expo ships the tool layer, not the model.** The product is deterministic, agent-facing tools (extending `expo-mcp`) plus official skills; the intelligence comes from whatever agent the user already runs (Claude Code, Cursor, the Claude mobile app). No model, no API key, and no billing anywhere in the product. Models appear only in CI, to run the eval suite. The `exagent` bin ships in v1 as a thin, model-free launcher; an embedded-loop agent remains a possible later wrapper, not v1. Shipping is gated on heavy tests and evals.
 
 ## Motivation
 

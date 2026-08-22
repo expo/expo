@@ -11,7 +11,7 @@
 
 One deterministic engine answers "what must run to get this app on a device?" — consumed as a single smart `start` command [confirmed — Kudo, 2026-08-19], as the post-install "what must rerun?" answer, and as an Expo Go compatibility check. Neither agents nor users decide when to prebuild, rebuild, or just start Metro.
 
-Per [[0001-agentic-cli-on-expo-cli]] §Constraints, the engine *invokes* `expo prebuild` / `expo run:*` / `expo start` as subprocesses and consumes their JSONL events; it does not import `@expo/cli` internals.
+Per [[0001-agentic-cli-on-expo-cli]] §Constraints, the engine _invokes_ `expo prebuild` / `expo run:*` / `expo start` as subprocesses and consumes their JSONL events; it does not import `@expo/cli` internals.
 
 ## Inputs (project-state probe)
 
@@ -21,14 +21,14 @@ Per [[0001-agentic-cli-on-expo-cli]] §Constraints, the engine *invokes* `expo p
 
 ## Decision table (sketch)
 
-| State | Plan |
-| --- | --- |
-| Expo Go compatible, Go installed | start Metro → open in Expo Go |
-| Dev client installed, fingerprint matches last build | start Metro → open dev client |
+| State                                                   | Plan                                            |
+| ------------------------------------------------------- | ----------------------------------------------- |
+| Expo Go compatible, Go installed                        | start Metro → open in Expo Go                   |
+| Dev client installed, fingerprint matches last build    | start Metro → open dev client                   |
 | Fingerprint changed (new native module / config plugin) | prebuild (CNG) → native build → install → start |
-| Build cache hit for current fingerprint | download/install cached build → start Metro |
-| Bare project, native dirs dirty | pod install / gradle sync → build → start |
-| Web | start Metro for web |
+| Build cache hit for current fingerprint                 | download/install cached build → start Metro     |
+| Bare project, native dirs dirty                         | pod install / gradle sync → build → start       |
+| Web                                                     | start Metro for web                             |
 
 ## Contract
 

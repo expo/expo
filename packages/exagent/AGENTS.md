@@ -1,6 +1,7 @@
 # Agent instructions — exagent
 
 <!-- BEGIN LLP MANAGED BLOCK (llp-adopt) -->
+
 ## LLP
 
 This package's design lives in Linked Literate Programming (LLP) documents in `llp/`.
