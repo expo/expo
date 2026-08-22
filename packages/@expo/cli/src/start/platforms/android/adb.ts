@@ -170,6 +170,42 @@ export async function getPackageInfoAsync(
   return await getServer().runAsync(adbShellArgs(device.pid, 'dumpsys', 'package', appId));
 }
 
+/**
+ * Get the paths of the installed APKs for an app based on its Android package name.
+ * Returns an empty list when the app is not installed. Every other failure (device offline,
+ * unauthorized, shell errors) throws — it says nothing about the app.
+ */
+export async function getPackagePathsAsync(
+  device: DeviceContext,
+  { appId }: { appId: string }
+): Promise<string[]> {
+  let output: string;
+  try {
+    output = await getServer().runAsync(
+      adbShellArgs(device.pid, 'pm', 'path', '--user', env.EXPO_ADB_USER, appId)
+    );
+  } catch (error: any) {
+    // `pm path` exits code 1 and prints nothing when the package is not installed;
+    // `resolveAdbPromise` keeps the bare spawn message in that case. Some devices print an
+    // explicit package error instead. Any other failure — transport errors, authorization
+    // states, shell errors — says nothing about the app and must propagate instead of
+    // reading as "not installed".
+    const message = error?.message ?? '';
+    if (
+      /exited with non-zero code: 1$/.test(message) ||
+      /can't find package|package \S+ (is )?not (found|installed)|unknown package/i.test(message)
+    ) {
+      return [];
+    }
+    throw error;
+  }
+  return output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('package:'))
+    .map((line) => line.slice('package:'.length));
+}
+
 /** Install an app on a connected device. */
 export async function installAsync(device: DeviceContext, { filePath }: { filePath: string }) {
   // TODO: Handle the `INSTALL_FAILED_INSUFFICIENT_STORAGE` error.
@@ -196,7 +232,7 @@ export function adbShellArgs(pid: Device['pid'], ...command: string[]): string[]
   return adbArgs(pid, 'shell', ...command.map(shellQuote));
 }
 
-function shellQuote(value: string): string {
+export function shellQuote(value: string): string {
   return `'${value.replace(/'/g, `'\\''`)}'`;
 }
 

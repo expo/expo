@@ -1,5 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
-import { execFileSync } from 'child_process';
+import { execFile, execFileSync } from 'child_process';
 
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
@@ -79,6 +79,40 @@ export class ADBServer {
     event('adb_server_run', { command: [adb, ...args].join(' ') });
     const result = await this.resolveAdbPromise(spawnAsync(adb, args));
     return result.output.join('\n');
+  }
+
+  /**
+   * Execute an ADB command and return its raw stdout. Required for binary output
+   * (e.g. `exec-out` reads of device files), which string decoding would corrupt.
+   */
+  async runRawAsync(args: string[]): Promise<Buffer> {
+    const adb = this.getAdbExecutablePath();
+
+    await this.startAsync();
+
+    event('adb_server_run', { command: [adb, ...args].join(' ') });
+    return await this.resolveAdbPromise(
+      new Promise<Buffer>((resolve, reject) => {
+        execFile(
+          adb,
+          args,
+          { encoding: 'buffer', maxBuffer: 16 * 1024 * 1024 },
+          (error, stdout, stderr) => {
+            if (error) {
+              // Normalize to strings so the shared adb error formatting applies.
+              reject(
+                Object.assign(error, {
+                  stdout: stdout?.toString() ?? '',
+                  stderr: stderr?.toString() ?? '',
+                })
+              );
+            } else {
+              resolve(stdout);
+            }
+          }
+        );
+      })
+    );
   }
 
   /** Get ADB file output. Useful for reading device state/settings. */
