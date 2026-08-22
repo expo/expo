@@ -117,8 +117,6 @@ export default defineConfig({
     'react/refs': 'off',
     'react/set-state-in-effect': 'off',
     'react/static-components': 'off',
-    'react/use-memo': 'off',
-    'react/void-use-memo': 'off',
 
     // -----------------
     // --- Stylistic ---
