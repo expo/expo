@@ -511,23 +511,54 @@ Respond with EXACTLY ONE JSON object and nothing else:
 
 Rules: one command per turn; wait for the result before deciding the next step; prefer the fewest commands that complete the task. Do not invent flags: if you need a flag that is not listed above, run the command with --help first and read the real flags from the output.`;
 
-async function chatOllama(messages) {
-  const response = await fetch(`${OLLAMA_HOST}/api/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: TIER1_MODEL,
-      messages,
-      stream: false,
-      format: 'json',
-      options: { temperature: 0, seed: TIER1_SEED },
-    }),
+// Plain http.request instead of fetch: Node's fetch (undici) enforces a 5-minute headers
+// timeout, which a slow CPU-only CI runner can exceed on a long-context inference call
+// (observed: HeadersTimeoutError on the 2nd turn of start-plan, expo/expo#49229 tier 1).
+const TIER1_REQUEST_TIMEOUT_MS = 900_000;
+
+function chatOllama(messages) {
+  const body = JSON.stringify({
+    model: TIER1_MODEL,
+    messages,
+    stream: false,
+    format: 'json',
+    options: { temperature: 0, seed: TIER1_SEED },
   });
-  if (!response.ok) {
-    throw new Error(`Ollama /api/chat responded ${response.status}: ${await response.text()}`);
-  }
-  const payload = await response.json();
-  return payload?.message?.content ?? '';
+  const url = new URL('/api/chat', OLLAMA_HOST);
+  const client = url.protocol === 'https:' ? https : http;
+
+  return new Promise((resolve, reject) => {
+    const request = client.request(
+      url,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) },
+        timeout: TIER1_REQUEST_TIMEOUT_MS,
+      },
+      (response) => {
+        let data = '';
+        response.on('data', (chunk) => (data += chunk));
+        response.on('end', () => {
+          if ((response.statusCode ?? 0) >= 400) {
+            reject(new Error(`Ollama /api/chat responded ${response.statusCode}: ${data}`));
+            return;
+          }
+          try {
+            resolve(JSON.parse(data)?.message?.content ?? '');
+          } catch (error) {
+            reject(new Error(`Ollama /api/chat returned invalid JSON: ${error.message}`));
+          }
+        });
+      }
+    );
+    request.on('timeout', () => {
+      request.destroy(
+        new Error(`Ollama /api/chat timed out after ${TIER1_REQUEST_TIMEOUT_MS / 1000}s`)
+      );
+    });
+    request.on('error', reject);
+    request.end(body);
+  });
 }
 
 async function checkOllamaAsync() {
@@ -606,7 +637,15 @@ async function runTier1Scenario(scenario) {
   let done = false;
 
   for (let turn = 1; turn <= TIER1_MAX_TURNS; turn++) {
-    const content = await chatOllama(messages);
+    let content;
+    try {
+      content = await chatOllama(messages);
+    } catch (error) {
+      // An inference failure fails this scenario, not the whole runner.
+      console.log(`    turn ${turn}: inference failed — ${error.message}`);
+      console.log(`    workspace kept for triage: ${workspace}`);
+      return { pass: false, reason: `inference failed on turn ${turn}: ${error.message}` };
+    }
     messages.push({ role: 'assistant', content });
 
     const action = parseTier1Action(content);

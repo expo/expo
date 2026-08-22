@@ -75,6 +75,7 @@ jobs:
       (github.event_name == 'schedule' && github.repository == 'expo/expo')
     runs-on: ubuntu-24.04
     continue-on-error: true
+    timeout-minutes: 45
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
