@@ -16,16 +16,19 @@ export function hasAdbReverseAsync(): boolean {
   }
 }
 
-export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
+export async function startAdbReverseAsync(
+  ports: number[],
+  signal?: AbortSignal
+): Promise<boolean> {
   // Install cleanup automatically...
   removeExitHook = installExitHooks(() => {
     stopAdbReverseAsync(ports);
   });
 
-  const devices = await getAttachedDevicesAsync();
+  const devices = await getAttachedDevicesAsync({ signal });
   for (const device of devices) {
     for (const port of ports) {
-      if (!(await adbReverseAsync(device, port))) {
+      if (!(await adbReverseAsync(device, port, signal))) {
         event('adb_reverse_port_failed', { port, deviceName: device.name });
         return false;
       }
@@ -34,43 +37,64 @@ export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
   return true;
 }
 
-export async function stopAdbReverseAsync(ports: number[]): Promise<void> {
+export async function stopAdbReverseAsync(ports: number[], signal?: AbortSignal): Promise<void> {
   removeExitHook?.();
 
-  const devices = await getAttachedDevicesAsync();
+  const devices = await getAttachedDevicesAsync({ signal });
   for (const device of devices) {
     for (const port of ports) {
-      await adbReverseRemoveAsync(device, port);
+      await adbReverseRemoveAsync(device, port, signal);
     }
   }
 }
 
-async function adbReverseAsync(device: Device, port: number): Promise<boolean> {
+async function adbReverseAsync(
+  device: Device,
+  port: number,
+  signal?: AbortSignal
+): Promise<boolean> {
   if (!device.isAuthorized) {
     logUnauthorized(device);
     return false;
   }
 
   try {
-    await getServer().runAsync(adbArgs(device.pid, 'reverse', `tcp:${port}`, `tcp:${port}`));
+    await getServer().runDeviceMutationAsync(
+      adbArgs(device.pid, 'reverse', `tcp:${port}`, `tcp:${port}`),
+      'reverse port',
+      signal
+    );
     return true;
   } catch (error: any) {
+    if (signal?.aborted && error === signal.reason) throw error;
     Log.warn(`[ADB] Couldn't reverse port ${port}: ${error.message}`);
     return false;
   }
 }
 
-async function adbReverseRemoveAsync(device: Device, port: number): Promise<boolean> {
+async function adbReverseRemoveAsync(
+  device: Device,
+  port: number,
+  signal?: AbortSignal
+): Promise<boolean> {
   if (!device.isAuthorized) {
     return false;
   }
 
   try {
-    await getServer().runAsync(adbArgs(device.pid, 'reverse', '--remove', `tcp:${port}`));
+    await getServer().runDeviceMutationAsync(
+      adbArgs(device.pid, 'reverse', '--remove', `tcp:${port}`),
+      'remove reverse port',
+      signal
+    );
     return true;
   } catch (error: any) {
+    if (signal?.aborted && error === signal.reason) throw error;
     // Don't send this to warn because we call this preemptively sometimes
-    event('adb_reverse_unforward_failed', { port, error: event.error(error as Error) });
+    event('adb_reverse_unforward_failed', {
+      port,
+      error: event.error(error as Error),
+    });
     return false;
   }
 }

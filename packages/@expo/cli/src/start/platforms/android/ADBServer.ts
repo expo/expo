@@ -1,23 +1,21 @@
-import spawnAsync from '@expo/spawn-async';
-import { execFileSync } from 'child_process';
-
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { AbortCommandError, CommandError } from '../../../utils/errors';
-import { installExitHooks } from '../../../utils/exit';
 import { event } from '../events';
 import { assertSdkRoot } from './AndroidSdk';
+import {
+  AdbProcessWaitError,
+  runAdbDeviceMutationAsync,
+  runAdbDeviceQueryAsync,
+  runAdbHostQueryAsync,
+  runBoundedAdbDeviceQueryAsync,
+  runBoundedAdbHostQueryAsync,
+} from './adbProcess';
 
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
-
-// This is a tricky class since it controls a system state (side-effects).
-// A more ideal solution would be to implement ADB in JS.
-// The main reason this is a class is to control the flow of testing.
+const PROPERTY_QUERY_WAIT_LIMIT_MS = 10_000;
 
 export class ADBServer {
-  isRunning: boolean = false;
-  removeExitHook: () => void = () => {};
-
   /** Returns the command line reference to ADB. */
   getAdbExecutablePath(): string {
     try {
@@ -33,69 +31,71 @@ export class ADBServer {
     return 'adb';
   }
 
-  /** Start the ADB server. */
-  async startAsync(): Promise<boolean> {
-    if (this.isRunning) {
-      return false;
-    }
-    // clean up
-    this.removeExitHook = installExitHooks(() => {
-      if (this.isRunning) {
-        this.stopAsync();
-      }
-    });
-    const adb = this.getAdbExecutablePath();
-    const result = await this.resolveAdbPromise(spawnAsync(adb, ['start-server']));
-    const lines = result.stderr.trim().split(/\r?\n/);
-    const isStarted = lines.includes('* daemon started successfully');
-    this.isRunning = isStarted;
-    return isStarted;
-  }
-
-  /** Kill the ADB server. */
-  async stopAsync(): Promise<boolean> {
-    if (!this.isRunning) {
-      return false;
-    }
-    this.removeExitHook();
-    try {
-      await this.runAsync(['kill-server']);
-      return true;
-    } catch (error: any) {
-      Log.error('Failed to stop ADB server: ' + error.message);
-      return false;
-    } finally {
-      this.isRunning = false;
-    }
-  }
-
   /** Execute an ADB command with given args. */
-  async runAsync(args: string[]): Promise<string> {
-    // TODO: Add a global package that installs adb to the path.
+  async runDeviceQueryAsync(
+    args: string[],
+    operation: string,
+    signal?: AbortSignal
+  ): Promise<string> {
     const adb = this.getAdbExecutablePath();
 
-    await this.startAsync();
+    // NOTE(@kitten): We removed start-server/stop-server calls,
+    // because each command already negotiates the server automatically
 
     event('adb_server_run', { command: [adb, ...args].join(' ') });
-    const result = await this.resolveAdbPromise(spawnAsync(adb, args));
-    return result.output.join('\n');
+    const result = await this.resolveAdbPromise(
+      runAdbDeviceQueryAsync(adb, args, operation, signal)
+    );
+    return [result.stdout, result.stderr].join('\n');
+  }
+
+  async runDeviceMutationAsync(
+    args: string[],
+    operation: string,
+    signal?: AbortSignal
+  ): Promise<string> {
+    const adb = this.getAdbExecutablePath();
+    event('adb_server_run', { command: [adb, ...args].join(' ') });
+    const result = await this.resolveAdbPromise(
+      runAdbDeviceMutationAsync(adb, args, operation, signal)
+    );
+    return [result.stdout, result.stderr].join('\n');
+  }
+
+  async runHostQueryAsync(
+    args: string[],
+    operation: string,
+    signal?: AbortSignal,
+    waitLimitMs?: number
+  ): Promise<string> {
+    const adb = this.getAdbExecutablePath();
+    const result = await this.resolveAdbPromise(
+      waitLimitMs == null
+        ? runAdbHostQueryAsync(adb, args, operation, signal)
+        : runBoundedAdbHostQueryAsync(adb, args, operation, waitLimitMs, signal)
+    );
+    return result.stdout;
   }
 
   /** Get ADB file output. Useful for reading device state/settings. */
-  async getFileOutputAsync(args: string[]): Promise<string> {
+  async getFileOutputAsync(
+    args: string[],
+    { signal, waitLimitMs }: { signal?: AbortSignal; waitLimitMs?: number } = {}
+  ): Promise<string> {
     // TODO: Add a global package that installs adb to the path.
     const adb = this.getAdbExecutablePath();
 
-    await this.startAsync();
-
-    const results = await this.resolveAdbPromise(
-      execFileSync(adb, args, {
-        encoding: 'latin1',
-        stdio: 'pipe',
-      })
+    const result = await this.resolveAdbPromise(
+      runBoundedAdbDeviceQueryAsync(
+        adb,
+        args,
+        'device property/boot query',
+        waitLimitMs ?? PROPERTY_QUERY_WAIT_LIMIT_MS,
+        signal
+      )
     );
-    event('adb_file_output', { output: results });
-    return results;
+    event('adb_file_output', { output: result.stdout });
+    return result.stdout;
   }
 
   /** Formats error info. */
@@ -103,6 +103,9 @@ export class ADBServer {
     try {
       return await promise;
     } catch (error: any) {
+      if (error instanceof AdbProcessWaitError) {
+        throw error;
+      }
       // User pressed ctrl+c to cancel the process...
       if (error.signal === 'SIGINT') {
         throw new AbortCommandError();
