@@ -282,8 +282,8 @@ describe('expo passthrough', () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.all).toContain('Expo CLI');
-    expect(result.all).toContain('forwarded to npx expo <command>');
+    expect(result.all).toContain('Expo CLI (fallback to npx expo <command>)');
+    expect(result.all).toContain('Expo CLI (fallback to npx expo <command>)');
     expect(result.all).toContain('prebuild');
     expect(result.all).toContain('whoami');
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);

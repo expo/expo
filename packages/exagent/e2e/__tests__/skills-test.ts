@@ -308,8 +308,8 @@ describe('exagent', () => {
     expect(result.all).toContain('skills:sync');
     expect(result.all).toContain('Checkpoints');
     expect(result.all).toContain('checkpoint, checkpoint:list, checkpoint:undo');
-    expect(result.all).toContain('Expo CLI');
-    expect(result.all).toContain('forwarded to npx expo <command>');
+    expect(result.all).toContain('Expo CLI (fallback to npx expo <command>)');
+    expect(result.all).toContain('Expo CLI (fallback to npx expo <command>)');
   });
 
   it('prints the package version with `--version`', async () => {

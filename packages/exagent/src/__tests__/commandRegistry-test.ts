@@ -255,8 +255,8 @@ describe(formatTopLevelHelp, () => {
   it('names the forwarded expo commands and where they go', () => {
     const help = formatTopLevelHelp();
 
-    expect(help).toContain('Expo CLI');
-    expect(help).toContain('forwarded to npx expo <command>');
+    expect(help).toContain('Expo CLI (fallback to npx expo <command>)');
+    expect(help).toContain('Expo CLI (fallback to npx expo <command>)');
     for (const command of forwardedCommands) {
       expect(help).toContain(command);
     }

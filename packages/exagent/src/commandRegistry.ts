@@ -294,9 +294,8 @@ export const helpSections: HelpSection[] = [
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
   { title: 'Checkpoints', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },
   {
-    title: 'Expo CLI',
+    title: 'Expo CLI (fallback to npx expo <command>)',
     commands: forwardedCommands,
-    note: 'forwarded to npx expo <command>',
   },
 ];
 
