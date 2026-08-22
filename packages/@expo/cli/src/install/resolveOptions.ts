@@ -16,6 +16,8 @@ export type Options = Pick<NodePackageManagerForProject, 'npm' | 'pnpm' | 'yarn'
   json?: boolean;
   /** Should link agent skills after installing, set to false with --no-agent-skills */
   agentSkills?: boolean;
+  /** Should print installed skills for a detected coding agent, set to false with --no-skill-context */
+  skillContext?: boolean;
 };
 
 function resolveOptions(options: Options): Options {
@@ -49,6 +51,7 @@ export async function resolveArgsAsync(
       '--bun',
       '--json',
       '--no-agent-skills',
+      '--no-skill-context',
     ],
     { variadic, extras, flags },
     'npx expo install'
@@ -67,6 +70,7 @@ export async function resolveArgsAsync(
       bun: !!flags['--bun'],
       json: !!flags['--json'],
       agentSkills: !flags['--no-agent-skills'],
+      skillContext: !flags['--no-skill-context'],
     }),
     extras,
   };
