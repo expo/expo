@@ -8,6 +8,7 @@ public final class ScreenCaptureModule: Module {
   private var blockView: UIView?
   private var protectionTextField: UITextField?
   private var originalParent: CALayer?
+  private weak var reparentedWindow: UIWindow?
   private var blurEffectView: AnimatedBlurEffectView?
   private var blurIntensity: CGFloat = 0.5
   private var keyWindow: UIWindow? {
@@ -122,6 +123,13 @@ public final class ScreenCaptureModule: Module {
   }
 
   private func preventScreenshots() {
+    // Protection is already active. Re-parenting again would nest the window layer
+    // inside a second secure canvas and overwrite `originalParent`, making the
+    // original layer hierarchy unrecoverable.
+    guard protectionTextField == nil else {
+      return
+    }
+
     guard let keyWindow = keyWindow else {
       return
     }
@@ -132,30 +140,78 @@ public final class ScreenCaptureModule: Module {
     textField.backgroundColor = UIColor.clear
     textField.frame = UIScreen.main.bounds
 
-    originalParent = keyWindow.layer.superlayer
-
-    keyWindow.layer.superlayer?.addSublayer(textField.layer)
-
-    if let firstTextFieldSublayer = textField.layer.sublayers?.first {
-      keyWindow.layer.removeFromSuperlayer()
-      firstTextFieldSublayer.addSublayer(keyWindow.layer)
+    guard let originalParentLayer = keyWindow.layer.superlayer else {
+      return
     }
 
+    originalParentLayer.addSublayer(textField.layer)
+
+    guard let firstTextFieldSublayer = textField.layer.sublayers?.first else {
+      textField.layer.removeFromSuperlayer()
+      return
+    }
+
+    keyWindow.layer.removeFromSuperlayer()
+    firstTextFieldSublayer.addSublayer(keyWindow.layer)
+    // Latch the protection state only after the re-parent actually happened, so a
+    // failed attempt leaves the module able to retry instead of permanently
+    // blocking future calls behind the guard above.
     protectionTextField = textField
+    originalParent = originalParentLayer
+    reparentedWindow = keyWindow
+    setNeedsDisplayRecursively(in: keyWindow)
+    DispatchQueue.main.async { [weak self] in
+      self?.setNeedsDisplayRecursively(in: keyWindow)
+    }
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+      self?.setNeedsDisplayRecursively(in: keyWindow)
+    }
   }
 
   private func allowScreenshots() {
+    defer {
+      protectionTextField = nil
+      originalParent = nil
+      reparentedWindow = nil
+    }
+
     guard let textField = protectionTextField,
-      let window = keyWindow,
       let originalParentLayer = originalParent else {
       return
     }
 
-    window.layer.removeFromSuperlayer()
-    originalParentLayer.addSublayer(window.layer)
-    textField.layer.removeFromSuperlayer()
-    protectionTextField = nil
-    originalParent = nil
+    if let window = reparentedWindow {
+      window.layer.removeFromSuperlayer()
+      originalParentLayer.addSublayer(window.layer)
+      textField.layer.removeFromSuperlayer()
+      setNeedsDisplayRecursively(in: window)
+      DispatchQueue.main.async { [weak self] in
+        self?.setNeedsDisplayRecursively(in: window)
+      }
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+        self?.setNeedsDisplayRecursively(in: window)
+      }
+    } else {
+      textField.layer.removeFromSuperlayer()
+    }
+  }
+
+  private func setNeedsDisplayRecursively(in view: UIView) {
+    guard Thread.isMainThread else {
+      DispatchQueue.main.async { [weak self] in
+        self?.setNeedsDisplayRecursively(in: view)
+      }
+      return
+    }
+
+    // Re-parenting the window layer can drop display work that views relying on
+    // `drawRect`-style rendering (for example `react-native-svg` surfaces) had
+    // pending, leaving them blank until something else forces a redraw. Re-issue
+    // the display work after each re-parent; callers repeat this on the next
+    // run-loop turn for same-turn commits and after 0.1 seconds for work issued
+    // by the JS layout/props cycle that follows.
+    view.setNeedsDisplay()
+    view.subviews.forEach { setNeedsDisplayRecursively(in: $0) }
   }
 
   private func enableAppSwitcherProtection() {
