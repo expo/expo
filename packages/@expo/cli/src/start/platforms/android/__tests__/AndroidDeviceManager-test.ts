@@ -1,7 +1,14 @@
 import { CommandError } from '../../../../utils/errors';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import type { Device } from '../adb';
-import { getPackageInfoAsync, launchActivityAsync, openUrlAsync } from '../adb';
+import {
+  getPackageInfoAsync,
+  installAsync,
+  isDeviceBootedAsync,
+  launchActivityAsync,
+  openUrlAsync,
+} from '../adb';
+import { startDeviceAsync } from '../emulator';
 import { shellDumpsysPackage } from './fixtures/adb-output';
 
 jest.mock('../adbReverse', () => ({
@@ -12,13 +19,127 @@ jest.mock('../adb', () => ({
   launchActivityAsync: jest.fn(),
   openAppIdAsync: jest.fn(),
   openUrlAsync: jest.fn(),
+  installAsync: jest.fn(),
+  isPackageInstalledAsync: jest.fn(),
+  isDeviceBootedAsync: jest.fn(),
+  logUnauthorized: jest.fn(),
 }));
+jest.mock('../emulator', () => ({ startDeviceAsync: jest.fn() }));
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
 
 function createDevice() {
   return new AndroidDeviceManager(asDevice({ name: 'Pixel 5', pid: '123' }));
 }
+
+describe('device resolution', () => {
+  it('launches only an explicit AVD inventory record', async () => {
+    const avd = asDevice({
+      name: 'Pixel_API_35',
+      type: 'emulator',
+      isLaunchable: true,
+      isBooted: false,
+      isAuthorized: true,
+    });
+    const attached = asDevice({
+      ...avd,
+      pid: 'emulator-5554',
+      state: 'device',
+      transportId: '4',
+      isLaunchable: false,
+      isBooted: true,
+    });
+    jest.mocked(startDeviceAsync).mockResolvedValueOnce(attached);
+
+    await expect(AndroidDeviceManager.resolveAsync({ device: avd })).resolves.toMatchObject({
+      device: attached,
+    });
+    expect(startDeviceAsync).toHaveBeenCalledWith(avd);
+    expect(isDeviceBootedAsync).not.toHaveBeenCalled();
+  });
+
+  it.each(['offline', 'unauthorized', 'future-state'])(
+    'rejects an attached %s transport without entering the AVD launch path',
+    async (state) => {
+      const physical = asDevice({
+        name: 'Device USB-1',
+        pid: 'USB-1',
+        type: 'device',
+        state,
+        isLaunchable: false,
+        isAuthorized: state !== 'unauthorized',
+      });
+
+      await expect(AndroidDeviceManager.resolveAsync({ device: physical })).rejects.toThrow(state);
+      expect(startDeviceAsync).not.toHaveBeenCalled();
+      expect(isDeviceBootedAsync).not.toHaveBeenCalled();
+    }
+  );
+
+  it('reports disappearance after discovery without launching or replaying', async () => {
+    const physical = asDevice({
+      name: 'Pixel USB',
+      pid: 'USB-1',
+      type: 'device',
+      state: 'device',
+      transportId: '4',
+      isLaunchable: false,
+      isAuthorized: true,
+    });
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(null);
+
+    await expect(AndroidDeviceManager.resolveAsync({ device: physical })).rejects.toThrow(
+      /Device not found after discovery/
+    );
+    expect(startDeviceAsync).not.toHaveBeenCalled();
+  });
+
+  it('uses a freshly rediscovered physical transport without launching an emulator', async () => {
+    const physical = asDevice({
+      name: 'Pixel USB',
+      pid: 'USB-1',
+      type: 'device',
+      state: 'device',
+      transportId: '4',
+      isLaunchable: false,
+      isAuthorized: true,
+    });
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce(physical);
+
+    await expect(AndroidDeviceManager.resolveAsync({ device: physical })).resolves.toMatchObject({
+      device: physical,
+    });
+    expect(startDeviceAsync).not.toHaveBeenCalled();
+  });
+
+  it('reports transport replacement after discovery', async () => {
+    const physical = asDevice({
+      name: 'Pixel USB',
+      pid: 'USB-1',
+      type: 'device',
+      state: 'device',
+      transportId: '4',
+      isLaunchable: false,
+      isAuthorized: true,
+    });
+    jest.mocked(isDeviceBootedAsync).mockResolvedValueOnce({ ...physical, transportId: '5' });
+
+    await expect(AndroidDeviceManager.resolveAsync({ device: physical })).rejects.toThrow(
+      /transport 4 became 5/
+    );
+    expect(startDeviceAsync).not.toHaveBeenCalled();
+  });
+
+  it('maps a post-selection device-not-found error without replaying install', async () => {
+    const manager = createDevice();
+    jest.mocked(installAsync).mockRejectedValueOnce(new Error('error: device not found'));
+
+    await expect(manager.installAppAsync('/tmp/app.apk')).rejects.toThrow(
+      /The device disconnected. Reconnect it and try again./
+    );
+    expect(installAsync).toHaveBeenCalledTimes(1);
+  });
+});
 
 describe('getAppVersionAsync', () => {
   it(`gets the version from an installed app`, async () => {
@@ -65,7 +186,8 @@ describe('launchActivityAsync', () => {
       expect.objectContaining({
         launchActivity: 'dev.expo.test/.MainActivity',
         url: 'exp+expo-test://expo-development-client/?url=http%3A%2F%2F192.168.86.186%3A8081',
-      })
+      }),
+      expect.any(AbortSignal)
     );
   });
 });
@@ -76,15 +198,24 @@ describe('openUrlAsync', () => {
     await device.openUrlAsync('exp://foobar');
     expect(launchActivityAsync).toHaveBeenCalledWith(
       { pid: '123' },
-      { launchActivity: 'host.exp.exponent/.experience.HomeActivity' }
+      { launchActivity: 'host.exp.exponent/.experience.HomeActivity' },
+      expect.any(AbortSignal)
     );
-    expect(openUrlAsync).toHaveBeenCalledWith({ pid: '123' }, { url: 'exp://foobar' });
+    expect(openUrlAsync).toHaveBeenCalledWith(
+      { pid: '123' },
+      { url: 'exp://foobar' },
+      expect.any(AbortSignal)
+    );
   });
   it('opens a URL on a device', async () => {
     const device = createDevice();
     await device.openUrlAsync('http://foobar');
     expect(launchActivityAsync).not.toHaveBeenCalled();
-    expect(openUrlAsync).toHaveBeenCalledWith({ pid: '123' }, { url: 'http://foobar' });
+    expect(openUrlAsync).toHaveBeenCalledWith(
+      { pid: '123' },
+      { url: 'http://foobar' },
+      expect.any(AbortSignal)
+    );
   });
   it('launches nonstandard URL', async () => {
     const device = createDevice();

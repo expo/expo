@@ -25,19 +25,6 @@ export async function getDevicesAsync(): Promise<Device[]> {
 }
 
 export function mergeDevices(attachedDevices: Device[], avds: Device[]): Device[] {
-  const connectedNames = attachedDevices.map(({ name }) => name);
-
-  const offlineEmulators = avds
-    .filter(({ name }) => !connectedNames.includes(name))
-    .map(({ name, type }) => {
-      return {
-        name,
-        type,
-        isBooted: false,
-        // TODO: Are emulators always authorized?
-        isAuthorized: true,
-      };
-    });
-
-  return attachedDevices.concat(offlineEmulators);
+  const connectedNames = new Set(attachedDevices.map(({ name }) => name));
+  return attachedDevices.concat(avds.filter(({ name }) => !connectedNames.has(name)));
 }
