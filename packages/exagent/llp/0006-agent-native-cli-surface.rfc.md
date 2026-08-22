@@ -31,6 +31,16 @@ Consequence: gaps discovered while building tools become upstream `@expo/cli` im
 - **MCP resources + versioned tool schemas** [confirmed — Kudo accepted, 2026-08-20; design inferred]. Expose cheap-to-read context (resolved config, router sitemap, doctor report, project brief) as MCP _resources_, not only tools. Version the tool/event schemas and negotiate capabilities on connect, so older driving agents keep working against newer servers.
 - **AGENTS.md generation** [confirmed — Kudo accepted, 2026-08-20; design inferred]. `exagent setup` writes and maintains a managed section in the project's `AGENTS.md`: SDK version, targets, the right commands, project quirks. Orients every agent — including ones that never call a tool.
 
+## Output contract
+
+Decision [confirmed — Kudo, 2026-08-22]: the default output stays **terse human text — which is the agent-friendly shape** — with three channels, each with one job:
+
+1. **Default text** — for humans and LLMs reading terminals: one fact per line, `label value` style, stable rule/id names, untrusted app output fenced. Evidence: the tier-1 4B model drove `start --plan` from the human table alone. Fewer tokens than pretty JSON.
+2. **`--json`** — for programmatic consumers: exactly one JSON object on stdout, nothing else. Guaranteed on **every** command. Field names mirror the text labels; top-level keys are stable per command and covered by shape tests (de-facto versioning).
+3. **`LOG_EVENTS` JSONL** — the streaming/telemetry channel for long-running commands, same contract as the expo CLI family.
+
+Anti-rule: **no detection-based shape switching.** `agent-cli-detector` may gate extras (skill context dumps, follow-up verbosity — [[0009-smart-followups]]) but never changes the core shape; an agent transcript must show what a human terminal shows (reproducibility, docs, evals).
+
 ## The `exagent` launcher
 
 The reserved bins (`exagent` / `ai-expo` [observed — npm, reserved by kudochien 2026-08-18]) ship as a model-free CLI: `setup` (install Expo skills + register the MCP server into Claude Code/Cursor/Codex), `skills` (sync/list/show/clean, [[0003-knowledge-tools-and-skills]]), `install` and `start` (wrapping the `expo` equivalents as subprocesses, with skill sync and — later — the smart-start engine [confirmed — Kudo, 2026-08-20]), `mcp` (start/connect), `context` (machine-readable project brief), `new` (headless creation, [[0007-deploy-and-headless]]).
