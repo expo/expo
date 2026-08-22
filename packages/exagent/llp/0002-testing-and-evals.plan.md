@@ -55,6 +55,8 @@ Programmatic and model-free: dev server responds; app boots (via `automation_tak
 
 - Harness home: `expo/expo`, under `packages/exagent/evals/`.
 - CI split: `tier0-linux` on every PR (subprocess + JSONL + schema tests, no simulator); simulator scenarios on macOS runners — `expo/expo` GitHub Actions already runs macOS jobs [confirmed — Kudo].
+- `tier0-windows` on every PR [confirmed — Kudo, 2026-08-22]: full unit + e2e on windows-2022. Paid off immediately [observed]: 19 posix-literal test assertions, then a real production bug — Node (post CVE-2024-27980) throws `spawn EINVAL` on `.cmd` shims without `shell: true`, which broke every subprocess spawn on Windows; fixed via `resolveSpawnTarget`.
+- Tier-1 per-PR trim [observed — 2026-08-22]: PRs run only `skills-sync` (~4 min); the full scenario set runs on the weekly cron + dispatch. Cause: CPU-inference variance on standard runners (the same turn ranged 23 s locally to >900 s on a slow runner); also `keep_alive: 45m` pins the model between turns and inference failures fail one scenario, not the runner.
 - First fixture matrix: latest stable SDK only; three fixtures (Expo Go app, dev-client app, broken variant); iOS-first for simulator scenarios, Android after the harness works.
 - Sequencing: feature-set review happens before implementation starts [confirmed — Kudo, 2026-08-20].
 

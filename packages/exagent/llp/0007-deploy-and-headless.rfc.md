@@ -23,6 +23,8 @@ Shipped [observed — 2026-08-22, revised same day]: `exagent deploy --native` *
 
 [confirmed — Kudo seed, 2026-08-18] `exagent new "<one-line app description>"`: template choice, `create-expo`, git init, EAS init, first boot check — every step flag- or JSON-driven, zero TTY. Depends on non-interactive parity ([[0006-agent-native-cli-surface]]).
 
+Shipped [observed — 2026-08-22]: `exagent new <dir> [--name] [--no-install] [--no-git] [--json]` — `create-expo --yes` as a subprocess, git init when appropriate, follow-ups into the new project; zero-TTY asserted in e2e. Not yet built from this seed: EAS init, the first-boot check, and the one-line-description form.
+
 ## Cloudflare Workers compatibility (EAS Hosting)
 
 [confirmed — Kudo seed, 2026-08-18] Expo API routes deploy to the Workers runtime (workerd). Tools:

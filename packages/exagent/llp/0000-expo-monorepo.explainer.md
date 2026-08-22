@@ -9,7 +9,7 @@
 
 ## What this is
 
-Root LLP for the `expo/expo` monorepo. It orients readers and agents, and indexes the LLP corpus. This corpus is new; it starts with one design document.
+Root LLP for this corpus (scoped to `packages/exagent` since 2026-08-21). It orients readers and agents and indexes the documents below: one umbrella RFC plus eight feature documents, most with implemented-in-v1 sections.
 
 ## The repository
 
