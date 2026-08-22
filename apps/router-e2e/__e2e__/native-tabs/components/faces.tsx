@@ -49,7 +49,7 @@ const getColors = () =>
 
 export function useFaceColors() {
   const scheme = useColorScheme();
-  const colors = useMemo(getColors, [scheme]);
+  const colors = useMemo(() => getColors(), [scheme]);
   return colors;
 }
 
