@@ -8,6 +8,7 @@ describe(resolveNavigateOptions, () => {
       platform: undefined,
       scheme: undefined,
       appId: undefined,
+      json: false,
     });
   });
 
@@ -22,6 +23,7 @@ describe(resolveNavigateOptions, () => {
         'http://192.168.1.10:8081/',
         '--app-id',
         'com.example.demo',
+        '--json',
       ])
     ).toEqual({
       route: '/profile/42',
@@ -29,7 +31,12 @@ describe(resolveNavigateOptions, () => {
       platform: 'android',
       scheme: 'demoapp',
       appId: 'com.example.demo',
+      json: true,
     });
+  });
+
+  it(`should read the json flag`, () => {
+    expect(resolveNavigateOptions(['/', '--json']).json).toBe(true);
   });
 
   it(`should read the ios flag`, () => {

@@ -34,7 +34,26 @@ describe(printProjectContextAsync, () => {
 
     await printProjectContextAsync(projectRoot, { json: true });
 
+    expect(Log.log).toHaveBeenCalledTimes(1);
     expect(JSON.parse(output())).toEqual(state);
+  });
+
+  // Shape test: the top-level keys of `--json` are the command's contract, so they are asserted
+  // as an exact set. Adding, renaming, or dropping one is a breaking change for every caller.
+  it(`should print a stable set of top-level keys with --json`, async () => {
+    mockState();
+
+    await printProjectContextAsync(projectRoot, { json: true });
+
+    expect(Object.keys(JSON.parse(output())).sort()).toEqual([
+      'expoGo',
+      'fingerprint',
+      'hasWeb',
+      'nativeDirs',
+      'projectRoot',
+      'sdkVersion',
+      'usesDevClient',
+    ]);
   });
 
   it(`should print a human readable summary of a managed project`, async () => {

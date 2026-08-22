@@ -39,16 +39,19 @@ describe('exagent skills', () => {
   it('reports skill metadata with `skills list --json`', async () => {
     const result = await executeExagentAsync(projectRoot, ['skills', 'list', '--json']);
 
-    expect(JSON.parse(result.stdout)).toEqual([
-      expect.objectContaining({
-        package: 'fake-module-with-skills',
-        skill: 'usage',
-        name: 'Fake Module Usage',
-        description: expect.stringContaining('Use the fake module in an Expo app.'),
-        linkName: 'usage',
-        linkedIn: [],
-      }),
-    ]);
+    // One object on stdout, never a bare array (llp/0006 §Output contract).
+    expect(JSON.parse(result.stdout)).toEqual({
+      skills: [
+        expect.objectContaining({
+          package: 'fake-module-with-skills',
+          skill: 'usage',
+          name: 'Fake Module Usage',
+          description: expect.stringContaining('Use the fake module in an Expo app.'),
+          linkName: 'usage',
+          linkedIn: [],
+        }),
+      ],
+    });
   });
 
   it('prints the SKILL.md contents with `skills show`', async () => {

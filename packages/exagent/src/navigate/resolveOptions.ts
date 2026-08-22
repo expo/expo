@@ -17,6 +17,8 @@ export interface NavigateOptions {
   scheme?: string;
   /** Application id of the target app, for the Android intent and the Expo Go check. */
   appId?: string;
+  /** Print the result as one JSON object instead of the human summary (`--json`). */
+  json: boolean;
 }
 
 const NAVIGATE_ARGS = {
@@ -25,6 +27,7 @@ const NAVIGATE_ARGS = {
   '--android': Boolean,
   '--dev-server-url': String,
   '--app-id': String,
+  '--json': Boolean,
 };
 
 /**
@@ -63,5 +66,6 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
     platform: args['--ios'] ? 'ios' : args['--android'] ? 'android' : undefined,
     scheme: args['--scheme'] ? String(args['--scheme']) : undefined,
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,
+    json: !!args['--json'],
   };
 }

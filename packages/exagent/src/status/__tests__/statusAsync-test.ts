@@ -235,6 +235,40 @@ describe(printStatusAsync, () => {
     ]);
   });
 
+  // Shape test: the top-level keys of `--json` are the command's contract, so they are asserted
+  // as an exact set. Adding, renaming, or dropping one is a breaking change for every caller.
+  it(`should print a stable set of top-level keys with --json`, async () => {
+    await printStatusAsync(projectRoot, { ...options, json: true });
+
+    expect(Object.keys(JSON.parse(output())).sort()).toEqual([
+      'devServer',
+      'errors',
+      'expoGo',
+      'freshness',
+      'next',
+      'project',
+      'skills',
+    ]);
+  });
+
+  it(`should print the same key set when a section could not be read`, async () => {
+    jest.mocked(probeProjectStateAsync).mockRejectedValue(new Error('project is unreadable'));
+
+    await printStatusAsync(projectRoot, { ...options, json: true });
+
+    // A failed section is reported as null plus a note in `errors`, so the shape never changes.
+    expect(Log.log).toHaveBeenCalledTimes(1);
+    expect(Object.keys(JSON.parse(output())).sort()).toEqual([
+      'devServer',
+      'errors',
+      'expoGo',
+      'freshness',
+      'next',
+      'project',
+      'skills',
+    ]);
+  });
+
   it(`should print the human readable report by default`, async () => {
     const report = await collectStatusReportAsync(projectRoot, options);
     jest.mocked(Log.log).mockClear();

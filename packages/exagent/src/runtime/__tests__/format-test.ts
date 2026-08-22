@@ -112,6 +112,8 @@ describe(evaluateResultToJson, () => {
       threw: false,
       type: 'number',
       value: 3,
+      description: null,
+      exception: null,
       untrusted: ['value', 'description', 'exception'],
     });
   });
@@ -124,7 +126,10 @@ describe(evaluateResultToJson, () => {
 
     expect(json.threw).toBe(true);
     expect(json.exception).toEqual({ text: 'TypeError: boom', stack: '  at foo' });
-    expect(json.value).toBeUndefined();
+    // Absent facts are null, never dropped (llp/0006 §Output contract: stable key set).
+    expect(json.value).toBeNull();
+    expect(json.type).toBeNull();
+    expect(json.description).toBeNull();
   });
 });
 

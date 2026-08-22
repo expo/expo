@@ -20,6 +20,32 @@ import type { NavigateOptions } from './resolveOptions';
 import { decideExpoGoTarget } from './target';
 
 /**
+ * Machine shape of `exagent navigate --json`.
+ *
+ * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout,
+ * with field names mirroring the labels of the human summary. Every key is always present, and
+ * a fact the run does not have is `null`, so a parser can read the same shape every time.
+ */
+export interface NavigateResultJson {
+  /** Route as it was passed on the command line. */
+  route: string;
+  /** URL that was opened on the device. */
+  url: string;
+  /** How the URL was derived, matching the line under `URL` in the human summary. */
+  resolution: string;
+  /** Why the target app was decided to be Expo Go or a development build. */
+  target: string;
+  platform: string;
+  deviceId: string;
+  /** Application id from `--app-id`, or null when it was not passed. */
+  appId: string | null;
+  /** Device command that was run, for reproducing the step by hand. */
+  command: string;
+  /** Exit code of that command: non-zero means the device refused the deep link. */
+  exitCode: number | null;
+}
+
+/**
  * Resolve a deep link for a route and open it on a device.
  *
  * The dev server is read for the app that is actually connected, because that answers which URL
@@ -32,7 +58,7 @@ export async function navigateAsync(
   projectRoot: string,
   options: NavigateOptions
 ): Promise<number> {
-  const { route, devServerUrl, platform, scheme, appId } = options;
+  const { route, devServerUrl, platform, scheme, appId, json } = options;
 
   const [devServer, config, nativeDirs, packageJson] = await Promise.all([
     probeDevServerAsync(devServerUrl),
@@ -82,16 +108,33 @@ export async function navigateAsync(
     exitCode: result.exitCode,
   });
 
-  const deviceLabel = device.name ? `${device.name} (${device.deviceId})` : device.deviceId;
-  Log.log(
-    [
-      chalk`{bold URL} ${resolved.url}`,
-      chalk`{dim  ${resolved.resolution}}`,
-      chalk`{dim  target: ${target.reason}}`,
-      chalk`{bold Device} ${device.platform} ${deviceLabel}`,
-      chalk`{dim  ${result.command}}`,
-    ].join('\n')
-  );
+  if (json) {
+    const report: NavigateResultJson = {
+      route,
+      url: resolved.url,
+      resolution: resolved.resolution,
+      target: target.reason,
+      platform: device.platform,
+      deviceId: device.deviceId,
+      appId: appId ?? null,
+      command: result.command,
+      exitCode: result.exitCode,
+    };
+    // The object is the whole of stdout, so the output can be piped into a parser. The failure
+    // below still explains itself, on stderr.
+    Log.log(JSON.stringify(report, null, 2));
+  } else {
+    const deviceLabel = device.name ? `${device.name} (${device.deviceId})` : device.deviceId;
+    Log.log(
+      [
+        chalk`{bold URL} ${resolved.url}`,
+        chalk`{dim  ${resolved.resolution}}`,
+        chalk`{dim  target: ${target.reason}}`,
+        chalk`{bold Device} ${device.platform} ${deviceLabel}`,
+        chalk`{dim  ${result.command}}`,
+      ].join('\n')
+    );
+  }
 
   if (result.exitCode !== 0) {
     Log.error(
@@ -108,7 +151,9 @@ export async function navigateAsync(
     return 1;
   }
 
-  if (result.stdout.trim()) {
+  // What the device tool printed is a note for a human, so it is left out of the JSON object
+  // rather than added to it: `command` says how to read it again.
+  if (!json && result.stdout.trim()) {
     Log.log(chalk.dim(result.stdout.trim()));
   }
   return 0;

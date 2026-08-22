@@ -68,7 +68,12 @@ function mockDevServer(targets: unknown[] | null) {
 }
 
 function options(overrides: Partial<NavigateOptions> = {}): NavigateOptions {
-  return { route: '/profile/42', devServerUrl: 'http://127.0.0.1:8081', ...overrides };
+  return { route: '/profile/42', devServerUrl: 'http://127.0.0.1:8081', json: false, ...overrides };
+}
+
+/** Everything the command wrote to stdout, joined into one string. */
+function printed(): string {
+  return jest.mocked(console.log).mock.calls.flat().join('\n');
 }
 
 let originalFetch: typeof fetch | undefined;
@@ -152,6 +157,74 @@ describe(navigateAsync, () => {
     mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '', exitCode: 1 }]);
 
     await expect(navigateAsync(projectRoot, options())).resolves.toBe(1);
+    expect(jest.mocked(console.error).mock.calls.join('\n')).toContain(
+      'did not open the deep link'
+    );
+  });
+
+  it(`should print one JSON object and nothing else with --json`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+      [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+    });
+    mockDevServer([EXPO_GO_TARGET]);
+    // The device tool prints on success, which must not join the JSON on stdout.
+    mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: 'success' }]);
+
+    await expect(navigateAsync(projectRoot, options({ json: true }))).resolves.toBe(0);
+
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(printed())).toEqual({
+      route: '/profile/42',
+      url: 'exp://127.0.0.1:8081/--/profile/42',
+      resolution: expect.stringContaining('Expo Go'),
+      target: expect.stringContaining('Expo Go'),
+      platform: 'ios',
+      deviceId: 'IOS-1',
+      appId: null,
+      command: 'xcrun simctl openurl IOS-1 exp://127.0.0.1:8081/--/profile/42',
+      exitCode: 0,
+    });
+  });
+
+  // Shape test: the top-level keys of `--json` are the command's contract, so they are asserted
+  // as an exact set. Adding, renaming, or dropping one is a breaking change for every caller.
+  it(`should print a stable set of top-level keys with --json`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+      [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+    });
+    mockDevServer([EXPO_GO_TARGET]);
+    mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+    await navigateAsync(projectRoot, options({ json: true }));
+
+    expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
+      'appId',
+      'command',
+      'deviceId',
+      'exitCode',
+      'platform',
+      'resolution',
+      'route',
+      'target',
+      'url',
+    ]);
+  });
+
+  it(`should report a refused deep link on stderr and keep stdout to the JSON object`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+      [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+    });
+    mockDevServer([EXPO_GO_TARGET]);
+    mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '', exitCode: 1 }]);
+
+    await expect(navigateAsync(projectRoot, options({ json: true }))).resolves.toBe(1);
+
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(printed()).exitCode).toBe(1);
+    // The what/why/how of a failure stays human text, on stderr.
     expect(jest.mocked(console.error).mock.calls.join('\n')).toContain(
       'did not open the deep link'
     );

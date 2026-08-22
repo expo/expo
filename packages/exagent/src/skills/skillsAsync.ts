@@ -93,7 +93,8 @@ export async function listSkillsAsync(
         fs.existsSync(path.join(projectRoot, dir, skill.linkName))
       ),
     }));
-    Log.log(JSON.stringify(entries, null, 2));
+    // One object on stdout per llp/0006 §Output contract (not a bare array).
+    Log.log(JSON.stringify({ skills: entries }, null, 2));
     return;
   }
 

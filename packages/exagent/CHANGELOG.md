@@ -13,6 +13,10 @@
 - Add `exagent status`: a read-only, `git status`-like overview of the project, the Expo Go verdict, the freshness of the last recorded development build per platform, the dev server and the apps connected to it, the linked agent skills, and the command that would get the app onto a device (`--json` for the machine-readable report, `--dev-server-url` to probe another dev server). ([#49229](https://github.com/expo/expo/pull/49229) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
 - Add `exagent navigate <route>`: open a route as a deep link on the booted simulator or attached device, resolving the URL shape from the app connected to the dev server (`exp://` for Expo Go) and the `scheme` field of the app config (`--scheme` to override). ([#49229](https://github.com/expo/expo/pull/49229) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
 
+- Add `--json` to `exagent navigate`: print the opened URL, how it was resolved, the target app, the device, the device command and its exit code as one JSON object on stdout. ([#49229](https://github.com/expo/expo/pull/49229) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Cover the top-level keys of every `--json` output with shape tests, so a renamed or dropped field fails a test instead of a caller. ([#49229](https://github.com/expo/expo/pull/49229) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))

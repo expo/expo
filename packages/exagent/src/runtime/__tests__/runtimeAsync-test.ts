@@ -86,14 +86,57 @@ describe(runtimeEvalAsync, () => {
 
     await runtimeEvalAsync({ ...evalOptions, json: true });
 
+    // The object is the whole of stdout: nothing is added for a human to read.
+    expect(console.log).toHaveBeenCalledTimes(1);
     expect(JSON.parse(printed())).toEqual({
       devServerUrl,
       expression: 'globalThis.count',
       threw: false,
       type: 'object',
       value: { id: 7 },
+      description: null,
+      exception: null,
       untrusted: ['value', 'description', 'exception'],
     });
+  });
+
+  // Shape test: the top-level keys of `--json` are the command's contract, so they are asserted
+  // as an exact set. Adding, renaming, or dropping one is a breaking change for every caller.
+  // A result and an exception share one stable key set; the keys whose facts are
+  // describe the run itself are in both.
+  it(`should print a stable set of top-level keys with --json for a returned value`, async () => {
+    mockEvaluate(async () => ({ value: { id: 7 }, type: 'object', description: 'Object' }));
+
+    await runtimeEvalAsync({ ...evalOptions, json: true });
+
+    expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
+      'description',
+      'devServerUrl',
+      'exception',
+      'expression',
+      'threw',
+      'type',
+      'untrusted',
+      'value',
+    ]);
+  });
+
+  it(`should print a stable set of top-level keys with --json for an exception`, async () => {
+    mockEvaluate(async () => ({ exceptionText: 'TypeError: boom', exceptionStack: 'at <anon>' }));
+
+    await expect(runtimeEvalAsync({ ...evalOptions, json: true })).resolves.toBe(1);
+
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
+      'description',
+      'devServerUrl',
+      'exception',
+      'expression',
+      'threw',
+      'type',
+      'untrusted',
+      'value',
+    ]);
   });
 
   it(`should explain how to start a dev server when none answers`, async () => {
@@ -165,6 +208,9 @@ describe(runtimeErrorsAsync, () => {
 
     await runtimeErrorsAsync({ ...errorsOptions, json: true });
 
+    // The object is the whole of stdout: the note about the collection window is text-mode only.
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(printed()).not.toContain(UNTRUSTED_OUTPUT_BEGIN);
     expect(JSON.parse(printed())).toEqual({
       devServerUrl,
       durationMs: 2000,
@@ -172,6 +218,25 @@ describe(runtimeErrorsAsync, () => {
       errors: [],
       untrusted: ['errors'],
     });
+  });
+
+  // Shape test: the top-level keys of `--json` are the command's contract, so they are asserted
+  // as an exact set. Adding, renaming, or dropping one is a breaking change for every caller.
+  it(`should print a stable set of top-level keys with --json`, async () => {
+    mockCollect(async () => [
+      { source: 'exception', timestamp: 1700000000001, message: 'boom', stack: 'at <anon>' },
+    ]);
+
+    await runtimeErrorsAsync({ ...errorsOptions, json: true });
+
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
+      'count',
+      'devServerUrl',
+      'durationMs',
+      'errors',
+      'untrusted',
+    ]);
   });
 
   it(`should report a failed collection with the reason`, async () => {

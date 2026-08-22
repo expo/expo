@@ -221,17 +221,19 @@ describe('listSkillsAsync with json output', () => {
     await listSkillsAsync('/root', { json: true });
 
     const output = jest.mocked(Log.log).mock.calls.at(-1)?.[0];
-    expect(JSON.parse(output!)).toEqual([
-      {
-        package: '@acme/tool',
-        skill: 'my-skill',
-        name: 'My skill',
-        description: 'Does things',
-        path: testSkill.path,
-        linkName: 'my-skill',
-        linkedIn: ['.claude/skills'],
-      },
-    ]);
+    expect(JSON.parse(output!)).toEqual({
+      skills: [
+        {
+          package: '@acme/tool',
+          skill: 'my-skill',
+          name: 'My skill',
+          description: 'Does things',
+          path: testSkill.path,
+          linkName: 'my-skill',
+          linkedIn: ['.claude/skills'],
+        },
+      ],
+    });
   });
 
   it('should print an empty json array when nothing is discovered', async () => {
@@ -242,7 +244,7 @@ describe('listSkillsAsync with json output', () => {
     await listSkillsAsync('/root', { json: true });
 
     const output = jest.mocked(Log.log).mock.calls.at(-1)?.[0];
-    expect(JSON.parse(output!)).toEqual([]);
+    expect(JSON.parse(output!)).toEqual({ skills: [] });
   });
 });
 

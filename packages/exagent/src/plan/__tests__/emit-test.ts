@@ -54,6 +54,15 @@ describe(emitStartPlan, () => {
     expect(JSON.parse(jest.mocked(Log.log).mock.calls[0]![0]!)).toEqual(plan);
   });
 
+  // Shape test: the top-level keys of `--json` are the command's contract, so they are asserted
+  // as an exact set. Adding, renaming, or dropping one is a breaking change for every caller.
+  it(`should print a stable set of top-level keys with --json`, () => {
+    emitStartPlan(plan, { mode: 'plan', json: true });
+
+    const printed = JSON.parse(jest.mocked(Log.log).mock.calls[0]![0]!);
+    expect(Object.keys(printed).sort()).toEqual(['reasons', 'rule', 'steps', 'target']);
+  });
+
   it(`should still emit the event in JSON mode`, () => {
     emitStartPlan(plan, { mode: 'plan', json: true });
 
