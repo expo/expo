@@ -62,7 +62,7 @@ packages/exagent/       # model-free CLI (Shape 1) — no agent loop
 
 `exagent install` / `exagent start` wrap the `expo` equivalents as subprocesses [confirmed — Kudo, 2026-08-20]; `@expo/cli` gets no hooks.
 
-The intelligence-adjacent surface lives in `expo-mcp` (tools) and `expo/skills` (knowledge); this package wires a user's existing agents to them. [inferred — layout sketch under Shape 1]
+Knowledge lives in co-located module skills ([[0003-knowledge-tools-and-skills]]); runtime and decision tooling is self-serve in this package [confirmed — Kudo, 2026-08-22].
 
 `@expo/cli` stays lean [observed — `packages/@expo/cli/CLAUDE.md` states the public interface is intentional and lean]. If an `expo agent` alias is wanted later, it follows the existing lazy-resolution pattern: `src/start/server/MCP.ts` resolves `expo-mcp` from the project with `resolveFrom.silent` and errors with an install hint when missing [observed].
 
@@ -70,7 +70,7 @@ The intelligence-adjacent surface lives in `expo-mcp` (tools) and `expo/skills` 
 
 Decision [confirmed — Kudo, 2026-08-18]: Shape 1. Consequences:
 
-- New capabilities land as `expo-mcp` tools and Expo skills, not as an agent loop.
+- New capabilities land as `exagent` commands and Expo skills, not as an agent loop [updated per the 2026-08-22 self-serve clarification].
 - Agent-friendly affordances in `@expo/cli` itself (non-interactive parity, JSONL events, deterministic decision commands) serve every driving agent.
 - The reserved bins (`exagent` / `ai-expo`) can still ship as a thin, model-free launcher: start/connect the MCP server, install skills into the user's agents, print project context. [inferred]
 - Chat-driven development ([[0007-deploy-and-headless]]) needs no Expo-side model either: the Claude app brings the model; Expo provides tools over `@expo/mcp-tunnel`.
