@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import os from 'os';
 
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
@@ -7,6 +6,7 @@ import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
 import { event } from '../events';
 import { ADBServer } from './ADBServer';
+import { parseAdbDeviceList } from './adbDeviceList';
 
 export enum DeviceABI {
   // The arch specific android target platforms are soft-deprecated.
@@ -204,34 +204,22 @@ function shellQuote(value: string): string {
 export async function getAttachedDevicesAsync(): Promise<Device[]> {
   const output = await getServer().runAsync(['devices', '-l']);
 
-  const splitItems = output
-    .trim()
-    .replace(/\n$/, '')
-    .split(os.EOL)
-    // Filter ADB trace logs from the output, e.g.
-    // adb D 03-06 15:25:53 63677 4018815 adb_client.cpp:393] adb_query: host:devices-l
-    // 03-04 12:29:44.557 16415 16415 D adb     : commandline.cpp:1646 Using server socket: tcp:172.27.192.1:5037
-    // 03-04 12:29:44.557 16415 16415 D adb     : adb_client.cpp:160 _adb_connect: host:version
-    .filter((line) => !line.match(/\.cpp:[0-9]+/));
-
-  // First line is `"List of devices attached"`, remove it
-  // @ts-ignore: todo
   const attachedDevices: {
     props: string[];
     type: Device['type'];
     isAuthorized: Device['isAuthorized'];
     isBooted: Device['isBooted'];
     connectionType?: Device['connectionType'];
-  }[] = splitItems
-    .slice(1, splitItems.length)
-    .map((line) => {
+  }[] = parseAdbDeviceList(output)
+    .map((record) => {
       // unauthorized: ['FA8251A00719', 'unauthorized', 'usb:338690048X', 'transport_id:5']
       // authorized: ['FA8251A00719', 'device', 'usb:336592896X', 'product:walleye', 'model:Pixel_2', 'device:walleye', 'transport_id:4']
       // emulator: ['emulator-5554', 'offline', 'transport_id:1']
-      const props = line.split(' ').filter(Boolean);
-      const type = line.includes('emulator') ? 'emulator' : 'device';
+      const props = [record.serial, record.state, ...record.metadata];
+      const line = props.join(' ');
+      const type: Device['type'] = line.includes('emulator') ? 'emulator' : 'device';
 
-      let connectionType;
+      let connectionType: Device['connectionType'];
       if (type === 'device' && line.includes('usb:')) {
         connectionType = 'USB';
       } else if (type === 'device' && line.includes('_adb-tls-connect.')) {
