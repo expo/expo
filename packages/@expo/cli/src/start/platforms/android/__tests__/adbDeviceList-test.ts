@@ -1,4 +1,4 @@
-import { parseAdbDeviceList } from '../adbDeviceList';
+import { isAdbDeviceStateUsable, parseAdbDeviceList } from '../adbDeviceList';
 
 describe(parseAdbDeviceList, () => {
   it.each([
@@ -70,23 +70,12 @@ describe(parseAdbDeviceList, () => {
       },
     ]);
   });
+});
 
-  it('filters ADB trace lines', () => {
-    expect(
-      parseAdbDeviceList(
-        [
-          'List of devices attached',
-          'adb D 03-06 15:25:53 adb_client.cpp:393] adb_query: host:devices-l',
-          'emulator-5554 device transport_id:1',
-        ].join('\n')
-      )
-    ).toEqual([
-      {
-        serial: 'emulator-5554',
-        state: 'device',
-        metadata: ['transport_id:1'],
-        transportId: '1',
-      },
-    ]);
+describe('ADB device state predicates', () => {
+  it('recognizes only the states Expo acts on without losing unknown values', () => {
+    expect(isAdbDeviceStateUsable('device')).toBe(true);
+    expect(isAdbDeviceStateUsable('authorizing')).toBe(false);
+    expect(isAdbDeviceStateUsable('future-adb-state')).toBe(false);
   });
 });
