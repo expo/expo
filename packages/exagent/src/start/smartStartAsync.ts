@@ -1,6 +1,6 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §Contract
-// The plan-first half of `exagent start`: probe the project, decide what must run, emit the
-// plan, then (unless `--plan` stopped us) run its steps as subprocesses.
+// What `exagent start` does by default: probe the project, decide what must run, emit the plan,
+// then (unless `--plan` stopped us, or a person declined it) run its steps as subprocesses.
 
 import { checkpointBeforeAsync } from '../checkpoint/integration';
 import {
@@ -19,6 +19,7 @@ import { probeProjectStateAsync } from '../project/probe';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
 import { CommandError } from '../utils/errors';
 import { runExpoAsync } from '../utils/expoCli';
+import { confirmPlanAsync } from './confirmPlan';
 import { resolveStartFollowUps } from './followUps';
 import { isPlatformFlag, type StartOptions } from './resolveOptions';
 import { runDevServerAsync } from './startAsync';
@@ -37,9 +38,9 @@ export async function smartStartAsync(projectRoot: string, options: StartOptions
   });
 
   // @ref llp/0009-smart-followups.rfc.md §Examples per command
-  // `--plan` stops here, so its follow-ups are about the plan itself; `--smart` is about to run
-  // it, so its follow-ups are the ones of a running dev server. Both are computed before the plan
-  // is emitted, because `--json` carries them inside the plan object.
+  // `--plan` stops here, so its follow-ups are about the plan itself; a run that executes the
+  // plan ends in a dev server, so its follow-ups are that server's. Both are computed before the
+  // plan is emitted, because `--json` carries them inside the plan object.
   const followups = resolveModeFollowUps(projectRoot, plan, state, options);
 
   // The plan is always emitted before anything runs, so `--plan` and `--smart` show the same
@@ -54,6 +55,13 @@ export async function smartStartAsync(projectRoot: string, options: StartOptions
   reportFollowUps('start', followups, { json: options.json });
 
   if (options.mode === 'plan') {
+    return 0;
+  }
+
+  // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run — the plan was printed above, so the
+  // person answering has seen what they are approving. Declining is not a failure: nothing ran,
+  // and nothing is wrong, so the command exits 0.
+  if (!(await confirmPlanAsync(plan, options))) {
     return 0;
   }
 

@@ -495,9 +495,9 @@ const TIER1_SYSTEM_PROMPT = `You are an autonomous agent completing a task in an
 
 Available commands:
   exagent context [--json]              Print project state: SDK version, native state, Expo Go support, fingerprint
-  exagent start                         Start the dev server
+  exagent start                         Print what must run to get the app running, then run it
   exagent start --plan                  Print what must run to get the app running, then exit without running it
-  exagent start --smart                 Print that plan, then run its steps
+  exagent start --passthrough           Start the dev server with expo start, without planning anything
   exagent skills sync --agent <agent>   Link agent skills from installed packages
   exagent skills list [--json]          List discovered skills
   exagent skills show <package>         Print a package's skill
@@ -722,7 +722,8 @@ async function runTier1Scenario(scenario) {
 
 /** Kept next to TIER1_SYSTEM_PROMPT's list on purpose — see the drift note above it. */
 const TIER2_COMMAND_SUMMARY =
-  'Available commands: context [--json], start [--plan|--smart], skills [sync|list|show|clean] ' +
+  'Available commands: context [--json], start [--plan|--passthrough] (start alone prints the plan ' +
+  'and runs it), skills [sync|list|show|clean] ' +
   '(sync takes --agent claude-code|cursor|codex|opencode|windsurf|gemini-cli), install <pkg..>.';
 
 function checkTier2() {

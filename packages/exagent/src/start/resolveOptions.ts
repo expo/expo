@@ -7,6 +7,8 @@ const EXAGENT_ONLY_FLAGS = [
   '--no-checkpoint',
   '--plan',
   '--smart',
+  '--passthrough',
+  '--yes',
   '--json',
 ];
 
@@ -31,12 +33,12 @@ export function isPlatformFlag(arg: string): boolean {
  * @see llp/0004-smart-start-and-project-state.rfc.md §Contract
  */
 export type StartMode =
-  /** Wrap `expo start`, exactly as `exagent start` always has. */
-  | 'default'
+  /** Emit the plan, then run its steps. The default, and what `--smart` asks for. */
+  | 'smart'
   /** Emit the plan of what must run, then exit without running it (`--plan`). */
   | 'plan'
-  /** Emit the plan, then run its steps (`--smart`). */
-  | 'smart';
+  /** Wrap `expo start` and forward every other argument to it (`--passthrough`). */
+  | 'passthrough';
 
 export interface StartOptions {
   mode: StartMode;
@@ -52,24 +54,27 @@ export interface StartOptions {
   followups: boolean;
   /** Snapshot the project before a plan that prebuilds runs, cleared by `--no-checkpoint`. */
   checkpoint: boolean;
+  /** Approve a plan with build-class steps up front (`--yes`), so no confirmation is asked for. */
+  yes: boolean;
 }
 
 /**
  * Split `exagent start` arguments into the `expo start` passthrough, the skill-sync decision,
  * and the plan-engine inputs.
  *
- * `--plan` wins over `--smart`: emitting a plan and stopping is the safe reading of a command
- * line that asks for both.
+ * Planning is the default (LLP 0004 §`exagent status` — Default change). The two escape hatches
+ * are ordered by how little they do: `--plan` runs nothing at all, and `--passthrough` runs only
+ * `expo start`, so a command line asking for both a hatch and `--smart` gets the narrower one.
  *
  * @see llp/0003-knowledge-tools-and-skills.rfc.md §Migration
  * @see llp/0004-smart-start-and-project-state.rfc.md §Contract
  */
 export function resolveStartOptions(argv: string[]): StartOptions {
-  let mode: StartMode = 'default';
+  let mode: StartMode = 'smart';
   if (argv.includes('--plan')) {
     mode = 'plan';
-  } else if (argv.includes('--smart')) {
-    mode = 'smart';
+  } else if (argv.includes('--passthrough')) {
+    mode = 'passthrough';
   }
 
   return {
@@ -81,5 +86,6 @@ export function resolveStartOptions(argv: string[]): StartOptions {
     json: argv.includes('--json'),
     followups: !argv.includes('--no-followups'),
     checkpoint: !argv.includes('--no-checkpoint'),
+    yes: argv.includes('--yes'),
   };
 }

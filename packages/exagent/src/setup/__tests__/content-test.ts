@@ -86,7 +86,7 @@ describe(generateAgentsMdBlock, () => {
     for (const command of [
       'exagent status',
       'exagent context --json',
-      'exagent start --smart',
+      '`npx exagent start` — get the app onto a device',
       'exagent start --plan',
       'exagent install',
       'exagent runtime eval',

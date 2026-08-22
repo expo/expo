@@ -20,12 +20,14 @@ export const exagentStart: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      `Start the Expo dev server and link the skills the project ships`,
+      `Get this app onto a device: decide what must run, print the plan, then run it`,
       chalk`npx exagent start {dim [options]}`,
       [
         `--plan              Print what must run to get this app on a device, then exit`,
-        `--smart             Print that plan, then run it (prebuild and build when needed)`,
-        `--json              Print the plan as JSON, for --plan and --smart`,
+        `--smart             Print the plan, then run it: the default, kept as an alias`,
+        `--passthrough       Forward everything to "expo start" instead, without planning`,
+        `--yes               Run a plan that builds without asking for confirmation`,
+        `--json              Print the plan as JSON, for --plan and the default`,
         `--no-agent-skills   Skip linking agent skills from installed packages`,
         `--no-followups      Skip the "Next:" section of suggested follow-up commands`,
         `--no-checkpoint     Skip the git snapshot taken before a plan that prebuilds`,
@@ -33,14 +35,23 @@ export const exagentStart: Command = async (argv) => {
       ].join('\n'),
       [
         '',
-        chalk`  All other arguments are passed to {bold expo start} in the project.`,
-        chalk`    {dim $} npx exagent start --web --port 8082`,
-        chalk`    {dim >} expo start --web --port 8082`,
-        '',
-        chalk`  {bold --plan} and {bold --smart} decide between {bold expo start}, {bold expo prebuild} and`,
-        chalk`  {bold expo run:ios}/{bold expo run:android} from the project state. {bold --plan} only reports the`,
-        chalk`  decision, so an agent can ask for approval before anything runs.`,
+        chalk`  By default this command decides between {bold expo start}, {bold expo prebuild} and`,
+        chalk`  {bold expo run:ios}/{bold expo run:android} from the project state, prints that plan, and runs it.`,
+        chalk`  {bold --plan} only reports the decision, so an agent can ask for approval before`,
+        chalk`  anything runs. In a terminal, a plan that prebuilds or builds is confirmed once`,
+        chalk`  before it starts; {bold --yes} answers that question up front, and a non-interactive`,
+        chalk`  run (an agent, or CI) is never asked.`,
+        chalk`    {dim $} npx exagent start`,
         chalk`    {dim $} npx exagent start --plan --ios`,
+        '',
+        chalk`  {bold --passthrough} runs {bold expo start} and nothing else, for a dev server that no`,
+        chalk`  planning may touch. Every other argument is passed to it untouched.`,
+        chalk`    {dim $} npx exagent start --passthrough --web --port 8082`,
+        chalk`    {dim >} expo start --web --port 8082`,
+        chalk`    {dim $} npx exagent start --passthrough -- --web --port 8082`,
+        '',
+        chalk`  Arguments are also passed to the {bold expo start} the plan ends with, when it ends with`,
+        chalk`  one. A plan ending in a build reports the arguments it could not pass on.`,
         '',
         chalk`  Run {bold npx expo start --help} for the arguments the Expo CLI accepts.`,
         '',
@@ -58,14 +69,16 @@ export const exagentStart: Command = async (argv) => {
     const projectRoot = findUpProjectRootOrAssert(process.cwd());
     const options = resolveStartOptions(argv ?? []);
 
-    if (options.mode === 'default') {
+    if (options.mode === 'passthrough') {
+      // The plain wrapper loads neither the probe nor the plan engine, so `--passthrough` reaches
+      // `expo start` as fast as it did when it was this command's default.
       const { startAsync } = require('./startAsync') as typeof import('./startAsync');
       process.exitCode = await startAsync(projectRoot, options);
       return;
     }
 
-    // The plan engine and the project probe only load for `--plan` and `--smart`, so the
-    // default path keeps starting the dev server as fast as it did before.
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status` — Default change:
+    // planning is what `exagent start` does, and `--passthrough` above is the way out of it.
     const { smartStartAsync } = require('./smartStartAsync') as typeof import('./smartStartAsync');
     process.exitCode = await smartStartAsync(projectRoot, options);
   })().catch(logCmdError);

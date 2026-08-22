@@ -21,7 +21,7 @@ Cheap mechanisms that make it safe for a driving agent to act autonomously on an
 [observed — 2026-08-22]
 
 - **Checkpoints/undo**: `exagent checkpoint [--label]` + `exagent undo [--list|--id]`, auto-taken before `expo install`, `setup`'s AGENTS.md write, and `start --smart` plans containing prebuild (`--no-checkpoint` / `EXAGENT_NO_CHECKPOINT` to skip). Mechanism: temp-index `git add -A .` → `write-tree` → parent-linked `commit-tree` as an **unreferenced object** — HEAD/branches/index/reflog untouched; ids in `.expo/exagent-checkpoints.json` (capped at 20). Restore = `read-tree` + `checkout-index -a -f`: restores everything the checkpoint holds including since-deleted files, **never deletes** files created after it (documented limit), reports restored/kept counts. Gitignored files are in no checkpoint (hence the `install-dependencies` follow-up); `git gc --prune=now` can reap old snapshots (`CHECKPOINT_OBJECT_MISSING` names it).
-- **Plan-with-cost dry run**: shipped as `exagent start --plan` ([[0004-smart-start-and-project-state]]).
+- **Plan-with-cost dry run**: shipped as `exagent start --plan`, and as the plan `exagent start` prints before it runs it ([[0004-smart-start-and-project-state]]). Since that default executes, an interactive terminal is asked `Run this plan?` once when a step costs more than seconds (`src/start/confirmPlan.ts`); `--yes` skips the question, `--json` and every non-interactive run are never asked, and a decline exits 0 having run nothing.
 - **Untrusted-content marking**: shipped in the runtime commands ([[0005-runtime-loop-tools]]) — fenced blocks with marker-forgery neutralization.
 - Not built: MCP impact metadata (no MCP server surface yet).
 

@@ -1,10 +1,10 @@
 /* eslint-env jest */
 // @ref llp/0004-smart-start-and-project-state.rfc.md §Contract
 //
-// `exagent start --smart` emits the plan and then runs its steps as subprocesses. `plan-test.ts`
-// covers which plan each fixture state produces; this file covers what actually runs: the order of
-// the `expo` invocations, the stop on the first failing step, and the build record written after a
-// successful native build.
+// `exagent start` emits the plan and then runs its steps as subprocesses, and `--smart` asks for
+// the same thing by name. `plan-test.ts` covers which plan each fixture state produces; this file
+// covers what actually runs: the order of the `expo` invocations, the stop on the first failing
+// step, and the build record written after a successful native build.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -42,13 +42,44 @@ function readLastBuildRecord(projectRoot: string): Record<string, string> | null
   return fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : null;
 }
 
-describe('exagent start --smart', () => {
-  it('documents the flag in `start --help`', async () => {
+describe('exagent start', () => {
+  it('documents the default and its flags in `start --help`', async () => {
     const projectRoot = await setupAsync('go-app');
     const result = await executeExagentAsync(projectRoot, ['start', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--smart');
+    expect(result.all).toContain('the default');
+    expect(result.all).toContain('--yes');
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status` — Default change
+  describe('no flag — the plan runs by default', () => {
+    it('runs the plan of a project that needs a build', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+      const result = await executeExagentAsync(projectRoot, ['start', '--ios']);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('Smart start plan');
+      expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
+    });
+
+    it('starts the dev server of a project that needs no build', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, ['start']);
+
+      expect(result.exitCode).toBe(0);
+      expect(invocationArgs(projectRoot)).toEqual([['start', '--go']]);
+    });
+
+    it('runs a plan that builds without asking, with no TTY to ask on', async () => {
+      // An agent and a CI job get the plan and its execution, never a prompt; the guardrail of
+      // llp/0008 is for a person watching a terminal.
+      const projectRoot = await setupAsync('dev-client-app');
+      const result = await executeExagentAsync(projectRoot, ['start', '--ios']);
+
+      expect(result.all).not.toContain('Run this plan?');
+    });
   });
 
   describe('dev-client-app — a plan of two steps', () => {

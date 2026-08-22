@@ -89,7 +89,9 @@ describe('exagent install', () => {
   });
 });
 
-describe('exagent start', () => {
+// `exagent start` plans by default (see `smart-test.ts`); `--passthrough` is the wrapper around
+// `expo start` that this file covers, and its argument forwarding must stay what the default was.
+describe('exagent start --passthrough', () => {
   let projectRoot: string;
   let skillLink: string;
 
@@ -104,13 +106,14 @@ describe('exagent start', () => {
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('start');
     expect(result.all).toContain('--no-agent-skills');
+    expect(result.all).toContain('--passthrough');
   });
 
   it('starts the expo CLI and syncs the skills in the background', async () => {
     await writeAgentSelectionAsync(projectRoot, ['claude-code']);
 
     // The stub dev server stays alive, like `expo start` does.
-    const child = spawnExagent(projectRoot, ['start'], {
+    const child = spawnExagent(projectRoot, ['start', '--passthrough'], {
       env: { STUB_EXPO_DELAY_MS: '15000' },
     });
     const output = collectOutput(child);
@@ -118,6 +121,32 @@ describe('exagent start', () => {
       expect(await waitForAsync(() => fs.existsSync(skillLink), 30_000)).toBe(true);
       expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual(['start']);
       expect(output.all).toContain('stub_expo_dev_server_ready');
+      // No probe, no decision table: the dev server is started, not planned for.
+      expect(output.all).not.toContain('Smart start plan');
+    } finally {
+      await killAsync(child);
+    }
+  });
+
+  it('forwards every other argument to expo start, separator included', async () => {
+    const child = spawnExagent(
+      projectRoot,
+      ['start', '--passthrough', '--port', '8082', '--', '--web'],
+      { env: { STUB_EXPO_DELAY_MS: '15000' } }
+    );
+    const output = collectOutput(child);
+    try {
+      expect(
+        await waitForAsync(() => readStubExpoInvocations(projectRoot).length > 0, 30_000)
+      ).toBe(true);
+      expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual([
+        'start',
+        '--port',
+        '8082',
+        '--',
+        '--web',
+      ]);
+      expect(output.all).not.toContain('--passthrough');
     } finally {
       await killAsync(child);
     }
@@ -126,7 +155,7 @@ describe('exagent start', () => {
   it('skips the skill sync with `--no-agent-skills`', async () => {
     await writeAgentSelectionAsync(projectRoot, ['claude-code']);
 
-    const child = spawnExagent(projectRoot, ['start', '--no-agent-skills'], {
+    const child = spawnExagent(projectRoot, ['start', '--passthrough', '--no-agent-skills'], {
       env: { STUB_EXPO_DELAY_MS: '15000' },
     });
     try {
@@ -140,7 +169,7 @@ describe('exagent start', () => {
   });
 
   it('forwards the exit code of the expo CLI', async () => {
-    const child = spawnExagent(projectRoot, ['start'], {
+    const child = spawnExagent(projectRoot, ['start', '--passthrough'], {
       env: { STUB_EXPO_EXIT_CODE: '7' },
     });
     const result = await waitForExitAsync(child, collectOutput(child));

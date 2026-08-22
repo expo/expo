@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- `exagent start` now plans by default: it probes the project, prints the plan of `expo start`, `expo prebuild` and `expo run:*` that gets the app onto a device, and then runs it. `--smart` is still accepted as an alias of that default, and `--plan` still prints the plan and exits. The previous default — forward every argument to `expo start` and nothing else — moved behind `--passthrough`, which forwards them exactly as before, probes nothing, and starts the dev server only. A terminal facing a plan that installs, prebuilds or builds is asked `Run this plan?` once before the first step runs; declining runs nothing and exits 0, `--yes` answers it up front, and a run that cannot be asked (an agent, CI, `--json`) proceeds without a prompt, so nothing about the plan-first contract changed for a driving agent. ([#49229](https://github.com/expo/expo/pull/49229) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))
+
 ### 🎉 New features
 
 - Initial `exagent` package: `skills` command (sync/list/show/clean) ported from the `@expo/cli` proof-of-concept. ([#49229](https://github.com/expo/expo/pull/49229) by [@expo-tuft[bot]](https://github.com/apps/expo-tuft))

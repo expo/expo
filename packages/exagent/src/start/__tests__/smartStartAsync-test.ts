@@ -9,11 +9,13 @@ import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../../pla
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
 import { runExpoAsync } from '../../utils/expoCli';
+import { confirmPlanAsync } from '../confirmPlan';
 import { resolveStartOptions } from '../resolveOptions';
 import { smartStartAsync } from '../smartStartAsync';
 import { runDevServerAsync } from '../startAsync';
 
 jest.mock('../../log');
+jest.mock('../confirmPlan', () => ({ confirmPlanAsync: jest.fn() }));
 jest.mock('../../checkpoint/integration', () => ({ checkpointBeforeAsync: jest.fn() }));
 jest.mock('../../plan/emit', () => ({ emitStartPlan: jest.fn() }));
 jest.mock('../../plan/events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
@@ -86,6 +88,7 @@ beforeEach(() => {
   jest.mocked(readLastBuildFingerprints).mockReturnValue({});
   jest.mocked(runExpoAsync).mockResolvedValue(0);
   jest.mocked(runDevServerAsync).mockResolvedValue(0);
+  jest.mocked(confirmPlanAsync).mockResolvedValue(true);
   mockLanAddress('192.168.1.5');
 });
 
@@ -122,6 +125,76 @@ describe(smartStartAsync, () => {
         json: false,
         followups: expect.any(Array),
       });
+    });
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status` — Default change
+  describe('no flag (the default)', () => {
+    it(`should emit the plan and run it, as --smart does`, async () => {
+      mockProjectState();
+
+      await expect(smartStartAsync(projectRoot, resolveStartOptions([]))).resolves.toBe(0);
+
+      expect(emitStartPlan).toHaveBeenCalledWith(expect.objectContaining({ rule: 'expo-go' }), {
+        mode: 'smart',
+        json: false,
+        followups: expect.any(Array),
+      });
+      expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--go'], {
+        agentSkills: true,
+      });
+    });
+
+    it(`should run every step of a plan that builds`, async () => {
+      mockStaleDevClientState();
+
+      await expect(smartStartAsync(projectRoot, resolveStartOptions(['--ios']))).resolves.toBe(0);
+
+      expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['prebuild', '--platform', 'ios']);
+      expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['run:ios'], {
+        agentSkills: true,
+      });
+    });
+  });
+
+  // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run
+  describe('confirmation', () => {
+    it(`should ask about the plan before anything runs`, async () => {
+      mockStaleDevClientState();
+
+      await smartStartAsync(projectRoot, resolveStartOptions(['--ios']));
+
+      expect(confirmPlanAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ rule: 'dev-client-stale' }),
+        expect.objectContaining({ mode: 'smart' })
+      );
+    });
+
+    it(`should run nothing and exit 0 when the plan is declined`, async () => {
+      mockStaleDevClientState();
+      jest.mocked(confirmPlanAsync).mockResolvedValue(false);
+
+      await expect(smartStartAsync(projectRoot, resolveStartOptions(['--ios']))).resolves.toBe(0);
+
+      expect(runExpoAsync).not.toHaveBeenCalled();
+      expect(runDevServerAsync).not.toHaveBeenCalled();
+    });
+
+    it(`should not snapshot the project for a plan that was declined`, async () => {
+      mockStaleDevClientState();
+      jest.mocked(confirmPlanAsync).mockResolvedValue(false);
+
+      await smartStartAsync(projectRoot, resolveStartOptions(['--ios']));
+
+      expect(checkpointBeforeAsync).not.toHaveBeenCalled();
+    });
+
+    it(`should never ask in --plan mode, which runs nothing anyway`, async () => {
+      mockStaleDevClientState();
+
+      await smartStartAsync(projectRoot, resolveStartOptions(['--plan', '--ios']));
+
+      expect(confirmPlanAsync).not.toHaveBeenCalled();
     });
   });
 

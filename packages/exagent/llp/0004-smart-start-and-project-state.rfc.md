@@ -52,11 +52,15 @@ Emit the plan first as a structured event (steps + reasons + time-class estimate
 
 Contract: human-readable sections by default (like `git status` short prose), `--json` for the machine shape, exit 0 always (status is information, not judgment). Fast: no subprocess heavier than the fingerprint CLI; dev-server probe with a short timeout.
 
-Implemented [observed — 2026-08-22]: `exagent status [--json] [--dev-server-url]`, ~65 ms, per-section error notes with exit 0 (argument errors exit 1); next action names `exagent start --smart` since plain `start` does not execute plans; project name from `package.json` (dynamic app config needs an `expo config` subprocess, same approximation as item 7 below); live-verified against a real running project.
+Default change [confirmed — Kudo, 2026-08-22]: **smart mode is `exagent start`'s default** (the plain passthrough moves behind `--passthrough`; `--smart` stays as an alias). Human guardrail per [[0008-guardrails]]: an interactive terminal facing a plan with build-class steps gets one Y/n confirmation; non-interactive runs (agents, CI) proceed plan-first without prompting.
+
+Implemented [observed — 2026-08-22]: `exagent status [--json] [--dev-server-url]`, ~65 ms, per-section error notes with exit 0 (argument errors exit 1); next action names `exagent start --smart`, which stays a valid spelling of the default; project name from `package.json` (dynamic app config needs an `expo config` subprocess, same approximation as item 7 below); live-verified against a real running project.
+
+Default change implemented [observed — 2026-08-22]: `resolveStartOptions` resolves `smart` with no flag, `--smart` is an accepted no-op alias, and the plain wrapper is `--passthrough` (which forwards its arguments byte for byte, loads neither the probe nor the plan engine, and is the only mode that reaches `startAsync`). `--plan` and `--passthrough` both win over `--smart` on a command line asking for two modes: the narrower request runs less. The guardrail lives in `src/start/confirmPlan.ts` and is asked only when the run is interactive (`isInteractive()`: a TTY, not CI, not headless), `--yes` was not passed, `--json` was not passed (the prompt would land inside the parsed payload), and at least one step is costlier than `seconds`. A decline emits `cli:start_plan_declined`, prints the `--plan`/`--passthrough` alternatives, and exits 0 — nothing ran, so nothing failed. It is asked after the plan is emitted and before the checkpoint is taken, so a declined plan snapshots nothing.
 
 ## Implemented in v1 as
 
-[observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/context/`, `exagent start --plan|--smart`) with these deliberate approximations of the table above:
+[observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/context/`, `exagent start [--plan]`) with these deliberate approximations of the table above:
 
 1. **No device probe.** "Go/dev client installed on the device" is unobservable without simctl/adb; those rows are dropped — `expo start` prompts for Go itself and `expo run:*` installs what it builds.
 2. **No build-cache lookup.** Freshness = probe fingerprint vs `.expo/exagent-last-build.json` (written after a successful `run:*` step). Unrecorded ⇒ stale: v1 over-plans a build at worst, never under-plans.

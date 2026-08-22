@@ -19,6 +19,12 @@ declare module '2g' {
       steps: PlanStep[];
       reasons: string[];
     };
+    /**
+     * An interactive run was offered a plan with build-class steps and said no, so nothing ran.
+     *
+     * @see llp/0008-guardrails.rfc.md §Plan-with-cost dry run
+     */
+    'cli:start_plan_declined': { rule: string; steps: number };
     /** One plan step is about to be spawned. */
     'cli:start_plan_step': { id: string; argv: string[]; index: number; total: number };
     /** One plan step finished. A non-zero code stops the plan. */
