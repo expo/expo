@@ -616,6 +616,12 @@ class AudioModule : Module() {
         ref.setVolume(volume)
       }
 
+      Property("isActiveForLockScreen") { player ->
+        runOnMain {
+          player.isActiveForLockScreen
+        }
+      }
+
       Function("play") { player: AudioPlayer ->
         if (!audioEnabled) {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
@@ -977,6 +983,12 @@ class AudioModule : Module() {
       Property("currentStatus") { playlist ->
         runOnMain {
           playlist.currentStatus()
+        }
+      }
+
+      Property("isActiveForLockScreen") { playlist ->
+        runOnMain {
+          playlist.isActiveForLockScreen
         }
       }
 

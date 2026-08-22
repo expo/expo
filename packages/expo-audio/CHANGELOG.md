@@ -14,6 +14,7 @@
 - Added a `fileSize` field to `RecorderState` reporting the current size of the recording file in bytes. ([#46808](https://github.com/expo/expo/pull/46808) by [@behenate](https://github.com/behenate))
 - Added `startFileRecordingAsync` and `stopFileRecordingAsync` methods to `AudioStream` for continuous WAV and PCM file recording alongside buffer streaming. ([#46771](https://github.com/expo/expo/pull/46771) by [@behenate](https://github.com/behenate))
 - [iOS] Added `allowsExternalPlayback` option to `AudioPlayerOptions`. Set to `false` to keep the local player in control during AirPlay, fixing `player.loop` not firing. ([#48366](https://github.com/expo/expo/pull/48366) by [@zoontek](https://github.com/zoontek))
+- Added a read-only `isActiveForLockScreen` property to `AudioPlayer` and `AudioPlaylist` reporting whether the player is currently active for lock screen controls. ([#48657](https://github.com/expo/expo/pull/48657) by [@RasmusKard](https://github.com/RasmusKard))
 
 ### 🐛 Bug fixes
 
