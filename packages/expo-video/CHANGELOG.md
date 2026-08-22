@@ -93,6 +93,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+[Android] Add `pictureInPictureActions` and `nowPlayingActions` props to `VideoPlayer`. ([#44138](https://github.com/expo/expo/pull/44138) by [@edgarjmesquita](https://github.com/edgarjmesquita))
+
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - [iOS] Add `keepFullscreenOnPiPStop` property. ([#44811](https://github.com/expo/expo/pull/44811) by [@behenate](https://github.com/behenate))
 - [iOS] Add support for overriding Asset loading behavior with `VideoAssetTransportProvider`. ([#44935](https://github.com/expo/expo/pull/44935) by [@behenate](https://github.com/behenate))
