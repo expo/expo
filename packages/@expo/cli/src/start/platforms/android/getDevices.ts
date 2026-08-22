@@ -8,21 +8,7 @@ export async function getDevicesAsync(): Promise<Device[]> {
   const bootedDevices = await getAttachedDevicesAsync();
 
   const data = await listAvdsAsync();
-  const connectedNames = bootedDevices.map(({ name }) => name);
-
-  const offlineEmulators = data
-    .filter(({ name }) => !connectedNames.includes(name))
-    .map(({ name, type }) => {
-      return {
-        name,
-        type,
-        isBooted: false,
-        // TODO: Are emulators always authorized?
-        isAuthorized: true,
-      };
-    });
-
-  const allDevices = bootedDevices.concat(offlineEmulators);
+  const allDevices = mergeDevices(bootedDevices, data);
 
   if (!allDevices.length) {
     throw new CommandError(
@@ -36,4 +22,22 @@ export async function getDevicesAsync(): Promise<Device[]> {
   }
 
   return allDevices;
+}
+
+export function mergeDevices(attachedDevices: Device[], avds: Device[]): Device[] {
+  const connectedNames = attachedDevices.map(({ name }) => name);
+
+  const offlineEmulators = avds
+    .filter(({ name }) => !connectedNames.includes(name))
+    .map(({ name, type }) => {
+      return {
+        name,
+        type,
+        isBooted: false,
+        // TODO: Are emulators always authorized?
+        isAuthorized: true,
+      };
+    });
+
+  return attachedDevices.concat(offlineEmulators);
 }
