@@ -20,6 +20,7 @@
 - [Android] Add a Jetpack Compose `Image` component. ([#48521](https://github.com/expo/expo/pull/48521) by [@jakex7](https://github.com/jakex7))
 - [android] Add `shouldDismissOnBackPress` prop to the universal `BottomSheet` component, forwarding it to `ModalBottomSheet` via `properties.shouldDismissOnBackPress`. When false, the back press does not dismiss the sheet (and the press still does not reach BackHandler). ([#48987](https://github.com/expo/expo/pull/48987) by [@webdevsamran](https://github.com/webdevsamran))
 - [universal] Added a `contentPadding` prop to `BottomSheet`, so sheet content can reach the sheet's edges instead of always sitting inside a hardcoded 16-unit inset. ([#48902](https://github.com/expo/expo/issues/48902) by [@kilarsky](https://github.com/kilarsky))
+- [iOS] Added the `ShapeStyle` type, shared by the modifiers that paint an area, and taught `foregroundStyle` to accept materials (`ultraThin`, `thin`, `regular`, `thick`, `ultraThick` and `bar`). ([#48905](https://github.com/expo/expo/pull/48905) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🐛 Bug fixes
 
