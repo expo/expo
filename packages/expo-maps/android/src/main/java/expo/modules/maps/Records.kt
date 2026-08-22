@@ -248,12 +248,14 @@ data class MapPropertiesRecord(
   @Field
   val minZoomPreference: Float = 3.0f
 ) : Record {
-  fun toMapProperties(): MapProperties {
+  fun toMapProperties(hasLocationPermission: Boolean): MapProperties {
     val mapStyleOptionsParsed = mapStyleOptions?.json?.let { MapStyleOptions(it) }
     return MapProperties(
       isBuildingEnabled = isBuildingEnabled,
       isIndoorEnabled = isIndoorEnabled,
-      isMyLocationEnabled = isMyLocationEnabled,
+      // The Maps SDK throws a SecurityException from setMyLocationEnabled when the app holds
+      // neither location permission, which crashes the app on the map's first composition.
+      isMyLocationEnabled = isMyLocationEnabled && hasLocationPermission,
       isTrafficEnabled = isTrafficEnabled,
       mapStyleOptions = mapStyleOptionsParsed,
       mapType = mapType.toMapType(),
