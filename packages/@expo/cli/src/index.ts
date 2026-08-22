@@ -4,6 +4,8 @@ import arg from 'arg';
 import chalk from 'chalk';
 import { boolish } from 'getenv';
 
+import { installAgentFeedback } from './utils/agentFeedback';
+
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG` so existing
 // muscle memory keeps surfacing debug events. This must run before `installEventLogger()` so the
 // debug flag is honored when the session activates.
@@ -66,17 +68,19 @@ const args = arg(
 const isSubcommand = !!(args._[0] && commands[args._[0]]);
 const command = isSubcommand ? args._[0]! : defaultCmd;
 const commandArgs = isSubcommand ? args._.slice(1) : args._;
+const commandName = args['--version']
+  ? '--version'
+  : args['--help'] && !isSubcommand
+    ? '--help'
+    : command;
 
 // Setup event logger output before any console output. This single install handles explicit
 // LOG_EVENTS targets, parent IPC, and bounded command sessions in 2g's precedence order.
 installEventLogger({
-  command: args['--version']
-    ? 'expo --version'
-    : args['--help'] && !isSubcommand
-      ? 'expo --help'
-      : `expo ${command}`,
+  command: `expo ${commandName}`,
   version: process.env.__EXPO_VERSION,
 });
+installAgentFeedback(commandName);
 
 if (args['--version']) {
   // Version is added in the build script.
