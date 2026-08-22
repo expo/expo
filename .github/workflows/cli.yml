@@ -56,6 +56,98 @@ env:
   SKIP_SKIA_DOWNLOAD: '1'
 
 jobs:
+  # Watcher end-to-end coverage (see e2e/__tests__/install-while-running.test.ts):
+  # the Debian container matches the environment of expo/expo#48950, and the
+  # matrix covers the package managers whose install strategies differ.
+  install-e2e-debian:
+    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    runs-on: ubuntu-24.04
+    container: node:24-bookworm
+    strategy:
+      fail-fast: false
+      matrix:
+        pm: [bun, npm, pnpm]
+    steps:
+      - name: 🐧 Install container prerequisites
+        run: apt-get update && apt-get install -y unzip
+
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.x'
+
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile --ignore-scripts
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🔨 Build the CLI and its dependencies
+        run: pnpm turbo run build --filter=@expo/cli
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🧪 Install-while-running E2E
+        working-directory: packages/@expo/cli
+        run: pnpm test:e2e install-while-running --max-workers 1
+        env:
+          E2E_INSTALL_PM: ${{ matrix.pm }}
+
+  # macOS uses NativeWatcher, which intermittently loses install events (a
+  # known issue, separate from the FallbackWatcher fix), so this job reports
+  # without blocking until that watcher is fixed. Gated like jest-windows to
+  # limit macOS runner usage.
+  install-e2e-macos:
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'schedule' && github.repository == 'expo/expo')
+    runs-on: macos-15
+    continue-on-error: true
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+
+      - name: 🏗️ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: '1.x'
+
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile --ignore-scripts
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🔨 Build the CLI and its dependencies
+        run: pnpm turbo run build --filter=@expo/cli
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+
+      - name: 🧪 Install-while-running E2E
+        working-directory: packages/@expo/cli
+        run: pnpm test:e2e install-while-running --max-workers 1
+
   jest-ubuntu:
     if: github.event_name != 'schedule' || github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
