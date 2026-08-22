@@ -1,6 +1,8 @@
 /* eslint-env jest */
 import { spawn, type ChildProcess } from 'node:child_process';
+import crypto from 'node:crypto';
 import fs from 'node:fs';
+import net from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
@@ -326,4 +328,125 @@ export async function writeAgentSelectionAsync(
 export function readProjectFile(projectRoot: string, ...segments: string[]): string | null {
   const filePath = path.join(projectRoot, ...segments);
   return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : null;
+}
+
+/** What the dev-server lock of a project answers with, per `src/devLock/types.ts`. */
+export type DevLockInfo = {
+  url: string;
+  port: number;
+  pid: number;
+  startedAt: string;
+  projectRoot: string;
+};
+
+/**
+ * Address of a project's dev-server lock.
+ *
+ * Deliberately a second implementation of `src/devLock/address.ts`: the lock is a wire contract
+ * between two processes that share no code, and a test deriving the address from the code under
+ * test could not notice the address changing. If the two disagree, these tests fail.
+ */
+export function devLockAddress(projectRoot: string): string {
+  // Symlinks resolved, so the test and the CLI spell one project one way.
+  const canonical = fs.realpathSync(path.resolve(projectRoot));
+  const digest = crypto
+    .createHash('sha1')
+    .update(canonical.toLowerCase())
+    .digest('hex')
+    .slice(0, 16);
+
+  if (process.platform === 'win32') {
+    return `\\\\.\\pipe\\exagent-dev-server-${digest}`;
+  }
+  const inProject = path.join(canonical, '.expo', 'exagent-dev-server.sock');
+  // Over the kernel's ~104-byte cap on a socket path, the lock moves to the temporary directory.
+  return inProject.length <= 100
+    ? inProject
+    : path.join(os.tmpdir(), `exagent-dev-server-${digest}.sock`);
+}
+
+/**
+ * Ask a project's dev-server lock where its dev server listens, or get null when nothing answers.
+ *
+ * The read is a connection: nothing answers unless a process is holding the address open right
+ * now, which is the property these tests are here to check.
+ */
+export function readDevLockAsync(
+  projectRoot: string,
+  timeoutMs = 1000
+): Promise<DevLockInfo | null> {
+  return new Promise((resolve) => {
+    let answer = '';
+    let settled = false;
+    const socket = net.connect(devLockAddress(projectRoot));
+    const finish = (info: DevLockInfo | null) => {
+      if (settled) return;
+      settled = true;
+      socket.destroy();
+      resolve(info);
+    };
+    const parse = (): DevLockInfo | null => {
+      try {
+        return JSON.parse(answer.split('\n')[0]!);
+      } catch {
+        return null;
+      }
+    };
+    socket.setEncoding('utf8');
+    socket.setTimeout(timeoutMs, () => finish(parse()));
+    socket.on('data', (chunk: string) => {
+      answer += chunk;
+      if (answer.includes('\n')) finish(parse());
+    });
+    socket.on('error', () => finish(null));
+    socket.on('close', () => finish(parse()));
+  });
+}
+
+/** Poll a project's dev-server lock until it answers, or the timeout expires. */
+export async function waitForDevLockAsync(
+  projectRoot: string,
+  timeoutMs = 30_000,
+  intervalMs = 250
+): Promise<DevLockInfo | null> {
+  const endTime = Date.now() + timeoutMs;
+  for (;;) {
+    const info = await readDevLockAsync(projectRoot, intervalMs * 2);
+    if (info != null || Date.now() >= endTime) {
+      return info;
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+}
+
+/**
+ * Hold a dev-server lock for a project the way `exagent start` does, so a command under test can
+ * read one without a dev server existing.
+ *
+ * @returns a callback that releases the lock
+ */
+export async function holdDevLockAsync(
+  projectRoot: string,
+  info: DevLockInfo
+): Promise<() => void> {
+  const address = devLockAddress(projectRoot);
+  await fs.promises.mkdir(path.dirname(address), { recursive: true });
+  await fs.promises.rm(address, { force: true }).catch(() => {});
+
+  const server = net.createServer((socket) => {
+    socket.on('error', () => {});
+    socket.end(`${JSON.stringify(info)}\n`);
+  });
+  server.unref();
+  await new Promise<void>((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(address, () => resolve());
+  });
+
+  return () => {
+    server.close();
+    if (process.platform !== 'win32') {
+      fs.rmSync(address, { force: true });
+    }
+  };
 }

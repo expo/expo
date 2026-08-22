@@ -6,10 +6,12 @@ import {
   collectOutput,
   executeExagentAsync,
   killAsync,
+  readDevLockAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
   spawnExagent,
   waitForAsync,
+  waitForDevLockAsync,
   waitForExitAsync,
   writeAgentSelectionAsync,
 } from '../utils';
@@ -191,6 +193,68 @@ describe('exagent start', () => {
     const result = await waitForExitAsync(child, collectOutput(child));
 
     expect(result.exitCode).toBe(7);
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+  // While the dev server runs, the wrapper holds a socket that answers where it listens. The test
+  // connects to it from the outside, like another `exagent` command would.
+  describe('the dev server lock', () => {
+    it('answers with the port the dev server reported, and stops when it exits', async () => {
+      const eventsFile = path.join(projectRoot, 'events.jsonl');
+      const child = spawnExagent(projectRoot, ['start'], {
+        env: {
+          STUB_EXPO_DELAY_MS: '30000',
+          STUB_EXPO_DEV_SERVER_PORT: '8087',
+          LOG_EVENTS: eventsFile,
+        },
+      });
+      collectOutput(child);
+      try {
+        const lock = await waitForDevLockAsync(projectRoot);
+
+        expect(lock).toMatchObject({
+          url: 'http://127.0.0.1:8087',
+          port: 8087,
+          pid: child.pid,
+        });
+        expect(fs.realpathSync(lock!.projectRoot)).toBe(fs.realpathSync(projectRoot));
+
+        // The port came out of the dev server's own log, not off the command line.
+        const events = fs
+          .readFileSync(eventsFile, 'utf8')
+          .split('\n')
+          .filter(Boolean)
+          .map((line) => JSON.parse(line));
+        expect(events.find((entry) => entry._e === 'cli:dev_lock_acquired')).toMatchObject({
+          port: 8087,
+          portSource: 'log',
+        });
+      } finally {
+        await killAsync(child);
+      }
+
+      // Nothing holds the address any more, so there is no stale answer to read.
+      expect(await readDevLockAsync(projectRoot)).toBeNull();
+    });
+
+    it('falls back to the requested port when the dev server logs none', async () => {
+      // The stub writes no `metro:instantiate` event without `STUB_EXPO_DEV_SERVER_PORT`, which is
+      // the case of an `expo` CLI too old to log one.
+      const child = spawnExagent(projectRoot, ['start', '--port', '8092'], {
+        env: { STUB_EXPO_DELAY_MS: '60000' },
+      });
+      try {
+        const lock = await waitForDevLockAsync(projectRoot, 40_000);
+
+        expect(lock).toMatchObject({ url: 'http://127.0.0.1:8092', port: 8092 });
+      } finally {
+        await killAsync(child);
+      }
+    });
+
+    it('answers nothing before a dev server runs', async () => {
+      expect(await readDevLockAsync(projectRoot)).toBeNull();
+    });
   });
 });
 

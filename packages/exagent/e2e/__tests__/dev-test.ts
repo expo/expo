@@ -11,8 +11,12 @@ import path from 'node:path';
 import {
   executeExagentAsync,
   installStubFingerprintAsync,
+  killAsync,
+  readDevLockAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
+  spawnExagent,
+  waitForDevLockAsync,
 } from '../utils';
 
 /** The record `src/plan/lastBuild.ts` writes, relative to the project root. */
@@ -157,6 +161,27 @@ describe('exagent dev', () => {
       // The dev server step runs through the same wrapper as `exagent start`, whose skill sync is
       // covered by `wrapper-test.ts`.
       expect(result.stdout).toContain('stub_expo_dev_server_ready');
+    });
+
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+    it('publishes the dev server it started on the project lock', async () => {
+      // The dev-server step of a plan is the same wrapper `exagent start` uses, so it takes the
+      // same lock — a `dev` run has to be findable exactly like a `start` run.
+      const projectRoot = await setupAsync('go-app');
+      const child = spawnExagent(projectRoot, ['dev'], {
+        env: { STUB_EXPO_DELAY_MS: '30000', STUB_EXPO_DEV_SERVER_PORT: '8088' },
+      });
+      try {
+        expect(await waitForDevLockAsync(projectRoot)).toMatchObject({
+          url: 'http://127.0.0.1:8088',
+          port: 8088,
+          pid: child.pid,
+        });
+      } finally {
+        await killAsync(child);
+      }
+
+      expect(await readDevLockAsync(projectRoot)).toBeNull();
     });
   });
 });

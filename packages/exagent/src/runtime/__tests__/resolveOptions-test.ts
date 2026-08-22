@@ -1,11 +1,28 @@
 import { resolveRuntimeCommand } from '../resolveOptions';
 
 describe(resolveRuntimeCommand, () => {
+  // `devServerUrl` is null, not the default URL: "the caller named no dev server" is what makes
+  // the command discover one, and a resolved default here would look like a named one.
+  it(`should leave the dev server unresolved when no URL was given`, () => {
+    expect(resolveRuntimeCommand(['eval', '1'])).toMatchObject({ devServerUrl: null });
+    expect(resolveRuntimeCommand(['errors'])).toMatchObject({ devServerUrl: null });
+    expect(resolveRuntimeCommand(['network'])).toMatchObject({ devServerUrl: null });
+  });
+
+  it(`should keep rejecting a --dev-server-url that is not an http URL`, () => {
+    expect(() => resolveRuntimeCommand(['eval', '1', '--dev-server-url', 'nope'])).toThrow(
+      /--dev-server-url is not a URL/
+    );
+    expect(() =>
+      resolveRuntimeCommand(['errors', '--dev-server-url', 'ws://127.0.0.1:8081'])
+    ).toThrow(/must be an http or https URL/);
+  });
+
   it(`should default the dev server, timeout, and promise handling of eval`, () => {
     expect(resolveRuntimeCommand(['eval', 'globalThis.count'])).toEqual({
       action: 'eval',
       expression: 'globalThis.count',
-      devServerUrl: 'http://127.0.0.1:8081',
+      devServerUrl: null,
       timeoutMs: 5000,
       awaitPromise: true,
       json: false,
@@ -37,7 +54,7 @@ describe(resolveRuntimeCommand, () => {
   it(`should default the window of errors`, () => {
     expect(resolveRuntimeCommand(['errors'])).toEqual({
       action: 'errors',
-      devServerUrl: 'http://127.0.0.1:8081',
+      devServerUrl: null,
       durationMs: 2000,
       json: false,
       followups: true,
@@ -80,7 +97,7 @@ describe(resolveRuntimeCommand, () => {
   it(`should default the window of network`, () => {
     expect(resolveRuntimeCommand(['network'])).toEqual({
       action: 'network',
-      devServerUrl: 'http://127.0.0.1:8081',
+      devServerUrl: null,
       durationMs: 5000,
       json: false,
       followups: true,

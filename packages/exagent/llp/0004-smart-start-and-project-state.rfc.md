@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** project-state probe (new); smart `dev` command (new, `start` until 2026-08-22); `@expo/fingerprint`; `expo-mcp` tools
+**Systems:** project-state probe (new); smart `dev` command (new, `start` until 2026-08-22); dev-server lock (new); `@expo/fingerprint`; `expo-mcp` tools
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0002-testing-and-evals]]
@@ -46,11 +46,26 @@ Emit the plan first as a structured event (steps + reasons + time-class estimate
 - **Project**: name/slug, SDK version, CNG vs bare, dev-client/web deps.
 - **Expo Go**: compatible or not, with reason count (the reasons themselves in the `probe` key of `--json`).
 - **Freshness**: current fingerprint vs `.expo/exagent-last-build.json` per platform → `fresh` / `stale` / `unknown` (no fingerprint tool).
-- **Dev server**: running or not, and how many CDP targets are connected (app open?). Discovery order [observed — 2026-08-22]: explicit `--dev-server-url` → the port the project's own `.expo/dev/logs/start.log` names (`metro:instantiate` event; project-scoped but carries no liveness/PID, so it is probed, never trusted) → 8081 → a short scan of the ports `expo start` falls back to. Recorded upstream ask: revive a `.expo/dev-server.json` lock (url + pid, removed on exit) in `@expo/cli` so tools get the port and liveness without scanning — the legacy `packager-info.json` is gone from the modern CLI [observed].
+- **Dev server**: running or not, and how many CDP targets are connected (app open?). Discovery order [observed — 2026-08-22]: explicit `--dev-server-url` → the project's **dev-server lock** (below) → the port the project's own `.expo/dev/logs/start.log` names (`metro:instantiate` event; project-scoped but carries no liveness/PID, so it is probed, never trusted) → 8081 → a short scan of the ports `expo start` falls back to.
 - **Skills**: agent selection cached? linked skill count vs discovered count (out-of-sync hint).
 - **Next action**: the smart-start rule that would fire, as one line (e.g. "`exagent dev` → expo-go: start Metro and open in Expo Go").
 
 Contract: human-readable sections by default (like `git status` short prose), `--json` for the machine shape, exit 0 always (status is information, not judgment). Fast: no subprocess heavier than the fingerprint CLI; dev-server probe with a short timeout.
+
+### The dev-server lock
+
+[confirmed — Kudo, 2026-08-22: socket lock in exagent, expo-cli unchanged] The legacy `packager-info.json` is gone from the modern CLI [observed], and its replacement lives in `exagent`, not upstream: `src/devLock/`, taken by the dev-server wrapper `runDevServerAsync` and therefore by both `exagent start` and the final step of an `exagent dev` plan.
+
+**A socket, not a JSON file** [confirmed — Kudo, 2026-08-22]. A file records a fact about a process, and that record outlives the process; every reader then has to guess whether what it read is still true, which is what made `packager-info.json` unreliable and what a `pid` field only papers over (PIDs are reused, and a liveness check is a second question with its own race). A listening socket cannot have that bug: it exists only while its owner does, so a reader that got an answer got it from a process that was alive when it answered. Zombie and out-of-date data are impossible by construction rather than by convention.
+
+- **Address** — a pure function of the project root, because the two sides share nothing else: `projectRoot/.expo/exagent-dev-server.sock` on posix, and `\\.\pipe\exagent-dev-server-<sha1(realpath(projectRoot))[0:16]>` on Windows, where a pipe is not a project file and the project can only be in its name. Symlinks are resolved and the digest is lowercased, so one directory is one address. A posix project buried deeper than the kernel's ~104-byte cap on `sun_path` gets the same digest scheme under the temporary directory; the choice depends only on the path length, so both sides make it identically.
+- **Protocol** — the server writes one JSON line (`url`, `port`, `pid`, `startedAt`, `projectRoot`) on connection and ends it. A reader connects with a ~250 ms timeout and reads to the close; a refused connection or a timeout is "no dev server", full stop.
+- **Acquisition** — `EADDRINUSE` on posix means either a live owner or an orphaned socket file, and only a connection tells them apart: an answer means another `exagent` legitimately owns the project's dev server, and silence means the file is an orphan, which is unlinked before listening again. Unlinking can only lose an orphan, because a socket file carries no state and connecting to it is the only way to reach whatever made it — nothing is ever _read_ out of the file. On Windows a pipe dies with its process, so `EADDRINUSE` is a live owner by definition.
+- **Release** — on the dev server's exit (the wrapper's `finally`) and on process exit, with a best-effort unlink. A leftover socket file is inert by construction: it answers nothing, so no reader is misled, and the next acquisition removes it.
+- **Never load-bearing** — the dev server is the command and the lock is a convenience, so an address that cannot be taken produces one warning and a `cli:dev_lock_skipped` event, never a failure. The port published is the one the dev server itself reported in `start.log` after the spawn timestamp, falling back to `--port` and then 8081.
+- **Still probed, never trusted** — the lock proves the wrapper is alive; only an HTTP probe of the URL proves the dev server behind it is. Discovery therefore uses the lock to _stop guessing which port_, not to skip the check.
+
+Implemented [observed — 2026-08-22] in `src/devLock/` (`address.ts`, `client.ts`, `server.ts`, `port.ts`, `holdLock.ts`), held by `runDevServerAsync` in `src/start/startAsync.ts`, and read as step 0 of `discoverDevServerAsync` in `src/runtime/devServer.ts`. `runtime:eval|errors|network` went through the same discovery in the same change: they previously assumed 8081 whenever `--dev-server-url` was absent, so a dev server on any other port was invisible to them even with a lock to ask. Accepted limits: a dev server started by `expo start` directly holds no lock (the port in `start.log` plus the scan is still the answer there), and a posix project path long enough to push the socket past the kernel's cap moves it out of `.expo`, where a person looking for it will not see it.
 
 Merged [confirmed — Kudo, 2026-08-22]: **`status` absorbs the former `exagent context`**, which is removed. `status --json` carries the raw `ProjectState` verbatim under a `probe` key, alongside the sections above — the sections round the probe off for a terminal (Expo Go as a reason _count_, the fingerprint as a hash), and `probe` is what the summarizing dropped, so a caller that wants the brief reads one command instead of two. Rationale [inferred]: the two commands shared one probe and differed only in how much of it they printed, which is a flag, not a verb; and an agent orienting in a project was reliably running both. The probe costs nothing extra here — `status` already reads it to build its sections. The `install-dev-client` follow-up moved over with it; the `project-context` follow-up that pointed at `context` is gone, because the reasons it promised are now in the same report.
 

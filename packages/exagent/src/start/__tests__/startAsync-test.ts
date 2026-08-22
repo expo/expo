@@ -1,6 +1,8 @@
 import { vol } from 'memfs';
 import os from 'os';
 
+import { holdDevServerLockAsync } from '../../devLock';
+import type { DevServerLockHandle } from '../../devLock';
 import * as Log from '../../log';
 import { autoSyncSkillsAsync } from '../../skills/skillsAsync';
 import { runExpoAsync } from '../../utils/expoCli';
@@ -10,6 +12,7 @@ import { runDevServerAsync, SKILLS_SYNC_IDLE_DELAY_MS, startAsync } from '../sta
 jest.mock('../../log');
 jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
 jest.mock('../../skills/skillsAsync', () => ({ autoSyncSkillsAsync: jest.fn() }));
+jest.mock('../../devLock', () => ({ holdDevServerLockAsync: jest.fn() }));
 
 const projectRoot = '/project';
 
@@ -36,10 +39,23 @@ function mockLongRunningStart(): (code: number) => void {
   return (code) => end(code);
 }
 
+/** A held lock whose `release` can be asserted on. */
+function mockHeldLock(): DevServerLockHandle {
+  const lock: DevServerLockHandle = {
+    address: '/project/.expo/exagent-dev-server.sock',
+    replacedStale: false,
+    release: jest.fn(),
+  };
+  jest.mocked(holdDevServerLockAsync).mockResolvedValue(lock);
+  return lock;
+}
+
 beforeEach(() => {
   jest.useFakeTimers();
   vol.reset();
   jest.mocked(autoSyncSkillsAsync).mockResolvedValue(undefined);
+  // No lock unless a test asks for one: the wrapper must work either way.
+  jest.mocked(holdDevServerLockAsync).mockResolvedValue(null);
   mockLanAddress('192.168.1.5');
 });
 
@@ -205,5 +221,70 @@ describe(runDevServerAsync, () => {
 
     end(0);
     await promise;
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+  describe('the dev server lock', () => {
+    it(`should publish the dev server alongside the subprocess`, async () => {
+      const end = mockLongRunningStart();
+      const promise = runDevServerAsync(projectRoot, ['start', '--port', '8082'], {
+        agentSkills: false,
+      });
+
+      // The arguments go along, because the requested port is the fallback when the dev server
+      // never reports the one it took.
+      expect(holdDevServerLockAsync).toHaveBeenCalledWith(
+        projectRoot,
+        ['start', '--port', '8082'],
+        expect.objectContaining({ since: expect.any(Number), isRunning: expect.any(Function) })
+      );
+
+      end(0);
+      await promise;
+    });
+
+    it(`should report the dev server as running until it exits`, async () => {
+      const end = mockLongRunningStart();
+      const promise = runDevServerAsync(projectRoot, ['start'], { agentSkills: false });
+      const { isRunning } = jest.mocked(holdDevServerLockAsync).mock.calls[0]![2];
+
+      expect(isRunning?.()).toBe(true);
+
+      end(0);
+      await promise;
+      expect(isRunning?.()).toBe(false);
+    });
+
+    it(`should release the lock when the dev server exits`, async () => {
+      const lock = mockHeldLock();
+      const end = mockLongRunningStart();
+      const promise = runDevServerAsync(projectRoot, ['start'], { agentSkills: false });
+
+      expect(lock.release).not.toHaveBeenCalled();
+
+      end(0);
+      await promise;
+      expect(lock.release).toHaveBeenCalled();
+    });
+
+    it(`should release the lock when the dev server could not be spawned`, async () => {
+      const lock = mockHeldLock();
+      jest.mocked(runExpoAsync).mockRejectedValue(new Error('EXPO_CLI_NOT_FOUND'));
+
+      await expect(
+        runDevServerAsync(projectRoot, ['start'], { agentSkills: false })
+      ).rejects.toThrow('EXPO_CLI_NOT_FOUND');
+      expect(lock.release).toHaveBeenCalled();
+    });
+
+    it(`should run the dev server when no lock could be taken`, async () => {
+      jest.mocked(holdDevServerLockAsync).mockResolvedValue(null);
+      const end = mockLongRunningStart();
+      const promise = runDevServerAsync(projectRoot, ['start'], { agentSkills: false });
+
+      end(3);
+      // The lock is a convenience; the exit code of the dev server is the answer either way.
+      await expect(promise).resolves.toBe(3);
+    });
   });
 });

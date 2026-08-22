@@ -11,20 +11,30 @@ export const RUNTIME_ACTIONS = ['eval', 'errors', 'network'] as const;
 
 export type RuntimeAction = (typeof RUNTIME_ACTIONS)[number];
 
-export interface RuntimeEvalOptions {
+/** What every runtime action shares: which dev server to talk to, and how to report. */
+interface RuntimeSharedOptions {
+  /**
+   * The `--dev-server-url` the caller named, or null when they named none.
+   *
+   * Null is not "the default port": it means the dev server is still to be found, which is what
+   * lets the command consult the project's dev-server lock and then fall back to a scan
+   * (`discoverDevServerAsync`). An explicit URL is used as given, and never scanned around.
+   */
+  devServerUrl: string | null;
+}
+
+export interface RuntimeEvalOptions extends RuntimeSharedOptions {
   action: 'eval';
   /** JavaScript expression to evaluate in the app. */
   expression: string;
-  devServerUrl: string;
   timeoutMs: number;
   /** Wait for a returned promise to settle and report the settled value. */
   awaitPromise: boolean;
   json: boolean;
 }
 
-export interface RuntimeErrorsOptions {
+export interface RuntimeErrorsOptions extends RuntimeSharedOptions {
   action: 'errors';
-  devServerUrl: string;
   /** How long to listen for runtime errors, in milliseconds. */
   durationMs: number;
   json: boolean;
@@ -32,9 +42,8 @@ export interface RuntimeErrorsOptions {
   followups: boolean;
 }
 
-export interface RuntimeNetworkOptions {
+export interface RuntimeNetworkOptions extends RuntimeSharedOptions {
   action: 'network';
-  devServerUrl: string;
   /** How long to listen for network requests, in milliseconds. */
   durationMs: number;
   json: boolean;
@@ -125,7 +134,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     return {
       action: 'eval',
       expression: positional[0]!,
-      devServerUrl: resolveDevServerUrlFlag(args['--dev-server-url']),
+      devServerUrl: resolveExplicitDevServerUrl(args['--dev-server-url']),
       timeoutMs: resolveDuration(args['--timeout'], '--timeout', 5000, { allowZero: false }),
       awaitPromise: !args['--no-await-promise'],
       json: !!args['--json'],
@@ -144,13 +153,23 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
 
   return {
     action: windowAction,
-    devServerUrl: resolveDevServerUrlFlag(args['--dev-server-url']),
+    devServerUrl: resolveExplicitDevServerUrl(args['--dev-server-url']),
     durationMs: resolveDuration(args['--duration'], '--duration', DEFAULT_WINDOW_MS[windowAction], {
       allowZero: true,
     }),
     json: !!args['--json'],
     followups: !args['--no-followups'],
   };
+}
+
+/**
+ * The `--dev-server-url` the caller named, validated, or null when they named none.
+ *
+ * The validation is unchanged — a value that is not an http(s) URL is still `BAD_ARGS` — only the
+ * absent case differs: it resolves to nothing to find rather than to the default port.
+ */
+function resolveExplicitDevServerUrl(value: unknown): string | null {
+  return value == null ? null : resolveDevServerUrlFlag(value);
 }
 
 function resolveDuration(

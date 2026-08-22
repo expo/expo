@@ -18,7 +18,7 @@ import {
   type CdpEvaluateResult,
   type CdpTarget,
 } from './cdpClient';
-import { requireConnectedAppAsync } from './devServer';
+import { discoverDevServerAsync, requireConnectedAppAsync } from './devServer';
 import {
   countFailedRequests,
   countPendingRequests,
@@ -42,14 +42,50 @@ import type {
 } from './resolveOptions';
 import { CdpRuntimeErrorCollector, type RuntimeErrorRecord } from './runtimeErrorCollector';
 
+export interface RuntimeContext {
+  /**
+   * Project the command was run in, when it was run in one.
+   *
+   * Only used to find the dev server: a project knows where its own dev server listens, and a
+   * command that has no project to ask falls back to scanning ports.
+   */
+  projectRoot?: string | null;
+}
+
+/**
+ * Which dev server this command talks to.
+ *
+ * A named URL is used as named — the caller was specific, so nothing is guessed around it. With
+ * no URL, discovery asks the project's dev-server lock first and only then scans, so a dev server
+ * that `exagent` started on a port other than 8081 is found instead of missed.
+ *
+ * @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+ */
+async function resolveDevServerUrlAsync(
+  options: { devServerUrl: string | null },
+  { projectRoot }: RuntimeContext
+): Promise<string> {
+  if (options.devServerUrl != null) {
+    return options.devServerUrl;
+  }
+  const discovery = await discoverDevServerAsync(undefined, {
+    projectRoot: projectRoot ?? undefined,
+  });
+  return discovery.devServerUrl;
+}
+
 /**
  * Evaluate an expression in the running app and print the value it returned.
  *
  * @returns the exit code: `1` when the expression threw inside the app, so a script can branch
  * on the outcome without parsing the output.
  */
-export async function runtimeEvalAsync(options: RuntimeEvalOptions): Promise<number> {
-  const { devServerUrl, expression, timeoutMs, awaitPromise, json } = options;
+export async function runtimeEvalAsync(
+  options: RuntimeEvalOptions,
+  context: RuntimeContext = {}
+): Promise<number> {
+  const { expression, timeoutMs, awaitPromise, json } = options;
+  const devServerUrl = await resolveDevServerUrlAsync(options, context);
   await requireConnectedAppAsync(devServerUrl);
 
   let result: CdpEvaluateResult;
@@ -113,8 +149,12 @@ function evaluateUnsupportedError(devServerUrl: string): CommandError {
 }
 
 /** Listen for runtime errors from the running app over a window and print what arrived. */
-export async function runtimeErrorsAsync(options: RuntimeErrorsOptions): Promise<number> {
-  const { devServerUrl, durationMs, json } = options;
+export async function runtimeErrorsAsync(
+  options: RuntimeErrorsOptions,
+  context: RuntimeContext = {}
+): Promise<number> {
+  const { durationMs, json } = options;
+  const devServerUrl = await resolveDevServerUrlAsync(options, context);
   await requireConnectedAppAsync(devServerUrl);
 
   let errors: RuntimeErrorRecord[];
@@ -166,8 +206,12 @@ export async function runtimeErrorsAsync(options: RuntimeErrorsOptions): Promise
  *
  * @ref llp/0005-runtime-loop-tools.rfc.md §Candidates — "Network inspection".
  */
-export async function runtimeNetworkAsync(options: RuntimeNetworkOptions): Promise<number> {
-  const { devServerUrl, durationMs, json } = options;
+export async function runtimeNetworkAsync(
+  options: RuntimeNetworkOptions,
+  context: RuntimeContext = {}
+): Promise<number> {
+  const { durationMs, json } = options;
+  const devServerUrl = await resolveDevServerUrlAsync(options, context);
   const targets = await requireConnectedAppAsync(devServerUrl);
 
   let requests: NetworkRequestRecord[];

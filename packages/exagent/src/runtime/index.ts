@@ -35,7 +35,7 @@ export const exagentRuntime: Command = async (argv) => {
         `  --duration <ms>         How long to listen for requests (default: 5000)`,
         `  --no-followups          Skip the "Next:" section of suggested follow-up commands`,
         '',
-        `--dev-server-url <url>    Dev server to talk to (default: http://127.0.0.1:8081)`,
+        `--dev-server-url <url>    Dev server to talk to (default: the project's own, then 8081)`,
         `--json                    Print the result as JSON`,
         `-h, --help                Usage info`,
       ].join('\n'),
@@ -66,21 +66,26 @@ export const exagentRuntime: Command = async (argv) => {
 
   // Load modules after the help prompt so `npx exagent runtime:eval -h` shows as fast as possible.
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+  const { findUpProjectRootOrCwd } = require('../utils/findUp') as typeof import('../utils/findUp');
   const { resolveRuntimeCommand } =
     require('./resolveOptions') as typeof import('./resolveOptions');
   const runtimeAsync = require('./runtimeAsync') as typeof import('./runtimeAsync');
 
   return (async () => {
     const options = resolveRuntimeCommand(argv ?? []);
+    // The non-asserting lookup: these commands work against any dev server, so being outside a
+    // project is not an error — it only means there is no dev-server lock to ask, and the port
+    // has to be scanned for.
+    const context = { projectRoot: findUpProjectRootOrCwd(process.cwd()) };
     switch (options.action) {
       case 'eval':
-        process.exitCode = await runtimeAsync.runtimeEvalAsync(options);
+        process.exitCode = await runtimeAsync.runtimeEvalAsync(options, context);
         break;
       case 'errors':
-        process.exitCode = await runtimeAsync.runtimeErrorsAsync(options);
+        process.exitCode = await runtimeAsync.runtimeErrorsAsync(options, context);
         break;
       case 'network':
-        process.exitCode = await runtimeAsync.runtimeNetworkAsync(options);
+        process.exitCode = await runtimeAsync.runtimeNetworkAsync(options, context);
         break;
     }
   })().catch(logCmdError);

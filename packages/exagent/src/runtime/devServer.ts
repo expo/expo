@@ -5,11 +5,11 @@
 // connected to it. Both are checked before a CDP connection is attempted, so the failure the
 // user reads names the missing piece instead of the socket error it caused.
 
-import fs from 'fs';
-import path from 'path';
-
+import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../devLock';
 import { CommandError } from '../utils/errors';
 import type { CdpTarget } from './cdpClient';
+
+export { readLastLoggedDevServerPort };
 
 /** Where `npx expo start` listens by default. */
 export const DEFAULT_DEV_SERVER_URL = 'http://127.0.0.1:8081';
@@ -53,31 +53,6 @@ export function resolveDevServerUrlFlag(value: unknown): string {
  * the ports `expo start` walks to when 8081 is taken. */
 export const DEV_SERVER_SCAN_PORTS = [8081, 8082, 8083, 8084, 8085];
 
-/** Last `metro:instantiate` port from `projectRoot/.expo/dev/logs/start.log`, or null. */
-export function readLastLoggedDevServerPort(projectRoot: string): number | null {
-  let contents: string;
-  try {
-    contents = fs.readFileSync(path.join(projectRoot, '.expo', 'dev', 'logs', 'start.log'), 'utf8');
-  } catch {
-    return null;
-  }
-  let port: number | null = null;
-  for (const line of contents.split('\n')) {
-    if (!line.includes('"metro:instantiate"')) {
-      continue;
-    }
-    try {
-      const entry = JSON.parse(line) as { _e?: string; port?: unknown };
-      if (entry._e === 'metro:instantiate' && typeof entry.port === 'number') {
-        port = entry.port;
-      }
-    } catch {
-      // A torn write is not an answer; keep scanning.
-    }
-  }
-  return port;
-}
-
 export interface DevServerDiscovery extends DevServerProbe {
   /** The dev server origin the probe answered on (the explicit URL, or the discovered one). */
   devServerUrl: string;
@@ -116,10 +91,26 @@ export async function discoverDevServerAsync(
     ]);
   };
 
-  // Step 0 — the project's own record: `expo start` logs a `metro:instantiate` event with the
-  // port into `.expo/dev/logs/start.log`. Project-scoped, but carries no liveness (the log
-  // outlives the server) and no PID, so the port is only a candidate until it answers a probe.
-  // A dedicated `.expo/dev-server.json` lock (url + pid) is the recorded upstream ask.
+  // Step 0 — the project's dev-server lock (`src/devLock/`): a socket an `exagent`-started dev
+  // server holds open for as long as it runs, which answers with the URL it listens on. Nothing
+  // answers unless a process is alive, so this step has no stale case to guard against. The URL
+  // is still probed, never trusted: the lock proves that the wrapper is alive, and the probe
+  // proves that the dev server behind it is.
+  if (projectRoot != null) {
+    const lock = await readDevServerLockAsync(projectRoot);
+    if (lock != null) {
+      const lockUrl = normalizeDevServerUrl(lock.url);
+      const lockProbe = await withTimeout(lockUrl);
+      if (lockProbe.reachable) {
+        return { ...lockProbe, devServerUrl: lockUrl, discovered: true };
+      }
+    }
+  }
+
+  // Step 1 — the project's own log: `expo start` logs a `metro:instantiate` event with the port
+  // into `.expo/dev/logs/start.log`. Project-scoped, but the log outlives the server that wrote
+  // it and names no PID, so the port is only a candidate until it answers a probe. This is what
+  // finds a dev server started by `expo start` directly, with no `exagent` wrapper to hold a lock.
   const loggedPort = projectRoot != null ? readLastLoggedDevServerPort(projectRoot) : null;
   if (loggedPort != null && loggedPort !== 8081) {
     const loggedUrl = `http://127.0.0.1:${loggedPort}`;

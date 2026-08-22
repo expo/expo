@@ -23,7 +23,7 @@ export const exagentStatus: Command = async (argv) => {
       chalk`npx exagent status`,
       [
         `--json                    Print the whole report as JSON, raw project probe included`,
-        `--dev-server-url <url>    Dev server to probe (default: scan ports 8081-8085)`,
+        `--dev-server-url <url>    Dev server to probe (default: the project's own, then 8081-8085)`,
         `--no-followups            Leave the suggested follow-up commands out of the report`,
         `-h, --help                Usage info`,
       ].join('\n'),

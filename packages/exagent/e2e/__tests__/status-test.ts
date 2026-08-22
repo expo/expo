@@ -11,6 +11,7 @@ import path from 'node:path';
 
 import {
   executeExagentAsync,
+  holdDevLockAsync,
   installStubFingerprintAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
@@ -430,6 +431,61 @@ describe('exagent status', () => {
       expect(report.devServer?.running).toBe(false);
       expect(report.devServer?.appsConnected).toBe(0);
       expect(report.devServer?.reason).toBeTruthy();
+    });
+
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+    // With no `--dev-server-url`, discovery asks the project's dev-server lock before it scans
+    // ports. The lock is held by this test, standing in for a running `exagent start`.
+    it('finds the dev server the project lock names, with no URL given', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const devServer = await startDevServerDoubleAsync([CDP_TARGET]);
+      server = devServer.server;
+      const releaseLock = await holdDevLockAsync(projectRoot, {
+        url: devServer.url,
+        port: Number(new URL(devServer.url).port),
+        pid: process.pid,
+        startedAt: new Date().toISOString(),
+        projectRoot,
+      });
+
+      try {
+        const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+
+        expect(result.exitCode).toBe(0);
+        const report: StatusReport = JSON.parse(result.stdout);
+        // An ephemeral port, so no scan of 8081-8085 could have found it.
+        expect(report.devServer).toEqual({
+          url: devServer.url,
+          running: true,
+          appsConnected: 1,
+        });
+      } finally {
+        releaseLock();
+      }
+    });
+
+    it('ignores a lock whose dev server is gone', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const goneUrl = await getUnusedDevServerUrlAsync();
+      const releaseLock = await holdDevLockAsync(projectRoot, {
+        url: goneUrl,
+        port: Number(new URL(goneUrl).port),
+        pid: process.pid,
+        startedAt: new Date().toISOString(),
+        projectRoot,
+      });
+
+      try {
+        const result = await executeExagentAsync(projectRoot, ['status', '--json']);
+
+        expect(result.exitCode).toBe(0);
+        const report: StatusReport = JSON.parse(result.stdout);
+        // The lock is probed, never trusted, so a URL that does not answer is not the answer.
+        // What discovery falls through to depends on the machine, so only this is asserted.
+        expect(report.devServer?.url).not.toBe(goneUrl);
+      } finally {
+        releaseLock();
+      }
     });
 
     it('rejects a `--dev-server-url` that is not a URL', async () => {
