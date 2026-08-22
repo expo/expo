@@ -15,6 +15,7 @@
 
 - Added `CLAUDE.md` and `CONTRIBUTING.md` to `.npmignore` template. ([#47451](https://github.com/expo/expo/pull/47451) by [@kudo](https://github.com/kudo))
 - Updated `oxlint-config-universe` to 0.2.0, which requires `oxlint` 1.79.0. ([#49241](https://github.com/expo/expo/pull/49241) by [@tsapeta](https://github.com/tsapeta))
+- Enabled the `react/use-memo` and `react/void-use-memo` rules in the shared oxlint config. ([#49242](https://github.com/expo/expo/pull/49242) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.3 - 2026-05-29
 
