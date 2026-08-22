@@ -11,6 +11,8 @@
 //   node evals/run.mjs --tier 0 --scenario <id>   Run one scenario
 //   node evals/run.mjs --tier 1                   Run the tier 1 scenarios with a local model
 //                                                 via Ollama (OLLAMA_HOST, EXAGENT_EVAL_MODEL)
+//   node evals/run.mjs --tier 2                   Run the tier 2 scenarios with Claude Code
+//                                                 headless (ANTHROPIC_API_KEY required)
 
 import { spawn } from 'node:child_process';
 import fs from 'node:fs';
@@ -42,6 +44,12 @@ const TIER1_MODEL = process.env.EXAGENT_EVAL_MODEL ?? 'qwen3:4b';
 const TIER1_MAX_TURNS = 8;
 const TIER1_OUTPUT_LIMIT = 2000;
 const TIER1_SEED = 42;
+
+// Tier 2: a frontier agent (Claude Code headless) drives the scenario for real. Runs from the
+// label-triggered EAS workflow (.eas/workflows/exagent-tier2-evals.yml); needs ANTHROPIC_API_KEY.
+const TIER2_AGENT_BIN = process.env.EXAGENT_TIER2_AGENT ?? 'claude';
+const TIER2_MAX_TURNS = 12;
+const TIER2_TIMEOUT_MS = 600_000;
 
 const USAGE = `Run the exagent eval scenarios.
 
@@ -654,6 +662,87 @@ async function runTier1Scenario(scenario) {
 }
 
 /* -------------------------------------------------------------------------- */
+/* Tier 2 execution — frontier agent (Claude Code headless)                   */
+/* -------------------------------------------------------------------------- */
+
+function checkTier2() {
+  if (!process.env.ANTHROPIC_API_KEY && !process.env.CLAUDE_CODE_OAUTH_TOKEN) {
+    return (
+      'Tier 2 needs Claude Code credentials: set ANTHROPIC_API_KEY (or CLAUDE_CODE_OAUTH_TOKEN). ' +
+      'In CI this comes from the EAS environment; locally, export it before running.'
+    );
+  }
+  return undefined;
+}
+
+async function runTier2Scenario(scenario) {
+  const fixtureDir = path.join(PACKAGE_ROOT, scenario.fixture);
+  if (!fs.existsSync(fixtureDir)) {
+    return { pass: false, reason: `fixture not found: ${scenario.fixture}` };
+  }
+
+  const workspace = fs.mkdtempSync(path.join(os.tmpdir(), `exagent-eval2-${scenario.id}-`));
+  copyFixture(fixtureDir, workspace);
+
+  const prompt =
+    `You are working inside an Expo project (the current directory is the project root). ` +
+    `Complete this task: ${scenario.taskPrompt}\n\n` +
+    `Use the exagent CLI by running it with node, for example:\n` +
+    `  node ${CLI_BIN} skills --help\n` +
+    `Available commands: skills [sync|list|show|clean], install <pkg..>, start. ` +
+    `When the task is complete, stop and summarize what you did in one sentence.`;
+
+  const startedAt = Date.now();
+  const result = await new Promise((resolve) => {
+    const child = spawn(
+      TIER2_AGENT_BIN,
+      ['-p', prompt, '--allowedTools', 'Bash', '--max-turns', String(TIER2_MAX_TURNS)],
+      {
+        cwd: workspace,
+        env: { ...process.env, CI: '1' },
+        stdio: ['ignore', 'pipe', 'pipe'],
+        timeout: TIER2_TIMEOUT_MS,
+      }
+    );
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', (chunk) => (stdout += chunk));
+    child.stderr.on('data', (chunk) => (stderr += chunk));
+    child.on('close', (code, signal) => resolve({ exitCode: code ?? -1, signal, stdout, stderr }));
+    child.on('error', (error) =>
+      resolve({ exitCode: -1, signal: null, stdout, stderr: `${stderr}${error.message}` })
+    );
+  });
+
+  const elapsedSeconds = ((Date.now() - startedAt) / 1000).toFixed(1);
+  console.log(
+    `    agent: ${TIER2_AGENT_BIN} headless, exit ${result.exitCode}, ${elapsedSeconds}s`
+  );
+  if (result.stdout.trim()) {
+    console.log(indent(truncate(result.stdout.trim(), TIER1_OUTPUT_LIMIT), '    agent said: '));
+  }
+
+  const grades = [];
+  for (const grader of scenario.graders) {
+    const grade = await applyGrader(grader, { workspace, result });
+    grades.push({ grader, ...grade });
+    console.log(`    ${grade.pass ? 'PASS' : 'FAIL'} ${describeGrader(grader)} — ${grade.detail}`);
+  }
+
+  const pass = grades.every((grade) => grade.pass);
+  if (pass) {
+    fs.rmSync(workspace, { recursive: true, force: true });
+  } else {
+    console.log(`    workspace kept for triage: ${workspace}`);
+    if (result.stderr.trim()) {
+      console.log(indent(result.stderr.trim(), '    stderr: '));
+    }
+  }
+
+  return { pass, reason: pass ? undefined : 'one or more graders failed' };
+}
+
+/* -------------------------------------------------------------------------- */
 /* Main                                                                       */
 /* -------------------------------------------------------------------------- */
 
@@ -740,7 +829,7 @@ async function main() {
         console.log(`  (tier 1 runs with model ${TIER1_MODEL} via Ollama at ${OLLAMA_HOST})`);
       }
       if (tier === 2 && tierScenarios.length) {
-        console.log(`  (tier ${tier} execution is not implemented yet — dry run only)`);
+        console.log(`  (tier 2 runs with ${TIER2_AGENT_BIN} headless; needs ANTHROPIC_API_KEY)`);
       }
       console.log('');
     }
@@ -751,12 +840,11 @@ async function main() {
   const selected = plan[0].scenarios;
 
   if (tier === 2) {
-    console.error(
-      `Tier 2 execution is not implemented yet, so there is nothing to run. It needs a frontier ` +
-        `agent and an API key in CI secrets (see llp/0002-testing-and-evals.plan.md). Re-run with ` +
-        `--dry-run to validate the scenarios and print the tier 2 plan.`
-    );
-    return 1;
+    const problem = checkTier2();
+    if (problem) {
+      console.error(problem);
+      return 1;
+    }
   }
 
   if (!selected.length) {
@@ -790,7 +878,11 @@ async function main() {
   for (const scenario of selected) {
     console.log(`  ${scenario.id} — ${scenario.taskPrompt}`);
     const outcome =
-      tier === 1 ? await runTier1Scenario(scenario) : await runTier0Scenario(scenario);
+      tier === 2
+        ? await runTier2Scenario(scenario)
+        : tier === 1
+          ? await runTier1Scenario(scenario)
+          : await runTier0Scenario(scenario);
     if (!outcome.pass) {
       failures.push({ scenario, reason: outcome.reason });
       console.log(`  FAIL ${scenario.id}: ${outcome.reason}\n`);

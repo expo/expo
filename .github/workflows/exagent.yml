@@ -66,9 +66,11 @@ jobs:
   # `continue-on-error` keeps it non-blocking until its pass rate is stable over a
   # trailing window (LLP 0002, "Flake containment").
   tier1-agent-eval:
-    # Proven on a real runner (PR #49229, 2026-08-22): job total 4m37s; the model chose
-    # the right command on turn 1 and the scenario passed — inference 157 s on 4 vCPU.
+    # Runs on PRs too (decision 2026-08-22): proven cost is ~4m37s/run on a 4 vCPU
+    # runner (2.5 GB model pull ~2 min, inference 157 s), which is acceptable per-PR.
+    # Still report-only via continue-on-error.
     if: >-
+      github.event_name == 'pull_request' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'schedule' && github.repository == 'expo/expo')
     runs-on: ubuntu-24.04

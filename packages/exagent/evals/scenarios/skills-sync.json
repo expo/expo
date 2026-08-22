@@ -3,7 +3,7 @@
   "fixture": "e2e/fixtures/skills-app",
   "taskPrompt": "sync agent skills in this project",
   "drivingAgent": "deterministic",
-  "tiers": [0, 1],
+  "tiers": [0, 1, 2],
   "command": {
     "argv": ["skills", "sync", "--agent", "claude-code"],
     "timeoutMs": 60000
