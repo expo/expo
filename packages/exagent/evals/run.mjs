@@ -42,7 +42,7 @@ const DEFAULT_TIMEOUT_MS = 120_000;
 const OLLAMA_HOST = process.env.OLLAMA_HOST ?? 'http://127.0.0.1:11434';
 const TIER1_MODEL = process.env.EXAGENT_EVAL_MODEL ?? 'qwen3:4b';
 const TIER1_MAX_TURNS = 8;
-const TIER1_OUTPUT_LIMIT = 2000;
+const TIER1_OUTPUT_LIMIT = 800;
 const TIER1_SEED = 42;
 
 // Tier 2: a frontier agent (Claude Code headless) drives the scenario for real. Runs from the
@@ -638,8 +638,10 @@ async function runTier1Scenario(scenario) {
 
   for (let turn = 1; turn <= TIER1_MAX_TURNS; turn++) {
     let content;
+    const turnStartedAt = Date.now();
     try {
       content = await chatOllama(messages);
+      console.log(`    turn ${turn}: inference ${((Date.now() - turnStartedAt) / 1000).toFixed(1)}s`);
     } catch (error) {
       // An inference failure fails this scenario, not the whole runner.
       console.log(`    turn ${turn}: inference failed — ${error.message}`);
