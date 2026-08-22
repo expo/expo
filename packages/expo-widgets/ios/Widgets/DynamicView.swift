@@ -2,11 +2,31 @@ import SwiftUI
 import ExpoModulesCore
 import ExpoUI
 
-// TODO(@jakex7): Hack to satisfy ExpoSwiftUI.AnyChild with random UUID value
-class NodeIdentityWrapper {
-  let id: UUID
-  init(id: UUID) {
-    self.id = id
+// SwiftUI can only animate a change when the view keeps the same identity across
+// renders, and `Children()` keys its ForEach on `AnyChild.id`. Handing out a fresh
+// identity object per render made every widget/Live Activity update a wholesale
+// remove-and-insert, which disabled system update animations, `contentTransition`,
+// and `.animation` alike. Instead, keep one identity object per logical node,
+// addressed by its position (or JSX `key`) in the tree.
+final class NodeIdentityWrapper {
+  private static var cache: [String: NodeIdentityWrapper] = [:]
+  private static let lock = NSLock()
+
+  let key: String
+
+  private init(key: String) {
+    self.key = key
+  }
+
+  static func identity(for key: String) -> NodeIdentityWrapper {
+    lock.lock()
+    defer { lock.unlock() }
+    if let existing = cache[key] {
+      return existing
+    }
+    let created = NodeIdentityWrapper(key: key)
+    cache[key] = created
+    return created
   }
 }
 extension ObjectIdentifier: @retroactive Encodable {
@@ -22,26 +42,38 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   let kind: WidgetsKind
   let entryIndex: Int?
   let environmentString: String?
+  // Path of this node within its layout tree, e.g. "ZStackView/2:moon/0:ImageView".
+  let path: String
 
-  let uuid = NodeIdentityWrapper(id: UUID())
+  private let identity: NodeIdentityWrapper
   public var id: ObjectIdentifier {
-    ObjectIdentifier(uuid)
+    ObjectIdentifier(identity)
   }
 
   public init(name: String, kind: WidgetsKind, node: [String: Any]) {
-    self.name = name
-    self.kind = kind
-    self.node = node
-    self.entryIndex = nil
-    self.environmentString = nil
+    self.init(name: name, kind: kind, node: node, entryIndex: nil, environmentString: nil)
   }
 
   public init(name: String, kind: WidgetsKind, node: [String: Any], entryIndex: Int?, environmentString: String?) {
+    self.init(name: name, kind: kind, node: node, entryIndex: entryIndex, environmentString: environmentString, path: node["type"] as? String ?? "root")
+  }
+
+  init(name: String, kind: WidgetsKind, node: [String: Any], entryIndex: Int?, environmentString: String?, path: String) {
     self.name = name
     self.kind = kind
     self.node = node
     self.entryIndex = entryIndex
     self.environmentString = environmentString
+    self.path = path
+    self.identity = NodeIdentityWrapper.identity(for: "\(name)|\(kind)|\(entryIndex.map(String.init) ?? "-")|\(path)")
+  }
+
+  // Children are addressed by their JSX `key` when present, otherwise by index,
+  // plus their type so a different component at the same slot gets a new identity.
+  private func childPath(for child: [String: Any], at index: Int) -> String {
+    let slot = (child["key"] as? String) ?? String(index)
+    let type = child["type"] as? String ?? "?"
+    return "\(path)/\(slot):\(type)"
   }
 
   @ViewBuilder
@@ -152,9 +184,11 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
     if let props = node["props"] as? [String: Any] {
       if let children = props["children"] as? [Any] {
         let validChildren = flattenChildNodes(children)
-        initialProps.children = validChildren.map { WidgetsDynamicView(name: name, kind: kind, node: $0, entryIndex: entryIndex, environmentString: environmentString) }
+        initialProps.children = validChildren.enumerated().map { index, child in
+          WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: childPath(for: child, at: index))
+        }
       } else if let child = props["children"] as? [String: Any] {
-        initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString)]
+        initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString, path: childPath(for: child, at: 0))]
       }
     }
   }
