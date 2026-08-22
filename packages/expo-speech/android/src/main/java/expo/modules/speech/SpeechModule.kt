@@ -48,6 +48,10 @@ class SpeechModule : Module() {
     AsyncFunction("getVoices") { promise: Promise ->
       if (isTextToSpeechReady) {
         promise.resolve(getVoices())
+      } else if (ttsFailed) {
+        // The engine already failed to initialize once; it will never become
+        // ready, so answer immediately instead of queueing forever.
+        promise.resolve(emptyList<VoiceRecord>())
       } else {
         delayedGetVoices.add(promise)
 
@@ -67,6 +71,9 @@ class SpeechModule : Module() {
 
       if (isTextToSpeechReady) {
         speakOut(id, text, options)
+      } else if (ttsFailed) {
+        // The engine can never become ready; fail the utterance loudly.
+        sendEvent(speakingErrorEvent, idToMap(id))
       } else {
         delayedUtterances.add(Utterance(id, text, options))
 
@@ -148,6 +155,9 @@ class SpeechModule : Module() {
   private val isTextToSpeechReady
     get() = _ttsReady
 
+  private val ttsFailed
+    get() = _ttsFailed
+
   private val textToSpeech: TextToSpeech by lazy {
     val newTtsInstance = TextToSpeech(appContext.reactContext) { status: Int ->
       if (status == TextToSpeech.SUCCESS) {
@@ -188,6 +198,22 @@ class SpeechModule : Module() {
             promise.resolve(getVoices())
           }
         }
+      } else {
+        // The TTS engine failed to initialize (e.g. no engine is installed on
+        // the device). Settle every queued promise so callers get "no voices"
+        // instead of an await that never returns, and fail queued utterances
+        // through the error event instead of dropping them silently.
+        synchronized(this@SpeechModule) {
+          _ttsFailed = true
+          while (true) {
+            val promise = delayedGetVoices.poll() ?: break
+            promise.resolve(emptyList<VoiceRecord>())
+          }
+          while (true) {
+            val utterance = delayedUtterances.poll() ?: break
+            sendEvent(speakingErrorEvent, idToMap(utterance.id))
+          }
+        }
       }
     }
     _textToSpeech = newTtsInstance
@@ -208,4 +234,5 @@ class SpeechModule : Module() {
   // do not refer to these - they're only needed when initializing `textToSpeech`
   private var _textToSpeech: TextToSpeech? = null
   private var _ttsReady = false
+  private var _ttsFailed = false
 }
