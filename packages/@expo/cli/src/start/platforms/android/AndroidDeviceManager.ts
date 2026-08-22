@@ -3,12 +3,20 @@ import chalk from 'chalk';
 
 import * as Log from '../../../log';
 import { AbortCommandError, CommandError } from '../../../utils/errors';
+import { installExitHooks } from '../../../utils/exit';
 import { validateUrl } from '../../../utils/url';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 import type { BaseResolveDeviceProps } from '../PlatformManager';
 import { activateWindowAsync } from './activateWindow';
 import * as AndroidDebugBridge from './adb';
+import { isAdbDeviceStateUsable } from './adbDeviceList';
+import {
+  createAdbOperationErrorAsync,
+  formatAdbDeviceError,
+  isAdbDeviceDisconnectedError,
+} from './adbDiagnostics';
+import { AdbProcessError } from './adbProcess';
 import { startDeviceAsync } from './emulator';
 import { getDevicesAsync } from './getDevices';
 import { promptForDeviceAsync } from './promptAndroidDevice';
@@ -53,18 +61,46 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   }
 
   async getAppVersionAsync(applicationId: string): Promise<string | null> {
-    const info = await AndroidDebugBridge.getPackageInfoAsync(this.device, {
-      appId: applicationId,
-    });
+    const info = await this.runDeviceOperationAsync((signal) =>
+      AndroidDebugBridge.getPackageInfoAsync(
+        this.device,
+        {
+          appId: applicationId,
+        },
+        signal
+      )
+    );
 
     const regex = /versionName=([0-9.]+)/;
     return regex.exec(info)?.[1] ?? null;
   }
 
   protected async attemptToStartAsync(): Promise<AndroidDebugBridge.Device | null> {
-    // TODO: Add a light-weight method for checking since a device could disconnect.
-    if (!(await AndroidDebugBridge.isDeviceBootedAsync(this.device))) {
+    // Only detached AVD inventory entries may enter the emulator launch path
+    if (this.device.isLaunchable) {
       this.device = await startDeviceAsync(this.device);
+    } else {
+      this.assertDeviceStateIsUsable(this.device);
+      const attachedDevice = await AndroidDebugBridge.isDeviceBootedAsync(this.device);
+      if (!attachedDevice) {
+        throw this.createDeviceStateError(
+          new Error(`Device not found after discovery: ${this.device.pid ?? this.device.name}.`)
+        );
+      }
+      this.assertDeviceStateIsUsable(attachedDevice);
+      if (
+        this.device.transportId &&
+        attachedDevice.transportId &&
+        this.device.transportId !== attachedDevice.transportId
+      ) {
+        throw this.createDeviceStateError(
+          new Error(
+            `Device ${this.device.pid ?? this.device.name} was replaced after discovery (transport ${this.device.transportId} became ${attachedDevice.transportId})`
+          ),
+          attachedDevice
+        );
+      }
+      this.device = attachedDevice;
     }
 
     if (this.device.isAuthorized === false) {
@@ -75,6 +111,47 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     return this.device;
   }
 
+  private assertDeviceStateIsUsable(device: AndroidDebugBridge.Device): void {
+    if (device.state && !isAdbDeviceStateUsable(device.state)) {
+      throw this.createDeviceStateError(
+        new Error(`Device ${device.pid ?? device.name} is in state ${device.state}.`),
+        device
+      );
+    }
+  }
+
+  private createDeviceStateError(
+    error: Error,
+    device: AndroidDebugBridge.Device = this.device
+  ): CommandError {
+    return new CommandError('ADB_DEVICE_STATE', formatAdbDeviceError(error, device));
+  }
+
+  private async mapDeviceOperationError(error: unknown): Promise<never> {
+    if (isAdbDeviceDisconnectedError(error)) {
+      throw new CommandError('ADB_DEVICE_DISCONNECTED', formatAdbDeviceError(error, this.device));
+    }
+    if (error instanceof AdbProcessError) {
+      throw await createAdbOperationErrorAsync('ADB_DEVICE_OPERATION', error, this.device);
+    }
+    throw error;
+  }
+
+  private async runDeviceOperationAsync<T>(
+    operation: (signal: AbortSignal) => Promise<T>
+  ): Promise<T> {
+    // NOTE(@kitten): Do not retry device commands; side effects may already have started
+    const controller = new AbortController();
+    const removeExitHook = installExitHooks(() => controller.abort(new AbortCommandError()));
+    try {
+      return await operation(controller.signal);
+    } catch (error) {
+      return await this.mapDeviceOperationError(error);
+    } finally {
+      removeExitHook();
+    }
+  }
+
   async startAsync(): Promise<AndroidDebugBridge.Device> {
     const device = await this.attemptToStartAsync();
     assert(device, `Failed to boot emulator.`);
@@ -82,9 +159,9 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   }
 
   async installAppAsync(binaryPath: string) {
-    await AndroidDebugBridge.installAsync(this.device, {
-      filePath: binaryPath,
-    });
+    await this.runDeviceOperationAsync((signal) =>
+      AndroidDebugBridge.installAsync(this.device, { filePath: binaryPath }, signal)
+    );
   }
 
   async uninstallAppAsync(appId: string) {
@@ -95,10 +172,11 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     }
 
     try {
-      await AndroidDebugBridge.uninstallAsync(this.device, {
-        appId,
-      });
+      await this.runDeviceOperationAsync((signal) =>
+        AndroidDebugBridge.uninstallAsync(this.device, { appId }, signal)
+      );
     } catch (e) {
+      if (e instanceof CommandError && e.code.startsWith('ADB_')) throw e;
       Log.error(
         `Could not uninstall app "${appId}" from your device, please uninstall it manually and try again.`
       );
@@ -111,11 +189,13 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
    */
   async launchActivityAsync(launchActivity: string, url?: string): Promise<string> {
     try {
-      return await AndroidDebugBridge.launchActivityAsync(this.device, {
-        launchActivity,
-        url,
-      });
+      return await this.runDeviceOperationAsync((signal) =>
+        AndroidDebugBridge.launchActivityAsync(this.device, { launchActivity, url }, signal)
+      );
     } catch (error: any) {
+      if (error instanceof CommandError && error.code.startsWith('ADB_')) {
+        throw error;
+      }
       let errorMessage = `Couldn't open Android app with activity "${launchActivity}" on device "${this.name}".`;
       if (error instanceof CommandError && error.code === 'APP_NOT_INSTALLED') {
         errorMessage += `\nThe app might not be installed, try installing it with: ${chalk.bold(
@@ -129,7 +209,9 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
   }
 
   async isAppInstalledAndIfSoReturnContainerPathForIOSAsync(applicationId: string) {
-    return await AndroidDebugBridge.isPackageInstalledAsync(this.device, applicationId);
+    return await this.runDeviceOperationAsync((signal) =>
+      AndroidDebugBridge.isPackageInstalledAsync(this.device, applicationId, signal)
+    );
   }
 
   async openUrlAsync(url: string) {
@@ -142,15 +224,20 @@ export class AndroidDeviceManager extends DeviceManager<AndroidDebugBridge.Devic
     const parsed = new URL(url);
 
     if (parsed.protocol === 'exp:') {
-      await AndroidDebugBridge.launchActivityAsync(
-        { pid: this.device.pid },
-        {
-          launchActivity: `${EXPO_GO_APPLICATION_IDENTIFIER}/.experience.HomeActivity`,
-        }
+      await this.runDeviceOperationAsync((signal) =>
+        AndroidDebugBridge.launchActivityAsync(
+          { pid: this.device.pid },
+          {
+            launchActivity: `${EXPO_GO_APPLICATION_IDENTIFIER}/.experience.HomeActivity`,
+          },
+          signal
+        )
       );
     }
 
-    await AndroidDebugBridge.openUrlAsync({ pid: this.device.pid }, { url });
+    await this.runDeviceOperationAsync((signal) =>
+      AndroidDebugBridge.openUrlAsync({ pid: this.device.pid }, { url }, signal)
+    );
   }
 
   async activateWindowAsync() {

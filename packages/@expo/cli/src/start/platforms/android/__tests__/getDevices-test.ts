@@ -18,12 +18,20 @@ it(`asserts no devices are available`, async () => {
   expect(listAvdsAsync).toHaveBeenCalled();
 });
 
+it('preserves AVD inventory tool failures', async () => {
+  jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([]);
+  jest.mocked(listAvdsAsync).mockRejectedValueOnce(new Error('emulator -list-avds failed'));
+
+  await expect(getDevicesAsync()).rejects.toThrow('emulator -list-avds failed');
+});
+
 describe(mergeDevices, () => {
   const avd = (name: string) => ({
     name,
     type: 'emulator' as const,
     isBooted: false,
     isAuthorized: true,
+    isLaunchable: true,
   });
 
   it('preserves attached-device ordering and appends absent AVDs', () => {
