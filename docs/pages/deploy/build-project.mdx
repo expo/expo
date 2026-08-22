@@ -1,4 +1,559 @@
----
+---import React, { useState } from "react";
+import {
+  SafeAreaView,
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+  Alert,
+} from "react-native";
+
+const restaurants = [
+  {
+    id: "1",
+    name: "Bihar Rasoi",
+    location: "Patna",
+    rating: "4.7",
+    foods: [
+      { id: "1", name: "Litti Chokha", price: 120 },
+      { id: "2", name: "Sattu Paratha", price: 90 },
+      { id: "3", name: "Veg Thali", price: 160 },
+    ],
+  },
+  {
+    id: "2",
+    name: "Mithila Kitchen",
+    location: "Muzaffarpur",
+    rating: "4.6",
+    foods: [
+      { id: "4", name: "Dal Pitha", price: 100 },
+      { id: "5", name: "Paneer Thali", price: 180 },
+      { id: "6", name: "Khaja", price: 70 },
+    ],
+  },
+  {
+    id: "3",
+    name: "Ganga Food Point",
+    location: "Bhagalpur",
+    rating: "4.5",
+    foods: [
+      { id: "7", name: "Chicken Biryani", price: 190 },
+      { id: "8", name: "Veg Biryani", price: 130 },
+      { id: "9", name: "Chole Rice", price: 110 },
+    ],
+  },
+];
+
+export default function App() {
+  const [screen, setScreen] = useState("home");
+  const [restaurant, setRestaurant] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [location, setLocation] = useState("");
+  const [question, setQuestion] = useState("");
+
+  const addToCart = (food) => {
+    setCart([...cart, food]);
+    Alert.alert("Added", `${food.name} cart mein add ho gaya.`);
+  };
+
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+  const placeOrder = () => {
+    if (cart.length === 0) {
+      Alert.alert("Cart empty", "Pehle food add karein.");
+      return;
+    }
+
+    const order = {
+      id: Date.now(),
+      items: cart,
+      total,
+      status: "Restaurant ko order bheja gaya",
+    };
+
+    setOrders([order, ...orders]);
+    setCart([]);
+    setScreen("orders");
+
+    Alert.alert("Order Placed 🎉", "Aapka order successfully place ho gaya.");
+  };
+
+  const askAI = () => {
+    if (!question.trim()) return;
+
+    let answer =
+      "Namaste 🙏 Main Bihar Bite AI hoon. Main food choose karne mein aapki help kar sakta hoon.";
+
+    const q = question.toLowerCase();
+
+    if (q.includes("bihar")) {
+      answer =
+        "Bihar ke popular foods mein Litti Chokha, Sattu Paratha, Dal Pitha aur Khaja shamil hain. 😋";
+    } else if (q.includes("200")) {
+      answer =
+        "₹200 ke budget mein aap Litti Chokha, Sattu Paratha ya Veg Thali try kar sakte hain.";
+    } else if (q.includes("best")) {
+      answer =
+        "Aap restaurant ki rating aur menu dekhkar apne liye best option choose kar sakte hain.";
+    } else if (q.includes("biryani")) {
+      answer =
+        "Bihar Bite demo mein Ganga Food Point par Chicken Biryani ₹190 aur Veg Biryani ₹130 hai.";
+    }
+
+    Alert.alert("🤖 Bihar Bite AI", answer);
+    setQuestion("");
+  };
+
+  const Home = () => (
+    <ScrollView style={styles.container}>
+      <Text style={styles.logo}>🍽️ Bihar Bite</Text>
+
+      <Text style={styles.subtitle}>
+        Bihar ka apna food delivery app
+      </Text>
+
+      <TouchableOpacity
+        style={styles.locationBox}
+        onPress={() => setScreen("location")}
+      >
+        <Text style={styles.locationText}>
+          📍 {location || "Location select karein"}
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.aiButton}
+        onPress={() => setScreen("ai")}
+      >
+        <Text style={styles.aiText}>
+          🤖 ChatGPT Vachan – Bihar Bite AI
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.mainButton}
+        onPress={() => setScreen("restaurants")}
+      >
+        <Text style={styles.buttonText}>🍔 Restaurants</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.mainButton}
+        onPress={() => setScreen("cart")}
+      >
+        <Text style={styles.buttonText}>
+          🛒 Cart ({cart.length})
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.mainButton}
+        onPress={() => setScreen("orders")}
+      >
+        <Text style={styles.buttonText}>📦 My Orders</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.mainButton}
+        onPress={() => setScreen("account")}
+      >
+        <Text style={styles.buttonText}>👤 Account</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+
+  const Restaurants = () => (
+    <View style={styles.container}>
+      <Header title="🍴 Restaurants" />
+
+      <FlatList
+        data={restaurants}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => {
+              setRestaurant(item);
+              setScreen("menu");
+            }}
+          >
+            <Text style={styles.restaurantName}>
+              {item.name}
+            </Text>
+            <Text>📍 {item.location}</Text>
+            <Text>⭐ {item.rating}</Text>
+          </TouchableOpacity>
+        )}
+      />
+    </View>
+  );
+
+  const Menu = () => (
+    <View style={styles.container}>
+      <Header title={restaurant?.name} />
+
+      <FlatList
+        data={restaurant?.foods || []}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.foodCard}>
+            <View>
+              <Text style={styles.foodName}>{item.name}</Text>
+              <Text>₹{item.price}</Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => addToCart(item)}
+            >
+              <Text style={styles.addText}>ADD</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+    </View>
+  );
+
+  const Cart = () => (
+    <View style={styles.container}>
+      <Header title="🛒 Your Cart" />
+
+      {cart.length === 0 ? (
+        <Text style={styles.empty}>Cart empty hai.</Text>
+      ) : (
+        <>
+          {cart.map((item, index) => (
+            <View style={styles.cartItem} key={index}>
+              <Text>{item.name}</Text>
+              <Text>₹{item.price}</Text>
+            </View>
+          ))}
+
+          <Text style={styles.total}>Total: ₹{total}</Text>
+
+          <TouchableOpacity
+            style={styles.mainButton}
+            onPress={placeOrder}
+          >
+            <Text style={styles.buttonText}>
+              ✅ Place Order
+            </Text>
+          </TouchableOpacity>
+        </>
+      )}
+    </View>
+  );
+
+  const Orders = () => (
+    <View style={styles.container}>
+      <Header title="📦 My Orders" />
+
+      {orders.length === 0 ? (
+        <Text style={styles.empty}>Abhi koi order nahi hai.</Text>
+      ) : (
+        <FlatList
+          data={orders}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            <View style={styles.orderCard}>
+              <Text style={styles.orderTitle}>
+                Order #{String(item.id).slice(-5)}
+              </Text>
+
+              <Text>Amount: ₹{item.total}</Text>
+
+              <Text style={styles.status}>
+                🟢 {item.status}
+              </Text>
+
+              <Text style={styles.delivery}>
+                🚚 Delivery status: Preparing
+              </Text>
+            </View>
+          )}
+        />
+      )}
+    </View>
+  );
+
+  const AI = () => (
+    <View style={styles.container}>
+      <Header title="🤖 ChatGPT Vachan" />
+
+      <Text style={styles.aiIntro}>
+        Namaste 🙏 Bihar Bite AI mein aapka swagat hai.
+      </Text>
+
+      <Text style={styles.example}>
+        Example: "₹200 mein kya khau?"
+      </Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Apna sawal likhein..."
+        value={question}
+        onChangeText={setQuestion}
+      />
+
+      <TouchableOpacity
+        style={styles.aiButton}
+        onPress={askAI}
+      >
+        <Text style={styles.aiText}>🤖 Ask Bihar Bite AI</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const Location = () => (
+    <View style={styles.container}>
+      <Header title="📍 Location" />
+
+      <TextInput
+        style={styles.input}
+        placeholder="City / Area likhein"
+        value={location}
+        onChangeText={setLocation}
+      />
+
+      <TouchableOpacity
+        style={styles.mainButton}
+        onPress={() => setScreen("home")}
+      >
+        <Text style={styles.buttonText}>
+          Location Save Karein
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  const Account = () => (
+    <View style={styles.container}>
+      <Header title="👤 My Account" />
+
+      <Text style={styles.accountText}>
+        Bihar Bite Customer
+      </Text>
+
+      <Text style={styles.accountInfo}>
+        Login / Signup feature next version mein database ke saath connect hoga.
+      </Text>
+    </View>
+  );
+
+  function Header({ title }) {
+    return (
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => setScreen("home")}>
+          <Text style={styles.back}>‹</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.headerTitle}>{title}</Text>
+      </View>
+    );
+  }
+
+  if (screen === "restaurants") return <Restaurants />;
+  if (screen === "menu") return <Menu />;
+  if (screen === "cart") return <Cart />;
+  if (screen === "orders") return <Orders />;
+  if (screen === "ai") return <AI />;
+  if (screen === "location") return <Location />;
+  if (screen === "account") return <Account />;
+
+  return <SafeAreaView style={{ flex: 1 }}><Home /></SafeAreaView>;
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: "#fff",
+  },
+
+  logo: {
+    fontSize: 34,
+    fontWeight: "bold",
+    marginTop: 25,
+  },
+
+  subtitle: {
+    fontSize: 17,
+    marginVertical: 10,
+    color: "#555",
+  },
+
+  locationBox: {
+    backgroundColor: "#f3f4f6",
+    padding: 16,
+    borderRadius: 12,
+    marginVertical: 12,
+  },
+
+  locationText: {
+    fontSize: 16,
+  },
+
+  aiButton: {
+    backgroundColor: "#111827",
+    padding: 17,
+    borderRadius: 13,
+    marginVertical: 8,
+  },
+
+  aiText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+
+  mainButton: {
+    backgroundColor: "#f97316",
+    padding: 17,
+    borderRadius: 13,
+    marginVertical: 7,
+  },
+
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+
+  back: {
+    fontSize: 38,
+    marginRight: 15,
+  },
+
+  headerTitle: {
+    fontSize: 25,
+    fontWeight: "bold",
+  },
+
+  card: {
+    backgroundColor: "#f5f5f5",
+    padding: 18,
+    borderRadius: 14,
+    marginBottom: 12,
+  },
+
+  restaurantName: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+
+  foodCard: {
+    backgroundColor: "#f7f7f7",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  foodName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+
+  addButton: {
+    backgroundColor: "#16a34a",
+    paddingVertical: 9,
+    paddingHorizontal: 18,
+    borderRadius: 8,
+  },
+
+  addText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+
+  cartItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 15,
+    borderBottomWidth: 1,
+    borderColor: "#ddd",
+  },
+
+  total: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginVertical: 20,
+  },
+
+  orderCard: {
+    backgroundColor: "#f5f5f5",
+    padding: 18,
+    borderRadius: 14,
+    marginBottom: 12,
+  },
+
+  orderTitle: {
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+
+  status: {
+    marginTop: 10,
+    color: "#16a34a",
+  },
+
+  delivery: {
+    marginTop: 7,
+  },
+
+  empty: {
+    textAlign: "center",
+    marginTop: 50,
+    fontSize: 17,
+    color: "#777",
+  },
+
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    padding: 14,
+    fontSize: 16,
+    marginVertical: 10,
+  },
+
+  aiIntro: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+
+  example: {
+    color: "#777",
+    marginBottom: 10,
+  },
+
+  accountText: {
+    fontSize: 22,
+    fontWeight: "bold",
+  },
+
+  accountInfo: {
+    marginTop: 15,
+    color: "#666",
+    fontSize: 16,
+  },
+});
+
 title: Build your project for app stores
 description: Learn how to create a production build for your app that is ready to be submitted to app stores from the command line using EAS Build.
 sidebar_title: Build project for app stores
