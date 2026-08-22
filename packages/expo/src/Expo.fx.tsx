@@ -16,6 +16,8 @@ if (
   typeof globalThis.expo !== 'undefined'
 ) {
   require('./async-require/messageSocket');
+  // Announce the embedded fingerprint so the dev server can warn about stale native builds.
+  require('./fingerprint/announceFingerprint');
 }
 
 if (isRunningInExpoGo()) {

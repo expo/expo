@@ -54,63 +54,134 @@ describe(getPrebuildStaleness, () => {
     createdAt: '2026-08-11T00:00:00.000Z',
   };
 
-  it(`is fresh when prebuild-relevant sources match, even when others differ`, () => {
-    const changedAutolinking = {
-      ...autolinkingSource,
-      hash: 'new-camera-hash',
-    };
+  const changedConfig = { ...configSource, hash: 'new-config-hash' };
+  const addedPlugin: FingerprintSource = {
+    type: 'file',
+    filePath: 'other.plugin.js',
+    reasons: ['expoConfigPlugins'],
+    hash: 'other-plugin-hash',
+  };
+
+  it.each([
+    {
+      name: 'is fresh when prebuild-relevant sources match, even when others differ',
+      currentSources: [
+        configSource,
+        pluginSource,
+        { ...autolinkingSource, hash: 'new-camera-hash' },
+      ],
+      expected: { status: 'fresh', changes: [] },
+    },
+    {
+      name: 'is stale when the expo config hash changes',
+      currentSources: [changedConfig, pluginSource, autolinkingSource],
+      expected: {
+        status: 'stale',
+        changes: [{ source: 'app config', change: 'changed', scope: 'project' }],
+      },
+    },
+    {
+      name: 'is stale when a plugin source is added',
+      currentSources: [configSource, pluginSource, addedPlugin],
+      expected: {
+        status: 'stale',
+        changes: [{ source: 'other.plugin.js', change: 'added', scope: 'project' }],
+      },
+    },
+    {
+      name: 'reports every changed source, sorted, when a plugin is removed',
+      currentSources: [changedConfig, autolinkingSource],
+      expected: {
+        status: 'stale',
+        changes: [
+          { source: 'app config', change: 'changed', scope: 'project' },
+          { source: 'app.plugin.js', change: 'removed', scope: 'project' },
+        ],
+      },
+    },
+  ])(`$name`, ({ currentSources, expected }) => {
     expect(
-      getPrebuildStaleness({
-        marker,
-        currentSources: [configSource, pluginSource, changedAutolinking],
-        currentFingerprintVersion: '0.19.3',
-      })
-    ).toEqual({ status: 'fresh', changes: [] });
+      getPrebuildStaleness({ marker, currentSources, currentFingerprintVersion: '0.19.3' })
+    ).toEqual(expected);
   });
 
-  it(`is stale when the expo config hash changes`, () => {
-    const changedConfig = { ...configSource, hash: 'new-config-hash' };
-    expect(
-      getPrebuildStaleness({
-        marker,
-        currentSources: [changedConfig, pluginSource, autolinkingSource],
-        currentFingerprintVersion: '0.19.3',
-      })
-    ).toEqual({ status: 'stale', changes: [{ source: 'app config', change: 'changed' }] });
-  });
-
-  it(`is stale when a plugin source is added`, () => {
-    const newPlugin: FingerprintSource = {
-      type: 'file',
-      filePath: 'other.plugin.js',
+  // Real case: editing an app config plugin option in a monorepo also changes the hash of the
+  // linked `expo` package directory, for unrelated reasons (its own sources and build output).
+  // Reporting that is technically true and useless, so dependency sources are marked and then
+  // left out of messages.
+  it(`classifies sources outside the project as dependencies`, () => {
+    const linkedPackage: FingerprintSource = {
+      type: 'dir',
+      filePath: '../../packages/expo',
       reasons: ['expoConfigPlugins'],
-      hash: 'other-plugin-hash',
+      hash: 'expo-dir-hash',
+    };
+    const installedPlugin: FingerprintSource = {
+      type: 'file',
+      filePath: 'node_modules/expo-notifications/app.plugin.js',
+      reasons: ['expoConfigPlugins'],
+      hash: 'notifications-hash',
     };
     expect(
       getPrebuildStaleness({
-        marker,
-        currentSources: [configSource, pluginSource, newPlugin],
-        currentFingerprintVersion: '0.19.3',
-      })
-    ).toEqual({
-      status: 'stale',
-      changes: [{ source: 'other.plugin.js', change: 'added' }],
-    });
-  });
-
-  it(`reports every changed source, sorted, when a plugin is removed`, () => {
-    const changedConfig = { ...configSource, hash: 'new-config-hash' };
-    expect(
-      getPrebuildStaleness({
-        marker,
-        currentSources: [changedConfig, autolinkingSource],
+        marker: { ...marker, sources: [...marker.sources, linkedPackage, installedPlugin] },
+        currentSources: [
+          { ...configSource, hash: 'new-config-hash' },
+          pluginSource,
+          autolinkingSource,
+          { ...linkedPackage, hash: 'new-expo-dir-hash' },
+        ],
         currentFingerprintVersion: '0.19.3',
       })
     ).toEqual({
       status: 'stale',
       changes: [
-        { source: 'app config', change: 'changed' },
-        { source: 'app.plugin.js', change: 'removed' },
+        { source: 'app config', change: 'changed', scope: 'project' },
+        { source: '../../packages/expo', change: 'changed', scope: 'dependency' },
+        {
+          source: 'node_modules/expo-notifications/app.plugin.js',
+          change: 'removed',
+          scope: 'dependency',
+        },
+      ],
+    });
+  });
+
+  // `@expo/fingerprint` sets `overrideHashKey` on external config-file sources on purpose, so
+  // their identity survives a path that differs between local and EAS builds. That key is the
+  // hash-map key, but it must never reach a message or drive classification — only `filePath` can.
+  it(`describes an overridden source by its path, not its hash key`, () => {
+    const externalFile: FingerprintSource = {
+      type: 'file',
+      filePath: 'assets/images/icon.png',
+      reasons: ['expoConfigExternalFile'],
+      overrideHashKey: 'expoConfigExternalFile:contentsOnly',
+      hash: 'icon-hash',
+    };
+    const overriddenDependency: FingerprintSource = {
+      type: 'dir',
+      filePath: '../../packages/expo',
+      reasons: ['expoConfigPlugins'],
+      overrideHashKey: 'expoPackage:contentsOnly',
+      hash: 'expo-dir-hash',
+    };
+    expect(
+      getPrebuildStaleness({
+        marker: { ...marker, sources: [...marker.sources, externalFile, overriddenDependency] },
+        currentSources: [
+          configSource,
+          pluginSource,
+          autolinkingSource,
+          { ...externalFile, hash: 'new-icon-hash' },
+          { ...overriddenDependency, hash: 'new-expo-dir-hash' },
+        ],
+        currentFingerprintVersion: '0.19.3',
+      })
+    ).toEqual({
+      status: 'stale',
+      changes: [
+        { source: 'assets/images/icon.png', change: 'changed', scope: 'project' },
+        { source: '../../packages/expo', change: 'changed', scope: 'dependency' },
       ],
     });
   });
@@ -137,11 +208,12 @@ describe(getPrebuildStaleness, () => {
 });
 
 describe(formatPrebuildChanges, () => {
+  const project = { scope: 'project' as const };
   const changes = [
-    { source: 'app config', change: 'changed' as const },
-    { source: 'app.plugin.js', change: 'added' as const },
-    { source: 'plugins/withFoo.js', change: 'removed' as const },
-    { source: 'plugins/withBar.js', change: 'removed' as const },
+    { source: 'app config', change: 'changed' as const, ...project },
+    { source: 'app.plugin.js', change: 'added' as const, ...project },
+    { source: 'plugins/withFoo.js', change: 'removed' as const, ...project },
+    { source: 'plugins/withBar.js', change: 'removed' as const, ...project },
   ];
 
   it(`names every change when the list is short`, () => {
@@ -156,6 +228,30 @@ describe(formatPrebuildChanges, () => {
 
   it(`is empty without changes`, () => {
     expect(formatPrebuildChanges([])).toBe('');
+  });
+
+  // A dependency path names code the developer did not write, and the remediation is the same
+  // either way — so it adds nothing a reader can act on. Leave it out.
+  it(`omits dependency changes`, () => {
+    expect(
+      formatPrebuildChanges([
+        { source: 'app config', change: 'changed', scope: 'project' },
+        { source: '../../packages/expo', change: 'changed', scope: 'dependency' },
+        {
+          source: 'node_modules/expo-notifications/app.plugin.js',
+          change: 'changed',
+          scope: 'dependency',
+        },
+      ])
+    ).toBe('app config');
+  });
+
+  it(`is empty when only dependencies changed, so callers can drop the clause`, () => {
+    expect(
+      formatPrebuildChanges([
+        { source: '../../packages/expo', change: 'changed', scope: 'dependency' },
+      ])
+    ).toBe('');
   });
 });
 
@@ -279,7 +375,7 @@ describe(getNativeDirectoryStaleness, () => {
     });
     expect(getNativeDirectoryStaleness(projectRoot, 'ios', current)).toEqual({
       status: 'stale',
-      changes: [{ source: 'app config', change: 'changed' }],
+      changes: [{ source: 'app config', change: 'changed', scope: 'project' }],
     });
   });
 });

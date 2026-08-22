@@ -229,7 +229,7 @@ async function checkPlatformAsync(
     return {
       status: 'rebuild-required',
       reason: 'prebuild-stale',
-      recommendation: `The app config or a config plugin changed after the native directories were generated${describeChanges(prebuildChanges)}. Regenerate them, then rebuild.`,
+      recommendation: `${describeChanges(prebuildChanges) ?? 'The native directories were generated from a different project state'}. Regenerate them, then rebuild.`,
       commands: rebuildCommands(platform, { prebuildFirst: true }),
       device: null,
       installedHash: null,
@@ -345,10 +345,12 @@ function toCheckFailedResult(error: Error): PlatformCheckResult {
 
 /**
  * Name the changed sources in the recommendation, so the verdict answers "what changed?"
- * without a second command. The full list stays in `--json`.
+ * without a second command. Null when only dependencies changed — naming those points at code the
+ * developer did not write, and the fix is the same either way. The full list stays in `--json`.
  */
-function describeChanges(changes: PrebuildSourceChange[]): string {
-  return changes.length ? ` (${formatPrebuildChanges(changes)})` : '';
+function describeChanges(changes: PrebuildSourceChange[]): string | null {
+  const named = formatPrebuildChanges(changes);
+  return named ? `${named} changed after the native directories were generated` : null;
 }
 
 /**
