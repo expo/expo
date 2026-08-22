@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { generateFaviconAssetAsync } from '../favicon';
+import { generateFaviconAssetAsync, getSvgFaviconHref } from '../favicon';
 import type { ExportAssetMap } from '../saveAssets';
 
 jest.mock('../publicFolder', () => ({
@@ -15,6 +15,14 @@ jest.mock('@expo/image-utils', () => ({
 const { getUserDefinedFile } = jest.requireMock('../publicFolder') as {
   getUserDefinedFile: jest.Mock;
 };
+
+/** Make the `getUserDefinedFile` mock resolve against a given set of public folder files. */
+function mockPublicFolder(publicFiles: string[]) {
+  getUserDefinedFile.mockImplementation((_projectRoot: string, possiblePaths: string[]) => {
+    const match = possiblePaths.find((possiblePath) => publicFiles.includes(possiblePath));
+    return match ? `/project/public/${match.replace(/^\.\//, '')}` : null;
+  });
+}
 
 describe(generateFaviconAssetAsync, () => {
   beforeEach(() => {
@@ -31,6 +39,90 @@ describe(generateFaviconAssetAsync, () => {
     });
 
     expect(result).toBeNull();
+  });
+
+  it('returns the SVG href when the user supplied a `public/favicon.svg`', async () => {
+    // Browsers don't auto-discover SVG favicons the way they do
+    // `/favicon.ico`, so a `<link>` tag must still be emitted. The SVG file
+    // itself is copied to the output by `copyPublicFolderAsync`, not here.
+    mockPublicFolder(['./favicon.svg']);
+
+    const files: ExportAssetMap = new Map();
+    const result = await generateFaviconAssetAsync('/project', {
+      baseUrl: '/app',
+      outputDir: '/out',
+      files,
+      exp: { name: '', slug: '' } as any,
+    });
+
+    expect(result).toEqual({ href: '/app/favicon.svg' });
+    expect(files.size).toBe(0);
+    // The raster pipeline is the pre-patch crash path for SVG input; assert it stays skipped.
+    const { generateImageAsync } = jest.requireMock('@expo/image-utils');
+    expect(generateImageAsync).not.toHaveBeenCalled();
+  });
+
+  it('still generates favicon.ico when a public SVG is paired with a raster web.favicon', async () => {
+    // A project that has both used to get a generated `favicon.ico`. The public SVG takes the
+    // `<link>`, but dropping the ICO would silently remove the fallback older browsers
+    // auto-discover at `/favicon.ico`.
+    mockPublicFolder(['./favicon.svg']);
+
+    const files: ExportAssetMap = new Map();
+    const result = await generateFaviconAssetAsync('/project', {
+      baseUrl: '',
+      outputDir: '/out',
+      files,
+      exp: { name: '', slug: '', web: { favicon: './icon.png' } } as any,
+    });
+
+    expect(result).toEqual({ href: '/favicon.svg' });
+    expect(files.get('favicon.ico')).toEqual({
+      contents: Buffer.from([1, 2, 3]),
+      targetDomain: 'client',
+    });
+  });
+
+  it('does not overwrite a public favicon.ico when the public folder also holds an SVG', async () => {
+    // `getUserDefinedFaviconFile` reports the SVG (it wins the `<link>`) and never mentions the
+    // sibling ICO, so generation has to re-check the output path: `copyPublicFolderAsync` has
+    // already copied the user's own `favicon.ico` there, and writing over it would replace a
+    // hand-crafted multi-size icon with a rasterized `web.favicon`.
+    mockPublicFolder(['./favicon.svg', './favicon.ico']);
+
+    const files: ExportAssetMap = new Map();
+    const result = await generateFaviconAssetAsync('/project', {
+      baseUrl: '',
+      outputDir: '/out',
+      files,
+      exp: { name: '', slug: '', web: { favicon: './icon.png' } } as any,
+    });
+
+    expect(result).toEqual({ href: '/favicon.svg' });
+    expect(files.size).toBe(0);
+  });
+
+  it('does not double-write favicon.svg when a public SVG is paired with an SVG web.favicon', async () => {
+    mockPublicFolder(['./favicon.svg']);
+    const readFileMock = jest
+      .spyOn(require('fs').promises, 'readFile')
+      .mockResolvedValue(Buffer.from('<svg/>'));
+
+    try {
+      const files: ExportAssetMap = new Map();
+      const result = await generateFaviconAssetAsync('/project', {
+        baseUrl: '',
+        outputDir: '/out',
+        files,
+        exp: { name: '', slug: '', web: { favicon: './icon.svg' } } as any,
+      });
+
+      // The public file already occupies `favicon.svg` in the output.
+      expect(result).toEqual({ href: '/favicon.svg' });
+      expect(files.size).toBe(0);
+    } finally {
+      readFileMock.mockRestore();
+    }
   });
 
   it('returns `null` when `web.favicon` is not set', async () => {
@@ -59,6 +151,37 @@ describe(generateFaviconAssetAsync, () => {
     });
   });
 
+  it('copies an SVG `web.favicon` raw (no rasterization) and returns the SVG href', async () => {
+    // Rasterizing would defeat the point of an SVG favicon — features like
+    // `prefers-color-scheme` media queries need the original markup to
+    // survive into the served asset.
+    const svgSource = '<svg xmlns="http://www.w3.org/2000/svg"/>';
+    const readFileMock = jest
+      .spyOn(require('fs').promises, 'readFile')
+      .mockResolvedValue(Buffer.from(svgSource));
+
+    try {
+      const files: ExportAssetMap = new Map();
+      const result = await generateFaviconAssetAsync('/project', {
+        baseUrl: '/app',
+        outputDir: '/out',
+        files,
+        exp: { name: '', slug: '', web: { favicon: './icon.svg' } } as any,
+      });
+
+      expect(result).toEqual({ href: '/app/favicon.svg' });
+      expect(files.get('favicon.svg')).toEqual({
+        contents: Buffer.from(svgSource),
+        targetDomain: 'client',
+      });
+      // The raster pipeline must not have been invoked for the SVG input.
+      const { generateImageAsync } = jest.requireMock('@expo/image-utils');
+      expect(generateImageAsync).not.toHaveBeenCalled();
+    } finally {
+      readFileMock.mockRestore();
+    }
+  });
+
   it('writes to disk when no asset map is provided', async () => {
     const fsMock = jest.spyOn(require('fs').promises, 'writeFile').mockResolvedValue(undefined);
     try {
@@ -71,5 +194,41 @@ describe(generateFaviconAssetAsync, () => {
     } finally {
       fsMock.mockRestore();
     }
+  });
+});
+
+describe(getSvgFaviconHref, () => {
+  beforeEach(() => {
+    getUserDefinedFile.mockReturnValue(null);
+  });
+
+  it('returns the SVG href for an SVG `web.favicon`', () => {
+    expect(
+      getSvgFaviconHref('/project', { name: '', slug: '', web: { favicon: './icon.svg' } } as any)
+    ).toBe('/favicon.svg');
+  });
+
+  it('returns the SVG href for a `public/favicon.svg`', () => {
+    mockPublicFolder(['./favicon.svg']);
+    expect(getSvgFaviconHref('/project', { name: '', slug: '' } as any)).toBe('/favicon.svg');
+  });
+
+  // `.ico` needs no tag: browsers auto-discover `/favicon.ico`, which is why the dev server
+  // never had to inject one before SVG support.
+  it('returns `null` for a raster `web.favicon`', () => {
+    expect(
+      getSvgFaviconHref('/project', { name: '', slug: '', web: { favicon: './icon.png' } } as any)
+    ).toBeNull();
+  });
+
+  it('returns `null` for a `public/favicon.ico`', () => {
+    getUserDefinedFile.mockReturnValueOnce('/project/public/favicon.ico');
+    expect(
+      getSvgFaviconHref('/project', { name: '', slug: '', web: { favicon: './icon.svg' } } as any)
+    ).toBeNull();
+  });
+
+  it('returns `null` when no favicon is configured', () => {
+    expect(getSvgFaviconHref('/project', { name: '', slug: '' } as any)).toBeNull();
   });
 });
