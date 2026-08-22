@@ -80,6 +80,49 @@ describe('resolveAdbPromise', () => {
   });
 });
 
+describe('adb command timeout', () => {
+  beforeEach(() => jest.useFakeTimers());
+  afterEach(() => jest.useRealTimers());
+
+  /** A spawn that never settles, like an adb client talking to a wedged server. */
+  function mockHangingSpawn() {
+    const kill = jest.fn();
+    const promise: any = new Promise(() => {});
+    promise.child = { kill };
+    jest.mocked(spawnAsync).mockReturnValueOnce(promise);
+    return { kill };
+  }
+
+  it(`fails with an actionable error when adb never responds`, async () => {
+    const { kill } = mockHangingSpawn();
+    const server = new ADBServer();
+    server.startAsync = jest.fn();
+    server.getAdbExecutablePath = jest.fn(() => 'adb');
+
+    // Capture the rejection up front so advancing the timers cannot surface it as an unhandled
+    // rejection before the assertion runs.
+    const error = server.runAsync(['devices', '-l']).catch((error) => error);
+    await jest.advanceTimersByTimeAsync(15000);
+
+    await expect(error).resolves.toThrow(
+      'adb did not respond within 15s while running "devices -l". The adb server may be unresponsive, which can happen when a device disconnects mid-transfer. Try running "adb kill-server" and then re-running this command.'
+    );
+    expect(kill).toHaveBeenCalledTimes(1);
+  });
+
+  it(`does not time out a command that responds`, async () => {
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
+      output: ['did thing'],
+      stderr: 'did thing',
+    } as any);
+    const server = new ADBServer();
+    server.startAsync = jest.fn();
+    server.getAdbExecutablePath = jest.fn(() => 'adb');
+
+    await expect(server.runAsync(['foo'])).resolves.toBe('did thing');
+  });
+});
+
 describe('startAsync', () => {
   it(`starts the ADB server`, async () => {
     jest.mocked(spawnAsync).mockResolvedValueOnce({
