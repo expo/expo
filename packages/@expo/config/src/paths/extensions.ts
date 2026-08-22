@@ -1,3 +1,4 @@
+import { PLATFORM_EXTENSIONS } from '@expo/platform-metadata';
 import assert from 'assert';
 
 export type LanguageOptions = {
@@ -64,11 +65,6 @@ export function getBareExtensions(
   _addMiscellaneousExtensions(platforms, fileExtensions);
   return fileExtensions;
 }
-
-const PLATFORM_EXTENSIONS: Record<string, readonly string[]> = {
-  tvos: ['tvos', 'ios', 'native'],
-  macos: ['macos', 'ios', 'native'],
-};
 
 /** Expand `extensions` with OOT platform extensions for platform */
 export function getPlatformExtensions(

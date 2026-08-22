@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Source platform identity data (out-of-tree platform names, react-native host packages, Metro extension fallback chains) from `@expo/platform-metadata` instead of local copies. No behavior change. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
 - Add experimental `tvos` and `macos` platforms gated by `expriments.outOfTreePlatforms` in config ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 
 ## 57.0.6 - 2026-07-22

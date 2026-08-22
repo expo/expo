@@ -1,5 +1,6 @@
 import type { ModConfig } from '@expo/config-plugins';
 import type { ExpoConfig } from '@expo/config-types';
+import type { PlatformName } from '@expo/platform-metadata';
 
 export type {
   ExpoConfig,
@@ -139,7 +140,7 @@ export enum ProjectPrivacy {
   UNLISTED = 'unlisted',
 }
 
-export type Platform = 'android' | 'ios' | 'web' | 'tvos' | 'macos';
+export type Platform = PlatformName;
 export type NativePlatform = Exclude<Platform, 'web'>;
 export type ProjectTarget = 'managed' | 'bare';
 

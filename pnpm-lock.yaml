@@ -2120,6 +2120,9 @@ importers:
       '@expo/json-file':
         specifier: workspace:^10.2.0
         version: link:../json-file
+      '@expo/platform-metadata':
+        specifier: workspace:^0.1.0
+        version: link:../platform-metadata
       '@expo/require-utils':
         specifier: workspace:^56.1.3
         version: link:../require-utils
@@ -2590,6 +2593,9 @@ importers:
       '@expo/metro':
         specifier: ~56.0.2
         version: 56.0.2(supports-color@8.1.1)
+      '@expo/platform-metadata':
+        specifier: workspace:^0.1.0
+        version: link:../platform-metadata
       '@expo/require-utils':
         specifier: workspace:^56.1.3
         version: link:../require-utils

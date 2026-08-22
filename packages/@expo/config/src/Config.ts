@@ -1,6 +1,7 @@
 import type { ModConfig } from '@expo/config-plugins';
 import type { JSONObject } from '@expo/json-file';
 import JsonFile from '@expo/json-file';
+import { OUT_OF_TREE_PLATFORMS, getReactNativeHostPackage } from '@expo/platform-metadata';
 import { resolveFrom } from '@expo/require-utils';
 import deepMerge from 'deepmerge';
 import { sync as globSync } from 'glob';
@@ -81,11 +82,10 @@ function getSupportedPlatforms(projectRoot: string, exp: Partial<ExpoConfig>): P
     platforms.push('web');
   }
   if (exp.experiments?.outOfTreePlatforms) {
-    if (resolveFrom(projectRoot, 'react-native-tvos/package.json')) {
-      platforms.push('tvos');
-    }
-    if (resolveFrom(projectRoot, 'react-native-macos/package.json')) {
-      platforms.push('macos');
+    for (const platform of OUT_OF_TREE_PLATFORMS) {
+      if (resolveFrom(projectRoot, `${getReactNativeHostPackage(platform)}/package.json`)) {
+        platforms.push(platform);
+      }
     }
   }
   return platforms;

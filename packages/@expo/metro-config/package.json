@@ -79,6 +79,7 @@
     "@expo/env": "workspace:~2.3.0",
     "@expo/json-file": "workspace:~10.2.0",
     "@expo/metro": "~56.0.2",
+    "@expo/platform-metadata": "workspace:^0.1.0",
     "@expo/require-utils": "workspace:^56.1.3",
     "@expo/spawn-async": "^1.8.0",
     "@jridgewell/gen-mapping": "^0.3.13",
