@@ -13,7 +13,7 @@ const win32 = { platform: 'win32' as NodeJS.Platform };
 
 describe(lockAddressFor, () => {
   it(`puts a socket file in the project's .expo on posix`, () => {
-    const projectRoot = path.join(path.sep, 'a', 'project');
+    const projectRoot = path.resolve(path.sep, 'a', 'project');
 
     expect(lockAddressFor(projectRoot, posix)).toEqual({
       kind: 'unix',
@@ -22,7 +22,7 @@ describe(lockAddressFor, () => {
   });
 
   it(`names a pipe after the project root on win32`, () => {
-    const { kind, address } = lockAddressFor(path.join(path.sep, 'a', 'project'), win32);
+    const { kind, address } = lockAddressFor(path.resolve(path.sep, 'a', 'project'), win32);
 
     expect(kind).toBe('pipe');
     // A named pipe is not a project file, so the project can only be in its name.
@@ -32,15 +32,15 @@ describe(lockAddressFor, () => {
   });
 
   it(`derives one address per project root, on both platforms`, () => {
-    const one = path.join(path.sep, 'a', 'project');
-    const other = path.join(path.sep, 'another', 'project');
+    const one = path.resolve(path.sep, 'a', 'project');
+    const other = path.resolve(path.sep, 'another', 'project');
 
     expect(lockAddressFor(one, win32).address).not.toBe(lockAddressFor(other, win32).address);
     expect(lockAddressFor(one, posix).address).not.toBe(lockAddressFor(other, posix).address);
   });
 
   it(`derives the same address twice for one project root`, () => {
-    const projectRoot = path.join(path.sep, 'a', 'project');
+    const projectRoot = path.resolve(path.sep, 'a', 'project');
 
     expect(lockAddressFor(projectRoot, win32)).toEqual(lockAddressFor(projectRoot, win32));
     expect(lockAddressFor(projectRoot, posix)).toEqual(lockAddressFor(projectRoot, posix));
@@ -49,7 +49,7 @@ describe(lockAddressFor, () => {
   it(`ignores the case of the project path in a pipe name`, () => {
     // NTFS compares paths without case, so two spellings of one project are one project, and
     // must not name two pipes that never find each other.
-    const upper = path.join(path.sep, 'Users', 'Me', 'App');
+    const upper = path.resolve(path.sep, 'Users', 'Me', 'App');
     const lower = path.join(path.sep, 'users', 'me', 'app');
 
     expect(lockAddressFor(upper, win32).address).toBe(lockAddressFor(lower, win32).address);
@@ -58,7 +58,7 @@ describe(lockAddressFor, () => {
   it(`moves the socket out of a project too deep for the kernel's path limit`, () => {
     // A unix socket path is capped at ~104 bytes. An in-project path over the cap cannot be
     // bound at all, so the address is derived the way a pipe name is instead.
-    const deep = path.join(path.sep, ...Array.from({ length: 20 }, (_, index) => `dir${index}`));
+    const deep = path.resolve(path.sep, ...Array.from({ length: 20 }, (_, index) => `dir${index}`));
     const { kind, address } = lockAddressFor(deep, posix);
 
     expect(kind).toBe('unix');
@@ -72,9 +72,10 @@ describe(lockAddressFor, () => {
   });
 
   it(`keeps the socket in the project when the path fits`, () => {
-    const { address } = lockAddressFor(path.join(path.sep, 'a', 'project'), posix);
+    const projectRoot = path.resolve(path.sep, 'a', 'project');
+    const { address } = lockAddressFor(projectRoot, posix);
 
-    expect(address.startsWith(path.join(path.sep, 'a', 'project'))).toBe(true);
+    expect(address.startsWith(projectRoot)).toBe(true);
   });
 
   it(`derives the pipe name from an absolute path, whatever the caller passed`, () => {
