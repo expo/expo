@@ -1,3 +1,4 @@
+import { flushEventLogger } from '2g';
 import { AssertionError } from 'assert';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
@@ -82,15 +83,20 @@ export function logCmdError(error: any): never {
       message: error.message,
       suggestedCommand: suggestedCommand ?? null,
     });
+    // Print the error first, the recovery command last — the last line is what an
+    // agent acts on.
+    exception(error);
     if (suggestedCommand) {
-      // Print the error first, the recovery command last — the last line is what an
-      // agent acts on.
-      exception(error);
       warn(`Try: ${suggestedCommand}`);
-      process.exit(1);
     }
-    // Print the stack trace in debug mode only.
-    exit(error);
+    // `process.exit` drops buffered JSONL events (the `cli:error` above never reached
+    // LOG_EVENTS), so flush first. The pending promise below keeps the process alive
+    // until the exit fires, and gives the `.catch(logCmdError)` callers nothing further
+    // to run.
+    flushEventLogger()
+      .catch(() => {})
+      .finally(() => process.exit(1));
+    return new Promise<never>(() => {}) as unknown as never;
   }
 
   const errorDetails = error.stack ? '\n' + chalk.gray(error.stack) : '';
