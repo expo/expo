@@ -3,39 +3,6 @@ import { matchDynamicName } from '../matchers';
 import type { PartialRoute, NavigationState, PartialState } from '../react-navigation/native';
 
 /**
- * React Navigation uses params to store information about the screens, rather than create new state for each level.
- * This function traverses the action state that will not be part of state and returns a payload that can be used in action.
- */
-export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
-  const rootPayload: Record<string, any> = { params: {} };
-  let payload = rootPayload;
-  let params = payload.params;
-  let actionStateRoute: PartialRoute<any> | undefined = _actionStateRoute;
-
-  while (actionStateRoute) {
-    Object.assign(params, { ...payload.params, ...actionStateRoute.params });
-    // Assign the screen name to the payload
-    payload.screen = actionStateRoute.name;
-    // Merge the params, ensuring that we create a new object
-    payload.params = { ...params };
-
-    // Params don't include the screen, thats a separate attribute
-    delete payload.params['screen'];
-
-    // Continue down the payload tree
-    // Initially these values are separate, but React Nav merges them after the first layer
-    payload = payload.params;
-    params = payload;
-
-    actionStateRoute =
-      actionStateRoute.state?.routes[
-        actionStateRoute.state.index ?? actionStateRoute.state.routes.length - 1
-      ];
-  }
-  return rootPayload;
-}
-
-/**
  * Traverse the state tree comparing the current state and the action state until we find where they diverge.
  *
  * @returns An object with:
@@ -49,8 +16,9 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
 export function findDivergentState(
   _actionState: ResultState,
   _navigationState: NavigationState,
-  // If true, look through all tabs to find the target state, rather then just the current tab
-  lookThroughAllTabs: boolean = false
+  // TODO: Convert these positional options to an object if more are added.
+  lookThroughAllTabs = false,
+  isMounted: (key: string) => boolean = () => true
 ) {
   let actionState: PartialState<NavigationState> | undefined = _actionState;
   let navigationState: NavigationState | undefined = _navigationState;
@@ -61,7 +29,7 @@ export function findDivergentState(
     actionStateRoute = actionState.routes[actionState.index ?? actionState.routes.length - 1]!;
     // TODO(ENG-22021): Resolve navigator types independently of state for the tab checks in this loop.
     // https://linear.app/expo/issue/ENG-22021/fix-link-preview-by-detecting-navigator-type-on-native
-    const stateRoute = (() => {
+    const stateRoute: NavigationState['routes'][number] = (() => {
       if (navigationState.type === 'tab' && lookThroughAllTabs) {
         return (
           navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
@@ -80,6 +48,8 @@ export function findDivergentState(
       actionStateRoute.name !== stateRoute.name ||
       !childState ||
       !nextNavigationState ||
+      !isKeyedNavigationState(nextNavigationState) ||
+      !isMounted(nextNavigationState.key) ||
       (dynamicName &&
         actionStateRoute.params?.[dynamicName.name] !==
           (stateRoute.params as Record<string, any> | undefined)?.[dynamicName.name]);
@@ -96,7 +66,7 @@ export function findDivergentState(
     navigationRoutes.push(stateRoute);
 
     actionState = childState;
-    navigationState = nextNavigationState as NavigationState;
+    navigationState = nextNavigationState;
   }
 
   return {
@@ -105,4 +75,10 @@ export function findDivergentState(
     actionStateRoute,
     navigationRoutes,
   };
+}
+
+function isKeyedNavigationState(
+  state: NavigationState | PartialState<NavigationState> | undefined
+): state is NavigationState {
+  return typeof state?.key === 'string';
 }

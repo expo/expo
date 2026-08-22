@@ -1,14 +1,25 @@
 import { act, render, screen } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { NavigationContainer } from '../../../fork/NavigationContainer';
 import {
   createNavigationContainerRef,
   NavigationRouteContext,
-  type NavigatorScreenParams,
+  type NavigationState,
+  useNavigation,
 } from '../../core';
+import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
+import type { StackNavigationProp } from '../../stack';
 import { createStackNavigator } from '../__stubs__/createStackNavigator';
 import { useRoutePath } from '../useRoutePath';
+
+const initialState = {
+  stale: false,
+  routeKeySeq: 0,
+  key: 'root',
+  index: 0,
+  routeNames: ['a', 'b'],
+  routes: [{ key: 'a', name: 'a' }],
+} satisfies NavigationState;
 
 const config = {
   prefixes: ['https://example.com'],
@@ -32,6 +43,17 @@ const config = {
   },
 };
 
+let warn: jest.SpiedFunction<typeof console.warn>;
+
+beforeEach(() => {
+  warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  expect(warn).not.toHaveBeenCalled();
+  warn.mockRestore();
+});
+
 const Test = () => {
   const route = React.useContext(NavigationRouteContext);
   const path = useRoutePath();
@@ -42,7 +64,7 @@ const Test = () => {
 test('throws when not rendered inside a screen', () => {
   expect(() => {
     render(
-      <NavigationContainer linking={config}>
+      <NavigationContainer initialState={initialState} linking={config}>
         <Test />
       </NavigationContainer>
     );
@@ -62,7 +84,7 @@ test('gets path for route in root navigator screen', () => {
   const navigation = createNavigationContainerRef<RootStackParamList>();
 
   render(
-    <NavigationContainer ref={navigation} linking={config}>
+    <NavigationContainer ref={navigation} initialState={initialState} linking={config}>
       <Stack.Navigator>
         <Stack.Screen name="a" component={Test} />
         <Stack.Screen name="b" component={Test} />
@@ -79,7 +101,7 @@ test('gets path for route in root navigator screen', () => {
 
 test('gets path for route in nested navigator screen', () => {
   type AStackParamList = {
-    a: NavigatorScreenParams<BStackParamList>;
+    a: undefined;
   };
 
   type BStackParamList = {
@@ -91,25 +113,23 @@ test('gets path for route in nested navigator screen', () => {
   const StackB = createStackNavigator<BStackParamList>();
 
   const navigation = createNavigationContainerRef<AStackParamList>();
+  let navigateToC: () => void;
+  const NestedTest = () => {
+    const navigation = useNavigation<StackNavigationProp<BStackParamList>>();
+    navigateToC = () => navigation.navigate('c');
+    return <Test />;
+  };
 
   render(
     <NavigationContainer
       ref={navigation}
-      linking={config}
-      initialState={{
-        routes: [
-          {
-            name: 'a',
-            state: { routes: [{ name: 'b', params: { id: 'apple' } }] },
-          },
-        ],
-      }}>
+      linking={{ ...config, getInitialURL: () => 'https://example.com/foo/bar/apple' }}>
       <StackA.Navigator>
         <StackA.Screen name="a">
           {() => (
             <StackB.Navigator>
-              <StackB.Screen name="b" component={Test} />
-              <StackB.Screen name="c" component={Test} />
+              <StackB.Screen name="b" component={NestedTest} />
+              <StackB.Screen name="c" component={NestedTest} />
             </StackB.Navigator>
           )}
         </StackA.Screen>
@@ -119,7 +139,7 @@ test('gets path for route in nested navigator screen', () => {
 
   expect(screen).toMatchInlineSnapshot(`"b: /foo/bar/apple"`);
 
-  act(() => navigation.navigate('a', { screen: 'c' }));
+  act(() => navigateToC());
 
   expect(screen).toMatchInlineSnapshot(`"c: /baz"`);
 });

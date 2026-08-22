@@ -5,6 +5,7 @@ import { router } from '../exports';
 import { store } from '../global-state/router-store';
 import { renderRouter } from '../testing-library';
 import { parseUrlUsingCustomBase } from '../utils/url';
+import { expectCompleteStateToMatch } from './assertCompleteState';
 
 it('can push a hash url', () => {
   renderRouter({
@@ -74,11 +75,13 @@ it('can push a hash url', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -205,7 +208,7 @@ it('navigating to the same route with a hash will only rerender the screen', () 
     index: () => <Text testID="index" />,
   });
 
-  expect(store.state).toStrictEqual({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -242,15 +245,17 @@ it('navigating to the same route with a hash will only rerender the screen', () 
               params: {
                 '#': 'hash1',
               },
-              path: '/',
+              path: '/?#hash1',
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });

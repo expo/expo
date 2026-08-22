@@ -1,9 +1,36 @@
 import { render } from '@testing-library/react-native';
 
-import { NavigationContainer } from '../../../fork/NavigationContainer';
-import { NavigationRouteContext } from '../../core';
+import { NavigationRouteContext, type NavigationState } from '../../core';
+import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
 import { createStackNavigator } from '../__stubs__/createStackNavigator';
 import { useLinkBuilder } from '../useLinkBuilder';
+
+const initialState = {
+  stale: false,
+  routeKeySeq: 0,
+  key: 'root',
+  index: 0,
+  routeNames: ['Foo'],
+  routes: [{ key: 'Foo', name: 'Foo' }],
+} satisfies NavigationState;
+
+const nestedInitialState = {
+  ...initialState,
+  routes: [
+    {
+      key: 'Foo',
+      name: 'Foo',
+      state: {
+        stale: false,
+        routeKeySeq: 0,
+        key: 'nested',
+        index: 0,
+        routeNames: ['Bar'],
+        routes: [{ key: 'Bar', name: 'Bar' }],
+      },
+    },
+  ],
+} satisfies NavigationState;
 
 const config = {
   prefixes: ['https://example.com'],
@@ -22,8 +49,19 @@ const config = {
   },
 };
 
+let warn: jest.SpiedFunction<typeof console.warn>;
+
+beforeEach(() => {
+  warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  expect(warn).not.toHaveBeenCalled();
+  warn.mockRestore();
+});
+
 test('builds href outside of a navigator', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Root = () => {
     const { buildHref } = useLinkBuilder();
@@ -36,14 +74,14 @@ test('builds href outside of a navigator', () => {
   };
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={initialState} linking={config}>
       <Root />
     </NavigationContainer>
   );
 });
 
 test('builds href in navigator layout', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = ({ children }: { children: React.ReactNode }) => {
     const { buildHref } = useLinkBuilder();
@@ -58,7 +96,7 @@ test('builds href in navigator layout', () => {
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={initialState} linking={config}>
       <Stack.Navigator layout={({ children }) => <Test>{children}</Test>}>
         <Stack.Screen name="Foo">{() => null}</Stack.Screen>
       </Stack.Navigator>
@@ -67,7 +105,7 @@ test('builds href in navigator layout', () => {
 });
 
 test('builds href in route context', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildHref } = useLinkBuilder();
@@ -82,7 +120,7 @@ test('builds href in route context', () => {
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={initialState} linking={config}>
       <Stack.Navigator
         layout={({ state }) => (
           <NavigationRouteContext.Provider value={state.routes.find((r) => r.name === 'Foo')}>
@@ -96,7 +134,7 @@ test('builds href in route context', () => {
 });
 
 test('builds href in stack navigator screen', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildHref } = useLinkBuilder();
@@ -111,7 +149,7 @@ test('builds href in stack navigator screen', () => {
   const StackA = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={initialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo" component={Test} />
       </StackA.Navigator>
@@ -120,7 +158,7 @@ test('builds href in stack navigator screen', () => {
 });
 
 test('builds href in nested navigator layout', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = ({ children }: { children: React.ReactNode }) => {
     const { buildHref } = useLinkBuilder();
@@ -136,7 +174,7 @@ test('builds href in nested navigator layout', () => {
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={nestedInitialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
           {() => (
@@ -151,7 +189,7 @@ test('builds href in nested navigator layout', () => {
 });
 
 test('builds href in nested route context', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildHref } = useLinkBuilder();
@@ -167,7 +205,7 @@ test('builds href in nested route context', () => {
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={nestedInitialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
           {() => (
@@ -187,7 +225,7 @@ test('builds href in nested route context', () => {
 });
 
 test('builds href in nested navigator screen', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildHref } = useLinkBuilder();
@@ -203,7 +241,7 @@ test('builds href in nested navigator screen', () => {
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={nestedInitialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
           {() => (
@@ -218,7 +256,7 @@ test('builds href in nested navigator screen', () => {
 });
 
 test('builds action from href outside of a navigator', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildAction } = useLinkBuilder();
@@ -227,26 +265,21 @@ test('builds action from href outside of a navigator', () => {
 
     expect(action).toEqual({
       type: 'NAVIGATE',
-      payload: {
-        name: 'Foo',
-        path: '/foo',
-        params: {},
-        pop: true,
-      },
+      payload: { name: 'Foo', path: '/foo', pop: true },
     });
 
     return null;
   };
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={initialState} linking={config}>
       <Test />
     </NavigationContainer>
   );
 });
 
 test('builds action from href in navigator screen', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildAction } = useLinkBuilder();
@@ -255,12 +288,7 @@ test('builds action from href in navigator screen', () => {
 
     expect(action).toEqual({
       type: 'NAVIGATE',
-      payload: {
-        name: 'Foo',
-        path: '/foo',
-        params: {},
-        pop: true,
-      },
+      payload: { name: 'Foo', path: '/foo', pop: true },
     });
 
     return null;
@@ -269,7 +297,7 @@ test('builds action from href in navigator screen', () => {
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={initialState} linking={config}>
       <Stack.Navigator>
         <Stack.Screen name="Foo" component={Test} />
       </Stack.Navigator>
@@ -278,7 +306,7 @@ test('builds action from href in navigator screen', () => {
 });
 
 test('builds action from href in nested navigator', () => {
-  expect.assertions(1);
+  expect.assertions(2);
 
   const Test = () => {
     const { buildAction } = useLinkBuilder();
@@ -289,14 +317,12 @@ test('builds action from href in nested navigator', () => {
       type: 'NAVIGATE',
       payload: {
         name: 'Foo',
-        params: {
-          id: '42',
-          initial: true,
-          screen: 'Bar',
-          params: { id: '42' },
-          path: '/foo/bar/42',
-        },
+        params: { id: '42' },
         pop: true,
+        state: {
+          __internal__routerActionState: true,
+          routes: [{ name: 'Bar', path: '/foo/bar/42', params: { id: '42' } }],
+        },
       },
     });
 
@@ -307,7 +333,7 @@ test('builds action from href in nested navigator', () => {
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer initialState={nestedInitialState} linking={config}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
           {() => (

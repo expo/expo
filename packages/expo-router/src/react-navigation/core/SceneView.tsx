@@ -10,7 +10,6 @@ import {
 } from './NavigationFocusedRouteStateContext';
 import { NavigationStateContext } from './NavigationStateContext';
 import { StaticContainer } from './StaticContainer';
-import { isArrayEqual } from './isArrayEqual';
 import type { NavigationProp, RouteConfigComponent } from './types';
 import { useOptionsGetters } from './useOptionsGetters';
 
@@ -19,8 +18,6 @@ type Props<State extends NavigationState, ScreenOptions extends object> = {
   navigation: NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions>;
   route: Route<string>;
   routeState: NavigationState | PartialState<NavigationState> | undefined;
-  getState: () => State;
-  setState: (state: State) => void;
   options: object;
   clearOptions: () => void;
 };
@@ -34,60 +31,13 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   route,
   navigation,
   routeState,
-  getState,
-  setState,
   options,
   clearOptions,
 }: Props<State, ScreenOptions>) {
-  const navigatorKeyRef = React.useRef<string | undefined>(undefined);
-  const getKey = React.useCallback(() => navigatorKeyRef.current, []);
-
   const { addOptionsGetter } = useOptionsGetters({
     key: route.key,
     options,
     navigation,
-  });
-
-  const setKey = React.useCallback((key: string) => {
-    navigatorKeyRef.current = key;
-  }, []);
-
-  const getCurrentState = React.useCallback(() => {
-    const state = getState();
-    const currentRoute = state.routes.find((r) => r.key === route.key);
-
-    return currentRoute ? currentRoute.state : undefined;
-  }, [getState, route.key]);
-
-  const setCurrentState = React.useCallback(
-    (child: NavigationState | PartialState<NavigationState> | undefined) => {
-      const state = getState();
-
-      const routes = state.routes.map((r) => {
-        if (r.key === route.key && r.state !== child) {
-          return {
-            ...r,
-            state: child,
-          };
-        }
-
-        return r;
-      });
-
-      if (!isArrayEqual(state.routes, routes)) {
-        setState({
-          ...state,
-          routes,
-        });
-      }
-    },
-    [getState, route.key, setState]
-  );
-
-  const isInitialRef = React.useRef(true);
-
-  React.useEffect(() => {
-    isInitialRef.current = false;
   });
 
   // Clear options set by this screen when it is unmounted
@@ -95,8 +45,6 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
     return clearOptions;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const getIsInitial = React.useCallback(() => isInitialRef.current, []);
 
   const parentFocusedRouteState = use(NavigationFocusedRouteStateContext);
 
@@ -136,14 +84,9 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   const context = React.useMemo(
     () => ({
       state: routeState,
-      getState: getCurrentState,
-      setState: setCurrentState,
-      getKey,
-      setKey,
-      getIsInitial,
       addOptionsGetter,
     }),
-    [routeState, getCurrentState, setCurrentState, getKey, setKey, getIsInitial, addOptionsGetter]
+    [routeState, addOptionsGetter]
   );
 
   const ScreenComponent = screen.getComponent ? screen.getComponent() : screen.component;

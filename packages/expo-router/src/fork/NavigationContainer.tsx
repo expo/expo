@@ -1,7 +1,8 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
 
-import { useImperativeApiEmitter } from '../imperative-api';
+import { syncStoreNavigationState } from '../global-state/store';
+import { useExpoRouterStore } from '../global-state/storeContext';
 import type {
   DocumentTitleOptions,
   LinkingOptions,
@@ -18,7 +19,6 @@ import {
   LocaleDirContext,
   ThemeProvider,
   UNSTABLE_UnhandledLinkingContext as UnhandledLinkingContext,
-  getActionFromState,
 } from '../react-navigation/native';
 import useLatestCallback from '../utils/useLatestCallback';
 import { getPathFromState } from './getPathFromState';
@@ -39,7 +39,7 @@ declare global {
 
 globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 
-type Props<ParamList extends object> = NavigationContainerProps & {
+type Props<ParamList extends object> = Omit<NavigationContainerProps, 'initialState'> & {
   direction?: LocaleDirection;
   linking?: LinkingOptions<ParamList>;
   fallback?: React.ReactNode;
@@ -50,14 +50,13 @@ type Props<ParamList extends object> = NavigationContainerProps & {
  * Container component which holds the navigation state designed for React Native apps.
  * This should be rendered at the root wrapping the whole app.
  *
- * @param props.initialState Initial state object for the navigation tree. When deep link handling is enabled, this will override deep links when specified. Make sure that you don't specify an `initialState` when there's a deep link (`Linking.getInitialURL()`).
  * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onStateChange Callback which is called with the latest navigation state when it changes.
  * @param props.onUnhandledAction Callback which is called when an action is not handled.
  * @param props.direction Text direction of the components. Defaults to `'ltr'`.
  * @param props.theme Theme object for the UI elements.
- * @param props.linking Options for deep linking. Deep link handling is enabled when this prop is provided.
- * @param props.fallback Fallback component to render until we have finished getting initial state when linking is enabled. Defaults to `null`.
+ * @param props.linking Options for deep linking.
+ * @param props.fallback Fallback component to render until we have finished getting initial state. Defaults to `null`.
  * @param props.documentTitle Options to configure the document title on Web. Updating document title is handled by default unless `documentTitle.enabled` is `false`.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
@@ -75,6 +74,8 @@ function NavigationContainerInner(
   }: Props<ParamListBase>,
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
 ) {
+  const store = useExpoRouterStore();
+
   if (linking?.config) {
     validatePathConfig(linking.config);
   }
@@ -83,11 +84,17 @@ function NavigationContainerInner(
 
   useBackButton(refContainer);
   useDocumentTitle(refContainer, documentTitle);
-  useImperativeApiEmitter(refContainer);
 
   const [lastUnhandledLink, setLastUnhandledLink] = React.useState<string | undefined>();
 
-  const { getInitialState } = useLinking(refContainer, linking, setLastUnhandledLink);
+  const { getInitialState } = useLinking(
+    refContainer,
+    {
+      prefixes: [],
+      ...linking,
+    },
+    setLastUnhandledLink
+  );
 
   const linkingContext = React.useMemo(() => ({ options: linking }), [linking]);
 
@@ -132,7 +139,6 @@ function NavigationContainerInner(
             prefixes: linking?.prefixes ?? [],
             getStateFromPath: linking?.getStateFromPath ?? getStateFromPath,
             getPathFromState: linking?.getPathFromState ?? getPathFromState,
-            getActionFromState: linking?.getActionFromState ?? getActionFromState,
           };
         },
       });
@@ -140,15 +146,33 @@ function NavigationContainerInner(
   });
 
   const [isResolved, initialState] = useThenable(getInitialState);
+  if (
+    store &&
+    // Linking state remains the initial state forever. Once navigation is ready,
+    // `onStateChange` owns the store and this must not restore stale state.
+    !refContainer.current?.isReady() &&
+    // Async linking may not have produced its initial state yet.
+    initialState &&
+    // Avoid recalculating route info when the store already has this exact state.
+    initialState !== store.state
+  ) {
+    // TODO(@ubax): remove this when we migrate to global state
+    // Children read route info during this render, so an effect would update the store too late.
+    syncStoreNavigationState(initialState);
+  }
 
   React.useImperativeHandle(ref, () => refContainer.current!);
 
-  const isLinkingReady = rest.initialState != null || !linking || isResolved;
-
-  if (!isLinkingReady) {
+  if (!isResolved) {
     // This is temporary until we have Suspense for data-fetching
     // Then the fallback will be handled by a parent `Suspense` component
     return <ThemeProvider value={theme}>{fallback}</ThemeProvider>;
+  }
+
+  if (initialState === undefined) {
+    throw new Error(
+      'Linking did not produce an initial navigation state. Expo Router always seeds a complete initial state before rendering the navigation container, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
+    );
   }
 
   return (
@@ -160,7 +184,9 @@ function NavigationContainerInner(
             theme={theme}
             onReady={onReadyForLinkingHandling}
             onStateChange={onStateChangeForLinkingHandling}
-            initialState={rest.initialState == null ? initialState : rest.initialState}
+            initialState={initialState}
+            UNSTABLE_routeNode={store?.routeNode ?? undefined}
+            UNSTABLE_onStateChangeInsertion={store ? syncStoreNavigationState : undefined}
             ref={refContainer}
           />
         </LinkingContext.Provider>

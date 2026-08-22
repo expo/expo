@@ -1,8 +1,15 @@
 'use client';
+import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 import { use } from 'react';
 
+import type { RouteNode } from '../../Route';
 import { findFocusedRoute } from '../../fork/findFocusedRoute';
+import { RoutingQueueDrainer } from '../../global-state/RoutingQueueDrainer';
+import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
+import { RouteInfoContext } from '../../global-state/routeInfoContext';
+import { RouterRegistryContext, RouterRegistryProvider } from '../../global-state/routerRegistry';
+import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -10,14 +17,12 @@ import {
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
-  type PartialState,
   type Route,
 } from '../routers';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
 import { NavigationStateContext } from './NavigationStateContext';
-import { UnhandledActionContext } from './UnhandledActionContext';
 import { checkDuplicateRouteNames } from './checkDuplicateRouteNames';
 import { checkSerializable } from './checkSerializable';
 import { NOT_INITIALIZED_ERROR } from './createNavigationContainerRef';
@@ -28,45 +33,20 @@ import type {
   NavigationContainerRef,
 } from './types';
 import { useChildListeners } from './useChildListeners';
+import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useEventEmitter } from './useEventEmitter';
 import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useOptionsGetters } from './useOptionsGetters';
-import { useSyncState } from './useSyncState';
 
-type State = NavigationState | PartialState<NavigationState> | undefined;
+type InternalNavigationContainerProps = Omit<NavigationContainerProps, 'initialState'> & {
+  initialState: InitialState;
+  ref?: React.Ref<NavigationContainerRef<ParamListBase>>;
+  UNSTABLE_routeNode?: RouteNode;
+  UNSTABLE_onStateChangeInsertion?: (state: NavigationState) => void;
+};
 
 const serializableWarnings: string[] = [];
 const duplicateNameWarnings: string[] = [];
-
-/**
- * Remove `key` and `routeNames` from the state objects recursively to get partial state.
- *
- * @param state Initial state object.
- */
-const getPartialState = (
-  state: InitialState | undefined
-): PartialState<NavigationState> | undefined => {
-  if (state === undefined) {
-    return;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { key, routeNames, ...partialState } = state;
-
-  return {
-    ...partialState,
-    stale: true,
-    routes: state.routes.map((route) => {
-      if (route.state === undefined) {
-        return route as Route<string> & {
-          state?: PartialState<NavigationState>;
-        };
-      }
-
-      return { ...route, state: getPartialState(route.state) };
-    }),
-  };
-};
 
 /**
  * Container component which holds the navigation state.
@@ -80,49 +60,79 @@ const getPartialState = (
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
  */
-export function BaseNavigationContainer({
+export function BaseNavigationContainer(props: InternalNavigationContainerProps) {
+  const registry = use(RouterRegistryContext);
+
+  // TODO(@ubax): investigate if this is really needed
+  if (registry === undefined) {
+    return (
+      <RouterRegistryProvider>
+        <BaseNavigationContainerInner {...props} />
+      </RouterRegistryProvider>
+    );
+  }
+
+  return <BaseNavigationContainerInner {...props} />;
+}
+
+function BaseNavigationContainerInner({
   ref,
   initialState,
   onStateChange,
   onReady,
-  onUnhandledAction,
+  UNSTABLE_routeNode,
+  UNSTABLE_onStateChangeInsertion,
   theme,
   children,
-}: NavigationContainerProps & { ref?: React.Ref<NavigationContainerRef<ParamListBase>> }) {
+}: InternalNavigationContainerProps) {
   const parent = use(NavigationStateContext);
+  const inheritedRouteInfo = use(RouteInfoContext);
+
   if (!parent.isDefault) {
     throw new Error(
       "Looks like you have nested a 'NavigationContainer' inside another. Normally you need only one container at the root of the app, so this was probably an error. If you need to render an isolated navigation tree inside a screen, install '@react-navigation/native' and use its NavigationContainer instead."
     );
   }
 
-  const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(() =>
-    getPartialState(initialState == null ? undefined : initialState)
+  const registry = use(RouterRegistryContext)!;
+  const emitter = useEventEmitter<NavigationContainerEventMap>();
+  // TODO(@ubax): investigate if this is really needed
+  const stackRef = React.useRef<string | undefined>(undefined);
+  const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
+    emitter.emit({
+      type: '__unsafe_action__',
+      data: { action, noop, stack: stackRef.current },
+    });
+  });
+
+  // TODO(@ubax): consider moving this state to ExpoRoot.
+  const { state, getState, getStateForKey, handleAction, processIntent } = useNavigationTreeReducer(
+    {
+      initialState,
+      routeNode: UNSTABLE_routeNode,
+      registry,
+      onStateChangeInsertion: UNSTABLE_onStateChangeInsertion,
+    }
   );
 
-  const isFirstMountRef = React.useRef<boolean>(true);
-
-  const navigatorKeyRef = React.useRef<string | undefined>(undefined);
-
-  const getKey = React.useCallback(() => navigatorKeyRef.current, []);
-
-  const setKey = React.useCallback((key: string) => {
-    navigatorKeyRef.current = key;
-  }, []);
+  const hasNotifiedInitialStateRef = React.useRef(false);
+  const lastNotifiedStateRef = React.useRef<NavigationState | undefined>(undefined);
 
   const { listeners, addListener } = useChildListeners();
 
-  const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
+  const { addKeyedListener } = useKeyedChildListeners();
 
-  const dispatch = useLatestCallback(
-    (action: NavigationAction | ((state: NavigationState) => NavigationAction)) => {
-      if (listeners.focus[0] == null) {
-        console.error(NOT_INITIALIZED_ERROR);
-      } else {
-        listeners.focus[0]((navigation) => navigation.dispatch(action));
-      }
+  const dispatch = useLatestCallback((action: NavigationAction) => {
+    if (listeners.focus[0] == null) {
+      console.error(NOT_INITIALIZED_ERROR);
+    } else {
+      listeners.focus[0]((navigation) => navigation.dispatch(action));
     }
-  );
+  });
+
+  const dispatchSync = useLatestCallback((action: NavigationAction) => {
+    handleAction(action);
+  });
 
   const canGoBack = useLatestCallback(() => {
     if (listeners.focus[0] == null) {
@@ -138,23 +148,8 @@ export function BaseNavigationContainer({
     }
   });
 
-  const resetRoot = useLatestCallback((state?: PartialState<NavigationState> | NavigationState) => {
-    const target = state?.key ?? keyedListeners.getState.root?.().key;
-
-    if (target == null) {
-      console.error(NOT_INITIALIZED_ERROR);
-    } else {
-      listeners.focus[0]!((navigation) =>
-        navigation.dispatch({
-          ...CommonActions.reset(state),
-          target,
-        })
-      );
-    }
-  });
-
   const getRootState = useLatestCallback(() => {
-    return keyedListeners.getState.root?.();
+    return getState();
   });
 
   const getCurrentRoute = useLatestCallback(() => {
@@ -169,9 +164,9 @@ export function BaseNavigationContainer({
     return route as Route<string> | undefined;
   });
 
-  const isReady = useLatestCallback(() => listeners.focus[0] != null);
-
-  const emitter = useEventEmitter<NavigationContainerEventMap>();
+  const isReady = useLatestCallback(
+    () => listeners.focus[0] != null && registry.has(getState().key)
+  );
 
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
@@ -185,7 +180,7 @@ export function BaseNavigationContainer({
       }, {}),
       ...emitter.create('root'),
       dispatch,
-      resetRoot,
+      dispatchSync,
       isFocused: () => true,
       canGoBack,
       getParent: () => undefined,
@@ -201,29 +196,23 @@ export function BaseNavigationContainer({
     [
       canGoBack,
       dispatch,
+      dispatchSync,
       emitter,
       getCurrentOptions,
       getCurrentRoute,
       getRootState,
       getState,
       isReady,
-      resetRoot,
     ]
   );
 
   React.useImperativeHandle(ref, () => navigation, [navigation]);
 
-  const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
-    emitter.emit({
-      type: '__unsafe_action__',
-      data: { action, noop, stack: stackRef.current },
-    });
-  });
-
   const lastEmittedOptionsRef = React.useRef<object | undefined>(undefined);
 
+  // TODO(@ubax): investigate if there is better way to implemnet this and wether this is really needed,
   const onOptionsChange = useLatestCallback((options: object) => {
-    if (lastEmittedOptionsRef.current === options) {
+    if (lastEmittedOptionsRef.current && isEqual(lastEmittedOptionsRef.current, options)) {
       return;
     }
 
@@ -235,43 +224,37 @@ export function BaseNavigationContainer({
     });
   });
 
-  const stackRef = React.useRef<string | undefined>(undefined);
-
   const builderContext = React.useMemo(
     () => ({
       addListener,
       addKeyedListener,
+      handleAction,
+      getStateForKey,
       onDispatchAction,
       onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
       stackRef,
     }),
-    [addListener, addKeyedListener, onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates]
+    [addListener, addKeyedListener, getStateForKey, handleAction, onDispatchAction, onOptionsChange]
   );
-
-  const isInitialRef = React.useRef(true);
-
-  const getIsInitial = React.useCallback(() => isInitialRef.current, []);
 
   const context = React.useMemo(
     () => ({
       state,
-      getState,
-      setState,
-      getKey,
-      setKey,
-      getIsInitial,
       addOptionsGetter,
     }),
-    [state, getState, setState, getKey, setKey, getIsInitial, addOptionsGetter]
+    [state, addOptionsGetter]
   );
+  const nextRouteInfo = React.useMemo(
+    () => (UNSTABLE_routeNode ? getRouteInfoFromState(state) : inheritedRouteInfo),
+    [state, UNSTABLE_routeNode, inheritedRouteInfo]
+  );
+  const routeInfoString = JSON.stringify(nextRouteInfo);
+  const routeInfo = React.useMemo(() => nextRouteInfo, [routeInfoString]);
 
   const onReadyRef = React.useRef(onReady);
   const onStateChangeRef = React.useRef(onStateChange);
 
   React.useEffect(() => {
-    isInitialRef.current = false;
     onStateChangeRef.current = onStateChange;
     onReadyRef.current = onReady;
   });
@@ -284,9 +267,9 @@ export function BaseNavigationContainer({
       onReadyRef.current?.();
       emitter.emit({ type: 'ready' });
     }
-  }, [state, isReady, emitter]);
+  }, [state, registry, isReady, emitter]);
 
-  React.useEffect(() => {
+  useClientLayoutEffect(() => {
     const hydratedState = getRootState();
 
     if (process.env.NODE_ENV !== 'production') {
@@ -351,66 +334,33 @@ export function BaseNavigationContainer({
       }
     }
 
+    // TODO(@ubax): invesitagte if there is cleaner way to do it
+    // If not consider deprecating the prop
+    const onStateChange = onStateChangeRef.current;
+    const shouldNotifyStateChange =
+      hasNotifiedInitialStateRef.current &&
+      lastNotifiedStateRef.current !== hydratedState &&
+      onStateChange !== undefined;
+    hasNotifiedInitialStateRef.current = true;
+    lastNotifiedStateRef.current = hydratedState;
+
     emitter.emit({ type: 'state', data: { state } });
 
-    if (!isFirstMountRef.current && onStateChangeRef.current) {
-      onStateChangeRef.current(hydratedState);
+    if (shouldNotifyStateChange) {
+      onStateChange(hydratedState);
     }
-
-    isFirstMountRef.current = false;
   }, [getRootState, emitter, state]);
-
-  const defaultOnUnhandledAction = useLatestCallback((action: NavigationAction) => {
-    if (process.env.NODE_ENV === 'production') {
-      return;
-    }
-
-    const payload: Record<string, any> | undefined = action.payload;
-
-    let message = `The action '${action.type}'${
-      payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
-    } was not handled by any navigator.`;
-
-    switch (action.type) {
-      case 'PRELOAD':
-      case 'NAVIGATE':
-      case 'PUSH':
-      case 'REPLACE':
-      case 'POP_TO':
-      case 'JUMP_TO':
-        if (payload?.name) {
-          message += `\n\nDo you have a screen named '${payload.name}'?\n\nIf you're trying to navigate to a screen in a nested navigator, see https://reactnavigation.org/docs/nesting-navigators#navigating-to-a-screen-in-a-nested-navigator.\n\nIf you're using conditional rendering, navigation will happen automatically and you shouldn't navigate manually, see.`;
-        } else {
-          message += `\n\nYou need to pass the name of the screen to navigate to.\n\nSee https://reactnavigation.org/docs/navigation-actions for usage.`;
-        }
-
-        break;
-      case 'GO_BACK':
-      case 'POP':
-      case 'POP_TO_TOP':
-        message += `\n\nIs there any screen to go back to?`;
-        break;
-      case 'OPEN_DRAWER':
-      case 'CLOSE_DRAWER':
-      case 'TOGGLE_DRAWER':
-        message += `\n\nIs your screen inside a Drawer navigator?`;
-        break;
-    }
-
-    message += `\n\nThis is a development-only warning and won't be shown in production.`;
-
-    console.error(message);
-  });
 
   return (
     <NavigationContainerRefContext.Provider value={navigation}>
       <NavigationBuilderContext.Provider value={builderContext}>
         <NavigationStateContext.Provider value={context}>
-          <UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
+          <RouteInfoContext.Provider value={routeInfo}>
             <EnsureSingleNavigator>
               <ThemeProvider value={theme}>{children}</ThemeProvider>
             </EnsureSingleNavigator>
-          </UnhandledActionContext.Provider>
+            <RoutingQueueDrainer ready={registry.has(state.key)} processIntent={processIntent} />
+          </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>
       </NavigationBuilderContext.Provider>
     </NavigationContainerRefContext.Provider>

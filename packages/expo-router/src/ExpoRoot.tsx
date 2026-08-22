@@ -10,14 +10,12 @@ import { NavigationContainer as UpstreamNavigationContainer } from './fork/Navig
 import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
 import { RouterRegistryProvider } from './global-state/routerRegistry';
-import type { ServerContextType } from './global-state/serverLocationContext';
-import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
-import type { LinkingOptions, NavigationAction } from './react-navigation/native';
+import type { LinkingOptions } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
 import type { RequireContext } from './types';
@@ -105,34 +103,18 @@ function ContextNavigator({
   // location and linking.getInitialURL are both used to initialize the router state
   //  - location is used on web and during static rendering
   //  - linking.getInitialURL is used on native
-  const serverContext = useMemo(() => {
-    let contextType: ServerContextType = {};
-
+  const serverUrl = useMemo(() => {
     const url =
       typeof initialLocation === 'string'
         ? parseUrlUsingCustomBase(initialLocation)
         : initialLocation;
 
     if (url && url instanceof URL) {
-      contextType = {
-        location: {
-          pathname: url.pathname,
-          search: url.search,
-          hash: url.hash,
-        },
-      };
+      return `${url.pathname}${url.search}${url.hash}`;
     }
 
-    return contextType;
+    return undefined;
   }, []);
-
-  /*
-   * The serverUrl is an initial URL used in server rendering environments.
-   * e.g Static renders, units tests, etc
-   */
-  const serverUrl = serverContext.location
-    ? `${serverContext.location.pathname}${serverContext.location.search}${serverContext.location.hash ?? ''}`
-    : undefined;
 
   const store = useStore(context, linking, serverUrl);
 
@@ -158,17 +140,12 @@ function ContextNavigator({
       <RouterRegistryProvider>
         <UpstreamNavigationContainer
           ref={store.navigationRef}
-          initialState={store.state}
           linking={store.linking as LinkingOptions<any>}
-          onUnhandledAction={onUnhandledAction}
-          onStateChange={store.onStateChange}
           documentTitle={documentTitle}
           onReady={onNavigationReady}>
-          <ServerContext.Provider value={serverContext}>
-            <WrapperComponent>
-              <Content />
-            </WrapperComponent>
-          </ServerContext.Provider>
+          <WrapperComponent>
+            <Content />
+          </WrapperComponent>
         </UpstreamNavigationContainer>
       </RouterRegistryProvider>
     </StoreContext.Provider>
@@ -195,47 +172,48 @@ function Content() {
   );
 }
 
-let onUnhandledAction: (action: NavigationAction) => void;
-
-if (process.env.NODE_ENV !== 'production') {
-  onUnhandledAction = (action: NavigationAction) => {
-    const payload: Record<string, any> | undefined = action.payload;
-
-    let message = `The action '${action.type}'${
-      payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
-    } was not handled by any navigator.`;
-
-    switch (action.type) {
-      case 'NAVIGATE':
-      case 'PUSH':
-      case 'REPLACE':
-      case 'JUMP_TO':
-        if (payload?.name) {
-          message += `\n\nDo you have a route named '${payload.name}'?`;
-        } else {
-          message += `\n\nYou need to pass the name of the screen to navigate to. This may be a bug.`;
-        }
-
-        break;
-      case 'GO_BACK':
-      case 'POP':
-      case 'POP_TO_TOP':
-        message += `\n\nIs there any screen to go back to?`;
-        break;
-      case 'OPEN_DRAWER':
-      case 'CLOSE_DRAWER':
-      case 'TOGGLE_DRAWER':
-        message += `\n\nIs your screen inside a Drawer navigator?`;
-        break;
-    }
-
-    message += `\n\nThis is a development-only warning and won't be shown in production.`;
-
-    if (process.env.NODE_ENV === 'test') {
-      throw new Error(message);
-    }
-    console.error(message);
-  };
-} else {
-  onUnhandledAction = function () {};
-}
+// TODO: (@ubax): Add the warning on unhandeled action back
+// let onUnhandledAction: (action: NavigationAction) => void;
+//
+// if (process.env.NODE_ENV !== 'production') {
+//   onUnhandledAction = (action: NavigationAction) => {
+//     const payload: Record<string, any> | undefined = action.payload;
+//
+//     let message = `The action '${action.type}'${
+//       payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
+//     } was not handled by any navigator.`;
+//
+//     switch (action.type) {
+//       case 'NAVIGATE':
+//       case 'PUSH':
+//       case 'REPLACE':
+//       case 'JUMP_TO':
+//         if (payload?.name) {
+//           message += `\n\nDo you have a route named '${payload.name}'?`;
+//         } else {
+//           message += `\n\nYou need to pass the name of the screen to navigate to. This may be a bug.`;
+//         }
+//
+//         break;
+//       case 'GO_BACK':
+//       case 'POP':
+//       case 'POP_TO_TOP':
+//         message += `\n\nIs there any screen to go back to?`;
+//         break;
+//       case 'OPEN_DRAWER':
+//       case 'CLOSE_DRAWER':
+//       case 'TOGGLE_DRAWER':
+//         message += `\n\nIs your screen inside a Drawer navigator?`;
+//         break;
+//     }
+//
+//     message += `\n\nThis is a development-only warning and won't be shown in production.`;
+//
+//     if (process.env.NODE_ENV === 'test') {
+//       throw new Error(message);
+//     }
+//     console.error(message);
+//   };
+// } else {
+//   onUnhandledAction = function () {};
+// }

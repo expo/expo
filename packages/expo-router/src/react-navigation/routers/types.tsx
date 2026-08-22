@@ -17,6 +17,10 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
    */
   key: string;
   /**
+   * Sequence used to mint route keys in this navigation state.
+   */
+  routeKeySeq: number;
+  /**
    * Index of the currently focused route.
    */
   index: number;
@@ -34,15 +38,11 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
   routes: NavigationRoute<ParamList, keyof ParamList>[];
   /**
    * Custom type for the state, whether it's for tab, stack, drawer etc.
-   * During rehydration, the state will be discarded if type doesn't match with router type.
-   * It can also be used to detect the type of the navigator we're dealing with. Note that initial
-   * state does not include type, so an action needs to be dispatched in a navigator, in order
-   * for the type to be set
+   * A navigator discards state whose type doesn't match its router type.
+   * It can also be used to detect the type of the navigator we're dealing with.
    */
   type?: string;
-  /**
-   * Whether the navigation state has been rehydrated.
-   */
+  // TODO: Remove `stale` in a follow-up after partial navigation states are removed.
   stale: false;
 }>;
 
@@ -57,6 +57,7 @@ export type PartialRoute<R extends Route<string>> = Omit<R, 'key'> & {
   state?: PartialState<NavigationState>;
 };
 
+// TODO: Remove `PartialState` in a follow-up once all state producers return complete states.
 export type PartialState<State extends NavigationState> = Partial<Omit<State, 'stale' | 'routes'>> &
   Readonly<{
     stale?: true;
@@ -144,7 +145,7 @@ export type RouterConfigOptions = {
 
 /**
  * Type of the router. Should match the `type` property in state.
- * If the type doesn't match, the state will be discarded during rehydration.
+ * If the type doesn't match, the state will be discarded.
  * Only routers whose state has no `type` may omit it, since a state without a `type`
  * is accepted by every router.
  */
@@ -156,17 +157,6 @@ export type Router<
   State extends NavigationState,
   Action extends NavigationAction,
 > = RouterType<State> & {
-  /**
-   * Rehydrate the full navigation state from a given partial state.
-   *
-   * @param partialState Navigation state to rehydrate from.
-   * @param options.routeNames List of valid route names as defined in the screen components.
-   */
-  getRehydratedState(
-    partialState: PartialState<State> | State,
-    options: RouterConfigOptions
-  ): State;
-
   /**
    * Take the current state and the route names the navigator declares, and return the state to
    * render until `ROUTE_NAMES_CHANGED` has been reconciled.
@@ -190,7 +180,7 @@ export type Router<
   getStateForRouteFocus(state: State, key: string): State;
 
   /**
-   * Take the current state and action, and return a new state.
+   * Take the current state and action, and return a new state and the affected route key.
    * If the action cannot be handled, return `null`. Custom routers must explicitly handle
    * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
    *
@@ -202,7 +192,7 @@ export type Router<
     state: State,
     action: Action,
     options: RouterConfigOptions
-  ): State | PartialState<State> | null;
+  ): RouterActionResult<State> | null;
 
   /**
    * Whether the action should also change focus in parent navigator
@@ -215,4 +205,19 @@ export type Router<
    * Action creators for the router.
    */
   actionCreators?: ActionCreators<Action>;
+};
+
+/**
+ * The result of reducing a navigation action.
+ */
+export type RouterActionResult<State extends NavigationState> = {
+  /**
+   * The navigation state produced by the action.
+   */
+  state: State | PartialState<State>;
+  /**
+   * The key of the route affected by the action. This is `undefined` when a partial state does
+   * not provide a key for the affected route.
+   */
+  affectedRouteKey: string | undefined;
 };

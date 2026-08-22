@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, jest, test } from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { act, fireEvent, isHiddenFromAccessibility, render } from '@testing-library/react-native';
 import { Button, Platform, View } from 'react-native';
 
-import { NavigationContainer } from '../../../fork/NavigationContainer';
+import { NavigationContainer } from '../../core/__tests__/__fixtures__/NavigationContainer';
 import { Text, useHeaderHeight } from '../../elements';
+import type { NavigationState } from '../../native';
 import { createNativeStackNavigator, type NativeStackScreenProps } from '../index';
 
 // The native screens debug container mounts React Native's unrelated LogBox subscription UI.
@@ -18,7 +19,42 @@ type NestedStackParamList = {
   C: undefined;
 };
 
+const initialState = {
+  stale: false,
+  routeKeySeq: 0,
+  key: 'root',
+  index: 0,
+  routeNames: ['A', 'B'],
+  routes: [{ key: 'A', name: 'A' }],
+} satisfies NavigationState;
+
+const nestedInitialState = {
+  ...initialState,
+  routes: [
+    { key: 'A', name: 'A' },
+    {
+      key: 'B',
+      name: 'B',
+      state: {
+        stale: false,
+        routeKeySeq: 0,
+        key: 'nested',
+        index: 0,
+        routeNames: ['C'],
+        routes: [{ key: 'C', name: 'C' }],
+      },
+    },
+  ],
+} satisfies NavigationState;
+
+let warn: jest.SpiedFunction<typeof console.warn>;
+
+beforeEach(() => {
+  warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
 afterEach(() => {
+  expect(warn).not.toHaveBeenCalled();
   jest.restoreAllMocks();
 });
 
@@ -34,7 +70,7 @@ test('renders a native-stack navigator with screens', async () => {
   const Stack = createNativeStackNavigator<StackParamList>();
 
   const { getByText, queryByText } = render(
-    <NavigationContainer>
+    <NavigationContainer initialState={initialState}>
       <Stack.Navigator>
         <Stack.Screen name="A" component={Test} />
         <Stack.Screen name="B" component={Test} />
@@ -66,7 +102,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B" component={Test} />
@@ -93,7 +129,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B" component={Test} />
@@ -120,7 +156,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B" component={Test} />
@@ -147,7 +183,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen
@@ -180,7 +216,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen
             name="A"
@@ -220,7 +256,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen
             name="A"
@@ -260,7 +296,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} options={{ headerShown: false }} />
           <Stack.Screen name="B" component={Test} />
@@ -287,7 +323,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} options={{ headerShown: false }} />
           <Stack.Screen name="B" component={Test} />
@@ -314,7 +350,7 @@ describe('useHeaderHeight in native-stack', () => {
     const Stack = createNativeStackNavigator<StackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={initialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} options={{ headerShown: false }} />
           <Stack.Screen name="B" component={Test} />
@@ -342,7 +378,7 @@ describe('useHeaderHeight in native-stack', () => {
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B">
@@ -376,7 +412,7 @@ describe('useHeaderHeight in native-stack', () => {
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B">
@@ -410,7 +446,7 @@ describe('useHeaderHeight in native-stack', () => {
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B">
@@ -444,7 +480,7 @@ describe('useHeaderHeight in native-stack', () => {
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B">
@@ -478,7 +514,7 @@ describe('useHeaderHeight in native-stack', () => {
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B">
@@ -512,7 +548,7 @@ describe('useHeaderHeight in native-stack', () => {
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B">
@@ -546,7 +582,7 @@ describe('useHeaderHeight in native-stack', () => {
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B">
@@ -580,7 +616,7 @@ describe('useHeaderHeight in native-stack', () => {
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B">
@@ -614,7 +650,7 @@ describe('useHeaderHeight in native-stack', () => {
     const NestedStack = createNativeStackNavigator<NestedStackParamList>();
 
     const { findByText } = render(
-      <NavigationContainer>
+      <NavigationContainer initialState={nestedInitialState}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="A" component={Test} />
           <Stack.Screen name="B">

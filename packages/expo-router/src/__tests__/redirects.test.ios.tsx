@@ -7,6 +7,7 @@ import { store } from '../global-state/router-store';
 import Stack from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
+import { expectCompleteStateToMatch } from './assertCompleteState';
 
 const mockRedirects = jest.fn(() => [] as RedirectConfig[]);
 const mockOpenURL = jest.fn((url: string) => undefined);
@@ -56,7 +57,7 @@ it('deep link to a redirect', () => {
 
   expect(screen.getByTestId('bar')).toBeTruthy();
 
-  expect(store.state).toStrictEqual({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -91,7 +92,7 @@ it('deep link to a dynamic redirect', () => {
     }
   );
 
-  expect(store.state).toEqual({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -132,7 +133,7 @@ it('keeps extra params as query params', () => {
     }
   );
 
-  expect(store.state).toStrictEqual({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -167,7 +168,7 @@ it('can redirect from single to catch all', () => {
     }
   );
 
-  expect(store.state).toEqual({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -203,7 +204,7 @@ it('can push to a redirect', () => {
     bar: () => <Text testID="bar" />,
   });
 
-  expect(store.state).toStrictEqual({
+  expectCompleteStateToMatch(store.state, {
     routes: [
       {
         name: '__root',
@@ -247,11 +248,13 @@ it('can push to a redirect', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });
@@ -435,11 +438,13 @@ it('not existing nested route redirects correctly', () => {
             },
           ],
           stale: false,
+          routeKeySeq: expect.any(Number),
           type: 'stack',
         },
       },
     ],
     stale: false,
+    routeKeySeq: expect.any(Number),
     type: 'stack',
   });
 });

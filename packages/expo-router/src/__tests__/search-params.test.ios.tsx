@@ -81,11 +81,13 @@ describe('push', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -116,11 +118,13 @@ describe('push', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -168,15 +172,17 @@ describe('navigate', () => {
                 params: {
                   c: 'true',
                 },
-                path: '/page',
+                path: '/page?c=true',
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -219,7 +225,7 @@ describe('navigate', () => {
                 params: {
                   page: 'a',
                 },
-                path: undefined,
+                path: '/a',
               },
               {
                 key: expect.any(String),
@@ -227,7 +233,7 @@ describe('navigate', () => {
                 params: {
                   page: 'b',
                 },
-                path: undefined,
+                path: '/b',
               },
               {
                 key: expect.any(String),
@@ -235,15 +241,17 @@ describe('navigate', () => {
                 params: {
                   page: 'c',
                 },
-                path: undefined,
+                path: '/c',
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -269,11 +277,13 @@ describe('navigate', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 
@@ -340,11 +350,13 @@ describe('replace', () => {
               },
             ],
             stale: false,
+            routeKeySeq: expect.any(Number),
             type: 'stack',
           },
         },
       ],
       stale: false,
+      routeKeySeq: expect.any(Number),
       type: 'stack',
     });
 

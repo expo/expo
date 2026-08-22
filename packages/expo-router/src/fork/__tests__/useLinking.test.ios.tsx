@@ -1,13 +1,330 @@
 import { expect, jest, test } from '@jest/globals';
-import { render, type RenderAPI } from '@testing-library/react-native';
+import { act, render, renderHook, type RenderAPI } from '@testing-library/react-native';
+import { Text } from 'react-native';
 
+import type { RouteNode } from '../../Route';
+import { routingQueue } from '../../global-state/routingQueue';
+import { store, storeRef as mockStoreRef } from '../../global-state/store';
 import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
+import { NavigationContainer } from '../NavigationContainer';
 import { useLinking } from '../useLinking';
 
-let errorSpy: jest.SpiedFunction<typeof console.error>;
+let errorSpy: jest.SpiedFunction<typeof console.error> | undefined;
+let mockRouteNode: RouteNode | undefined;
+
+jest.mock('../../global-state/storeContext', () => ({
+  useExpoRouterStore: () => ({
+    get state() {
+      return mockStoreRef.current.state;
+    },
+    get routeNode() {
+      return mockRouteNode;
+    },
+  }),
+}));
+
+function node(route: string, children: RouteNode[] = []): RouteNode {
+  return {
+    type: 'route',
+    route,
+    children,
+    dynamic: null,
+    contextKey: route,
+    loadRoute: () => ({}),
+  };
+}
+
+function getParsedHomeState() {
+  return {
+    routes: [
+      {
+        name: '__root',
+        state: { routes: [{ name: 'home', state: { routes: [{ name: '[id]' }] } }] },
+      },
+    ],
+  };
+}
+
+beforeEach(() => {
+  routingQueue.queue = [];
+  mockRouteNode = node('root', [node('home', [node('[id]')])]);
+  mockStoreRef.current.state = undefined;
+});
 
 afterEach(() => {
-  errorSpy.mockRestore();
+  errorSpy?.mockRestore();
+});
+
+test('queues an incoming deep link using its extracted app path', () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+  ref.current = {
+    getRootState: () => ({ routeNames: ['home'] }),
+  } as typeof ref.current;
+  let listener: ((url: string) => void) | undefined;
+  const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
+
+  function Sample() {
+    useLinking(
+      ref,
+      {
+        prefixes: ['example://'],
+        getStateFromPath,
+        subscribe: (nextListener) => {
+          listener = nextListener;
+          return () => {};
+        },
+      },
+      () => {}
+    );
+    return null;
+  }
+
+  render(<Sample />);
+  listener?.('example://home?from=link');
+
+  expect(getStateFromPath).toHaveBeenCalledWith('home?from=link', undefined);
+  expect(routingQueue.queue).toEqual([
+    {
+      type: 'NAVIGATE_TO_HREF',
+      payload: {
+        href: '/home?from=link',
+        originalHref: 'example://home?from=link',
+        options: { event: 'NAVIGATE' },
+      },
+    },
+  ]);
+});
+
+test('resolves a completed state from an async initial URL without writing to the store', async () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const getStateFromPath = jest.fn(() => ({
+    routes: [
+      {
+        name: '__root',
+        state: {
+          routes: [
+            {
+              name: 'home',
+              state: { routes: [{ name: '[id]', path: '/home/42', params: { id: '42' } }] },
+            },
+          ],
+        },
+      },
+    ],
+  }));
+
+  const { result } = renderHook(() =>
+    useLinking(
+      ref,
+      {
+        prefixes: ['example://'],
+        getInitialURL: () => Promise.resolve('example://home/42'),
+        getStateFromPath,
+      },
+      () => {}
+    )
+  );
+
+  const state = await result.current.getInitialState();
+
+  expect(getStateFromPath).toHaveBeenCalledWith('/home/42', undefined);
+  expect(state?.routes[0]!.state?.routes[0]!.state).toMatchObject({
+    stale: false,
+    routeKeySeq: expect.any(Number),
+    key: expect.any(String),
+    routeNames: ['[id]'],
+  });
+  expect(mockStoreRef.current.state).toBeUndefined();
+});
+
+test('calls getInitialURL only once across re-renders', () => {
+  const getInitialURL = jest.fn(() => null);
+  const element = render(
+    <NavigationContainer linking={{ prefixes: [], getInitialURL }}>{null}</NavigationContainer>
+  );
+
+  element.rerender(
+    <NavigationContainer linking={{ prefixes: [], getInitialURL }}>{null}</NavigationContainer>
+  );
+
+  expect(getInitialURL).toHaveBeenCalledTimes(1);
+});
+
+test('resubscribes on re-render and cleans up the previous subscription', () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+  ref.current = {
+    getRootState: () => ({ routeNames: ['home'] }),
+  } as typeof ref.current;
+  const listeners: ((url: string) => void)[] = [];
+  const unsubscribes = [jest.fn(), jest.fn()];
+  const subscribe = jest.fn((listener: (url: string) => void) => {
+    listeners.push(listener);
+    return unsubscribes[listeners.length - 1]!;
+  });
+
+  function Sample() {
+    useLinking(
+      ref,
+      {
+        prefixes: ['example://'],
+        getStateFromPath: () => ({ routes: [{ name: 'home' }] }),
+        subscribe,
+      },
+      () => {}
+    );
+    return null;
+  }
+
+  const element = render(<Sample />);
+  element.rerender(<Sample />);
+  listeners[1]?.('example://home');
+
+  expect(subscribe).toHaveBeenCalledTimes(2);
+  expect(unsubscribes[0]).toHaveBeenCalledTimes(1);
+  expect(unsubscribes[1]).not.toHaveBeenCalled();
+  expect(routingQueue.queue).toMatchObject([
+    { type: 'NAVIGATE_TO_HREF', payload: { href: '/home' } },
+  ]);
+});
+
+test('async initial URL is parsed with first-render options', async () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+  let resolveInitialURL: ((url: string) => void) | undefined;
+  const initialURL = new Promise<string>((resolve) => {
+    resolveInitialURL = resolve;
+  });
+  const firstGetStateFromPath = jest.fn(getParsedHomeState);
+  const secondGetStateFromPath = jest.fn(getParsedHomeState);
+  let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
+
+  function Sample({ getStateFromPath }: { getStateFromPath: typeof firstGetStateFromPath }) {
+    getInitialState = useLinking(
+      ref,
+      { prefixes: ['example://'], getInitialURL: () => initialURL, getStateFromPath },
+      () => {}
+    ).getInitialState;
+    return null;
+  }
+
+  const element = render(<Sample getStateFromPath={firstGetStateFromPath} />);
+  const statePromise = getInitialState?.();
+  element.rerender(<Sample getStateFromPath={secondGetStateFromPath} />);
+  resolveInitialURL?.('example://home');
+  await statePromise;
+
+  expect(firstGetStateFromPath).toHaveBeenCalledWith('/home', undefined);
+  expect(secondGetStateFromPath).not.toHaveBeenCalled();
+});
+
+test('does not reseed the store when it already holds the seeded state', () => {
+  const element = render(
+    <NavigationContainer
+      linking={{
+        prefixes: ['example://'],
+        getInitialURL: () => 'example://home',
+        getStateFromPath: getParsedHomeState,
+      }}>
+      {null}
+    </NavigationContainer>
+  );
+  const seededState = mockStoreRef.current.state;
+
+  element.rerender(
+    <NavigationContainer
+      linking={{
+        prefixes: ['example://'],
+        getInitialURL: () => 'example://home',
+        getStateFromPath: getParsedHomeState,
+      }}>
+      {null}
+    </NavigationContainer>
+  );
+
+  expect(mockStoreRef.current.state).toBe(seededState);
+});
+
+test('renders children on first paint with a synchronous initial URL and no initialState prop', () => {
+  const element = render(
+    <NavigationContainer
+      fallback={<Text>Loading</Text>}
+      linking={{
+        prefixes: ['example://'],
+        getInitialURL: () => 'example://home',
+        getStateFromPath: getParsedHomeState,
+      }}>
+      <Text>Content</Text>
+    </NavigationContainer>
+  );
+
+  expect(element.getByText('Content')).toBeTruthy();
+  expect(element.queryByText('Loading')).toBeNull();
+});
+
+test('shows fallback then content for an async initial URL and seeds the store once', async () => {
+  let resolveInitialURL: ((url: string) => void) | undefined;
+  const initialURL = new Promise<string>((resolve) => {
+    resolveInitialURL = resolve;
+  });
+  const linking = {
+    prefixes: ['example://'],
+    getInitialURL: () => initialURL,
+    getStateFromPath: getParsedHomeState,
+  };
+  const element = render(
+    <NavigationContainer fallback={<Text>Loading</Text>} linking={linking}>
+      <Text>Content</Text>
+    </NavigationContainer>
+  );
+
+  expect(element.getByText('Loading')).toBeTruthy();
+  await act(async () => resolveInitialURL?.('example://home'));
+  expect(element.getByText('Content')).toBeTruthy();
+  const seededState = mockStoreRef.current.state;
+
+  element.rerender(
+    <NavigationContainer fallback={<Text>Loading</Text>} linking={linking}>
+      <Text>Content</Text>
+    </NavigationContainer>
+  );
+
+  expect(mockStoreRef.current.state).toBe(seededState);
+});
+
+test('seeds the store when a synchronous initial URL is absent', () => {
+  render(
+    <NavigationContainer
+      documentTitle={{ enabled: false }}
+      linking={{ prefixes: [], getInitialURL: () => null }}>
+      {null}
+    </NavigationContainer>
+  );
+
+  expect(mockStoreRef.current.state).toMatchObject({
+    stale: false,
+    routeKeySeq: expect.any(Number),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        name: '__root',
+        state: { stale: false, routeNames: ['home'], routes: [{ name: 'home' }] },
+      },
+    ],
+  });
+  expect(store.getRouteInfo().pathname).toBe('/home');
+});
+
+test('throws when linking does not produce an initial state', () => {
+  mockRouteNode = undefined;
+
+  expect(() =>
+    render(
+      <NavigationContainer linking={{ prefixes: [], getInitialURL: () => null }}>
+        {null}
+      </NavigationContainer>
+    )
+  ).toThrow(
+    'Linking did not produce an initial navigation state. Expo Router always seeds a complete initial state before rendering the navigation container, so this is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
+  );
 });
 
 test('throws if multiple instances of useLinking are used', () => {

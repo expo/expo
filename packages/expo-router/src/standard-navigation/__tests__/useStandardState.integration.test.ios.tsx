@@ -11,7 +11,7 @@ import { renderRouter } from '../../testing-library';
 import { useStandardState } from '../useStandardState';
 
 // Integration: exercises useStandardState together with the real useBuildHref → useStateForPath →
-// getCachedRouteInfo pipeline, asserting the actual resolved href strings. The isolated mapping and
+// getRouteInfoFromState pipeline, asserting the actual resolved href strings. The isolated mapping and
 // memo logic is covered by the unit test in useStandardState.test.ios.tsx.
 
 // useStandardState only reads `index` and `routes` off the builder state, so a minimal
@@ -27,6 +27,7 @@ function makeBuilderState(
     routes,
     type: 'tab',
     stale: false,
+    routeKeySeq: 0,
   } as unknown as NavigationState;
 }
 
