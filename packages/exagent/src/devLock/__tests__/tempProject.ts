@@ -24,7 +24,8 @@ function temporaryRoot(): string {
   // (its existence check can pass while creation fails on another drive) — the real
   // tmpdir is short enough there and always correct.
   if (process.platform === 'win32') {
-    return os.tmpdir();
+    // The env vars are beyond any module mock's reach.
+    return process.env.TEMP ?? process.env.TMP ?? os.tmpdir();
   }
   const short = path.join(path.sep, 'tmp');
   try {
