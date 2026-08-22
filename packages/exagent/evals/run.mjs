@@ -641,7 +641,9 @@ async function runTier1Scenario(scenario) {
     const turnStartedAt = Date.now();
     try {
       content = await chatOllama(messages);
-      console.log(`    turn ${turn}: inference ${((Date.now() - turnStartedAt) / 1000).toFixed(1)}s`);
+      console.log(
+        `    turn ${turn}: inference ${((Date.now() - turnStartedAt) / 1000).toFixed(1)}s`
+      );
     } catch (error) {
       // An inference failure fails this scenario, not the whole runner.
       console.log(`    turn ${turn}: inference failed — ${error.message}`);

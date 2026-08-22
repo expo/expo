@@ -20,6 +20,8 @@ const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here.
   context: () => import('./context').then((i) => i.exagentContext),
   install: () => import('./install').then((i) => i.exagentInstall),
+  navigate: () => import('./navigate').then((i) => i.exagentNavigate),
+  runtime: () => import('./runtime').then((i) => i.exagentRuntime),
   start: () => import('./start').then((i) => i.exagentStart),
   skills: () => import('./skills').then((i) => i.exagentSkills),
 };

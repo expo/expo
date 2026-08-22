@@ -6,6 +6,7 @@ import { existsSync } from 'fs';
 import { resolve } from 'path';
 
 import * as Log from '../log';
+import { CommandError } from './errors';
 
 /**
  * Parse the first argument as a project directory.
@@ -47,6 +48,25 @@ export function assertWithOptionsArgs(
       Log.exit(error.message, 1);
     }
     // Otherwise rethrow the error.
+    throw error;
+  }
+}
+
+/**
+ * Parse args and report unknown options as a `CommandError` instead of exiting.
+ *
+ * Use this when the arguments of a subcommand are resolved by a pure function: the caller keeps
+ * one error path for both a bad flag and a bad value, and the resolver stays testable.
+ */
+export function parseArgsOrThrow(schema: arg.Spec, argv: string[]): arg.Result<arg.Spec> {
+  try {
+    return arg(schema, { argv, permissive: false });
+  } catch (error: any) {
+    // Only errors from `arg` that do not start with `ARG_CONFIG_` are user input errors.
+    // See: https://github.com/vercel/arg/releases/tag/5.0.0
+    if ('code' in error && error.code.startsWith('ARG_') && !error.code.startsWith('ARG_CONFIG_')) {
+      throw new CommandError('BAD_ARGS', error.message);
+    }
     throw error;
   }
 }
