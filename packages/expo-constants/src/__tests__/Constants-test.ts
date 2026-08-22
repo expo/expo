@@ -15,6 +15,35 @@ it(`defines a linking URI`, () => {
   }
 });
 
+describe(`fingerprint`, () => {
+  beforeEach(() => {
+    jest.resetModules();
+  });
+
+  afterEach(() => {
+    jest.dontMock('../ExponentConstants');
+  });
+
+  function mockExponentConstantsModule(mockValues: object) {
+    jest.doMock('../ExponentConstants', () => ({
+      ...jest.requireActual('../ExponentConstants'),
+      ...mockValues,
+    }));
+  }
+
+  it(`exposes the fingerprint embedded at build time`, () => {
+    mockExponentConstantsModule({ fingerprint: 'embedded-hash' });
+    const ConstantsWithMock = require('../Constants').default;
+    expect(ConstantsWithMock.fingerprint).toBe('embedded-hash');
+  });
+
+  it(`is null when the native key is absent (Expo Go, old builds, web)`, () => {
+    mockExponentConstantsModule({ fingerprint: undefined });
+    const ConstantsWithMock = require('../Constants').default;
+    expect(ConstantsWithMock.fingerprint).toBeNull();
+  });
+});
+
 describe(`manifest`, () => {
   const fakeEmbeddedAppConfig: ExpoConfig = {
     name: 'manifest',

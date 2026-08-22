@@ -12,6 +12,7 @@
 
 ### 🎉 New features
 
+- [iOS] The constants provider reads the embedded `app.fingerprint` file, exposing it to JS as `Constants.fingerprint`. ([#48922](https://github.com/expo/expo/pull/48922) by [@vonovak](https://github.com/vonovak))
 - [Android] Added a `loadImageForManipulationFromURL` overload to `ImageLoaderInterface` that decodes the image within the given `maxWidth`/`maxHeight` bounds. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 - Add `useReleasingSharedObjectWithLifecycle` hook. ([#46494](https://github.com/expo/expo/pull/46494) by [@behenate](https://github.com/behenate))
 - Added `ArrayBuffer` as the preferred safe native module argument and return type, and deprecated `NativeArrayBuffer` in favor of it. ([#47106](https://github.com/expo/expo/pull/47106) by [@barthap](https://github.com/barthap))
