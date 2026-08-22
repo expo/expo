@@ -15,6 +15,7 @@ class HomeViewModel: ObservableObject {
   @Published var showingFeedbackForm = false
   @Published var errorToShow: ErrorInfo?
   @Published var isNetworkAvailable = true
+  @Published var deviceLoginRequest: DeviceLoginRequest?
 
   @Published var user: UserActor?
   @Published var selectedAccountId: String?
@@ -35,10 +36,6 @@ class HomeViewModel: ObservableObject {
 
   var selectedAccount: Account? { authService.selectedAccount }
   var isLoggedIn: Bool { authService.isLoggedIn }
-
-  var displayUsername: String? {
-    user?.username ?? UserDefaults.standard.string(forKey: AuthenticationService.usernameKey)
-  }
 
   var shakeToShowDevMenu: Bool { settingsManager.shakeToShowDevMenu }
   var threeFingerLongPressEnabled: Bool { settingsManager.threeFingerLongPressEnabled }
@@ -227,6 +224,19 @@ class HomeViewModel: ObservableObject {
     errorToShow = ErrorInfo(message: message, apiError: apiError)
   }
 
+  /// Presents the device login sheet and resolves once the user signs in or backs out.
+  func presentDeviceLogin(verificationURI: URL?) async -> Bool {
+    await withCheckedContinuation { continuation in
+      deviceLoginRequest?.completion.resolve(false)
+      deviceLoginRequest = DeviceLoginRequest(
+        verificationURI: verificationURI,
+        completion: DeviceLoginCompletion { signedIn in
+          continuation.resume(returning: signedIn)
+        }
+      )
+    }
+  }
+
   private func setupSubscriptions() {
     authService.$user
       .sink { [weak self] in self?.user = $0 }
@@ -333,4 +343,26 @@ enum ExpoGoError: Error {
   case noSessionSecret
   case notImplemented(String)
   case missingURLScheme
+}
+
+struct DeviceLoginRequest: Identifiable {
+  let id = UUID()
+  let verificationURI: URL?
+  let completion: DeviceLoginCompletion
+}
+
+/// Wraps a device login result so success, cancel, and dismiss paths can each call it without a double resume.
+@MainActor
+final class DeviceLoginCompletion {
+  private var handler: ((Bool) -> Void)?
+
+  init(_ handler: @escaping (Bool) -> Void) {
+    self.handler = handler
+  }
+
+  func resolve(_ signedIn: Bool) {
+    guard let handler else { return }
+    self.handler = nil
+    handler(signedIn)
+  }
 }

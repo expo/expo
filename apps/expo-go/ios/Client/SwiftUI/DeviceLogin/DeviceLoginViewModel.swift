@@ -19,13 +19,16 @@ final class DeviceLoginViewModel: ObservableObject {
   /// Called once a session has been stored, so the caller can resume whatever it was doing.
   var onSignedIn: (() -> Void)?
 
+  private let authService: AuthenticationService
   private let verificationURI: URL?
   private var serverVerificationURI: URL?
   private var authorization: DeviceAuthorization?
   private var machine: DeviceLoginStateMachine?
   private var pollTask: Task<Void, Never>?
+  private var finishTask: Task<Void, Never>?
 
-  init(verificationURI: URL?) {
+  init(authService: AuthenticationService, verificationURI: URL?) {
+    self.authService = authService
     self.verificationURI = verificationURI
   }
 
@@ -88,6 +91,8 @@ final class DeviceLoginViewModel: ObservableObject {
   func cancel() {
     pollTask?.cancel()
     pollTask = nil
+    finishTask?.cancel()
+    finishTask = nil
   }
 
   private func schedule(_ step: DeviceLoginStateMachine.Step) {
@@ -106,7 +111,7 @@ final class DeviceLoginViewModel: ObservableObject {
     case .awaitMatch(let options):
       phase = .matching(options)
     case .signedIn(let secret, let expiresAt):
-      Task { [weak self] in
+      finishTask = Task { [weak self] in
         await self?.finish(secret: secret, expiresAt: expiresAt)
       }
     case .failed(let failure):
@@ -141,32 +146,18 @@ final class DeviceLoginViewModel: ObservableObject {
   }
 
   private func finish(secret: String, expiresAt: Date?) async {
-    guard let username = await resolveUsername(sessionSecret: secret) else {
+    await authService.completeLogin(with: secret, expiresAt: expiresAt)
+    // Re-checked after the await so a cancelled sign-in cannot still call onSignedIn.
+    guard !Task.isCancelled else {
+      return
+    }
+    guard authService.user != nil else {
+      // No actor means no username, which the manifest check needs, so this is not a usable session.
+      authService.signOut()
       phase = .failed(.invalid)
       return
     }
-    await AuthenticationService.storeDeviceAuthSession(
-      sessionSecret: secret,
-      username: username,
-      expiresAt: expiresAt
-    )
     onSignedIn?()
-  }
-
-  /// The token response carries no username, and `meUserActor` is null for some actor types, so username comes from `meActor`.
-  private func resolveUsername(sessionSecret: String) async -> String? {
-    await APIClient.shared.setSession(sessionSecret)
-    do {
-      let response: MeActorResponse = try await APIClient.shared.request(Queries.getCurrentUser())
-      guard let username = response.data.meActor?.username else {
-        print("[DeviceLogin] meActor was null after signing in")
-        return nil
-      }
-      return username
-    } catch {
-      print("[DeviceLogin] Could not resolve the username: \(error)")
-      return nil
-    }
   }
 
   /// A transport failure can be retried in place. An API refusal, like a rate limit, needs its own message.
@@ -177,7 +168,9 @@ final class DeviceLoginViewModel: ObservableObject {
     switch loginError {
     case .networkError:
       return .network
-    case .apiError(let message), .invalidCredentials(let message):
+    case .apiError(let message):
+      return RESTClient.isClientAuthoredMessage(message) ? .invalid : .server(message)
+    case .invalidCredentials(let message):
       return .server(message)
     case .otpRequired:
       return .invalid

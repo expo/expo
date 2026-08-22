@@ -130,9 +130,64 @@ final class DeviceLoginLinkTests: XCTestCase {
 
   func testPendingHolderStoresAndClears() throws {
     let uri = try url("https://verify.example/p/123")
-    PendingDeviceLogin.shared.set(uri)
-    XCTAssertEqual(PendingDeviceLogin.shared.current, uri)
+    let project = try url("exp://10.0.0.5:8081/")
+    PendingDeviceLogin.shared.setPending(true, verificationURI: uri, forProjectURL: project)
+    XCTAssertTrue(PendingDeviceLogin.shared.hasPending(forProjectURL: project))
+    XCTAssertEqual(PendingDeviceLogin.shared.verificationURI(forProjectURL: project), uri)
     PendingDeviceLogin.shared.clear()
-    XCTAssertNil(PendingDeviceLogin.shared.current)
+    XCTAssertFalse(PendingDeviceLogin.shared.hasPending(forProjectURL: project))
+    XCTAssertNil(PendingDeviceLogin.shared.verificationURI(forProjectURL: project))
+  }
+
+  func testPendingHolderAcceptsANilOverride() throws {
+    let project = try url("exp://10.0.0.5:8081/")
+    PendingDeviceLogin.shared.setPending(true, verificationURI: nil, forProjectURL: project)
+    XCTAssertTrue(PendingDeviceLogin.shared.hasPending(forProjectURL: project))
+    XCTAssertNil(PendingDeviceLogin.shared.verificationURI(forProjectURL: project))
+    XCTAssertTrue(PendingDeviceLogin.shared.offerOnce(forProjectURL: project))
+    PendingDeviceLogin.shared.clear()
+  }
+
+  func testPendingHolderDoesNotLeakToAnotherProject() throws {
+    let uri = try url("https://verify.example/p/123")
+    let scanned = try url("exp://10.0.0.5:8081/")
+    let unrelated = try url("exp://10.0.0.9:8081/")
+    PendingDeviceLogin.shared.setPending(true, verificationURI: uri, forProjectURL: scanned)
+    XCTAssertFalse(PendingDeviceLogin.shared.hasPending(forProjectURL: unrelated))
+    XCTAssertFalse(PendingDeviceLogin.shared.offerOnce(forProjectURL: unrelated))
+    XCTAssertTrue(PendingDeviceLogin.shared.offerOnce(forProjectURL: scanned))
+    PendingDeviceLogin.shared.clear()
+  }
+
+  func testPendingHolderOffersOnlyOnce() throws {
+    let project = try url("exp://10.0.0.5:8081/")
+    PendingDeviceLogin.shared.setPending(true, verificationURI: nil, forProjectURL: project)
+
+    XCTAssertTrue(PendingDeviceLogin.shared.offerOnce(forProjectURL: project))
+    XCTAssertFalse(PendingDeviceLogin.shared.offerOnce(forProjectURL: project))
+    // Still pending after being offered, which is what the mismatch error reads.
+    XCTAssertTrue(PendingDeviceLogin.shared.hasPending(forProjectURL: project))
+
+    PendingDeviceLogin.shared.clear()
+  }
+
+  func testPendingHolderOffersAgainAfterANewScan() throws {
+    let project = try url("exp://10.0.0.5:8081/")
+    PendingDeviceLogin.shared.setPending(true, verificationURI: nil, forProjectURL: project)
+    _ = PendingDeviceLogin.shared.offerOnce(forProjectURL: project)
+
+    PendingDeviceLogin.shared.setPending(true, verificationURI: nil, forProjectURL: project)
+    XCTAssertTrue(PendingDeviceLogin.shared.offerOnce(forProjectURL: project))
+
+    PendingDeviceLogin.shared.clear()
+  }
+
+  func testPendingHolderClearsWhenNotPending() throws {
+    let uri = try url("https://verify.example/p/123")
+    let project = try url("exp://10.0.0.5:8081/")
+    PendingDeviceLogin.shared.setPending(true, verificationURI: uri, forProjectURL: project)
+    PendingDeviceLogin.shared.setPending(false, verificationURI: nil, forProjectURL: project)
+    XCTAssertFalse(PendingDeviceLogin.shared.hasPending(forProjectURL: project))
+    XCTAssertNil(PendingDeviceLogin.shared.verificationURI(forProjectURL: project))
   }
 }

@@ -6,6 +6,7 @@ import UIKit
 struct DeviceLoginCodeView: View {
   let userCode: String
   let origin: String
+  let onOpenBrowser: () -> Void
 
   var body: some View {
     VStack(alignment: .leading, spacing: 24) {
@@ -22,24 +23,41 @@ struct DeviceLoginCodeView: View {
         Text("Enter it on the page that showed you the QR code:")
           .font(.subheadline)
           .foregroundColor(.secondary)
-        // Plain text on purpose. This address comes from a scanned QR code, so Expo Go never opens it.
         Text(origin)
           .font(.system(.body, design: .monospaced))
           .foregroundColor(.primary)
       }
 
-      Button {
-        UIPasteboard.general.string = userCode
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-      } label: {
-        Text("Copy code")
-          .font(.headline)
-          .frame(maxWidth: .infinity)
-          .padding(.vertical, 12)
+      VStack(alignment: .leading, spacing: 12) {
+        Text("After you approve on that page, it will show you a two-digit number. Remember that number, because you will pick it here once the browser closes.")
+          .font(.subheadline)
+          .foregroundColor(.secondary)
+
+        Button {
+          copyCode()
+          onOpenBrowser()
+        } label: {
+          Text("Copy code and open page")
+            .font(.headline)
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+        }
+        .background(Color.black)
+        .cornerRadius(12)
+
+        Button {
+          copyCode()
+        } label: {
+          Text("Copy code")
+            .font(.subheadline)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 10)
+        }
+        .background(Color.expoSystemBackground)
+        .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.secondary.opacity(0.3)))
+        .cornerRadius(12)
       }
-      .background(Color.expoSystemBackground)
-      .overlay(RoundedRectangle(cornerRadius: 12).stroke(Color.secondary.opacity(0.3)))
-      .cornerRadius(12)
 
       HStack(spacing: 8) {
         ProgressView()
@@ -53,6 +71,11 @@ struct DeviceLoginCodeView: View {
         .foregroundColor(.secondary)
     }
     .frame(maxWidth: .infinity, alignment: .leading)
+  }
+
+  private func copyCode() {
+    UIPasteboard.general.string = userCode
+    UIImpactFeedbackGenerator(style: .light).impactOccurred()
   }
 
   /// VoiceOver reads "BCDFGHJK" as a word. Spelling it out makes it transcribable.
