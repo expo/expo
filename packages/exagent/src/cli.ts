@@ -24,6 +24,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   runtime: () => import('./runtime').then((i) => i.exagentRuntime),
   start: () => import('./start').then((i) => i.exagentStart),
   skills: () => import('./skills').then((i) => i.exagentSkills),
+  status: () => import('./status').then((i) => i.exagentStatus),
 };
 
 const args = arg(

@@ -1,0 +1,412 @@
+/* eslint-env jest */
+// @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`
+//
+// `exagent status` is the read-only overview: it prints where the project is and what would
+// happen next, and always exits 0. These tests run it through the CLI it is published as, against
+// the fixture matrix in `e2e/fixtures/README.md`.
+import fs from 'node:fs';
+import { createServer, type Server } from 'node:http';
+import type { AddressInfo } from 'node:net';
+import path from 'node:path';
+
+import {
+  executeExagentAsync,
+  installStubFingerprintAsync,
+  readStubExpoInvocations,
+  setupFixtureAsync,
+  writeAgentSelectionAsync,
+} from '../utils';
+
+/** The shape `status --json` prints, per `src/status/types.ts`. */
+type StatusReport = {
+  project: {
+    root: string;
+    name: string | null;
+    sdkVersion: string | null;
+    native: 'bare' | 'cng';
+    nativeDirs: { ios: boolean; android: boolean };
+    usesDevClient: boolean;
+    hasWeb: boolean;
+  } | null;
+  expoGo: { compatible: boolean; reasonCount: number } | null;
+  freshness: {
+    hash: string | null;
+    error?: string;
+    platforms: {
+      platform: 'ios' | 'android';
+      state: 'fresh' | 'stale' | 'unknown';
+      detail: string;
+      recordedHash: string | null;
+    }[];
+  } | null;
+  devServer: { url: string; running: boolean; appsConnected: number; reason?: string } | null;
+  skills: { agentIds: string[] | null; discovered: number; linked: number } | null;
+  next: { command: string; rule: string; target: string; steps: { argv: string[] }[] } | null;
+  errors: Record<string, string>;
+};
+
+/** The hash the stub `@expo/fingerprint` bin of `dev-client-fresh-app` prints. */
+const FIXTURE_FINGERPRINT_HASH = '0f1e2d3c4b5a69788796a5b4c3d2e1f001234567';
+
+/** One debugger target, the shape `expo start` reports for a connected app. */
+const CDP_TARGET = {
+  id: '1',
+  appId: 'host.exp.Exponent',
+  title: 'Expo Go',
+  type: 'native',
+  description: '',
+  devtoolsFrontendUrl: '/devtools',
+  webSocketDebuggerUrl: 'ws://127.0.0.1/inspector/debug?device=1&page=1',
+};
+
+/** Copy a fixture and install both stub bins the status sections may reach for. */
+async function setupAsync(fixtureName: string): Promise<string> {
+  const projectRoot = await setupFixtureAsync(fixtureName);
+  await installStubFingerprintAsync(projectRoot);
+  return projectRoot;
+}
+
+/** A dev server double that answers the debugger target list, and the port it listens on. */
+async function startDevServerDoubleAsync(targets: unknown[]): Promise<{
+  server: Server;
+  url: string;
+}> {
+  const server = createServer((request, response) => {
+    if (request.url === '/json/list') {
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      response.end(JSON.stringify(targets));
+      return;
+    }
+    response.writeHead(404).end();
+  });
+
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const { port } = server.address() as AddressInfo;
+  return { server, url: `http://127.0.0.1:${port}` };
+}
+
+/** A URL nothing listens on: a port that was bound, then released. */
+async function getUnusedDevServerUrlAsync(): Promise<string> {
+  const { server, url } = await startDevServerDoubleAsync([]);
+  await new Promise<void>((resolve) => server.close(() => resolve()));
+  return url;
+}
+
+/**
+ * Run `status --json` in a prepared project and parse the report.
+ *
+ * Every call points the dev-server probe at a port nothing listens on, so the report never
+ * depends on a Metro instance the developer happens to be running.
+ */
+async function reportInAsync(projectRoot: string, args: string[] = []): Promise<StatusReport> {
+  const result = await executeExagentAsync(projectRoot, [
+    'status',
+    '--json',
+    '--dev-server-url',
+    await getUnusedDevServerUrlAsync(),
+    ...args,
+  ]);
+
+  expect(result.exitCode).toBe(0);
+  return JSON.parse(result.stdout);
+}
+
+/** Run `status --json` in a fixture and parse the report. */
+async function reportAsync(fixtureName: string): Promise<StatusReport> {
+  return reportInAsync(await setupAsync(fixtureName));
+}
+
+describe('exagent status', () => {
+  it('prints usage with `status --help`', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const result = await executeExagentAsync(projectRoot, ['status', '--help']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.all).toContain('--json');
+    expect(result.all).toContain('--dev-server-url');
+  });
+
+  it('lists the command in the top level help', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const result = await executeExagentAsync(projectRoot, ['--help']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.all).toContain('status');
+  });
+
+  describe('go-app — an Expo Go compatible CNG project', () => {
+    it('prints one line per section', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--dev-server-url',
+        await getUnusedDevServerUrlAsync(),
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('project');
+      expect(result.stdout).toContain('go-app');
+      expect(result.stdout).toContain('SDK 54.0.0');
+      expect(result.stdout).toContain('CNG');
+      expect(result.stdout).toContain('expo go');
+      expect(result.stdout).toContain('compatible');
+      expect(result.stdout).toContain('freshness');
+      expect(result.stdout).toContain('dev server');
+      expect(result.stdout).toContain('not running');
+      expect(result.stdout).toContain('skills');
+      expect(result.stdout).toContain('next');
+      expect(result.stdout).toContain('expo-go');
+    });
+
+    it('reports every section in the JSON report', async () => {
+      const report = await reportAsync('go-app');
+
+      expect(Object.keys(report)).toEqual([
+        'project',
+        'expoGo',
+        'freshness',
+        'devServer',
+        'skills',
+        'next',
+        'errors',
+      ]);
+      expect(report.errors).toEqual({});
+      expect(report.project).toMatchObject({
+        name: 'go-app',
+        sdkVersion: '54.0.0',
+        native: 'cng',
+        usesDevClient: false,
+        hasWeb: true,
+      });
+      expect(report.expoGo).toEqual({ compatible: true, reasonCount: 0 });
+      expect(report.next?.rule).toBe('expo-go');
+      expect(report.next?.steps[0]!.argv).toEqual(['expo', 'start', '--go']);
+    });
+
+    it('reports an unknown freshness when the project has no fingerprint tool', async () => {
+      const report = await reportAsync('go-app');
+
+      // No `fingerprint` bin is installed for this fixture, so nothing can be compared.
+      expect(report.freshness?.hash).toBeNull();
+      expect(report.freshness?.platforms.map((platform) => platform.state)).toEqual([
+        'unknown',
+        'unknown',
+      ]);
+    });
+
+    it('reports that no agent is selected', async () => {
+      const report = await reportAsync('go-app');
+
+      expect(report.skills).toEqual({ agentIds: null, discovered: 0, linked: 0 });
+    });
+
+    it('reports the agents a previous skills run selected', async () => {
+      const projectRoot = await setupAsync('go-app');
+      await writeAgentSelectionAsync(projectRoot, ['claude-code']);
+
+      const report = await reportInAsync(projectRoot);
+
+      expect(report.skills?.agentIds).toEqual(['claude-code']);
+    });
+
+    it('starts nothing and exits 0', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--dev-server-url',
+        await getUnusedDevServerUrlAsync(),
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      // Status is read-only: it never invokes the `expo` CLI.
+      expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+    });
+
+    it('emits the status event for a driving agent', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const eventsFile = path.join(projectRoot, 'events.jsonl');
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        { env: { LOG_EVENTS: eventsFile } }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const events = fs
+        .readFileSync(eventsFile, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => JSON.parse(line));
+      // `2g` names the event in the `_e` field of every JSONL line.
+      const status = events.find((entry) => entry._e === 'cli:status');
+      expect(status).toMatchObject({ rule: 'expo-go', devServerRunning: false });
+    });
+  });
+
+  describe('dev-client-fresh-app — a recorded build that still matches', () => {
+    it('reports the platform of the recorded build as fresh', async () => {
+      const report = await reportAsync('dev-client-fresh-app');
+
+      expect(report.freshness?.hash).toBe(FIXTURE_FINGERPRINT_HASH);
+      const ios = report.freshness?.platforms.find((platform) => platform.platform === 'ios');
+      expect(ios).toMatchObject({ state: 'fresh', recordedHash: FIXTURE_FINGERPRINT_HASH });
+    });
+
+    it('reports the Expo Go blocker and the dev client dependency', async () => {
+      const report = await reportAsync('dev-client-fresh-app');
+
+      expect(report.project?.usesDevClient).toBe(true);
+      expect(report.expoGo?.compatible).toBe(false);
+      expect(report.expoGo!.reasonCount).toBeGreaterThan(0);
+    });
+
+    it('reports a native fingerprint change as stale', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--json', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        { env: { STUB_FINGERPRINT_HASH: 'aaaabbbbccccddddeeeeffff0000111122223333' } }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report: StatusReport = JSON.parse(result.stdout);
+      expect(report.freshness?.platforms.every((platform) => platform.state === 'stale')).toBe(
+        true
+      );
+    });
+
+    it('reports a failing fingerprint tool as an unknown freshness, still exiting 0', async () => {
+      const projectRoot = await setupAsync('dev-client-fresh-app');
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--json', '--dev-server-url', await getUnusedDevServerUrlAsync()],
+        { env: { STUB_FINGERPRINT_EXIT_CODE: '1' } }
+      );
+
+      // A broken tool is a section note, never a failed command.
+      expect(result.exitCode).toBe(0);
+      const report: StatusReport = JSON.parse(result.stdout);
+      expect(report.freshness?.hash).toBeNull();
+      expect(report.freshness?.error).toBeTruthy();
+      expect(report.errors).toEqual({});
+    });
+  });
+
+  describe('bare-app — committed native directories', () => {
+    it('reports the project as bare and plans a build', async () => {
+      const report = await reportAsync('bare-app');
+
+      expect(report.project?.native).toBe('bare');
+      expect(report.project?.nativeDirs).toEqual({ ios: true, android: true });
+      expect(report.next?.rule).toBe('bare-stale');
+    });
+
+    it('names the checked-in native directories in the human report', async () => {
+      const projectRoot = await setupAsync('bare-app');
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--dev-server-url',
+        await getUnusedDevServerUrlAsync(),
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('bare (ios, android)');
+    });
+  });
+
+  describe('the dev server section', () => {
+    let server: Server | undefined;
+
+    afterEach(async () => {
+      if (server) {
+        await new Promise<void>((resolve) => server!.close(() => resolve()));
+        server = undefined;
+      }
+    });
+
+    it('reports a running dev server and the app connected to it', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const devServer = await startDevServerDoubleAsync([CDP_TARGET]);
+      server = devServer.server;
+
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--json',
+        '--dev-server-url',
+        devServer.url,
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      const report: StatusReport = JSON.parse(result.stdout);
+      expect(report.devServer).toEqual({
+        url: devServer.url,
+        running: true,
+        appsConnected: 1,
+      });
+    });
+
+    it('prints the running dev server and its connected app for a human', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const devServer = await startDevServerDoubleAsync([CDP_TARGET]);
+      server = devServer.server;
+
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--dev-server-url',
+        devServer.url,
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain(`running on ${devServer.url}`);
+      expect(result.stdout).toContain('1 app connected');
+    });
+
+    it('reports a dev server without a connected app', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const devServer = await startDevServerDoubleAsync([]);
+      server = devServer.server;
+
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--json',
+        '--dev-server-url',
+        devServer.url,
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      const report: StatusReport = JSON.parse(result.stdout);
+      expect(report.devServer).toMatchObject({ running: true, appsConnected: 0 });
+    });
+
+    it('reports a dev server that does not answer, still exiting 0', async () => {
+      const report = await reportAsync('go-app');
+
+      expect(report.devServer?.running).toBe(false);
+      expect(report.devServer?.appsConnected).toBe(0);
+      expect(report.devServer?.reason).toBeTruthy();
+    });
+
+    it('rejects a `--dev-server-url` that is not a URL', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['status', '--dev-server-url', 'not a url'],
+        { reject: false }
+      );
+
+      // A flag the user got wrong is an argument error, not a status the command can report.
+      expect(result.exitCode).toBe(1);
+      expect(result.all).toContain('--dev-server-url');
+    });
+  });
+
+  describe('broken-app — a dependency missing from node_modules', () => {
+    it('still reports the sections it can read', async () => {
+      const report = await reportAsync('broken-app');
+
+      expect(report.project?.name).toBe('broken-app');
+      expect(report.next).not.toBeNull();
+      expect(report.devServer?.running).toBe(false);
+    });
+  });
+});
