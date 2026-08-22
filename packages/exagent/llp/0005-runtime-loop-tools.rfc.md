@@ -25,6 +25,16 @@ Tools that let a driving agent observe and manipulate the running app, closing t
 - **Log triage** [confirmed — feature list, 2026-08-18]: red screen → `collect_app_logs` / red-screen feed → symbolicated source location → agent fixes → verify by screenshot.
 - **Verified UI changes** [confirmed — feature list, 2026-08-18]: edit → reload → `automation_take_screenshot` → compare against the request → iterate.
 
+## Implemented in v1 as
+
+[observed — expo-mcp worktree, 2026-08-22] Three tools landed in `expo-mcp` (per the reuse decision in [[0001-agentic-cli-on-expo-cli]]):
+
+- `runtime_evaluate` — `CdpClient.evaluateAsync` (Runtime.evaluate, returnByValue + awaitPromise + exceptionDetails); app output fenced with untrusted-content markers per [[0008-guardrails]], including marker-forgery neutralization.
+- `read_runtime_errors` — `CdpRuntimeErrorCollector` capturing `Runtime.exceptionThrown` + console.error over a window; distinguishes "no errors" from "app unreachable".
+- `navigate_to_route` — device-side deep link (`simctl openurl` / `adb am start`), static scheme resolution from app.json with Expo Go `exp://<host>/--/<route>` support and explicit `scheme` override.
+
+64 new unit tests (119 total in the package) against MockWebSocket / mocked spawns. **Not yet verified against a real device/Metro** — target selection, real symbolicated stacks, whether exceptionThrown fires for every LogBox red screen, and actual deep-link navigation remain open until a simulator round. Not built yet: network inspection, performance probe, cross-platform sweep.
+
 ## Testing
 
 Each tool: schema unit tests + tier-0 e2e coverage against a fixture app on a simulator ([[0002-testing-and-evals]]; scripted MCP replay is optional/deferred there). The composite loops are tier-1/2 eval scenarios.
