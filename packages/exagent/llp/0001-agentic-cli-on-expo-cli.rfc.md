@@ -95,6 +95,7 @@ Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries 
 - [[0006-agent-native-cli-surface]] — the process boundary, JSONL events as the contract, agent-mode dev server output, non-interactive parity, headless CI mode, the `exagent` launcher.
 - [[0007-deploy-and-headless]] — cross-platform `deploy` (EAS Hosting + launch.expo.dev), headless project creation, Cloudflare Workers compatibility, chat-driven development (the phone as the only device), EAS auth for headless agents.
 - [[0008-guardrails]] — checkpoints/undo, plan-with-cost dry runs, tool impact metadata.
+- [[0009-smart-followups]] — every command output carries state-aware next actions for the driving agent.
 
 **Scoped out** [confirmed — Kudo, 2026-08-19]: ambient/long-running modes (copilot watch mode, EAS build babysitter, PR verification bot, maintenance agent) — driving-agent behaviors, not tool-layer work; a separate `exagent mcp` feature (subsumed by Shape 1); the build-failure signature DB.
 

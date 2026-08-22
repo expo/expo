@@ -41,3 +41,4 @@ Agentic tool layer (umbrella + feature areas):
 - [[0006-agent-native-cli-surface]] — RFC: process boundary, JSONL events, non-interactive parity.
 - [[0007-deploy-and-headless]] — RFC: cross-platform deploy, headless creation, workerd compat, chat-driven dev, EAS auth.
 - [[0008-guardrails]] — RFC: checkpoints, plan dry runs, tool impact metadata.
+- [[0009-smart-followups]] — RFC: state-aware next actions attached to every command output.
