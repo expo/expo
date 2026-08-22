@@ -66,6 +66,32 @@ describe(spawnSubprocessAsync, () => {
     stderrWrite.mockRestore();
   });
 
+  it(`should keep stdout to itself and stream stderr in capture-stdout mode`, async () => {
+    // The shape of a tool with machine-readable stdout and human progress on stderr: the payload
+    // has to be parsed rather than printed, the progress belongs on the terminal as it happens, and
+    // it is still captured because a failing tool says why on that same stream.
+    const stdoutWrite = jest.spyOn(process.stdout, 'write').mockReturnValue(true);
+    const stderrWrite = jest.spyOn(process.stderr, 'write').mockReturnValue(true);
+    const child = mockSpawn();
+
+    const promise = spawnSubprocessAsync('create-launch', ['--json'], {
+      output: 'capture-stdout',
+    });
+    child.stdout!.emit('data', '{"id":"launch-1"}\n');
+    child.stderr!.emit('data', 'Searching for relevant files\n');
+    child.emit('close', 0, null);
+
+    await expect(promise).resolves.toEqual({
+      exitCode: 0,
+      stdout: '{"id":"launch-1"}\n',
+      stderr: 'Searching for relevant files\n',
+    });
+    expect(stdoutWrite).not.toHaveBeenCalled();
+    expect(stderrWrite).toHaveBeenCalledWith('Searching for relevant files\n');
+    stdoutWrite.mockRestore();
+    stderrWrite.mockRestore();
+  });
+
   it(`should hand the terminal to the child in inherit mode`, async () => {
     const child = mockSpawn({ piped: false });
 

@@ -20,8 +20,7 @@ import { spawnSubprocessAsync, type SubprocessOutput } from '../utils/subprocess
 import { resolveEasCliOrThrow, type EasCli } from './easCli';
 import { debugEvent, event } from './events';
 import { launchProjectAsync } from './launchAsync';
-import { resolveLaunchAuthOrThrowAsync } from './launchAuth';
-import { formatByteSize } from './launchFiles';
+import { resolveCreateLaunchCli } from './launchCli';
 import { outputTail, parseDeploymentUrl } from './parseOutput';
 import type { DeployOptions } from './resolveOptions';
 import type { DeployReport, DeployTarget, WebDeployResult } from './types';
@@ -47,17 +46,18 @@ export async function deployAsync(projectRoot: string, options: DeployOptions): 
   const nativeRequest = targets.includes('native') ? options.native : null;
   const deploysWeb = targets.includes('web');
 
-  // The two rails need different things, and everything they need is resolved before either one
-  // runs — the arguments first, because a mistyped flag should not be reported after a login is.
+  // Each rail needs its own tool, and both are resolved before either one runs — the arguments
+  // first, because a mistyped flag should not be reported after minutes of exporting.
   const uploadPaths = nativeRequest
     ? resolveUploadPaths(projectRoot, nativeRequest.uploadRoot)
     : null;
   const easCli = deploysWeb ? resolveEasCliOrThrow(projectRoot) : null;
-  const auth = nativeRequest ? await resolveLaunchAuthOrThrowAsync() : null;
+  const launchCli = nativeRequest ? resolveCreateLaunchCli(projectRoot) : null;
   event('resolved', {
     targets,
     easCli: easCli?.command ?? null,
     easCliSource: easCli?.source ?? 'none',
+    launchCli: launchCli ? [launchCli.command, ...launchCli.args].join(' ') : null,
   });
 
   // In `--json` mode this command owns stdout, so the tools are captured; otherwise their output is
@@ -66,8 +66,8 @@ export async function deployAsync(projectRoot: string, options: DeployOptions): 
 
   const web = easCli ? await deployWebAsync(projectRoot, easCli, output) : null;
   const native =
-    auth && uploadPaths
-      ? await launchProjectAsync({ auth, json: options.json, ...uploadPaths })
+    launchCli && uploadPaths
+      ? await launchProjectAsync({ cli: launchCli, json: options.json, ...uploadPaths })
       : null;
 
   const followups = followUpsEnabled(options.followups)
@@ -310,10 +310,6 @@ function summaryLines(report: DeployReport): string[] {
     // so it gets the bold line and the sentence that says what to do with it.
     row('Launch', report.native.id);
     row('Framework', report.native.framework);
-    row(
-      'Uploaded',
-      `${report.native.upload.files} files (${formatByteSize(report.native.upload.size)})`
-    );
     lines.push('');
     lines.push(chalk.bold('Open this to finish the launch:'));
     lines.push(`  ${chalk.cyan(report.native.url)}`);

@@ -1,4 +1,4 @@
-import { outputTail, parseBuildPageUrl, parseDeploymentUrl } from '../parseOutput';
+import { outputTail, parseDeploymentUrl } from '../parseOutput';
 
 describe(parseDeploymentUrl, () => {
   it(`should read a labelled deployment URL`, () => {
@@ -39,33 +39,6 @@ describe(parseDeploymentUrl, () => {
   it(`should return null when the output holds no hosting URL`, () => {
     expect(parseDeploymentUrl('Deployment failed.')).toBeNull();
     expect(parseDeploymentUrl('See https://expo.dev/projects/my-app for details')).toBeNull();
-  });
-});
-
-describe(parseBuildPageUrl, () => {
-  it(`should read a labelled build page URL`, () => {
-    const output = [
-      'Build details: https://expo.dev/accounts/acme/projects/my-app/builds/2f0e1d2c-3b4a-5968-8796-a5b4c3d2e1f0',
-      'Waiting for build to complete...',
-    ].join('\n');
-
-    expect(parseBuildPageUrl(output)).toBe(
-      'https://expo.dev/accounts/acme/projects/my-app/builds/2f0e1d2c-3b4a-5968-8796-a5b4c3d2e1f0'
-    );
-  });
-
-  it(`should read an unlabelled build page URL`, () => {
-    expect(
-      parseBuildPageUrl('Started at https://expo.dev/accounts/acme/projects/app/builds/abc-123.')
-    ).toBe('https://expo.dev/accounts/acme/projects/app/builds/abc-123');
-  });
-
-  it(`should not mistake the project page for the build page`, () => {
-    expect(parseBuildPageUrl('Project: https://expo.dev/accounts/acme/projects/my-app')).toBeNull();
-  });
-
-  it(`should return null when the output holds no build URL`, () => {
-    expect(parseBuildPageUrl('Build failed before it was queued.')).toBeNull();
   });
 });
 

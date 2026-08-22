@@ -14,11 +14,6 @@ const DEPLOYMENT_URL_LABEL = /(?:deployment|production|preview|website)\s*url:?\
 /** EAS Hosting serves deployments from this domain, which is what makes a bare URL recognizable. */
 const HOSTING_URL = /https?:\/\/[^\s]*\.expo\.app[^\s]*/gi;
 
-/** Label the EAS CLI puts in front of the page of a build it started. */
-const BUILD_URL_LABEL = /build\s*details:?\s*(\S+)/i;
-/** A build page always names the build it belongs to, which the project page does not. */
-const BUILD_URL = /https?:\/\/expo\.dev\/[^\s]*\/builds\/[^\s]*/i;
-
 /** Trailing characters that belong to the sentence a URL was printed in, not to the URL. */
 function trimUrl(url: string): string {
   return url.replace(/[).,;:'"\]]+$/, '');
@@ -45,26 +40,6 @@ export function parseDeploymentUrl(output: string): string | null {
 
   const matches = text.match(HOSTING_URL);
   return matches?.length ? trimUrl(matches[matches.length - 1]!) : null;
-}
-
-/**
- * The EAS Build page of the build that was just started, read from the `eas build` output.
- *
- * @returns the URL, or null when the output holds none.
- */
-export function parseBuildPageUrl(output: string): string | null {
-  const text = stripVTControlCharacters(output);
-
-  const labelled = text.match(BUILD_URL_LABEL);
-  if (labelled?.[1]) {
-    const url = trimUrl(labelled[1]);
-    if (BUILD_URL.test(url)) {
-      return url;
-    }
-  }
-
-  const match = text.match(BUILD_URL);
-  return match ? trimUrl(match[0]) : null;
 }
 
 /**

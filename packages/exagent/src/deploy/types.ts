@@ -16,23 +16,25 @@ export interface WebDeployResult {
   outputTail: string;
 }
 
-/**
- * The launch created for the native platforms.
- *
- * There is no build here and no per-platform result: the service takes the project source and the
- * rest happens in the browser, for iOS and Android together (llp/0007 §Cross-platform deploy).
- */
-export interface LaunchDeployResult {
+/** What the launch CLI answers with, as it prints it. */
+export interface LaunchResult {
   /** Identifier of the launch, for support and for a later lookup. */
   id: string;
   /** The URL that has to be opened to finish the launch. The result of the command. */
   url: string;
-  /** Framework the service recognized in the uploaded source, e.g. `expo`. */
+  /** Framework the CLI recognized in the project, e.g. `expo`. */
   framework: string;
+}
+
+/**
+ * The launch created for the native platforms.
+ *
+ * There is no build here and no per-platform result: the launch takes the project source and the
+ * rest happens in the browser, for iOS and Android together (llp/0007 §Cross-platform deploy).
+ */
+export interface LaunchDeployResult extends LaunchResult {
   /** How long the URL stays open, in hours. */
   expiresInHours: number;
-  /** What was sent: the files and bytes of the project source. */
-  upload: { files: number; size: number };
 }
 
 /** The shape `exagent deploy --json` prints. Top-level keys are the stable contract (llp/0006). */

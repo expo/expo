@@ -1,17 +1,13 @@
-import { untar } from 'multitars';
-import fs from 'node:fs';
 /* eslint-env jest */
 // @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy
 //
-// `exagent deploy` is orchestration: it resolves the tools, runs `expo export` and the EAS CLI as
-// subprocesses, and hands the URLs back. These tests drive the published CLI against a stub `eas`
-// installed next to the stub `expo` bin of the fixtures (`e2e/fixtures/README.md`), so the
-// orchestration is asserted without an EAS account, a network, or a cloud build. The real `eas` is
-// never invoked here.
-import { createServer, type Server } from 'node:http';
-import type { AddressInfo } from 'node:net';
+// `exagent deploy` is orchestration: it resolves the tools and runs `expo export`, the EAS CLI and
+// the launch CLI as subprocesses, then hands the URLs back. These tests drive the published CLI
+// against stub `eas` and `create-launch` bins installed next to the stub `expo` bin of the fixtures
+// (`e2e/fixtures/README.md`), so the orchestration is asserted without an EAS account, an Expo
+// login, or a network. No real `eas` and no real `create-launch` is ever invoked here.
+import fs from 'node:fs';
 import path from 'node:path';
-import zlib from 'node:zlib';
 
 import {
   executeExagentAsync,
@@ -27,13 +23,7 @@ type DeployReport = {
   projectRoot: string;
   targets: ('web' | 'native')[];
   web: { url: string | null; exportDir: string; outputTail: string } | null;
-  native: {
-    id: string;
-    url: string;
-    framework: string;
-    expiresInHours: number;
-    upload: { files: number; size: number };
-  } | null;
+  native: { id: string; url: string; framework: string; expiresInHours: number } | null;
   followups: { id: string; command: string; why: string }[];
 };
 
@@ -112,100 +102,114 @@ function emptyPathEnv(emptyDir: string): Record<string, string> {
   return process.platform === 'win32' ? { PATH: emptyDir, Path: emptyDir } : { PATH: emptyDir };
 }
 
-/** What the stub Launch service answers with, standing in for launch.expo.dev. */
+/** What the stub launch CLI answers with, standing in for launch.expo.dev. */
 const STUB_LAUNCH_ID = 'launch-e2e-1';
 const STUB_LAUNCH_URL = 'https://launch.expo.dev/l/e2e123';
 
-/** One request the stub Launch service received. */
-type LaunchRequest = {
-  method: string;
-  path: string;
-  /** Header names lowercased, as node delivers them. */
-  headers: Record<string, string | undefined>;
-  /** The raw request body, i.e. the gzipped tarball. */
-  body: Buffer;
-};
+/** Name of the file the stub `create-launch` bin appends one JSON line to per invocation. */
+const STUB_LAUNCH_LOG_NAME = 'stub-create-launch-invocations.jsonl';
 
 /**
- * A stand-in for the Launch service, on localhost.
+ * Stub `create-launch` bin, in the shape of the real CLI's machine-readable surface: one JSON
+ * object on stdout, human progress on stderr, and a non-zero exit with its message on stderr when
+ * it refuses.
  *
- * The real service is never called from a test: `LAUNCH_HOST` points the upload here, so the
- * project source of whoever runs the suite never leaves the machine.
+ * Environment variables the tests steer it with:
+ * - STUB_LAUNCH_LOG: file the invocation is appended to
+ * - STUB_LAUNCH_MODE: `unauthenticated`, `refused` or `garbage` (default: a successful launch)
  */
-async function startLaunchServerAsync({
-  status = 200,
-  body,
-}: { status?: number; body?: unknown } = {}): Promise<{
-  origin: string;
-  requests: LaunchRequest[];
-  closeAsync: () => Promise<void>;
-}> {
-  const requests: LaunchRequest[] = [];
+const STUB_CREATE_LAUNCH = `#!/usr/bin/env node
+'use strict';
+const fs = require('node:fs');
 
-  const server: Server = createServer((request, response) => {
-    const chunks: Buffer[] = [];
-    request.on('data', (chunk) => chunks.push(Buffer.from(chunk)));
-    request.on('end', () => {
-      requests.push({
-        method: request.method ?? '',
-        path: request.url ?? '',
-        headers: request.headers as Record<string, string | undefined>,
-        body: Buffer.concat(chunks),
-      });
-      response.writeHead(status, { 'Content-Type': 'application/json' });
-      response.end(
-        JSON.stringify(body ?? { id: STUB_LAUNCH_ID, url: STUB_LAUNCH_URL, framework: 'expo' })
-      );
-    });
-  });
+const args = process.argv.slice(2);
+fs.appendFileSync(
+  process.env.STUB_LAUNCH_LOG,
+  JSON.stringify({ args, cwd: process.cwd(), isTTY: !!process.stdin.isTTY }) + '\\n'
+);
 
-  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
-  const { port } = server.address() as AddressInfo;
+const mode = process.env.STUB_LAUNCH_MODE || 'launch';
 
-  return {
-    origin: `http://127.0.0.1:${port}`,
-    requests,
-    closeAsync: () => new Promise<void>((resolve) => server.close(() => resolve())),
-  };
+if (mode === 'unauthenticated') {
+  // The wording of the real CLI when nobody is signed in and it cannot prompt.
+  process.stderr.write(
+    'You need to be authenticated with Expo before launching in non-interactive\\n'
+  );
+  process.exit(1);
 }
 
-/** Write the state file `expo login` leaves behind, in a home directory of its own. */
-async function writeExpoSessionAsync(sessionSecret: string): Promise<string> {
-  const home = getTemporaryPath();
-  await fs.promises.mkdir(home, { recursive: true });
-  await fs.promises.writeFile(
-    path.join(home, 'state.json'),
-    JSON.stringify({ auth: { sessionSecret, userId: 'user-1', username: 'ada' } })
-  );
-  return home;
+if (mode === 'refused') {
+  process.stderr.write('Launch has a project size limit of 500 MB, your project is 1.20 GB.\\n');
+  process.exit(1);
+}
+
+process.stderr.write('Searching for relevant files...\\n');
+
+if (mode === 'garbage') {
+  process.stdout.write('all done!\\n');
+  process.exit(0);
+}
+
+process.stdout.write(
+  JSON.stringify({
+    id: ${JSON.stringify(STUB_LAUNCH_ID)},
+    url: ${JSON.stringify(STUB_LAUNCH_URL)},
+    framework: 'expo',
+  }) + '\\n'
+);
+`;
+
+/** One recorded invocation of the stub `create-launch` bin. */
+type StubLaunchInvocation = { args: string[]; cwd: string; isTTY: boolean };
+
+/**
+ * Install the stub launch CLI on the `PATH` of a project, and return the log file it records to.
+ *
+ * The log path is absolute and passed through the environment, because the launch CLI runs in the
+ * directory it uploads — which is the project for a single app and its parent for a monorepo.
+ */
+async function installStubLaunchAsync(projectRoot: string): Promise<string> {
+  const binDir = path.join(projectRoot, '.stub-bin');
+  await fs.promises.mkdir(binDir, { recursive: true });
+  const stubScript = path.join(binDir, 'create-launch-stub.js');
+  await fs.promises.writeFile(stubScript, STUB_CREATE_LAUNCH);
+  await installStubBinAsync(binDir, 'create-launch', stubScript);
+  return path.join(projectRoot, STUB_LAUNCH_LOG_NAME);
+}
+
+/** Every invocation of the stub `create-launch` bin recorded in a log file. */
+function readStubLaunchInvocations(logPath: string): StubLaunchInvocation[] {
+  if (!fs.existsSync(logPath)) {
+    return [];
+  }
+  return fs
+    .readFileSync(logPath, 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
 }
 
 /**
- * Environment for a launch run: the stub service, and one credential.
+ * Environment for a launch run: the stub's log file, and its mode.
  *
- * `EXPO_TOKEN` is always set, to empty when the test wants a session, because the machine running
- * the suite may have a real token exported and that must not decide the result of a test.
+ * `EXPO_TOKEN` and the Expo home are cleared as a safety net, not as part of the test: if bin
+ * resolution ever fell through to the real `npx create-launch@latest`, it would refuse for lack of
+ * a login instead of uploading the fixture — and the developer's own session — to the service.
  */
 function launchEnv(
-  origin: string,
-  { home, token = '' }: { home: string; token?: string }
+  logPath: string,
+  { mode, home = NO_EXPO_HOME }: { mode?: string; home?: string } = {}
 ): Record<string, string> {
   return {
-    LAUNCH_HOST: origin,
+    STUB_LAUNCH_LOG: logPath,
+    ...(mode ? { STUB_LAUNCH_MODE: mode } : {}),
     __UNSAFE_EXPO_HOME_DIRECTORY: home,
-    EXPO_TOKEN: token,
+    EXPO_TOKEN: '',
   };
 }
 
-/** The entry names inside an uploaded gzipped tarball. */
-async function readTarEntriesAsync(gzipped: Buffer): Promise<string[]> {
-  const tarball = zlib.gunzipSync(gzipped);
-  const names: string[] = [];
-  for await (const entry of untar([new Uint8Array(tarball)])) {
-    names.push(entry.name);
-  }
-  return names;
-}
+/** A directory that holds no Expo session, and never will. */
+const NO_EXPO_HOME = path.join(getTemporaryPath(), 'no-expo-home');
 
 /** Every invocation of the stub `eas` bin recorded for a project. */
 function readStubEasInvocations(projectRoot: string): StubEasInvocation[] {
@@ -329,196 +333,131 @@ describe('exagent deploy', () => {
   });
 
   describe('native — launch.expo.dev', () => {
-    it(`should upload the project source as the signed in user and hand back the URL`, async () => {
+    it(`should run the launch CLI in the project and hand back its URL`, async () => {
       const projectRoot = await setupAsync('go-app');
-      const home = await writeExpoSessionAsync('session-secret-value');
-      const server = await startLaunchServerAsync();
+      const logPath = await installStubLaunchAsync(projectRoot);
 
-      try {
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--native', '--json'], {
-          env: launchEnv(server.origin, { home }),
-        });
-        const report: DeployReport = JSON.parse(result.stdout);
+      const result = await executeExagentAsync(projectRoot, ['deploy', '--native', '--json'], {
+        env: launchEnv(logPath),
+      });
+      const report: DeployReport = JSON.parse(result.stdout);
 
-        // One request, to the endpoint of the reference implementation, as this user.
-        expect(server.requests).toHaveLength(1);
-        const [request] = server.requests;
-        expect(request!.method).toBe('POST');
-        expect(request!.path).toBe('/--/v1/launch/cli');
-        expect(request!.headers['content-type']).toBe('application/gzip');
-        expect(request!.headers['expo-session']).toBe('session-secret-value');
-        expect(request!.headers['authorization']).toBeUndefined();
-        expect(request!.headers['user-agent']).toMatch(/^exagent\//);
-        // A single app upload has no path inside the tarball to point at.
-        expect(request!.headers['x-project-root']).toBeUndefined();
+      // One run, in the directory it uploads, asking for the machine-readable answer.
+      expect(readStubLaunchInvocations(logPath)).toEqual([
+        { args: ['--json'], cwd: projectRoot, isTTY: false },
+      ]);
 
-        // The body is a gzip stream, and it holds the project under `project/`.
-        expect([...request!.body.subarray(0, 2)]).toEqual([0x1f, 0x8b]);
-        const entries = await readTarEntriesAsync(request!.body);
-        expect(entries).toContain('project/package.json');
-        expect(entries).toContain('project/app.json');
-        // What the upload leaves out is what keeps a project under the size limit.
-        expect(entries.some((entry) => entry.includes('node_modules'))).toBe(false);
-
-        // The top-level key set is the contract of the command (llp/0006 §Output contract).
-        expect(Object.keys(report).sort()).toEqual([
-          'followups',
-          'native',
-          'projectRoot',
-          'targets',
-          'web',
-        ]);
-        expect(Object.keys(report.native!).sort()).toEqual([
-          'expiresInHours',
-          'framework',
-          'id',
-          'upload',
-          'url',
-        ]);
-        expect(report).toMatchObject({
-          targets: ['native'],
-          web: null,
-          native: { id: STUB_LAUNCH_ID, url: STUB_LAUNCH_URL, framework: 'expo' },
-        });
-        expect(report.native!.upload.files).toBeGreaterThan(0);
-        // Opening the URL is the next action, and the only one.
-        expect(report.followups.map((followup) => followup.id)).toEqual(['open-launch-url']);
-        expect(report.followups[0]!.command).toBe(STUB_LAUNCH_URL);
-        // Nothing was exported or uploaded to EAS Hosting: that is the other rail.
-        expect(readStubExpoInvocations(projectRoot)).toEqual([]);
-        expect(readStubEasInvocations(projectRoot)).toEqual([]);
-      } finally {
-        await server.closeAsync();
-      }
+      // The top-level key set is the contract of the command (llp/0006 §Output contract).
+      expect(Object.keys(report).sort()).toEqual([
+        'followups',
+        'native',
+        'projectRoot',
+        'targets',
+        'web',
+      ]);
+      // The launch itself is what the CLI reported, plus how long its URL stays open.
+      expect(Object.keys(report.native!).sort()).toEqual([
+        'expiresInHours',
+        'framework',
+        'id',
+        'url',
+      ]);
+      expect(report).toMatchObject({
+        targets: ['native'],
+        web: null,
+        native: {
+          id: STUB_LAUNCH_ID,
+          url: STUB_LAUNCH_URL,
+          framework: 'expo',
+          expiresInHours: 8,
+        },
+      });
+      // Opening the URL is the next action, and the only one.
+      expect(report.followups.map((followup) => followup.id)).toEqual(['open-launch-url']);
+      expect(report.followups[0]!.command).toBe(STUB_LAUNCH_URL);
+      // Nothing was exported or uploaded to EAS Hosting: that is the other rail.
+      expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+      expect(readStubEasInvocations(projectRoot)).toEqual([]);
     });
 
-    it(`should print the launch URL as the step it is`, async () => {
+    it(`should print the launch URL as the step it is, and the CLI's progress as it happens`, async () => {
       const projectRoot = await setupAsync('go-app');
-      const home = await writeExpoSessionAsync('session-secret-value');
-      const server = await startLaunchServerAsync();
+      const logPath = await installStubLaunchAsync(projectRoot);
 
-      try {
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
-          env: launchEnv(server.origin, { home }),
-        });
+      const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
+        env: launchEnv(logPath),
+      });
 
-        expect(result.stdout).toContain('Open this to finish the launch:');
-        expect(result.stdout).toContain(STUB_LAUNCH_URL);
-        expect(result.stdout).toContain('expires in 8 hours');
-        expect(result.stdout).toContain('Next:');
-      } finally {
-        await server.closeAsync();
-      }
+      expect(result.stdout).toContain('Open this to finish the launch:');
+      expect(result.stdout).toContain(STUB_LAUNCH_URL);
+      expect(result.stdout).toContain('expires in 8 hours');
+      expect(result.stdout).toContain('Next:');
+      // The progress of the launch CLI reaches the terminal while it runs, on stderr, so a slow
+      // upload does not look like a hung command.
+      expect(result.stderr).toContain('Searching for relevant files');
     });
 
-    it(`should authenticate with EXPO_TOKEN when one is set`, async () => {
-      const projectRoot = await setupAsync('go-app');
-      // A token belongs to a machine that cannot sign in, and it wins over a stored session.
-      const home = await writeExpoSessionAsync('session-secret-value');
-      const server = await startLaunchServerAsync();
-
-      try {
-        await executeExagentAsync(projectRoot, ['deploy', '--native'], {
-          env: launchEnv(server.origin, { home, token: 'token-value' }),
-        });
-
-        expect(server.requests[0]!.headers['authorization']).toBe('Bearer token-value');
-        expect(server.requests[0]!.headers['expo-session']).toBeUndefined();
-      } finally {
-        await server.closeAsync();
-      }
-    });
-
-    it(`should upload a whole monorepo and name the app inside it`, async () => {
+    it(`should run from the workspace root and name the app inside it`, async () => {
       const projectRoot = await setupAsync('go-app');
       const workspaceRoot = path.dirname(projectRoot);
       const appDirectory = path.basename(projectRoot);
-      const home = await writeExpoSessionAsync('session-secret-value');
-      const server = await startLaunchServerAsync();
+      const logPath = await installStubLaunchAsync(projectRoot);
 
-      try {
-        const result = await executeExagentAsync(
-          projectRoot,
-          ['deploy', '--native', '--upload-root', workspaceRoot, '--json'],
-          { env: launchEnv(server.origin, { home }) }
-        );
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['deploy', '--native', '--upload-root', workspaceRoot, '--json'],
+        { env: launchEnv(logPath) }
+      );
 
-        expect(JSON.parse(result.stdout).native.url).toBe(STUB_LAUNCH_URL);
-        // The service unpacks `project/` and looks for the app at this path inside it.
-        expect(server.requests[0]!.headers['x-project-root']).toBe(appDirectory);
-        const entries = await readTarEntriesAsync(server.requests[0]!.body);
-        expect(entries).toContain(`project/${appDirectory}/package.json`);
-      } finally {
-        await server.closeAsync();
-      }
+      expect(JSON.parse(result.stdout).native.url).toBe(STUB_LAUNCH_URL);
+      // Our --upload-root names the directory to upload; the launch CLI expresses the same thing
+      // as "run from here, the app is at --project", so the flag is inverted for it.
+      expect(readStubLaunchInvocations(logPath)).toEqual([
+        { args: ['--json', '--project', appDirectory], cwd: workspaceRoot, isTTY: false },
+      ]);
     });
 
     it(`should answer a machine that is not signed in with the login command`, async () => {
       const projectRoot = await setupAsync('go-app');
-      // An Expo home with no state file at all: nobody is logged in here.
-      const home = getTemporaryPath();
-      await fs.promises.mkdir(home, { recursive: true });
-      const server = await startLaunchServerAsync();
+      const logPath = await installStubLaunchAsync(projectRoot);
 
-      try {
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
-          env: launchEnv(server.origin, { home }),
-          reject: false,
-        });
-
-        expect(result.exitCode).toBe(1);
-        expect(result.stderr).toContain('not signed in');
-        expect(result.stderr).toContain('EXPO_TOKEN');
-        // Errors are prompts (llp/0006): the last line is what an agent runs next.
-        expect(result.stderr).toContain('Try: npx expo login');
-        // Nothing was uploaded before the credential was checked.
-        expect(server.requests).toEqual([]);
-      } finally {
-        await server.closeAsync();
-      }
-    });
-
-    it(`should report what the service refused`, async () => {
-      const projectRoot = await setupAsync('go-app');
-      const home = await writeExpoSessionAsync('session-secret-value');
-      const server = await startLaunchServerAsync({
-        status: 422,
-        body: { message: 'No supported framework was found' },
+      const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
+        env: launchEnv(logPath, { mode: 'unauthenticated' }),
+        reject: false,
       });
 
-      try {
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
-          env: launchEnv(server.origin, { home }),
-          reject: false,
-        });
-
-        expect(result.exitCode).toBe(1);
-        expect(result.stderr).toContain('No supported framework was found');
-        expect(result.stderr).toContain('Try: npx exagent deploy --native');
-      } finally {
-        await server.closeAsync();
-      }
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain('not signed in');
+      expect(result.stderr).toContain('EXPO_TOKEN');
+      // Errors are prompts (llp/0006): the last line is what an agent runs next.
+      expect(result.stderr).toContain('Try: npx expo login');
     });
 
-    it(`should answer a rejected credential with the login command`, async () => {
+    it(`should report what the launch CLI refused, in its own words`, async () => {
       const projectRoot = await setupAsync('go-app');
-      const home = await writeExpoSessionAsync('stale-secret');
-      const server = await startLaunchServerAsync({
-        status: 401,
-        body: { message: 'Unauthorized' },
+      const logPath = await installStubLaunchAsync(projectRoot);
+
+      const result = await executeExagentAsync(projectRoot, ['deploy', '--native', '--json'], {
+        env: launchEnv(logPath, { mode: 'refused' }),
+        reject: false,
       });
 
-      try {
-        const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
-          env: launchEnv(server.origin, { home }),
-          reject: false,
-        });
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain('project size limit of 500 MB');
+      expect(result.stderr).toContain('Try: npx exagent deploy --native');
+    });
 
-        expect(result.exitCode).toBe(1);
-        expect(result.stderr).toContain('Try: npx expo login');
-      } finally {
-        await server.closeAsync();
-      }
+    it(`should report a run that printed no launch`, async () => {
+      const projectRoot = await setupAsync('go-app');
+      const logPath = await installStubLaunchAsync(projectRoot);
+
+      const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
+        env: launchEnv(logPath, { mode: 'garbage' }),
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain('did not print a launch');
     });
 
     it(`should explain that the retired build flags are gone`, async () => {
@@ -536,54 +475,44 @@ describe('exagent deploy', () => {
 
   it(`should deploy both targets in one run`, async () => {
     const projectRoot = await setupAsync('go-app');
-    const home = await writeExpoSessionAsync('session-secret-value');
-    const server = await startLaunchServerAsync();
+    const logPath = await installStubLaunchAsync(projectRoot);
 
-    try {
-      const result = await executeExagentAsync(
-        projectRoot,
-        ['deploy', '--web', '--native', '--json'],
-        { env: launchEnv(server.origin, { home }) }
-      );
-      const report: DeployReport = JSON.parse(result.stdout);
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['deploy', '--web', '--native', '--json'],
+      {
+        env: launchEnv(logPath),
+      }
+    );
+    const report: DeployReport = JSON.parse(result.stdout);
 
-      expect(report.targets).toEqual(['web', 'native']);
-      expect(readStubEasInvocations(projectRoot).map((invocation) => invocation.args[0])).toEqual([
-        'deploy',
-      ]);
-      expect(report.web!.url).toBe(STUB_DEPLOYMENT_URL);
-      expect(report.native!.url).toBe(STUB_LAUNCH_URL);
-      // The launch is the unfinished half, so it is named first.
-      expect(report.followups.map((followup) => followup.id)).toEqual([
-        'open-launch-url',
-        'open-deployment',
-        'eas-deploy-prod',
-      ]);
-    } finally {
-      await server.closeAsync();
-    }
+    expect(report.targets).toEqual(['web', 'native']);
+    expect(readStubEasInvocations(projectRoot).map((invocation) => invocation.args[0])).toEqual([
+      'deploy',
+    ]);
+    expect(readStubLaunchInvocations(logPath)).toHaveLength(1);
+    expect(report.web!.url).toBe(STUB_DEPLOYMENT_URL);
+    expect(report.native!.url).toBe(STUB_LAUNCH_URL);
+    // The launch is the unfinished half, so it is named first.
+    expect(report.followups.map((followup) => followup.id)).toEqual([
+      'open-launch-url',
+      'open-deployment',
+      'eas-deploy-prod',
+    ]);
   });
 
   it(`should run with no TTY on any stream`, async () => {
     // The e2e runner attaches no stdin (see `spawnExagent`), which is the shape an agent runs the
-    // CLI in: `--non-interactive` plus no stdin means a prompt fails instead of hanging, and the
-    // launch upload never prompts at all.
+    // CLI in: every tool it spawns gets the same, so a prompt fails instead of hanging.
     const projectRoot = await setupAsync('go-app');
-    const home = await writeExpoSessionAsync('session-secret-value');
-    const server = await startLaunchServerAsync();
+    const logPath = await installStubLaunchAsync(projectRoot);
 
-    try {
-      await executeExagentAsync(projectRoot, ['deploy', '--web'], {
-        env: stubExpoEnv(projectRoot),
-      });
-      expect(readStubEasInvocations(projectRoot)[0]!.isTTY).toBe(false);
+    await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+      env: stubExpoEnv(projectRoot),
+    });
+    expect(readStubEasInvocations(projectRoot)[0]!.isTTY).toBe(false);
 
-      const launched = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
-        env: launchEnv(server.origin, { home }),
-      });
-      expect(launched.exitCode).toBe(0);
-    } finally {
-      await server.closeAsync();
-    }
+    await executeExagentAsync(projectRoot, ['deploy', '--native'], { env: launchEnv(logPath) });
+    expect(readStubLaunchInvocations(logPath)[0]!.isTTY).toBe(false);
   });
 });

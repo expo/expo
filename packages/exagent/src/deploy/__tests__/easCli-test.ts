@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { CommandError } from '../../utils/errors';
-import { assertEasConfiguredOrThrow, resolveEasCliOrThrow } from '../easCli';
+import { resolveEasCliOrThrow } from '../easCli';
 
 const projectRoot = '/project';
 const realPlatform = process.platform;
@@ -63,24 +63,6 @@ describe(resolveEasCliOrThrow, () => {
       expect(error).toBeInstanceOf(CommandError);
       expect(error.code).toBe('EAS_CLI_MISSING');
       expect(error.suggestedCommand).toBe('npm install -g eas-cli');
-    }
-  });
-});
-
-describe(assertEasConfiguredOrThrow, () => {
-  it(`should pass for a project with an eas.json`, () => {
-    vol.fromJSON({ [`${projectRoot}/eas.json`]: '{"build":{}}' });
-
-    expect(() => assertEasConfiguredOrThrow(projectRoot)).not.toThrow();
-  });
-
-  it(`should throw the configure command when eas.json is missing`, () => {
-    expect.assertions(2);
-    try {
-      assertEasConfiguredOrThrow(projectRoot);
-    } catch (error: any) {
-      expect(error.code).toBe('EAS_NOT_CONFIGURED');
-      expect(error.suggestedCommand).toBe('npx eas-cli build:configure');
     }
   });
 });

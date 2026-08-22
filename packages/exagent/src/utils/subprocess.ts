@@ -15,7 +15,15 @@ export type SubprocessOutput =
   /** The output is collected and never printed, for a command that owns stdout (`--json`). */
   | 'capture'
   /** The output is printed as it arrives *and* collected, for a result parsed out of it. */
-  | 'tee';
+  | 'tee'
+  /**
+   * Both streams are collected, and only stderr is printed as it arrives.
+   *
+   * For a tool that answers on stdout and reports progress on stderr (`create-launch --json`): the
+   * answer has to be parsed rather than printed, the progress belongs on the terminal while it
+   * happens, and it still has to be *kept*, because a tool that fails says why on the same stream.
+   */
+  | 'capture-stdout';
 
 export interface SubprocessOptions {
   cwd?: string;
@@ -60,7 +68,7 @@ export function spawnSubprocessAsync(
     const target = resolveSpawnTarget(command, args);
     const child = spawn(target.command, target.args, {
       cwd,
-      stdio: output === 'inherit' ? ['ignore', 'inherit', 'inherit'] : ['ignore', 'pipe', 'pipe'],
+      stdio: stdioFor(output),
       shell: target.shell,
     });
 
@@ -76,7 +84,7 @@ export function spawnSubprocessAsync(
     child.stderr?.on('data', (chunk) => {
       const text = chunk.toString();
       stderr += text;
-      if (output === 'tee') {
+      if (output === 'tee' || output === 'capture-stdout') {
         process.stderr.write(text);
       }
     });
@@ -105,6 +113,12 @@ export function spawnSubprocessAsync(
       resolve({ exitCode, stdout, stderr });
     });
   });
+}
+
+/** How the three standard streams of the child are wired for one output mode. */
+function stdioFor(output: SubprocessOutput): ('ignore' | 'inherit' | 'pipe')[] {
+  // Anything that is captured has to be piped; only a fully inherited run hands the streams over.
+  return output === 'inherit' ? ['ignore', 'inherit', 'inherit'] : ['ignore', 'pipe', 'pipe'];
 }
 
 /** Filename variants of one command, in the order a shell would try them on this platform. */

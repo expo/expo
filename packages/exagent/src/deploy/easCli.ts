@@ -1,11 +1,10 @@
-// @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy — "EAS is the delivery rail".
-// EAS is reached as a subprocess like the rest of the family (llp/0001 constraint 5), so the first
-// question of every deploy is which `eas` binary is going to run, and the second is whether the
-// project is configured for it. Both are answered before anything is spent.
+// @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy — EAS Hosting is the web rail.
+// The EAS CLI is reached as a subprocess like the rest of the family (llp/0001 constraint 5), so
+// the first question of a web deploy is which `eas` binary is going to run. It is answered before
+// anything is exported.
 
 import path from 'path';
 
-import { easJsonExistsSync } from '../followups/projectFiles';
 import { fileExistsSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { findExecutableOnPath } from '../utils/subprocess';
@@ -50,30 +49,5 @@ export function resolveEasCliOrThrow(
     ].join('\n')
   );
   error.suggestedCommand = 'npm install -g eas-cli';
-  throw error;
-}
-
-/**
- * Assert that the project is configured for EAS Build.
- *
- * Checked before the build is started, not by letting `eas build` discover it: a missing `eas.json`
- * has one exact fix, and naming it here is one hop instead of a search.
- *
- * @throws {CommandError} `EAS_NOT_CONFIGURED` when the project has no `eas.json`.
- */
-export function assertEasConfiguredOrThrow(projectRoot: string): void {
-  if (easJsonExistsSync(projectRoot)) {
-    return;
-  }
-
-  const error = new CommandError(
-    'EAS_NOT_CONFIGURED',
-    [
-      `This project has no eas.json, so there is no build profile to build with.`,
-      `Why: EAS Build reads the platform settings and the profile (production, preview, ...) from eas.json, and the project root does not have one.`,
-      `How: run "npx eas-cli build:configure" once to create it, then run this command again.`,
-    ].join('\n')
-  );
-  error.suggestedCommand = 'npx eas-cli build:configure';
   throw error;
 }
