@@ -673,7 +673,9 @@ async function runTier1Scenario(scenario) {
     commandsRun++;
     const result = await runCli(action.run, {
       cwd: workspace,
-      env: { ...process.env, CI: '1' },
+      // Scenario env (e.g. LOG_EVENTS) applies in every tier — the graders read the same
+      // files regardless of which driver ran the command.
+      env: { ...process.env, CI: '1', ...(scenario.command?.env ?? {}) },
       timeoutMs: DEFAULT_TIMEOUT_MS,
     });
     lastResult = result;
@@ -758,7 +760,7 @@ async function runTier2Scenario(scenario) {
       ['-p', prompt, '--allowedTools', 'Bash', '--max-turns', String(TIER2_MAX_TURNS)],
       {
         cwd: workspace,
-        env: { ...process.env, CI: '1' },
+        env: { ...process.env, CI: '1', ...(scenario.command?.env ?? {}) },
         stdio: ['ignore', 'pipe', 'pipe'],
         timeout: TIER2_TIMEOUT_MS,
       }
