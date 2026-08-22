@@ -11,6 +11,7 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.devsupport.HMRClient
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.devmenu.DevMenuSettings
+import expo.modules.devmenu.api.CustomPerformanceMonitor
 import expo.modules.devmenu.api.DevMenuApi
 import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.websockets.DevMenuMetroClient
@@ -71,7 +72,9 @@ class DevMenuDevToolsDelegate(
     if (DevMenuSettings.performanceMonitorNeedsOverlayPermission) {
       requestOverlaysPermission(context)
     }
-    devSupportManager.setFpsDebugEnabled(!devSettings.isFpsDebugEnabled)
+    val isShown = (devSupportManager as? CustomPerformanceMonitor)?.isPerformanceMonitorShown
+      ?: devSettings.isFpsDebugEnabled
+    devSupportManager.setFpsDebugEnabled(!isShown)
   }
 
   fun toggleFastRefresh() {
