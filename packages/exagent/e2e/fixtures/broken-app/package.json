@@ -1,0 +1,11 @@
+{
+  "name": "broken-app",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "dependencies": {
+    "expo": "54.0.0",
+    "expo-camera": "17.0.0",
+    "fake-native-module": "1.0.0"
+  }
+}

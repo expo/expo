@@ -1,0 +1,7 @@
+// Marker file: a committed `android/` directory is what makes this project bare instead of CNG.
+// Gradle never runs here; the fixture only needs the directory to exist.
+buildscript {
+  ext {
+    compileSdkVersion = 35
+  }
+}

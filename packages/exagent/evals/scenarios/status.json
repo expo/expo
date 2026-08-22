@@ -1,0 +1,12 @@
+{
+  "id": "status",
+  "fixture": "e2e/fixtures/go-app",
+  "taskPrompt": "report where this project is right now and what would happen next, without starting anything",
+  "drivingAgent": "deterministic",
+  "tiers": [0, 1],
+  "command": {
+    "argv": ["status", "--json"],
+    "timeoutMs": 60000
+  },
+  "graders": [{ "type": "exit-code", "expect": 0 }]
+}

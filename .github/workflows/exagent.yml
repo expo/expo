@@ -1,0 +1,157 @@
+# @ref llp/0002-testing-and-evals.plan.md
+name: Exagent
+
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/exagent.yml
+      - packages/exagent/**
+      - pnpm-lock.yaml
+  pull_request:
+    paths:
+      - .github/workflows/exagent.yml
+      - packages/exagent/**
+      - pnpm-lock.yaml
+  schedule:
+    # Weekly, Monday 15:00 UTC — only the report-only tier 1 job runs on this trigger.
+    - cron: 0 15 * * 1
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Tier 0 of LLP 0002: deterministic, model-free, runs on every PR.
+  tier0-linux:
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build exagent
+        run: pnpm turbo build --filter exagent...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🔎 Typecheck exagent
+        run: pnpm typecheck
+        working-directory: packages/exagent
+      - name: 🚨 Lint exagent
+        run: pnpm lint
+        working-directory: packages/exagent
+      - name: 🧪 Test exagent
+        run: pnpm test --ci
+        working-directory: packages/exagent
+      - name: 🧪 E2E Test exagent
+        run: pnpm test:e2e --ci --runInBand
+        working-directory: packages/exagent
+      - name: 🎯 Tier 0 evals
+        run: node evals/run.mjs --tier 0
+        working-directory: packages/exagent
+
+  # Windows coverage: the skills linker uses directory junctions instead of symlinks on
+  # win32 and nothing else exercises that path (junction code shipped untested until now).
+  tier0-windows:
+    if: github.event_name != 'schedule'
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build exagent
+        run: pnpm turbo build --filter exagent...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🧪 Test exagent
+        run: pnpm test --ci
+        working-directory: packages/exagent
+      - name: 🧪 E2E Test exagent
+        run: pnpm test:e2e --ci --runInBand
+        working-directory: packages/exagent
+
+  # Tier 1 of LLP 0002: agent-in-the-loop, best-effort, report-only.
+  # `continue-on-error` keeps it non-blocking until its pass rate is stable over a
+  # trailing window (LLP 0002, "Flake containment").
+  tier1-agent-eval:
+    # Runs on PRs too (decision 2026-08-22): proven cost is ~4m37s/run on a 4 vCPU
+    # runner (2.5 GB model pull ~2 min, inference 157 s), which is acceptable per-PR.
+    # Still report-only via continue-on-error.
+    if: >-
+      github.event_name == 'pull_request' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' && github.repository == 'expo/expo')
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    timeout-minutes: 45
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build exagent
+        run: pnpm turbo build --filter exagent...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      # Tier 1 driver: Ollama on the runner, CPU-only (chosen over hosted free tiers —
+      # GitHub Models retired 2026-07-30; Groq/Gemini/OpenRouter remain optional fast
+      # lanes behind a repo secret). Model pinned, temperature 0, fixed seed. Spike
+      # numbers (Apple M4, local): skills-sync passes 5/5 at ~23.5 s/run with a single
+      # correct command per run; expect a few multiples slower on a 4 vCPU runner.
+      # No model cache on purpose: a weekly job would lose the LRU race for the shared
+      # 10 GB pool, and a cold pull costs only a few minutes (LLP 0002).
+      # The graders stay programmatic (see evals/schema.md) and the job stays report-only.
+      - name: 🦙 Install Ollama
+        run: curl -fsSL https://ollama.com/install.sh | sh
+      - name: 🦙 Start Ollama and pull the pinned model
+        run: |
+          ollama serve > /tmp/ollama-serve.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/version && break
+            sleep 1
+          done
+          ollama pull "$EXAGENT_EVAL_MODEL"
+        env:
+          EXAGENT_EVAL_MODEL: qwen3:4b
+      # Per-PR runs use only the cheapest scenario: CPU inference on the standard runner is
+      # too variable for the longer ones (observed: start-plan turn-2 ranging 23s local to
+      # >900s on a slow runner). The full set runs on the weekly cron and manual dispatch.
+      - name: 🤖 Tier 1 evals (report-only)
+        run: node evals/run.mjs --tier 1 ${{ github.event_name == 'pull_request' && '--scenario skills-sync' || '' }}
+        working-directory: packages/exagent
+        env:
+          EXAGENT_EVAL_MODEL: qwen3:4b

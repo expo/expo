@@ -1,0 +1,9 @@
+# The fixture projects ship committed `node_modules` directories as test data, so the repository
+# root rule that ignores every `node_modules` directory must not apply below this directory.
+!node_modules/
+
+# Same for `.expo`: `dev-client-fresh-app` commits a last-build record inside it. Git cannot
+# re-include a file whose parent directory is excluded, so the directory has to be un-ignored
+# here, above the fixture that needs it. Every fixture that has no committed `.expo` content
+# ignores the directory again in its own `.gitignore`.
+!.expo/

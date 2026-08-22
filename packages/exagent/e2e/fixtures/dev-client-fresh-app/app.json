@@ -1,0 +1,8 @@
+{
+  "expo": {
+    "name": "dev-client-fresh-app",
+    "slug": "dev-client-fresh-app",
+    "sdkVersion": "54.0.0",
+    "platforms": ["ios", "android"]
+  }
+}

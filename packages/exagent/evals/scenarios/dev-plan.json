@@ -1,0 +1,16 @@
+{
+  "id": "dev-plan",
+  "fixture": "e2e/fixtures/dev-client-app",
+  "taskPrompt": "figure out the plan to get this app running on iOS without executing it",
+  "drivingAgent": "deterministic",
+  "tiers": [0, 1, 2],
+  "command": {
+    "argv": ["dev", "--plan"],
+    "env": { "LOG_EVENTS": "events.jsonl" },
+    "timeoutMs": 60000
+  },
+  "graders": [
+    { "type": "exit-code", "expect": 0 },
+    { "type": "jsonl-event", "file": "events.jsonl", "event": "cli:followups", "atLeast": 1 }
+  ]
+}
