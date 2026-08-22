@@ -33,7 +33,11 @@ Tools that let a driving agent observe and manipulate the running app, closing t
 - `read_runtime_errors` — `CdpRuntimeErrorCollector` capturing `Runtime.exceptionThrown` + console.error over a window; distinguishes "no errors" from "app unreachable".
 - `navigate_to_route` — device-side deep link (`simctl openurl` / `adb am start`), static scheme resolution from app.json with Expo Go `exp://<host>/--/<route>` support and explicit `scheme` override.
 
-64 new unit tests (119 total in the package) against MockWebSocket / mocked spawns. **Not yet verified against a real device/Metro** — target selection, real symbolicated stacks, whether exceptionThrown fires for every LogBox red screen, and actual deep-link navigation remain open until a simulator round. Not built yet: network inspection, performance probe, cross-platform sweep.
+64 new unit tests (122 total in the package) against MockWebSocket / mocked spawns.
+
+**Verified live** [observed — 2026-08-22, SDK 57 app in Expo Go on an iOS 26.5 simulator]: `evaluateAsync` returned real values/state/exceptions from Hermes; the error collector captured an injected uncaught error (delivered via RN's console path, not `Runtime.exceptionThrown` — having both capture sources is required); deep-link navigation landed the app on the `/explore` route (screenshot-confirmed). The live round also found and fixed a blocking bug the unit tests could not see: **Metro's inspector proxy rejects CDP WebSocket handshakes without a same-origin `Origin` header (401)** — all default connection paths now send it (`createInspectorWebSocket`).
+
+Still open: Android emulator pass, `exceptionThrown`-vs-console behavior across RN versions, network inspection, performance probe, cross-platform sweep.
 
 ## Testing
 
