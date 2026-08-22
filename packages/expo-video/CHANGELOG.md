@@ -19,6 +19,7 @@
 - [iOS] Fixed a thread-safety crash caused by mutating the internal player registries while they were being iterated on another thread (e.g. during audio session and now playing updates). ([#46930](https://github.com/expo/expo/pull/46930) by [@jiunshinn](https://github.com/jiunshinn))
 - Fix VideoView holding a strong reference to VideoPlayer even after the player has been detached. ([#46453](https://github.com/expo/expo/pull/46453) by [@behenate](https://github.com/behenate))
 - [iOS] Fixed fullscreen rotation requesting geometry from an arbitrary scene rather than the one the player is in. ([#48316](https://github.com/expo/expo/pull/48316) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Request transient audio focus for the `auto` audio mixing mode so that background audio from other apps resumes once video players stop playing sound. ([#48546](https://github.com/expo/expo/pull/48546) by [@huextrat](https://github.com/huextrat))
 
 ### 💡 Others
 
