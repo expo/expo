@@ -3565,6 +3565,9 @@ importers:
       '@types/prompts':
         specifier: ^2.4.9
         version: 2.4.9
+      '@types/ws':
+        specifier: ^8.5.4
+        version: 8.18.1
       '@vercel/ncc':
         specifier: ^0.38.3
         version: 0.38.4
@@ -3577,6 +3580,9 @@ importers:
       chalk:
         specifier: ^4.0.0
         version: 4.1.2
+      devtools-protocol:
+        specifier: ^0.0.1113120
+        version: 0.0.1113120
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
@@ -3589,6 +3595,9 @@ importers:
       prompts:
         specifier: ^2.3.2
         version: 2.4.2
+      ws:
+        specifier: ^8.12.1
+        version: 8.19.0
 
   packages/expo:
     dependencies:
