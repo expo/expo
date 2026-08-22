@@ -15,6 +15,8 @@ Ship and develop without a terminal or a laptop. Seeds [confirmed — Kudo, 2026
 
 [confirmed — Kudo seed, 2026-08-19] One command deploys every platform: web via EAS Hosting, native platforms via launch.expo.dev. Deterministic orchestration (export → upload → URLs back) so it works equally as a human command and an agent tool; agent mode returns structured URLs and status. Pairs with smart `start` ([[0004-smart-start-and-project-state]]): one command to run, one to ship.
 
+Native rail design [confirmed — Kudo chose user-auth ("A"), 2026-08-22; grounded in a study of the expo/launch repo]: launch.expo.dev consumes **project source** (one gzip tarball), not prebuilt artifacts — it generates and runs the EAS workflow itself. So `deploy --native` = pack source (create-launch's ignore rules, ~500 MB limit) → upload with the user's own Expo session/`EXPO_TOKEN` (the same endpoint the public `create-launch` CLI uses) → print the returned launch URL. The **browser handoff is a required UX step, not an error**: App Store setup needs a browser Apple login; no headless path exists today [observed — expo/launch]. Launch sessions expire after 8 hours. Vendor-token capabilities (status polling, log streaming) exist server-side but require a shared secret that cannot ship in a public package — a launch-side enhancement if exagent should babysit workflows [inferred].
+
 ## Headless project creation
 
 [confirmed — Kudo seed, 2026-08-18] `exagent new "<one-line app description>"`: template choice, `create-expo`, git init, EAS init, first boot check — every step flag- or JSON-driven, zero TTY. Depends on non-interactive parity ([[0006-agent-native-cli-surface]]).
