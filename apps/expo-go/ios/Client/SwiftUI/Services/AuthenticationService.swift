@@ -5,6 +5,10 @@ import AuthenticationServices
 import Combine
 import ExpoModulesCore
 
+extension Notification.Name {
+  static let expoSessionDidChange = Notification.Name("expo-session-did-change")
+}
+
 @MainActor
 class AuthenticationService: ObservableObject {
   @Published var user: UserActor?
@@ -12,13 +16,15 @@ class AuthenticationService: ObservableObject {
   @Published var isAuthenticating = false
   @Published var isAuthenticated = false
 
-  private let sessionKey = "expo-session-secret"
-  private let usernameKey = "expo-username"
-  private let selectedAccountKey = "expo-selected-account-id"
+  nonisolated static let sessionKey = "expo-session-secret"
+  nonisolated static let usernameKey = "expo-username"
+  nonisolated static let selectedAccountKey = "expo-selected-account-id"
+  nonisolated static let sessionExpiresAtKey = "expo-session-expires-at"
   private let presentationContext = AuthPresentationContextProvider()
+  private var cancellables = Set<AnyCancellable>()
 
   var sessionSecret: String? {
-    UserDefaults.standard.string(forKey: sessionKey)
+    UserDefaults.standard.string(forKey: Self.sessionKey)
   }
 
   var selectedAccount: Account? {
@@ -34,17 +40,27 @@ class AuthenticationService: ObservableObject {
   }
 
   init() {
-    selectedAccountId = UserDefaults.standard.string(forKey: selectedAccountKey)
+    selectedAccountId = UserDefaults.standard.string(forKey: Self.selectedAccountKey)
     checkAuthenticationStatus()
+    observeSessionChanges()
   }
 
   func checkAuthenticationStatus() {
-    let sessionSecret = UserDefaults.standard.string(forKey: sessionKey)
+    if Self.isSessionExpired() {
+      // The bridge reads this expiry to explain the failure, then clears it.
+      Self.deleteNativeSession()
+      user = nil
+      selectedAccountId = nil
+      isAuthenticated = false
+      return
+    }
+
+    let sessionSecret = UserDefaults.standard.string(forKey: Self.sessionKey)
     isAuthenticated = !(sessionSecret?.isEmpty ?? true)
 
     if isAuthenticated {
       if let sessionSecret {
-        synchronizeNativeSession(sessionSecret)
+        Self.saveNativeSession(sessionSecret)
       }
       Task {
         if let sessionSecret {
@@ -53,10 +69,20 @@ class AuthenticationService: ObservableObject {
         await loadUserInfo()
       }
     } else {
-      clearNativeSession()
+      Self.deleteNativeSession()
       user = nil
       selectedAccountId = nil
     }
+  }
+
+  private func observeSessionChanges() {
+    NotificationCenter.default.publisher(for: .expoSessionDidChange)
+      .sink { [weak self] _ in
+        Task { @MainActor in
+          self?.checkAuthenticationStatus()
+        }
+      }
+      .store(in: &cancellables)
   }
 
   func loadUserInfo() async {
@@ -66,18 +92,19 @@ class AuthenticationService: ObservableObject {
 
   private func fetchUserInfo() async {
     do {
-      let response: MeUserActorResponse = try await APIClient.shared.request(Queries.getCurrentUser())
-      user = response.data.meUserActor
-
-      if let username = user?.username {
-        UserDefaults.standard.set(username, forKey: usernameKey)
+      let response: MeActorResponse = try await APIClient.shared.request(Queries.getCurrentUser())
+      guard let actor = response.data.meActor else {
+        print("[AuthenticationService] meActor was null. Signed in as an actor type Expo Go does not model.")
+        return
       }
+      user = actor
+      UserDefaults.standard.set(actor.username, forKey: Self.usernameKey)
 
-      if selectedAccountId == nil, let firstAccount = user?.accounts.first {
+      if selectedAccountId == nil, let firstAccount = actor.accounts.first {
         selectAccount(accountId: firstAccount.id)
       }
     } catch {
-      print("Failed to load user info: \(error)")
+      print("[AuthenticationService] Failed to load user info: \(error)")
     }
   }
 
@@ -109,8 +136,9 @@ class AuthenticationService: ObservableObject {
   }
 
   func completeLogin(with sessionSecret: String) async {
-    UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
-    synchronizeNativeSession(sessionSecret)
+    UserDefaults.standard.set(sessionSecret, forKey: Self.sessionKey)
+    UserDefaults.standard.removeObject(forKey: Self.sessionExpiresAtKey)
+    Self.saveNativeSession(sessionSecret)
     await APIClient.shared.setSession(sessionSecret)
     // Fetch user info before setting isAuthenticated so account data is ready
     // when the UI switches to the account selector
@@ -119,19 +147,13 @@ class AuthenticationService: ObservableObject {
   }
 
   func signOut() {
-    UserDefaults.standard.removeObject(forKey: sessionKey)
-    UserDefaults.standard.removeObject(forKey: usernameKey)
-    UserDefaults.standard.removeObject(forKey: selectedAccountKey)
-    clearNativeSession()
-    Task {
-      await APIClient.shared.setSession(nil)
-    }
+    Self.clearSession()
     user = nil
     selectedAccountId = nil
     isAuthenticated = false
   }
 
-  private func synchronizeNativeSession(_ sessionSecret: String) {
+  nonisolated private static func saveNativeSession(_ sessionSecret: String) {
     do {
       try Session.sharedInstance.saveSession(
         toKeychain: ["sessionSecret": sessionSecret] as NSDictionary
@@ -141,7 +163,7 @@ class AuthenticationService: ObservableObject {
     }
   }
 
-  private func clearNativeSession() {
+  nonisolated private static func deleteNativeSession() {
     do {
       try Session.sharedInstance.deleteSessionFromKeychain()
     } catch {
@@ -149,9 +171,46 @@ class AuthenticationService: ObservableObject {
     }
   }
 
+  nonisolated static func storeDeviceAuthSession(
+    sessionSecret: String,
+    username: String,
+    expiresAt: Date?
+  ) async {
+    let defaults = UserDefaults.standard
+    defaults.set(sessionSecret, forKey: sessionKey)
+    defaults.set(username, forKey: usernameKey)
+    if let expiresAt {
+      defaults.set(expiresAt.timeIntervalSince1970, forKey: sessionExpiresAtKey)
+    } else {
+      defaults.removeObject(forKey: sessionExpiresAtKey)
+    }
+    saveNativeSession(sessionSecret)
+    await APIClient.shared.setSession(sessionSecret)
+    NotificationCenter.default.post(name: .expoSessionDidChange, object: nil)
+  }
+
+  /// The stored expiry is the only local signal that the session died, avoiding a round trip on every project open.
+  nonisolated static func isSessionExpired() -> Bool {
+    guard let expiresAt = UserDefaults.standard.object(forKey: sessionExpiresAtKey) as? Double else {
+      return false
+    }
+    return Date().timeIntervalSince1970 >= expiresAt
+  }
+
+  nonisolated static func clearSession() {
+    let defaults = UserDefaults.standard
+    defaults.removeObject(forKey: sessionKey)
+    defaults.removeObject(forKey: usernameKey)
+    defaults.removeObject(forKey: selectedAccountKey)
+    defaults.removeObject(forKey: sessionExpiresAtKey)
+    deleteNativeSession()
+    Task { await APIClient.shared.setSession(nil) }
+    NotificationCenter.default.post(name: .expoSessionDidChange, object: nil)
+  }
+
   func selectAccount(accountId: String) {
     selectedAccountId = accountId
-    UserDefaults.standard.set(accountId, forKey: selectedAccountKey)
+    UserDefaults.standard.set(accountId, forKey: Self.selectedAccountKey)
   }
 
   private func performAuthentication(path: String) async throws -> String? {
