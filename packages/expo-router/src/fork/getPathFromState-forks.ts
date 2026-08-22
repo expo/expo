@@ -69,10 +69,8 @@ export function appendBaseUrl(
   path: string,
   baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ) {
-  if (process.env.NODE_ENV !== 'development') {
-    if (baseUrl) {
-      return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
-    }
+  if (baseUrl) {
+    return `/${baseUrl.replace(/^\/+/, '').replace(/\/$/, '')}${path}`;
   }
 
   return path;
