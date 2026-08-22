@@ -9,7 +9,7 @@
 
 ## Summary
 
-Tools that let a driving agent observe and manipulate the running app, closing the verify loop that text-only agents cannot close. All ship as `expo-mcp` tools (per the reuse decision in [[0001-agentic-cli-on-expo-cli]]). All items [inferred] unless tagged; the named runtime hooks exist today [observed where noted].
+Tools that let a driving agent observe and manipulate the running app, closing the verify loop that text-only agents cannot close. Ship as self-serve `exagent` CLI commands [confirmed — Kudo, 2026-08-22]; `expo-mcp` is not a dependency. All items [inferred] unless tagged; the named runtime hooks exist today [observed where noted].
 
 ## Candidates
 
@@ -27,7 +27,7 @@ Tools that let a driving agent observe and manipulate the running app, closing t
 
 ## Implemented in v1 as
 
-[observed — expo-mcp worktree, 2026-08-22] Three tools landed in `expo-mcp` (per the reuse decision in [[0001-agentic-cli-on-expo-cli]]):
+Home correction [confirmed — Kudo, 2026-08-22]: these are **self-serve in `packages/exagent`** as CLI commands (`exagent runtime eval|errors`, `exagent navigate`), not expo-mcp tools — the expo-mcp implementation round was abandoned unpushed, with the code ported over. Original build + live verification [observed — 2026-08-22]:
 
 - `runtime_evaluate` — `CdpClient.evaluateAsync` (Runtime.evaluate, returnByValue + awaitPromise + exceptionDetails); app output fenced with untrusted-content markers per [[0008-guardrails]], including marker-forgery neutralization.
 - `read_runtime_errors` — `CdpRuntimeErrorCollector` capturing `Runtime.exceptionThrown` + console.error over a window; distinguishes "no errors" from "app unreachable".
