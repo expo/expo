@@ -260,9 +260,11 @@ private class CountingSink(
 }
 
 private fun UnifiedFileInterface.asRequestBody(contentType: String?): RequestBody {
-  // length() on a SAF document is a ContentResolver query; resolve it once.
-  val resolvedLength = length()
   return object : RequestBody() {
+    // length() on a SAF document is a ContentResolver query, and it can fall back to
+    // reading the whole stream; resolve it once, and not before OkHttp asks for it.
+    private val resolvedLength: Long by lazy { length() }
+
     override fun contentType() = contentType?.toMediaTypeOrNull()
     override fun contentLength() = resolvedLength
     override fun writeTo(sink: BufferedSink) {

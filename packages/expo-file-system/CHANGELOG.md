@@ -23,7 +23,7 @@
 - Fixed potential file offset races when asynchronous and synchronous `FileHandle` operations overlap on Android and iOS. ([#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
 - Fixed `readAsStringAsync` to respect `position` and `length` when reading UTF-8 strings. ([#20291](https://github.com/expo/expo/issues/20291) by [@mvincentong](https://github.com/mvincentong)) ([#45714](https://github.com/expo/expo/pull/45714) by [@mvincentong](https://github.com/mvincentong))
 - [android] Fixed `rename()` storing an unencoded URI, so reading `.uri` afterwards threw for names containing a space. ([#48496](https://github.com/expo/expo/issues/48496) by [@yagiz2000](https://github.com/yagiz2000), [#48510](https://github.com/expo/expo/pull/48510) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [android] Fixed slow uploads of SAF-backed `content://` files by resolving the request body's content length once, instead of querying it through `ContentResolver` for every 8 KiB written. (by [@gmaclennan](https://github.com/gmaclennan))
+- [android] Fixed slow uploads of SAF-backed `content://` files by resolving the request body's content length once, instead of querying it through `ContentResolver` for every 8 KiB written. ([#49206](https://github.com/expo/expo/pull/49206) by [@gmaclennan](https://github.com/gmaclennan))
 
 ### 💡 Others
 
