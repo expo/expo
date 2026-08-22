@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { spawn } from 'child_process';
-import os from 'os';
+import { setTimeout as delayAsync } from 'node:timers/promises';
 
 import * as Log from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
@@ -22,28 +22,24 @@ export function whichEmulator(): string {
 
 /** Returns a list of emulator names. */
 export async function listAvdsAsync(): Promise<Device[]> {
-  try {
-    const { stdout } = await spawnAsync(whichEmulator(), ['-list-avds']);
-    return (
-      stdout
-        .split(os.EOL)
-        .filter(Boolean)
-        /**
-         * AVD IDs cannot contain spaces. This removes extra info lines from the output. e.g.
-         * "INFO    | Storing crashdata in: /tmp/android-brent/emu-crash-34.1.18.db
-         */
-        .filter((name) => !name.trim().includes(' '))
-        .map((name) => ({
-          name,
-          type: 'emulator',
-          // unsure from this
-          isBooted: false,
-          isAuthorized: true,
-        }))
-    );
-  } catch {
-    return [];
-  }
+  const { stdout } = await spawnAsync(whichEmulator(), ['-list-avds']);
+  return (
+    stdout
+      .split(/\r?\n/)
+      .filter(Boolean)
+      /**
+       * AVD IDs cannot contain spaces. This removes extra info lines from the output. e.g.
+       * "INFO    | Storing crashdata in: /tmp/android-brent/emu-crash-34.1.18.db
+       */
+      .filter((name) => !name.trim().includes(' '))
+      .map((name) => ({
+        name,
+        type: 'emulator',
+        isBooted: false,
+        isAuthorized: true,
+        isLaunchable: true,
+      }))
+  );
 }
 
 /** Start an Android device and wait until it is booted. */
@@ -52,12 +48,15 @@ export async function startDeviceAsync(
   {
     timeout = EMULATOR_MAX_WAIT_TIMEOUT,
     interval = 1000,
+    signal,
   }: {
     /** Time in milliseconds to wait before asserting a timeout error. */
     timeout?: number;
     interval?: number;
+    signal?: AbortSignal;
   } = {}
 ): Promise<Device> {
+  signal?.throwIfAborted();
   Log.log(`\u203A Opening emulator ${chalk.bold(device.name)}`);
 
   // Start a process to open an emulator
@@ -76,56 +75,52 @@ export async function startDeviceAsync(
 
   emulatorProcess.unref();
 
-  return new Promise<Device>((resolve, reject) => {
-    const waitTimer = setInterval(async () => {
-      try {
-        const bootedDevices = await getAttachedDevicesAsync();
-        const connected = bootedDevices.find(({ name }) => name === device.name);
-        if (connected) {
-          const isBooted = await isBootAnimationCompleteAsync(connected.pid);
-          if (isBooted) {
-            stopWaiting();
-            resolve(connected);
-          }
-        }
-      } catch (error) {
-        stopWaiting();
-        reject(error);
-      }
-    }, interval);
+  const controller = new AbortController();
+  const timeoutSignal = AbortSignal.timeout(timeout);
+  const operationSignal = signal
+    ? AbortSignal.any([signal, controller.signal, timeoutSignal])
+    : AbortSignal.any([controller.signal, timeoutSignal]);
+  const manualCommand = `${whichEmulator()} @${device.name}`;
+  const handleEmulatorError = (error: Error) => controller.abort(error);
+  const handleEmulatorExit = () =>
+    controller.abort(
+      new Error(
+        `The emulator (${device.name}) quit before it finished opening. You can try starting the emulator manually from the terminal with: ${manualCommand}`
+      )
+    );
+  const removeExitHook = installExitHooks((exitSignal) => {
+    emulatorProcess.kill(exitSignal);
+    controller.abort(new AbortCommandError());
+  });
+  emulatorProcess.on('error', handleEmulatorError);
+  emulatorProcess.on('exit', handleEmulatorExit);
 
-    // Reject command after timeout
-    const maxTimer = setTimeout(() => {
-      const manualCommand = `${whichEmulator()} @${device.name}`;
-      stopWaitingAndReject(
+  try {
+    // Wait for each check before delaying so boot polls never overlap.
+    while (true) {
+      const connected = await checkEmulatorBootAsync(device.name, operationSignal);
+      if (connected) return connected;
+      await delayAsync(interval, undefined, { signal: operationSignal });
+    }
+  } catch (error) {
+    if (timeoutSignal.aborted && operationSignal.reason === timeoutSignal.reason) {
+      throw new Error(
         `It took too long to start the Android emulator: ${device.name}. You can try starting the emulator manually from the terminal with: ${manualCommand}`
       );
-    }, timeout);
+    }
+    throw operationSignal.aborted ? operationSignal.reason : error;
+  } finally {
+    removeExitHook();
+    emulatorProcess.off('error', handleEmulatorError);
+    emulatorProcess.off('exit', handleEmulatorExit);
+  }
+}
 
-    const stopWaiting = () => {
-      clearTimeout(maxTimer);
-      clearInterval(waitTimer);
-      removeExitHook();
-    };
-
-    const stopWaitingAndReject = (message: string) => {
-      stopWaiting();
-      reject(new Error(message));
-    };
-
-    const removeExitHook = installExitHooks((signal) => {
-      stopWaiting();
-      emulatorProcess.kill(signal);
-      reject(new AbortCommandError());
-    });
-
-    emulatorProcess.on('error', ({ message }) => stopWaitingAndReject(message));
-
-    emulatorProcess.on('exit', () => {
-      const manualCommand = `${whichEmulator()} @${device.name}`;
-      stopWaitingAndReject(
-        `The emulator (${device.name}) quit before it finished opening. You can try starting the emulator manually from the terminal with: ${manualCommand}`
-      );
-    });
-  });
+async function checkEmulatorBootAsync(name: string, signal?: AbortSignal): Promise<Device | null> {
+  const bootedDevices = await getAttachedDevicesAsync({ signal });
+  const connected = bootedDevices.find((device) => device.name === name);
+  if (connected && (await isBootAnimationCompleteAsync(connected.pid, signal))) {
+    return connected;
+  }
+  return null;
 }
