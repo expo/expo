@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`Slider`](../universal/slider) — it renders the appropriate native component per platform.
@@ -30,7 +31,13 @@ Expo UI Slider matches the official Jetpack Compose [Slider API](https://develop
 
 ### Basic slider
 
-```tsx BasicSliderExample.tsx
+<ComponentExample
+  title="BasicSliderExample.tsx"
+  src="/static/images/expo-ui/examples/slider-basic-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/slider-basic-android-dark.webp"
+  alt="A Material 3 slider with the thumb at the midpoint">
+
+```tsx
 import { useState } from 'react';
 import { Host, Slider } from '@expo/ui/jetpack-compose';
 
@@ -38,18 +45,28 @@ export default function BasicSliderExample() {
   const [value, setValue] = useState(0.5);
 
   return (
-    <Host matchContents>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Slider value={value} onValueChange={setValue} />
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Slider with custom range
 
 Use the `min` and `max` props to define the slider's value range.
 
-```tsx CustomRangeSliderExample.tsx
+<ComponentExample
+  title="CustomRangeSliderExample.tsx"
+  src="/static/images/expo-ui/examples/slider-custom-range-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/slider-custom-range-android-dark.webp"
+  alt="A slider ranging from 0 to 100 with the thumb at 50">
+
+```tsx
 import { useState } from 'react';
 import { Host, Slider } from '@expo/ui/jetpack-compose';
 
@@ -57,18 +74,33 @@ export default function CustomRangeSliderExample() {
   const [value, setValue] = useState(50);
 
   return (
-    <Host matchContents>
-      <Slider value={value} min={0} max={100} onValueChange={setValue} />
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Slider
+        value={value}
+        min={0}
+        max={100}
+        onValueChange={setValue}
+      />
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Slider with steps
 
 Use the `steps` prop to define discrete increments. Set `steps` to `0` for continuous values.
 
-```tsx SteppedSliderExample.tsx
+<ComponentExample
+  title="SteppedSliderExample.tsx"
+  src="/static/images/expo-ui/examples/slider-stepped-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/slider-stepped-android-dark.webp"
+  alt="A slider with eleven tick marks and the thumb at the far left">
+
+```tsx
 import { useState } from 'react';
 import { Host, Slider } from '@expo/ui/jetpack-compose';
 
@@ -76,18 +108,34 @@ export default function SteppedSliderExample() {
   const [value, setValue] = useState(0);
 
   return (
-    <Host matchContents>
-      <Slider value={value} min={0} max={100} steps={10} onValueChange={setValue} />
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <Slider
+        value={value}
+        min={0}
+        max={100}
+        steps={10}
+        onValueChange={setValue}
+      />
     </Host>
   );
 }
 ```
 
+</ComponentExample>
+
 ### Custom colors
 
 Use the `colors` prop to override the default Material3 colors for the slider's thumb, track, and tick marks.
 
-```tsx CustomColorsSliderExample.tsx
+<ComponentExample
+  title="CustomColorsSliderExample.tsx"
+  src="/static/images/expo-ui/examples/slider-custom-colors-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/slider-custom-colors-android-dark.webp"
+  alt="A slider with a purple thumb, purple active track, and grey inactive track">
+
+```tsx
 import { useState } from 'react';
 import { Host, Slider } from '@expo/ui/jetpack-compose';
 
@@ -95,7 +143,9 @@ export default function CustomColorsSliderExample() {
   const [value, setValue] = useState(0.5);
 
   return (
-    <Host matchContents>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Slider
         value={value}
         colors={{
@@ -110,13 +160,27 @@ export default function CustomColorsSliderExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom thumb and track
 
 Use both `Slider.Thumb` and `Slider.Track` slots for a fully custom slider appearance.
 
-```tsx FullyCustomSliderExample.tsx
+<ComponentExample
+  title="FullyCustomSliderExample.tsx"
+  src="/static/images/expo-ui/examples/slider-custom-thumb-track-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/slider-custom-thumb-track-android-dark.webp"
+  alt="A slider with a purple circular thumb on a purple and grey split track">
+
+```tsx
 import { useState } from 'react';
-import { Host, Slider, Shape, Row, Box } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Slider,
+  Shape,
+  Row,
+  Box,
+} from '@expo/ui/jetpack-compose';
 import {
   fillMaxWidth,
   height,
@@ -131,10 +195,18 @@ export default function FullyCustomSliderExample() {
   const [value, setValue] = useState(0.5);
 
   return (
-    <Host matchContents>
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
       <Slider value={value} onValueChange={setValue}>
         <Slider.Thumb>
-          <Box modifiers={[size(24, 24), clip(Shapes.Circle), background('#6200EE')]} />
+          <Box
+            modifiers={[
+              size(24, 24),
+              clip(Shapes.Circle),
+              background('#6200EE'),
+            ]}
+          />
         </Slider.Thumb>
         <Slider.Track>
           <Row modifiers={[fillMaxWidth(), height(8)]}>
@@ -146,7 +218,10 @@ export default function FullyCustomSliderExample() {
             <Shape.RoundedCorner
               color="#BDBDBD"
               cornerRadii={{ topEnd: 4, bottomEnd: 4 }}
-              modifiers={[weight(Math.max(1 - value, 0.01)), height(8)]}
+              modifiers={[
+                weight(Math.max(1 - value, 0.01)),
+                height(8),
+              ]}
             />
           </Row>
         </Slider.Track>
@@ -156,10 +231,15 @@ export default function FullyCustomSliderExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
 import { Slider } from '@expo/ui/jetpack-compose';
 ```
 
-<APISection packageName="expo-ui/jetpack-compose/slider" apiName="Slider" />
+<APISection
+  packageName="expo-ui/jetpack-compose/slider"
+  apiName="Slider"
+/>

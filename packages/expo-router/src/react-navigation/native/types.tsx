@@ -59,11 +59,6 @@ export type LocaleDirection = 'ltr' | 'rtl';
 
 export type LinkingOptions<ParamList extends object> = {
   /**
-   * Whether deep link handling should be enabled.
-   * Defaults to true.
-   */
-  enabled?: boolean;
-  /**
    * The prefixes are stripped from the URL before parsing them.
    * Usually they are the `scheme` + `host` (e.g. `myapp://chat?user=jane`)
    *

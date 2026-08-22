@@ -101,6 +101,7 @@ function state(
   over: Partial<{
     enabled: boolean;
     threshold: number;
+    includeUrlParams: boolean;
     reported: Set<string>;
     subscription: { remove: () => void } | null;
     appMetrics: FakeAppMetrics | null;
@@ -110,6 +111,7 @@ function state(
   return {
     enabled: true,
     threshold: 2,
+    includeUrlParams: false,
     reported: new Set<string>(),
     subscription: null,
     appMetrics: makeAppMetrics(),
@@ -221,6 +223,194 @@ describe('reportIfOversized', () => {
     expect(() => reportIfOversized(state({ appMetrics: null }), image(1000))).not.toThrow();
   });
 
+  it('strips the query and fragment from the reported url by default', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(
+      state({ appMetrics }),
+      image(1000, 1000, 'https://example.com/a.png?token=secret#frag')
+    );
+
+    expect(appMetrics.logEvent).toHaveBeenCalledTimes(1);
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.url).toBe('https://example.com/a.png');
+  });
+
+  it('dedups on the stripped url so signed variants of one image report once', () => {
+    const appMetrics = makeAppMetrics();
+    const s = state({ appMetrics });
+
+    reportIfOversized(s, image(1000, 1000, 'https://example.com/a.png?token=1'));
+    reportIfOversized(s, image(1000, 1000, 'https://example.com/a.png?token=2'));
+
+    expect(appMetrics.logEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports the full url when includeUrlParams is enabled', () => {
+    const appMetrics = makeAppMetrics();
+    const s = state({ appMetrics, includeUrlParams: true });
+
+    reportIfOversized(s, image(1000, 1000, 'https://example.com/a.png?w=4000'));
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.url).toBe(
+      'https://example.com/a.png?w=4000'
+    );
+  });
+
+  it('dedups on the full url when includeUrlParams is enabled', () => {
+    const appMetrics = makeAppMetrics();
+    const s = state({ appMetrics, includeUrlParams: true });
+
+    reportIfOversized(s, image(1000, 1000, 'https://example.com/a.png?id=1'));
+    reportIfOversized(s, image(1000, 1000, 'https://example.com/a.png?id=2'));
+
+    expect(appMetrics.logEvent).toHaveBeenCalledTimes(2);
+  });
+
+  it('reports file: urls', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(state({ appMetrics }), image(1000, 1000, 'file:///var/app/assets/hero.png'));
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.url).toBe(
+      'file:///var/app/assets/hero.png'
+    );
+  });
+
+  it('reports bundled android.resource: urls', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(
+      state({ appMetrics }),
+      image(1000, 1000, 'android.resource://com.example.app/2131165280')
+    );
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.url).toBe(
+      'android.resource://com.example.app/2131165280'
+    );
+  });
+
+  it('never reports urls outside the http, https, file, and android.resource schemes', () => {
+    const appMetrics = makeAppMetrics();
+    const s = state({ appMetrics });
+
+    reportIfOversized(s, image(1000, 1000, 'ph://ED7AC36B-A150-4C38-BB8C-B6D696F4F2ED/L0/001'));
+    reportIfOversized(s, image(1000, 1000, 'content://media/external/images/media/12'));
+
+    expect(appMetrics.logEvent).not.toHaveBeenCalled();
+  });
+
+  it('flags a query-stripped url with urlSanitized', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(
+      state({ appMetrics }),
+      image(1000, 1000, 'https://example.com/a.png?token=1')
+    );
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.urlSanitized).toBe(true);
+  });
+
+  it('flags a credential-stripped url with urlSanitized even when includeUrlParams is enabled', () => {
+    const appMetrics = makeAppMetrics();
+    const s = state({ appMetrics, includeUrlParams: true });
+
+    reportIfOversized(s, image(1000, 1000, 'https://user:pass@example.com/a.png?w=4000'));
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.urlSanitized).toBe(true);
+  });
+
+  it('reports urlSanitized as false when the url is unchanged', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(state({ appMetrics }), image(1000, 1000, 'https://example.com/a.png'));
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.urlSanitized).toBe(false);
+  });
+
+  it('never reports data: urls', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(state({ appMetrics }), image(1000, 1000, 'data:image/png;base64,aGVsbG8='));
+
+    expect(appMetrics.logEvent).not.toHaveBeenCalled();
+  });
+
+  it('never reports data: urls even when includeUrlParams is enabled', () => {
+    const appMetrics = makeAppMetrics();
+    const s = state({ appMetrics, includeUrlParams: true });
+
+    reportIfOversized(s, image(1000, 1000, 'data:image/png;base64,aGVsbG8='));
+
+    expect(appMetrics.logEvent).not.toHaveBeenCalled();
+  });
+
+  it('strips basic-auth credentials from the reported url', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(
+      state({ appMetrics }),
+      image(1000, 1000, 'https://user:pass@example.com/a.png?token=1')
+    );
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.url).toBe('https://example.com/a.png');
+  });
+
+  it('strips credentials that contain an unencoded @', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(
+      state({ appMetrics }),
+      image(1000, 1000, 'https://user:pa@ss@example.com/a.png')
+    );
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.url).toBe('https://example.com/a.png');
+  });
+
+  it('strips credentials even when includeUrlParams is enabled', () => {
+    const appMetrics = makeAppMetrics();
+    const s = state({ appMetrics, includeUrlParams: true });
+
+    reportIfOversized(s, image(1000, 1000, 'https://user:pass@example.com/a.png?w=4000'));
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.url).toBe(
+      'https://example.com/a.png?w=4000'
+    );
+  });
+
+  it('keeps an @ that is part of the path or query', () => {
+    const appMetrics = makeAppMetrics();
+    const s = state({ appMetrics, includeUrlParams: true });
+
+    reportIfOversized(s, image(1000, 1000, 'https://example.com/img@2x.png'));
+    reportIfOversized(s, image(1000, 1000, 'https://example.com?email=a@b.com'));
+
+    expect(appMetrics.logEvent.mock.calls[0][1].attributes.url).toBe(
+      'https://example.com/img@2x.png'
+    );
+    expect(appMetrics.logEvent.mock.calls[1][1].attributes.url).toBe(
+      'https://example.com/?email=a@b.com'
+    );
+  });
+
+  it('reports urls in normalized form without flagging them as sanitized', () => {
+    const appMetrics = makeAppMetrics();
+
+    reportIfOversized(state({ appMetrics }), image(1000, 1000, 'HTTPS://EXAMPLE.com/a.png'));
+
+    const attributes = appMetrics.logEvent.mock.calls[0][1].attributes;
+    expect(attributes.url).toBe('https://example.com/a.png');
+    expect(attributes.urlSanitized).toBe(false);
+  });
+
+  it('never reports an unparseable url', () => {
+    const appMetrics = makeAppMetrics();
+
+    // The scheme-less name React Native gives a bundled asset on Android in release builds.
+    reportIfOversized(state({ appMetrics }), image(1000, 1000, 'src_assets_hero'));
+
+    expect(appMetrics.logEvent).not.toHaveBeenCalled();
+  });
+
   it('does not throw when logEvent fails', () => {
     const appMetrics: FakeAppMetrics = {
       logEvent: jest.fn(() => {
@@ -274,6 +464,24 @@ describe('activate', () => {
 
     expect(s.enabled).toBe(true);
     expect(s.threshold).toBe(1.5);
+  });
+
+  it('keeps url params disabled by default', () => {
+    const s = state({ enabled: false, includeUrlParams: true });
+
+    activate(s, { 'expo-image': true });
+    expect(s.includeUrlParams).toBe(false);
+
+    activate(s, { 'expo-image': { oversizeThreshold: 3 } });
+    expect(s.includeUrlParams).toBe(false);
+  });
+
+  it('reads includeUrlParams from an object config', () => {
+    const s = state({ enabled: false });
+
+    activate(s, { 'expo-image': { includeUrlParams: true } });
+
+    expect(s.includeUrlParams).toBe(true);
   });
 
   it('does not enable or subscribe when the config is absent', () => {

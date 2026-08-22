@@ -8,8 +8,25 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A scrollable container, defaulting to vertical scrolling. Use [`direction="horizontal"`](#direction) for horizontal lists.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/scrollview/android-light.webp',
+    darkSrc: '/static/images/expo-ui/scrollview/android-dark.webp',
+    alt: 'A vertical list of six items inside a scroll view',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/scrollview/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/scrollview/ios-dark.webp',
+    alt: 'A vertical list of items inside a scroll view',
+  }}
+/>
 
 ## Installation
 
@@ -19,16 +36,35 @@ A scrollable container, defaulting to vertical scrolling. Use [`direction="horiz
 
 ### Vertical scrolling
 
-```tsx VerticalScrollViewExample.tsx
+<ComponentExample
+  title="VerticalScrollViewExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-scrollview-vertical-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-scrollview-vertical-android-dark.webp',
+    alt: 'A vertical list of numbered rows filling the screen',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-scrollview-vertical-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-scrollview-vertical-ios-dark.webp',
+    alt: 'A vertical list of numbered rows filling the screen',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, ScrollView, Column, Text } from '@expo/ui';
 
 export default function VerticalScrollViewExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
     <Host style={{ flex: 1 }}>
       <ScrollView>
         <Column spacing={8}>
           {Array.from({ length: 30 }).map((_, i) => (
-            <Text key={i}>Row {i + 1}</Text>
+            <Text key={i} textStyle={ink}>
+              {`Row ${i + 1}`}
+            </Text>
           ))}
         </Column>
       </ScrollView>
@@ -37,18 +73,39 @@ export default function VerticalScrollViewExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Horizontal scrolling
 
-```tsx HorizontalScrollViewExample.tsx
+<ComponentExample
+  title="HorizontalScrollViewExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-scrollview-horizontal-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-scrollview-horizontal-android-dark.webp',
+    alt: 'A horizontal strip of numbered items running off the screen edge',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-scrollview-horizontal-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-scrollview-horizontal-ios-dark.webp',
+    alt: 'A horizontal strip of numbered items running off the screen edge',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, ScrollView, Row, Text } from '@expo/ui';
 
 export default function HorizontalScrollViewExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <ScrollView direction="horizontal">
         <Row spacing={12}>
           {Array.from({ length: 20 }).map((_, i) => (
-            <Text key={i}>Item {i + 1}</Text>
+            <Text key={i} textStyle={ink}>
+              {`Item ${i + 1}`}
+            </Text>
           ))}
         </Row>
       </ScrollView>
@@ -57,6 +114,8 @@ export default function HorizontalScrollViewExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -64,3 +123,5 @@ import { ScrollView } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/scrollview" apiName="ScrollView" />
+
+</PlatformTabsGroup>

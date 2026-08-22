@@ -4,7 +4,7 @@
     {
       "name": "ExpoImageManipulator",
       "podName": "ExpoImageManipulator",
-      "platforms": ["iOS(.v16)"],
+      "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",

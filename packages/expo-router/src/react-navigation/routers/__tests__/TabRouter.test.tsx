@@ -14,6 +14,77 @@ import {
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: jest.fn(() => 'test') }));
 
+describe('state without router metadata', () => {
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeGetIdList: {},
+  };
+  const createState = (index = 1): TabNavigationState<ParamListBase> => ({
+    stale: false,
+    key: 'root',
+    index,
+    routeNames: options.routeNames,
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
+    ],
+  });
+
+  test('handled actions return tab type and history', () => {
+    const result = TabRouter({}).getStateForAction(
+      createState(0),
+      TabActions.jumpTo('baz'),
+      options
+    );
+
+    expect(result).toMatchObject({ type: 'tab', history: expect.any(Array) });
+  });
+
+  test('complete RESET state gets tab type and rebuilt history', () => {
+    const state = createState();
+    const result = TabRouter({}).getStateForAction(
+      state,
+      CommonActions.reset({ ...state, index: 0, routes: [state.routes[0]!] }),
+      options
+    );
+
+    expect(result).toMatchObject({
+      type: 'tab',
+      history: [{ type: 'route', key: 'bar' }],
+    });
+  });
+
+  test('passes partial RESET state through unchanged', () => {
+    const partialState = { routes: [{ name: 'bar' }] };
+    const result = TabRouter({}).getStateForAction(
+      createState(),
+      CommonActions.reset(partialState),
+      options
+    );
+
+    expect(result).toBe(partialState);
+  });
+
+  test('route focus returns tab type and history', () => {
+    expect(TabRouter({}).getStateForRouteFocus(createState(0), 'baz')).toMatchObject({
+      type: 'tab',
+      history: expect.any(Array),
+    });
+  });
+
+  test('preserves drawer type when used by DrawerRouter', () => {
+    const state = { ...createState(0), type: 'drawer' as const };
+    // DrawerRouter delegates to TabRouter with the structurally compatible drawer state.
+    const result = TabRouter({}).getStateForAction(
+      state as unknown as TabNavigationState<ParamListBase>,
+      TabActions.jumpTo('baz'),
+      options
+    );
+
+    expect(result?.type).toBe('drawer');
+  });
+});
+
 const createTabState = (
   options: RouterConfigOptions,
   initialRouteName?: string
@@ -220,7 +291,6 @@ test('gets rehydrated state from partial state', () => {
 
 test.each([
   CommonActions.navigate('baz', { value: 2 }),
-  CommonActions.navigateDeprecated('baz', { value: 2 }),
   TabActions.jumpTo('baz', { value: 2 }),
   TabActions.replace('baz', { value: 2 }),
 ])('$type mints and focuses an absent declared route', (action) => {
