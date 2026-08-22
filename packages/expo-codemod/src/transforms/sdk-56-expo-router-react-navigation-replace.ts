@@ -7,6 +7,12 @@
  *   @react-navigation/bottom-tabs   → expo-router/js-tabs
  *   @react-navigation/material-top-tabs → expo-router/js-top-tabs
  *
+ * Rewritten site types: named imports and named re-exports
+ * (`export { A } from '...'`).
+ *
+ * `jest.mock(...)`/`jest.requireActual(...)` calls are reported but never
+ * rewritten — see the note on JEST_MODULE_METHODS below.
+ *
  * Unsupported (no direct equivalent — throws to surface the migration step):
  *   @react-navigation/native-stack  → use the `Stack` layout from expo-router
  *   @react-navigation/drawer        → use the `Drawer` layout from expo-router
@@ -16,6 +22,9 @@
 import chalk from 'chalk';
 import type {
   ASTPath,
+  CallExpression,
+  ExportAllDeclaration,
+  ExportNamedDeclaration,
   ImportDeclaration,
   ImportDefaultSpecifier,
   ImportNamespaceSpecifier,
@@ -76,24 +85,37 @@ const markAsInlineType = <T extends ImportSpecifierWithKind>(spec: T): T => {
   return clone;
 };
 
+// Any site that carries a module specifier: an import declaration, a re-export
+// declaration, or a `jest.mock`-style call. Not all of them are rewritable —
+// jest calls are only reported.
+type ModuleSite = {
+  sourceModule: string;
+  line: number | '?';
+  kind: 'import' | 'export' | 'call';
+};
+
+const getDeclarationSite = (
+  path: ASTPath<ImportDeclaration | ExportNamedDeclaration | ExportAllDeclaration>,
+  kind: 'import' | 'export'
+): ModuleSite => ({
+  sourceModule: path.node.source?.value as string,
+  line: path.node.loc?.start.line ?? '?',
+  kind,
+});
+
 /**
- * Collects errors for imports from packages that have no direct expo-router
- * equivalent (e.g. `@react-navigation/native-stack`, `@react-navigation/drawer`).
- * These require a structural migration to the file-based `Stack`/`Drawer`
- * layouts and cannot be rewritten automatically.
+ * Collects errors for sites referencing packages that have no direct
+ * expo-router equivalent (e.g. `@react-navigation/native-stack`,
+ * `@react-navigation/drawer`). These require a structural migration to the
+ * file-based `Stack`/`Drawer` layouts and cannot be rewritten automatically.
  */
-const collectUnsupportedPackageErrors = (
-  filePath: string,
-  paths: ASTPath<ImportDeclaration>[]
-): string[] => {
+const collectUnsupportedPackageErrors = (filePath: string, sites: ModuleSite[]): string[] => {
   const errors: string[] = [];
-  for (const declarationPath of paths) {
-    const sourceModule = declarationPath.node.source.value as string;
-    const message = UNSUPPORTED_PACKAGES[sourceModule];
+  for (const site of sites) {
+    const message = UNSUPPORTED_PACKAGES[site.sourceModule];
     if (!message) continue;
-    const line = declarationPath.node.loc?.start.line ?? '?';
     errors.push(
-      `${filePath}:${line} - import from "${sourceModule}" cannot be migrated. ${message}`
+      `${filePath}:${site.line} - ${site.kind} from "${site.sourceModule}" cannot be migrated. ${message}`
     );
   }
   return errors;
@@ -172,42 +194,202 @@ const mergeGroup = (j: JSCodeshift, groupPaths: ASTPath<ImportDeclaration>[]): v
   for (const declarationPath of declarationsToRemove) j(declarationPath).remove();
 };
 
+// Module names referenced by `jest.mock('...')` / `jest.requireActual('...')`
+// are reported for manual review, never rewritten.
+//
+// `jest.mock` keys the module registry on the *resolved* module, and
+// `expo-router/react-navigation` is expo-router's own bundled copy of React
+// Navigation (`expo-router/src/react-navigation/`), not a re-export of
+// `@react-navigation/*`. Rewriting the module name would therefore point the
+// mock at a different implementation than the one it was written against, and
+// the factory — which often mirrors the shape of the original package — may not
+// match. Whether the migrated file wants the expo-router copy mocked, the
+// original package left mocked for code that still imports it, or no mock at
+// all depends on the test, so we surface the call and let the author decide.
+const JEST_MODULE_METHODS = new Set(['mock', 'doMock', 'requireActual', 'unmock']);
+
+const findJestModuleCalls = (j: JSCodeshift, root: ReturnType<JSCodeshift>) =>
+  root
+    .find(j.CallExpression)
+    .filter((path: ASTPath<CallExpression>) => {
+      const { callee } = path.node;
+      if (
+        callee.type !== 'MemberExpression' ||
+        callee.object.type !== 'Identifier' ||
+        callee.object.name !== 'jest' ||
+        callee.property.type !== 'Identifier' ||
+        !JEST_MODULE_METHODS.has(callee.property.name)
+      ) {
+        return false;
+      }
+      const [firstArg] = path.node.arguments;
+      return (
+        firstArg != null &&
+        (firstArg.type === 'StringLiteral' || firstArg.type === 'Literal') &&
+        typeof firstArg.value === 'string'
+      );
+    })
+    .paths();
+
+const getCallSite = (path: ASTPath<CallExpression>): ModuleSite => ({
+  sourceModule: (path.node.arguments[0] as { value: string }).value,
+  line: path.node.loc?.start.line ?? '?',
+  kind: 'call',
+});
+
+// `export { A } from '...'` can be rewritten exactly like a named import.
+// `export v from '...'` (export-default-from) and `export * as ns from '...'`
+// cannot — same reason default and namespace imports are unsupported.
+const isNamedReExport = (path: ASTPath<ExportNamedDeclaration>): boolean =>
+  path.node.source != null &&
+  (path.node.specifiers ?? []).every((spec) => spec.type === 'ExportSpecifier');
+
+// Re-export styles that carry a module specifier but cannot be rewritten. The
+// `ts`/`tsx` parsers give both an `ExportNamedDeclaration` with a single
+// specifier, so they reach the same list as named re-exports and would
+// otherwise be skipped silently. (The `jsx` parser instead reports
+// `export * as ns from` as an `ExportAllDeclaration`, which the loop above
+// already covers, and rejects `export v from` outright.)
+const UNSUPPORTED_EXPORT_SPECIFIERS: Record<string, string> = {
+  ExportNamespaceSpecifier: 'namespace re-export (export * as ns from ...)',
+  ExportDefaultSpecifier: 'default re-export (export v from ...)',
+};
+
 const transform: Transform = (fileInfo, api) => {
   const j = api.jscodeshift;
   const root = j(fileInfo.source);
 
-  const unsupportedPackagePaths = root
-    .find(j.ImportDeclaration)
-    .filter((path) => (path.node.source.value as string) in UNSUPPORTED_PACKAGES)
+  const importPaths = root.find(j.ImportDeclaration).paths();
+  const reExportPaths = root
+    .find(j.ExportNamedDeclaration)
+    .filter((path) => path.node.source != null)
     .paths();
+  const exportAllPaths = root.find(j.ExportAllDeclaration).paths();
+  const jestCallPaths = findJestModuleCalls(j, root);
 
-  const unsupportedPackageErrors = collectUnsupportedPackageErrors(
-    fileInfo.path,
-    unsupportedPackagePaths
-  );
+  const allSites: ModuleSite[] = [
+    ...importPaths.map((path) => getDeclarationSite(path, 'import')),
+    ...reExportPaths.map((path) => getDeclarationSite(path, 'export')),
+    ...exportAllPaths.map((path) => getDeclarationSite(path, 'export')),
+    ...jestCallPaths.map(getCallSite),
+  ];
+
+  const unsupportedPackageErrors = collectUnsupportedPackageErrors(fileInfo.path, allSites);
   if (unsupportedPackageErrors.length) {
     printErrorBlock('Migration required — manual change needed', unsupportedPackageErrors);
   }
 
-  const mappablePaths = root
-    .find(j.ImportDeclaration)
-    .filter((path) => (path.node.source.value as string) in IMPORT_MAP)
-    .paths();
+  if (!allSites.some((site) => site.sourceModule in IMPORT_MAP)) return undefined;
 
-  if (mappablePaths.length === 0) return undefined;
+  const mappablePaths = importPaths.filter(
+    (path) => (path.node.source.value as string) in IMPORT_MAP
+  );
 
   const errors = collectUnsupportedImportStyleErrors(fileInfo.path, mappablePaths);
+
+  // `export * from '...'` re-exports the source module's full namespace, which
+  // may not match the expo-router entry point shape — same reason namespace
+  // imports are unsupported.
+  for (const path of exportAllPaths) {
+    const sourceModule = path.node.source.value as string;
+    if (!(sourceModule in IMPORT_MAP)) continue;
+    errors.push(
+      [
+        `${fileInfo.path}:${
+          path.node.loc?.start.line ?? '?'
+        } - namespace re-export (export * from "${sourceModule}") is not supported.`,
+        'Only named imports and named re-exports can be rewritten by this codemod.',
+        'Replace it with named re-exports and re-run the codemod.',
+      ].join('\n')
+    );
+  }
+
+  // `export * as ns from '...'` and `export v from '...'` are parsed as named
+  // export declarations, so they land in `reExportPaths` but are not rewritable.
+  // Report them rather than skipping them silently.
+  for (const path of reExportPaths) {
+    const sourceModule = path.node.source?.value as string;
+    if (!(sourceModule in IMPORT_MAP) || isNamedReExport(path)) continue;
+    for (const spec of path.node.specifiers ?? []) {
+      const label = UNSUPPORTED_EXPORT_SPECIFIERS[spec.type];
+      if (!label) continue;
+      errors.push(
+        [
+          `${fileInfo.path}:${
+            path.node.loc?.start.line ?? '?'
+          } - ${label} from "${sourceModule}" is not supported.`,
+          'Only named imports and named re-exports can be rewritten by this codemod.',
+          'Replace it with named re-exports and re-run the codemod.',
+        ].join('\n')
+      );
+    }
+  }
+
   if (errors.length) {
     printErrorBlock('Unsupported import style — manual change needed', errors);
   }
 
-  if (unsupportedPackageErrors.length || errors.length) {
-    return undefined;
+  // Jest module calls are reported, never rewritten. See JEST_MODULE_METHODS.
+  const jestWarnings = jestCallPaths
+    .filter((path) => ((path.node.arguments[0] as { value: string }).value as string) in IMPORT_MAP)
+    .map((path) => {
+      const sourceModule = (path.node.arguments[0] as { value: string }).value;
+      const method = (
+        (path.node.callee as { property: { name: string } }).property as {
+          name: string;
+        }
+      ).name;
+      return [
+        `${fileInfo.path}:${
+          path.node.loc?.start.line ?? '?'
+        } - jest.${method}("${sourceModule}") was left unchanged.`,
+        `"${IMPORT_MAP[sourceModule]}" is expo-router's own bundled copy of React`,
+        `Navigation, not a re-export of "${sourceModule}", so this mock no longer applies`,
+        'to the imports migrated in this file. Point it at the expo-router module by hand',
+        'if the test still needs a mock.',
+      ].join('\n');
+    });
+
+  if (jestWarnings.length) {
+    printErrorBlock('Jest module mocks — manual review needed', jestWarnings);
   }
 
+  // We intentionally do not bail out of the entire file when there are
+  // unsupported packages (e.g. native-stack/drawer) or unsupported import
+  // styles. Those are reported above for the user to migrate manually, but any
+  // clean named imports in the same file must still be rewritten — otherwise
+  // they are silently left on `@react-navigation/*` with nothing reported about
+  // them, which is the failure mode this codemod exists to prevent.
+  //
+  // A file that still holds a reported import is not usable until that manual
+  // migration happens either way: Metro rejects any `@react-navigation/*`
+  // import from app code once expo-router is installed (see
+  // `withMetroMultiPlatform.ts`). Migrating what we can shrinks the manual step
+  // instead of hiding it.
+  let didRewrite = false;
   for (const path of mappablePaths) {
+    const specifiers = (path.node.specifiers ?? []) as ImportSpecifierWithKind[];
+    // Skip imports we cannot safely rewrite (default/namespace style). These are
+    // reported above and left untouched for the user to migrate manually.
+    if (specifiers.some((spec) => UNSUPPORTED_SPECIFIERS[spec.type] != null)) {
+      continue;
+    }
     const sourceModule = path.node.source.value as string;
     path.node.source.value = IMPORT_MAP[sourceModule];
+    didRewrite = true;
+  }
+
+  for (const path of reExportPaths) {
+    const source = path.node.source;
+    if (source == null) continue;
+    const sourceModule = source.value as string;
+    if (!(sourceModule in IMPORT_MAP) || !isNamedReExport(path)) continue;
+    source.value = IMPORT_MAP[sourceModule];
+    didRewrite = true;
+  }
+
+  if (!didRewrite) {
+    return undefined;
   }
 
   const groups = groupPathsBySource(root.find(j.ImportDeclaration).paths());
