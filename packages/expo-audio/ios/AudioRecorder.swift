@@ -23,6 +23,9 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private var mediaServicesDidReset = false
   private var currentOptions: RecordingOptions?
   private var currentSessionOptions: AVAudioSession.CategoryOptions = []
+  // The duration a recording was armed with via `record({ forDuration })`.
+  // Remembered so an interruption resume can re-apply it — see `startRecording()`.
+  private var durationLimitSeconds: TimeInterval?
 
   private var isPrepared: Bool {
     currentState == .prepared || currentState == .recording || currentState == .paused
@@ -81,6 +84,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       ref.stop()
     }
     resetDurationTracking()
+    durationLimitSeconds = nil
     mediaServicesDidReset = false
 
     let session = AVAudioSession.sharedInstance()
@@ -121,6 +125,23 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   private func resetDurationTracking() {
     startTimestamp = 0
     totalRecordedDuration = 0
+    // `durationLimitSeconds` is deliberately NOT cleared here. This helper runs
+    // from `updateStateForDirectRecording()`, which is called *after* a
+    // `record(forDuration:)` has already armed the limit, so clearing it here
+    // would discard the limit the caller just set. It is cleared at capture
+    // boundaries instead.
+  }
+
+  /// Arms `record(forDuration:)` and remembers the limit so it survives a
+  /// pause/resume. Callers should use this rather than driving `ref` directly.
+  func recordForDuration(_ seconds: TimeInterval, atTime absoluteTime: TimeInterval? = nil) {
+    if let absoluteTime {
+      ref.record(atTime: absoluteTime, forDuration: seconds)
+    } else {
+      ref.record(forDuration: seconds)
+    }
+    updateStateForDirectRecording()
+    durationLimitSeconds = seconds
   }
 
   func startRecording() throws -> [String: Any] {
@@ -136,7 +157,23 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       resetDurationTracking()
     }
 
-    ref.record()
+    // If the recording was armed with a duration, re-apply it. A bare
+    // `ref.record()` carries no duration, so resuming after an interruption
+    // silently dropped the limit and the recording would continue indefinitely.
+    //
+    // `forDuration` is absolute rather than incremental — the recorder stops
+    // when its own `currentTime` reaches the value — so the ORIGINAL limit is
+    // re-applied, not a remaining-time calculation.
+    if let limit = durationLimitSeconds {
+      if ref.currentTime >= limit {
+        // The allowance is already spent; stop rather than resume.
+        stopRecording()
+        return getRecordingStatus()
+      }
+      ref.record(forDuration: limit)
+    } else {
+      ref.record()
+    }
 
     startTimestamp = deviceCurrentTime
     currentState = .recording
@@ -160,6 +197,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ref.stop()
     currentState = .stopped
     resetDurationTracking()
+    durationLimitSeconds = nil
   }
 
   func pauseRecording() {
@@ -194,6 +232,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
   func handleMediaServicesReset() {
     mediaServicesDidReset = true
     resetDurationTracking()
+    durationLimitSeconds = nil
 
     if let options = currentOptions {
       do {
@@ -225,6 +264,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     // Update internal state when recording finishes automatically (e.g., from recordForDuration)
     currentState = .stopped
     resetDurationTracking()
+    durationLimitSeconds = nil
 
     emit(event: recordingStatus, payload: [
       "id": id,
@@ -239,6 +279,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     // Update internal state on error
     currentState = .error
     resetDurationTracking()
+    durationLimitSeconds = nil
 
     emit(event: recordingStatus, payload: [
       "id": id,
