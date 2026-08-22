@@ -300,6 +300,27 @@ export function stripWhitespace(str: string): string {
   return str.replace(/\s+/g, '').trim();
 }
 
+/** Write a fake npm package that ships agent skills, for testing `expo skills`. */
+export async function writeSkillPackageAsync(
+  packageDir: string,
+  packageName: string,
+  skillNames: string[]
+): Promise<void> {
+  await fs.promises.mkdir(packageDir, { recursive: true });
+  await fs.promises.writeFile(
+    path.join(packageDir, 'package.json'),
+    JSON.stringify({ name: packageName, version: '1.0.0' })
+  );
+  for (const skillName of skillNames) {
+    const skillDir = path.join(packageDir, 'skills', skillName);
+    await fs.promises.mkdir(skillDir, { recursive: true });
+    await fs.promises.writeFile(
+      path.join(skillDir, 'SKILL.md'),
+      `---\nname: Skill ${skillName}\ndescription: Description for ${skillName}\n---\n\nBody of ${skillName}\n`
+    );
+  }
+}
+
 /**
  * Gets the data from a page and its associated loader.
  *
