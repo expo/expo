@@ -40,6 +40,8 @@ export function BottomSheet({
   testID,
   modifiers,
   shouldDismissOnBackPress = true,
+  shouldDismissOnClickOutside = true,
+  scrimColor,
   contentPadding,
 }: BottomSheetProps) {
   const sheetRef = useRef<ModalBottomSheetRef>(null);
@@ -82,7 +84,8 @@ export function BottomSheet({
         onDismissRequest={onDismiss}
         showDragHandle={showDragIndicator}
         skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
-        properties={{ shouldDismissOnBackPress }}
+        properties={{ shouldDismissOnBackPress, shouldDismissOnClickOutside }}
+        scrimColor={scrimColor}
         modifiers={modifiers}>
         <Column modifiers={contentModifiers}>{children}</Column>
       </ModalBottomSheet>
