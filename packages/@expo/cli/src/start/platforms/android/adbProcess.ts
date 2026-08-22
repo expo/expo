@@ -10,12 +10,16 @@ export class AdbProcessError extends Error {
     message: string,
     readonly operation: string,
     readonly phase: AdbProcessPhase,
-    readonly remoteCompletionUnknown?: true,
-    readonly spawnFailed?: true
+    remoteCompletionUnknown?: true,
+    spawnFailed?: true
   ) {
     super(message);
+    this.remoteCompletionUnknown = remoteCompletionUnknown;
+    this.spawnFailed = spawnFailed;
   }
 
+  remoteCompletionUnknown?: boolean;
+  spawnFailed?: boolean;
   stdout?: string;
   stderr?: string;
   status?: number;
@@ -157,7 +161,7 @@ async function runAdbProcessAsync(
       }
 
       if (params.hasSideEffects && error instanceof Error) {
-        Object.assign(error, { remoteCompletionUnknown: true });
+        (error as AdbProcessError).remoteCompletionUnknown = true;
       }
 
       throw error;
