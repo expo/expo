@@ -155,6 +155,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   let onBarcodeScanned = EventDispatcher()
   let onResponsiveOrientationChanged = EventDispatcher()
   let onAvailableLensesChanged = EventDispatcher()
+  let onRecordingProgress = EventDispatcher()
 
   internal var deviceOrientation: UIInterfaceOrientation {
     SceneGeometry.interfaceOrientation(for: self)
