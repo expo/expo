@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. `npx expo needs-rebuild` reads it to detect when the installed app is stale. Release builds do not compute or ship the file. Set `EXPO_SKIP_FINGERPRINT_EMBED=1` to opt out. ([#48919](https://github.com/expo/expo/pull/48919) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 - [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
