@@ -103,7 +103,7 @@
     "jest-expo": "workspace:~56.0.4",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
-    "oxlint-config-universe": "^0.0.3",
+    "oxlint-config-universe": "^0.2.0",
     "resolve-workspace-root": "^2.0.0",
     "typescript": "^6.0.2"
   },
