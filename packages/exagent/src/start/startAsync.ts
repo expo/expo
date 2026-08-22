@@ -1,5 +1,7 @@
+import { dependsOnDevClientSync, reportFollowUps } from '../followups';
 import { autoSyncSkillsAsync } from '../skills/skillsAsync';
 import { runExpoAsync } from '../utils/expoCli';
+import { resolveStartFollowUps } from './followUps';
 import type { StartOptions } from './resolveOptions';
 
 /** How long to wait after spawning `expo start` before syncing skills. */
@@ -11,6 +13,21 @@ export const SKILLS_SYNC_IDLE_DELAY_MS = 3000;
  * @returns the exit code of the `expo start` subprocess.
  */
 export async function startAsync(projectRoot: string, options: StartOptions): Promise<number> {
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command
+  // The follow-ups go out before the subprocess does: once Metro streams into this terminal,
+  // anything printed after it scrolls away with the bundler output.
+  //
+  // The plain wrapper runs no probe, by design, so which app the URL is for is decided the way
+  // `expo start` decides it: `--dev-client`, or the `expo-dev-client` dependency, means a
+  // development build; anything else means Expo Go.
+  reportFollowUps(
+    'start',
+    resolveStartFollowUps(projectRoot, options, {
+      expoGo: !options.expoArgs.includes('--dev-client') && !dependsOnDevClientSync(projectRoot),
+      web: options.platform === 'web',
+    })
+  );
+
   return runDevServerAsync(projectRoot, ['start', ...options.expoArgs], {
     agentSkills: options.agentSkills,
   });

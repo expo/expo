@@ -30,4 +30,6 @@ export interface SkillsOptions {
   agents: string[];
   /** Print planned changes without writing. */
   dryRun: boolean;
+  /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
+  followups?: boolean;
 }

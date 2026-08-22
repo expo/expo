@@ -6,7 +6,11 @@
   "tiers": [0, 1, 2],
   "command": {
     "argv": ["start", "--plan"],
+    "env": { "LOG_EVENTS": "events.jsonl" },
     "timeoutMs": 60000
   },
-  "graders": [{ "type": "exit-code", "expect": 0 }]
+  "graders": [
+    { "type": "exit-code", "expect": 0 },
+    { "type": "jsonl-event", "file": "events.jsonl", "event": "cli:followups", "atLeast": 1 }
+  ]
 }

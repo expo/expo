@@ -11,6 +11,7 @@ export const exagentSkills: Command = async (argv) => {
       '--dry-run': Boolean,
       '--json': Boolean,
       '--agent': [String],
+      '--no-followups': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -27,6 +28,7 @@ export const exagentSkills: Command = async (argv) => {
         `--agent <agent>          Link skills for specific agents (can be used multiple times)`,
         `--dry-run                Print planned changes without modifying the project`,
         `--json                   Output the skill list as JSON (with ${'`'}list${'`'})`,
+        `--no-followups           Skip the "Next:" section of suggested follow-up commands`,
         `-h, --help               Usage info`,
       ].join('\n')
     );
@@ -45,6 +47,7 @@ export const exagentSkills: Command = async (argv) => {
     const options = {
       agents: args['--agent'] ?? [],
       dryRun: !!args['--dry-run'],
+      followups: !args['--no-followups'],
     };
 
     switch (action) {

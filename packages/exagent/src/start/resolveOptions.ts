@@ -1,7 +1,7 @@
 import type { PlanPlatform } from '../plan/types';
 
 /** Flags that `exagent start` handles itself and does not forward to `expo start`. */
-const EXAGENT_ONLY_FLAGS = ['--no-agent-skills', '--plan', '--smart', '--json'];
+const EXAGENT_ONLY_FLAGS = ['--no-agent-skills', '--no-followups', '--plan', '--smart', '--json'];
 
 /** Platform selection flags of `expo start`, mapped onto the plan engine's platforms. */
 const PLATFORM_FLAGS: Record<string, PlanPlatform> = {
@@ -41,6 +41,8 @@ export interface StartOptions {
   platform?: PlanPlatform;
   /** Print the plan as JSON instead of a table (`--json`), for `--plan` and `--smart`. */
   json: boolean;
+  /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
+  followups: boolean;
 }
 
 /**
@@ -68,5 +70,6 @@ export function resolveStartOptions(argv: string[]): StartOptions {
     // The first platform flag wins, the way `arg` resolves repeated flags.
     platform: argv.map((arg) => PLATFORM_FLAGS[arg]).find((platform) => platform != null),
     json: argv.includes('--json'),
+    followups: !argv.includes('--no-followups'),
   };
 }

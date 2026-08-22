@@ -177,6 +177,7 @@ const errorsOptions = {
   devServerUrl,
   durationMs: 2000,
   json: false,
+  followups: true,
 };
 
 describe(runtimeErrorsAsync, () => {
@@ -217,6 +218,13 @@ describe(runtimeErrorsAsync, () => {
       count: 0,
       errors: [],
       untrusted: ['errors'],
+      followups: [
+        {
+          id: 'runtime-errors-reproduce',
+          command: 'npx exagent runtime errors --duration 4000',
+          why: expect.stringContaining('reproduce'),
+        },
+      ],
     });
   });
 
@@ -235,8 +243,45 @@ describe(runtimeErrorsAsync, () => {
       'devServerUrl',
       'durationMs',
       'errors',
+      'followups',
       'untrusted',
     ]);
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — the runtime loop.
+  it(`should ask for a rerun after the reported errors are fixed`, async () => {
+    mockCollect(async () => [{ source: 'console', timestamp: 1, message: 'Request failed' }]);
+
+    await runtimeErrorsAsync(errorsOptions);
+
+    expect(printed()).toContain('Next:');
+    expect(printed()).toContain('npx exagent runtime errors --duration 2000');
+  });
+
+  it(`should ask for a longer window when nothing was reported`, async () => {
+    mockCollect(async () => []);
+
+    await runtimeErrorsAsync(errorsOptions);
+
+    expect(printed()).toContain('npx exagent runtime errors --duration 4000');
+  });
+
+  it(`should print no Next section with --no-followups`, async () => {
+    mockCollect(async () => []);
+
+    await runtimeErrorsAsync({ ...errorsOptions, followups: false });
+
+    expect(printed()).not.toContain('Next:');
+  });
+
+  it(`should embed an empty follow-up list in --json with --no-followups`, async () => {
+    mockCollect(async () => []);
+
+    await runtimeErrorsAsync({ ...errorsOptions, json: true, followups: false });
+
+    // The key stays in the set either way, so a parser reads one shape (llp/0006 §Output contract).
+    expect(console.log).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(printed()).followups).toEqual([]);
   });
 
   it(`should report a failed collection with the reason`, async () => {

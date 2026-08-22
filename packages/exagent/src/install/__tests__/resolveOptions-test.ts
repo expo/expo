@@ -9,6 +9,7 @@ describe(resolveInstallPlan, () => {
       skillContext: true,
       syncScope: 'packages',
       impact: true,
+      followups: true,
     });
   });
 
@@ -30,6 +31,7 @@ describe(resolveInstallPlan, () => {
       '--fix',
       '--no-skill-context',
       '--no-impact',
+      '--no-followups',
     ]);
 
     expect(plan.expoArgs).toEqual(['expo-sqlite', '--fix']);
@@ -69,6 +71,11 @@ describe(resolveInstallPlan, () => {
   it(`should sync every package when no package is named`, () => {
     expect(resolveInstallPlan(['--fix']).syncScope).toBe('all');
     expect(resolveInstallPlan([]).syncScope).toBe('all');
+  });
+
+  it(`should suppress the follow-ups with --no-followups`, () => {
+    expect(resolveInstallPlan(['expo-sqlite']).followups).toBe(true);
+    expect(resolveInstallPlan(['expo-sqlite', '--no-followups']).followups).toBe(false);
   });
 
   it(`should skip the sync for --check, which installs nothing`, () => {

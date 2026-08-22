@@ -40,6 +40,7 @@ describe(resolveRuntimeCommand, () => {
       devServerUrl: 'http://127.0.0.1:8081',
       durationMs: 2000,
       json: false,
+      followups: true,
     });
   });
 
@@ -58,7 +59,22 @@ describe(resolveRuntimeCommand, () => {
       devServerUrl: 'http://192.168.1.10:8081',
       durationMs: 5000,
       json: true,
+      followups: true,
     });
+  });
+
+  it(`should suppress the follow-ups of errors with --no-followups`, () => {
+    const options = resolveRuntimeCommand(['errors', '--no-followups']);
+
+    expect(options.action).toBe('errors');
+    expect(options).toMatchObject({ followups: false });
+  });
+
+  // `eval` reports no follow-ups, so the flag is unknown there rather than a silent no-op.
+  it(`should reject --no-followups on eval`, () => {
+    expect(() => resolveRuntimeCommand(['eval', '1 + 1', '--no-followups'])).toThrow(
+      /--no-followups/
+    );
   });
 
   it(`should require an action`, () => {

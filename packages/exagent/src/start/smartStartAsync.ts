@@ -2,6 +2,12 @@
 // The plan-first half of `exagent start`: probe the project, decide what must run, emit the
 // plan, then (unless `--plan` stopped us) run its steps as subprocesses.
 
+import {
+  buildStartPlanFollowUps,
+  followUpsEnabled,
+  reportFollowUps,
+  type FollowUp,
+} from '../followups';
 import { Log } from '../log';
 import { decideStartPlan } from '../plan/decide';
 import { emitStartPlan } from '../plan/emit';
@@ -12,6 +18,7 @@ import { probeProjectStateAsync } from '../project/probe';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
 import { CommandError } from '../utils/errors';
 import { runExpoAsync } from '../utils/expoCli';
+import { resolveStartFollowUps } from './followUps';
 import { isPlatformFlag, type StartOptions } from './resolveOptions';
 import { runDevServerAsync } from './startAsync';
 
@@ -28,17 +35,46 @@ export async function smartStartAsync(projectRoot: string, options: StartOptions
     lastBuild: readLastBuildFingerprints(projectRoot),
   });
 
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command
+  // `--plan` stops here, so its follow-ups are about the plan itself; `--smart` is about to run
+  // it, so its follow-ups are the ones of a running dev server. Both are computed before the plan
+  // is emitted, because `--json` carries them inside the plan object.
+  const followups = resolveModeFollowUps(projectRoot, plan, state, options);
+
   // The plan is always emitted before anything runs, so `--plan` and `--smart` show the same
   // plan and a driving agent can approve one it has already seen.
   emitStartPlan(plan, {
     mode: options.mode === 'plan' ? 'plan' : 'smart',
     json: options.json,
+    followups,
   });
+  // Printed after the plan table and before the first step, so the terminal reads in the order
+  // things happen and nothing lands in the middle of the dev server's own output.
+  reportFollowUps('start', followups, { json: options.json });
+
   if (options.mode === 'plan') {
     return 0;
   }
 
   return executePlanAsync(projectRoot, plan, state, options);
+}
+
+/** The follow-ups of the mode this run is in, or an empty list when they are suppressed. */
+function resolveModeFollowUps(
+  projectRoot: string,
+  plan: StartPlan,
+  state: ProjectState,
+  options: StartOptions
+): FollowUp[] {
+  if (options.mode === 'plan') {
+    return followUpsEnabled(options.followups) ? buildStartPlanFollowUps(plan, state) : [];
+  }
+  // The plan knows which app the dev server will be opened in, which the plain wrapper has to
+  // read off the command line.
+  return resolveStartFollowUps(projectRoot, options, {
+    expoGo: plan.target === 'expo-go',
+    web: plan.target === 'web',
+  });
 }
 
 async function executePlanAsync(

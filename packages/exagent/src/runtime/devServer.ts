@@ -112,7 +112,7 @@ export async function requireConnectedAppAsync(devServerUrl: string): Promise<Cd
   const probe = await probeDevServerAsync(url);
 
   if (!probe.reachable) {
-    throw new CommandError(
+    const error = new CommandError(
       'NO_DEV_SERVER',
       [
         `No Expo dev server answered at ${url}, so there is no app runtime to talk to.`,
@@ -120,10 +120,12 @@ export async function requireConnectedAppAsync(devServerUrl: string): Promise<Cd
         `How: run "npx expo start" in the project root and open the app on a device or simulator, then run this command again. Pass --dev-server-url to reach a dev server on another host or port.`,
       ].join('\n')
     );
+    error.suggestedCommand = 'npx exagent start --smart';
+    throw error;
   }
 
   if (probe.targets.length === 0) {
-    throw new CommandError(
+    const error = new CommandError(
       'NO_APP_CONNECTED',
       [
         `The Expo dev server at ${url} is running, but no app is connected to it.`,
@@ -131,6 +133,8 @@ export async function requireConnectedAppAsync(devServerUrl: string): Promise<Cd
         `How: open the app on a device or simulator (press "i" or "a" in the "npx expo start" terminal), wait for the bundle to finish loading, then run this command again.`,
       ].join('\n')
     );
+    error.suggestedCommand = 'npx exagent navigate /';
+    throw error;
   }
 
   return probe.targets;

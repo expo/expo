@@ -1,5 +1,10 @@
 /** Flags that `exagent install` handles itself and does not forward to `expo install`. */
-const EXAGENT_ONLY_FLAGS = ['--no-agent-skills', '--no-skill-context', '--no-impact'];
+const EXAGENT_ONLY_FLAGS = [
+  '--no-agent-skills',
+  '--no-skill-context',
+  '--no-impact',
+  '--no-followups',
+];
 
 /** Which skills to link after the install finishes. */
 export type SyncScope =
@@ -23,6 +28,8 @@ export interface InstallPlan {
   syncScope: SyncScope;
   /** Classify what the named packages changed, cleared by `--no-impact`. */
   impact: boolean;
+  /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
+  followups: boolean;
 }
 
 /**
@@ -59,5 +66,6 @@ export function resolveInstallPlan(argv: string[]): InstallPlan {
     // The impact of a full `expo install --fix` is not one package's impact, so the report only
     // runs for named packages. It is independent of the skill flags.
     impact: !argv.includes('--no-impact') && !installsNothing && positional.length > 0,
+    followups: !argv.includes('--no-followups'),
   };
 }

@@ -4,6 +4,7 @@
 // "I read the value out of the running app".
 
 import { event } from '../events';
+import { buildRuntimeErrorsFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
 import { CdpClient, type CdpEvaluateResult } from './cdpClient';
@@ -83,11 +84,25 @@ export async function runtimeErrorsAsync(options: RuntimeErrorsOptions): Promise
 
   event('runtime_errors', { devServerUrl, durationMs, count: errors.length });
 
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — the two outcomes need opposite
+  // next steps: errors mean "fix, then prove the window is clean", an empty window means the
+  // failure was probably never reproduced inside it.
+  const followups = followUpsEnabled(options.followups)
+    ? buildRuntimeErrorsFollowUps({ count: errors.length, durationMs })
+    : [];
+
   if (json) {
-    Log.log(JSON.stringify(runtimeErrorsToJson(devServerUrl, durationMs, errors), null, 2));
+    Log.log(
+      JSON.stringify(
+        { ...runtimeErrorsToJson(devServerUrl, durationMs, errors), followups },
+        null,
+        2
+      )
+    );
   } else {
     Log.log(formatRuntimeErrors(devServerUrl, durationMs, errors));
   }
+  reportFollowUps('runtime errors', followups, { json });
 
   // Collected errors are a report, not a failure of the command: the app was reached and
   // answered. A caller that wants to fail on errors reads `count` from `--json`.

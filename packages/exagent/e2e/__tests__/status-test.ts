@@ -43,6 +43,7 @@ type StatusReport = {
   skills: { agentIds: string[] | null; discovered: number; linked: number } | null;
   next: { command: string; rule: string; target: string; steps: { argv: string[] }[] } | null;
   errors: Record<string, string>;
+  followups: { id: string; command: string; why: string }[];
 };
 
 /** The hash the stub `@expo/fingerprint` bin of `dev-client-fresh-app` prints. */
@@ -169,6 +170,7 @@ describe('exagent status', () => {
         'skills',
         'next',
         'errors',
+        'followups',
       ]);
       expect(report.errors).toEqual({});
       expect(report.project).toMatchObject({
@@ -240,6 +242,36 @@ describe('exagent status', () => {
       // `2g` names the event in the `_e` field of every JSONL line.
       const status = events.find((entry) => entry._e === 'cli:status');
       expect(status).toMatchObject({ rule: 'expo-go', devServerRunning: false });
+    });
+
+    // @ref llp/0009-smart-followups.rfc.md §Examples per command — status keeps its own `next`
+    // line, so the follow-ups only reach a driving agent through JSON and the event stream.
+    it('keeps the follow-ups out of the text report', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--dev-server-url',
+        await getUnusedDevServerUrlAsync(),
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).not.toContain('Next:');
+    });
+
+    it('reports an empty follow-up list with --no-followups, keeping the key set', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, [
+        'status',
+        '--json',
+        '--no-followups',
+        '--dev-server-url',
+        await getUnusedDevServerUrlAsync(),
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      const report: StatusReport = JSON.parse(result.stdout);
+      expect(report.followups).toEqual([]);
+      expect(Object.keys(report)).toContain('followups');
     });
   });
 

@@ -35,7 +35,7 @@ describe(printProjectContextAsync, () => {
     await printProjectContextAsync(projectRoot, { json: true });
 
     expect(Log.log).toHaveBeenCalledTimes(1);
-    expect(JSON.parse(output())).toEqual(state);
+    expect(JSON.parse(output())).toEqual({ ...state, followups: expect.any(Array) });
   });
 
   // Shape test: the top-level keys of `--json` are the command's contract, so they are asserted
@@ -48,6 +48,7 @@ describe(printProjectContextAsync, () => {
     expect(Object.keys(JSON.parse(output())).sort()).toEqual([
       'expoGo',
       'fingerprint',
+      'followups',
       'hasWeb',
       'nativeDirs',
       'projectRoot',
@@ -112,5 +113,53 @@ describe(printProjectContextAsync, () => {
     await printProjectContextAsync(projectRoot, {});
 
     expect(output()).toContain('unknown');
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Design
+  describe('follow-ups', () => {
+    it(`should point at status and the start plan`, async () => {
+      mockState();
+
+      await printProjectContextAsync(projectRoot, {});
+
+      expect(output()).toContain('Next:');
+      expect(output()).toContain('npx exagent status');
+      expect(output()).toContain('npx exagent start --plan');
+    });
+
+    it(`should offer the dev client install when Expo Go is out`, async () => {
+      mockState({
+        expoGo: { compatible: false, reasons: [{ kind: 'config-plugin', detail: 'a plugin' }] },
+      });
+
+      await printProjectContextAsync(projectRoot, {});
+
+      expect(output()).toContain('npx exagent install expo-dev-client');
+    });
+
+    it(`should embed the follow-ups in the JSON brief and print nothing extra`, async () => {
+      mockState();
+
+      await printProjectContextAsync(projectRoot, { json: true });
+
+      expect(Log.log).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(output()).followups.map((item: { id: string }) => item.id)).toEqual([
+        'status',
+        'start-plan',
+      ]);
+    });
+
+    it(`should print nothing and embed an empty list with --no-followups`, async () => {
+      mockState();
+
+      await printProjectContextAsync(projectRoot, { followups: false });
+
+      expect(output()).not.toContain('Next:');
+
+      jest.mocked(Log.log).mockClear();
+      await printProjectContextAsync(projectRoot, { json: true, followups: false });
+
+      expect(JSON.parse(output()).followups).toEqual([]);
+    });
   });
 });

@@ -19,6 +19,8 @@ export interface NavigateOptions {
   appId?: string;
   /** Print the result as one JSON object instead of the human summary (`--json`). */
   json: boolean;
+  /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
+  followups: boolean;
 }
 
 const NAVIGATE_ARGS = {
@@ -28,6 +30,7 @@ const NAVIGATE_ARGS = {
   '--dev-server-url': String,
   '--app-id': String,
   '--json': Boolean,
+  '--no-followups': Boolean,
 };
 
 /**
@@ -67,5 +70,6 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
     scheme: args['--scheme'] ? String(args['--scheme']) : undefined,
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,
     json: !!args['--json'],
+    followups: !args['--no-followups'],
   };
 }

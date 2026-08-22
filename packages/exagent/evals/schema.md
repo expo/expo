@@ -75,9 +75,12 @@ link, so a symlink to a missing target still counts as a symlink.
 ```
 
 Parses a JSONL file line by line and counts the entries whose event name matches `event`. The
-event name is read from the `event`, `name`, or `type` field of each line. `atLeast` is optional
-and defaults to `1`. This is the check that makes the event stream the API under test, per LLP
-0002 layer 2 — the scenario is responsible for pointing the CLI at `file` through `command.env`.
+event name is read from the `_e`, `event`, `name`, or `type` field of each line; `_e` is the field
+`2g` writes, so it is the one the Expo CLI family uses. `atLeast` is optional and defaults to `1`.
+This is the check that makes the event stream the API under test, per LLP 0002 layer 2 — the
+scenario is responsible for pointing the CLI at `file` through `command.env`, e.g.
+`"env": { "LOG_EVENTS": "events.jsonl" }`. A relative path resolves against the workspace, which
+is both the CLI's working directory and the root grader paths are resolved from.
 
 ### `http-probe`
 

@@ -26,15 +26,18 @@ const ACTION_LABELS: Record<InstallImpactReport['action'], string> = {
  *
  * Best-effort: an install that succeeded must not fail because its impact could not be
  * classified, so nothing here throws and the exit code is untouched.
+ *
+ * @returns the classifications, which the follow-up builder reads (llp/0009), or an empty list
+ * when there was nothing to classify or the classification failed.
  */
 export async function reportInstallImpactAsync(
   projectRoot: string,
   packageNames: string[]
-): Promise<void> {
+): Promise<InstallImpactReport[]> {
   try {
     const reports = await classifyInstallImpactAsync(projectRoot, packageNames);
     if (!reports.length) {
-      return;
+      return [];
     }
 
     // Agents read the event; the printed lines are for the developer watching the install.
@@ -49,7 +52,9 @@ export async function reportInstallImpactAsync(
         }${reasons}`
       );
     }
+    return reports;
   } catch (error: any) {
     Log.warn(`Skipping the install impact report: ${error.message}`);
+    return [];
   }
 }

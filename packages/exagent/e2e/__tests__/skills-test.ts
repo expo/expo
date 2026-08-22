@@ -110,6 +110,53 @@ describe('exagent skills', () => {
       );
     });
 
+    // @ref llp/0009-smart-followups.rfc.md §Examples per command — `skills sync`.
+    it('ends with a Next section pointing at the skill list', async () => {
+      const result = await executeExagentAsync(projectRoot, [
+        'skills',
+        'sync',
+        '--agent',
+        'claude-code',
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('Next:');
+      expect(result.stdout).toContain('npx exagent skills list');
+    });
+
+    it('leaves the Next section out with --no-followups', async () => {
+      const result = await executeExagentAsync(projectRoot, [
+        'skills',
+        'sync',
+        '--agent',
+        'claude-code',
+        '--no-followups',
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).not.toContain('Next:');
+    });
+
+    it('emits one cli:followups event for a driving agent', async () => {
+      const eventsFile = path.join(projectRoot, 'skills-events.jsonl');
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['skills', 'sync', '--agent', 'claude-code'],
+        { env: { LOG_EVENTS: eventsFile } }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const events = fs
+        .readFileSync(eventsFile, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => JSON.parse(line));
+      // `2g` names the event in the `_e` field of every JSONL line.
+      const followups = events.filter((entry) => entry._e === 'cli:followups');
+      expect(followups).toHaveLength(1);
+      expect(followups[0]).toMatchObject({ command: 'skills sync' });
+    });
+
     it('treats `skills` without an action as `skills sync`', async () => {
       const result = await executeExagentAsync(projectRoot, ['skills', '--agent', 'claude-code']);
 

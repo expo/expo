@@ -232,6 +232,7 @@ describe(printStatusAsync, () => {
       'skills',
       'next',
       'errors',
+      'followups',
     ]);
   });
 
@@ -244,6 +245,7 @@ describe(printStatusAsync, () => {
       'devServer',
       'errors',
       'expoGo',
+      'followups',
       'freshness',
       'next',
       'project',
@@ -262,6 +264,7 @@ describe(printStatusAsync, () => {
       'devServer',
       'errors',
       'expoGo',
+      'followups',
       'freshness',
       'next',
       'project',
@@ -305,5 +308,57 @@ describe(printStatusAsync, () => {
       'status',
       expect.objectContaining({ rule: null, sectionErrors: ['project'] })
     );
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — status already carries "next",
+  // so its follow-ups reach a driving agent only through the event and the JSON report.
+  describe('follow-ups', () => {
+    it(`should emit the follow-up event without adding a section to the text report`, async () => {
+      await printStatusAsync(projectRoot, options);
+
+      expect(event).toHaveBeenCalledWith('followups', {
+        command: 'status',
+        followups: [
+          {
+            id: 'runtime-errors',
+            command: 'npx exagent runtime errors',
+            why: expect.any(String),
+          },
+        ],
+      });
+      expect(output()).not.toContain('Next:');
+    });
+
+    it(`should embed the follow-ups in the JSON report`, async () => {
+      await printStatusAsync(projectRoot, { ...options, json: true });
+
+      expect(Log.log).toHaveBeenCalledTimes(1);
+      expect(JSON.parse(output()).followups).toEqual([
+        { id: 'runtime-errors', command: 'npx exagent runtime errors', why: expect.any(String) },
+      ]);
+    });
+
+    it(`should never repeat the plan the next line already names`, async () => {
+      jest.mocked(getPersistedAgentIdsAsync).mockResolvedValue(['claude-code']);
+      jest.mocked(discoverSkillsAsync).mockResolvedValue([uiSkill]);
+      mockState({ expoGo: { compatible: false, reasons: [] } });
+
+      await printStatusAsync(projectRoot, { ...options, json: true });
+
+      const report = JSON.parse(output());
+      expect(report.followups.map((followup: { id: string }) => followup.id)).toEqual([
+        'runtime-errors',
+        'skills-sync',
+        'project-context',
+      ]);
+      expect(report.next.command).toBe('exagent start --smart');
+    });
+
+    it(`should embed an empty list with --no-followups, keeping the key set`, async () => {
+      await printStatusAsync(projectRoot, { ...options, json: true, followups: false });
+
+      expect(JSON.parse(output()).followups).toEqual([]);
+      expect(event).not.toHaveBeenCalledWith('followups', expect.anything());
+    });
   });
 });

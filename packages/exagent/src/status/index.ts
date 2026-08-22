@@ -10,6 +10,7 @@ export const exagentStatus: Command = async (argv) => {
       '--help': Boolean,
       '--json': Boolean,
       '--dev-server-url': String,
+      '--no-followups': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -23,6 +24,7 @@ export const exagentStatus: Command = async (argv) => {
       [
         `--json                    Print the whole report as JSON`,
         `--dev-server-url <url>    Dev server to probe (default: http://127.0.0.1:8081)`,
+        `--no-followups            Leave the suggested follow-up commands out of the report`,
         `-h, --help                Usage info`,
       ].join('\n'),
       [
@@ -55,6 +57,7 @@ export const exagentStatus: Command = async (argv) => {
     await printStatusAsync(projectRoot, {
       devServerUrl: resolveDevServerUrlFlag(args['--dev-server-url']),
       json: !!args['--json'],
+      followups: !args['--no-followups'],
     });
   })().catch(logCmdError);
 };

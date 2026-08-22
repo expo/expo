@@ -1,6 +1,7 @@
 // @ref llp/0006-agent-native-cli-surface.rfc.md — `context`: the machine-readable project brief.
 import chalk from 'chalk';
 
+import { buildContextFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
 import { probeProjectStateAsync } from '../project/probe';
 import type { ProjectState } from '../project/types';
@@ -8,24 +9,35 @@ import type { ProjectState } from '../project/types';
 /** Width of the label column of the human readable summary. */
 const LABEL_WIDTH = 12;
 
+export interface ProjectContextOptions {
+  /** Print the project brief as one JSON object instead of a summary. */
+  json?: boolean;
+  /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
+  followups?: boolean;
+}
+
 /**
  * Print the project state, either as the brief an agent parses (`--json`) or as a summary a
  * developer reads.
  */
 export async function printProjectContextAsync(
   projectRoot: string,
-  options: { json?: boolean }
+  options: ProjectContextOptions
 ): Promise<void> {
   const state = await probeProjectStateAsync(projectRoot);
+  // @ref llp/0009-smart-followups.rfc.md §Design — the brief says what the project is, so the
+  // follow-ups are the commands that answer what is true now and what would happen next.
+  const followups = followUpsEnabled(options.followups) ? buildContextFollowUps(state) : [];
 
   if (options.json) {
-    Log.log(JSON.stringify(state, null, 2));
-    return;
+    Log.log(JSON.stringify({ ...state, followups }, null, 2));
+  } else {
+    for (const line of summaryLines(state)) {
+      Log.log(line);
+    }
   }
 
-  for (const line of summaryLines(state)) {
-    Log.log(line);
-  }
+  reportFollowUps('context', followups, { json: options.json });
 }
 
 function summaryLines(state: ProjectState): string[] {

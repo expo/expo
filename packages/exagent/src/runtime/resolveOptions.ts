@@ -26,6 +26,8 @@ export interface RuntimeErrorsOptions {
   /** How long to listen for runtime errors, in milliseconds. */
   durationMs: number;
   json: boolean;
+  /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
+  followups: boolean;
 }
 
 export type RuntimeCommandOptions = RuntimeEvalOptions | RuntimeErrorsOptions;
@@ -43,9 +45,12 @@ const EVAL_ARGS = {
   '--no-await-promise': Boolean,
 };
 
+// Only `errors` reports follow-ups, so only `errors` takes the flag: on `eval` it would be a flag
+// that does nothing, and an unknown flag is a clearer answer than a silent no-op.
 const ERRORS_ARGS = {
   ...SHARED_ARGS,
   '--duration': String,
+  '--no-followups': Boolean,
 };
 
 /**
@@ -111,6 +116,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     devServerUrl: resolveDevServerUrlFlag(args['--dev-server-url']),
     durationMs: resolveDuration(args['--duration'], '--duration', 2000, { allowZero: true }),
     json: !!args['--json'],
+    followups: !args['--no-followups'],
   };
 }
 

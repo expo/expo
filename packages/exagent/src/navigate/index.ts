@@ -29,6 +29,7 @@ export const exagentNavigate: Command = async (argv) => {
         `--app-id <id>           Application id of the target app`,
         `--dev-server-url <url>  Dev server to read (default: http://127.0.0.1:8081)`,
         `--json                  Print the result as JSON`,
+        `--no-followups          Skip the "Next:" section of suggested follow-up commands`,
         `-h, --help              Usage info`,
       ].join('\n'),
       [

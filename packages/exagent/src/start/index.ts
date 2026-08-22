@@ -27,6 +27,7 @@ export const exagentStart: Command = async (argv) => {
         `--smart             Print that plan, then run it (prebuild and build when needed)`,
         `--json              Print the plan as JSON, for --plan and --smart`,
         `--no-agent-skills   Skip linking agent skills from installed packages`,
+        `--no-followups      Skip the "Next:" section of suggested follow-up commands`,
         `-h, --help          Usage info`,
       ].join('\n'),
       [

@@ -9,6 +9,7 @@ describe(resolveNavigateOptions, () => {
       scheme: undefined,
       appId: undefined,
       json: false,
+      followups: true,
     });
   });
 
@@ -32,11 +33,17 @@ describe(resolveNavigateOptions, () => {
       scheme: 'demoapp',
       appId: 'com.example.demo',
       json: true,
+      followups: true,
     });
   });
 
   it(`should read the json flag`, () => {
     expect(resolveNavigateOptions(['/', '--json']).json).toBe(true);
+  });
+
+  it(`should suppress the follow-ups with --no-followups`, () => {
+    expect(resolveNavigateOptions(['/']).followups).toBe(true);
+    expect(resolveNavigateOptions(['/', '--no-followups']).followups).toBe(false);
   });
 
   it(`should read the ios flag`, () => {

@@ -1,4 +1,10 @@
-import { autoSyncSkillsAsync, printSkillsForAgentAsync } from '../skills/skillsAsync';
+import { buildInstallFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
+import type { InstallImpactReport } from '../project/types';
+import {
+  autoSyncSkillsAsync,
+  listSkillPackagesAsync,
+  printSkillsForAgentAsync,
+} from '../skills/skillsAsync';
 import { runExpoAsync } from '../utils/expoCli';
 import { reportInstallImpactAsync } from './impactReport';
 import type { InstallPlan } from './resolveOptions';
@@ -20,11 +26,10 @@ export async function installAsync(projectRoot: string, plan: InstallPlan): Prom
   }
 
   // @ref llp/0004-smart-start-and-project-state.rfc.md §Sub-features — post-install impact
-  if (plan.impact) {
-    await reportInstallImpactAsync(projectRoot, plan.packages);
-  }
+  const reports = plan.impact ? await reportInstallImpactAsync(projectRoot, plan.packages) : [];
 
   if (plan.syncScope === 'none') {
+    await reportInstallFollowUpsAsync(projectRoot, plan, reports);
     return exitCode;
   }
 
@@ -39,5 +44,29 @@ export async function installAsync(projectRoot: string, plan: InstallPlan): Prom
     await printSkillsForAgentAsync(projectRoot, { packages: plan.packages });
   }
 
+  await reportInstallFollowUpsAsync(projectRoot, plan, reports);
   return exitCode;
+}
+
+/**
+ * Say what the install left to do: rebuild or reload, and which skill to read.
+ *
+ * @ref llp/0009-smart-followups.rfc.md §Examples per command — `install`. The classification the
+ * impact report already made is the whole input, so no probe runs twice.
+ */
+async function reportInstallFollowUpsAsync(
+  projectRoot: string,
+  plan: InstallPlan,
+  reports: InstallImpactReport[]
+): Promise<void> {
+  if (!followUpsEnabled(plan.followups) || !reports.length) {
+    return;
+  }
+
+  let packagesWithSkills: string[] = [];
+  if (plan.agentSkills) {
+    packagesWithSkills = await listSkillPackagesAsync(projectRoot, plan.packages);
+  }
+
+  reportFollowUps('install', buildInstallFollowUps({ reports, packagesWithSkills }));
 }

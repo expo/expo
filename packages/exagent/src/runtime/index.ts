@@ -29,6 +29,7 @@ export const exagentRuntime: Command = async (argv) => {
         '',
         chalk`{bold errors}                   Collect runtime errors over a time window`,
         `  --duration <ms>         How long to listen for errors (default: 2000)`,
+        `  --no-followups          Skip the "Next:" section of suggested follow-up commands`,
         '',
         `--dev-server-url <url>    Dev server to talk to (default: http://127.0.0.1:8081)`,
         `--json                    Print the result as JSON`,

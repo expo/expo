@@ -9,6 +9,7 @@ export const exagentContext: Command = async (argv) => {
       // Types
       '--help': Boolean,
       '--json': Boolean,
+      '--no-followups': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -19,7 +20,11 @@ export const exagentContext: Command = async (argv) => {
     printHelp(
       `Print what the project is: SDK version, native state, Expo Go support and fingerprint`,
       chalk`npx exagent context`,
-      [`--json      Print the project state as JSON`, `-h, --help  Usage info`].join('\n'),
+      [
+        `--json          Print the project state as JSON`,
+        `--no-followups  Skip the "Next:" section of suggested follow-up commands`,
+        `-h, --help      Usage info`,
+      ].join('\n'),
       [
         '',
         chalk`  The JSON output is the project brief for agents: every field is a fact read from`,
@@ -37,6 +42,9 @@ export const exagentContext: Command = async (argv) => {
 
   return (async () => {
     const projectRoot = findUpProjectRootOrAssert(process.cwd());
-    await printProjectContextAsync(projectRoot, { json: !!args['--json'] });
+    await printProjectContextAsync(projectRoot, {
+      json: !!args['--json'],
+      followups: !args['--no-followups'],
+    });
   })().catch(logCmdError);
 };

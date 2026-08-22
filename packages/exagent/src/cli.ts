@@ -22,6 +22,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   install: () => import('./install').then((i) => i.exagentInstall),
   navigate: () => import('./navigate').then((i) => i.exagentNavigate),
   runtime: () => import('./runtime').then((i) => i.exagentRuntime),
+  setup: () => import('./setup').then((i) => i.exagentSetup),
   start: () => import('./start').then((i) => i.exagentStart),
   skills: () => import('./skills').then((i) => i.exagentSkills),
   status: () => import('./status').then((i) => i.exagentStatus),

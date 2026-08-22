@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
+import { buildSkillsSyncFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
 import { getAgentTelemetryContext } from '../utils/agent';
 import { CommandError } from '../utils/errors';
@@ -66,12 +67,24 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
       Log.log(`${prefix}${chalk.red('-')} ${link}`);
     }
   }
-  const packageCount = new Set(skills.map((skill) => skill.packageName)).size;
+  const skillPackages = [...new Set(skills.map((skill) => skill.packageName))];
   Log.log(
-    `${prefix}${skills.length} skill(s) from ${packageCount} package(s) linked for: ${agents
+    `${prefix}${skills.length} skill(s) from ${skillPackages.length} package(s) linked for: ${agents
       .map((agent) => agent.displayName)
       .join(', ')}`
   );
+
+  // @ref llp/0009-smart-followups.rfc.md §Wider ideas — agent-aware rendering: a detected agent is
+  // told that it does not have to read these files itself.
+  if (followUpsEnabled(options.followups)) {
+    reportFollowUps(
+      'skills sync',
+      buildSkillsSyncFollowUps({
+        skillPackages,
+        agentId: getAgentTelemetryContext()?.id ?? null,
+      })
+    );
+  }
 }
 
 export async function listSkillsAsync(
@@ -255,6 +268,33 @@ export async function printSkillsForAgentAsync(
     }
   } catch (error: any) {
     Log.warn(`Skipping agent skills output: ${error.message}`);
+  }
+}
+
+/**
+ * Which of the given package specs ship an agent skill.
+ *
+ * Best-effort, like the sync itself: a dependency graph that cannot be walked means "no skills"
+ * rather than a failed command, because the caller only uses this to word a follow-up.
+ *
+ * @param packages package specs as passed to `expo install`, version ranges included.
+ */
+export async function listSkillPackagesAsync(
+  projectRoot: string,
+  packages: string[]
+): Promise<string[]> {
+  if (!packages.length) {
+    return [];
+  }
+
+  try {
+    const packageNames = packages.map(parsePackageNameFromSpec);
+    const skills = await discoverSkillsAsync(projectRoot);
+    // Ordered by the command line, so a follow-up names the package the user asked for first.
+    return packageNames.filter((name) => skills.some((skill) => skill.packageName === name));
+  } catch (error: any) {
+    debugEvent('skill_packages_failed', { error: debugEvent.error(error as Error) });
+    return [];
   }
 }
 

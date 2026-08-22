@@ -41,6 +41,10 @@ Seed [confirmed — Kudo, 2026-08-22]: the CLI should be smart about attaching w
 5. **Escalation ladders.** Each follow-up can name the next rung: dev (simulator) → real device (dev build/tunnel) → internal distribution (EAS) → store. The agent always knows the path upward without knowing EAS.
 6. **First-run richness.** Optionally richer follow-ups the first time a command runs in a project (seen-state in `.expo/`), terse afterwards — agents don't need repetition. (May be overkill; measure in evals first.)
 
+## Implemented in v1 as
+
+[observed — 2026-08-22] `src/followups/` engine with 18 stable ids across start/plan/install/status/context/navigate/runtime-errors/skills-sync; `Next:` text block, `followups` key in every `--json` shape, `cli:followups` JSONL event; `--no-followups` + `EXAGENT_NO_FOLLOWUPS`; capped at 3. The eval suite asserts `cli:followups` via the jsonl-event grader (which had never matched a real event before — `2g` writes names to `_e`; fixed).
+
 ## Testing
 
 Follow-up computation is pure logic over already-probed state → exhaustively unit-tested. Tier-1/2 evals assert follow-up `id`s appear after key commands and that a weak model can act on them (the real test of "smart context").

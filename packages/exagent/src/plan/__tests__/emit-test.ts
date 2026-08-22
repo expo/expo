@@ -50,17 +50,53 @@ describe(emitStartPlan, () => {
     emitStartPlan(plan, { mode: 'plan', json: true });
 
     expect(Log.log).toHaveBeenCalledTimes(1);
-    expect(Log.log).toHaveBeenCalledWith(JSON.stringify(plan, null, 2));
-    expect(JSON.parse(jest.mocked(Log.log).mock.calls[0]![0]!)).toEqual(plan);
+    expect(JSON.parse(jest.mocked(Log.log).mock.calls[0]![0]!)).toEqual({
+      ...plan,
+      followups: [],
+    });
   });
 
   // Shape test: the top-level keys of `--json` are the command's contract, so they are asserted
   // as an exact set. Adding, renaming, or dropping one is a breaking change for every caller.
+  // `followups` joined the set with llp/0009; it is always present, and empty when suppressed.
   it(`should print a stable set of top-level keys with --json`, () => {
     emitStartPlan(plan, { mode: 'plan', json: true });
 
     const printed = JSON.parse(jest.mocked(Log.log).mock.calls[0]![0]!);
-    expect(Object.keys(printed).sort()).toEqual(['reasons', 'rule', 'steps', 'target']);
+    expect(Object.keys(printed).sort()).toEqual([
+      'followups',
+      'reasons',
+      'rule',
+      'steps',
+      'target',
+    ]);
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Design — "also embedded in `--json` payloads".
+  it(`should embed the follow-ups in the JSON plan`, () => {
+    const followups = [
+      { id: 'start-smart', command: 'npx exagent start --smart', why: 'Runs the plan.' },
+    ];
+
+    emitStartPlan(plan, { mode: 'plan', json: true, followups });
+
+    expect(JSON.parse(jest.mocked(Log.log).mock.calls[0]![0]!).followups).toEqual(followups);
+  });
+
+  it(`should keep the follow-ups out of the plan table, which the caller prints itself`, () => {
+    emitStartPlan(plan, {
+      mode: 'plan',
+      followups: [{ id: 'start-smart', command: 'npx exagent start --smart', why: 'Runs it.' }],
+    });
+
+    expect(Log.log).toHaveBeenCalledTimes(1);
+    expect(Log.log).toHaveBeenCalledWith(formatStartPlan(plan));
+  });
+
+  it(`should print an empty follow-up list when none is passed`, () => {
+    emitStartPlan(plan, { mode: 'smart', json: true });
+
+    expect(JSON.parse(jest.mocked(Log.log).mock.calls[0]![0]!).followups).toEqual([]);
   });
 
   it(`should still emit the event in JSON mode`, () => {

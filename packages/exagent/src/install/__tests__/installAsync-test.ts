@@ -1,4 +1,10 @@
-import { autoSyncSkillsAsync, printSkillsForAgentAsync } from '../../skills/skillsAsync';
+import * as Log from '../../log';
+import type { InstallImpactReport } from '../../project/types';
+import {
+  autoSyncSkillsAsync,
+  listSkillPackagesAsync,
+  printSkillsForAgentAsync,
+} from '../../skills/skillsAsync';
 import { runExpoAsync } from '../../utils/expoCli';
 import { reportInstallImpactAsync } from '../impactReport';
 import { installAsync } from '../installAsync';
@@ -9,13 +15,32 @@ jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
 jest.mock('../impactReport', () => ({ reportInstallImpactAsync: jest.fn() }));
 jest.mock('../../skills/skillsAsync', () => ({
   autoSyncSkillsAsync: jest.fn(),
+  listSkillPackagesAsync: jest.fn(),
   printSkillsForAgentAsync: jest.fn(),
 }));
 
 const projectRoot = '/project';
 
+function report(overrides: Partial<InstallImpactReport> = {}): InstallImpactReport {
+  return {
+    packageName: 'expo-sqlite',
+    impact: 'js-only',
+    expoGoBundled: false,
+    action: 'reload',
+    reasons: [],
+    ...overrides,
+  };
+}
+
+/** Everything the command printed, joined into one string. */
+function printed(): string {
+  return jest.mocked(Log.log).mock.calls.flat().join('\n');
+}
+
 beforeEach(() => {
   jest.mocked(runExpoAsync).mockResolvedValue(0);
+  jest.mocked(reportInstallImpactAsync).mockResolvedValue([report()]);
+  jest.mocked(listSkillPackagesAsync).mockResolvedValue([]);
 });
 
 describe(installAsync, () => {
@@ -95,5 +120,71 @@ describe(installAsync, () => {
 
   it(`should return the exit code of a successful install`, async () => {
     await expect(installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']))).resolves.toBe(0);
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — `install`.
+  describe('follow-ups', () => {
+    it(`should say a reload is enough after a JavaScript only install`, async () => {
+      await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
+
+      expect(printed()).toContain('Next:');
+      expect(printed()).toContain('npx exagent runtime errors');
+      expect(printed()).toContain('reload');
+    });
+
+    it(`should warn that the running app cannot load a new native module`, async () => {
+      jest.mocked(reportInstallImpactAsync).mockResolvedValue([
+        report({
+          packageName: 'react-native-fancy',
+          impact: 'native-module',
+          action: 'prebuild-and-build',
+        }),
+      ]);
+
+      await installAsync(projectRoot, resolveInstallPlan(['react-native-fancy']));
+
+      expect(printed()).toContain('npx exagent start --smart');
+      expect(printed()).toContain('react-native-fancy');
+    });
+
+    it(`should point at the skill of a package that ships one`, async () => {
+      jest.mocked(listSkillPackagesAsync).mockResolvedValue(['@expo/ui']);
+
+      await installAsync(projectRoot, resolveInstallPlan(['@expo/ui@~1.0.0']));
+
+      expect(listSkillPackagesAsync).toHaveBeenCalledWith(projectRoot, ['@expo/ui@~1.0.0']);
+      expect(printed()).toContain('npx exagent skills show @expo/ui');
+    });
+
+    it(`should not look for skills when the skill sync is off`, async () => {
+      await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--no-agent-skills']));
+
+      expect(listSkillPackagesAsync).not.toHaveBeenCalled();
+      // The impact report is independent of the skill flags, so it still drives a follow-up.
+      expect(printed()).toContain('Next:');
+    });
+
+    it(`should print nothing with --no-followups`, async () => {
+      await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--no-followups']));
+
+      expect(printed()).not.toContain('Next:');
+      expect(listSkillPackagesAsync).not.toHaveBeenCalled();
+    });
+
+    it(`should print nothing when there was no impact to classify`, async () => {
+      jest.mocked(reportInstallImpactAsync).mockResolvedValue([]);
+
+      await installAsync(projectRoot, resolveInstallPlan(['--fix']));
+
+      expect(printed()).not.toContain('Next:');
+    });
+
+    it(`should print nothing when the install itself failed`, async () => {
+      jest.mocked(runExpoAsync).mockResolvedValue(1);
+
+      await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
+
+      expect(printed()).not.toContain('Next:');
+    });
   });
 });

@@ -2,6 +2,7 @@ import { AssertionError } from 'assert';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 
+import { event as cliEvent } from '../events';
 import { exit, exception, warn } from '../log';
 
 const ERROR_PREFIX = 'Error: ';
@@ -13,6 +14,13 @@ export class CommandError extends Error {
   name = 'CommandError';
   readonly isCommandError = true;
   [prop: string]: unknown;
+
+  /**
+   * Machine-readable next action for a driving agent (llp/0006 "errors are prompts"):
+   * the exact command that most likely resolves this error. Printed as a trailing
+   * `Try: <command>` line and carried on the `cli:error` JSONL event.
+   */
+  suggestedCommand?: string;
 
   constructor(
     public code: string,
@@ -65,6 +73,18 @@ export function logCmdError(error: any): never {
     error.name === 'ApiV2Error' ||
     error.name === 'ConfigError'
   ) {
+    // Errors are prompts (llp/0006): carry the machine-readable next action on the event
+    // stream, and print it as the last line so the agent's recovery is one hop.
+    const code = error instanceof CommandError ? error.code : error.name;
+    const suggestedCommand = error instanceof CommandError ? error.suggestedCommand : undefined;
+    cliEvent('error', {
+      code,
+      message: error.message,
+      suggestedCommand: suggestedCommand ?? null,
+    });
+    if (suggestedCommand) {
+      warn(`Try: ${suggestedCommand}`);
+    }
     // Print the stack trace in debug mode only.
     exit(error);
   }

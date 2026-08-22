@@ -4,6 +4,12 @@
 import chalk from 'chalk';
 
 import { event } from '../events';
+import {
+  buildNavigateFollowUps,
+  followUpsEnabled,
+  reportFollowUps,
+  type FollowUp,
+} from '../followups';
 import * as Log from '../log';
 import { readProjectNativeDirsAsync } from '../project/nativeCode';
 import {
@@ -43,6 +49,12 @@ export interface NavigateResultJson {
   command: string;
   /** Exit code of that command: non-zero means the device refused the deep link. */
   exitCode: number | null;
+  /**
+   * State-aware next actions, empty when the device refused the link or they are suppressed.
+   *
+   * @see llp/0009-smart-followups.rfc.md §Design
+   */
+  followups: FollowUp[];
 }
 
 /**
@@ -58,7 +70,7 @@ export async function navigateAsync(
   projectRoot: string,
   options: NavigateOptions
 ): Promise<number> {
-  const { route, devServerUrl, platform, scheme, appId, json } = options;
+  const { route, devServerUrl, platform, scheme, appId, json, followups: wantFollowUps } = options;
 
   const [devServer, config, nativeDirs, packageJson] = await Promise.all([
     probeDevServerAsync(devServerUrl),
@@ -88,7 +100,9 @@ export async function navigateAsync(
     devServerUrl: devServer.reachable ? devServerUrl : null,
   });
   if (!resolved.ok) {
-    throw new CommandError('DEEP_LINK_UNRESOLVED', resolved.error);
+    const error = new CommandError('DEEP_LINK_UNRESOLVED', resolved.error);
+    error.suggestedCommand = 'npx exagent navigate <route> --scheme <your-app-scheme>';
+    throw error;
   }
   debugEvent('url_resolved', { url: resolved.url, resolution: resolved.resolution });
 
@@ -108,6 +122,14 @@ export async function navigateAsync(
     exitCode: result.exitCode,
   });
 
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — `navigate`. Only a link the
+  // device accepted has a screen to capture, so a refusal carries no follow-up: its own what/why/
+  // how below is the next step.
+  const followups =
+    result.exitCode === 0 && followUpsEnabled(wantFollowUps)
+      ? buildNavigateFollowUps({ platform: device.platform, deviceId: device.deviceId })
+      : [];
+
   if (json) {
     const report: NavigateResultJson = {
       route,
@@ -119,6 +141,7 @@ export async function navigateAsync(
       appId: appId ?? null,
       command: result.command,
       exitCode: result.exitCode,
+      followups,
     };
     // The object is the whole of stdout, so the output can be piped into a parser. The failure
     // below still explains itself, on stderr.
@@ -156,5 +179,8 @@ export async function navigateAsync(
   if (!json && result.stdout.trim()) {
     Log.log(chalk.dim(result.stdout.trim()));
   }
+
+  // Last, so the `Next:` section is the last thing in the terminal, after what the device said.
+  reportFollowUps('navigate', followups, { json });
   return 0;
 }

@@ -358,7 +358,8 @@ async function applyGrader(grader, context) {
         } catch {
           continue;
         }
-        const name = entry?.event ?? entry?.name ?? entry?.type;
+        // `2g` names the event in `_e`; the other three cover the JSONL shapes of other tools.
+        const name = entry?._e ?? entry?.event ?? entry?.name ?? entry?.type;
         if (name === grader.event) {
           count++;
         }

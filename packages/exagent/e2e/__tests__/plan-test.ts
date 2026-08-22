@@ -25,6 +25,7 @@ type StartPlan = {
   }[];
   rule: string;
   reasons: string[];
+  followups: { id: string; command: string; why: string }[];
 };
 
 const TIME_CLASSES = ['seconds', 'a-minute', 'minutes', 'many-minutes'];
@@ -202,6 +203,77 @@ describe('exagent start --plan', () => {
       }
 
       expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+    });
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — `start --plan`.
+  describe('follow-ups', () => {
+    it('offers to run the plan it just printed', async () => {
+      const output = await planTextAsync('go-app', ['--ios']);
+
+      expect(output).toContain('Next:');
+      expect(output).toContain('npx exagent start --smart');
+    });
+
+    it('explains the build a stale plan includes', async () => {
+      const output = await planTextAsync('dev-client-app', ['--ios']);
+
+      expect(output).toContain('npx exagent status');
+      // Expo Go is out for this fixture, so the reasons are worth reading in full.
+      expect(output).toContain('npx exagent context');
+    });
+
+    it('embeds the follow-ups in the JSON plan, which stays one object', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, ['start', '--plan', '--json']);
+
+      expect(result.exitCode).toBe(0);
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.followups.map((followup) => followup.id)).toEqual(['start-smart']);
+    });
+
+    it('leaves them out with --no-followups, keeping the key set', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const text = await executeExagentAsync(projectRoot, ['start', '--plan', '--no-followups']);
+      const json = await executeExagentAsync(projectRoot, [
+        'start',
+        '--plan',
+        '--json',
+        '--no-followups',
+      ]);
+
+      expect(text.stdout).not.toContain('Next:');
+      const plan: StartPlan = JSON.parse(json.stdout);
+      expect(plan.followups).toEqual([]);
+      expect(Object.keys(plan)).toContain('followups');
+      // The flag is exagent's own, so it never reaches the Expo CLI.
+      expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+    });
+
+    it('leaves them out for EXAGENT_NO_FOLLOWUPS', async () => {
+      const output = await planTextAsync('go-app', [], { EXAGENT_NO_FOLLOWUPS: '1' });
+
+      expect(output).not.toContain('Next:');
+    });
+
+    it('emits one cli:followups event for a driving agent', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const eventsFile = path.join(projectRoot, 'events.jsonl');
+      const result = await executeExagentAsync(projectRoot, ['start', '--plan'], {
+        env: { LOG_EVENTS: eventsFile },
+      });
+
+      expect(result.exitCode).toBe(0);
+      const events = fs
+        .readFileSync(eventsFile, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => JSON.parse(line));
+      // `2g` names the event in the `_e` field of every JSONL line.
+      const followups = events.filter((entry) => entry._e === 'cli:followups');
+      expect(followups).toHaveLength(1);
+      expect(followups[0]).toMatchObject({ command: 'start' });
+      expect(followups[0].followups[0].id).toBe('start-smart');
     });
   });
 });

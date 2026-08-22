@@ -10,6 +10,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { event } from '../events';
+import { buildStatusFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
 import { readLastBuildFingerprints } from '../plan/lastBuild';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
@@ -53,11 +54,17 @@ export interface StatusOptions {
   platform?: PlanPlatform;
   /** Overrides {@link DEV_SERVER_PROBE_TIMEOUT_MS}, for tests. */
   devServerTimeoutMs?: number;
+  /** Attach the state-aware next actions to the report, cleared by `--no-followups`. */
+  followups?: boolean;
 }
 
 /** Gather the report, emit it for agents, and print it for humans. */
 export async function printStatusAsync(projectRoot: string, options: StatusOptions): Promise<void> {
   const report = await collectStatusReportAsync(projectRoot, options);
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — status already carries "next" by
+  // design, so these are the actions that line does not name, and only the machine channels
+  // (`--json` and the event) carry them.
+  const followups = followUpsEnabled(options.followups) ? buildStatusFollowUps(report) : [];
 
   event('status', {
     rule: report.next?.rule ?? null,
@@ -71,7 +78,12 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
     sectionErrors: Object.keys(report.errors),
   });
 
-  Log.log(options.json ? JSON.stringify(report, null, 2) : formatStatusReport(report));
+  Log.log(
+    options.json ? JSON.stringify({ ...report, followups }, null, 2) : formatStatusReport(report)
+  );
+  // Silent on purpose: repeating the plan the `next` line already names would be noise, so the
+  // follow-ups reach a driving agent through the event and the JSON report only.
+  reportFollowUps('status', followups, { silent: true });
 }
 
 /**

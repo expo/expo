@@ -68,7 +68,13 @@ function mockDevServer(targets: unknown[] | null) {
 }
 
 function options(overrides: Partial<NavigateOptions> = {}): NavigateOptions {
-  return { route: '/profile/42', devServerUrl: 'http://127.0.0.1:8081', json: false, ...overrides };
+  return {
+    route: '/profile/42',
+    devServerUrl: 'http://127.0.0.1:8081',
+    json: false,
+    followups: true,
+    ...overrides,
+  };
 }
 
 /** Everything the command wrote to stdout, joined into one string. */
@@ -184,6 +190,18 @@ describe(navigateAsync, () => {
       appId: null,
       command: 'xcrun simctl openurl IOS-1 exp://127.0.0.1:8081/--/profile/42',
       exitCode: 0,
+      followups: [
+        {
+          id: 'screenshot',
+          command: 'xcrun simctl io IOS-1 screenshot screen.png',
+          why: expect.any(String),
+        },
+        {
+          id: 'runtime-errors',
+          command: 'npx exagent runtime errors',
+          why: expect.any(String),
+        },
+      ],
     });
   });
 
@@ -204,12 +222,72 @@ describe(navigateAsync, () => {
       'command',
       'deviceId',
       'exitCode',
+      'followups',
       'platform',
       'resolution',
       'route',
       'target',
       'url',
     ]);
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — `navigate`.
+  describe('follow-ups', () => {
+    /** A project whose route resolves through Expo Go on a booted simulator. */
+    function mockExpoGoProject() {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+      mockDevServer([EXPO_GO_TARGET]);
+    }
+
+    it(`should offer the simulator screenshot and the runtime loop`, async () => {
+      mockExpoGoProject();
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await navigateAsync(projectRoot, options());
+
+      expect(printed()).toContain('Next:');
+      expect(printed()).toContain('xcrun simctl io IOS-1 screenshot screen.png');
+      expect(printed()).toContain('npx exagent runtime errors');
+    });
+
+    it(`should offer the adb screenshot for an Android device`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({
+          name: 'demo',
+          dependencies: { 'expo-dev-client': '5.0.0' },
+        }),
+        [`${projectRoot}/node_modules/expo-dev-client/package.json`]: '{"name":"expo-dev-client"}',
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+      mockDevServer(null);
+      mockSpawnQueue([{ stdout: ADB_DEVICES }, { stdout: 'Starting: Intent' }]);
+
+      await navigateAsync(projectRoot, options({ platform: 'android' }));
+
+      expect(printed()).toContain('adb -s emulator-5554 exec-out screencap -p > screen.png');
+    });
+
+    it(`should print nothing with --no-followups`, async () => {
+      mockExpoGoProject();
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await navigateAsync(projectRoot, options({ followups: false }));
+
+      expect(printed()).not.toContain('Next:');
+    });
+
+    it(`should offer nothing after a link the device refused`, async () => {
+      mockExpoGoProject();
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '', exitCode: 1 }]);
+
+      await expect(navigateAsync(projectRoot, options({ json: true }))).resolves.toBe(1);
+
+      // There is no screen to capture, and the failure's own how/why is the next step.
+      expect(JSON.parse(printed()).followups).toEqual([]);
+    });
   });
 
   it(`should report a refused deep link on stderr and keep stdout to the JSON object`, async () => {

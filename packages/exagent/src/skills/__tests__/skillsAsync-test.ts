@@ -62,6 +62,11 @@ const testSkill: DiscoveredSkill = {
   linkName: 'my-skill',
 };
 
+/** Everything a command printed, joined into one string. */
+function printed(): string {
+  return jest.mocked(Log.log).mock.calls.flat().join('\n');
+}
+
 beforeEach(() => {
   // The sync refreshes the gitignore block for every known agent directory.
   jest.mocked(getAllAgents).mockReturnValue([claudeAgent, cursorAgent, codexAgent]);
@@ -184,6 +189,65 @@ describe('syncSkillsAsync', () => {
 
     expect(syncSkillLinksAsync).toHaveBeenCalledWith('/root', [], ['.claude/skills'], {
       dryRun: false,
+    });
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — `skills sync`.
+  describe('follow-ups', () => {
+    /** A sync that linked one skill of one package for one agent. */
+    function mockSuccessfulSync() {
+      jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+      jest
+        .mocked(resolveAgentsAsync)
+        .mockResolvedValueOnce({ agents: [claudeAgent], source: 'cache' });
+      jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['x'], pruned: [] });
+    }
+
+    it('should offer the skill list', async () => {
+      mockSuccessfulSync();
+
+      await syncSkillsAsync('/root', { agents: [], dryRun: false });
+
+      expect(printed()).toContain('Next:');
+      expect(printed()).toContain('npx exagent skills list');
+    });
+
+    it('should note that a detected agent loads the linked skills by itself', async () => {
+      mockSuccessfulSync();
+      // `mockReturnValueOnce`, because `clearMocks` resets calls but keeps implementations.
+      jest
+        .mocked(getAgentTelemetryContext)
+        .mockReturnValueOnce({ id: 'claude-code', sessionId: undefined });
+
+      await syncSkillsAsync('/root', { agents: [], dryRun: false });
+
+      expect(printed()).toContain('npx exagent skills show @acme/tool');
+      expect(printed()).toContain('claude-code');
+    });
+
+    it('should not name a skill when no agent is driving the CLI', async () => {
+      mockSuccessfulSync();
+
+      await syncSkillsAsync('/root', { agents: [], dryRun: false });
+
+      expect(printed()).not.toContain('skills show');
+    });
+
+    it('should print nothing with --no-followups', async () => {
+      mockSuccessfulSync();
+
+      await syncSkillsAsync('/root', { agents: [], dryRun: false, followups: false });
+
+      expect(printed()).not.toContain('Next:');
+    });
+
+    it('should offer nothing when there was nothing to sync', async () => {
+      jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([]);
+      jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(null);
+
+      await syncSkillsAsync('/root', { agents: [], dryRun: false });
+
+      expect(printed()).not.toContain('Next:');
     });
   });
 });

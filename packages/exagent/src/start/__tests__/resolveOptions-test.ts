@@ -8,6 +8,7 @@ describe(resolveStartOptions, () => {
       agentSkills: true,
       platform: 'web',
       json: false,
+      followups: true,
     });
   });
 
@@ -18,6 +19,7 @@ describe(resolveStartOptions, () => {
       agentSkills: false,
       platform: undefined,
       json: false,
+      followups: true,
     });
   });
 
@@ -32,6 +34,7 @@ describe(resolveStartOptions, () => {
       agentSkills: true,
       platform: undefined,
       json: false,
+      followups: true,
     });
   });
 
@@ -42,6 +45,7 @@ describe(resolveStartOptions, () => {
       agentSkills: true,
       platform: undefined,
       json: false,
+      followups: true,
     });
   });
 
@@ -75,6 +79,7 @@ describe(resolveStartOptions, () => {
       agentSkills: true,
       platform: undefined,
       json: true,
+      followups: true,
     });
   });
 
@@ -84,5 +89,20 @@ describe(resolveStartOptions, () => {
 
   it(`should report no platform when none is asked for`, () => {
     expect(resolveStartOptions(['--smart', '--port', '8082']).platform).toBeUndefined();
+  });
+
+  it(`should suppress the follow-ups and strip the flag`, () => {
+    expect(resolveStartOptions(['--no-followups', '--clear'])).toEqual({
+      mode: 'default',
+      expoArgs: ['--clear'],
+      agentSkills: true,
+      platform: undefined,
+      json: false,
+      followups: false,
+    });
+  });
+
+  it(`should keep the follow-ups without the flag`, () => {
+    expect(resolveStartOptions([]).followups).toBe(true);
   });
 });

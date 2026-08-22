@@ -23,6 +23,16 @@ class Env {
     return boolish('EXPO_NO_TELEMETRY', false);
   }
 
+  /**
+   * Do not print or emit the follow-up suggestions commands attach to their output.
+   * `--no-followups` does the same for one run.
+   *
+   * @see llp/0009-smart-followups.rfc.md §Design
+   */
+  get EXAGENT_NO_FOLLOWUPS() {
+    return boolish('EXAGENT_NO_FOLLOWUPS', false);
+  }
+
   /** @internal Force the webcontainer environment checks to pass */
   get EXPO_FORCE_WEBCONTAINER_ENV() {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);

@@ -73,7 +73,7 @@ describe(reportInstallImpactAsync, () => {
   it(`should print nothing when there is nothing to classify`, async () => {
     jest.mocked(classifyInstallImpactAsync).mockResolvedValue([]);
 
-    await reportInstallImpactAsync(projectRoot, []);
+    await expect(reportInstallImpactAsync(projectRoot, [])).resolves.toEqual([]);
 
     expect(Log.log).not.toHaveBeenCalled();
   });
@@ -83,7 +83,18 @@ describe(reportInstallImpactAsync, () => {
       .mocked(classifyInstallImpactAsync)
       .mockRejectedValue(new Error('node_modules disappeared'));
 
-    await expect(reportInstallImpactAsync(projectRoot, ['expo-camera'])).resolves.toBeUndefined();
+    await expect(reportInstallImpactAsync(projectRoot, ['expo-camera'])).resolves.toEqual([]);
     expect(Log.warn).toHaveBeenCalled();
+  });
+
+  // The classifications are the input of the follow-up builder (llp/0009), so they are returned
+  // rather than recomputed by the caller.
+  it(`should return the classifications it printed`, async () => {
+    const reports = [report(), report({ packageName: 'zod', impact: 'js-only' })];
+    jest.mocked(classifyInstallImpactAsync).mockResolvedValue(reports);
+
+    await expect(reportInstallImpactAsync(projectRoot, ['expo-camera', 'zod'])).resolves.toEqual(
+      reports
+    );
   });
 });

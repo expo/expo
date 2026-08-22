@@ -4,6 +4,7 @@
 // The project-state probe, exercised through the CLI it is published as. Every assertion here is
 // a claim about the `ProjectState` contract in `src/project/types.ts`, checked against the fixture
 // matrix described in `e2e/fixtures/README.md`.
+import fs from 'node:fs';
 import path from 'node:path';
 
 import { executeExagentAsync, installStubFingerprintAsync, setupFixtureAsync } from '../utils';
@@ -23,6 +24,7 @@ type ProjectState = {
     reasons: { kind: string; packageName?: string; detail: string }[];
   };
   fingerprint: { hash: string | null; error?: string };
+  followups: { id: string; command: string; why: string }[];
 };
 
 /** Run `context --json` in a fixture and parse the state it prints. */
@@ -152,6 +154,68 @@ describe('exagent context', () => {
       const state: ProjectState = JSON.parse(result.stdout);
       expect(state.fingerprint.hash).toBeNull();
       expect(state.fingerprint.error).toBeTruthy();
+    });
+  });
+
+  // @ref llp/0009-smart-followups.rfc.md §Design
+  describe('follow-ups', () => {
+    it('ends the human summary with a Next section', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, ['context']);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toContain('Next:');
+      expect(result.stdout).toContain('npx exagent status');
+      expect(result.stdout).toContain('npx exagent start --plan');
+    });
+
+    it('embeds the follow-ups in the JSON brief, which stays one object', async () => {
+      const state = await probeAsync('go-app');
+
+      expect(state.followups.map((followup) => followup.id)).toEqual(['status', 'start-plan']);
+    });
+
+    it('offers the dev client install for a project Expo Go cannot run', async () => {
+      const projectRoot = await setupFixtureAsync('dev-client-app');
+      const result = await executeExagentAsync(projectRoot, ['context']);
+
+      expect(result.exitCode).toBe(0);
+      // The fixture depends on `expo-dev-client`, so the blocker is already solved.
+      expect(result.stdout).not.toContain('install expo-dev-client');
+    });
+
+    it('leaves them out with --no-followups, keeping the key set', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const text = await executeExagentAsync(projectRoot, ['context', '--no-followups']);
+      const json = await executeExagentAsync(projectRoot, ['context', '--json', '--no-followups']);
+
+      expect(text.stdout).not.toContain('Next:');
+      const state: ProjectState = JSON.parse(json.stdout);
+      expect(state.followups).toEqual([]);
+      expect(Object.keys(state)).toContain('followups');
+    });
+
+    it('emits one cli:followups event for a driving agent', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const eventsFile = path.join(projectRoot, 'events.jsonl');
+      const result = await executeExagentAsync(projectRoot, ['context', '--json'], {
+        env: { LOG_EVENTS: eventsFile },
+      });
+
+      expect(result.exitCode).toBe(0);
+      const events = fs
+        .readFileSync(eventsFile, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => JSON.parse(line));
+      // `2g` names the event in the `_e` field of every JSONL line.
+      const followups = events.filter((entry) => entry._e === 'cli:followups');
+      expect(followups).toHaveLength(1);
+      expect(followups[0]).toMatchObject({ command: 'context' });
+      expect(followups[0].followups.map((item: { id: string }) => item.id)).toEqual([
+        'status',
+        'start-plan',
+      ]);
     });
   });
 
