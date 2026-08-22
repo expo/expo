@@ -1,0 +1,99 @@
+---
+title: Grok Build and Expo
+sidebar_title: Grok Build
+description: Use Grok Build to build, upgrade, debug, and deploy your Expo and React Native projects.
+---
+
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+Grok Build is xAI's terminal-based AI coding agent. It can read and write files across your project, run terminal commands, and browse the web. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Grok Build reads directly. With the official Expo plugin installed, it can also check EAS and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
+
+## Quick start
+
+<Step label="1">
+
+### Install Grok Build
+
+Install Grok Build, then start it from any project. For other install methods, see the [Grok Build documentation](https://docs.x.ai/build/overview).
+
+<Terminal cmd={['$ curl -fsSL https://x.ai/cli/install.sh | bash']} />
+
+</Step>
+
+<Step label="2">
+
+### Create a new Expo project
+
+Create a project with the following command or ensure your existing project has the latest expo package installed.
+
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
+    bun: ['$ bun create expo --template default@sdk-57'],
+  }}
+/>
+
+</Step>
+
+<Step label="3">
+
+### Install the Expo plugin
+
+Install the official Expo plugin from the Grok Build plugin marketplace. The plugin bundles [Expo Skills](/skills/) and the [Expo MCP Server](/mcp/), so this single install teaches Grok Build known-good Expo patterns and gives it live access to Expo documentation and EAS.
+
+<Terminal cmd={['$ grok plugin install expo --trust']} />
+
+You can also type `/marketplace` inside Grok Build and install `expo` from the catalog.
+
+</Step>
+
+<Step label="4">
+
+### Open your project and start prompting
+
+Run Grok Build from your project root, then describe what you want to do.
+
+<Terminal cmd={['$ cd my-app', '', '$ grok']} />
+
+</Step>
+
+<Step label="5">
+
+### Verify setup
+
+Paste the following prompt in your Grok Build session to confirm it can read your project:
+
+```text Example prompt
+Open package.json and tell me which Expo SDK version this project targets.
+```
+
+If the agent replies with the SDK version from **package.json**, the agent is reading your project correctly.
+
+</Step>
+
+## How Grok Build reads your Expo project
+
+When you start Grok Build in your project, it reads the scaffolded **AGENTS.md** file. This file points Grok Build to the documentation for your project's Expo SDK version and holds any project-level instructions you add.
+
+**AGENTS.md** is committed to your project, so a developer's Grok Build session starts from the same context.
+
+## Example prompts
+
+After setup, describe Expo tasks in plain language. For example:
+
+| Task              | Example prompt                                                                    |
+| ----------------- | --------------------------------------------------------------------------------- |
+| Upgrade the SDK   | Upgrade this project to the latest Expo SDK and fix any breaking changes.         |
+| Add navigation    | Add a tab navigator with Expo Router and a new settings screen.                   |
+| Automate builds   | Create an EAS Workflow that builds the app on every pull request.                 |
+| Debug a build     | My latest iOS build failed. Read the EAS Build logs and tell me what went wrong.  |
+| Add notifications | Configure expo-notifications and show a local notification when the app launches. |
+| Set up CI/CD      | Create a CI/CD workflow that builds on every PR.                                  |
+| Add native UI     | Add a SwiftUI picker component to my Expo app.                                    |
+| Check feedback    | Show TestFlight feedback for my app.                                              |
+| Verify the UI     | Take a screenshot and verify the blue circle view.                                |
+
+For more examples, see the Example prompts sections of [Expo Skills](/skills/#example-prompts) and [Expo MCP Server](/mcp/#what-does-expo-mcp-server-do).
