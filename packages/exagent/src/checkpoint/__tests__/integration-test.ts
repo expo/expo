@@ -75,7 +75,7 @@ describe(checkpointBeforeAsync, () => {
 
   it(`should snapshot without printing when the caller owns stdout`, async () => {
     const result = await checkpointBeforeAsync(projectRoot, {
-      label: 'exagent start --smart',
+      label: 'exagent dev',
       silent: true,
     });
 

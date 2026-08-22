@@ -36,7 +36,7 @@ Each fixture ships its own copy of these, because a fixture must stand alone onc
   listed in `package.json`, reporting unresolved ones as `undefined` like the real linker does.
   Skill discovery needs it; the project-state probe does not, because the probe classifies packages
   from their files alone. It is kept in every fixture so that any of them can also run the `skills`
-  commands, and `start --smart`, which syncs skills after the dev server starts.
+  commands, and `start`/`dev`, which sync skills after the dev server starts.
 - `node_modules/expo/bundledNativeModules.json` — the short list of packages that count as bundled
   in Expo Go for these fixtures. Only `expo-camera`, `expo-dev-client` and `react-native-web` are
   in it, so any other native module is "unbundled".

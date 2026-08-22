@@ -191,7 +191,7 @@ export async function cleanSkillsAsync(
 }
 
 /**
- * Best-effort skill sync for `exagent install` and `exagent start`. Runs only for the
+ * Best-effort skill sync for `exagent install`, `exagent start` and `exagent dev`. Runs only for the
  * agents cached in `.expo/agent-skill-links.json` by a previous `npx exagent skills` run, so it
  * stays off until the user selects agents once. Never prompts and never throws.
  * With `packages` (the specs that were just installed), only the skills of those

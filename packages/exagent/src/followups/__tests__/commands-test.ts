@@ -32,7 +32,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     freshness: null,
     devServer: { url: 'http://127.0.0.1:8081', running: false, appsConnected: 0 },
     skills: { agentIds: ['claude-code'], discovered: 0, linked: 0 },
-    next: { command: 'exagent start --smart', rule: 'expo-go', target: 'expo-go', steps: [] },
+    next: { command: 'exagent dev', rule: 'expo-go', target: 'expo-go', steps: [] },
     errors: {},
     ...overrides,
   };
@@ -42,9 +42,9 @@ describe(buildContextFollowUps, () => {
   it(`should point at status and the start plan`, () => {
     const followups = buildContextFollowUps(mockState());
 
-    expect(ids(followups)).toEqual(['status', 'start-plan']);
+    expect(ids(followups)).toEqual(['status', 'dev-plan']);
     expect(followups[0]!.command).toBe('npx exagent status');
-    expect(followups[1]!.command).toBe('npx exagent start --plan');
+    expect(followups[1]!.command).toBe('npx exagent dev --plan');
   });
 
   it(`should offer the dev client install when Expo Go is out and none is installed`, () => {
@@ -57,7 +57,7 @@ describe(buildContextFollowUps, () => {
       })
     );
 
-    expect(ids(followups)).toEqual(['install-dev-client', 'status', 'start-plan']);
+    expect(ids(followups)).toEqual(['install-dev-client', 'status', 'dev-plan']);
     expect(followups[0]!.command).toBe('npx exagent install expo-dev-client');
   });
 
@@ -66,7 +66,7 @@ describe(buildContextFollowUps, () => {
       mockState({ usesDevClient: true, expoGo: { compatible: false, reasons: [] } })
     );
 
-    expect(ids(followups)).toEqual(['status', 'start-plan']);
+    expect(ids(followups)).toEqual(['status', 'dev-plan']);
   });
 });
 
@@ -133,7 +133,7 @@ describe(buildStatusFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['runtime-errors', 'skills-sync', 'project-context']);
-    expect(followups.map((followup) => followup.command)).not.toContain('exagent start --smart');
+    expect(followups.map((followup) => followup.command)).not.toContain('exagent dev');
   });
 
   it(`should offer nothing when every section failed to be read`, () => {

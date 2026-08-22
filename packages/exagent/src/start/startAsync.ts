@@ -17,7 +17,7 @@ export async function startAsync(projectRoot: string, options: StartOptions): Pr
   // The follow-ups go out before the subprocess does: once Metro streams into this terminal,
   // anything printed after it scrolls away with the bundler output.
   //
-  // The plain wrapper runs no probe, by design, so which app the URL is for is decided the way
+  // This command runs no probe, by design, so which app the URL is for is decided the way
   // `expo start` decides it: `--dev-client`, or the `expo-dev-client` dependency, means a
   // development build; anything else means Expo Go.
   reportFollowUps(

@@ -36,8 +36,8 @@ export function buildInstallFollowUps({
   if (rebuild.length) {
     const names = rebuild.map((report) => report.packageName).join(', ');
     followups.push({
-      id: 'start-smart',
-      command: 'npx exagent start --smart',
+      id: 'dev',
+      command: 'npx exagent dev',
       why: `The app that is running now cannot load ${names}, which changed the native surface: this plans and makes the development build that can.`,
     });
   } else {

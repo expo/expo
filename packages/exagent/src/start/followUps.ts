@@ -1,6 +1,7 @@
 // @ref llp/0009-smart-followups.rfc.md §Examples per command — `start`.
-// The follow-ups of a run that starts a dev server, shared by the plain wrapper and the plan
-// executor. Both know which app the URL is for, which is the one fact the builder cannot guess.
+// The follow-ups of a run that starts a dev server, shared by `exagent start` (the `expo start`
+// wrapper) and `exagent dev` (the plan executor). Both know which app the URL is for, which is the
+// one fact the builder cannot guess.
 
 import {
   buildStartFollowUps,
@@ -10,13 +11,20 @@ import {
   resolveExpoGoLanUrl,
   type FollowUp,
 } from '../followups';
-import type { StartOptions } from './resolveOptions';
 
 export interface StartTargetHint {
   /** The app the dev server will be opened in runs inside Expo Go. */
   expoGo: boolean;
   /** The run only serves a web bundle, so no phone or simulator is involved. */
   web: boolean;
+}
+
+/** What this builder needs of the resolved options, satisfied by `StartOptions` and `DevOptions`. */
+export interface StartFollowUpOptions {
+  /** Arguments forwarded to `expo start`, which name the port the dev server listens on. */
+  expoArgs: string[];
+  /** Whether the follow-ups were asked for at all. */
+  followups: boolean;
 }
 
 /**
@@ -28,7 +36,7 @@ export interface StartTargetHint {
  */
 export function resolveStartFollowUps(
   projectRoot: string,
-  options: StartOptions,
+  options: StartFollowUpOptions,
   { expoGo, web }: StartTargetHint
 ): FollowUp[] {
   if (!followUpsEnabled(options.followups)) {

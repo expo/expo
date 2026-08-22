@@ -114,8 +114,8 @@ describe(buildStartPlanFollowUps, () => {
   it(`should offer to run the plan that was printed`, () => {
     const followups = buildStartPlanFollowUps(mockPlan(), mockState());
 
-    expect(ids(followups)).toEqual(['start-smart']);
-    expect(followups[0]!.command).toBe('npx exagent start --smart');
+    expect(ids(followups)).toEqual(['dev']);
+    expect(followups[0]!.command).toBe('npx exagent dev');
   });
 
   it.each(['dev-client-stale', 'bare-stale', 'needs-dev-client'])(
@@ -147,7 +147,7 @@ describe(buildStartPlanFollowUps, () => {
       })
     );
 
-    expect(ids(followups)).toEqual(['start-smart', 'build-freshness', 'project-context']);
+    expect(ids(followups)).toEqual(['dev', 'build-freshness', 'project-context']);
     expect(followups.at(-1)!.command).toBe('npx exagent context');
   });
 

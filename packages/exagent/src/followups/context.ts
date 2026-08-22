@@ -25,8 +25,8 @@ export function buildContextFollowUps(state: ProjectState): FollowUp[] {
       why: 'Adds what is true right now: the dev server, the recorded builds, and the linked skills.',
     },
     {
-      id: 'start-plan',
-      command: 'npx exagent start --plan',
+      id: 'dev-plan',
+      command: 'npx exagent dev --plan',
       why: 'Prints what must run to get this project onto a device, without running any of it.',
     }
   );

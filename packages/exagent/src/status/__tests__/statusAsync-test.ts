@@ -351,7 +351,7 @@ describe(printStatusAsync, () => {
         'skills-sync',
         'project-context',
       ]);
-      expect(report.next.command).toBe('exagent start --smart');
+      expect(report.next.command).toBe('exagent dev');
     });
 
     it(`should embed an empty list with --no-followups, keeping the key set`, async () => {

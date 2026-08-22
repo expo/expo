@@ -179,7 +179,7 @@ describe(buildNextActionStatus, () => {
   it(`should report the Expo Go rule and the command that runs it`, () => {
     const next = buildNextActionStatus(mockState(), {}, 'ios');
 
-    expect(next.command).toBe('exagent start --smart');
+    expect(next.command).toBe('exagent dev');
     expect(next.rule).toBe('expo-go');
     expect(next.target).toBe('expo-go');
     expect(next.steps[0]!.argv).toEqual(['expo', 'start', '--go']);

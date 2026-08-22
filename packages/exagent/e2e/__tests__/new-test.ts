@@ -172,11 +172,7 @@ describe('exagent new', () => {
       created: true,
       installed: true,
     });
-    expect(report.followups.map((followup) => followup.id)).toEqual([
-      'status',
-      'start-smart',
-      'setup',
-    ]);
+    expect(report.followups.map((followup) => followup.id)).toEqual(['status', 'dev', 'setup']);
   });
 
   it(`should keep the repository create-expo initialized`, async () => {

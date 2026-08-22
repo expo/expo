@@ -1,10 +1,10 @@
 /* eslint-env jest */
 // @ref llp/0004-smart-start-and-project-state.rfc.md §Contract
 //
-// `exagent start` emits the plan and then runs its steps as subprocesses, and `--smart` asks for
-// the same thing by name. `plan-test.ts` covers which plan each fixture state produces; this file
-// covers what actually runs: the order of the `expo` invocations, the stop on the first failing
-// step, and the build record written after a successful native build.
+// `exagent dev` emits the plan and then runs its steps as subprocesses. `plan-test.ts` covers
+// which plan each fixture state produces; this file covers what actually runs: the order of the
+// `expo` invocations, the stop on the first failing step, and the build record written after a
+// successful native build.
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -42,50 +42,42 @@ function readLastBuildRecord(projectRoot: string): Record<string, string> | null
   return fs.existsSync(filePath) ? JSON.parse(fs.readFileSync(filePath, 'utf8')) : null;
 }
 
-describe('exagent start', () => {
-  it('documents the default and its flags in `start --help`', async () => {
+describe('exagent dev', () => {
+  it('documents the plan flags in `dev --help`', async () => {
     const projectRoot = await setupAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['start', '--help']);
+    const result = await executeExagentAsync(projectRoot, ['dev', '--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.all).toContain('--smart');
-    expect(result.all).toContain('the default');
+    expect(result.all).toContain('--plan');
     expect(result.all).toContain('--yes');
+    // The plain `expo start` wrapper is a command of its own now, and is named here.
+    expect(result.all).toContain('npx exagent start');
   });
 
-  // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status` — Default change
-  describe('no flag — the plan runs by default', () => {
-    it('runs the plan of a project that needs a build', async () => {
-      const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--ios']);
+  it('does not accept the flags that moved off `start`', async () => {
+    // `--smart` and `--passthrough` are gone: this command is the plan engine, and `expo start`
+    // rejects the flags it does not know, from the step the plan ends with.
+    const projectRoot = await setupAsync('go-app');
+    const result = await executeExagentAsync(projectRoot, ['dev', '--help']);
 
-      expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('Smart start plan');
-      expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
-    });
+    expect(result.all).not.toContain('--smart');
+    expect(result.all).not.toContain('--passthrough');
+  });
 
-    it('starts the dev server of a project that needs no build', async () => {
-      const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, ['start']);
+  // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run
+  it('runs a plan that builds without asking, with no TTY to ask on', async () => {
+    // An agent and a CI job get the plan and its execution, never a prompt; the guardrail of
+    // llp/0008 is for a person watching a terminal.
+    const projectRoot = await setupAsync('dev-client-app');
+    const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
 
-      expect(result.exitCode).toBe(0);
-      expect(invocationArgs(projectRoot)).toEqual([['start', '--go']]);
-    });
-
-    it('runs a plan that builds without asking, with no TTY to ask on', async () => {
-      // An agent and a CI job get the plan and its execution, never a prompt; the guardrail of
-      // llp/0008 is for a person watching a terminal.
-      const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--ios']);
-
-      expect(result.all).not.toContain('Run this plan?');
-    });
+    expect(result.all).not.toContain('Run this plan?');
   });
 
   describe('dev-client-app — a plan of two steps', () => {
     it('runs prebuild and the native build, in that order', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--smart', '--ios']);
+      const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
 
       expect(result.exitCode).toBe(0);
       expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
@@ -93,7 +85,7 @@ describe('exagent start', () => {
 
     it('emits the plan before the first step runs', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--smart', '--ios']);
+      const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
 
       // The stub `expo` bin announces itself on stdout, and the plan shares that stream, so the
       // plan-first contract is observable in the output order.
@@ -105,7 +97,7 @@ describe('exagent start', () => {
 
     it('stops at the first failing step and forwards its exit code', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--smart', '--ios'], {
+      const result = await executeExagentAsync(projectRoot, ['dev', '--ios'], {
         env: { STUB_EXPO_EXIT_CODE: '3' },
         reject: false,
       });
@@ -117,7 +109,7 @@ describe('exagent start', () => {
 
     it('records no build when the fingerprint is unavailable', async () => {
       const projectRoot = await setupAsync('dev-client-app');
-      await executeExagentAsync(projectRoot, ['start', '--smart', '--ios']);
+      await executeExagentAsync(projectRoot, ['dev', '--ios']);
 
       // This fixture ships no fingerprint CLI, so there is no hash to record the build against,
       // and an unrecorded build is planned again next time.
@@ -128,7 +120,7 @@ describe('exagent start', () => {
   describe('dev-client-fresh-app — a rebuild after the native surface changed', () => {
     it('records the built fingerprint, keeping the other platform', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--smart', '--ios'], {
+      const result = await executeExagentAsync(projectRoot, ['dev', '--ios'], {
         env: { STUB_FINGERPRINT_HASH: CHANGED_HASH },
       });
 
@@ -143,7 +135,7 @@ describe('exagent start', () => {
 
     it('runs only the dev server when the recorded build still matches', async () => {
       const projectRoot = await setupAsync('dev-client-fresh-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--smart', '--ios']);
+      const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
 
       expect(result.exitCode).toBe(0);
       expect(invocationArgs(projectRoot)).toEqual([['start', '--dev-client', '--ios']]);
@@ -158,12 +150,12 @@ describe('exagent start', () => {
   describe('go-app — a plan of one step', () => {
     it('starts the dev server for Expo Go', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--smart']);
+      const result = await executeExagentAsync(projectRoot, ['dev']);
 
       expect(result.exitCode).toBe(0);
       expect(invocationArgs(projectRoot)).toEqual([['start', '--go']]);
-      // The dev server step runs through the same wrapper as plain `exagent start`, whose skill
-      // sync is covered by `wrapper-test.ts`.
+      // The dev server step runs through the same wrapper as `exagent start`, whose skill sync is
+      // covered by `wrapper-test.ts`.
       expect(result.stdout).toContain('stub_expo_dev_server_ready');
     });
   });

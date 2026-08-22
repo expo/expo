@@ -64,7 +64,7 @@ describe('exagent setup', () => {
     // The command cheat sheet.
     expect(agentsMd).toContain('exagent status');
     expect(agentsMd).toContain('exagent context --json');
-    expect(agentsMd).toContain('exagent start --plan');
+    expect(agentsMd).toContain('exagent dev --plan');
     expect(agentsMd).toContain('exagent install');
     expect(agentsMd).toContain('exagent runtime eval');
     expect(agentsMd).toContain('exagent navigate');

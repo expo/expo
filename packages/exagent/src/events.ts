@@ -8,6 +8,12 @@ declare module '2g' {
     'cli:expo_resolved': { command: string; args: string[] };
     'cli:expo_exit': { code: number; signal?: string };
     'cli:expo_spawn_failed': { command: string; error: SerializedError };
+    /**
+     * A command `exagent` does not implement was forwarded to the project's `expo` CLI verbatim.
+     *
+     * @see llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher
+     */
+    'cli:expo_passthrough': { command: string; args: string[] };
     'cli:skills_sync_failed': { error: SerializedError };
     /**
      * A command failed with a known error. `suggestedCommand` is the machine-readable next

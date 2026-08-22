@@ -35,7 +35,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     devServer: { url: 'http://127.0.0.1:8081', running: true, appsConnected: 1 },
     skills: { agentIds: ['claude-code'], discovered: 3, linked: 3 },
     next: {
-      command: 'exagent start --smart',
+      command: 'exagent dev',
       rule: 'expo-go',
       target: 'expo-go',
       steps: [
@@ -219,15 +219,13 @@ describe(formatStatusReport, () => {
   });
 
   it(`should print the next action as the rule and the first step`, () => {
-    expect(line(mockReport(), 'next')).toBe(
-      'next        exagent start --smart → expo-go: expo start --go'
-    );
+    expect(line(mockReport(), 'next')).toBe('next        exagent dev → expo-go: expo start --go');
   });
 
   it(`should count the steps that follow the first one`, () => {
     const report = mockReport({
       next: {
-        command: 'exagent start --smart',
+        command: 'exagent dev',
         rule: 'dev-client-stale',
         target: 'dev-client',
         steps: [

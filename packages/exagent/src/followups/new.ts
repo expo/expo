@@ -32,8 +32,8 @@ export function buildNewFollowUps({ directory, installed }: NewFollowUpInput): F
       why: 'Prints what the new project is and what would happen next, without starting anything.',
     },
     {
-      id: 'start-smart',
-      command: inProject('npx exagent start --smart'),
+      id: 'dev',
+      command: inProject('npx exagent dev'),
       why: 'Runs the app, deciding between Expo Go, a development build and a plain dev server from the project state.',
     },
     {

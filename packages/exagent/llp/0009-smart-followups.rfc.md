@@ -24,9 +24,9 @@ Seed [confirmed — Kudo, 2026-08-22]: the CLI should be smart about attaching w
 ## Examples per command
 
 - `start` (Metro up, Expo Go): → real device: how to open on a physical phone (tunnel/LAN URL); → `exagent runtime errors` while reproducing an issue; → production: `eas build --profile production` (only when `eas.json` exists, else `eas build:configure` first).
-- `install <native module>` while targeting Expo Go: → warning + `exagent start --smart` (Go cannot load it) — the impact classifier already knows this.
+- `install <native module>` while targeting Expo Go: → warning + `exagent dev` (Go cannot load it) — the impact classifier already knows this.
 - `install <js-only>`: → "reload is enough"; → the module's skill was dumped to context / `exagent skills show <pkg>`.
-- `start --plan`: → `exagent start --smart` to execute; → what would make the plan cheaper ("record a build to make ios fresh").
+- `dev --plan`: → `exagent dev` to execute; → what would make the plan cheaper ("record a build to make ios fresh").
 - `navigate`: → `xcrun simctl io … screenshot` or the screenshot tool; → `exagent runtime errors` to check the landing.
 - `run/build success`: → freshness recorded; → `eas build` to ship, `eas update` for OTA.
 - `new`: → `exagent start`; → `exagent status` to orient.

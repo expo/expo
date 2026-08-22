@@ -495,9 +495,9 @@ const TIER1_SYSTEM_PROMPT = `You are an autonomous agent completing a task in an
 
 Available commands:
   exagent context [--json]              Print project state: SDK version, native state, Expo Go support, fingerprint
-  exagent start                         Print what must run to get the app running, then run it
-  exagent start --plan                  Print what must run to get the app running, then exit without running it
-  exagent start --passthrough           Start the dev server with expo start, without planning anything
+  exagent dev                           Print what must run to get the app running, then run it
+  exagent dev --plan                    Print what must run to get the app running, then exit without running it
+  exagent start                         Start the dev server with expo start, without planning anything
   exagent skills sync --agent <agent>   Link agent skills from installed packages
   exagent skills list [--json]          List discovered skills
   exagent skills show <package>         Print a package's skill
@@ -510,11 +510,13 @@ Respond with EXACTLY ONE JSON object and nothing else:
   {"run": ["skills", "sync", "--agent", "claude-code"]}   to execute an exagent command
   {"done": true, "summary": "<what you accomplished>"}    when the task is complete
 
+Any command not listed above is forwarded to the project's \`expo\` CLI, e.g. \`exagent prebuild --clean\` runs \`expo prebuild --clean\`.
+
 Rules: one command per turn; wait for the result before deciding the next step; prefer the fewest commands that complete the task. Do not invent flags: if you need a flag that is not listed above, run the command with --help first and read the real flags from the output.`;
 
 // Plain http.request instead of fetch: Node's fetch (undici) enforces a 5-minute headers
 // timeout, which a slow CPU-only CI runner can exceed on a long-context inference call
-// (observed: HeadersTimeoutError on the 2nd turn of start-plan, expo/expo#49229 tier 1).
+// (observed: HeadersTimeoutError on the 2nd turn of dev-plan, expo/expo#49229 tier 1).
 const TIER1_REQUEST_TIMEOUT_MS = 900_000;
 
 function chatOllama(messages) {
@@ -722,9 +724,10 @@ async function runTier1Scenario(scenario) {
 
 /** Kept next to TIER1_SYSTEM_PROMPT's list on purpose — see the drift note above it. */
 const TIER2_COMMAND_SUMMARY =
-  'Available commands: context [--json], start [--plan|--passthrough] (start alone prints the plan ' +
-  'and runs it), skills [sync|list|show|clean] ' +
-  '(sync takes --agent claude-code|cursor|codex|opencode|windsurf|gemini-cli), install <pkg..>.';
+  'Available commands: context [--json], dev [--plan] (dev alone prints the plan and runs it), ' +
+  'start (expo start, no planning), skills [sync|list|show|clean] ' +
+  '(sync takes --agent claude-code|cursor|codex|opencode|windsurf|gemini-cli), install <pkg..>. ' +
+  'Any other command is forwarded to expo <command>.';
 
 function checkTier2() {
   if (!process.env.ANTHROPIC_API_KEY && !process.env.CLAUDE_CODE_OAUTH_TOKEN) {

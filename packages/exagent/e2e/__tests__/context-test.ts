@@ -166,13 +166,13 @@ describe('exagent context', () => {
       expect(result.exitCode).toBe(0);
       expect(result.stdout).toContain('Next:');
       expect(result.stdout).toContain('npx exagent status');
-      expect(result.stdout).toContain('npx exagent start --plan');
+      expect(result.stdout).toContain('npx exagent dev --plan');
     });
 
     it('embeds the follow-ups in the JSON brief, which stays one object', async () => {
       const state = await probeAsync('go-app');
 
-      expect(state.followups.map((followup) => followup.id)).toEqual(['status', 'start-plan']);
+      expect(state.followups.map((followup) => followup.id)).toEqual(['status', 'dev-plan']);
     });
 
     it('offers the dev client install for a project Expo Go cannot run', async () => {
@@ -214,7 +214,7 @@ describe('exagent context', () => {
       expect(followups[0]).toMatchObject({ command: 'context' });
       expect(followups[0].followups.map((item: { id: string }) => item.id)).toEqual([
         'status',
-        'start-plan',
+        'dev-plan',
       ]);
     });
   });

@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0004-smart-start-and-project-state.rfc.md
 //
-// `exagent start --plan` emits the plan the decision table produced and exits without executing
+// `exagent dev --plan` emits the plan the decision table produced and exits without executing
 // it, so a driving agent can present it for approval (llp/0008-guardrails). These tests check the
 // plan against the fixture matrix in `e2e/fixtures/README.md`, and check that nothing ran.
 import fs from 'node:fs';
@@ -14,7 +14,7 @@ import {
   setupFixtureAsync,
 } from '../utils';
 
-/** The shape `start --plan --json` prints, per `src/project/types.ts`. */
+/** The shape `dev --plan --json` prints, per `src/project/types.ts`. */
 type StartPlan = {
   target: 'expo-go' | 'dev-client' | 'bare' | 'web';
   steps: {
@@ -43,7 +43,7 @@ async function planTextInAsync(
   args: string[] = [],
   env?: Record<string, string>
 ): Promise<string> {
-  const result = await executeExagentAsync(projectRoot, ['start', '--plan', ...args], { env });
+  const result = await executeExagentAsync(projectRoot, ['dev', '--plan', ...args], { env });
 
   expect(result.exitCode).toBe(0);
   // `--plan` stops after emitting the plan, so the stub `expo` bin records no invocation.
@@ -61,10 +61,10 @@ async function planTextAsync(
   return planTextInAsync(await setupAsync(fixtureName), args, env);
 }
 
-describe('exagent start --plan', () => {
-  it('documents the flag in `start --help`', async () => {
+describe('exagent dev --plan', () => {
+  it('documents the flag in `dev --help`', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['start', '--help']);
+    const result = await executeExagentAsync(projectRoot, ['dev', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--plan');
@@ -179,7 +179,7 @@ describe('exagent start --plan', () => {
   describe('the machine readable plan', () => {
     it('prints the StartPlan as JSON with `--plan --json`', async () => {
       const projectRoot = await setupFixtureAsync('dev-client-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--plan', '--json', '--ios']);
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
 
       expect(result.exitCode).toBe(0);
 
@@ -206,13 +206,13 @@ describe('exagent start --plan', () => {
     });
   });
 
-  // @ref llp/0009-smart-followups.rfc.md §Examples per command — `start --plan`.
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — `dev --plan`.
   describe('follow-ups', () => {
     it('offers to run the plan it just printed', async () => {
       const output = await planTextAsync('go-app', ['--ios']);
 
       expect(output).toContain('Next:');
-      expect(output).toContain('npx exagent start --smart');
+      expect(output).toContain('npx exagent dev');
     });
 
     it('explains the build a stale plan includes', async () => {
@@ -225,18 +225,18 @@ describe('exagent start --plan', () => {
 
     it('embeds the follow-ups in the JSON plan, which stays one object', async () => {
       const projectRoot = await setupAsync('go-app');
-      const result = await executeExagentAsync(projectRoot, ['start', '--plan', '--json']);
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json']);
 
       expect(result.exitCode).toBe(0);
       const plan: StartPlan = JSON.parse(result.stdout);
-      expect(plan.followups.map((followup) => followup.id)).toEqual(['start-smart']);
+      expect(plan.followups.map((followup) => followup.id)).toEqual(['dev']);
     });
 
     it('leaves them out with --no-followups, keeping the key set', async () => {
       const projectRoot = await setupAsync('go-app');
-      const text = await executeExagentAsync(projectRoot, ['start', '--plan', '--no-followups']);
+      const text = await executeExagentAsync(projectRoot, ['dev', '--plan', '--no-followups']);
       const json = await executeExagentAsync(projectRoot, [
-        'start',
+        'dev',
         '--plan',
         '--json',
         '--no-followups',
@@ -259,7 +259,7 @@ describe('exagent start --plan', () => {
     it('emits one cli:followups event for a driving agent', async () => {
       const projectRoot = await setupAsync('go-app');
       const eventsFile = path.join(projectRoot, 'events.jsonl');
-      const result = await executeExagentAsync(projectRoot, ['start', '--plan'], {
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan'], {
         env: { LOG_EVENTS: eventsFile },
       });
 
@@ -272,8 +272,8 @@ describe('exagent start --plan', () => {
       // `2g` names the event in the `_e` field of every JSONL line.
       const followups = events.filter((entry) => entry._e === 'cli:followups');
       expect(followups).toHaveLength(1);
-      expect(followups[0]).toMatchObject({ command: 'start' });
-      expect(followups[0].followups[0].id).toBe('start-smart');
+      expect(followups[0]).toMatchObject({ command: 'dev' });
+      expect(followups[0].followups[0].id).toBe('dev');
     });
   });
 });

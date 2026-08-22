@@ -8,11 +8,11 @@ import { emitStartPlan } from '../../plan/emit';
 import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../../plan/lastBuild';
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
+import { runDevServerAsync } from '../../start/startAsync';
 import { runExpoAsync } from '../../utils/expoCli';
 import { confirmPlanAsync } from '../confirmPlan';
-import { resolveStartOptions } from '../resolveOptions';
-import { smartStartAsync } from '../smartStartAsync';
-import { runDevServerAsync } from '../startAsync';
+import { devAsync } from '../devAsync';
+import { resolveDevOptions } from '../resolveOptions';
 
 jest.mock('../../log');
 jest.mock('../confirmPlan', () => ({ confirmPlanAsync: jest.fn() }));
@@ -25,7 +25,7 @@ jest.mock('../../plan/lastBuild', () => ({
 }));
 jest.mock('../../project/probe', () => ({ probeProjectStateAsync: jest.fn() }));
 jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
-jest.mock('../startAsync', () => ({ runDevServerAsync: jest.fn() }));
+jest.mock('../../start/startAsync', () => ({ runDevServerAsync: jest.fn() }));
 
 const projectRoot = '/project';
 const fingerprintHash = 'abc123def4567890';
@@ -97,14 +97,12 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-describe(smartStartAsync, () => {
+describe(devAsync, () => {
   describe('--plan', () => {
     it(`should emit the plan and run nothing`, async () => {
       mockStaleDevClientState();
 
-      await expect(
-        smartStartAsync(projectRoot, resolveStartOptions(['--plan', '--ios']))
-      ).resolves.toBe(0);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--plan', '--ios']))).resolves.toBe(0);
 
       expect(emitStartPlan).toHaveBeenCalledWith(
         expect.objectContaining({ rule: 'dev-client-stale' }),
@@ -117,7 +115,7 @@ describe(smartStartAsync, () => {
     it(`should decide from the probed project state`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--plan']));
+      await devAsync(projectRoot, resolveDevOptions(['--plan']));
 
       expect(probeProjectStateAsync).toHaveBeenCalledWith(projectRoot);
       expect(emitStartPlan).toHaveBeenCalledWith(expect.objectContaining({ rule: 'expo-go' }), {
@@ -129,11 +127,11 @@ describe(smartStartAsync, () => {
   });
 
   // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status` — Default change
-  describe('no flag (the default)', () => {
-    it(`should emit the plan and run it, as --smart does`, async () => {
+  describe('no flag (running the plan is the default)', () => {
+    it(`should emit the plan and run it`, async () => {
       mockProjectState();
 
-      await expect(smartStartAsync(projectRoot, resolveStartOptions([]))).resolves.toBe(0);
+      await expect(devAsync(projectRoot, resolveDevOptions([]))).resolves.toBe(0);
 
       expect(emitStartPlan).toHaveBeenCalledWith(expect.objectContaining({ rule: 'expo-go' }), {
         mode: 'smart',
@@ -148,7 +146,7 @@ describe(smartStartAsync, () => {
     it(`should run every step of a plan that builds`, async () => {
       mockStaleDevClientState();
 
-      await expect(smartStartAsync(projectRoot, resolveStartOptions(['--ios']))).resolves.toBe(0);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).resolves.toBe(0);
 
       expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['prebuild', '--platform', 'ios']);
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['run:ios'], {
@@ -162,11 +160,11 @@ describe(smartStartAsync, () => {
     it(`should ask about the plan before anything runs`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--ios']));
 
       expect(confirmPlanAsync).toHaveBeenCalledWith(
         expect.objectContaining({ rule: 'dev-client-stale' }),
-        expect.objectContaining({ mode: 'smart' })
+        expect.objectContaining({ mode: 'run' })
       );
     });
 
@@ -174,7 +172,7 @@ describe(smartStartAsync, () => {
       mockStaleDevClientState();
       jest.mocked(confirmPlanAsync).mockResolvedValue(false);
 
-      await expect(smartStartAsync(projectRoot, resolveStartOptions(['--ios']))).resolves.toBe(0);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).resolves.toBe(0);
 
       expect(runExpoAsync).not.toHaveBeenCalled();
       expect(runDevServerAsync).not.toHaveBeenCalled();
@@ -184,7 +182,7 @@ describe(smartStartAsync, () => {
       mockStaleDevClientState();
       jest.mocked(confirmPlanAsync).mockResolvedValue(false);
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--ios']));
 
       expect(checkpointBeforeAsync).not.toHaveBeenCalled();
     });
@@ -192,17 +190,17 @@ describe(smartStartAsync, () => {
     it(`should never ask in --plan mode, which runs nothing anyway`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--plan', '--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--plan', '--ios']));
 
       expect(confirmPlanAsync).not.toHaveBeenCalled();
     });
   });
 
-  describe('--smart', () => {
+  describe('running the plan', () => {
     it(`should emit the plan before running any step`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart']));
+      await devAsync(projectRoot, resolveDevOptions([]));
 
       expect(emitStartPlan).toHaveBeenCalledWith(expect.objectContaining({ rule: 'expo-go' }), {
         mode: 'smart',
@@ -214,9 +212,7 @@ describe(smartStartAsync, () => {
     it(`should run a single dev server step through the start wrapper`, async () => {
       mockProjectState();
 
-      await expect(
-        smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--port', '8082']))
-      ).resolves.toBe(0);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--port', '8082']))).resolves.toBe(0);
 
       expect(runDevServerAsync).toHaveBeenCalledWith(
         projectRoot,
@@ -229,7 +225,7 @@ describe(smartStartAsync, () => {
     it(`should keep the skill sync opt-out`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--no-agent-skills']));
+      await devAsync(projectRoot, resolveDevOptions(['--no-agent-skills']));
 
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--go'], {
         agentSkills: false,
@@ -239,7 +235,7 @@ describe(smartStartAsync, () => {
     it(`should not repeat a platform flag the plan already passes`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--web']));
+      await devAsync(projectRoot, resolveDevOptions(['--web']));
 
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--web'], {
         agentSkills: true,
@@ -249,9 +245,7 @@ describe(smartStartAsync, () => {
     it(`should run every step in order, ending with the dev server`, async () => {
       mockStaleDevClientState();
 
-      await expect(
-        smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--ios']))
-      ).resolves.toBe(0);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).resolves.toBe(0);
 
       expect(runExpoAsync).toHaveBeenCalledTimes(1);
       expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['prebuild', '--platform', 'ios']);
@@ -263,10 +257,10 @@ describe(smartStartAsync, () => {
     it(`should snapshot the project before a plan that prebuilds`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--ios']));
 
       expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
-        label: 'exagent start --smart',
+        label: 'exagent dev',
         enabled: true,
         silent: false,
       });
@@ -275,7 +269,7 @@ describe(smartStartAsync, () => {
     it(`should not snapshot a plan that only starts the dev server`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart']));
+      await devAsync(projectRoot, resolveDevOptions([]));
 
       expect(checkpointBeforeAsync).not.toHaveBeenCalled();
     });
@@ -283,10 +277,7 @@ describe(smartStartAsync, () => {
     it(`should skip the snapshot with --no-checkpoint`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(
-        projectRoot,
-        resolveStartOptions(['--smart', '--ios', '--no-checkpoint'])
-      );
+      await devAsync(projectRoot, resolveDevOptions(['--ios', '--no-checkpoint']));
 
       expect(checkpointBeforeAsync).toHaveBeenCalledWith(
         projectRoot,
@@ -298,9 +289,7 @@ describe(smartStartAsync, () => {
       mockStaleDevClientState();
       jest.mocked(runExpoAsync).mockResolvedValue(2);
 
-      await expect(
-        smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--ios']))
-      ).resolves.toBe(2);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).resolves.toBe(2);
 
       expect(runDevServerAsync).not.toHaveBeenCalled();
       expect(recordLastBuildFingerprint).not.toHaveBeenCalled();
@@ -309,7 +298,7 @@ describe(smartStartAsync, () => {
     it(`should record the fingerprint of a build that succeeded`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--android']));
+      await devAsync(projectRoot, resolveDevOptions(['--android']));
 
       expect(recordLastBuildFingerprint).toHaveBeenCalledWith(
         projectRoot,
@@ -322,9 +311,7 @@ describe(smartStartAsync, () => {
       mockStaleDevClientState();
       jest.mocked(runDevServerAsync).mockResolvedValue(1);
 
-      await expect(
-        smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--ios']))
-      ).resolves.toBe(1);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).resolves.toBe(1);
 
       expect(recordLastBuildFingerprint).not.toHaveBeenCalled();
     });
@@ -332,7 +319,7 @@ describe(smartStartAsync, () => {
     it(`should not record anything when the fingerprint is unavailable`, async () => {
       mockStaleDevClientState({ fingerprint: { hash: null, error: 'fingerprint failed' } });
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--ios']));
 
       expect(recordLastBuildFingerprint).not.toHaveBeenCalled();
     });
@@ -341,7 +328,7 @@ describe(smartStartAsync, () => {
       mockStaleDevClientState();
       jest.mocked(readLastBuildFingerprints).mockReturnValue({ ios: fingerprintHash });
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--ios']));
 
       expect(emitStartPlan).toHaveBeenCalledWith(
         expect.objectContaining({ rule: 'dev-client-fresh' }),
@@ -359,10 +346,7 @@ describe(smartStartAsync, () => {
     it(`should warn that expo start options do not reach a build step`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(
-        projectRoot,
-        resolveStartOptions(['--smart', '--ios', '--port', '8082'])
-      );
+      await devAsync(projectRoot, resolveDevOptions(['--ios', '--port', '8082']));
 
       expect(Log.warn).toHaveBeenCalledWith(expect.stringMatching(/--port 8082/));
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['run:ios'], {
@@ -373,7 +357,7 @@ describe(smartStartAsync, () => {
     it(`should not warn about the platform flag the plan already acted on`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--ios']));
 
       expect(Log.warn).not.toHaveBeenCalled();
     });
@@ -384,7 +368,7 @@ describe(smartStartAsync, () => {
       mockPlatform('darwin');
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart']));
+      await devAsync(projectRoot, resolveDevOptions([]));
 
       expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['prebuild', '--platform', 'ios']);
     });
@@ -393,7 +377,7 @@ describe(smartStartAsync, () => {
       mockPlatform('linux');
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart']));
+      await devAsync(projectRoot, resolveDevOptions([]));
 
       expect(runExpoAsync).toHaveBeenCalledWith(projectRoot, ['prebuild', '--platform', 'android']);
     });
@@ -402,7 +386,7 @@ describe(smartStartAsync, () => {
       mockPlatform('darwin');
       mockStaleDevClientState({ nativeDirs: { ios: false, android: true } });
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart']));
+      await devAsync(projectRoot, resolveDevOptions([]));
 
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['run:android'], {
         agentSkills: true,
@@ -415,24 +399,24 @@ describe(smartStartAsync, () => {
     it(`should offer to run the plan --plan just printed`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--plan']));
+      await devAsync(projectRoot, resolveDevOptions(['--plan']));
 
-      expect(emittedFollowUpIds()).toEqual(['start-smart']);
-      expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('npx exagent start --smart'));
+      expect(emittedFollowUpIds()).toEqual(['dev']);
+      expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('npx exagent dev'));
     });
 
     it(`should explain the build a stale plan includes`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--plan', '--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--plan', '--ios']));
 
-      expect(emittedFollowUpIds()).toEqual(['start-smart', 'build-freshness', 'project-context']);
+      expect(emittedFollowUpIds()).toEqual(['dev', 'build-freshness', 'project-context']);
     });
 
-    it(`should offer the device, runtime and ship steps once --smart runs the plan`, async () => {
+    it(`should offer the device, runtime and ship steps once the plan runs`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart']));
+      await devAsync(projectRoot, resolveDevOptions([]));
 
       expect(emittedFollowUpIds()).toEqual([
         'real-device',
@@ -446,7 +430,7 @@ describe(smartStartAsync, () => {
       vol.fromJSON({ [`${projectRoot}/eas.json`]: '{"build":{}}' });
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart']));
+      await devAsync(projectRoot, resolveDevOptions([]));
 
       expect(emittedFollowUpIds()).toContain('eas-build');
     });
@@ -454,7 +438,7 @@ describe(smartStartAsync, () => {
     it(`should read the port the dev server was asked for`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--port', '8082']));
+      await devAsync(projectRoot, resolveDevOptions(['--port', '8082']));
 
       expect(emittedFollowUps()[0]!.command).toBe('exp://192.168.1.5:8082');
     });
@@ -463,7 +447,7 @@ describe(smartStartAsync, () => {
       jest.mocked(readLastBuildFingerprints).mockReturnValue({ ios: fingerprintHash });
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--ios']));
 
       expect(emittedFollowUpIds()).toContain('real-device-tunnel');
     });
@@ -471,7 +455,7 @@ describe(smartStartAsync, () => {
     it(`should leave out the device hint for the web target`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--web']));
+      await devAsync(projectRoot, resolveDevOptions(['--web']));
 
       expect(emittedFollowUpIds()).toEqual(['runtime-errors', 'eas-build-configure']);
     });
@@ -479,7 +463,7 @@ describe(smartStartAsync, () => {
     it(`should offer nothing with --no-followups, and print no Next section`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--no-followups']));
+      await devAsync(projectRoot, resolveDevOptions(['--no-followups']));
 
       expect(emittedFollowUps()).toEqual([]);
       expect(Log.log).not.toHaveBeenCalled();
@@ -488,7 +472,7 @@ describe(smartStartAsync, () => {
     it(`should suppress the follow-ups of --plan too`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--plan', '--no-followups']));
+      await devAsync(projectRoot, resolveDevOptions(['--plan', '--no-followups']));
 
       expect(emittedFollowUps()).toEqual([]);
     });
@@ -496,7 +480,7 @@ describe(smartStartAsync, () => {
     it(`should keep --no-followups out of the expo start arguments`, async () => {
       mockProjectState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--no-followups']));
+      await devAsync(projectRoot, resolveDevOptions(['--no-followups']));
 
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['start', '--go'], {
         agentSkills: true,
@@ -506,7 +490,7 @@ describe(smartStartAsync, () => {
     it(`should never offer more than three follow-ups`, async () => {
       mockStaleDevClientState();
 
-      await smartStartAsync(projectRoot, resolveStartOptions(['--plan', '--ios']));
+      await devAsync(projectRoot, resolveDevOptions(['--plan', '--ios']));
 
       expect(emittedFollowUps().length).toBeLessThanOrEqual(3);
     });

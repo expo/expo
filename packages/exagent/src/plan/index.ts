@@ -1,6 +1,6 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md
 // The plan engine of LLP 0004: one deterministic answer to "what must run to get this app on a
-// device?". Consumed by `exagent start --plan` / `--smart`, and later by the post-install
+// device?". Consumed by `exagent dev` and `exagent dev --plan`, and later by the post-install
 // impact classifier and the MCP tool of the same name.
 
 export { decideStartPlan } from './decide';

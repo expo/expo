@@ -1,6 +1,6 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §Contract
 // "Emit the plan first": one structured event for the driving agent, one table for the human.
-// Both are written before any step is spawned, so `--plan` and `--smart` print the same thing.
+// Both are written before any step is spawned, so `dev --plan` and `dev` print the same thing.
 
 import type { FollowUp } from '../followups/types';
 import { Log } from '../log';
@@ -36,7 +36,7 @@ export function emitStartPlan(
     steps: plan.steps,
     reasons: plan.reasons,
   });
-  // In JSON mode the plan is the only thing on stdout, so `exagent start --plan --json` can be
+  // In JSON mode the plan is the only thing on stdout, so `exagent dev --plan --json` can be
   // piped into a parser. Agents that read the JSONL events get the same plan either way.
   Log.log(json ? JSON.stringify({ ...plan, followups }, null, 2) : formatStartPlan(plan));
 }

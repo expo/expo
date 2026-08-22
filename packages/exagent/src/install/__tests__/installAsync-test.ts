@@ -174,7 +174,7 @@ describe(installAsync, () => {
 
       await installAsync(projectRoot, resolveInstallPlan(['react-native-fancy']));
 
-      expect(printed()).toContain('npx exagent start --smart');
+      expect(printed()).toContain('npx exagent dev');
       expect(printed()).toContain('react-native-fancy');
     });
 

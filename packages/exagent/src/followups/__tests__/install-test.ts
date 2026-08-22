@@ -33,8 +33,8 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: [],
     });
 
-    expect(ids(followups)).toEqual(['start-smart']);
-    expect(followups[0]!.command).toBe('npx exagent start --smart');
+    expect(ids(followups)).toEqual(['dev']);
+    expect(followups[0]!.command).toBe('npx exagent dev');
     expect(followups[0]!.why).toContain('react-native-fancy');
     expect(followups[0]!.why).toContain('development build');
   });
@@ -45,7 +45,7 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: [],
     });
 
-    expect(ids(followups)).toEqual(['start-smart']);
+    expect(ids(followups)).toEqual(['dev']);
   });
 
   it(`should name every package that needs a new build`, () => {
@@ -109,7 +109,7 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: ['@expo/ui'],
     });
 
-    expect(ids(followups)).toEqual(['start-smart', 'skills-show']);
+    expect(ids(followups)).toEqual(['dev', 'skills-show']);
   });
 
   it(`should never offer more than three follow-ups`, () => {

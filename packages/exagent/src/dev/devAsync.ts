@@ -1,6 +1,7 @@
 // @ref llp/0004-smart-start-and-project-state.rfc.md §Contract
-// What `exagent start` does by default: probe the project, decide what must run, emit the plan,
-// then (unless `--plan` stopped us, or a person declined it) run its steps as subprocesses.
+// What `exagent dev` does: probe the project, decide what must run, emit the plan, then (unless
+// `--plan` stopped us, or a person declined it) run its steps as subprocesses. The plain
+// `expo start` wrapper is `exagent start`, whose dev-server runner and follow-ups this reuses.
 
 import { checkpointBeforeAsync } from '../checkpoint/integration';
 import {
@@ -14,15 +15,16 @@ import { decideStartPlan } from '../plan/decide';
 import { emitStartPlan } from '../plan/emit';
 import { event } from '../plan/events';
 import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../plan/lastBuild';
+import { isPlatformFlag } from '../plan/platformFlags';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
 import { probeProjectStateAsync } from '../project/probe';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
+import { resolveStartFollowUps } from '../start/followUps';
+import { runDevServerAsync } from '../start/startAsync';
 import { CommandError } from '../utils/errors';
 import { runExpoAsync } from '../utils/expoCli';
 import { confirmPlanAsync } from './confirmPlan';
-import { resolveStartFollowUps } from './followUps';
-import { isPlatformFlag, type StartOptions } from './resolveOptions';
-import { runDevServerAsync } from './startAsync';
+import type { DevOptions } from './resolveOptions';
 
 /**
  * Probe the project, emit the plan, and run it.
@@ -30,7 +32,7 @@ import { runDevServerAsync } from './startAsync';
  * @returns 0 in `--plan` mode, otherwise the exit code of the first step that failed, or of the
  * last step when every step succeeded.
  */
-export async function smartStartAsync(projectRoot: string, options: StartOptions): Promise<number> {
+export async function devAsync(projectRoot: string, options: DevOptions): Promise<number> {
   const state = await probeProjectStateAsync(projectRoot);
   const plan = decideStartPlan(state, {
     platform: options.platform ?? resolveDefaultPlatform(state),
@@ -43,8 +45,8 @@ export async function smartStartAsync(projectRoot: string, options: StartOptions
   // plan is emitted, because `--json` carries them inside the plan object.
   const followups = resolveModeFollowUps(projectRoot, plan, state, options);
 
-  // The plan is always emitted before anything runs, so `--plan` and `--smart` show the same
-  // plan and a driving agent can approve one it has already seen.
+  // The plan is always emitted before anything runs, so `--plan` and a run of the plan show the
+  // same plan and a driving agent can approve one it has already seen.
   emitStartPlan(plan, {
     mode: options.mode === 'plan' ? 'plan' : 'smart',
     json: options.json,
@@ -52,7 +54,7 @@ export async function smartStartAsync(projectRoot: string, options: StartOptions
   });
   // Printed after the plan table and before the first step, so the terminal reads in the order
   // things happen and nothing lands in the middle of the dev server's own output.
-  reportFollowUps('start', followups, { json: options.json });
+  reportFollowUps('dev', followups, { json: options.json });
 
   if (options.mode === 'plan') {
     return 0;
@@ -70,7 +72,7 @@ export async function smartStartAsync(projectRoot: string, options: StartOptions
   // reads the project or writes into gitignored directories, so it needs no snapshot.
   if (plan.steps.some(isPrebuildStep)) {
     await checkpointBeforeAsync(projectRoot, {
-      label: 'exagent start --smart',
+      label: 'exagent dev',
       enabled: options.checkpoint,
       silent: options.json,
     });
@@ -84,13 +86,13 @@ function resolveModeFollowUps(
   projectRoot: string,
   plan: StartPlan,
   state: ProjectState,
-  options: StartOptions
+  options: DevOptions
 ): FollowUp[] {
   if (options.mode === 'plan') {
     return followUpsEnabled(options.followups) ? buildStartPlanFollowUps(plan, state) : [];
   }
-  // The plan knows which app the dev server will be opened in, which the plain wrapper has to
-  // read off the command line.
+  // The plan knows which app the dev server will be opened in, which `exagent start` has to read
+  // off the command line.
   return resolveStartFollowUps(projectRoot, options, {
     expoGo: plan.target === 'expo-go',
     web: plan.target === 'web',
@@ -101,7 +103,7 @@ async function executePlanAsync(
   projectRoot: string,
   plan: StartPlan,
   state: ProjectState,
-  options: StartOptions
+  options: DevOptions
 ): Promise<number> {
   let exitCode = 0;
 
@@ -137,7 +139,7 @@ async function executePlanAsync(
  * to the last step only when that step is `expo start`, because `expo prebuild` and
  * `expo run:*` accept a different set of options.
  */
-function resolveStepArgs(step: PlanStep, options: StartOptions, isLast: boolean): string[] {
+function resolveStepArgs(step: PlanStep, options: DevOptions, isLast: boolean): string[] {
   assertExpoStep(step);
   const args = step.argv.slice(1);
   if (!isLast || !options.expoArgs.length) {
@@ -165,7 +167,7 @@ function isPrebuildStep(step: PlanStep): boolean {
   return step.argv[1] === 'prebuild';
 }
 
-/** Steps that start a dev server, and so get the skill sync of the plain `start` command. */
+/** Steps that start a dev server, and so get the skill sync of the `exagent start` wrapper. */
 function isDevServerStep(step: PlanStep): boolean {
   const command = step.argv[1];
   return command === 'start' || command === 'run:ios' || command === 'run:android';

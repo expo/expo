@@ -57,7 +57,7 @@ export async function undoAsync(projectRoot: string, options: UndoOptions): Prom
   if (!records.length) {
     const error = new CommandError(
       'NO_CHECKPOINTS',
-      `No checkpoint is recorded for this project. "exagent install", "exagent setup" and "exagent start --smart" record one before they change anything, and "exagent checkpoint" records one now.`
+      `No checkpoint is recorded for this project. "exagent install", "exagent setup" and "exagent dev" record one before they change anything, and "exagent checkpoint" records one now.`
     );
     error.suggestedCommand = 'npx exagent checkpoint';
     throw error;

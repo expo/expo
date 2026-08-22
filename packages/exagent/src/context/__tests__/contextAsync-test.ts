@@ -124,7 +124,7 @@ describe(printProjectContextAsync, () => {
 
       expect(output()).toContain('Next:');
       expect(output()).toContain('npx exagent status');
-      expect(output()).toContain('npx exagent start --plan');
+      expect(output()).toContain('npx exagent dev --plan');
     });
 
     it(`should offer the dev client install when Expo Go is out`, async () => {
@@ -145,7 +145,7 @@ describe(printProjectContextAsync, () => {
       expect(Log.log).toHaveBeenCalledTimes(1);
       expect(JSON.parse(output()).followups.map((item: { id: string }) => item.id)).toEqual([
         'status',
-        'start-plan',
+        'dev-plan',
       ]);
     });
 

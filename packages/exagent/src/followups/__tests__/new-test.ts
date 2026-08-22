@@ -5,8 +5,8 @@ describe(buildNewFollowUps, () => {
     expect(buildNewFollowUps({ directory: 'my-app', installed: true })).toEqual([
       expect.objectContaining({ id: 'status', command: 'cd my-app && npx exagent status' }),
       expect.objectContaining({
-        id: 'start-smart',
-        command: 'cd my-app && npx exagent start --smart',
+        id: 'dev',
+        command: 'cd my-app && npx exagent dev',
       }),
       expect.objectContaining({ id: 'setup', command: 'cd my-app && npx exagent setup' }),
     ]);

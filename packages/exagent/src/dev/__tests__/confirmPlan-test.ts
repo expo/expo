@@ -3,7 +3,7 @@ import type { PlanStep, StartPlan, TimeClass } from '../../project/types';
 import { isInteractive } from '../../utils/interactive';
 import { confirmAsync } from '../../utils/prompts';
 import { confirmPlanAsync } from '../confirmPlan';
-import { resolveStartOptions } from '../resolveOptions';
+import { resolveDevOptions } from '../resolveOptions';
 
 jest.mock('../../log');
 jest.mock('../../plan/events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
@@ -45,7 +45,8 @@ describe(confirmPlanAsync, () => {
     await expect(confirmPlanAsync(mockPlan('many-minutes'), options())).resolves.toBe(false);
 
     const printed = jest.mocked(Log.log).mock.calls.flat().join('\n');
-    expect(printed).toContain('npx exagent start --plan');
+    expect(printed).toContain('npx exagent dev --plan');
+    expect(printed).toContain('npx exagent start');
   });
 
   it(`should treat a cancelled prompt as a decline`, async () => {
@@ -92,5 +93,5 @@ describe(confirmPlanAsync, () => {
 });
 
 function options(...argv: string[]) {
-  return resolveStartOptions(argv);
+  return resolveDevOptions(argv);
 }

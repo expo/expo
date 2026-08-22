@@ -14,26 +14,23 @@ describe(buildUndoFollowUps, () => {
 
   it(`should suggest a rebuild when native project files were restored`, () => {
     expect(buildUndoFollowUps({ paths: ['ios/Podfile'] }).map((followup) => followup.id)).toEqual([
-      'start-smart',
+      'dev',
     ]);
     expect(
       buildUndoFollowUps({ paths: ['android/app/build.gradle'] }).map((followup) => followup.id)
-    ).toEqual(['start-smart']);
+    ).toEqual(['dev']);
     expect(buildUndoFollowUps({ paths: ['app.json'] }).map((followup) => followup.id)).toEqual([
-      'start-smart',
+      'dev',
     ]);
     expect(buildUndoFollowUps({ paths: ['app.config.ts'] }).map((followup) => followup.id)).toEqual(
-      ['start-smart']
+      ['dev']
     );
   });
 
   it(`should put the dependency install first when both apply`, () => {
     const followups = buildUndoFollowUps({ paths: ['package.json', 'ios/Podfile'] });
 
-    expect(followups.map((followup) => followup.id)).toEqual([
-      'install-dependencies',
-      'start-smart',
-    ]);
+    expect(followups.map((followup) => followup.id)).toEqual(['install-dependencies', 'dev']);
   });
 
   it(`should read package.json in a nested project as a dependency change`, () => {

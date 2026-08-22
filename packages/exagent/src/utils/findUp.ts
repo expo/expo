@@ -15,6 +15,18 @@ export function findUpProjectRootOrAssert(cwd: string): string {
   return path.dirname(projectRoot);
 }
 
+/**
+ * The project root of a directory, or that directory itself when it is inside no project.
+ *
+ * The generic `expo` passthrough uses this instead of the asserting variant: `expo login` and
+ * `expo whoami` need no project, and the `expo` commands that do need one report a missing project
+ * themselves, in their own words.
+ */
+export function findUpProjectRootOrCwd(cwd: string): string {
+  const projectRoot = findUpProjectRoot(cwd);
+  return projectRoot ? path.dirname(projectRoot) : cwd;
+}
+
 function findUpProjectRoot(root: string): string | null {
   return findFileInParents(root, 'package.json');
 }

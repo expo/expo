@@ -1,4 +1,4 @@
-// @ref llp/0009-smart-followups.rfc.md §Examples per command — `start` and `start --plan`.
+// @ref llp/0009-smart-followups.rfc.md §Examples per command — `start` and `dev --plan`.
 // Pure builders: the caller passes what it already probed, so every branch is unit-testable
 // without a dev server, a device, or an EAS account.
 
@@ -82,8 +82,8 @@ function easFollowUp(easJson: boolean): FollowUp {
 export function buildStartPlanFollowUps(plan: StartPlan, state: ProjectState): FollowUp[] {
   const followups: FollowUp[] = [
     {
-      id: 'start-smart',
-      command: 'npx exagent start --smart',
+      id: 'dev',
+      command: 'npx exagent dev',
       why: 'Runs the plan above, emitting it again first so nothing runs unannounced.',
     },
   ];

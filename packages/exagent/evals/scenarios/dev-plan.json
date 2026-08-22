@@ -1,11 +1,11 @@
 {
-  "id": "start-plan",
+  "id": "dev-plan",
   "fixture": "e2e/fixtures/dev-client-app",
   "taskPrompt": "figure out the plan to get this app running on iOS without executing it",
   "drivingAgent": "deterministic",
   "tiers": [0, 1, 2],
   "command": {
-    "argv": ["start", "--plan"],
+    "argv": ["dev", "--plan"],
     "env": { "LOG_EVENTS": "events.jsonl" },
     "timeoutMs": 60000
   },

@@ -5,7 +5,7 @@
 **Systems:** `packages/@expo/cli`; JSONL events; `exagent` launcher (new)
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
-**Related:** [[0001-agentic-cli-on-expo-cli]]
+**Related:** [[0001-agentic-cli-on-expo-cli]], [[0004-smart-start-and-project-state]]
 
 ## Summary
 
@@ -35,7 +35,7 @@ Consequence: gaps discovered while building tools become upstream `@expo/cli` im
 
 Decision [confirmed — Kudo, 2026-08-22]: the default output stays **terse human text — which is the agent-friendly shape** — with three channels, each with one job:
 
-1. **Default text** — for humans and LLMs reading terminals: one fact per line, `label value` style, stable rule/id names, untrusted app output fenced. Evidence: the tier-1 4B model drove `start --plan` from the human table alone. Fewer tokens than pretty JSON.
+1. **Default text** — for humans and LLMs reading terminals: one fact per line, `label value` style, stable rule/id names, untrusted app output fenced. Evidence: the tier-1 4B model drove `dev --plan` from the human table alone. Fewer tokens than pretty JSON.
 2. **`--json`** — for programmatic consumers: exactly one JSON object on stdout, nothing else. Guaranteed on **every** command. Field names mirror the text labels; top-level keys are stable per command and covered by shape tests (de-facto versioning).
 3. **`LOG_EVENTS` JSONL** — the streaming/telemetry channel for long-running commands, same contract as the expo CLI family.
 
@@ -43,7 +43,11 @@ Anti-rule: **no detection-based shape switching.** `agent-cli-detector` may gate
 
 ## The `exagent` launcher
 
-The reserved bins (`exagent` / `ai-expo` [observed — npm, reserved by kudochien 2026-08-18]) ship as a model-free CLI: `setup` (install Expo skills + register the MCP server into Claude Code/Cursor/Codex), `skills` (sync/list/show/clean, [[0003-knowledge-tools-and-skills]]), `install` and `start` (wrapping the `expo` equivalents as subprocesses, with skill sync and — later — the smart-start engine [confirmed — Kudo, 2026-08-20]), `mcp` (start/connect), `context` (machine-readable project brief), `new` (headless creation, [[0007-deploy-and-headless]]).
+The reserved bins (`exagent` / `ai-expo` [observed — npm, reserved by kudochien 2026-08-18]) ship as a model-free CLI: `setup` (install Expo skills + register the MCP server into Claude Code/Cursor/Codex), `skills` (sync/list/show/clean, [[0003-knowledge-tools-and-skills]]), `install` and `start` (wrapping the `expo` equivalents as subprocesses, with skill sync [confirmed — Kudo, 2026-08-20]), `dev` (the smart-start engine of [[0004-smart-start-and-project-state]]), `mcp` (start/connect), `context` (machine-readable project brief), `status` (where the project is right now), `runtime` (eval/errors/network, [[0005-runtime-loop-tools]]), `navigate` (deep-link a route), `checkpoint`/`undo` ([[0008-guardrails]]), `new` and `deploy` (headless creation and shipping, [[0007-deploy-and-headless]]).
+
+Naming rule [confirmed — Kudo, 2026-08-22]: **a command sharing a name with an `expo` command behaves like that command; a capability only `exagent` has gets a verb of its own; every other command is forwarded to the project's `expo` CLI verbatim.** Rationale [inferred]: the launcher is a superset of `expo`, so an agent that knows `expo` is never wrong about `exagent`, and nothing has to be re-learned per command. The forwarding half is what makes the rule cheap to hold — `exagent` never has to decide what to do with a command it does not implement, and never has to grow a wrapper to stay usable as a project's only CLI entry point.
+
+Implemented [observed — 2026-08-22]: `start` and `install` add skill sync and follow-ups to `expo start`/`expo install` and forward every other argument untouched; the plan-first engine that `start` briefly owned is the `dev` verb; anything else runs through `src/passthrough/`, which spawns the project's `expo` CLI with stdio inherited, forwards the exit code, emits one `cli:expo_passthrough` event, and adds nothing else. A command neither CLI knows is not a special case: `expo` reports it, and its exit code is forwarded like any other.
 
 ## Testing
 

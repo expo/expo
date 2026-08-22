@@ -35,7 +35,7 @@ export const exagentCheckpoint: Command = async (argv) => {
         chalk`  without touching your index, your branches, or {bold HEAD}: nothing is committed, and`,
         chalk`  {bold git status} and {bold git log} do not change.`,
         '',
-        chalk`  {bold exagent install}, {bold exagent setup} and {bold exagent start --smart} take one`,
+        chalk`  {bold exagent install}, {bold exagent setup} and {bold exagent dev} take one`,
         chalk`  before they change anything. Pass {bold --no-checkpoint}, or set {bold EXAGENT_NO_CHECKPOINT},`,
         chalk`  to turn that off.`,
         '',

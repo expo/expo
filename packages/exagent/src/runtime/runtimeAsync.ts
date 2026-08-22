@@ -105,7 +105,7 @@ function evaluateUnsupportedError(devServerUrl: string): CommandError {
     [
       `The app connected to ${devServerUrl} cannot evaluate JavaScript.`,
       `Why: its runtime answered Runtime.evaluate with "method not found". Expo Go for Android ships a JavaScript engine built without the Chrome DevTools Protocol debugger, so nothing can be evaluated in it, and "npx exagent runtime errors" and "npx exagent runtime network" connect to it but report an empty window. Expo Go on iOS answers all three.`,
-      `How: run "npx exagent runtime errors" to see whether this runtime reports anything at all. If that window is empty too, open the app in a development build ("npx exagent start --smart" prints the plan) or on iOS, either of which carries a debuggable engine.`,
+      `How: run "npx exagent runtime errors" to see whether this runtime reports anything at all. If that window is empty too, open the app in a development build ("npx exagent dev" prints the plan) or on iOS, either of which carries a debuggable engine.`,
     ].join('\n')
   );
   error.suggestedCommand = 'npx exagent runtime errors';

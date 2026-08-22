@@ -21,6 +21,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   checkpoint: () => import('./checkpoint').then((i) => i.exagentCheckpoint),
   context: () => import('./context').then((i) => i.exagentContext),
   deploy: () => import('./deploy').then((i) => i.exagentDeploy),
+  dev: () => import('./dev').then((i) => i.exagentDev),
   install: () => import('./install').then((i) => i.exagentInstall),
   navigate: () => import('./navigate').then((i) => i.exagentNavigate),
   runtime: () => import('./runtime').then((i) => i.exagentRuntime),
@@ -48,21 +49,24 @@ const args = arg(
 );
 
 // Check if we are running `npx exagent <subcommand>` or `npx exagent`.
-const command = args._[0] && commands[args._[0]] ? args._[0]! : null;
+const subcommand = args._[0] ?? null;
+// @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher — anything not in the map
+// above is one of the `expo` CLI's own commands, and is forwarded to it as a subprocess.
+const command = subcommand && commands[subcommand] ? subcommand : null;
 
 // Subcommand arguments come from the raw argv, not from `args._`: `arg` drops the `--`
 // separator, and `install`/`start` forward everything after it to the package manager.
 const rawArgv = process.argv.slice(2);
-const commandArgs = command == null ? [] : rawArgv.slice(rawArgv.indexOf(command) + 1);
+const commandArgs = subcommand == null ? [] : rawArgv.slice(rawArgv.indexOf(subcommand) + 1);
 
 // Set up event logger output before any console output, so agents driving `exagent` read
 // JSONL events instead of scraping the terminal.
 installEventLogger({
   command: args['--version']
     ? 'exagent --version'
-    : command == null
+    : subcommand == null
       ? 'exagent --help'
-      : `exagent ${command}`,
+      : `exagent ${subcommand}`,
   version,
 });
 
@@ -71,14 +75,15 @@ if (args['--version']) {
   process.exit(0);
 }
 
-if (command == null) {
-  const unknown = args._[0];
+if (subcommand == null) {
   console.log(chalk`
   {bold Usage}
     {dim $} npx exagent <command>
 
   {bold Commands}
     ${Object.keys(commands).join(', ')}
+
+    Any other command is forwarded to {bold expo <command>}.
 
   {bold Options}
     --version, -v   Version number
@@ -87,15 +92,7 @@ if (command == null) {
   For more info run a command with the {bold --help} flag
     {dim $} npx exagent skills --help
 `);
-
-  if (unknown) {
-    console.error(
-      chalk.red(
-        `Unknown command: ${unknown}. Expected one of: ${Object.keys(commands).join(', ')}.`
-      )
-    );
-  }
-  process.exit(unknown ? 1 : 0);
+  process.exit(0);
 }
 
 // Push the help flag to the subcommand args, e.g. for `npx exagent --help skills`.
@@ -103,6 +100,10 @@ if (args['--help'] && !commandArgs.includes('--help') && !commandArgs.includes('
   commandArgs.push('--help');
 }
 
-// No signal hooks are installed here. `install` and `start` hand the terminal to the
-// `expo` subprocess and forward the signals to it, in `utils/expoCli.ts`.
-commands[command]!().then((exec) => exec(commandArgs));
+// No signal hooks are installed here. `install`, `start` and the `expo` passthrough hand the
+// terminal to the `expo` subprocess and forward the signals to it, in `utils/expoCli.ts`.
+if (command == null) {
+  import('./passthrough').then((i) => i.exagentExpoPassthrough(subcommand)(commandArgs));
+} else {
+  commands[command]!().then((exec) => exec(commandArgs));
+}

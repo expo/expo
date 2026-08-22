@@ -23,8 +23,8 @@ const PLATFORMS: NativePlatform[] = ['ios', 'android'];
 /** How many characters of a fingerprint hash are shown, as in the plan engine. */
 const HASH_DISPLAY_LENGTH = 8;
 
-/** The command the next action names. `--smart` is the flag that runs a plan. */
-const NEXT_ACTION_COMMAND = 'exagent start --smart';
+/** The command the next action names: the one that decides a plan and runs it. */
+const NEXT_ACTION_COMMAND = 'exagent dev';
 
 /** What the project is: name, SDK, and how its native side is produced. */
 export function buildProjectStatus(state: ProjectState, packageName: string | null): ProjectStatus {
@@ -114,8 +114,8 @@ export function buildNextActionStatus(
 /**
  * The platform the next action targets when the command line names none.
  *
- * Mirrors the default of `exagent start --smart` (see `resolveDefaultPlatform` in
- * `../start/smartStartAsync.ts`), so status reports the plan that command would run: a single
+ * Mirrors the default of `exagent dev` (see `resolveDefaultPlatform` in
+ * `../dev/devAsync.ts`), so status reports the plan that command would run: a single
  * checked-in native directory is the project's own answer, otherwise only macOS can build for iOS.
  */
 export function resolveDefaultPlatform(state: ProjectState): PlanPlatform {

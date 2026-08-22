@@ -1,5 +1,5 @@
 // @ref llp/0008-guardrails.rfc.md §Plan-with-cost dry run
-// The human guardrail on the plan-first contract: since `exagent start` runs the plan it printed,
+// The human guardrail on the plan-first contract: since `exagent dev` runs the plan it printed,
 // a person watching a terminal gets one chance to say no before a prebuild or a native build
 // starts. Agents and CI never see this prompt — they are non-interactive, and `--plan` is the
 // approval hop built for them.
@@ -11,7 +11,7 @@ import { event } from '../plan/events';
 import type { PlanStep, StartPlan } from '../project/types';
 import { isInteractive } from '../utils/interactive';
 import { confirmAsync } from '../utils/prompts';
-import type { StartOptions } from './resolveOptions';
+import type { DevOptions } from './resolveOptions';
 
 /**
  * Whether one step costs enough to be worth asking about.
@@ -30,7 +30,7 @@ function isExpensiveStep(step: PlanStep): boolean {
  * `--json` counts as machine use, like a non-interactive stream does: the prompt would land in
  * the middle of the payload the caller is parsing.
  */
-export function planNeedsConfirmation(plan: StartPlan, options: StartOptions): boolean {
+export function planNeedsConfirmation(plan: StartPlan, options: DevOptions): boolean {
   if (options.yes || options.json || !isInteractive()) {
     return false;
   }
@@ -42,7 +42,7 @@ export function planNeedsConfirmation(plan: StartPlan, options: StartOptions): b
  *
  * @returns whether the plan may run. `true` whenever no confirmation is needed.
  */
-export async function confirmPlanAsync(plan: StartPlan, options: StartOptions): Promise<boolean> {
+export async function confirmPlanAsync(plan: StartPlan, options: DevOptions): Promise<boolean> {
   if (!planNeedsConfirmation(plan, options)) {
     return true;
   }
@@ -51,7 +51,7 @@ export async function confirmPlanAsync(plan: StartPlan, options: StartOptions): 
   if (!approved) {
     event('start_plan_declined', { rule: plan.rule, steps: plan.steps.length });
     Log.log(
-      chalk`Nothing ran: the plan was not confirmed.\nTry: {bold npx exagent start --plan} to print it again, or {bold npx exagent start --passthrough} to start the dev server without planning.`
+      chalk`Nothing ran: the plan was not confirmed.\nTry: {bold npx exagent dev --plan} to print it again, or {bold npx exagent start} to start the dev server without planning.`
     );
   }
   return approved;

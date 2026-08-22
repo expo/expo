@@ -120,7 +120,7 @@ export async function requireConnectedAppAsync(devServerUrl: string): Promise<Cd
         `How: run "npx expo start" in the project root and open the app on a device or simulator, then run this command again. Pass --dev-server-url to reach a dev server on another host or port.`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx exagent start --smart';
+    error.suggestedCommand = 'npx exagent dev';
     throw error;
   }
 
