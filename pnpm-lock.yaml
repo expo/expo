@@ -5056,6 +5056,9 @@ importers:
 
   packages/expo-modules-autolinking:
     dependencies:
+      '@expo/platform-metadata':
+        specifier: workspace:^0.1.0
+        version: link:../@expo/platform-metadata
       '@expo/require-utils':
         specifier: workspace:^56.1.3
         version: link:../@expo/require-utils

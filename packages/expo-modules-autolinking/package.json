@@ -59,6 +59,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@expo/platform-metadata": "workspace:^0.1.0",
     "@expo/require-utils": "workspace:^56.1.3",
     "@expo/spawn-async": "^1.8.0",
     "chalk": "^4.1.0",

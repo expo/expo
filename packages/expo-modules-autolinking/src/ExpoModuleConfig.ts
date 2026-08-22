@@ -1,3 +1,4 @@
+import { isAppleTargetPlatform } from '@expo/platform-metadata';
 import fs from 'fs';
 import path from 'path';
 
@@ -59,18 +60,14 @@ export class ExpoModuleConfig {
     } else if (platform === 'apple') {
       // Apple platform is supported when any of iOS, macOS and tvOS is supported.
       return supportedPlatforms.some((supportedPlatform) => {
-        return ['apple', 'ios', 'macos', 'tvos'].includes(supportedPlatform);
+        return supportedPlatform === 'apple' || isAppleTargetPlatform(supportedPlatform);
       });
     }
-    switch (platform) {
-      case 'ios':
-      case 'macos':
-      case 'tvos':
-        // ios|macos|tvos are supported when the module supports "apple" as a platform in general
-        return supportedPlatforms.includes(platform) || supportedPlatforms.includes('apple');
-      default:
-        return supportedPlatforms.includes(platform);
+    if (isAppleTargetPlatform(platform)) {
+      // ios|macos|tvos are supported when the module supports "apple" as a platform in general
+      return supportedPlatforms.includes(platform) || supportedPlatforms.includes('apple');
     }
+    return supportedPlatforms.includes(platform);
   }
 
   /**

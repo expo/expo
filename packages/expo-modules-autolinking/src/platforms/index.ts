@@ -1,3 +1,5 @@
+import { getReactNativeHostPackage } from '@expo/platform-metadata';
+
 import type { SupportedPlatform } from '../types';
 
 interface PlatformImplementations {
@@ -56,13 +58,11 @@ export function getSupportPackageForPlatform(platform: SupportedPlatform): strin
   switch (platform) {
     case 'ios':
     case 'android':
-      return 'react-native';
     case 'tvos':
-      return 'react-native-tvos';
     case 'macos':
-      return 'react-native-macos';
     case 'windows':
-      return 'react-native-windows';
+      // The host package names are shared tooling-wide data in @expo/platform-metadata.
+      return getReactNativeHostPackage(platform)!;
     case 'apple':
     case 'web':
     case 'devtools':

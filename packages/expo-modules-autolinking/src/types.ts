@@ -1,3 +1,5 @@
+import type { PlatformName } from '@expo/platform-metadata';
+
 import type { ExpoModuleConfig } from './ExpoModuleConfig';
 
 type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
@@ -5,15 +7,7 @@ type Required<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 type WithRequired<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>> & Required<T, K>;
 
 // NOTE(@kitten): Our code has never guaranteed this to be exhaustive, hence the `| (string & {})` addition
-export type SupportedPlatform =
-  | 'apple'
-  | 'ios'
-  | 'android'
-  | 'web'
-  | 'macos'
-  | 'tvos'
-  | 'devtools'
-  | (string & {});
+export type SupportedPlatform = PlatformName | 'apple' | 'devtools' | (string & {});
 
 export type PackageRevision = {
   name: string;
