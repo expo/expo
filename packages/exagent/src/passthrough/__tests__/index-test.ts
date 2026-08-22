@@ -1,4 +1,5 @@
 import { vol } from 'memfs';
+import path from 'path';
 
 import { exagentExpoPassthrough } from '..';
 import { event } from '../../events';
@@ -8,7 +9,9 @@ jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
 
-const projectRoot = '/project';
+// path.resolve so the expectation matches what findUpProjectRootOrCwd returns on every
+// platform (win32 resolves '/project' to '<drive>:\\project').
+const projectRoot = path.resolve('/project');
 
 beforeEach(() => {
   vol.reset();
