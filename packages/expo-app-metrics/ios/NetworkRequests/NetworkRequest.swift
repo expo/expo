@@ -50,6 +50,12 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
   /// string rather than carrying `NSError` so the type stays `Sendable` and serializable.
   public let errorDescription: String?
 
+  /// Stable `domain:code` pair of the completion error (e.g. `NSURLErrorDomain:-1009`), or `nil`
+  /// when the task completed without one. Unlike `errorDescription`, which is localized free text,
+  /// this stays constant across locales and OS releases, so telemetry can group failures by it —
+  /// it feeds the low-cardinality `error.type` attribute of OpenTelemetry's semantic conventions.
+  public let errorType: String?
+
   /// Ordered list of redirect hops that preceded the final response. Empty when the task returned
   /// directly. Each entry describes one hop: `fromUrl` is the URL that returned the redirect,
   /// `statusCode` is the 3xx code it returned, and `toUrl` is where the redirect pointed. For a
@@ -263,6 +269,10 @@ extension NetworkRequest {
       cameFromNetwork: cameFromNetwork,
       timings: timings,
       errorDescription: error.map { ($0 as NSError).localizedDescription },
+      errorType: error.map {
+        let nsError = $0 as NSError
+        return "\(nsError.domain):\(nsError.code)"
+      },
       redirects: redirects
     )
   }
