@@ -115,8 +115,11 @@ jobs:
           ollama pull "$EXAGENT_EVAL_MODEL"
         env:
           EXAGENT_EVAL_MODEL: qwen3:4b
+      # Per-PR runs use only the cheapest scenario: CPU inference on the standard runner is
+      # too variable for the longer ones (observed: start-plan turn-2 ranging 23s local to
+      # >900s on a slow runner). The full set runs on the weekly cron and manual dispatch.
       - name: 🤖 Tier 1 evals (report-only)
-        run: node evals/run.mjs --tier 1
+        run: node evals/run.mjs --tier 1 ${{ github.event_name == 'pull_request' && '--scenario skills-sync' || '' }}
         working-directory: packages/exagent
         env:
           EXAGENT_EVAL_MODEL: qwen3:4b
