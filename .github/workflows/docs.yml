@@ -34,7 +34,7 @@ jobs:
         with:
           fetch-depth: 30000
       - name: 🏗️ Setup pnpm
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
           version: 10
       - name: ⬢ Setup Node
@@ -89,7 +89,7 @@ jobs:
         working-directory: docs
         run: echo "version=$(node -p "require('./.vale-version.json').version")" >> "$GITHUB_OUTPUT"
       - name: 💬 Lint Docs website content
-        uses: vale-cli/vale-action@85f9f7f2c5f449ac0ae5b66662961bae3f77ca6a # 2.1.2
+        uses: vale-cli/vale-action@518a9136acc6e6668ce7c00d367051e0941e87ff # 3.0.0
         with:
           version: ${{ steps.vale-version.outputs.version }}
           reporter: github-pr-check
