@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix a `NullPointerException` crash in `TaskService.executeTask` when a task event is delivered concurrently with `notifyTaskFinished` removing the last in-flight event — the unsynchronized check-then-act on the static `sEvents` map could re-read a removed entry as `null`. Seen in production as fatal crashes during background location tracking. ([#48684](https://github.com/expo/expo/pull/48684) by [@pelayomartinez](https://github.com/pelayomartinez))
 - [Android] Clear headless task manager on context destroy ([#47958](https://github.com/expo/expo/pull/47958) by [@Wenszel](https://github.com/Wenszel))
 - [Android] Fix a crash on Android 9 when delivering a task event through `JobScheduler` (geofencing, background location), where the job was built without the scheduling constraint that `JobInfo.Builder.build()` requires. ([#48305](https://github.com/expo/expo/pull/48305) by [@rvaccone](https://github.com/rvaccone))
 
