@@ -51,6 +51,7 @@
     "expo-notifications": "workspace:*",
     "expo-observe": "workspace:*",
     "expo-router": "workspace:*",
+    "expo-secure-store": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "expo-status-bar": "workspace:*",
     "expo-tracking-transparency": "workspace:*",
