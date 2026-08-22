@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 import os from 'os';
 
+import { checkpointBeforeAsync } from '../../checkpoint/integration';
 import type { FollowUp } from '../../followups';
 import { Log } from '../../log';
 import { emitStartPlan } from '../../plan/emit';
@@ -13,6 +14,7 @@ import { smartStartAsync } from '../smartStartAsync';
 import { runDevServerAsync } from '../startAsync';
 
 jest.mock('../../log');
+jest.mock('../../checkpoint/integration', () => ({ checkpointBeforeAsync: jest.fn() }));
 jest.mock('../../plan/emit', () => ({ emitStartPlan: jest.fn() }));
 jest.mock('../../plan/events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 jest.mock('../../plan/lastBuild', () => ({
@@ -183,6 +185,40 @@ describe(smartStartAsync, () => {
       expect(runDevServerAsync).toHaveBeenCalledWith(projectRoot, ['run:ios'], {
         agentSkills: true,
       });
+    });
+
+    it(`should snapshot the project before a plan that prebuilds`, async () => {
+      mockStaleDevClientState();
+
+      await smartStartAsync(projectRoot, resolveStartOptions(['--smart', '--ios']));
+
+      expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
+        label: 'exagent start --smart',
+        enabled: true,
+        silent: false,
+      });
+    });
+
+    it(`should not snapshot a plan that only starts the dev server`, async () => {
+      mockProjectState();
+
+      await smartStartAsync(projectRoot, resolveStartOptions(['--smart']));
+
+      expect(checkpointBeforeAsync).not.toHaveBeenCalled();
+    });
+
+    it(`should skip the snapshot with --no-checkpoint`, async () => {
+      mockStaleDevClientState();
+
+      await smartStartAsync(
+        projectRoot,
+        resolveStartOptions(['--smart', '--ios', '--no-checkpoint'])
+      );
+
+      expect(checkpointBeforeAsync).toHaveBeenCalledWith(
+        projectRoot,
+        expect.objectContaining({ enabled: false })
+      );
     });
 
     it(`should stop at the first failing step and forward its exit code`, async () => {

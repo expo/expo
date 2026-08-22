@@ -77,8 +77,46 @@ describe(resolveRuntimeCommand, () => {
     );
   });
 
+  it(`should default the window of network`, () => {
+    expect(resolveRuntimeCommand(['network'])).toEqual({
+      action: 'network',
+      devServerUrl: 'http://127.0.0.1:8081',
+      durationMs: 5000,
+      json: false,
+      followups: true,
+    });
+  });
+
+  it(`should read the network flags`, () => {
+    expect(
+      resolveRuntimeCommand([
+        'network',
+        '--duration',
+        '10000',
+        '--dev-server-url',
+        'http://192.168.1.10:8081/',
+        '--json',
+        '--no-followups',
+      ])
+    ).toEqual({
+      action: 'network',
+      devServerUrl: 'http://192.168.1.10:8081',
+      durationMs: 10000,
+      json: true,
+      followups: false,
+    });
+  });
+
+  it(`should reject a flag of another action on network`, () => {
+    expect(() => resolveRuntimeCommand(['network', '--timeout', '10'])).toThrow(/--timeout/);
+  });
+
+  it(`should reject an argument after network`, () => {
+    expect(() => resolveRuntimeCommand(['network', 'GET'])).toThrow(/Unexpected argument: GET/);
+  });
+
   it(`should require an action`, () => {
-    expect(() => resolveRuntimeCommand([])).toThrow(/Missing action.*eval\|errors/);
+    expect(() => resolveRuntimeCommand([])).toThrow(/Missing action.*eval\|errors\|network/);
   });
 
   it(`should reject an unknown action`, () => {

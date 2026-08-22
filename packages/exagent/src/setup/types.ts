@@ -10,6 +10,8 @@ export interface SetupOptions {
   agentSkills: boolean;
   /** Print the report as one JSON object instead of the text summary. */
   json?: boolean;
+  /** Snapshot the project before `AGENTS.md` is written. Disabled by `--no-checkpoint`. */
+  checkpoint?: boolean;
 }
 
 /** What happened to the managed block. `skipped` means the file already held this exact block. */

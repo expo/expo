@@ -4,6 +4,7 @@ const EXAGENT_ONLY_FLAGS = [
   '--no-skill-context',
   '--no-impact',
   '--no-followups',
+  '--no-checkpoint',
 ];
 
 /** Which skills to link after the install finishes. */
@@ -30,6 +31,8 @@ export interface InstallPlan {
   impact: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
   followups: boolean;
+  /** Snapshot the project before `expo install` runs, cleared by `--no-checkpoint`. */
+  checkpoint: boolean;
 }
 
 /**
@@ -67,5 +70,7 @@ export function resolveInstallPlan(argv: string[]): InstallPlan {
     // runs for named packages. It is independent of the skill flags.
     impact: !argv.includes('--no-impact') && !installsNothing && positional.length > 0,
     followups: !argv.includes('--no-followups'),
+    // `--check` changes nothing, so there is nothing to snapshot for.
+    checkpoint: !argv.includes('--no-checkpoint') && !installsNothing,
   };
 }

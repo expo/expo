@@ -1,6 +1,17 @@
+import { EventEmitter } from 'events';
 import type WebSocketImpl from 'ws';
 
-import { CdpClient, deriveInspectorOrigin, parseEvaluateResponse } from '../cdpClient';
+import {
+  CdpClient,
+  CdpRequestError,
+  createDefaultTargetSelector,
+  deriveInspectorOrigin,
+  evaluateJsFromCdpAsync,
+  isMethodNotFoundError,
+  parseEvaluateResponse,
+  RPC_METHOD_NOT_FOUND,
+  type CdpTarget,
+} from '../cdpClient';
 import { MockWebSocket } from './MockWebSocket';
 
 const TARGET = {
@@ -147,6 +158,26 @@ describe('CdpClient.evaluateAsync', () => {
     await expect(client.evaluateAsync('1')).rejects.toThrow(/Runtime agent is not enabled/);
   });
 
+  // The caller has to tell "this runtime has no evaluate handler" from "the evaluate failed", so
+  // the JSON-RPC code rides on the error rather than being flattened into its message.
+  it(`should carry the JSON-RPC code of a rejected request`, async () => {
+    const client = createClient((request, socket) => {
+      socket.emit(
+        'message',
+        JSON.stringify({
+          id: request.id,
+          error: { code: RPC_METHOD_NOT_FOUND, message: 'Runtime.evaluate' },
+        })
+      );
+    });
+
+    const error = await client.evaluateAsync('1').catch((e) => e);
+
+    expect(error).toBeInstanceOf(CdpRequestError);
+    expect(error.rpcCode).toBe(RPC_METHOD_NOT_FOUND);
+    expect(isMethodNotFoundError(error)).toBe(true);
+  });
+
   it(`should reject when the connection closes before an answer`, async () => {
     const client = createClient((_request, socket) => {
       socket.close();
@@ -188,6 +219,181 @@ describe('CdpClient.evaluateAsync', () => {
 
     const client = new CdpClient({ metroUrl: 'http://localhost:8081' });
     await expect(client.evaluateAsync('1')).rejects.toThrow(/No target found/);
+  });
+});
+
+describe(evaluateJsFromCdpAsync, () => {
+  it(`should reject with the JSON-RPC code the runtime answered`, async () => {
+    const error = await evaluateJsFromCdpAsync('ws://debugger', '1', 2000, {
+      createWebSocket: (url) =>
+        new MockWebSocket(url, (request, socket) => {
+          socket.emit(
+            'message',
+            JSON.stringify({
+              id: request.id,
+              error: { code: RPC_METHOD_NOT_FOUND, message: 'Runtime.evaluate' },
+            })
+          );
+        }) as unknown as WebSocketImpl,
+    }).catch((e) => e);
+
+    expect(error).toBeInstanceOf(CdpRequestError);
+    expect(error.rpcCode).toBe(RPC_METHOD_NOT_FOUND);
+  });
+
+  it(`should reject without a JSON-RPC code when the transport fails`, async () => {
+    const error = await evaluateJsFromCdpAsync('ws://debugger', '1', 2000, {
+      createWebSocket: () => new FailingWebSocket() as unknown as WebSocketImpl,
+    }).catch((e) => e);
+
+    expect(isMethodNotFoundError(error)).toBe(false);
+  });
+});
+
+/** A socket that never connects, to exercise the transport-failure path. */
+class FailingWebSocket extends EventEmitter {
+  constructor() {
+    super();
+    process.nextTick(() => this.emit('error', new Error('connect ECONNREFUSED 127.0.0.1:8081')));
+  }
+  send() {}
+  close() {}
+}
+
+type ProbeBehavior =
+  /** The runtime answered; a string value means it asks to be hidden from the inspector. */
+  | { kind: 'answers'; hidden?: boolean }
+  /** The runtime answered the request with a JSON-RPC error. */
+  | { kind: 'rpcError'; code: number }
+  /** The debugger connection never opened. */
+  | { kind: 'transportError' };
+
+function target(overrides: Partial<CdpTarget>): CdpTarget {
+  return {
+    ...TARGET,
+    reactNative: { logicalDeviceId: 'device', capabilities: { nativePageReloads: true } },
+    ...overrides,
+  } as CdpTarget;
+}
+
+/** A default selector whose probe answers per debugger URL, so no dev server is needed. */
+function selectorWithProbes(behaviors: Record<string, ProbeBehavior>) {
+  return createDefaultTargetSelector({
+    createWebSocket: (url) => {
+      const behavior = behaviors[url];
+      if (behavior?.kind === 'transportError') {
+        return new FailingWebSocket() as unknown as WebSocketImpl;
+      }
+      return new MockWebSocket(url, (request, socket) => {
+        if (behavior?.kind === 'rpcError') {
+          socket.emit(
+            'message',
+            JSON.stringify({ id: request.id, error: { code: behavior.code, message: 'x' } })
+          );
+          return;
+        }
+        socket.emit(
+          'message',
+          JSON.stringify({
+            id: request.id,
+            result: {
+              result:
+                behavior?.kind === 'answers' && behavior.hidden
+                  ? { type: 'string', value: 'true' }
+                  : { type: 'undefined' },
+            },
+          })
+        );
+      }) as unknown as WebSocketImpl;
+    },
+  });
+}
+
+describe(createDefaultTargetSelector, () => {
+  it(`should pick the first target that answers and does not ask to be hidden`, async () => {
+    const first = target({ webSocketDebuggerUrl: 'ws://a' });
+    const second = target({ webSocketDebuggerUrl: 'ws://b' });
+    const selector = selectorWithProbes({
+      'ws://a': { kind: 'answers' },
+      'ws://b': { kind: 'answers' },
+    });
+
+    await expect(selector([first, second])).resolves.toBe(first);
+  });
+
+  it(`should skip a target that asks to be hidden from the inspector`, async () => {
+    const hidden = target({ webSocketDebuggerUrl: 'ws://hidden' });
+    const app = target({ webSocketDebuggerUrl: 'ws://app' });
+    const selector = selectorWithProbes({
+      'ws://hidden': { kind: 'answers', hidden: true },
+      'ws://app': { kind: 'answers' },
+    });
+
+    await expect(selector([hidden, app])).resolves.toBe(app);
+  });
+
+  it(`should skip a target that does not reload natively`, async () => {
+    const stale = target({
+      webSocketDebuggerUrl: 'ws://stale',
+      reactNative: { logicalDeviceId: 'device', capabilities: { nativePageReloads: false } },
+    });
+    const app = target({ webSocketDebuggerUrl: 'ws://app' });
+    const selector = selectorWithProbes({ 'ws://app': { kind: 'answers' } });
+
+    await expect(selector([stale, app])).resolves.toBe(app);
+  });
+
+  it(`should skip a target whose debugger connection fails`, async () => {
+    const gone = target({ webSocketDebuggerUrl: 'ws://gone' });
+    const app = target({ webSocketDebuggerUrl: 'ws://app' });
+    const selector = selectorWithProbes({
+      'ws://gone': { kind: 'transportError' },
+      'ws://app': { kind: 'answers' },
+    });
+
+    await expect(selector([gone, app])).resolves.toBe(app);
+  });
+
+  // Expo Go on Android answers `Runtime.evaluate` with -32601, so the probe cannot say whether the
+  // target asks to be hidden. "Cannot determine" must not read as "exclude": that made every
+  // runtime command report "No target found" on Android, including the ones that never evaluate.
+  it(`should keep a target whose runtime has no evaluate handler, behind one that answered`, async () => {
+    const android = target({ webSocketDebuggerUrl: 'ws://android', deviceName: 'sdk_gphone64' });
+    const ios = target({ webSocketDebuggerUrl: 'ws://ios', deviceName: 'iPhone' });
+    const selector = selectorWithProbes({
+      'ws://android': { kind: 'rpcError', code: RPC_METHOD_NOT_FOUND },
+      'ws://ios': { kind: 'answers' },
+    });
+
+    // Android is listed first, but a target that answered the probe is the safer answer: it is the
+    // only one `runtime eval` can drive.
+    await expect(selector([android, ios])).resolves.toBe(ios);
+  });
+
+  it(`should fall back to a target whose runtime has no evaluate handler`, async () => {
+    const android = target({ webSocketDebuggerUrl: 'ws://android' });
+    const selector = selectorWithProbes({
+      'ws://android': { kind: 'rpcError', code: RPC_METHOD_NOT_FOUND },
+    });
+
+    await expect(selector([android])).resolves.toBe(android);
+  });
+
+  // Any other JSON-RPC error is a runtime that answered and refused, which is not the same as one
+  // that has no handler: it stays excluded.
+  it(`should skip a target that refuses the probe with another error`, async () => {
+    const refusing = target({ webSocketDebuggerUrl: 'ws://refusing' });
+    const selector = selectorWithProbes({ 'ws://refusing': { kind: 'rpcError', code: -32000 } });
+
+    await expect(selector([refusing])).resolves.toBeNull();
+  });
+
+  it(`should return null when every target is skipped`, async () => {
+    const hidden = target({ webSocketDebuggerUrl: 'ws://hidden' });
+    const selector = selectorWithProbes({ 'ws://hidden': { kind: 'answers', hidden: true } });
+
+    await expect(selector([hidden])).resolves.toBeNull();
+    await expect(selector([])).resolves.toBeNull();
   });
 });
 

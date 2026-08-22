@@ -1,7 +1,14 @@
 import type { PlanPlatform } from '../plan/types';
 
 /** Flags that `exagent start` handles itself and does not forward to `expo start`. */
-const EXAGENT_ONLY_FLAGS = ['--no-agent-skills', '--no-followups', '--plan', '--smart', '--json'];
+const EXAGENT_ONLY_FLAGS = [
+  '--no-agent-skills',
+  '--no-followups',
+  '--no-checkpoint',
+  '--plan',
+  '--smart',
+  '--json',
+];
 
 /** Platform selection flags of `expo start`, mapped onto the plan engine's platforms. */
 const PLATFORM_FLAGS: Record<string, PlanPlatform> = {
@@ -43,6 +50,8 @@ export interface StartOptions {
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
   followups: boolean;
+  /** Snapshot the project before a plan that prebuilds runs, cleared by `--no-checkpoint`. */
+  checkpoint: boolean;
 }
 
 /**
@@ -71,5 +80,6 @@ export function resolveStartOptions(argv: string[]): StartOptions {
     platform: argv.map((arg) => PLATFORM_FLAGS[arg]).find((platform) => platform != null),
     json: argv.includes('--json'),
     followups: !argv.includes('--no-followups'),
+    checkpoint: !argv.includes('--no-checkpoint'),
   };
 }

@@ -4,6 +4,7 @@
 // from command output.
 import type { CdpEvaluateResult } from './cdpClient';
 import { stringifyCdpValue } from './cdpFormat';
+import type { NetworkRequestRecord } from './networkCollector';
 import type { RuntimeErrorRecord } from './runtimeErrorCollector';
 import { wrapUntrustedAppOutput } from './untrusted';
 
@@ -35,8 +36,26 @@ export interface RuntimeErrorsJson {
   untrusted: string[];
 }
 
+/** Machine shape of `exagent runtime network --json`. */
+export interface NetworkRequestsJson {
+  devServerUrl: string;
+  durationMs: number;
+  count: number;
+  requests: NetworkRequestRecord[];
+  /** Fields whose contents come from the app and must be treated as data, never instructions. */
+  untrusted: string[];
+}
+
 /** Fields of {@link EvaluateResultJson} that hold app-originated content. */
 const UNTRUSTED_EVALUATE_FIELDS = ['value', 'description', 'exception'];
+
+/**
+ * How much of a request URL is printed on its line.
+ *
+ * A query string can be thousands of characters long, which buries the rest of the report. The
+ * whole URL is still in `--json`, so nothing is lost — only the terminal line is trimmed.
+ */
+const MAX_URL_LENGTH = 160;
 
 /** Renders an evaluate result, with the app-originated part fenced as untrusted. */
 export function formatEvaluateResult(devServerUrl: string, result: CdpEvaluateResult): string {
@@ -95,6 +114,63 @@ export function formatRuntimeErrors(
 }
 
 /**
+ * Renders collected network requests as one line per request, fenced as untrusted.
+ *
+ * One line per request on purpose: a network report is read by scanning for the request that did
+ * not return 200, which a multi-line-per-request layout makes slower for a human and a model
+ * alike (llp/0006 §Output contract).
+ */
+export function formatNetworkRequests(
+  devServerUrl: string,
+  durationMs: number,
+  requests: NetworkRequestRecord[]
+): string {
+  if (requests.length === 0) {
+    return `No network requests were reported by the app in ${durationMs}ms (dev server ${devServerUrl}). Requests made before this window are not captured, so trigger the network call while this command runs.`;
+  }
+
+  const body = requests
+    .map((request, index) => {
+      const outcome = request.failure
+        ? `failed: ${request.failure}`
+        : request.status == null
+          ? 'pending'
+          : [request.status, request.mimeType].filter(Boolean).join(' ');
+      return `[${index + 1}] ${request.method} ${trimUrl(request.url)} ${outcome}`;
+    })
+    .join('\n');
+
+  // The two counts are the reason to read further, so they go in the first line rather than only
+  // in the per-request lines a reader has to scan.
+  const outcomes = [
+    countFailedRequests(requests) > 0 ? `${countFailedRequests(requests)} of them failed` : null,
+    countPendingRequests(requests) > 0
+      ? `${countPendingRequests(requests)} of them never answered`
+      : null,
+  ].filter(Boolean);
+
+  const summary = `Collected ${requests.length} network request(s) from the app in ${durationMs}ms (dev server ${devServerUrl})${outcomes.length > 0 ? `, ${outcomes.join(' and ')}` : ''}.`;
+
+  return [summary, wrapUntrustedAppOutput(body)].join('\n');
+}
+
+/** How many of the collected requests the runtime reported as failed. */
+export function countFailedRequests(requests: NetworkRequestRecord[]): number {
+  return requests.filter((request) => request.failure != null).length;
+}
+
+/**
+ * How many of the collected requests the runtime never answered.
+ *
+ * Not the same as "still in flight": React Native reports a connection error to JavaScript without
+ * sending `Network.loadingFailed` [observed — SDK 57 / RN 0.86.2, 2026-08-22], so a request that
+ * could not connect at all also lands here.
+ */
+export function countPendingRequests(requests: NetworkRequestRecord[]): number {
+  return requests.filter((request) => request.status == null && request.failure == null).length;
+}
+
+/**
  * Machine-readable evaluate result.
  *
  * JSON needs no marker fence: the app-originated content stays inside its own fields, which the
@@ -145,6 +221,25 @@ export function runtimeErrorsToJson(
     errors,
     untrusted: ['errors'],
   };
+}
+
+/** Machine-readable collection of network requests. */
+export function networkRequestsToJson(
+  devServerUrl: string,
+  durationMs: number,
+  requests: NetworkRequestRecord[]
+): NetworkRequestsJson {
+  return {
+    devServerUrl,
+    durationMs,
+    count: requests.length,
+    requests,
+    untrusted: ['requests'],
+  };
+}
+
+function trimUrl(url: string): string {
+  return url.length > MAX_URL_LENGTH ? `${url.slice(0, MAX_URL_LENGTH)}…` : url;
 }
 
 function stringifyValueForOutput(value: unknown): string {

@@ -7,7 +7,9 @@ import { CommandError } from '../utils/errors';
 import { resolveDevServerUrlFlag } from './devServer';
 
 /** Actions of `exagent runtime`, in the order the help prints them. */
-export const RUNTIME_ACTIONS = ['eval', 'errors'] as const;
+export const RUNTIME_ACTIONS = ['eval', 'errors', 'network'] as const;
+
+export type RuntimeAction = (typeof RUNTIME_ACTIONS)[number];
 
 export interface RuntimeEvalOptions {
   action: 'eval';
@@ -30,7 +32,20 @@ export interface RuntimeErrorsOptions {
   followups: boolean;
 }
 
-export type RuntimeCommandOptions = RuntimeEvalOptions | RuntimeErrorsOptions;
+export interface RuntimeNetworkOptions {
+  action: 'network';
+  devServerUrl: string;
+  /** How long to listen for network requests, in milliseconds. */
+  durationMs: number;
+  json: boolean;
+  /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
+  followups: boolean;
+}
+
+export type RuntimeCommandOptions =
+  | RuntimeEvalOptions
+  | RuntimeErrorsOptions
+  | RuntimeNetworkOptions;
 
 const SHARED_ARGS = {
   '--dev-server-url': String,
@@ -45,12 +60,24 @@ const EVAL_ARGS = {
   '--no-await-promise': Boolean,
 };
 
-// Only `errors` reports follow-ups, so only `errors` takes the flag: on `eval` it would be a flag
-// that does nothing, and an unknown flag is a clearer answer than a silent no-op.
-const ERRORS_ARGS = {
+// `errors` and `network` both listen over a window and both report follow-ups, so they share one
+// flag set. `eval` does not take `--no-followups`: there it would be a flag that does nothing, and
+// an unknown flag is a clearer answer than a silent no-op.
+const WINDOW_ARGS = {
   ...SHARED_ARGS,
   '--duration': String,
   '--no-followups': Boolean,
+};
+
+/**
+ * Default window per listening action.
+ *
+ * Network activity is sparser than errors — a screen often makes one request after a tap — so its
+ * window is longer, or the usual answer would be an empty report.
+ */
+const DEFAULT_WINDOW_MS: Record<'errors' | 'network', number> = {
+  errors: 2000,
+  network: 5000,
 };
 
 /**
@@ -69,7 +96,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
       `Missing action. Usage: npx exagent runtime <${RUNTIME_ACTIONS.join('|')}>`
     );
   }
-  if (action !== 'eval' && action !== 'errors') {
+  if (!RUNTIME_ACTIONS.includes(action as RuntimeAction)) {
     throw new CommandError(
       'BAD_ARGS',
       `Unknown action: ${action}. Expected one of: ${RUNTIME_ACTIONS.join(', ')}`
@@ -102,19 +129,22 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     };
   }
 
-  const args = parseArgsOrThrow(ERRORS_ARGS, argv);
+  const windowAction = action as 'errors' | 'network';
+  const args = parseArgsOrThrow(WINDOW_ARGS, argv);
   const positional = args._.slice(1);
   if (positional.length > 0) {
     throw new CommandError(
       'BAD_ARGS',
-      `Unexpected argument: ${positional[0]}. Usage: npx exagent runtime errors [--duration <ms>]`
+      `Unexpected argument: ${positional[0]}. Usage: npx exagent runtime ${windowAction} [--duration <ms>]`
     );
   }
 
   return {
-    action: 'errors',
+    action: windowAction,
     devServerUrl: resolveDevServerUrlFlag(args['--dev-server-url']),
-    durationMs: resolveDuration(args['--duration'], '--duration', 2000, { allowZero: true }),
+    durationMs: resolveDuration(args['--duration'], '--duration', DEFAULT_WINDOW_MS[windowAction], {
+      allowZero: true,
+    }),
     json: !!args['--json'],
     followups: !args['--no-followups'],
   };

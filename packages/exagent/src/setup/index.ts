@@ -12,6 +12,7 @@ export const exagentSetup: Command = async (argv) => {
       '--agent': [String],
       '--no-agents-md': Boolean,
       '--no-agent-skills': Boolean,
+      '--no-checkpoint': Boolean,
       // Aliases
       '-h': '--help',
     },
@@ -26,6 +27,7 @@ export const exagentSetup: Command = async (argv) => {
         `--agent <agent>     Set up for specific agents (can be used multiple times)`,
         `--no-agents-md      Do not create or update AGENTS.md`,
         `--no-agent-skills   Do not link the agent skills of the installed packages`,
+        `--no-checkpoint     Skip the git snapshot taken before AGENTS.md is written`,
         `--json              Print the result as JSON`,
         `-h, --help          Usage info`,
       ].join('\n'),
@@ -57,6 +59,7 @@ export const exagentSetup: Command = async (argv) => {
       agentsMd: !args['--no-agents-md'],
       agentSkills: !args['--no-agent-skills'],
       json: !!args['--json'],
+      checkpoint: !args['--no-checkpoint'],
     });
   })().catch(logCmdError);
 };

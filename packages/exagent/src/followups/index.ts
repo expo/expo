@@ -3,13 +3,19 @@
 // never has to guess the next command. The builders are pure functions over state the command
 // already probed; `report.ts` is the only module that writes anything.
 
+export { buildUndoFollowUps, type UndoFollowUpInput } from './checkpoint';
 export { buildContextFollowUps } from './context';
 export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
 export { buildNavigateFollowUps, type NavigateFollowUpInput } from './navigate';
 export { resolveExpoGoLanUrl, resolveLanHost } from './network';
 export { dependsOnDevClientSync, easJsonExistsSync } from './projectFiles';
 export { followUpsEnabled, reportFollowUps, type ReportFollowUpsOptions } from './report';
-export { buildRuntimeErrorsFollowUps, type RuntimeErrorsFollowUpInput } from './runtime';
+export {
+  buildRuntimeErrorsFollowUps,
+  buildRuntimeNetworkFollowUps,
+  type RuntimeErrorsFollowUpInput,
+  type RuntimeNetworkFollowUpInput,
+} from './runtime';
 export { buildSkillsSyncFollowUps, type SkillsSyncFollowUpInput } from './skills';
 export {
   buildStartFollowUps,

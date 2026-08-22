@@ -10,6 +10,7 @@ describe(resolveInstallPlan, () => {
       syncScope: 'packages',
       impact: true,
       followups: true,
+      checkpoint: true,
     });
   });
 
@@ -32,9 +33,16 @@ describe(resolveInstallPlan, () => {
       '--no-skill-context',
       '--no-impact',
       '--no-followups',
+      '--no-checkpoint',
     ]);
 
     expect(plan.expoArgs).toEqual(['expo-sqlite', '--fix']);
+  });
+
+  it(`should skip the checkpoint with --no-checkpoint, and for an install that changes nothing`, () => {
+    expect(resolveInstallPlan(['expo-sqlite']).checkpoint).toBe(true);
+    expect(resolveInstallPlan(['expo-sqlite', '--no-checkpoint']).checkpoint).toBe(false);
+    expect(resolveInstallPlan(['--check']).checkpoint).toBe(false);
   });
 
   it(`should classify the impact of the named packages by default`, () => {

@@ -9,6 +9,7 @@ describe(resolveStartOptions, () => {
       platform: 'web',
       json: false,
       followups: true,
+      checkpoint: true,
     });
   });
 
@@ -20,6 +21,7 @@ describe(resolveStartOptions, () => {
       platform: undefined,
       json: false,
       followups: true,
+      checkpoint: true,
     });
   });
 
@@ -35,6 +37,7 @@ describe(resolveStartOptions, () => {
       platform: undefined,
       json: false,
       followups: true,
+      checkpoint: true,
     });
   });
 
@@ -46,6 +49,7 @@ describe(resolveStartOptions, () => {
       platform: undefined,
       json: false,
       followups: true,
+      checkpoint: true,
     });
   });
 
@@ -80,6 +84,7 @@ describe(resolveStartOptions, () => {
       platform: undefined,
       json: true,
       followups: true,
+      checkpoint: true,
     });
   });
 
@@ -99,10 +104,19 @@ describe(resolveStartOptions, () => {
       platform: undefined,
       json: false,
       followups: false,
+      checkpoint: true,
     });
   });
 
   it(`should keep the follow-ups without the flag`, () => {
     expect(resolveStartOptions([]).followups).toBe(true);
+  });
+
+  it(`should strip --no-checkpoint and skip the snapshot`, () => {
+    const options = resolveStartOptions(['--no-checkpoint', '--smart']);
+
+    expect(options.checkpoint).toBe(false);
+    expect(options.expoArgs).toEqual([]);
+    expect(resolveStartOptions(['--smart']).checkpoint).toBe(true);
   });
 });

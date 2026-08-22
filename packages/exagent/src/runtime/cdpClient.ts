@@ -24,6 +24,38 @@ export function createInspectorWebSocket(webSocketDebuggerUrl: string): WebSocke
   });
 }
 
+/** JSON-RPC code for a method the peer does not implement. */
+export const RPC_METHOD_NOT_FOUND = -32601;
+
+/**
+ * A request the runtime answered with a JSON-RPC error.
+ *
+ * The code is carried instead of being flattened into the message because callers branch on it:
+ * "this runtime has no handler for the method" and "this runtime refused the call" need different
+ * answers, and only the code tells them apart.
+ */
+export class CdpRequestError extends Error {
+  readonly isCdpRequestError = true;
+
+  constructor(
+    message: string,
+    public readonly rpcCode?: number
+  ) {
+    super(message);
+    this.name = 'CdpRequestError';
+  }
+}
+
+/**
+ * Whether the runtime answered that it does not implement the method that was called.
+ *
+ * Not a failure of the request: the runtime is reachable and healthy, it simply carries no handler.
+ * Expo Go on Android answers `Runtime.evaluate` this way [observed — Expo Go 57.0.9, 2026-08-22].
+ */
+export function isMethodNotFoundError(error: unknown): boolean {
+  return error instanceof CdpRequestError && error.rpcCode === RPC_METHOD_NOT_FOUND;
+}
+
 export interface CdpTarget {
   id: string;
   appId: string;
@@ -107,7 +139,11 @@ export class CdpClient {
     }
 
     const targets = await this.listTargetsAsync();
-    const selector = this.options.targetSelector ?? defaultTargetSelector;
+    // The default selector probes each target over its own connection, so it gets the same socket
+    // factory as the client: a caller that injected one gets it honored everywhere.
+    const selector =
+      this.options.targetSelector ??
+      createDefaultTargetSelector({ createWebSocket: this.options.createWebSocket });
     const target = await selector(targets);
     if (!target) {
       throw new Error('No target found.');
@@ -205,7 +241,7 @@ export class CdpClient {
           url: this.getWebSocketDebuggerUrl(),
           message: data.toString(),
         });
-        let message: { id?: number; result?: unknown; error?: { message?: string } };
+        let message: { id?: number; result?: unknown; error?: { message?: string; code?: number } };
         try {
           message = JSON.parse(data.toString());
         } catch (error) {
@@ -220,8 +256,9 @@ export class CdpClient {
         if (message.error) {
           settle(() =>
             reject(
-              new Error(
-                `The app rejected the evaluate request: ${message.error?.message ?? 'unknown error'}`
+              new CdpRequestError(
+                `The app rejected the evaluate request: ${message.error?.message ?? 'unknown error'}`,
+                message.error?.code
               )
             )
           );
@@ -266,35 +303,68 @@ export function parseEvaluateResponse(
 const HIDE_FROM_INSPECTOR_ENV = 'globalThis.__expo_hide_from_inspector__';
 
 /**
- * Pick the app page to talk to: the first target that reloads natively and does not ask to be
- * hidden from the inspector. Metro also lists stale and internal pages, which would answer with
- * values from a runtime that is no longer on screen.
+ * Build the default target selector: pick the app page to talk to, which is the first target that
+ * reloads natively and does not ask to be hidden from the inspector. Metro also lists stale and
+ * internal pages, which would answer with values from a runtime that is no longer on screen.
+ *
+ * The probe asks the runtime for a global, so it needs `Runtime.evaluate`. A runtime that has no
+ * evaluate handler therefore cannot be classified at all, and "cannot classify" must not read as
+ * "exclude": Expo Go on Android answers `Runtime.evaluate` with `-32601`
+ * [observed — Expo Go 57.0.9 on an Android emulator, 2026-08-22], and excluding it made *every*
+ * runtime command report "No target found" there, including `runtime errors` and `runtime network`,
+ * which never evaluate anything. Such a target is kept as a fallback instead: it is used when no
+ * target answered the probe, so a runtime that can be driven still wins when there is one.
+ *
+ * @param options.createWebSocket socket factory for the probe, so the probe is injectable in tests
+ * and honors a factory the caller passed to {@link CdpClient}.
  */
-export const defaultTargetSelector: CdpTargetSelector = async (targets) => {
-  for (const target of targets) {
-    const capabilities = target.reactNative?.capabilities ?? {};
-    if (capabilities.nativePageReloads !== true) {
-      continue;
-    }
-    try {
-      const hideFromInspector =
-        (await evaluateJsFromCdpAsync(target.webSocketDebuggerUrl, HIDE_FROM_INSPECTOR_ENV)) !==
-        undefined;
-      if (hideFromInspector) {
+export function createDefaultTargetSelector(options?: {
+  createWebSocket?: (url: string) => WebSocket;
+}): CdpTargetSelector {
+  return async (targets) => {
+    const undetermined: CdpTarget[] = [];
+
+    for (const target of targets) {
+      const capabilities = target.reactNative?.capabilities ?? {};
+      if (capabilities.nativePageReloads !== true) {
         continue;
       }
-    } catch (error: unknown) {
-      // A target we cannot evaluate against is skipped, not an error: another target may answer.
-      debugEvent('cdp_target_skipped', {
-        url: target.webSocketDebuggerUrl,
-        reason: error instanceof Error ? error.message : String(error),
-      });
-      continue;
+      try {
+        const hideFromInspector =
+          (await evaluateJsFromCdpAsync(
+            target.webSocketDebuggerUrl,
+            HIDE_FROM_INSPECTOR_ENV,
+            undefined,
+            options
+          )) !== undefined;
+        if (hideFromInspector) {
+          continue;
+        }
+      } catch (error: unknown) {
+        const reason = error instanceof Error ? error.message : String(error);
+        if (isMethodNotFoundError(error)) {
+          // The runtime is there and healthy, it just cannot answer this question.
+          debugEvent('cdp_target_undetermined', { url: target.webSocketDebuggerUrl, reason });
+          undetermined.push(target);
+          continue;
+        }
+        // A target we cannot reach is skipped, not an error: another target may answer.
+        debugEvent('cdp_target_skipped', { url: target.webSocketDebuggerUrl, reason });
+        continue;
+      }
+      return target;
     }
-    return target;
-  }
-  return null;
-};
+
+    return undetermined[0] ?? null;
+  };
+}
+
+/**
+ * Pick the app page to talk to.
+ *
+ * @see {@link createDefaultTargetSelector}
+ */
+export const defaultTargetSelector: CdpTargetSelector = createDefaultTargetSelector();
 
 /** Evaluates JavaScript in the app over a one-shot CDP connection. */
 export function evaluateJsFromCdpAsync(
@@ -348,7 +418,7 @@ export function evaluateJsFromCdpAsync(
         const response = JSON.parse(data.toString());
         if (response.id === REQUEST_ID) {
           if (response.error) {
-            reject(new Error(response.error.message));
+            reject(new CdpRequestError(response.error.message, response.error.code));
           } else if (response.result.result.type === 'string') {
             resolve(response.result.result.value);
           } else {

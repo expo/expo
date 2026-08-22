@@ -27,6 +27,7 @@ export const exagentInstall: Command = async (argv) => {
         `--no-skill-context  Skip printing installed skills for a detected coding agent`,
         `--no-impact         Skip the report of what must rerun after the install`,
         `--no-followups      Skip the "Next:" section of suggested follow-up commands`,
+        `--no-checkpoint     Skip the git snapshot taken before the install`,
         `-h, --help          Usage info`,
       ].join('\n'),
       [

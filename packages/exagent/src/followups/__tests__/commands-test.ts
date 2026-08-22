@@ -4,7 +4,7 @@ import type { ProjectState } from '../../project/types';
 import type { StatusReport } from '../../status/types';
 import { buildContextFollowUps } from '../context';
 import { buildNavigateFollowUps } from '../navigate';
-import { buildRuntimeErrorsFollowUps } from '../runtime';
+import { buildRuntimeErrorsFollowUps, buildRuntimeNetworkFollowUps } from '../runtime';
 import { buildSkillsSyncFollowUps } from '../skills';
 import { buildStatusFollowUps } from '../status';
 
@@ -183,6 +183,64 @@ describe(buildRuntimeErrorsFollowUps, () => {
     // A longer window, because the failure was not reproduced inside the last one.
     expect(followups[0]!.command).toBe('npx exagent runtime errors --duration 4000');
     expect(followups[0]!.why).toContain('reproduce');
+  });
+});
+
+describe(buildRuntimeNetworkFollowUps, () => {
+  it(`should point at the error window first when a request failed`, () => {
+    const followups = buildRuntimeNetworkFollowUps({
+      count: 3,
+      failedCount: 1,
+      pendingCount: 0,
+      durationMs: 5000,
+    });
+
+    expect(ids(followups)).toEqual(['runtime-network-errors', 'runtime-network-rerun']);
+    expect(followups[0]!.command).toBe('npx exagent runtime errors --duration 5000');
+    expect(followups[1]!.command).toBe('npx exagent runtime network --duration 5000');
+  });
+
+  it(`should ask for a longer window when the app made no request`, () => {
+    const followups = buildRuntimeNetworkFollowUps({
+      count: 0,
+      failedCount: 0,
+      pendingCount: 0,
+      durationMs: 5000,
+    });
+
+    expect(ids(followups)).toEqual(['runtime-network-reproduce']);
+    expect(followups[0]!.command).toBe('npx exagent runtime network --duration 10000');
+    expect(followups[0]!.why).toContain('trigger');
+  });
+
+  // A request the runtime never answered is the shape a connection error takes here: React Native
+  // reports the rejection to JavaScript but sends no `loadingFailed`
+  // [observed — SDK 57 / RN 0.86.2, 2026-08-22].
+  it(`should explain a request the runtime never answered`, () => {
+    const followups = buildRuntimeNetworkFollowUps({
+      count: 2,
+      failedCount: 0,
+      pendingCount: 1,
+      durationMs: 5000,
+    });
+
+    expect(ids(followups)).toEqual(['runtime-network-pending', 'runtime-network-rerun']);
+    expect(followups[0]!.command).toBe('npx exagent runtime errors --duration 5000');
+    expect(followups[0]!.why).toContain('connection');
+    expect(followups[1]!.command).toBe('npx exagent runtime network --duration 10000');
+  });
+
+  // Every request answered, so a wrong screen is not a network problem: look at the app instead.
+  it(`should send the caller to the app when every request answered`, () => {
+    const followups = buildRuntimeNetworkFollowUps({
+      count: 2,
+      failedCount: 0,
+      pendingCount: 0,
+      durationMs: 5000,
+    });
+
+    expect(ids(followups)).toEqual(['runtime-network-clean']);
+    expect(followups[0]!.command).toBe('npx exagent runtime errors --duration 5000');
   });
 });
 

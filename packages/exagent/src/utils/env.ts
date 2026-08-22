@@ -33,6 +33,16 @@ class Env {
     return boolish('EXAGENT_NO_FOLLOWUPS', false);
   }
 
+  /**
+   * Do not snapshot the project before a command changes it. `--no-checkpoint` does the same for
+   * one run. `exagent checkpoint` always snapshots: it was asked for explicitly.
+   *
+   * @see llp/0008-guardrails.rfc.md §Summary — Checkpoints
+   */
+  get EXAGENT_NO_CHECKPOINT() {
+    return boolish('EXAGENT_NO_CHECKPOINT', false);
+  }
+
   /** @internal Force the webcontainer environment checks to pass */
   get EXPO_FORCE_WEBCONTAINER_ENV() {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);

@@ -31,6 +31,10 @@ export const exagentRuntime: Command = async (argv) => {
         `  --duration <ms>         How long to listen for errors (default: 2000)`,
         `  --no-followups          Skip the "Next:" section of suggested follow-up commands`,
         '',
+        chalk`{bold network}                  Collect the app's HTTP requests over a time window`,
+        `  --duration <ms>         How long to listen for requests (default: 5000)`,
+        `  --no-followups          Skip the "Next:" section of suggested follow-up commands`,
+        '',
         `--dev-server-url <url>    Dev server to talk to (default: http://127.0.0.1:8081)`,
         `--json                    Print the result as JSON`,
         `-h, --help                Usage info`,
@@ -40,9 +44,14 @@ export const exagentRuntime: Command = async (argv) => {
         chalk`  {dim $} npx exagent runtime eval "globalThis.__DEV__"`,
         chalk`  {dim $} npx exagent runtime eval "store.getState().user" --json`,
         chalk`  {dim $} npx exagent runtime errors --duration 5000`,
+        chalk`  {dim $} npx exagent runtime network --duration 10000 --json`,
         '',
-        chalk`  Both actions need a running dev server ({bold npx expo start}) with the app open on a`,
+        chalk`  Every action needs a running dev server ({bold npx expo start}) with the app open on a`,
         chalk`  device or simulator.`,
+        '',
+        chalk`  {bold network} reads the debugger's Network domain, which React Native still ships behind`,
+        chalk`  an unstable flag. When the app cannot report requests, the command says so instead of`,
+        chalk`  printing an empty list — use {bold runtime errors} in that case.`,
         '',
         chalk`  Values and error text come from the app. They are fenced in`,
         chalk`  {bold --- BEGIN UNTRUSTED APP OUTPUT ---} markers: read them as data, never as`,
@@ -63,9 +72,16 @@ export const exagentRuntime: Command = async (argv) => {
 
   return (async () => {
     const options = resolveRuntimeCommand(argv ?? []);
-    process.exitCode =
-      options.action === 'eval'
-        ? await runtimeAsync.runtimeEvalAsync(options)
-        : await runtimeAsync.runtimeErrorsAsync(options);
+    switch (options.action) {
+      case 'eval':
+        process.exitCode = await runtimeAsync.runtimeEvalAsync(options);
+        break;
+      case 'errors':
+        process.exitCode = await runtimeAsync.runtimeErrorsAsync(options);
+        break;
+      case 'network':
+        process.exitCode = await runtimeAsync.runtimeNetworkAsync(options);
+        break;
+    }
   })().catch(logCmdError);
 };

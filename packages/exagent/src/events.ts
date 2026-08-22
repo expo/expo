@@ -16,6 +16,15 @@ declare module '2g' {
     'cli:error': { code: string; message: string; suggestedCommand: string | null };
     'cli:runtime_eval': { devServerUrl: string; threw: boolean; type: string };
     'cli:runtime_errors': { devServerUrl: string; durationMs: number; count: number };
+    'cli:runtime_network': {
+      devServerUrl: string;
+      durationMs: number;
+      count: number;
+      /** How many of the collected requests the runtime reported as failed. */
+      failedCount: number;
+      /** How many of the collected requests the runtime never answered. */
+      pendingCount: number;
+    };
     /**
      * The whole `exagent status` report, as the summary an agent can branch on. The command
      * always exits 0, so this event is where the answer lives.

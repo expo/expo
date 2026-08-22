@@ -1,3 +1,4 @@
+import { checkpointBeforeAsync } from '../../checkpoint/integration';
 import * as Log from '../../log';
 import type { InstallImpactReport } from '../../project/types';
 import {
@@ -11,6 +12,7 @@ import { installAsync } from '../installAsync';
 import { resolveInstallPlan } from '../resolveOptions';
 
 jest.mock('../../log');
+jest.mock('../../checkpoint/integration', () => ({ checkpointBeforeAsync: jest.fn() }));
 jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
 jest.mock('../impactReport', () => ({ reportInstallImpactAsync: jest.fn() }));
 jest.mock('../../skills/skillsAsync', () => ({
@@ -44,6 +46,35 @@ beforeEach(() => {
 });
 
 describe(installAsync, () => {
+  it(`should snapshot the project before expo install runs`, async () => {
+    const order: string[] = [];
+    jest.mocked(checkpointBeforeAsync).mockImplementation(async () => {
+      order.push('checkpoint');
+      return { record: null, files: 0, skipped: 'not-a-git-repo', detail: '' };
+    });
+    jest.mocked(runExpoAsync).mockImplementation(async () => {
+      order.push('install');
+      return 0;
+    });
+
+    await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
+
+    expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
+      label: 'exagent install',
+      enabled: true,
+    });
+    expect(order).toEqual(['checkpoint', 'install']);
+  });
+
+  it(`should skip the snapshot with --no-checkpoint`, async () => {
+    await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--no-checkpoint']));
+
+    expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
+      label: 'exagent install',
+      enabled: false,
+    });
+  });
+
   it(`should run expo install with the forwarded arguments`, async () => {
     await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--dev']));
 

@@ -2,6 +2,7 @@
 // The plan-first half of `exagent start`: probe the project, decide what must run, emit the
 // plan, then (unless `--plan` stopped us) run its steps as subprocesses.
 
+import { checkpointBeforeAsync } from '../checkpoint/integration';
 import {
   buildStartPlanFollowUps,
   followUpsEnabled,
@@ -54,6 +55,17 @@ export async function smartStartAsync(projectRoot: string, options: StartOptions
 
   if (options.mode === 'plan') {
     return 0;
+  }
+
+  // @ref llp/0008-guardrails.rfc.md §Summary — Checkpoints: only `expo prebuild` writes files git
+  // tracks, by generating the native projects over whatever is there. Every other step of a plan
+  // reads the project or writes into gitignored directories, so it needs no snapshot.
+  if (plan.steps.some(isPrebuildStep)) {
+    await checkpointBeforeAsync(projectRoot, {
+      label: 'exagent start --smart',
+      enabled: options.checkpoint,
+      silent: options.json,
+    });
   }
 
   return executePlanAsync(projectRoot, plan, state, options);
@@ -138,6 +150,11 @@ function resolveStepArgs(step: PlanStep, options: StartOptions, isLast: boolean)
   // The plan already sets the flags it needs (`--go`, `--dev-client`, `--web`), so a user who
   // passed the same flag does not get it twice.
   return [...args, ...options.expoArgs.filter((arg) => !args.includes(arg))];
+}
+
+/** Steps that generate the native projects, overwriting whatever is checked in. */
+function isPrebuildStep(step: PlanStep): boolean {
+  return step.argv[1] === 'prebuild';
 }
 
 /** Steps that start a dev server, and so get the skill sync of the plain `start` command. */

@@ -23,6 +23,7 @@ The ".expo" folder is created when an Expo project is started using "expo start"
 - "settings.json": contains the server configuration that is used to serve the application manifest.
 - "agent-skill-links.json": remembers which coding agents were selected for the "exagent skills" command.
 - "exagent-last-build.json": remembers the native fingerprint of the last successful "exagent start --smart" build per platform, so the next plan can skip an unnecessary rebuild.
+- "exagent-checkpoints.json": lists the git snapshots "exagent checkpoint" and the commands that change the project took, so "exagent undo" can restore one. It holds git object ids, not file contents.
 - "dev/logs/": contains structured JSONL event logs from CLI commands (e.g. start.log, export.log). These are truncated on each run.
 
 > Should I commit the ".expo" folder?

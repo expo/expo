@@ -38,6 +38,8 @@ export function generateAgentsMdBlock({ state, projectName, skillsDirs }: Agents
     '- `npx exagent runtime errors` — collect the runtime errors of the running app',
     '- `npx exagent navigate <route>` — open a route as a deep link on a device',
     '- `npx exagent skills list` — the agent skills the installed packages ship',
+    '- `npx exagent new <dir>` / `npx exagent deploy` — create a project headlessly / deploy web and native',
+    '- `npx exagent undo` — restore the last checkpoint taken before a mutating command',
     '',
     skillsLine(skillsDirs),
   ].join('\n');
