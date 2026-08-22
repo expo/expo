@@ -39,6 +39,19 @@ Emit the plan first as a structured event (steps + reasons + time-class estimate
 - **Expo Go compatibility check** [confirmed — Kudo seed, 2026-08-18]: answer "can this run in Expo Go?" with reasons — compare dependencies against `packages/expo/bundledNativeModules.json` [observed — file exists], detect config plugins and custom native code, check SDK support.
 - **Post-install impact decisions** [confirmed — Kudo seed, 2026-08-18]: after `npx expo install {pkg}`: JS-only → keep dev server, maybe reload; new config plugin or native module under CNG → prebuild + new dev build; bare native dirs → pod install / gradle sync. Same classifier as the decision table, consumed at a second moment.
 
+## `exagent status`
+
+[confirmed — Kudo seed, 2026-08-22] A `git status`-like overview: one fast, read-only command that answers "where is this project right now, and what would happen next". Composition of existing pieces [inferred]:
+
+- **Project**: name/slug, SDK version, CNG vs bare, dev-client/web deps.
+- **Expo Go**: compatible or not, with reason count (details via `exagent context`).
+- **Freshness**: current fingerprint vs `.expo/exagent-last-build.json` per platform → `fresh` / `stale` / `unknown` (no fingerprint tool).
+- **Dev server**: running or not (probe the configured/default port), and how many CDP targets are connected (app open?).
+- **Skills**: agent selection cached? linked skill count vs discovered count (out-of-sync hint).
+- **Next action**: the smart-start rule that would fire, as one line (e.g. "`exagent start` → expo-go: start Metro and open in Expo Go").
+
+Contract: human-readable sections by default (like `git status` short prose), `--json` for the machine shape, exit 0 always (status is information, not judgment). Fast: no subprocess heavier than the fingerprint CLI; dev-server probe with a short timeout.
+
 ## Implemented in v1 as
 
 [observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/context/`, `exagent start --plan|--smart`) with these deliberate approximations of the table above:
