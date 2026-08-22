@@ -160,6 +160,7 @@ _This version does not introduce any user-facing changes._
 - Disable sextant QR code rendering for Windows Terminal ([#46455](https://github.com/expo/expo/pull/46455) by [@kitten](https://github.com/kitten))
 - Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
 - Remove `@expo/metro-config` install from `expo customize metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
+- Reset the Metro cache when bundling production apps in local EAS builds. ([#47769](https://github.com/expo/expo/pull/47769) by [@tjzel](https://github.com/tjzel))
 
 ## 56.1.13 - 2026-05-29
 
