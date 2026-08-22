@@ -66,7 +66,11 @@ jobs:
   # `continue-on-error` keeps it non-blocking until its pass rate is stable over a
   # trailing window (LLP 0002, "Flake containment").
   tier1-agent-eval:
+    # TEMPORARY: pull_request enabled once to prove tier 1 on a real runner from the
+    # PR branch (workflow_dispatch only works from the default branch). Revert to
+    # dispatch+schedule before landing.
     if: >-
+      github.event_name == 'pull_request' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'schedule' && github.repository == 'expo/expo')
     runs-on: ubuntu-24.04
