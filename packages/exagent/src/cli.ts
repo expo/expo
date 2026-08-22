@@ -8,7 +8,7 @@ import {
   formatTopLevelHelp,
   resolveCommand,
   unknownActionMessage,
-  unknownGroupMessage,
+  unknownCommandMessage,
 } from './commandRegistry';
 import * as Log from './log';
 
@@ -57,8 +57,8 @@ if (
 }
 
 // @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher — the registry in
-// `commandRegistry.ts` owns which names exist; anything it does not know is one of the `expo`
-// CLI's own commands, and is forwarded to it as a subprocess.
+// `commandRegistry.ts` owns which names exist: its own commands, the actions of its groups, and
+// the fixed set of `expo` commands it forwards. A name in none of them is an error, not a forward.
 const resolution = subcommand == null ? null : resolveCommand(subcommand, commandArgs);
 
 // Set up event logger output before any console output, so agents driving `exagent` read
@@ -95,8 +95,8 @@ switch (resolution.kind) {
     Log.exit(formatGroupHelp(resolution.group), 0);
     break;
 
-  // The two error cases print the listing first and the error last: the last line is what a
-  // driving agent acts on (llp/0006 "errors are prompts").
+  // The listing comes first and the error last: the last line is what a driving agent acts on
+  // (llp/0006 "errors are prompts").
   case 'unknown-action': {
     const { CommandError, logCmdError } =
       require('./utils/errors') as typeof import('./utils/errors');
@@ -110,13 +110,10 @@ switch (resolution.kind) {
     break;
   }
 
-  case 'unknown-group': {
+  case 'unknown-command': {
     const { CommandError, logCmdError } =
       require('./utils/errors') as typeof import('./utils/errors');
-    const error = new CommandError(
-      'UNKNOWN_COMMAND',
-      unknownGroupMessage(resolution.command, resolution.group)
-    );
+    const error = new CommandError('UNKNOWN_COMMAND', unknownCommandMessage(resolution.command));
     error.suggestedCommand = 'npx exagent --help';
     logCmdError(error);
     break;

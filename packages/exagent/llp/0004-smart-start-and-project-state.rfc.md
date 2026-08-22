@@ -44,13 +44,15 @@ Emit the plan first as a structured event (steps + reasons + time-class estimate
 [confirmed — Kudo seed, 2026-08-22] A `git status`-like overview: one fast, read-only command that answers "where is this project right now, and what would happen next". Composition of existing pieces [inferred]:
 
 - **Project**: name/slug, SDK version, CNG vs bare, dev-client/web deps.
-- **Expo Go**: compatible or not, with reason count (details via `exagent context`).
+- **Expo Go**: compatible or not, with reason count (the reasons themselves in the `probe` key of `--json`).
 - **Freshness**: current fingerprint vs `.expo/exagent-last-build.json` per platform → `fresh` / `stale` / `unknown` (no fingerprint tool).
 - **Dev server**: running or not (probe the configured/default port), and how many CDP targets are connected (app open?).
 - **Skills**: agent selection cached? linked skill count vs discovered count (out-of-sync hint).
 - **Next action**: the smart-start rule that would fire, as one line (e.g. "`exagent dev` → expo-go: start Metro and open in Expo Go").
 
 Contract: human-readable sections by default (like `git status` short prose), `--json` for the machine shape, exit 0 always (status is information, not judgment). Fast: no subprocess heavier than the fingerprint CLI; dev-server probe with a short timeout.
+
+Merged [confirmed — Kudo, 2026-08-22]: **`status` absorbs the former `exagent context`**, which is removed. `status --json` carries the raw `ProjectState` verbatim under a `probe` key, alongside the sections above — the sections round the probe off for a terminal (Expo Go as a reason _count_, the fingerprint as a hash), and `probe` is what the summarizing dropped, so a caller that wants the brief reads one command instead of two. Rationale [inferred]: the two commands shared one probe and differed only in how much of it they printed, which is a flag, not a verb; and an agent orienting in a project was reliably running both. The probe costs nothing extra here — `status` already reads it to build its sections. The `install-dev-client` follow-up moved over with it; the `project-context` follow-up that pointed at `context` is gone, because the reasons it promised are now in the same report.
 
 Default change [confirmed — Kudo, 2026-08-22]: **smart mode is `exagent start`'s default** (the plain passthrough moves behind `--passthrough`; `--smart` stays as an alias). Human guardrail per [[0008-guardrails]]: an interactive terminal facing a plan with build-class steps gets one Y/n confirmation; non-interactive runs (agents, CI) proceed plan-first without prompting.
 
@@ -62,7 +64,7 @@ Rename implemented [observed — 2026-08-22]: the engine is `src/dev/` (`devAsyn
 
 ## Implemented in v1 as
 
-[observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/context/`, `src/dev/`, `exagent dev [--plan]`) with these deliberate approximations of the table above:
+[observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/status/`, `src/dev/`, `exagent dev [--plan]`) with these deliberate approximations of the table above:
 
 1. **No device probe.** "Go/dev client installed on the device" is unobservable without simctl/adb; those rows are dropped — `expo start` prompts for Go itself and `expo run:*` installs what it builds.
 2. **No build-cache lookup.** Freshness = probe fingerprint vs `.expo/exagent-last-build.json` (written after a successful `run:*` step). Unrecorded ⇒ stale: v1 over-plans a build at worst, never under-plans.

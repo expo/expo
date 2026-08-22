@@ -31,7 +31,7 @@ export function generateAgentsMdBlock({ state, projectName, skillsDirs }: Agents
     'Prefer these over the raw `expo` commands: they answer in a shape an agent can parse, and most of them take `--json` for the machine-readable form.',
     '',
     '- `npx exagent status` — where the project is right now, and what would happen next',
-    '- `npx exagent context --json` — the machine-readable project brief',
+    '- `npx exagent status --json` — the same report as one object, with the raw project probe under `probe`',
     '- `npx exagent dev` — get the app onto a device: it prints the plan, then runs it; `npx exagent dev --plan` prints the steps without running them',
     '- `npx exagent start` — `expo start` and nothing else: a dev server no planning may touch',
     '- `npx exagent install <pkg>` — install a package and report what it changes natively',
@@ -61,7 +61,7 @@ function expoGoLine(state: ProjectState): string {
     return 'compatible (Expo Go can run this project)';
   }
   const count = state.expoGo.reasons.length;
-  return `not compatible (${count} reason${count === 1 ? '' : 's'}; needs a development build, run \`npx exagent context\` for the details)`;
+  return `not compatible (${count} reason${count === 1 ? '' : 's'}; needs a development build, run \`npx exagent status --json\` for the details)`;
 }
 
 function skillsLine(skillsDirs: string[]): string {

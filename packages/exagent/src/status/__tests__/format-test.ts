@@ -47,6 +47,8 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
         },
       ],
     },
+    // The text report never prints the raw probe, so it is null here on purpose.
+    probe: null,
     errors: {},
     ...overrides,
   };
@@ -163,7 +165,7 @@ describe(formatStatusReport, () => {
 
     expect(line(report, 'freshness')).toContain('The @expo/fingerprint CLI is not installed');
     expect(line(report, 'freshness')).toContain('…');
-    // The full message is in the `--json` report, and in `exagent context`.
+    // The full message is in the `--json` report, under `freshness` and `probe`.
     expect(line(report, 'freshness')).not.toContain('npx expo install');
   });
 

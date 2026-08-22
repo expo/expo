@@ -25,11 +25,13 @@ export function buildStatusFollowUps(report: StatusReport): FollowUp[] {
     });
   }
 
-  if (report.expoGo?.compatible === false) {
+  // The reasons Expo Go is out are in the report already (`probe.expoGo.reasons`), so the follow-up
+  // is the action they imply rather than a command that would only print them again.
+  if (report.expoGo?.compatible === false && report.project?.usesDevClient === false) {
     followups.push({
-      id: 'project-context',
-      command: 'npx exagent context',
-      why: 'Expo Go cannot run this project; context lists every reason the probe found.',
+      id: 'install-dev-client',
+      command: 'npx exagent install expo-dev-client',
+      why: 'Expo Go cannot run this project and expo-dev-client is not a dependency, so no development build can be made yet.',
     });
   }
 

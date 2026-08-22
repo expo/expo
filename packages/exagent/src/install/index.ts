@@ -36,6 +36,8 @@ export const exagentInstall: Command = async (argv) => {
         chalk`    {dim $} npx exagent install expo-sqlite --dev`,
         chalk`    {dim >} expo install expo-sqlite --dev`,
         '',
+        chalk`  {bold npx exagent add} is the same command, because {bold expo add} is {bold expo install}.`,
+        '',
         chalk`  Run {bold npx expo install --help} for the arguments the Expo CLI accepts.`,
         '',
       ].join('\n')

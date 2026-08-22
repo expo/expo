@@ -219,8 +219,9 @@ describe('exagent dev --plan', () => {
       const output = await planTextAsync('dev-client-app', ['--ios']);
 
       expect(output).toContain('npx exagent status');
-      // Expo Go is out for this fixture, so the reasons are worth reading in full.
-      expect(output).toContain('npx exagent context');
+      // Expo Go is out for this fixture, so the reasons in the probe are worth reading in full.
+      expect(output).toContain('npx exagent status --json');
+      expect(output).not.toContain('npx exagent context');
     });
 
     it('embeds the follow-ups in the JSON plan, which stays one object', async () => {

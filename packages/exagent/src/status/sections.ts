@@ -42,7 +42,7 @@ export function buildProjectStatus(state: ProjectState, packageName: string | nu
   };
 }
 
-/** The Expo Go verdict, as a count. `exagent context` prints the reasons themselves. */
+/** The Expo Go verdict, as a count. The reasons themselves ride along in `probe`. */
 export function buildExpoGoStatus(state: ProjectState): ExpoGoStatus {
   return { compatible: state.expoGo.compatible, reasonCount: state.expoGo.reasons.length };
 }

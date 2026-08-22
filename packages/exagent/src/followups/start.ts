@@ -99,8 +99,8 @@ export function buildStartPlanFollowUps(plan: StartPlan, state: ProjectState): F
   if (!state.expoGo.compatible) {
     followups.push({
       id: 'project-context',
-      command: 'npx exagent context',
-      why: 'Expo Go cannot run this project; context lists every reason the probe found.',
+      command: 'npx exagent status --json',
+      why: 'Expo Go cannot run this project; the probe in that report lists every reason.',
     });
   }
 

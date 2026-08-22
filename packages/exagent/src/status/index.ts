@@ -19,10 +19,10 @@ export const exagentStatus: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      `Print where the project is right now, and what would happen next`,
+      `Where the project is now and what would happen next`,
       chalk`npx exagent status`,
       [
-        `--json                    Print the whole report as JSON`,
+        `--json                    Print the whole report as JSON, raw project probe included`,
         `--dev-server-url <url>    Dev server to probe (default: http://127.0.0.1:8081)`,
         `--no-followups            Leave the suggested follow-up commands out of the report`,
         `-h, --help                Usage info`,
@@ -37,8 +37,9 @@ export const exagentStatus: Command = async (argv) => {
         chalk`  Nothing is started, built, or written. The command always exits 0, so a script can`,
         chalk`  read the report without branching on the exit code.`,
         '',
-        chalk`  Run {bold npx exagent context} for the project facts in full, including every reason`,
-        chalk`  Expo Go cannot run the project.`,
+        chalk`  {bold --json} carries the raw project probe too, under {bold probe}: the SDK version, the`,
+        chalk`  native state, the fingerprint, and every reason Expo Go cannot run the project, exactly`,
+        chalk`  as the probe read them. That is the project brief, so nothing needs a second command.`,
         '',
       ].join('\n')
     );

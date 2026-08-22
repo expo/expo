@@ -111,6 +111,7 @@ export async function collectStatusReportAsync(
     devServer: null,
     skills: null,
     next: null,
+    probe: null,
     errors,
   };
 
@@ -119,6 +120,9 @@ export async function collectStatusReportAsync(
     // Advisory by contract, and read after the probe, so the fingerprint it is compared against
     // and the record it is compared to describe the same moment.
     const lastBuild = readLastBuildFingerprints(projectRoot);
+    // The probe rides along whole, so `--json` is also the project brief: the sections round its
+    // facts off for a terminal, and a caller that wants them exactly reads `probe`.
+    report.probe = state;
     report.project = buildProjectStatus(state, packageName);
     report.expoGo = buildExpoGoStatus(state);
     report.freshness = buildFreshnessStatus(state, lastBuild);

@@ -14,7 +14,7 @@ import type { CheckpointResult, CheckpointSkipReason } from './types';
 /** Label of a checkpoint the user asked for without naming one. */
 export const DEFAULT_LABEL = 'manual';
 
-/** Width of the label column of the text output, matching `exagent agents:setup` and `exagent context`. */
+/** Width of the label column of the text output, matching `exagent agents:setup` and `exagent status`. */
 const LABEL_WIDTH = 12;
 
 export interface CreateCheckpointOptions {

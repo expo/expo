@@ -16,7 +16,7 @@ import { debugEvent, event } from './events';
 import { resolveGitStateAsync } from './git';
 import type { NewOptions } from './resolveOptions';
 
-/** Width of the label column of the human readable summary, as in `exagent context`. */
+/** Width of the label column of the human readable summary, as in `exagent status`. */
 const LABEL_WIDTH = 12;
 
 /** How much of a failed `create-expo` run is repeated on stderr in `--json` mode. */

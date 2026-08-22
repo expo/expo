@@ -23,7 +23,7 @@ import { event } from './events';
 import { withStdoutRedirectedAsync } from './stdout';
 import type { SetupOptions, SetupReport, SetupSkillsResult } from './types';
 
-/** Width of the label column of the text summary, matching `exagent context`. */
+/** Width of the label column of the text summary, matching `exagent status`. */
 const LABEL_WIDTH = 12;
 
 /** Run the setup, emit the summary event, and print the report. */

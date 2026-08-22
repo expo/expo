@@ -67,7 +67,7 @@ describe('exagent agents:setup', () => {
     expect(agentsMd).toContain('Expo Go');
     // The command cheat sheet.
     expect(agentsMd).toContain('exagent status');
-    expect(agentsMd).toContain('exagent context --json');
+    expect(agentsMd).toContain('exagent status --json');
     expect(agentsMd).toContain('exagent dev --plan');
     expect(agentsMd).toContain('exagent install');
     expect(agentsMd).toContain('exagent runtime:eval');

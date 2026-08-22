@@ -31,7 +31,7 @@ const EXPORT_DIR = 'dist';
 /** How much of the tool output travels in the payload next to a parsed URL. */
 const OUTPUT_TAIL_LINES = 10;
 
-/** Width of the label column of the human readable summary, as in `exagent context`. */
+/** Width of the label column of the human readable summary, as in `exagent status`. */
 const LABEL_WIDTH = 12;
 
 /**
@@ -172,7 +172,7 @@ async function resolveTargetsAsync(
 /**
  * Whether the project has a web app to deploy.
  *
- * This is the same fact `exagent context` reports as `hasWeb`, read the same way, but without the
+ * This is the same fact the project probe reports as `hasWeb`, read the same way, but without the
  * rest of the probe: a deploy must not wait for a fingerprint it never uses.
  */
 async function hasWebAsync(projectRoot: string): Promise<boolean> {

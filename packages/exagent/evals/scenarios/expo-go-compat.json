@@ -5,7 +5,7 @@
   "drivingAgent": "deterministic",
   "tiers": [0],
   "command": {
-    "argv": ["context", "--json"],
+    "argv": ["status", "--json"],
     "timeoutMs": 60000
   },
   "graders": [{ "type": "exit-code", "expect": 0 }]

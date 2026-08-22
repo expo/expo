@@ -42,6 +42,19 @@ type StatusReport = {
   devServer: { url: string; running: boolean; appsConnected: number; reason?: string } | null;
   skills: { agentIds: string[] | null; discovered: number; linked: number } | null;
   next: { command: string; rule: string; target: string; steps: { argv: string[] }[] } | null;
+  /** The raw project probe, per `src/project/types.ts`. Covered on its own in `probe-test.ts`. */
+  probe: {
+    projectRoot: string;
+    sdkVersion: string | null;
+    nativeDirs: { ios: boolean; android: boolean };
+    usesDevClient: boolean;
+    hasWeb: boolean;
+    expoGo: {
+      compatible: boolean;
+      reasons: { kind: string; packageName?: string; detail: string }[];
+    };
+    fingerprint: { hash: string | null; error?: string };
+  } | null;
   errors: Record<string, string>;
   followups: { id: string; command: string; why: string }[];
 };
@@ -169,6 +182,7 @@ describe('exagent status', () => {
         'devServer',
         'skills',
         'next',
+        'probe',
         'errors',
         'followups',
       ]);

@@ -90,7 +90,7 @@ describe(buildExpoGoStatus, () => {
       },
     });
 
-    // The count is the summary; `exagent context` prints the reasons themselves.
+    // The count is the summary; the reasons themselves ride along in the report's `probe`.
     expect(buildExpoGoStatus(state)).toEqual({ compatible: false, reasonCount: 2 });
   });
 });

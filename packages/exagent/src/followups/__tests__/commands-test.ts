@@ -1,8 +1,6 @@
 // Builders of the remaining commands: the ones whose input is one already-gathered report.
 
-import type { ProjectState } from '../../project/types';
 import type { StatusReport } from '../../status/types';
-import { buildContextFollowUps } from '../context';
 import { buildNavigateFollowUps } from '../navigate';
 import { buildRuntimeErrorsFollowUps, buildRuntimeNetworkFollowUps } from '../runtime';
 import { buildSkillsSyncFollowUps } from '../skills';
@@ -12,63 +10,27 @@ function ids(followups: { id: string }[]): string[] {
   return followups.map((followup) => followup.id);
 }
 
-function mockState(overrides: Partial<ProjectState> = {}): ProjectState {
-  return {
-    projectRoot: '/project',
-    sdkVersion: '54.0.0',
-    nativeDirs: { ios: false, android: false },
-    usesDevClient: false,
-    hasWeb: true,
-    expoGo: { compatible: true, reasons: [] },
-    fingerprint: { hash: 'abc123' },
-    ...overrides,
-  };
-}
-
 function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
   return {
-    project: null,
+    project: {
+      root: '/project',
+      name: 'my-app',
+      sdkVersion: '54.0.0',
+      native: 'cng',
+      nativeDirs: { ios: false, android: false },
+      usesDevClient: false,
+      hasWeb: true,
+    },
     expoGo: { compatible: true, reasonCount: 0 },
     freshness: null,
     devServer: { url: 'http://127.0.0.1:8081', running: false, appsConnected: 0 },
     skills: { agentIds: ['claude-code'], discovered: 0, linked: 0 },
     next: { command: 'exagent dev', rule: 'expo-go', target: 'expo-go', steps: [] },
+    probe: null,
     errors: {},
     ...overrides,
   };
 }
-
-describe(buildContextFollowUps, () => {
-  it(`should point at status and the start plan`, () => {
-    const followups = buildContextFollowUps(mockState());
-
-    expect(ids(followups)).toEqual(['status', 'dev-plan']);
-    expect(followups[0]!.command).toBe('npx exagent status');
-    expect(followups[1]!.command).toBe('npx exagent dev --plan');
-  });
-
-  it(`should offer the dev client install when Expo Go is out and none is installed`, () => {
-    const followups = buildContextFollowUps(
-      mockState({
-        expoGo: {
-          compatible: false,
-          reasons: [{ kind: 'config-plugin', detail: 'the app config uses a config plugin' }],
-        },
-      })
-    );
-
-    expect(ids(followups)).toEqual(['install-dev-client', 'status', 'dev-plan']);
-    expect(followups[0]!.command).toBe('npx exagent install expo-dev-client');
-  });
-
-  it(`should not offer a dev client the project already depends on`, () => {
-    const followups = buildContextFollowUps(
-      mockState({ usesDevClient: true, expoGo: { compatible: false, reasons: [] } })
-    );
-
-    expect(ids(followups)).toEqual(['status', 'dev-plan']);
-  });
-});
 
 describe(buildStatusFollowUps, () => {
   it(`should offer nothing for a project with nothing to act on`, () => {
@@ -114,13 +76,34 @@ describe(buildStatusFollowUps, () => {
     expect(ids(followups)).toEqual([]);
   });
 
-  it(`should point at the Expo Go reasons`, () => {
+  // The reasons themselves are in `status --json` now, so the follow-up is the action they imply
+  // rather than a second command that would only reprint them.
+  it(`should offer the dev client install when Expo Go is out and none is installed`, () => {
     const followups = buildStatusFollowUps(
       mockReport({ expoGo: { compatible: false, reasonCount: 2 } })
     );
 
-    expect(ids(followups)).toEqual(['project-context']);
-    expect(followups[0]!.command).toBe('npx exagent context');
+    expect(ids(followups)).toEqual(['install-dev-client']);
+    expect(followups[0]!.command).toBe('npx exagent install expo-dev-client');
+  });
+
+  it(`should not offer a dev client the project already depends on`, () => {
+    const followups = buildStatusFollowUps(
+      mockReport({
+        expoGo: { compatible: false, reasonCount: 2 },
+        project: {
+          root: '/project',
+          name: 'my-app',
+          sdkVersion: '54.0.0',
+          native: 'cng',
+          nativeDirs: { ios: false, android: false },
+          usesDevClient: true,
+          hasWeb: true,
+        },
+      })
+    );
+
+    expect(ids(followups)).toEqual([]);
   });
 
   it(`should never repeat the command the next line already names`, () => {
@@ -132,7 +115,7 @@ describe(buildStatusFollowUps, () => {
       })
     );
 
-    expect(ids(followups)).toEqual(['runtime-errors', 'skills-sync', 'project-context']);
+    expect(ids(followups)).toEqual(['runtime-errors', 'skills-sync', 'install-dev-client']);
     expect(followups.map((followup) => followup.command)).not.toContain('exagent dev');
   });
 

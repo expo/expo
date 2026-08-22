@@ -15,7 +15,7 @@ import type {
   StatusSectionName,
 } from './types';
 
-/** Width of the label column, matching `exagent context`. */
+/** Width of the label column, matching the other commands. */
 const LABEL_WIDTH = 12;
 
 /** Separates the facts inside one line. */

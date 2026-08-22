@@ -1,5 +1,7 @@
 import {
+  commandAliases,
   commandGroups,
+  forwardedCommands,
   formatGroupHelp,
   formatTopLevelHelp,
   helpSections,
@@ -86,20 +88,95 @@ describe(resolveCommand, () => {
     });
   });
 
-  it('never forwards a colon command to the expo CLI', () => {
-    expect(resolveCommand('export:web', ['--clean'])).toEqual({
-      kind: 'unknown-group',
+  it('forwards every command of the fixed expo set', () => {
+    for (const command of forwardedCommands) {
+      expect(resolveCommand(command, ['--clean'])).toEqual({
+        kind: 'passthrough',
+        command,
+        argv: ['--clean'],
+      });
+    }
+  });
+
+  // `expo export:web` has a colon and is still an `expo` command, so membership in the forwarded
+  // set decides — not the shape of the name.
+  it('forwards a colon-named expo command that is in the set', () => {
+    expect(resolveCommand('export:web', [])).toMatchObject({
+      kind: 'passthrough',
       command: 'export:web',
-      group: 'export',
     });
   });
 
-  it('forwards a command it does not implement to the expo CLI', () => {
-    expect(resolveCommand('prebuild', ['--clean'])).toEqual({
-      kind: 'passthrough',
-      command: 'prebuild',
-      argv: ['--clean'],
+  // `expo add` is `expo install`, so `exagent add` is `exagent install` — the wrapper with the
+  // skill sync and the impact report, not a bare forward.
+  it('resolves an alias to the command it names', () => {
+    expect(resolveCommand('add', ['expo-camera'])).toEqual({
+      kind: 'command',
+      name: 'install',
+      argv: ['expo-camera'],
+      load: topLevelCommands.install,
     });
+    expect(forwardedCommands).not.toContain('add');
+  });
+
+  it('names every alias target, and nothing else', () => {
+    for (const [alias, target] of Object.entries(commandAliases)) {
+      expect(topLevelCommands[target]).toBeDefined();
+      expect(topLevelCommands[alias]).toBeUndefined();
+      expect(forwardedCommands).not.toContain(alias);
+      expect(commandGroups[alias]).toBeUndefined();
+    }
+  });
+
+  // `context` was merged into `status --json`, which carries the whole probe.
+  it('has no context command', () => {
+    expect(resolveCommand('context', ['--json'])).toEqual({
+      kind: 'unknown-command',
+      command: 'context',
+    });
+  });
+
+  it('fails on a command in no map, instead of forwarding it', () => {
+    expect(resolveCommand('totally-unknown', ['--clean'])).toEqual({
+      kind: 'unknown-command',
+      command: 'totally-unknown',
+    });
+    expect(resolveCommand('bogus:thing', [])).toEqual({
+      kind: 'unknown-command',
+      command: 'bogus:thing',
+    });
+  });
+
+  it('never forwards an action of a group it owns', () => {
+    expect(resolveCommand('runtime:nope', [])).toEqual({
+      kind: 'unknown-action',
+      group: 'runtime',
+      action: 'nope',
+    });
+  });
+
+  // `start` and `install` are `expo` commands this CLI wraps, so they must resolve to the wrapper
+  // and never to a bare forward.
+  it('keeps the expo commands it wraps out of the forwarded set', () => {
+    expect(forwardedCommands).not.toContain('start');
+    expect(forwardedCommands).not.toContain('install');
+    expect(resolveCommand('start', [])).toMatchObject({ kind: 'command', name: 'start' });
+    expect(resolveCommand('install', [])).toMatchObject({ kind: 'command', name: 'install' });
+  });
+
+  it('names nothing twice across the three maps', () => {
+    const own = [
+      ...Object.keys(topLevelCommands),
+      ...Object.keys(commandGroups),
+      ...Object.entries(commandGroups).flatMap(([group, { actions }]) =>
+        Object.keys(actions).map((action) => `${group}:${action}`)
+      ),
+    ];
+
+    for (const command of forwardedCommands) {
+      expect(own).not.toContain(command);
+    }
+    expect(forwardedCommands).toHaveLength(new Set(forwardedCommands).size);
   });
 
   it('loads every registered command', async () => {
@@ -175,19 +252,36 @@ describe(formatTopLevelHelp, () => {
     }
   });
 
-  it('names the forwarding rule', () => {
-    expect(formatTopLevelHelp()).toContain('forwarded to expo <command>');
+  it('names the forwarded expo commands and where they go', () => {
+    const help = formatTopLevelHelp();
+
+    expect(help).toContain('Expo CLI');
+    expect(help).toContain('forwarded to npx expo <command>');
+    for (const command of forwardedCommands) {
+      expect(help).toContain(command);
+    }
+  });
+
+  it('sections the commands by the job they do', () => {
+    const help = formatTopLevelHelp();
+
+    expect(help).toContain('Develop');
+    expect(help).toContain('Create');
+    expect(help).toContain('Deployment');
+    expect(help).toContain('Debug a running app');
+    expect(help).toContain('Agent setup');
+    expect(help).toContain('Checkpoints');
   });
 });
 
 // The sections are the whole advertised surface: a command missing from them is a command an agent
 // reading `exagent --help` never learns about.
 describe('helpSections', () => {
-  it('names commands that all resolve', () => {
+  it('names commands that all resolve to something runnable', () => {
     for (const { commands } of helpSections) {
       for (const command of commands) {
         const [token, ...rest] = command.split(' ');
-        expect(resolveCommand(token!, rest)).toMatchObject({ kind: 'command' });
+        expect(resolveCommand(token!, rest).kind).toMatch(/^(command|passthrough)$/);
       }
     }
   });
@@ -196,7 +290,7 @@ describe('helpSections', () => {
     const advertised = helpSections.flatMap((section) => section.commands);
     expect(advertised).toHaveLength(new Set(advertised).size);
 
-    for (const command of Object.keys(topLevelCommands)) {
+    for (const command of [...Object.keys(topLevelCommands), ...forwardedCommands]) {
       expect(advertised).toContain(command);
     }
     for (const [group, { actions, defaultAction }] of Object.entries(commandGroups)) {

@@ -3,16 +3,20 @@
 // to one of them. `cli.ts` reads the answer and does the I/O; nothing here prints or exits, so the
 // resolution rules are unit-testable without spawning the CLI.
 //
-// Two kinds of name, and one rule each:
+// Three kinds of name, and one rule each:
 //
 // - **Top-level** (`dev`, `status`) — a flat lazy map, one module per name.
 // - **Groups** (`runtime:eval`, `skills:sync`) — a nested lazy map. `<group>:<action>` is the
 //   canonical spelling; `<group> <action>` resolves to the same command, so an agent that types
 //   the space form is never wrong. A group with a `defaultAction` runs it for the bare name.
+// - **Forwarded** (`prebuild`, `login`) — a fixed list of the `expo` commands this CLI does not
+//   wrap, run as a subprocess verbatim (`src/passthrough/`).
 //
-// A name with a colon is always one of ours: it is never forwarded to the `expo` CLI, because no
-// `expo` command has a colon in it. Anything else that is not in the maps is one of the `expo`
-// CLI's own commands and is forwarded verbatim (`src/passthrough/`).
+// Plus `commandAliases`, which is another name for one of the above rather than a fourth kind.
+//
+// The three lists are the whole surface: a name in none of them is a command neither CLI has, and
+// it fails saying so. There is no open-ended fallback, so a typo is answered here instead of
+// becoming an `expo` invocation that could not have meant anything.
 
 import chalk from 'chalk';
 
@@ -54,7 +58,6 @@ export function withAction(action: string, load: CommandLoader): CommandLoader {
 
 /** Commands with a name of their own. Add a new top-level command here. */
 export const topLevelCommands: { [command: string]: CommandLoader } = {
-  context: () => import('./context').then((i) => i.exagentContext),
   deploy: () => import('./deploy').then((i) => i.exagentDeploy),
   dev: () => import('./dev').then((i) => i.exagentDev),
   install: () => import('./install').then((i) => i.exagentInstall),
@@ -134,6 +137,53 @@ export const commandGroups: { [group: string]: CommandGroup } = {
   },
 };
 
+/**
+ * Other names for a command above, as `alias -> command`.
+ *
+ * These exist for parity: `expo add` is `expo install` under another name, so `exagent add` has to
+ * be `exagent install` — the wrapper with the skill sync and the impact report — and not a bare
+ * forward that quietly does less than the command it looks like. An alias resolves to its target's
+ * name, so the event stream and the follow-ups only ever name the command that ran.
+ *
+ * An alias is documented in its target's `--help`, not as a command of its own: the top-level
+ * listing names capabilities, and an alias adds none.
+ */
+export const commandAliases: { [alias: string]: string } = {
+  add: 'install',
+};
+
+/**
+ * The `expo` commands this CLI forwards, and the whole of what it forwards.
+ *
+ * A fixed set, not a fallback: an unrecognized command is a typo far more often than it is a new
+ * `expo` command, and forwarding it made the typo the `expo` CLI's problem to report. The cost is
+ * that this list has to be kept in step by hand.
+ *
+ * Source of truth: the `commands` map of `packages/@expo/cli/src/index.ts` [observed —
+ * 2026-08-22], in its own order, minus `start` and `install`, which this CLI wraps.
+ */
+export const forwardedCommands: string[] = [
+  // Project commands
+  'run',
+  'run:ios',
+  'run:android',
+  'prebuild',
+  'config',
+  'export',
+  'export:web',
+  'export:embed',
+  'serve',
+  // Auxiliary commands. `add` is missing on purpose: it is `expo install` under another name, so
+  // it is an alias of this CLI's `install` wrapper (see `commandAliases`).
+  'customize',
+  'lint',
+  // Auth
+  'login',
+  'logout',
+  'register',
+  'whoami',
+];
+
 /** What one argv resolved to. Every case is something `cli.ts` can act on without deciding again. */
 export type CommandResolution =
   /** A command of this CLI, with the arguments it owns. */
@@ -142,32 +192,34 @@ export type CommandResolution =
   | { kind: 'group-help'; group: string }
   /** A known group with an action it does not have: the listing, plus an error. */
   | { kind: 'unknown-action'; group: string; action: string }
-  /** A colon command whose group does not exist. Never forwarded — `expo` has no colon commands. */
-  | { kind: 'unknown-group'; command: string; group: string }
-  /** Not one of ours, so it is one of the `expo` CLI's own commands. */
-  | { kind: 'passthrough'; command: string; argv: string[] };
+  /** One of the `expo` commands above, forwarded verbatim. */
+  | { kind: 'passthrough'; command: string; argv: string[] }
+  /** In none of the three maps, so neither CLI has it. */
+  | { kind: 'unknown-command'; command: string };
 
 /**
  * Resolve the command an invocation names.
+ *
+ * Our own names win, then the forwarded `expo` set, and anything left is an error. Membership in a
+ * map decides — never the shape of the name — because `expo export:web` has a colon too.
  *
  * @param command The first positional argument, e.g. `runtime:eval` or `runtime`.
  * @param argv Everything after it, with the help flag already normalized into it by `cli.ts`.
  */
 export function resolveCommand(command: string, argv: string[]): CommandResolution {
-  // A colon names one of our groups, whether or not the group exists.
-  if (command.includes(':')) {
+  // A colon spells one of our groups, unless the whole name is a command `expo` owns.
+  if (command.includes(':') && !forwardedCommands.includes(command)) {
     const separator = command.indexOf(':');
-    const group = command.slice(0, separator);
+    const groupName = command.slice(0, separator);
     const action = command.slice(separator + 1);
-    const entry = commandGroups[group];
-    if (!entry) {
-      return { kind: 'unknown-group', command, group };
+    const entry = commandGroups[groupName];
+    if (entry) {
+      const target = entry.actions[action];
+      // An action of a group we own is never forwarded, whether or not the group has it.
+      return target
+        ? { kind: 'command', name: `${groupName}:${action}`, argv, load: target.load }
+        : { kind: 'unknown-action', group: groupName, action };
     }
-    const target = entry.actions[action];
-    if (!target) {
-      return { kind: 'unknown-action', group, action };
-    }
-    return { kind: 'command', name: `${group}:${action}`, argv, load: target.load };
   }
 
   const group = commandGroups[command];
@@ -204,7 +256,16 @@ export function resolveCommand(command: string, argv: string[]): CommandResoluti
     return { kind: 'command', name: command, argv, load };
   }
 
-  return { kind: 'passthrough', command, argv };
+  const aliased = commandAliases[command];
+  if (aliased) {
+    return { kind: 'command', name: aliased, argv, load: topLevelCommands[aliased]! };
+  }
+
+  if (forwardedCommands.includes(command)) {
+    return { kind: 'passthrough', command, argv };
+  }
+
+  return { kind: 'unknown-command', command };
 }
 
 /** The canonical names of every action of a group, e.g. `['runtime:eval', ...]`. */
@@ -216,28 +277,63 @@ function actionNames(group: string): string[] {
 export interface HelpSection {
   title: string;
   commands: string[];
+  /** One line under the commands, for a section that needs it. */
+  note?: string;
 }
 
 /**
  * The advertised surface, grouped by the job at hand rather than alphabetically: a flat list of
- * fifteen names says nothing about which one to reach for. A unit test pins that every command in
+ * thirty names says nothing about which one to reach for. A unit test pins that every command in
  * the registry appears here, so a new command cannot ship undiscoverable.
  */
 export const helpSections: HelpSection[] = [
-  { title: 'Develop', commands: ['dev', 'start', 'install', 'status', 'context'] },
-  { title: 'Create & ship', commands: ['new', 'deploy'] },
-  {
-    title: 'Runtime (needs a running app)',
-    commands: [...actionNames('runtime'), 'navigate'],
-  },
+  { title: 'Develop', commands: ['dev', 'start', 'install', 'status'] },
+  { title: 'Create', commands: ['new'] },
+  { title: 'Deployment', commands: ['deploy'] },
+  { title: 'Debug a running app', commands: [...actionNames('runtime'), 'navigate'] },
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
-  { title: 'Safety', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },
+  { title: 'Checkpoints', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },
+  {
+    title: 'Expo CLI',
+    commands: forwardedCommands,
+    note: 'forwarded to npx expo <command>',
+  },
 ];
+
+/** Width the help wraps a long command list at, so the Expo CLI section stays readable. */
+const HELP_WIDTH = 80;
+
+/** One comma-separated list of commands, wrapped onto as many indented lines as it needs. */
+function wrapCommands(commands: string[], indent: string): string {
+  const lines: string[] = [];
+  for (const command of commands) {
+    const last = lines.length - 1;
+    const candidate = lines.length ? `${lines[last]}, ${command}` : `${indent}${command}`;
+    if (lines.length && candidate.length <= HELP_WIDTH) {
+      lines[last] = candidate;
+    } else {
+      // The comma stays on the line that is full, so a wrapped list still reads as one list.
+      if (lines.length) {
+        lines[last] += ',';
+      }
+      lines.push(`${indent}${command}`);
+    }
+  }
+  return lines.join('\n');
+}
 
 /** The `exagent --help` listing: every command, by the job it does. */
 export function formatTopLevelHelp(): string {
   const sections = helpSections
-    .map(({ title, commands }) => chalk`    {bold ${title}}\n      ${commands.join(', ')}`)
+    .map(({ title, commands, note }) =>
+      [
+        chalk`    {bold ${title}}`,
+        wrapCommands(commands, '      '),
+        note ? chalk`      {dim ${note}}` : null,
+      ]
+        .filter((line) => line != null)
+        .join('\n')
+    )
     .join('\n');
 
   return chalk`
@@ -246,8 +342,6 @@ export function formatTopLevelHelp(): string {
 
   {bold Commands}
 ${sections}
-
-    Anything else is forwarded to {bold expo <command>}.
 
   {bold Options}
     --version, -v   Version number
@@ -300,13 +394,15 @@ export function unknownActionMessage(group: string, action: string): string {
   );
 }
 
-/** The error for a colon command whose group does not exist. */
-export function unknownGroupMessage(command: string, group: string): string {
+/** The error for a name in none of the three maps. */
+export function unknownCommandMessage(command: string): string {
   return (
     `"exagent ${command}" is not a command. ` +
-    `A colon names one of exagent's own command groups, and "${group}" is not one of them: the groups are ${Object.keys(
+    `exagent runs its own commands, the actions of its command groups (${Object.keys(
       commandGroups
-    ).join(', ')}. ` +
-    `Run "npx exagent --help" for the full list. A command without a colon is forwarded to the project's expo CLI, but this one was not: no expo command has a colon in its name.`
+    ).join(
+      ', '
+    )}), and a fixed set of ${forwardedCommands.length} expo commands it forwards; "${command}" is in none of them, so neither CLI has it. ` +
+    `Run "npx exagent --help" for the whole list.`
   );
 }

@@ -148,7 +148,7 @@ describe(buildStartPlanFollowUps, () => {
     );
 
     expect(ids(followups)).toEqual(['dev', 'build-freshness', 'project-context']);
-    expect(followups.at(-1)!.command).toBe('npx exagent context');
+    expect(followups.at(-1)!.command).toBe('npx exagent status --json');
   });
 
   it(`should never offer more than three follow-ups`, () => {

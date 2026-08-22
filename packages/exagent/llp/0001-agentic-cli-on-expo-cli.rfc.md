@@ -54,7 +54,7 @@ packages/exagent/       # model-free CLI (Shape 1) — no agent loop
 │   ├── skills/         # skills sync/list/show/clean (code from PoC PRs, [[0003-knowledge-tools-and-skills]])
 │   ├── install/        # wraps `expo install` subprocess + skill sync + impact classification
 │   ├── start/          # wraps `expo start` subprocess + skill sync; later smart start ([[0004-smart-start-and-project-state]])
-│   ├── context/        # project-state probe: machine-readable project brief
+│   ├── project/        # project-state probe: the machine-readable project brief, reported by `status --json`
 │   └── new/            # headless project creation ([[0007-deploy-and-headless]])
 ├── e2e/
 └── evals/              # eval scenarios, fixtures, graders (tiers 0–2)

@@ -87,6 +87,21 @@ describe('exagent install', () => {
 
     expect(result.exitCode).toBe(42);
   });
+
+  // `expo add` is `expo install`, so `exagent add` is this wrapper and not a bare forward: it
+  // spawns `expo install` and syncs the skills of what it installed.
+  it('runs `add` as the install wrapper, skill sync included', async () => {
+    await writeAgentSelectionAsync(projectRoot, ['claude-code']);
+
+    const result = await executeExagentAsync(projectRoot, ['add', 'fake-module-with-skills']);
+
+    expect(result.exitCode).toBe(0);
+    expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual([
+      'install',
+      'fake-module-with-skills',
+    ]);
+    expect(fs.existsSync(skillLink)).toBe(true);
+  });
 });
 
 // `exagent start` is the wrapper around `expo start`: it plans nothing (that is `exagent dev`, see
@@ -180,7 +195,8 @@ describe('exagent start', () => {
 });
 
 // @ref llp/0006-agent-native-cli-surface.rfc.md §The `exagent` launcher
-// Every command `exagent` does not implement is one of the `expo` CLI's own, forwarded verbatim.
+// A fixed set of `expo` commands is forwarded verbatim. Everything outside that set, and outside
+// exagent's own commands, is a command neither CLI has, and fails saying so.
 describe('expo passthrough', () => {
   let projectRoot: string;
 
@@ -196,12 +212,21 @@ describe('expo passthrough', () => {
     expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual(['export', '--platform', 'web']);
   });
 
-  it('forwards a command neither CLI knows, letting expo report it', async () => {
+  it('forwards a colon-named expo command of the set', async () => {
+    const result = await executeExagentAsync(projectRoot, ['export:web'], { reject: false });
+
+    expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual(['export:web']);
+    expect(result.all).not.toContain('not a command');
+  });
+
+  it('fails on a command neither CLI has, instead of forwarding it', async () => {
     const result = await executeExagentAsync(projectRoot, ['totally-unknown'], { reject: false });
 
-    // No "Unknown command" from exagent: the stub `expo` bin is what answers.
-    expect(result.all).not.toContain('Unknown command');
-    expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual(['totally-unknown']);
+    expect(result.exitCode).not.toBe(0);
+    expect(result.all).toContain('"exagent totally-unknown" is not a command');
+    expect(result.all).toContain('Try: npx exagent --help');
+    // The point of the fixed set: nothing was handed to `expo` to report for us.
+    expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
 
   it('forwards the exit code of the expo CLI', async () => {
@@ -243,23 +268,24 @@ describe('expo passthrough', () => {
     expect(fs.existsSync(skillLink)).toBe(false);
   });
 
-  // A name with a colon is one of exagent's own groups, whatever comes after it, so an unknown one
-  // is an error here instead of an `expo` invocation that could not mean anything.
-  it('never forwards a colon command, known group or not', async () => {
+  // An action of a group exagent owns is never forwarded, whether or not the group has it.
+  it('never forwards an action of one of its own groups', async () => {
     const known = await executeExagentAsync(projectRoot, ['skills:nope'], { reject: false });
-    const unknown = await executeExagentAsync(projectRoot, ['export:web'], { reject: false });
+    const unknown = await executeExagentAsync(projectRoot, ['bogus:thing'], { reject: false });
 
     expect(known.exitCode).not.toBe(0);
     expect(unknown.exitCode).not.toBe(0);
-    expect(unknown.all).toContain('export');
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
 
-  it('names the forwarding rule in the top-level help', async () => {
+  it('lists the forwarded expo commands in the top-level help', async () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.all).toContain('forwarded to expo <command>');
+    expect(result.all).toContain('Expo CLI');
+    expect(result.all).toContain('forwarded to npx expo <command>');
+    expect(result.all).toContain('prebuild');
+    expect(result.all).toContain('whoami');
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
 });

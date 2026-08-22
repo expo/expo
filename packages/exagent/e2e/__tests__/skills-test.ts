@@ -298,17 +298,18 @@ describe('exagent', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('Develop');
-    expect(result.all).toContain('dev, start, install, status, context');
-    expect(result.all).toContain('Create & ship');
-    expect(result.all).toContain('new, deploy');
-    expect(result.all).toContain('Runtime (needs a running app)');
+    expect(result.all).toContain('dev, start, install, status');
+    expect(result.all).toContain('Create');
+    expect(result.all).toContain('Deployment');
+    expect(result.all).toContain('Debug a running app');
     expect(result.all).toContain('runtime:eval, runtime:errors, runtime:network, navigate');
     expect(result.all).toContain('Agent setup');
     expect(result.all).toContain('agents:setup');
     expect(result.all).toContain('skills:sync');
-    expect(result.all).toContain('Safety');
+    expect(result.all).toContain('Checkpoints');
     expect(result.all).toContain('checkpoint, checkpoint:list, checkpoint:undo');
-    expect(result.all).toContain('forwarded to expo <command>');
+    expect(result.all).toContain('Expo CLI');
+    expect(result.all).toContain('forwarded to npx expo <command>');
   });
 
   it('prints the package version with `--version`', async () => {

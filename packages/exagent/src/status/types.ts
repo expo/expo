@@ -3,7 +3,7 @@
 // Pure data, so the human formatter and the `--json` output describe exactly the same facts.
 
 import type { NativePlatform } from '../plan/types';
-import type { PlanStep, ProjectTarget } from '../project/types';
+import type { PlanStep, ProjectState, ProjectTarget } from '../project/types';
 
 /** Whether the installed development build can be proven to match the project. */
 export type FreshnessState =
@@ -28,7 +28,7 @@ export interface ProjectStatus {
 
 export interface ExpoGoStatus {
   compatible: boolean;
-  /** How many reasons block Expo Go. The reasons themselves come from `exagent context`. */
+  /** How many reasons block Expo Go. The reasons themselves are in {@link StatusReport.probe}. */
   reasonCount: number;
 }
 
@@ -99,6 +99,14 @@ export interface StatusReport {
   devServer: DevServerStatus | null;
   skills: SkillsStatus | null;
   next: NextActionStatus | null;
+  /**
+   * The raw project probe the sections above are summarized from, verbatim.
+   *
+   * This is the project brief the former `exagent context` printed: the sections answer "where is
+   * this project", and every fact they round off — the Expo Go reasons, the fingerprint error —
+   * is readable here, so no caller needs a second command. Null exactly when `project` is.
+   */
+  probe: ProjectState | null;
   /** Why a section is null, keyed by the section it belongs to. */
   errors: Partial<Record<StatusSectionName, string>>;
 }

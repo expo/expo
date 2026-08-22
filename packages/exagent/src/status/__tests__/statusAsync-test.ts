@@ -90,6 +90,39 @@ describe(collectStatusReportAsync, () => {
     expect(report.next?.rule).toBe('expo-go');
   });
 
+  // The whole probe rides along, so `status --json` is the project brief the former
+  // `exagent context` printed, and nothing has to run a second command for the raw facts.
+  it(`should carry the raw project probe`, async () => {
+    const state = mockState({
+      expoGo: {
+        compatible: false,
+        reasons: [
+          {
+            kind: 'unbundled-native-module',
+            packageName: 'fake-native-module',
+            detail: 'is native',
+          },
+        ],
+      },
+    });
+
+    const report = await collectStatusReportAsync(projectRoot, options);
+
+    expect(report.probe).toEqual(state);
+    // The reasons the `expoGo` section only counts are readable here.
+    expect(report.probe?.expoGo.reasons).toHaveLength(1);
+    expect(report.expoGo).toEqual({ compatible: false, reasonCount: 1 });
+  });
+
+  it(`should report a null probe when the project could not be read`, async () => {
+    jest.mocked(probeProjectStateAsync).mockRejectedValue(new Error('project is unreadable'));
+
+    const report = await collectStatusReportAsync(projectRoot, options);
+
+    expect(report.probe).toBeNull();
+    expect(report.errors.project).toBe('project is unreadable');
+  });
+
   it(`should report a skill that is discovered but not linked`, async () => {
     jest.mocked(getPersistedAgentIdsAsync).mockResolvedValue(['claude-code']);
     jest.mocked(discoverSkillsAsync).mockResolvedValue([uiSkill]);
@@ -231,6 +264,7 @@ describe(printStatusAsync, () => {
       'devServer',
       'skills',
       'next',
+      'probe',
       'errors',
       'followups',
     ]);
@@ -248,6 +282,7 @@ describe(printStatusAsync, () => {
       'followups',
       'freshness',
       'next',
+      'probe',
       'project',
       'skills',
     ]);
@@ -267,6 +302,7 @@ describe(printStatusAsync, () => {
       'followups',
       'freshness',
       'next',
+      'probe',
       'project',
       'skills',
     ]);
@@ -349,7 +385,7 @@ describe(printStatusAsync, () => {
       expect(report.followups.map((followup: { id: string }) => followup.id)).toEqual([
         'runtime-errors',
         'skills-sync',
-        'project-context',
+        'install-dev-client',
       ]);
       expect(report.next.command).toBe('exagent dev');
     });
