@@ -65,40 +65,26 @@ it('installs a local package tarball without network access', async () => {
     HTTPS_PROXY: 'http://127.0.0.1:9',
     NO_PROXY: '',
   };
-  const originalEnv = Object.fromEntries(
-    Object.keys(offlineEnv).map((key) => [key, process.env[key]])
-  );
-  Object.assign(process.env, offlineEnv);
 
-  try {
-    const projectRoot = await setupTestProjectWithOptionsAsync(
-      'local-package-install',
-      'with-blank',
-      {
-        reuseExisting: false,
-      }
-    );
-    const tarball = await createPackageTarball(
-      projectRoot,
-      'packages/@expo/cli/e2e/fixtures/install-smoke-package'
-    );
-
-    await expect(
-      executeExpoAsync(projectRoot, ['install', tarball.packageReference, '--', '--offline'], {
-        env: offlineEnv,
-      })
-    ).resolves.toMatchObject({ exitCode: 0 });
-
-    const pkg: any = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-    expect(pkg.dependencies?.[tarball.name]).toEqual(expect.any(String));
-    expect(require.resolve(tarball.name, { paths: [projectRoot] })).toEqual(expect.any(String));
-  } finally {
-    for (const [key, value] of Object.entries(originalEnv)) {
-      if (value === undefined) {
-        delete process.env[key];
-      } else {
-        process.env[key] = value;
-      }
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'local-package-install',
+    'with-blank',
+    {
+      reuseExisting: false,
     }
-  }
+  );
+  const tarball = await createPackageTarball(
+    projectRoot,
+    'packages/@expo/cli/e2e/fixtures/install-smoke-package'
+  );
+
+  await expect(
+    executeExpoAsync(projectRoot, ['install', tarball.packageReference, '--', '--offline'], {
+      env: offlineEnv,
+    })
+  ).resolves.toMatchObject({ exitCode: 0 });
+
+  const pkg: any = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+  expect(pkg.dependencies?.[tarball.name]).toEqual(expect.any(String));
+  expect(require.resolve(tarball.name, { paths: [projectRoot] })).toEqual(expect.any(String));
 });
