@@ -20,6 +20,7 @@ Comment `@expo-bot help` on an expo/expo thread for a short list. That command a
 | `@expo-bot dismiss <id>…` | `/dismiss <id>…` | PR | Hide reviewer finding(s); optional `-- reason` |
 | `@expo-bot undismiss <id>…` | `/undismiss <id>…` | PR | Restore finding(s) |
 | `@expo-bot <task>` | — | open PR **authored by expo-bot** | Carry out that follow-up and push to the same PR |
+| `@expo-bot use-fix-option <N>` | — | open PR **authored by expo-bot** | Rebuild the PR against option `<N>` of its “Options considered” block, then move the chosen mark |
 
 A bare `@expo-bot` is the same as `@expo-bot help`.
 
@@ -30,6 +31,7 @@ Incidental mentions in the middle of a comment do nothing. The command has to st
 - **Review / dismiss / work** are pull-request only.
 - **Verify and help** also run on issues. On an issue, `/verify` will open a fix PR when it can; on a pull request it reports only unless you pass `--fix`.
 - **Work mode** (`@expo-bot <task>`) only updates PRs expo-bot itself opened. It will not push to a contributor branch.
+- **Selecting an option** (`@expo-bot use-fix-option <N>`) needs an “Options considered” block in the PR body. It takes an option number and nothing else, so put any extra instruction in a separate `@expo-bot <task>` comment.
 - Reserved verbs (`help`, `verify`, `check`, `review`, `dismiss`, `undismiss`) are never treated as a work-mode task.
 
 ## Continuous review

@@ -84,6 +84,7 @@ jobs:
           | `@expo-bot check` | Verify + review from one comment (on an issue, verify only) |
           | `@expo-bot dismiss` / `undismiss` | Hide or restore a finding |
           | `@expo-bot <task>` | Follow-up on an open expo-bot PR |
+          | `@expo-bot use-fix-option <N>` | Rebuild an expo-bot PR against option N of its options block |
 
           Review, dismiss, and work are pull-request only. Verify and help also run on issues.
           MARKDOWN
