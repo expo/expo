@@ -20,7 +20,27 @@ import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { assertSafeSPMIdentifier } from './SPMIdentifier';
 import { createAsyncSpinner, SpinnerError } from './Utils';
+import { VersionStamp } from './VersionStamp';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
+
+/**
+ * Written next to the tarballs, recording what the artifacts in that directory were
+ * compiled against. `expo-modules-autolinking` reads it during `pod install` and builds
+ * from source instead of linking an xcframework whose React Native disagrees with the
+ * installed one — React Native's C++ types are not ABI-stable across patch releases, so
+ * that combination is memory corruption at runtime rather than a link error.
+ *
+ * Deliberately not a dotfile: it ships inside npm packages that bundle their prebuilds.
+ */
+export const PREBUILT_VERSIONS_FILENAME = 'prebuilt-versions.properties';
+
+/**
+ * The versions a set of prebuilt artifacts was compiled against.
+ */
+export type PrebuiltVersions = {
+  reactNativeVersion: string;
+  hermesVersion: string;
+};
 
 /**
  * Options for code signing XCFrameworks.
@@ -71,7 +91,7 @@ export const Frameworks = {
     buildType: BuildFlavor,
     platform?: BuildPlatform,
     signing?: SigningOptions,
-    options?: { bundleSharedDeps?: boolean }
+    options?: { bundleSharedDeps?: boolean; versions?: PrebuiltVersions }
   ): Promise<void> => {
     const spmConfig = pkg.getSwiftPMConfiguration();
 
@@ -149,7 +169,33 @@ export const Frameworks = {
     }
 
     // Create tarball containing the product xcframework and any SPM dependency xcframeworks
-    await createProductTarballAsync(pkg, product, buildType, options?.bundleSharedDeps);
+    await createProductTarballAsync(
+      pkg,
+      product,
+      buildType,
+      options?.bundleSharedDeps,
+      options?.versions
+    );
+  },
+
+  /**
+   * Records the versions the artifacts in `outputDir` were compiled against, so that
+   * `pod install` can refuse to link them against a different React Native instead of
+   * doing it silently. No-ops when a version is unknown: an empty value would read as
+   * a mismatch on every consumer and push every module to a source build.
+   */
+  writePrebuiltVersions: (outputDir: string, versions?: Partial<PrebuiltVersions>): void => {
+    if (!versions?.reactNativeVersion || !versions.hermesVersion) {
+      return;
+    }
+    VersionStamp.write(
+      outputDir,
+      {
+        reactNativeVersion: versions.reactNativeVersion,
+        hermesVersion: versions.hermesVersion,
+      },
+      PREBUILT_VERSIONS_FILENAME
+    );
   },
 
   /**
@@ -643,7 +689,8 @@ const createProductTarballAsync = async (
   pkg: SPMPackageSource,
   product: SPMProduct,
   buildType: BuildFlavor,
-  bundleSharedDeps?: boolean
+  bundleSharedDeps?: boolean,
+  versions?: PrebuiltVersions
 ): Promise<void> => {
   const outputDir = Frameworks.getFrameworksOutputPath(
     pkg.buildPath,
@@ -684,6 +731,10 @@ const createProductTarballAsync = async (
   await spawnAsync('tar', ['-czf', tarballPath, '-C', outputDir, ...xcframeworkEntries], {
     stdio: 'pipe',
   });
+
+  // Every product built in one run targets the same React Native, so a single record per
+  // output directory describes all of its tarballs.
+  Frameworks.writePrebuiltVersions(outputDir, versions);
 
   logger.info(
     `✅ Created ${path.basename(tarballPath)} (${xcframeworkEntries.length} framework(s))`
