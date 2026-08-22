@@ -3,7 +3,7 @@ import FontObserver from 'fontfaceobserver';
 
 import type { ExpoFontLoaderModule } from './ExpoFontLoader';
 import type { UnloadFontOptions } from './Font';
-import { FontDisplay, type FontResource } from './Font.types';
+import type { FontResource } from './Font.types';
 import {
   addServerFont,
   getLoadedServerFonts,
@@ -40,20 +40,38 @@ function getFontFaceRules(): RuleItem[] {
   return [];
 }
 
+// Exported for testing: jsdom doesn't implement `CSSFontFaceRule`, so tests exercise this matching
+// logic directly with plain `{ style }` objects instead of going through `getFontFaceRules()`.
+export function _matchesFontFaceOptions(
+  rule: Pick<CSSFontFaceRule, 'style'>,
+  fontFamilyName: string,
+  options?: UnloadFontOptions
+): boolean {
+  if (rule.style.fontFamily !== fontFamilyName) {
+    return false;
+  }
+  if (options?.display && options.display !== (rule.style as any).fontDisplay) {
+    return false;
+  }
+  if (options?.weight != null && String(options.weight) !== rule.style.fontWeight) {
+    return false;
+  }
+  if (options?.style != null && options.style !== rule.style.fontStyle) {
+    return false;
+  }
+  return true;
+}
+
 function getFontFaceRulesMatchingResource(
   fontFamilyName: string,
   options?: UnloadFontOptions
 ): RuleItem[] {
-  const rules = getFontFaceRules();
-  return rules.filter(({ rule }) => {
-    return (
-      rule.style.fontFamily === fontFamilyName &&
-      (options && options.display ? options.display === (rule.style as any).fontDisplay : true)
-    );
-  });
+  return getFontFaceRules().filter(({ rule }) =>
+    _matchesFontFaceOptions(rule, fontFamilyName, options)
+  );
 }
 
-const ExpoFontLoader: Required<ExpoFontLoaderModule> = {
+const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>> = {
   async unloadAllAsync(): Promise<void> {
     if (typeof window === 'undefined') return;
 
@@ -184,14 +202,29 @@ function getStyleElement(): HTMLStyleElement {
 
 const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
 
+// An unset `display`/`weight`/`style` omits the descriptor, letting the browser default apply —
+// forcing e.g. `font-weight: 400` would pin a variable font's face to that one weight.
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
-  const display =
-    typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)
-      ? resource.display
-      : FontDisplay.AUTO;
-  return `@font-face{font-family:${JSON.stringify(fontFamily)};src:url(${JSON.stringify(
-    resource.uri
-  )});font-display:${display}}`;
+  const declarations = [
+    `font-family:${JSON.stringify(fontFamily)}`,
+    `src:url(${JSON.stringify(resource.uri)})`,
+  ];
+
+  if (typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)) {
+    declarations.push(`font-display:${resource.display}`);
+  }
+
+  if (typeof resource.weight === 'number' && Number.isFinite(resource.weight)) {
+    declarations.push(`font-weight:${resource.weight}`);
+  } else if (typeof resource.weight === 'string' && CSS_IDENT_RE.test(resource.weight)) {
+    declarations.push(`font-weight:${resource.weight}`);
+  }
+
+  if (typeof resource.style === 'string' && CSS_IDENT_RE.test(resource.style)) {
+    declarations.push(`font-style:${resource.style}`);
+  }
+
+  return `@font-face{${declarations.join(';')}}`;
 }
 
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {

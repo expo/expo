@@ -165,6 +165,37 @@ const styles = StyleSheet.create({
 
 The `Roboto Flex` entry in the example above is a variable font: one file that holds many faces. You select a face with the `fontWeight` and `fontStyle` style props. Variable fonts also work with [`useFonts`](#usefonts). To learn more, see [Variable fonts](/develop/user-interface/fonts/#variable-fonts) in the Fonts guide.
 
+### Multiple weights and styles
+
+To load several static font files (for example regular, bold, and italic cuts) under a single `fontFamily` name, pass `useFonts` an array of [`FontFamilyDefinition`](#fontfamilydefinition)s instead of a map:
+
+```tsx
+const [loaded, error] = useFonts([
+  {
+    fontFamily: 'Inter',
+    fontDefinitions: [
+      { path: require('./assets/fonts/Inter-Regular.otf'), weight: 400 },
+      { path: require('./assets/fonts/Inter-Italic.otf'), weight: 400, style: 'italic' },
+      { path: require('./assets/fonts/Inter-Bold.otf'), weight: 700 },
+    ],
+  },
+]);
+```
+
+Then select the loaded face with the `fontWeight` and `fontStyle` style props:
+
+```tsx
+<Text style={{ fontFamily: 'Inter', fontWeight: '700' }}>Inter Bold</Text>
+<Text style={{ fontFamily: 'Inter', fontWeight: '400', fontStyle: 'italic' }}>Inter Italic</Text>
+```
+
+Platform notes:
+
+- **iOS** matches faces by the weight and style metadata embedded in the font files. It does not use the declared `weight` and `style` values for matching.
+- **Android** uses the declared `weight` and `style` values, and falls back to the values in the font file when not declared. Below API 29 (Android 10), only the default face loads (closest to weight 400, upright).
+- **Web** generates one CSS `@font-face` rule per face, with the declared `weight` and `style` values.
+
+
 ## API
 
 ```js

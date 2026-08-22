@@ -54,15 +54,12 @@ describe('getAssetForSource', () => {
   it('works for FontSource object where uri is a module id', () => {
     expect(FontLoader.getAssetForSource({ uri: 40 })).toEqual({
       uri: '/assets/?unstable_path=.%2F..%2Ftest-suite%2Fassets%2Fcomic.ttf&platform=web&hash=69d77ab',
-      display: 'auto',
     });
   });
 
-  it(`parses font display`, () => {
-    expect((FontLoader.getAssetForSource('foo') as any).display).toBe(Font.FontDisplay.AUTO);
-    expect((FontLoader.getAssetForSource({ uri: 'foo' }) as any).display).toBe(
-      Font.FontDisplay.AUTO
-    );
+  it(`does not default font display, so a variable font isn't restricted to one strategy`, () => {
+    expect((FontLoader.getAssetForSource('foo') as any).display).toBeUndefined();
+    expect((FontLoader.getAssetForSource({ uri: 'foo' }) as any).display).toBeUndefined();
     expect(
       (FontLoader.getAssetForSource({ uri: 'foo', display: Font.FontDisplay.SWAP }) as any).display
     ).toBe(Font.FontDisplay.SWAP);

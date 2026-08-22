@@ -4,10 +4,13 @@ package expo.modules.font
 
 import android.content.Context
 import android.graphics.Typeface
+import android.graphics.fonts.FontFamily
+import android.graphics.fonts.FontStyle
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import com.facebook.react.common.assets.ReactFontManager
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -32,24 +35,113 @@ open class FontLoaderModule : Module() {
       return@Function getLoadedFonts()
     }
 
-    AsyncFunction("loadAsync") { fontFamilyName: String, localUri: String ->
-      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
-      // TODO(nikki): make sure path is in experience's scope
-      val source = FontSource.resolve(localUri, fontFamilyName, context)
-
-      val instanced = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        buildVariableWeightTypeface(fontFamilyName, source)
-      } else {
-        // This needs `android.graphics.fonts`, which API 29 added. Before API 29, every weight
-        // comes from the one weight that Android loads, and Android synthesizes bold from it.
-        null
-      }
-      val typeface = instanced ?: source.load()
-
+    fun registerTypeface(fontFamilyName: String, typeface: Typeface) {
       ReactFontManager.getInstance().addCustomFont(fontFamilyName, typeface)
       loadedFonts = getLoadedFonts().toMutableSet().apply { add(fontFamilyName) }.toList()
     }
+
+    AsyncFunction("loadAsync") { fontFamilyName: String, localUri: String ->
+      registerTypeface(fontFamilyName, loadSingleFaceTypeface(fontFamilyName, localUri))
+    }
+
+    AsyncFunction("loadFontFamilyAsync") { fontFamilyName: String, faces: List<FontFaceRecord> ->
+      if (faces.isEmpty()) {
+        throw CodedException(
+          "Could not load font family '$fontFamilyName' because 'faces' is empty. Pass at " +
+            "least one face with a 'localUri' pointing to a font file."
+        )
+      }
+      FontFamilyFaces.assertNoDuplicateFaces(fontFamilyName, faces)
+
+      registerTypeface(fontFamilyName, familyTypeface(fontFamilyName, faces))
+    }
+  }
+
+  /**
+   * A lone face with nothing declared loads exactly like `loadAsync`, which also expands a
+   * variable font's `wght` axis. Below API 29, `android.graphics.fonts.FontFamily` doesn't
+   * exist, so only the default face loads and Android synthesizes bold/italic from it.
+   */
+  private fun familyTypeface(fontFamilyName: String, faces: List<FontFaceRecord>): Typeface {
+    val face = faces.first()
+    if (faces.size == 1 && face.weight == null && face.style == null) {
+      return loadSingleFaceTypeface(fontFamilyName, face.localUri)
+    }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      val defaultFace = faces[FontFamilyFaces.defaultFaceIndex(faces)]
+      return loadSingleFaceTypeface(fontFamilyName, defaultFace.localUri)
+    }
+    return buildMultiFaceTypeface(fontFamilyName, faces)
+  }
+
+  /**
+   * The typeface for one font file: the file's one weight, with `fontWeight` synthesizing bold
+   * from it — or, on API 29+, every weight a variable font's `wght` axis covers.
+   */
+  private fun loadSingleFaceTypeface(fontFamilyName: String, localUri: String): Typeface {
+    // TODO(nikki): make sure path is in experience's scope
+    val source = FontSource.resolve(localUri, fontFamilyName, context)
+
+    val instanced = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      buildVariableWeightTypeface(fontFamilyName, source)
+    } else {
+      null
+    }
+    return instanced ?: source.load()
+  }
+
+  /**
+   * One [Typeface] holding every face, so `Typeface.create(typeface, weight, italic)` selects
+   * the right file at render time.
+   */
+  @RequiresApi(Build.VERSION_CODES.Q)
+  private fun buildMultiFaceTypeface(fontFamilyName: String, faces: List<FontFaceRecord>): Typeface {
+    val fonts = faces.map { face ->
+      val builder = FontSource.resolve(face.localUri, fontFamilyName, context).newFontBuilder()
+      face.weight?.let { builder.setWeight(it) }
+      face.style?.let {
+        builder.setSlant(
+          if (it == "italic") FontStyle.FONT_SLANT_ITALIC else FontStyle.FONT_SLANT_UPRIGHT
+        )
+      }
+
+      try {
+        builder.build()
+      } catch (e: IOException) {
+        throw CodedException(
+          "Could not read font face '${face.localUri}' for family '$fontFamilyName'. The file " +
+            "may be corrupted or in a format Android can't parse. Open it in a font editor to " +
+            "check it, or replace it with a valid .ttf or .otf file.",
+          e
+        )
+      }
+    }
+
+    // Undeclared weight/style resolve from the file, so faces can still collide after the
+    // declared-values check. Re-check the resolved values so a collision names the two files.
+    val resolvedFaces = faces.zip(fonts).map { (face, font) ->
+      FontFaceRecord(
+        localUri = face.localUri,
+        weight = font.style.weight,
+        style = if (font.style.slant == FontStyle.FONT_SLANT_ITALIC) "italic" else "normal"
+      )
+    }
+    FontFamilyFaces.assertNoDuplicateFaces(fontFamilyName, resolvedFaces)
+
+    val familyBuilder = FontFamily.Builder(fonts[0])
+    for (font in fonts.drop(1)) {
+      try {
+        familyBuilder.addFont(font)
+      } catch (e: IllegalArgumentException) {
+        throw CodedException(
+          "expo-font couldn't build the font family '$fontFamilyName' because of an internal " +
+            "error. Please report this at https://github.com/expo/expo/issues.",
+          e
+        )
+      }
+    }
+
+    return VariableTypefaces.wrapWithSystemFallback(familyBuilder.build())
   }
 
   /**
