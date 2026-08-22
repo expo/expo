@@ -216,10 +216,8 @@ export function stripBaseUrl(
   path: string,
   baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ) {
-  if (process.env.NODE_ENV !== 'development') {
-    if (baseUrl) {
-      return path.replace(/^\/+/g, '/').replace(new RegExp(`^\\/?${escape(baseUrl)}`, 'g'), '');
-    }
+  if (baseUrl) {
+    return path.replace(/^\/+/g, '/').replace(new RegExp(`^\\/?${escape(baseUrl)}`, 'g'), '');
   }
   return path;
 }

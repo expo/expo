@@ -50,8 +50,18 @@ describe(stripBaseUrl, () => {
 });
 
 describe('baseUrl', () => {
+  const oldNodeEnv = process.env.NODE_ENV;
+
+  beforeAll(() => {
+    process.env.NODE_ENV = 'development';
+  });
+
   beforeEach(() => {
     delete process.env.EXPO_BASE_URL;
+  });
+
+  afterAll(() => {
+    process.env.NODE_ENV = oldNodeEnv;
   });
 
   it('accounts for baseUrl', () => {
