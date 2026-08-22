@@ -83,7 +83,11 @@ export function logCmdError(error: any): never {
       suggestedCommand: suggestedCommand ?? null,
     });
     if (suggestedCommand) {
+      // Print the error first, the recovery command last — the last line is what an
+      // agent acts on.
+      exception(error);
       warn(`Try: ${suggestedCommand}`);
+      process.exit(1);
     }
     // Print the stack trace in debug mode only.
     exit(error);
