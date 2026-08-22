@@ -1,0 +1,44 @@
+{
+  "name": "@expo/platform-metadata",
+  "version": "0.1.0",
+  "description": "Platform identity metadata shared by Expo tooling: platform names, react-native host packages, and Metro extension fallback chains",
+  "keywords": [
+    "expo",
+    "platforms",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/platform-metadata#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/platform-metadata"
+  },
+  "files": [
+    "build"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "workspace:*"
+  },
+  "engines": {
+    "node": ">=20.12.0"
+  }
+}

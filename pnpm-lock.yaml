@@ -2846,6 +2846,12 @@ importers:
         specifier: workspace:*
         version: link:../../expo-module-scripts
 
+  packages/@expo/platform-metadata:
+    devDependencies:
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../../expo-module-scripts
+
   packages/@expo/plist:
     dependencies:
       '@xmldom/xmldom':
