@@ -240,6 +240,8 @@ object BackgroundTaskScheduler {
           }
         } catch (e: Exception) {
           Log.e(TAG, "Task failed: ${e.message}")
+          // Ensure awaitAll() doesn't stall on a consumer that threw before registering its callback.
+          taskCompletion.complete(Unit)
         }
         taskCompletion
       }
