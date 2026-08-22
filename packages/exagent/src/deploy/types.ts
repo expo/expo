@@ -4,9 +4,6 @@
 
 import type { FollowUp } from '../followups/types';
 
-/** A platform EAS Build builds for. Web is not one of these: it deploys, it does not build. */
-export type DeployPlatform = 'ios' | 'android';
-
 /** What a deploy run was asked to ship. */
 export type DeployTarget = 'web' | 'native';
 
@@ -19,15 +16,23 @@ export interface WebDeployResult {
   outputTail: string;
 }
 
-export interface NativeDeployResult {
-  platform: DeployPlatform;
-  /** `eas.json` build profile the build ran with. */
-  profile: string;
-  /** EAS Build page of the build that was started. Null when it was not found in the output. */
-  buildUrl: string | null;
-  /** What this build is not yet: an app installed on a device. */
-  note: string;
-  outputTail: string;
+/**
+ * The launch created for the native platforms.
+ *
+ * There is no build here and no per-platform result: the service takes the project source and the
+ * rest happens in the browser, for iOS and Android together (llp/0007 §Cross-platform deploy).
+ */
+export interface LaunchDeployResult {
+  /** Identifier of the launch, for support and for a later lookup. */
+  id: string;
+  /** The URL that has to be opened to finish the launch. The result of the command. */
+  url: string;
+  /** Framework the service recognized in the uploaded source, e.g. `expo`. */
+  framework: string;
+  /** How long the URL stays open, in hours. */
+  expiresInHours: number;
+  /** What was sent: the files and bytes of the project source. */
+  upload: { files: number; size: number };
 }
 
 /** The shape `exagent deploy --json` prints. Top-level keys are the stable contract (llp/0006). */
@@ -36,6 +41,6 @@ export interface DeployReport {
   /** Targets this run shipped, in the order they ran. */
   targets: DeployTarget[];
   web: WebDeployResult | null;
-  native: NativeDeployResult | null;
+  native: LaunchDeployResult | null;
   followups: FollowUp[];
 }

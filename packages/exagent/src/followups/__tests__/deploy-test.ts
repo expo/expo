@@ -1,9 +1,11 @@
 import { buildDeployFollowUps } from '../deploy';
 
+const launch = { url: 'https://launch.expo.dev/l/abc', expiresInHours: 8 };
+
 describe(buildDeployFollowUps, () => {
   it(`should open the deployment and name the promotion command after a web deploy`, () => {
     expect(
-      buildDeployFollowUps({ web: { url: 'https://my-app--7xk2m1.expo.app' }, native: null })
+      buildDeployFollowUps({ web: { url: 'https://my-app--7xk2m1.expo.app' }, launch: null })
     ).toEqual([
       expect.objectContaining({
         id: 'open-deployment',
@@ -15,58 +17,40 @@ describe(buildDeployFollowUps, () => {
 
   it(`should still name the promotion command when no URL could be parsed`, () => {
     // A URL the parser missed is not a failed deploy, so the next step stays available.
-    expect(buildDeployFollowUps({ web: { url: null }, native: null })).toEqual([
+    expect(buildDeployFollowUps({ web: { url: null }, launch: null })).toEqual([
       expect.objectContaining({ id: 'eas-deploy-prod' }),
     ]);
   });
 
-  it(`should point at the build page and the store submission after a native build`, () => {
-    expect(
-      buildDeployFollowUps({
-        web: null,
-        native: { platform: 'ios', buildUrl: 'https://expo.dev/accounts/a/projects/b/builds/c' },
-      })
-    ).toEqual([
-      expect.objectContaining({
-        id: 'open-build',
-        command: 'https://expo.dev/accounts/a/projects/b/builds/c',
-      }),
-      expect.objectContaining({
-        id: 'eas-submit',
-        command: 'npx eas submit --platform ios --latest',
-      }),
-    ]);
-  });
-
-  it(`should name the platform that was built in the submit command`, () => {
-    const followups = buildDeployFollowUps({
-      web: null,
-      native: { platform: 'android', buildUrl: null },
-    });
+  it(`should hand over the launch URL after a native deploy`, () => {
+    const followups = buildDeployFollowUps({ web: null, launch });
 
     expect(followups).toEqual([
-      expect.objectContaining({
-        id: 'eas-submit',
-        command: 'npx eas submit --platform android --latest',
-      }),
+      expect.objectContaining({ id: 'open-launch-url', command: launch.url }),
+    ]);
+    // The URL is a required step, not a suggestion, and it does not wait forever.
+    expect(followups[0]!.why).toContain('browser');
+    expect(followups[0]!.why).toContain('8 hours');
+  });
+
+  it(`should put the launch first when both targets shipped`, () => {
+    // The web deployment is already live; the launch is unfinished until someone opens it.
+    const followups = buildDeployFollowUps({ web: { url: 'https://my-app.expo.app' }, launch });
+
+    expect(followups.map((followup) => followup.id)).toEqual([
+      'open-launch-url',
+      'open-deployment',
+      'eas-deploy-prod',
     ]);
   });
 
-  it(`should cap a deploy of both targets at three follow-ups`, () => {
-    const followups = buildDeployFollowUps({
-      web: { url: 'https://my-app.expo.app' },
-      native: { platform: 'ios', buildUrl: 'https://expo.dev/accounts/a/projects/b/builds/c' },
-    });
-
-    expect(followups).toHaveLength(3);
-    expect(followups.map((followup) => followup.id)).toEqual([
-      'open-deployment',
-      'eas-deploy-prod',
-      'open-build',
-    ]);
+  it(`should never print more than the three lines a follow-up block allows`, () => {
+    expect(buildDeployFollowUps({ web: { url: 'https://my-app.expo.app' }, launch })).toHaveLength(
+      3
+    );
   });
 
   it(`should return nothing when neither target ran`, () => {
-    expect(buildDeployFollowUps({ web: null, native: null })).toEqual([]);
+    expect(buildDeployFollowUps({ web: null, launch: null })).toEqual([]);
   });
 });

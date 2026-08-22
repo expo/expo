@@ -52,6 +52,7 @@
     "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
     "memfs": "^3.2.0",
+    "multitars": "^1.0.0",
     "prompts": "^2.3.2",
     "ws": "^8.12.1"
   }

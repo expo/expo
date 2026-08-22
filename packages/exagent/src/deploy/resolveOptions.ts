@@ -5,18 +5,23 @@
 
 import { parseArgsOrThrow } from '../utils/args';
 import { CommandError } from '../utils/errors';
-import type { DeployPlatform } from './types';
-
-/** Build profile used when `--profile` is not given, i.e. the one that ships. */
-export const DEFAULT_BUILD_PROFILE = 'production';
-
-const DEPLOY_PLATFORMS: DeployPlatform[] = ['ios', 'android'];
 
 export interface DeployOptions {
   /** Deploy the web export to EAS Hosting. */
   web: boolean;
-  /** Build the native app with EAS Build, or null when no native target was asked for. */
-  native: { platform: DeployPlatform; profile: string } | null;
+  /**
+   * Create a launch for the native platforms, or null when no native target was asked for.
+   *
+   * There is no platform and no build profile here: the launch takes the project source, and iOS
+   * and Android are chosen in the browser afterwards.
+   */
+  native: {
+    /**
+     * Directory to upload, as typed. Undefined uploads the project itself; a monorepo names the
+     * workspace root here, and the app is reported to the service as a path inside it.
+     */
+    uploadRoot?: string;
+  } | null;
   /** Print the result as one JSON object instead of the human summary (`--json`). */
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
@@ -26,10 +31,12 @@ export interface DeployOptions {
 const DEPLOY_ARGS = {
   '--web': Boolean,
   '--native': Boolean,
-  '--platform': String,
-  '--profile': String,
+  '--upload-root': String,
   '--json': Boolean,
   '--no-followups': Boolean,
+  // Accepted only to explain what replaced them, see below.
+  '--platform': String,
+  '--profile': String,
 };
 
 /** The usage line, which is the recovery path for every argument error of this command. */
@@ -48,8 +55,8 @@ function badArgs(message: string, suggestedCommand: string): CommandError {
  * No target flag resolves to no target: an empty request is not an error, it is the default the
  * caller fills in from the project state.
  *
- * @throws {CommandError} `BAD_ARGS` for a native target without a platform, an unknown platform, a
- * build profile without a native target, an unknown flag, or an unusable value.
+ * @throws {CommandError} `BAD_ARGS` for a flag of the retired EAS Build rail, an upload root
+ * without a native target, an unknown flag, or an unusable value.
  */
 export function resolveDeployOptions(argv: string[]): DeployOptions {
   let args;
@@ -62,37 +69,40 @@ export function resolveDeployOptions(argv: string[]): DeployOptions {
     throw error;
   }
 
-  const platformValue = args['--platform'] == null ? undefined : String(args['--platform']);
-  if (platformValue && !DEPLOY_PLATFORMS.includes(platformValue as DeployPlatform)) {
+  // `--platform` and `--profile` picked an EAS Build. The native rail is a launch now: it covers
+  // both platforms and reads no build profile, and saying that beats "unknown option".
+  if (args['--platform'] != null) {
     throw badArgs(
-      `--platform ${platformValue} is not a platform EAS Build builds for. Pass one of: ${DEPLOY_PLATFORMS.join(', ')}. The web app is deployed with --web, which needs no platform.`,
-      `${USAGE_COMMAND} --platform ios`
+      `--platform is not part of a native deploy any more. Why: the native rail creates a launch on launch.expo.dev from your project source, and one launch covers iOS and Android — the platform is chosen there, in the browser. How: run "${USAGE_COMMAND} --native" and open the URL it prints.`,
+      `${USAGE_COMMAND} --native`
+    );
+  }
+  if (args['--profile'] != null) {
+    throw badArgs(
+      `--profile is not part of a native deploy any more. Why: it named a build profile in eas.json, and the native rail no longer starts an EAS Build — it uploads your project source to launch.expo.dev. How: run "${USAGE_COMMAND} --native", or run "npx eas build --profile ${String(args['--profile'])}" directly if that build is what you want.`,
+      `${USAGE_COMMAND} --native`
     );
   }
 
-  // `--platform` only ever means a native build, so it is a request for that target by itself.
-  const wantsNative = !!args['--native'] || !!platformValue;
-  const profile = args['--profile'] == null ? undefined : String(args['--profile']);
+  const uploadRoot = args['--upload-root'] == null ? undefined : String(args['--upload-root']);
 
-  if (wantsNative && !platformValue) {
+  if (uploadRoot != null && !uploadRoot.trim()) {
     throw badArgs(
-      `--native does not say which platform to build. Why: one EAS Build runs for one platform, so the platform is part of the request. How: pass --platform ios or --platform android, and run the command twice to build both.`,
-      `${USAGE_COMMAND} --native --platform ios`
+      `--upload-root was empty. Pass the directory whose contents should be uploaded, for example "--upload-root ../.." from an app inside a monorepo, or leave it out to upload the project itself.`,
+      `${USAGE_COMMAND} --native`
     );
   }
 
-  if (profile && !wantsNative) {
+  if (uploadRoot != null && !args['--native']) {
     throw badArgs(
-      `--profile names a build profile in eas.json, which only the native build reads. Why: the web deploy uploads the export as it is, so there is no profile to pick. How: drop --profile, or add --platform ios (or android) to build the native app with it.`,
-      `${USAGE_COMMAND} --platform ios --profile ${profile}`
+      `--upload-root only describes the native deploy, and no native target was requested. Why: the web deploy exports the project itself, so there is no directory to pick for it. How: add --native, or drop --upload-root.`,
+      `${USAGE_COMMAND} --native --upload-root ${uploadRoot}`
     );
   }
 
   return {
     web: !!args['--web'],
-    native: wantsNative
-      ? { platform: platformValue as DeployPlatform, profile: profile ?? DEFAULT_BUILD_PROFILE }
-      : null,
+    native: args['--native'] ? { uploadRoot } : null,
     json: !!args['--json'],
     followups: !args['--no-followups'],
   };

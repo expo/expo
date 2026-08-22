@@ -1,8 +1,9 @@
 // @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy
-// One command ships every platform: web through EAS Hosting, native through EAS Build. The
-// orchestration is deterministic — resolve the tools, export, upload, hand the URLs back — so the
-// same run works as a human command and as an agent tool.
+// One command ships every platform: web through EAS Hosting, native through launch.expo.dev. The
+// orchestration is deterministic — resolve the credentials and tools, export or pack, upload, hand
+// the URLs back — so the same run works as a human command and as an agent tool.
 import chalk from 'chalk';
+import path from 'path';
 
 import { followUpsEnabled, reportFollowUps } from '../followups';
 import { buildDeployFollowUps } from '../followups/deploy';
@@ -14,18 +15,16 @@ import {
 } from '../project/nodeModules';
 import { CommandError } from '../utils/errors';
 import { resolveExpoCli } from '../utils/expoCli';
+import { toPosixPath } from '../utils/filePath';
 import { spawnSubprocessAsync, type SubprocessOutput } from '../utils/subprocess';
-import { assertEasConfiguredOrThrow, resolveEasCliOrThrow, type EasCli } from './easCli';
+import { resolveEasCliOrThrow, type EasCli } from './easCli';
 import { debugEvent, event } from './events';
-import { outputTail, parseBuildPageUrl, parseDeploymentUrl } from './parseOutput';
+import { launchProjectAsync } from './launchAsync';
+import { resolveLaunchAuthOrThrowAsync } from './launchAuth';
+import { formatByteSize } from './launchFiles';
+import { outputTail, parseDeploymentUrl } from './parseOutput';
 import type { DeployOptions } from './resolveOptions';
-import type {
-  DeployPlatform,
-  DeployReport,
-  DeployTarget,
-  NativeDeployResult,
-  WebDeployResult,
-} from './types';
+import type { DeployReport, DeployTarget, WebDeployResult } from './types';
 
 /** Where `expo export` writes the web bundle when no `--output-dir` is given. */
 const EXPORT_DIR = 'dist';
@@ -36,41 +35,45 @@ const OUTPUT_TAIL_LINES = 10;
 /** Width of the label column of the human readable summary, as in `exagent context`. */
 const LABEL_WIDTH = 12;
 
-// TODO(llp/0007): native delivery goes through launch.expo.dev, whose integration is still pending.
-// Until it exists, the native target stops at the EAS Build page and says so, rather than inventing
-// a URL shape for a service this command does not talk to yet.
-const NATIVE_NOTE =
-  'Native delivery through launch.expo.dev is not wired up yet, so this is the EAS Build page: install from there, or run eas submit.';
-
 /**
  * Deploy a project, and print where it went.
  *
- * Every precondition is checked before the first subprocess runs. An export takes minutes, and
- * finding out afterwards that the EAS CLI is missing is a minute an agent spent for nothing.
+ * Every precondition is checked before the first byte is sent. An export takes minutes and an
+ * upload can take more, and finding out afterwards that the EAS CLI is missing or that nobody is
+ * signed in is time an agent spent for nothing.
  */
 export async function deployAsync(projectRoot: string, options: DeployOptions): Promise<void> {
   const targets = await resolveTargetsAsync(projectRoot, options);
   const nativeRequest = targets.includes('native') ? options.native : null;
+  const deploysWeb = targets.includes('web');
 
-  if (nativeRequest) {
-    assertEasConfiguredOrThrow(projectRoot);
-  }
-  const easCli = resolveEasCliOrThrow(projectRoot);
-  event('resolved', { targets, easCli: easCli.command, easCliSource: easCli.source });
+  // The two rails need different things, and everything they need is resolved before either one
+  // runs — the arguments first, because a mistyped flag should not be reported after a login is.
+  const uploadPaths = nativeRequest
+    ? resolveUploadPaths(projectRoot, nativeRequest.uploadRoot)
+    : null;
+  const easCli = deploysWeb ? resolveEasCliOrThrow(projectRoot) : null;
+  const auth = nativeRequest ? await resolveLaunchAuthOrThrowAsync() : null;
+  event('resolved', {
+    targets,
+    easCli: easCli?.command ?? null,
+    easCliSource: easCli?.source ?? 'none',
+  });
 
   // In `--json` mode this command owns stdout, so the tools are captured; otherwise their output is
   // printed as it arrives *and* captured, because the URLs are only in there.
   const output: SubprocessOutput = options.json ? 'capture' : 'tee';
 
-  const web = targets.includes('web') ? await deployWebAsync(projectRoot, easCli, output) : null;
-  const native = nativeRequest
-    ? await buildNativeAsync(projectRoot, easCli, nativeRequest, output)
-    : null;
+  const web = easCli ? await deployWebAsync(projectRoot, easCli, output) : null;
+  const native =
+    auth && uploadPaths
+      ? await launchProjectAsync({ auth, json: options.json, ...uploadPaths })
+      : null;
 
   const followups = followUpsEnabled(options.followups)
     ? buildDeployFollowUps({
         web: web && { url: web.url },
-        native: native && { platform: native.platform, buildUrl: native.buildUrl },
+        launch: native && { url: native.url, expiresInHours: native.expiresInHours },
       })
     : [];
 
@@ -88,12 +91,49 @@ export async function deployAsync(projectRoot: string, options: DeployOptions): 
 }
 
 /**
+ * Which directory is uploaded, and where the app sits inside it.
+ *
+ * With no `--upload-root` the project *is* the upload, and the service needs no path. A monorepo
+ * uploads a parent directory, and then the app's path inside the tarball is what tells the service
+ * which of the workspaces to launch — the same `x-project-root` the reference implementation sends.
+ *
+ * @throws {CommandError} `BAD_ARGS` when the project is not inside the named directory.
+ */
+function resolveUploadPaths(
+  projectRoot: string,
+  uploadRootArg?: string
+): { uploadRoot: string; projectPath?: string } {
+  if (!uploadRootArg) {
+    return { uploadRoot: projectRoot };
+  }
+
+  const uploadRoot = path.resolve(projectRoot, uploadRootArg);
+  const relative = path.relative(uploadRoot, projectRoot);
+
+  if (relative.startsWith('..') || path.isAbsolute(relative)) {
+    const error = new CommandError(
+      'BAD_ARGS',
+      [
+        `The project is not inside ${uploadRoot}, so that directory cannot be uploaded for it.`,
+        `Why: --upload-root names a directory that *contains* the app, and ${projectRoot} is not under it, so the upload would not hold the project at all.`,
+        `How: point --upload-root at a parent directory of the project, for example "--upload-root .." from an app in a monorepo, or leave it out to upload the project itself.`,
+      ].join('\n')
+    );
+    error.suggestedCommand = 'npx exagent deploy --native';
+    throw error;
+  }
+
+  // An empty relative path means the upload root resolved to the project itself.
+  return { uploadRoot, projectPath: relative ? toPosixPath(relative) : undefined };
+}
+
+/**
  * What this run ships.
  *
  * A request with no target flag is answered from the project: a project that has web deploys its
  * web app, which is the cheap, URL-in-seconds half of the deploy. A project without web has no
- * default, because the native half costs a cloud build and picks a platform, and neither is
- * something to start on a guess.
+ * default, because the native half uploads the whole project source and hands a browser step to a
+ * person, and neither is something to start on a guess.
  *
  * @throws {CommandError} `NO_DEPLOY_TARGET` when nothing was asked for and nothing can be assumed.
  */
@@ -121,11 +161,11 @@ async function resolveTargetsAsync(
     'NO_DEPLOY_TARGET',
     [
       `No deploy target was given, and this project has no web app to default to.`,
-      `Why: react-native-web is not a dependency, so there is no web bundle to export; the native target is never assumed, because it starts a cloud build for a platform this command would have to guess.`,
-      `How: pass --platform ios or --platform android to build and ship the native app, or add web support with "npx expo install react-native-web react-dom" and pass --web.`,
+      `Why: react-native-web is not a dependency, so there is no web bundle to export; the native target is never assumed, because it uploads your project source and then needs a person in a browser.`,
+      `How: pass --native to launch the native app, or add web support with "npx expo install react-native-web react-dom" and pass --web.`,
     ].join('\n')
   );
-  error.suggestedCommand = 'npx exagent deploy --platform ios';
+  error.suggestedCommand = 'npx exagent deploy --native';
   throw error;
 }
 
@@ -205,55 +245,6 @@ async function deployWebAsync(
   return { url, exportDir: EXPORT_DIR, outputTail: outputTail(outputText, OUTPUT_TAIL_LINES) };
 }
 
-/** Start the cloud build for one native platform, and report the page it runs on. */
-async function buildNativeAsync(
-  projectRoot: string,
-  easCli: EasCli,
-  request: { platform: DeployPlatform; profile: string },
-  output: SubprocessOutput
-): Promise<NativeDeployResult> {
-  const args = [
-    'build',
-    '--platform',
-    request.platform,
-    '--profile',
-    request.profile,
-    '--non-interactive',
-  ];
-  debugEvent('build', { command: easCli.command, args });
-
-  const built = await spawnSubprocessAsync(easCli.command, args, { cwd: projectRoot, output });
-  if (built.spawnError) {
-    throw easCliUnavailable(easCli.command, built.spawnError);
-  }
-  const outputText = `${built.stdout}${built.stderr}`;
-  if (built.exitCode !== 0) {
-    const error = new CommandError(
-      'EAS_BUILD_FAILED',
-      [
-        `The ${request.platform} build did not run (eas build exited with code ${built.exitCode}).`,
-        `Why: the build ran non-interactively with the "${request.profile}" profile, so a missing credential, an unknown profile, or an account that is not signed in fails instead of prompting.`,
-        `How: check who the CLI is acting as with "npx eas-cli whoami", confirm eas.json has a "${request.profile}" profile, and for a headless machine set EXPO_TOKEN to an access token from expo.dev.`,
-        fence(built, output),
-      ]
-        .filter(Boolean)
-        .join('\n')
-    );
-    error.suggestedCommand = 'npx eas-cli whoami';
-    throw error;
-  }
-
-  const buildUrl = parseBuildPageUrl(outputText);
-  event('native', { platform: request.platform, profile: request.profile, buildUrl });
-  return {
-    platform: request.platform,
-    profile: request.profile,
-    buildUrl,
-    note: NATIVE_NOTE,
-    outputTail: outputTail(outputText, OUTPUT_TAIL_LINES),
-  };
-}
-
 /**
  * The tail of a captured failure, for the error message.
  *
@@ -315,13 +306,22 @@ function summaryLines(report: DeployReport): string[] {
   }
 
   if (report.native) {
-    row('Platform', `${report.native.platform} (profile ${report.native.profile})`);
+    // The URL is the result of the command, not a detail of it: nothing ships until it is opened,
+    // so it gets the bold line and the sentence that says what to do with it.
+    row('Launch', report.native.id);
+    row('Framework', report.native.framework);
     row(
-      'Build',
-      report.native.buildUrl ??
-        chalk.yellow('unknown (the eas output held no build URL — see the output above)')
+      'Uploaded',
+      `${report.native.upload.files} files (${formatByteSize(report.native.upload.size)})`
     );
-    row('Note', report.native.note);
+    lines.push('');
+    lines.push(chalk.bold('Open this to finish the launch:'));
+    lines.push(`  ${chalk.cyan(report.native.url)}`);
+    lines.push(
+      chalk.dim(
+        `  The store account, the signing and the submission happen in the browser. The link expires in ${report.native.expiresInHours} hours.`
+      )
+    );
   }
 
   return lines;

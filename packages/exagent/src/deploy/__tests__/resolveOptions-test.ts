@@ -20,44 +20,54 @@ describe(resolveDeployOptions, () => {
     });
   });
 
-  it(`should default the native build profile to production`, () => {
-    expect(resolveDeployOptions(['--native', '--platform', 'ios'])).toEqual({
+  it(`should resolve the native target, which needs no platform`, () => {
+    // One launch covers iOS and Android: the platforms are chosen in the browser, not here.
+    expect(resolveDeployOptions(['--native'])).toEqual({
       web: false,
-      native: { platform: 'ios', profile: 'production' },
+      native: { uploadRoot: undefined },
       json: false,
       followups: true,
     });
   });
 
-  it(`should treat --platform as a request for the native target`, () => {
-    expect(resolveDeployOptions(['--platform', 'android', '--profile', 'preview'])).toEqual({
+  it(`should resolve the directory to upload`, () => {
+    expect(resolveDeployOptions(['--native', '--upload-root', '../..'])).toEqual({
       web: false,
-      native: { platform: 'android', profile: 'preview' },
+      native: { uploadRoot: '../..' },
       json: false,
       followups: true,
     });
   });
 
   it(`should resolve both targets at once`, () => {
-    expect(resolveDeployOptions(['--web', '--platform', 'ios'])).toEqual({
+    expect(resolveDeployOptions(['--web', '--native', '--json'])).toEqual({
       web: true,
-      native: { platform: 'ios', profile: 'production' },
-      json: false,
+      native: { uploadRoot: undefined },
+      json: true,
       followups: true,
     });
   });
 
-  it(`should throw for --native without a platform`, () => {
-    expect(() => resolveDeployOptions(['--native'])).toThrow(/--platform/);
+  it(`should explain that a native deploy no longer takes a platform`, () => {
+    // The flag belonged to the EAS Build rail this command used to have, so a script that still
+    // passes it has to be told what replaced it, not just that a flag is unknown.
+    expect(() => resolveDeployOptions(['--platform', 'ios'])).toThrow(/launch\.expo\.dev/);
+    expect(() => resolveDeployOptions(['--native', '--platform', 'android'])).toThrow(/--platform/);
   });
 
-  it(`should throw for a platform EAS Build does not take`, () => {
-    expect(() => resolveDeployOptions(['--platform', 'web'])).toThrow(/ios/);
+  it(`should explain that a native deploy no longer takes a build profile`, () => {
+    expect(() => resolveDeployOptions(['--native', '--profile', 'preview'])).toThrow(/--profile/);
   });
 
-  it(`should throw for a build profile without a native target`, () => {
-    // `--profile` names an `eas.json` build profile, which the web deploy never reads.
-    expect(() => resolveDeployOptions(['--web', '--profile', 'preview'])).toThrow(/--profile/);
+  it(`should refuse an upload root without a native target`, () => {
+    // `--upload-root` only describes the launch upload; the web deploy exports the project itself.
+    expect(() => resolveDeployOptions(['--web', '--upload-root', '..'])).toThrow(/--native/);
+  });
+
+  it(`should refuse an empty upload root`, () => {
+    expect(() => resolveDeployOptions(['--native', '--upload-root', '  '])).toThrow(
+      /--upload-root/
+    );
   });
 
   it(`should throw for an unknown flag`, () => {

@@ -3592,6 +3592,9 @@ importers:
       memfs:
         specifier: ^3.2.0
         version: 3.6.0
+      multitars:
+        specifier: ^1.0.0
+        version: 1.0.2
       prompts:
         specifier: ^2.3.2
         version: 2.4.2
