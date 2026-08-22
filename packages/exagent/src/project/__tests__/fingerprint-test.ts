@@ -1,11 +1,20 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { vol } from 'memfs';
+import path from 'path';
 
 import { generateFingerprintAsync, resolveFingerprintCli } from '../fingerprint';
 
 const projectRoot = '/project';
 const realPlatform = process.platform;
+
+/**
+ * The path of a bin the project installed, spelled the way the running platform spells it.
+ *
+ * The resolver builds it with `path.join`, so an expectation written as a posix literal would only
+ * hold on posix. Building it the same way keeps the assertion about *which* bin was chosen.
+ */
+const projectBin = (name: string) => path.join(projectRoot, 'node_modules', '.bin', name);
 
 function mockPlatform(value: typeof process.platform) {
   Object.defineProperty(process, 'platform', { value });
@@ -43,14 +52,14 @@ describe(resolveFingerprintCli, () => {
   it(`should resolve the project's fingerprint bin`, () => {
     writeFingerprintBin();
 
-    expect(resolveFingerprintCli(projectRoot)).toBe('/project/node_modules/.bin/fingerprint');
+    expect(resolveFingerprintCli(projectRoot)).toBe(projectBin('fingerprint'));
   });
 
   it(`should resolve the .cmd shim on Windows`, () => {
     mockPlatform('win32');
     writeFingerprintBin('fingerprint.cmd');
 
-    expect(resolveFingerprintCli(projectRoot)).toBe('/project/node_modules/.bin/fingerprint.cmd');
+    expect(resolveFingerprintCli(projectRoot)).toBe(projectBin('fingerprint.cmd'));
   });
 
   it(`should return null when the project does not ship the CLI`, () => {
@@ -71,7 +80,7 @@ describe(generateFingerprintAsync, () => {
 
     await expect(promise).resolves.toEqual({ hash: 'abc123' });
     expect(spawn).toHaveBeenCalledWith(
-      '/project/node_modules/.bin/fingerprint',
+      projectBin('fingerprint'),
       ['fingerprint:generate', projectRoot],
       expect.objectContaining({ cwd: projectRoot })
     );

@@ -3,12 +3,26 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { Log } from '../../log';
+import { toPosixPath } from '../../utils/filePath';
 import { cleanSkillLinksAsync, syncSkillLinksAsync, updateGitIgnoreAsync } from '../linking';
 import type { DiscoveredSkill } from '../types';
 
 jest.mock('../../log');
 
 const projectRoot = '/project';
+
+/**
+ * The reported paths as posix paths.
+ *
+ * `created` and `pruned` hold project-relative paths built with `path.relative`, so on Windows they
+ * are spelled with backslashes. Which entries are reported is the contract; how the platform spells
+ * a separator is not, so the received value is normalized instead of the expectation being written
+ * twice.
+ */
+const asPosix = (paths: string[]) => paths.map(toPosixPath);
+
+/** A path inside the project, spelled the way the running platform spells it. */
+const inProject = (...segments: string[]) => path.join(projectRoot, ...segments);
 
 const realPlatform = process.platform;
 
@@ -66,26 +80,26 @@ describe(syncSkillLinksAsync, () => {
       ['.claude/skills', '.agents/skills']
     );
 
-    expect(results).toEqual({
-      created: [
-        '.claude/skills/expo-ui',
-        '.claude/skills/routing',
-        '.agents/skills/expo-ui',
-        '.agents/skills/routing',
-      ],
-      pruned: [],
-    });
+    expect(asPosix(results.created)).toEqual([
+      '.claude/skills/expo-ui',
+      '.claude/skills/routing',
+      '.agents/skills/expo-ui',
+      '.agents/skills/routing',
+    ]);
+    expect(results.pruned).toEqual([]);
 
     for (const link of results.created) {
-      expect(vol.lstatSync(`${projectRoot}/${link}`).isSymbolicLink()).toBe(true);
+      expect(vol.lstatSync(inProject(link)).isSymbolicLink()).toBe(true);
     }
   });
 
   it('should point links at a relative target', async () => {
     await syncSkillLinksAsync(projectRoot, [uiSkill], ['.claude/skills']);
 
-    expect(symlinkSpy.mock.calls[0][0]).toBe('../../node_modules/@expo/ui/skills/expo-ui');
-    expect(symlinkSpy.mock.calls[0][1]).toBe('/project/.claude/skills/expo-ui');
+    expect(symlinkSpy.mock.calls[0][0]).toBe(
+      path.join('..', '..', 'node_modules', '@expo', 'ui', 'skills', 'expo-ui')
+    );
+    expect(symlinkSpy.mock.calls[0][1]).toBe(inProject('.claude', 'skills', 'expo-ui'));
     expect(vol.readFileSync('/project/.claude/skills/expo-ui/SKILL.md', 'utf8')).toBe('# expo-ui');
   });
 
@@ -115,7 +129,7 @@ describe(syncSkillLinksAsync, () => {
       ['.claude/skills']
     );
 
-    expect(results.created).toEqual(['.claude/skills/expo-ui']);
+    expect(asPosix(results.created)).toEqual(['.claude/skills/expo-ui']);
     expect(vol.readFileSync('/project/.claude/skills/expo-ui/SKILL.md', 'utf8')).toBe('# expo-ui');
     expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('other'));
   });
@@ -137,7 +151,8 @@ describe(syncSkillLinksAsync, () => {
 
     const results = await syncSkillLinksAsync(projectRoot, [uiSkill], ['.claude/skills']);
 
-    expect(results).toEqual({ created: ['.claude/skills/expo-ui'], pruned: [] });
+    expect(asPosix(results.created)).toEqual(['.claude/skills/expo-ui']);
+    expect(results.pruned).toEqual([]);
     expect(vol.readFileSync('/project/.claude/skills/expo-ui/SKILL.md', 'utf8')).toBe('# expo-ui');
   });
 
@@ -146,10 +161,8 @@ describe(syncSkillLinksAsync, () => {
 
     const results = await syncSkillLinksAsync(projectRoot, [uiSkill], ['.claude/skills']);
 
-    expect(results).toEqual({
-      created: [],
-      pruned: ['.claude/skills/routing'],
-    });
+    expect(results.created).toEqual([]);
+    expect(asPosix(results.pruned)).toEqual(['.claude/skills/routing']);
     expect(vol.existsSync('/project/.claude/skills/routing')).toBe(false);
     expect(vol.existsSync('/project/.claude/skills/expo-ui')).toBe(true);
   });
@@ -171,7 +184,7 @@ describe(syncSkillLinksAsync, () => {
 
     const results = await syncSkillLinksAsync(projectRoot, [uiSkill], ['.claude/skills']);
 
-    expect(results.pruned).toEqual(['.claude/skills/routing']);
+    expect(asPosix(results.pruned)).toEqual(['.claude/skills/routing']);
     expect(
       vol.lstatSync('/project/.claude/skills/routing', {
         throwIfNoEntry: false,
@@ -206,7 +219,9 @@ describe(syncSkillLinksAsync, () => {
 
     expect(results).toEqual({ created: [], pruned: [] });
     expect(vol.readFileSync('/project/.claude/skills/expo-ui/SKILL.md', 'utf8')).toBe('# not ours');
-    expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('.claude/skills/expo-ui'));
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(path.join('.claude', 'skills', 'expo-ui'))
+    );
   });
 
   it('should keep a wanted name that is a user symlink outside node_modules', async () => {
@@ -218,7 +233,9 @@ describe(syncSkillLinksAsync, () => {
 
     expect(results).toEqual({ created: [], pruned: [] });
     expect(vol.readFileSync('/project/.claude/skills/expo-ui/SKILL.md', 'utf8')).toBe('# not ours');
-    expect(Log.warn).toHaveBeenCalledWith(expect.stringContaining('.claude/skills/expo-ui'));
+    expect(Log.warn).toHaveBeenCalledWith(
+      expect.stringContaining(path.join('.claude', 'skills', 'expo-ui'))
+    );
   });
 
   it('should not create an agent directory when there are no skills', async () => {
@@ -236,10 +253,8 @@ describe(syncSkillLinksAsync, () => {
       dryRun: true,
     });
 
-    expect(results).toEqual({
-      created: ['.claude/skills/expo-ui'],
-      pruned: ['.claude/skills/routing'],
-    });
+    expect(asPosix(results.created)).toEqual(['.claude/skills/expo-ui']);
+    expect(asPosix(results.pruned)).toEqual(['.claude/skills/routing']);
     expect(vol.toJSON()).toEqual(before);
   });
 });
@@ -254,7 +269,7 @@ describe(cleanSkillLinksAsync, () => {
 
     const results = await cleanSkillLinksAsync(projectRoot, ['.claude/skills', '.agents/skills']);
 
-    expect(results.pruned.sort()).toEqual([
+    expect(asPosix(results.pruned).sort()).toEqual([
       '.agents/skills/expo-ui',
       '.agents/skills/routing',
       '.claude/skills/expo-ui',
@@ -277,7 +292,7 @@ describe(cleanSkillLinksAsync, () => {
 
     const results = await cleanSkillLinksAsync(projectRoot, ['.claude/skills']);
 
-    expect(results.pruned).toEqual(['.claude/skills/expo-ui']);
+    expect(asPosix(results.pruned)).toEqual(['.claude/skills/expo-ui']);
     expect(vol.existsSync('/project/.claude/skills/my-own-skill/SKILL.md')).toBe(true);
     expect(vol.lstatSync('/project/.claude/skills/local').isSymbolicLink()).toBe(true);
   });
@@ -294,7 +309,7 @@ describe(cleanSkillLinksAsync, () => {
 
     const results = await cleanSkillLinksAsync(projectRoot, ['.claude/skills'], { dryRun: true });
 
-    expect(results.pruned).toEqual(['.claude/skills/expo-ui']);
+    expect(asPosix(results.pruned)).toEqual(['.claude/skills/expo-ui']);
     expect(vol.toJSON()).toEqual(before);
   });
 });

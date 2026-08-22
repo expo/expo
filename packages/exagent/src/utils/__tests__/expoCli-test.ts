@@ -1,11 +1,20 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { vol } from 'memfs';
+import path from 'path';
 
 import { resolveExpoCli, runExpoAsync } from '../expoCli';
 
 const projectRoot = '/project';
 const realPlatform = process.platform;
+
+/**
+ * The path of a bin the project installed, spelled the way the running platform spells it.
+ *
+ * The resolver builds it with `path.join`, so an expectation written as a posix literal would only
+ * hold on posix. Building it the same way keeps the assertion about *which* bin was chosen.
+ */
+const projectBin = (name: string) => path.join(projectRoot, 'node_modules', '.bin', name);
 
 function mockPlatform(value: typeof process.platform) {
   Object.defineProperty(process, 'platform', { value });
@@ -22,6 +31,9 @@ function mockSpawn(): FakeChild {
 }
 
 beforeEach(() => {
+  // A fixed platform for every test but the Windows one: the resolver picks the bin *name* from
+  // it, so the tests would otherwise install a bin the resolver on Windows never looks for.
+  mockPlatform('darwin');
   vol.reset();
 });
 
@@ -31,11 +43,10 @@ afterEach(() => {
 
 describe(resolveExpoCli, () => {
   it(`should use the project's local expo bin when it exists`, () => {
-    mockPlatform('darwin');
     vol.fromJSON({ [`${projectRoot}/node_modules/.bin/expo`]: '#!/usr/bin/env node' });
 
     expect(resolveExpoCli(projectRoot, ['start', '--web'])).toEqual({
-      command: '/project/node_modules/.bin/expo',
+      command: projectBin('expo'),
       args: ['start', '--web'],
     });
   });
@@ -44,13 +55,10 @@ describe(resolveExpoCli, () => {
     mockPlatform('win32');
     vol.fromJSON({ [`${projectRoot}/node_modules/.bin/expo.cmd`]: '' });
 
-    expect(resolveExpoCli(projectRoot, ['start']).command).toBe(
-      '/project/node_modules/.bin/expo.cmd'
-    );
+    expect(resolveExpoCli(projectRoot, ['start']).command).toBe(projectBin('expo.cmd'));
   });
 
   it(`should fall back to npx expo when the project has no local bin`, () => {
-    mockPlatform('darwin');
     vol.fromJSON({ [`${projectRoot}/package.json`]: '{}' });
 
     expect(resolveExpoCli(projectRoot, ['install', 'expo-sqlite'])).toEqual({
@@ -70,7 +78,7 @@ describe(runExpoAsync, () => {
 
     await expect(promise).resolves.toBe(0);
     expect(spawn).toHaveBeenCalledWith(
-      '/project/node_modules/.bin/expo',
+      projectBin('expo'),
       ['install', 'expo-sqlite'],
       expect.objectContaining({ cwd: projectRoot, stdio: 'inherit' })
     );

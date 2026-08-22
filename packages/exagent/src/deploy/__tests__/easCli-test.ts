@@ -5,8 +5,20 @@ import { CommandError } from '../../utils/errors';
 import { assertEasConfiguredOrThrow, resolveEasCliOrThrow } from '../easCli';
 
 const projectRoot = '/project';
+const realPlatform = process.platform;
+
+function mockPlatform(value: typeof process.platform) {
+  Object.defineProperty(process, 'platform', { value });
+}
+
+beforeEach(() => {
+  // A fixed platform for every test but the Windows one: the resolver picks the bin *name* from
+  // it, so the tests would otherwise install a bin the resolver on Windows never looks for.
+  mockPlatform('darwin');
+});
 
 afterEach(() => {
+  mockPlatform(realPlatform);
   vol.reset();
 });
 
@@ -19,6 +31,16 @@ describe(resolveEasCliOrThrow, () => {
 
     expect(resolveEasCliOrThrow(projectRoot, { pathEnv: '/usr/local/bin' })).toEqual({
       command: path.join(projectRoot, 'node_modules', '.bin', 'eas'),
+      source: 'project',
+    });
+  });
+
+  it(`should prefer the .cmd shim of the project on Windows`, () => {
+    mockPlatform('win32');
+    vol.fromJSON({ [`${projectRoot}/node_modules/.bin/eas.cmd`]: '' });
+
+    expect(resolveEasCliOrThrow(projectRoot, { pathEnv: '/usr/local/bin' })).toEqual({
+      command: path.join(projectRoot, 'node_modules', '.bin', 'eas.cmd'),
       source: 'project',
     });
   });
