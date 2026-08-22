@@ -1,5 +1,7 @@
 import { spawn } from 'child_process';
 
+import { resolveSpawnTarget } from './windowsShim';
+
 /** Outcome of one captured subprocess run. */
 export interface SpawnCaptureResult {
   stdout: string;
@@ -22,10 +24,13 @@ export function spawnCaptureAsync(
   options: { cwd?: string } = {}
 ): Promise<SpawnCaptureResult> {
   return new Promise<SpawnCaptureResult>((resolve) => {
-    const child = spawn(command, args, {
+    // A `fingerprint` resolved inside a project is a batch shim on Windows, which needs `cmd.exe`.
+    const target = resolveSpawnTarget(command, args);
+    const child = spawn(target.command, target.args, {
       cwd: options.cwd,
       // The output is data for the caller, not something the user should read directly.
       stdio: ['ignore', 'pipe', 'pipe'],
+      shell: target.shell,
     });
 
     let stdout = '';

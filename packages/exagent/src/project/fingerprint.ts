@@ -6,6 +6,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 
 import { fileExistsSync } from '../utils/dir';
+import { resolveSpawnTarget } from '../utils/windowsShim';
 import { debugEvent } from './events';
 
 /** Result of one fingerprint run. Mirrors `ProjectState['fingerprint']`. */
@@ -53,11 +54,14 @@ function runFingerprintAsync(command: string, projectRoot: string): Promise<Fing
   const args = ['fingerprint:generate', projectRoot];
 
   return new Promise<FingerprintResult>((resolve) => {
-    const child = spawn(command, args, {
+    // On Windows the project's bin is a batch shim, which only `cmd.exe` can run.
+    const target = resolveSpawnTarget(command, args);
+    const child = spawn(target.command, target.args, {
       cwd: projectRoot,
       // The output is data, not something the user should read, so stdout is captured. Debug
       // logs of the CLI go to stderr and are only reported when the command fails.
       stdio: ['ignore', 'pipe', 'pipe'],
+      shell: target.shell,
     });
 
     let stdout = '';

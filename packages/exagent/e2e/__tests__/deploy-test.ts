@@ -12,6 +12,7 @@ import path from 'node:path';
 import {
   executeExagentAsync,
   getTemporaryPath,
+  installStubBinAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
   stubExpoEnv,
@@ -92,17 +93,25 @@ async function setupAsync(fixtureName: string): Promise<string> {
   const projectRoot = await setupFixtureAsync(fixtureName);
   const binDir = path.join(projectRoot, '.stub-bin');
   await fs.promises.mkdir(binDir, { recursive: true });
-  const binPath = path.join(binDir, 'eas');
-  await fs.promises.writeFile(binPath, STUB_EAS);
-  await fs.promises.chmod(binPath, 0o755);
-  // Windows resolves `eas` through the `.cmd` shim, mirroring what npm/pnpm write.
-  await fs.promises.writeFile(
-    path.join(binDir, 'eas.cmd'),
-    `@echo off\r\n"${process.execPath}" "${binPath}" %*\r\n`
-  );
+  // The stub is a Node script the shims run, not a bin itself: Windows can execute neither a
+  // shebang script nor an extensionless file, so both shims are written (see
+  // {@link installStubBinAsync}) exactly as npm installs a real `eas`.
+  const stubScript = path.join(binDir, 'eas-stub.js');
+  await fs.promises.writeFile(stubScript, STUB_EAS);
+  await installStubBinAsync(binDir, 'eas', stubScript);
   // The real path, because that is what a subprocess reports as its working directory: on macOS
   // the temporary directory is reached through a symlink.
   return fs.promises.realpath(projectRoot);
+}
+
+/**
+ * An environment whose `PATH` holds nothing, in every spelling the platform may read.
+ *
+ * This is the only way to test a missing EAS CLI on a machine that has one installed, and it has to
+ * clear `Path` as well: on Windows a leftover spelling would still point at the real `eas`.
+ */
+function emptyPathEnv(emptyDir: string): Record<string, string> {
+  return process.platform === 'win32' ? { PATH: emptyDir, Path: emptyDir } : { PATH: emptyDir };
 }
 
 /** Give a project the `eas.json` that EAS Build needs before it will build anything. */
@@ -222,7 +231,7 @@ describe('exagent deploy', () => {
       await fs.promises.mkdir(emptyDir, { recursive: true });
 
       const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
-        env: { PATH: emptyDir },
+        env: emptyPathEnv(emptyDir),
         reject: false,
       });
 

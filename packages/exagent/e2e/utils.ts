@@ -50,9 +50,45 @@ export async function setupFixtureAsync(fixtureName: string): Promise<string> {
 }
 
 /**
+ * Install one stub bin the way npm and pnpm install a real one: a `sh` shim for posix and a `.cmd`
+ * shim for Windows, both starting the stub script with the Node that runs the test.
+ *
+ * Both shims always exist, whatever the platform, because that is the layout the resolvers under
+ * test look for — `resolveExpoCli` and friends pick the `.cmd` name on Windows and the bare name
+ * everywhere else. A stub that ships only one of them is not testing the resolver, it is testing
+ * the fallback.
+ *
+ * Executable bits are set here instead of committed to git, so the fixtures stay plain files.
+ *
+ * @param binDir Directory the shims go into, e.g. `node_modules/.bin` or `.stub-bin`
+ * @param name Bin name without an extension, e.g. `expo`
+ * @param stubScript Absolute path of the Node script the shims run
+ */
+export async function installStubBinAsync(
+  binDir: string,
+  name: string,
+  stubScript: string
+): Promise<void> {
+  await fs.promises.mkdir(binDir, { recursive: true });
+
+  const shPath = path.join(binDir, name);
+  await fs.promises.writeFile(
+    shPath,
+    `#!/bin/sh\nexec "${process.execPath}" "${stubScript}" "$@"\n`
+  );
+  await fs.promises.chmod(shPath, 0o755);
+
+  // Windows cannot execute either the shebang script or an extensionless file, so the `.cmd` shim
+  // is the only thing a spawn there can reach.
+  await fs.promises.writeFile(
+    path.join(binDir, `${name}.cmd`),
+    `@echo off\r\n"${process.execPath}" "${stubScript}" %*\r\n`
+  );
+}
+
+/**
  * Write the executable shims that make `expo` resolve to the fixture's stub bin, both through
- * `PATH` (see {@link stubExpoEnv}) and through the project's `node_modules/.bin`. Executable bits
- * are set here instead of committed to git, so the fixtures stay plain files.
+ * `PATH` (see {@link stubExpoEnv}) and through the project's `node_modules/.bin`.
  */
 async function installStubExpoAsync(projectRoot: string): Promise<void> {
   const stubScript = path.join(projectRoot, 'node_modules', 'expo', 'bin', 'cli');
@@ -62,18 +98,7 @@ async function installStubExpoAsync(projectRoot: string): Promise<void> {
   ];
 
   for (const dir of dirs) {
-    await fs.promises.mkdir(dir, { recursive: true });
-    const shPath = path.join(dir, 'expo');
-    await fs.promises.writeFile(
-      shPath,
-      `#!/bin/sh\nexec "${process.execPath}" "${stubScript}" "$@"\n`
-    );
-    await fs.promises.chmod(shPath, 0o755);
-    // Windows resolves `expo` through the `.cmd` shim, mirroring what npm/pnpm write.
-    await fs.promises.writeFile(
-      path.join(dir, 'expo.cmd'),
-      `@echo off\r\n"${process.execPath}" "${stubScript}" %*\r\n`
-    );
+    await installStubBinAsync(dir, 'expo', stubScript);
   }
 }
 
@@ -92,27 +117,25 @@ export async function installStubFingerprintAsync(projectRoot: string): Promise<
     return false;
   }
 
-  const binDir = path.join(projectRoot, 'node_modules', '.bin');
-  await fs.promises.mkdir(binDir, { recursive: true });
-  const shPath = path.join(binDir, 'fingerprint');
-  await fs.promises.writeFile(
-    shPath,
-    `#!/bin/sh\nexec "${process.execPath}" "${stubScript}" "$@"\n`
-  );
-  await fs.promises.chmod(shPath, 0o755);
-  // Windows resolves the bin through the `.cmd` shim, mirroring what npm/pnpm write.
-  await fs.promises.writeFile(
-    path.join(binDir, 'fingerprint.cmd'),
-    `@echo off\r\n"${process.execPath}" "${stubScript}" %*\r\n`
+  await installStubBinAsync(
+    path.join(projectRoot, 'node_modules', '.bin'),
+    'fingerprint',
+    stubScript
   );
   return true;
 }
 
-/** Environment that makes any bare `expo` spawn resolve to the fixture's stub bin. */
+/**
+ * Environment that makes any bare `expo` spawn resolve to the fixture's stub bin.
+ *
+ * Windows spells the variable `Path`, and a child that inherits both spellings resolves a bin
+ * through whichever one the platform happens to pick, so both carry the stub directory there. One
+ * spelling with the stub and one without is a test that passes or fails by luck.
+ */
 export function stubExpoEnv(projectRoot: string): Record<string, string> {
-  return {
-    PATH: `${path.join(projectRoot, '.stub-bin')}${path.delimiter}${process.env.PATH}`,
-  };
+  const inherited = process.env.PATH ?? process.env.Path ?? '';
+  const withStub = `${path.join(projectRoot, '.stub-bin')}${path.delimiter}${inherited}`;
+  return process.platform === 'win32' ? { PATH: withStub, Path: withStub } : { PATH: withStub };
 }
 
 /** One recorded invocation of the stub `expo` bin. */

@@ -6,6 +6,7 @@ import { spawn } from 'child_process';
 import path from 'path';
 
 import { fileExistsSync } from './dir';
+import { resolveSpawnTarget } from './windowsShim';
 
 /** What happens to the output of the subprocess. */
 export type SubprocessOutput =
@@ -55,9 +56,12 @@ export function spawnSubprocessAsync(
   { cwd, output = 'capture' }: SubprocessOptions = {}
 ): Promise<SubprocessResult> {
   return new Promise<SubprocessResult>((resolve) => {
-    const child = spawn(command, args, {
+    // `eas`, `create-expo` and `npx` all resolve to a batch shim on Windows, which needs `cmd.exe`.
+    const target = resolveSpawnTarget(command, args);
+    const child = spawn(target.command, target.args, {
       cwd,
       stdio: output === 'inherit' ? ['ignore', 'inherit', 'inherit'] : ['ignore', 'pipe', 'pipe'],
+      shell: target.shell,
     });
 
     let stdout = '';

@@ -4,6 +4,7 @@ import path from 'path';
 
 import { debugEvent } from '../events';
 import { CommandError } from './errors';
+import { resolveSpawnTarget } from './windowsShim';
 
 /** The `expo` CLI invocation to spawn. */
 export interface ExpoCliCommand {
@@ -27,8 +28,11 @@ export function resolveExpoCli(projectRoot: string, args: string[]): ExpoCliComm
   if (fs.existsSync(localBin)) {
     return { command: localBin, args };
   }
-  // Projects that have not installed their dependencies yet still get a working command.
-  return { command: 'npx', args: ['expo', ...args] };
+  // Projects that have not installed their dependencies yet still get a working command. On
+  // Windows npm ships `npx` as a batch file, and a bare `npx` would be looked up as an image that
+  // does not exist, so the shim is named here and started through a shell by `resolveSpawnTarget`.
+  const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+  return { command: npx, args: ['expo', ...args] };
 }
 
 /** Signals the terminal delivers to the whole process group, so the child gets them too. */
@@ -51,7 +55,13 @@ export function runExpoAsync(projectRoot: string, args: string[]): Promise<numbe
   debugEvent('expo_resolved', { command, args: commandArgs });
 
   return new Promise<number>((resolve, reject) => {
-    const child = spawn(command, commandArgs, { cwd: projectRoot, stdio: 'inherit' });
+    // On Windows the resolved bin is a batch shim, which only `cmd.exe` can run.
+    const target = resolveSpawnTarget(command, commandArgs);
+    const child = spawn(target.command, target.args, {
+      cwd: projectRoot,
+      stdio: 'inherit',
+      shell: target.shell,
+    });
 
     const listeners = TERMINAL_SIGNALS.map((signal) => {
       const forward = () => {

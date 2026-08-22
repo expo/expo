@@ -13,6 +13,18 @@ import { executeExagentAsync, readProjectFile, setupFixtureAsync } from '../util
 /** Relative path of the store `exagent checkpoint` writes. */
 const STORE_FILE = path.join('.expo', 'exagent-checkpoints.json');
 
+/**
+ * A file's content with its line endings made comparable.
+ *
+ * A checkpoint stores what git stores, and git stores LF, so on Windows — where the checkout wrote
+ * the fixture with CRLF — a restored file comes back with LF. The assertion here is that the
+ * *content* returned; whether `undo` should reapply the platform's line endings the way
+ * `git checkout` does is a question for `src/checkpoint`, not one this test should decide.
+ */
+function sameLines(content: string | null): string | null {
+  return content?.replace(/\r\n/g, '\n') ?? null;
+}
+
 /** One record of the store, per `src/checkpoint/types.ts`. */
 type CheckpointRecord = {
   id: string;
@@ -173,7 +185,9 @@ describe('exagent undo', () => {
 
     expect(result.exitCode).toBe(0);
     // The changed file is back, and so is the deleted one.
-    expect(readProjectFile(projectRoot, 'package.json')).toBe(originalPackageJson);
+    expect(sameLines(readProjectFile(projectRoot, 'package.json'))).toBe(
+      sameLines(originalPackageJson)
+    );
     expect(fs.existsSync(path.join(projectRoot, 'index.js'))).toBe(true);
     // An undo only writes files, so the new one is still there.
     expect(readProjectFile(projectRoot, 'notes.md')).toBe('written after the checkpoint');

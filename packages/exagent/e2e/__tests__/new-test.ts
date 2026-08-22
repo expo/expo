@@ -10,7 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { executeExagentAsync, getTemporaryPath } from '../utils';
+import { executeExagentAsync, getTemporaryPath, installStubBinAsync } from '../utils';
 
 /** The shape `new --json` prints, per `src/new/newAsync.ts`. */
 type NewProjectReport = {
@@ -86,16 +86,19 @@ process.stdout.write('Your project is ready!\\n');
 /**
  * A fresh working directory with the stub `create-expo` on the `PATH` of every `exagent` run.
  *
- * `.stub-bin` is the directory `stubExpoEnv()` prepends to `PATH`, so the stub is found by the
- * same mechanism the `expo` stub uses.
+ * `.stub-bin` is the directory `stubExpoEnv()` prepends to `PATH`, and the stub is installed with
+ * the same shim pair npm writes (see {@link installStubBinAsync}), so the bin the resolver looks
+ * for exists on every platform.
  */
 async function setupWorkDirAsync(): Promise<string> {
   const workDir = getTemporaryPath();
   const binDir = path.join(workDir, '.stub-bin');
   await fs.promises.mkdir(binDir, { recursive: true });
-  const binPath = path.join(binDir, 'create-expo');
-  await fs.promises.writeFile(binPath, STUB_CREATE_EXPO);
-  await fs.promises.chmod(binPath, 0o755);
+  // The stub is a Node script the shims run, not a bin itself: Windows can execute neither a
+  // shebang script nor an extensionless file.
+  const stubScript = path.join(binDir, 'create-expo-stub.js');
+  await fs.promises.writeFile(stubScript, STUB_CREATE_EXPO);
+  await installStubBinAsync(binDir, 'create-expo', stubScript);
   // The real path, because that is what a subprocess reports as its working directory: on macOS
   // the temporary directory is reached through a symlink.
   return fs.promises.realpath(workDir);
