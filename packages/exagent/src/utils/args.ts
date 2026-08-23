@@ -72,10 +72,31 @@ export function parseArgsOrThrow(schema: arg.Spec, argv: string[]): arg.Result<a
 }
 
 /**
+ * Units a duration flag may be spelled with, as the milliseconds one of them is worth.
+ *
+ * A bare number stays milliseconds, which is what every flag meant before the units existed and
+ * what a value computed by a caller still is. The suffixes exist for the durations a person types:
+ * `--timeout 2700000` and `--timeout 45m` are the same wait, and only one of them can be read back.
+ */
+const DURATION_UNITS: Record<string, number> = {
+  ms: 1,
+  s: 1_000,
+  m: 60_000,
+  h: 3_600_000,
+};
+
+/** A number with one of {@link DURATION_UNITS} attached, e.g. `90s`. */
+const DURATION_WITH_UNIT = /^(\d+(?:\.\d+)?)(ms|s|m|h)$/;
+
+/**
  * Read a duration flag in milliseconds, or fall back when the caller named none.
  *
  * The value arrives as a string rather than through a numeric `arg` handler, so an unusable one is
  * reported as the user typed it instead of as the `NaN` a handler would have produced.
+ *
+ * A bare number is milliseconds; `90s`, `30m` and `2h` are the same duration spelled the way a
+ * person says it. Nothing else is accepted, so a typo is an error rather than a silently truncated
+ * number — `Number('45min')` is `NaN`, but `parseInt` would have made it 45.
  *
  * Every command that waits takes one of these, so the rule lives here: one spelling of the error,
  * one answer for `0`, and one place to change either.
@@ -96,14 +117,25 @@ export function resolveDuration(
   if (value == null) {
     return fallback;
   }
-  const duration = Number(value);
+  const duration = parseDuration(value);
   if (!Number.isFinite(duration) || duration < 0 || (!allowZero && duration <= 0)) {
     throw new CommandError(
       'BAD_ARGS',
-      `${flag} must be a duration in milliseconds${allowZero ? ' of 0 or more' : ' greater than 0'}, but got ${value}.`
+      `${flag} must be a duration${allowZero ? ' of 0 or more' : ' greater than 0'} — milliseconds, or a number with a unit like 90s, 30m or 2h — but got ${value}.`
     );
   }
   return duration;
+}
+
+/** The milliseconds a duration value is worth, or `NaN` when it is not one. */
+function parseDuration(value: unknown): number {
+  if (typeof value === 'string') {
+    const match = DURATION_WITH_UNIT.exec(value.trim());
+    if (match) {
+      return Number(match[1]) * DURATION_UNITS[match[2]!]!;
+    }
+  }
+  return Number(value);
 }
 
 export function printHelp(info: string, usage: string, options: string, extra: string = ''): never {

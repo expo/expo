@@ -41,6 +41,15 @@ export interface CommandGroup {
    * A group without one prints its help instead, because there is nothing obvious to do.
    */
   defaultAction?: string;
+  /**
+   * The command another CLI owns the bare group name for, e.g. `npx eas build` for `build`.
+   *
+   * Set it when the group name is also a verb someone will type on its own. `exagent build
+   * --platform ios` is not a typo — it is a real command of a real CLI, aimed at the wrong one —
+   * and the answer that helps is that command, with the caller's own flags on it, rather than a
+   * listing of two actions that do something else (llp/0010 §Registry rules).
+   */
+  bareNameCommand?: string;
   actions: { [action: string]: CommandAction };
 }
 
@@ -75,6 +84,18 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       setup: {
         summary: 'Link the agent skills and maintain the managed block of AGENTS.md',
         load: () => import('./agents').then((i) => i.exagentAgentsSetup),
+      },
+    },
+  },
+  build: {
+    summary: 'Work with the EAS builds this project already has',
+    // No `defaultAction`: `exagent build --platform ios` means `eas build`, and running an
+    // action of this group for it would be a command nobody asked for. See `bareNameCommand`.
+    bareNameCommand: 'npx eas build',
+    actions: {
+      wait: {
+        summary: 'Wait for a build to finish, and exit with what it did',
+        load: () => import('./builds').then((i) => i.exagentBuildWait),
       },
     },
   },
@@ -314,7 +335,11 @@ export interface HelpSection {
 export const helpSections: HelpSection[] = [
   { title: 'Develop', commands: ['dev', 'start', 'install', 'status'] },
   { title: 'Create', commands: ['new'] },
-  { title: 'Deployment', commands: ['deploy'] },
+  {
+    title: 'Deployment',
+    commands: ['deploy', ...actionNames('build')],
+    note: 'Builds are started with npx eas build; build:wait attaches to one that exists.',
+  },
   { title: 'Debug a running app', commands: [...actionNames('runtime'), 'navigate'] },
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
   { title: 'Checkpoints', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },
@@ -423,14 +448,30 @@ export function unknownActionMessage(group: string, action: string): string {
  *
  * What, why, how, in that order: the flags are quoted back so the reader sees their own command,
  * the reason names the missing half, and the way out is the list of actions those flags could
- * have belonged to.
+ * have belonged to — or, for a group whose name is another CLI's verb, that CLI's command with
+ * these very flags on it, because that is what the caller was reaching for.
  */
 export function flagsWithoutActionMessage(group: string, flags: string[]): string {
+  const bare = commandGroups[group]?.bareNameCommand;
   return (
     `"exagent ${group} ${flags.join(' ')}" names no action, so nothing ran. ` +
     `The ${group} group has no default action: its options belong to one of its actions, not to the group itself, so there is nothing here for ${flags[0]} to apply to. ` +
+    (bare
+      ? `"exagent ${group}" is not the command that starts one — that is "${bare}", which takes these options. `
+      : '') +
     `Run one of ${actionNames(group).join(', ')} with those options, or "npx exagent ${group} --help" for what each of them does.`
   );
+}
+
+/**
+ * The command to put on the `Try:` line of a {@link flagsWithoutActionMessage}.
+ *
+ * The other CLI's command with the caller's own flags when the group has one, so the recovery is a
+ * paste rather than a re-read; the group's help otherwise.
+ */
+export function flagsWithoutActionSuggestion(group: string, flags: string[]): string {
+  const bare = commandGroups[group]?.bareNameCommand;
+  return bare ? [bare, ...flags].join(' ') : `npx exagent ${group} --help`;
 }
 
 /** The error for a name in none of the three maps. */

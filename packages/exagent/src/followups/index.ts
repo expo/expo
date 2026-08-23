@@ -3,6 +3,7 @@
 // never has to guess the next command. The builders are pure functions over state the command
 // already probed; `report.ts` is the only module that writes anything.
 
+export { buildBuildWaitFollowUps, type BuildWaitFollowUpInput } from './builds';
 export { buildUndoFollowUps, type UndoFollowUpInput } from './checkpoint';
 export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
 export { buildNavigateFollowUps, type NavigateFollowUpInput } from './navigate';

@@ -2,6 +2,7 @@ import {
   commandAliases,
   commandGroups,
   flagsWithoutActionMessage,
+  flagsWithoutActionSuggestion,
   forwardedCommands,
   formatGroupHelp,
   formatTopLevelHelp,
@@ -353,6 +354,47 @@ describe(formatGroupHelp, () => {
   });
 });
 
+// `exagent build --platform ios` is the worst thing a `build` group could do: `build` is a real
+// verb of a real CLI, and printing a listing and exiting 0 would tell a driving agent it had
+// started a build (llp/0010 §Registry rules).
+describe('a group whose name is another CLI’s verb', () => {
+  it('fails on the bare name with options, instead of listing its actions', () => {
+    expect(resolveCommand('build', ['--platform', 'ios'])).toEqual({
+      kind: 'flags-without-action',
+      group: 'build',
+      flags: ['--platform', 'ios'],
+    });
+  });
+
+  it('still answers the bare name, and the help flag, with the listing', () => {
+    expect(resolveCommand('build', [])).toEqual({ kind: 'group-help', group: 'build' });
+    expect(resolveCommand('build', ['--help'])).toEqual({ kind: 'group-help', group: 'build' });
+  });
+
+  it('resolves its actions in both spellings', () => {
+    expect(resolveCommand('build:wait', ['abc', '--json'])).toMatchObject({
+      kind: 'command',
+      name: 'build:wait',
+      argv: ['abc', '--json'],
+    });
+    expect(resolveCommand('build', ['wait', 'abc'])).toMatchObject({
+      kind: 'command',
+      name: 'build:wait',
+      argv: ['abc'],
+    });
+  });
+
+  it('names the command the caller was reaching for, with their own flags', () => {
+    const message = flagsWithoutActionMessage('build', ['--platform', 'ios']);
+
+    expect(message).toContain('"exagent build --platform ios"');
+    expect(message).toContain('"npx eas build"');
+    expect(flagsWithoutActionSuggestion('build', ['--platform', 'ios'])).toBe(
+      'npx eas build --platform ios'
+    );
+  });
+});
+
 describe(flagsWithoutActionMessage, () => {
   it('quotes the command back, and names the actions the options could belong to', () => {
     const message = flagsWithoutActionMessage('runtime', ['--json']);
@@ -362,6 +404,12 @@ describe(flagsWithoutActionMessage, () => {
     expect(message).toContain('runtime:eval');
     expect(message).toContain('runtime:network');
     expect(message).toContain('npx exagent runtime --help');
+  });
+
+  // Only a group that named another CLI's command has one to point at.
+  it('sends a group without another CLI behind it to its own help', () => {
+    expect(flagsWithoutActionSuggestion('runtime', ['--json'])).toBe('npx exagent runtime --help');
+    expect(flagsWithoutActionMessage('runtime', ['--json'])).not.toContain('npx eas');
   });
 });
 
