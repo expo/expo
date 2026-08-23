@@ -15,15 +15,15 @@ The conventions every `exagent` command shares, written down once so a feature d
 
 Decision [confirmed — Kudo, 2026-08-23]. A driving agent reads the exit code before it reads a word of the output, so the code answers two questions that a single non-zero number cannot: **did the tool work**, and **did the thing the tool was asked about work**. A command that ran a smoke test and reported the app crashing has done its job perfectly; a command that could not find the project has not. `1` for both makes the agent scrape stdout to tell them apart, which is the failure mode this convention exists to remove.
 
-| Code    | Meaning                                                    | The agent's next move                            |
-| ------- | ---------------------------------------------------------- | ------------------------------------------------ |
-| `0`     | The tool worked, the outcome was success                   | Continue                                         |
-| `1`     | The tool did not work: usage error, missing dependency, bug | Read the error and the `Try:` line; fix the call |
-| `7`     | The tool worked; a person must finish the step              | Hand the printed URL or instruction to the human |
-| `20`    | The tool worked; the operation failed                       | Read the payload; act on the *subject's* failure |
-| `21`    | The tool worked; the operation was canceled                 | Nothing is known; re-run if it was not deliberate|
-| `22`    | The tool worked; the operation timed out (inconclusive)     | Wait longer, or look again                       |
-| `23–29` | Reserved for further outcome classes                        | —                                                |
+| Code    | Meaning                                                     | The agent's next move                             |
+| ------- | ----------------------------------------------------------- | ------------------------------------------------- |
+| `0`     | The tool worked, the outcome was success                    | Continue                                          |
+| `1`     | The tool did not work: usage error, missing dependency, bug | Read the error and the `Try:` line; fix the call  |
+| `7`     | The tool worked; a person must finish the step              | Hand the printed URL or instruction to the human  |
+| `20`    | The tool worked; the operation failed                       | Read the payload; act on the _subject's_ failure  |
+| `21`    | The tool worked; the operation was canceled                 | Nothing is known; re-run if it was not deliberate |
+| `22`    | The tool worked; the operation timed out (inconclusive)     | Wait longer, or look again                        |
+| `23–29` | Reserved for further outcome classes                        | —                                                 |
 
 Rationale for the shape [inferred]:
 
@@ -34,7 +34,7 @@ Rationale for the shape [inferred]:
 
 Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are the only place a code is spelled, and there are two supported ways to leave the process with one. A **tool** error throws a `CommandError`, optionally carrying an `exitCode`; `logCmdError` prints it, puts it on the `cli:error` event with its `suggestedCommand`, then exits with `error.exitCode ?? EXIT_ERROR`. An **outcome** is not an error and has nothing to print that the command has not printed already, so it calls `exitWithCodeAsync(code)`. Both flush the event logger first: `process.exit` drops whatever the JSONL stream has buffered, which would lose the very events that explain the code the agent just read.
 
-Two consequences worth stating. First, no existing command's exit code changes by adopting this: the convention binds the codes commands choose from here on, and re-coding a shipped command is a separate, breaking decision. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's *own* failures use the table; a subprocess's do not.
+Two consequences worth stating. First, no existing command's exit code changes by adopting this: the convention binds the codes commands choose from here on, and re-coding a shipped command is a separate, breaking decision. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's _own_ failures use the table; a subprocess's do not.
 
 ## Registry rules
 

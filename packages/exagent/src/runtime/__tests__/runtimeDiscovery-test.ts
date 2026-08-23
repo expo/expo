@@ -59,15 +59,13 @@ const networkOptions: RuntimeNetworkOptions = {
 
 /** Make discovery answer with one URL, as if the project's lock had named it. */
 function mockDiscovered(devServerUrl: string) {
-  jest
-    .mocked(discoverDevServerAsync)
-    .mockResolvedValue({
-      reachable: true,
-      targets: [],
-      devServerUrl,
-      source: 'lock',
-      discovered: true,
-    });
+  jest.mocked(discoverDevServerAsync).mockResolvedValue({
+    reachable: true,
+    targets: [],
+    devServerUrl,
+    source: 'lock',
+    discovered: true,
+  });
 }
 
 beforeEach(() => {

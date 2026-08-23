@@ -2,6 +2,7 @@ import { events } from '2g';
 import type { SerializedError } from '2g';
 
 import type { FollowUp } from './followups/types';
+import type { DevServerSource } from './runtime/devServer';
 
 declare module '2g' {
   interface EventRegistry {
@@ -20,6 +21,25 @@ declare module '2g' {
      * action — errors are prompts (llp/0006 §Errors are prompts).
      */
     'cli:error': { code: string; message: string; suggestedCommand: string | null };
+    /**
+     * One `exagent dev:wait` run: whether the bundler finished, whose bundle it is, and how long
+     * the wait took. The command's exit code is the same answer, and this is where the detail is.
+     *
+     * @see llp/0005-runtime-loop-tools.rfc.md
+     */
+    'cli:dev_wait': {
+      devServerUrl: string;
+      /** Which step of discovery produced `devServerUrl`, e.g. `lock` or `scan`. */
+      source: DevServerSource;
+      /** The dev server answered `packager-status:running`. */
+      ready: boolean;
+      /** Whether the dev server serves this project; null when it could not be decided. */
+      projectRootMatched: boolean | null;
+      /** Debugger targets attached when the wait ended, i.e. apps running the bundle. */
+      appsConnected: number;
+      waitedMs: number;
+      timedOut: boolean;
+    };
     'cli:runtime_eval': { devServerUrl: string; threw: boolean; type: string };
     'cli:runtime_errors': { devServerUrl: string; durationMs: number; count: number };
     'cli:runtime_network': {
