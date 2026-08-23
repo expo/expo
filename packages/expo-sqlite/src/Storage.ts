@@ -387,13 +387,18 @@ export class SQLiteStorage {
     return db.withTransactionAsync(async () => {
       const result = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
       const currentDbVersion = result?.user_version ?? 0;
-      // `MIGRATION_STATEMENT_0` uses `CREATE TABLE IF NOT EXISTS`, so it is a no-op when the
-      // table is already there. Running it unconditionally rather than only when the version is
-      // still 0 also repairs a database left at `user_version = 1` without a `storage` table.
+
+      // Baseline schema, deliberately outside the version ladder below. It is a
+      // `CREATE TABLE IF NOT EXISTS`, so it is a no-op on a healthy database and it also repairs
+      // one that a raced first-run migration left at `user_version >= 1` with no `storage` table.
+      // A new column has to be added here as well, so fresh and repaired databases also get it.
       await db.execAsync(MIGRATION_STATEMENT_0);
-      if (currentDbVersion < DATABASE_VERSION) {
-        await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
+
+      // Version ladder: add each new migration below, gated on `currentDbVersion`.
+      if (currentDbVersion >= DATABASE_VERSION) {
+        return;
       }
+      await db.execAsync(`PRAGMA user_version = ${DATABASE_VERSION}`);
     });
   }
 
@@ -401,11 +406,14 @@ export class SQLiteStorage {
     db.withTransactionSync(() => {
       const result = db.getFirstSync<{ user_version: number }>('PRAGMA user_version');
       const currentDbVersion = result?.user_version ?? 0;
-      // See the comment in `maybeMigrateDbAsync()`.
+
+      // Keep in sync with `maybeMigrateDbAsync()`, which documents the two steps below.
       db.execSync(MIGRATION_STATEMENT_0);
-      if (currentDbVersion < DATABASE_VERSION) {
-        db.execSync(`PRAGMA user_version = ${DATABASE_VERSION}`);
+
+      if (currentDbVersion >= DATABASE_VERSION) {
+        return;
       }
+      db.execSync(`PRAGMA user_version = ${DATABASE_VERSION}`);
     });
   }
 

@@ -329,6 +329,8 @@ describe('react-native-async-storage API compatibility', () => {
 
 describe('SQLiteStorage migration', () => {
   const databaseName = 'TestStorageMigration';
+  // Any version above the `DATABASE_VERSION` the source is currently at.
+  const FUTURE_DATABASE_VERSION = 99;
 
   async function removeDatabaseFile() {
     await fs.unlink(createDatabasePath(databaseName)).catch(() => {});
@@ -403,6 +405,24 @@ describe('SQLiteStorage migration', () => {
     }
     expect(tableExists()).toBe(true);
     expect(readUserVersion()).toBe(1);
+  });
+
+  it('should leave a database from a newer version untouched', () => {
+    const db = openDatabaseSync(databaseName);
+    db.execSync('CREATE TABLE IF NOT EXISTS storage (key TEXT PRIMARY KEY NOT NULL, value TEXT);');
+    db.execSync("INSERT INTO storage (key, value) VALUES ('key1', 'value1');");
+    db.execSync(`PRAGMA user_version = ${FUTURE_DATABASE_VERSION}`);
+    db.closeSync();
+
+    const storage = new SQLiteStorage(databaseName);
+    try {
+      expect(storage.getItemSync('key1')).toBe('value1');
+    } finally {
+      storage.closeSync();
+    }
+    // The migration must never downgrade `user_version`, otherwise the next launch would replay
+    // migrations that have already run.
+    expect(readUserVersion()).toBe(FUTURE_DATABASE_VERSION);
   });
 
   it('should keep existing data when reopening an already migrated database', () => {
