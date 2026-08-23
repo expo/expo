@@ -19,8 +19,6 @@ begin
   if ENV['EX_UPDATES_NATIVE_DEBUG'] != '1'
     project_root = ENV['PROJECT_ROOT'] || Pod::Config.instance.installation_root.to_s
     dev_client_package = podfile_properties['expo.updates.devClientPackage'] || 'expo-dev-client'
-    # `node --print` exits nonzero and prints a MODULE_NOT_FOUND trace when the package is
-    # absent, which is expected here, so discard stderr and test the resolved path instead.
     dev_client_package_json_path = `node --print "require.resolve('#{dev_client_package}/package.json', { paths: ['#{__dir__}', '#{project_root}'] })" 2>/dev/null`.strip
     use_dev_client = !dev_client_package_json_path.empty?
   end
