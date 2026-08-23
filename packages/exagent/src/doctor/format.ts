@@ -12,15 +12,20 @@ const LABEL_WIDTH = 13;
 /** The report: the counts, how well the output was understood, and every failure with its advice. */
 export function formatDoctorReport(report: DoctorReport): string {
   const total = report.passed + report.failed;
+  // A parse that found nothing counted nothing, and a green `0` there would read as "no check
+  // failed" when the truth is "no check was read". Both count lines say so.
+  const unread = report.parse === 'failed';
   const blocks: string[] = [
     [
+      row('Checks', unread ? chalk.yellow('not reported') : `${report.passed}/${total} passed`),
       row(
-        'Checks',
-        report.parse === 'failed'
+        'Failed',
+        unread
           ? chalk.yellow('not reported')
-          : `${report.passed}/${total} passed`
+          : report.failed
+            ? chalk.red(String(report.failed))
+            : chalk.green('0')
       ),
-      row('Failed', report.failed ? chalk.red(String(report.failed)) : chalk.green('0')),
       row('Parse', parseLine(report)),
     ].join('\n'),
   ];

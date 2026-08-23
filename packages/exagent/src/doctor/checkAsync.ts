@@ -65,26 +65,38 @@ export async function runDoctorCheckAsync(projectRoot: string): Promise<DoctorRe
   });
 
   if (result.spawnError) {
-    const error = new CommandError(
-      'EXPO_DOCTOR_NOT_FOUND',
-      [
-        `Could not run expo-doctor (${cli.command}), so this project was never checked.`,
-        `Why: spawning it failed (${result.spawnError.code ?? result.spawnError.message}). expo-doctor is not installed in this project and the npx fallback could not run either, which for npx means npm is not on PATH.`,
-        `How: run "npx expo-doctor" once to fetch it, or add it to the project with "npm install --save-dev expo-doctor", then run this command again.`,
-      ].join('\n')
+    throw notFoundError(
+      cli,
+      `spawning it failed (${result.spawnError.code ?? result.spawnError.message})`
     );
-    error.suggestedCommand = 'npx expo-doctor';
-    throw error;
   }
 
   // Both streams: the check detail is on stdout and the closing "N checks failed" line is on
   // stderr [observed — `Log.exit` uses `console.error` for a non-zero code].
   const raw = stripVTControlCharacters(`${result.stdout}${result.stderr}`);
+  const parsed = parseDoctorOutput(raw);
 
-  return {
-    projectRoot,
-    exitCode: result.exitCode,
-    raw,
-    ...parseDoctorOutput(raw),
-  };
+  // 127 is the shell's "command not found", so the npx fallback resolved to nothing and expo-doctor
+  // never ran. Mirroring it would hand the caller a code that looks like a verdict on the project;
+  // it is a verdict on this machine, so it is a tool error with the install step attached. The
+  // parse has to have found nothing too, in case a future expo-doctor ever exits 127 of its own.
+  if (result.exitCode === 127 && parsed.parse === 'failed') {
+    throw notFoundError(cli, `running it exited 127, which is "command not found"`);
+  }
+
+  return { projectRoot, exitCode: result.exitCode, raw, ...parsed };
+}
+
+/** The error for a machine where expo-doctor could not be run at all. */
+function notFoundError(cli: ExpoDoctorCli, why: string): CommandError {
+  const error = new CommandError(
+    'EXPO_DOCTOR_NOT_FOUND',
+    [
+      `Could not run expo-doctor (${cli.command}), so this project was never checked.`,
+      `Why: ${why}. expo-doctor is not installed in this project, and the npx fallback could not fetch or start it either.`,
+      `How: add it to the project with "npm install --save-dev expo-doctor", or run "npx expo-doctor" once on a machine with network access to fetch it, then run this command again.`,
+    ].join('\n')
+  );
+  error.suggestedCommand = 'npm install --save-dev expo-doctor';
+  return error;
 }

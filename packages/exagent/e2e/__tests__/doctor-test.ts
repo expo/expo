@@ -48,6 +48,12 @@ fs.appendFileSync(
 
 const mode = process.env.STUB_DOCTOR_MODE || 'failing';
 
+if (mode === 'not-found') {
+  // What \`npx expo-doctor\` leaves behind on a machine that can neither find nor fetch it.
+  process.stderr.write('sh: expo-doctor: command not found\\n');
+  process.exit(127);
+}
+
 if (mode === 'garbage') {
   process.stderr.write('TypeError: Cannot read properties of undefined (reading \\'exp\\')\\n');
   process.exit(1);
@@ -241,6 +247,22 @@ describe('exagent doctor:check', () => {
     const payload: DoctorPayload = JSON.parse(result.stdout);
     expect(payload).toMatchObject({ passed: 0, failed: 0, checks: [], parse: 'failed' });
     expect(payload.raw).toContain('TypeError: Cannot read properties of undefined');
+  });
+
+  // 127 is the shell's "command not found", so expo-doctor never ran. Mirroring it would hand the
+  // caller a code that looks like a verdict on the project, and it is a verdict on the machine.
+  it('reports a machine where expo-doctor could not run at all, and exits 1', async () => {
+    const projectRoot = await setupAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['doctor:check'], {
+      env: { STUB_DOCTOR_MODE: 'not-found' },
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.all).toContain('Could not run expo-doctor');
+    expect(result.all).toContain('command not found');
+    expect(result.all).toContain('Try: npm install --save-dev expo-doctor');
   });
 
   it('runs doctor:check for the bare group name', async () => {

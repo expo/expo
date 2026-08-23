@@ -35,6 +35,19 @@ const FAILED_BLOCK = /^✖\s+(.+)$/;
 const ADVICE_HEADER = /^Advice:\s*$/;
 
 /**
+ * Lines that end the last check's block rather than belonging to it.
+ *
+ * `expo-doctor` closes with one of these after the detail blocks, on stderr [observed —
+ * `Log.exit`/`Log.warn` at the end of `packages/expo-doctor/src/doctor.ts`]. Without them the
+ * closing line is read as the last check's advice, which is how a real run ended up suggesting
+ * "5 checks failed, indicating possible issues with the project" as a thing to do about a check.
+ */
+const BLOCK_TERMINATORS = [
+  /^\d+ checks? failed, indicating possible issues with the project\./,
+  /^One or more checks failed due to network errors,/,
+];
+
+/**
  * Read one `expo-doctor` run out of its output.
  *
  * @param raw stdout and stderr of the run, with ANSI escape codes already removed.
@@ -134,6 +147,10 @@ function readFailureBlocks(lines: string[]): DoctorCheck[] {
       };
       inAdvice = false;
       blocks.push(current);
+      continue;
+    }
+    if (BLOCK_TERMINATORS.some((terminator) => terminator.test(line))) {
+      current = null;
       continue;
     }
     if (!current) {

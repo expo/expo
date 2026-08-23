@@ -72,11 +72,18 @@ describe(parseDoctorOutput, () => {
       );
     });
 
-    // The line that goes to stderr, after the detail blocks, is not a check.
-    it('does not read the closing stderr line as a check', () => {
-      expect(parsed.checks.map((check) => check.name)).not.toContain(
-        '5 checks failed, indicating possible issues with the project.'
-      );
+    // The line that goes to stderr, after the detail blocks, is not a check — and it is not the
+    // last check's advice either. A real run suggested "5 checks failed, indicating possible
+    // issues with the project" as a thing to do about a check before this was pinned.
+    it('does not read the closing stderr line as part of the report', () => {
+      const closing = '5 checks failed, indicating possible issues with the project.';
+      expect(parsed.checks.map((check) => check.name)).not.toContain(closing);
+
+      const last = parsed.checks.find((entry) => entry.name.includes('match versions required'))!;
+      expect(last.advice).toEqual([
+        "Use 'npx expo install --check' to review and upgrade your dependencies.",
+        'To ignore specific packages, add them to "expo.install.exclude" in package.json. Learn more: https://expo.fyi/dependency-validation',
+      ]);
     });
   });
 
@@ -282,8 +289,11 @@ describe(formatDoctorReport, () => {
   it('hands the raw output over when the parse found nothing', () => {
     const printed = formatDoctorReport(report('expo-doctor exploded\n', 1));
 
-    expect(printed).toContain('not reported');
     expect(printed).toContain('expo-doctor said:');
     expect(printed).toContain('expo-doctor exploded');
+    // Both count lines, because a green `0` failed would read as "no check failed" when the truth
+    // is "no check was read".
+    expect(printed).toContain('Checks       not reported');
+    expect(printed).toContain('Failed       not reported');
   });
 });
