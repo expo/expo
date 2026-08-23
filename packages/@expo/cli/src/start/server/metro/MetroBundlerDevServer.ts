@@ -1809,48 +1809,72 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return route;
   }
 
+  // Evaluated API route modules, keyed by file path. Unlike `pendingRouteOperations` (which
+  // only caches the bundled source), this keeps the module's live exports around between
+  // requests so module-scope state behaves like it does in production (`@expo/server`
+  // evaluates a route module once and reuses it), instead of resetting on every request.
+  // https://github.com/expo/expo/issues/33857
+  private evaluatedApiRoutes = new Map<
+    string,
+    Promise<null | Record<string, Function> | Response>
+  >();
+
   private async ssrImportApiRoute(
     filePath: string,
     { platform }: { platform: string }
   ): Promise<null | Record<string, Function> | Response> {
-    // TODO: Cache the evaluated function.
-    try {
-      const apiRoute = await this.bundleApiRoute(filePath, { platform });
+    if (this.evaluatedApiRoutes.has(filePath)) {
+      return this.evaluatedApiRoutes.get(filePath)!;
+    }
 
-      if (!apiRoute?.src) {
-        return null;
-      }
-      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename, apiRoute.map);
-    } catch (error) {
-      // Format any errors that were thrown in the global scope of the evaluation.
-      if (error instanceof Error) {
-        try {
-          const htmlServerError = await getErrorOverlayHtmlAsync({
-            error,
-            projectRoot: this.projectRoot,
-            routerRoot: this.instanceMetroOptions.routerRoot!,
-          });
+    const evalAsync = async (): Promise<null | Record<string, Function> | Response> => {
+      try {
+        const apiRoute = await this.bundleApiRoute(filePath, { platform });
 
-          return new Response(htmlServerError, {
-            status: 500,
-            headers: {
-              'Content-Type': 'text/html',
-            },
-          });
-        } catch (internalError) {
-          debugEvent('api_route_overlay_failed', {
-            error: debugEvent.error(internalError as Error),
-          });
+        if (!apiRoute?.src) {
+          return null;
+        }
+        return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename, apiRoute.map);
+      } catch (error) {
+        // Format any errors that were thrown in the global scope of the evaluation.
+        if (error instanceof Error) {
+          try {
+            const htmlServerError = await getErrorOverlayHtmlAsync({
+              error,
+              projectRoot: this.projectRoot,
+              routerRoot: this.instanceMetroOptions.routerRoot!,
+            });
+
+            return new Response(htmlServerError, {
+              status: 500,
+              headers: {
+                'Content-Type': 'text/html',
+              },
+            });
+          } catch (internalError) {
+            debugEvent('api_route_overlay_failed', {
+              error: debugEvent.error(internalError as Error),
+            });
+            throw error;
+          }
+        } else {
           throw error;
         }
-      } else {
-        throw error;
       }
+    };
+
+    const evaluated = evalAsync();
+    // Re-check the cache after the (async) bundle step so concurrent first requests for the
+    // same route share a single evaluated module instance instead of racing to overwrite it.
+    if (!this.evaluatedApiRoutes.has(filePath)) {
+      this.evaluatedApiRoutes.set(filePath, evaluated);
     }
+    return this.evaluatedApiRoutes.get(filePath)!;
   }
 
   private invalidateApiRouteCache() {
     this.pendingRouteOperations.clear();
+    this.evaluatedApiRoutes.clear();
   }
 
   /**
