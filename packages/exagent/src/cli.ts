@@ -10,6 +10,7 @@ import {
   unknownActionMessage,
   unknownCommandMessage,
 } from './commandRegistry';
+import { EXIT_OK } from './exitCodes';
 import * as Log from './log';
 
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG`, the same way
@@ -77,11 +78,11 @@ installEventLogger({
 
 if (args['--version']) {
   console.log(version);
-  process.exit(0);
+  process.exit(EXIT_OK);
 }
 
 if (resolution == null) {
-  Log.exit(formatTopLevelHelp(), 0);
+  Log.exit(formatTopLevelHelp(), EXIT_OK);
 }
 
 // No signal hooks are installed here. `install`, `start` and the `expo` passthrough hand the
@@ -92,7 +93,7 @@ switch (resolution.kind) {
     break;
 
   case 'group-help':
-    Log.exit(formatGroupHelp(resolution.group), 0);
+    Log.exit(formatGroupHelp(resolution.group), EXIT_OK);
     break;
 
   // The listing comes first and the error last: the last line is what a driving agent acts on

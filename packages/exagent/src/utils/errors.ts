@@ -1,9 +1,9 @@
-import { flushEventLogger } from '2g';
 import { AssertionError } from 'assert';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 
 import { event as cliEvent } from '../events';
+import { EXIT_ERROR, exitWithCodeAsync } from '../exitCodes';
 import { exit, exception, warn } from '../log';
 
 const ERROR_PREFIX = 'Error: ';
@@ -22,6 +22,14 @@ export class CommandError extends Error {
    * `Try: <command>` line and carried on the `cli:error` JSONL event.
    */
   suggestedCommand?: string;
+
+  /**
+   * The code to leave the process with, when it is not {@link EXIT_ERROR} (llp/0010).
+   *
+   * Set it from `exitCodes.ts` — never as a literal — for the errors the convention gives a band
+   * of their own, e.g. a step only a person can finish (`EXIT_NEEDS_HUMAN`).
+   */
+  exitCode?: number;
 
   constructor(
     public code: string,
@@ -67,7 +75,7 @@ export function logCmdError(error: any): never {
   }
   if (error instanceof AbortCommandError || error instanceof SilentError) {
     // Do nothing, this is used for prompts or other cases that were custom logged.
-    process.exit(1);
+    process.exit(EXIT_ERROR);
   } else if (
     error instanceof CommandError ||
     error instanceof AssertionError ||
@@ -90,13 +98,11 @@ export function logCmdError(error: any): never {
       warn(`Try: ${suggestedCommand}`);
     }
     // `process.exit` drops buffered JSONL events (the `cli:error` above never reached
-    // LOG_EVENTS), so flush first. The pending promise below keeps the process alive
-    // until the exit fires, and gives the `.catch(logCmdError)` callers nothing further
-    // to run.
-    flushEventLogger()
-      .catch(() => {})
-      .finally(() => process.exit(1));
-    return new Promise<never>(() => {}) as unknown as never;
+    // LOG_EVENTS), so `exitWithCodeAsync` flushes first. It never settles, which keeps the
+    // process alive until the exit fires and gives the `.catch(logCmdError)` callers nothing
+    // further to run. An error that names no code is a tool error, so it exits 1 (llp/0010).
+    const exitCode = error instanceof CommandError ? (error.exitCode ?? EXIT_ERROR) : EXIT_ERROR;
+    return exitWithCodeAsync(exitCode) as unknown as never;
   }
 
   const errorDetails = error.stack ? '\n' + chalk.gray(error.stack) : '';
@@ -140,7 +146,7 @@ function handleTooManyOpenFileErrors(error: any) {
     }
 
     exception(error);
-    process.exit(1);
+    process.exit(EXIT_ERROR);
   }
 
   throw error;
