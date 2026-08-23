@@ -192,6 +192,8 @@ export type CommandResolution =
   | { kind: 'group-help'; group: string }
   /** A known group with an action it does not have: the listing, plus an error. */
   | { kind: 'unknown-action'; group: string; action: string }
+  /** A group with options but no action, and no default action to give them to: an error. */
+  | { kind: 'flags-without-action'; group: string; flags: string[] }
   /** One of the `expo` commands above, forwarded verbatim. */
   | { kind: 'passthrough'; command: string; argv: string[] }
   /** In none of the three maps, so neither CLI has it. */
@@ -202,6 +204,18 @@ export type CommandResolution =
  *
  * Our own names win, then the forwarded `expo` set, and anything left is an error. Membership in a
  * map decides — never the shape of the name — because `expo export:web` has a colon too.
+ *
+ * Two rules of the resolution order are worth naming, both from llp/0010 §Registry rules:
+ *
+ * 1. **Options without an action are an error, not help.** `exagent <group> --json` used to print
+ *    the group listing and exit 0, which an agent reads as "that worked" — a silent no-op is the
+ *    one answer a driving agent cannot recover from. A group that declares a `defaultAction` is
+ *    unaffected: there the options belong to that action, and it runs with them.
+ * 2. **A group cannot capture the bare form of a forwarded `expo` command.** A group named after
+ *    one — `config`, say — owns its colon forms (`config:doctor`) and nothing else: `exagent
+ *    config` stays `expo config`, because the bare name means what the `expo` command means
+ *    (llp/0006 naming rule). The space form is unavailable for such a group, so
+ *    `exagent config doctor` forwards two arguments to `expo config` rather than resolving here.
  *
  * @param command The first positional argument, e.g. `runtime:eval` or `runtime`.
  * @param argv Everything after it, with the help flag already normalized into it by `cli.ts`.
@@ -222,7 +236,10 @@ export function resolveCommand(command: string, argv: string[]): CommandResoluti
     }
   }
 
-  const group = commandGroups[command];
+  // Rule 2: the bare name of a forwarded `expo` command is that command, whatever this CLI groups
+  // under the same name. Its colon forms were resolved above, where the forwarded set is checked
+  // against the whole name and so never matches `<group>:<action>`.
+  const group = forwardedCommands.includes(command) ? undefined : commandGroups[command];
   if (group) {
     // The action of the space form is the argument right after the group name: `skills list`, the
     // way `skills:list` puts it. A flag there is the bare form with options, not a bad action.
@@ -240,8 +257,15 @@ export function resolveCommand(command: string, argv: string[]): CommandResoluti
       };
     }
     // `exagent <group> --help` is about the group, so it lists the actions instead of running one.
-    if (argv.includes('--help') || argv.includes('-h') || !group.defaultAction) {
+    if (argv.includes('--help') || argv.includes('-h')) {
       return { kind: 'group-help', group: command };
+    }
+    if (!group.defaultAction) {
+      // Rule 1: a bare group is answerable and prints its actions; the same group with options is
+      // an invocation that named no action, and there is nothing to give the options to.
+      return next == null
+        ? { kind: 'group-help', group: command }
+        : { kind: 'flags-without-action', group: command, flags: argv };
     }
     return {
       kind: 'command',
@@ -390,6 +414,21 @@ export function unknownActionMessage(group: string, action: string): string {
     `"${action}" is not an action of "exagent ${group}". ` +
     `The actions of the ${group} group are the ones listed above: ${actionNames(group).join(', ')}. ` +
     `Run one of those, or "npx exagent ${group} --help" for what each of them does.`
+  );
+}
+
+/**
+ * The error for a group given options but no action (llp/0010 §Registry rules).
+ *
+ * What, why, how, in that order: the flags are quoted back so the reader sees their own command,
+ * the reason names the missing half, and the way out is the list of actions those flags could
+ * have belonged to.
+ */
+export function flagsWithoutActionMessage(group: string, flags: string[]): string {
+  return (
+    `"exagent ${group} ${flags.join(' ')}" names no action, so nothing ran. ` +
+    `The ${group} group has no default action: its options belong to one of its actions, not to the group itself, so there is nothing here for ${flags[0]} to apply to. ` +
+    `Run one of ${actionNames(group).join(', ')} with those options, or "npx exagent ${group} --help" for what each of them does.`
   );
 }
 

@@ -1,6 +1,7 @@
 import {
   commandAliases,
   commandGroups,
+  flagsWithoutActionMessage,
   forwardedCommands,
   formatGroupHelp,
   formatTopLevelHelp,
@@ -10,6 +11,22 @@ import {
   withAction,
 } from '../commandRegistry';
 import type { Command } from '../types';
+
+/**
+ * Register a group for the length of one test, and take it out again.
+ *
+ * The registry is data, so a rule about a group that does not exist yet is proved with one that
+ * exists for three lines — the alternative is waiting for the first real `config`-shaped group and
+ * discovering the rule was never wired.
+ */
+function withGroup(name: string, group: (typeof commandGroups)[string], test: () => void): void {
+  commandGroups[name] = group;
+  try {
+    test();
+  } finally {
+    delete commandGroups[name];
+  }
+}
 
 describe(resolveCommand, () => {
   it('resolves a top-level command, keeping the rest of the arguments', () => {
@@ -75,6 +92,44 @@ describe(resolveCommand, () => {
     });
   });
 
+  // A silent group listing that exits 0 tells a driving agent its command worked, and it then
+  // waits for output that is never coming (llp/0010 §Registry rules).
+  it('fails on options with no action, for a group with no default action', () => {
+    expect(resolveCommand('runtime', ['--json'])).toEqual({
+      kind: 'flags-without-action',
+      group: 'runtime',
+      flags: ['--json'],
+    });
+    expect(resolveCommand('agents', ['--agent', 'claude-code'])).toEqual({
+      kind: 'flags-without-action',
+      group: 'agents',
+      flags: ['--agent', 'claude-code'],
+    });
+  });
+
+  // The options of such a group belong to its default action, so they run rather than fail.
+  it('gives the options of a group with a default action to that action', () => {
+    expect(resolveCommand('skills', ['--json'])).toMatchObject({
+      kind: 'command',
+      name: 'skills:sync',
+      argv: ['--json'],
+    });
+    expect(resolveCommand('checkpoint', ['--json', '--label', 'x'])).toMatchObject({
+      kind: 'command',
+      name: 'checkpoint:create',
+      argv: ['--json', '--label', 'x'],
+    });
+  });
+
+  it('still lists the actions for a bare group, and for one asked for help', () => {
+    expect(resolveCommand('runtime', [])).toEqual({ kind: 'group-help', group: 'runtime' });
+    expect(resolveCommand('runtime', ['--help'])).toEqual({ kind: 'group-help', group: 'runtime' });
+    expect(resolveCommand('runtime', ['-h', '--json'])).toEqual({
+      kind: 'group-help',
+      group: 'runtime',
+    });
+  });
+
   it('reports an unknown action of a known group, in both forms', () => {
     expect(resolveCommand('skills:nope', [])).toEqual({
       kind: 'unknown-action',
@@ -104,6 +159,64 @@ describe(resolveCommand, () => {
     expect(resolveCommand('export:web', [])).toMatchObject({
       kind: 'passthrough',
       command: 'export:web',
+    });
+  });
+
+  // A group may be named after a forwarded `expo` command: `config` is one of both surfaces. The
+  // bare name means what the `expo` command means, and the group owns only its colon forms
+  // (llp/0010 §Registry rules).
+  describe('a group named after a forwarded expo command', () => {
+    const group = {
+      summary: 'Synthetic group for the forwarded-name rule',
+      actions: { doctor: { summary: 'Synthetic action', load: async () => (() => {}) as Command } },
+    };
+
+    it('keeps the bare name forwarded to expo', () => {
+      withGroup('config', group, () => {
+        expect(resolveCommand('config', ['--type', 'public'])).toEqual({
+          kind: 'passthrough',
+          command: 'config',
+          argv: ['--type', 'public'],
+        });
+        expect(resolveCommand('config', [])).toEqual({
+          kind: 'passthrough',
+          command: 'config',
+          argv: [],
+        });
+      });
+    });
+
+    it('owns its colon forms', () => {
+      withGroup('config', group, () => {
+        expect(resolveCommand('config:doctor', ['--json'])).toMatchObject({
+          kind: 'command',
+          name: 'config:doctor',
+          argv: ['--json'],
+        });
+        expect(resolveCommand('config:nope', [])).toEqual({
+          kind: 'unknown-action',
+          group: 'config',
+          action: 'nope',
+        });
+      });
+    });
+
+    // The space form is the bare form with an argument, and the bare form is `expo config`.
+    it('forwards the space form instead of resolving it', () => {
+      withGroup('config', group, () => {
+        expect(resolveCommand('config', ['doctor'])).toEqual({
+          kind: 'passthrough',
+          command: 'config',
+          argv: ['doctor'],
+        });
+      });
+    });
+
+    it('leaves a group named after nothing forwarded alone', () => {
+      expect(resolveCommand('runtime', ['eval', '1'])).toMatchObject({
+        kind: 'command',
+        name: 'runtime:eval',
+      });
     });
   });
 
@@ -237,6 +350,18 @@ describe(formatGroupHelp, () => {
   it('names the command a bare group runs', () => {
     expect(formatGroupHelp('skills')).toContain('npx exagent skills');
     expect(formatGroupHelp('skills')).toContain('skills:sync');
+  });
+});
+
+describe(flagsWithoutActionMessage, () => {
+  it('quotes the command back, and names the actions the options could belong to', () => {
+    const message = flagsWithoutActionMessage('runtime', ['--json']);
+
+    expect(message).toContain('"exagent runtime --json"');
+    expect(message).toContain('no default action');
+    expect(message).toContain('runtime:eval');
+    expect(message).toContain('runtime:network');
+    expect(message).toContain('npx exagent runtime --help');
   });
 });
 

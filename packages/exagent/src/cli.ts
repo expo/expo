@@ -4,6 +4,7 @@ import arg from 'arg';
 import { boolish } from 'getenv';
 
 import {
+  flagsWithoutActionMessage,
   formatGroupHelp,
   formatTopLevelHelp,
   resolveCommand,
@@ -105,6 +106,21 @@ switch (resolution.kind) {
     const error = new CommandError(
       'UNKNOWN_ACTION',
       unknownActionMessage(resolution.group, resolution.action)
+    );
+    error.suggestedCommand = `npx exagent ${resolution.group} --help`;
+    logCmdError(error);
+    break;
+  }
+
+  // Options with no action used to print this listing and exit 0, which reads as success to an
+  // agent that then waits for output that never comes (llp/0010 §Registry rules).
+  case 'flags-without-action': {
+    const { CommandError, logCmdError } =
+      require('./utils/errors') as typeof import('./utils/errors');
+    Log.log(formatGroupHelp(resolution.group));
+    const error = new CommandError(
+      'UNKNOWN_ACTION',
+      flagsWithoutActionMessage(resolution.group, resolution.flags)
     );
     error.suggestedCommand = `npx exagent ${resolution.group} --help`;
     logCmdError(error);

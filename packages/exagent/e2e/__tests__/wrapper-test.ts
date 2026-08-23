@@ -353,3 +353,35 @@ describe('expo passthrough', () => {
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
 });
+
+// The resolution rules of llp/0010 §Registry rules, at the process boundary: what the exit code
+// and the last line of output actually are, which is all a driving agent sees.
+describe('command registry', () => {
+  let projectRoot: string;
+
+  beforeEach(async () => {
+    projectRoot = await setupFixtureAsync('skills-app');
+  });
+
+  it('fails on a group given options but no action', async () => {
+    const result = await executeExagentAsync(projectRoot, ['runtime', '--json'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.all).toContain('names no action');
+    // The listing comes first, so the actions those options belong to are on screen.
+    expect(result.all).toContain('runtime:eval');
+    expect(result.all).toContain('Try: npx exagent runtime --help');
+    expect(readStubExpoInvocations(projectRoot)).toEqual([]);
+  });
+
+  // The other half of the rule — a group *with* a default action still gets its options — is
+  // `exagent checkpoint --label ...` in `checkpoint-test.ts`, which needs a git repository.
+  it('still lists the actions of a bare group, and exits 0', async () => {
+    const result = await executeExagentAsync(projectRoot, ['runtime']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.all).toContain('runtime:eval');
+  });
+});
