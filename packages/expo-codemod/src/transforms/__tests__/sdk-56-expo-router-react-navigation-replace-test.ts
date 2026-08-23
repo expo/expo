@@ -585,7 +585,7 @@ describe('mixed files: migratable imports are rewritten even alongside unsupport
     expect(output).toContain(`import { NavigationContainer } from "expo-router/react-navigation"`);
     // ...the unsupported package is reported for manual migration...
     expect(errorSpy).toHaveBeenCalled();
-    expect(errorSpy.mock.calls[0][0]).toContain('@react-navigation/native-stack');
+    expect(errorSpy.mock.calls[0]![0]).toContain('@react-navigation/native-stack');
     // ...and left untouched for the user to migrate by hand.
     expect(output).toContain(
       `import { createNativeStackNavigator } from '@react-navigation/native-stack'`
