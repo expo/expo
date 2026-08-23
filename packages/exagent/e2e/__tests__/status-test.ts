@@ -15,6 +15,7 @@ import {
   installStubFingerprintAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
+  startStubDevServerAsync,
   writeAgentSelectionAsync,
 } from '../utils';
 
@@ -40,7 +41,15 @@ type StatusReport = {
       recordedHash: string | null;
     }[];
   } | null;
-  devServer: { url: string; running: boolean; appsConnected: number; reason?: string } | null;
+  devServer: {
+    url: string;
+    running: boolean;
+    appsConnected: number;
+    source: 'flag' | 'lock' | 'log' | 'default' | 'scan';
+    ready: boolean | null;
+    projectRootMatched: boolean | null;
+    reason?: string;
+  } | null;
   skills: { agentIds: string[] | null; discovered: number; linked: number } | null;
   next: { command: string; rule: string; target: string; steps: { argv: string[] }[] } | null;
   /** The raw project probe, per `src/project/types.ts`. Covered on its own in `probe-test.ts`. */
@@ -389,7 +398,56 @@ describe('exagent status', () => {
         url: devServer.url,
         running: true,
         appsConnected: 1,
+        // The double answers the target list and 404s everything else, so it is reachable and its
+        // bundler is not ready — which is exactly what a port that is not Metro looks like.
+        source: 'flag',
+        ready: false,
+        projectRootMatched: null,
       });
+    });
+
+    // The readiness probe of status is short and never waits for a bundle, so this asserts the
+    // answer a dev server that has already finished gives.
+    it('reports a ready bundler and the project it serves', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const stub = await startStubDevServerAsync({ projectRoot, targets: [CDP_TARGET] });
+
+      try {
+        const result = await executeExagentAsync(projectRoot, [
+          'status',
+          '--json',
+          '--dev-server-url',
+          stub.url,
+        ]);
+
+        expect(JSON.parse(result.stdout).devServer).toEqual({
+          url: stub.url,
+          running: true,
+          appsConnected: 1,
+          source: 'flag',
+          ready: true,
+          projectRootMatched: true,
+        });
+      } finally {
+        await stub.close();
+      }
+    });
+
+    it('names another project as the owner of the dev server that answered', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const stub = await startStubDevServerAsync({ projectRoot: '/somewhere/else', targets: [] });
+
+      try {
+        const result = await executeExagentAsync(projectRoot, [
+          'status',
+          '--dev-server-url',
+          stub.url,
+        ]);
+
+        expect(result.stdout).toContain('serves another project');
+      } finally {
+        await stub.close();
+      }
     });
 
     it('prints the running dev server and its connected app for a human', async () => {
@@ -453,11 +511,15 @@ describe('exagent status', () => {
 
         expect(result.exitCode).toBe(0);
         const report: StatusReport = JSON.parse(result.stdout);
-        // An ephemeral port, so no scan of 8081-8085 could have found it.
+        // An ephemeral port, so no scan of 8081-8085 could have found it — and `source` now says
+        // which step did.
         expect(report.devServer).toEqual({
           url: devServer.url,
           running: true,
           appsConnected: 1,
+          source: 'lock',
+          ready: false,
+          projectRootMatched: null,
         });
       } finally {
         releaseLock();

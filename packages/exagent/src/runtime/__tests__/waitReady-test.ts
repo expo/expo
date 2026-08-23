@@ -163,6 +163,25 @@ describe(waitForBundlerReadyAsync, () => {
     expect(result.reason).toContain('150ms');
   });
 
+  // The headers are flushed before the bundler is awaited, so the request that expires has still
+  // answered "whose dev server is this" — which is what `status` reports without ever waiting.
+  it(`still answers the project root on a wait that expired`, async () => {
+    const url = await startServerAsync(() => ({
+      body: PACKAGER_STATUS_READY,
+      headers: { 'X-React-Native-Project-Root': '/tmp/my-app' },
+      delayMs: 5000,
+    }));
+
+    const result = await waitForBundlerReadyAsync(url, {
+      timeoutMs: 150,
+      projectRoot: '/tmp/my-app',
+    });
+
+    expect(result.timedOut).toBe(true);
+    expect(result.projectRootMatched).toBe(true);
+    expect(result.reportedProjectRoot).toBe('/tmp/my-app');
+  });
+
   it(`stops on an abort from the caller, without calling it a timeout`, async () => {
     const url = await startServerAsync(() => ({ body: PACKAGER_STATUS_READY, delayMs: 5000 }));
     const controller = new AbortController();

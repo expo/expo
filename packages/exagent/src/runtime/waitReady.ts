@@ -80,12 +80,16 @@ export async function waitForBundlerReadyAsync(
   const abortFromCaller = () => controller.abort();
   signal?.addEventListener('abort', abortFromCaller, { once: true });
 
+  // Held outside the try because the headers arrive before the body does: a request that goes on
+  // to expire has already answered "whose dev server is this", and that answer must survive the
+  // abort. It is the whole reason a request that times out is still worth reporting.
+  let reported: string | null = null;
+  let projectRootMatched: boolean | null = null;
+
   try {
     const response = await fetch(url, { signal: controller.signal });
-    // Read the header first: it is flushed before the bundler is awaited, so it is available even
-    // on the request that goes on to time out waiting for the body.
-    const reported = decodeProjectRoot(response.headers.get(PROJECT_ROOT_HEADER));
-    const projectRootMatched = matchProjectRoot(reported, projectRoot);
+    reported = decodeProjectRoot(response.headers.get(PROJECT_ROOT_HEADER));
+    projectRootMatched = matchProjectRoot(reported, projectRoot);
     const body = (await response.text()).trim();
 
     if (!response.ok) {
@@ -119,8 +123,8 @@ export async function waitForBundlerReadyAsync(
   } catch (error: unknown) {
     return {
       ready: false,
-      projectRootMatched: null,
-      reportedProjectRoot: null,
+      projectRootMatched,
+      reportedProjectRoot: reported,
       timedOut,
       waitedMs: Date.now() - startedAt,
       reason: timedOut
