@@ -355,15 +355,14 @@ export async function getAdbNameForDeviceIdAsync(
 }
 
 export async function isDeviceBootedAsync({
+  pid,
   name,
-}: { name?: string } = {}): Promise<Device | null> {
+}: Partial<Pick<Device, 'pid' | 'name'>> = {}): Promise<Device | null> {
   const devices = await getAttachedDevicesAsync();
 
-  if (!name) {
-    return devices[0] ?? null;
-  }
-
-  return devices.find((device) => device.name === name) ?? null;
+  if (pid) return devices.find((device) => device.pid === pid) ?? null;
+  if (name) return devices.find((device) => device.name === name) ?? null;
+  return devices[0] ?? null;
 }
 
 /**

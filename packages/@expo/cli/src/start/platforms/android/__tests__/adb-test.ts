@@ -258,6 +258,29 @@ describe(isDeviceBootedAsync, () => {
     });
   });
 
+  it('revalidates a selected device by serial when device names are duplicated', async () => {
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockResolvedValueOnce(
+        deviceListResult(
+          [
+            'List of devices attached',
+            'serial-1 device product:walleye model:Pixel_2 device:walleye transport_id:1',
+            'serial-2 device product:walleye model:Pixel_2 device:walleye transport_id:2',
+            '',
+          ].join('\n')
+        )
+      );
+
+    await expect(
+      isDeviceBootedAsync(asDevice({ pid: 'serial-2', name: 'Pixel_2' }))
+    ).resolves.toMatchObject({
+      pid: 'serial-2',
+      name: 'Pixel_2',
+      transportId: '2',
+    });
+  });
+
   it(`returns null when the device is not booted`, async () => {
     jest.mocked(getServer().runHostQueryAsync).mockResolvedValueOnce(deviceListResult(''));
     expect(await isDeviceBootedAsync(device)).toBe(null);
