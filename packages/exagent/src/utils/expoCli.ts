@@ -4,7 +4,7 @@ import path from 'path';
 
 import { debugEvent } from '../events';
 import { CommandError } from './errors';
-import { spawnSubprocessAsync, type SubprocessOutput, type SubprocessResult } from './subprocess';
+import { spawnSubprocessAsync, type CapturedOutput, type SubprocessResult } from './subprocess';
 import { resolveSpawnTarget } from './windowsShim';
 
 /** The `expo` CLI invocation to spawn. */
@@ -39,11 +39,8 @@ export function resolveExpoCli(projectRoot: string, args: string[]): ExpoCliComm
 /** Signals the terminal delivers to the whole process group, so the child gets them too. */
 const TERMINAL_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
 
-/** Output modes of a captured run: `inherit` is {@link runExpoAsync}'s, and only its. */
-export type CapturedOutput = Exclude<SubprocessOutput, 'inherit'>;
-
 export interface SpawnExpoOptions {
-  /** Defaults to `capture`. */
+  /** Defaults to `capture`. `inherit` is {@link runExpoAsync}'s mode, and only its. */
   output?: CapturedOutput;
   /** Kill the run when it goes silent on a question. See `SubprocessOptions.promptGuard`. */
   promptGuard?: boolean;

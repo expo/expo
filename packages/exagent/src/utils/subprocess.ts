@@ -27,6 +27,9 @@ export type SubprocessOutput =
    */
   | 'capture-stdout';
 
+/** The output modes that keep what the tool printed, i.e. everything but `inherit`. */
+export type CapturedOutput = Exclude<SubprocessOutput, 'inherit'>;
+
 export interface SubprocessOptions {
   cwd?: string;
   /** Defaults to `capture`. */
