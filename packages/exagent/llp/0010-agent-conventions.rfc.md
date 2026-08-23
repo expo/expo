@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`); `exagent build:wait` (`src/builds/`); `packages/@expo/cli`; `eas-cli`
+**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`); `exagent build:wait` (`src/builds/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-23
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]]
@@ -54,7 +54,50 @@ Three details of the mapping are decisions rather than transcription:
 
 Progress goes to the `LOG_EVENTS` JSONL stream as `cli:build_wait_poll`, never to stdout, so `--json` still prints exactly one object ([[0006-agent-native-cli-surface]] §Output contract).
 
-Two consequences worth stating. First, no existing command's exit code changes by adopting this: the convention binds the codes commands choose from here on, and re-coding a shipped command is a separate, breaking decision. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's *own* failures use the table; a subprocess's do not.
+Two consequences worth stating. First, adopting the convention changed no shipped command's exit code by itself; the one command that has been re-coded since is the deploy's auth failure, and that was a deliberate, separate decision recorded below. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's _own_ failures use the table; a subprocess's do not.
+
+## Needs-human protocol
+
+Decision [confirmed — Kudo, 2026-08-23]. Exit `7` above needed a way to be _raised_, and the class of failure it names is the one an agent cannot recover from by trying harder: a login, an Apple two-factor push, a device to scan a code on, a page to open. This section is the convention for all of them — one error class, one event, one registry, four ways of noticing.
+
+### The class
+
+`NeedsHumanError extends CommandError` [observed — `src/utils/errors.ts`]. It carries a `NeedsHuman` record — `scenario`, `need`, `command`, `url`, `unattendedEnv`, `resumable`, `detectedBy` — sets `exitCode` to `EXIT_NEEDS_HUMAN` on construction, and exposes `isNeedsHuman: true`. The boolean is the point: an agent must not need a code allowlist to know its user is required. The `code` stays per site, so a failure that is reclassified keeps the code it shipped with — `LAUNCH_NOT_AUTHENTICATED` is still `LAUNCH_NOT_AUTHENTICATED`, and now also scenario `expo-login`.
+
+`logCmdError` emits `cli:error` (now with `needsHuman: boolean`), then `cli:needs_human` with the whole record, then prints the error and ends with three lines [observed — `src/utils/errors.ts`]:
+
+```
+Needs a human   eas-login
+Ask the user    npx eas login
+Or set          EXPO_TOKEN  (https://expo.dev/settings/access-tokens)
+```
+
+`label value`, per [[0006-agent-native-cli-surface]] §Output contract, with the recovery last. The block replaces the `Try:` line rather than following it: line two already _is_ the suggested command, and printing both would end the output on the weaker of the two.
+
+### The registry
+
+`src/needsHuman/registry.ts` is a data table, in the style of `src/commandRegistry.ts`: thirteen scenarios, each with its id, code, one sentence of need, the command or URL a person uses, the environment variables that remove the need on an unattended machine, whether a re-run resumes, the tools whose output it may be recognised in, and the stderr patterns that recognise it. Callers never match strings themselves.
+
+Two of the rows are marked `generic` — `expo-prompt` and `eas-prompt`. They name no command of their own, because the command a person has to run is the one that just stopped, so the classifier fills it in from the invocation. They sort last, which is what makes them a fallback: a generic answer that names the tool and quotes what it printed beats a confident wrong guess, and that is the same honesty `src/deploy/launchCli.ts` already practices about `create-launch` output.
+
+Rows with no signature are not a gap. `ios-credentials`, `device-register` and `eas-env-list` are raised _by construction_: 39 of eas-cli's 144 commands have no `--non-interactive` flag at all [observed — eas-cli 22.2.0 manifest], so needing one of them is knowable before it runs. `apple-auth` deliberately has none either: the wording of an Apple sign-in failure is Apple's, and a pattern broad enough to catch it would claim a two-factor push for every Apple error.
+
+### Four layers, in priority order
+
+1. **Preflight** — ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself — so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out": the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`].
+2. **Force non-interactive** — every captured subprocess is told that nothing can answer it. For `expo` that is `CI=1` in the child environment, because the CLI rejects `--non-interactive` and names the variable instead [observed — `packages/@expo/cli/src/index.ts`]; `spawnExpoAsync` is the capture path that sets it, and `runExpoAsync` deliberately does not, because there a person has the terminal. For `eas` it is `--non-interactive`, or `--json`, which implies it. stdin was already never attached [observed — `src/utils/subprocess.ts`].
+3. **Exit signature** — match the captured output against the registry. Three patterns are load-bearing today: eas-cli's `Either log in with … EXPO_TOKEN` [observed — `build/user/SessionManager.js`], `@expo/cli`'s `is in non-interactive mode` [observed — `src/utils/prompts.ts`], and the `in non-interactive mode` fragment eas-cli's many prompt sites share.
+4. **Prompt-hang guard** — for a captured child only, and only when the caller opts in. If it writes nothing for `EXAGENT_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Both halves are required: silence alone is a long build, and killing that would be worse than the hang it prevents. Never in `inherit` mode, where a prompt is legitimate.
+
+The prompt shape is `/[?:]\s*$|^\s*[?›»]\s+\S|\(y\/N\)|\(Y\/n\)|Password|passphrase/i` [observed — `src/needsHuman/detect.ts`]. The leading-marker half was added because `prompts` and `inquirer` write the marker at the _start_ — `? Select a platform` is a question that ends in neither a question mark nor a colon.
+
+### What it costs, and the hole that stays
+
+The breaking change [observed — `e2e/__tests__/deploy-test.ts`]: the deploy's two auth failures exited `1` and now exit `7`. At 0.0.2 that is the right moment; a CHANGELOG entry records it.
+
+Two limits, both deliberate. First, the **forwarded commands are not covered**. `exagent login`, `exagent prebuild` and the rest of the passthrough inherit the terminal, so their output is never captured and nothing can be classified — `src/passthrough/` is unchanged on purpose. Second, there is **no `--json` error envelope** [observed — `src/cli.ts`, `src/utils/errors.ts`]: a failing command prints prose on stderr and nothing on stdout, whatever mode it was asked for, so the handoff travels on the printed block and on `cli:needs_human`, both machine-readable. Adding a JSON error object for every command is a separate decision about the whole error path, not a needs-human one.
+
+Signature matching is version-coupled to two CLIs that do not promise their wording — which is why the generic rows exist, why they are last, and why the upstream ask below is the real fix.
 
 ## Registry rules
 
@@ -101,7 +144,7 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
 - `build:logs` — read a build's logs from the CLI. Today the logs are reachable through the web dashboard, so a headless agent explaining a failed build has nothing to read.
 - `credentials:list --json --non-interactive` — see what credentials a project has without a TTY.
 - `--non-interactive` on `build:view` and `submit:view` — both are read-only and both can still prompt.
-- Typed non-interactive errors — a machine-readable code when a command cannot proceed without a prompt, so the tool layer can distinguish "needs a human" (exit `7` above) from "failed".
+- Typed non-interactive errors — a machine-readable code when a command cannot proceed without a prompt, so the tool layer can distinguish "needs a human" (exit `7` above) from "failed". This is the ask that would retire the signature table of the needs-human protocol: today the wording of 100-plus prompt sites is what the classifier reads, and it is version-coupled to a CLI that never promised it.
 - `env:list --json` — the environment a build will run with, as data.
 
 `@expo/cli`:
@@ -120,3 +163,5 @@ Libraries:
 Unit tests pin the constants and all three resolution rules, including a synthetic group registered under a forwarded name for rule (b) [observed — `src/__tests__/exitCodes-test.ts`, `src/__tests__/commandRegistry-test.ts`]. E2E tests pin what the process boundary actually shows: the exit code and the last line of output for a group given options with no action [observed — `e2e/__tests__/wrapper-test.ts`, `e2e/__tests__/build-wait-test.ts`]. Per [[0002-testing-and-evals]], every layer runs with no TTY attached.
 
 The outcome band gets its own discipline, because a code is not testable by reading it. `build:wait`'s status table is exhaustive at the unit level — every status in both casings and both separators, plus values it has never heard of — and each of the four exit codes gets a separate e2e test against a stub `eas` bin walking a scripted status sequence [observed — `src/builds/__tests__/status-test.ts`, `e2e/__tests__/build-wait-test.ts`]. One test asserting "some non-zero code" would pass while the distinction the band exists for was broken.
+
+The needs-human protocol is tested the same way, at both tiers [observed — 2026-08-23]. Unit: the classifier against a table of recorded output, one sample per signature that exists plus the cases that must answer `null`; the registry invariants (unique ids and codes, `SCREAMING_SNAKE` codes, a command or a URL for every row that is not a generic fallback, the fallbacks last); `logCmdError` with a `NeedsHumanError`, asserting the event pair, the three printed lines and exit `7`; the preflight answering from one subprocess however often it is asked; the hang guard on fake timers, including the two cases it must _not_ fire in. E2E, through the published bin with stdin closed: a stub `eas` printing the real `SessionManager` auth line, a stub `expo` printing the real non-interactive line, and a stub that prints a question and then waits forever — each asserting the exit code, the printed block and the `cli:needs_human` event in `LOG_EVENTS` [observed — `e2e/__tests__/deploy-test.ts`].

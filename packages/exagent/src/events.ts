@@ -18,9 +18,31 @@ declare module '2g' {
     'cli:skills_sync_failed': { error: SerializedError };
     /**
      * A command failed with a known error. `suggestedCommand` is the machine-readable next
-     * action — errors are prompts (llp/0006 §Errors are prompts).
+     * action — errors are prompts (llp/0006 §Errors are prompts). `needsHuman` says whether the
+     * next action belongs to a person, so a consumer reading only this event still sees the class.
      */
-    'cli:error': { code: string; message: string; suggestedCommand: string | null };
+    'cli:error': {
+      code: string;
+      message: string;
+      suggestedCommand: string | null;
+      needsHuman: boolean;
+    };
+    /**
+     * A command stopped because only a person can complete the next step. Emitted right after the
+     * `cli:error` of the same failure, which is also the run that exits `7`.
+     *
+     * @see llp/0010-agent-conventions.rfc.md §Needs-human protocol
+     */
+    'cli:needs_human': {
+      code: string;
+      scenario: string;
+      need: string;
+      command: string | null;
+      url: string | null;
+      unattendedEnv: string[];
+      resumable: boolean;
+      detectedBy: string;
+    };
     /**
      * One `exagent dev:wait` run: whether the bundler finished, whose bundle it is, and how long
      * the wait took. The command's exit code is the same answer, and this is where the detail is.

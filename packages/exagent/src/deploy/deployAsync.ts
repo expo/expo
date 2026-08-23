@@ -8,6 +8,9 @@ import path from 'path';
 import { followUpsEnabled, reportFollowUps } from '../followups';
 import { buildDeployFollowUps } from '../followups/deploy';
 import * as Log from '../log';
+import { classifySubprocessFailure } from '../needsHuman/detect';
+import { needsHumanErrorFrom } from '../needsHuman/error';
+import type { NeedsHumanTool } from '../needsHuman/registry';
 import {
   isInstalledDependencyAsync,
   listDependencyNames,
@@ -15,9 +18,9 @@ import {
 } from '../project/nodeModules';
 import { resolveEasCliOrThrow, type EasCli } from '../utils/easCli';
 import { CommandError } from '../utils/errors';
-import { resolveExpoCli } from '../utils/expoCli';
+import { spawnExpoAsync } from '../utils/expoCli';
 import { toPosixPath } from '../utils/filePath';
-import { spawnSubprocessAsync, type SubprocessOutput } from '../utils/subprocess';
+import { spawnSubprocessAsync, type CapturedOutput } from '../utils/subprocess';
 import { debugEvent, event } from './events';
 import { launchProjectAsync } from './launchAsync';
 import { resolveCreateLaunchCli } from './launchCli';
@@ -33,6 +36,10 @@ const OUTPUT_TAIL_LINES = 10;
 
 /** Width of the label column of the human readable summary, as in `exagent status`. */
 const LABEL_WIDTH = 12;
+
+/** The two commands of the web rail, as a person would run them without this wrapper. */
+const EXPORT_COMMAND = 'npx expo export --platform web';
+const DEPLOY_COMMAND = 'npx eas deploy';
 
 /**
  * Deploy a project, and print where it went.
@@ -62,7 +69,7 @@ export async function deployAsync(projectRoot: string, options: DeployOptions): 
 
   // In `--json` mode this command owns stdout, so the tools are captured; otherwise their output is
   // printed as it arrives *and* captured, because the URLs are only in there.
-  const output: SubprocessOutput = options.json ? 'capture' : 'tee';
+  const output: CapturedOutput = options.json ? 'capture' : 'tee';
 
   const web = easCli ? await deployWebAsync(projectRoot, easCli, output) : null;
   const native =
@@ -188,23 +195,23 @@ async function hasWebAsync(projectRoot: string): Promise<boolean> {
 async function deployWebAsync(
   projectRoot: string,
   easCli: EasCli,
-  output: SubprocessOutput
+  output: CapturedOutput
 ): Promise<WebDeployResult> {
-  const expoCli = resolveExpoCli(projectRoot, ['export', '--platform', 'web']);
+  const { cli: expoCli, result: exported } = await spawnExpoAsync(
+    projectRoot,
+    ['export', '--platform', 'web'],
+    { output, promptGuard: true }
+  );
   debugEvent('export', { command: expoCli.command, args: expoCli.args });
 
-  const exported = await spawnSubprocessAsync(expoCli.command, expoCli.args, {
-    cwd: projectRoot,
-    output,
-  });
   if (exported.spawnError) {
     throw expoCliUnavailable(expoCli.command, exported.spawnError);
   }
-  if (exported.exitCode !== 0) {
+  if (exported.exitCode !== 0 || exported.promptHang) {
     const error = new CommandError(
       'EXPORT_FAILED',
       [
-        `The web bundle could not be exported, so there was nothing to deploy (expo export exited with code ${exported.exitCode}).`,
+        `The web bundle could not be exported, so there was nothing to deploy (${howItStopped('expo export', exported)}).`,
         `Why: the export bundles the app for the web platform, and the bundler stopped on something in the project.`,
         `How: fix what the bundler reported, then run this command again. Running the export on its own prints the full output.`,
         fence(exported, output),
@@ -213,22 +220,23 @@ async function deployWebAsync(
         .join('\n')
     );
     error.suggestedCommand = 'npx expo export --platform web';
-    throw error;
+    throw handoffOr(error, exported, 'expo', EXPORT_COMMAND);
   }
 
   const deployed = await spawnSubprocessAsync(easCli.command, ['deploy', '--non-interactive'], {
     cwd: projectRoot,
     output,
+    promptGuard: true,
   });
   if (deployed.spawnError) {
     throw easCliUnavailable(easCli.command, deployed.spawnError);
   }
   const outputText = `${deployed.stdout}${deployed.stderr}`;
-  if (deployed.exitCode !== 0) {
+  if (deployed.exitCode !== 0 || deployed.promptHang) {
     const error = new CommandError(
       'EAS_DEPLOY_FAILED',
       [
-        `The export was built, but EAS Hosting did not accept it (eas deploy exited with code ${deployed.exitCode}).`,
+        `The export was built, but EAS Hosting did not accept it (${howItStopped('eas deploy', deployed)}).`,
         `Why: the upload ran non-interactively, so anything that needs an answer — most often an account that is not signed in — fails instead of prompting.`,
         `How: check who the CLI is acting as with "npx eas-cli whoami"; for a headless machine, set EXPO_TOKEN to an access token from expo.dev instead of signing in.`,
         fence(deployed, output),
@@ -237,12 +245,48 @@ async function deployWebAsync(
         .join('\n')
     );
     error.suggestedCommand = 'npx eas-cli whoami';
-    throw error;
+    throw handoffOr(error, deployed, 'eas', DEPLOY_COMMAND);
   }
 
   const url = parseDeploymentUrl(outputText);
   event('web', { url, exportDir: EXPORT_DIR });
   return { url, exportDir: EXPORT_DIR, outputTail: outputTail(outputText, OUTPUT_TAIL_LINES) };
+}
+
+/**
+ * How a tool stopped, for the first line of the error.
+ *
+ * A tool killed on a question has no exit code of its own, and reporting `code null` would name
+ * the symptom of this CLI's own guard instead of what happened.
+ */
+function howItStopped(tool: string, result: { exitCode: number | null; promptHang?: string }) {
+  return result.promptHang
+    ? `${tool} stopped on a question, and this run has no terminal to answer it`
+    : `${tool} exited with code ${result.exitCode}`;
+}
+
+/**
+ * The same failure, as a handoff when what stopped the tool was a person-shaped step.
+ *
+ * The wording and the code stay exactly as written above: nothing about the *what* changed, and a
+ * code an agent may already branch on must not be renamed by a reclassification. What is added is
+ * the machine-readable "who has to do something about it", which also moves the run into the
+ * needs-human exit band (llp/0010 §Needs-human protocol).
+ *
+ * @param invocation the command a person runs to see this for themselves
+ */
+function handoffOr(
+  error: CommandError,
+  result: { exitCode: number | null; stdout: string; stderr: string; promptHang?: string },
+  tool: NeedsHumanTool,
+  invocation: string
+): CommandError {
+  const needsHuman = classifySubprocessFailure({ tool, invocation, ...result });
+  if (!needsHuman) {
+    return error;
+  }
+  const quoted = result.promptHang ? `\nWhat it was waiting for:\n${result.promptHang}` : '';
+  return needsHumanErrorFrom(needsHuman, { code: error.code, message: error.message + quoted });
 }
 
 /**
@@ -253,7 +297,7 @@ async function deployWebAsync(
  */
 function fence(
   result: { stdout: string; stderr: string },
-  output: SubprocessOutput
+  output: CapturedOutput
 ): string | undefined {
   if (output !== 'capture') {
     return undefined;

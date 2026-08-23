@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 
 import { event } from '../../events';
 import * as Log from '../../log';
+import { readAuthPreflightAsync } from '../../needsHuman/preflight';
 import { readLastBuildFingerprints } from '../../plan/lastBuild';
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
@@ -21,6 +22,9 @@ jest.mock('../../project/probe', () => ({ probeProjectStateAsync: jest.fn() }));
 jest.mock('../../plan/lastBuild', () => ({ readLastBuildFingerprints: jest.fn(() => ({})) }));
 jest.mock('../../runtime/devServer', () => ({ discoverDevServerAsync: jest.fn() }));
 jest.mock('../../runtime/waitReady', () => ({ waitForBundlerReadyAsync: jest.fn() }));
+// The preflight spawns `eas whoami`; these tests are about the report, not about the machine the
+// suite happens to run on.
+jest.mock('../../needsHuman/preflight', () => ({ readAuthPreflightAsync: jest.fn() }));
 jest.mock('../../skills/discovery', () => ({ discoverSkillsAsync: jest.fn(async () => []) }));
 jest.mock('../../skills/agents', () => ({
   ...jest.requireActual('../../skills/agents'),
@@ -58,6 +62,9 @@ beforeEach(() => {
   vol.fromJSON({ '/project/package.json': JSON.stringify({ name: 'my-app' }) });
   mockState();
   jest.mocked(readLastBuildFingerprints).mockReturnValue({});
+  jest
+    .mocked(readAuthPreflightAsync)
+    .mockResolvedValue({ loggedIn: true, user: 'kudo', source: 'eas whoami' });
   jest.mocked(discoverDevServerAsync).mockResolvedValue({
     reachable: true,
     targets: [{} as any],
@@ -319,6 +326,24 @@ describe(collectStatusReportAsync, () => {
     expect(report.skills).not.toBeNull();
   });
 
+  // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — what an agent reads before it
+  // starts a command that would stop on a login.
+  it(`should report who the CLI family acts as`, async () => {
+    const report = await collectStatusReportAsync(projectRoot, options);
+
+    expect(report.auth).toEqual({ loggedIn: true, user: 'kudo', source: 'eas whoami' });
+  });
+
+  it(`should note an auth section it could not read, and report the rest`, async () => {
+    jest.mocked(readAuthPreflightAsync).mockRejectedValue(new Error('eas is not executable'));
+
+    const report = await collectStatusReportAsync(projectRoot, options);
+
+    expect(report.auth).toBeNull();
+    expect(report.errors.auth).toContain('eas is not executable');
+    expect(report.project).not.toBeNull();
+  });
+
   it(`should note a skills section it could not read`, async () => {
     jest.mocked(discoverSkillsAsync).mockRejectedValue(new Error('autolinking is not installed'));
 
@@ -355,6 +380,7 @@ describe(printStatusAsync, () => {
       'freshness',
       'devServer',
       'skills',
+      'auth',
       'next',
       'probe',
       'errors',
@@ -368,6 +394,7 @@ describe(printStatusAsync, () => {
     await printStatusAsync(projectRoot, { ...options, json: true });
 
     expect(Object.keys(JSON.parse(output())).sort()).toEqual([
+      'auth',
       'devServer',
       'errors',
       'expoGo',
@@ -388,6 +415,7 @@ describe(printStatusAsync, () => {
     // A failed section is reported as null plus a note in `errors`, so the shape never changes.
     expect(Log.log).toHaveBeenCalledTimes(1);
     expect(Object.keys(JSON.parse(output())).sort()).toEqual([
+      'auth',
       'devServer',
       'errors',
       'expoGo',

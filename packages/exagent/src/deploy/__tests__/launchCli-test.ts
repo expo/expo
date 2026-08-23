@@ -1,6 +1,7 @@
 import { vol } from 'memfs';
 import path from 'path';
 
+import { EXIT_NEEDS_HUMAN } from '../../exitCodes';
 import { CommandError } from '../../utils/errors';
 import * as subprocess from '../../utils/subprocess';
 import { buildCreateLaunchArgs, resolveCreateLaunchCli, runCreateLaunchAsync } from '../launchCli';
@@ -138,20 +139,32 @@ describe(runCreateLaunchAsync, () => {
     ).rejects.toMatchObject({ code: 'LAUNCH_UNEXPECTED_OUTPUT' });
   });
 
-  it(`should map the non-interactive auth failure onto the login command`, async () => {
+  // A login is not something the CLI can retry: it needs the person this run belongs to
+  // (llp/0010 §Needs-human protocol). The code stays the one this site has always raised.
+  it(`should map the non-interactive auth failure onto the login handoff`, async () => {
     // What the real CLI prints when nobody is signed in and it cannot prompt.
     mockRun({
       exitCode: 1,
       stderr: 'You need to be authenticated with Expo before launching in non-interactive\n',
     });
 
-    expect.assertions(3);
+    expect.assertions(5);
     try {
       await runCreateLaunchAsync({ cli, uploadRoot: '/workspace', json: true });
     } catch (error: any) {
       expect(error).toBeInstanceOf(CommandError);
       expect(error.code).toBe('LAUNCH_NOT_AUTHENTICATED');
       expect(error.suggestedCommand).toBe('npx expo login');
+      expect(error.exitCode).toBe(EXIT_NEEDS_HUMAN);
+      expect(error.needsHuman).toEqual({
+        scenario: 'expo-login',
+        need: 'Sign in to an Expo account on this machine.',
+        command: 'npx expo login',
+        url: 'https://expo.dev/settings/access-tokens',
+        unattendedEnv: ['EXPO_TOKEN'],
+        resumable: true,
+        detectedBy: 'exit-signature',
+      });
     }
   });
 

@@ -41,6 +41,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       projectRootMatched: true,
     },
     skills: { agentIds: ['claude-code'], discovered: 3, linked: 3 },
+    auth: { loggedIn: true, user: 'kudo', source: 'eas whoami' },
     next: {
       command: 'exagent dev',
       rule: 'expo-go',
@@ -76,15 +77,48 @@ describe(formatStatusReport, () => {
   it(`should print one line per section, like git status`, () => {
     const lines = report(mockReport()).split('\n');
 
-    expect(lines).toHaveLength(6);
+    expect(lines).toHaveLength(7);
     expect(lines.map((text) => text.split(/\s{2,}/)[0])).toEqual([
       'project',
       'expo go',
       'freshness',
       'dev server',
       'skills',
+      'auth',
       'next',
     ]);
+  });
+
+  // Who the CLI family acts as, so an agent knows before a long command whether it will stop on a
+  // login (llp/0010 §Needs-human protocol).
+  describe('the auth line', () => {
+    it(`should name the account and what said so`, () => {
+      expect(line(mockReport(), 'auth')).toContain('kudo');
+      expect(line(mockReport(), 'auth')).toContain('eas whoami');
+    });
+
+    it(`should say "signed in" for an account nothing named`, () => {
+      const value = mockReport({
+        auth: { loggedIn: true, user: null, source: 'EXPO_TOKEN' },
+      });
+
+      expect(line(value, 'auth')).toContain('signed in');
+      expect(line(value, 'auth')).toContain('EXPO_TOKEN');
+    });
+
+    it(`should report a signed-out machine as signed out`, () => {
+      const value = mockReport({ auth: { loggedIn: false, user: null, source: 'eas whoami' } });
+
+      expect(line(value, 'auth')).toContain('not signed in');
+    });
+
+    // Never rounded down to "signed out": the two lead to different next actions.
+    it(`should keep "unknown" apart from "not signed in"`, () => {
+      const value = mockReport({ auth: { loggedIn: null, user: null, source: null } });
+
+      expect(line(value, 'auth')).toContain('unknown');
+      expect(line(value, 'auth')).not.toContain('not signed in');
+    });
   });
 
   it(`should summarize a managed project on the project line`, () => {

@@ -12,6 +12,7 @@ import path from 'node:path';
 import {
   executeExagentAsync,
   holdDevLockAsync,
+  installStubBinAsync,
   installStubFingerprintAsync,
   readStubExpoInvocations,
   setupFixtureAsync,
@@ -51,6 +52,11 @@ type StatusReport = {
     reason?: string;
   } | null;
   skills: { agentIds: string[] | null; discovered: number; linked: number } | null;
+  auth: {
+    loggedIn: boolean | null;
+    user: string | null;
+    source: 'eas whoami' | 'EXPO_TOKEN' | null;
+  } | null;
   next: { command: string; rule: string; target: string; steps: { argv: string[] }[] } | null;
   /** The raw project probe, per `src/project/types.ts`. Covered on its own in `probe-test.ts`. */
   probe: {
@@ -140,6 +146,30 @@ async function reportAsync(fixtureName: string): Promise<StatusReport> {
   return reportInAsync(await setupAsync(fixtureName));
 }
 
+/**
+ * Install an `eas` bin that answers `whoami`, on the `PATH` the wrapper searches.
+ *
+ * The auth section runs a real subprocess, so without a stub the report would say whatever the
+ * machine running the suite happens to be signed in as.
+ *
+ * @param user the account it names, or null for a CLI that refuses because nobody is signed in
+ */
+async function installStubEasAsync(
+  projectRoot: string,
+  { user }: { user: string | null }
+): Promise<void> {
+  const binDir = path.join(projectRoot, '.stub-bin');
+  await fs.promises.mkdir(binDir, { recursive: true });
+  const stubScript = path.join(binDir, 'eas-stub.js');
+  await fs.promises.writeFile(
+    stubScript,
+    user
+      ? `process.stdout.write(${JSON.stringify(`${user}\n`)});\n`
+      : `process.stderr.write('Not logged in\\n');\nprocess.exit(1);\n`
+  );
+  await installStubBinAsync(binDir, 'eas', stubScript);
+}
+
 describe('exagent status', () => {
   it('prints usage with `status --help`', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
@@ -191,6 +221,7 @@ describe('exagent status', () => {
         'freshness',
         'devServer',
         'skills',
+        'auth',
         'next',
         'probe',
         'errors',
@@ -218,6 +249,40 @@ describe('exagent status', () => {
         'unknown',
         'unknown',
       ]);
+    });
+
+    // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol
+    // Who the CLI family acts as, asked with a stub `eas` so the answer is the fixture's and not
+    // the machine's.
+    describe('the auth section', () => {
+      it('reports the account the EAS CLI named', async () => {
+        const projectRoot = await setupAsync('go-app');
+        await installStubEasAsync(projectRoot, { user: 'e2e-user' });
+
+        const report = await reportInAsync(projectRoot);
+
+        expect(report.auth).toEqual({
+          loggedIn: true,
+          user: 'e2e-user',
+          source: 'eas whoami',
+        });
+      });
+
+      it('reports a signed-out machine, and still exits 0', async () => {
+        const projectRoot = await setupAsync('go-app');
+        await installStubEasAsync(projectRoot, { user: null });
+
+        const result = await executeExagentAsync(projectRoot, [
+          'status',
+          '--dev-server-url',
+          await getUnusedDevServerUrlAsync(),
+        ]);
+
+        // Status is information: not being signed in is a fact it reports, not a failure.
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout).toContain('auth');
+        expect(result.stdout).toContain('not signed in');
+      });
     });
 
     it('reports that no agent is selected', async () => {

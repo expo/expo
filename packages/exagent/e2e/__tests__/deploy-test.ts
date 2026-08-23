@@ -30,6 +30,32 @@ type DeployReport = {
 /** One recorded invocation of the stub `eas` bin. */
 type StubEasInvocation = { args: string[]; cwd: string; isTTY: boolean };
 
+/**
+ * Exit code of a run that stopped on a step only a person can finish (llp/0010 §Exit codes).
+ *
+ * Spelled out rather than imported: an e2e test pins what the process boundary actually shows, and
+ * one that read the constant from the source could not notice the number changing.
+ */
+const EXIT_NEEDS_HUMAN = 7;
+
+/** Every JSONL event a run wrote to its `LOG_EVENTS` file. `2g` names each one in `_e`. */
+function readEvents(eventsFile: string): any[] {
+  return fs
+    .readFileSync(eventsFile, 'utf8')
+    .split('\n')
+    .filter(Boolean)
+    .map((line) => JSON.parse(line));
+}
+
+/** The last `count` non-empty lines of a stream, which is where the handoff block sits. */
+function lastLines(output: string, count: number): string[] {
+  return output
+    .split('\n')
+    .map((line) => line.trimEnd())
+    .filter(Boolean)
+    .slice(-count);
+}
+
 const STUB_EAS_LOG_NAME = 'stub-eas-invocations.jsonl';
 
 /** URL the stub prints, in the shape the EAS CLI writes it. */
@@ -43,6 +69,10 @@ const STUB_DEPLOYMENT_URL = 'https://go-app--e2e123.expo.app';
  * Environment variables the tests steer it with:
  * - STUB_EAS_EXIT_CODE: exit code to return (default 0), to test failure reporting
  * - STUB_EAS_NO_URL: `1` to print no URL at all, for the "URL could not be parsed" path
+ * - STUB_EAS_STDERR: what it prints on stderr before a non-zero exit, so a test can hand the
+ *   wrapper the exact wording the real CLI uses
+ * - STUB_EAS_HANG: `1` to print a prompt and then wait forever, like a CLI asking a question
+ *   nobody can answer
  */
 const STUB_EAS = `#!/usr/bin/env node
 'use strict';
@@ -56,9 +86,20 @@ fs.appendFileSync(
   JSON.stringify({ args, cwd, isTTY: !!process.stdin.isTTY }) + '\\n'
 );
 
+if (process.env.STUB_EAS_HANG === '1') {
+  process.stderr.write('Resolving the deployment\\n');
+  process.stderr.write('? Select a platform\\n');
+  // Nothing else, ever: this is the hang the guard exists for.
+  setInterval(() => {}, 60000);
+  return;
+}
+
 const exitCode = Number(process.env.STUB_EAS_EXIT_CODE || 0);
 if (exitCode !== 0) {
-  process.stderr.write('Entity not authorized: the request was made without an account.\\n');
+  process.stderr.write(
+    (process.env.STUB_EAS_STDERR ||
+      'Entity not authorized: the request was made without an account.') + '\\n'
+  );
   process.exit(exitCode);
 }
 
@@ -312,6 +353,101 @@ describe('exagent deploy', () => {
       expect(result.stderr).toContain('Try: npx eas-cli whoami');
     });
 
+    // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol
+    // The three ways a run can stop on a person, driven through the real process boundary: the
+    // wording of the tool, the exit code, the printed block and the event, with stdin closed
+    // throughout (which is the default condition of every e2e run here).
+    describe('a step only a person can finish', () => {
+      it(`should recognise the EAS CLI asking for a login`, async () => {
+        const projectRoot = await setupAsync('go-app');
+        const eventsFile = path.join(projectRoot, 'events.jsonl');
+
+        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+          env: {
+            STUB_EAS_EXIT_CODE: '1',
+            // The one stable auth error of the real CLI, verbatim.
+            STUB_EAS_STDERR:
+              'Either log in with eas login or set the EXPO_TOKEN environment variable if you’re using EAS CLI on CI (https://docs.expo.dev/accounts/programmatic-access/)',
+            LOG_EVENTS: eventsFile,
+          },
+          reject: false,
+        });
+
+        expect(result.exitCode).toBe(EXIT_NEEDS_HUMAN);
+        expect(lastLines(result.stderr, 3)).toEqual([
+          'Needs a human   eas-login',
+          'Ask the user    npx eas login',
+          'Or set          EXPO_TOKEN  (https://expo.dev/settings/access-tokens)',
+        ]);
+        const events = readEvents(eventsFile);
+        expect(events.filter((entry) => entry._e === 'cli:needs_human')).toHaveLength(1);
+        expect(events.find((entry) => entry._e === 'cli:needs_human')).toMatchObject({
+          // The code the deploy has always raised, now carrying the handoff.
+          code: 'EAS_DEPLOY_FAILED',
+          scenario: 'eas-login',
+          command: 'npx eas login',
+          detectedBy: 'exit-signature',
+        });
+        // The stub never saw a terminal: nothing here can answer a prompt.
+        expect(readStubEasInvocations(projectRoot)[0]!.isTTY).toBe(false);
+      });
+
+      it(`should answer the Expo CLI's non-interactive stop generically, naming the command`, async () => {
+        const projectRoot = await setupAsync('go-app');
+        const eventsFile = path.join(projectRoot, 'events.jsonl');
+
+        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+          env: {
+            STUB_EXPO_EXIT_CODE: '1',
+            // What `@expo/cli`'s prompt helper prints when it cannot ask.
+            STUB_EXPO_STDERR: `Input is required, but 'npx expo' is in non-interactive mode.`,
+            LOG_EVENTS: eventsFile,
+          },
+          reject: false,
+        });
+
+        expect(result.exitCode).toBe(EXIT_NEEDS_HUMAN);
+        // Nothing in the output says *which* prompt it was, so the answer names the tool and the
+        // command instead of guessing.
+        expect(lastLines(result.stderr, 2)).toEqual([
+          'Needs a human   expo-prompt',
+          'Ask the user    npx expo export --platform web',
+        ]);
+        expect(
+          readEvents(eventsFile).find((entry) => entry._e === 'cli:needs_human')
+        ).toMatchObject({ code: 'EXPORT_FAILED', scenario: 'expo-prompt' });
+        // The upload never started: the export is what stopped.
+        expect(readStubEasInvocations(projectRoot)).toEqual([]);
+      });
+
+      it(`should kill a tool that went silent on a question, instead of hanging`, async () => {
+        const projectRoot = await setupAsync('go-app');
+        const eventsFile = path.join(projectRoot, 'events.jsonl');
+
+        const result = await executeExagentAsync(projectRoot, ['deploy', '--web'], {
+          env: {
+            STUB_EAS_HANG: '1',
+            // The guard is opted into by the call site; the window is this variable.
+            EXAGENT_PROMPT_TIMEOUT_MS: '1500',
+            LOG_EVENTS: eventsFile,
+          },
+          reject: false,
+        });
+
+        expect(result.exitCode).toBe(EXIT_NEEDS_HUMAN);
+        expect(result.stderr).toContain('stopped on a question');
+        // The line it stopped on travels as quoted, untrusted text.
+        expect(result.stderr).toContain('? Select a platform');
+        expect(lastLines(result.stderr, 2)).toEqual([
+          'Needs a human   eas-prompt',
+          'Ask the user    npx eas deploy',
+        ]);
+        expect(
+          readEvents(eventsFile).find((entry) => entry._e === 'cli:needs_human')
+        ).toMatchObject({ scenario: 'eas-prompt', detectedBy: 'prompt-pattern' });
+      });
+    });
+
     it(`should name the install command when no eas is available`, async () => {
       const projectRoot = await setupAsync('go-app');
       // A PATH with nothing on it: the only way to test a missing EAS CLI on a machine that has
@@ -417,20 +553,37 @@ describe('exagent deploy', () => {
       ]);
     });
 
-    it(`should answer a machine that is not signed in with the login command`, async () => {
+    // A login is a person's job, so this leaves the process in the needs-human band
+    // (llp/0010 §Needs-human protocol) instead of looking like a call an agent typed wrong.
+    it(`should hand a machine that is not signed in back to its user`, async () => {
       const projectRoot = await setupAsync('go-app');
       const logPath = await installStubLaunchAsync(projectRoot);
+      const eventsFile = path.join(projectRoot, 'events.jsonl');
 
       const result = await executeExagentAsync(projectRoot, ['deploy', '--native'], {
-        env: launchEnv(logPath, { mode: 'unauthenticated' }),
+        env: { ...launchEnv(logPath, { mode: 'unauthenticated' }), LOG_EVENTS: eventsFile },
         reject: false,
       });
 
-      expect(result.exitCode).toBe(1);
+      expect(result.exitCode).toBe(EXIT_NEEDS_HUMAN);
       expect(result.stderr).toContain('not signed in');
-      expect(result.stderr).toContain('EXPO_TOKEN');
-      // Errors are prompts (llp/0006): the last line is what an agent runs next.
-      expect(result.stderr).toContain('Try: npx expo login');
+      // The last three lines are the handoff, and the recovery is on the last one.
+      expect(lastLines(result.stderr, 3)).toEqual([
+        'Needs a human   expo-login',
+        'Ask the user    npx expo login',
+        'Or set          EXPO_TOKEN  (https://expo.dev/settings/access-tokens)',
+      ]);
+      expect(readEvents(eventsFile).find((entry) => entry._e === 'cli:needs_human')).toMatchObject({
+        code: 'LAUNCH_NOT_AUTHENTICATED',
+        scenario: 'expo-login',
+        unattendedEnv: ['EXPO_TOKEN'],
+        resumable: true,
+        detectedBy: 'exit-signature',
+      });
+      // The class is on the error event too, for a consumer that reads only that one.
+      expect(readEvents(eventsFile).find((entry) => entry._e === 'cli:error')).toMatchObject({
+        needsHuman: true,
+      });
     });
 
     it(`should report what the launch CLI refused, in its own words`, async () => {

@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import { vol } from 'memfs';
 import path from 'path';
 
-import { resolveExpoCli, runExpoAsync } from '../expoCli';
+import { resolveExpoCli, runExpoAsync, spawnExpoAsync } from '../expoCli';
 
 const projectRoot = '/project';
 const realPlatform = process.platform;
@@ -21,11 +21,17 @@ function mockPlatform(value: typeof process.platform) {
 }
 
 interface FakeChild extends EventEmitter {
+  stdout: EventEmitter | null;
+  stderr: EventEmitter | null;
   kill: jest.Mock;
 }
 
-function mockSpawn(): FakeChild {
-  const child = Object.assign(new EventEmitter(), { kill: jest.fn() });
+function mockSpawn({ piped = false }: { piped?: boolean } = {}): FakeChild {
+  const child = Object.assign(new EventEmitter(), {
+    stdout: piped ? new EventEmitter() : null,
+    stderr: piped ? new EventEmitter() : null,
+    kill: jest.fn(),
+  });
   jest.mocked(spawn).mockReturnValue(child as any);
   return child;
 }
@@ -151,5 +157,39 @@ describe(runExpoAsync, () => {
     child.emit('error', Object.assign(new Error('spawn npx ENOENT'), { code: 'ENOENT' }));
 
     await expect(promise).rejects.toThrow(/npx expo/);
+  });
+});
+
+// @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — layer 2, in the one place where
+// nobody is watching the terminal.
+describe(spawnExpoAsync, () => {
+  it(`should tell the captured CLI that nothing can answer it`, async () => {
+    vol.fromJSON({ [`${projectRoot}/node_modules/.bin/expo`]: '' });
+    const child = mockSpawn({ piped: true });
+
+    const promise = spawnExpoAsync(projectRoot, ['export', '--platform', 'web']);
+    child.stdout!.emit('data', 'Exported\n');
+    child.emit('close', 0, null);
+
+    await expect(promise).resolves.toEqual({
+      cli: { command: projectBin('expo'), args: ['export', '--platform', 'web'] },
+      result: { exitCode: 0, stdout: 'Exported\n', stderr: '' },
+    });
+    const options = jest.mocked(spawn).mock.calls[0]![2] as any;
+    expect(options.env.CI).toBe('1');
+    expect(options.stdio).toEqual(['ignore', 'pipe', 'pipe']);
+  });
+
+  it(`should leave the inherited run interactive, where a person has the terminal`, async () => {
+    vol.fromJSON({ [`${projectRoot}/node_modules/.bin/expo`]: '' });
+    const child = mockSpawn();
+
+    const promise = runExpoAsync(projectRoot, ['prebuild']);
+    child.emit('close', 0, null);
+    await promise;
+
+    // `env` is not passed at all, so the child inherits this process' own — CI included only if
+    // the caller already had it.
+    expect((jest.mocked(spawn).mock.calls[0]![2] as any).env).toBeUndefined();
   });
 });

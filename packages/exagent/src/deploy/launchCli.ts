@@ -13,6 +13,7 @@
 
 import path from 'path';
 
+import { needsHumanError } from '../needsHuman/error';
 import { fileExistsSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { findExecutableOnPath, spawnSubprocessAsync } from '../utils/subprocess';
@@ -83,8 +84,9 @@ export interface RunCreateLaunchOptions {
  * Create a launch by running `create-launch`.
  *
  * @throws {CommandError} `CREATE_LAUNCH_UNAVAILABLE` when the CLI could not be started,
- * `LAUNCH_NOT_AUTHENTICATED` when it refused for lack of a login, `LAUNCH_FAILED` for anything else
- * it reported, `LAUNCH_UNEXPECTED_OUTPUT` when it succeeded without printing a launch.
+ * `LAUNCH_NOT_AUTHENTICATED` when it refused for lack of a login (a `NeedsHumanError`, so the
+ * process exits 7), `LAUNCH_FAILED` for anything else it reported, `LAUNCH_UNEXPECTED_OUTPUT` when
+ * it succeeded without printing a launch.
  */
 export async function runCreateLaunchAsync(options: RunCreateLaunchOptions): Promise<LaunchResult> {
   const args = [...options.cli.args, ...buildCreateLaunchArgs(options)];
@@ -159,10 +161,11 @@ function parseLaunch(stdout: string): LaunchResult | null {
  * Map a failed run onto an error that names the next action.
  *
  * The one thing scraped from the output is the missing-login case, because the CLI prints its error
- * code only under `EXPO_DEBUG` and a login is the one failure with an exact fix. Everything else is
- * passed through as the CLI worded it: it knows why it stopped, and repeating its words beats
- * guessing. (An upstream `--json` error object would make this exact — llp/0006 §The process
- * boundary: gaps become upstream improvements.)
+ * code only under `EXPO_DEBUG` and a login is the one failure with an exact fix — and the fix
+ * belongs to a person, so it becomes a handoff rather than an error. Everything else is passed
+ * through as the CLI worded it: it knows why it stopped, and repeating its words beats guessing.
+ * (An upstream `--json` error object would make this exact — llp/0006 §The process boundary: gaps
+ * become upstream improvements.)
  */
 function failureError(
   result: { exitCode: number | null; stdout: string; stderr: string },
@@ -171,16 +174,18 @@ function failureError(
   const said = outputTail(`${result.stderr}${result.stdout}`);
 
   if (/authenticat/i.test(said)) {
-    const error = new CommandError(
-      'LAUNCH_NOT_AUTHENTICATED',
-      [
+    // Nothing about the call was wrong and a retry will stop here again, so this is the
+    // needs-human band (llp/0010 §Needs-human protocol) rather than a tool error. The code is the
+    // one this site has always raised: reclassifying a failure must not rename it.
+    return needsHumanError('expo-login', {
+      code: 'LAUNCH_NOT_AUTHENTICATED',
+      detectedBy: 'exit-signature',
+      message: [
         `Launch needs an Expo account, and this machine is not signed in to one.`,
         `Why: the launch runs as you — the upload, the store account and the signing all belong to your Expo account — and the launch CLI found no session and no EXPO_TOKEN.`,
         `How: run "npx expo login" once on this machine, or set EXPO_TOKEN to a personal access token from https://expo.dev/settings/access-tokens for a machine that cannot sign in interactively.`,
-      ].join('\n')
-    );
-    error.suggestedCommand = 'npx expo login';
-    return error;
+      ].join('\n'),
+    });
   }
 
   const error = new CommandError(

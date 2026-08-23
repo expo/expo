@@ -1,4 +1,4 @@
-import { boolish } from 'getenv';
+import { boolish, int } from 'getenv';
 
 /**
  * Environment variables `exagent` reads. This is a deliberately small subset of the
@@ -41,6 +41,16 @@ class Env {
    */
   get EXAGENT_NO_CHECKPOINT() {
     return boolish('EXAGENT_NO_CHECKPOINT', false);
+  }
+
+  /**
+   * How long a guarded subprocess may stay silent before its last line is checked for a question
+   * it is waiting on. Widen it for a tool that is legitimately quiet for minutes at a time.
+   *
+   * @see llp/0010-agent-conventions.rfc.md §Needs-human protocol
+   */
+  get EXAGENT_PROMPT_TIMEOUT_MS() {
+    return int('EXAGENT_PROMPT_TIMEOUT_MS', 20_000);
   }
 
   /** @internal Force the webcontainer environment checks to pass */

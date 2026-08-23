@@ -136,6 +136,111 @@ describe(spawnSubprocessAsync, () => {
     await expect(promise).resolves.toMatchObject({ exitCode: 0 });
   });
 
+  // Layer 2 of the needs-human detection: a child is told that nobody can answer it, in the way
+  // the tool understands (llp/0010 §Needs-human protocol).
+  it(`should merge the given environment over this process' own`, async () => {
+    const child = mockSpawn();
+
+    const promise = spawnSubprocessAsync('expo', ['export'], { env: { CI: '1' } });
+    child.emit('close', 0, null);
+    await promise;
+
+    const options = jest.mocked(spawn).mock.calls[0]![2] as any;
+    expect(options.env.CI).toBe('1');
+    expect(options.env.PATH).toBe(process.env.PATH);
+  });
+
+  it(`should let the child inherit the environment when nothing is added`, async () => {
+    const child = mockSpawn();
+
+    const promise = spawnSubprocessAsync('expo', ['export']);
+    child.emit('close', 0, null);
+    await promise;
+
+    expect((jest.mocked(spawn).mock.calls[0]![2] as any).env).toBeUndefined();
+  });
+
+  describe('the prompt-hang guard', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it(`kills a child that went silent on a question, and quotes the line`, async () => {
+      const child = mockSpawn();
+
+      const promise = spawnSubprocessAsync('eas', ['deploy'], { promptGuard: true });
+      child.stderr!.emit('data', 'Resolving the project\n? Select a platform\n');
+      jest.advanceTimersByTime(20_000);
+      expect(child.kill).toHaveBeenCalled();
+      child.emit('close', null, 'SIGTERM');
+
+      await expect(promise).resolves.toMatchObject({
+        exitCode: null,
+        promptHang: '? Select a platform',
+      });
+    });
+
+    it(`leaves a child that is silent without asking anything alone`, async () => {
+      const child = mockSpawn();
+
+      const promise = spawnSubprocessAsync('eas', ['build'], { promptGuard: true });
+      child.stderr!.emit('data', 'Compiling native code\n');
+      jest.advanceTimersByTime(120_000);
+      expect(child.kill).not.toHaveBeenCalled();
+      child.emit('close', 0, null);
+
+      await expect(promise).resolves.toMatchObject({ exitCode: 0 });
+    });
+
+    it(`restarts the window every time the child writes something`, async () => {
+      const child = mockSpawn();
+
+      const promise = spawnSubprocessAsync('eas', ['deploy'], { promptGuard: true });
+      child.stderr!.emit('data', '? Select a platform\n');
+      jest.advanceTimersByTime(15_000);
+      child.stderr!.emit('data', 'ios\nUploading\n');
+      jest.advanceTimersByTime(15_000);
+
+      expect(child.kill).not.toHaveBeenCalled();
+      child.emit('close', 0, null);
+      await promise;
+    });
+
+    it(`never runs in inherit mode, where a person can answer`, async () => {
+      const child = mockSpawn({ piped: false });
+
+      const promise = spawnSubprocessAsync('create-expo', ['my-app'], {
+        output: 'inherit',
+        promptGuard: true,
+      });
+      jest.advanceTimersByTime(120_000);
+      expect(child.kill).not.toHaveBeenCalled();
+      child.emit('close', 0, null);
+
+      await expect(promise).resolves.toEqual({
+        exitCode: 0,
+        stdout: '',
+        stderr: '',
+      });
+    });
+
+    it(`is off unless the caller asks for it`, async () => {
+      const child = mockSpawn();
+
+      const promise = spawnSubprocessAsync('eas', ['deploy']);
+      child.stderr!.emit('data', '? Select a platform\n');
+      jest.advanceTimersByTime(120_000);
+      expect(child.kill).not.toHaveBeenCalled();
+      child.emit('close', 0, null);
+
+      await promise;
+    });
+  });
+
   it(`should forward terminal signals to the child while it runs`, async () => {
     const child = mockSpawn();
     const listenersBefore = process.listenerCount('SIGTERM');
