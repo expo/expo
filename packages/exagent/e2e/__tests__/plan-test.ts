@@ -211,7 +211,7 @@ describe('exagent dev --plan', () => {
     it('offers to run the plan it just printed', async () => {
       const output = await planTextAsync('go-app', ['--ios']);
 
-      expect(output).toContain('Next:');
+      expect(output).toContain('Next (optional):');
       expect(output).toContain('npx exagent dev');
     });
 
@@ -243,7 +243,7 @@ describe('exagent dev --plan', () => {
         '--no-followups',
       ]);
 
-      expect(text.stdout).not.toContain('Next:');
+      expect(text.stdout).not.toContain('Next (optional):');
       const plan: StartPlan = JSON.parse(json.stdout);
       expect(plan.followups).toEqual([]);
       expect(Object.keys(plan)).toContain('followups');
@@ -254,7 +254,7 @@ describe('exagent dev --plan', () => {
     it('leaves them out for EXAGENT_NO_FOLLOWUPS', async () => {
       const output = await planTextAsync('go-app', [], { EXAGENT_NO_FOLLOWUPS: '1' });
 
-      expect(output).not.toContain('Next:');
+      expect(output).not.toContain('Next (optional):');
     });
 
     it('emits one cli:followups event for a driving agent', async () => {

@@ -87,7 +87,7 @@ describe(formatFollowUps, () => {
 
     // The section trails whatever the command printed, so it opens with a blank line.
     expect(lines[0]).toBe('');
-    expect(lines[1]).toContain('Next:');
+    expect(lines[1]).toContain('Next (optional):');
     expect(lines[2]).toContain('npx exagent runtime:errors');
     expect(lines[2]).toContain('— Reads the app errors.');
     expect(lines[3]).toContain('npx eas build');

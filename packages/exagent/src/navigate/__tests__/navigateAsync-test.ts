@@ -248,7 +248,7 @@ describe(navigateAsync, () => {
 
       await navigateAsync(projectRoot, options());
 
-      expect(printed()).toContain('Next:');
+      expect(printed()).toContain('Next (optional):');
       expect(printed()).toContain('xcrun simctl io IOS-1 screenshot screen.png');
       expect(printed()).toContain('npx exagent runtime:errors');
     });
@@ -276,7 +276,7 @@ describe(navigateAsync, () => {
 
       await navigateAsync(projectRoot, options({ followups: false }));
 
-      expect(printed()).not.toContain('Next:');
+      expect(printed()).not.toContain('Next (optional):');
     });
 
     it(`should offer nothing after a link the device refused`, async () => {

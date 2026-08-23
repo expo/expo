@@ -27,7 +27,7 @@ export const exagentDeploy: Command = async (argv) => {
         `--native             Launch the native app with create-launch (launch.expo.dev)`,
         `--upload-root <dir>  Directory to upload for --native. Default: the project itself`,
         `--json               Print the result as JSON`,
-        `--no-followups       Skip the "Next:" section of suggested follow-up commands`,
+        `--no-followups       Skip the "Next (optional):" section of suggested follow-up commands`,
         `-h, --help           Usage info`,
       ].join('\n'),
       [

@@ -180,7 +180,7 @@ export async function navigateAsync(
     Log.log(chalk.dim(result.stdout.trim()));
   }
 
-  // Last, so the `Next:` section is the last thing in the terminal, after what the device said.
+  // Last, so the `Next (optional):` section is the last thing in the terminal, after what the device said.
   reportFollowUps('navigate', followups, { json });
   return 0;
 }

@@ -28,7 +28,7 @@ export const exagentDev: Command = async (argv) => {
         `--json              Print the plan as JSON, for --plan and for a run`,
         `--ios, --android, --web   Platform to plan for; the host decides when none is named`,
         `--no-agent-skills   Skip linking agent skills from installed packages`,
-        `--no-followups      Skip the "Next:" section of suggested follow-up commands`,
+        `--no-followups      Skip the "Next (optional):" section of suggested follow-up commands`,
         `--no-checkpoint     Skip the git snapshot taken before a plan that prebuilds`,
         `-h, --help          Usage info`,
       ].join('\n'),

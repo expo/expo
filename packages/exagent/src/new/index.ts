@@ -27,7 +27,7 @@ export const exagentNew: Command = async (argv) => {
         `--no-install    Skip installing the dependencies`,
         `--no-git        Skip initializing a git repository`,
         `--json          Print the result as JSON`,
-        `--no-followups  Skip the "Next:" section of suggested follow-up commands`,
+        `--no-followups  Skip the "Next (optional):" section of suggested follow-up commands`,
         `-h, --help      Usage info`,
       ].join('\n'),
       [

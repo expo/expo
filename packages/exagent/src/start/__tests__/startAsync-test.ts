@@ -115,7 +115,7 @@ describe(startAsync, () => {
 
     // Printed synchronously, before the subprocess exists: nothing printed after Metro starts
     // streaming survives in a terminal a person or an agent reads.
-    expect(printed()).toContain('Next:');
+    expect(printed()).toContain('Next (optional):');
     expect(printed()).toContain('exp://192.168.1.5:8081');
     expect(printed()).toContain('npx exagent runtime:errors');
     expect(printed()).toContain('npx eas build:configure');
@@ -167,7 +167,7 @@ describe(startAsync, () => {
     const end = mockLongRunningStart();
     const promise = startAsync(projectRoot, resolveStartOptions(['--web']));
 
-    expect(printed()).toContain('Next:');
+    expect(printed()).toContain('Next (optional):');
     expect(printed()).not.toContain('exp://');
     expect(printed()).not.toContain('--tunnel');
 
