@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Added the `alignmentGuide` modifier, so the `listRowSeparatorLeading` guide can set where a list row separator starts. ([#49246](https://github.com/expo/expo/issues/49246) by [@marco242424](https://github.com/marco242424)) ([#49247](https://github.com/expo/expo/pull/49247) by [@expo-bot](https://github.com/expo-bot))
+- [android] Add `shouldDismissOnClickOutside` and `scrimColor` props to the universal `BottomSheet` component, forwarding them to `ModalBottomSheet` via `properties.shouldDismissOnClickOutside` and `scrimColor`. ([#48986](https://github.com/expo/expo/pull/48986) by [@webdevsamran](https://github.com/webdevsamran))
 
 ### 🐛 Bug fixes
 
