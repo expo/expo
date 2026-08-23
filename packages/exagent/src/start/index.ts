@@ -24,7 +24,7 @@ export const exagentStart: Command = async (argv) => {
       chalk`npx exagent start {dim [options]}`,
       [
         `--no-agent-skills   Skip linking agent skills from installed packages`,
-        `--no-followups      Skip the "Next (optional):" section of suggested follow-up commands`,
+        `--no-followups      Skip the "Suggested next:" section of suggested follow-up commands`,
         `-h, --help          Usage info`,
       ].join('\n'),
       [

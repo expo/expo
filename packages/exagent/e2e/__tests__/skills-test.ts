@@ -127,7 +127,7 @@ describe('exagent skills', () => {
       ]);
 
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).toContain('Next (optional):');
+      expect(result.stdout).toContain('Suggested next:');
       expect(result.stdout).toContain('npx exagent skills:list');
     });
 
@@ -140,7 +140,7 @@ describe('exagent skills', () => {
       ]);
 
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).not.toContain('Next (optional):');
+      expect(result.stdout).not.toContain('Suggested next:');
     });
 
     it('emits one cli:followups event for a driving agent', async () => {

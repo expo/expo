@@ -290,7 +290,7 @@ describe(runtimeErrorsAsync, () => {
 
     await runtimeErrorsAsync(errorsOptions);
 
-    expect(printed()).toContain('Next (optional):');
+    expect(printed()).toContain('Suggested next:');
     expect(printed()).toContain('npx exagent runtime:errors --duration 2000');
   });
 
@@ -307,7 +307,7 @@ describe(runtimeErrorsAsync, () => {
 
     await runtimeErrorsAsync({ ...errorsOptions, followups: false });
 
-    expect(printed()).not.toContain('Next (optional):');
+    expect(printed()).not.toContain('Suggested next:');
   });
 
   it(`should embed an empty follow-up list in --json with --no-followups`, async () => {
@@ -422,7 +422,7 @@ describe(runtimeNetworkAsync, () => {
     await runtimeNetworkAsync(networkOptions);
 
     expect(printed()).toContain('1 of them failed');
-    expect(printed()).toContain('Next (optional):');
+    expect(printed()).toContain('Suggested next:');
     expect(printed()).toContain('npx exagent runtime:errors --duration 5000');
   });
 
@@ -443,7 +443,7 @@ describe(runtimeNetworkAsync, () => {
 
     await runtimeNetworkAsync({ ...networkOptions, followups: false });
 
-    expect(printed()).not.toContain('Next (optional):');
+    expect(printed()).not.toContain('Suggested next:');
   });
 
   // "The app made no requests" and "this runtime cannot report requests" are different facts:

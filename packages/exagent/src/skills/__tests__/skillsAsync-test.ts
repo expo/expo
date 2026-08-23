@@ -208,7 +208,7 @@ describe('syncSkillsAsync', () => {
 
       await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
-      expect(printed()).toContain('Next (optional):');
+      expect(printed()).toContain('Suggested next:');
       expect(printed()).toContain('npx exagent skills:list');
     });
 
@@ -238,7 +238,7 @@ describe('syncSkillsAsync', () => {
 
       await syncSkillsAsync('/root', { agents: [], dryRun: false, followups: false });
 
-      expect(printed()).not.toContain('Next (optional):');
+      expect(printed()).not.toContain('Suggested next:');
     });
 
     it('should offer nothing when there was nothing to sync', async () => {
@@ -247,7 +247,7 @@ describe('syncSkillsAsync', () => {
 
       await syncSkillsAsync('/root', { agents: [], dryRun: false });
 
-      expect(printed()).not.toContain('Next (optional):');
+      expect(printed()).not.toContain('Suggested next:');
     });
   });
 });

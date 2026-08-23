@@ -270,7 +270,7 @@ describe('exagent status', () => {
       ]);
 
       expect(result.exitCode).toBe(0);
-      expect(result.stdout).not.toContain('Next (optional):');
+      expect(result.stdout).not.toContain('Suggested next:');
     });
 
     it('reports an empty follow-up list with --no-followups, keeping the key set', async () => {

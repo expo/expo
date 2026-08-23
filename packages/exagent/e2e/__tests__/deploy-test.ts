@@ -268,7 +268,7 @@ describe('exagent deploy', () => {
 
       expect(readStubEasInvocations(projectRoot)[0]!.args).toEqual(['deploy', '--non-interactive']);
       expect(result.stdout).toContain(STUB_DEPLOYMENT_URL);
-      expect(result.stdout).toContain('Next (optional):');
+      expect(result.stdout).toContain('Suggested next:');
     });
 
     it(`should report a deployment whose URL is not in the output`, async () => {
@@ -391,7 +391,7 @@ describe('exagent deploy', () => {
       expect(result.stdout).toContain('Open this to finish the launch:');
       expect(result.stdout).toContain(STUB_LAUNCH_URL);
       expect(result.stdout).toContain('expires in 8 hours');
-      expect(result.stdout).toContain('Next (optional):');
+      expect(result.stdout).toContain('Suggested next:');
       // The progress of the launch CLI reaches the terminal while it runs, on stderr, so a slow
       // upload does not look like a hung command.
       expect(result.stderr).toContain('Searching for relevant files');

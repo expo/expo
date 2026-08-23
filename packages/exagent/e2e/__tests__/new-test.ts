@@ -146,7 +146,7 @@ describe('exagent new', () => {
     ]);
     expect(fs.existsSync(path.join(workDir, 'my-app', 'app.json'))).toBe(true);
     expect(result.stdout).toContain(path.join(workDir, 'my-app'));
-    expect(result.stdout).toContain('Next (optional):');
+    expect(result.stdout).toContain('Suggested next:');
     expect(result.stdout).toContain('cd my-app && npx exagent status');
   });
 

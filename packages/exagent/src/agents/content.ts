@@ -72,5 +72,5 @@ function skillsLine(skillsDirs: string[]): string {
     .map((dir) => `\`${dir}\``)
     .join(', ')}. Rerun \`npx exagent agents:setup\` after installing a package.
 
-Commands end with a \`Next (optional):\` section — suggested follow-up commands, not required steps. Run one only when it serves your current goal.`;
+Commands end with a \`Suggested next:\` section — suggested follow-up commands, not required steps. Run one only when it serves your current goal.`;
 }

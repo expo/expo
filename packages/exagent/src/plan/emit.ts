@@ -16,7 +16,7 @@ export interface EmitStartPlanOptions {
   /** Print the plan as JSON instead of a table, for callers that parse stdout. */
   json?: boolean;
   /**
-   * Next actions to embed in the `--json` payload, empty when they are suppressed. The `Next (optional):`
+   * Next actions to embed in the `--json` payload, empty when they are suppressed. The `Suggested next:`
    * section of the text output and the `cli:followups` event are the caller's own, so the plan
    * stays the only thing this module prints.
    *

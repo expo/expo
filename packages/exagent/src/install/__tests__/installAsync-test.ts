@@ -158,7 +158,7 @@ describe(installAsync, () => {
     it(`should say a reload is enough after a JavaScript only install`, async () => {
       await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
 
-      expect(printed()).toContain('Next (optional):');
+      expect(printed()).toContain('Suggested next:');
       expect(printed()).toContain('npx exagent runtime:errors');
       expect(printed()).toContain('reload');
     });
@@ -192,13 +192,13 @@ describe(installAsync, () => {
 
       expect(listSkillPackagesAsync).not.toHaveBeenCalled();
       // The impact report is independent of the skill flags, so it still drives a follow-up.
-      expect(printed()).toContain('Next (optional):');
+      expect(printed()).toContain('Suggested next:');
     });
 
     it(`should print nothing with --no-followups`, async () => {
       await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--no-followups']));
 
-      expect(printed()).not.toContain('Next (optional):');
+      expect(printed()).not.toContain('Suggested next:');
       expect(listSkillPackagesAsync).not.toHaveBeenCalled();
     });
 
@@ -207,7 +207,7 @@ describe(installAsync, () => {
 
       await installAsync(projectRoot, resolveInstallPlan(['--fix']));
 
-      expect(printed()).not.toContain('Next (optional):');
+      expect(printed()).not.toContain('Suggested next:');
     });
 
     it(`should print nothing when the install itself failed`, async () => {
@@ -215,7 +215,7 @@ describe(installAsync, () => {
 
       await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
 
-      expect(printed()).not.toContain('Next (optional):');
+      expect(printed()).not.toContain('Suggested next:');
     });
   });
 });

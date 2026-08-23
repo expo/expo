@@ -1,6 +1,6 @@
 // @ref llp/0009-smart-followups.rfc.md §Design
 // The one place follow-ups reach the outside world: the `cli:followups` event for a driving
-// agent, and the `Next (optional):` section for a human terminal. Nothing here can change an exit code.
+// agent, and the `Suggested next:` section for a human terminal. Nothing here can change an exit code.
 
 import { event } from '../events';
 import * as Log from '../log';
@@ -9,7 +9,7 @@ import { formatFollowUps } from './format';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface ReportFollowUpsOptions {
-  /** The command prints one JSON object on stdout, so the `Next (optional):` section is left out. */
+  /** The command prints one JSON object on stdout, so the `Suggested next:` section is left out. */
   json?: boolean;
   /**
    * Never print the section, even in text mode. `exagent status` uses this: its own `next` line
@@ -31,7 +31,7 @@ export function followUpsEnabled(flag: boolean | undefined): boolean {
 }
 
 /**
- * Emit the follow-ups of one command: always the event, and the `Next (optional):` section unless the
+ * Emit the follow-ups of one command: always the event, and the `Suggested next:` section unless the
  * caller owns stdout.
  *
  * @param command The CLI command name the follow-ups belong to, e.g. `start` or `runtime:errors`.

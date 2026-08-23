@@ -326,7 +326,7 @@ describe('expo passthrough', () => {
 
     const result = await executeExagentAsync(projectRoot, ['prebuild']);
 
-    expect(result.all).not.toContain('Next (optional):');
+    expect(result.all).not.toContain('Suggested next:');
     // The sync of `start` runs a few seconds in, give it time to wrongly happen here.
     await waitForAsync(() => fs.existsSync(skillLink), 5000);
     expect(fs.existsSync(skillLink)).toBe(false);

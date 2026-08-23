@@ -121,7 +121,7 @@ export const exagentCheckpointUndo: Command = async (argv) => {
       [
         `--id <id>         Checkpoint to restore (default: the most recent one)`,
         `--json            Print the result as JSON`,
-        `--no-followups    Skip the "Next (optional):" section of suggested follow-up commands`,
+        `--no-followups    Skip the "Suggested next:" section of suggested follow-up commands`,
         `-h, --help        Usage info`,
       ].join('\n'),
       [

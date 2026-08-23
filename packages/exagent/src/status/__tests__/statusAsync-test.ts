@@ -368,7 +368,7 @@ describe(printStatusAsync, () => {
           },
         ],
       });
-      expect(output()).not.toContain('Next (optional):');
+      expect(output()).not.toContain('Suggested next:');
     });
 
     it(`should embed the follow-ups in the JSON report`, async () => {
