@@ -1041,6 +1041,12 @@ module Expo
         header_search_paths = collect_xcframework_header_paths(expo_core_xcframework)
         return if header_search_paths.empty?
 
+        # Make the paths relative to PODS_ROOT so a relocated Pods directory keeps working.
+        sandbox_root = installer.sandbox.root.to_s
+        header_search_paths = header_search_paths.map do |path|
+          path.start_with?("#{sandbox_root}/") ? path.sub(sandbox_root, '${PODS_ROOT}') : path
+        end
+
         paths_string = header_search_paths.map { |p| "\"#{p}\"" }.join(' ')
 
         Pod::UI.info "#{'[Expo-precompiled] '.blue}Adding ExpoModulesJSI header search paths to all targets"
@@ -1519,7 +1525,14 @@ module Expo
           next nil unless @framework_owner_map[dep_name] == pod_name
           source_base = shared_spm_dep_source_base(dep_name, pod_info)
           next nil unless source_base
-          %(--shared "#{dep_name}:#{source_base.gsub(/[\\"$`]/) { |c| "\\#{c}" }}")
+          # Make the path relative to PODS_ROOT so a relocated Pods directory keeps working.
+          pods_root = Pod::Config.instance.project_pods_root.to_s
+          begin
+            source_base = "$PODS_ROOT/#{Pathname.new(source_base).relative_path_from(Pathname.new(pods_root))}"
+          rescue ArgumentError
+            source_base = source_base.gsub(/[\\"$`]/) { |c| "\\#{c}" }
+          end
+          %(--shared "#{dep_name}:#{source_base}")
         end
       end
 
