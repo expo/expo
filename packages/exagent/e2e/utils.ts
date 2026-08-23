@@ -2,7 +2,9 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
+import { createServer, type Server } from 'node:http';
 import net from 'node:net';
+import type { AddressInfo } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
@@ -61,6 +63,10 @@ export async function setupFixtureAsync(fixtureName: string): Promise<string> {
  * the fallback.
  *
  * Executable bits are set here instead of committed to git, so the fixtures stay plain files.
+ *
+ * The name and the script are the caller's: `expo` for the fixtures, `eas` and `create-launch` for
+ * the deploy tests, and anything else a command reaches for — including a script that never exits,
+ * for a command that has to be tested against a tool that stalls.
  *
  * @param binDir Directory the shims go into, e.g. `node_modules/.bin` or `.stub-bin`
  * @param name Bin name without an extension, e.g. `expo`
@@ -417,6 +423,94 @@ export async function waitForDevLockAsync(
     }
     await new Promise((resolve) => setTimeout(resolve, intervalMs));
   }
+}
+
+/** How a stub dev server should answer, per {@link startStubDevServerAsync}. */
+export type StubDevServerOptions = {
+  /**
+   * Debugger targets `GET /json/list` answers with — the apps a command under test will believe
+   * are connected. Defaults to none, which is a dev server nothing has attached to yet.
+   */
+  targets?: unknown[];
+  /**
+   * Delay before `GET /status` answers, in milliseconds.
+   *
+   * A real dev server does not answer while it is still coming up, and a command that waits for
+   * one has to be tested against that, not only against a server that is instantly ready.
+   */
+  statusDelayMs?: number;
+  /** Project root the `/status` answer names in its header, as the real dev server does. */
+  projectRoot?: string;
+};
+
+/** A stub dev server, and where it listens. */
+export type StubDevServer = {
+  /** Origin to hand to `--dev-server-url`, e.g. `http://127.0.0.1:53421`. */
+  url: string;
+  port: number;
+  /** Stop listening and wait for the server to close. */
+  close(): Promise<void>;
+};
+
+/**
+ * Start an HTTP server that answers the two requests `exagent` uses to recognize a dev server:
+ * `GET /status`, which a real Metro answers with `packager-status:running` and the project root in
+ * a header, and `GET /json/list`, the debugger target list.
+ *
+ * It is a double for the protocol, not for Metro: nothing is bundled and no app is involved, so a
+ * test can pin what a command does with a dev server that is up, one that is slow to answer, or
+ * one with no app attached, in milliseconds and with no ports to guess. Listens on `127.0.0.1` and
+ * an ephemeral port, so parallel test files never collide.
+ */
+export async function startStubDevServerAsync({
+  targets = [],
+  statusDelayMs = 0,
+  projectRoot = '/stub-project',
+}: StubDevServerOptions = {}): Promise<StubDevServer> {
+  const server: Server = createServer((request, response) => {
+    const route = (request.url ?? '').split('?')[0];
+
+    if (route === '/status') {
+      // The delay is the point of the option: the socket is accepted and left open, exactly as a
+      // dev server that is still starting leaves a probe waiting.
+      setTimeout(() => {
+        response.writeHead(200, {
+          'Content-Type': 'text/plain',
+          'X-React-Native-Project-Root': projectRoot,
+        });
+        response.end('packager-status:running');
+      }, statusDelayMs);
+      return;
+    }
+
+    if (route === '/json/list') {
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      response.end(JSON.stringify(targets));
+      return;
+    }
+
+    response.writeHead(404).end();
+  });
+
+  // Nothing keeps the test process alive because of the stub: a test that forgets to close one
+  // fails on its assertions, not on a jest run that never ends.
+  server.unref();
+  await new Promise<void>((resolve, reject) => {
+    server.once('error', reject);
+    server.listen(0, '127.0.0.1', () => resolve());
+  });
+
+  const { port } = server.address() as AddressInfo;
+  return {
+    url: `http://127.0.0.1:${port}`,
+    port,
+    close: () =>
+      new Promise<void>((resolve) => {
+        // Any request left waiting on `statusDelayMs` holds the server open otherwise.
+        server.closeAllConnections?.();
+        server.close(() => resolve());
+      }),
+  };
 }
 
 /**
