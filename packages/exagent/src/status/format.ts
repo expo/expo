@@ -5,6 +5,7 @@
 import chalk from 'chalk';
 
 import type {
+  AuthStatus,
   DevServerStatus,
   ExpoGoStatus,
   FreshnessStatus,
@@ -32,6 +33,7 @@ export function formatStatusReport(report: StatusReport): string {
     row('freshness', report.freshness, freshnessLine, report, 'freshness'),
     row('dev server', report.devServer, devServerLine, report, 'devServer'),
     row('skills', report.skills, skillsLine, report, 'skills'),
+    row('auth', report.auth, authLine, report, 'auth'),
     row('next', report.next, nextLine, report, 'next'),
   ].join('\n');
 }
@@ -105,6 +107,22 @@ function skillsLine(skills: SkillsStatus): string {
     ? `${skills.linked}/${skills.discovered} linked`
     : `${skills.discovered} ${pluralize(skills.discovered, 'skill', 'skills')} discovered`;
   return [agents, counts].join(SEPARATOR);
+}
+
+/**
+ * Who the CLI family acts as, and what said so.
+ *
+ * "Unknown" is its own answer and is never rounded down to "signed out": the difference decides
+ * whether an agent should hand a login to its user or simply start the command.
+ */
+function authLine(auth: AuthStatus): string {
+  if (auth.loggedIn == null) {
+    return chalk.yellow('unknown (nothing could answer)');
+  }
+  if (!auth.loggedIn) {
+    return [chalk.yellow('not signed in'), chalk.dim(`per ${auth.source}`)].join(SEPARATOR);
+  }
+  return [chalk.green(auth.user ?? 'signed in'), chalk.dim(`per ${auth.source}`)].join(SEPARATOR);
 }
 
 function nextLine(next: NextActionStatus): string {

@@ -25,6 +25,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     freshness: null,
     devServer: { url: 'http://127.0.0.1:8081', running: false, appsConnected: 0 },
     skills: { agentIds: ['claude-code'], discovered: 0, linked: 0 },
+    auth: { loggedIn: true, user: 'kudo', source: 'eas whoami' },
     next: { command: 'exagent dev', rule: 'expo-go', target: 'expo-go', steps: [] },
     probe: null,
     errors: {},

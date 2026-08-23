@@ -68,6 +68,22 @@ export interface SkillsStatus {
   linked: number;
 }
 
+/**
+ * Who the Expo CLI family acts as on this machine.
+ *
+ * Answers before a long command starts what would otherwise be found out after it: an agent that
+ * reads `loggedIn: false` here knows to hand a login to its user rather than to begin a deploy
+ * that will stop on one (llp/0010 §Needs-human protocol).
+ */
+export interface AuthStatus {
+  /** Null when nothing could answer, which is not the same as "signed out". */
+  loggedIn: boolean | null;
+  /** The account name, when something knew it. */
+  user: string | null;
+  /** What answered. Null when nothing did. */
+  source: 'eas whoami' | 'EXPO_TOKEN' | null;
+}
+
 export interface NextActionStatus {
   /** The command that performs this plan. */
   command: string;
@@ -84,6 +100,7 @@ export type StatusSectionName =
   | 'freshness'
   | 'devServer'
   | 'skills'
+  | 'auth'
   | 'next';
 
 /**
@@ -98,6 +115,7 @@ export interface StatusReport {
   freshness: FreshnessStatus | null;
   devServer: DevServerStatus | null;
   skills: SkillsStatus | null;
+  auth: AuthStatus | null;
   next: NextActionStatus | null;
   /**
    * The raw project probe the sections above are summarized from, verbatim.

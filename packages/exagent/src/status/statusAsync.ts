@@ -12,6 +12,7 @@ import path from 'path';
 import { event } from '../events';
 import { buildStatusFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
+import { readAuthPreflightAsync } from '../needsHuman/preflight';
 import { readLastBuildFingerprints } from '../plan/lastBuild';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
 import { readProjectPackageJsonAsync } from '../project/nodeModules';
@@ -31,6 +32,7 @@ import {
   resolveDefaultPlatform,
 } from './sections';
 import type {
+  AuthStatus,
   DevServerStatus,
   FreshnessState,
   SkillsStatus,
@@ -89,18 +91,19 @@ export async function printStatusAsync(projectRoot: string, options: StatusOptio
 /**
  * Read every section of the report.
  *
- * The three independent reads (project, dev server, skills) run in parallel, and each is wrapped
- * on its own: an unreadable project still reports a running dev server, and a dependency graph
- * the skill discovery cannot walk still reports the project.
+ * The four independent reads (project, dev server, skills, auth) run in parallel, and each is
+ * wrapped on its own: an unreadable project still reports a running dev server, and a dependency
+ * graph the skill discovery cannot walk still reports the project.
  */
 export async function collectStatusReportAsync(
   projectRoot: string,
   options: StatusOptions
 ): Promise<StatusReport> {
-  const [project, devServer, skills] = await Promise.all([
+  const [project, devServer, skills, auth] = await Promise.all([
     attemptAsync(() => readProjectAsync(projectRoot)),
     attemptAsync(() => probeDevServerStatusAsync(projectRoot, options)),
     attemptAsync(() => readSkillsStatusAsync(projectRoot)),
+    attemptAsync<AuthStatus>(() => readAuthPreflightAsync(projectRoot)),
   ]);
 
   const errors: Partial<Record<StatusSectionName, string>> = {};
@@ -110,6 +113,7 @@ export async function collectStatusReportAsync(
     freshness: null,
     devServer: null,
     skills: null,
+    auth: null,
     next: null,
     probe: null,
     errors,
@@ -146,6 +150,14 @@ export async function collectStatusReportAsync(
     report.skills = skills.value;
   } else {
     errors.skills = skills.error;
+  }
+
+  // The preflight never throws, so this only fires if it ever learns how to. Status is
+  // information: a probe that broke costs one line, not the command.
+  if ('value' in auth) {
+    report.auth = auth.value;
+  } else {
+    errors.auth = auth.error;
   }
 
   return report;

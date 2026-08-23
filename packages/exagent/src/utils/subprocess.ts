@@ -50,6 +50,14 @@ export interface SubprocessOptions {
    * because a person is watching. See {@link SubprocessResult.promptHang}.
    */
   promptGuard?: boolean;
+  /**
+   * Kill the child after this long, whatever it is doing.
+   *
+   * For a question whose answer is only worth a moment — "who is this machine signed in as", asked
+   * by a command that promises to be instant. A tool that is doing the work it was asked to do
+   * gets no deadline. See {@link SubprocessResult.timedOut}.
+   */
+  timeoutMs?: number;
 }
 
 export interface SubprocessResult {
@@ -66,6 +74,8 @@ export interface SubprocessResult {
    * Untrusted text: it is whatever the tool printed, and it is quoted rather than acted on.
    */
   promptHang?: string;
+  /** Set when the child was killed for running past `timeoutMs`. */
+  timedOut?: boolean;
 }
 
 /** Signals the terminal delivers to the whole process group, so the child gets them too. */
@@ -88,7 +98,7 @@ const TERMINAL_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
 export function spawnSubprocessAsync(
   command: string,
   args: string[],
-  { cwd, output = 'capture', env: childEnv, promptGuard }: SubprocessOptions = {}
+  { cwd, output = 'capture', env: childEnv, promptGuard, timeoutMs }: SubprocessOptions = {}
 ): Promise<SubprocessResult> {
   return new Promise<SubprocessResult>((resolve) => {
     // `eas`, `create-expo` and `npx` all resolve to a batch shim on Windows, which needs `cmd.exe`.
@@ -106,6 +116,16 @@ export function spawnSubprocessAsync(
     let stderr = '';
     /** Set when the guard below kills the child, so `close` knows why it is closing. */
     let promptHang: string | undefined;
+    /** Set when the deadline below kills the child, for the same reason. */
+    let timedOut = false;
+
+    const deadline = timeoutMs
+      ? setTimeout(() => {
+          timedOut = true;
+          child.kill();
+        }, timeoutMs)
+      : undefined;
+    deadline?.unref?.();
 
     // Layer 4 of the needs-human detection (llp/0010 §Needs-human protocol). Nothing is captured
     // in `inherit` mode, so there is no last line to look at and no reason to look: a person has
@@ -148,6 +168,7 @@ export function spawnSubprocessAsync(
     });
     const stopWatching = () => {
       guard?.stop();
+      clearTimeout(deadline);
       for (const { signal, forward } of listeners) {
         process.off(signal, forward);
       }
@@ -164,6 +185,10 @@ export function spawnSubprocessAsync(
       // asked for, so it must not read as the clean interrupt below.
       if (promptHang != null) {
         resolve({ exitCode: code, stdout, stderr, promptHang });
+        return;
+      }
+      if (timedOut) {
+        resolve({ exitCode: code, stdout, stderr, timedOut: true });
         return;
       }
       const exitCode = code ?? (signal === 'SIGINT' || signal === 'SIGTERM' ? 0 : 1);
