@@ -38,6 +38,7 @@
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
 - Fix wirelessly connected iOS 16 and older devices being omitted from `expo run:ios --device` selection. ([#48127](https://github.com/expo/expo/pull/48127) by [@davellanedam](https://github.com/davellanedam))
 - Fix resolution of ESLint failing in `expo lint` after prerequisites check installs it ([#46223](https://github.com/expo/expo/pull/46223) by [@claritystorm](https://github.com/claritystorm))
+- Make Android tooling (avd and adb) handling safer, more reliable, and cancellable ([#49258](https://github.com/expo/expo/pull/49258) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
