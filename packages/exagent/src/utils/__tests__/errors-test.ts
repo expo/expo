@@ -1,8 +1,20 @@
 import { EXIT_NEEDS_HUMAN } from '../../exitCodes';
-import { CommandError, logCmdError } from '../errors';
+import { warn } from '../../log';
+import {
+  CommandError,
+  NeedsHumanError,
+  formatNeedsHumanBlock,
+  isNeedsHumanError,
+  logCmdError,
+  type NeedsHuman,
+} from '../errors';
+
+const emitted: { name: string; payload: any }[] = [];
 
 jest.mock('2g', () => {
-  const events: any = () => jest.fn();
+  const events: any = (group: string) => (name: string, payload: any) => {
+    emitted.push({ name: `${group}:${name}`, payload });
+  };
   events.debug = () => jest.fn();
   return { events, flushEventLogger: jest.fn(async () => {}) };
 });
@@ -13,10 +25,26 @@ jest.mock('../../log', () => ({
   warn: jest.fn(),
 }));
 
+/** A handoff, as the registry hands one over. */
+function needsHuman(overrides: Partial<NeedsHuman> = {}): NeedsHuman {
+  return {
+    scenario: 'eas-login',
+    need: 'Sign in to an Expo account on this machine.',
+    command: 'npx eas login',
+    url: 'https://expo.dev/settings/access-tokens',
+    unattendedEnv: ['EXPO_TOKEN'],
+    resumable: true,
+    detectedBy: 'exit-signature',
+    ...overrides,
+  };
+}
+
 describe(logCmdError, () => {
   let exitSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    emitted.length = 0;
+    jest.clearAllMocks();
     exitSpy = jest.spyOn(process, 'exit').mockImplementation((() => {}) as never);
   });
 
@@ -42,5 +70,101 @@ describe(logCmdError, () => {
     error.exitCode = EXIT_NEEDS_HUMAN;
 
     expect(await exitCodeOfAsync(error)).toBe(7);
+  });
+
+  it('exits 7 for a needs-human error without being told the code', async () => {
+    const error = new NeedsHumanError('EAS_LOGIN_REQUIRED', 'Nobody is signed in.', needsHuman());
+
+    expect(await exitCodeOfAsync(error)).toBe(EXIT_NEEDS_HUMAN);
+  });
+
+  it('emits cli:error and then cli:needs_human, with the whole handoff', async () => {
+    await exitCodeOfAsync(
+      new NeedsHumanError('EAS_LOGIN_REQUIRED', 'Nobody is signed in.', needsHuman())
+    );
+
+    expect(emitted.map((entry) => entry.name)).toEqual(['cli:error', 'cli:needs_human']);
+    expect(emitted[0]!.payload).toEqual({
+      code: 'EAS_LOGIN_REQUIRED',
+      message: 'Nobody is signed in.',
+      suggestedCommand: 'npx eas login',
+      needsHuman: true,
+    });
+    expect(emitted[1]!.payload).toEqual({
+      code: 'EAS_LOGIN_REQUIRED',
+      scenario: 'eas-login',
+      need: 'Sign in to an Expo account on this machine.',
+      command: 'npx eas login',
+      url: 'https://expo.dev/settings/access-tokens',
+      unattendedEnv: ['EXPO_TOKEN'],
+      resumable: true,
+      detectedBy: 'exit-signature',
+    });
+  });
+
+  it('marks an ordinary error as not needing a human', async () => {
+    await exitCodeOfAsync(new CommandError('BAD_ARGS', 'nope'));
+
+    expect(emitted.map((entry) => entry.name)).toEqual(['cli:error']);
+    expect(emitted[0]!.payload).toMatchObject({ needsHuman: false });
+  });
+
+  it('prints the three-line block instead of the Try line', async () => {
+    await exitCodeOfAsync(
+      new NeedsHumanError('EAS_LOGIN_REQUIRED', 'Nobody is signed in.', needsHuman())
+    );
+
+    expect(jest.mocked(warn).mock.calls.map(([line]) => line)).toEqual([
+      'Needs a human   eas-login',
+      'Ask the user    npx eas login',
+      'Or set          EXPO_TOKEN  (https://expo.dev/settings/access-tokens)',
+    ]);
+  });
+});
+
+describe(formatNeedsHumanBlock, () => {
+  it('names the URL as the ask when there is no command', () => {
+    expect(
+      formatNeedsHumanBlock(
+        needsHuman({
+          scenario: 'launch-browser-handoff',
+          command: null,
+          url: 'https://launch.expo.dev/l/abc',
+          unattendedEnv: [],
+        })
+      )
+    ).toEqual([
+      'Needs a human   launch-browser-handoff',
+      'Ask the user    https://launch.expo.dev/l/abc',
+    ]);
+  });
+
+  it('keeps the URL next to the command when nothing can be set instead', () => {
+    expect(
+      formatNeedsHumanBlock(
+        needsHuman({
+          scenario: 'asc-api-key-create',
+          command: 'npx eas credentials --platform ios',
+          url: 'https://appstoreconnect.apple.com',
+          unattendedEnv: [],
+        })
+      )[1]
+    ).toBe(
+      'Ask the user    npx eas credentials --platform ios  (https://appstoreconnect.apple.com)'
+    );
+  });
+
+  it('falls back to the need when a scenario names neither', () => {
+    expect(
+      formatNeedsHumanBlock(needsHuman({ command: null, url: null, unattendedEnv: [] }))[1]
+    ).toBe('Ask the user    Sign in to an Expo account on this machine.');
+  });
+});
+
+describe(isNeedsHumanError, () => {
+  it('recognises the class without an instanceof check', () => {
+    expect(isNeedsHumanError(new NeedsHumanError('X', 'x', needsHuman()))).toBe(true);
+    expect(isNeedsHumanError(new CommandError('X', 'x'))).toBe(false);
+    expect(isNeedsHumanError(new Error('x'))).toBe(false);
   });
 });
