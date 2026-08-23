@@ -7,7 +7,16 @@ import { listAvdsAsync } from './emulator';
 export async function getDevicesAsync(): Promise<Device[]> {
   const bootedDevices = await getAttachedDevicesAsync();
 
-  const data = await listAvdsAsync();
+  // NOTE(@kitten): We don't assume AVD must succeed or be present, and still allow
+  // devices to be discovered and move on
+  let data: Device[];
+  try {
+    data = await listAvdsAsync();
+  } catch (error) {
+    if (!bootedDevices.length) throw error;
+    data = [];
+  }
+
   const allDevices = mergeDevices(bootedDevices, data);
 
   if (!allDevices.length) {
