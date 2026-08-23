@@ -456,6 +456,22 @@ describe(getAttachedDevicesAsync, () => {
     );
   });
 
+  it('diagnoses a timeout while resolving an attached emulator name', async () => {
+    jest
+      .mocked(getServer().runHostQueryAsync)
+      .mockResolvedValueOnce('List of devices attached\nemulator-5554 device transport_id:1');
+    jest
+      .mocked(getServer().runDeviceQueryAsync)
+      .mockRejectedValueOnce(
+        new AdbProcessWaitError('name lookup timed out', 'emulator name query', 'device-service')
+      );
+    jest.spyOn(AdbEndpoint, 'probeAdbHostVersionAsync').mockResolvedValueOnce({ kind: 'version' });
+
+    await expect(getAttachedDevicesAsync({ probeWaitLimitMs: 5 })).rejects.toThrow(
+      /ADB server is responding, but emulator name query did not finish/
+    );
+  });
+
   it('does not probe after explicit caller cancellation', async () => {
     const cancellation = new Error('cancelled');
     const controller = new AbortController();
