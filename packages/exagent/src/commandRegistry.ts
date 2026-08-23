@@ -199,13 +199,14 @@ export type CommandResolution =
   /** In none of the three maps, so neither CLI has it. */
   | { kind: 'unknown-command'; command: string };
 
+// @ref llp/0010-agent-conventions.rfc.md §Registry rules — rules 1 and 2 below.
 /**
  * Resolve the command an invocation names.
  *
  * Our own names win, then the forwarded `expo` set, and anything left is an error. Membership in a
  * map decides — never the shape of the name — because `expo export:web` has a colon too.
  *
- * Two rules of the resolution order are worth naming, both from llp/0010 §Registry rules:
+ * Two rules of the resolution order are worth naming:
  *
  * 1. **Options without an action are an error, not help.** `exagent <group> --json` used to print
  *    the group listing and exit 0, which an agent reads as "that worked" — a silent no-op is the
