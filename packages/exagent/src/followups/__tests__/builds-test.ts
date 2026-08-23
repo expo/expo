@@ -42,10 +42,7 @@ describe(buildBuildWaitFollowUps, () => {
       input({ outcome: 'errored', errorDocsUrl: 'https://docs.expo.dev/troubleshooting/' })
     );
 
-    expect(followups.map((followup) => followup.id)).toEqual([
-      'open-error-docs',
-      'eas-build-view',
-    ]);
+    expect(followups.map((followup) => followup.id)).toEqual(['open-error-docs', 'eas-build-view']);
     expect(followups[1]!.command).toBe(`npx eas build:view ${ID}`);
   });
 
@@ -62,9 +59,7 @@ describe(buildBuildWaitFollowUps, () => {
   });
 
   it(`offers the restart without a profile the payload did not name`, () => {
-    const followups = buildBuildWaitFollowUps(
-      input({ outcome: 'canceled', buildProfile: null })
-    );
+    const followups = buildBuildWaitFollowUps(input({ outcome: 'canceled', buildProfile: null }));
 
     expect(followups[0]!.command).toBe('npx eas build --platform ios');
   });
