@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Document that every `tint` value adds a color layer on top of the blur.
+
 ## 57.0.2 - 2026-07-15
 
 _This version does not introduce any user-facing changes._
