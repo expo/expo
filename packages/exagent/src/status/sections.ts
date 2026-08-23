@@ -7,7 +7,7 @@ import path from 'path';
 import { decideStartPlan } from '../plan/decide';
 import type { LastBuildFingerprints, NativePlatform, PlanPlatform } from '../plan/types';
 import type { ProjectState } from '../project/types';
-import type { DevServerProbe } from '../runtime/devServer';
+import type { DevServerProbe, DevServerSource } from '../runtime/devServer';
 import type {
   DevServerStatus,
   ExpoGoStatus,
@@ -87,12 +87,26 @@ function platformFreshness(
   return { platform, state: 'fresh', detail: `matches ${shortHash(hash)}`, recordedHash };
 }
 
-/** Whether a dev server answers, and how many apps are connected to it. */
-export function buildDevServerStatus(url: string, probe: DevServerProbe): DevServerStatus {
+/** What the dev-server section reports beyond reachability, gathered by the caller. */
+export interface DevServerReadiness {
+  /** Which step of discovery produced the URL. */
+  source: DevServerSource;
+  /** Whether the bundler has finished, or null when it could not be decided. */
+  ready: boolean | null;
+  /** Whether the dev server serves this project, or null when it could not be decided. */
+  projectRootMatched: boolean | null;
+}
+
+/** Whether a dev server answers, how many apps are connected to it, and whether it is ready. */
+export function buildDevServerStatus(
+  url: string,
+  probe: DevServerProbe,
+  readiness: DevServerReadiness
+): DevServerStatus {
   if (probe.reachable) {
-    return { url, running: true, appsConnected: probe.targets.length };
+    return { url, running: true, appsConnected: probe.targets.length, ...readiness };
   }
-  const status: DevServerStatus = { url, running: false, appsConnected: 0 };
+  const status: DevServerStatus = { url, running: false, appsConnected: 0, ...readiness };
   return probe.reason ? { ...status, reason: probe.reason } : status;
 }
 

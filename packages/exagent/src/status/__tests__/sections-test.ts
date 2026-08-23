@@ -8,6 +8,7 @@ import {
   buildNextActionStatus,
   buildProjectStatus,
   resolveDefaultPlatform,
+  type DevServerReadiness,
 } from '../sections';
 
 const projectRoot = '/project';
@@ -146,32 +147,63 @@ describe(buildFreshnessStatus, () => {
 
 describe(buildDevServerStatus, () => {
   const url = 'http://127.0.0.1:8081';
+  const readiness: DevServerReadiness = {
+    source: 'default',
+    ready: true,
+    projectRootMatched: true,
+  };
 
   it(`should report a reachable dev server and the apps connected to it`, () => {
     const probe = { reachable: true, targets: [{ id: '1' }, { id: '2' }] } as DevServerProbe;
 
-    expect(buildDevServerStatus(url, probe)).toEqual({
+    expect(buildDevServerStatus(url, probe, readiness)).toEqual({
       url,
       running: true,
       appsConnected: 2,
+      source: 'default',
+      ready: true,
+      projectRootMatched: true,
     });
   });
 
   it(`should report a dev server without a connected app`, () => {
     const probe: DevServerProbe = { reachable: true, targets: [] };
 
-    expect(buildDevServerStatus(url, probe)).toEqual({ url, running: true, appsConnected: 0 });
+    expect(buildDevServerStatus(url, probe, readiness)).toEqual({
+      url,
+      running: true,
+      appsConnected: 0,
+      source: 'default',
+      ready: true,
+      projectRootMatched: true,
+    });
   });
 
   it(`should report an unreachable dev server with its reason`, () => {
     const probe: DevServerProbe = { reachable: false, targets: [], reason: 'fetch failed' };
 
-    expect(buildDevServerStatus(url, probe)).toEqual({
+    expect(
+      buildDevServerStatus(url, probe, { source: 'default', ready: null, projectRootMatched: null })
+    ).toEqual({
       url,
       running: false,
       appsConnected: 0,
+      source: 'default',
+      ready: null,
+      projectRootMatched: null,
       reason: 'fetch failed',
     });
+  });
+
+  // The step that answered is part of the report: `flag` and `lock` name a dev server on purpose,
+  // `scan` only found one that answered (llp/0010 §Registry rules is about names; this is about
+  // how much a discovered URL proves).
+  it(`should carry the discovery step through`, () => {
+    const probe: DevServerProbe = { reachable: true, targets: [] };
+
+    expect(
+      buildDevServerStatus(url, probe, { source: 'scan', ready: false, projectRootMatched: false })
+    ).toMatchObject({ source: 'scan', ready: false, projectRootMatched: false });
   });
 });
 

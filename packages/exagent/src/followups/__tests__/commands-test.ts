@@ -23,7 +23,14 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     },
     expoGo: { compatible: true, reasonCount: 0 },
     freshness: null,
-    devServer: { url: 'http://127.0.0.1:8081', running: false, appsConnected: 0 },
+    devServer: {
+      url: 'http://127.0.0.1:8081',
+      running: false,
+      appsConnected: 0,
+      source: 'default',
+      ready: null,
+      projectRootMatched: null,
+    },
     skills: { agentIds: ['claude-code'], discovered: 0, linked: 0 },
     next: { command: 'exagent dev', rule: 'expo-go', target: 'expo-go', steps: [] },
     probe: null,
@@ -40,7 +47,14 @@ describe(buildStatusFollowUps, () => {
   it(`should read the runtime of an app connected to the dev server`, () => {
     const followups = buildStatusFollowUps(
       mockReport({
-        devServer: { url: 'http://127.0.0.1:8081', running: true, appsConnected: 1 },
+        devServer: {
+          url: 'http://127.0.0.1:8081',
+          running: true,
+          appsConnected: 1,
+          source: 'default',
+          ready: true,
+          projectRootMatched: true,
+        },
       })
     );
 
@@ -51,7 +65,14 @@ describe(buildStatusFollowUps, () => {
   it(`should not offer the runtime loop for a dev server without an app`, () => {
     const followups = buildStatusFollowUps(
       mockReport({
-        devServer: { url: 'http://127.0.0.1:8081', running: true, appsConnected: 0 },
+        devServer: {
+          url: 'http://127.0.0.1:8081',
+          running: true,
+          appsConnected: 0,
+          source: 'default',
+          ready: true,
+          projectRootMatched: true,
+        },
       })
     );
 
@@ -109,7 +130,14 @@ describe(buildStatusFollowUps, () => {
   it(`should never repeat the command the next line already names`, () => {
     const followups = buildStatusFollowUps(
       mockReport({
-        devServer: { url: 'http://127.0.0.1:8081', running: true, appsConnected: 1 },
+        devServer: {
+          url: 'http://127.0.0.1:8081',
+          running: true,
+          appsConnected: 1,
+          source: 'default',
+          ready: true,
+          projectRootMatched: true,
+        },
         skills: { agentIds: ['claude-code'], discovered: 3, linked: 0 },
         expoGo: { compatible: false, reasonCount: 1 },
       })

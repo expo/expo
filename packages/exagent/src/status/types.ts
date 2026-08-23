@@ -4,6 +4,7 @@
 
 import type { NativePlatform } from '../plan/types';
 import type { PlanStep, ProjectState, ProjectTarget } from '../project/types';
+import type { DevServerSource } from '../runtime/devServer';
 
 /** Whether the installed development build can be proven to match the project. */
 export type FreshnessState =
@@ -55,6 +56,24 @@ export interface DevServerStatus {
   running: boolean;
   /** Debugger targets the dev server reported, i.e. apps connected to it. */
   appsConnected: number;
+  /** Which step of discovery produced {@link url}, e.g. the project's lock or a port scan. */
+  source: DevServerSource;
+  /**
+   * Whether the bundler has finished, per `GET /status`.
+   *
+   * Null when it could not be decided in the moment status allows itself: nothing answered, or
+   * the dev server was still bundling when the short probe expired. Status reports where the
+   * project is *now* and never waits, so "still working" is reported as unknown rather than as
+   * not ready — `npx exagent dev:wait` is the command that waits for the answer.
+   */
+  ready: boolean | null;
+  /**
+   * Whether the dev server that answered serves this project, per its own project-root header.
+   *
+   * Null when it cannot be decided; `false` means another project's dev server answered on the
+   * port this one was looked for on.
+   */
+  projectRootMatched: boolean | null;
   /** Why the dev server did not answer. */
   reason?: string;
 }

@@ -7,6 +7,7 @@ import { readLastBuildFingerprints } from '../../plan/lastBuild';
 import { probeProjectStateAsync } from '../../project/probe';
 import type { ProjectState } from '../../project/types';
 import { discoverDevServerAsync } from '../../runtime/devServer';
+import { waitForBundlerReadyAsync } from '../../runtime/waitReady';
 import { getPersistedAgentIdsAsync } from '../../skills/agents';
 import { discoverSkillsAsync } from '../../skills/discovery';
 import type { DiscoveredSkill } from '../../skills/types';
@@ -19,6 +20,7 @@ jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
 jest.mock('../../project/probe', () => ({ probeProjectStateAsync: jest.fn() }));
 jest.mock('../../plan/lastBuild', () => ({ readLastBuildFingerprints: jest.fn(() => ({})) }));
 jest.mock('../../runtime/devServer', () => ({ discoverDevServerAsync: jest.fn() }));
+jest.mock('../../runtime/waitReady', () => ({ waitForBundlerReadyAsync: jest.fn() }));
 jest.mock('../../skills/discovery', () => ({ discoverSkillsAsync: jest.fn(async () => []) }));
 jest.mock('../../skills/agents', () => ({
   ...jest.requireActual('../../skills/agents'),
@@ -56,9 +58,20 @@ beforeEach(() => {
   vol.fromJSON({ '/project/package.json': JSON.stringify({ name: 'my-app' }) });
   mockState();
   jest.mocked(readLastBuildFingerprints).mockReturnValue({});
-  jest
-    .mocked(discoverDevServerAsync)
-    .mockResolvedValue({ reachable: true, targets: [{} as any], devServerUrl, discovered: false });
+  jest.mocked(discoverDevServerAsync).mockResolvedValue({
+    reachable: true,
+    targets: [{} as any],
+    devServerUrl,
+    source: 'default',
+    discovered: false,
+  });
+  jest.mocked(waitForBundlerReadyAsync).mockResolvedValue({
+    ready: true,
+    projectRootMatched: true,
+    reportedProjectRoot: projectRoot,
+    timedOut: false,
+    waitedMs: 1,
+  });
   jest.mocked(discoverSkillsAsync).mockResolvedValue([]);
   jest.mocked(getPersistedAgentIdsAsync).mockResolvedValue(null);
 });
@@ -87,7 +100,14 @@ describe(collectStatusReportAsync, () => {
     });
     expect(report.expoGo).toEqual({ compatible: true, reasonCount: 0 });
     expect(report.freshness?.platforms[0]).toMatchObject({ platform: 'ios', state: 'fresh' });
-    expect(report.devServer).toEqual({ url: devServerUrl, running: true, appsConnected: 1 });
+    expect(report.devServer).toEqual({
+      url: devServerUrl,
+      running: true,
+      appsConnected: 1,
+      source: 'default',
+      ready: true,
+      projectRootMatched: true,
+    });
     expect(report.skills).toEqual({ agentIds: ['claude-code'], discovered: 1, linked: 1 });
     expect(report.next?.rule).toBe('expo-go');
   });
@@ -149,6 +169,7 @@ describe(collectStatusReportAsync, () => {
       targets: [],
       reason: 'fetch failed',
       devServerUrl,
+      source: 'default',
       discovered: false,
     });
 
@@ -158,11 +179,76 @@ describe(collectStatusReportAsync, () => {
       url: devServerUrl,
       running: false,
       appsConnected: 0,
+      source: 'default',
+      ready: null,
+      projectRootMatched: null,
       reason: 'fetch failed',
     });
+    // Nothing answered, so nothing was asked about readiness either.
+    expect(jest.mocked(waitForBundlerReadyAsync)).not.toHaveBeenCalled();
     // A missing dev server is information, so every other section is still reported.
     expect(report.errors).toEqual({});
     expect(report.project).not.toBeNull();
+  });
+
+  // @ref llp/0010 — `status` reports where the project is now and never waits for a bundle, so
+  // "still working" is its own answer and not a claim that the bundler failed.
+  it(`should report an unknown readiness when the bundler is still working`, async () => {
+    jest.mocked(waitForBundlerReadyAsync).mockResolvedValue({
+      ready: false,
+      projectRootMatched: true,
+      reportedProjectRoot: projectRoot,
+      timedOut: true,
+      waitedMs: 400,
+    });
+
+    const report = await collectStatusReportAsync(projectRoot, options);
+
+    expect(report.devServer?.ready).toBeNull();
+    expect(report.devServer?.projectRootMatched).toBe(true);
+  });
+
+  it(`should report a dev server that answered /status with something else as not ready`, async () => {
+    jest.mocked(waitForBundlerReadyAsync).mockResolvedValue({
+      ready: false,
+      projectRootMatched: null,
+      reportedProjectRoot: null,
+      timedOut: false,
+      waitedMs: 3,
+      reason: 'not an Expo dev server',
+    });
+
+    const report = await collectStatusReportAsync(projectRoot, options);
+
+    expect(report.devServer?.ready).toBe(false);
+  });
+
+  it(`should report the discovery step that found the dev server`, async () => {
+    jest.mocked(discoverDevServerAsync).mockResolvedValue({
+      reachable: true,
+      targets: [],
+      devServerUrl: 'http://127.0.0.1:8090',
+      source: 'lock',
+      discovered: true,
+    });
+
+    const report = await collectStatusReportAsync(projectRoot, options);
+
+    expect(report.devServer?.source).toBe('lock');
+  });
+
+  it(`should report another project's dev server as not matching`, async () => {
+    jest.mocked(waitForBundlerReadyAsync).mockResolvedValue({
+      ready: true,
+      projectRootMatched: false,
+      reportedProjectRoot: '/other-project',
+      timedOut: false,
+      waitedMs: 2,
+    });
+
+    const report = await collectStatusReportAsync(projectRoot, options);
+
+    expect(report.devServer?.projectRootMatched).toBe(false);
   });
 
   it(`should stop waiting for a dev server that never answers`, async () => {

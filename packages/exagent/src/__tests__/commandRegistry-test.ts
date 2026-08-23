@@ -31,11 +31,43 @@ function withGroup(name: string, group: (typeof commandGroups)[string], test: ()
 
 describe(resolveCommand, () => {
   it('resolves a top-level command, keeping the rest of the arguments', () => {
-    expect(resolveCommand('dev', ['--plan', '--json'])).toEqual({
+    expect(resolveCommand('status', ['--json'])).toEqual({
       kind: 'command',
-      name: 'dev',
-      argv: ['--plan', '--json'],
+      name: 'status',
+      argv: ['--json'],
       load: expect.any(Function),
+    });
+  });
+
+  // `dev` became a group so that `dev:wait` could join it as one entry. The bare name still runs
+  // the plan engine with every option it was given, which is what makes the promotion invisible.
+  describe('the dev group', () => {
+    it('runs the plan engine for the bare name, with its options', () => {
+      expect(resolveCommand('dev', ['--plan', '--json'])).toMatchObject({
+        kind: 'command',
+        name: 'dev:run',
+        argv: ['--plan', '--json'],
+      });
+      expect(resolveCommand('dev', [])).toMatchObject({ kind: 'command', name: 'dev:run' });
+    });
+
+    it('resolves the readiness gate in both spellings', () => {
+      expect(resolveCommand('dev:wait', ['--require-app'])).toMatchObject({
+        kind: 'command',
+        name: 'dev:wait',
+        argv: ['--require-app'],
+      });
+      expect(resolveCommand('dev', ['wait', '--require-app'])).toMatchObject({
+        kind: 'command',
+        name: 'dev:wait',
+        argv: ['--require-app'],
+      });
+    });
+
+    // `dev` is this CLI's own verb rather than an `expo` command, so llp/0010 rule (b) does not
+    // apply and the space form is available.
+    it('is not a forwarded expo command', () => {
+      expect(forwardedCommands).not.toContain('dev');
     });
   });
 

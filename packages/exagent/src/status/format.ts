@@ -89,10 +89,31 @@ function devServerLine(devServer: DevServerStatus): string {
     return `${chalk.dim('not running')} (${devServer.url})`;
   }
   const apps = pluralize(devServer.appsConnected, 'app', 'apps');
-  return [
+  const facts = [
     `${chalk.green('running')} on ${devServer.url}`,
+    chalk.dim(`via ${devServer.source}`),
+    bundlerFact(devServer.ready),
     `${devServer.appsConnected} ${apps} connected`,
-  ].join(SEPARATOR);
+  ];
+  // Only worth a word when it is the bad answer: a dev server that proved it serves this project
+  // is what the reader already assumed.
+  if (devServer.projectRootMatched === false) {
+    facts.push(chalk.yellow('serves another project'));
+  }
+  return facts.join(SEPARATOR);
+}
+
+/**
+ * What the short readiness probe found.
+ *
+ * `null` is "still bundling", not "not ready": status never waits for a bundle, so a dev server
+ * that has not answered yet is unknown here and `npx exagent dev:wait` is what settles it.
+ */
+function bundlerFact(ready: boolean | null): string {
+  if (ready == null) {
+    return chalk.dim('bundler still working');
+  }
+  return ready ? chalk.green('bundler ready') : chalk.yellow('bundler not ready');
 }
 
 function skillsLine(skills: SkillsStatus): string {

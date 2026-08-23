@@ -47,9 +47,9 @@ function readLastBuildRecord(projectRoot: string): Record<string, string> | null
 }
 
 describe('exagent dev', () => {
-  it('documents the plan flags in `dev --help`', async () => {
+  it('documents the plan flags in `dev:run --help`', async () => {
     const projectRoot = await setupAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['dev', '--help']);
+    const result = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--plan');
@@ -58,11 +58,23 @@ describe('exagent dev', () => {
     expect(result.all).toContain('npx exagent start');
   });
 
+  // `dev` became a group so `dev:wait` could join it, and a group asked for help lists its actions
+  // (llp/0010 §Registry rules). The plan engine's own options moved one hop, to `dev:run --help`.
+  it('lists the actions of the group for `dev --help`', async () => {
+    const projectRoot = await setupAsync('go-app');
+    const result = await executeExagentAsync(projectRoot, ['dev', '--help']);
+
+    expect(result.exitCode).toBe(0);
+    expect(result.all).toContain('dev:run');
+    expect(result.all).toContain('dev:wait');
+    expect(result.all).toContain('npx exagent dev runs dev:run');
+  });
+
   it('does not accept the flags that moved off `start`', async () => {
     // `--smart` and `--passthrough` are gone: this command is the plan engine, and `expo start`
     // rejects the flags it does not know, from the step the plan ends with.
     const projectRoot = await setupAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['dev', '--help']);
+    const result = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
 
     expect(result.all).not.toContain('--smart');
     expect(result.all).not.toContain('--passthrough');

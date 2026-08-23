@@ -15,15 +15,15 @@ The conventions every `exagent` command shares, written down once so a feature d
 
 Decision [confirmed — Kudo, 2026-08-23]. A driving agent reads the exit code before it reads a word of the output, so the code answers two questions that a single non-zero number cannot: **did the tool work**, and **did the thing the tool was asked about work**. A command that ran a smoke test and reported the app crashing has done its job perfectly; a command that could not find the project has not. `1` for both makes the agent scrape stdout to tell them apart, which is the failure mode this convention exists to remove.
 
-| Code    | Meaning                                                    | The agent's next move                            |
-| ------- | ---------------------------------------------------------- | ------------------------------------------------ |
-| `0`     | The tool worked, the outcome was success                   | Continue                                         |
-| `1`     | The tool did not work: usage error, missing dependency, bug | Read the error and the `Try:` line; fix the call |
-| `7`     | The tool worked; a person must finish the step              | Hand the printed URL or instruction to the human |
-| `20`    | The tool worked; the operation failed                       | Read the payload; act on the *subject's* failure |
-| `21`    | The tool worked; the operation was canceled                 | Nothing is known; re-run if it was not deliberate|
-| `22`    | The tool worked; the operation timed out (inconclusive)     | Wait longer, or look again                       |
-| `23–29` | Reserved for further outcome classes                        | —                                                |
+| Code    | Meaning                                                     | The agent's next move                             |
+| ------- | ----------------------------------------------------------- | ------------------------------------------------- |
+| `0`     | The tool worked, the outcome was success                    | Continue                                          |
+| `1`     | The tool did not work: usage error, missing dependency, bug | Read the error and the `Try:` line; fix the call  |
+| `7`     | The tool worked; a person must finish the step              | Hand the printed URL or instruction to the human  |
+| `20`    | The tool worked; the operation failed                       | Read the payload; act on the _subject's_ failure  |
+| `21`    | The tool worked; the operation was canceled                 | Nothing is known; re-run if it was not deliberate |
+| `22`    | The tool worked; the operation timed out (inconclusive)     | Wait longer, or look again                        |
+| `23–29` | Reserved for further outcome classes                        | —                                                 |
 
 Rationale for the shape [inferred]:
 

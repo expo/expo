@@ -68,7 +68,6 @@ export function withAction(action: string, load: CommandLoader): CommandLoader {
 /** Commands with a name of their own. Add a new top-level command here. */
 export const topLevelCommands: { [command: string]: CommandLoader } = {
   deploy: () => import('./deploy').then((i) => i.exagentDeploy),
-  dev: () => import('./dev').then((i) => i.exagentDev),
   install: () => import('./install').then((i) => i.exagentInstall),
   navigate: () => import('./navigate').then((i) => i.exagentNavigate),
   new: () => import('./new').then((i) => i.exagentNew),
@@ -114,6 +113,23 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       undo: {
         summary: 'Restore the project to a checkpoint',
         load: () => import('./checkpoint').then((i) => i.exagentCheckpointUndo),
+      },
+    },
+  },
+  // `dev` is a group with a default action rather than a top-level command, so `exagent dev` runs
+  // the plan engine exactly as before while `dev:wait` joins it as one entry. Promoting a name
+  // this way costs nothing at the call site: a group with a `defaultAction` gives it every option.
+  dev: {
+    summary: 'Get this app onto a device, and wait for its dev server to be ready',
+    defaultAction: 'run',
+    actions: {
+      run: {
+        summary: 'Decide what must run to get this app on a device, print the plan, then run it',
+        load: () => import('./dev').then((i) => i.exagentDev),
+      },
+      wait: {
+        summary: `Wait until the dev server has finished bundling, and say whose bundle it is`,
+        load: () => import('./dev/wait').then((i) => i.exagentDevWait),
       },
     },
   },
@@ -333,7 +349,7 @@ export interface HelpSection {
  * the registry appears here, so a new command cannot ship undiscoverable.
  */
 export const helpSections: HelpSection[] = [
-  { title: 'Develop', commands: ['dev', 'start', 'install', 'status'] },
+  { title: 'Develop', commands: ['dev', 'dev:wait', 'start', 'install', 'status'] },
   { title: 'Create', commands: ['new'] },
   {
     title: 'Deployment',

@@ -62,9 +62,10 @@ async function planTextAsync(
 }
 
 describe('exagent dev --plan', () => {
-  it('documents the flag in `dev --help`', async () => {
+  // `dev` is a group now, so its own options are documented under the action the bare name runs.
+  it('documents the flag in `dev:run --help`', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
-    const result = await executeExagentAsync(projectRoot, ['dev', '--help']);
+    const result = await executeExagentAsync(projectRoot, ['dev:run', '--help']);
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('--plan');

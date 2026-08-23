@@ -5,6 +5,7 @@
 
 export { buildBuildWaitFollowUps, type BuildWaitFollowUpInput } from './builds';
 export { buildUndoFollowUps, type UndoFollowUpInput } from './checkpoint';
+export { buildDevWaitFollowUps, type DevWaitFollowUpInput } from './devWait';
 export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
 export { buildNavigateFollowUps, type NavigateFollowUpInput } from './navigate';
 export { resolveExpoGoLanUrl, resolveLanHost } from './network';

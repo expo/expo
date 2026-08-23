@@ -1,0 +1,52 @@
+import { CommandError } from '../../utils/errors';
+import { DEFAULT_DEV_WAIT_TIMEOUT_MS, resolveDevWaitOptions } from '../resolveWaitOptions';
+
+describe(resolveDevWaitOptions, () => {
+  it(`should default to a two minute wait on a dev server it has yet to find`, () => {
+    expect(resolveDevWaitOptions([])).toEqual({
+      devServerUrl: null,
+      timeoutMs: DEFAULT_DEV_WAIT_TIMEOUT_MS,
+      requireApp: false,
+      json: false,
+      followups: true,
+    });
+  });
+
+  it.each([
+    [['--timeout', '5000'], { timeoutMs: 5000 }],
+    [['--require-app'], { requireApp: true }],
+    [['--json'], { json: true }],
+    [['--no-followups'], { followups: false }],
+    [['--dev-server-url', 'http://127.0.0.1:8090'], { devServerUrl: 'http://127.0.0.1:8090' }],
+    // A trailing slash would make `${url}/status` a double slash, so it is normalized away.
+    [['--dev-server-url', 'http://127.0.0.1:8090/'], { devServerUrl: 'http://127.0.0.1:8090' }],
+    [['--require-app', '--json', '--timeout', '1'], { requireApp: true, json: true, timeoutMs: 1 }],
+  ])(`should resolve %p`, (argv, expected) => {
+    expect(resolveDevWaitOptions(argv)).toMatchObject(expected);
+  });
+
+  it.each([
+    // A wait of nothing is a mistake, not a request to check once.
+    [['--timeout', '0'], '--timeout'],
+    [['--timeout', 'soon'], '--timeout'],
+    [['--timeout', '-1'], '--timeout'],
+    [['--dev-server-url', 'not a url'], '--dev-server-url'],
+    [['--dev-server-url', 'ws://127.0.0.1:8081'], '--dev-server-url'],
+  ])(`should reject %p`, (argv, flag) => {
+    expect(() => resolveDevWaitOptions(argv)).toThrow(CommandError);
+    expect(() => resolveDevWaitOptions(argv)).toThrow(
+      expect.objectContaining({ code: 'BAD_ARGS' })
+    );
+    expect(() => resolveDevWaitOptions(argv)).toThrow(new RegExp(flag));
+  });
+
+  it(`should reject an unknown flag instead of ignoring it`, () => {
+    expect(() => resolveDevWaitOptions(['--require-apps'])).toThrow(
+      expect.objectContaining({ code: 'BAD_ARGS' })
+    );
+  });
+
+  it(`should reject a stray argument, which is usually a flag that lost its dashes`, () => {
+    expect(() => resolveDevWaitOptions(['ready'])).toThrow(/Unexpected argument: ready/);
+  });
+});

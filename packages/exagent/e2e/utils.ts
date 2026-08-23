@@ -472,14 +472,15 @@ export async function startStubDevServerAsync({
 
     if (route === '/status') {
       // The delay is the point of the option: the socket is accepted and left open, exactly as a
-      // dev server that is still starting leaves a probe waiting.
+      // dev server that is still starting leaves a probe waiting. Unreferenced, so a long delay
+      // that a test deliberately never waits out cannot hold the jest worker open for its length.
       setTimeout(() => {
         response.writeHead(200, {
           'Content-Type': 'text/plain',
           'X-React-Native-Project-Root': projectRoot,
         });
         response.end('packager-status:running');
-      }, statusDelayMs);
+      }, statusDelayMs).unref();
       return;
     }
 
