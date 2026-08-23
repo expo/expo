@@ -242,18 +242,19 @@ export async function getAttachedDevicesAsync({
   signal,
   waitLimitMs,
   probeWaitLimitMs = ADB_HOST_PROBE_WAIT_LIMIT_MS,
+  shouldShowWaitingMessage = true,
 }: {
   server?: ADBServer;
   signal?: AbortSignal;
   waitLimitMs?: number;
   probeWaitLimitMs?: number;
+  shouldShowWaitingMessage?: boolean;
 } = {}): Promise<Device[]> {
   const discoveryWaitLimitMs = waitLimitMs ?? DEVICE_DISCOVERY_WAIT_LIMIT_MS;
   const waitSignal = AbortSignal.timeout(discoveryWaitLimitMs);
   const operationSignal = signal ? AbortSignal.any([signal, waitSignal]) : waitSignal;
   const endpoint = resolveAdbEndpoint();
-  const spinner = ora('Waiting for ADB device discovery');
-  spinner.start();
+  const spinner = shouldShowWaitingMessage ? ora('Waiting for ADB device discovery').start() : null;
 
   try {
     const output = await server.runHostQueryAsync(
@@ -280,7 +281,7 @@ export async function getAttachedDevicesAsync({
     }
     throw new CommandError('ADB_DISCOVERY', formatAdbDiscoveryError(error, endpoint, hostProbe));
   } finally {
-    spinner.stop();
+    spinner?.stop();
   }
 }
 

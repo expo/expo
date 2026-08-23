@@ -107,7 +107,10 @@ describe(startDeviceAsync, () => {
     const result = startDeviceAsync({ name: 'foo' }, { timeout: 50, interval: 5 });
     await new Promise((resolve) => setTimeout(resolve, 20));
     expect(ADB.getAttachedDevicesAsync).toHaveBeenCalledTimes(1);
-    expect(ADB.getAttachedDevicesAsync).toHaveBeenCalledWith({ signal: expect.any(AbortSignal) });
+    expect(ADB.getAttachedDevicesAsync).toHaveBeenCalledWith({
+      signal: expect.any(AbortSignal),
+      shouldShowWaitingMessage: false,
+    });
 
     resolveFirstCheck([]);
     await expect(result).rejects.toThrow(/It took too long/);
