@@ -10,6 +10,7 @@ import { evalMetroNoHandling } from '../../getStaticRenderFunctions';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
+import * as ErrorInterface from '../metroErrorInterface';
 import { warnInvalidWebOutput } from '../router';
 import { observeAnyFileChanges, observeFileChanges } from '../waitForMetroToObserveTypeScriptFile';
 
@@ -589,6 +590,28 @@ describe('ssrImportApiRoute', () => {
     await devServer['ssrImportApiRoute']('/app/bar+api.ts', { platform: 'web' });
 
     expect(evalMetroNoHandling).toHaveBeenCalledTimes(2);
+  });
+
+  it('rebuilds a fresh error Response on every request instead of reusing a consumed one', async () => {
+    // A cached error `Response` would have its one-shot body stream already read by the
+    // first request, so a second request reusing the same instance must still work.
+    const devServer = createDevServerForStaticPageTests();
+    devServer['ssrLoadModuleContents'] = jest.fn(async () => {
+      throw new Error('boom');
+    }) as any;
+    jest.spyOn(ErrorInterface, 'getErrorOverlayHtmlAsync').mockResolvedValue('<html>error</html>');
+
+    const first = await devServer['ssrImportApiRoute']('/app/broken+api.ts', { platform: 'web' });
+    const second = await devServer['ssrImportApiRoute']('/app/broken+api.ts', {
+      platform: 'web',
+    });
+
+    expect(first).toBeInstanceOf(Response);
+    expect(second).toBeInstanceOf(Response);
+    expect(first).not.toBe(second);
+    // Both response bodies must still be independently readable.
+    await expect((first as Response).text()).resolves.toBe('<html>error</html>');
+    await expect((second as Response).text()).resolves.toBe('<html>error</html>');
   });
 
   it('re-evaluates the module after the route cache is invalidated', async () => {
