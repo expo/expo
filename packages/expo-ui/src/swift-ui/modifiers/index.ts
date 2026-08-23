@@ -1138,7 +1138,7 @@ export const listRowSpacing = (spacing?: number) => createModifier('listRowSpaci
  * @param guide - The horizontal alignment guide to set. `'listRowSeparatorLeading'` and
  * `'listRowSeparatorTrailing'` do nothing on tvOS, where SwiftUI does not provide them.
  * @param value - The position of the guide, in points from the leading edge of the view.
- * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/alignmentguide(_:computevalue:)-6y3u2).
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/alignmentguide(_:computevalue:)-9mdoh).
  *
  * @example
  * ```tsx
