@@ -24,7 +24,8 @@ const SAMPLES = {
   ascApiKey:
     'A new App Store Connect API Key cannot be created in non-interactive mode. Provide one with EXPO_ASC_API_KEY_PATH.',
   /** create-launch, when nobody is signed in. */
-  launchUnauthenticated: 'You need to be authenticated with Expo before launching in non-interactive',
+  launchUnauthenticated:
+    'You need to be authenticated with Expo before launching in non-interactive',
 } as const;
 
 /** A failed run of one tool, with the sample it printed on stderr. */
@@ -103,8 +104,9 @@ describe(classifySubprocessFailure, () => {
   });
 
   it('answers null for a tool that succeeded, whatever it printed', () => {
-    expect(classifySubprocessFailure(failure({ exitCode: 0, stderr: SAMPLES.easNotLoggedIn })))
-      .toBeNull();
+    expect(
+      classifySubprocessFailure(failure({ exitCode: 0, stderr: SAMPLES.easNotLoggedIn }))
+    ).toBeNull();
   });
 
   // Layer 4: the child was killed on a question, so the scenario is the tool's generic one and
@@ -148,14 +150,12 @@ describe(isPromptShaped, () => {
     expect(isPromptShaped(line)).toBe(true);
   });
 
-  it.each([
-    'Bundling 1200 modules',
-    'Compiling native code',
-    'Uploading to EAS Hosting...',
-    '',
-  ])('does not mistake %p for a question', (line) => {
-    expect(isPromptShaped(line)).toBe(false);
-  });
+  it.each(['Bundling 1200 modules', 'Compiling native code', 'Uploading to EAS Hosting...', ''])(
+    'does not mistake %p for a question',
+    (line) => {
+      expect(isPromptShaped(line)).toBe(false);
+    }
+  );
 });
 
 describe(lastNonEmptyLine, () => {

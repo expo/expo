@@ -4,6 +4,7 @@ import path from 'path';
 
 import { debugEvent } from '../events';
 import { CommandError } from './errors';
+import { spawnSubprocessAsync, type SubprocessOutput, type SubprocessResult } from './subprocess';
 import { resolveSpawnTarget } from './windowsShim';
 
 /** The `expo` CLI invocation to spawn. */
@@ -37,6 +38,47 @@ export function resolveExpoCli(projectRoot: string, args: string[]): ExpoCliComm
 
 /** Signals the terminal delivers to the whole process group, so the child gets them too. */
 const TERMINAL_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM'];
+
+/** Output modes of a captured run: `inherit` is {@link runExpoAsync}'s, and only its. */
+export type CapturedOutput = Exclude<SubprocessOutput, 'inherit'>;
+
+export interface SpawnExpoOptions {
+  /** Defaults to `capture`. */
+  output?: CapturedOutput;
+  /** Kill the run when it goes silent on a question. See `SubprocessOptions.promptGuard`. */
+  promptGuard?: boolean;
+}
+
+/**
+ * Run the project's `expo` CLI and capture what it printed.
+ *
+ * The difference from {@link runExpoAsync} is who is watching. Nothing is attached to this child's
+ * stdin and nobody is reading its output as it arrives, so a prompt here is a hang — and `CI=1` is
+ * how the Expo CLI is told that: it rejects `--non-interactive` and names the variable instead
+ * [observed — `packages/@expo/cli/src/index.ts`], and its prompt helper then fails fast with a
+ * sentence this CLI can classify [observed — `packages/@expo/cli/src/utils/prompts.ts`].
+ *
+ * The inherited runs deliberately do not get it: there a person has the terminal, and answering a
+ * prompt is the point.
+ *
+ * @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol
+ */
+export async function spawnExpoAsync(
+  projectRoot: string,
+  args: string[],
+  { output = 'capture', promptGuard }: SpawnExpoOptions = {}
+): Promise<{ cli: ExpoCliCommand; result: SubprocessResult }> {
+  const cli = resolveExpoCli(projectRoot, args);
+  debugEvent('expo_resolved', { command: cli.command, args: cli.args });
+
+  const result = await spawnSubprocessAsync(cli.command, cli.args, {
+    cwd: projectRoot,
+    output,
+    promptGuard,
+    env: { CI: '1' },
+  });
+  return { cli, result };
+}
 
 /**
  * Run the project's `expo` CLI and resolve with the exit code it reported.
