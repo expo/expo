@@ -74,6 +74,8 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
   const webView = resolveWebView(useExpoDOMWebView);
   const webviewRef = React.useRef<WebViewRef>(null);
   const domImperativeHandlePropsRef = React.useRef<string[]>([]);
+  // Whether the DOM side has registered its `$$props` listener, see `$$dom_ready` below.
+  const isDOMReadyRef = React.useRef(false);
   const source = { uri: overrideUri ?? `${getBaseURL()}/${filePath}` };
   const [containerStyle, setContainerStyle] = React.useState<WebViewProps['containerStyle']>(null);
 
@@ -110,6 +112,14 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
 
   // When the `marshalProps` change, emit them to the webview.
   React.useEffect(() => {
+    // The DOM side only registers its `$$props` listener right before it posts
+    // `$$dom_ready`, so anything emitted earlier is dropped there anyway, and
+    // the `$$dom_ready` handler below answers with the current props. Emitting
+    // early is not just wasted: on the first commit after mount the native view
+    // is not resolvable by tag yet, and `injectJavaScript` rejects.
+    if (!isDOMReadyRef.current) {
+      return;
+    }
     emit({ type: '$$props', data: smartActions });
   }, [emit, smartActions]);
 
@@ -179,6 +189,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
       }
 
       if (type === DOM_READY) {
+        isDOMReadyRef.current = true;
         // Re-send the props the DOM side missed while the WebView was loading.
         emit({ type: '$$props', data: smartActions });
         return;
