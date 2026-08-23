@@ -36,8 +36,8 @@ public class AudioModule: Module {
       try setAudioMode(mode: mode)
     }
 
-    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool) in
-      try setIsAudioActive(isActive)
+    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool, promise: Promise) in
+      setIsAudioActive(isActive, promise: promise)
     }
 
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
@@ -220,7 +220,9 @@ public class AudioModule: Module {
         }
         let rate = player.currentRate > 0 ? player.currentRate : 1.0
         player.play(at: rate)
-        self.activateSession()
+        self.activateSession { message in
+          player.updateStatus(with: ["error": message])
+        }
       }
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
@@ -649,15 +651,18 @@ public class AudioModule: Module {
   }
 
   private func handleInterruptionBegan() {
-    interruptedPlayers.removeAll()
-    playerVolumes.removeAll()
+    // Capture which players are playing before dispatching work to the `sessionQueue`.
+    // If a player is auto-paused while the `sessionQueue` is busy, a later check would
+    // miss it and it would never resume.
+    var interrupted = Set<String>()
+    var volumes = [String: Float]()
 
     registry.allPlayables.forEach { playable in
       if playable.isPlaying {
-        interruptedPlayers.insert(playable.id)
+        interrupted.insert(playable.id)
         switch interruptionMode {
         case .duckOthers:
-          playerVolumes[playable.id] = playable.volume
+          volumes[playable.id] = playable.volume
           playable.volume *= 0.5
         case .doNotMix, .doNotMixPersistent, .mixWithOthers:
           playable.pause()
@@ -673,12 +678,19 @@ public class AudioModule: Module {
     }
 #endif
 
-    recordSessionActive(false)
+    sessionQueue.async { [weak self] in
+      guard let self else {
+        return
+      }
+      self.interruptedPlayers = interrupted
+      self.playerVolumes = volumes
+      self.sessionIsActive = false
+    }
   }
 
   private func handleInterruptionEnded(with options: AVAudioSession.InterruptionOptions) {
     sessionQueue.async { [weak self] in
-      guard let self, self.audioEnabled.withLock({ $0 }), self.applySessionActive(true) else {
+      guard let self, self.audioEnabled.withLock({ $0 }), self.applySessionActive(true) == nil else {
         return
       }
       if options.contains(.shouldResume) {
@@ -812,19 +824,20 @@ public class AudioModule: Module {
     return URL(fileURLWithPath: path)
   }
 
-  private func setIsAudioActive(_ isActive: Bool) throws {
+  private func setIsAudioActive(_ isActive: Bool, promise: Promise) {
     audioEnabled.withLock { $0 = isActive }
     if !isActive {
       pauseAllPlayers()
     }
 
-    do {
-      try sessionQueue.sync {
-        try AVAudioSession.sharedInstance().setActive(isActive, options: activationOptions(isActive: isActive))
+    sessionQueue.async {
+      do {
+        try AVAudioSession.sharedInstance().setActive(isActive, options: self.activationOptions(isActive: isActive))
         self.sessionIsActive = isActive
+        promise.resolve()
+      } catch {
+        promise.reject(AudioStateException(error.localizedDescription))
       }
-    } catch {
-      throw AudioStateException(error.localizedDescription)
     }
   }
 
@@ -906,12 +919,14 @@ public class AudioModule: Module {
     return true
   }
 
-  private func activateSession() {
+  private func activateSession(onError: ((String) -> Void)? = nil) {
     sessionQueue.async { [weak self] in
       guard let self, self.audioEnabled.withLock({ $0 }), !self.sessionIsActive else {
         return
       }
-      self.applySessionActive(true)
+      if let error = self.applySessionActive(true) {
+        onError?("Audio session activation failed: \(error.localizedDescription)")
+      }
     }
   }
 
@@ -933,14 +948,14 @@ public class AudioModule: Module {
   }
 
   @discardableResult
-  private func applySessionActive(_ isActive: Bool) -> Bool {
+  private func applySessionActive(_ isActive: Bool) -> Error? {
     do {
       try AVAudioSession.sharedInstance().setActive(isActive, options: activationOptions(isActive: isActive))
       sessionIsActive = isActive
-      return true
+      return nil
     } catch {
       log.warn("[expo-audio] Failed to \(isActive ? "activate" : "deactivate") the audio session: \(error.localizedDescription)")
-      return false
+      return error
     }
   }
 
