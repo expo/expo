@@ -63,7 +63,11 @@ declare module '2g' {
       timedOut: boolean;
     };
     'cli:runtime_eval': { devServerUrl: string; threw: boolean; type: string };
-    'cli:runtime_errors': { devServerUrl: string; durationMs: number; count: number };
+    'cli:runtime_errors': {
+      devServerUrl: string;
+      durationMs: number;
+      count: number;
+    };
     'cli:runtime_network': {
       devServerUrl: string;
       durationMs: number;
@@ -146,6 +150,39 @@ declare module '2g' {
        * so the distinction lives here.
        */
       interrupted: boolean;
+    };
+    /**
+     * One `exagent config:effective` run, as counts.
+     *
+     * Counts only, deliberately: an effective config carries bundle identifiers, URL schemes and
+     * permission strings, which belong in the answer the caller asked for and not on a stream that
+     * may be collected somewhere else.
+     *
+     * @see llp/0006-agent-native-cli-surface.rfc.md §Output contract
+     */
+    'cli:config_effective': {
+      sdkVersion: string | null;
+      /** Platforms the report covers, e.g. `["ios", "android"]`. */
+      platforms: string[];
+      /** Mods introspected per platform, e.g. `{ ios: 5, android: 6 }`. */
+      modCounts: { [platform: string]: number };
+      pluginCount: number;
+      /** How many of them the app config declared; the rest are auto-applied. */
+      declaredPluginCount: number;
+      autolinkedModuleCount: number;
+      /** How long the `expo config` subprocess took. */
+      durationMs: number;
+    };
+    /**
+     * One `exagent doctor:check` run. `parse` says how much of expo-doctor's prose was understood,
+     * because the counts are only as good as the parse that produced them.
+     */
+    'cli:doctor_check': {
+      passed: number;
+      failed: number;
+      parse: 'full' | 'best-effort' | 'failed';
+      /** The code expo-doctor exited with, which the command mirrors. */
+      exitCode: number | null;
     };
     'cli:navigate': {
       route: string;
