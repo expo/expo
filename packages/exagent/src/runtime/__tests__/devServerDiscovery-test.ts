@@ -23,6 +23,7 @@ describe(discoverDevServerAsync, () => {
     expect(result).toMatchObject({
       reachable: true,
       devServerUrl: 'http://127.0.0.1:9999',
+      source: 'flag',
       discovered: false,
     });
     expect(jest.mocked(fetch)).toHaveBeenCalledTimes(1);
@@ -31,7 +32,11 @@ describe(discoverDevServerAsync, () => {
   it(`short-circuits on the default port without scanning`, async () => {
     mockFetchByPort({ '8081': [target] });
     const result = await discoverDevServerAsync();
-    expect(result).toMatchObject({ devServerUrl: 'http://127.0.0.1:8081', discovered: false });
+    expect(result).toMatchObject({
+      devServerUrl: 'http://127.0.0.1:8081',
+      source: 'default',
+      discovered: false,
+    });
     expect(jest.mocked(fetch)).toHaveBeenCalledTimes(1);
   });
 
@@ -41,6 +46,7 @@ describe(discoverDevServerAsync, () => {
     expect(result).toMatchObject({
       reachable: true,
       devServerUrl: 'http://127.0.0.1:8083',
+      source: 'scan',
       discovered: true,
     });
   });
@@ -58,6 +64,7 @@ describe(discoverDevServerAsync, () => {
     expect(result).toMatchObject({
       reachable: false,
       devServerUrl: 'http://127.0.0.1:8081',
+      source: 'default',
       discovered: false,
     });
   });
@@ -83,6 +90,7 @@ describe('readLastLoggedDevServerPort via discovery', () => {
     expect(result).toMatchObject({
       reachable: true,
       devServerUrl: 'http://127.0.0.1:8090',
+      source: 'log',
       discovered: true,
     });
     // The logged port answered, so neither 8081 nor the scan ports were touched.

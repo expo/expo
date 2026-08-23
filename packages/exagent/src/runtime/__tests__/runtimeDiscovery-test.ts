@@ -61,7 +61,13 @@ const networkOptions: RuntimeNetworkOptions = {
 function mockDiscovered(devServerUrl: string) {
   jest
     .mocked(discoverDevServerAsync)
-    .mockResolvedValue({ reachable: true, targets: [], devServerUrl, discovered: true });
+    .mockResolvedValue({
+      reachable: true,
+      targets: [],
+      devServerUrl,
+      source: 'lock',
+      discovered: true,
+    });
 }
 
 beforeEach(() => {

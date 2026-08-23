@@ -64,6 +64,7 @@ describe('discoverDevServerAsync — the project lock', () => {
     expect(result).toMatchObject({
       reachable: true,
       devServerUrl: 'http://127.0.0.1:8090',
+      source: 'lock',
       discovered: true,
     });
     // The lock answered and the URL it named answered: nothing else was tried.
@@ -88,7 +89,11 @@ describe('discoverDevServerAsync — the project lock', () => {
 
     const result = await discoverDevServerAsync('http://127.0.0.1:9999', { projectRoot });
 
-    expect(result).toMatchObject({ devServerUrl: 'http://127.0.0.1:9999', discovered: false });
+    expect(result).toMatchObject({
+      devServerUrl: 'http://127.0.0.1:9999',
+      source: 'flag',
+      discovered: false,
+    });
     expect(jest.mocked(fetch)).toHaveBeenCalledTimes(1);
   });
 
@@ -101,7 +106,11 @@ describe('discoverDevServerAsync — the project lock', () => {
     const result = await discoverDevServerAsync(undefined, { projectRoot, timeoutMs: 200 });
 
     // 8090 answers, but nothing pointed discovery at it, so the ordinary steps ran.
-    expect(result).toMatchObject({ devServerUrl: 'http://127.0.0.1:8081', discovered: false });
+    expect(result).toMatchObject({
+      devServerUrl: 'http://127.0.0.1:8081',
+      source: 'default',
+      discovered: false,
+    });
   });
 
   it(`ignores a socket file with no process behind it`, async () => {

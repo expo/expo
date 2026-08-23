@@ -17,7 +17,12 @@ import type { NativePlatform, PlanPlatform } from '../plan/types';
 import { readProjectPackageJsonAsync } from '../project/nodeModules';
 import { probeProjectStateAsync } from '../project/probe';
 import type { ProjectState } from '../project/types';
-import { discoverDevServerAsync, type DevServerProbe } from '../runtime/devServer';
+import {
+  discoverDevServerAsync,
+  type DevServerDiscovery,
+  type DevServerProbe,
+} from '../runtime/devServer';
+import { waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { getAllAgents, getPersistedAgentIdsAsync } from '../skills/agents';
 import { discoverSkillsAsync } from '../skills/discovery';
 import type { DiscoveredSkill } from '../skills/types';
@@ -29,6 +34,7 @@ import {
   buildNextActionStatus,
   buildProjectStatus,
   resolveDefaultPlatform,
+  type DevServerReadiness,
 } from './sections';
 import type {
   DevServerStatus,
@@ -45,6 +51,15 @@ import type {
  */
 export const DEV_SERVER_PROBE_TIMEOUT_MS = 1500;
 
+/**
+ * How long the readiness probe of the dev-server section may take.
+ *
+ * Much shorter than the reachability budget above, because this request is answered by a dev
+ * server that has finished bundling and left open by one that has not. Status must not wait for a
+ * bundle, so the budget is only long enough for a ready server on localhost to answer.
+ */
+export const DEV_SERVER_READY_PROBE_TIMEOUT_MS = 400;
+
 export interface StatusOptions {
   /** Explicit --dev-server-url; null lets the probe scan the ports `expo start` uses. */
   devServerUrl: string | null;
@@ -54,6 +69,8 @@ export interface StatusOptions {
   platform?: PlanPlatform;
   /** Overrides {@link DEV_SERVER_PROBE_TIMEOUT_MS}, for tests. */
   devServerTimeoutMs?: number;
+  /** Overrides {@link DEV_SERVER_READY_PROBE_TIMEOUT_MS}, for tests. */
+  devServerReadyTimeoutMs?: number;
   /** Attach the state-aware next actions to the report, cleared by `--no-followups`. */
   followups?: boolean;
 }
@@ -185,9 +202,45 @@ async function probeDevServerStatusAsync(
       targets: [],
       reason: `the dev server did not answer within ${timeoutMs}ms`,
     };
-    return buildDevServerStatus(options.devServerUrl ?? 'http://127.0.0.1:8081', timedOut);
+    return buildDevServerStatus(options.devServerUrl ?? 'http://127.0.0.1:8081', timedOut, {
+      source: options.devServerUrl != null ? 'flag' : 'default',
+      ready: null,
+      projectRootMatched: null,
+    });
   }
-  return buildDevServerStatus(discovery.devServerUrl, discovery);
+  return buildDevServerStatus(
+    discovery.devServerUrl,
+    discovery,
+    await readDevServerReadinessAsync(projectRoot, discovery, options)
+  );
+}
+
+/**
+ * Ask a dev server that answered whether its bundler is done, and whether it is this project's.
+ *
+ * Deliberately a short probe, not a wait: `GET /status` only answers once the bundle finishes, so
+ * a status command that awaited it would hang for the length of a cold bundle. The budget expiring
+ * is reported as `ready: null` — "still working", which is a different fact from "not ready" and
+ * the reason `dev:wait` exists. The project-root header is flushed before the bundler is awaited,
+ * so `projectRootMatched` is answered even by the probe that expires.
+ */
+async function readDevServerReadinessAsync(
+  projectRoot: string,
+  discovery: DevServerDiscovery,
+  options: StatusOptions
+): Promise<DevServerReadiness> {
+  if (!discovery.reachable) {
+    return { source: discovery.source, ready: null, projectRootMatched: null };
+  }
+  const readiness = await waitForBundlerReadyAsync(discovery.devServerUrl, {
+    timeoutMs: options.devServerReadyTimeoutMs ?? DEV_SERVER_READY_PROBE_TIMEOUT_MS,
+    projectRoot,
+  });
+  return {
+    source: discovery.source,
+    ready: readiness.timedOut ? null : readiness.ready,
+    projectRootMatched: readiness.projectRootMatched,
+  };
 }
 
 /** Which agents are configured, how many skills the project ships, and how many are linked. */

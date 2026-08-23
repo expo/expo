@@ -32,7 +32,14 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
         },
       ],
     },
-    devServer: { url: 'http://127.0.0.1:8081', running: true, appsConnected: 1 },
+    devServer: {
+      url: 'http://127.0.0.1:8081',
+      running: true,
+      appsConnected: 1,
+      source: 'lock',
+      ready: true,
+      projectRootMatched: true,
+    },
     skills: { agentIds: ['claude-code'], discovered: 3, linked: 3 },
     next: {
       command: 'exagent dev',
@@ -169,18 +176,58 @@ describe(formatStatusReport, () => {
     expect(line(report, 'freshness')).not.toContain('npx expo install');
   });
 
-  it(`should print the dev server and the number of connected apps`, () => {
+  it(`should print the dev server, how it was found, its bundler and its connected apps`, () => {
     expect(line(mockReport(), 'dev server')).toBe(
-      'dev server  running on http://127.0.0.1:8081 · 1 app connected'
+      'dev server  running on http://127.0.0.1:8081 · via lock · bundler ready · 1 app connected'
     );
   });
 
   it(`should print connected apps in the plural`, () => {
     const report = mockReport({
-      devServer: { url: 'http://127.0.0.1:8081', running: true, appsConnected: 0 },
+      devServer: {
+        url: 'http://127.0.0.1:8081',
+        running: true,
+        appsConnected: 0,
+        source: 'default',
+        ready: true,
+        projectRootMatched: null,
+      },
     });
 
     expect(line(report, 'dev server')).toContain('0 apps connected');
+  });
+
+  // Status never waits for a bundle, so an unfinished one is unknown rather than failed.
+  it(`should print a bundler that is still working as unknown`, () => {
+    const report = mockReport({
+      devServer: {
+        url: 'http://127.0.0.1:8081',
+        running: true,
+        appsConnected: 1,
+        source: 'default',
+        ready: null,
+        projectRootMatched: true,
+      },
+    });
+
+    expect(line(report, 'dev server')).toContain('bundler still working');
+    expect(line(report, 'dev server')).not.toContain('bundler not ready');
+  });
+
+  it(`should name a dev server that serves another project`, () => {
+    const report = mockReport({
+      devServer: {
+        url: 'http://127.0.0.1:8081',
+        running: true,
+        appsConnected: 1,
+        source: 'scan',
+        ready: true,
+        projectRootMatched: false,
+      },
+    });
+
+    expect(line(report, 'dev server')).toContain('serves another project');
+    expect(line(report, 'dev server')).toContain('via scan');
   });
 
   it(`should print a dev server that is not running with the url it probed`, () => {
@@ -189,6 +236,9 @@ describe(formatStatusReport, () => {
         url: 'http://127.0.0.1:8081',
         running: false,
         appsConnected: 0,
+        source: 'default',
+        ready: null,
+        projectRootMatched: null,
         reason: 'fetch failed',
       },
     });

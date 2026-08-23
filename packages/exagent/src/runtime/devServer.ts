@@ -53,11 +53,43 @@ export function resolveDevServerUrlFlag(value: unknown): string {
  * the ports `expo start` walks to when 8081 is taken. */
 export const DEV_SERVER_SCAN_PORTS = [8081, 8082, 8083, 8084, 8085];
 
+/**
+ * Which step of {@link discoverDevServerAsync} produced the URL.
+ *
+ * Reported rather than kept private because the steps differ in how much they prove: `flag` and
+ * `lock` name a dev server on purpose, `log` and `scan` are guesses that happened to answer. A
+ * caller reading `scan` knows the caveat below applies to its result, and can pass
+ * `--dev-server-url` to remove it.
+ */
+export type DevServerSource =
+  /** An explicit `--dev-server-url`. */
+  | 'flag'
+  /** The project's dev-server lock, held by an `exagent`-started dev server. */
+  | 'lock'
+  /** The port the project's own `start.log` last recorded. */
+  | 'log'
+  /** Metro's default port, 8081. Also the reported source when nothing answered anywhere. */
+  | 'default'
+  /** One of the fallback ports `expo start` walks to, found by scanning. */
+  | 'scan';
+
 export interface DevServerDiscovery extends DevServerProbe {
   /** The dev server origin the probe answered on (the explicit URL, or the discovered one). */
   devServerUrl: string;
-  /** True when the URL came from the port scan rather than a flag/default hit. */
+  /** The step that produced {@link devServerUrl}. */
+  source: DevServerSource;
+  /**
+   * True when the URL was found rather than named: the lock, the log, or the port scan.
+   *
+   * Kept as the coarse form of {@link source}, for callers that only ask whether the URL was
+   * guessed at.
+   */
   discovered: boolean;
+}
+
+/** The two ways of describing one discovery step, so the sources and the flag stay in step. */
+function foundBy(source: DevServerSource): { source: DevServerSource; discovered: boolean } {
+  return { source, discovered: source === 'lock' || source === 'log' || source === 'scan' };
 }
 
 /**
@@ -75,7 +107,7 @@ export async function discoverDevServerAsync(
 ): Promise<DevServerDiscovery> {
   if (explicitUrl != null) {
     const probe = await probeDevServerAsync(explicitUrl);
-    return { ...probe, devServerUrl: normalizeDevServerUrl(explicitUrl), discovered: false };
+    return { ...probe, devServerUrl: normalizeDevServerUrl(explicitUrl), ...foundBy('flag') };
   }
 
   const withTimeout = async (url: string): Promise<DevServerProbe> => {
@@ -102,7 +134,7 @@ export async function discoverDevServerAsync(
       const lockUrl = normalizeDevServerUrl(lock.url);
       const lockProbe = await withTimeout(lockUrl);
       if (lockProbe.reachable) {
-        return { ...lockProbe, devServerUrl: lockUrl, discovered: true };
+        return { ...lockProbe, devServerUrl: lockUrl, ...foundBy('lock') };
       }
     }
   }
@@ -116,13 +148,13 @@ export async function discoverDevServerAsync(
     const loggedUrl = `http://127.0.0.1:${loggedPort}`;
     const loggedProbe = await withTimeout(loggedUrl);
     if (loggedProbe.reachable) {
-      return { ...loggedProbe, devServerUrl: loggedUrl, discovered: true };
+      return { ...loggedProbe, devServerUrl: loggedUrl, ...foundBy('log') };
     }
   }
 
   const defaultProbe = await withTimeout(DEFAULT_DEV_SERVER_URL);
   if (defaultProbe.reachable) {
-    return { ...defaultProbe, devServerUrl: DEFAULT_DEV_SERVER_URL, discovered: false };
+    return { ...defaultProbe, devServerUrl: DEFAULT_DEV_SERVER_URL, ...foundBy('default') };
   }
 
   const candidates = DEV_SERVER_SCAN_PORTS.slice(1).map((port) => `http://127.0.0.1:${port}`);
@@ -133,10 +165,12 @@ export async function discoverDevServerAsync(
     probes.find(({ probe }) => probe.reachable && probe.targets.length > 0) ??
     probes.find(({ probe }) => probe.reachable);
   if (hit) {
-    return { ...hit.probe, devServerUrl: hit.url, discovered: true };
+    return { ...hit.probe, devServerUrl: hit.url, ...foundBy('scan') };
   }
 
-  return { ...defaultProbe, devServerUrl: DEFAULT_DEV_SERVER_URL, discovered: false };
+  // Nothing answered anywhere. The default URL is reported so the caller has a dev server to name
+  // in its error, and `default` is the step that produced it.
+  return { ...defaultProbe, devServerUrl: DEFAULT_DEV_SERVER_URL, ...foundBy('default') };
 }
 
 export interface DevServerProbe {
