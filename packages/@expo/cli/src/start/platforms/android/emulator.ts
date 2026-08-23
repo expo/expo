@@ -117,7 +117,7 @@ export async function startDeviceAsync(
 }
 
 async function checkEmulatorBootAsync(name: string, signal?: AbortSignal): Promise<Device | null> {
-  const bootedDevices = await getAttachedDevicesAsync({ signal });
+  const bootedDevices = await getAttachedDevicesAsync({ signal, shouldShowWaitingMessage: false });
   const connected = bootedDevices.find((device) => device.name === name);
   if (connected && (await isBootAnimationCompleteAsync(connected.pid, signal))) {
     return connected;
