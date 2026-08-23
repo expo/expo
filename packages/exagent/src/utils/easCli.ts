@@ -1,13 +1,14 @@
 // @ref llp/0007-deploy-and-headless.rfc.md §Cross-platform deploy — EAS Hosting is the web rail.
 // The EAS CLI is reached as a subprocess like the rest of the family (llp/0001 constraint 5), so
-// the first question of a web deploy is which `eas` binary is going to run. It is answered before
-// anything is exported.
+// the first question of anything that goes through EAS is which `eas` binary is going to run. A
+// web deploy answers it before it exports; every other EAS-backed command answers it the same way,
+// which is why the resolver is here and not under `deploy/`.
 
 import path from 'path';
 
-import { fileExistsSync } from '../utils/dir';
-import { CommandError } from '../utils/errors';
-import { findExecutableOnPath } from '../utils/subprocess';
+import { fileExistsSync } from './dir';
+import { CommandError } from './errors';
+import { findExecutableOnPath } from './subprocess';
 
 /** The `eas` bin to spawn, and where it came from. */
 export interface EasCli {

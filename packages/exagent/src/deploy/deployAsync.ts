@@ -13,11 +13,11 @@ import {
   listDependencyNames,
   readProjectPackageJsonAsync,
 } from '../project/nodeModules';
+import { resolveEasCliOrThrow, type EasCli } from '../utils/easCli';
 import { CommandError } from '../utils/errors';
 import { resolveExpoCli } from '../utils/expoCli';
 import { toPosixPath } from '../utils/filePath';
 import { spawnSubprocessAsync, type SubprocessOutput } from '../utils/subprocess';
-import { resolveEasCliOrThrow, type EasCli } from './easCli';
 import { debugEvent, event } from './events';
 import { launchProjectAsync } from './launchAsync';
 import { resolveCreateLaunchCli } from './launchCli';

@@ -2,7 +2,7 @@
 // Argument resolution for the `exagent runtime:<action>` commands. Pure: argv in, options out,
 // `CommandError` for anything a user can get wrong, so every flag combination is unit-testable.
 
-import { parseArgsOrThrow } from '../utils/args';
+import { parseArgsOrThrow, resolveDuration } from '../utils/args';
 import { CommandError } from '../utils/errors';
 import { resolveDevServerUrlFlag } from './devServer';
 
@@ -170,23 +170,4 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
  */
 function resolveExplicitDevServerUrl(value: unknown): string | null {
   return value == null ? null : resolveDevServerUrlFlag(value);
-}
-
-function resolveDuration(
-  value: unknown,
-  flag: string,
-  fallback: number,
-  { allowZero }: { allowZero: boolean }
-): number {
-  if (value == null) {
-    return fallback;
-  }
-  const duration = Number(value);
-  if (!Number.isFinite(duration) || duration < 0 || (!allowZero && duration <= 0)) {
-    throw new CommandError(
-      'BAD_ARGS',
-      `${flag} must be a duration in milliseconds${allowZero ? ' of 0 or more' : ' greater than 0'}, but got ${value}.`
-    );
-  }
-  return duration;
 }

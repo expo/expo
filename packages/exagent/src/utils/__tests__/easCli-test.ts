@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 import path from 'path';
 
-import { CommandError } from '../../utils/errors';
 import { resolveEasCliOrThrow } from '../easCli';
+import { CommandError } from '../errors';
 
 const projectRoot = '/project';
 const realPlatform = process.platform;

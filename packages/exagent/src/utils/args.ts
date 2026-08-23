@@ -71,6 +71,41 @@ export function parseArgsOrThrow(schema: arg.Spec, argv: string[]): arg.Result<a
   }
 }
 
+/**
+ * Read a duration flag in milliseconds, or fall back when the caller named none.
+ *
+ * The value arrives as a string rather than through a numeric `arg` handler, so an unusable one is
+ * reported as the user typed it instead of as the `NaN` a handler would have produced.
+ *
+ * Every command that waits takes one of these, so the rule lives here: one spelling of the error,
+ * one answer for `0`, and one place to change either.
+ *
+ * @param value The raw flag value, or null/undefined when it was not passed.
+ * @param flag The flag name, for the error message, e.g. `--timeout`.
+ * @param fallback The duration to use when the flag was not passed.
+ * @param allowZero Whether `0` is a duration this flag accepts, e.g. a window that collects
+ *   nothing. A timeout of `0` is a mistake, so the flags that mean "wait" reject it.
+ * @throws {CommandError} `BAD_ARGS` for a value that is not a usable duration.
+ */
+export function resolveDuration(
+  value: unknown,
+  flag: string,
+  fallback: number,
+  { allowZero }: { allowZero: boolean }
+): number {
+  if (value == null) {
+    return fallback;
+  }
+  const duration = Number(value);
+  if (!Number.isFinite(duration) || duration < 0 || (!allowZero && duration <= 0)) {
+    throw new CommandError(
+      'BAD_ARGS',
+      `${flag} must be a duration in milliseconds${allowZero ? ' of 0 or more' : ' greater than 0'}, but got ${value}.`
+    );
+  }
+  return duration;
+}
+
 export function printHelp(info: string, usage: string, options: string, extra: string = ''): never {
   Log.exit(
     chalk`
