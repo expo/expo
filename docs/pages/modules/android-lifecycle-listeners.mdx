@@ -16,9 +16,7 @@ First, you need to have created an Expo module or integrated the Expo modules AP
 
 Inside your module, create a concrete class that implements the [`Package`](https://github.com/expo/expo/tree/main/packages/expo-modules-core/android/src/main/java/expo/modules/core/interfaces/Package.java) interface. For most cases, you only need to implement the `createReactActivityLifecycleListeners` or `createApplicationLifecycleListeners` methods.
 
-You do not need to register this class in **MainApplication.java** or **MainApplication.kt**. [Expo Autolinking](/modules/autolinking/) scans each linked module's Android sources for classes in files ending in **Package.java** or **Package.kt** that implement the `Package` interface. During the Android build, it adds those classes to the generated `ExpoModulesPackageList`, which Expo uses to create the lifecycle listeners. No additional entry in **expo-module.config.json** is required for the `Package` class itself, as long as the module is already configured for Android.
-
-If you add a `Package` class after the Android project has already been built and it is not detected, run `./gradlew clean` from the app's **android** directory and rebuild the app. This forces Gradle to regenerate the package list.
+You do not need to register this class in **MainApplication.java** or **MainApplication.kt**. [Expo Autolinking](/modules/autolinking/) scans each linked module's Android sources for classes in files ending in **Package.java** or **Package.kt** that implement the `Package` interface. During the Android build, it adds those classes to the generated `ExpoModulesPackageList`, which Expo uses to create the lifecycle listeners. If the module already supports Android, you also do not need to add the `Package` class to **expo-module.config.json**.
 
 ## `Activity` lifecycle listeners
 
