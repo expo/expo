@@ -25,6 +25,20 @@ it('preserves AVD inventory tool failures', async () => {
   await expect(getDevicesAsync()).rejects.toThrow('emulator -list-avds failed');
 });
 
+it('preserves attached devices when AVD inventory is unavailable', async () => {
+  const device = {
+    name: 'Pixel USB',
+    pid: 'serial-1',
+    type: 'device' as const,
+    isBooted: true,
+    isAuthorized: true,
+  };
+  jest.mocked(getAttachedDevicesAsync).mockResolvedValueOnce([device]);
+  jest.mocked(listAvdsAsync).mockRejectedValueOnce(new Error('emulator -list-avds failed'));
+
+  await expect(getDevicesAsync()).resolves.toEqual([device]);
+});
+
 describe(mergeDevices, () => {
   const avd = (name: string) => ({
     name,
