@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `alignmentGuide` modifier, so the `listRowSeparatorLeading` guide can set where a list row separator starts. ([#49246](https://github.com/expo/expo/issues/49246) by [@marco242424](https://github.com/marco242424)) ([#49247](https://github.com/expo/expo/pull/49247) by [@expo-bot](https://github.com/expo-bot))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix the dev menu not opening with the menu key (Cmd+M) while a `BottomSheet` is open. Material3 shows the sheet in its own dialog window, so key events did not reach the activity. The sheet now forwards them, as React Native's `Modal` does, unless a view in the sheet is accepting text. ([#49215](https://github.com/expo/expo/pull/49215) by [@expo-bot](https://github.com/expo-bot))
