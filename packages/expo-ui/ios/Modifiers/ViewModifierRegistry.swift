@@ -1034,6 +1034,50 @@ internal struct ListRowSpacing: ViewModifier, Record {
   }
 }
 
+internal enum AlignmentGuideOptions: String, Enumerable {
+  case leading
+  case center
+  case trailing
+  case listRowSeparatorLeading
+  case listRowSeparatorTrailing
+
+  var horizontalAlignment: HorizontalAlignment? {
+    switch self {
+    case .leading:
+      return .leading
+    case .center:
+      return .center
+    case .trailing:
+      return .trailing
+    case .listRowSeparatorLeading:
+#if os(tvOS)
+      return nil
+#else
+      return .listRowSeparatorLeading
+#endif
+    case .listRowSeparatorTrailing:
+#if os(tvOS)
+      return nil
+#else
+      return .listRowSeparatorTrailing
+#endif
+    }
+  }
+}
+
+internal struct AlignmentGuideModifier: ViewModifier, Record {
+  @Field var guide: AlignmentGuideOptions = .leading
+  @Field var value: Double = 0
+
+  func body(content: Content) -> some View {
+    if let alignment = guide.horizontalAlignment {
+      content.alignmentGuide(alignment) { _ in CGFloat(value) }
+    } else {
+      content
+    }
+  }
+}
+
 internal enum TextTruncationModeTypes: String, Enumerable {
   case head
   case middle
@@ -2040,6 +2084,10 @@ extension ViewModifierRegistry {
 
     register("listRowSpacing") { params, appContext, _ in
       return try ListRowSpacing(from: params, appContext: appContext)
+    }
+
+    register("alignmentGuide") { params, appContext, _ in
+      return try AlignmentGuideModifier(from: params, appContext: appContext)
     }
 
     register("truncationMode") { params, appContext, _ in
