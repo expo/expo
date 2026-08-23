@@ -137,7 +137,6 @@ function missingId(kind: BuildWaitKind): CommandError {
       how,
     ].join('\n')
   );
-  error.suggestedCommand =
-    kind === 'submission' ? 'npx exagent build:wait --help' : buildListing;
+  error.suggestedCommand = kind === 'submission' ? 'npx exagent build:wait --help' : buildListing;
   return error;
 }

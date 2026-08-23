@@ -51,6 +51,60 @@ declare module '2g' {
       /** Sections that could not be read, e.g. `["project"]`. */
       sectionErrors: string[];
     };
+    /**
+     * One poll of `exagent build:wait`, while the wait is still running.
+     *
+     * Progress belongs here and not on stdout: `--json` prints exactly one object (llp/0006
+     * §Output contract), so a wait that printed its polls would break the contract for the sake of
+     * output nobody parses. `queuePosition` and `estimatedWaitTimeLeftSeconds` are what turn
+     * "still going" into an answer, and both are real `BuildFragment` fields.
+     *
+     * @see llp/0010-agent-conventions.rfc.md §Exit codes
+     */
+    'cli:build_wait_poll': {
+      kind: 'build' | 'submission';
+      id: string;
+      /** Which poll this was, counting from 1. */
+      poll: number;
+      status: string | null;
+      queuePosition: number | null;
+      estimatedWaitTimeLeftSeconds: number | null;
+      elapsedMs: number;
+    };
+    /**
+     * A poll that did not answer. A network blip must not end a 45-minute wait, so this is a
+     * progress event and not an error — `consecutiveFailures` is how close the wait is to giving up.
+     */
+    'cli:build_wait_poll_failed': {
+      kind: 'build' | 'submission';
+      id: string;
+      poll: number;
+      consecutiveFailures: number;
+      /** Exit code of the view command, or null when it could not be spawned. */
+      exitCode: number | null;
+      message: string;
+    };
+    /**
+     * How one wait ended. The exit code is the command's answer, and this is the same answer on
+     * the event stream, for an agent reading only the JSONL.
+     */
+    'cli:build_wait': {
+      kind: 'build' | 'submission';
+      id: string;
+      outcome: 'finished' | 'errored' | 'canceled' | 'timeout';
+      status: string | null;
+      waitedMs: number;
+      polls: number;
+      exitCode: number;
+      /**
+       * Whether this wait was interrupted rather than the build being canceled.
+       *
+       * Both end as `canceled` with the same exit code — the caller asked for the stop either way
+       * — but only one of them means the build is still running, and the `--json` key set is fixed,
+       * so the distinction lives here.
+       */
+      interrupted: boolean;
+    };
     'cli:navigate': {
       route: string;
       url: string;

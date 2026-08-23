@@ -5,6 +5,7 @@ import { boolish } from 'getenv';
 
 import {
   flagsWithoutActionMessage,
+  flagsWithoutActionSuggestion,
   formatGroupHelp,
   formatTopLevelHelp,
   resolveCommand,
@@ -122,7 +123,9 @@ switch (resolution.kind) {
       'UNKNOWN_ACTION',
       flagsWithoutActionMessage(resolution.group, resolution.flags)
     );
-    error.suggestedCommand = `npx exagent ${resolution.group} --help`;
+    // For a group named after another CLI's verb this is that CLI's command, with these flags on
+    // it: `exagent build --platform ios` recovers with `npx eas build --platform ios`.
+    error.suggestedCommand = flagsWithoutActionSuggestion(resolution.group, resolution.flags);
     logCmdError(error);
     break;
   }
