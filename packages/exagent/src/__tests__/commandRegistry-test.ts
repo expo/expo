@@ -13,18 +13,24 @@ import {
 import type { Command } from '../types';
 
 /**
- * Register a group for the length of one test, and take it out again.
+ * Register a group for the length of one test, and put the registry back afterwards.
  *
- * The registry is data, so a rule about a group that does not exist yet is proved with one that
- * exists for three lines — the alternative is waiting for the first real `config`-shaped group and
- * discovering the rule was never wired.
+ * The registry is data, so a resolution rule can be proved against a group that exists for three
+ * lines rather than only against the real ones. Restoring rather than deleting matters: a name used
+ * here may also be a real group (`config` is), and taking it out would leave every later test in
+ * this file running against a registry with a command missing.
  */
 function withGroup(name: string, group: (typeof commandGroups)[string], test: () => void): void {
+  const previous = commandGroups[name];
   commandGroups[name] = group;
   try {
     test();
   } finally {
-    delete commandGroups[name];
+    if (previous) {
+      commandGroups[name] = previous;
+    } else {
+      delete commandGroups[name];
+    }
   }
 }
 
@@ -56,6 +62,11 @@ describe(resolveCommand, () => {
 
   it('resolves the space form of every action of every group', () => {
     for (const [group, { actions }] of Object.entries(commandGroups)) {
+      // Except under a forwarded `expo` name, where the bare form is that command and the space
+      // form is that command with an argument (llp/0010 §Registry rules, rule b).
+      if (forwardedCommands.includes(group)) {
+        continue;
+      }
       for (const action of Object.keys(actions)) {
         expect(resolveCommand(group, [action])).toMatchObject({
           kind: 'command',
@@ -67,12 +78,21 @@ describe(resolveCommand, () => {
   });
 
   it('prints the group help for a group with no default action', () => {
-    expect(resolveCommand('runtime', [])).toEqual({ kind: 'group-help', group: 'runtime' });
-    expect(resolveCommand('agents', [])).toEqual({ kind: 'group-help', group: 'agents' });
+    expect(resolveCommand('runtime', [])).toEqual({
+      kind: 'group-help',
+      group: 'runtime',
+    });
+    expect(resolveCommand('agents', [])).toEqual({
+      kind: 'group-help',
+      group: 'agents',
+    });
   });
 
   it('prints the group help for a group asked for help', () => {
-    expect(resolveCommand('skills', ['--help'])).toEqual({ kind: 'group-help', group: 'skills' });
+    expect(resolveCommand('skills', ['--help'])).toEqual({
+      kind: 'group-help',
+      group: 'skills',
+    });
     expect(resolveCommand('checkpoint', ['-h'])).toEqual({
       kind: 'group-help',
       group: 'checkpoint',
@@ -122,8 +142,14 @@ describe(resolveCommand, () => {
   });
 
   it('still lists the actions for a bare group, and for one asked for help', () => {
-    expect(resolveCommand('runtime', [])).toEqual({ kind: 'group-help', group: 'runtime' });
-    expect(resolveCommand('runtime', ['--help'])).toEqual({ kind: 'group-help', group: 'runtime' });
+    expect(resolveCommand('runtime', [])).toEqual({
+      kind: 'group-help',
+      group: 'runtime',
+    });
+    expect(resolveCommand('runtime', ['--help'])).toEqual({
+      kind: 'group-help',
+      group: 'runtime',
+    });
     expect(resolveCommand('runtime', ['-h', '--json'])).toEqual({
       kind: 'group-help',
       group: 'runtime',
@@ -168,7 +194,12 @@ describe(resolveCommand, () => {
   describe('a group named after a forwarded expo command', () => {
     const group = {
       summary: 'Synthetic group for the forwarded-name rule',
-      actions: { doctor: { summary: 'Synthetic action', load: async () => (() => {}) as Command } },
+      actions: {
+        doctor: {
+          summary: 'Synthetic action',
+          load: async () => (() => {}) as Command,
+        },
+      },
     };
 
     it('keeps the bare name forwarded to expo', () => {
@@ -216,6 +247,84 @@ describe(resolveCommand, () => {
       expect(resolveCommand('runtime', ['eval', '1'])).toMatchObject({
         kind: 'command',
         name: 'runtime:eval',
+      });
+    });
+  });
+
+  // The rule above with the real group registered. `config` is both a forwarded `expo` command and
+  // this CLI's group for `config:effective`, which is the case the rule was written for, so it is
+  // pinned against the registry as it actually ships rather than only against a synthetic group.
+  describe('the real config group', () => {
+    it('leaves exagent config as expo config', () => {
+      expect(resolveCommand('config', ['--type', 'introspect', '--json'])).toEqual({
+        kind: 'passthrough',
+        command: 'config',
+        argv: ['--type', 'introspect', '--json'],
+      });
+      expect(resolveCommand('config', [])).toEqual({
+        kind: 'passthrough',
+        command: 'config',
+        argv: [],
+      });
+      // Even the help flag: the bare name is the `expo` command, so its help is that command's.
+      expect(resolveCommand('config', ['--help'])).toEqual({
+        kind: 'passthrough',
+        command: 'config',
+        argv: ['--help'],
+      });
+    });
+
+    it('owns config:effective', () => {
+      expect(resolveCommand('config:effective', ['--json'])).toMatchObject({
+        kind: 'command',
+        name: 'config:effective',
+        argv: ['--json'],
+      });
+    });
+
+    it('answers a colon form it does not have without forwarding it', () => {
+      expect(resolveCommand('config:why', [])).toEqual({
+        kind: 'unknown-action',
+        group: 'config',
+        action: 'why',
+      });
+    });
+
+    // The documented cost of the rule: the space form is the bare form with an argument, and the
+    // bare form is `expo config`, which takes a positional directory.
+    it('forwards the space form instead of resolving it', () => {
+      expect(resolveCommand('config', ['effective'])).toEqual({
+        kind: 'passthrough',
+        command: 'config',
+        argv: ['effective'],
+      });
+    });
+  });
+
+  // `doctor` is free: `expo-doctor` is a separate bin and is in no `expo` command map, so the group
+  // keeps both spellings and a default action.
+  describe('the doctor group', () => {
+    it('is not a forwarded expo command', () => {
+      expect(forwardedCommands).not.toContain('doctor');
+    });
+
+    it('runs doctor:check for the bare name', () => {
+      expect(resolveCommand('doctor', ['--json'])).toMatchObject({
+        kind: 'command',
+        name: 'doctor:check',
+        argv: ['--json'],
+      });
+    });
+
+    it('resolves both spellings of its action', () => {
+      expect(resolveCommand('doctor:check', [])).toMatchObject({
+        kind: 'command',
+        name: 'doctor:check',
+      });
+      expect(resolveCommand('doctor', ['check'])).toMatchObject({
+        kind: 'command',
+        name: 'doctor:check',
+        argv: [],
       });
     });
   });
@@ -273,14 +382,23 @@ describe(resolveCommand, () => {
   it('keeps the expo commands it wraps out of the forwarded set', () => {
     expect(forwardedCommands).not.toContain('start');
     expect(forwardedCommands).not.toContain('install');
-    expect(resolveCommand('start', [])).toMatchObject({ kind: 'command', name: 'start' });
-    expect(resolveCommand('install', [])).toMatchObject({ kind: 'command', name: 'install' });
+    expect(resolveCommand('start', [])).toMatchObject({
+      kind: 'command',
+      name: 'start',
+    });
+    expect(resolveCommand('install', [])).toMatchObject({
+      kind: 'command',
+      name: 'install',
+    });
   });
 
-  it('names nothing twice across the three maps', () => {
+  // A *runnable* name of this CLI is never also a forwarded one, because then one invocation would
+  // have two answers. A group *name* may collide, and rule (b) is what decides it: the bare form
+  // forwards and only the colon forms are this CLI's, so `config` is a group name and never a
+  // command an argv resolves to.
+  it('names nothing runnable twice across the three maps', () => {
     const own = [
       ...Object.keys(topLevelCommands),
-      ...Object.keys(commandGroups),
       ...Object.entries(commandGroups).flatMap(([group, { actions }]) =>
         Object.keys(actions).map((action) => `${group}:${action}`)
       ),
@@ -290,6 +408,18 @@ describe(resolveCommand, () => {
       expect(own).not.toContain(command);
     }
     expect(forwardedCommands).toHaveLength(new Set(forwardedCommands).size);
+  });
+
+  it('resolves a group name that is also a forwarded command to the forward', () => {
+    for (const group of Object.keys(commandGroups)) {
+      if (forwardedCommands.includes(group)) {
+        expect(resolveCommand(group, [])).toEqual({
+          kind: 'passthrough',
+          command: group,
+          argv: [],
+        });
+      }
+    }
   });
 
   it('loads every registered command', async () => {

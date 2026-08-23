@@ -4,6 +4,8 @@
 // already probed; `report.ts` is the only module that writes anything.
 
 export { buildUndoFollowUps, type UndoFollowUpInput } from './checkpoint';
+export { buildConfigEffectiveFollowUps, type ConfigEffectiveFollowUpInput } from './config';
+export { buildDoctorCheckFollowUps, extractAdviceAction } from './doctor';
 export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
 export { buildNavigateFollowUps, type NavigateFollowUpInput } from './navigate';
 export { resolveExpoGoLanUrl, resolveLanHost } from './network';

@@ -96,6 +96,27 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       },
     },
   },
+  // `config` is also a forwarded `expo` command, so this group owns its colon forms only and
+  // `exagent config` stays `expo config` (llp/0010 §Registry rules, rule b).
+  config: {
+    summary: 'Read the native configuration the config plugins produce',
+    actions: {
+      effective: {
+        summary: 'What the config plugins actually produced, per platform',
+        load: () => import('./config').then((i) => i.exagentConfigEffective),
+      },
+    },
+  },
+  doctor: {
+    summary: 'Diagnose the project with expo-doctor',
+    defaultAction: 'check',
+    actions: {
+      check: {
+        summary: 'Run the expo-doctor checks and normalize the report',
+        load: () => import('./doctor').then((i) => i.exagentDoctorCheck),
+      },
+    },
+  },
   runtime: {
     summary: `Read and drive the running app over the dev server's debugger connection`,
     actions: {
@@ -232,7 +253,12 @@ export function resolveCommand(command: string, argv: string[]): CommandResoluti
       const target = entry.actions[action];
       // An action of a group we own is never forwarded, whether or not the group has it.
       return target
-        ? { kind: 'command', name: `${groupName}:${action}`, argv, load: target.load }
+        ? {
+            kind: 'command',
+            name: `${groupName}:${action}`,
+            argv,
+            load: target.load,
+          }
         : { kind: 'unknown-action', group: groupName, action };
     }
   }
@@ -283,7 +309,12 @@ export function resolveCommand(command: string, argv: string[]): CommandResoluti
 
   const aliased = commandAliases[command];
   if (aliased) {
-    return { kind: 'command', name: aliased, argv, load: topLevelCommands[aliased]! };
+    return {
+      kind: 'command',
+      name: aliased,
+      argv,
+      load: topLevelCommands[aliased]!,
+    };
   }
 
   if (forwardedCommands.includes(command)) {
@@ -313,11 +344,25 @@ export interface HelpSection {
  */
 export const helpSections: HelpSection[] = [
   { title: 'Develop', commands: ['dev', 'start', 'install', 'status'] },
+  {
+    title: 'Inspect the project',
+    commands: ['config:effective', 'doctor'],
+    note: 'exagent config (bare) is expo config; only config:effective is this CLI',
+  },
   { title: 'Create', commands: ['new'] },
   { title: 'Deployment', commands: ['deploy'] },
-  { title: 'Debug a running app', commands: [...actionNames('runtime'), 'navigate'] },
-  { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
-  { title: 'Checkpoints', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },
+  {
+    title: 'Debug a running app',
+    commands: [...actionNames('runtime'), 'navigate'],
+  },
+  {
+    title: 'Agent setup',
+    commands: [...actionNames('agents'), ...actionNames('skills')],
+  },
+  {
+    title: 'Checkpoints',
+    commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'],
+  },
   {
     title: 'Expo CLI (fallback to npx expo <command>)',
     commands: forwardedCommands,
