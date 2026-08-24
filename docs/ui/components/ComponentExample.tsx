@@ -6,6 +6,13 @@ import { cleanCopyValue, getCodeBlockDataFromChildren } from '~/common/code-util
 import { prefersDarkTheme } from '~/common/window';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { LightboxImage } from '~/ui/components/ContentSpotlight/LightboxImage';
+import { PlatformTabs } from '~/ui/components/PlatformTabs';
+import {
+  type Platform,
+  type PlatformImage,
+  orderPlatforms,
+  usePlatformSelection,
+} from '~/ui/components/PlatformTabs/platform';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
@@ -14,9 +21,11 @@ import { SettingsAction } from '~/ui/components/Snippet/actions/SettingsAction';
 
 type Props = PropsWithChildren<{
   title: string;
-  src: string;
-  alt: string;
+  src?: string;
+  alt?: string;
   darkSrc?: string;
+  android?: PlatformImage;
+  ios?: PlatformImage;
 }>;
 
 type SideButton = {
@@ -50,6 +59,25 @@ const DEVICE_FRAMES = {
   },
 };
 
+function resolveImages({
+  src,
+  darkSrc,
+  alt,
+  android,
+  ios,
+}: Pick<Props, 'src' | 'darkSrc' | 'alt' | 'android' | 'ios'>): Partial<
+  Record<Platform, PlatformImage>
+> {
+  if (android || ios) {
+    return { ...(android && { android }), ...(ios && { ios }) };
+  }
+  if (!src) {
+    return {};
+  }
+  const platform: Platform = src.includes('-android-') ? 'android' : 'ios';
+  return { [platform]: { src, darkSrc, alt: alt ?? '' } };
+}
+
 /**
  * Shows a code example next to a screenshot of what it renders, in a single
  * snippet card: a full-width header with actions, code on the left, and the
@@ -60,10 +88,14 @@ const DEVICE_FRAMES = {
  * rather than a floating image. The platform comes from the file name, which
  * every capture carries as `-ios-` or `-android-`, so pages need no extra prop.
  */
-export function ComponentExample({ title, src, darkSrc, alt, children }: Props) {
+export function ComponentExample({ title, src, darkSrc, alt, android, ios, children }: Props) {
   const { themeName } = useTheme();
   const context = usePageApiVersion();
   const [isDark, setDark] = useState(false);
+
+  const images = resolveImages({ src, darkSrc, alt, android, ios });
+  const available = orderPlatforms(images);
+  const { active, select } = usePlatformSelection(available);
 
   useEffect(() => {
     if (themeName === 'auto') {
@@ -74,8 +106,9 @@ export function ComponentExample({ title, src, darkSrc, alt, children }: Props) 
   }, [themeName]);
 
   const { value } = getCodeBlockDataFromChildren(children);
-  const activeSrc = isDark && darkSrc ? darkSrc : src;
-  const device = src.includes('-android-') ? DEVICE_FRAMES.android : DEVICE_FRAMES.ios;
+  const image = images[active];
+  const activeSrc = image && isDark && image.darkSrc ? image.darkSrc : image?.src;
+  const device = active === 'android' ? DEVICE_FRAMES.android : DEVICE_FRAMES.ios;
 
   return (
     <Snippet className="mb-4 flex flex-col prose-pre:m-0! prose-pre:rounded-none! prose-pre:border-0!">
@@ -87,36 +120,39 @@ export function ComponentExample({ title, src, darkSrc, alt, children }: Props) 
           </SnippetHeader>
           <SnippetContent className="flex-1 rounded-none border-0 p-0">{children}</SnippetContent>
         </div>
-        <div className="flex w-56 shrink-0 items-center justify-center border-l border-default bg-subtle p-4 max-lg:w-full max-lg:border-t max-lg:border-l-0">
-          <div
-            className="relative w-full max-w-48 border border-default bg-[#101012] p-0.75 shadow-xs dark:bg-[#3c3c40]"
-            style={{ borderRadius: device.frameRadius }}>
-            {device.buttons.map(button => (
-              <span
-                key={`${button.side}-${button.top}`}
-                aria-hidden
-                className="absolute w-0.5 bg-[#101012] dark:bg-[#3c3c40]"
-                style={{
-                  top: button.top,
-                  height: button.height,
-                  [button.side]: '-2px',
-                  borderRadius: 1,
-                }}
-              />
-            ))}
+        {image && activeSrc && (
+          <div className="flex w-56 shrink-0 flex-col items-center justify-center gap-3 border-l border-default bg-subtle p-4 max-lg:w-full max-lg:border-t max-lg:border-l-0">
+            <PlatformTabs available={available} active={active} select={select} />
             <div
-              className="overflow-hidden [&_button]:block [&_button]:w-full [&_button]:cursor-pointer"
-              style={{ borderRadius: device.screenRadius }}>
-              <LightboxImage
-                src={activeSrc}
-                alt={alt}
-                width={device.width}
-                height={device.height}
-                className="h-auto w-full"
-              />
+              className="relative w-full max-w-48 border border-default bg-[#101012] p-0.75 shadow-xs dark:bg-[#3c3c40]"
+              style={{ borderRadius: device.frameRadius }}>
+              {device.buttons.map(button => (
+                <span
+                  key={`${button.side}-${button.top}`}
+                  aria-hidden
+                  className="absolute w-0.5 bg-[#101012] dark:bg-[#3c3c40]"
+                  style={{
+                    top: button.top,
+                    height: button.height,
+                    [button.side]: '-2px',
+                    borderRadius: 1,
+                  }}
+                />
+              ))}
+              <div
+                className="overflow-hidden [&_button]:block [&_button]:w-full [&_button]:cursor-pointer"
+                style={{ borderRadius: device.screenRadius }}>
+                <LightboxImage
+                  src={activeSrc}
+                  alt={image.alt}
+                  width={device.width}
+                  height={device.height}
+                  className="h-auto w-full"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </Snippet>
   );
