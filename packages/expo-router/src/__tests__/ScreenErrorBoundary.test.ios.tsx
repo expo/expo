@@ -29,6 +29,21 @@ it('uses a layout screen error boundary for a child route', async () => {
   expect(screen.getByTestId('layout-boundary')).toBeOnTheScreen();
 });
 
+it('uses the parent layout boundary for a nested layout without one', async () => {
+  const LayoutBoundary = boundary('layout-boundary');
+
+  await renderRouterAsync({
+    _layout: {
+      default: () => <Stack />,
+      unstable_settings: { screenErrorBoundary: LayoutBoundary },
+    },
+    'nested/_layout': () => <Stack />,
+    'nested/index': ThrowingRoute,
+  });
+
+  expect(screen.getByTestId('layout-boundary')).toBeOnTheScreen();
+});
+
 it('uses the navigator boundary before the layout boundary', async () => {
   const LayoutBoundary = boundary('layout-boundary');
   const NavigatorBoundary = boundary('navigator-boundary');

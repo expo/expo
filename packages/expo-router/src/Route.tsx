@@ -70,7 +70,7 @@ const CurrentRouteContext = createContext<RouteNode | null>(null);
 export const SuspenseFallbackContext = createContext<
   ComponentType<SuspenseFallbackProps> | undefined
 >(undefined);
-/** This context carries the error boundary configured by the current layout, navigator, or screen. */
+/** This context carries the error boundary configured by the current layout or navigator. */
 export const ScreenErrorBoundaryContext = createContext<
   ComponentType<ErrorBoundaryProps> | undefined
 >(undefined);

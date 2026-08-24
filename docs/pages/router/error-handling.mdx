@@ -90,10 +90,27 @@ function ScreenErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   return <Text onPress={retry}>Try again: {error.message}</Text>;
 }
 
+// Choose this to configure the boundary for the layout's direct child screens.
 export const unstable_settings = {
   screenErrorBoundary: ScreenErrorBoundary,
 };
 
+export default function Layout() {
+  return <Stack />;
+}
+```
+
+Alternatively, configure the boundary on the navigator instead:
+
+```tsx src/app/_layout.tsx
+import { Stack, type ErrorBoundaryProps } from 'expo-router';
+import { Text } from 'react-native';
+
+function ScreenErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return <Text onPress={retry}>Try again: {error.message}</Text>;
+}
+
+// Choose this to configure the boundary for the navigator's direct child screens.
 export default function Layout() {
   return <Stack unstable_screenErrorBoundary={ScreenErrorBoundary} />;
 }

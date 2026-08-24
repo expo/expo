@@ -174,8 +174,6 @@ export function unstable_integrateWithRouter<
   >;
 
   function StandardRouterNavigator(allProps: NavPropsType) {
-    // `withLayoutContext` consumes this prop when it creates the route screens. Do not forward it
-    // to `NavigatorContent`, whose props may reject unknown fields.
     const { unstable_screenErrorBoundary, ...rest } = allProps;
     const props = rest as NavPropsType;
     const routeNode = useRouteNode();
