@@ -559,9 +559,16 @@ function printHumanReport(report: ReloadResultJson): void {
   }
   lines.push(
     chalk`{bold Dev server} ${report.devServerUrl}{dim  · via ${report.devServerSource}}`,
-    // Both numbers, always: the second is what the reload was judged on, and printing only the
-    // first is what let "Apps connected 1" describe a runtime that was on its way out (F45).
-    chalk`{bold Apps connected} ${report.appsConnected}{dim  · ${report.appsReconnected} reconnected after the reload}`
+    // Both numbers whenever a reload happened: the second is what the reload was judged on, and
+    // printing only the first is what let "Apps connected 1" describe a runtime that was on its
+    // way out (F45). When no reload happened there is nothing to count reconnections *against*,
+    // and "0 reconnected after the reload" read as an app that failed to come back from one
+    // [friction run 5, F48-6] — so the clause says which of the two this is instead.
+    chalk`{bold Apps connected} ${report.appsConnected}{dim  · ${
+      report.reloaded
+        ? `${report.appsReconnected} reconnected after the reload`
+        : 'no reload happened, so nothing had reason to reconnect'
+    }}`
   );
   if (report.bundle.ok != null) {
     lines.push(

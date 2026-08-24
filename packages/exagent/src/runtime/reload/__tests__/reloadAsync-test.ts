@@ -351,6 +351,34 @@ describe(reloadAsync, () => {
     expect(spawn).not.toHaveBeenCalled();
   });
 
+  // @ref llp/0010-agent-conventions.rfc.md §The reload gate — friction run 5, F48-6. "0
+  // reconnected after the reload" describes an app that failed to come back from a reload that
+  // never happened, which is a worse reading of the refusal than no line at all.
+  it(`should not count reconnections against a reload that never happened`, async () => {
+    writeProject();
+    mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
+    mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }]).socket);
+
+    await reloadAsync(projectRoot, options());
+
+    expect(printed()).toContain('Apps connected 1');
+    expect(printed()).toContain('no reload happened');
+    expect(printed()).not.toContain('reconnected after the reload');
+  });
+
+  it(`should still count reconnections for a reload that did happen`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () =>
+        server.listing([RELOADED_EXPO_GO_TARGET])
+      ).socket
+    );
+
+    await expect(reloadAsync(projectRoot, options())).resolves.toBe(EXIT_OK);
+    expect(printed()).toContain('1 reconnected after the reload');
+  });
+
   it(`should name the bundle in the failure, not the app`, async () => {
     writeProject();
     mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
