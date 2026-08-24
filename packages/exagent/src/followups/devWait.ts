@@ -1,8 +1,10 @@
 // @ref llp/0009-smart-followups.rfc.md §Examples per command — the readiness gate.
-// Four outcomes, four different next steps: a wait that expired is worth repeating with a longer
-// budget, a ready bundler with no app attached needs the app opened, another project's dev server
-// needs a different dev server, and a bundle that is loaded and running is ready to be read.
+// Five outcomes, five different next steps: a wait that expired is worth repeating with a longer
+// budget, an entry bundle that does not compile needs the file it names fixed, a ready bundler with
+// no app attached needs the app opened, another project's dev server needs a different dev server,
+// and a bundle that is loaded and running is ready to be read.
 
+import type { BundleCheckResult } from '../runtime/bundleCheck';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface DevWaitFollowUpInput {
@@ -16,6 +18,8 @@ export interface DevWaitFollowUpInput {
   appsConnected: number;
   /** The budget the wait was given, in milliseconds. */
   timeoutMs: number;
+  /** What building the project's entry bundle answered, or null when it was not attempted. */
+  bundle?: BundleCheckResult | null;
 }
 
 export function buildDevWaitFollowUps({
@@ -24,6 +28,7 @@ export function buildDevWaitFollowUps({
   projectRootMatched,
   appsConnected,
   timeoutMs,
+  bundle = null,
 }: DevWaitFollowUpInput): FollowUp[] {
   // The wrong dev server first, whatever else is true: every other suggestion is about a bundle
   // that belongs to another project, so acting on one of those would confirm the wrong thing.
@@ -33,6 +38,22 @@ export function buildDevWaitFollowUps({
         id: 'dev-wait-other-project',
         command: 'npx exagent dev',
         why: 'The dev server that answered was started for another project, so start this one and pass --dev-server-url to wait on a specific dev server.',
+      },
+    ]);
+  }
+
+  // Before the timeout, and before everything else that assumes a working app: nothing else is
+  // worth doing until the code compiles, and the file that stopped the bundler is the only place
+  // to start. The command already printed the message, so the follow-up is the check to re-run.
+  if (bundle?.outcome === 'broken') {
+    const where = bundle.error?.filename
+      ? `${bundle.error.filename}${bundle.error.lineNumber ? `:${bundle.error.lineNumber}` : ''}`
+      : 'the file the bundler named';
+    return capFollowUps([
+      {
+        id: 'dev-wait-bundle-broken',
+        command: 'npx exagent dev:wait',
+        why: `The dev server is healthy but this project's entry bundle does not compile: fix ${where}, then run this again — the dev server rebuilds on save, so no restart is needed.`,
       },
     ]);
   }

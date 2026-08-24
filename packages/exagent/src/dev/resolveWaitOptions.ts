@@ -2,6 +2,11 @@
 // Argument resolution for `exagent dev:wait`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong, so every flag combination is unit-testable without a dev server.
 
+import {
+  BUNDLE_CHECK_PLATFORMS,
+  DEFAULT_BUNDLE_CHECK_PLATFORM,
+  type BundleCheckPlatform,
+} from '../runtime/bundleCheck';
 import { resolveDevServerUrlFlag } from '../runtime/devServer';
 import { DURATION_METAVAR, parseArgsOrThrow, resolveDuration } from '../utils/args';
 import { CommandError } from '../utils/errors';
@@ -27,6 +32,15 @@ export interface DevWaitOptions {
   timeoutMs: number;
   /** Also wait for an app to attach to the dev server, not only for the bundler to finish. */
   requireApp: boolean;
+  /**
+   * Build the project's entry bundle once the dev server is ready, cleared by `--no-bundle-check`.
+   *
+   * On by default because it is the only part of this command that says anything about the
+   * *project*: everything else it asks proves the bundler process is alive.
+   */
+  bundleCheck: boolean;
+  /** Platform to build the entry bundle for (`--platform`). */
+  platform: BundleCheckPlatform;
   /** Print the result as one JSON object instead of labelled lines. */
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
@@ -39,6 +53,8 @@ const WAIT_ARGS = {
   // `NaN` a numeric handler would produce.
   '--timeout': String,
   '--require-app': Boolean,
+  '--no-bundle-check': Boolean,
+  '--platform': String,
   '--json': Boolean,
   '--no-followups': Boolean,
 };
@@ -65,7 +81,28 @@ export function resolveDevWaitOptions(argv: string[]): DevWaitOptions {
       allowZero: false,
     }),
     requireApp: !!args['--require-app'],
+    bundleCheck: !args['--no-bundle-check'],
+    platform: resolveBundlePlatform(args['--platform']),
     json: !!args['--json'],
     followups: !args['--no-followups'],
   };
+}
+
+/**
+ * Read the `--platform` flag.
+ *
+ * @throws {CommandError} `BAD_ARGS` naming the platforms the entry bundle can be built for.
+ */
+function resolveBundlePlatform(value: unknown): BundleCheckPlatform {
+  if (value == null) {
+    return DEFAULT_BUNDLE_CHECK_PLATFORM;
+  }
+  const platform = String(value);
+  if ((BUNDLE_CHECK_PLATFORMS as readonly string[]).includes(platform)) {
+    return platform as BundleCheckPlatform;
+  }
+  throw new CommandError(
+    'BAD_ARGS',
+    `--platform ${platform} is not a platform the dev server builds a bundle for. Pass ${BUNDLE_CHECK_PLATFORMS.join(', ')} — the default is ${DEFAULT_BUNDLE_CHECK_PLATFORM}, because a syntax error is a syntax error on every platform.`
+  );
 }

@@ -189,6 +189,189 @@ describe('exagent dev:wait', () => {
     expect(JSON.parse(result.stdout)).toMatchObject({ ok: true, projectRootMatched: null });
   });
 
+  // The most damaging finding of the friction run: an agent broke the build, then asked four
+  // different health commands whether the app was fine and got four green answers. `/status` only
+  // ever proved the bundler process was alive.
+  describe('the entry-bundle check', () => {
+    it('exits 20 and names the file when the project does not compile', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const server = await startStubAsync({
+        projectRoot,
+        targets: [{ id: '1' }],
+        bundle: 'broken',
+      });
+
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev:wait', '--dev-server-url', server.url, '--json'],
+        { reject: false }
+      );
+
+      expect(result.exitCode).toBe(20);
+      const report = JSON.parse(result.stdout);
+      expect(report.ok).toBe(false);
+      // The dev server was healthy the whole time. That was never the question.
+      expect(report.ready).toBe(true);
+      expect(report.bundle).toMatchObject({
+        checked: true,
+        ok: false,
+        platform: 'ios',
+        error: {
+          type: 'TransformError',
+          filename: 'src/app/index.tsx',
+          lineNumber: 101,
+          column: 2,
+          message: expect.stringContaining("Unexpected keyword 'const'"),
+        },
+      });
+      expect(report.followups[0].id).toBe('dev-wait-bundle-broken');
+    });
+
+    it('prints the file, line and message for a human', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const server = await startStubAsync({
+        projectRoot,
+        targets: [{ id: '1' }],
+        bundle: 'broken',
+      });
+
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev:wait', '--dev-server-url', server.url],
+        { reject: false }
+      );
+
+      expect(result.exitCode).toBe(20);
+      expect(result.stdout).toContain('does not compile for ios');
+      expect(result.stdout).toContain('src/app/index.tsx:101:2');
+      expect(result.stdout).toContain("Unexpected keyword 'const'");
+    });
+
+    it('exits 0 and says so when the entry bundle compiles', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
+
+      const result = await executeExagentAsync(projectRoot, [
+        'dev:wait',
+        '--dev-server-url',
+        server.url,
+        '--json',
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(JSON.parse(result.stdout).bundle).toMatchObject({
+        checked: true,
+        ok: true,
+        platform: 'ios',
+        error: null,
+      });
+      expect(JSON.parse(result.stdout).bundle.url).toContain('platform=ios');
+    });
+
+    it('builds the bundle for the platform --platform names', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
+
+      const result = await executeExagentAsync(projectRoot, [
+        'dev:wait',
+        '--dev-server-url',
+        server.url,
+        '--platform',
+        'android',
+        '--json',
+      ]);
+
+      expect(JSON.parse(result.stdout).bundle).toMatchObject({ ok: true, platform: 'android' });
+      expect(JSON.parse(result.stdout).bundle.url).toContain('platform=android');
+    });
+
+    it('checks nothing with --no-bundle-check', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const server = await startStubAsync({
+        projectRoot,
+        targets: [{ id: '1' }],
+        bundle: 'broken',
+      });
+
+      const result = await executeExagentAsync(projectRoot, [
+        'dev:wait',
+        '--dev-server-url',
+        server.url,
+        '--no-bundle-check',
+        '--json',
+      ]);
+
+      // The escape hatch: the same broken project, and the same answer the command used to give.
+      expect(result.exitCode).toBe(0);
+      expect(JSON.parse(result.stdout).bundle).toEqual({
+        checked: false,
+        ok: null,
+        platform: null,
+        url: null,
+        error: null,
+        reason: null,
+      });
+    });
+
+    // A dev server that answers nothing this command understands has not shown the project to be
+    // broken, so the gate stays green and says why it could not decide.
+    it('exits 0 when the dev server answers no manifest', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const server = await startStubAsync({
+        projectRoot,
+        targets: [{ id: '1' }],
+        bundle: 'no-manifest',
+      });
+
+      const result = await executeExagentAsync(projectRoot, [
+        'dev:wait',
+        '--dev-server-url',
+        server.url,
+        '--json',
+      ]);
+
+      expect(result.exitCode).toBe(0);
+      expect(JSON.parse(result.stdout).bundle).toMatchObject({ checked: true, ok: null });
+      expect(JSON.parse(result.stdout).bundle.reason).toContain('404');
+    });
+
+    // The first build of a cold dev server compiles the whole app, so the budget has to be able to
+    // expire — and expiring is "look again", not "the project is broken".
+    it('exits 22 when the first build does not finish inside --timeout', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const server = await startStubAsync({
+        projectRoot,
+        targets: [{ id: '1' }],
+        bundleDelayMs: 30_000,
+      });
+
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev:wait', '--dev-server-url', server.url, '--timeout', '600ms', '--json'],
+        { reject: false }
+      );
+
+      expect(result.exitCode).toBe(22);
+      expect(JSON.parse(result.stdout)).toMatchObject({
+        ok: false,
+        timedOut: true,
+        bundle: { checked: true, ok: null },
+      });
+    });
+
+    it('rejects a platform the dev server does not bundle for', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev:wait', '--platform', 'windows'], {
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.all).toContain('--platform windows');
+      expect(result.all).toContain('ios, android, web');
+    });
+  });
+
   describe('--require-app', () => {
     it('exits 0 when an app is already attached', async () => {
       const projectRoot = await setupFixtureAsync('go-app');

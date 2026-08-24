@@ -61,6 +61,19 @@ declare module '2g' {
       appsConnected: number;
       waitedMs: number;
       timedOut: boolean;
+      /**
+       * What building this project's entry bundle answered.
+       *
+       * The location only: the code frame belongs in the command's own output, not on a stream
+       * that may be collected somewhere else.
+       */
+      bundle: {
+        /** `ok`, `broken`, `timeout`, `unknown`, or null when the check did not run. */
+        outcome: string | null;
+        platform: string | null;
+        filename: string | null;
+        lineNumber: number | null;
+      };
     };
     'cli:runtime_eval': { devServerUrl: string; threw: boolean; type: string };
     'cli:runtime_errors': {

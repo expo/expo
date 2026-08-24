@@ -6,6 +6,7 @@
 import { event } from '../../events';
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
 import * as Log from '../../log';
+import { checkEntryBundleAsync, type BundleCheckResult } from '../../runtime/bundleCheck';
 import { discoverDevServerAsync } from '../../runtime/devServer';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../../runtime/waitReady';
 import type { DevWaitOptions } from '../resolveWaitOptions';
@@ -18,6 +19,10 @@ jest.mock('../../runtime/waitReady', () => ({
   waitForBundlerReadyAsync: jest.fn(),
   waitForAppConnectionAsync: jest.fn(),
 }));
+jest.mock('../../runtime/bundleCheck', () => ({
+  ...jest.requireActual('../../runtime/bundleCheck'),
+  checkEntryBundleAsync: jest.fn(),
+}));
 
 const projectRoot = '/project';
 const devServerUrl = 'http://127.0.0.1:8081';
@@ -27,6 +32,10 @@ function options(overrides: Partial<DevWaitOptions> = {}): DevWaitOptions {
     devServerUrl: null,
     timeoutMs: 5000,
     requireApp: false,
+    // Off unless a test is about it: the bundle check is one more HTTP round trip, and the cases
+    // below are about the readiness gate.
+    bundleCheck: false,
+    platform: 'ios',
     json: false,
     followups: true,
     ...overrides,
@@ -56,6 +65,31 @@ function mockReady(overrides: Record<string, unknown> = {}) {
     ...overrides,
   });
 }
+
+/** Make the entry-bundle check answer with one outcome. */
+function mockBundle(overrides: Partial<BundleCheckResult> = {}) {
+  jest.mocked(checkEntryBundleAsync).mockResolvedValue({
+    outcome: 'ok',
+    platform: 'ios',
+    url: 'http://127.0.0.1:8081/index.bundle?platform=ios',
+    error: null,
+    waitedMs: 120,
+    ...overrides,
+  });
+}
+
+/** The transform error a broken project produces, as `bundleCheck` reshapes it. */
+const BROKEN_BUNDLE: Partial<BundleCheckResult> = {
+  outcome: 'broken',
+  error: {
+    type: 'TransformError',
+    filename: 'src/app/index.tsx',
+    lineNumber: 101,
+    column: 2,
+    message: "SyntaxError: Unexpected keyword 'const'. (101:2)",
+    snippet: '> 101 |   const x =',
+  },
+};
 
 /** The one JSON object `--json` printed. */
 function printedJson(): any {
@@ -187,6 +221,174 @@ describe(devWaitAsync, () => {
     });
   });
 
+  // The finding this check exists for: the dev server was healthy, the project had a syntax error
+  // in it, and every health command in the CLI answered green.
+  describe('the entry-bundle check', () => {
+    beforeEach(() => {
+      mockBundle();
+    });
+
+    it(`should build the entry bundle once the dev server is ready`, async () => {
+      expect(await devWaitAsync(projectRoot, options({ bundleCheck: true }))).toBe(EXIT_OK);
+
+      const [url, checkOptions] = jest.mocked(checkEntryBundleAsync).mock.calls[0]!;
+      expect(url).toBe(devServerUrl);
+      expect(checkOptions.platform).toBe('ios');
+      // The budget is the command's, not a second one of the same size.
+      expect(checkOptions.timeoutMs).toBeLessThanOrEqual(5000);
+    });
+
+    it(`should exit 20 and name the file when the bundle does not compile`, async () => {
+      mockBundle(BROKEN_BUNDLE);
+
+      expect(await devWaitAsync(projectRoot, options({ bundleCheck: true, json: true }))).toBe(
+        EXIT_OUTCOME_FAILED
+      );
+      expect(printedJson()).toMatchObject({
+        ok: false,
+        // The dev server was healthy the whole time. That was never the question.
+        ready: true,
+        bundle: {
+          checked: true,
+          ok: false,
+          platform: 'ios',
+          error: {
+            filename: 'src/app/index.tsx',
+            lineNumber: 101,
+            column: 2,
+            message: expect.stringContaining('Unexpected keyword'),
+          },
+        },
+      });
+    });
+
+    it(`should point the follow-up at the file the bundler stopped on`, async () => {
+      mockBundle(BROKEN_BUNDLE);
+
+      await devWaitAsync(projectRoot, options({ bundleCheck: true, json: true }));
+
+      const [followup] = printedJson().followups;
+      expect(followup.id).toBe('dev-wait-bundle-broken');
+      expect(followup.why).toContain('src/app/index.tsx:101');
+    });
+
+    it(`should print the file, line and message for a human`, async () => {
+      mockBundle(BROKEN_BUNDLE);
+
+      await devWaitAsync(projectRoot, options({ bundleCheck: true }));
+
+      const printed = jest
+        .mocked(Log.log)
+        .mock.calls.map(([line]) => line)
+        .join('\n');
+      expect(printed).toContain('does not compile');
+      expect(printed).toContain('src/app/index.tsx:101:2');
+      expect(printed).toContain("Unexpected keyword 'const'");
+      expect(printed).toContain('> 101 |   const x =');
+    });
+
+    // Nothing can attach to a bundle that does not exist, so waiting for one would spend the rest
+    // of the budget learning what the check already knows.
+    it(`should not wait for an app on a bundle that does not compile`, async () => {
+      mockBundle(BROKEN_BUNDLE);
+
+      await devWaitAsync(projectRoot, options({ bundleCheck: true, requireApp: true }));
+
+      expect(jest.mocked(waitForAppConnectionAsync)).not.toHaveBeenCalled();
+    });
+
+    // 22 means "look again"; a file with a syntax error in it does not parse on the second look.
+    it(`should report a broken bundle as failed, never as timed out`, async () => {
+      mockBundle(BROKEN_BUNDLE);
+      jest.mocked(waitForBundlerReadyAsync).mockResolvedValue({
+        ready: true,
+        projectRootMatched: true,
+        reportedProjectRoot: projectRoot,
+        timedOut: true,
+        waitedMs: 4000,
+      });
+
+      expect(await devWaitAsync(projectRoot, options({ bundleCheck: true }))).toBe(
+        EXIT_OUTCOME_FAILED
+      );
+    });
+
+    it(`should exit 22 when the first cold build does not finish in the budget`, async () => {
+      mockBundle({ outcome: 'timeout', reason: 'the bundler did not finish within 5000ms' });
+
+      expect(await devWaitAsync(projectRoot, options({ bundleCheck: true, json: true }))).toBe(
+        EXIT_OUTCOME_TIMEOUT
+      );
+      expect(printedJson()).toMatchObject({ ok: false, timedOut: true, bundle: { ok: null } });
+    });
+
+    // A dev server that answered nothing the check understands has not shown the project to be
+    // broken, so the gate stays green and says why it could not decide.
+    it(`should pass when the check could not decide`, async () => {
+      mockBundle({ outcome: 'unknown', url: null, reason: 'no launchAsset.url' });
+
+      expect(await devWaitAsync(projectRoot, options({ bundleCheck: true, json: true }))).toBe(
+        EXIT_OK
+      );
+      expect(printedJson().bundle).toMatchObject({
+        checked: true,
+        ok: null,
+        reason: 'no launchAsset.url',
+      });
+    });
+
+    it(`should not build anything with --no-bundle-check`, async () => {
+      expect(await devWaitAsync(projectRoot, options({ bundleCheck: false, json: true }))).toBe(
+        EXIT_OK
+      );
+      expect(jest.mocked(checkEntryBundleAsync)).not.toHaveBeenCalled();
+      expect(printedJson().bundle).toEqual({
+        checked: false,
+        ok: null,
+        platform: null,
+        url: null,
+        error: null,
+        reason: null,
+      });
+    });
+
+    // Building *their* entry bundle answers nothing about this project's code, and it would spend
+    // the caller's whole budget doing it.
+    it(`should not build another project's bundle`, async () => {
+      mockReady({ projectRootMatched: false, reportedProjectRoot: '/other-project' });
+
+      await devWaitAsync(projectRoot, options({ bundleCheck: true }));
+
+      expect(jest.mocked(checkEntryBundleAsync)).not.toHaveBeenCalled();
+    });
+
+    it(`should not build a bundle the dev server never finished`, async () => {
+      mockReady({ ready: false, timedOut: true, projectRootMatched: null });
+
+      await devWaitAsync(projectRoot, options({ bundleCheck: true }));
+
+      expect(jest.mocked(checkEntryBundleAsync)).not.toHaveBeenCalled();
+    });
+
+    it(`should carry the outcome and the location on the event stream`, async () => {
+      mockBundle(BROKEN_BUNDLE);
+
+      await devWaitAsync(projectRoot, options({ bundleCheck: true }));
+
+      expect(jest.mocked(event)).toHaveBeenCalledWith(
+        'dev_wait',
+        expect.objectContaining({
+          bundle: {
+            outcome: 'broken',
+            platform: 'ios',
+            filename: 'src/app/index.tsx',
+            lineNumber: 101,
+          },
+        })
+      );
+    });
+  });
+
   describe('--json', () => {
     it(`should print exactly one object, with the keys of the contract`, async () => {
       await devWaitAsync(projectRoot, options({ json: true }));
@@ -194,6 +396,7 @@ describe(devWaitAsync, () => {
       expect(jest.mocked(Log.log)).toHaveBeenCalledTimes(1);
       expect(Object.keys(printedJson()).sort()).toEqual([
         'appsConnected',
+        'bundle',
         'devServerUrl',
         'followups',
         'ok',
@@ -226,6 +429,7 @@ describe(devWaitAsync, () => {
       appsConnected: 1,
       waitedMs: expect.any(Number),
       timedOut: false,
+      bundle: { outcome: null, platform: null, filename: null, lineNumber: null },
     });
   });
 

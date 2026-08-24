@@ -19,7 +19,10 @@ export function formatEffectiveConfig(report: EffectiveConfigReport): string {
     row('Project', report.projectRoot),
     // "per config", because `exagent status` prints an `SDK` of its own and it is the installed
     // `expo` version. Two numbers under one label is what made them look like a disagreement.
-    row('SDK', `${report.configuredSdkVersion ?? chalk.yellow('unknown')} ${chalk.dim('per config')}`),
+    row(
+      'SDK',
+      `${report.configuredSdkVersion ?? chalk.yellow('unknown')} ${chalk.dim('per config')}`
+    ),
     row('Plugins', pluginsLine(report)),
     row('Autolinked', `${report.autolinkedModules.length} modules`),
   ];

@@ -6,6 +6,11 @@
 import chalk from 'chalk';
 
 import type { FollowUp } from '../followups';
+import type {
+  BundleCheckError,
+  BundleCheckPlatform,
+  BundleCheckResult,
+} from '../runtime/bundleCheck';
 import type { DevServerSource } from '../runtime/devServer';
 
 /** Width of the label column, matching `exagent status`. */
@@ -35,8 +40,36 @@ export interface DevWaitResult {
   timedOut: boolean;
   /** Whether an app was required to attach (`--require-app`). */
   requireApp: boolean;
+  /** What building the project's entry bundle answered, or null when it was not attempted. */
+  bundle: BundleCheckResult | null;
   /** Why the wait did not end in a ready bundler. Absent when it did. */
   reason?: string;
+}
+
+/**
+ * The `bundle` object of the `--json` payload.
+ *
+ * Always present with the same keys, so a parser reads one shape whether the check ran, was
+ * declined with `--no-bundle-check`, or could not decide (llp/0006 §Output contract).
+ */
+export interface DevWaitBundleJson {
+  /** Whether the entry bundle was fetched at all. */
+  checked: boolean;
+  /**
+   * True when it compiled, false when the bundler reported an error.
+   *
+   * Null when it was not decided: the check was declined, the dev server was never ready, or
+   * nothing about the manifest could be read. Null is never "broken".
+   */
+  ok: boolean | null;
+  /** Platform the bundle was built for, or null when nothing was built. */
+  platform: BundleCheckPlatform | null;
+  /** Entry bundle URL that was fetched, resolved from the dev server's own manifest. */
+  url: string | null;
+  /** What the bundler reported. Present exactly when `ok` is false. */
+  error: BundleCheckError | null;
+  /** Why `ok` is null. */
+  reason: string | null;
 }
 
 /** The `--json` payload: one object, with the keys the labelled lines print. */
@@ -51,6 +84,7 @@ export interface DevWaitResultJson {
   waitedMs: number;
   timedOut: boolean;
   source: DevServerSource;
+  bundle: DevWaitBundleJson;
   followups: FollowUp[];
 }
 
@@ -69,7 +103,21 @@ export function devWaitSucceeded(result: DevWaitResult): boolean {
   return (
     result.projectRootMatched !== false &&
     result.ready &&
+    bundleCompiled(result) &&
     (!result.requireApp || result.appsConnected > 0)
+  );
+}
+
+/**
+ * Whether the entry bundle is known not to be broken.
+ *
+ * A check that could not run (`unknown`) passes: the dev server answered nothing this command
+ * understands, which is not evidence that the project is broken, and going red on it would trade
+ * one wrong answer for another.
+ */
+function bundleCompiled(result: DevWaitResult): boolean {
+  return (
+    result.bundle == null || result.bundle.outcome === 'ok' || result.bundle.outcome === 'unknown'
   );
 }
 
@@ -87,7 +135,23 @@ export function devWaitResultToJson(
     waitedMs: result.waitedMs,
     timedOut: result.timedOut,
     source: result.source,
+    bundle: bundleToJson(result.bundle),
     followups,
+  };
+}
+
+/** The `bundle` object, with the same keys whatever the check did or did not manage to do. */
+function bundleToJson(bundle: BundleCheckResult | null): DevWaitBundleJson {
+  if (bundle == null) {
+    return { checked: false, ok: null, platform: null, url: null, error: null, reason: null };
+  }
+  return {
+    checked: true,
+    ok: bundle.outcome === 'ok' ? true : bundle.outcome === 'broken' ? false : null,
+    platform: bundle.platform,
+    url: bundle.url,
+    error: bundle.error,
+    reason: bundle.reason ?? null,
   };
 }
 
@@ -97,7 +161,9 @@ export function formatDevWaitResult(result: DevWaitResult): string {
     row('dev server', `${result.devServerUrl}${SEPARATOR}${chalk.dim(`via ${result.source}`)}`),
     row('bundler', bundlerValue(result)),
     row('project', projectValue(result)),
+    row('bundle', bundleValue(result.bundle)),
     row('apps', appsValue(result)),
+    ...bundleErrorLines(result.bundle),
   ].join('\n');
 }
 
@@ -131,6 +197,49 @@ function projectValue(result: DevWaitResult): string {
     );
   }
   return chalk.dim(`unknown (the dev server named no project root)`);
+}
+
+/**
+ * What building the project's own entry bundle answered.
+ *
+ * The only line of this report that is about the *project*: every other one is about the dev
+ * server, which can be perfectly healthy while the code it is serving does not compile.
+ */
+function bundleValue(bundle: BundleCheckResult | null): string {
+  if (bundle == null) {
+    return chalk.dim('not checked');
+  }
+  switch (bundle.outcome) {
+    case 'ok':
+      return `${chalk.green('compiles')} for ${bundle.platform}`;
+    case 'broken':
+      return `${chalk.red('does not compile')} for ${bundle.platform}`;
+    case 'timeout':
+      return chalk.yellow(`still building for ${bundle.platform} (timed out)`);
+    default:
+      return chalk.dim(`unknown${bundle.reason ? ` (${bundle.reason})` : ''}`);
+  }
+}
+
+/**
+ * The file, line and message the bundler stopped on, under the summary line.
+ *
+ * Printed in full rather than summarized: this is the one thing the reader has to act on, and it
+ * is exactly what they would otherwise go looking for in a dev-server log they do not have.
+ */
+function bundleErrorLines(bundle: BundleCheckResult | null): string[] {
+  const error = bundle?.error;
+  if (error == null) {
+    return [];
+  }
+  const location = [error.filename, error.lineNumber, error.column].filter(
+    (part) => part != null
+  ) as (string | number)[];
+  return [
+    row('', chalk.red(error.message)),
+    ...(location.length ? [row('', chalk.dim(location.join(':')))] : []),
+    ...(error.snippet ? [error.snippet] : []),
+  ];
 }
 
 function appsValue(result: DevWaitResult): string {
