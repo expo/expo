@@ -105,7 +105,6 @@ export function useStore(
     [navigationRef, linking, owner, rootComponent, redirects, routeNode]
   );
 
-
   useEffect(() => {
     return () => {
       // listener();

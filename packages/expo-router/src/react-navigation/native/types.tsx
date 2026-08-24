@@ -1,11 +1,7 @@
 import type { ColorValue } from 'react-native';
 
 import type { getStateFromPath as getExpoStateFromPath } from '../../fork/getStateFromPath';
-import type {
-  getPathFromState as getPathFromStateDefault,
-  PathConfigMap,
-  Route,
-} from '../core';
+import type { getPathFromState as getPathFromStateDefault, PathConfigMap, Route } from '../core';
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

@@ -1,3 +1,4 @@
+import * as forkGetStateFromPath from '../../../fork/getStateFromPath';
 import { store } from '../../../global-state/router-store';
 import { Stack } from '../../../layouts/Stack';
 import { NativeTabs } from '../../../native-tabs/index';
@@ -467,7 +468,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
   });
 
   it('matches the preloaded route by nested state shape', () => {
-    getStateForHref = jest.spyOn(store, 'getStateForHref').mockReturnValue({
+    getStateForHref = jest.spyOn(forkGetStateFromPath, 'getStateFromPath').mockReturnValue({
       routes: [
         {
           name: 'details',
@@ -477,7 +478,7 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
           },
         },
       ],
-    });
+    } as any);
     const matchingRoute = {
       key: 'details-matching',
       name: 'details',
@@ -557,18 +558,20 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       type: 'stack' as const,
     };
 
-    expect(getPreloadedRouteFromRootStateByHref('/details', state)).toBe(matchingRoute);
+    expect(
+      getPreloadedRouteFromRootStateByHref('/details', state, store.getRouteInfo(), store.linking)
+    ).toBe(matchingRoute);
   });
 
   it('does not match a preloaded route from a different branch', () => {
-    getStateForHref = jest.spyOn(store, 'getStateForHref').mockReturnValue({
+    getStateForHref = jest.spyOn(forkGetStateFromPath, 'getStateFromPath').mockReturnValue({
       routes: [
         {
           name: 'target',
           state: { routes: [{ name: 'child', params: { filter: 'target' } }] },
         },
       ],
-    });
+    } as any);
     const unrelatedPreloadedRoute = {
       key: 'child-preloaded',
       name: 'child',
@@ -598,6 +601,13 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
       type: 'stack' as const,
     };
 
-    expect(getPreloadedRouteFromRootStateByHref('/target/child', state)).toBeUndefined();
+    expect(
+      getPreloadedRouteFromRootStateByHref(
+        '/target/child',
+        state,
+        store.getRouteInfo(),
+        store.linking
+      )
+    ).toBeUndefined();
   });
 });

@@ -10,7 +10,7 @@ import { NavigationContainer as UpstreamNavigationContainer } from './fork/Navig
 import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { useStore } from './global-state/router-store';
 import { RouterRegistryProvider } from './global-state/routerRegistry';
-import { maybeHideSplashScreen, store } from './global-state/store';
+import { maybeHideSplashScreen } from './global-state/store';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
