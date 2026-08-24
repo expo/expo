@@ -12,6 +12,7 @@ import { useStore } from './global-state/router-store';
 import { RouterRegistryProvider } from './global-state/routerRegistry';
 import type { ServerContextType } from './global-state/serverLocationContext';
 import { ServerContext } from './global-state/serverLocationContext';
+import { maybeHideSplashScreen, store } from './global-state/store';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
@@ -130,15 +131,22 @@ function ContextNavigator({
     : undefined;
 
   const storeValue = useStore(context, linking, serverUrl);
-  const { navigationRef, initialState, rootComponent, linking: linkingConfig } = storeValue;
+  const {
+    navigationRef,
+    initialState,
+    rootComponent,
+    linking: linkingConfig,
+    routeNode,
+  } = storeValue;
   const onNavigationReady = useCallback(() => {
     handleNavigationOnReady();
-    storeValue.onReady();
+    maybeHideSplashScreen();
   }, [storeValue]);
 
   useDomComponentNavigation();
 
-  if (storeValue.shouldShowTutorial) {
+  // TODO(@ubax): Revisit onboarding once route creation is React-owned.
+  if (process.env.NODE_ENV === 'development' && !routeNode) {
     SplashScreen.hideAsync();
     if (process.env.NODE_ENV === 'development') {
       const Tutorial = require('./onboard/Tutorial').Tutorial;
@@ -161,7 +169,7 @@ function ContextNavigator({
           initialState={initialState}
           linking={linkingConfig as LinkingOptions<any>}
           onUnhandledAction={onUnhandledAction}
-          onStateChange={storeValue.onStateChange}
+          onStateChange={store.onStateChange}
           documentTitle={documentTitle}
           onReady={onNavigationReady}>
           <ServerContext.Provider value={serverContext}>

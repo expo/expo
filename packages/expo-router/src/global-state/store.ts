@@ -36,10 +36,18 @@ export function setHasAttemptedToHideSplash(value: boolean) {
   hasAttemptedToHideSplash = value;
 }
 
+export function maybeHideSplashScreen() {
+  if (!hasAttemptedToHideSplash) {
+    setHasAttemptedToHideSplash(true);
+    setSplashScreenAnimationFrame(
+      requestAnimationFrame(() => {
+        SplashScreen._internal_maybeHideAsync?.();
+      })
+    );
+  }
+}
+
 export const store = {
-  shouldShowTutorial() {
-    return !storeRef.current.routeNode && process.env.NODE_ENV === 'development';
-  },
   get state() {
     return storeRef.current.state;
   },
@@ -58,18 +66,6 @@ export const store = {
   setFocusedState(state: FocusedRouteState) {
     const routeInfo = getCachedRouteInfo(state);
     storeRef.current.routeInfo = routeInfo;
-  },
-  // TODO(@ubax): Refactor onReady logic as it probably should live somewhere else then store
-  onReady() {
-    if (!hasAttemptedToHideSplash) {
-      setHasAttemptedToHideSplash(true);
-      // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.
-      setSplashScreenAnimationFrame(
-        requestAnimationFrame(() => {
-          SplashScreen._internal_maybeHideAsync?.();
-        })
-      );
-    }
   },
   onStateChange(newState: ReactNavigationState | undefined) {
     if (!newState) {
@@ -102,13 +98,6 @@ export const store = {
 
     for (const callback of routeInfoSubscribers) {
       callback();
-    }
-  },
-  assertIsReady() {
-    if (!storeRef.current.navigationRef.isReady()) {
-      throw new Error(
-        'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
-      );
     }
   },
 };

@@ -17,12 +17,7 @@ import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
 import { getRouteInfoFromState } from './getRouteInfoFromState';
 import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
-import {
-  store,
-  storeRef,
-  getSplashScreenAnimationFrame,
-  setSplashScreenAnimationFrame,
-} from './store';
+import { storeRef, getSplashScreenAnimationFrame, setSplashScreenAnimationFrame } from './store';
 import type { StoreContextValue } from './storeContext';
 import type { ReactNavigationState, StoreRedirects } from './types';
 
@@ -78,7 +73,7 @@ export function useStore(
         // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
         if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
 
-        initialState = linking.getStateFromPath(initialPath, linking.config);
+        initialState = linking.getStateFromPath!(initialPath, linking.config);
         const initialRouteInfo = getRouteInfoFromState(initialState);
         setCachedRouteInfo(initialState as any, initialRouteInfo);
       }
@@ -110,9 +105,7 @@ export function useStore(
       initialState,
       rootComponent,
       redirects,
-      shouldShowTutorial: !routeNode && process.env.NODE_ENV === 'development',
-      onReady: store.onReady,
-      onStateChange: store.onStateChange,
+      routeNode,
     };
   }, [context, linkingConfigOptions, navigationRef, serverUrl]);
 

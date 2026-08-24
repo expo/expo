@@ -15,7 +15,7 @@ export function useNextScreenId(): [
 ] {
   const router = useRouter();
   const routeInfo = useRouteInfo();
-  const { navigationRef, linking } = useExpoRouterStore();
+  const { navigationRef } = useExpoRouterStore();
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
   const currentHref = useRef<Href | undefined>(undefined);
@@ -28,15 +28,13 @@ export function useNextScreenId(): [
         const preloadedRoute = getPreloadedRouteFromRootStateByHref(
           currentHref.current,
           state,
-          routeInfo,
-          linking
+          routeInfo
         );
         const routeKey = preloadedRoute?.key;
         const tabPathFromRootState = getTabPathFromRootStateByHref(
           currentHref.current,
           state,
-          routeInfo,
-          linking
+          routeInfo
         );
         // Without this timeout react-native does not have enough time to mount the new screen
         // and thus it will not be found on the native side

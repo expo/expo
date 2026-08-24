@@ -339,10 +339,10 @@ describe('router action functions', () => {
     expect(mockAdd).toHaveBeenCalledWith({ type: 'POP_TO_TOP' });
   });
 
-  it('goBack calls store.assertIsReady and enqueues GO_BACK', () => {
+  it('goBack checks navigation readiness and enqueues GO_BACK', () => {
     goBack();
 
-    expect(store.assertIsReady).toHaveBeenCalled();
+    expect(store.navigationRef.isReady).toHaveBeenCalled();
     expect(mockAdd).toHaveBeenCalledWith({ type: 'GO_BACK' });
   });
 
@@ -363,10 +363,10 @@ describe('router action functions', () => {
     expect(store.navigationRef.current!.canGoBack).toHaveBeenCalled();
   });
 
-  it('setParams calls store.assertIsReady', () => {
+  it('setParams checks navigation readiness', () => {
     setParams({ name: 'test' });
 
-    expect(store.assertIsReady).toHaveBeenCalled();
+    expect(store.navigationRef.isReady).toHaveBeenCalled();
     expect(store.navigationRef.current!.setParams).toHaveBeenCalledWith({ name: 'test' });
   });
 });
@@ -397,6 +397,6 @@ describe('DOM short-circuit paths', () => {
 
     expect(mockEmitDomGoBack).toHaveBeenCalled();
     expect(mockAdd).not.toHaveBeenCalled();
-    expect(store.assertIsReady).not.toHaveBeenCalled();
+    expect(store.navigationRef.isReady).not.toHaveBeenCalled();
   });
 });
