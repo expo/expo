@@ -48,6 +48,15 @@ export const OPTION_OWNERS: { [option: string]: string[] } = {
   '--app-id': ['runtime:stop'],
   '--timeout': ['dev:wait', 'dev:stop', 'build:wait', 'runtime:reload'],
   '--json': ['dev', 'dev:wait', 'dev:stop', 'status', 'typecheck', 'install', 'navigate'],
+  // Four more from friction run 5 (F48-2). Each is an option a caller reached for on the
+  // *neighbour* of the command that has it, which is the only thing that earns a row here:
+  // `--tail` reads like a `dev:logs` option and is one, `--duration` and `--fail-on-error` are
+  // what an agent gating on a window types after `dev:wait`, and `--require-app` is what it types
+  // on the command that reads the app rather than on the one that waits for it.
+  '--tail': ['dev:logs'],
+  '--fail-on-error': ['runtime:errors'],
+  '--require-app': ['dev:wait'],
+  '--duration': ['runtime:errors'],
 };
 
 /** The commands other than this one that take an option, or an empty list. */
