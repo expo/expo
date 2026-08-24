@@ -11,14 +11,25 @@ const plan: StartPlan = {
       argv: ['expo', 'prebuild', '--platform', 'ios'],
       reason: 'Generates the ios project from the app config.',
       timeClass: 'a-minute',
+      runsOn: 'local',
     },
     {
       id: 'run',
       argv: ['expo', 'run:ios'],
       reason: 'Builds, installs, and starts the dev server.',
       timeClass: 'many-minutes',
+      runsOn: 'local',
     },
   ],
+  buildLocation: {
+    runsOn: 'local',
+    platform: 'ios',
+    requirement: 'Xcode on this machine',
+    status: 'present',
+    detail: 'Xcode 16.2 at /Applications/Xcode.app/Contents/Developer.',
+    caveats: [],
+    alternativeCommand: 'npx eas build --platform ios --profile development',
+  },
 };
 
 describe(formatTimeClass, () => {
@@ -60,17 +71,88 @@ describe(formatStartPlan, () => {
       ...plan,
       rule: 'expo-go',
       target: 'expo-go',
+      buildLocation: null,
       steps: [
         {
           id: 'start',
           argv: ['expo', 'start', '--go'],
           reason: 'Opens in Expo Go.',
           timeClass: 'seconds',
+          runsOn: null,
         },
       ],
     });
 
     expect(output).toMatch(/1\. expo start --go/);
     expect(output).not.toMatch(/2\./);
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+  describe('where the build runs', () => {
+    it(`should mark every building step, and only those`, () => {
+      const output = formatStartPlan(plan);
+
+      expect(output).toMatch(/expo prebuild --platform ios\s+~a minute\s+local/);
+      expect(output).toMatch(/expo run:ios\s+~many minutes\s+local/);
+    });
+
+    it(`should label no step of a plan that builds nothing`, () => {
+      const output = formatStartPlan({
+        ...plan,
+        buildLocation: null,
+        steps: [
+          {
+            id: 'start',
+            argv: ['expo', 'start', '--go'],
+            reason: 'Opens in Expo Go.',
+            timeClass: 'seconds',
+            runsOn: null,
+          },
+        ],
+      });
+
+      expect(output).not.toContain('local');
+      expect(output).not.toContain('Build:');
+    });
+
+    it(`should say where the build happens and that this machine can do it`, () => {
+      const output = formatStartPlan(plan);
+
+      expect(output).toContain('Build: local — runs on this machine, needs Xcode on this machine.');
+      expect(output).toContain('Found: Xcode 16.2');
+    });
+
+    // The point of the whole line: a caller who cannot build here learns it here, and the command
+    // that does work is on the same line as the problem.
+    it(`should name the EAS command when this machine cannot build`, () => {
+      const output = formatStartPlan({
+        ...plan,
+        buildLocation: {
+          ...plan.buildLocation!,
+          status: 'missing',
+          detail: 'xcode-select is not on PATH.',
+        },
+      });
+
+      expect(output).toContain('Not found: xcode-select is not on PATH.');
+      expect(output).toContain('Instead: npx eas build --platform ios --profile development');
+    });
+
+    it(`should not call an unprobeable machine a machine without the toolchain`, () => {
+      const output = formatStartPlan({
+        ...plan,
+        buildLocation: {
+          ...plan.buildLocation!,
+          status: 'unknown',
+          detail: 'The ios toolchain could not be probed: EPERM',
+        },
+      });
+
+      expect(output).toContain('Not established');
+      expect(output).not.toContain('Not found');
+      expect(output).toContain(
+        'If it is missing: npx eas build --platform ios --profile development'
+      );
+    });
   });
 });

@@ -36,8 +36,10 @@ function mockPlan(overrides: Partial<StartPlan> = {}): StartPlan {
         argv: ['expo', 'start', '--go'],
         reason: 'Opens the project in Expo Go.',
         timeClass: 'seconds',
+        runsOn: null,
       },
     ],
+    buildLocation: null,
     ...overrides,
   };
 }
@@ -56,15 +58,16 @@ describe(buildStartFollowUps, () => {
 
   // The EAS rung is still the last one built, and the cap is still what drops it — for either
   // answer to "does this project have an eas.json", and whatever else the ladder holds.
-  it.each([true, false])(`should keep the cloud build off a native ladder (eas.json: %s)`, (
-    easJson
-  ) => {
-    const followups = buildStartFollowUps({ expoGo: true, web: false, lanUrl, easJson });
+  it.each([true, false])(
+    `should keep the cloud build off a native ladder (eas.json: %s)`,
+    (easJson) => {
+      const followups = buildStartFollowUps({ expoGo: true, web: false, lanUrl, easJson });
 
-    expect(followups).toHaveLength(3);
-    expect(ids(followups)).not.toContain('eas-build');
-    expect(ids(followups)).not.toContain('eas-build-configure');
-  });
+      expect(followups).toHaveLength(3);
+      expect(ids(followups)).not.toContain('eas-build');
+      expect(ids(followups)).not.toContain('eas-build-configure');
+    }
+  );
 
   it(`should fall back to a tunnel when the host has no LAN address`, () => {
     const followups = buildStartFollowUps({
@@ -113,11 +116,7 @@ describe(buildStartFollowUps, () => {
     it(`should name no URL when nothing reported a port`, () => {
       const followups = buildStartFollowUps({ ...web, webUrl: null });
 
-      expect(ids(followups)).toEqual([
-        'dev-server-port-unknown',
-        'web-bundle-check',
-        'deploy-web',
-      ]);
+      expect(ids(followups)).toEqual(['dev-server-port-unknown', 'web-bundle-check', 'deploy-web']);
       expect(followups.some((followup) => followup.command.startsWith('http://localhost'))).toBe(
         false
       );

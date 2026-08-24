@@ -23,7 +23,7 @@ export function spawnCaptureAsync(
   args: string[],
   options: { cwd?: string; timeoutMs?: number } = {}
 ): Promise<SpawnCaptureResult> {
-  return new Promise<SpawnCaptureResult>((resolve) => {
+  return new Promise<SpawnCaptureResult>((resolve, reject) => {
     // A `fingerprint` resolved inside a project is a batch shim on Windows, which needs `cmd.exe`.
     const target = resolveSpawnTarget(command, args);
     const child = spawn(target.command, target.args, {
@@ -37,34 +37,45 @@ export function spawnCaptureAsync(
     // names a deadline: every other caller runs a tool that ends on its own.
     let deadline: NodeJS.Timeout | null = null;
     if (options.timeoutMs != null) {
-      deadline = setTimeout(() => child.kill('SIGKILL'), options.timeoutMs);
+      deadline = setTimeout(() => child?.kill('SIGKILL'), options.timeoutMs);
       // An unreferenced timer never keeps the process alive on its own.
       deadline.unref?.();
     }
 
-    let stdout = '';
-    let stderr = '';
-    child.stdout?.on('data', (chunk) => {
-      stdout += chunk.toString();
-    });
-    child.stderr?.on('data', (chunk) => {
-      stderr += chunk.toString();
-    });
-
-    child.on('error', (error: NodeJS.ErrnoException) => {
-      clearDeadline();
-      resolve({ stdout, stderr, exitCode: null, spawnError: error });
-    });
-
-    child.on('close', (code) => {
-      clearDeadline();
-      resolve({ stdout, stderr, exitCode: code });
-    });
-
-    function clearDeadline() {
+    const clearDeadline = () => {
       if (deadline != null) {
         clearTimeout(deadline);
+        deadline = null;
       }
+    };
+
+    let stdout = '';
+    let stderr = '';
+
+    // Attaching the handlers can throw before any of them exists — `spawn` is replaceable, and a
+    // replacement may hand back something that is not a child process. The deadline is armed by
+    // then, and a timer left behind by a call that never settled fires into a process that has
+    // moved on: a run that passed, ending in a stack trace about `kill` on `undefined`.
+    try {
+      child.stdout?.on('data', (chunk) => {
+        stdout += chunk.toString();
+      });
+      child.stderr?.on('data', (chunk) => {
+        stderr += chunk.toString();
+      });
+
+      child.on('error', (error: NodeJS.ErrnoException) => {
+        clearDeadline();
+        resolve({ stdout, stderr, exitCode: null, spawnError: error });
+      });
+
+      child.on('close', (code) => {
+        clearDeadline();
+        resolve({ stdout, stderr, exitCode: code });
+      });
+    } catch (error) {
+      clearDeadline();
+      reject(error);
     }
   });
 }

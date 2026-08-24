@@ -3,6 +3,9 @@
 // happens here, so every row is exhaustively unit-testable without a project or a device.
 
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
+import { localBuildLocation } from '../toolchain/planLocation';
+import { localRequirement, LOCAL_WHERE } from '../toolchain/runsOn';
+import type { RunsOn } from '../toolchain/runsOn';
 import type {
   DecideStartPlanOptions,
   LastBuildFingerprints,
@@ -38,20 +41,18 @@ export function decideStartPlan(
   // only chosen when it is asked for: an Expo project always *can* target native, so no probed
   // fact proves that web is the only option.
   if (options.platform === 'web') {
-    return {
-      target: 'web',
-      rule: 'web',
-      steps: [
-        step('start', ['expo', 'start', '--web'], 'seconds', 'Serves the app to a web browser.'),
-      ],
-      reasons: [
+    return plan(
+      'web',
+      'web',
+      [step('start', ['expo', 'start', '--web'], 'seconds', 'Serves the app to a web browser.')],
+      [
         describeSdk(state),
         'Target platform: web.',
         state.hasWeb
           ? 'react-native-web is a dependency.'
           : 'react-native-web is not a dependency, so the web bundle may fail to build.',
-      ],
-    };
+      ]
+    );
   }
 
   const platform = resolveNativePlatform(state, options);
@@ -85,7 +86,8 @@ export function decideStartPlan(
           'bare-stale',
           'bare',
           [runStep(platform, build.summary)],
-          [...factsWhen(true), ...build.reasons]
+          [...factsWhen(true), ...build.reasons],
+          localBuildLocation(platform)
         );
   }
 
@@ -103,7 +105,8 @@ export function decideStartPlan(
           'dev-client-stale',
           'dev-client',
           [prebuildStep(platform), runStep(platform, build.summary)],
-          [...factsWhen(true), ...build.reasons]
+          [...factsWhen(true), ...build.reasons],
+          localBuildLocation(platform)
         );
   }
 
@@ -127,7 +130,8 @@ export function decideStartPlan(
       prebuildStep(platform),
       runStep(platform, 'The first development build of this project has to be made.'),
     ],
-    factsWhen(true)
+    factsWhen(true),
+    localBuildLocation(platform)
   );
 }
 
@@ -135,18 +139,26 @@ function plan(
   rule: StartPlanRule,
   target: StartPlan['target'],
   steps: PlanStep[],
-  reasons: string[]
+  reasons: string[],
+  buildLocation: StartPlan['buildLocation'] = null
 ): StartPlan {
-  return { target, rule, steps, reasons };
+  return { target, rule, steps, reasons, buildLocation };
 }
 
+/**
+ * One step.
+ *
+ * `runsOn` defaults to `null` — the answer for every step that builds nothing, which is most of
+ * them. Only the two steps that put a compiler to work say `local`.
+ */
 function step(
   id: string,
   argv: string[],
   timeClass: PlanStep['timeClass'],
-  reason: string
+  reason: string,
+  runsOn: RunsOn | null = null
 ): PlanStep {
-  return { id, argv, timeClass, reason };
+  return { id, argv, timeClass, reason, runsOn };
 }
 
 /**
@@ -196,12 +208,21 @@ function deviceNoun(platform: NativePlatform): string {
   return platform === 'ios' ? 'a booted iOS simulator' : 'an attached Android device or emulator';
 }
 
+/**
+ * Prebuild, which runs locally and is labelled so.
+ *
+ * It generates source rather than a binary, and it is still a `local` step: on iOS it ends in a
+ * `pod install` that wants Xcode's command line tools, and it is the first half of a build that
+ * only ever happens on this machine. A caller who cannot build here needs to know that at this
+ * step, not at the next one.
+ */
 function prebuildStep(platform: NativePlatform): PlanStep {
   return step(
     'prebuild',
     ['expo', 'prebuild', '--platform', platform],
     'a-minute',
-    `Generates the ${platform} native project from the app config and the installed packages.`
+    `Generates the ${platform} native project from the app config and the installed packages. Runs ${LOCAL_WHERE}, as the first half of a local build.`,
+    'local'
   );
 }
 
@@ -210,7 +231,8 @@ function runStep(platform: NativePlatform, reason: string): PlanStep {
     'run',
     ['expo', `run:${platform}`],
     'many-minutes',
-    `Builds the ${platform} app, installs it, and starts the dev server. ${reason}`
+    `Builds the ${platform} app ${LOCAL_WHERE} (a local build, which needs ${localRequirement(platform)}), installs it, and starts the dev server. ${reason}`,
+    'local'
   );
 }
 

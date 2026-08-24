@@ -17,8 +17,15 @@ function mockPlan(...timeClasses: TimeClass[]): StartPlan {
     argv: ['expo', 'start'],
     reason: 'because',
     timeClass,
+    runsOn: null,
   }));
-  return { target: 'dev-client', rule: 'dev-client-stale', steps, reasons: [] };
+  return {
+    target: 'dev-client',
+    rule: 'dev-client-stale',
+    steps,
+    reasons: [],
+    buildLocation: null,
+  };
 }
 
 beforeEach(() => {

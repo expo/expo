@@ -1,0 +1,233 @@
+// @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+// Cheap probes for "can this machine build the app itself?". Two subprocesses at most for iOS and
+// none at all for Android, cached for the life of the process, and wrapped so that nothing here can
+// stop a plan being made: a probe that throws answers `unknown`, which reads as "not established".
+
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+
+import type { NativePlatform } from '../plan/types';
+import { spawnCaptureAsync } from '../utils/spawnCapture';
+import { findExecutableOnPath } from '../utils/subprocess';
+import { localRequirement } from './runsOn';
+import type { ToolchainProbe } from './types';
+
+/**
+ * How long a probe may take before it is abandoned.
+ *
+ * `xcodebuild -version` reads a plist and exits; a first run after an Xcode update can take a
+ * couple of seconds. Anything past this is a machine that will not answer, and a plan is not worth
+ * holding up for it — the answer is `unknown`, which says exactly that.
+ */
+const PROBE_TIMEOUT_MS = 5_000;
+
+/** Environment variables the Android tooling reads, in the order it reads them. */
+const ANDROID_SDK_ENV_VARS = ['ANDROID_HOME', 'ANDROID_SDK_ROOT'] as const;
+
+/**
+ * One probe per platform per process.
+ *
+ * The promise is cached rather than the result, so two callers that ask at once share one run.
+ */
+const cache = new Map<NativePlatform, Promise<ToolchainProbe>>();
+
+/** Forget what this process probed. For tests, and for nothing else. */
+export function resetToolchainCache(): void {
+  cache.clear();
+}
+
+/**
+ * Can this machine build the app for `platform` itself?
+ *
+ * Never rejects and never throws: a plan that could not be made because a probe failed would be
+ * worse than a plan that says it does not know.
+ */
+export function detectToolchainAsync(platform: NativePlatform): Promise<ToolchainProbe> {
+  const cached = cache.get(platform);
+  if (cached) {
+    return cached;
+  }
+  const probe = runProbeAsync(platform);
+  cache.set(platform, probe);
+  return probe;
+}
+
+async function runProbeAsync(platform: NativePlatform): Promise<ToolchainProbe> {
+  try {
+    return platform === 'ios' ? await detectXcodeAsync() : detectAndroidSdk();
+  } catch (error: any) {
+    // Unknown, not missing. Nothing was learned about the machine, and saying otherwise would send
+    // a caller to a cloud build over a toolchain this probe simply could not reach.
+    return {
+      platform,
+      status: 'unknown',
+      detail: `The ${platform} toolchain could not be probed: ${error?.message ?? String(error)}`,
+      requirement: localRequirement(platform),
+      caveats: [],
+    };
+  }
+}
+
+/**
+ * Xcode, in the two questions that decide whether `expo run:ios` can work.
+ *
+ * `xcode-select -p` names the active developer directory, and `xcodebuild -version` is the one that
+ * separates Xcode from the Command Line Tools: a machine with only the tools answers the first and
+ * refuses the second, and it cannot build an app.
+ */
+async function detectXcodeAsync(): Promise<ToolchainProbe> {
+  const requirement = localRequirement('ios');
+  if (process.platform !== 'darwin') {
+    // Settled by the host, so nothing is spawned: only macOS can build for iOS, whatever is
+    // installed on this one.
+    return {
+      platform: 'ios',
+      status: 'missing',
+      detail: `An iOS build needs macOS with Xcode, and this machine runs ${process.platform}.`,
+      requirement,
+      caveats: [],
+    };
+  }
+
+  const selected = await spawnCaptureAsync('xcode-select', ['-p'], {
+    timeoutMs: PROBE_TIMEOUT_MS,
+  });
+  if (selected.spawnError) {
+    return {
+      platform: 'ios',
+      status: 'missing',
+      detail: `xcode-select is not on PATH, so no Xcode installation could be found (${selected.spawnError.code ?? selected.spawnError.message}).`,
+      requirement,
+      caveats: [],
+    };
+  }
+
+  const developerDir = selected.stdout.trim();
+  if (selected.exitCode !== 0 || !developerDir) {
+    return {
+      platform: 'ios',
+      status: 'missing',
+      detail: `xcode-select names no active developer directory: ${firstLine(selected.stderr) || `it exited ${selected.exitCode}`}`,
+      requirement,
+      caveats: [],
+    };
+  }
+
+  const version = await spawnCaptureAsync('xcodebuild', ['-version'], {
+    timeoutMs: PROBE_TIMEOUT_MS,
+  });
+  if (version.spawnError || version.exitCode !== 0) {
+    const said = firstLine(version.stderr) || firstLine(version.stdout);
+    return {
+      platform: 'ios',
+      status: 'missing',
+      detail: `xcode-select points at ${developerDir} and xcodebuild does not run there, so this machine has the Command Line Tools rather than Xcode${said ? `: ${said}` : '.'}`,
+      requirement,
+      caveats: [],
+    };
+  }
+
+  return {
+    platform: 'ios',
+    status: 'present',
+    detail: `${firstLine(version.stdout) || 'Xcode'} at ${developerDir}.`,
+    requirement,
+    caveats: [],
+  };
+}
+
+/**
+ * The Android SDK, which is a directory rather than a command.
+ *
+ * Deliberately not "is `adb` on PATH?". A Gradle build finds the SDK through `ANDROID_HOME` or
+ * `local.properties`, and this machine is the case that makes the difference concrete: the SDK is
+ * where the installer put it, no environment variable names it, and `adb` is not on PATH. That is
+ * a machine that can build and cannot run one shell command, so the SDK decides the status and the
+ * rest is reported as a caveat.
+ */
+function detectAndroidSdk(): ToolchainProbe {
+  const requirement = localRequirement('android');
+  const named = ANDROID_SDK_ENV_VARS.map((name) => ({ name, value: readEnv(name) })).find(
+    (entry) => entry.value
+  );
+  const sdkDir = named?.value ?? defaultAndroidSdkDir();
+  const from = named ? `${named.name} names it` : 'the default install location';
+
+  if (!sdkDir || !directoryExistsSync(sdkDir)) {
+    return {
+      platform: 'android',
+      status: 'missing',
+      detail: named
+        ? `${named.name} names ${sdkDir}, and there is no directory there.`
+        : `No Android SDK found: ANDROID_HOME and ANDROID_SDK_ROOT are unset, and the default location (${sdkDir}) does not exist.`,
+      requirement,
+      caveats: [],
+    };
+  }
+
+  const caveats: string[] = [];
+  const platformTools = path.join(sdkDir, 'platform-tools');
+  if (!directoryExistsSync(platformTools)) {
+    caveats.push(
+      `The SDK at ${sdkDir} has no platform-tools directory, so adb is not installed in it yet; the Android tooling installs that package itself.`
+    );
+  } else if (!findExecutableOnPath('adb')) {
+    caveats.push(
+      `adb is not on PATH, though it is at ${platformTools}. A Gradle build finds the SDK without it; a command that talks to a device does not. Add ${platformTools} to PATH, and set ANDROID_HOME to ${sdkDir}.`
+    );
+  }
+  if (!named) {
+    caveats.push(
+      `Neither ANDROID_HOME nor ANDROID_SDK_ROOT is set, so the SDK was found by looking in the default location.`
+    );
+  }
+
+  return {
+    platform: 'android',
+    status: 'present',
+    detail: `Android SDK at ${sdkDir} (${from}).`,
+    requirement,
+    caveats,
+  };
+}
+
+/** Where the Android Studio installer puts the SDK, per host. */
+function defaultAndroidSdkDir(): string {
+  const home = os.homedir();
+  if (process.platform === 'darwin') {
+    return path.join(home, 'Library', 'Android', 'sdk');
+  }
+  if (process.platform === 'win32') {
+    return path.join(
+      process.env.LOCALAPPDATA || path.join(home, 'AppData', 'Local'),
+      'Android',
+      'Sdk'
+    );
+  }
+  return path.join(home, 'Android', 'Sdk');
+}
+
+/** An environment variable that is set to something, treating an empty value as unset. */
+function readEnv(name: string): string | null {
+  const value = process.env[name];
+  return value && value.trim() ? value.trim() : null;
+}
+
+function directoryExistsSync(dir: string): boolean {
+  try {
+    return fs.statSync(dir).isDirectory();
+  } catch {
+    return false;
+  }
+}
+
+/** The first line worth quoting from a tool's output, or an empty string. */
+function firstLine(output: string): string {
+  return (
+    output
+      .split('\n')
+      .map((line) => line.trim())
+      .find(Boolean) ?? ''
+  );
+}

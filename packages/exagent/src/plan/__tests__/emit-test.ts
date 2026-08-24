@@ -17,8 +17,10 @@ const plan: StartPlan = {
       argv: ['expo', 'start', '--go'],
       reason: 'Opens the project in Expo Go.',
       timeClass: 'seconds',
+      runsOn: null,
     },
   ],
+  buildLocation: null,
 };
 
 describe(emitStartPlan, () => {
@@ -31,6 +33,7 @@ describe(emitStartPlan, () => {
       rule: 'expo-go',
       steps: plan.steps,
       reasons: plan.reasons,
+      buildLocation: null,
     });
   });
 
@@ -59,11 +62,14 @@ describe(emitStartPlan, () => {
   // Shape test: the top-level keys of `--json` are the command's contract, so they are asserted
   // as an exact set. Adding, renaming, or dropping one is a breaking change for every caller.
   // `followups` joined the set with llp/0009; it is always present, and empty when suppressed.
+  // `buildLocation` joined it with llp/0004 §Where a build runs, and is null for a plan that
+  // builds nothing — present either way, so a caller reads one key rather than checking for it.
   it(`should print a stable set of top-level keys with --json`, () => {
     emitStartPlan(plan, { mode: 'plan', json: true });
 
     const printed = JSON.parse(jest.mocked(Log.log).mock.calls[0]![0]!);
     expect(Object.keys(printed).sort()).toEqual([
+      'buildLocation',
       'followups',
       'reasons',
       'rule',
