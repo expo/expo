@@ -1,5 +1,6 @@
 package expo.modules.audio
 
+import android.media.AudioManager
 import android.media.MediaRecorder
 import android.os.Build
 import expo.modules.kotlin.records.Field
@@ -118,8 +119,16 @@ class AudioLockScreenOptions(
 
 enum class InterruptionMode(val value: String) : Enumerable {
   DO_NOT_MIX("doNotMix"),
+  DO_NOT_MIX_PERSISTENT("doNotMixPersistent"),
   DUCK_OTHERS("duckOthers"),
-  MIX_WITH_OTHERS("mixWithOthers")
+  MIX_WITH_OTHERS("mixWithOthers");
+
+  fun toAudioFocusGain(): Int? = when (this) {
+    DO_NOT_MIX_PERSISTENT -> AudioManager.AUDIOFOCUS_GAIN
+    DO_NOT_MIX -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+    DUCK_OTHERS -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
+    MIX_WITH_OTHERS -> null
+  }
 }
 
 @OptimizedRecord

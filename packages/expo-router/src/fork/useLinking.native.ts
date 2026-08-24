@@ -8,7 +8,6 @@ import {
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
   type ParamListBase,
-  useNavigationIndependentTree,
 } from '../react-navigation/native';
 import { extractExpoPathFromURL } from './extractPathFromURL';
 
@@ -52,14 +51,8 @@ export function useLinking(
     });
   const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
-  const independent = useNavigationIndependentTree();
-
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
-      return undefined;
-    }
-
-    if (independent) {
       return undefined;
     }
 
@@ -88,7 +81,7 @@ export function useLinking(
         linkingHandlers.splice(index, 1);
       }
     };
-  }, [enabled, independent]);
+  }, [enabled]);
 
   // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
   // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`

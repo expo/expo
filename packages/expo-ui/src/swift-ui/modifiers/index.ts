@@ -1130,6 +1130,30 @@ export const listRowSeparatorTint = (color?: Color, edges?: 'all' | 'top' | 'bot
 export const listRowSpacing = (spacing?: number) => createModifier('listRowSpacing', { spacing });
 
 /**
+ * Sets the position of a horizontal alignment guide of this view.
+ *
+ * Use the `'listRowSeparatorLeading'` guide to set where the separator of a `List` row starts.
+ * SwiftUI insets a row separator past a leading `Image`, but not past other leading content, so
+ * rows with different leading content get separators that start at different offsets.
+ * @param guide - The horizontal alignment guide to set. `'listRowSeparatorLeading'` and
+ * `'listRowSeparatorTrailing'` do nothing on tvOS, where SwiftUI does not provide them.
+ * @param value - The position of the guide, in points from the leading edge of the view.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/alignmentguide(_:computevalue:)-9mdoh).
+ *
+ * @example
+ * ```tsx
+ * <HStack modifiers={[alignmentGuide('listRowSeparatorLeading', 32)]}>
+ *   <Text>A</Text>
+ *   <Text>The separator starts 32 points from the leading edge</Text>
+ * </HStack>
+ * ```
+ */
+export const alignmentGuide = (
+  guide: 'leading' | 'center' | 'trailing' | 'listRowSeparatorLeading' | 'listRowSeparatorTrailing',
+  value: number
+) => createModifier('alignmentGuide', { guide, value });
+
+/**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
  * @param mode - The truncation mode that specifies where to truncate the text within the text view, if needed.
  * You can truncate at the beginning, middle, or end of the text view.
@@ -1743,6 +1767,7 @@ export type BuiltInModifier =
   | ReturnType<typeof listRowSeparator>
   | ReturnType<typeof listRowSeparatorTint>
   | ReturnType<typeof listRowSpacing>
+  | ReturnType<typeof alignmentGuide>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>
   | ReturnType<typeof kerning>

@@ -13,6 +13,14 @@
 #                            are shorthands. Works on any command form and on the
 #                            workflow_dispatch `model` input; default is the
 #                            VERIFY_MODEL repo variable, else claude-opus-5.
+#   ... --retry              re-run and UPDATE the thread's latest findings comment
+#                            in place instead of posting a new one (GitHub keeps the
+#                            edit history). If the thread has no findings comment
+#                            yet, a new one is posted. Dispatch input: `retry`.
+#   ... --no-announce        skip the "started — watch the run" comment; the
+#                            eyes reaction is then the only receipt. Announcing
+#                            is the default on the comment path (dispatch runs
+#                            are always quiet).
 #   @expo-bot check          verify + review from one comment. This workflow runs the
 #                            verify half (--fix / --no-fix apply, issues and PRs);
 #                            expo-code-review-command.yml picks up the review half
@@ -120,6 +128,10 @@ on:
         description: "Override the agent model for this run (a full claude-* id, e.g. claude-fable-5). Empty = the VERIFY_MODEL repo variable, else claude-opus-5. Comment-path runs never set this."
         required: false
         type: string
+      retry:
+        description: "Update the thread's latest findings comment in place instead of posting a new one"
+        type: boolean
+        default: false
 
 # Scopes the automatic workflow token, which is what the AGENT step gets:
 # issue comments yes, repository contents never. The agent therefore cannot
@@ -336,6 +348,7 @@ jobs:
           INPUT_FIX: ${{ inputs.fix }}
           INPUT_MODE: ${{ inputs.mode }}
           INPUT_MODEL: ${{ inputs.model }}
+          INPUT_RETRY: ${{ inputs.retry }}
           REQUEST: ${{ github.event.comment.body || inputs.request }}
         run: |
           # Reject an ill-formed command. On the comment path the reason also
@@ -504,15 +517,35 @@ jobs:
                 ;;
             esac
           fi
+          # The "started — watch the run" comment posts by default on the
+          # comment path; --no-announce opts a thread out, leaving the eyes
+          # reaction as the only receipt. Dispatch runs stay quiet always.
+          announce=true
+          if [ "$QUIET" = "true" ]; then
+            announce=false
+          else
+            case " $line " in *" --no-announce "*) announce=false ;; esac
+          fi
+          # --retry: the publish phase passes updateLatest to the findings
+          # tool, so the thread's previous findings comment is edited in
+          # place rather than joined by a sibling.
+          retry=false
+          if [ "$QUIET" = "true" ]; then
+            if [ "$INPUT_RETRY" = "true" ]; then retry=true; fi
+          else
+            case " $line " in *" --retry "*) retry=true ;; esac
+          fi
           {
             # route last: everything before this line can still reject.
             echo "mode=$mode"
             echo "fix=$fix"
             echo "is_pr=$IS_PR"
             echo "model=$model"
+            echo "announce=$announce"
+            echo "retry=$retry"
             echo "route=true"
           } >> "$GITHUB_OUTPUT"
-          echo "mode: $mode; fix mode: $fix; model: ${model:-default} (target is $([ "$IS_PR" = true ] && echo 'a pull request' || echo 'an issue'))"
+          echo "mode: $mode; fix mode: $fix; model: ${model:-default}; announce: $announce; retry: $retry (target is $([ "$IS_PR" = true ] && echo 'a pull request' || echo 'an issue'))"
 
       # A maintainer typed a command and it did not launch — say so where it
       # was typed. Rejections used to surface two bad ways: a red step in a
@@ -536,8 +569,9 @@ jobs:
       # Watchable from the start: the Actions run streams the agent's live
       # progress, so the thread gets that link the moment work begins (the
       # findings comment lands separately when the investigation completes).
+      # --no-announce opts out, leaving the eyes reaction as the only receipt.
       - name: Announce run
-        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && env.QUIET != 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && steps.cmd.outputs.announce == 'true' && env.QUIET != 'true'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           MODE: ${{ steps.cmd.outputs.mode }}
@@ -559,8 +593,8 @@ jobs:
       # admission by global position keeps the executing count at CAP even
       # when several waiters poll at once. Runs pending on the per-target
       # group are not in_progress and hold no capacity. The announce above
-      # already posted the watch link, so the queue wait is visible from
-      # the thread.
+      # already posted the watch link (unless --no-announce), so the queue
+      # wait is visible from the thread.
       - name: Wait for a free verification slot
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
@@ -1352,6 +1386,7 @@ jobs:
           CUT_SHORT: ${{ steps.investigate.outputs.cut_short }}
           WRITES_DENIED: ${{ steps.investigate.outputs.writes_denied }}
           MODE: ${{ steps.cmd.outputs.mode }}
+          RETRY: ${{ steps.cmd.outputs.retry }}
         run: |
           set -o pipefail
           review=$(cat .verify-out/review.md)
@@ -1372,10 +1407,18 @@ jobs:
           else
             writes_denied=""
           fi
+          # --retry: the maintainer asked this run to REPLACE the thread's
+          # previous findings comment rather than add a sibling. The server
+          # resolves which comment that is; the agent only sets the flag.
+          if [ "$RETRY" = "true" ]; then
+            retry_note="RETRY MODE: this thread already carries a findings comment from an earlier run, and the maintainer asked for it to be UPDATED IN PLACE. Pass updateLatest: true in your mcp__sandbox__github_comment_issue call; write the body as the complete, current findings (it replaces the old body entirely — do not write it as a diff against the previous comment). "
+          else
+            retry_note=""
+          fi
           set +o pipefail
           rc_file="$RUNNER_TEMP/revise.rc"
           { timeout 1800 claude -p --resume "$SESSION_ID" \
-            "${cut_short}${writes_denied}A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the outcome with your reason rather than silently ignoring it. Any sandbox you created is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
+            "${cut_short}${writes_denied}${retry_note}A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the outcome with your reason rather than silently ignoring it. Any sandbox you created is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
 
           Then, and only then: post the outcome with mcp__sandbox__github_comment_issue; keep or withdraw .verify-out/pr.md and, in work mode, .verify-out/changes.json as the command mode requires; and destroy EVERY sandbox you created with mcp__sandbox__destroy_sandbox before you finish. Destroy them even if posting fails.
 

@@ -10,7 +10,6 @@ import {
   StackRouter,
   TabRouter,
 } from '../../routers';
-import { NavigationIndependentTree } from '../NavigationIndependentTree';
 import { NavigationStateContext } from '../NavigationStateContext';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
@@ -78,19 +77,7 @@ test('throws when nesting containers', () => {
         </BaseNavigationContainer>
       </BaseNavigationContainer>
     )
-  ).toThrow("Looks like you have nested a 'NavigationContainer' inside another.");
-
-  expect(() =>
-    render(
-      <BaseNavigationContainer>
-        <NavigationIndependentTree>
-          <BaseNavigationContainer>
-            <></>
-          </BaseNavigationContainer>
-        </NavigationIndependentTree>
-      </BaseNavigationContainer>
-    )
-  ).not.toThrow("Looks like you have nested a 'NavigationContainer' inside another.");
+  ).toThrow("install '@react-navigation/native' and use its NavigationContainer instead.");
 });
 
 test('handle dispatching with ref', () => {
@@ -826,7 +813,7 @@ test('invokes the unhandled action listener with the unhandled action', () => {
   });
 });
 
-test('works with state change events in independent nested container', () => {
+test('works with state change events in a sibling root container', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -842,23 +829,20 @@ test('works with state change events in independent nested container', () => {
   const onStateChange = jest.fn();
 
   render(
-    <BaseNavigationContainer>
-      <TestNavigator>
-        <Screen name="foo">
-          {() => (
-            <NavigationIndependentTree>
-              <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
-                <TestNavigator>
-                  <Screen name="qux">{() => null}</Screen>
-                  <Screen name="lex">{() => null}</Screen>
-                </TestNavigator>
-              </BaseNavigationContainer>
-            </NavigationIndependentTree>
-          )}
-        </Screen>
-        <Screen name="bar">{() => null}</Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
+    <>
+      <BaseNavigationContainer>
+        <TestNavigator>
+          <Screen name="foo">{() => null}</Screen>
+          <Screen name="bar">{() => null}</Screen>
+        </TestNavigator>
+      </BaseNavigationContainer>
+      <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+        <TestNavigator>
+          <Screen name="qux">{() => null}</Screen>
+          <Screen name="lex">{() => null}</Screen>
+        </TestNavigator>
+      </BaseNavigationContainer>
+    </>
   );
 
   act(() => ref.current?.navigate('lex'));

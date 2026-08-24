@@ -40,6 +40,23 @@ function getFontFaceRules(): RuleItem[] {
   return [];
 }
 
+// Engines disagree about whether the CSSOM keeps the quotes from a `font-family`
+// declaration: Firefox keeps them for every name, while Chromium and WebKit keep them only
+// for names that need quoting, such as anything containing a space. `_createWebFontTemplate`
+// always writes the name quoted, so the quoting has to be normalized away before comparing.
+function normalizeFontFamilyName(fontFamily: string): string {
+  // jsdom leaves `style.fontFamily` undefined on the `@font-face` rules it parses.
+  const trimmed = fontFamily?.trim();
+  if (!trimmed) {
+    return '';
+  }
+  const quote = trimmed[0];
+  if (trimmed.length >= 2 && (quote === '"' || quote === "'") && trimmed.endsWith(quote)) {
+    return trimmed.slice(1, -1).replace(/\\(.)/g, '$1');
+  }
+  return trimmed;
+}
+
 // Exported for testing: jsdom doesn't implement `CSSFontFaceRule`, so tests exercise this matching
 // logic directly with plain `{ style }` objects instead of going through `getFontFaceRules()`.
 export function _matchesFontFaceOptions(
@@ -47,7 +64,7 @@ export function _matchesFontFaceOptions(
   fontFamilyName: string,
   options?: UnloadFontOptions
 ): boolean {
-  if (rule.style.fontFamily !== fontFamilyName) {
+  if (normalizeFontFamilyName(rule.style.fontFamily) !== normalizeFontFamilyName(fontFamilyName)) {
     return false;
   }
   if (options?.display && options.display !== (rule.style as any).fontDisplay) {
@@ -140,7 +157,7 @@ const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>
       return getLoadedServerFonts();
     }
     const rules = getFontFaceRules();
-    return rules.map(({ rule }) => rule.style.fontFamily);
+    return rules.map(({ rule }) => normalizeFontFamilyName(rule.style.fontFamily));
   },
 
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {

@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `prepublishOnly` wiping `build/` for packages that compile with `expo-build`, by rebuilding via the package's own `build` script instead of `tsc`. ([#47344](https://github.com/expo/expo/pull/47344) by [@zoontek](https://github.com/zoontek))
+- Remove the dangling `build-src` command, which `expo-module --help` advertised but which failed with a Commander `'expo-module-build-src' does not exist` error because no such executable has ever existed. ([#49195](https://github.com/expo/expo/pull/49195) by [@dennytosp](https://github.com/dennytosp))
 
 ### 💡 Others
 

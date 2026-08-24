@@ -40,7 +40,7 @@ export default function AudioControlsScreen(props: any) {
   React.useLayoutEffect(() => {
     AudioModule.setAudioModeAsync({
       shouldPlayInBackground: true,
-      interruptionMode: 'doNotMix',
+      interruptionMode: 'doNotMixPersistent',
       playsInSilentMode: true,
       allowsRecording: false,
     }).catch((error: unknown) =>

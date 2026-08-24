@@ -16,7 +16,6 @@ import {
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
-import { NavigationIndependentTreeContext } from './NavigationIndependentTreeContext';
 import { NavigationStateContext } from './NavigationStateContext';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { checkDuplicateRouteNames } from './checkDuplicateRouteNames';
@@ -31,7 +30,6 @@ import type {
 import { useChildListeners } from './useChildListeners';
 import { useEventEmitter } from './useEventEmitter';
 import { useKeyedChildListeners } from './useKeyedChildListeners';
-import { useNavigationIndependentTree } from './useNavigationIndependentTree';
 import { useOptionsGetters } from './useOptionsGetters';
 import { useSyncState } from './useSyncState';
 
@@ -92,11 +90,9 @@ export function BaseNavigationContainer({
   children,
 }: NavigationContainerProps & { ref?: React.Ref<NavigationContainerRef<ParamListBase>> }) {
   const parent = use(NavigationStateContext);
-  const independent = useNavigationIndependentTree();
-
-  if (!parent.isDefault && !independent) {
+  if (!parent.isDefault) {
     throw new Error(
-      "Looks like you have nested a 'NavigationContainer' inside another. Normally you need only one container at the root of the app, so this was probably an error. If this was intentional, wrap the container in 'NavigationIndependentTree' explicitly. Note that this will make the child navigators disconnected from the parent and you won't be able to navigate between them."
+      "Looks like you have nested a 'NavigationContainer' inside another. Normally you need only one container at the root of the app, so this was probably an error. If you need to render an isolated navigation tree inside a screen, install '@react-navigation/native' and use its NavigationContainer instead."
     );
   }
 
@@ -407,18 +403,16 @@ export function BaseNavigationContainer({
   });
 
   return (
-    <NavigationIndependentTreeContext.Provider value={false}>
-      <NavigationContainerRefContext.Provider value={navigation}>
-        <NavigationBuilderContext.Provider value={builderContext}>
-          <NavigationStateContext.Provider value={context}>
-            <UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
-              <EnsureSingleNavigator>
-                <ThemeProvider value={theme}>{children}</ThemeProvider>
-              </EnsureSingleNavigator>
-            </UnhandledActionContext.Provider>
-          </NavigationStateContext.Provider>
-        </NavigationBuilderContext.Provider>
-      </NavigationContainerRefContext.Provider>
-    </NavigationIndependentTreeContext.Provider>
+    <NavigationContainerRefContext.Provider value={navigation}>
+      <NavigationBuilderContext.Provider value={builderContext}>
+        <NavigationStateContext.Provider value={context}>
+          <UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
+            <EnsureSingleNavigator>
+              <ThemeProvider value={theme}>{children}</ThemeProvider>
+            </EnsureSingleNavigator>
+          </UnhandledActionContext.Provider>
+        </NavigationStateContext.Provider>
+      </NavigationBuilderContext.Provider>
+    </NavigationContainerRefContext.Provider>
   );
 }
