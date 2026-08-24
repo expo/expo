@@ -25,10 +25,7 @@ import { PreviewRouteContext } from './PreviewRouteContext';
 
 export function HrefPreview({ href }: { href: Href }) {
   const routeInfo = useRouteInfo();
-  const hrefState = useMemo(
-    () => getStateForHref(href, routeInfo, store.linking),
-    [href, routeInfo]
-  );
+  const hrefState = useMemo(() => getStateForHref(href, routeInfo), [href, routeInfo]);
   const index = hrefState?.index ?? 0;
 
   let isProtected = false;

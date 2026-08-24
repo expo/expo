@@ -2,7 +2,7 @@ import { Platform } from 'expo';
 
 import type { RouteNode } from './Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
-import type { Options, State } from './fork/getPathFromState';
+import type { State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
 import { applyRedirects } from './getRoutesRedirects';
 import type { StoreRedirects } from './global-state/router-store';
@@ -134,13 +134,7 @@ export function getLinkingConfig(
       return initialUrl;
     },
     subscribe: subscribe(nativeLinking, redirects),
-    getStateFromPath: <ParamList extends object>(
-      path: string,
-      options?: Options<ParamList>,
-      previousSegments?: string[]
-    ) => {
-      return getStateFromPath(path, options, previousSegments);
-    },
+    getStateFromPath,
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {
