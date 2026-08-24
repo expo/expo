@@ -42,6 +42,17 @@ export interface DecideStartPlanOptions {
    */
   platform?: PlanPlatform;
   /**
+   * The platform flag the caller actually typed, when they typed one.
+   *
+   * Distinct from {@link platform}, which is always set — the caller falls back to the host or to
+   * the project's own native directories. Only a flag the user typed reaches `expo start`, and
+   * `expo start --ios` does something the plain form does not: it opens the app on a simulator,
+   * booting one and installing Expo Go if it has to [observed — `@expo/cli`
+   * `openPlatforms.ts` → `PlatformManager.openProjectInExpoGoAsync`]. The plan has to show the flag
+   * in the argv it prints, because the command really does run with it.
+   */
+  requestedPlatform?: PlanPlatform;
+  /**
    * Fingerprint hashes of the last builds `exagent` ran. Passed in by the caller so the
    * decision table stays a pure function of probed state.
    */

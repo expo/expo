@@ -10,7 +10,15 @@ import type { NavigatePlatform } from './device';
 export interface NavigateOptions {
   /** Route path (`/profile/42`) or a full URL (`myapp://profile/42`). */
   route: string;
-  devServerUrl: string;
+  /**
+   * The `--dev-server-url` the caller named, or null when they named none.
+   *
+   * Null is not "the default port": it means the dev server is still to be found, which is what
+   * lets the command consult the project's dev-server lock and then fall back to a scan
+   * (`discoverDevServerAsync`), exactly as the `runtime:*` actions do. This command used to default
+   * to 8081 here, which sent the device into whichever project happened to hold that port.
+   */
+  devServerUrl: string | null;
   /** Platform to open the link on. Undefined means "whichever device is booted". */
   platform?: NavigatePlatform;
   /** URL scheme, which wins over the scheme read from the project config. */
@@ -65,7 +73,8 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
 
   return {
     route: positional[0]!,
-    devServerUrl: resolveDevServerUrlFlag(args['--dev-server-url']),
+    devServerUrl:
+      args['--dev-server-url'] == null ? null : resolveDevServerUrlFlag(args['--dev-server-url']),
     platform: args['--ios'] ? 'ios' : args['--android'] ? 'android' : undefined,
     scheme: args['--scheme'] ? String(args['--scheme']) : undefined,
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,

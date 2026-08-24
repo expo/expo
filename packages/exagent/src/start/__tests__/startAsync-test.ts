@@ -116,9 +116,10 @@ describe(startAsync, () => {
     // Printed synchronously, before the subprocess exists: nothing printed after Metro starts
     // streaming survives in a terminal a person or an agent reads.
     expect(printed()).toContain('Suggested next:');
+    // The step nothing else does: a dev server serves a bundle and opens no app.
+    expect(printed()).toContain('npx exagent navigate /');
     expect(printed()).toContain('exp://192.168.1.5:8081');
     expect(printed()).toContain('npx exagent runtime:errors');
-    expect(printed()).toContain('npx eas build:configure');
 
     end(0);
     await promise;
@@ -152,10 +153,12 @@ describe(startAsync, () => {
     await promise;
   });
 
+  // On a native run the three nearer rungs crowd the EAS one out; a web run has no device steps,
+  // so it is the shape that shows the rung is still built.
   it(`should offer the production build when the project has an eas.json`, async () => {
     vol.fromJSON({ [`${projectRoot}/eas.json`]: '{"build":{}}' });
     const end = mockLongRunningStart();
-    const promise = startAsync(projectRoot, resolveStartOptions([]));
+    const promise = startAsync(projectRoot, resolveStartOptions(['--web']));
 
     expect(printed()).toContain('npx eas build --profile production');
 

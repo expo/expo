@@ -7,6 +7,10 @@ describe(resolveDevWaitOptions, () => {
       devServerUrl: null,
       timeoutMs: DEFAULT_DEV_WAIT_TIMEOUT_MS,
       requireApp: false,
+      // On by default: it is the only part of the command that is about the project rather than
+      // about the dev server.
+      bundleCheck: true,
+      platform: 'ios',
       json: false,
       followups: true,
     });
@@ -15,6 +19,9 @@ describe(resolveDevWaitOptions, () => {
   it.each([
     [['--timeout', '5000'], { timeoutMs: 5000 }],
     [['--require-app'], { requireApp: true }],
+    [['--no-bundle-check'], { bundleCheck: false }],
+    [['--platform', 'android'], { platform: 'android' }],
+    [['--platform', 'web'], { platform: 'web' }],
     [['--json'], { json: true }],
     [['--no-followups'], { followups: false }],
     [['--dev-server-url', 'http://127.0.0.1:8090'], { devServerUrl: 'http://127.0.0.1:8090' }],
@@ -32,6 +39,7 @@ describe(resolveDevWaitOptions, () => {
     [['--timeout', '-1'], '--timeout'],
     [['--dev-server-url', 'not a url'], '--dev-server-url'],
     [['--dev-server-url', 'ws://127.0.0.1:8081'], '--dev-server-url'],
+    [['--platform', 'windows'], '--platform'],
   ])(`should reject %p`, (argv, flag) => {
     expect(() => resolveDevWaitOptions(argv)).toThrow(CommandError);
     expect(() => resolveDevWaitOptions(argv)).toThrow(

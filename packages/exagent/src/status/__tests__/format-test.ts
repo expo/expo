@@ -46,6 +46,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
       command: 'exagent dev',
       rule: 'expo-go',
       target: 'expo-go',
+      why: null,
       steps: [
         {
           id: 'start',
@@ -308,12 +309,32 @@ describe(formatStatusReport, () => {
     expect(line(mockReport(), 'next')).toBe('next        exagent dev → expo-go: expo start --go');
   });
 
+  // The dev-server line three rows above said the server is up; a `next` that says to start one
+  // makes the reader pick which of the two rows to believe.
+  it(`should print the reason instead of a plan when a dev server changed the answer`, () => {
+    const report = mockReport({
+      next: {
+        command: 'exagent dev:wait --require-app',
+        rule: 'expo-go',
+        target: 'expo-go',
+        steps: [],
+        why: 'a dev server is already running, so wait for its bundle',
+      },
+    });
+
+    const rendered = line(report, 'next');
+    expect(rendered).toContain('exagent dev:wait --require-app');
+    expect(rendered).toContain('a dev server is already running');
+    expect(rendered).not.toContain('expo start --go');
+  });
+
   it(`should count the steps that follow the first one`, () => {
     const report = mockReport({
       next: {
         command: 'exagent dev',
         rule: 'dev-client-stale',
         target: 'dev-client',
+        why: null,
         steps: [
           {
             id: 'prebuild',

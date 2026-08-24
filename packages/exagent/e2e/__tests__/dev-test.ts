@@ -154,6 +154,8 @@ describe('exagent dev', () => {
       const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
 
       expect(result.exitCode).toBe(0);
+      // Exactly once, not twice: the flag is in the plan's own argv now, and the passthrough that
+      // appends the user's `expo start` options must not add it a second time.
       expect(invocationArgs(projectRoot)).toEqual([['start', '--dev-client', '--ios']]);
       // Nothing was built, so the record is untouched.
       expect(readLastBuildRecord(projectRoot)).toEqual({

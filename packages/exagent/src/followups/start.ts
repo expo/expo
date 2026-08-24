@@ -29,6 +29,13 @@ export interface StartFollowUpInput {
 export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
   const followups: FollowUp[] = [];
   if (!input.web) {
+    // First, because it is the one step between "the dev server is up" and anything verifiable,
+    // and the only one no other command does: a dev server serves a bundle and opens nothing.
+    followups.push({
+      id: 'open-app',
+      command: 'npx exagent navigate /',
+      why: 'The dev server is up but opens nothing, so this deep-links the app onto the booted simulator or the attached device.',
+    });
     followups.push(realDeviceFollowUp(input));
   }
   followups.push({

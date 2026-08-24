@@ -61,6 +61,19 @@ declare module '2g' {
       appsConnected: number;
       waitedMs: number;
       timedOut: boolean;
+      /**
+       * What building this project's entry bundle answered.
+       *
+       * The location only: the code frame belongs in the command's own output, not on a stream
+       * that may be collected somewhere else.
+       */
+      bundle: {
+        /** `ok`, `broken`, `timeout`, `unknown`, or null when the check did not run. */
+        outcome: string | null;
+        platform: string | null;
+        filename: string | null;
+        lineNumber: number | null;
+      };
     };
     'cli:runtime_eval': { devServerUrl: string; threw: boolean; type: string };
     'cli:runtime_errors': {
@@ -161,7 +174,13 @@ declare module '2g' {
      * @see llp/0006-agent-native-cli-surface.rfc.md §Output contract
      */
     'cli:config_effective': {
-      sdkVersion: string | null;
+      /**
+       * The SDK the evaluated app config resolves to, e.g. `57.0.0`.
+       *
+       * Not `sdkVersion`: `cli:status` carries a field of that name and it is the version of the
+       * installed `expo` package. See `EffectiveConfigReport.configuredSdkVersion`.
+       */
+      configuredSdkVersion: string | null;
       /** Platforms the report covers, e.g. `["ios", "android"]`. */
       platforms: string[];
       /** Mods introspected per platform, e.g. `{ ios: 5, android: 6 }`. */
@@ -187,6 +206,10 @@ declare module '2g' {
     'cli:navigate': {
       route: string;
       url: string;
+      /** Dev server the URL was built from. */
+      devServerUrl: string;
+      /** Which discovery step produced it: `flag`, `lock`, `log`, `default` or `scan`. */
+      devServerSource: string;
       platform: string;
       deviceId: string;
       exitCode: number | null;

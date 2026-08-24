@@ -33,7 +33,7 @@ function mockReport(overrides: Partial<StatusReport> = {}): StatusReport {
     },
     skills: { agentIds: ['claude-code'], discovered: 0, linked: 0 },
     auth: { loggedIn: true, user: 'kudo', source: 'eas whoami' },
-    next: { command: 'exagent dev', rule: 'expo-go', target: 'expo-go', steps: [] },
+    next: { command: 'exagent dev', rule: 'expo-go', target: 'expo-go', steps: [], why: null },
     probe: null,
     errors: {},
     ...overrides,

@@ -136,6 +136,14 @@ export async function collectStatusReportAsync(
     errors,
   };
 
+  // Read before the project section, because `next` depends on it: a dev server that is already
+  // serving this project changes what the useful next command is (see `buildNextActionStatus`).
+  if ('value' in devServer) {
+    report.devServer = devServer.value;
+  } else {
+    errors.devServer = devServer.error;
+  }
+
   if ('value' in project) {
     const { state, packageName } = project.value;
     // Advisory by contract, and read after the probe, so the fingerprint it is compared against
@@ -150,17 +158,12 @@ export async function collectStatusReportAsync(
     report.next = buildNextActionStatus(
       state,
       lastBuild,
-      options.platform ?? resolveDefaultPlatform(state)
+      options.platform ?? resolveDefaultPlatform(state),
+      report.devServer
     );
   } else {
     // One cause, one note. The other three sections are left null, and the project line says why.
     errors.project = project.error;
-  }
-
-  if ('value' in devServer) {
-    report.devServer = devServer.value;
-  } else {
-    errors.devServer = devServer.error;
   }
 
   if ('value' in skills) {

@@ -72,7 +72,7 @@ export function decideStartPlan(
       ? plan(
           'bare-fresh',
           'bare',
-          [startDevClientStep(build.summary)],
+          [startDevClientStep(build.summary, options)],
           [...facts, ...build.reasons]
         )
       : plan(
@@ -90,7 +90,7 @@ export function decideStartPlan(
       ? plan(
           'dev-client-fresh',
           'dev-client',
-          [startDevClientStep(build.summary)],
+          [startDevClientStep(build.summary, options)],
           [...facts, ...build.reasons]
         )
       : plan(
@@ -102,19 +102,7 @@ export function decideStartPlan(
   }
 
   if (state.expoGo.compatible) {
-    return plan(
-      'expo-go',
-      'expo-go',
-      [
-        step(
-          'start',
-          ['expo', 'start', '--go'],
-          'seconds',
-          'Opens the project in Expo Go, which needs no native build.'
-        ),
-      ],
-      facts
-    );
+    return plan('expo-go', 'expo-go', [startExpoGoStep(options)], facts);
   }
 
   // Not compatible with Expo Go and no development build tooling yet: the project needs the
@@ -155,13 +143,51 @@ function step(
   return { id, argv, timeClass, reason };
 }
 
-function startDevClientStep(reason: string): PlanStep {
+/**
+ * The Expo Go step, with the platform flag the caller typed on it.
+ *
+ * The `reason` used to read "Opens the project in Expo Go", which `expo start --go` does not do:
+ * it serves a bundle and waits. Nothing opened the app, `--ios` changed nothing in the printed
+ * plan even though it is forwarded to `expo start`, and following the plan left an agent with a
+ * dev server and no way to reach it. Both halves are fixed here: the flag is in the argv, and the
+ * sentence says what each form actually does.
+ */
+function startExpoGoStep(options: DecideStartPlanOptions): PlanStep {
+  const opensOn = openTargetOf(options);
   return step(
     'start',
-    ['expo', 'start', '--dev-client'],
+    ['expo', 'start', '--go', ...(opensOn ? [`--${opensOn}`] : [])],
     'seconds',
-    `Starts the dev server for the existing development build. ${reason}`
+    opensOn
+      ? `Serves the project to Expo Go and opens it on ${deviceNoun(opensOn)}, booting one and installing Expo Go if it has to. No native build is needed.`
+      : `Serves the project to Expo Go, which needs no native build. It opens nothing on its own — run "exagent navigate /" once it is up, or pass --ios or --android.`
   );
+}
+
+function startDevClientStep(reason: string, options: DecideStartPlanOptions = {}): PlanStep {
+  const opensOn = openTargetOf(options);
+  return step(
+    'start',
+    ['expo', 'start', '--dev-client', ...(opensOn ? [`--${opensOn}`] : [])],
+    'seconds',
+    opensOn
+      ? `Starts the dev server and opens the development build on ${deviceNoun(opensOn)}. ${reason}`
+      : `Starts the dev server for the existing development build. It opens nothing on its own — run "exagent navigate /" once it is up, or pass --ios or --android. ${reason}`
+  );
+}
+
+/**
+ * The device `expo start` will open the app on, or null when nothing will be opened.
+ *
+ * Only a flag the caller typed counts. `web` is left out: the plan's own `--web` row already
+ * describes serving a browser, and a native plan is not the place to open one.
+ */
+function openTargetOf({ requestedPlatform }: DecideStartPlanOptions): NativePlatform | null {
+  return requestedPlatform === 'ios' || requestedPlatform === 'android' ? requestedPlatform : null;
+}
+
+function deviceNoun(platform: NativePlatform): string {
+  return platform === 'ios' ? 'a booted iOS simulator' : 'an attached Android device or emulator';
 }
 
 function prebuildStep(platform: NativePlatform): PlanStep {

@@ -439,9 +439,42 @@ export type StubDevServerOptions = {
    * one has to be tested against that, not only against a server that is instantly ready.
    */
   statusDelayMs?: number;
-  /** Project root the `/status` answer names in its header, as the real dev server does. */
-  projectRoot?: string;
+  /**
+   * Project root the `/status` answer names in its header, as the real dev server does.
+   *
+   * `null` sends no header at all, which is the "undecidable" case: a dev server that names no
+   * project root has not been shown to be the wrong one, and the commands that compare roots have
+   * to tell that apart from a root that does not match.
+   */
+  projectRoot?: string | null;
+  /**
+   * How the stub answers a request for the entry bundle, which is what `dev:wait` checks the
+   * project's own code with.
+   *
+   * - `compiles` — the manifest names an entry bundle, and building it succeeds.
+   * - `broken` — building it answers 500 with the `TransformError` body Metro sends.
+   * - `no-manifest` — `GET /` 404s, which is the "cannot decide" case a dev server too old to
+   *   answer produces.
+   */
+  bundle?: 'compiles' | 'broken' | 'no-manifest';
+  /** Delay before the entry bundle answers, standing in for a cold first build. */
+  bundleDelayMs?: number;
 };
+
+/** The `TransformError` body Metro answers a broken build with, recorded from an SDK 57 app. */
+export const STUB_TRANSFORM_ERROR = {
+  type: 'TransformError',
+  lineNumber: 101,
+  column: 2,
+  filename: 'src/app/index.tsx',
+  name: 'SyntaxError',
+  message:
+    "SyntaxError: /project/src/app/index.tsx: Unexpected keyword 'const'. (101:2)\n\n[0m [90m 100 |[39m function broken( {\n[31m[1m>[22m[39m[90m 101 |[39m   [36mconst[39m x [33m=[39m[0m",
+  errors: [{ description: 'Unexpected keyword', filename: 'src/app/index.tsx', lineNumber: 101 }],
+};
+
+/** Path of the entry bundle the stub manifest names, matching an Expo Router project. */
+const STUB_BUNDLE_PATH = '/node_modules/expo-router/entry.bundle';
 
 /** A stub dev server, and where it listens. */
 export type StubDevServer = {
@@ -466,9 +499,49 @@ export async function startStubDevServerAsync({
   targets = [],
   statusDelayMs = 0,
   projectRoot = '/stub-project',
+  bundle = 'compiles',
+  bundleDelayMs = 0,
 }: StubDevServerOptions = {}): Promise<StubDevServer> {
+  let port = 0;
   const server: Server = createServer((request, response) => {
     const route = (request.url ?? '').split('?')[0];
+
+    // The manifest, which is the only thing that knows the entry path of this project. A real dev
+    // server answers it with an Expo Updates manifest whose `launchAsset.url` is the bundle URL.
+    if (route === '/' && request.headers['expo-platform']) {
+      if (bundle === 'no-manifest') {
+        response.writeHead(404).end();
+        return;
+      }
+      response.writeHead(200, { 'Content-Type': 'application/json' });
+      response.end(
+        JSON.stringify({
+          id: 'stub-manifest',
+          runtimeVersion: 'exposdk:57.0.0',
+          launchAsset: {
+            key: 'bundle',
+            contentType: 'application/javascript',
+            url: `http://127.0.0.1:${port}${STUB_BUNDLE_PATH}?platform=${request.headers['expo-platform']}&dev=true`,
+          },
+        })
+      );
+      return;
+    }
+
+    if (route === STUB_BUNDLE_PATH) {
+      // Unreferenced, so a delay a test deliberately never waits out cannot hold the worker open.
+      setTimeout(() => {
+        if (bundle === 'broken') {
+          response.writeHead(500, { 'Content-Type': 'application/json; charset=UTF-8' });
+          // HEAD gets the status and no body, exactly as it does from Metro.
+          response.end(request.method === 'HEAD' ? '' : JSON.stringify(STUB_TRANSFORM_ERROR));
+          return;
+        }
+        response.writeHead(200, { 'Content-Type': 'application/javascript' });
+        response.end(request.method === 'HEAD' ? '' : 'var __BUNDLE_START_TIME__=0;');
+      }, bundleDelayMs).unref();
+      return;
+    }
 
     if (route === '/status') {
       // The delay is the point of the option: the socket is accepted and left open, exactly as a
@@ -477,7 +550,7 @@ export async function startStubDevServerAsync({
       setTimeout(() => {
         response.writeHead(200, {
           'Content-Type': 'text/plain',
-          'X-React-Native-Project-Root': projectRoot,
+          ...(projectRoot == null ? {} : { 'X-React-Native-Project-Root': projectRoot }),
         });
         response.end('packager-status:running');
       }, statusDelayMs).unref();
@@ -501,7 +574,9 @@ export async function startStubDevServerAsync({
     server.listen(0, '127.0.0.1', () => resolve());
   });
 
-  const { port } = server.address() as AddressInfo;
+  // Read back rather than chosen, and captured for the manifest: the bundle URL a dev server
+  // publishes is absolute, so the stub has to know the ephemeral port it ended up on.
+  port = (server.address() as AddressInfo).port;
   return {
     url: `http://127.0.0.1:${port}`,
     port,

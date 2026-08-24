@@ -2,8 +2,14 @@ import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { vol } from 'memfs';
 
+import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../../devLock';
 import { navigateAsync } from '../navigateAsync';
 import type { NavigateOptions } from '../resolveOptions';
+
+jest.mock('../../devLock', () => ({
+  readDevServerLockAsync: jest.fn(async () => null),
+  readLastLoggedDevServerPort: jest.fn(() => null),
+}));
 
 const projectRoot = '/project';
 const realPlatform = process.platform;
@@ -67,6 +73,23 @@ function mockDevServer(targets: unknown[] | null) {
   }) as unknown as typeof fetch;
 }
 
+/**
+ * Answer only for the origins in the map, and refuse every other one.
+ *
+ * What discovery needs to be tested against: a machine where one port answers and the rest do not
+ * is the whole reason the lock exists.
+ */
+function mockDevServersAt(byOrigin: { [origin: string]: unknown[] }) {
+  globalThis.fetch = (async (input: string) => {
+    const origin = new URL(String(input)).origin;
+    const targets = byOrigin[origin];
+    if (targets == null) {
+      throw new Error(`connect ECONNREFUSED ${origin}`);
+    }
+    return { ok: true, json: async () => targets };
+  }) as unknown as typeof fetch;
+}
+
 function options(overrides: Partial<NavigateOptions> = {}): NavigateOptions {
   return {
     route: '/profile/42',
@@ -86,6 +109,9 @@ let originalFetch: typeof fetch | undefined;
 
 beforeEach(() => {
   originalFetch = globalThis.fetch;
+  // `clearMocks` empties these between tests, and "no lock, no logged port" is the default state.
+  jest.mocked(readDevServerLockAsync).mockResolvedValue(null);
+  jest.mocked(readLastLoggedDevServerPort).mockReturnValue(null);
   mockPlatform('darwin');
   jest.spyOn(console, 'log').mockImplementation(() => {});
   jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -117,6 +143,89 @@ describe(navigateAsync, () => {
       'IOS-1',
       'exp://127.0.0.1:8081/--/profile/42',
     ]);
+  });
+
+  // The bug this pins: `navigate` was the one runtime-facing command that assumed 8081, so on a
+  // machine where another project held that port it opened *that* project on the simulator and
+  // reported success. Every sibling command already read the lock.
+  describe('dev-server discovery', () => {
+    function mockExpoGoProject() {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+    }
+
+    it(`should build the URL from the project's lock, not from 8081`, async () => {
+      mockExpoGoProject();
+      jest.mocked(readDevServerLockAsync).mockResolvedValue({
+        url: 'http://127.0.0.1:8099',
+        port: 8099,
+        pid: 4242,
+        startedAt: '2026-08-23T00:00:00.000Z',
+        projectRoot,
+      });
+      // Both ports answer, and 8081 is another project's: the lock is what tells them apart.
+      mockDevServersAt({
+        'http://127.0.0.1:8099': [EXPO_GO_TARGET],
+        'http://127.0.0.1:8081': [EXPO_GO_TARGET],
+      });
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await expect(
+        navigateAsync(projectRoot, options({ devServerUrl: null, json: true }))
+      ).resolves.toBe(0);
+
+      const report = JSON.parse(printed());
+      expect(report.url).toBe('exp://127.0.0.1:8099/--/profile/42');
+      expect(report.devServerUrl).toBe('http://127.0.0.1:8099');
+      expect(report.devServerSource).toBe('lock');
+      expect(spawnedArgv(1).at(-1)).toBe('exp://127.0.0.1:8099/--/profile/42');
+    });
+
+    it(`should still let --dev-server-url name the dev server exactly`, async () => {
+      mockExpoGoProject();
+      jest.mocked(readDevServerLockAsync).mockResolvedValue({
+        url: 'http://127.0.0.1:8099',
+        port: 8099,
+        pid: 4242,
+        startedAt: '2026-08-23T00:00:00.000Z',
+        projectRoot,
+      });
+      mockDevServersAt({ 'http://127.0.0.1:8123': [EXPO_GO_TARGET] });
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await navigateAsync(
+        projectRoot,
+        options({ devServerUrl: 'http://127.0.0.1:8123', json: true })
+      );
+
+      const report = JSON.parse(printed());
+      expect(report.devServerUrl).toBe('http://127.0.0.1:8123');
+      expect(report.devServerSource).toBe('flag');
+      expect(readDevServerLockAsync).not.toHaveBeenCalled();
+    });
+
+    // A development build with a known scheme needs no dev server, and discovery finding none must
+    // not turn that into a failure.
+    it(`should still resolve a scheme URL when nothing answers anywhere`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({
+          name: 'demo',
+          dependencies: { 'expo-dev-client': '5.0.0' },
+        }),
+        [`${projectRoot}/node_modules/expo-dev-client/package.json`]: '{"name":"expo-dev-client"}',
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+      mockDevServersAt({});
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await expect(
+        navigateAsync(projectRoot, options({ devServerUrl: null, json: true }))
+      ).resolves.toBe(0);
+
+      expect(JSON.parse(printed()).url).toBe('demoapp://profile/42');
+    });
   });
 
   it(`should open the project scheme on Android for a development build`, async () => {
@@ -183,6 +292,8 @@ describe(navigateAsync, () => {
     expect(JSON.parse(printed())).toEqual({
       route: '/profile/42',
       url: 'exp://127.0.0.1:8081/--/profile/42',
+      devServerUrl: 'http://127.0.0.1:8081',
+      devServerSource: 'flag',
       resolution: expect.stringContaining('Expo Go'),
       target: expect.stringContaining('Expo Go'),
       platform: 'ios',
@@ -220,6 +331,8 @@ describe(navigateAsync, () => {
     expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
       'appId',
       'command',
+      'devServerSource',
+      'devServerUrl',
       'deviceId',
       'exitCode',
       'followups',

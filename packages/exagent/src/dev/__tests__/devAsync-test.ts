@@ -413,24 +413,23 @@ describe(devAsync, () => {
       expect(emittedFollowUpIds()).toEqual(['dev', 'build-freshness', 'project-context']);
     });
 
-    it(`should offer the device, runtime and ship steps once the plan runs`, async () => {
+    // The open step comes first: a dev server serves a bundle and opens nothing, which is the one
+    // gap an agent could not close from inside this CLI.
+    it(`should offer the open, device and runtime steps once the plan runs`, async () => {
       mockProjectState();
 
       await devAsync(projectRoot, resolveDevOptions([]));
 
-      expect(emittedFollowUpIds()).toEqual([
-        'real-device',
-        'runtime-errors',
-        'eas-build-configure',
-      ]);
-      expect(emittedFollowUps()[0]!.command).toBe('exp://192.168.1.5:8081');
+      expect(emittedFollowUpIds()).toEqual(['open-app', 'real-device', 'runtime-errors']);
+      expect(emittedFollowUps()[0]!.command).toBe('npx exagent navigate /');
+      expect(emittedFollowUps()[1]!.command).toBe('exp://192.168.1.5:8081');
     });
 
-    it(`should offer the production build when the project has an eas.json`, async () => {
+    it(`should offer the production build when the run needs no device`, async () => {
       vol.fromJSON({ [`${projectRoot}/eas.json`]: '{"build":{}}' });
       mockProjectState();
 
-      await devAsync(projectRoot, resolveDevOptions([]));
+      await devAsync(projectRoot, resolveDevOptions(['--web']));
 
       expect(emittedFollowUpIds()).toContain('eas-build');
     });
@@ -440,7 +439,7 @@ describe(devAsync, () => {
 
       await devAsync(projectRoot, resolveDevOptions(['--port', '8082']));
 
-      expect(emittedFollowUps()[0]!.command).toBe('exp://192.168.1.5:8082');
+      expect(emittedFollowUps()[1]!.command).toBe('exp://192.168.1.5:8082');
     });
 
     it(`should offer a tunnel for a development build, which needs no exp:// URL`, async () => {

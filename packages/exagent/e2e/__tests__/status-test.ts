@@ -57,7 +57,13 @@ type StatusReport = {
     user: string | null;
     source: 'eas whoami' | 'EXPO_TOKEN' | null;
   } | null;
-  next: { command: string; rule: string; target: string; steps: { argv: string[] }[] } | null;
+  next: {
+    command: string;
+    rule: string;
+    target: string;
+    steps: { argv: string[] }[];
+    why: string | null;
+  } | null;
   /** The raw project probe, per `src/project/types.ts`. Covered on its own in `probe-test.ts`. */
   probe: {
     projectRoot: string;
@@ -493,6 +499,71 @@ describe('exagent status', () => {
           ready: true,
           projectRootMatched: true,
         });
+      } finally {
+        await stub.close();
+      }
+    });
+
+    // The report used to say "running on http://127.0.0.1:8099" and, three lines below it,
+    // "next  exagent dev → expo-go: expo start --go" — advice to start a second dev server, which
+    // is both a contradiction and a command that would fail on the busy port.
+    it('sends a healthy dev server to verification instead of to a second dev server', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const stub = await startStubDevServerAsync({ projectRoot, targets: [CDP_TARGET] });
+
+      try {
+        const result = await executeExagentAsync(projectRoot, [
+          'status',
+          '--json',
+          '--dev-server-url',
+          stub.url,
+        ]);
+
+        const report: StatusReport = JSON.parse(result.stdout);
+        expect(report.next?.command).toBe('exagent dev:wait --require-app');
+        expect(report.next?.why).toContain('instead of starting a second server');
+        // The project's own shape is still reported: a running server does not change it.
+        expect(report.next?.rule).toBe('expo-go');
+        expect(report.next?.steps).toEqual([]);
+      } finally {
+        await stub.close();
+      }
+    });
+
+    it('prints the reason on the human next line', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const stub = await startStubDevServerAsync({ projectRoot, targets: [CDP_TARGET] });
+
+      try {
+        const result = await executeExagentAsync(projectRoot, [
+          'status',
+          '--dev-server-url',
+          stub.url,
+        ]);
+
+        expect(result.stdout).toContain('exagent dev:wait --require-app');
+        expect(result.stdout).not.toContain('exagent dev → expo-go');
+      } finally {
+        await stub.close();
+      }
+    });
+
+    // A dev server that serves someone else is not this project's, so the plan still stands.
+    it('keeps the plan when the dev server belongs to another project', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const stub = await startStubDevServerAsync({ projectRoot: '/somewhere/else', targets: [] });
+
+      try {
+        const result = await executeExagentAsync(projectRoot, [
+          'status',
+          '--json',
+          '--dev-server-url',
+          stub.url,
+        ]);
+
+        const report: StatusReport = JSON.parse(result.stdout);
+        expect(report.next?.command).toBe('exagent dev');
+        expect(report.next?.why).toBeNull();
       } finally {
         await stub.close();
       }

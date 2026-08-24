@@ -1,17 +1,19 @@
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
 // What `exagent dev:wait` does: find the dev server, hold one request open until its bundler
-// finishes, and answer three questions an agent cannot otherwise ask — is the bundle built, is it
-// this project's bundle, and is an app running it.
+// finishes, and answer four questions an agent cannot otherwise ask — is the bundler done, is it
+// this project's dev server, does this project's own code compile, and is an app running it.
 //
 // The exit code is the answer. `0` ready, `22` the budget expired (inconclusive: wait longer),
-// `20` the dev server answered but not as an Expo dev server does, `1` there was no dev server to
-// wait on at all. Only the last is a failure of the *tool*; the others are outcomes, so they are
-// reported and exited with rather than thrown.
+// `20` the operation failed — another project's dev server, an entry bundle that does not compile,
+// or something answering on the port that is not an Expo dev server — and `1` there was no dev
+// server to wait on at all. Only the last is a failure of the *tool*; the others are outcomes, so
+// they are reported and exited with rather than thrown.
 
 import { event } from '../events';
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
 import { buildDevWaitFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
+import { checkEntryBundleAsync, type BundleCheckResult } from '../runtime/bundleCheck';
 import { discoverDevServerAsync } from '../runtime/devServer';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { CommandError } from '../utils/errors';
@@ -58,12 +60,30 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
 
   let appsConnected = discovery.targets.length;
   let timedOut = readiness.timedOut;
+  const remainingMs = () => Math.max(0, options.timeoutMs - (Date.now() - startedAt));
+
+  // The one question that is about the project rather than about the dev server, and the reason
+  // the whole command was reporting green on a build an agent had just broken. Skipped for a dev
+  // server that is not this project's: building *their* entry bundle answers nothing about this
+  // code, and it would spend the caller's whole budget doing it.
+  const bundle =
+    options.bundleCheck && readiness.ready && readiness.projectRootMatched !== false
+      ? await checkEntryBundleAsync(discovery.devServerUrl, {
+          platform: options.platform,
+          timeoutMs: remainingMs(),
+        })
+      : null;
+  if (bundle?.outcome === 'timeout') {
+    timedOut = true;
+  }
+
   // The app can only attach to a bundle that exists, so this waits on what is left of the budget
-  // rather than on a budget of its own.
-  if (options.requireApp && readiness.ready) {
-    const remainingMs = Math.max(0, options.timeoutMs - (Date.now() - startedAt));
+  // rather than on a budget of its own. A bundle that does not compile is not waited on at all:
+  // nothing can attach to it, so the wait would spend the rest of the budget to learn what the
+  // line above already knows.
+  if (options.requireApp && readiness.ready && bundle?.outcome !== 'broken' && !timedOut) {
     const attached = await waitForAppConnectionAsync(discovery.devServerUrl, {
-      timeoutMs: remainingMs,
+      timeoutMs: remainingMs(),
     });
     appsConnected = attached.appsConnected;
     timedOut = attached.timedOut;
@@ -80,6 +100,7 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
     waitedMs: Date.now() - startedAt,
     timedOut,
     requireApp: options.requireApp,
+    bundle,
     ...(readiness.reason ? { reason: readiness.reason } : {}),
   };
 
@@ -91,6 +112,7 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
     appsConnected: result.appsConnected,
     waitedMs: result.waitedMs,
     timedOut: result.timedOut,
+    bundle: bundleEvent(bundle),
   });
 
   const followups = followUpsEnabled(options.followups)
@@ -100,6 +122,7 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
         projectRootMatched: result.projectRootMatched,
         appsConnected: result.appsConnected,
         timeoutMs: options.timeoutMs,
+        bundle: result.bundle,
       })
     : [];
 
@@ -119,12 +142,32 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
  * The distinction that matters to a caller is between "not yet" and "not this": a budget that
  * expired is worth waiting on again, and a port that answers with something other than a bundler
  * never will be (llp/0010 §Exit codes).
+ *
+ * A dev server that serves another project is checked before the timeout, because it is the one
+ * failure a longer wait cannot fix: the mismatch was *decided*, not left open, so reporting it as
+ * `22` would invite the retry that is guaranteed to fail again.
  */
 function exitCodeFor(result: DevWaitResult): number {
   if (devWaitSucceeded(result)) {
     return EXIT_OK;
   }
+  // Both of these are decided rather than pending, so they are checked before the timeout: a
+  // longer wait cannot make another project's dev server this one's, and it cannot make a file
+  // with a syntax error in it parse.
+  if (result.projectRootMatched === false || result.bundle?.outcome === 'broken') {
+    return EXIT_OUTCOME_FAILED;
+  }
   return result.timedOut ? EXIT_OUTCOME_TIMEOUT : EXIT_OUTCOME_FAILED;
+}
+
+/** The bundle facts worth putting on the event stream: an outcome and a location, never a frame. */
+function bundleEvent(bundle: BundleCheckResult | null) {
+  return {
+    outcome: bundle?.outcome ?? null,
+    platform: bundle?.platform ?? null,
+    filename: bundle?.error?.filename ?? null,
+    lineNumber: bundle?.error?.lineNumber ?? null,
+  };
 }
 
 /**

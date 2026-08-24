@@ -1,10 +1,12 @@
 import { resolveNavigateOptions } from '../resolveOptions';
 
 describe(resolveNavigateOptions, () => {
-  it(`should default the dev server and leave the platform to device discovery`, () => {
+  // Null, not 8081: an unnamed dev server is one still to be found, which is what lets the command
+  // read the project's lock. Defaulting to 8081 here is what sent the device into another project.
+  it(`should leave the dev server to be discovered and the platform to device discovery`, () => {
     expect(resolveNavigateOptions(['/profile/42'])).toEqual({
       route: '/profile/42',
-      devServerUrl: 'http://127.0.0.1:8081',
+      devServerUrl: null,
       platform: undefined,
       scheme: undefined,
       appId: undefined,

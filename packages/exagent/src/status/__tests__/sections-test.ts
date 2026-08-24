@@ -10,6 +10,7 @@ import {
   resolveDefaultPlatform,
   type DevServerReadiness,
 } from '../sections';
+import type { DevServerStatus } from '../types';
 
 const projectRoot = '/project';
 
@@ -209,7 +210,7 @@ describe(buildDevServerStatus, () => {
 
 describe(buildNextActionStatus, () => {
   it(`should report the Expo Go rule and the command that runs it`, () => {
-    const next = buildNextActionStatus(mockState(), {}, 'ios');
+    const next = buildNextActionStatus(mockState(), {}, 'ios', null);
 
     expect(next.command).toBe('exagent dev');
     expect(next.rule).toBe('expo-go');
@@ -223,7 +224,7 @@ describe(buildNextActionStatus, () => {
       expoGo: { compatible: false, reasons: [] },
     });
 
-    const next = buildNextActionStatus(state, {}, 'android');
+    const next = buildNextActionStatus(state, {}, 'android', null);
 
     expect(next.rule).toBe('dev-client-stale');
     expect(next.steps.map((step) => step.argv.join(' '))).toEqual([
@@ -235,17 +236,95 @@ describe(buildNextActionStatus, () => {
   it(`should report the fresh rule when the recorded build matches`, () => {
     const state = mockState({ usesDevClient: true, expoGo: { compatible: false, reasons: [] } });
 
-    const next = buildNextActionStatus(state, { ios: 'abcdef0123456789' }, 'ios');
+    const next = buildNextActionStatus(state, { ios: 'abcdef0123456789' }, 'ios', null);
 
     expect(next.rule).toBe('dev-client-fresh');
     expect(next.steps).toHaveLength(1);
   });
 
   it(`should target the platform it is given`, () => {
-    const next = buildNextActionStatus(mockState({ hasWeb: true }), {}, 'web');
+    const next = buildNextActionStatus(mockState({ hasWeb: true }), {}, 'web', null);
 
     expect(next.rule).toBe('web');
     expect(next.steps[0]!.argv).toEqual(['expo', 'start', '--web']);
+  });
+
+  // The report used to name a running dev server three lines above a `next` that said to start
+  // one. Two lines of the same report contradicting each other is worse than either being wrong.
+  describe('with a dev server already answering', () => {
+    function devServerStatus(overrides: Partial<DevServerStatus> = {}): DevServerStatus {
+      return {
+        url: 'http://127.0.0.1:8099',
+        running: true,
+        appsConnected: 0,
+        source: 'lock',
+        ready: true,
+        projectRootMatched: true,
+        ...overrides,
+      };
+    }
+
+    it(`should send a matched server with no app to the readiness gate`, () => {
+      const next = buildNextActionStatus(mockState(), {}, 'ios', devServerStatus());
+
+      expect(next.command).toBe('exagent dev:wait --require-app');
+      expect(next.why).toContain('instead of starting a second server');
+      // The project's own shape does not change because a server is up.
+      expect(next.rule).toBe('expo-go');
+      expect(next.steps).toEqual([]);
+    });
+
+    // Still the gate and not `runtime:errors`, which the follow-ups already name: the gate is the
+    // only command that proves the bundle compiles, and `next` must not repeat a follow-up.
+    it(`should send a matched server with an app to the gate too`, () => {
+      const next = buildNextActionStatus(
+        mockState(),
+        {},
+        'ios',
+        devServerStatus({ appsConnected: 1 })
+      );
+
+      expect(next.command).toBe('exagent dev:wait --require-app');
+      expect(next.why).toContain('app connected');
+    });
+
+    // Undecidable is not a mismatch: a dev server that named no project root is still the only one
+    // there is, and starting a second would collide with it.
+    it(`should still verify when the match could not be decided`, () => {
+      const next = buildNextActionStatus(
+        mockState(),
+        {},
+        'ios',
+        devServerStatus({ projectRootMatched: null })
+      );
+
+      expect(next.command).toBe('exagent dev:wait --require-app');
+    });
+
+    it(`should keep the plan for another project's dev server`, () => {
+      const next = buildNextActionStatus(
+        mockState(),
+        {},
+        'ios',
+        devServerStatus({ projectRootMatched: false, appsConnected: 1 })
+      );
+
+      expect(next.command).toBe('exagent dev');
+      expect(next.why).toBeNull();
+      expect(next.steps[0]!.argv).toEqual(['expo', 'start', '--go']);
+    });
+
+    it(`should keep the plan when nothing answered`, () => {
+      const next = buildNextActionStatus(
+        mockState(),
+        {},
+        'ios',
+        devServerStatus({ running: false, ready: null })
+      );
+
+      expect(next.command).toBe('exagent dev');
+      expect(next.why).toBeNull();
+    });
   });
 });
 

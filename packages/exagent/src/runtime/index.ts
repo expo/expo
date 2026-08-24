@@ -1,7 +1,12 @@
 import chalk from 'chalk';
 
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import {
+  assertWithOptionsArgs,
+  DURATION_HELP_NOTE,
+  DURATION_METAVAR,
+  printHelp,
+} from '../utils/args';
 
 export const exagentRuntime: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -24,15 +29,15 @@ export const exagentRuntime: Command = async (argv) => {
       chalk`npx exagent runtime:{dim <action>}`,
       [
         chalk`{bold runtime:eval} <expression>  Evaluate JavaScript in the running app`,
-        `  --timeout <ms>          How long to wait for the app to answer (default: 5000)`,
+        `  --timeout ${DURATION_METAVAR}    How long to wait for the app to answer (default: 5s)`,
         `  --no-await-promise      Report the promise itself instead of its settled value`,
         '',
         chalk`{bold runtime:errors}             Collect runtime errors over a time window`,
-        `  --duration <ms>         How long to listen for errors (default: 2000)`,
+        `  --duration ${DURATION_METAVAR}   How long to listen for errors (default: 2s)`,
         `  --no-followups          Skip the "Suggested next:" section of suggested follow-up commands`,
         '',
         chalk`{bold runtime:network}            Collect the app's HTTP requests over a time window`,
-        `  --duration <ms>         How long to listen for requests (default: 5000)`,
+        `  --duration ${DURATION_METAVAR}   How long to listen for requests (default: 5s)`,
         `  --no-followups          Skip the "Suggested next:" section of suggested follow-up commands`,
         '',
         `--dev-server-url <url>    Dev server to talk to (default: the project's own, then 8081)`,
@@ -43,8 +48,10 @@ export const exagentRuntime: Command = async (argv) => {
         '',
         chalk`  {dim $} npx exagent runtime:eval "globalThis.__DEV__"`,
         chalk`  {dim $} npx exagent runtime:eval "store.getState().user" --json`,
-        chalk`  {dim $} npx exagent runtime:errors --duration 5000`,
-        chalk`  {dim $} npx exagent runtime:network --duration 10000 --json`,
+        chalk`  {dim $} npx exagent runtime:errors --duration 5s`,
+        chalk`  {dim $} npx exagent runtime:network --duration 10s --json`,
+        '',
+        `  ${DURATION_HELP_NOTE}`,
         '',
         chalk`  Every action needs a running dev server ({bold npx expo start}) with the app open on a`,
         chalk`  device or simulator.`,

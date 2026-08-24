@@ -507,7 +507,13 @@ describe(printStatusAsync, () => {
         'skills-sync',
         'install-dev-client',
       ]);
-      expect(report.next.command).toBe('exagent dev');
+      // The dev server of this fixture is running with an app attached, so `next` is the readiness
+      // gate rather than `exagent dev` — and deliberately not `runtime:errors`, which the
+      // `runtime-errors` follow-up above already names.
+      expect(report.next.command).toBe('exagent dev:wait --require-app');
+      expect(
+        report.followups.map((followup: { command: string }) => followup.command)
+      ).not.toContain(report.next.command);
     });
 
     it(`should embed an empty list with --no-followups, keeping the key set`, async () => {

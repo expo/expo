@@ -26,6 +26,17 @@ const HASH_DISPLAY_LENGTH = 8;
 /** The command the next action names: the one that decides a plan and runs it. */
 const NEXT_ACTION_COMMAND = 'exagent dev';
 
+/**
+ * The gate to put in front of anything that reads the app, once a dev server is up.
+ *
+ * One command for both the app-attached and the nothing-attached case, rather than `runtime:errors`
+ * for the first: this is the only command that proves the project's own bundle *compiles*, which is
+ * the fact a report full of green lines was missing. What to do once it passes is a follow-up, and
+ * the `runtime-errors` follow-up already says it — `next` naming it too would be the duplication
+ * that `status` keeps its follow-ups silent to avoid.
+ */
+const VERIFY_COMMAND = 'exagent dev:wait --require-app';
+
 /** What the project is: name, SDK, and how its native side is produced. */
 export function buildProjectStatus(state: ProjectState, packageName: string | null): ProjectStatus {
   const bare = state.nativeDirs.ios || state.nativeDirs.android;
@@ -110,18 +121,49 @@ export function buildDevServerStatus(
   return probe.reason ? { ...status, reason: probe.reason } : status;
 }
 
-/** The decision-table row that would fire, and the steps it would run. */
+/**
+ * What to do next: the decision-table row that would fire, or the verification a running dev
+ * server has already made possible.
+ *
+ * The plan is only the next action while there is nothing to verify. A dev server that answers and
+ * proved it serves this project makes `exagent dev` the wrong advice — it would start a second one,
+ * three lines under a report that says the first is healthy — so the answer becomes the gate that
+ * says whether the bundle and the app are actually working.
+ *
+ * A dev server that answered for *another* project is not this project's, so it changes nothing:
+ * the plan stands, and the dev-server line is where that mismatch is reported.
+ */
 export function buildNextActionStatus(
   state: ProjectState,
   lastBuild: LastBuildFingerprints,
-  platform: PlanPlatform
+  platform: PlanPlatform,
+  devServer: DevServerStatus | null
 ): NextActionStatus {
   const plan = decideStartPlan(state, { platform, lastBuild });
+  const verify = verifyAction(devServer);
+  if (verify) {
+    return { ...verify, rule: plan.rule, target: plan.target, steps: [] };
+  }
   return {
     command: NEXT_ACTION_COMMAND,
     rule: plan.rule,
     target: plan.target,
     steps: plan.steps,
+    why: null,
+  };
+}
+
+/** The command and the reason for a dev server this project can already use, or null. */
+function verifyAction(devServer: DevServerStatus | null): { command: string; why: string } | null {
+  if (!devServer?.running || devServer.projectRootMatched === false) {
+    return null;
+  }
+  return {
+    command: VERIFY_COMMAND,
+    why:
+      devServer.appsConnected > 0
+        ? 'a dev server is running with an app connected, so check that its bundle builds instead of starting a second server'
+        : 'a dev server is already running, so wait for its bundle and for an app to attach instead of starting a second server',
   };
 }
 

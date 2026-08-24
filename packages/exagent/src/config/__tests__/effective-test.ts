@@ -31,7 +31,7 @@ describe(buildEffectiveConfig, () => {
     const report = build();
 
     expect(report.projectRoot).toBe('/project');
-    expect(report.sdkVersion).toBe('57.0.0');
+    expect(report.configuredSdkVersion).toBe('57.0.0');
     expect(report.source).toEqual({
       command: ['expo', 'config', '--type', 'introspect', '--json'],
       durationMs: 1380,
@@ -213,7 +213,7 @@ describe(formatEffectiveConfig, () => {
   it('prints one labelled line per fact, with a count per mod', () => {
     expect(formatEffectiveConfig(build())).toMatchInlineSnapshot(`
       "Project      /project
-      SDK          57.0.0
+      SDK          57.0.0 per config
       Plugins      13 (1 declared, 12 auto)
       Autolinked   12 modules
       ios          podfileProperties 10 keys, infoPlist 8 keys, splashScreenStoryboard 1 key, entitlements 1 key, expoPlist 4 keys

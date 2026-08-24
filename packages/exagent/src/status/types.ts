@@ -19,6 +19,14 @@ export interface ProjectStatus {
   root: string;
   /** `name` from the project `package.json`, or the directory name. */
   name: string | null;
+  /**
+   * The version of the **installed `expo` package**, e.g. `57.0.15`. Null when it is unresolvable.
+   *
+   * The code that is actually on disk, not the SDK line the app config names. `config:effective`
+   * reports that one, and it reports it as `configuredSdkVersion` for exactly this reason:
+   * `57.0.15` and `57.0.0` are two answers to two questions, and one field name for both read as
+   * a disagreement between the commands.
+   */
   sdkVersion: string | null;
   /** `bare` when a native directory is checked in, `cng` when prebuild generates it. */
   native: 'bare' | 'cng';
@@ -104,12 +112,26 @@ export interface AuthStatus {
 }
 
 export interface NextActionStatus {
-  /** The command that performs this plan. */
+  /** The command to run next. */
   command: string;
-  /** Decision-table row that would fire, e.g. `expo-go`. */
+  /**
+   * Decision-table row that would fire to get the app onto a device, e.g. `expo-go`.
+   *
+   * Always the plan's row, even when {@link command} is not `exagent dev`: it is the project's
+   * shape, and a reader that wants it does not stop wanting it because a dev server is up.
+   */
   rule: string;
   target: ProjectTarget;
+  /** The steps {@link command} would run. Empty for a command that is not `exagent dev`. */
   steps: PlanStep[];
+  /**
+   * Why this command rather than the plan's own. Null when it *is* the plan's own.
+   *
+   * Set exactly when a dev server this project can use is already answering: recommending a second
+   * one then contradicts the dev-server line three rows above it, and the useful next move is to
+   * verify the server that is running rather than to start another.
+   */
+  why: string | null;
 }
 
 /** Sections of the report, in the order they print. */

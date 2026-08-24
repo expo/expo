@@ -89,6 +89,24 @@ const DURATION_UNITS: Record<string, number> = {
 const DURATION_WITH_UNIT = /^(\d+(?:\.\d+)?)(ms|s|m|h)$/;
 
 /**
+ * The metavariable every duration flag prints in its `--help` option line.
+ *
+ * `<ms>` was a lie of omission: the flags have accepted `90s` and `2h` since the units existed, and
+ * an agent that copies the stated type never tries anything else. One spelling here means a flag
+ * that starts accepting durations cannot document itself as milliseconds by accident.
+ */
+export const DURATION_METAVAR = '<duration>';
+
+/**
+ * The line a `--help` prints once to say what {@link DURATION_METAVAR} accepts.
+ *
+ * Kept next to {@link resolveDuration} and to the error it throws, so the three spellings a user
+ * can meet — the option line, this note, and the rejection — cannot drift apart.
+ */
+export const DURATION_HELP_NOTE =
+  'Durations are milliseconds, or a number with a unit: 90s, 30m, 2h.';
+
+/**
  * Read a duration flag in milliseconds, or fall back when the caller named none.
  *
  * The value arrives as a string rather than through a numeric `arg` handler, so an unusable one is

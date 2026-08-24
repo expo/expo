@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`); `exagent build:wait` (`src/builds/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
+**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-23
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]]
@@ -38,13 +38,13 @@ Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are 
 
 [observed — 2026-08-23, `src/builds/`] `exagent build:wait <id>` is the first command whose whole answer is its exit code, and it is what the `20`–`29` band was reserved for. It attaches to an EAS build that already exists — one started by CI, by the dashboard, or by another agent — polls `eas build:view <id> --json`, and leaves with what the build did:
 
-| Code | The build | Where it is decided |
-| ---- | --------- | ------------------- |
-| `0`  | `FINISHED` | `src/builds/status.ts` |
-| `20` | `ERRORED` | `src/builds/status.ts` |
-| `21` | `CANCELED`, **or this wait was interrupted** | `src/builds/status.ts` |
-| `22` | still running when `--timeout` elapsed | `src/builds/waitAsync.ts` |
-| `1`  | not readable: bad id, no `eas`, not signed in, three failed polls | `CommandError` |
+| Code | The build                                                         | Where it is decided       |
+| ---- | ----------------------------------------------------------------- | ------------------------- |
+| `0`  | `FINISHED`                                                        | `src/builds/status.ts`    |
+| `20` | `ERRORED`                                                         | `src/builds/status.ts`    |
+| `21` | `CANCELED`, **or this wait was interrupted**                      | `src/builds/status.ts`    |
+| `22` | still running when `--timeout` elapsed                            | `src/builds/waitAsync.ts` |
+| `1`  | not readable: bad id, no `eas`, not signed in, three failed polls | `CommandError`            |
 
 Three details of the mapping are decisions rather than transcription:
 
@@ -55,6 +55,81 @@ Three details of the mapping are decisions rather than transcription:
 Progress goes to the `LOG_EVENTS` JSONL stream as `cli:build_wait_poll`, never to stdout, so `--json` still prints exactly one object ([[0006-agent-native-cli-surface]] §Output contract).
 
 Two consequences worth stating. First, adopting the convention changed no shipped command's exit code by itself; the one command that has been re-coded since is the deploy's auth failure, and that was a deliberate, separate decision recorded below. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's _own_ failures use the table; a subprocess's do not.
+
+### The second: `dev:wait`, and what an outcome is an outcome _about_
+
+[observed — 2026-08-23, `src/dev/`] `exagent dev:wait` joined the band next, and it made the band's
+one ambiguity concrete: `20` says "the operation failed", and a readiness gate has to decide what
+its operation _is_. Waiting for a dev server to answer, or establishing that this project's app is
+in a state worth reading? The command exists for the second, so that is what its code answers.
+
+Decision [confirmed — Kudo, 2026-08-23]. A dev server that proved it serves **another project**
+exits `20`, with `ok: false`. Before, it exited `0` with `ok: true` while the human report said, on
+screen, `serves /other/app, not /this/app` — the two channels of one command disagreeing, with the
+machine one wrong. An agent gating on the exit code proceeded into a stranger's app; the `--help`
+of the same command calls the project-root header "the one thing a port scan cannot prove", so the
+command detected the mismatch and then declined to act on it.
+
+Three details of that mapping are decisions rather than transcription:
+
+- **`null` is not `false`.** A dev server that named no project root has not been _shown_ to be the
+  wrong one, and `matchProjectRoot` answers `null` for it. Failing on undecidable would fail every
+  dev server too old to send the header, which is a different command's problem to have.
+- **A mismatch is `20`, never `22`,** even when the wait also expired. `22` means "look again", and
+  no amount of looking turns another project's dev server into this one's. The mismatch is checked
+  before the timeout for exactly this reason.
+- **The human output is unchanged.** It was already right. Only `ok` and the exit code moved, which
+  is the smallest change that makes the two channels agree.
+
+### The gate has to ask about the _project_, not only the dev server
+
+Decision [confirmed — Kudo, 2026-08-23]. `dev:wait` builds the project's entry bundle, and an entry
+bundle that does not compile exits `20` with the file, line and message the bundler stopped on.
+
+The finding this answers [observed — friction run 1, 2026-08-23]: a syntax error was appended to a
+route of a real SDK 57 app, and `status`, `doctor`, `dev:wait` and `runtime:errors` all reported
+green and exited `0`. Every one of them was asking about the dev server. `GET /status` proves the
+**bundler process** is alive [observed — `createMetroMiddleware.ts`], `/json/list` proves an app is
+attached, and neither has ever had anything to say about whether the code compiles — so the edit →
+verify loop returned "fine" immediately after an agent broke the build, which is the most expensive
+answer a driving agent can be given.
+
+**How the entry path is found, without importing `@expo/cli`.** Two HTTP requests:
+
+1. `GET /` with `expo-platform: <platform>` and `Accept: application/json`, whose `launchAsset.url`
+   is the entry bundle URL the dev server hands a real app [observed —
+   `ExpoGoManifestHandlerMiddleware.ts:159-181`, and live on 2026-08-23]. Asking is what keeps the
+   entry path out of the wrapper: it is `node_modules/expo-router/entry` for a router project and
+   `index` for a plain one, and the URL also carries the whole query string Metro keys its graph by
+   (`transform.routerRoot`, `transform.engine`, `lazy`, …). The URL is then used **byte for byte** —
+   adding or dropping one parameter compiles a second graph rather than reading the one the app uses
+   [observed — `metroOptions.ts`, `Server.js` `getGraphId`].
+2. `HEAD` of that URL. HEAD builds the bundle and reports the real status without sending the body,
+   which for this app is 8 MB [observed live: 200 in 11 ms warm, 500 in 0.7 s on a broken route].
+   The body is fetched only when the status says something went wrong, and then it is the small one:
+   Metro answers a failed build with `{"type":"TransformError","lineNumber":…,"column":…,
+"filename":…,"message":…}` and status 500 [observed — `metro/src/lib/formatBundlingError.js`].
+
+Four decisions inside that, each of which could have gone the other way:
+
+- **`unknown` is not `broken`.** A manifest that 404s, is not JSON, or names no `launchAsset.url`
+  leaves `ok: null` and passes. A dev server that answered nothing the wrapper understands has not
+  shown the project to be broken, and a gate that went red on it would trade a false green for a
+  false red — which is worse, because the false red is not actionable.
+- **A broken bundle is `20`, never `22`,** for the same reason a project-root mismatch is: a file
+  with a syntax error in it does not parse on the second look. A cold first build that does not
+  finish inside `--timeout` **is** `22`, because that one really is "look again".
+- **The check is skipped for another project's dev server.** Building _their_ entry bundle answers
+  nothing about this code and would spend the caller's whole budget doing it.
+- **`--no-bundle-check` exists.** The first build of a cold dev server compiles the whole app and can
+  take tens of seconds; a caller that only wants the old readiness gate must be able to say so
+  rather than raise `--timeout` and wait.
+
+**`status` is deliberately not given this.** [inferred] Its readiness probe has a 400 ms ceiling and
+its whole contract is that it never waits, while a cold first build is tens of seconds and nothing
+the dev server exposes says "is the last build broken" without building. The honest arrangement is
+the one now in place: `status` reports where the project is, and its `next` line points at
+`exagent dev:wait --require-app`, which is the command that pays for the answer.
 
 ## Needs-human protocol
 
@@ -127,7 +202,7 @@ Rule (a) says what `exagent build --platform ios` must not do — print a listin
 
 So [observed — 2026-08-23, `src/commandRegistry.ts`] a `CommandGroup` may declare `bareNameCommand`, the command another CLI owns its bare name for. When it has one, the `flags-without-action` error names it and the `Try:` line is that command **with the caller's own flags on it** — `Try: npx eas build --platform ios` — so the recovery is a paste rather than a re-read. A group without one is unchanged and recovers into `npx exagent <group> --help`.
 
-This is narrower than rule (b), and the two do not overlap: rule (b) is for a name in the *forwarded* set, where `exagent` runs the other command itself; this is for a name owned by a CLI `exagent` does not forward, where the only thing to hand back is the command line.
+This is narrower than rule (b), and the two do not overlap: rule (b) is for a name in the _forwarded_ set, where `exagent` runs the other command itself; this is for a name owned by a CLI `exagent` does not forward, where the only thing to hand back is the command line.
 
 ## `build:explain`: the rule table is capped and in-repo
 
@@ -149,6 +224,13 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
 
 `@expo/cli`:
 
+- Do not let `expo start --ios` take the dev server down with it. `ensureSimulatorAppRunningAsync`
+  runs `osascript … tell app "System Events"`, which fails on a Mac with no usable GUI session, and
+  the rejection travels unhandled through `openPlatformsAsync` and ends the process [observed —
+  live, 2026-08-23, in both CI and non-CI mode; the app *was* opened first]. Opening a window is a
+  convenience and should not be able to fail a start, the way the eager Xcode warm-up already
+  swallows its own error [observed — `startAsync.ts`]. Worked around by not relying on `--ios`:
+  llp/0004 §A plan step's `reason` records why the follow-ups name `exagent navigate /` instead.
 - Emit `cli:error` JSONL for every command error, with a `needsInput` flag — the event contract of llp/0006 §Output contract, extended so a wrapper can see that a prompt is what stopped the command.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.

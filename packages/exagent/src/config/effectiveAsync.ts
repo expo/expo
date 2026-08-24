@@ -55,7 +55,7 @@ export async function printEffectiveConfigAsync(
   });
 
   event('config_effective', {
-    sdkVersion: report.sdkVersion,
+    configuredSdkVersion: report.configuredSdkVersion,
     platforms: Object.keys(report.platforms),
     modCounts: Object.fromEntries(
       Object.entries(report.platforms).map(([name, mods]) => [name, Object.keys(mods).length])

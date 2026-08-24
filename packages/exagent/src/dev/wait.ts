@@ -1,7 +1,12 @@
 import chalk from 'chalk';
 
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import {
+  assertWithOptionsArgs,
+  DURATION_HELP_NOTE,
+  DURATION_METAVAR,
+  printHelp,
+} from '../utils/args';
 
 export const exagentDevWait: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -20,32 +25,46 @@ export const exagentDevWait: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      `Wait until the dev server has finished bundling, and say whose bundle it is`,
+      `Wait for the dev server, and check that this project's code still compiles`,
       chalk`npx exagent dev:wait {dim [options]}`,
       [
-        `--timeout <ms>          How long to wait in total (default: 120000)`,
-        `--require-app           Also wait for an app to attach to the dev server`,
-        `--dev-server-url <url>  Dev server to wait on (default: the project's own, then 8081)`,
-        `--json                  Print the result as JSON`,
-        `--no-followups          Skip the "Suggested next:" section of suggested follow-up commands`,
-        `-h, --help              Usage info`,
+        `--timeout ${DURATION_METAVAR}      How long to wait in total (default: 2m)`,
+        `--require-app              Also wait for an app to attach to the dev server`,
+        `--platform <ios|android|web>  Platform to build the entry bundle for (default: ios)`,
+        `--no-bundle-check          Only wait for the bundler; do not build the entry bundle`,
+        `--dev-server-url <url>     Dev server to wait on (default: the project's own, then 8081)`,
+        `--json                     Print the result as JSON`,
+        `--no-followups             Skip the "Suggested next:" section of suggested follow-up commands`,
+        `-h, --help                 Usage info`,
       ].join('\n'),
       [
         '',
         chalk`  {dim $} npx exagent dev:wait`,
-        chalk`  {dim $} npx exagent dev:wait --require-app --timeout 60000 --json`,
+        chalk`  {dim $} npx exagent dev:wait --require-app --timeout 60s --json`,
+        '',
+        `  ${DURATION_HELP_NOTE}`,
         '',
         chalk`  The dev server answers {bold GET /status} only once its bundler has finished, so this`,
         chalk`  command holds one request open rather than polling. It is the gate to put before`,
         chalk`  anything that reads the running app: {bold runtime:eval}, {bold runtime:errors} and`,
         chalk`  {bold navigate} all need a bundle that exists.`,
         '',
+        chalk`  {bold /status} only proves the bundler process is alive, so this then asks the dev server`,
+        chalk`  for its manifest and builds the entry bundle it names. That is the only part of the`,
+        chalk`  check that is about {bold your code}: a dev server can be perfectly healthy while the`,
+        chalk`  project it serves has a syntax error in it. A bundle that does not compile is reported`,
+        chalk`  with the file, line and message the bundler stopped on. The first build of a cold dev`,
+        chalk`  server compiles the whole app and can take tens of seconds, inside {bold --timeout};`,
+        chalk`  {bold --no-bundle-check} waits for the bundler and nothing else.`,
+        '',
         chalk`  The dev server also names the project it serves, so this reports whether the server`,
-        chalk`  that answered is {bold this} project's — the one thing a port scan cannot prove. Pass`,
+        chalk`  that answered is {bold this} project's — the one thing a port scan cannot prove. A`,
+        chalk`  server that proved it serves {bold another} project is a failure, not a pass: pass`,
         chalk`  {bold --dev-server-url} when two projects are running at once.`,
         '',
         chalk`  Exit codes: {bold 0} ready · {bold 22} the wait expired, so try a longer {bold --timeout} ·`,
-        chalk`  {bold 20} something answered that is not an Expo dev server · {bold 1} no dev server at all.`,
+        chalk`  {bold 20} the entry bundle does not compile, the dev server serves another project, or`,
+        chalk`  something answered that is not an Expo dev server · {bold 1} no dev server at all.`,
         '',
       ].join('\n')
     );
