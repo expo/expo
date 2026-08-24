@@ -113,8 +113,20 @@ function logErrorListing(text: string): void {
 // No signal hooks are installed here. `install`, `start` and the `expo` passthrough hand the
 // terminal to the `expo` subprocess and forward the signals to it, in `utils/expoCli.ts`.
 switch (resolution.kind) {
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+  // The outermost catch of the CLI. A command's own body already ends in `.catch(logCmdError)`,
+  // but its **argument parsing** runs before that chain is built — so a bad flag rejected here,
+  // with nobody listening, and Node printed an `ArgError` stack trace and exited 1 with no event,
+  // no `Try:` line and, under `--json`, nothing at all on stdout. Every command funnels through
+  // this one line, so the envelope is guaranteed rather than per command.
   case 'command':
-    resolution.load().then((exec) => exec(resolution.argv));
+    resolution
+      .load()
+      .then((exec) => exec(resolution.argv))
+      .catch((error: unknown) => {
+        const { logCmdError } = require('./utils/errors') as typeof import('./utils/errors');
+        logCmdError(error);
+      });
     break;
 
   // @ref llp/0010-agent-conventions.rfc.md §Registry rules — the listing, and then the options of

@@ -36,7 +36,11 @@ import {
   readProjectPackageJsonAsync,
 } from '../../project/nodeModules';
 import { readProjectRoutesAsync } from '../../project/routes';
-import { discoverDevServerAsync, type DevServerSource } from '../devServer';
+import {
+  discoverDevServerAsync,
+  howToNameTheDevServer,
+  type DevServerSource,
+} from '../devServer';
 import {
   connectMessageSocketAsync,
   peersChanged,
@@ -135,7 +139,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
       [
         `No Expo dev server answered at ${devServerUrl}, so there is nothing to reload the app onto.`,
         `Why: the request for its debugger target list failed (${devServer.reason ?? 'no answer'}). A reload makes the app fetch its bundle again, and without a dev server that fetch has nowhere to go — the app would be left on a loading screen rather than on the fixed code.`,
-        `How: start the dev server ("npx exagent dev --yes"), then run this command again. Pass --dev-server-url to name a dev server on another host or port.`,
+        `How: start the dev server ("npx exagent dev --yes"), then run this command again. ${howToNameTheDevServer(options.devServerUrl != null)}`,
       ].join('\n')
     );
     error.suggestedCommand = 'npx exagent dev:wait';

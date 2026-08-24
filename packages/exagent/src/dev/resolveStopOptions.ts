@@ -55,7 +55,7 @@ const DEV_STOP_ARGS = {
  * unusable timeout, or a positional argument it has no place for.
  */
 export function resolveDevStopOptions(argv: string[]): DevStopOptions {
-  const args = parseArgsOrThrow(DEV_STOP_ARGS, argv);
+  const args = parseArgsOrThrow(DEV_STOP_ARGS, argv, 'dev:stop');
 
   // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d).
   if (args._.length > 0) {

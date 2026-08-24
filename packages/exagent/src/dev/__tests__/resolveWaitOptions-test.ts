@@ -58,3 +58,21 @@ describe(resolveDevWaitOptions, () => {
     expect(() => resolveDevWaitOptions(['ready'])).toThrow(/Unexpected argument: ready/);
   });
 });
+
+// @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts — `exagent dev --port 8195`
+// is the command that started the server, so the port is what a caller has in hand next.
+describe('resolveDevWaitOptions --port', () => {
+  it('reads --port as the dev server on that port of this machine', () => {
+    expect(resolveDevWaitOptions(['--port', '8195']).devServerUrl).toBe('http://127.0.0.1:8195');
+  });
+
+  it('rejects a value that is not a port', () => {
+    expect(() => resolveDevWaitOptions(['--port', 'lots'])).toThrow(/--port must be a port number/);
+  });
+
+  it('refuses --port and --dev-server-url together instead of picking one', () => {
+    expect(() =>
+      resolveDevWaitOptions(['--port', '8195', '--dev-server-url', 'http://127.0.0.1:8081'])
+    ).toThrow(/both name a dev server/);
+  });
+});

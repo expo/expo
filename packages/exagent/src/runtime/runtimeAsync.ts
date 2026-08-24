@@ -95,7 +95,7 @@ export async function runtimeEvalAsync(
 ): Promise<number> {
   const { expression, timeoutMs, awaitPromise, json } = options;
   const devServerUrl = await resolveDevServerUrlAsync(options, context);
-  await requireConnectedAppAsync(devServerUrl);
+  await requireConnectedAppAsync(devServerUrl, { explicit: options.devServerUrl != null });
 
   let result: CdpEvaluateResult;
   try {
@@ -202,7 +202,7 @@ export async function runtimeErrorsAsync(
 ): Promise<number> {
   const { durationMs, json, failOnError } = options;
   const devServerUrl = await resolveDevServerUrlAsync(options, context);
-  await requireConnectedAppAsync(devServerUrl);
+  await requireConnectedAppAsync(devServerUrl, { explicit: options.devServerUrl != null });
 
   let errors: RuntimeErrorRecord[];
   try {
@@ -298,7 +298,9 @@ export async function runtimeNetworkAsync(
 ): Promise<number> {
   const { durationMs, json } = options;
   const devServerUrl = await resolveDevServerUrlAsync(options, context);
-  const targets = await requireConnectedAppAsync(devServerUrl);
+  const targets = await requireConnectedAppAsync(devServerUrl, {
+    explicit: options.devServerUrl != null,
+  });
 
   let requests: NetworkRequestRecord[];
   try {

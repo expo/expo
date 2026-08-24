@@ -150,6 +150,10 @@ export const commandGroups: { [group: string]: CommandGroup } = {
         summary: `Stop this project's dev server`,
         load: () => import('./dev/stop').then((i) => i.exagentDevStop),
       },
+      logs: {
+        summary: `Read what this project's detached dev server has printed`,
+        load: () => import('./dev/logs').then((i) => i.exagentDevLogs),
+      },
     },
   },
   doctor: {
@@ -401,7 +405,8 @@ export interface HelpSection {
 export const helpSections: HelpSection[] = [
   {
     title: 'Develop',
-    commands: ['dev', 'dev:wait', 'dev:stop', 'typecheck', 'start', 'install', 'status'],
+    commands: ['dev', 'dev:wait', 'dev:logs', 'dev:stop', 'typecheck', 'start', 'install', 'status'],
+    note: 'dev blocks this terminal; dev --detach does not, and dev:logs reads what it printed.',
   },
   {
     title: 'Inspect the project',
@@ -655,10 +660,13 @@ function editDistance(a: string, b: string): number {
 const absentCapabilities: {
   [name: string]: { absent: string; instead: string; suggestedCommand: string };
 } = {
+  // `dev:logs` exists now, so the bare name is a caller one hop away from it rather than one
+  // reaching for a capability this CLI does not have. The other two commands stay in the answer:
+  // a log is read for three different questions, and only one of them is "what did it print".
   logs: {
-    absent: `this CLI has no log command: nothing in it tails the dev server's output or the app's console`,
-    instead: `Two commands answer what a log is usually read for: "npx exagent dev:wait" says whether the dev server finished bundling and reports the error when it did not, and "npx exagent runtime:errors" collects the errors and console.error calls the running app reports over a time window.`,
-    suggestedCommand: 'npx exagent runtime:errors',
+    absent: `the log this CLI keeps is the dev server's, and it is "npx exagent dev:logs"`,
+    instead: `That reads what a dev server started with "npx exagent dev --detach" has printed. For the two questions a log is more often opened for: "npx exagent dev:wait" says whether the bundler finished and whether this project compiles, and "npx exagent runtime:errors" collects what the running app threw over a time window.`,
+    suggestedCommand: 'npx exagent dev:logs',
   },
 };
 // The singular is the same mistake, and the same answer.

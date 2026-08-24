@@ -201,9 +201,14 @@ describe('exagent dev', () => {
   // nothing, appended the subprocess log to its own JSON, exited 1, and told its caller to open a
   // dev server it had not started [observed — friction run, 2026-08-23].
   describe('a run with no terminal', () => {
-    /** The non-interactive stop of the Expo CLI, verbatim, as a busy 8081 produces it. */
+    /**
+     * The non-interactive stop of the Expo CLI, verbatim, on a question only a person can answer.
+     *
+     * Deliberately not the port question any more: that one is recognised and retried before the
+     * needs-human classifier sees it (F41), and it has tests of its own below.
+     */
     const NEEDS_INPUT =
-      "Input is required, but 'npx expo' is in non-interactive mode.\nRequired input:\n> Use port 8082 instead?";
+      "Input is required, but 'npx expo' is in non-interactive mode.\nRequired input:\n> Which development build would you like to use?";
 
     it('prints exactly one JSON object, with no subprocess output after it', async () => {
       const projectRoot = await setupAsync('go-app');
@@ -228,8 +233,8 @@ describe('exagent dev', () => {
 
       expect(result.exitCode).toBe(7);
       expect(result.stderr).toContain('Needs a human   expo-prompt');
-      // The way out is the flag that answers the question before it is asked.
-      expect(result.stderr).toContain('npx exagent dev --port 8082');
+      // The recovery is the person, at a terminal — not a flag this CLI could have passed.
+      expect(result.stderr).toContain('run the command above in a terminal once and answer it');
       // And the same failure as data, since JSON was asked for.
       expect(JSON.parse(result.stdout).error).toMatchObject({
         code: 'EXPO_NEEDS_INPUT',
@@ -243,6 +248,50 @@ describe('exagent dev', () => {
       expect(events.find((entry) => entry._e === 'cli:needs_human')).toMatchObject({
         scenario: 'expo-prompt',
       });
+    });
+
+    // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — the port carve-out (F41).
+    // A busy port used to be exit 7 with `needsHuman.scenario: "expo-prompt"` and a `How:` line
+    // naming the very flag the caller had passed. Nothing about it needs a person.
+    it('starts on a free port it picks when the port is busy and none was named', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json'], {
+        env: { STUB_EXPO_PORT_BUSY: '8180' },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(0);
+      // Said out loud, on stderr, because the dev server is not where it was asked for.
+      expect(result.stderr).toContain('Port 8180 was busy');
+      // Two invocations of `expo start`: the one that stopped, and the one with the port on it.
+      const starts = readStubExpoInvocations(projectRoot).filter(({ args }) => args[0] === 'start');
+      expect(starts).toHaveLength(2);
+      expect(starts[0]!.args).not.toContain('--port');
+      expect(starts[1]!.args).toContain('--port');
+      // Nobody was asked, so stdout is still the one plan object.
+      expect(JSON.parse(result.stdout)).toMatchObject({ target: 'expo-go' });
+    });
+
+    // A port the caller named is a requirement. Exit 20 is "the outcome failed", never 7, and the
+    // recovery is never the command that just failed.
+    it('exits 20 when the port the caller demanded is taken', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--yes', '--json', '--port', '8180'],
+        { env: { STUB_EXPO_PORT_BUSY: '8180' }, reject: false }
+      );
+
+      expect(result.exitCode).toBe(20);
+      const { error } = JSON.parse(result.stdout);
+      expect(error.code).toBe('PORT_IN_USE');
+      expect(error.needsHuman).toBeNull();
+      expect(error.suggestedCommand).not.toContain('--port 8180');
+      // One attempt: it was not quietly moved somewhere else.
+      const starts = readStubExpoInvocations(projectRoot).filter(({ args }) => args[0] === 'start');
+      expect(starts).toHaveLength(1);
     });
 
     it('exits 7 in human mode too, where the output is still captured', async () => {

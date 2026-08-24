@@ -17,7 +17,7 @@ import { classifySubprocessFailure, lastNonEmptyLine } from '../needsHuman/detec
 import { needsHumanErrorFrom } from '../needsHuman/error';
 import { decideStartPlan } from '../plan/decide';
 import { emitStartPlan } from '../plan/emit';
-import { event } from '../plan/events';
+import { event as planEvent } from '../plan/events';
 import { readLastBuildFingerprints, recordLastBuildFingerprint } from '../plan/lastBuild';
 import { isPlatformFlag } from '../plan/platformFlags';
 import type { NativePlatform, PlanPlatform } from '../plan/types';
@@ -25,12 +25,18 @@ import { probeProjectStateAsync } from '../project/probe';
 import type { PlanStep, ProjectState, StartPlan } from '../project/types';
 import { resolveStartFollowUps } from '../start/followUps';
 import { runDevServerAsync, type DevServerRun } from '../start/startAsync';
+import { EXIT_OUTCOME_FAILED } from '../exitCodes';
 import { CommandError } from '../utils/errors';
 import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
 import { isInteractive } from '../utils/interactive';
 import type { SubprocessOutput } from '../utils/subprocess';
 import { confirmPlanAsync } from './confirmPlan';
+import { event as devEvent } from './events';
+import { detectPortCollision, findFreePortAsync, type PortCollision } from './portCollision';
 import type { DevOptions } from './resolveOptions';
+
+/** Where `expo start` listens when nothing names a port, for the free-port scan to start from. */
+const DEFAULT_METRO_PORT = 8081;
 
 /**
  * Probe the project, emit the plan, and run it.
@@ -39,6 +45,13 @@ import type { DevOptions } from './resolveOptions';
  * last step when every step succeeded.
  */
 export async function devAsync(projectRoot: string, options: DevOptions): Promise<number> {
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Daemonization — before the probe, because
+  // the child does the probe: this run's whole job is to start that child and report on it.
+  if (options.detach) {
+    const { devDetachAsync } = require('./detachAsync') as typeof import('./detachAsync');
+    return await devDetachAsync(projectRoot, options);
+  }
+
   const state = await probeProjectStateAsync(projectRoot);
   const plan = decideStartPlan(state, {
     platform: options.platform ?? resolveDefaultPlatform(state),
@@ -165,10 +178,14 @@ async function executePlanAsync(
   const output = stepOutputFor(options);
   let devServer: DevServerRun | null = null;
   let exitCode = 0;
+  // One retry per plan, whatever it is made of: a second collision means the port this CLI picked
+  // was taken between the bind test and the dev server's own bind, and retrying forever on that
+  // would be a loop nobody asked for.
+  let retriedOnFreePort = false;
 
   for (const [index, step] of plan.steps.entries()) {
-    const args = resolveStepArgs(step, options, index === plan.steps.length - 1);
-    event('start_plan_step', {
+    let args = resolveStepArgs(step, options, index === plan.steps.length - 1);
+    planEvent('start_plan_step', {
       id: step.id,
       argv: [step.argv[0]!, ...args],
       index: index + 1,
@@ -176,14 +193,52 @@ async function executePlanAsync(
     });
 
     const devServerStep = isDevServerStep(step);
-    const result = devServerStep
-      ? await runDevServerAsync(projectRoot, args, { agentSkills: options.agentSkills, output })
-      : await runStepAsync(projectRoot, args, output);
+    const runStep = async (stepArgs: string[]) =>
+      devServerStep
+        ? await runDevServerAsync(projectRoot, stepArgs, {
+            agentSkills: options.agentSkills,
+            output,
+          })
+        : await runStepAsync(projectRoot, stepArgs, output);
+
+    let result = await runStep(args);
+    let portCollided = false;
+
+    // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — the port carve-out. Checked
+    // before the classifier below, because a busy port is the one stop in the Expo CLI's prompt
+    // family that a machine can get past on its own.
+    if (devServerStep && result.exitCode !== 0) {
+      const collision = detectPortCollision(`${result.stderr}\n${result.stdout}`);
+      if (collision) {
+        portCollided = true;
+        // A port the caller named is a requirement, not a preference: silently moving the dev
+        // server somewhere else would leave every command the caller had already written — and
+        // every URL it had already printed — pointing at nothing.
+        if (options.port != null) {
+          throw await portDemandedError(projectRoot, options.port);
+        }
+        // Once per plan. A second collision means the port this CLI picked was taken between the
+        // bind test and the dev server's own bind, and retrying forever on that is a loop nobody
+        // asked for — the step failure below reports it instead.
+        if (!retriedOnFreePort) {
+          retriedOnFreePort = true;
+          const retry = await retryOnFreePortAsync(collision, args, runStep);
+          if (retry) {
+            args = retry.args;
+            result = retry.result;
+            portCollided =
+              result.exitCode !== 0 &&
+              detectPortCollision(`${result.stderr}\n${result.stdout}`) != null;
+          }
+        }
+      }
+    }
+
     if (devServerStep) {
       devServer = result as DevServerRun;
     }
     exitCode = result.exitCode;
-    event('start_plan_step_exit', { id: step.id, code: exitCode });
+    planEvent('start_plan_step_exit', { id: step.id, code: exitCode });
 
     if (exitCode !== 0) {
       const failure: StepFailure = {
@@ -198,7 +253,13 @@ async function executePlanAsync(
       // stopped because the Expo CLI needed an answer, or because macOS refused it a permission,
       // is not a failed command: it is a command waiting on a person. Nothing is captured in
       // `inherit` mode, so there is nothing to classify there.
-      assertNotNeedsHuman(failure);
+      //
+      // A port collision is excluded whatever its output looks like: it has already been retried
+      // on a port this CLI picked, and there is no answer a person could give that the retry did
+      // not already try. It falls through to the ordinary step failure below.
+      if (!portCollided) {
+        assertNotNeedsHuman(failure);
+      }
       // Every later step depends on this one having worked, so the plan stops here.
       return { exitCode, devServer, failure };
     }
@@ -207,6 +268,96 @@ async function executePlanAsync(
   }
 
   return { exitCode, devServer, failure: null };
+}
+
+/** What one step run amounts to, for the retry that may replace it. */
+type StepResult = { exitCode: number; stdout: string; stderr: string };
+
+/**
+ * Start the dev server again on a port this CLI picked, after the Expo CLI stopped on a busy one.
+ *
+ * Only reached when the caller named no `--port`: they asked for "a dev server", and which port it
+ * lands on is this command's to decide — which is exactly what the Expo CLI's own question is for,
+ * and exactly what a run with no terminal cannot answer.
+ *
+ * @returns the second run and the arguments it used, or null when no free port could be found.
+ */
+async function retryOnFreePortAsync(
+  collision: PortCollision,
+  args: string[],
+  runStep: (stepArgs: string[]) => Promise<StepResult>
+): Promise<{ args: string[]; result: StepResult } | null> {
+  // The CLI's own offer first: it walked to that port, so it is the one it would have taken.
+  const scanFrom = collision.offeredPort ?? (collision.requestedPort ?? DEFAULT_METRO_PORT) + 1;
+  const free = await findFreePortAsync(scanFrom);
+  const busy = collision.requestedPort;
+
+  devEvent('start_plan_port_retry', {
+    busyPort: busy,
+    offeredPort: collision.offeredPort,
+    port: free,
+  });
+
+  if (free == null) {
+    return null;
+  }
+
+  // On stderr even in `--json` mode, where stdout is the one object this run prints. Said out loud
+  // because the dev server is not where the caller asked for it, and every URL it printed before
+  // this line is stale.
+  Log.warn(
+    busy == null
+      ? `The port the dev server wanted was busy; started on ${free} instead. Pass --port to name one yourself.`
+      : `Port ${busy} was busy; started on ${free} instead. Pass --port ${busy} to require that port instead of moving, which fails when it is taken.`
+  );
+
+  const retryArgs = [...args, '--port', String(free)];
+  return { args: retryArgs, result: await runStep(retryArgs) };
+}
+
+/**
+ * The failure for a `--port` that was named and could not be had.
+ *
+ * An **outcome**, not a tool error and not a person: the command worked, and the thing it was asked
+ * to do did not happen (llp/0010 §Exit codes). It never suggests the command that just failed —
+ * running it again unchanged stops in the same place until the port is freed.
+ */
+async function portDemandedError(projectRoot: string, port: number): Promise<CommandError> {
+  const { findPortListenerAsync } = require('./portListener') as typeof import('./portListener');
+  const { readDevServerLockAsync } = require('../devLock') as typeof import('../devLock');
+  const [listener, lock, free] = await Promise.all([
+    findPortListenerAsync(port),
+    readDevServerLockAsync(projectRoot),
+    findFreePortAsync(port + 1),
+  ]);
+
+  // The most useful special case: the process on that port is this project's own dev server, so
+  // there is nothing to start and nothing to fix.
+  const ours = lock != null && lock.port === port;
+  const holder = listener
+    ? `pid ${listener.pid}${listener.command ? ` (${listener.command})` : ''}`
+    : 'a process this machine would not name';
+
+  const error = new CommandError(
+    'PORT_IN_USE',
+    [
+      `Port ${port} is taken, so no dev server was started on it.`,
+      ours
+        ? `Why: this project's own dev server is already on port ${port}, held by ${holder}. Nothing was started, because there is already one there.`
+        : `Why: ${holder} is listening on it, and --port ${port} is a requirement rather than a preference — moving the dev server to another port would leave every URL and every command that names ${port} pointing at nothing.`,
+      ours
+        ? `How: use the dev server that is running ("npx exagent dev:wait" to wait for its bundle), or stop it first with "npx exagent dev:stop".`
+        : `How: free the port with "npx exagent dev:stop --port ${port} --force", which stops it only when it answers as an Expo dev server${listener ? ` and pid ${listener.pid} looks like one` : ''}${free == null ? '' : `, or start on a free port instead with "npx exagent dev --yes --port ${free}"`}. Leaving --port out lets this command pick a free port on its own.`,
+    ].join('\n')
+  );
+  // Never the command that just failed: it would stop in exactly the same place.
+  error.suggestedCommand = ours
+    ? 'npx exagent dev:wait'
+    : free == null
+      ? `npx exagent dev:stop --port ${port} --force`
+      : `npx exagent dev --yes --port ${free}`;
+  error.exitCode = EXIT_OUTCOME_FAILED;
+  return error;
 }
 
 /** Run a plan step that is not a dev server, in the output mode this run is in. */
@@ -274,13 +425,17 @@ function stopPromptFor(
 
   // A prompt is the one case where the *last* line is the answer: it is the question the CLI
   // stopped on, and nothing was printed after it.
+  //
+  // The port question is deliberately not among these any more: it is recognised before the
+  // classifier runs and either retried on a free port or reported as an outcome
+  // (`detectPortCollision`, `portDemandedError`). What is left here genuinely needs the person.
   const asked = lastNonEmptyLine(failure.stderr) ?? lastNonEmptyLine(failure.stdout);
   return {
     code: 'EXPO_NEEDS_INPUT',
     message: [
       `The plan stopped at "${failure.step.id}": "${invocation}" needed an answer and this run has no terminal to give one.`,
-      `Why: the Expo CLI asks before it does something it cannot decide — most often "port 8081 is busy, use another one?" — and a run with no terminal fails there instead of prompting.`,
-      `How: for the port question, name the port yourself with "npx exagent dev --port 8082", which is answered before the CLI has to ask. Otherwise run the command above in a terminal once, and answer it.`,
+      `Why: the Expo CLI asks before it does something it cannot decide, and a run with no terminal fails there instead of prompting. The question it asked is quoted below.`,
+      `How: run the command above in a terminal once and answer it. If the answer is a value this CLI takes as a flag, pass that flag instead — "npx exagent dev --help" lists them.`,
       asked ? `\nWhat it asked for:\n${asked}` : '',
     ]
       .filter(Boolean)

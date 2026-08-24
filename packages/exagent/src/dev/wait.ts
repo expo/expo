@@ -38,6 +38,7 @@ export const exagentDevWait: Command = async (argv) => {
         `--platform <ios|android|web>  Platform to build the entry bundle for (default: ios)`,
         `--no-bundle-check          Only wait for the bundler; do not build the entry bundle`,
         `--dev-server-url <url>     Dev server to wait on (default: the project's own, then 8081)`,
+        `--port <number>            Dev server on this port, short for --dev-server-url`,
         `--json                     Print the result as JSON`,
         `--no-followups             Skip the "Suggested next:" section of suggested follow-up commands`,
         `-h, --help                 Usage info`,

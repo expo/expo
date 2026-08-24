@@ -238,11 +238,11 @@ so the error window was right to be empty, and nothing failed to transform, so t
 right to pass. Green meant "it parses and does not throw", and an agent following the CLI's own
 follow-ups would have shipped it.
 
-| Code | The project                                                       | Where it is decided             |
-| ---- | ----------------------------------------------------------------- | ------------------------------- |
-| `0`  | type-checks, **or** has no TypeScript to check                    | `src/typecheck/typecheckAsync.ts` |
-| `20` | does not type-check; the diagnostics are the payload              | `src/typecheck/typecheckAsync.ts` |
-| `1`  | unknown: no runnable compiler, or one that failed saying nothing  | `CommandError`                  |
+| Code | The project                                                                      | Where it is decided               |
+| ---- | -------------------------------------------------------------------------------- | --------------------------------- |
+| `0`  | type-checks, **or** has no TypeScript in it at all                               | `src/typecheck/typecheckAsync.ts` |
+| `20` | does not type-check; the diagnostics are the payload                             | `src/typecheck/typecheckAsync.ts` |
+| `1`  | unknown: a TypeScript project with no compiler, or one that failed saying nothing | `CommandError`                    |
 
 Four details of that are decisions rather than transcription:
 
@@ -252,6 +252,17 @@ Four details of that are decisions rather than transcription:
   has to ask about the _project_, and the same key pair reporting it. `reason` is present exactly
   when `checked` is false, and the follow-up says so in a command as well as in a field, because
   "nothing was checked" must not read as "everything passed".
+- **A TypeScript project with no compiler is `1`, not `0`.** Amendment [confirmed — friction run 4,
+  2026-08-24]. These were one answer, word for word: `run4b/tsnots` has a `tsconfig.json` and a
+  `.tsx` entry and no `node_modules`, and it reported "this project has no TypeScript compiler
+  installed … so there is nothing to type-check" — the same string as the genuinely JavaScript-only
+  fixture next to it — and exited `0` [observed — F43]. An exit-code gate read a broken TypeScript
+  setup as a pass, and the reason it printed was false. There are **three** states, not two: no
+  `tsconfig.json` and no `.ts`/`.tsx` sources is a JavaScript project and exits `0`; either of those
+  present with no `node_modules/.bin/tsc` is a broken setup and exits `1` with
+  `TYPECHECK_CLI_MISSING` and `Try: npx exagent install typescript --dev`; a compiler present runs.
+  The sources are evidence in their own right because a project can lose its `tsconfig.json` and
+  still be one; `.d.ts` files alone are not, since `expo-env.d.ts` is generated into every app.
 - **No compiler is ever fetched.** `doctor:check` falls back to `npx expo-doctor` and this
   deliberately does not: `expo-doctor` is a tool you run *at* a project and its checks are its own,
   while a type check is a function of the project's own compiler version, its `tsconfig.json` and
@@ -357,6 +368,27 @@ Or set          EXPO_TOKEN  (https://expo.dev/settings/access-tokens)
 Two of the rows are marked `generic` — `expo-prompt` and `eas-prompt`. They name no command of their own, because the command a person has to run is the one that just stopped, so the classifier fills it in from the invocation. They sort last, which is what makes them a fallback: a generic answer that names the tool and quotes what it printed beats a confident wrong guess, and that is the same honesty `src/deploy/launchCli.ts` already practices about `create-launch` output.
 
 Rows with no signature are not a gap. `ios-credentials`, `device-register` and `eas-env-list` are raised _by construction_: 39 of eas-cli's 144 commands have no `--non-interactive` flag at all [observed — eas-cli 22.2.0 manifest], so needing one of them is knowable before it runs. `apple-auth` deliberately has none either: the wording of an Apple sign-in failure is Apple's, and a pattern broad enough to catch it would claim a two-factor push for every Apple error.
+
+### One question of the family is not a needs-human: the busy port
+
+Amendment [confirmed — friction run 4, 2026-08-24]. `Use port 8181 instead?` matches the
+`expo-prompt` signatures like every other question the Expo CLI asks, and it is the only one a
+machine can answer for itself. `exagent dev` recognises it **before** the classifier runs
+(`src/dev/portCollision.ts`) and either retries the step on a free port it picked or, when the
+caller named `--port`, reports `PORT_IN_USE` with exit `20`.
+
+The shipped behaviour was exit `7`, `needsHuman.scenario: "expo-prompt"`, a `suggestedCommand`
+re-running the identical failing command, and a `How:` naming the flag the caller had just passed
+[observed — F41]. Exit `7` means "the recovery is not another command"; here the recovery *is*
+another command, and one this CLI can run itself.
+
+The carve-out is deliberately **not** a negative signature in the registry. A registry row describes
+a stop and the handoff for it; what makes this one different is the *action* — find a free port, run
+the step again — which belongs to the caller that owns the step. `expo-prompt` is unchanged and
+still catches every other prompt; only its `How:` line lost the port example, which now belongs to
+an error of its own. The full reasoning, including why a named `--port` is a requirement rather than
+a preference, is [[0004-smart-start-and-project-state]] §A busy port is not a step only a person can
+complete.
 
 ### Four layers, in priority order
 
@@ -497,6 +529,29 @@ Four properties are load-bearing:
 - **The key set never varies.** `suggestedCommand` and `needsHuman` are `null` rather than absent, per [[0006-agent-native-cli-surface]] §Output contract, so a caller reading `error.needsHuman` after a plain tool error branches on a value instead of on a missing key. `needsHuman` carries the whole record — the same one `cli:needs_human` carries — because an agent that has to hand a step to its user needs the URL and the environment variables, not a boolean.
 - **The code is the one the site already shipped.** Reclassification never renames a code (the rule of §Needs-human protocol), and the envelope reports `error.code` verbatim.
 - **Success paths are untouched.** Nothing about a command that works changes, and no command gained a second object: a failing command printed nothing on stdout before, so the envelope is the *only* thing there.
+
+**The envelope has to cover argument parsing too** [amended — friction run 4, 2026-08-24]. It did
+not: `typecheck --json --bogus` exited 1 with an empty stdout and a bare `unknown or unexpected
+option: --bogus` on stderr, with no `CommandError:` prefix, while every other command's `--json`
+failure printed one parseable object [observed — F44]. Two things caused it, and both were at the
+shared layer rather than in the command:
+
+- `assertWithOptionsArgs` reported `arg`'s failures with `Log.exit`, which prints and exits without
+  ever reaching `logCmdError` — so no event, no `Try:` line, no envelope. It throws a `CommandError`
+  now (`argParseError`), and so does the stray-positional check next to it, which had the same shape
+  and a worse consequence: `logCmdError` flushes the event log before exiting, so it does not end
+  the process on that tick, and the command body went on running in the window before the exit
+  fired.
+- Nothing caught what a command rejected with. A command's own body ends in `.catch(logCmdError)`,
+  but its *argument parsing* runs before that chain is built, so a throw there was an unhandled
+  rejection and Node printed a stack trace. `cli.ts` now catches at the one place every command is
+  invoked from, which is what makes the envelope a property of the CLI rather than of each command.
+
+The same change gives a bad option the what / why / how shape the rest of the CLI has, and a
+`Try: <command> --help`. When the option exists on a sibling command — `--port` on `dev`, `--route`
+on `runtime:reload` — the message names it, from a small hand-kept table (`OPTION_OWNERS`) in the
+style of `absentCapabilities` here: only options a caller actually reaches for on the wrong command
+belong in it, and a unit test pins that every command it names still resolves.
 - **The exit code is still the first thing to read.** The envelope explains a failure; it does not signal one. `7` and the `20`–`29` band mean exactly what the table above says.
 
 Implementation [observed — `src/utils/jsonMode.ts`, `src/utils/errors.ts`, `src/cli.ts`]: `logCmdError` is the one function every command's failure funnels into, and it runs *after* the command module threw — often before that module ever parsed its own arguments. So the flag is answered once, by the launcher, from the raw argv: `setJsonRequested(argvRequestsJson(commandArgs))`. `argvRequestsJson` only looks before a `--` separator, because `install` and `start` forward everything after it to another tool and `exagent install -- --json` is npm's flag, not ours. The alternative — an argument on `logCmdError` and on every `.catch(logCmdError)` — is thirty call sites carrying one boolean that cannot change during a run.

@@ -1,3 +1,4 @@
+import { DEFAULT_DETACH_TIMEOUT_MS } from '../detachAsync';
 import { resolveDevOptions } from '../resolveOptions';
 
 describe(resolveDevOptions, () => {
@@ -11,6 +12,10 @@ describe(resolveDevOptions, () => {
       followups: true,
       checkpoint: true,
       yes: false,
+      detach: false,
+      waitReady: false,
+      detachTimeoutMs: DEFAULT_DETACH_TIMEOUT_MS,
+      detachArgv: expect.any(Array),
       // Read, and still forwarded: `--port` is an `expo start` flag, and the plan's last step is
       // what acts on it. Reading it only lets this command validate it and name it in a URL.
       port: 8082,
@@ -27,6 +32,10 @@ describe(resolveDevOptions, () => {
       followups: true,
       checkpoint: true,
       yes: false,
+      detach: false,
+      waitReady: false,
+      detachTimeoutMs: DEFAULT_DETACH_TIMEOUT_MS,
+      detachArgv: expect.any(Array),
       port: null,
     });
   });
@@ -45,6 +54,10 @@ describe(resolveDevOptions, () => {
       followups: true,
       checkpoint: true,
       yes: false,
+      detach: false,
+      waitReady: false,
+      detachTimeoutMs: DEFAULT_DETACH_TIMEOUT_MS,
+      detachArgv: expect.any(Array),
       port: 8082,
     });
   });
@@ -95,6 +108,10 @@ describe(resolveDevOptions, () => {
       followups: true,
       checkpoint: true,
       yes: false,
+      detach: false,
+      waitReady: false,
+      detachTimeoutMs: DEFAULT_DETACH_TIMEOUT_MS,
+      detachArgv: expect.any(Array),
       port: null,
     });
   });
@@ -117,6 +134,10 @@ describe(resolveDevOptions, () => {
       followups: false,
       checkpoint: true,
       yes: false,
+      detach: false,
+      waitReady: false,
+      detachTimeoutMs: DEFAULT_DETACH_TIMEOUT_MS,
+      detachArgv: expect.any(Array),
       port: null,
     });
   });

@@ -103,20 +103,64 @@ describe(runTypeCheckAsync, () => {
   });
 
   // A project with no TypeScript in it has nothing to check, which is an answer and not a failure.
-  it(`should report that a project without a compiler has nothing to check`, async () => {
-    vol.fromJSON({ [`${projectRoot}/package.json`]: '{}' });
+  it(`should report that a JavaScript project has nothing to check`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{}',
+      [`${projectRoot}/src/app/index.js`]: '',
+      // Generated into every Expo app, JavaScript ones included, so it must not count as evidence.
+      [`${projectRoot}/expo-env.d.ts`]: '',
+    });
 
     const report = await runTypeCheckAsync(projectRoot);
 
     expect(report).toEqual({
       projectRoot,
       checked: false,
-      reason: expect.stringContaining('no TypeScript compiler installed'),
+      reason: expect.stringContaining('no TypeScript in it'),
       errorCount: 0,
       errors: [],
       durationMs: 0,
     });
     expect(spawn).not.toHaveBeenCalled();
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The fourth: `typecheck` — the three states, and the
+  // two that used to be one. A gate reading the exit code saw a broken TypeScript setup as a pass.
+  it(`should fail a TypeScript project whose compiler is missing, and say so differently`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{}',
+      [`${projectRoot}/tsconfig.json`]: '{}',
+      [`${projectRoot}/src/app/index.tsx`]: '',
+    });
+
+    await expect(runTypeCheckAsync(projectRoot)).rejects.toMatchObject({
+      code: 'TYPECHECK_CLI_MISSING',
+      suggestedCommand: 'npx exagent install typescript --dev',
+    });
+    expect(spawn).not.toHaveBeenCalled();
+  });
+
+  // Evidence from the sources alone: a project can lose its `tsconfig.json` and still be one.
+  it(`should fail on .ts sources with no tsconfig and no compiler`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{}',
+      [`${projectRoot}/src/app/index.tsx`]: '',
+    });
+
+    await expect(runTypeCheckAsync(projectRoot)).rejects.toMatchObject({
+      code: 'TYPECHECK_CLI_MISSING',
+      message: expect.stringContaining('.ts or .tsx source files'),
+    });
+  });
+
+  it(`should not look for sources inside node_modules`, async () => {
+    vol.fromJSON({
+      [`${projectRoot}/package.json`]: '{}',
+      [`${projectRoot}/index.js`]: '',
+      [`${projectRoot}/node_modules/some-lib/index.ts`]: '',
+    });
+
+    await expect(runTypeCheckAsync(projectRoot)).resolves.toMatchObject({ checked: false });
   });
 
   it(`should report that a project without a tsconfig has nothing to check`, async () => {

@@ -28,9 +28,15 @@ export interface PortListener {
  * command that asks has a report to print either way.
  */
 export async function findPortListenerAsync(port: number): Promise<PortListener | null> {
-  return process.platform === 'win32'
-    ? await findWindowsListenerAsync(port)
-    : await findPosixListenerAsync(port);
+  try {
+    return process.platform === 'win32'
+      ? await findWindowsListenerAsync(port)
+      : await findPosixListenerAsync(port);
+  } catch {
+    // "Never throws" is the contract, and it has to hold for the spawn itself as well as for its
+    // result: a machine that cannot start `lsof` at all is the same answer as one with no `lsof`.
+    return null;
+  }
 }
 
 /** `lsof -nP -iTCP:<port> -sTCP:LISTEN -FpcR` — one field per line, which is the parseable form. */

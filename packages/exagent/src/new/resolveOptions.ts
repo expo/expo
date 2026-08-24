@@ -48,7 +48,7 @@ function badArgs(message: string, suggestedCommand = USAGE_COMMAND): CommandErro
 export function resolveNewOptions(argv: string[]): NewOptions {
   let args;
   try {
-    args = parseArgsOrThrow(NEW_ARGS, argv);
+    args = parseArgsOrThrow(NEW_ARGS, argv, 'new');
   } catch (error: any) {
     if (error instanceof CommandError && !error.suggestedCommand) {
       error.suggestedCommand = `${USAGE_COMMAND} --help`;

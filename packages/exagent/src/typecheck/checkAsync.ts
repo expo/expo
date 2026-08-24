@@ -4,6 +4,7 @@
 //
 // The split is: `tsc` decides, `exagent` reports. Nothing here re-implements a check.
 
+import fs from 'fs';
 import path from 'path';
 import { stripVTControlCharacters } from 'util';
 
@@ -59,6 +60,68 @@ export function resolveTsConfigPath(projectRoot: string): string | null {
   return null;
 }
 
+/** Directories a project's own TypeScript is never in, skipped by the source scan. */
+const NOT_PROJECT_SOURCE = new Set([
+  'node_modules',
+  '.git',
+  '.expo',
+  'ios',
+  'android',
+  'dist',
+  'build',
+  'web-build',
+  'coverage',
+  '.next',
+  '.turbo',
+]);
+
+/**
+ * How many directories the source scan will open before it stops looking.
+ *
+ * The scan exists to answer "is this a TypeScript project", and a TypeScript project answers it in
+ * the first few directories — the entry file, `app/`, or `src/`. The cap is there so the *negative*
+ * answer, which is the one that has to walk everything, cannot cost a second on a large repository.
+ */
+const MAX_SCANNED_DIRECTORIES = 500;
+
+/**
+ * Whether the project has TypeScript source files of its own.
+ *
+ * The second half of "is this a TypeScript project", and the reason the question needs two halves:
+ * a `tsconfig.json` is the usual evidence, and a project that lost one — or never had one, and
+ * relies on `expo start`'s implicit config — still has `.ts` files that a type check is about. A
+ * project with neither is a JavaScript project, which is the one case where "nothing to check" is
+ * the truth rather than a broken setup (llp/0010 §The fourth: `typecheck`).
+ */
+export function hasTypeScriptSourcesSync(projectRoot: string): boolean {
+  const queue: string[] = [projectRoot];
+  let opened = 0;
+
+  while (queue.length > 0 && opened < MAX_SCANNED_DIRECTORIES) {
+    const directory = queue.shift()!;
+    opened++;
+    let entries: fs.Dirent[];
+    try {
+      entries = fs.readdirSync(directory, { withFileTypes: true });
+    } catch {
+      // A directory this process may not read says nothing either way, so it is skipped.
+      continue;
+    }
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        if (!entry.name.startsWith('.') && !NOT_PROJECT_SOURCE.has(entry.name)) {
+          queue.push(path.join(directory, entry.name));
+        }
+      } else if (/\.(ts|tsx|mts|cts)$/.test(entry.name) && !entry.name.endsWith('.d.ts')) {
+        // `.d.ts` alone is not a TypeScript project: `expo-env.d.ts` is generated into every app,
+        // JavaScript ones included.
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 /**
  * Run the project's TypeScript compiler and report what it found.
  *
@@ -80,13 +143,21 @@ export async function runTypeCheckAsync(projectRoot: string): Promise<TypeCheckR
     durationMs: 0,
   });
 
+  // Three states, and only one of them is "nothing to check" (llp/0010 §The fourth: `typecheck`).
+  // A missing compiler used to be reported as the *same* thing as a project with no TypeScript in
+  // it, word for word, so a broken TypeScript setup passed an exit-code gate and the reason it
+  // printed was false [observed — friction run 4, 2026-08-23].
   const cli = resolveTypeScriptCli(projectRoot);
+  const tsConfigPath = resolveTsConfigPath(projectRoot);
   if (!cli) {
+    if (tsConfigPath != null || hasTypeScriptSourcesSync(projectRoot)) {
+      throw compilerMissingError(tsConfigPath != null);
+    }
     return nothingToCheck(
-      `this project has no TypeScript compiler installed (no node_modules/.bin/tsc), so there is nothing to type-check`
+      `this project has no TypeScript in it — no tsconfig.json and no .ts or .tsx files of its own — so there is nothing to type-check`
     );
   }
-  if (resolveTsConfigPath(projectRoot) == null) {
+  if (tsConfigPath == null) {
     return nothingToCheck(
       `this project has no tsconfig.json, so the compiler has no set of files to check`
     );
@@ -125,6 +196,30 @@ export async function runTypeCheckAsync(projectRoot: string): Promise<TypeCheckR
     errors,
     durationMs,
   };
+}
+
+/**
+ * The error for a TypeScript project with no compiler to check it with.
+ *
+ * A **tool** failure and so exit 1, not "nothing to check" and exit 0: the project has TypeScript
+ * in it, the question was asked, and no answer was produced. The old behaviour reported the absence
+ * of the compiler as the absence of TypeScript, which passes every gate that reads the exit code
+ * and states something untrue in the same breath.
+ *
+ * @param hasTsConfig whether it was the `tsconfig.json` that identified this as a TypeScript
+ * project, or its `.ts` files — the two are different evidence and the reader should see theirs.
+ */
+function compilerMissingError(hasTsConfig: boolean): CommandError {
+  const error = new CommandError(
+    'TYPECHECK_CLI_MISSING',
+    [
+      `This project is a TypeScript project with no TypeScript compiler installed, so nothing was type-checked.`,
+      `Why: ${hasTsConfig ? 'it has a tsconfig.json' : 'it has .ts or .tsx source files'}, but no node_modules/.bin/tsc. Nothing here falls back to a compiler from the registry, because a type check is a function of the version this project pinned, its tsconfig.json and its @types — one fetched from elsewhere would answer a question about a project that does not exist.`,
+      `How: install the project's dependencies ("npm install"), which is the usual cause when node_modules is missing entirely. If TypeScript is genuinely not a dependency yet, add it with "npx exagent install typescript --dev".`,
+    ].join('\n')
+  );
+  error.suggestedCommand = 'npx exagent install typescript --dev';
+  return error;
 }
 
 /** The error for a compiler that is on disk and could not be started. */

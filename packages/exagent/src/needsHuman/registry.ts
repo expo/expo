@@ -222,6 +222,13 @@ export const needsHumanScenarios: NeedsHumanScenario[] = [
     tools: ['expo'],
     // The prompt helper of `@expo/cli` fails fast with this exact sentence
     // [observed — `packages/@expo/cli/src/utils/prompts.ts`].
+    //
+    // **One question of the family is deliberately not this scenario:** "Use port 8181 instead?".
+    // It matches these signatures like every other prompt does, and it is the only one a machine
+    // can answer for itself, so `exagent dev` recognises it *before* the classifier runs and either
+    // retries on a free port or reports the outcome (`src/dev/portCollision.ts`). The carve-out
+    // lives there rather than as a negative signature here, because the recovery — pick a port, run
+    // the step again — is the caller's to perform and cannot be expressed as a registry row.
     signatures: [/is in non-interactive mode/i, /Input is required, but/i],
     generic: true,
   },

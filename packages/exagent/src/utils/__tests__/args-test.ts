@@ -42,18 +42,37 @@ describe(assertWithOptionsArgs, () => {
 
   // The whole of F22: `checkpoint:undo <id>` dropped the argument and restored the newest
   // checkpoint over the working tree, and reported that it had worked.
-  it(`reports a stray argument for a command that reads none`, () => {
-    assertWithOptionsArgs(HELP_SCHEMA, {
-      argv: ['abc123'],
-      command: 'checkpoint:undo',
-      positionalArgs: 'none',
-      strayHint: 'name it with --id.',
-    });
-    expect(logCmdError).toHaveBeenCalledTimes(1);
-    const error = logCmdError.mock.calls[0]![0] as CommandError;
-    expect(error.code).toBe('BAD_ARGS');
-    expect(error.message).toContain('Unexpected argument: abc123');
-    expect(error.message).toContain('name it with --id.');
+  //
+  // Thrown rather than reported: `logCmdError` exits on a later tick, so a caller that carried on
+  // ran the command body in the window before the exit fired.
+  it(`throws for a stray argument on a command that reads none`, () => {
+    const run = () =>
+      assertWithOptionsArgs(HELP_SCHEMA, {
+        argv: ['abc123'],
+        command: 'checkpoint:undo',
+        positionalArgs: 'none',
+        strayHint: 'name it with --id.',
+      });
+
+    expect(run).toThrow(CommandError);
+    expect(run).toThrow(/Unexpected argument: abc123/);
+    expect(run).toThrow(/name it with --id\./);
+    expect(logCmdError).not.toHaveBeenCalled();
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope — the parser's own
+  // sentence used to reach the terminal unchanged, with no envelope behind it.
+  it(`throws a CommandError for an option the command does not have`, () => {
+    const run = () =>
+      assertWithOptionsArgs(HELP_SCHEMA, {
+        argv: ['--bogus'],
+        command: 'checkpoint:undo',
+        positionalArgs: 'none',
+      });
+
+    expect(run).toThrow(CommandError);
+    expect(run).toThrow(/Unknown option --bogus for "exagent checkpoint:undo"/);
+    expect(run).toThrow(/How: run "npx exagent checkpoint:undo --help"/);
   });
 
   it(`accepts a run with only options`, () => {

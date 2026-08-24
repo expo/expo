@@ -1,6 +1,7 @@
 import { resolvePlatformFlag } from '../plan/platformFlags';
 import type { PlanPlatform } from '../plan/types';
 import { CommandError } from '../utils/errors';
+import { DEFAULT_DETACH_TIMEOUT_MS } from './detachAsync';
 
 /** Flags that `exagent dev` handles itself and does not forward to the `expo` CLI. */
 const EXAGENT_ONLY_FLAGS = [
@@ -10,6 +11,8 @@ const EXAGENT_ONLY_FLAGS = [
   '--plan',
   '--yes',
   '--json',
+  '--detach',
+  '--wait-ready',
 ];
 
 /**
@@ -46,8 +49,26 @@ export interface DevOptions {
    * help text, so the way to avoid the "port 8081 is busy, use 8082?" question the Expo CLI asks
    * (and that a run with no terminal cannot answer) was undiscoverable. Naming it here also gives
    * the follow-ups a port they can vouch for.
+   *
+   * Naming it also makes the port a **requirement**: a run whose named port is taken fails rather
+   * than moving to a free one (`src/dev/portCollision.ts`).
    */
   port: number | null;
+  /**
+   * Run the dev server in a process of its own and give the terminal back (`--detach`).
+   *
+   * @see llp/0004-smart-start-and-project-state.rfc.md §Daemonization
+   */
+  detach: boolean;
+  /** Under `--detach`, also wait for the bundler to answer before reporting (`--wait-ready`). */
+  waitReady: boolean;
+  /** How long a detached start may take before the parent gives up on it. */
+  detachTimeoutMs: number;
+  /**
+   * The command line to start the detached child with, i.e. this one minus the flags that are the
+   * parent's. Recorded here so the resolver stays the one place that reads argv.
+   */
+  detachArgv: string[];
 }
 
 /**
@@ -63,6 +84,15 @@ export interface DevOptions {
  * @throws {CommandError} `BAD_ARGS` when `--port` names something that is not a port.
  */
 export function resolveDevOptions(argv: string[]): DevOptions {
+  const detach = argv.includes('--detach');
+  const waitReady = argv.includes('--wait-ready');
+  if (waitReady && !detach) {
+    throw waitReadyWithoutDetach();
+  }
+  if (detach && argv.includes('--plan')) {
+    throw detachWithPlan();
+  }
+
   return {
     mode: argv.includes('--plan') ? 'plan' : 'run',
     // `--port` is *not* stripped: it is an `expo start` flag and the plan's last step is the one
@@ -75,7 +105,41 @@ export function resolveDevOptions(argv: string[]): DevOptions {
     checkpoint: !argv.includes('--no-checkpoint'),
     yes: argv.includes('--yes'),
     port: resolvePort(argv),
+    detach,
+    waitReady,
+    detachTimeoutMs: DEFAULT_DETACH_TIMEOUT_MS,
+    // The child's argv is built from the same list, so a flag added to this command reaches the
+    // detached run without a second place to remember.
+    detachArgv: argv,
   };
+}
+
+/** `--wait-ready` waits for a dev server this run would not have started. */
+function waitReadyWithoutDetach(): CommandError {
+  const error = new CommandError(
+    'BAD_ARGS',
+    [
+      `--wait-ready only means something with --detach, and --detach was not passed.`,
+      `Why: without --detach this command runs the dev server in the foreground and does not return until it stops, so there is no moment at which it could report that the bundler is ready.`,
+      `How: pass both ("npx exagent dev --detach --wait-ready"), or wait on a dev server that is already running with "npx exagent dev:wait".`,
+    ].join('\n')
+  );
+  error.suggestedCommand = 'npx exagent dev --detach --wait-ready';
+  return error;
+}
+
+/** `--plan` runs nothing, so there is nothing to detach. */
+function detachWithPlan(): CommandError {
+  const error = new CommandError(
+    'BAD_ARGS',
+    [
+      `--plan and --detach ask for opposite things, so this run would do nothing.`,
+      `Why: --plan prints what would run and exits without running it, and --detach is about where the run goes. There is no plan-shaped thing to put in the background.`,
+      `How: run "npx exagent dev --plan" to see the plan, then "npx exagent dev --detach --yes" to run it in the background.`,
+    ].join('\n')
+  );
+  error.suggestedCommand = 'npx exagent dev --plan';
+  return error;
 }
 
 /**

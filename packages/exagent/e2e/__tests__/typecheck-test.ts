@@ -173,9 +173,28 @@ describe('exagent typecheck', () => {
     expect(result.exitCode).toBe(0);
     const payload = JSON.parse(result.stdout);
     expect(payload.checked).toBe(false);
-    expect(payload.reason).toContain('no TypeScript compiler installed');
+    expect(payload.reason).toContain('no TypeScript in it');
     expect(payload.errors).toEqual([]);
     expect(payload.followups.map((followup: any) => followup.id)).toEqual(['typecheck-not-run']);
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The fourth: `typecheck` — the state between the two
+  // above. A `tsconfig.json` with no compiler behind it is a broken setup, and reporting it as
+  // "nothing to check" passed every gate that reads the exit code [F43, friction run 4].
+  it(`should exit 1 on a TypeScript project whose compiler is missing`, async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    await fs.promises.writeFile(path.join(projectRoot, 'tsconfig.json'), '{}');
+
+    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    const { error } = JSON.parse(result.stdout);
+    expect(error.code).toBe('TYPECHECK_CLI_MISSING');
+    expect(error.suggestedCommand).toBe('npx exagent install typescript --dev');
+    // The two reasons must not read the same: that is the whole finding.
+    expect(error.message).not.toContain('nothing to type-check');
   });
 
   // A compiler that failed without reporting a diagnostic has not answered the question, so it is
@@ -211,5 +230,68 @@ describe('exagent typecheck', () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 
     expect(result.stdout).toContain('typecheck');
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope — this command parsed its
+  // own options before the envelope machinery engaged, so a bad flag printed a bare sentence on
+  // stderr and nothing at all on stdout [F44, friction run 4].
+  it(`should print the JSON error envelope for an option it does not have`, async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['typecheck', '--json', '--bogus'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    const { error } = JSON.parse(result.stdout);
+    expect(error.code).toBe('BAD_ARGS');
+    expect(error.message).toContain('--bogus');
+    expect(error.suggestedCommand).toBe('npx exagent typecheck --help');
+    expect(result.stderr).toContain('CommandError');
+  });
+});
+
+// @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts — one central fix, so every
+// command answers a bad option the same way [F47, friction run 4].
+describe('unknown options across commands', () => {
+  it(`should name the command that does take --port when dev:wait is given one`, async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['dev:wait', '--bogus', '--json'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout).error.suggestedCommand).toBe('npx exagent dev:wait --help');
+  });
+
+  // The sugar itself: `--port` is what the caller has in hand after `exagent dev --port`.
+  it(`should accept dev:wait --port as the dev server on that port`, async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['dev:wait', '--port', '65533', '--timeout', '1s', '--json'],
+      { reject: false }
+    );
+
+    // Nothing listens there, so the answer is "no dev server at that URL" — and the URL it names
+    // is the one the port spells, which is the proof that the flag was understood rather than
+    // rejected as unknown.
+    const { error } = JSON.parse(result.stdout);
+    expect(error.code).toBe('NO_DEV_SERVER');
+    expect(error.message).toContain('http://127.0.0.1:65533');
+  });
+
+  it(`should tell runtime:stop --platform ios apart from an unknown option`, async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['runtime:stop', '--platform', 'ios', '--port', '65533', '--json'],
+      { reject: false }
+    );
+
+    expect(result.stdout).not.toContain('Unknown option');
   });
 });

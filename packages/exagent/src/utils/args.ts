@@ -7,6 +7,7 @@ import { resolve } from 'path';
 
 import * as Log from '../log';
 import { CommandError } from './errors';
+import { argParseError } from './unknownOption';
 
 /**
  * Parse the first argument as a project directory.
@@ -81,21 +82,26 @@ export function assertWithOptionsArgs(
     // Handle errors caused by user input.
     // Only errors from `arg`, which does not start with `ARG_CONFIG_` are user input errors.
     // See: https://github.com/vercel/arg/releases/tag/5.0.0
-    if ('code' in error && error.code.startsWith('ARG_') && !error.code.startsWith('ARG_CONFIG_')) {
-      Log.exit(error.message, 1);
+    if (!('code' in error) || !error.code.startsWith('ARG_') || error.code.startsWith('ARG_CONFIG_')) {
+      // Not the user's mistake: this CLI's own schema is wrong, and that is a crash.
+      throw error;
     }
-    // Otherwise rethrow the error.
-    throw error;
+    // Thrown, not printed and exited: `cli.ts` catches what a command rejects with and runs it
+    // through `logCmdError`, which is what attaches the `cli:error` event, the `Try:` line, the
+    // exit code and the `--json` envelope. This used to call `Log.exit` with the parser's own
+    // sentence, so a `--json` run printed nothing at all on stdout (llp/0010 §The `--json` error
+    // envelope) [observed — friction run 4, 2026-08-23: `typecheck --json --bogus`].
+    throw argParseError(command, error.message, error.code);
   }
 
   // The check runs after the parse and before the command's `--help` branch, so a run with both a
   // stray argument and `--help` still prints the help — a caller reading the usage is not the one
   // this protects.
   if (positionalArgs === 'none' && !result['--help'] && result._.length > 0) {
-    // Reported here rather than thrown: this runs outside the command's own `.catch(logCmdError)`,
-    // and a throw would become an unhandled rejection with no envelope on it.
-    const { logCmdError } = require('./errors') as typeof import('./errors');
-    logCmdError(strayArgumentError(command, result._, { hint: strayHint }));
+    // Thrown, like the parse failure above: `logCmdError` flushes the event log before it exits, so
+    // it does not end the process on this tick — reporting here and carrying on meant the command
+    // body ran anyway, in the window before the exit fired.
+    throw strayArgumentError(command, result._, { hint: strayHint });
   }
 
   return result;
@@ -136,15 +142,23 @@ export function strayArgumentError(
  *
  * Use this when the arguments of a subcommand are resolved by a pure function: the caller keeps
  * one error path for both a bad flag and a bad value, and the resolver stays testable.
+ *
+ * @param command the command as a caller types it, e.g. `dev:wait`. Required, and not inferred,
+ * because it is what the error names — both in the `Try:` line and in the sentence that says which
+ * *other* command takes the option ({@link import('./unknownOption').OPTION_OWNERS}).
  */
-export function parseArgsOrThrow(schema: arg.Spec, argv: string[]): arg.Result<arg.Spec> {
+export function parseArgsOrThrow(
+  schema: arg.Spec,
+  argv: string[],
+  command: string
+): arg.Result<arg.Spec> {
   try {
     return arg(schema, { argv, permissive: false });
   } catch (error: any) {
     // Only errors from `arg` that do not start with `ARG_CONFIG_` are user input errors.
     // See: https://github.com/vercel/arg/releases/tag/5.0.0
     if ('code' in error && error.code.startsWith('ARG_') && !error.code.startsWith('ARG_CONFIG_')) {
-      throw new CommandError('BAD_ARGS', error.message);
+      throw argParseError(command, error.message, error.code);
     }
     throw error;
   }

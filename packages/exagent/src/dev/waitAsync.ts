@@ -14,7 +14,7 @@ import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../exitCodes
 import { buildDevWaitFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
 import * as Log from '../log';
 import { checkEntryBundleAsync, type BundleCheckResult } from '../runtime/bundleCheck';
-import { discoverDevServerAsync } from '../runtime/devServer';
+import { discoverDevServerAsync, howToNameTheDevServer } from '../runtime/devServer';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { CommandError } from '../utils/errors';
 import type { DevWaitOptions } from './resolveWaitOptions';
@@ -192,7 +192,7 @@ function noDevServerError(
           ? ''
           : ` The project's dev-server lock, the port in its start.log, 8081 and the ports "expo start" falls back to were all tried.`
       }`,
-      `How: start a dev server with "npx exagent dev" and run this command again, or pass --dev-server-url to wait on a dev server on another host or port.`,
+      `How: start a dev server with "npx exagent dev" and run this command again. ${howToNameTheDevServer(explicit)}`,
     ].join('\n')
   );
   error.suggestedCommand = 'npx exagent dev';

@@ -61,7 +61,7 @@ function badArgs(message: string, suggestedCommand: string): CommandError {
 export function resolveDeployOptions(argv: string[]): DeployOptions {
   let args;
   try {
-    args = parseArgsOrThrow(DEPLOY_ARGS, argv);
+    args = parseArgsOrThrow(DEPLOY_ARGS, argv, 'deploy');
   } catch (error: any) {
     if (error instanceof CommandError && !error.suggestedCommand) {
       error.suggestedCommand = `${USAGE_COMMAND} --help`;

@@ -49,6 +49,79 @@ export function resolveDevServerUrlFlag(value: unknown): string {
   return url;
 }
 
+/**
+ * The dev server a caller named, through either of the two flags that name one, or null.
+ *
+ * `--port 8195` is `--dev-server-url http://127.0.0.1:8195` and nothing else. It exists because
+ * `exagent dev --port 8195` is the command that started the server, and every command that then
+ * talks to it wanted the *other* spelling — so an agent that had just typed a port had to translate
+ * it into a URL, and got `unknown or unexpected option: --port` when it did not
+ * [observed — friction run 4, 2026-08-23]. One flag name across the group is cheaper than the
+ * translation, and the URL form stays for a dev server on another host.
+ *
+ * @param url the `--dev-server-url` value, or null/undefined when the caller named none.
+ * @param port the `--port` value, or null/undefined when the caller named none.
+ * @param command the command as a caller types it, for the error that names both flags.
+ * @throws {CommandError} `BAD_ARGS` when both are named, or when the port is not a port.
+ */
+export function resolveDevServerTarget(
+  url: unknown,
+  port: unknown,
+  command: string
+): string | null {
+  if (url != null && port != null) {
+    throw new CommandError(
+      'BAD_ARGS',
+      [
+        `--dev-server-url and --port both name a dev server for "exagent ${command}", and they name different ones.`,
+        `Why: --port <n> is shorthand for --dev-server-url http://127.0.0.1:<n>, so passing both leaves two answers to one question and no rule for which wins.`,
+        `How: pass one. Use --port ${port} for a dev server on this machine, or --dev-server-url ${url} for one anywhere else.`,
+      ].join('\n')
+    );
+  }
+  if (port != null) {
+    return `http://127.0.0.1:${resolvePortFlag(port, command)}`;
+  }
+  return url == null ? null : resolveDevServerUrlFlag(url);
+}
+
+/**
+ * A `--port` value as a port number.
+ *
+ * @throws {CommandError} `BAD_ARGS` when the value is not a port.
+ */
+export function resolvePortFlag(value: unknown, command: string): number {
+  const port = Number(value);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new CommandError(
+      'BAD_ARGS',
+      [
+        `--port must be a port number from 1 to 65535, but got ${String(value) || '(nothing)'}.`,
+        `Why: it names the port the dev server listens on, which is what this command connects to.`,
+        `How: pass one, as in "npx exagent ${command} --port 8081". Leaving it out lets this command find the dev server of this project on its own.`,
+      ].join('\n')
+    );
+  }
+  return port;
+}
+
+/**
+ * The last sentence of a "no dev server answered" error: what to do about the URL.
+ *
+ * Two answers, and telling them apart is the whole point. A caller that let this CLI find the dev
+ * server is told how to name one. A caller that **named** it is not told to name it — that sentence
+ * suggested the very flag they had just passed, which reads as if the tool had not noticed
+ * [observed — friction run 4, 2026-08-23: `runtime:reload --dev-server-url http://127.0.0.1:9999`].
+ * What helps there is that the value they gave is the one that was tried.
+ *
+ * @param explicit whether the caller named the dev server, with `--dev-server-url` or `--port`.
+ */
+export function howToNameTheDevServer(explicit: boolean): string {
+  return explicit
+    ? `The URL above is the one you named, so nothing else was tried — check its host and port against the dev server you meant ("npx exagent status --json" reports this project's).`
+    : `Pass --dev-server-url, or --port for one on this machine, to reach a dev server on another host or port.`;
+}
+
 /** Ports `discoverDevServerAsync` scans when no explicit URL was given: Metro's default and
  * the ports `expo start` walks to when 8081 is taken. */
 export const DEV_SERVER_SCAN_PORTS = [8081, 8082, 8083, 8084, 8085];
@@ -234,7 +307,10 @@ export async function probeDevServerAsync(devServerUrl: string): Promise<DevServ
  * @throws {CommandError} `NO_DEV_SERVER` when nothing answers, `NO_APP_CONNECTED` when the dev
  * server runs but reports no debugger target.
  */
-export async function requireConnectedAppAsync(devServerUrl: string): Promise<CdpTarget[]> {
+export async function requireConnectedAppAsync(
+  devServerUrl: string,
+  { explicit = false }: { explicit?: boolean } = {}
+): Promise<CdpTarget[]> {
   const url = normalizeDevServerUrl(devServerUrl);
   const probe = await probeDevServerAsync(url);
 
@@ -244,7 +320,7 @@ export async function requireConnectedAppAsync(devServerUrl: string): Promise<Cd
       [
         `No Expo dev server answered at ${url}, so there is no app runtime to talk to.`,
         `Why: the request for the debugger target list failed (${probe.reason}).`,
-        `How: run "npx expo start" in the project root and open the app on a device or simulator, then run this command again. Pass --dev-server-url to reach a dev server on another host or port.`,
+        `How: run "npx expo start" in the project root and open the app on a device or simulator, then run this command again. ${howToNameTheDevServer(explicit)}`,
       ].join('\n')
     );
     error.suggestedCommand = 'npx exagent dev';

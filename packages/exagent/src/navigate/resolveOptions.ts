@@ -58,7 +58,7 @@ const NAVIGATE_ARGS = {
  * flag, or an unusable value.
  */
 export function resolveNavigateOptions(argv: string[]): NavigateOptions {
-  const args = parseArgsOrThrow(NAVIGATE_ARGS, argv);
+  const args = parseArgsOrThrow(NAVIGATE_ARGS, argv, 'navigate');
 
   if (args['--ios'] && args['--android']) {
     throw new CommandError(
