@@ -38,6 +38,7 @@
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
 - Fix wirelessly connected iOS 16 and older devices being omitted from `expo run:ios --device` selection. ([#48127](https://github.com/expo/expo/pull/48127) by [@davellanedam](https://github.com/davellanedam))
 - Fix resolution of ESLint failing in `expo lint` after prerequisites check installs it ([#46223](https://github.com/expo/expo/pull/46223) by [@claritystorm](https://github.com/claritystorm))
+- Cache the runtime version resolved for the dev server manifest, instead of re-running the `expo-updates` fingerprint on every request, and invalidate it when the file watcher observes a change ([#49289](https://github.com/expo/expo/pull/49289) by [@giaBaoJS](https://github.com/giaBaoJS))
 
 ### 💡 Others
 
