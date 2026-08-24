@@ -137,7 +137,7 @@ export async function resolveDeviceAsync(platform?: NavigatePlatform): Promise<N
       [
         'No booted iOS simulator was found, so there is no device to open the deep link on.',
         `Why: ${probe.reason}.`,
-        'How: open the app on a simulator with "npx expo run:ios" (or boot one from Xcode and start it with "npx expo start"), then run this command again.',
+        'How: boot a simulator (from Xcode, or with "xcrun simctl boot"), start the dev server with "npx exagent dev --detach", then run this command again.',
       ].join('\n')
     );
   }

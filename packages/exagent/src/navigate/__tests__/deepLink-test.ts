@@ -282,7 +282,7 @@ describe(resolveDeepLinkUrl, () => {
 
     const error = expectError(result);
     expect(error).toContain('the dev server URL is unknown');
-    expect(error).toContain('npx expo start');
+    expect(error).toContain('npx exagent dev --detach');
   });
 
   it(`should use the config scheme for a development build`, () => {

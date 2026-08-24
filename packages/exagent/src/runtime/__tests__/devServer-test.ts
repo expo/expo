@@ -108,7 +108,11 @@ describe(requireConnectedAppAsync, () => {
 
     expect(error.code).toBe('NO_DEV_SERVER');
     expect(error.message).toContain('http://127.0.0.1:8081');
-    expect(error.message).toContain('npx expo start');
+    // Friction run 5, F48-5: this CLI's own How: line names this CLI's own command. `npx expo
+    // start` blocks the shell it is run in, which is the one thing a driving agent cannot do —
+    // and every command it would run next needs that shell back.
+    expect(error.message).toContain('npx exagent dev --detach');
+    expect(error.message).not.toContain('npx expo start');
     expect(error.message).toContain('--dev-server-url');
   });
 
@@ -120,6 +124,10 @@ describe(requireConnectedAppAsync, () => {
     expect(error.code).toBe('NO_APP_CONNECTED');
     expect(error.message).toContain('no app is connected');
     expect(error.message).toContain('/json/list');
+    // Not a keypress in a terminal: a detached dev server has none, and an agent has no keyboard
+    // for one that has (friction run 5, F48-5).
+    expect(error.message).toContain('npx exagent navigate /');
+    expect(error.message).not.toContain('press "i"');
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — friction run 4, F39.

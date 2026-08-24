@@ -46,7 +46,7 @@ export const exagentNavigate: Command = async (argv) => {
         '',
         chalk`  The URL shape follows the app: Expo Go uses {bold exp://<host>/--/<route>}, a`,
         chalk`  development build uses {bold <scheme>://<route>}. Which app is running is read from`,
-        chalk`  the dev server, so start it with {bold npx expo start} first.`,
+        chalk`  the dev server, so start it with {bold npx exagent dev --detach} first.`,
         '',
         chalk`  The dev server is found the way every runtime command finds it: the project's`,
         chalk`  dev-server lock, then the port in its {bold start.log}, then 8081 and the ports`,

@@ -166,7 +166,7 @@ export function resolveDeepLinkUrl({
         error: [
           'Cannot build an Expo Go URL because the dev server URL is unknown.',
           'Why: Expo Go deep links have the shape exp://<host>/--/<route>, so they need the running dev server host.',
-          'How: start the dev server with `npx expo start` and run this command again, or pass --scheme to target a development build instead.',
+          'How: start the dev server with `npx exagent dev --detach` and run this command again, or pass --scheme to target a development build instead.',
         ].join('\n'),
       };
     }

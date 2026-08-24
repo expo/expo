@@ -360,7 +360,7 @@ export async function requireConnectedAppAsync(
       [
         `No Expo dev server answered at ${url}, so there is no app runtime to talk to.`,
         `Why: the request for the debugger target list failed (${probe.reason}).`,
-        `How: run "npx expo start" in the project root and open the app on a device or simulator, then run this command again. ${howToNameTheDevServer(explicit)}`,
+        `How: start one with "npx exagent dev --detach" in the project root and open the app with "npx exagent navigate /", then run this command again. ${howToNameTheDevServer(explicit)}`,
       ].join('\n')
     );
     error.suggestedCommand = 'npx exagent dev';
@@ -373,7 +373,10 @@ export async function requireConnectedAppAsync(
       [
         `The Expo dev server at ${url} is running, but no app is connected to it.`,
         `Why: its debugger target list (${url}/json/list) is empty${retryMs > 0 ? `, and it was still empty ${retryMs}ms later` : ''}, so there is no JavaScript runtime to talk to.`,
-        `How: open the app on a device or simulator (press "i" or "a" in the "npx expo start" terminal), wait for the bundle to finish loading, then run this command again.`,
+        // Not "press i in the dev server's terminal": a dev server this CLI started with --detach
+        // has no terminal to press a key in, and a driving agent has no keyboard for one that has
+        // [friction run 5, F48-5]. `navigate` is the command that does the same thing.
+        `How: open the app on a device or simulator with "npx exagent navigate /", wait for the bundle to finish loading with "npx exagent dev:wait --require-app", then run this command again.`,
       ].join('\n')
     );
     error.suggestedCommand = 'npx exagent navigate /';
