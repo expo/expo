@@ -201,6 +201,10 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   let verifiedBy: ReloadResultJson['verifiedBy'] = null;
   let device: NavigateDevice | null = null;
   let knownTargetIds: string[] = [];
+  // The last count anybody actually read, for the runs where no wait happens. Reporting a flat 0
+  // for a refusal would be this command inventing "no app is connected" out of a step it skipped,
+  // which is the same shape of claim as the ones it exists to remove.
+  let observedApps = devServer.targets.length;
 
   if (refusal == null) {
     // Read as late as possible, and always again rather than reusing the discovery probe: these
@@ -208,6 +212,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     // the meantime — a save the watcher picked up — would otherwise be credited to this command.
     const before = await probeDevServerAsync(devServerUrl);
     knownTargetIds = before.targets.map((target) => target.id);
+    observedApps = before.targets.length;
 
     if (options.method === 'auto' || options.method === 'dev-server') {
       const attempt = await reloadOverDevServerAsync(devServerUrl);
@@ -243,7 +248,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
           timeoutMs: remainingMs(),
           knownTargetIds,
         })
-      : { appsConnected: 0, freshTargets: 0, timedOut: false, waitedMs: 0 };
+      : { appsConnected: observedApps, freshTargets: 0, timedOut: false, waitedMs: 0 };
 
   // The route is opened after the app is back, not before: Expo Go reloads the URL it was launched
   // with [observed — 2026-08-23: an app deep-linked to `/notes` returns to `/notes` after a

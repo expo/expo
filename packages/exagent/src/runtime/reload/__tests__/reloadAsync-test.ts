@@ -336,6 +336,10 @@ describe(reloadAsync, () => {
     expect(JSON.parse(printed())).toMatchObject({
       reloaded: false,
       method: null,
+      // The count the dev server gave before the refusal, not a flat 0: nothing was waited on, so
+      // reporting 0 would be inventing "no app is connected" out of a step that never ran.
+      appsConnected: 1,
+      appsReconnected: 0,
       bundle: {
         checked: true,
         ok: false,
