@@ -37,6 +37,17 @@ const NEXT_ACTION_COMMAND = 'exagent dev';
  */
 const VERIFY_COMMAND = 'exagent dev:wait --require-app';
 
+/**
+ * The command to name when a dev server is up and nothing is attached to it.
+ *
+ * The gate above cannot be the answer there, and the reason is mechanical rather than a matter of
+ * taste [observed — friction run 5, F48-8]: `--require-app` polls the dev server's debugger target
+ * list, and the only thing that puts an entry in that list is an app being opened on a device.
+ * Nothing was going to do that, so the suggestion was a two-minute wait with one possible ending.
+ * This is the command that changes the state the wait is waiting for.
+ */
+const OPEN_APP_COMMAND = 'exagent navigate /';
+
 /** What the project is: name, SDK, and how its native side is produced. */
 export function buildProjectStatus(state: ProjectState, packageName: string | null): ProjectStatus {
   const bare = state.nativeDirs.ios || state.nativeDirs.android;
@@ -158,12 +169,15 @@ function verifyAction(devServer: DevServerStatus | null): { command: string; why
   if (!devServer?.running || devServer.projectRootMatched === false) {
     return null;
   }
+  if (devServer.appsConnected > 0) {
+    return {
+      command: VERIFY_COMMAND,
+      why: 'a dev server is running with an app connected, so check that its bundle builds instead of starting a second server',
+    };
+  }
   return {
-    command: VERIFY_COMMAND,
-    why:
-      devServer.appsConnected > 0
-        ? 'a dev server is running with an app connected, so check that its bundle builds instead of starting a second server'
-        : 'a dev server is already running, so wait for its bundle and for an app to attach instead of starting a second server',
+    command: OPEN_APP_COMMAND,
+    why: 'a dev server is running and no app is connected to it, so this opens one on a booted device — waiting for an app to attach would run out, because nothing else here starts one',
   };
 }
 
