@@ -49,6 +49,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.OptimizedComposeProps
 import expo.modules.ui.colors.isDynamicColorSupported
 import expo.modules.ui.colors.seedColorScheme
+import kotlin.math.abs
 
 internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   LeftToRight("leftToRight"),
@@ -101,6 +102,7 @@ internal class HostView(context: Context, appContext: AppContext) :
   override val props = HostProps()
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
   private var lastDispatchedContentSize: IntSize? = null
+  private var reappliedForSpec: IntSize? = null
 
   @Composable
   override fun ComposableScope.Content() {
@@ -205,13 +207,20 @@ internal class HostView(context: Context, appContext: AppContext) :
   }
 
   private fun dispatchOnLayoutContent(size: IntSize, density: Density) {
+    val matchContentsHorizontal = this.props.matchContentsHorizontal.value
+    val matchContentsVertical = this.props.matchContentsVertical.value
+    val matchContents = matchContentsHorizontal == true || matchContentsVertical == true
+
+    // A matchContents host is transiently measured at 0x0 when its parent re-attaches it, as with
+    // react-native-screens header subviews. Writing it would clear the real size and latch the dedup.
+    if (matchContents && size.width == 0 && size.height == 0) {
+      return
+    }
+
     if (lastDispatchedContentSize == size) {
       return
     }
     lastDispatchedContentSize = size
-
-    val matchContentsHorizontal = this.props.matchContentsHorizontal.value
-    val matchContentsVertical = this.props.matchContentsVertical.value
 
     with(density) {
       val width = size.width.toDp().value
@@ -231,6 +240,8 @@ internal class HostView(context: Context, appContext: AppContext) :
     val matchContentsHorizontal = props.matchContentsHorizontal.value
     val matchContentsVertical = props.matchContentsVertical.value
 
+    reapplyStyleSizeIfLost(matchContentsHorizontal == true, matchContentsVertical == true, widthMeasureSpec, heightMeasureSpec)
+
     // Measure with UNSPECIFIED to get intrinsic size for matchContents
     if (matchContentsHorizontal == true || matchContentsVertical == true) {
       val widthSpec = if (matchContentsHorizontal == true) {
@@ -247,6 +258,39 @@ internal class HostView(context: Context, appContext: AppContext) :
     } else {
       super.onMeasure(widthMeasureSpec, heightMeasureSpec)
     }
+  }
+
+  // A JS commit can replace the shadow node state that carries the size dispatched from Compose, after
+  // which Fabric lays the host out without it. Compose still holds that size, so nothing re-dispatches it.
+  // Re-applied once per mismatch so a parent-imposed size or rounding drift cannot keep dirtying Yoga.
+  private fun reapplyStyleSizeIfLost(
+    matchContentsHorizontal: Boolean,
+    matchContentsVertical: Boolean,
+    widthMeasureSpec: Int,
+    heightMeasureSpec: Int
+  ) {
+    val size = lastDispatchedContentSize ?: return
+    if (MeasureSpec.getMode(widthMeasureSpec) != MeasureSpec.EXACTLY || MeasureSpec.getMode(heightMeasureSpec) != MeasureSpec.EXACTLY) {
+      return
+    }
+    val specWidth = MeasureSpec.getSize(widthMeasureSpec)
+    val specHeight = MeasureSpec.getSize(heightMeasureSpec)
+    val widthLost = matchContentsHorizontal && size.width > 0 && abs(specWidth - size.width) > 1
+    val heightLost = matchContentsVertical && size.height > 0 && abs(specHeight - size.height) > 1
+    if (!widthLost && !heightLost) {
+      reappliedForSpec = null
+      return
+    }
+    val spec = IntSize(specWidth, specHeight)
+    if (reappliedForSpec == spec) {
+      return
+    }
+    reappliedForSpec = spec
+    val density = resources.displayMetrics.density
+    shadowNodeProxy.setStyleSize(
+      if (matchContentsHorizontal && size.width > 0) (size.width / density).toDouble() else null,
+      if (matchContentsVertical && size.height > 0) (size.height / density).toDouble() else null
+    )
   }
 
   internal fun onViewDidUpdateProps() {
