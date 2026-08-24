@@ -114,6 +114,10 @@ describe(requireConnectedAppAsync, () => {
     expect(error.message).toContain('npx exagent dev --detach');
     expect(error.message).not.toContain('npx expo start');
     expect(error.message).toContain('--dev-server-url');
+    // The How: and the Try: name the same action. They disagreed — `npx expo start` in the How:
+    // and `npx exagent dev` on the Try: — which is one failure telling a reader two things
+    // [observed — friction run 5].
+    expect(error.suggestedCommand).toBe('npx exagent dev --detach');
   });
 
   it(`should explain how to connect an app when the dev server has no targets`, async () => {

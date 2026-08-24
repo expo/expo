@@ -363,7 +363,9 @@ export async function requireConnectedAppAsync(
         `How: start one with "npx exagent dev --detach" in the project root and open the app with "npx exagent navigate /", then run this command again. ${howToNameTheDevServer(explicit)}`,
       ].join('\n')
     );
-    error.suggestedCommand = 'npx exagent dev';
+    // The same command the How: names. They disagreed — `npx expo start` above and `npx exagent
+    // dev` here — which is a failure telling a reader two things [observed — friction run 5].
+    error.suggestedCommand = 'npx exagent dev --detach';
     throw error;
   }
 

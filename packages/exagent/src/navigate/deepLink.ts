@@ -112,7 +112,22 @@ export interface ResolveDeepLinkUrlParams {
 
 export type ResolveDeepLinkUrlResult =
   | { ok: true; url: string; resolution: string }
-  | { ok: false; error: string };
+  | {
+      ok: false;
+      error: string;
+      /**
+       * The command to put on the `Try:` line, decided here because it depends on *which* of the
+       * three ways this can fail happened.
+       *
+       * One `Try:` for all three was `npx exagent navigate <route> --scheme <your-app-scheme>` —
+       * two placeholders, so an agent could not run the last line of the failure at all
+       * [observed — friction run 5]. A missing dev server is answered by starting one; a project
+       * with no resolvable scheme is the one case where a person genuinely has to supply a value,
+       * and its `Try:` is the command that prints what the project does declare rather than a
+       * line with a hole in it.
+       */
+      suggestedCommand: string;
+    };
 
 /**
  * Build the URL to open for a route.
@@ -136,6 +151,7 @@ export function resolveDeepLinkUrl({
         'Why: there is nothing to navigate to.',
         'How: pass a route path such as "/profile/42", or a full URL such as "myapp://profile/42".',
       ].join('\n'),
+      suggestedCommand: 'npx exagent navigate /',
     };
   }
 
@@ -168,6 +184,9 @@ export function resolveDeepLinkUrl({
           'Why: Expo Go deep links have the shape exp://<host>/--/<route>, so they need the running dev server host.',
           'How: start the dev server with `npx exagent dev --detach` and run this command again, or pass --scheme to target a development build instead.',
         ].join('\n'),
+        // The How: and the Try: named different commands here, which is a failure telling a reader
+        // two things [observed — friction run 5]. Both are the one action that fixes this.
+        suggestedCommand: 'npx exagent dev --detach',
       };
     }
     if (routePath.length === 0) {
@@ -211,6 +230,10 @@ export function resolveDeepLinkUrl({
       why,
       'How: pass --scheme explicitly (for example --scheme myapp), or add a "scheme" field to app.json and rebuild the app.',
     ].join('\n'),
+    // The one case where a person has to supply a value this CLI cannot know. The `Try:` is
+    // therefore the command that *prints what the project declares* rather than a line with a
+    // hole in it: `--scheme <your-app-scheme>` is not something an agent can run.
+    suggestedCommand: 'npx exagent config:effective --json',
   };
 }
 

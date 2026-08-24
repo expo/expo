@@ -336,7 +336,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   if (json) {
     Log.log(JSON.stringify(report, null, 2));
   } else {
-    printHumanReport(report);
+    printHumanReport(report, options);
   }
 
   if (exitCode !== EXIT_OK) {
@@ -553,7 +553,7 @@ async function resolveAppIdAsync(
   }).appId;
 }
 
-function printHumanReport(report: ReloadResultJson): void {
+function printHumanReport(report: ReloadResultJson, options: ReloadOptions): void {
   const lines = [
     chalk`{bold Reloaded} ${report.reloaded ? chalk.green('yes') : chalk.red('no')}${
       report.method ? chalk`{dim  · via ${report.method}}` : ''
@@ -575,11 +575,21 @@ function printHumanReport(report: ReloadResultJson): void {
         : 'no reload happened, so nothing had reason to reconnect'
     }}`
   );
+  // Always a line, whatever the check did. Printing one only for an answered check made the
+  // *absence* of a line the only signal that a gate had been skipped [observed — friction run 5,
+  // F48-7: `runtime:reload --no-bundle-check` printed no Bundle line at all, while a checked run
+  // printed `Bundle compiles · for ios`]. A reader cannot notice a line that is not there.
   if (report.bundle.ok != null) {
     lines.push(
       chalk`{bold Bundle} ${report.bundle.ok ? chalk.green('compiles') : chalk.red('does not compile')}${
         report.bundle.platform ? chalk`{dim  · for ${report.bundle.platform}}` : ''
       }`
+    );
+  } else if (!options.bundleCheck) {
+    lines.push(chalk`{bold Bundle} ${chalk.dim('skipped (--no-bundle-check)')}`);
+  } else {
+    lines.push(
+      chalk`{bold Bundle} ${chalk.dim(`not checked${report.bundle.reason ? ` · ${report.bundle.reason}` : ''}`)}`
     );
   }
   if (report.route != null) {

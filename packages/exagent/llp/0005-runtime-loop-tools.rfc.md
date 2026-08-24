@@ -555,6 +555,27 @@ health it never observed. `runtime` is a phase of its own for exactly this: it a
 evaluate `1`, and a `-32601` there means the window that follows proves nothing. `passed` requires
 that evaluation to have answered.
 
+### `--platform web` is refused, not answered
+
+Decision [confirmed — Kudo, 2026-08-24]. `exagent smoke --platform web` is `BAD_ARGS`, exit `1`,
+and its `Try:` is `npx exagent dev:wait --platform web`.
+
+The original plan listed `web` alongside `ios` and `android`. [[0010-agent-conventions]] §What app
+counting can and cannot see is newer than that plan and settles the same shape for
+`--require-app --platform web`: `/json/list` is the inspector proxy's list of React Native
+runtimes, a browser registers nothing in it whether or not the page is open, and there is nothing
+to filter. Every phase of this command after the bundle check reads the app through that list.
+
+The two alternatives both lose, and for the reasons that section already gave. `passed` would be
+`dev:wait --platform web` wearing a name that promises a runtime check — the word "smoke" is a
+claim about the app running. `22` says "look again", and no amount of looking makes a browser
+answer a debugger, which is the argument that ruled out `22` for `--require-app`. `1` is the band
+for "the tool did not work: usage error … fix the call", and the recovery is one command the
+message names.
+
+What web keeps is the half it can answer, and `dev:wait --platform web` is exactly that: the
+bundler is this project's and the web entry bundle compiles.
+
 ### What counts as a crash, and the measurement that changed it
 
 Amendment [observed — 2026-08-24, notesapp on SDK 57 in Expo Go, iPhone 17 Pro

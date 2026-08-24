@@ -391,6 +391,41 @@ describe(reloadAsync, () => {
     expect(printedError).toContain('src/app/notes.tsx:76');
   });
 
+  // @ref llp/0010-agent-conventions.rfc.md §`checked` and `ok` move together — friction run 5,
+  // F48-7. A checked run prints `Bundle compiles · for ios`, so the *absence* of the line was the
+  // only signal that a gate had been skipped — and a reader cannot notice a line that is not there.
+  it(`should name --no-bundle-check in a Bundle line rather than printing none`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () =>
+        server.listing([RELOADED_EXPO_GO_TARGET])
+      ).socket
+    );
+
+    await reloadAsync(projectRoot, options({ bundleCheck: false }));
+
+    expect(printed()).toContain('Bundle');
+    expect(printed()).toContain('skipped (--no-bundle-check)');
+  });
+
+  // The other way of having no answer keeps the plainer wording: there is no flag to blame when a
+  // dev server simply said nothing this CLI understands.
+  it(`should say not checked, with the reason, when the check could not decide`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET], { bundle: 'no-manifest' });
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () =>
+        server.listing([RELOADED_EXPO_GO_TARGET])
+      ).socket
+    );
+
+    await reloadAsync(projectRoot, options());
+
+    expect(printed()).toContain('not checked');
+    expect(printed()).not.toContain('--no-bundle-check');
+  });
+
   it(`should reload anyway with --no-bundle-check`, async () => {
     writeProject();
     const server = mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });

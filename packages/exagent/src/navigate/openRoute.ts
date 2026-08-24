@@ -154,7 +154,10 @@ export async function openRouteAsync(
   });
   if (!resolved.ok) {
     const error = new CommandError('DEEP_LINK_UNRESOLVED', resolved.error);
-    error.suggestedCommand = 'npx exagent navigate <route> --scheme <your-app-scheme>';
+    // Decided where the diagnosis was, so the last line of the failure is a command that can be
+    // run: one `Try:` for all three ways this fails was a line with two placeholders in it
+    // [observed — friction run 5].
+    error.suggestedCommand = resolved.suggestedCommand;
     throw error;
   }
   debugEvent('url_resolved', { url: resolved.url, resolution: resolved.resolution });
