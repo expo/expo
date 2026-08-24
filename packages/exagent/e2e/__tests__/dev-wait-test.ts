@@ -136,9 +136,47 @@ describe('exagent dev:wait', () => {
     expect(result.all).toContain('--timeout');
   });
 
-  it('names another project as the owner of the bundle it found', async () => {
+  // The human report was already right about this and the machine output was not: `ok: true` and
+  // exit 0 sent an agent into a stranger's app while the prose on screen told a person not to go.
+  it('exits 20 for another project’s dev server, and says so in the JSON', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const server = await startStubAsync({ projectRoot: '/somewhere/else', targets: [{ id: '1' }] });
+
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['dev:wait', '--dev-server-url', server.url, '--json'],
+      { reject: false }
+    );
+
+    expect(result.exitCode).toBe(20);
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      ok: false,
+      // The bundler really did finish; it finished someone else's bundle.
+      ready: true,
+      projectRootMatched: false,
+    });
+    expect(JSON.parse(result.stdout).followups[0].id).toBe('dev-wait-other-project');
+  });
+
+  it('keeps the human report of the mismatch unchanged', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const server = await startStubAsync({ projectRoot: '/somewhere/else', targets: [{ id: '1' }] });
+
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['dev:wait', '--dev-server-url', server.url],
+      { reject: false }
+    );
+
+    expect(result.exitCode).toBe(20);
+    expect(result.stdout).toContain('serves /somewhere/else');
+    expect(result.stdout).toContain(projectRoot);
+  });
+
+  // A dev server that named no project root has not been shown to be the wrong one.
+  it('exits 0 when the dev server named no project root at all', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const server = await startStubAsync({ projectRoot: null, targets: [{ id: '1' }] });
 
     const result = await executeExagentAsync(projectRoot, [
       'dev:wait',
@@ -147,7 +185,8 @@ describe('exagent dev:wait', () => {
       '--json',
     ]);
 
-    expect(JSON.parse(result.stdout)).toMatchObject({ projectRootMatched: false });
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout)).toMatchObject({ ok: true, projectRootMatched: null });
   });
 
   describe('--require-app', () => {

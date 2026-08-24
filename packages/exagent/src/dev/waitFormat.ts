@@ -54,9 +54,23 @@ export interface DevWaitResultJson {
   followups: FollowUp[];
 }
 
-/** Whether the run answered the question it was asked: ready, plus an app if one was required. */
+/**
+ * Whether the run answered the question it was asked: this project's bundler ready, plus an app if
+ * one was required.
+ *
+ * A dev server that proved it serves **another** project fails, whatever else it answered. The
+ * human report has always said so plainly — "serves /other/app, not /this/app" — while `ok` stayed
+ * true and the process exited 0, so an agent gating on the exit code walked into a stranger's app
+ * while the prose on screen told a person not to. `null` is not `false`: a dev server that named no
+ * project root has not been shown to be the wrong one, and refusing to pass on "undecidable" would
+ * fail every dev server too old to send the header.
+ */
 export function devWaitSucceeded(result: DevWaitResult): boolean {
-  return result.ready && (!result.requireApp || result.appsConnected > 0);
+  return (
+    result.projectRootMatched !== false &&
+    result.ready &&
+    (!result.requireApp || result.appsConnected > 0)
+  );
 }
 
 export function devWaitResultToJson(

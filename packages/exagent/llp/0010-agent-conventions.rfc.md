@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`); `exagent build:wait` (`src/builds/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
+**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-23
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]]
@@ -55,6 +55,31 @@ Three details of the mapping are decisions rather than transcription:
 Progress goes to the `LOG_EVENTS` JSONL stream as `cli:build_wait_poll`, never to stdout, so `--json` still prints exactly one object ([[0006-agent-native-cli-surface]] §Output contract).
 
 Two consequences worth stating. First, adopting the convention changed no shipped command's exit code by itself; the one command that has been re-coded since is the deploy's auth failure, and that was a deliberate, separate decision recorded below. Second, the convention does not reach a **forwarded** code. `install`, `start`, `dev` and the `expo` passthrough hand back whatever the subprocess exited with, verbatim — `expo prebuild` failing with `3` makes `exagent dev --ios` exit `3` [observed — `e2e/__tests__/dev-test.ts`] — because inventing a code there would hide the one the tool actually reported. A wrapper's _own_ failures use the table; a subprocess's do not.
+
+### The second: `dev:wait`, and what an outcome is an outcome *about*
+
+[observed — 2026-08-23, `src/dev/`] `exagent dev:wait` joined the band next, and it made the band's
+one ambiguity concrete: `20` says "the operation failed", and a readiness gate has to decide what
+its operation *is*. Waiting for a dev server to answer, or establishing that this project's app is
+in a state worth reading? The command exists for the second, so that is what its code answers.
+
+Decision [confirmed — Kudo, 2026-08-23]. A dev server that proved it serves **another project**
+exits `20`, with `ok: false`. Before, it exited `0` with `ok: true` while the human report said, on
+screen, `serves /other/app, not /this/app` — the two channels of one command disagreeing, with the
+machine one wrong. An agent gating on the exit code proceeded into a stranger's app; the `--help`
+of the same command calls the project-root header "the one thing a port scan cannot prove", so the
+command detected the mismatch and then declined to act on it.
+
+Three details of that mapping are decisions rather than transcription:
+
+- **`null` is not `false`.** A dev server that named no project root has not been *shown* to be the
+  wrong one, and `matchProjectRoot` answers `null` for it. Failing on undecidable would fail every
+  dev server too old to send the header, which is a different command's problem to have.
+- **A mismatch is `20`, never `22`,** even when the wait also expired. `22` means "look again", and
+  no amount of looking turns another project's dev server into this one's. The mismatch is checked
+  before the timeout for exactly this reason.
+- **The human output is unchanged.** It was already right. Only `ok` and the exit code moved, which
+  is the smallest change that makes the two channels agree.
 
 ## Needs-human protocol
 

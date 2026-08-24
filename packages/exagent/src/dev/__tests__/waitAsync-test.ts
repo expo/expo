@@ -111,13 +111,38 @@ describe(devWaitAsync, () => {
     expect(jest.mocked(waitForBundlerReadyAsync)).not.toHaveBeenCalled();
   });
 
-  it(`should report a ready bundler that belongs to another project`, async () => {
+  // The human report always said "serves /other-project, not /project"; `ok: true` and exit 0 said
+  // the opposite to the only reader that branches on them.
+  it(`should fail on a ready bundler that belongs to another project`, async () => {
     mockReady({ projectRootMatched: false, reportedProjectRoot: '/other-project' });
 
-    // Still ready, so still 0: the wait was answered. The mismatch is what the report is for.
-    expect(await devWaitAsync(projectRoot, options({ json: true }))).toBe(EXIT_OK);
-    expect(printedJson()).toMatchObject({ ok: true, projectRootMatched: false });
+    expect(await devWaitAsync(projectRoot, options({ json: true }))).toBe(EXIT_OUTCOME_FAILED);
+    expect(printedJson()).toMatchObject({ ok: false, ready: true, projectRootMatched: false });
     expect(printedJson().followups[0].id).toBe('dev-wait-other-project');
+  });
+
+  // A longer wait cannot turn another project's dev server into this one's, so the code must not
+  // be the one that means "look again".
+  it(`should report another project's dev server as failed, never as timed out`, async () => {
+    mockReady({ projectRootMatched: false, reportedProjectRoot: '/other-project' });
+    jest.mocked(waitForBundlerReadyAsync).mockResolvedValue({
+      ready: false,
+      timedOut: true,
+      projectRootMatched: false,
+      reportedProjectRoot: '/other-project',
+      waitedMs: 10,
+    });
+
+    expect(await devWaitAsync(projectRoot, options())).toBe(EXIT_OUTCOME_FAILED);
+  });
+
+  // Undecidable is not a mismatch: a dev server that named no project root has not been shown to
+  // be the wrong one, and failing on it would fail every server too old to send the header.
+  it(`should still pass when the project could not be decided`, async () => {
+    mockReady({ projectRootMatched: null, reportedProjectRoot: null });
+
+    expect(await devWaitAsync(projectRoot, options({ json: true }))).toBe(EXIT_OK);
+    expect(printedJson()).toMatchObject({ ok: true, projectRootMatched: null });
   });
 
   describe('--require-app', () => {

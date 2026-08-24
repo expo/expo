@@ -30,6 +30,12 @@ describe(devWaitSucceeded, () => {
     [{ appsConnected: 0 }, true],
     [{ requireApp: true, appsConnected: 0 }, false],
     [{ requireApp: true, appsConnected: 2 }, true],
+    // Another project's dev server fails whatever else it answered: the wait is about *this*
+    // project's bundle, and a ready one belonging to someone else is not it.
+    [{ projectRootMatched: false, reportedProjectRoot: '/other' }, false],
+    [{ projectRootMatched: false, requireApp: true, appsConnected: 3 }, false],
+    // `null` is undecidable, not wrong — a dev server that named no project root still passes.
+    [{ projectRootMatched: null, reportedProjectRoot: null }, true],
   ])(`should decide %p`, (overrides, expected) => {
     expect(devWaitSucceeded(result(overrides))).toBe(expected);
   });

@@ -119,10 +119,17 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
  * The distinction that matters to a caller is between "not yet" and "not this": a budget that
  * expired is worth waiting on again, and a port that answers with something other than a bundler
  * never will be (llp/0010 §Exit codes).
+ *
+ * A dev server that serves another project is checked before the timeout, because it is the one
+ * failure a longer wait cannot fix: the mismatch was *decided*, not left open, so reporting it as
+ * `22` would invite the retry that is guaranteed to fail again.
  */
 function exitCodeFor(result: DevWaitResult): number {
   if (devWaitSucceeded(result)) {
     return EXIT_OK;
+  }
+  if (result.projectRootMatched === false) {
+    return EXIT_OUTCOME_FAILED;
   }
   return result.timedOut ? EXIT_OUTCOME_TIMEOUT : EXIT_OUTCOME_FAILED;
 }

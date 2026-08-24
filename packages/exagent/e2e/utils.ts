@@ -439,8 +439,14 @@ export type StubDevServerOptions = {
    * one has to be tested against that, not only against a server that is instantly ready.
    */
   statusDelayMs?: number;
-  /** Project root the `/status` answer names in its header, as the real dev server does. */
-  projectRoot?: string;
+  /**
+   * Project root the `/status` answer names in its header, as the real dev server does.
+   *
+   * `null` sends no header at all, which is the "undecidable" case: a dev server that names no
+   * project root has not been shown to be the wrong one, and the commands that compare roots have
+   * to tell that apart from a root that does not match.
+   */
+  projectRoot?: string | null;
 };
 
 /** A stub dev server, and where it listens. */
@@ -477,7 +483,7 @@ export async function startStubDevServerAsync({
       setTimeout(() => {
         response.writeHead(200, {
           'Content-Type': 'text/plain',
-          'X-React-Native-Project-Root': projectRoot,
+          ...(projectRoot == null ? {} : { 'X-React-Native-Project-Root': projectRoot }),
         });
         response.end('packager-status:running');
       }, statusDelayMs).unref();

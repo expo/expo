@@ -48,11 +48,13 @@ export const exagentDevWait: Command = async (argv) => {
         chalk`  {bold navigate} all need a bundle that exists.`,
         '',
         chalk`  The dev server also names the project it serves, so this reports whether the server`,
-        chalk`  that answered is {bold this} project's — the one thing a port scan cannot prove. Pass`,
+        chalk`  that answered is {bold this} project's — the one thing a port scan cannot prove. A`,
+        chalk`  server that proved it serves {bold another} project is a failure, not a pass: pass`,
         chalk`  {bold --dev-server-url} when two projects are running at once.`,
         '',
         chalk`  Exit codes: {bold 0} ready · {bold 22} the wait expired, so try a longer {bold --timeout} ·`,
-        chalk`  {bold 20} something answered that is not an Expo dev server · {bold 1} no dev server at all.`,
+        chalk`  {bold 20} the dev server serves another project, or answered as something that is not an`,
+        chalk`  Expo dev server · {bold 1} no dev server at all.`,
         '',
       ].join('\n')
     );
