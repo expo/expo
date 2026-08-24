@@ -78,7 +78,7 @@ describe(generateFingerprintAsync, () => {
     child.stdout.emit('data', JSON.stringify({ sources: [], hash: 'abc123' }));
     child.emit('close', 0, null);
 
-    await expect(promise).resolves.toEqual({ hash: 'abc123' });
+    await expect(promise).resolves.toEqual({ hash: 'abc123', sources: [] });
     expect(spawn).toHaveBeenCalledWith(
       projectBin('fingerprint'),
       ['fingerprint:generate', projectRoot],
@@ -95,7 +95,7 @@ describe(generateFingerprintAsync, () => {
     child.stdout.emit('data', `${JSON.stringify({ hash: 'def456' })}\n`);
     child.emit('close', 0, null);
 
-    await expect(promise).resolves.toEqual({ hash: 'def456' });
+    await expect(promise).resolves.toEqual({ hash: 'def456', sources: null });
   });
 
   it(`should report a missing CLI without spawning anything`, async () => {
@@ -145,6 +145,7 @@ describe(generateFingerprintAsync, () => {
 
     await expect(promise).resolves.toEqual({
       hash: null,
+      sources: null,
       error: expect.stringContaining('ENOENT'),
     });
   });

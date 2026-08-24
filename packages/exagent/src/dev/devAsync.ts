@@ -566,11 +566,18 @@ function isDevServerStep(step: PlanStep): boolean {
  * The hash comes from the probe, meaning it describes the project as it was *before* prebuild
  * ran. That is the same hash the next probe computes for an unchanged project, which is what
  * makes the comparison in `decideStartPlan` work.
+ *
+ * The probe's `sources` go in with it, because a hash alone lets a later `exagent impact` say the
+ * native surface changed and never what changed (llp/0011 §The record has to hold the sources).
+ * They are already in hand: the probe computed them to get the hash.
  */
 function recordBuildOf(projectRoot: string, step: PlanStep, state: ProjectState): void {
   const platform = resolveBuildPlatform(step);
   if (platform && state.fingerprint.hash) {
-    recordLastBuildFingerprint(projectRoot, platform, state.fingerprint.hash);
+    recordLastBuildFingerprint(projectRoot, platform, {
+      hash: state.fingerprint.hash,
+      sources: state.fingerprint.sources ?? null,
+    });
   }
 }
 

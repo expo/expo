@@ -13,7 +13,7 @@ const compatible = { compatible: true, reasons: [] };
 
 beforeEach(() => {
   jest.mocked(checkExpoGoCompatibilityAsync).mockResolvedValue(compatible);
-  jest.mocked(generateFingerprintAsync).mockResolvedValue({ hash: 'abc123' });
+  jest.mocked(generateFingerprintAsync).mockResolvedValue({ hash: 'abc123', sources: null });
 });
 
 afterEach(() => {
@@ -41,7 +41,7 @@ describe(probeProjectStateAsync, () => {
       usesDevClient: false,
       hasWeb: false,
       expoGo: compatible,
-      fingerprint: { hash: 'abc123' },
+      fingerprint: { hash: 'abc123', sources: null },
     });
   });
 
@@ -120,7 +120,7 @@ describe(probeProjectStateAsync, () => {
   it(`should report a fingerprint error instead of throwing`, async () => {
     jest
       .mocked(generateFingerprintAsync)
-      .mockResolvedValue({ hash: null, error: 'fingerprint CLI not found' });
+      .mockResolvedValue({ hash: null, sources: null, error: 'fingerprint CLI not found' });
     writeProject({ expo: '54.0.0' });
 
     await expect(probeProjectStateAsync(projectRoot)).resolves.toMatchObject({
