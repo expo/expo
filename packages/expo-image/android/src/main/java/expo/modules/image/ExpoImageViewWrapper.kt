@@ -1,5 +1,7 @@
 package expo.modules.image
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
@@ -317,18 +319,32 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             newView.bringToFront()
             previousView.alpha = 1f
             newView.alpha = 0f
-            // A newer source can reuse this view as its `newView` before the fade-out ends. That
-            // cancels this animation, and the end action runs on cancel too, so without this guard
-            // it would recycle the view now holding the new image. See issue #46703.
+            // A newer source can reuse this view as its `newView` before the fade-out ends, so the
+            // cleanup is guarded on the view still holding the target it was scheduled for.
+            // See issue #46703.
             val previousTarget = previousView.currentTarget
             previousView.animate().apply {
               duration = transitionDuration
               alpha(0f)
-              withEndAction {
-                if (previousView.currentTarget === previousTarget) {
-                  clearPreviousView()
+              // Deliberately not `withEndAction`: `ViewPropertyAnimator` drops the end action when
+              // the animation is cancelled, and starting a new animation on the same view cancels
+              // this one. In a recycling list that happens constantly, so the target would never be
+              // returned to the pool and the view would stay blank.
+              setListener(object : AnimatorListenerAdapter() {
+                private var handled = false
+
+                override fun onAnimationCancel(animation: Animator) = onAnimationEnd(animation)
+
+                override fun onAnimationEnd(animation: Animator) {
+                  if (handled) {
+                    return
+                  }
+                  handled = true
+                  if (previousView.currentTarget === previousTarget) {
+                    clearPreviousView()
+                  }
                 }
-              }
+              })
             }
             newView.animate().apply {
               duration = transitionDuration
