@@ -3,6 +3,7 @@ import type WebSocketImpl from 'ws';
 
 import {
   CdpNetworkCollector,
+  classifyNetworkDomainRefusal,
   NetworkDomainUnavailableError,
   parseNetworkMessage,
   targetAdvertisesNetworkPanel,
@@ -315,5 +316,34 @@ describe(targetAdvertisesNetworkPanel, () => {
       false
     );
     expect(targetAdvertisesNetworkPanel({ ...TARGET, devtoolsFrontendUrl: '' })).toBe(false);
+  });
+});
+
+// The two refusals React Native ships need opposite next steps, and only the answer tells them
+// apart: one is about the state of the app process, the other about how the runtime was built.
+describe(classifyNetworkDomainRefusal, () => {
+  it(`should recognise the multiple-hosts refusal by its message`, () => {
+    expect(
+      classifyNetworkDomainRefusal({
+        reason: 'The Network domain is unavailable when multiple React Native hosts are registered.',
+        rpcCode: -32603,
+      })
+    ).toBe('multiple-hosts');
+  });
+
+  it(`should recognise a missing handler by its JSON-RPC code`, () => {
+    expect(classifyNetworkDomainRefusal({ reason: 'nope', rpcCode: -32601 })).toBe(
+      'not-implemented'
+    );
+  });
+
+  it(`should fall back to the wording when no code came back`, () => {
+    expect(
+      classifyNetworkDomainRefusal({ reason: `'Network.enable' wasn't found`, rpcCode: undefined })
+    ).toBe('not-implemented');
+  });
+
+  it(`should call an answer it has not seen unknown rather than guessing`, () => {
+    expect(classifyNetworkDomainRefusal({ reason: 'something else', rpcCode: -1 })).toBe('unknown');
   });
 });

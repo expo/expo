@@ -450,7 +450,7 @@ describe(runtimeNetworkAsync, () => {
   // an empty report for the second one would send an agent to debug the wrong thing.
   it(`should report an unsupported Network domain instead of an empty window`, async () => {
     mockNetwork(async () => {
-      throw new NetworkDomainUnavailableError(`'Network.enable' wasn't found`);
+      throw new NetworkDomainUnavailableError(`'Network.enable' wasn't found`, -32601);
     });
 
     const error = await runtimeNetworkAsync(networkOptions).catch((e) => e);
@@ -458,21 +458,56 @@ describe(runtimeNetworkAsync, () => {
     expect(error.code).toBe('NETWORK_DOMAIN_UNAVAILABLE');
     expect(error.message).toContain('Network.enable');
     expect(error.message).toContain(`'Network.enable' wasn't found`);
+    expect(error.message).toContain('carries no handler for the method');
     expect(error.suggestedCommand).toBe('npx exagent runtime:errors');
     expect(printed()).not.toContain('No network requests were reported');
   });
 
-  it(`should name whether the dev server offers the network panel for the app`, async () => {
+  it(`should name the network panel flag only for a runtime that has no handler`, async () => {
     mockDevServer([
       { ...TARGET, devtoolsFrontendUrl: '/devtools?unstable_enableNetworkPanel=true' },
     ]);
     mockNetwork(async () => {
-      throw new NetworkDomainUnavailableError('nope');
+      throw new NetworkDomainUnavailableError(`'Network.enable' wasn't found`, -32601);
     });
 
     const error = await runtimeNetworkAsync(networkOptions).catch((e) => e);
 
-    expect(error.message).toContain('does offer');
+    expect(error.message).toContain('does offer the network panel');
+  });
+
+  // F24: the message quoted "multiple hosts" and then blamed a runtime built without the domain
+  // and told the caller to upgrade the SDK — advice that could not follow from the quoted cause.
+  it(`should explain a multiple-hosts refusal by the host count, not by the SDK`, async () => {
+    mockNetwork(async () => {
+      throw new NetworkDomainUnavailableError(
+        'The Network domain is unavailable when multiple React Native hosts are registered.',
+        -32603
+      );
+    });
+
+    const error = await runtimeNetworkAsync(networkOptions).catch((e) => e);
+
+    expect(error.code).toBe('NETWORK_DOMAIN_UNAVAILABLE');
+    expect(error.message).toContain('multiple React Native hosts are registered');
+    expect(error.message).toContain('exactly one React Native host');
+    expect(error.message).toContain('Relaunch the app');
+    // The three claims that contradicted the quoted cause.
+    expect(error.message).not.toContain('newer Expo SDK');
+    expect(error.message).not.toContain('built without');
+    expect(error.message).not.toContain('no handler');
+  });
+
+  it(`should quote a refusal it does not recognise and claim nothing about it`, async () => {
+    mockNetwork(async () => {
+      throw new NetworkDomainUnavailableError('something else entirely');
+    });
+
+    const error = await runtimeNetworkAsync(networkOptions).catch((e) => e);
+
+    expect(error.message).toContain('"something else entirely"');
+    expect(error.message).toContain('not a refusal this CLI recognises');
+    expect(error.message).not.toContain('newer Expo SDK');
   });
 
   it(`should report a failed collection with the reason`, async () => {

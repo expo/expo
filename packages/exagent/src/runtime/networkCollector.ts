@@ -28,7 +28,12 @@
 import type CdpMessageType from 'devtools-protocol';
 import { type WebSocket } from 'ws';
 
-import { CdpClient, type CdpClientOptions, type CdpTarget } from './cdpClient';
+import {
+  CdpClient,
+  RPC_METHOD_NOT_FOUND,
+  type CdpClientOptions,
+  type CdpTarget,
+} from './cdpClient';
 import { debugEvent } from './events';
 
 /** A single HTTP request the running app made, with the answer it got. */
@@ -74,7 +79,18 @@ export interface CdpNetworkCollectorConfig extends CdpClientOptions {
 export class NetworkDomainUnavailableError extends Error {
   readonly isNetworkDomainUnavailable = true;
 
-  constructor(public readonly reason: string) {
+  /**
+   * @param reason the runtime's own answer, quoted verbatim into the command's diagnosis: the two
+   * refusals React Native ships have different causes and opposite recoveries, and only this
+   * string tells them apart.
+   * @param rpcCode the JSON-RPC code of that answer, when the runtime sent one. `-32601` means the
+   * runtime carries no handler for the method at all; an internal error means it has one and
+   * declined.
+   */
+  constructor(
+    public readonly reason: string,
+    public readonly rpcCode?: number
+  ) {
     super(`The app refused Network.enable: ${reason}`);
     this.name = 'NetworkDomainUnavailableError';
   }
@@ -85,7 +101,7 @@ interface CdpMessage {
   method?: string;
   params?: any;
   result?: unknown;
-  error?: { message?: string };
+  error?: { message?: string; code?: number };
 }
 
 /**
@@ -197,7 +213,12 @@ export class CdpNetworkCollector {
           // "cannot report traffic".
           if (message.id === enableRequestId && message.error) {
             settle(() => {
-              reject(new NetworkDomainUnavailableError(message.error?.message ?? 'unknown error'));
+              reject(
+                new NetworkDomainUnavailableError(
+                  message.error?.message ?? 'unknown error',
+                  message.error?.code
+                )
+              );
               ws.close();
             });
             return;
@@ -332,4 +353,49 @@ export function targetAdvertisesNetworkPanel(
   target: Pick<CdpTarget, 'devtoolsFrontendUrl'>
 ): boolean {
   return /[?&]unstable_enableNetworkPanel=true\b/.test(target.devtoolsFrontendUrl ?? '');
+}
+
+/**
+ * Why the runtime refused `Network.enable`.
+ *
+ * React Native has exactly two refusals, and they need opposite next steps
+ * [observed — `ReactCommon/jsinspector-modern/HostAgent.cpp`, React Native 0.86]:
+ *
+ * ```cpp
+ * if (InspectorFlags::getInstance().getNetworkInspectionEnabled()) {
+ *   if (req.method == "Network.enable") {
+ *     if (inspector.getSystemState().registeredHostsCount > 1) {
+ *       frontendChannel_(cdp::jsonError(req.id, cdp::ErrorCode::InternalError,
+ *         "The Network domain is unavailable when multiple React Native hosts are registered."));
+ * ```
+ *
+ * With the flag off the method is never handled at all, and the dispatcher answers `-32601`.
+ * The first refusal is about the state of the app process and clears on a relaunch; the second is
+ * about how the runtime was built and never clears. Reporting either as the other sends a caller
+ * to upgrade an SDK that would not have helped, which is exactly what this command used to do.
+ */
+export type NetworkDomainRefusal =
+  /** More than one React Native host is registered in the app process. */
+  | 'multiple-hosts'
+  /** The runtime carries no handler for the method. */
+  | 'not-implemented'
+  /** The runtime refused for a reason this CLI has not seen. */
+  | 'unknown';
+
+/** The message React Native sends when more than one host is registered [observed — RN 0.86]. */
+const MULTIPLE_HOSTS_MESSAGE = 'multiple React Native hosts are registered';
+
+/** Classify a refusal of `Network.enable` by what the runtime actually answered. */
+export function classifyNetworkDomainRefusal(
+  error: Pick<NetworkDomainUnavailableError, 'reason' | 'rpcCode'>
+): NetworkDomainRefusal {
+  if (error.reason.includes(MULTIPLE_HOSTS_MESSAGE)) {
+    return 'multiple-hosts';
+  }
+  // The code is the reliable half; the wording of a missing handler differs per runtime, so the
+  // text is only consulted when no code came back.
+  if (error.rpcCode === RPC_METHOD_NOT_FOUND || /\bwasn't found\b|\bnot found\b/i.test(error.reason)) {
+    return 'not-implemented';
+  }
+  return 'unknown';
 }

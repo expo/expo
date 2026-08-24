@@ -31,6 +31,7 @@ import {
 } from './format';
 import {
   CdpNetworkCollector,
+  classifyNetworkDomainRefusal,
   NetworkDomainUnavailableError,
   targetAdvertisesNetworkPanel,
   type NetworkRequestRecord,
@@ -272,25 +273,55 @@ export async function runtimeNetworkAsync(
 }
 
 /**
- * The runtime does not implement the CDP Network domain.
+ * The runtime refused `Network.enable`.
  *
- * Reported as its own error, never as an empty window: the domain is behind an unstable flag in
- * React Native's Fusebox, so "the app made no requests" and "this runtime cannot report requests"
- * are both plausible and lead to opposite next steps. The panel flag on the dev server's target is
- * named because it is the one piece of evidence a caller can check by hand.
+ * Reported as its own error, never as an empty window: "the app made no requests" and "this runtime
+ * cannot report requests" are both plausible and lead to opposite next steps.
+ *
+ * The why and the how both branch on what the runtime actually answered
+ * ({@link classifyNetworkDomainRefusal}), because React Native's two refusals have nothing in
+ * common. This message used to quote "multiple React Native hosts are registered" and then blame a
+ * runtime built without the domain and recommend an SDK upgrade — three sentences that contradicted
+ * the evidence in the one above them.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Implemented in v1 as — Network inspection.
  */
 function networkDomainUnavailableError(
   devServerUrl: string,
   cause: NetworkDomainUnavailableError,
   targets: CdpTarget[]
 ): CommandError {
+  const refusal = classifyNetworkDomainRefusal(cause);
   const advertised = targets.some(targetAdvertisesNetworkPanel);
+  const quoted = `it answered Network.enable with an error: "${cause.reason}"`;
+
+  // Reading the errors is the answer to all three, because a failing request nearly always throws
+  // or logs; only the way to get the network log itself back differs.
+  const readErrorsInstead = `Read the app's runtime errors meanwhile — a request that fails almost always throws or logs there — or wrap the call in your own logging and read the value with "npx exagent runtime:eval".`;
+
+  const { why, how } =
+    refusal === 'multiple-hosts'
+      ? {
+          // Observed in React Native 0.86's HostAgent.cpp; see `classifyNetworkDomainRefusal`.
+          why: `${quoted}. The domain attaches only while exactly one React Native host is registered in the app's process, and this app's process has more than one. The count is a property of the app, not of the dev server: stopping another dev server does not lower it, and neither does reconnecting the debugger. Expo Go reaches this state by holding a host for a project it loaded earlier alongside the one for this project.`,
+          how: `Relaunch the app so this project's host is the only one registered — "npx exagent navigate /" after closing the app reloads it from scratch — then run this command again. A development build that runs one host answers the domain directly. ${readErrorsInstead}`,
+        }
+      : refusal === 'not-implemented'
+        ? {
+            why: `${quoted}. The runtime carries no handler for the method, so there is no request log in it to read. Network inspection is an unstable part of the React Native debugger and a runtime can be built without it; Expo Go for Android ships a JavaScript engine with no Chrome DevTools Protocol debugger at all, which answers every method this way.${advertised ? ' The dev server does offer the network panel for this app, which describes what the debugger frontend would show and is not a promise from the runtime.' : ''}`,
+            how: `${readErrorsInstead} Opening the app on iOS, or in a development build, gives a runtime that implements the domain.`,
+          }
+        : {
+            why: `${quoted}. That is not a refusal this CLI recognises: the two React Native sends are "the domain is unavailable when multiple hosts are registered" and "no such method". The answer above is the whole of what the runtime said.`,
+            how: `${readErrorsInstead} Re-run with EXPO_DEBUG=1 to see the debugger traffic that produced this answer.`,
+          };
+
   const error = new CommandError(
     'NETWORK_DOMAIN_UNAVAILABLE',
     [
-      `The app connected to ${devServerUrl} cannot report its network requests.`,
-      `Why: it answered Network.enable with an error (${cause.reason}). Network inspection is an unstable part of the React Native debugger, so a runtime built without it has no request log to read. The dev server ${advertised ? 'does offer' : 'does not offer'} the network panel for this app.`,
-      `How: read the app's runtime errors instead — a request that fails almost always throws or logs there — or wrap the call in your own logging and read the value with "npx exagent runtime:eval". Upgrading the app to a newer Expo SDK is what adds the domain.`,
+      `The app connected to ${devServerUrl} did not report its network requests.`,
+      `Why: ${why}`,
+      `How: ${how}`,
     ].join('\n')
   );
   error.suggestedCommand = 'npx exagent runtime:errors';
