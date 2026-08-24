@@ -206,6 +206,46 @@ describe(navigateAsync, () => {
       expect(readDevServerLockAsync).not.toHaveBeenCalled();
     });
 
+    // F26: the flag was the one dev-server source whose probe failure was not acted on, so a typo
+    // in it deep-linked the device into an app with nothing to bundle for it, and reported exit 0.
+    it(`should refuse to open anything when --dev-server-url does not answer`, async () => {
+      mockExpoGoProject();
+      mockDevServersAt({});
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      const error = await navigateAsync(
+        projectRoot,
+        options({ devServerUrl: 'http://127.0.0.1:8199' })
+      ).catch((e) => e);
+
+      expect(error.code).toBe('DEEP_LINK_UNRESOLVED');
+      expect(error.message).toContain('http://127.0.0.1:8199');
+      expect(error.message).toContain('--dev-server-url');
+      expect(spawn).not.toHaveBeenCalled();
+    });
+
+    // The same dead URL against a development build: the scheme alone would have built a URL, which
+    // is exactly why the probe has to be the thing that stops it.
+    it(`should refuse a dead --dev-server-url even when the scheme needs no dev server`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({
+          name: 'demo',
+          dependencies: { 'expo-dev-client': '5.0.0' },
+        }),
+        [`${projectRoot}/node_modules/expo-dev-client/package.json`]: '{"name":"expo-dev-client"}',
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+      mockDevServersAt({});
+
+      const error = await navigateAsync(
+        projectRoot,
+        options({ devServerUrl: 'http://127.0.0.1:8199' })
+      ).catch((e) => e);
+
+      expect(error.code).toBe('DEEP_LINK_UNRESOLVED');
+      expect(spawn).not.toHaveBeenCalled();
+    });
+
     // A development build with a known scheme needs no dev server, and discovery finding none must
     // not turn that into a failure.
     it(`should still resolve a scheme URL when nothing answers anywhere`, async () => {
@@ -241,7 +281,11 @@ describe(navigateAsync, () => {
     mockSpawnQueue([{ stdout: ADB_DEVICES }, { stdout: 'Starting: Intent' }]);
 
     await expect(
-      navigateAsync(projectRoot, options({ platform: 'android', appId: 'com.example.demo' }))
+      navigateAsync(
+        projectRoot,
+        // Nobody named a dev server: this is a development build with a scheme, which needs none.
+        options({ devServerUrl: null, platform: 'android', appId: 'com.example.demo' })
+      )
     ).resolves.toBe(0);
 
     const argv = spawnedArgv(1);
@@ -378,7 +422,7 @@ describe(navigateAsync, () => {
       mockDevServer(null);
       mockSpawnQueue([{ stdout: ADB_DEVICES }, { stdout: 'Starting: Intent' }]);
 
-      await navigateAsync(projectRoot, options({ platform: 'android' }));
+      await navigateAsync(projectRoot, options({ devServerUrl: null, platform: 'android' }));
 
       expect(printed()).toContain('adb -s emulator-5554 exec-out screencap -p > screen.png');
     });
@@ -429,7 +473,7 @@ describe(navigateAsync, () => {
     mockDevServer(null);
     mockSpawnQueue([]);
 
-    const error = await navigateAsync(projectRoot, options()).catch((e) => e);
+    const error = await navigateAsync(projectRoot, options({ devServerUrl: null })).catch((e) => e);
 
     expect(error.code).toBe('DEEP_LINK_UNRESOLVED');
     expect(error.message).toContain('app.config.js');
@@ -444,7 +488,7 @@ describe(navigateAsync, () => {
     mockDevServer(null);
     mockSpawnQueue([]);
 
-    const error = await navigateAsync(projectRoot, options()).catch((e) => e);
+    const error = await navigateAsync(projectRoot, options({ devServerUrl: null })).catch((e) => e);
 
     expect(error.code).toBe('DEEP_LINK_UNRESOLVED');
     expect(error.message).toContain('npx expo start');
