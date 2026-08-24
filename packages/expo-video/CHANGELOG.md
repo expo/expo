@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed a crash when the device runs out of storage while writing to the video cache. `FileHandle.writeData:` raises an uncatchable Objective-C `NSFileHandleOperationException` on `ENOSPC`; the throwing Swift APIs are now used so the error is caught and logged instead. ([#49284](https://github.com/expo/expo/pull/49284) by [@huextrat](https://github.com/huextrat))
+
 ### 💡 Others
 
 ## 57.0.4 — 2026-09-11
