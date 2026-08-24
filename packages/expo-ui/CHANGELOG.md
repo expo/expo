@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Added the `Background` component, which draws any view behind another view with an optional `alignment`, matching SwiftUI's `background(alignment:content:)`. ([#48904](https://github.com/expo/expo/pull/48904) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [android] Added the `amplitude`, `wavelength` and `waveSpeed` props to `LinearWavyProgressIndicator` and `CircularWavyProgressIndicator`, so the Material 3 wave can be configured instead of always using the Compose defaults. ([#49265](https://github.com/expo/expo/pull/49265) by [@felipe-software](https://github.com/felipe-software))
 
 ### 🐛 Bug fixes
 

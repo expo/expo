@@ -85,7 +85,30 @@ export interface CircularProgressIndicatorProps extends ProgressCommonConfig {
  * Matches the Jetpack Compose `CircularProgressIndicator`.
  */
 export declare const CircularProgressIndicator: import("react").ComponentType<CircularProgressIndicatorProps>;
-export interface LinearWavyProgressIndicatorProps extends ProgressCommonConfig {
+/**
+ * Wave configuration shared by the wavy progress indicator variants.
+ */
+export type WavyProgressCommonConfig = {
+    /**
+     * Height of the wave, where `0` draws a flat line and `1` draws the full wave height.
+     * When set, the amplitude stays the same across the whole track.
+     * When omitted, a determinate indicator uses the Material 3 default, which flattens the wave as
+     * progress approaches `0` and `1`.
+     * An indeterminate indicator defaults to the full wave height.
+     */
+    amplitude?: number;
+    /**
+     * Length of a single wave in dp. `CircularWavyProgressIndicator` rounds this to fit a whole
+     * number of waves around the ring, so the wave it draws can be slightly shorter or longer.
+     */
+    wavelength?: number;
+    /**
+     * Speed of the wave in dp per second. Defaults to `wavelength`, which advances the wave by one
+     * wavelength per second. Set it to `0` to stop the wave from moving.
+     */
+    waveSpeed?: number;
+};
+export interface LinearWavyProgressIndicatorProps extends ProgressCommonConfig, WavyProgressCommonConfig {
     /**
      * Size of the stop indicator in dp at the end of the determinate progress track.
      */
@@ -97,7 +120,7 @@ export interface LinearWavyProgressIndicatorProps extends ProgressCommonConfig {
  * Matches the Jetpack Compose `LinearWavyProgressIndicator`.
  */
 export declare const LinearWavyProgressIndicator: import("react").ComponentType<LinearWavyProgressIndicatorProps>;
-export interface CircularWavyProgressIndicatorProps extends ProgressCommonConfig {
+export interface CircularWavyProgressIndicatorProps extends ProgressCommonConfig, WavyProgressCommonConfig {
 }
 /**
  * A circular progress indicator with wavy animation style.
