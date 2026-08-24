@@ -1,7 +1,8 @@
 import * as osascript from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
-import os from 'os';
 import path from 'path';
+
+import { isWsl } from './wsl';
 
 /** Splits an inline script into trimmed, non-empty lines for `osascript -e <line>`. */
 function applescript(strings: TemplateStringsArray, ...values: unknown[]): string[] {
@@ -184,11 +185,4 @@ async function spawnWindowsStartAsync(
   if (browserApp) startArgs.push(browserApp);
   startArgs.push(target, ...browserArgs);
   await spawnAsync(cmd, startArgs, { stdio: 'ignore' });
-}
-
-function isWsl(): boolean {
-  if (process.platform !== 'linux') return false;
-  if (process.env.WSL_DISTRO_NAME) return true;
-  const release = os.release().toLowerCase();
-  return release.includes('microsoft') || release.includes('wsl');
 }
