@@ -26,26 +26,6 @@ jest.mock('react-native-screens', () => {
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
-it('uses a trigger error boundary for an individual tab screen', () => {
-  function ThrowingRoute(): never {
-    throw new Error('Expected route error');
-  }
-  function ErrorBoundary({ error }: ErrorBoundaryProps) {
-    return <Text testID="error-boundary">{error.message}</Text>;
-  }
-
-  renderRouter({
-    _layout: () => (
-      <NativeTabs>
-        <NativeTabs.Trigger name="index" unstable_errorBoundary={ErrorBoundary} />
-      </NativeTabs>
-    ),
-    index: ThrowingRoute,
-  });
-
-  expect(screen.getByTestId('error-boundary')).toBeVisible();
-});
-
 it('uses a navigator error boundary for an individual tab screen', () => {
   function ThrowingRoute(): never {
     throw new Error('Expected route error');

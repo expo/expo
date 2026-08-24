@@ -1,9 +1,8 @@
 'use client';
-import type { ComponentType, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { isValidElement } from 'react';
 
 import { useNavigation } from '../useNavigation';
-import type { ErrorBoundaryProps } from './Try';
 import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
@@ -16,24 +15,13 @@ export type ScreenProps<TOptions extends Record<string, any> = Record<string, an
    */
   name?: string;
   options?: TOptions;
-  /** A component to render when this screen throws an error. Only supported inside a Layout. */
-  unstable_errorBoundary?: ComponentType<ErrorBoundaryProps>;
 };
 
 /** Component for setting the current screen's options dynamically. */
-export function Screen<TOptions extends object = object>({
-  name,
-  options,
-  unstable_errorBoundary,
-}: ScreenProps<TOptions>) {
+export function Screen<TOptions extends object = object>({ name, options }: ScreenProps<TOptions>) {
   if (name) {
     throw new Error(
       `The name prop on the Screen component may only be used when it is inside a Layout route`
-    );
-  }
-  if (process.env.NODE_ENV !== 'production' && unstable_errorBoundary) {
-    console.warn(
-      'The unstable_errorBoundary prop on Screen is only supported inside a Layout component.'
     );
   }
   const navigation = useNavigation();

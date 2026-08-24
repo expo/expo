@@ -54,13 +54,6 @@ export interface StackScreenProps extends PropsWithChildren {
    * Only supported when used inside a Layout component.
    */
   dangerouslySingular?: StackBaseScreenProps['dangerouslySingular'];
-
-  /**
-   * A component to render when this screen throws an error.
-   *
-   * Only supported when used inside a Layout component.
-   */
-  unstable_errorBoundary?: StackBaseScreenProps['unstable_errorBoundary'];
 }
 
 /**

@@ -186,11 +186,7 @@ export function withLayoutContext<
         }
       }
 
-      const sorted = useSortedScreens(
-        processed ?? [],
-        guardedRedirects,
-        props.unstable_screenErrorBoundary
-      );
+      const sorted = useSortedScreens(processed ?? [], guardedRedirects);
 
       // Prevent throwing an error when there are no screens.
       if (!sorted.length) {

@@ -49,7 +49,6 @@ import {
   type SuspenseFallbackProps,
 } from './views/SuspenseFallback';
 import { Try } from './views/Try';
-import type { ErrorBoundaryProps } from './views/Try';
 
 declare module 'react' {
   export function lazy<T extends React.ComponentType<any>>(
@@ -78,8 +77,6 @@ export type ScreenProps<
   getId?: ({ params }: { params?: Record<string, any> }) => string | undefined;
 
   dangerouslySingular?: SingularOptions;
-  /** A component to render when this screen throws an error. */
-  unstable_errorBoundary?: React.ComponentType<ErrorBoundaryProps>;
 };
 
 export type SingularOptions =
@@ -107,60 +104,47 @@ function getSortedChildren<
   const entries = [...children];
 
   const ordered = order
-    .map(
-      ({
-        name,
-        listeners,
-        options,
-        getId,
-        dangerouslySingular: singular,
-        unstable_errorBoundary,
-      }) => {
-        if (!entries.length) {
-          console.warn(
-            `[Layout children]: Too many screens defined. Route "${name}" is extraneous.`
-          );
-          return null;
-        }
-        const match = findRouteNodeByName(entries, name);
-        if (!match) {
-          console.warn(
-            `[Layout children]: No route named "${name}" exists in nested children:`,
-            children.map(({ route }) => route)
-          );
-          return null;
-        } else {
-          // Get match and remove from entries
-          entries.splice(entries.indexOf(match), 1);
-
-          if (getId) {
-            console.warn(
-              `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
-            );
-            if (singular) {
-              console.warn(
-                `Screen ${name} cannot use both getId and dangerouslySingular together.`
-              );
-            }
-          } else if (singular) {
-            // If singular is set, use it as the getId function.
-            if (typeof singular === 'string') {
-              getId = () => singular;
-            } else if (typeof singular === 'function' && name) {
-              getId = (options) => singular(name, options.params || {});
-            } else if (singular === true && name) {
-              getId = (options) => getSingularId(name, options);
-            }
-          }
-
-          return {
-            route: match,
-            props: { listeners, options, getId, unstable_errorBoundary },
-            routeSource: 'layout' as const,
-          };
-        }
+    .map(({ name, listeners, options, getId, dangerouslySingular: singular }) => {
+      if (!entries.length) {
+        console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
+        return null;
       }
-    )
+      const match = findRouteNodeByName(entries, name);
+      if (!match) {
+        console.warn(
+          `[Layout children]: No route named "${name}" exists in nested children:`,
+          children.map(({ route }) => route)
+        );
+        return null;
+      } else {
+        // Get match and remove from entries
+        entries.splice(entries.indexOf(match), 1);
+
+        if (getId) {
+          console.warn(
+            `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
+          );
+          if (singular) {
+            console.warn(`Screen ${name} cannot use both getId and dangerouslySingular together.`);
+          }
+        } else if (singular) {
+          // If singular is set, use it as the getId function.
+          if (typeof singular === 'string') {
+            getId = () => singular;
+          } else if (typeof singular === 'function' && name) {
+            getId = (options) => singular(name, options.params || {});
+          } else if (singular === true && name) {
+            getId = (options) => getSingularId(name, options);
+          }
+        }
+
+        return {
+          route: match,
+          props: { listeners, options, getId },
+          routeSource: 'layout' as const,
+        };
+      }
+    })
     .filter(Boolean) as {
     route: RouteNode;
     props: Partial<ScreenProps<TOptions, TState, TEventMap>>;
@@ -186,13 +170,9 @@ export function useSortedScreens<
   TEventMap extends EventMapBase,
 >(
   order: ScreenProps<TOptions, TState, TEventMap>[],
-  guardedRedirects: GuardedRedirects = new Map(),
-  screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>
+  guardedRedirects: GuardedRedirects = new Map()
 ): React.ReactNode[] {
   const node = useRouteNode();
-  const screenErrorBoundaryStore = React.useRef<
-    WeakMap<RouteNode, WeakMap<React.ComponentType<ErrorBoundaryProps>, React.ComponentType<any>>>
-  >(new WeakMap()).current;
 
   const children = node?.children ?? [];
   const sorted = children.length
@@ -204,18 +184,9 @@ export function useSortedScreens<
       return { ...value, isGuarded: isRouteGuarded(route, guardedRedirects) };
     });
     return screensWithGuarded.map((value) => {
-      return routeToScreen(
-        value.route,
-        {
-          ...value.props,
-          unstable_errorBoundary: value.props.unstable_errorBoundary ?? screenErrorBoundary,
-        },
-        value.isGuarded,
-        value.routeSource,
-        screenErrorBoundaryStore
-      );
+      return routeToScreen(value.route, value.props, value.isGuarded, value.routeSource);
     });
-  }, [sorted, guardedRedirects, screenErrorBoundary]);
+  }, [sorted, guardedRedirects]);
 }
 
 function fromImport(
@@ -278,38 +249,6 @@ function fromImport(
 // TODO: Maybe there's a more React-y way to do this?
 // Without this store, the process enters a recursive loop.
 const qualifiedStore = new WeakMap<RouteNode, React.ComponentType<any>>();
-function getScreenComponent(
-  route: RouteNode,
-  ErrorBoundary: React.ComponentType<ErrorBoundaryProps> | undefined,
-  screenErrorBoundaryStore: WeakMap<
-    RouteNode,
-    WeakMap<React.ComponentType<ErrorBoundaryProps>, React.ComponentType<any>>
-  >
-) {
-  if (!ErrorBoundary) {
-    return getQualifiedRouteComponent(route);
-  }
-
-  let boundaries = screenErrorBoundaryStore.get(route);
-  if (!boundaries) {
-    boundaries = new WeakMap();
-    screenErrorBoundaryStore.set(route, boundaries);
-  }
-
-  let ScreenComponent = boundaries.get(ErrorBoundary);
-  if (!ScreenComponent) {
-    ScreenComponent = (props) => {
-      const QualifiedRouteComponent = getQualifiedRouteComponent(route);
-      return <QualifiedRouteComponent {...props} __screenErrorBoundary={ErrorBoundary} />;
-    };
-    if (__DEV__) {
-      ScreenComponent.displayName = `ScreenErrorBoundary(${route.contextKey})`;
-    }
-    boundaries.set(ErrorBoundary, ScreenComponent);
-  }
-  return ScreenComponent;
-}
-
 /** Wrap the component with various enhancements and add access to child routes. */
 export function getQualifiedRouteComponent(value: RouteNode) {
   if (qualifiedStore.has(value)) {
@@ -356,7 +295,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     // enforce usage of expo-router hooks (where the query params are correct).
     route,
     navigation,
-    __screenErrorBoundary,
 
     // Pass all other props to the component
     ...props
@@ -375,14 +313,12 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     > & {
       getState(): NavigationState | undefined;
     };
-    __screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
   }) {
     const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
-    const inheritedScreenErrorBoundary = use(ScreenErrorBoundaryContext);
-    const ScreenErrorBoundary = __screenErrorBoundary ?? inheritedScreenErrorBoundary;
+    const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
 
@@ -619,18 +555,9 @@ export function routeToScreen<
   TEventMap extends EventMapBase,
 >(
   route: RouteNode,
-  {
-    options,
-    getId,
-    unstable_errorBoundary,
-    ...props
-  }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
+  { options, getId, ...props }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
   isGuarded?: boolean,
-  routeSource?: RouteSource,
-  screenErrorBoundaryStore?: WeakMap<
-    RouteNode,
-    WeakMap<React.ComponentType<ErrorBoundaryProps>, React.ComponentType<any>>
-  >
+  routeSource?: RouteSource
 ) {
   return (
     <Screen
@@ -640,9 +567,7 @@ export function routeToScreen<
       getId={getId}
       routeSource={routeSource}
       options={screenOptionsFactory(route, options, isGuarded)}
-      getComponent={() =>
-        getScreenComponent(route, unstable_errorBoundary, screenErrorBoundaryStore ?? new WeakMap())
-      }
+      getComponent={() => getQualifiedRouteComponent(route)}
     />
   );
 }
