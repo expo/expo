@@ -136,8 +136,10 @@ export const CircularProgressIndicator = createProgressComponent<CircularProgres
 export type WavyProgressCommonConfig = {
   /**
    * Height of the wave, where `0` draws a flat line and `1` draws the full wave height.
-   * A determinate indicator keeps the same amplitude across the whole track, while the Material 3
-   * default flattens the wave as progress approaches `0` and `1`.
+   * When set, the amplitude stays the same across the whole track.
+   * When omitted, a determinate indicator uses the Material 3 default, which flattens the wave as
+   * progress approaches `0` and `1`.
+   * An indeterminate indicator defaults to the full wave height.
    */
   amplitude?: number;
   /**
