@@ -227,10 +227,17 @@ async function assertNativeIsCleanAsync(
     return;
   }
 
+  // The directories git actually reported on, not the ones it was asked about: a run that asked
+  // about both and got one back must not name the clean one as dirty.
+  const named = [...platforms].filter((platform) =>
+    dirty.some((file) => file === platform || file.startsWith(`${platform}/`))
+  );
+  const subject = (named.length ? named : [...platforms]).join(' and ');
+
   const error = new CommandError(
     'DOCTOR_FIX_DIRTY_NATIVE',
     [
-      `Nothing was planned: ${[...platforms].join('/')} ${platforms.size === 1 ? 'has' : 'have'} uncommitted changes (${dirty.slice(0, 5).join(', ')}${dirty.length > 5 ? `, and ${dirty.length - 5} more` : ''}).`,
+      `Nothing was planned: ${subject} ${named.length === 1 ? 'has' : 'have'} uncommitted changes (${dirty.slice(0, 5).join(', ')}${dirty.length > 5 ? `, and ${dirty.length - 5} more` : ''}).`,
       `Why: this tier deletes inside those directories and reinstalls into them, and a checkpoint holds only tracked files that are already committed — so your uncommitted native work would be the one thing no snapshot could put back.`,
       `How: commit or stash the changes and run this again, or use "npx exagent doctor:fix --tier safe", which never touches the native directories.`,
     ].join('\n')

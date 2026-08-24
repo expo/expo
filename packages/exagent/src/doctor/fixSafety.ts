@@ -108,8 +108,15 @@ export function rejectUnsafeTarget(target: string, context: TargetSafetyContext)
 
   // The parent may be the link instead, which the lstat above never sees. A target that does not
   // exist has no realpath and is not unsafe: the planner is what decides it is not worth a step.
+  //
+  // The *root* is resolved too, and it has to be: on macOS `os.tmpdir()` answers
+  // `/var/folders/…`, `/var` is a symlink to `/private/var`, and every real path under it starts
+  // with `/private` [observed live — the first run of this command on this machine refused its own
+  // Metro file map for escaping a directory it had never left]. Comparing a resolved path against
+  // an unresolved root makes every target of a symlinked root look like an escape.
   const real = realpathOrNull(normalized);
-  if (real && real !== normalized && !isPathInside(real, root)) {
+  const realRoot = realpathOrNull(root) ?? root;
+  if (real && real !== normalized && !isPathInside(real, realRoot)) {
     return `"${target}" resolves to "${real}", which is outside ${root}.`;
   }
 

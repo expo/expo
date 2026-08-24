@@ -301,6 +301,10 @@ describe('planFixAsync', () => {
       expect(error.message).toContain('ios/MyApp/AppDelegate.swift');
       expect(error.message).toContain('--tier safe');
       expect(error.message).toContain('holds only tracked files');
+      // Only the directory git reported on: a run that asked about both and got one back must
+      // not name the clean one as dirty.
+      expect(error.message).toContain('ios has uncommitted changes');
+      expect(error.message).not.toContain('android');
     });
 
     // The safe tier deletes nothing inside a native directory, so it is never refused for one.

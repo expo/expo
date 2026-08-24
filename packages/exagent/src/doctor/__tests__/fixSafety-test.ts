@@ -134,6 +134,21 @@ describe('rejectUnsafeTarget', () => {
     expect(rejectUnsafeTarget(`${PROJECT}/nested/link/thing`, context())).toBeTruthy();
   });
 
+  // macOS answers `os.tmpdir()` with `/var/folders/…` and `/var` is a symlink to `/private/var`,
+  // so every real path under the temporary directory starts somewhere the declared root does not.
+  // Resolving only the target and not the root made the command refuse its own Metro file map.
+  it('accepts a target under a root that is itself a symlink', () => {
+    vol.mkdirSync('/private/varlike/T', { recursive: true });
+    vol.writeFileSync('/private/varlike/T/metro-cache', 'c');
+    vol.symlinkSync('/private/varlike', '/varlike');
+    expect(
+      rejectUnsafeTarget('/varlike/T/metro-cache', {
+        ...context({ scope: 'machine', allowMachineWide: true }),
+        tmpDir: '/varlike/T',
+      })
+    ).toBeNull();
+  });
+
   // A target that does not exist is not unsafe. The planner is what decides it is not worth a step.
   it('accepts a path that does not exist yet', () => {
     expect(rejectUnsafeTarget(`${PROJECT}/android/build`, context())).toBeNull();
