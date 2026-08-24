@@ -1,3 +1,5 @@
+// @ref llp/0005-runtime-loop-tools.rfc.md §Reloading the app
+// @ref llp/0010-agent-conventions.rfc.md §The fourth: `reload`
 import chalk from 'chalk';
 
 import type { Command } from '../types';
@@ -46,11 +48,12 @@ export const exagentReload: Command = async (argv) => {
         chalk`  {dim $} npx exagent reload --route /notes`,
         chalk`  {dim $} npx exagent reload --json --timeout 60s`,
         '',
-        chalk`  {bold Why this exists.} Fast Refresh cannot recover an app whose component threw while`,
-        chalk`  rendering. The file gets fixed, {bold dev:wait} goes green because the bundle compiles,`,
-        chalk`  and the app keeps running the JavaScript from before the fix — a blank screen with`,
-        chalk`  {bold runtime:errors} still reporting the old error. This is the command that ends that`,
-        chalk`  state, and it is the step to take before believing any gate that reads the app.`,
+        chalk`  {bold Why this exists.} After a component throws while rendering, the fix on disk does`,
+        chalk`  not reach the app on its own. {bold dev:wait} goes green because the bundle compiles,`,
+        chalk`  while the app is still running the JavaScript from before the fix — and`,
+        chalk`  {bold runtime:errors --fail-on-error} keeps exiting 20 for the error that was removed,`,
+        chalk`  because the debugger replays what the app reported to every new connection. Reload`,
+        chalk`  before believing any gate that reads the app.`,
         '',
         chalk`  {bold How it reloads.} By default it broadcasts a reload on the dev server's own client`,
         chalk`  command socket — the same thing pressing {bold r} in {bold expo start} does. That needs no`,

@@ -1,4 +1,5 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Reloading the app
+// @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d)
 // Argument resolution for `exagent reload`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 

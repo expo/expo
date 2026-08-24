@@ -1,12 +1,19 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Reloading the app
+// @ref llp/0010-agent-conventions.rfc.md §The fourth: `reload`
 // Put the running app back on the code that is on disk, and prove that it went.
 //
 // The friction this exists for [observed — friction run 3, F31, 2026-08-23]: a component threw
-// while rendering, and Fast Refresh could not recover it. The file on disk was fixed, the served
-// bundle was clean, and `dev:wait` exited 0 — while the simulator showed a blank screen and
-// `runtime:errors --fail-on-error` kept exiting 20 for the *old* error. Every gate in the CLI was
-// asking about the dev server; the app was running JavaScript none of them could see. There was no
-// command to fix it, and the only recovery was `xcrun simctl terminate` by hand.
+// while rendering. The file on disk was fixed, the served bundle was clean, and `dev:wait` exited
+// 0 — while the simulator showed a blank screen and `runtime:errors --fail-on-error` kept exiting
+// 20 for the *old* error. Every gate in the CLI was asking about the dev server; nothing could see
+// the app's own session. The only recovery was `xcrun simctl terminate` by hand.
+//
+// Reproduced live [observed — 2026-08-23, SDK 57 in Expo Go on iOS] with one correction worth
+// carrying: on that SDK Fast Refresh *did* recover the screen, and the error report did not.
+// `runtime:errors --duration 3s` returned the same pre-fix error three times in a row against a
+// healthy screen, so the debugger replays what the app reported to every new connection. The trap
+// is therefore not only stale code — an error window is a property of the app's session, and the
+// session outlives the fix. A reload cleared it: `count: 0`, twice.
 
 import chalk from 'chalk';
 

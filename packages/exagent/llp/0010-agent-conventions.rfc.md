@@ -194,6 +194,32 @@ Only `errors` has it. `runtime:network`'s failed requests are something it repor
 a 404 the app handles is not the command's operation failing — and there is no equivalent question
 for its exit code to answer.
 
+### The fourth: `reload`, and the difference between failed and inconclusive
+
+[observed — 2026-08-23, `src/reload/`; friction run 3, F31] `exagent reload` is the first command
+that uses **both** codes of the band in one run, and the boundary between them is the whole design
+(the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
+
+| Code | The reload                                                        |
+| ---- | ----------------------------------------------------------------- |
+| `0`  | happened, and an app is attached again                            |
+| `20` | did not happen: nothing answered, or nothing acted on it          |
+| `22` | happened, and no app had reconnected when `--timeout` expired     |
+| `1`  | was not attempted: no dev server to reload onto, or a bad argument |
+
+Three details are decisions rather than transcription:
+
+- **A reload is never assumed.** The broadcast has no reply, so a command that sent one and exited
+  0 would be reporting an act it did not observe — the same shape of lie as a bundle check on a
+  frozen watcher. `reloaded: true` requires the app's connection to the dev server to have been
+  *replaced*, which the dev server's never-reused socket ids make provable without CDP.
+- **`20` and `22` split on whether anything happened.** Nothing reloaded is a failure with a cause
+  to read; reloaded-but-not-back is a wait that ran out, and the next action is to look again, not
+  to re-run the reload. Collapsing them would make an agent reload an app that was already fine.
+- **No dev server is `1`, not `20`.** Nothing was attempted, and the operation the code would be
+  reporting on never started. A reload with no dev server would also be actively harmful — it makes
+  the app re-fetch a bundle from nowhere — so the command refuses rather than reports.
+
 ## Needs-human protocol
 
 Decision [confirmed — Kudo, 2026-08-23]. Exit `7` above needed a way to be _raised_, and the class of failure it names is the one an agent cannot recover from by trying harder: a login, an Apple two-factor push, a device to scan a code on, a page to open. This section is the convention for all of them — one error class, one event, one registry, four ways of noticing.
