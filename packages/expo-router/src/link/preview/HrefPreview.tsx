@@ -24,6 +24,7 @@ import { getPathFromState } from '../linking';
 import { PreviewRouteContext } from './PreviewRouteContext';
 
 export function HrefPreview({ href }: { href: Href }) {
+  // TODO(@ubax): Check if using more granular context would improve performance here.
   const { segments: routeSegments } = useRouteInfo();
   const hrefState = useMemo(
     () => getStateForHref(href, { segments: routeSegments }),

@@ -1,6 +1,5 @@
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
-import { getStateFromPath } from '../link/linking';
 import {
   appendInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
@@ -29,6 +28,17 @@ export function getNavigateAction(
   { navigationRef, linking, redirects }: NavigationActionContext
 ) {
   let href: string | undefined = baseHref;
+  // TODO(@ubax): Check whether callers can guarantee a navigation ref.
+  if (navigationRef == null) {
+    throw new Error(
+      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
+    );
+  }
+  if (!navigationRef.isReady()) {
+    throw new Error(
+      'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
+    );
+  }
   if (!linking) {
     throw new Error('Attempted to link to route when no routes are present');
   }
@@ -42,7 +52,7 @@ export function getNavigateAction(
     return;
   }
 
-  const state = getStateFromPath(href, linking.config, segments);
+  const state = linking.getStateFromPath!(href, linking.config, segments);
 
   if (!state || state.routes.length === 0) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);

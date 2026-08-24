@@ -110,19 +110,13 @@ export function getLinkingConfig(
           if (typeof initialUrl === 'string') {
             initialUrl = applyRedirects(initialUrl, redirects);
             if (initialUrl && typeof nativeLinking?.redirectSystemPath === 'function') {
-              initialUrl = nativeLinking.redirectSystemPath({
-                path: initialUrl,
-                initial: true,
-              });
+              initialUrl = nativeLinking.redirectSystemPath({ path: initialUrl, initial: true });
             }
           } else if (initialUrl) {
             initialUrl = initialUrl.then((url) => {
               url = applyRedirects(url, redirects);
               if (url && typeof nativeLinking?.redirectSystemPath === 'function') {
-                return nativeLinking.redirectSystemPath({
-                  path: url,
-                  initial: true,
-                });
+                return nativeLinking.redirectSystemPath({ path: url, initial: true });
               }
               return url;
             });

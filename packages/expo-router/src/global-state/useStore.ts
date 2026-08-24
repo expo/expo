@@ -27,8 +27,8 @@ export function useStore(
   serverUrl?: string
 ): StoreContextValue {
   const navigationRef = useNavigationContainerRef();
+  const config = Constants.expoConfig?.extra?.router;
   const storeValue = useMemo(() => {
-    const config = Constants.expoConfig?.extra?.router;
     let linking: ExpoLinkingOptions | undefined;
     let rootComponent: ComponentType<any> = Fragment;
     let initialState: ReactNavigationState | undefined;
@@ -87,18 +87,6 @@ export function useStore(
       rootComponent = Fragment;
     }
 
-    storeRef.current = {
-      navigationRef,
-      routeNode,
-      config,
-      linking,
-      state: initialState,
-    };
-
-    if (initialState) {
-      storeRef.current.routeInfo = getCachedRouteInfo(initialState);
-    }
-
     return {
       navigationRef,
       linking,
@@ -107,7 +95,20 @@ export function useStore(
       redirects,
       routeNode,
     };
-  }, [context, linkingConfigOptions, navigationRef, serverUrl]);
+  }, [config, context, linkingConfigOptions, navigationRef, serverUrl]);
+
+  // TODO(@ubax): Check whether updating the store ref during every render is safe and needed.
+  storeRef.current = {
+    navigationRef,
+    routeNode: storeValue.routeNode,
+    config,
+    linking: storeValue.linking,
+    state: storeValue.initialState,
+  };
+
+  if (storeValue.initialState) {
+    storeRef.current.routeInfo = getCachedRouteInfo(storeValue.initialState);
+  }
 
   useEffect(() => {
     return () => {

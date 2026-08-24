@@ -11,7 +11,7 @@ import type {
   TabNavigationState,
 } from '../../react-navigation/native';
 import type { Href } from '../../types';
-import { resolveHref } from '../href';
+import { resolveHref, resolveHrefStringWithSegments } from '../href';
 import { getStateFromPath } from '../linking';
 import type { TabPath } from './native';
 
@@ -22,7 +22,11 @@ export function getTabPathFromRootStateByHref(
   linking: ExpoLinkingOptions | undefined
 ): TabPath[] {
   const hrefState = linking
-    ? getStateFromPath(resolveHref(href), linking.config, routeInfo.segments)
+    ? getStateFromPath(
+        resolveHrefStringWithSegments(resolveHref(href), routeInfo),
+        linking.config,
+        routeInfo.segments
+      )
     : undefined;
   const state: ReactNavigationState | undefined = rootState;
   if (!hrefState || !state) {
@@ -61,7 +65,11 @@ export function getPreloadedRouteFromRootStateByHref(
   linking: ExpoLinkingOptions | undefined
 ): NavigationRoute<ParamListBase, string> | undefined {
   const hrefState = linking
-    ? getStateFromPath(resolveHref(href), linking.config, routeInfo.segments)
+    ? getStateFromPath(
+        resolveHrefStringWithSegments(resolveHref(href), routeInfo),
+        linking.config,
+        routeInfo.segments
+      )
     : undefined;
   const state: ReactNavigationState | undefined = rootState;
   if (!hrefState || !state) {
