@@ -14,7 +14,6 @@ interface NavigateToHrefIntent {
 
 interface RoutingIntentMetadata {
   history?: {
-    id: number;
     path: string;
   };
 }

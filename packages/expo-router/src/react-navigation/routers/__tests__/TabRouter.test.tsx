@@ -594,10 +594,7 @@ test('gets state on route names change', () => {
         routeKeySeq: 0,
         type: 'tab',
       },
-      {
-        type: 'ROUTE_NAMES_CHANGED',
-        payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] },
-      },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
         routeGetIdList: {},
@@ -672,10 +669,7 @@ test('preserves focused route on route names change', () => {
         routeKeySeq: 0,
         type: 'tab',
       },
-      {
-        type: 'ROUTE_NAMES_CHANGED',
-        payload: { routeNames: ['qux', 'foo', 'fiz', 'baz'] },
-      },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz', 'baz'] } },
       {
         routeNames: ['qux', 'foo', 'fiz', 'baz'],
         routeGetIdList: {},
@@ -718,10 +712,7 @@ test('falls back to first route if route is removed on route names change', () =
         routeKeySeq: 0,
         type: 'tab',
       },
-      {
-        type: 'ROUTE_NAMES_CHANGED',
-        payload: { routeNames: ['qux', 'foo', 'fiz'] },
-      },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'foo', 'fiz'],
         routeGetIdList: {},
@@ -816,10 +807,7 @@ test.each<[Parameters<typeof TabRouter>[0]['backBehavior'], string[]]>([
     expect(
       router.getStateForAction(
         state,
-        {
-          type: 'ROUTE_NAMES_CHANGED',
-          payload: { routeNames: ['qux', 'baz', 'bar'] },
-        },
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'bar'] } },
         { ...options, routeNames: ['qux', 'baz', 'bar'] }
       )?.state
     ).toMatchObject({
@@ -860,10 +848,7 @@ test.each<['history' | 'fullHistory', string[]]>([
     expect(
       router.getStateForAction(
         state,
-        {
-          type: 'ROUTE_NAMES_CHANGED',
-          payload: { routeNames: ['bar', 'qux'] },
-        },
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'qux'] } },
         { ...options, routeNames: ['bar', 'qux'] }
       )?.state
     ).toMatchObject({
@@ -2011,9 +1996,7 @@ test('preserves params in history with backBehavior: fullHistory', () => {
   )!.state as TabNavigationState<ParamListBase>;
 
   expect(state.routes[2]!.params).toEqual({ value: 'updated with setParams' });
-  expect(state.history?.[2]!.params).toEqual({
-    value: 'updated with setParams',
-  });
+  expect(state.history?.[2]!.params).toEqual({ value: 'updated with setParams' });
 
   state = router.getStateForAction(
     state,

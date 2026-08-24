@@ -214,10 +214,9 @@ export type RouterActionResult<State extends NavigationState> = {
   /**
    * The navigation state produced by the action.
    */
-  state: State | PartialState<State>;
+  state: State;
   /**
-   * The key of the route affected by the action. This is `undefined` when a partial state does
-   * not provide a key for the affected route.
+   * The key of the route affected by the action.
    */
   affectedRouteKey: string | undefined;
 };

@@ -1,4 +1,5 @@
 import type { RouteNode } from '../../Route';
+import { expectCompleteStateToMatch } from '../../__tests__/assertCompleteState';
 import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
 import { completeParsedState, createSeededRootState } from '../createSeededNavigationState';
 
@@ -12,24 +13,6 @@ function node(route: string, children: RouteNode[] = [], initialRouteName?: stri
     contextKey: route,
     loadRoute: () => ({}),
   };
-}
-
-function expectCompleteState(state: object) {
-  expect(state).toMatchObject({
-    stale: false,
-    key: expect.any(String),
-    routeKeySeq: expect.any(Number),
-    index: expect.any(Number),
-    routeNames: expect.any(Array),
-    routes: expect.any(Array),
-  });
-
-  for (const route of (state as { routes: { key?: string; state?: object }[] }).routes) {
-    expect(route.key).toEqual(expect.any(String));
-    if (route.state) {
-      expectCompleteState(route.state);
-    }
-  }
 }
 
 test('completes nested parsed routes without dropping anchor or dynamic params', () => {
@@ -76,7 +59,7 @@ test('completes nested parsed routes without dropping anchor or dynamic params',
     routeNode
   );
 
-  expectCompleteState(state);
+  expectCompleteStateToMatch(state, {});
   expect(state.routes[0]!.state).toMatchObject({
     routeNames: ['index', '(group)'],
     routes: [
@@ -120,7 +103,7 @@ test('completes parsed routes without a route tree', () => {
     ROOT_CHAIN
   );
 
-  expectCompleteState(state!);
+  expectCompleteStateToMatch(state, {});
   expect(state?.routes[0]!.state?.routes[0]).toMatchObject({
     name: 'b',
     path: '/foo/bar/apple',

@@ -47,7 +47,7 @@ function isStackAction(
   );
 }
 
-const isPreviewAction = (action: NavigationAction): action is ExpoNavigationAction =>
+const isPreviewAction = (action: NavigationAction): boolean =>
   !!action.payload &&
   'params' in action.payload &&
   typeof action.payload.params === 'object' &&
@@ -91,8 +91,6 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         return original.getStateForAction(state, action, options);
       }
 
-      const minter = createRouteKeyMinter(state);
-
       // The dynamic getId added to an action, `router.push('screen', { singular: true })`
       const actionSingularOptions =
         action.payload && 'singular' in action.payload
@@ -128,174 +126,81 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
             return null;
           }
 
-          // START FORK
           const getId = getIdFunction();
-          // const getId = options.routeGetIdList[action.payload.name];
-          // END FORK
           const id = getId?.({ params: action.payload.params });
           const activeRoutes = state.routes.slice(0, state.index + 1);
           const preloadedRoutes = state.routes.slice(state.index + 1);
-
-          let route: Route<string> | undefined;
-
-          if (id !== undefined) {
-            route = activeRoutes.findLast(
-              (route) =>
-                route.name === action.payload.name && id === getId?.({ params: route.params })
-            );
-          } else if (action.type === 'NAVIGATE') {
-            const currentRoute = activeRoutes[state.index]!;
-
-            // If the route matches the current one, then navigate to it
-            if (action.payload.name === currentRoute.name && !isPreviewAction(action)) {
-              route = currentRoute;
-            } else if (action.payload.pop) {
-              route = activeRoutes.findLast((route) => route.name === action.payload.name);
-            }
+          const isPreview = isPreviewAction(action);
+          const activeMatch =
+            id === undefined
+              ? undefined
+              : activeRoutes.findLast(
+                  (route) =>
+                    route.name === action.payload.name && id === getId?.({ params: route.params })
+                );
+          const previewRoute =
+            isPreview && !activeMatch
+              ? preloadedRoutes.find(
+                  (route) => route.name === action.payload.name && id === route.key
+                )
+              : undefined;
+          const currentRoute = activeRoutes[state.index]!;
+          const shouldCreateSingularRoute =
+            action.type === 'NAVIGATE' &&
+            !isPreview &&
+            id === undefined &&
+            currentRoute.name === action.payload.name &&
+            getSingularId(currentRoute.name, { params: currentRoute.params }) !==
+              getSingularId(action.payload.name, { params: action.payload.params });
+          const baseAction =
+            isPreview && !activeMatch ? { ...action, type: 'PUSH' as const } : action;
+          const routeGetIdList = { ...options.routeGetIdList };
+          if (getId) {
+            routeGetIdList[action.payload.name] = getId;
+          }
+          if (previewRoute) {
+            const previewParams = previewRoute.params;
+            const actionParams = action.payload.params;
+            routeGetIdList[action.payload.name] = ({ params }) =>
+              params === previewParams || params === actionParams ? id : getId?.({ params });
           }
 
-          // START FORK
-          let isPreloadedRoute = false;
-          if (isPreviewAction(action) && !route) {
-            route = preloadedRoutes.find(
-              (route) => route.name === action.payload.name && id === route.key
-            );
-            isPreloadedRoute = !!route;
-          }
-          // END FORK
-
-          if (!route) {
-            route = preloadedRoutes.find(
-              (route) =>
-                route.name === action.payload.name && id === getId?.({ params: route.params })
-            );
-            // START FORK
-            isPreloadedRoute = !!route;
-            // END FORK
-          }
-
-          if (route) {
-            route = attachRouteState(route, action);
-          }
-
-          let params;
-
-          if (action.type === 'NAVIGATE' && action.payload.merge && route) {
-            params =
-              action.payload.params !== undefined
-                ? {
-                    ...route.params,
-                    ...action.payload.params,
-                  }
-                : route.params;
-          } else {
-            params = action.payload.params;
-          }
-
-          let routes: Route<string>[];
-
-          if (route) {
-            if (action.type === 'NAVIGATE' && action.payload.pop) {
-              routes = [];
-
-              // Get all routes until the matching one
-              for (const r of activeRoutes) {
-                if (r.key === route.key) {
-                  routes.push({
-                    ...route,
-                    path: action.payload.path !== undefined ? action.payload.path : route.path,
-                    params,
-                  });
-                  break;
-                }
-
-                routes.push(r);
-              }
-
-              // Promote the route when it is preloaded and therefore absent from the active routes.
-              if (!routes.some((r) => r.key === route.key)) {
-                routes.push({
-                  ...route,
-                  path: action.payload.path !== undefined ? action.payload.path : route.path,
-                  params,
-                });
-              }
-            } else {
-              // START FORK
-              // If there is an id, then filter out the existing route with the same id.
-              // THIS ACTION IS DANGEROUS. This can cause React Native Screens to freeze
-              if (id !== undefined) {
-                routes = activeRoutes.filter((r) => r.key !== route.key);
-              } else if (action.type === 'NAVIGATE' && activeRoutes.length > 0) {
-                // The navigation action should only replace the last route if it has the same name and path params.
-                const lastRoute = activeRoutes[activeRoutes.length - 1]!;
-                if (
-                  getSingularId(lastRoute.name, { params: lastRoute.params }) ===
-                  getSingularId(route.name, { params })
-                ) {
-                  routes = activeRoutes.slice(0, -1);
-                } else {
-                  routes = [...activeRoutes];
-                }
-              } else {
-                routes = [...activeRoutes];
-              }
-
-              // If the routes length is the same as the state routes length, then we are navigating to a new route.
-              // Otherwise we are replacing an existing route.
-              // For preloaded route, we want to use the same key, so that preloaded screen is used.
-              const key =
-                routes.length === activeRoutes.length && !isPreloadedRoute
-                  ? minter.mint(action.payload.name)
-                  : route.key;
-
-              routes.push({
-                ...route,
-                key,
-                path:
-                  action.type === 'NAVIGATE' && action.payload.path !== undefined
-                    ? action.payload.path
-                    : route.path,
+          let actionResult: ReturnType<typeof original.getStateForAction>;
+          if (shouldCreateSingularRoute) {
+            const minter = createRouteKeyMinter(state);
+            const params = action.payload.merge
+              ? { ...currentRoute.params, ...action.payload.params }
+              : action.payload.params;
+            const route = attachRouteState(
+              {
+                ...currentRoute,
+                key: minter.mint(action.payload.name),
+                path: action.payload.path ?? currentRoute.path,
                 params,
-              });
-
-              // routes = state.routes.filter((r) => r.key !== route.key);
-              // routes.push({
-              //   ...route,
-              //   path:
-              //     action.type === 'NAVIGATE' && action.payload.path !== undefined
-              //       ? action.payload.path
-              //       : route.path,
-              //   params,
-              // });
-              // END FORK
-            }
+              },
+              action
+            );
+            actionResult = {
+              state: {
+                ...state,
+                routeKeySeq: minter.routeKeySeq,
+                index: activeRoutes.length,
+                routes: activeRoutes.concat(route, preloadedRoutes),
+              },
+              affectedRouteKey: route.key,
+            };
           } else {
-            routes = [
-              ...activeRoutes,
-              attachRouteState(
-                {
-                  key: minter.mint(action.payload.name),
-                  name: action.payload.name,
-                  path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
-                  params,
-                },
-                action
-              ),
-            ];
+            actionResult = original.getStateForAction(state, baseAction, {
+              ...options,
+              routeGetIdList,
+            });
+          }
+          if (!actionResult) {
+            return actionResult;
           }
 
-          // START FORK
-          // return filterSingular(
-          const result = {
-            ...state,
-            routeKeySeq: minter.routeKeySeq,
-            index: routes.length - 1,
-            routes: routes.concat(
-              preloadedRoutes.filter((route) => routes[routes.length - 1]!.key !== route.key)
-            ),
-          };
-          const affectedRouteKey = routes[routes.length - 1]!.key;
+          const affectedRouteKey = actionResult.affectedRouteKey;
+          const result = actionResult.state;
           if (actionSingularOptions) {
             const filteredState = filterSingular(result, getId);
             return { state: filteredState, affectedRouteKey };
@@ -323,103 +228,49 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           }
 
           return { state: result, affectedRouteKey };
-          // return {
-          //   ...state,
-          //   index: routes.length - 1,
-          //   preloadedRoutes: state.preloadedRoutes.filter(
-          //     (route) => routes[routes.length - 1].key !== route.key
-          //   ),
-          //   routes,
-          // };
-          // END FORK
         }
         case 'PRELOAD': {
-          // TODO(@ubax): Combine this with the base StackRouter PRELOAD implementation.
-          // START FORK
-          // This will be the case for example for protected route
           if (!state.routeNames.includes(action.payload.name)) {
             return null;
           }
-          // END FORK
-          const getId = options.routeGetIdList[action.payload.name];
-          const id = getId?.({ params: action.payload.params });
-          const activeRoutes = state.routes.slice(0, state.index + 1);
-          const preloadedRoutes = state.routes.slice(state.index + 1);
-
-          let route: Route<string> | undefined;
-
-          if (id !== undefined) {
-            route = activeRoutes.find(
-              (route) =>
-                route.name === action.payload.name && id === getId?.({ params: route.params })
-            );
+          const actionResult = original.getStateForAction(state, action, options);
+          if (!actionResult) {
+            return actionResult;
           }
-
+          const affectedRouteKey = actionResult.affectedRouteKey;
+          const affectedIndex = actionResult.state.routes.findIndex(
+            (route) => route.key === affectedRouteKey
+          );
           const preloadZoomTransitionId = getZoomTransitionIdFromAction(action);
+          let routes = actionResult.state.routes;
 
-          if (route) {
-            return {
-              state: {
-                ...state,
-                routes: state.routes.map((r) => {
-                  if (r.key !== route?.key) {
-                    return r;
-                  }
-                  return attachRouteState(
-                    {
-                      ...r,
-                      params: preloadZoomTransitionId
-                        ? {
-                            ...action.payload.params,
-                            [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: r.key,
-                          }
-                        : action.payload.params,
-                    },
-                    action
-                  );
-                }),
-              },
-              affectedRouteKey: route.key,
-            };
-          } else {
-            // START FORK
-            const preloadedRouteKey = minter.mint(action.payload.name);
-            const currentPreloadedRoute: (typeof state)['routes'][number] = attachRouteState(
-              {
-                key: preloadedRouteKey,
-                name: action.payload.name,
-                params: preloadZoomTransitionId
-                  ? {
-                      ...action.payload.params,
-                      [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]:
-                        preloadedRouteKey,
-                    }
-                  : action.payload.params,
-              },
-              action
-            );
-            // END FORK
-            return {
-              state: {
-                ...state,
-                routeKeySeq: minter.routeKeySeq,
-                // START FORK
-                // Adding the current preloaded route to the beginning of the preloadedRoutes array
-                // This ensures that the preloaded route will be the next one after the visible route
-                // and when navigation will happen, there will be no reshuffling
-                // This is a workaround for the link preview navigation issue, when screen would freeze after navigation from native side
-                // and reshuffling from react-navigation
-                routes: activeRoutes.concat(
-                  currentPreloadedRoute,
-                  preloadedRoutes.filter(
-                    (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
-                  )
-                ),
-              },
-              affectedRouteKey: preloadedRouteKey,
-              // END FORK
-            };
+          if (affectedIndex > state.index + 1) {
+            const affectedRoute = routes[affectedIndex]!;
+            routes = routes
+              .toSpliced(affectedIndex, 1)
+              .toSpliced(state.index + 1, 0, affectedRoute);
           }
+          if (preloadZoomTransitionId) {
+            routes = routes.map((route) =>
+              route.key === affectedRouteKey
+                ? {
+                    ...route,
+                    params: {
+                      ...route.params,
+                      [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: affectedRouteKey,
+                    },
+                  }
+                : route
+            );
+          }
+
+          return {
+            state:
+              routes === actionResult.state.routes
+                ? actionResult.state
+                : { ...actionResult.state, routes },
+            affectedRouteKey,
+          };
         }
         default: {
           return original.getStateForAction(state, action, options);

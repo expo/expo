@@ -1,5 +1,6 @@
 import type { RouteNode } from '../Route';
 import {
+  findRouteNodeAndParamsForState,
   findRouteNodeByName,
   findRouteNodeForState,
   getValidInitialRouteName,
@@ -175,5 +176,14 @@ describe(findRouteNodeForState, () => {
         state: { routes: [{ name: 'missing' }] },
       })
     ).toBeUndefined();
+  });
+});
+
+describe(findRouteNodeAndParamsForState, () => {
+  it('returns no route node without nested state', () => {
+    expect(findRouteNodeAndParamsForState(asRouteNode('_layout'), undefined)).toEqual({
+      routeNode: undefined,
+      params: {},
+    });
   });
 });

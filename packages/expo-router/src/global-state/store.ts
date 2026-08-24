@@ -13,8 +13,6 @@ type StoreRef = {
   routeNode: RouteNode | null;
   state?: ReactNavigationState;
   linking?: ExpoLinkingOptions;
-  // TODO(@ubax): dead code, remove in a follow-up. Written by useStore but never read.
-  config: any;
   redirects?: StoreRedirects[];
 };
 
@@ -22,7 +20,6 @@ export const storeRef = {
   current: {} as StoreRef,
 };
 
-// TODO(temporary): remove once imperative consumers read the reducer state directly.
 export function syncStoreNavigationState(state: ReactNavigationState) {
   storeRef.current.state = state;
 
@@ -56,8 +53,7 @@ export function setSplashScreenAnimationFrame(value: number | undefined) {
   splashScreenAnimationFrame = value;
 }
 
-// TODO(@ubax): dead code, remove in a follow-up. The `export` is unnecessary; only self-consumed below.
-export function setHasAttemptedToHideSplash(value: boolean) {
+function setHasAttemptedToHideSplash(value: boolean) {
   hasAttemptedToHideSplash = value;
 }
 

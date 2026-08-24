@@ -1,28 +1,22 @@
 import { expect, jest, test } from '@jest/globals';
-import { act, render, renderHook, type RenderAPI } from '@testing-library/react-native';
+import {
+  act,
+  render as renderWithoutStore,
+  renderHook as renderHookWithoutStore,
+  type RenderAPI,
+} from '@testing-library/react-native';
+import type { ReactNode } from 'react';
 import { Text } from 'react-native';
 
 import type { RouteNode } from '../../Route';
 import { routingQueue } from '../../global-state/routingQueue';
 import { store, storeRef as mockStoreRef } from '../../global-state/store';
+import { StoreContext, type StoreContextValue } from '../../global-state/storeContext';
 import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
 import { NavigationContainer } from '../NavigationContainer';
 import { useLinking } from '../useLinking';
 
 let errorSpy: jest.SpiedFunction<typeof console.error> | undefined;
-let mockRouteNode: RouteNode | undefined;
-
-jest.mock('../../global-state/storeContext', () => ({
-  useExpoRouterStore: () => ({
-    get state() {
-      return mockStoreRef.current.state;
-    },
-    get routeNode() {
-      return mockRouteNode;
-    },
-  }),
-}));
-
 function node(route: string, children: RouteNode[] = []): RouteNode {
   return {
     type: 'route',
@@ -32,6 +26,33 @@ function node(route: string, children: RouteNode[] = []): RouteNode {
     contextKey: route,
     loadRoute: () => ({}),
   };
+}
+
+const storeValue: StoreContextValue = {
+  get navigationRef() {
+    return mockStoreRef.current.navigationRef;
+  },
+  linking: undefined,
+  get state() {
+    return mockStoreRef.current.state;
+  },
+  rootComponent: Text,
+  get routeNode() {
+    return mockStoreRef.current.routeNode;
+  },
+  redirects: [],
+};
+
+function StoreProvider({ children }: { children: ReactNode }) {
+  return <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>;
+}
+
+function render(element: React.ReactElement) {
+  return renderWithoutStore(element, { wrapper: StoreProvider });
+}
+
+function renderHook<Result>(callback: () => Result) {
+  return renderHookWithoutStore(callback, { wrapper: StoreProvider });
 }
 
 function getParsedHomeState() {
@@ -47,7 +68,7 @@ function getParsedHomeState() {
 
 beforeEach(() => {
   routingQueue.queue = [];
-  mockRouteNode = node('root', [node('home', [node('[id]')])]);
+  mockStoreRef.current.routeNode = node('root', [node('home', [node('[id]')])]);
   mockStoreRef.current.state = undefined;
 });
 
@@ -314,7 +335,7 @@ test('seeds the store when a synchronous initial URL is absent', () => {
 });
 
 test('throws when linking does not produce an initial state', () => {
-  mockRouteNode = undefined;
+  mockStoreRef.current.routeNode = null;
 
   expect(() =>
     render(

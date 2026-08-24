@@ -106,6 +106,27 @@ export function findRouteNodeForState(
   return currentNode;
 }
 
+export function findRouteNodeAndParamsForState(
+  node: RouteNode | null | undefined,
+  state: PartialRoute<NavigationRoute<string>>['state']
+): { routeNode: RouteNode | undefined; params: Record<string, unknown> } {
+  const params: Record<string, unknown> = {};
+  if (!state) {
+    return { routeNode: undefined, params };
+  }
+  let routeNode = node ?? undefined;
+
+  while (state) {
+    const route: PartialRoute<NavigationRoute<string>> | undefined =
+      state.routes[state.index ?? state.routes.length - 1];
+    Object.assign(params, route?.params);
+    routeNode = findRouteNodeByName(routeNode, route?.name);
+    state = route?.state;
+  }
+
+  return { routeNode, params };
+}
+
 export function getValidInitialRoute(
   node: RouteNode | null,
   initialRouteName = node?.initialRouteName,

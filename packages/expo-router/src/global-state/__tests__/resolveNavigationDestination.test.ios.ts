@@ -257,61 +257,6 @@ test('builds the synthetic root subtree without registered routers', () => {
   );
 });
 
-test('rebuilds from a router that returns partial state', () => {
-  const child: NavigationState = {
-    stale: false,
-    routeKeySeq: 0,
-    key: 'child-stack',
-    index: 0,
-    routeNames: ['index', 'details'],
-    routes: [{ key: 'index-key', name: 'index' }],
-  };
-  const root: NavigationState = {
-    stale: false,
-    routeKeySeq: 0,
-    key: 'root-stack',
-    index: 0,
-    routeNames: ['settings'],
-    routes: [{ key: 'settings-key', name: 'settings', state: child }],
-  };
-  const partialReducer = jest.fn(() => ({
-    state: { routes: [{ name: 'details' }] },
-    affectedRouteKey: undefined,
-  }));
-  const registry: RouterRegistry = new Map([
-    ['root-stack', entry(StackRouter({}), root.routeNames)],
-    [
-      'child-stack',
-      {
-        reduce: partialReducer,
-      },
-    ],
-  ]);
-
-  const action = resolveNavigationDestination({
-    targetState: {
-      routes: [{ name: 'settings', state: { routes: [{ name: 'details' }] } }],
-    },
-    navigationState: root,
-    routeNode: node('root', [node('settings', [node('index'), node('details')])]),
-    registry,
-    action: { type: 'NAVIGATE', payload: {} },
-  });
-
-  expect(partialReducer).toHaveBeenCalled();
-  expect(action.payload.state).toEqual(
-    expect.objectContaining({
-      stale: false,
-      routeKeySeq: 1,
-      key: expect.any(String),
-      routeNames: ['index', 'details'],
-    })
-  );
-  expect(action.payload.state?.routes[0]).toEqual(
-    expect.objectContaining({ name: 'details', key: expect.any(String) })
-  );
-});
-
 test('strips source, target and first-level options from deeper actions', () => {
   const child: NavigationState = {
     stale: false,

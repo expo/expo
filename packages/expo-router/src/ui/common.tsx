@@ -52,14 +52,18 @@ type TriggerConfig =
 
 export type TriggerMap = Record<string, TriggerConfig>;
 
+export function getTabRoute(state: NavigationState, name: string) {
+  const route = state.routes.find((route) => route.name === name);
+  return { route, isSwitching: state.routes[state.index]?.key !== route?.key };
+}
+
 export function buildTabAction(
   config: Extract<TriggerConfig, { type: 'internal' }>,
   state: NavigationState,
   registry: RouterRegistry,
   resetOnFocus?: boolean
 ): NavigationAction {
-  const route = state.routes.find((route) => route.name === config.routeNode.route);
-  const isSwitching = state.routes[state.index]?.key !== route?.key;
+  const { route, isSwitching } = getTabRoute(state, config.routeNode.route);
   const shouldResolve =
     config.deep || route?.state === undefined || Boolean(resetOnFocus && isSwitching);
   const navigationState =

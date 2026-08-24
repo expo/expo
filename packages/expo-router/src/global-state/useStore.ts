@@ -72,7 +72,7 @@ export function useStore(
     }
 
     return { linking, rootComponent, redirects, routeNode };
-  }, [config, context, linkingConfigOptions, navigationRef, serverUrl]);
+  }, [config, context, linkingConfigOptions, serverUrl]);
 
   const { linking, rootComponent, redirects, routeNode } = configValue;
 
@@ -87,7 +87,6 @@ export function useStore(
     owner,
     navigationRef,
     routeNode,
-    config,
     linking,
     redirects,
     state,
@@ -97,18 +96,18 @@ export function useStore(
     () => ({
       navigationRef,
       linking,
-      initialState: owner.state,
+      get state() {
+        return storeRef.current.state;
+      },
       rootComponent,
       redirects,
       routeNode,
     }),
-    [navigationRef, linking, owner, rootComponent, redirects, routeNode]
+    [navigationRef, linking, rootComponent, redirects, routeNode]
   );
 
   useEffect(() => {
     return () => {
-      // listener();
-
       const animationFrame = getSplashScreenAnimationFrame();
       if (animationFrame) {
         cancelAnimationFrame(animationFrame);

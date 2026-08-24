@@ -15,6 +15,7 @@ function assertCompleteState(state: NavigationState | PartialState<NavigationSta
   expect(state).toMatchObject({
     stale: false,
     key: expect.any(String),
+    routeKeySeq: expect.any(Number),
     index: expect.any(Number),
     routeNames: expect.any(Array),
     routes: expect.any(Array),

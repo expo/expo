@@ -1,9 +1,12 @@
-import { act, render, waitFor } from '@testing-library/react-native';
+import { act, render as renderWithoutStore, waitFor } from '@testing-library/react-native';
+import type { ReactNode } from 'react';
 
 import type { RouteNode } from '../../Route';
 import { expectCompleteStateToMatch } from '../../__tests__/assertCompleteState';
 import { RouterRegistryProvider } from '../../global-state/routerRegistry';
 import { routingQueue } from '../../global-state/routingQueue';
+import { storeRef as mockStoreRef } from '../../global-state/store';
+import { StoreContext, type StoreContextValue } from '../../global-state/storeContext';
 import { Screen } from '../../react-navigation/core/Screen';
 import { createNavigationContainerRef } from '../../react-navigation/core/createNavigationContainerRef';
 import { useNavigationBuilder } from '../../react-navigation/core/useNavigationBuilder';
@@ -13,14 +16,7 @@ import { createMemoryHistory } from '../createMemoryHistory';
 import { useLinking } from '../useLinking';
 
 jest.mock('../createMemoryHistory');
-jest.mock('../../global-state/store', () => ({
-  ...jest.requireActual<typeof import('../../global-state/store')>('../../global-state/store'),
-  syncStoreNavigationState: jest.fn(),
-}));
-
 let mockNavigationRef: ReturnType<typeof createNavigationContainerRef>;
-let mockStoreState: NavigationState | undefined;
-let mockStoreEnabled = false;
 const mockRouteNode: RouteNode = {
   type: 'route',
   route: 'root',
@@ -29,16 +25,28 @@ const mockRouteNode: RouteNode = {
   contextKey: 'root',
   loadRoute: () => ({}),
 };
-jest.mock('../../global-state/storeContext', () => ({
-  useExpoRouterStore: () => ({
-    get state() {
-      return mockStoreState ?? mockNavigationRef?.current?.getRootState();
-    },
-    get routeNode() {
-      return mockStoreEnabled ? mockRouteNode : null;
-    },
-  }),
-}));
+const storeValue: StoreContextValue = {
+  get navigationRef() {
+    return mockStoreRef.current.navigationRef;
+  },
+  linking: undefined,
+  get state() {
+    return mockStoreRef.current.state;
+  },
+  rootComponent: EmptyScreen,
+  get routeNode() {
+    return mockStoreRef.current.routeNode;
+  },
+  redirects: [],
+};
+
+function StoreProvider({ children }: { children: ReactNode }) {
+  return <StoreContext.Provider value={storeValue}>{children}</StoreContext.Provider>;
+}
+
+function render(element: React.ReactElement) {
+  return renderWithoutStore(element, { wrapper: StoreProvider });
+}
 jest.mock('../../global-state/utils', () => ({
   ...jest.requireActual<typeof import('../../global-state/utils')>('../../global-state/utils'),
   getRootStackRouteNames: () => ['home'],
@@ -60,8 +68,8 @@ function EmptyScreen() {
 }
 
 beforeEach(() => {
-  mockStoreState = undefined;
-  mockStoreEnabled = false;
+  mockStoreRef.current.state = undefined;
+  mockStoreRef.current.routeNode = null;
   routingQueue.queue = [];
   jest.mocked(createMemoryHistory).mockReturnValue(history);
   Object.defineProperty(globalThis, 'location', {
@@ -73,7 +81,7 @@ beforeEach(() => {
 const webTest = typeof window === 'undefined' ? test.skip : test;
 
 webTest('queues forward history and restores saved, parsed, and initial state', () => {
-  mockStoreEnabled = true;
+  mockStoreRef.current.routeNode = mockRouteNode;
   let historyListener: (() => void) | undefined;
   let historyIndex = 3;
   jest.mocked(createMemoryHistory).mockReturnValueOnce({
@@ -117,7 +125,7 @@ webTest('queues forward history and restores saved, parsed, and initial state', 
   expect(routingQueue.queue[0]).toMatchObject({
     type: 'NAVIGATE_TO_HREF',
     payload: { href: '/forward', options: { event: 'NAVIGATE' } },
-    metadata: { history: { id: 0, path: '/forward' } },
+    metadata: { history: { path: '/forward' } },
   });
 
   historyIndex = 3;
@@ -127,7 +135,7 @@ webTest('queues forward history and restores saved, parsed, and initial state', 
   expect(routingQueue.queue[1]).toMatchObject({
     type: 'ACTION',
     payload: { action: { type: 'RESET', payload: savedState, target: 'saved-stack' } },
-    metadata: { history: { id: 1, path: '/saved' } },
+    metadata: { history: { path: '/saved' } },
   });
 
   historyIndex = 2;
@@ -138,7 +146,7 @@ webTest('queues forward history and restores saved, parsed, and initial state', 
   expect(parsedIntent).toMatchObject({
     type: 'ACTION',
     payload: { action: { type: 'RESET', target: expect.any(String) } },
-    metadata: { history: { id: 2, path: '/parsed' } },
+    metadata: { history: { path: '/parsed' } },
   });
   const parsedPayload =
     parsedIntent?.type === 'ACTION' ? parsedIntent.payload.action.payload : undefined;
@@ -154,12 +162,12 @@ webTest('queues forward history and restores saved, parsed, and initial state', 
   expect(routingQueue.queue[3]).toMatchObject({
     type: 'ACTION',
     payload: { action: { type: 'RESET', payload: initialState, target: 'root' } },
-    metadata: { history: { id: 3, path: '/invalid' } },
+    metadata: { history: { path: '/invalid' } },
   });
 });
 
 webTest('parses the initial URL instead of returning the existing store state', async () => {
-  mockStoreEnabled = true;
+  mockStoreRef.current.routeNode = mockRouteNode;
   const existingState = {
     stale: false as const,
     routeKeySeq: expect.any(Number),
@@ -169,7 +177,7 @@ webTest('parses the initial URL instead of returning the existing store state', 
     routes: [{ key: 'home', name: 'home' }],
   };
   mockNavigationRef = createNavigationContainerRef();
-  mockStoreState = existingState;
+  mockStoreRef.current.state = existingState;
   Object.assign(globalThis.location, { pathname: '/home', search: '', hash: '' });
   let getInitialState: ReturnType<typeof useLinking>['getInitialState'] | undefined;
   const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
@@ -197,7 +205,7 @@ webTest('parses the initial URL instead of returning the existing store state', 
 });
 
 webTest('getInitialState is computed once with first-render options', async () => {
-  mockStoreEnabled = true;
+  mockStoreRef.current.routeNode = mockRouteNode;
   mockNavigationRef = createNavigationContainerRef();
   Object.assign(globalThis.location, { pathname: '/home', search: '', hash: '' });
   const firstGetStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
@@ -243,7 +251,7 @@ test('does not add browser history when preloading a stack route', async () => {
   };
   const ref = createNavigationContainerRef<any>();
   mockNavigationRef = ref;
-  mockStoreState = {
+  mockStoreRef.current.state = {
     stale: false,
     routeKeySeq: expect.any(Number),
     key: 'root',

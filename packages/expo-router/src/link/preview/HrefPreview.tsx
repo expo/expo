@@ -3,8 +3,8 @@
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
-import { findRouteNodeForState, type RouteNode } from '../../Route';
-import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
+import { findRouteNodeAndParamsForState } from '../../Route';
+import { INTERNAL_SLOT_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
 import { store } from '../../global-state/router-store';
@@ -123,26 +123,9 @@ function PreviewForInternalRoutes() {
   );
 }
 
-function collectParamsFromState(state: ResultState | undefined): UnknownOutputParams {
-  const params: UnknownOutputParams = {};
-
-  while (state) {
-    const route = state.routes[state.index ?? state.routes.length - 1]!;
-    Object.assign(params, route.params);
-    state = route.state;
-  }
-
-  return params;
-}
-
 function getParamsAndNodeFromHref(hrefState: ResultState) {
   const index = hrefState?.index ?? 0;
   if (hrefState?.routes[index] && hrefState.routes[index].name !== INTERNAL_SLOT_NAME) {
-    const name = hrefState.routes[index].name;
-    if (name === SITEMAP_ROUTE_NAME || name === NOT_FOUND_ROUTE_NAME) {
-      console.log(store.routeNode);
-      console.log(hrefState);
-    }
     const error = `Expo Router Error: Expected navigation state to begin with one of [${getRootStackRouteNames().join(', ')}] routes`;
     if (process.env.NODE_ENV !== 'production') {
       throw new Error(error);
@@ -151,11 +134,10 @@ function getParamsAndNodeFromHref(hrefState: ResultState) {
     }
   }
   const initialState = hrefState?.routes[index]?.state;
-  const initialRoute = initialState?.routes[initialState.index ?? initialState.routes.length - 1];
-  const routeNode: RouteNode | undefined = findRouteNodeForState(store.routeNode, initialRoute);
-  const params = collectParamsFromState(initialState);
+  const { routeNode, params } = findRouteNodeAndParamsForState(store.routeNode, initialState);
 
-  return { params, routeNode, state: initialState };
+  // Linking has already parsed these values into the public search-param shape.
+  return { params: params as UnknownOutputParams, routeNode, state: initialState };
 }
 
 const displayWarningForProp = (prop: string) => {

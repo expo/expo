@@ -2,7 +2,7 @@ import React from 'react';
 import { I18nManager } from 'react-native';
 
 import { syncStoreNavigationState } from '../global-state/store';
-import { useExpoRouterStore } from '../global-state/storeContext';
+import { StoreContext } from '../global-state/storeContext';
 import type {
   DocumentTitleOptions,
   LinkingOptions,
@@ -74,7 +74,7 @@ function NavigationContainerInner(
   }: Props<ParamListBase>,
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
 ) {
-  const store = useExpoRouterStore();
+  const store = React.use(StoreContext);
 
   if (linking?.config) {
     validatePathConfig(linking.config);

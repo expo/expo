@@ -1,13 +1,10 @@
-import type { RouteNode } from '../Route';
 import type { NavigationAction, NavigationState, PartialState } from '../react-navigation/routers';
-import { completeNavigationState } from './createSeededNavigationState';
 import type { RouterRegistry } from './routerRegistry';
 
 export type TreeNode = {
   state: NavigationState;
   parent?: TreeNode;
   parentRouteIndex?: number;
-  parentRouteKey?: string;
 };
 
 export type NavigationTreeIndex = {
@@ -18,7 +15,6 @@ export type NavigationTreeIndex = {
 type Handler = {
   node: TreeNode;
   nextSlice: NavigationState;
-  handlerNoop: boolean;
   shouldFocus: boolean;
 };
 
@@ -26,15 +22,7 @@ export type NavigationTreeReduction =
   | { handled: false }
   | {
       handled: true;
-      handlerNoop: boolean;
-      treeChanged: boolean;
       nextState: NavigationState;
-      originStateKey?: string;
-      target: {
-        stateKey: string;
-        prevSlice: NavigationState;
-        nextSlice: NavigationState;
-      };
     };
 
 export function indexNavigationTree(root: NavigationState): NavigationTreeIndex {
@@ -44,15 +32,14 @@ export function indexNavigationTree(root: NavigationState): NavigationTreeIndex 
   const indexState = (
     state: NavigationState,
     parent?: TreeNode,
-    parentRouteIndex?: number,
-    parentRouteKey?: string
+    parentRouteIndex?: number
   ): TreeNode => {
-    const node = { state, parent, parentRouteIndex, parentRouteKey };
+    const node = { state, parent, parentRouteIndex };
     nodes.set(state.key, node);
     state.routes.forEach((route, index) => {
       if (route.state) {
         assertCompleteState(route.state);
-        indexState(route.state, node, index, route.key);
+        indexState(route.state, node, index);
       }
     });
     return node;
@@ -118,12 +105,10 @@ export function findActionHandler(
       return false;
     }
 
-    // Router results preserve the complete state shape supplied by the registry.
-    const nextSlice = (result?.state ?? node.state) as NavigationState;
+    const nextSlice = result?.state ?? node.state;
     handler = {
       node,
       nextSlice,
-      handlerNoop: nextSlice === node.state,
       shouldFocus: entry.shouldActionChangeFocus?.(action) ?? false,
     };
     return true;
@@ -180,12 +165,10 @@ export function reduceNavigationTree(
     originKey,
     origin,
     tree = indexNavigationTree(root),
-    routeNode,
   }: {
     originKey?: string;
     origin?: TreeNode;
     tree?: NavigationTreeIndex;
-    routeNode?: RouteNode;
   }
 ): NavigationTreeReduction {
   origin ??= resolveOrigin(tree.rootNode, tree.nodes, registry, originKey);
@@ -198,53 +181,10 @@ export function reduceNavigationTree(
     return { handled: false };
   }
 
-  let nextState = rebuildTreeWithSlice(handler, registry);
-  if (routeNode) {
-    nextState = completeNavigationState(nextState, routeNode);
-  }
-
-  let nextSlice = nextState;
-  for (const routeIndex of getPathFromRoot(handler.node)) {
-    // The indexed path only traverses complete child states.
-    nextSlice = nextSlice.routes[routeIndex]!.state as NavigationState;
-  }
-  let nextOriginState: NavigationState | undefined = nextState;
-  for (const routeKey of getRouteKeyPathFromRoot(origin)) {
-    // The route-key path was built from complete child states in the original tree.
-    const childState = nextOriginState?.routes.find((route) => route.key === routeKey)?.state as
-      | NavigationState
-      | undefined;
-    nextOriginState = childState?.stale === false ? childState : undefined;
-  }
-
   return {
     handled: true,
-    handlerNoop: handler.handlerNoop,
-    treeChanged: nextState !== root,
-    nextState,
-    originStateKey: nextOriginState?.key,
-    target: {
-      stateKey: handler.node.state.key,
-      prevSlice: handler.node.state,
-      nextSlice,
-    },
+    nextState: rebuildTreeWithSlice(handler, registry),
   };
-}
-
-function getPathFromRoot(node: TreeNode): number[] {
-  const path: number[] = [];
-  for (let current: TreeNode | undefined = node; current.parent; current = current.parent) {
-    path.unshift(current.parentRouteIndex!);
-  }
-  return path;
-}
-
-function getRouteKeyPathFromRoot(node: TreeNode): string[] {
-  const path: string[] = [];
-  for (let current: TreeNode | undefined = node; current.parent; current = current.parent) {
-    path.unshift(current.parentRouteKey!);
-  }
-  return path;
 }
 
 function assertCompleteState(

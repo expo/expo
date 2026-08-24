@@ -192,6 +192,7 @@ export function StackRouter(options: StackRouterOptions) {
   > = {
     ...BaseRouter,
 
+    // TODO: Keep this value in sync with the `ensureStateType` calls below.
     type: 'stack',
 
     getStateForDeclaredRoutes(state, routeNames) {

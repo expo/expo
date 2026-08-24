@@ -10,7 +10,7 @@ import {
 import { ensureStateHistory } from '../react-navigation/routers/TabRouter';
 import { attachRouteState, type RouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
-import type { TriggerMap } from './common';
+import { getTabRoute, type TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;
@@ -44,13 +44,12 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
-      const route = state.routes.find((route) => route.name === action.payload.name);
+      const { route, isSwitching } = getTabRoute(state, action.payload.name);
 
       if (!route) {
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
-      const isSwitching = state.routes[state.index ?? 0]!.key !== route.key;
       const shouldReset =
         'resetOnFocus' in action.payload && Boolean(action.payload.resetOnFocus && isSwitching);
 

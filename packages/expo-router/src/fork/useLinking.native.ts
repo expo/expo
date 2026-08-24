@@ -1,13 +1,12 @@
-import * as ExpoLinking from 'expo-linking';
-import { type RefObject, useCallback, useEffect, useRef } from 'react';
-import { Linking, Platform } from 'react-native';
+import { type RefObject, use, useCallback, useEffect, useRef } from 'react';
+import { Linking } from 'react-native';
 
 import {
   completeParsedState,
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
 import { routingQueue } from '../global-state/routingQueue';
-import { useExpoRouterStore } from '../global-state/storeContext';
+import { StoreContext } from '../global-state/storeContext';
 import {
   type LinkingOptions,
   getStateFromPath as getStateFromPathDefault,
@@ -17,6 +16,7 @@ import {
 } from '../react-navigation/native';
 import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import { extractExpoPathFromURL } from './extractPathFromURL';
+import { getInitialURLWithTimeout } from './getInitialURLWithTimeout';
 
 type Options = LinkingOptions<ParamListBase>;
 
@@ -58,7 +58,7 @@ export function useLinking(
   }: Options,
   onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
 ) {
-  const store = useExpoRouterStore();
+  const store = use(StoreContext);
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -157,7 +157,7 @@ export function useLinking(
     };
 
     return thenable as PromiseLike<NavigationState | undefined>;
-  }, [config, filter, getInitialURL, getStateFromPath, onUnhandledLinking, prefixes, store]);
+  }, [config, filter, getInitialURL, getStateFromPath, onUnhandledLinking, prefixes]);
 
   useEffect(() => {
     const listener = (url: string) => {
@@ -190,23 +190,4 @@ export function useLinking(
   return {
     getInitialState,
   };
-}
-
-export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
-  if (typeof window === 'undefined') {
-    return '';
-  } else if (Platform.OS === 'ios') {
-    // Use the new Expo API for iOS. This has better support for App Clips and handoff.
-    return ExpoLinking.getLinkingURL();
-  }
-
-  return Promise.race([
-    // TODO: Phase this out in favor of expo-linking on Android.
-    Linking.getInitialURL(),
-    new Promise<null>((resolve) =>
-      // Timeout in 150ms if `getInitialState` doesn't resolve
-      // Workaround for https://github.com/facebook/react-native/issues/25675
-      setTimeout(() => resolve(null), 150)
-    ),
-  ]);
 }

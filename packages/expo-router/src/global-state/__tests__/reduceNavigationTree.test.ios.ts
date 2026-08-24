@@ -86,14 +86,9 @@ it('bubbles from the deepest focused navigator to its parent', () => {
   const result = reduceNavigationTree(root, { type: 'TEST' }, registry, {});
 
   expect(calls).toEqual(['child', 'root']);
-  expect(result).toMatchObject({
-    handled: true,
-    handlerNoop: false,
-    treeChanged: true,
-  });
+  expect(result).toMatchObject({ handled: true });
   if (result.handled) {
     expect(result.nextState.index).toBe(1);
-    expect(result.target.stateKey).toBe('root');
   }
 });
 
@@ -105,11 +100,7 @@ it('handles an unsupported targeted action as a no-op', () => {
 
   expect(result).toEqual({
     handled: true,
-    handlerNoop: true,
-    treeChanged: false,
     nextState: root,
-    originStateKey: 'child',
-    target: { stateKey: 'child', prevSlice: child, nextSlice: child },
   });
 });
 
@@ -136,7 +127,6 @@ it('looks up a targeted sibling directly', () => {
 
   expect(result).toMatchObject({
     handled: true,
-    target: { stateKey: 'sibling' },
     nextState: { routes: [{ state: child }, { state: { index: 1 } }] },
   });
 });
@@ -164,11 +154,7 @@ it('focuses ancestors even when the handling navigator is a no-op', () => {
     { originKey: 'child' }
   );
 
-  expect(result).toMatchObject({
-    handled: true,
-    handlerNoop: true,
-    treeChanged: true,
-  });
+  expect(result).toMatchObject({ handled: true });
   if (result.handled) {
     expect(result.nextState.index).toBe(0);
   }

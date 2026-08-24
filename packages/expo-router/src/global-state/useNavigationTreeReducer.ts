@@ -135,21 +135,16 @@ function navigationTreeReducer(
       const result = reduceNavigationTree(state, operation.payload.action, config.registry, {
         origin,
         tree,
-        routeNode: config.routeNode,
       });
       if (!result.handled) {
         // TODO(@ubax): call onUnhandledAction.
         warnUnhandledAction(operation.payload.action);
         return state;
       }
-      if (!result.treeChanged) {
-        return state;
-      }
-
       const nextState = config.routeNode
         ? completeNavigationState(result.nextState, config.routeNode)
         : result.nextState;
-      return deepFreeze(nextState);
+      return nextState === state ? state : deepFreeze(nextState);
     }
     case 'NAVIGATOR_ACTION':
       throw new Error('NAVIGATOR_ACTION must be dispatched through its navigator.');
