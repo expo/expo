@@ -13,6 +13,7 @@ describe(resolveReloadOptions, () => {
       json: false,
       followups: true,
       routeCheck: true,
+      bundleCheck: true,
     });
   });
 
@@ -35,6 +36,7 @@ describe(resolveReloadOptions, () => {
         '--json',
         '--no-followups',
         '--no-route-check',
+        '--no-bundle-check',
       ])
     ).toEqual({
       route: '/notes',
@@ -47,6 +49,7 @@ describe(resolveReloadOptions, () => {
       json: true,
       followups: false,
       routeCheck: false,
+      bundleCheck: false,
     });
   });
 

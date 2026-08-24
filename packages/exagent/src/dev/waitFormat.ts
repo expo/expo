@@ -147,8 +147,14 @@ export function devWaitResultToJson(
   };
 }
 
-/** The `bundle` object, with the same keys whatever the check did or did not manage to do. */
-function bundleToJson(bundle: BundleCheckResult | null): DevWaitBundleJson {
+/**
+ * The `bundle` object, with the same keys whatever the check did or did not manage to do.
+ *
+ * Shared with `runtime:reload`, which runs the same check before it reloads anything, so the one
+ * question "does this project's entry bundle compile" is reported in one shape wherever it is
+ * asked (llp/0010 §The reload gate).
+ */
+export function bundleToJson(bundle: BundleCheckResult | null): DevWaitBundleJson {
   if (bundle == null) {
     return {
       checked: false,

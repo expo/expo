@@ -27,6 +27,14 @@ type ReloadReport = {
   devServerSource: string;
   appsConnected: number;
   appsReconnected: number;
+  bundle: {
+    checked: boolean;
+    ok: boolean | null;
+    platform: string | null;
+    url: string | null;
+    error: { type: string | null; filename: string | null; lineNumber: number | null } | null;
+    reason: string | null;
+  };
   route: string | null;
   routeCheck: { checked: boolean; ok: boolean | null; matched: string | null };
   url: string | null;
@@ -144,6 +152,7 @@ describe('exagent runtime:reload', () => {
         'appsConnected',
         'appsReconnected',
         'attempts',
+        'bundle',
         'devServerSource',
         'devServerUrl',
         'deviceId',
@@ -209,6 +218,62 @@ describe('exagent runtime:reload', () => {
 
       expect(result.exitCode).toBe(20);
       expect(JSON.parse(result.stdout).attempts[0]!.reason).toContain('did not act on it');
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The reload gate — friction run 4, F38.
+  // The check runs against the dev server, so this is the tier that can prove the two requests it
+  // makes and, more importantly, that the broadcast never goes out.
+  it('refuses to reload onto an entry bundle that does not compile', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET], bundle: 'broken' });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+    const readXcrun = await installStubXcrunAsync(projectRoot);
+
+    try {
+      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
+        env: stubExpoEnv(projectRoot),
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(20);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.reloaded).toBe(false);
+      expect(report.method).toBe(null);
+      expect(report.bundle).toMatchObject({
+        checked: true,
+        ok: false,
+        error: { type: 'TransformError', filename: 'src/app/index.tsx', lineNumber: 101 },
+      });
+      // Nothing was reloaded and no device was touched: the gate is before the broadcast.
+      expect(report.attempts).toEqual([]);
+      expect(readXcrun()).toEqual([]);
+      expect(result.stderr).toContain('does not compile');
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
+  it('reloads onto a broken bundle when --no-bundle-check says to', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET], bundle: 'broken' });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:reload', '--no-bundle-check', '--json'],
+        { env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.reloaded).toBe(true);
+      expect(report.bundle).toMatchObject({ checked: false, ok: null });
     } finally {
       releaseLock();
       await stub.close();

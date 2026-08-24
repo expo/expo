@@ -75,16 +75,56 @@ function mockConnect(socket: any) {
  * The list is mutable through the returned handle, so a test can say what the dev server reports
  * *after* the app acted on the reload — which is the only thing a reload may be believed on.
  */
-function mockDevServer(targets: unknown[] | null): { listing: (next: unknown[]) => void } {
+function mockDevServer(
+  targets: unknown[] | null,
+  { bundle = 'compiles' }: { bundle?: 'compiles' | 'broken' | 'no-manifest' } = {}
+): { listing: (next: unknown[]) => void } {
   let now = targets;
-  globalThis.fetch = (async () => {
+  globalThis.fetch = (async (input: unknown) => {
     if (now == null) {
       throw new Error('fetch failed');
     }
-    return { ok: true, json: async () => now };
+    const url = String(input);
+    if (url.endsWith('/json/list')) {
+      return { ok: true, json: async () => now };
+    }
+    // The entry bundle. A broken one answers the way Metro answers a failed build: 500 with a
+    // small JSON body rather than megabytes of JavaScript.
+    if (url.includes('entry.bundle')) {
+      if (bundle === 'broken') {
+        return {
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+          headers: { get: () => 'application/json' },
+          text: async () => JSON.stringify(TRANSFORM_ERROR),
+        };
+      }
+      return { ok: true, status: 200, text: async () => '' };
+    }
+    // The manifest: `GET /` with an `expo-platform` header, whose `launchAsset.url` is the entry
+    // bundle. `no-manifest` is the dev server that answers nothing this check understands.
+    if (bundle === 'no-manifest') {
+      return { ok: false, status: 404, statusText: 'Not Found' };
+    }
+    return {
+      ok: true,
+      status: 200,
+      headers: { get: () => 'application/json' },
+      json: async () => ({ launchAsset: { url: 'http://127.0.0.1:8081/entry.bundle?dev=true' } }),
+    };
   }) as unknown as typeof fetch;
   return { listing: (next) => (now = next) };
 }
+
+/** What Metro answers a failed build with, cut to the fields this CLI reads. */
+const TRANSFORM_ERROR = {
+  type: 'TransformError',
+  lineNumber: 76,
+  column: 4,
+  filename: 'src/app/notes.tsx',
+  message: "SyntaxError: /project/src/app/notes.tsx: Unexpected token (76:4)",
+};
 
 /**
  * A dev server whose app reloads when it is told to: the page id changes on the broadcast.
@@ -137,6 +177,7 @@ function options(overrides: Partial<ReloadOptions> = {}): ReloadOptions {
     json: false,
     followups: false,
     routeCheck: true,
+    bundleCheck: true,
     ...overrides,
   };
 }
@@ -264,6 +305,7 @@ describe(reloadAsync, () => {
       'appsConnected',
       'appsReconnected',
       'attempts',
+      'bundle',
       'devServerSource',
       'devServerUrl',
       'deviceId',
@@ -277,6 +319,75 @@ describe(reloadAsync, () => {
       'verifiedBy',
       'waitedMs',
     ]);
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The reload gate — friction run 4, F38.
+  // A reload makes the app fetch the served bundle again. When that bundle does not compile the
+  // app is put back on the same red screen, and the old command reported `Reloaded yes` for it.
+  it(`should refuse to reload onto an entry bundle that does not compile`, async () => {
+    writeProject();
+    mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
+    const { socket, sent } = fakeSocket([{ 'socket#1': 'role=ios' }]);
+    mockConnect(socket);
+
+    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(
+      EXIT_OUTCOME_FAILED
+    );
+    expect(JSON.parse(printed())).toMatchObject({
+      reloaded: false,
+      method: null,
+      bundle: {
+        checked: true,
+        ok: false,
+        error: { type: 'TransformError', filename: 'src/app/notes.tsx', lineNumber: 76 },
+      },
+    });
+    // The gate is before the broadcast, not after it: nothing was reloaded and no device was asked.
+    expect(sent).toEqual([]);
+    expect(spawn).not.toHaveBeenCalled();
+  });
+
+  it(`should name the bundle in the failure, not the app`, async () => {
+    writeProject();
+    mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
+    mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }]).socket);
+
+    await reloadAsync(projectRoot, options());
+
+    const printedError = jest.mocked(console.error).mock.calls.flat().join('\n');
+    expect(printedError).toContain('does not compile');
+    expect(printedError).toContain('src/app/notes.tsx:76');
+  });
+
+  it(`should reload anyway with --no-bundle-check`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () =>
+        server.listing([RELOADED_EXPO_GO_TARGET])
+      ).socket
+    );
+
+    await expect(
+      reloadAsync(projectRoot, options({ json: true, bundleCheck: false }))
+    ).resolves.toBe(EXIT_OK);
+    expect(JSON.parse(printed()).bundle).toMatchObject({ checked: false, ok: null });
+  });
+
+  // The same fail-open rule the check follows for `dev:wait`: a dev server that answered nothing
+  // this CLI understands has not shown the project to be broken, and refusing there would stop a
+  // reload that would have worked.
+  it(`should reload when the dev server says nothing about the entry bundle`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET], { bundle: 'no-manifest' });
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () =>
+        server.listing([RELOADED_EXPO_GO_TARGET])
+      ).socket
+    );
+
+    await expect(reloadAsync(projectRoot, options({ json: true }))).resolves.toBe(EXIT_OK);
+    expect(JSON.parse(printed()).bundle).toMatchObject({ checked: false, ok: null });
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — friction run 4, F45.
