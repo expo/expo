@@ -1,0 +1,19 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace notesapp.xcworkspace -scheme notesapp -configuration Release build
+
+note: Building targets in dependency order
+Ld /Users/expo/Library/Developer/Xcode/DerivedData/notesapp/Build/Products/Release-iphoneos/notesapp.app/notesapp normal (in target 'notesapp' from project 'notesapp')
+    cd /Users/expo/workingdir/build/ios
+Undefined symbols for architecture arm64:
+  "_OBJC_CLASS_$_RNNoteStore", referenced from:
+      objc-class-ref in NoteModule.o
+  "_ExpoModulesRegisterNoteFormatter", referenced from:
+      -[NoteModule setup] in NoteModule.o
+ld: symbol(s) not found for architecture arm64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+** BUILD FAILED **
+
+
+The following build commands failed:
+	Ld /Users/expo/Library/Developer/Xcode/DerivedData/notesapp/Build/Products/Release-iphoneos/notesapp.app/notesapp normal (in target 'notesapp' from project 'notesapp')
+(1 failure)

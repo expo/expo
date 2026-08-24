@@ -67,13 +67,25 @@ export function buildBuildWaitFollowUps({
         why: 'EAS classified this failure and linked the page that explains that class of error.',
       });
     }
-    // Until `build:explain` lands, the CLI's own view is the shortest path to the logs: it prints
-    // the error EAS recorded and the URLs of the log files (llp/0010 §Upstream asks, `build:logs`).
+    // The CLI's own view is the shortest path to the logs: it prints the error EAS recorded and
+    // the URLs of the log files (llp/0010 §Upstream asks, `build:logs`).
     followups.push({
       id: 'eas-build-view',
       command: `npx eas ${view} ${id}`,
       why: `The ${kind} failed; this prints what EAS recorded about it, including where the logs are.`,
     });
+    // And the explainer, for once the log is on disk — for a *build*, whose log is a native build
+    // log the rule table was written against. The `why` is deliberate about the step in between:
+    // this CLI cannot fetch the log itself, because eas-cli has no `build:logs` (llp/0010
+    // §Upstream asks), and a follow-up that read as though it could would send an agent to run
+    // `build:explain <id>`, which is exactly the form that does not work yet.
+    if (kind === 'build') {
+      followups.push({
+        id: 'explain-saved-log',
+        command: 'npx exagent build:explain --file <path>',
+        why: 'Once the log above is saved to a file, this locates the failing line in it and names the fix. Nothing here can download it for you yet.',
+      });
+    }
   }
 
   if (outcome === 'canceled') {

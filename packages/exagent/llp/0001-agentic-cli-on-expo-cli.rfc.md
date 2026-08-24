@@ -98,9 +98,10 @@ Feature areas live in child LLPs [confirmed — Kudo, 2026-08-20]; each carries 
 - [[0009-smart-followups]] — every command output carries state-aware next actions for the driving agent.
 - [[0010-agent-conventions]] — the conventions every command shares: the exit-code table, the two command-resolution rules, and the list of upstream asks the tool layer is working around.
 - [[0011-impact-and-freshness]] — `exagent impact`: what a change costs (reload, Metro restart, native build) from the fingerprint diff, and — separately, from the `runtimeVersion` policy — whether it can ship over the air.
+- [[0012-build-explain]] — deterministic triage of a native build log: the two-layer phase detector, the capped in-repo rule table, and the captured-log fixture corpus that pins it.
 - [[0013-doctor-fix]] — the deterministic cache and build-state reset: the tier table, the path-safety predicate, and the one command checkpoints do not protect.
 
-**Scoped out** [confirmed — Kudo, 2026-08-19]: ambient/long-running modes (copilot watch mode, EAS build babysitter, PR verification bot, maintenance agent) — driving-agent behaviors, not tool-layer work; a separate `exagent mcp` feature (subsumed by Shape 1); the build-failure signature DB.
+**Scoped out** [confirmed — Kudo, 2026-08-19]: ambient/long-running modes (copilot watch mode, EAS build babysitter, PR verification bot, maintenance agent) — driving-agent behaviors, not tool-layer work; a separate `exagent mcp` feature (subsumed by Shape 1); **the build-failure signature DB** — a hosted, growing, community-fed corpus with its own service and submission path. The capped, in-repo, ~40-entry rule table `build:explain` matches against is deliberately not that; [[0010-agent-conventions]] §`build:explain` records the decision and [[0012-build-explain]] §The rule table implements the cap.
 
 ## Open questions
 

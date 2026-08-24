@@ -99,6 +99,10 @@ export const commandGroups: { [group: string]: CommandGroup } = {
     // action of this group for it would be a command nobody asked for. See `bareNameCommand`.
     bareNameCommand: 'npx eas build',
     actions: {
+      explain: {
+        summary: 'Read a build log and say what failed in it',
+        load: () => import('./builds').then((i) => i.exagentBuildExplain),
+      },
       wait: {
         summary: 'Wait for a build to finish, and exit with what it did',
         load: () => import('./builds').then((i) => i.exagentBuildWait),

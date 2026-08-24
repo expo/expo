@@ -1,0 +1,12 @@
+{
+  "phases": [
+    {
+      "name": "pod-install",
+      "status": "unknown",
+      "startLine": 1,
+      "endLine": 335
+    }
+  ],
+  "failure": null,
+  "otherSignatures": []
+}

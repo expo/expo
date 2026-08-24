@@ -1,0 +1,575 @@
+Using Expo modules
+[Expo] Enabling modular headers for pod ExpoModulesCore
+[Expo] Enabling modular headers for pod ExpoModulesWorklets
+[Expo] Enabling modular headers for pod React-RCTFabric
+[Expo] Enabling modular headers for pod ExpoModulesJSI
+[Expo] Enabling modular headers for pod React-RCTAppDelegate
+[Expo] Enabling modular headers for pod ReactAppDependencyProvider
+[Expo] Enabling modular headers for pod React-Core
+[Expo] Enabling modular headers for pod ReactCodegen
+[Expo] Enabling modular headers for pod RCTRequired
+[Expo] Enabling modular headers for pod RCTTypeSafety
+[Expo] Enabling modular headers for pod ReactCommon
+[Expo] Enabling modular headers for pod React-NativeModulesApple
+[Expo] Enabling modular headers for pod Yoga
+[Expo] Enabling modular headers for pod React-Fabric
+[Expo] Enabling modular headers for pod React-graphics
+[Expo] Enabling modular headers for pod React-utils
+[Expo] Enabling modular headers for pod React-featureflags
+[Expo] Enabling modular headers for pod React-debug
+[Expo] Enabling modular headers for pod React-ImageManager
+[Expo] Enabling modular headers for pod React-rendererdebug
+[Expo] Enabling modular headers for pod React-jsi
+[Expo] Enabling modular headers for pod React-renderercss
+[Expo] Enabling modular headers for pod hermes-engine
+[Expo] Enabling modular headers for pod glog
+[Expo] Enabling modular headers for pod boost
+[Expo] Enabling modular headers for pod DoubleConversion
+[Expo] Enabling modular headers for pod fast_float
+[Expo] Enabling modular headers for pod fmt
+[Expo] Enabling modular headers for pod RCT-Folly
+[Expo] Enabling modular headers for pod SocketRocket
+[Expo] Enabling modular headers for pod SDWebImage
+[Expo] Enabling modular headers for pod SDWebImageAVIFCoder
+[Expo] Enabling modular headers for pod SDWebImageSVGCoder
+[Expo] Enabling modular headers for pod SDWebImageWebPCoder
+[Expo] Enabling modular headers for pod libavif
+[Expo] Enabling modular headers for pod RNScreens
+[Expo-precompiled] RNReanimated: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/pods-expo-conflict/packages/precompile/.build/react-native-reanimated/output/4.5.1/0.86.2/250829098.0.16/debug/xcframeworks/RNReanimated.tar.gz
+[Expo-precompiled] react-native-safe-area-context: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/pods-expo-conflict/packages/precompile/.build/react-native-safe-area-context/output/5.7.0/0.86.2/250829098.0.16/debug/xcframeworks/RNCSafeAreaContext.tar.gz
+[Expo-precompiled] RNScreens: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/pods-expo-conflict/packages/precompile/.build/react-native-screens/output/4.26.2/0.86.2/250829098.0.16/debug/xcframeworks/RNScreens.tar.gz
+[Expo-precompiled] RNWorklets: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/pods-expo-conflict/packages/precompile/.build/react-native-worklets/output/0.10.1/0.86.2/250829098.0.16/debug/xcframeworks/RNWorklets.tar.gz
+[Expo-precompiled] RNCAsyncStorage: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/pods-expo-conflict/packages/precompile/.build/@react-native-async-storage/async-storage/output/2.2.0/0.86.2/250829098.0.16/debug/xcframeworks/RNCAsyncStorage.tar.gz
+[RNScreens] Gamma project enabled. Including source files.
+Found 8 modules for target `notesapp`
+link_native_modules! {ios_packages: [{configurations: [], name: "@react-native-async-storage/async-storage", root: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/@react-native-async-storage/async-storage", path: "../node_modules/@react-native-async-storage/async-storage", podspec_path: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/@react-native-async-storage/async-storage/RNCAsyncStorage.podspec", script_phases: []}, {configurations: [], name: "@react-native-masked-view/masked-view", root: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/@react-native-masked-view/masked-view", path: "../node_modules/@react-native-masked-view/masked-view", podspec_path: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/@react-native-masked-view/masked-view/RNCMaskedView.podspec", script_phases: []}, {configurations: [], name: "expo", root: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/expo", path: "../node_modules/expo", podspec_path: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/expo/Expo.podspec", script_phases: []}, {configurations: [], name: "react-native-gesture-handler", root: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-gesture-handler", path: "../node_modules/react-native-gesture-handler", podspec_path: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-gesture-handler/RNGestureHandler.podspec", script_phases: []}, {configurations: [], name: "react-native-reanimated", root: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-reanimated", path: "../node_modules/react-native-reanimated", podspec_path: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-reanimated/RNReanimated.podspec", script_phases: []}, {configurations: [], name: "react-native-safe-area-context", root: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-safe-area-context", path: "../node_modules/react-native-safe-area-context", podspec_path: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-safe-area-context/react-native-safe-area-context.podspec", script_phases: []}, {configurations: [], name: "react-native-screens", root: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-screens", path: "../node_modules/react-native-screens", podspec_path: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-screens/RNScreens.podspec", script_phases: []}, {configurations: [], name: "react-native-worklets", root: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-worklets", path: "../node_modules/react-native-worklets", podspec_path: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/node_modules/react-native-worklets/RNWorklets.podspec", script_phases: []}], ios_project_root_path: "/private/tmp/wave6-explain-scratch/pods-expo-conflict/ios", react_native_path: "../node_modules/react-native"}
+[RNScreens] Gamma project enabled. Including source files.
+Auto-linking React Native modules for target `notesapp`: RNCAsyncStorage, RNCMaskedView, RNGestureHandler, RNReanimated, RNScreens, RNWorklets, and react-native-safe-area-context
+Framework build type is static library
+[ReactNativeDependencies] Setting up ReactNativeDependencies...
+[ReactNativeDependencies] Building from source: false
+[ReactNativeDependencies] Using tarball from URL: https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-dependencies-debug.tar.gz
+[ReactNativeDependencies] Verifying checksum for cached reactnative-dependencies-0.86.2-debug.tar.gz...
+[Cache] SHA1 verified for reactnative-dependencies-0.86.2-debug.tar.gz
+[ReactNativeDependencies] Cache hit: copying reactnative-dependencies-0.86.2-debug.tar.gz from shared cache (/Users/expo/Library/Caches/ReactNative)
+[ReactNativeDependencies] Verifying checksum for cached reactnative-dependencies-0.86.2-release.tar.gz...
+[Cache] SHA1 verified for reactnative-dependencies-0.86.2-release.tar.gz
+[ReactNativeDependencies] Cache hit: copying reactnative-dependencies-0.86.2-release.tar.gz from shared cache (/Users/expo/Library/Caches/ReactNative)
+[ReactNativeDependencies] Source: {http: "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-dependencies-debug.tar.gz"}
+[ReactNativeCore] Setting up ReactNativeCore...
+[ReactNativeCore] Building from source: false
+Configuring the target with the New Architecture
+[ReactNativeCore] Using React Native Core and React Native Dependencies prebuilt versions.
+[36m[1m[Codegen][0m Analyzing /private/tmp/wave6-explain-scratch/pods-expo-conflict/package.json[0m
+[36m[1m[Codegen][0m [33mSearching for codegen-enabled libraries in the app.[0m
+[36m[1m[Codegen][0m [33mThe "codegenConfig" field is not defined in package.json. Assuming there is nothing to generate at the app level.[0m
+[36m[1m[Codegen][0m [33mSearching for codegen-enabled libraries in react-native.config.js[0m
+[36m[1m[Codegen][0m Found @react-native-async-storage/async-storage[0m
+[36m[1m[Codegen][0m Found react-native-gesture-handler[0m
+[36m[1m[Codegen][0m Found react-native-reanimated[0m
+[36m[1m[Codegen][0m Found react-native-safe-area-context[0m
+[36m[1m[Codegen][0m Found react-native-screens[0m
+[36m[1m[Codegen][0m Found react-native-worklets[0m
+[36m[1m[Codegen][0m Processing rnasyncstorage[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for rnasyncstorage[0m
+[36m[1m[Codegen][0m Processing rngesturehandler_codegen[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for rngesturehandler_codegen[0m
+[36m[1m[Codegen][0m Processing rnreanimated[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for rnreanimated[0m
+[36m[1m[Codegen][0m Processing safeareacontext[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for safeareacontext[0m
+[36m[1m[Codegen][0m Processing rnscreens[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, tvos, visionos for rnscreens[0m
+[36m[1m[Codegen][0m Processing rnworklets[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for rnworklets[0m
+[36m[1m[Codegen][0m Generating Native Code for rnasyncstorage - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for rngesturehandler_codegen - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for rnreanimated - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for safeareacontext - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for rnscreens - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for rnworklets - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating RCTThirdPartyComponentsProvider.h[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen/RCTThirdPartyComponentsProvider.h[0m
+[36m[1m[Codegen][0m Generating RCTThirdPartyComponentsProvider.mm[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen/RCTThirdPartyComponentsProvider.mm[0m
+[36m[1m[Codegen][0m Generating RCTModulesProvider.h[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen/RCTModuleProviders.h[0m
+[36m[1m[Codegen][0m Generating RCTModuleProviders.mm[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen/RCTModuleProviders.mm[0m
+[36m[1m[Codegen][0m Generating RCTAppDependencyProvider[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactAppDependencyProvider/RCTAppDependencyProvider.h[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactAppDependencyProvider/RCTAppDependencyProvider.mm[0m
+[36m[1m[Codegen][0m Generated podspec: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactAppDependencyProvider/ReactAppDependencyProvider.podspec[0m
+[36m[1m[Codegen][0m Generated podspec: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/ReactCodegen/ReactCodegen.podspec[0m
+[36m[1m[Codegen][0m Generating Package.swift[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/build/generated/ios/Package.swift[0m
+[36m[1m[Codegen][0m [33mDone.[0m
+Analyzing dependencies
+[Expo-precompiled] Bundled SPM frameworks: SDWebImage, SDWebImageAVIFCoder, SDWebImageSVGCoder, SDWebImageWebPCoder, libavif
+Fetching podspec for `ExpoFileSystem` from `../node_modules/expo-file-system/ios/ExpoFileSystem.podspec`
+Fetching podspec for `ExpoFont` from `../node_modules/expo-font/ios/ExpoFont.podspec`
+Fetching podspec for `ExpoImage` from `../node_modules/expo-image/ios/ExpoImage.podspec`
+[Expo-precompiled] Stripping bundled dependency 'SDWebImage' from ExpoImage
+[Expo-precompiled] Stripping bundled dependency 'SDWebImageAVIFCoder' from ExpoImage
+[Expo-precompiled] Stripping bundled dependency 'SDWebImageSVGCoder' from ExpoImage
+[Expo-precompiled] Stripping bundled dependency 'SDWebImageWebPCoder' from ExpoImage
+[Expo-precompiled] Stripping bundled dependency 'libavif/libdav1d' from ExpoImage
+Fetching podspec for `ExpoModulesCore` from `../node_modules/expo-modules-core/ExpoModulesCore.podspec`
+Fetching podspec for `ExpoModulesWorklets` from `../node_modules/expo-modules-core/ExpoModulesWorklets.podspec`
+[RNScreens] Gamma project enabled. Including source files.
+Fetching podspec for `React-Core-prebuilt` from `../node_modules/react-native/React-Core-prebuilt.podspec`
+[ReactNativeCore] Verifying checksum for cached reactnative-core-0.86.2-debug.tar.gz...
+[Cache] SHA1 verified for reactnative-core-0.86.2-debug.tar.gz
+[ReactNativeCore] Cache hit: copying reactnative-core-0.86.2-debug.tar.gz from shared cache (/Users/expo/Library/Caches/ReactNative)
+[ReactNativeCore] Verifying checksum for cached reactnative-core-0.86.2-release.tar.gz...
+[Cache] SHA1 verified for reactnative-core-0.86.2-release.tar.gz
+[ReactNativeCore] Cache hit: copying reactnative-core-0.86.2-release.tar.gz from shared cache (/Users/expo/Library/Caches/ReactNative)
+[ReactNativeCore] Resolved stable ReactNativeCore-prebuilt version:
+[ReactNativeCore]   ../../ios/Pods/ReactNativeCore-artifacts/reactnative-core-0.86.2-debug.tar.gz
+[ReactNativeCore]   ../../ios/Pods/ReactNativeCore-artifacts/reactnative-core-0.86.2-release.tar.gz
+Fetching podspec for `ReactNativeDependencies` from `../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`
+[ReactNativeDependencies] Using tarball from URL: https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-dependencies-debug.tar.gz
+[ReactNativeDependencies] Tarball reactnative-dependencies-0.86.2-debug.tar.gz already exists in Pods. Skipping download.
+[ReactNativeDependencies] Tarball reactnative-dependencies-0.86.2-release.tar.gz already exists in Pods. Skipping download.
+Fetching podspec for `hermes-engine` from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`
+[Hermes] Using release tarball from URL: https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/250829098.0.16/hermes-ios-250829098.0.16-hermes-ios-debug.tar.gz
+[Hermes] Verifying checksum for cached hermes-ios-250829098.0.16-debug.tar.gz...
+[Hermes] SHA1 verified for hermes-ios-250829098.0.16-debug.tar.gz
+[Hermes] Cache hit: copying hermes-ios-250829098.0.16-debug.tar.gz from shared cache (/Users/expo/Library/Caches/ReactNative)
+[Hermes] Verifying checksum for cached hermes-ios-250829098.0.16-release.tar.gz...
+[Hermes] SHA1 verified for hermes-ios-250829098.0.16-release.tar.gz
+[Hermes] Cache hit: copying hermes-ios-250829098.0.16-release.tar.gz from shared cache (/Users/expo/Library/Caches/ReactNative)
+Downloading dependencies
+Installing EXConstants (57.0.13)
+Installing Expo (57.0.15)
+Installing ExpoAsset (57.0.13)
+Installing ExpoDevice (57.0.1)
+Installing ExpoDomWebView (57.0.1)
+Installing ExpoFileSystem (57.0.5)
+Installing ExpoFont (57.0.1)
+Installing ExpoGlassEffect (57.0.1)
+Installing ExpoImage (57.0.3)
+Installing ExpoKeepAwake (57.0.1)
+Installing ExpoLinking (57.0.7)
+Installing ExpoLogBox (57.0.3)
+Installing ExpoModulesCore (57.0.12)
+Installing ExpoModulesJSI (57.0.5)
+Installing ExpoModulesWorklets (57.0.12)
+Installing ExpoModulesWorkletsAdapter (57.0.12)
+Installing ExpoRouter (57.0.15)
+Installing ExpoSplashScreen (57.0.7)
+Installing ExpoSymbols (57.0.2)
+Installing ExpoSystemUI (57.0.2)
+Installing ExpoUI (57.0.12)
+Installing ExpoWebBrowser (57.0.2)
+Installing FBLazyVector (0.86.2)
+Installing RCTDeprecation (0.86.2)
+Installing RCTRequired (0.86.2)
+Installing RCTSwiftUI (0.86.2)
+Installing RCTSwiftUIWrapper (0.86.2)
+Installing RCTTypeSafety (0.86.2)
+Installing RNCAsyncStorage (2.2.0)
+Installing RNCMaskedView (0.3.2)
+Installing RNGestureHandler (2.32.0)
+Installing RNReanimated (4.5.1)
+Installing RNScreens (4.26.2)
+Installing RNWorklets (0.10.1)
+Installing React (0.86.2)
+Installing React-Core (0.86.2)
+Installing React-Core-prebuilt (0.86.2)
+Installing React-CoreModules (0.86.2)
+Installing React-Fabric (0.86.2)
+Installing React-FabricComponents (0.86.2)
+Installing React-FabricImage (0.86.2)
+Installing React-ImageManager (0.86.2)
+Installing React-Mapbuffer (0.86.2)
+Installing React-NativeModulesApple (0.86.2)
+Installing React-RCTActionSheet (0.86.2)
+Installing React-RCTAnimation (0.86.2)
+Installing React-RCTAppDelegate (0.86.2)
+Installing React-RCTBlob (0.86.2)
+Installing React-RCTFBReactNativeSpec (0.86.2)
+Installing React-RCTFabric (0.86.2)
+Installing React-RCTImage (0.86.2)
+Installing React-RCTLinking (0.86.2)
+Installing React-RCTNetwork (0.86.2)
+Installing React-RCTRuntime (0.86.2)
+Installing React-RCTSettings (0.86.2)
+Installing React-RCTText (0.86.2)
+Installing React-RCTVibration (0.86.2)
+Installing React-RuntimeApple (0.86.2)
+Installing React-RuntimeCore (0.86.2)
+Installing React-RuntimeHermes (0.86.2)
+Installing React-callinvoker (0.86.2)
+Installing React-cxxreact (0.86.2)
+Installing React-debug (0.86.2)
+Installing React-defaultsnativemodule (0.86.2)
+Installing React-domnativemodule (0.86.2)
+Installing React-featureflags (0.86.2)
+Installing React-featureflagsnativemodule (0.86.2)
+Installing React-graphics (0.86.2)
+Installing React-hermes (0.86.2)
+Installing React-idlecallbacksnativemodule (0.86.2)
+Installing React-intersectionobservernativemodule (0.86.2)
+Installing React-jserrorhandler (0.86.2)
+Installing React-jsi (0.86.2)
+Installing React-jsiexecutor (0.86.2)
+Installing React-jsinspector (0.86.2)
+Installing React-jsinspectorcdp (0.86.2)
+Installing React-jsinspectornetwork (0.86.2)
+Installing React-jsinspectortracing (0.86.2)
+Installing React-jsitooling (0.86.2)
+Installing React-jsitracing (0.86.2)
+Installing React-logger (0.86.2)
+Installing React-microtasksnativemodule (0.86.2)
+Installing React-mutationobservernativemodule (0.86.2)
+Installing React-networking (0.86.2)
+Installing React-oscompat (0.86.2)
+Installing React-perflogger (0.86.2)
+Installing React-performancecdpmetrics (0.86.2)
+Installing React-performancetimeline (0.86.2)
+Installing React-rendererconsistency (0.86.2)
+Installing React-renderercss (0.86.2)
+Installing React-rendererdebug (0.86.2)
+Installing React-runtimeexecutor (0.86.2)
+Installing React-runtimescheduler (0.86.2)
+Installing React-timing (0.86.2)
+Installing React-utils (0.86.2)
+Installing React-viewtransitionnativemodule (0.86.2)
+Installing React-webperformancenativemodule (0.86.2)
+Installing ReactAppDependencyProvider (0.86.2)
+Installing ReactCodegen (0.86.2)
+Installing ReactCommon (0.86.2)
+Installing ReactNativeDependencies (0.86.2)
+Installing SDWebImage (4.4.2)
+Installing Yoga (0.0.0)
+Installing hermes-engine (250829098.0.16)
+Installing react-native-safe-area-context (5.7.0)
+[Expo] Ensuring required slices in ExpoModulesJSI.xcframework
+[Expo] Staged 5/5 shared SPM xcframework(s) (debug)
+Generating Pods project
+Setting USE_HERMES build settings
+Setting REACT_NATIVE_PATH build settings
+Setting SWIFT_ACTIVE_COMPILATION_CONDITIONS build settings
+[Ccache]: Removing Ccache from CC, LD, CXX & LDPLUSPLUS build settings
+Setting SWIFT_ENABLE_EXPLICIT_MODULES build settings
+[ReactNativeCore] Processing VFS overlay file...
+[ReactNativeCore]   Created VFS overlay at /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/Pods/React-Core-prebuilt/React-VFS.yaml
+[ReactNativeCore] VFS overlay setup complete
+[ReactNativeCore] Configuring xcconfig for prebuilt React Native Core...
+[ReactNativeCore] Prebuilt xcconfig configuration complete
+[SPM] Cleaning old SPM dependencies from Pods project
+[SPM] Adding SPM dependencies to Pods project
+[Privacy Manifest Aggregation] No existing PrivacyInfo.xcprivacy file found, creating a new one.
+[Privacy Manifest Aggregation] Reading .xcprivacy files to aggregate all used Required Reason APIs.
+file_root: notesapp
+Setting CLANG_CXX_LANGUAGE_STANDARD to c++20 on /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/notesapp.xcodeproj
+
+==================== DEPRECATION NOTICE =====================
+Calling `pod install` directly is deprecated in React Native
+because we are moving away from Cocoapods toward alternative
+solutions to build the project.
+* If you are using Expo, please run:
+`npx expo run:ios`
+* If you are using the Community CLI, please run:
+`yarn ios`
+=============================================================
+
+Pod install took 30 [s] to run
+Integrating client project
+
+[!] Please close any current Xcode sessions and use `notesapp.xcworkspace` for this project from now on.
+[Expo] Installing the build script for target notesapp
+Pod installation complete! There are 106 dependencies from the Podfile and 105 total pods installed.
+[Expo-precompiled] Precompiled modules:
+[Expo-precompiled]   📦 ExpoFileSystem (57.0.5)
+[Expo-precompiled]   📦 ExpoFont (57.0.1)
+[Expo-precompiled]   📦 ExpoImage (57.0.3)
+[Expo-precompiled]       ∟ SDWebImage.xcframework (5.21.6)
+[Expo-precompiled]       ∟ SDWebImageAVIFCoder.xcframework (0.12.0)
+[Expo-precompiled]       ∟ SDWebImageSVGCoder.xcframework (1.8.0)
+[Expo-precompiled]       ∟ SDWebImageWebPCoder.xcframework (0.15.0)
+[Expo-precompiled]       ∟ libavif.xcframework (1.0.0)
+[Expo-precompiled]   📦 ExpoModulesCore (57.0.12)
+[Expo-precompiled]   📦 ExpoModulesWorklets (57.0.12)
+[Expo] Disabling SWIFT_EMIT_MODULE_INTERFACE for pod targets (prebuilt React compatibility)
+[Expo-precompiled] Looking for ExpoModulesCore.xcframework at: /private/tmp/wave6-explain-scratch/pods-expo-conflict/ios/Pods/ExpoModulesCore/ExpoModulesCore.xcframework
+[Expo-precompiled] Adding ExpoModulesJSI header search paths to all targets
+[Expo] Adding '[Expo] Remove duplicate codegen output' build phase to ReactCodegen
+[Expo-precompiled] Stubbed 'SDWebImage': removed 27 source files from compile phase
+[Expo-precompiled] Cleaned linker flags from Pods-notesapp/Pods-notesapp.debug.xcconfig
+[Expo-precompiled] Cleaned linker flags from Pods-notesapp/Pods-notesapp.release.xcconfig
+[Expo] Raised resource bundle deployment targets to match their pods: RNCAsyncStorage-RNCAsyncStorage_resources
+
+[!] ExpoFileSystem has added 2 script phases. Please inspect before executing a build. See `https://guides.cocoapods.org/syntax/podspec.html#script_phases` for more information.
+
+[!] ExpoFont has added 2 script phases. Please inspect before executing a build. See `https://guides.cocoapods.org/syntax/podspec.html#script_phases` for more information.
+
+[!] ExpoImage has added 2 script phases. Please inspect before executing a build. See `https://guides.cocoapods.org/syntax/podspec.html#script_phases` for more information.
+
+[!] ExpoModulesCore has added 2 script phases. Please inspect before executing a build. See `https://guides.cocoapods.org/syntax/podspec.html#script_phases` for more information.
+
+[!] ExpoModulesWorklets has added 2 script phases. Please inspect before executing a build. See `https://guides.cocoapods.org/syntax/podspec.html#script_phases` for more information.
+
+[!] React-Core-prebuilt has added 1 script phase. Please inspect before executing a build. See `https://guides.cocoapods.org/syntax/podspec.html#script_phases` for more information.
+
+[!] ReactNativeDependencies has added 1 script phase. Please inspect before executing a build. See `https://guides.cocoapods.org/syntax/podspec.html#script_phases` for more information.
+
+[!] hermes-engine has added 1 script phase. Please inspect before executing a build. See `https://guides.cocoapods.org/syntax/podspec.html#script_phases` for more information.
+Command line invocation:
+    /Applications/Xcode-26.6.0.app/Contents/Developer/usr/bin/xcodebuild -project notesapp.xcodeproj -scheme notesapp -configuration Debug -sdk iphonesimulator -destination "generic/platform=iOS Simulator" build
+
+Build settings from command line:
+    SDKROOT = iphonesimulator26.5
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'notesapp' in project 'notesapp' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/usr/bin/ibtool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch arm64 -isysroot /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/Images.xcassets /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/expo.icon
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch x86_64 -isysroot /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+Build description signature: abb56f9cfcfb71dfa7f491aaa7a86d99
+Build description path: /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/XCBuildData/abb56f9cfcfb71dfa7f491aaa7a86d99.xcbuilddata
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products
+
+ClangStatCache /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk /Users/expo/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f1afc054c1cac950feb885fa0ed580ea.sdkstatcache
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -o /Users/expo/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f1afc054c1cac950feb885fa0ed580ea.sdkstatcache
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/ExplicitPrecompiledModules
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp-134e828940a3823e14e357279cddddc8-VFS-iphonesimulator/all-product-headers.yaml
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp-134e828940a3823e14e357279cddddc8-VFS-iphonesimulator/all-product-headers.yaml
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.DependencyStaticMetadataFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.DependencyMetadataFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-generated-files.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-generated-files.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-target-headers.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-non-framework-target-headers.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibPath-normal-x86_64.txt (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibPath-normal-x86_64.txt
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-project-headers.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-project-headers.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-own-target-headers.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibPath-normal-arm64.txt (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibPath-normal-arm64.txt
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibInstallName-normal-x86_64.txt (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibInstallName-normal-x86_64.txt
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibInstallName-normal-arm64.txt (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibInstallName-normal-arm64.txt
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-800E24972A6A228C8D4807E9.sh (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-800E24972A6A228C8D4807E9.sh
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-00DD1BFF1BD5951E006B06BC.sh (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-00DD1BFF1BD5951E006B06BC.sh
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.SwiftConstValuesFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp_const_extract_protocols.json (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.SwiftFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.SwiftFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.LinkFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.LinkFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp-OutputFileMap.json (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/7187679823f38a2a940e0043cdf9d637-common-args.resp (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/7187679823f38a2a940e0043cdf9d637-common-args.resp
+'-std=gnu99' -fmodules -gmodules '-fmodules-cache-path=/Users/expo/Library/Developer/Xcode/DerivedData/ModuleCache.noindex' -fpascal-strings -O0 -fno-common '-DDEBUG=1' '-DFB_SONARKIT_ENABLED=1' -fasm-blocks -g -iquote /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-generated-files.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-own-target-headers.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-target-headers.hmap -iquote /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-project-headers.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator/include -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources-normal/x86_64 -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/x86_64 -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources -F/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp_const_extract_protocols.json (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.SwiftFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.SwiftFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.SwiftConstValuesFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.LinkFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.LinkFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp-OutputFileMap.json (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/7187679823f38a2a940e0043cdf9d637-common-args.resp (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/7187679823f38a2a940e0043cdf9d637-common-args.resp
+'-std=gnu99' -fmodules -gmodules '-fmodules-cache-path=/Users/expo/Library/Developer/Xcode/DerivedData/ModuleCache.noindex' -fpascal-strings -O0 -fno-common '-DDEBUG=1' '-DFB_SONARKIT_ENABLED=1' -g -iquote /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-generated-files.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-own-target-headers.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-target-headers.hmap -iquote /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-project-headers.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator/include -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources-normal/arm64 -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/arm64 -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources -F/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/Entitlements-Simulated.plist (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/Entitlements-Simulated.plist
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/notesapp_vers.c (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/notesapp_vers.c
+
+MkDir /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator/notesapp.app (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    /bin/mkdir -p /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator/notesapp.app
+
+ProcessProductPackaging /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/notesapp.entitlements /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    
+    Entitlements:
+    
+    {
+}
+    
+    builtin-productPackagingUtility /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/notesapp.entitlements -entitlements -format xml -o /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent
+
+ProcessProductPackaging /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/notesapp.entitlements /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    
+    Entitlements:
+    
+    {
+    "application-identifier" = "FAKETEAMID.com.anonymous.notesapp";
+}
+    
+    builtin-productPackagingUtility /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/notesapp.entitlements -entitlements -format xml -o /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent
+
+ProcessProductPackagingDER /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent.der (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    /usr/bin/derq query -f xml -i /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent -o /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent.der --raw
+
+ProcessProductPackagingDER /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent.der (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    /usr/bin/derq query -f xml -i /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent -o /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent.der --raw
+
+PhaseScriptExecution [CP]\ Check\ Pods\ Manifest.lock /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    /bin/sh -c /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh
+diff: /Podfile.lock: No such file or directory
+error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.
+
+note: Run script build phase 'Bundle React Native code and images' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'notesapp' from project 'notesapp')
+** BUILD FAILED **
+
+
+The following build commands failed:
+	PhaseScriptExecution [CP]\ Check\ Pods\ Manifest.lock /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh (in target 'notesapp' from project 'notesapp')
+	Building project notesapp with scheme notesapp and configuration Debug
+(2 failures)

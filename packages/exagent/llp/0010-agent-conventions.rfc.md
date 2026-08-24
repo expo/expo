@@ -38,20 +38,20 @@ Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are 
 
 [observed — 2026-08-23, `src/builds/`] `exagent build:wait <id>` is the first command whose whole answer is its exit code, and it is what the `20`–`29` band was reserved for. It attaches to an EAS build that already exists — one started by CI, by the dashboard, or by another agent — polls `eas build:view <id> --json`, and leaves with what the build did:
 
-| Code | The build                                                          | Where it is decided            |
-| ---- | ------------------------------------------------------------------ | ------------------------------ |
-| `0`  | `FINISHED`                                                         | `src/builds/status.ts`         |
-| `20` | `ERRORED`                                                          | `src/builds/status.ts`         |
-| `21` | `CANCELED`, **or this wait was interrupted**                       | `src/builds/status.ts`         |
-| `22` | still running when `--timeout` elapsed                             | `src/builds/waitAsync.ts`      |
-| `7`  | nobody is signed in, so no build is visible                        | `src/needsHuman/assertAuth.ts` |
-| `1`  | not readable: bad id, no `eas`, three failed polls                 | `CommandError`                 |
+| Code | The build                                          | Where it is decided            |
+| ---- | -------------------------------------------------- | ------------------------------ |
+| `0`  | `FINISHED`                                         | `src/builds/status.ts`         |
+| `20` | `ERRORED`                                          | `src/builds/status.ts`         |
+| `21` | `CANCELED`, **or this wait was interrupted**       | `src/builds/status.ts`         |
+| `22` | still running when `--timeout` elapsed             | `src/builds/waitAsync.ts`      |
+| `7`  | nobody is signed in, so no build is visible        | `src/needsHuman/assertAuth.ts` |
+| `1`  | not readable: bad id, no `eas`, three failed polls | `CommandError`                 |
 
 Three details of the mapping are decisions rather than transcription:
 
 - **An unrecognized status is not terminal.** The status enum belongs to a service that ships without this CLI, so a status the table has never seen keeps the wait polling. Ending on it would report an outcome nobody observed; the timeout is what stops a wait that is wrong about this, and `22` says "inconclusive" rather than claiming a result. `PENDING_CANCEL` is the concrete case — a cancellation asked for and not yet happened, which still resolves to `CANCELED` or `FINISHED`.
 - **An interrupted wait exits `21`, not `130`.** The definition of `21` above is "canceled by the caller (a declined prompt, `SIGINT`) or by the service", and a Ctrl-C is the caller cancelling. `130` would have been a second convention for the same fact. The two are told apart on the event stream (`cli:build_wait.interrupted`) rather than in the `--json` payload, whose key set is fixed.
-- **Three failed polls is `1`, not an outcome.** A wait that cannot read the build has not learned anything about it, so it is a tool failure. Its *prose* names `eas workflow:status <id> --wait --json`, because a build id and a workflow id look alike and come from the same places — but not its `Try:` line [revised — 2026-08-23]. The `How:` sentence states a condition ("*if* it names a workflow run"), and the last line of a failure is what a driving agent acts on, so putting the workflow command there strips the condition and sends the agent to run something that fails again for the same reason [observed — friction run, 2026-08-23: signed out, and `Try:` recommended the workflow command for an id that was obviously not a build]. `Try:` is now `<the eas that ran> whoami`, which is worth running whatever the cause.
+- **Three failed polls is `1`, not an outcome.** A wait that cannot read the build has not learned anything about it, so it is a tool failure. Its _prose_ names `eas workflow:status <id> --wait --json`, because a build id and a workflow id look alike and come from the same places — but not its `Try:` line [revised — 2026-08-23]. The `How:` sentence states a condition ("_if_ it names a workflow run"), and the last line of a failure is what a driving agent acts on, so putting the workflow command there strips the condition and sends the agent to run something that fails again for the same reason [observed — friction run, 2026-08-23: signed out, and `Try:` recommended the workflow command for an id that was obviously not a build]. `Try:` is now `<the eas that ran> whoami`, which is worth running whatever the cause.
 - **Signed out is `7`, and it is asked before the first poll** [added — 2026-08-23]. The auth preflight of §Needs-human protocol runs first: a wait that nobody is signed in for cannot see any build, so its three polls are three doomed subprocesses ending in a "gave up waiting" that names the wrong cause. A preflight answering `null` — no EAS CLI, a timeout, or a binary under that name that is not the CLI — is **not** "signed out", and the wait proceeds exactly as before.
 
 Progress goes to the `LOG_EVENTS` JSONL stream as `cli:build_wait_poll`, never to stdout, so `--json` still prints exactly one object ([[0006-agent-native-cli-surface]] §Output contract).
@@ -152,7 +152,7 @@ questions in two other places:
    code frame, with `<` escaped so the payload cannot close its own tag]. That is read as `broken`
    directly, because there is no bundle left to ask about.
 
-A 500 whose body is *not* an Expo error page stays `unknown` — the conservatism of the four
+A 500 whose body is _not_ an Expo error page stays `unknown` — the conservatism of the four
 decisions above is unchanged, and something else answering on that port has not shown this project
 to be broken.
 
@@ -164,7 +164,7 @@ reason, and `--require-app --platform web` is a `BAD_ARGS` — exit `1`.
 The finding [observed — friction run 4, F40]: with only Expo Go on a simulator attached,
 `dev:wait --platform web --require-app` exited **0** with `apps 1 app connected` and a follow-up
 reading "The bundle is loaded in a connected app". No web client existed. The follow-ups also
-dropped `--platform web` and named `runtime:errors`, which reads the *native* runtime over the
+dropped `--platform web` and named `runtime:errors`, which reads the _native_ runtime over the
 debugger — a different app on a different platform than the one that had just been waited on.
 
 The first instinct was to filter the target list by platform. That is not a smaller version of the
@@ -219,7 +219,7 @@ parse once. The two halves have different answers:
 
 - **`filename` is normalized, in one place.** Metro names the file relative to the project root and
   the web error page names it absolutely, so the relativizing happens where every result leaves the
-  check rather than per reader. A file *outside* the project stays absolute, for the reason a stack
+  check rather than per reader. A file _outside_ the project stays absolute, for the reason a stack
   frame outside it does: `../../..` is not more useful than the path.
 - **`type` is derived on web, and the derivation is sound because of when the page exists.** The
   page has no field for it, and the earlier code declined to invent one — correctly, as a rule about
@@ -229,7 +229,7 @@ parse once. The two halves have different answers:
   `UnableToResolveError` and everything else from Metro's `TransformError` [observed —
   `@expo/log-box-utils` `parseWebBuildErrors`]. Two guards keep it honest — an explicit `type` on
   the record wins, so the day the page carries the class this stops deriving anything; and `'error'`
-  is *not* read as one, because `LogBoxLog` fills that in for a record that named no type
+  is _not_ read as one, because `LogBoxLog` fills that in for a record that named no type
   [observed — `log-box/LogBoxLog.ts`, `data.type ?? 'error'`], which is the absence of an answer
   wearing the shape of one. A record with no level at all still reports `null`.
 
@@ -269,29 +269,29 @@ window. The flag exists because the asymmetry was itself the friction: an agent 
 `dev:wait` and not on `runtime:errors`, and had to parse `count` out of `--json` to close the loop
 that the exit code closes everywhere else.
 
-Only `errors` has it. `runtime:network`'s failed requests are something it reports *about* the app —
+Only `errors` has it. `runtime:network`'s failed requests are something it reports _about_ the app —
 a 404 the app handles is not the command's operation failing — and there is no equivalent question
 for its exit code to answer.
 
 ### The fourth: `typecheck`, and the gate the other three could not be
 
 [observed — 2026-08-23, `src/typecheck/`] `exagent typecheck` is the fourth command in the band, and
-the first one whose *whole reason to exist* is a class of failure the band's other members are
+the first one whose _whole reason to exist_ is a class of failure the band's other members are
 structurally blind to.
 
 The finding [observed — friction run 3, F34]: a feature was finished with `dev:wait` at `0`,
 `runtime:errors --fail-on-error` at `0` and `doctor` at 21 of 21, and `npx tsc --noEmit` then
 reported seven errors. One of them was `Spacing.md` on a constant with no `md`, which evaluates to
 `undefined`, so the screen rendered with `padding: undefined` — every line of text flush against the
-left edge, in the screenshots, with every gate green. Both other gates were *correct*: nothing threw,
+left edge, in the screenshots, with every gate green. Both other gates were _correct_: nothing threw,
 so the error window was right to be empty, and nothing failed to transform, so the bundle check was
 right to pass. Green meant "it parses and does not throw", and an agent following the CLI's own
 follow-ups would have shipped it.
 
-| Code | The project                                                                      | Where it is decided               |
-| ---- | -------------------------------------------------------------------------------- | --------------------------------- |
-| `0`  | type-checks, **or** has no TypeScript in it at all                               | `src/typecheck/typecheckAsync.ts` |
-| `20` | does not type-check; the diagnostics are the payload                             | `src/typecheck/typecheckAsync.ts` |
+| Code | The project                                                                       | Where it is decided               |
+| ---- | --------------------------------------------------------------------------------- | --------------------------------- |
+| `0`  | type-checks, **or** has no TypeScript in it at all                                | `src/typecheck/typecheckAsync.ts` |
+| `20` | does not type-check; the diagnostics are the payload                              | `src/typecheck/typecheckAsync.ts` |
 | `1`  | unknown: a TypeScript project with no compiler, or one that failed saying nothing | `CommandError`                    |
 
 Four details of that are decisions rather than transcription:
@@ -314,7 +314,7 @@ Four details of that are decisions rather than transcription:
   The sources are evidence in their own right because a project can lose its `tsconfig.json` and
   still be one; `.d.ts` files alone are not, since `expo-env.d.ts` is generated into every app.
 - **No compiler is ever fetched.** `doctor:check` falls back to `npx expo-doctor` and this
-  deliberately does not: `expo-doctor` is a tool you run *at* a project and its checks are its own,
+  deliberately does not: `expo-doctor` is a tool you run _at_ a project and its checks are its own,
   while a type check is a function of the project's own compiler version, its `tsconfig.json` and
   its `@types` — so a compiler from the registry would answer a question about a project that does
   not exist. Only `node_modules/.bin/tsc` counts.
@@ -324,7 +324,7 @@ Four details of that are decisions rather than transcription:
   error that was never reported. The error quotes what the compiler did print and names the exact
   command to re-run by hand.
 - **Both output forms are parsed.** `--pretty false` is what the compiler is asked for, and `pretty`
-  is a *compiler option* as well as a flag, so a project can set it in its own `tsconfig.json` and
+  is a _compiler option_ as well as a flag, so a project can set it in its own `tsconfig.json` and
   what runs is whatever the project has under that name — an assumption, not a fact, exactly as §The
   binary may not be the CLI says. A parser that knew only the terse form would report "no errors"
   for a project whose compiler printed the other one, which is the one answer a gate must never
@@ -340,20 +340,20 @@ replaces in each — is [[0009-smart-followups]] §Where the typecheck rung goes
 first command that uses **both** codes of the band in one run, and the boundary between them is the
 whole design (the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
 
-| Code | The reload                                                                        |
-| ---- | --------------------------------------------------------------------------------- |
-| `0`  | happened, and a debugger target that was not there before has registered          |
-| `20` | did not happen: the entry bundle does not compile, nothing answered, or nothing acted on it |
-| `22` | happened, and no *new* app had registered when `--timeout` expired; or the entry bundle was still building |
-| `1`  | was not attempted: no dev server to reload onto, or a bad argument                |
+| Code | The reload                                                                                                 |
+| ---- | ---------------------------------------------------------------------------------------------------------- |
+| `0`  | happened, and a debugger target that was not there before has registered                                   |
+| `20` | did not happen: the entry bundle does not compile, nothing answered, or nothing acted on it                |
+| `22` | happened, and no _new_ app had registered when `--timeout` expired; or the entry bundle was still building |
+| `1`  | was not attempted: no dev server to reload onto, or a bad argument                                         |
 
 Three details are decisions rather than transcription:
 
 - **A reload is never assumed.** The broadcast has no reply, so a command that sent one and exited
   0 would be reporting an act it did not observe — the same shape of lie as a bundle check on a
   frozen watcher. `reloaded: true` requires the app's connection to the dev server to have been
-  *replaced*, which the dev server's never-reused socket ids make provable without CDP. What that
-  proves is that the app **acted**; [[0005-runtime-loop-tools]] §Peer churn proves the app *acted*
+  _replaced_, which the dev server's never-reused socket ids make provable without CDP. What that
+  proves is that the app **acted**; [[0005-runtime-loop-tools]] §Peer churn proves the app _acted_
   covers why it does not prove the app came back, and what is waited for instead.
 - **`20` and `22` split on whether anything happened.** Nothing reloaded is a failure with a cause
   to read; reloaded-but-not-back is a wait that ran out, and the next action is to look again, not
@@ -444,19 +444,19 @@ and both answer it the same way: that is success.
 
 Decision [confirmed — Kudo, 2026-08-23]. An app that was not running, and a dev server that was not
 running, both exit `0`. The alternative was tempting — a distinct code for "nothing to do" — and it
-is wrong for the reason the band exists: the code answers *did the thing the tool was asked about
-work*, and the thing being asked about is a state, not an act. An agent that stops an app twice
+is wrong for the reason the band exists: the code answers _did the thing the tool was asked about
+work_, and the thing being asked about is a state, not an act. An agent that stops an app twice
 would otherwise have to special-case the second run, which is exactly the branching the convention
-removes. What is *not* collapsed is the fact itself: `runtime:stop` reports `wasRunning`, and
+removes. What is _not_ collapsed is the fact itself: `runtime:stop` reports `wasRunning`, and
 `dev:stop` reports `reason: "not-running"`, so a caller that cares can read it without reading the
 code.
 
 The two codes each command does use:
 
-| Command | `20` | `1` |
-| --- | --- | --- |
+| Command        | `20`                                                                 | `1`                     |
+| -------------- | -------------------------------------------------------------------- | ----------------------- |
 | `runtime:stop` | `--app-id` named an app that was not running, and a different one is | the device tool refused |
-| `dev:stop` | it is still running, or it is not this CLI's to stop | a bad argument |
+| `dev:stop`     | it is still running, or it is not this CLI's to stop                 | a bad argument          |
 
 Two details are decisions rather than transcription:
 
@@ -471,6 +471,7 @@ Two details are decisions rather than transcription:
   nobody is running has the three conditions and the argument, including why a note on a `0` was
   rejected — an agent reads the code before it reads a word of the output, so a warning inside a
   zero is a warning nobody acts on.
+
 - **A dev server this CLI did not start is `20`, not `1`.** The command worked perfectly and
   declined on purpose; nothing about the invocation was wrong. `1` would tell an agent to fix its
   call, and there is nothing to fix — the recovery is `--force`, or stopping it where it was
@@ -512,11 +513,11 @@ caller named `--port`, reports `PORT_IN_USE` with exit `20`.
 
 The shipped behaviour was exit `7`, `needsHuman.scenario: "expo-prompt"`, a `suggestedCommand`
 re-running the identical failing command, and a `How:` naming the flag the caller had just passed
-[observed — F41]. Exit `7` means "the recovery is not another command"; here the recovery *is*
+[observed — F41]. Exit `7` means "the recovery is not another command"; here the recovery _is_
 another command, and one this CLI can run itself.
 
 The carve-out is deliberately **not** a negative signature in the registry. A registry row describes
-a stop and the handoff for it; what makes this one different is the *action* — find a free port, run
+a stop and the handoff for it; what makes this one different is the _action_ — find a free port, run
 the step again — which belongs to the caller that owns the step. `expo-prompt` is unchanged and
 still catches every other prompt; only its `How:` line lost the port example, which now belongs to
 an error of its own. The full reasoning, including why a named `--port` is a requirement rather than
@@ -525,9 +526,10 @@ complete.
 
 ### Four layers, in priority order
 
-1. **Preflight** — ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself — so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out": the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`], and `src/needsHuman/assertAuth.ts` is the same answer *raised* — for `deploy` and `build:wait`, which cannot do their job without an account and would otherwise spend minutes finding out.
+1. **Preflight** — ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself — so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out": the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`], and `src/needsHuman/assertAuth.ts` is the same answer _raised_ — for `deploy` and `build:wait`, which cannot do their job without an account and would otherwise spend minutes finding out.
 
    Three things count as "cannot run", and the third was a bug [fixed — 2026-08-23]. No `eas` on this machine, a run that passed the deadline, and **a binary under that name that is not the EAS CLI**. The third exits non-zero exactly like a signed-out CLI does, so it read as "signed out" — and on a machine whose PATH `eas` is a wrapper that crashes (this is not hypothetical: the friction run's was), every command with a preflight would have stopped and handed its user a login they did not need. `looksLikeWrapperCrash` (§The binary may not be the CLI) is what tells the two apart.
+
 2. **Force non-interactive** — every captured subprocess is told that nothing can answer it. For `expo` that is `CI=1` in the child environment, because the CLI rejects `--non-interactive` and names the variable instead [observed — `packages/@expo/cli/src/index.ts`]; `spawnExpoAsync` is the capture path that sets it, and `runExpoAsync` deliberately does not, because there a person has the terminal. For `eas` it is `--non-interactive`, or `--json`, which implies it. stdin was already never attached [observed — `src/utils/subprocess.ts`]. **Except the dev-server step, which is spawned with `ci: false`** — see below.
 
 #### The dev server is the exception, and `CI` is why
@@ -574,9 +576,7 @@ Three details of that are decisions rather than transcription:
 
 The alternative that was looked for and does not exist: an env var or flag that re-enables the
 watcher under `CI`. `isWatchEnabled()` returns `!env.CI` with nothing in between, so there is
-nothing to pass. The upstream ask that would retire this exception is recorded below.
-3. **Exit signature** — match the captured output against the registry. Three patterns are load-bearing today: eas-cli's `Either log in with … EXPO_TOKEN` [observed — `build/user/SessionManager.js`], `@expo/cli`'s `is in non-interactive mode` [observed — `src/utils/prompts.ts`], and the `in non-interactive mode` fragment eas-cli's many prompt sites share.
-4. **Prompt-hang guard** — for a captured child only, and only when the caller opts in. If it writes nothing for `EXAGENT_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Both halves are required: silence alone is a long build, and killing that would be worse than the hang it prevents. Never in `inherit` mode, where a prompt is legitimate.
+nothing to pass. The upstream ask that would retire this exception is recorded below. 3. **Exit signature** — match the captured output against the registry. Three patterns are load-bearing today: eas-cli's `Either log in with … EXPO_TOKEN` [observed — `build/user/SessionManager.js`], `@expo/cli`'s `is in non-interactive mode` [observed — `src/utils/prompts.ts`], and the `in non-interactive mode` fragment eas-cli's many prompt sites share. 4. **Prompt-hang guard** — for a captured child only, and only when the caller opts in. If it writes nothing for `EXAGENT_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Both halves are required: silence alone is a long build, and killing that would be worse than the hang it prevents. Never in `inherit` mode, where a prompt is legitimate.
 
 The prompt shape is `/[?:]\s*$|^\s*[?›»]\s+\S|\(y\/N\)|\(Y\/n\)|Password|passphrase/i` [observed — `src/needsHuman/detect.ts`]. The leading-marker half was added because `prompts` and `inquirer` write the marker at the _start_ — `? Select a platform` is a question that ends in neither a question mark nor a colon.
 
@@ -584,14 +584,14 @@ The prompt shape is `/[?:]\s*$|^\s*[?›»]\s+\S|\(y\/N\)|\(Y\/n\)|Password|pass
 
 Decision [confirmed — Kudo, 2026-08-23]. Every one of the four layers above assumes that the thing on the other side of the spawn is the CLI. Across a process boundary that is an assumption, not a fact: what runs is whatever the machine has under that name, and a shim, a stale link, or a wrapper from another project will answer instead. The friction run of 2026-08-23 was driven on such a machine — PATH `eas` was a Rust wrapper that panicked — and it broke two things at once.
 
-`src/utils/wrapperCrash.ts` is the one guard, and it is deliberately conservative: a failure counts as "not the CLI" only when the output holds **nothing** that looks like that CLI's *and* the process died the way a wrapper dies (exit `101`, `126`, `127`, `134`, `139`, or a panic/backtrace signature). A false positive hides a real failure's output, which is worse than the vagueness it buys, so both halves have to agree.
+`src/utils/wrapperCrash.ts` is the one guard, and it is deliberately conservative: a failure counts as "not the CLI" only when the output holds **nothing** that looks like that CLI's _and_ the process died the way a wrapper dies (exit `101`, `126`, `127`, `134`, `139`, or a panic/backtrace signature). A false positive hides a real failure's output, which is worse than the vagueness it buys, so both halves have to agree.
 
 Two callers, for the two things that broke:
 
 - **The preflight** answers `null` instead of `false`, per layer 1 above. Reading a crash as "signed out" is the more expensive error of the two: it stops a command that would have worked.
 - **The error message** says `The eas at <path> failed to run at all (this may not be the real CLI)` instead of quoting the bytes under `What the tool printed:`. The heading is a claim about provenance, and it was false: an agent reading a Rust backtrace attributed to eas-cli goes looking for a missing file inside a program that was never involved.
 
-The `Try:` lines of `deploy` and `build:wait` changed for the same reason. `npx eas-cli whoami` checks a *different* program than the one that just failed — a healthy answer from it proves nothing — so the check names the resolved path that actually ran.
+The `Try:` lines of `deploy` and `build:wait` changed for the same reason. `npx eas-cli whoami` checks a _different_ program than the one that just failed — a healthy answer from it proves nothing — so the check names the resolved path that actually ran.
 
 ### What it costs, and the hole that stays
 
@@ -612,7 +612,7 @@ server, an agent reading stderr read nothing, and only the exit code disagreed w
 
 Three things were wrong at once, and each is fixed on its own terms:
 
-- **The payload.** The plan describes what the run *meant* to do. After a step failed it is a
+- **The payload.** The plan describes what the run _meant_ to do. After a step failed it is a
   description of something that did not happen, and its follow-ups ("The dev server is up but opens
   nothing…", `exp://…:8131`) are advice about a dev server that does not exist. `PLAN_STEP_FAILED`
   is the envelope now, and in `capture` mode it carries the tail of what the step printed —
@@ -630,7 +630,7 @@ Three things were wrong at once, and each is fixed on its own terms:
   `PLAN_STEP_FAILED`. The exit code was never meant to be read alone; the envelope is what
   disambiguates it.
 
-What is deliberately *not* changed: `--ios` stays in the plan's argv. It is the step that opens the
+What is deliberately _not_ changed: `--ios` stays in the plan's argv. It is the step that opens the
 app, it works on a Mac with the permission granted, and llp/0004's `reason` already tells a reader
 what each form does. The recovery an agent can take without a person — start without `--ios`, then
 `exagent navigate /`, which deep-links through `simctl openurl` and needs no Automation grant — is
@@ -661,7 +661,7 @@ Four properties are load-bearing:
 
 - **The key set never varies.** `suggestedCommand` and `needsHuman` are `null` rather than absent, per [[0006-agent-native-cli-surface]] §Output contract, so a caller reading `error.needsHuman` after a plain tool error branches on a value instead of on a missing key. `needsHuman` carries the whole record — the same one `cli:needs_human` carries — because an agent that has to hand a step to its user needs the URL and the environment variables, not a boolean.
 - **The code is the one the site already shipped.** Reclassification never renames a code (the rule of §Needs-human protocol), and the envelope reports `error.code` verbatim.
-- **Success paths are untouched.** Nothing about a command that works changes, and no command gained a second object: a failing command printed nothing on stdout before, so the envelope is the *only* thing there.
+- **Success paths are untouched.** Nothing about a command that works changes, and no command gained a second object: a failing command printed nothing on stdout before, so the envelope is the _only_ thing there.
 
 **The envelope has to cover argument parsing too** [amended — friction run 4, 2026-08-24]. It did
 not: `typecheck --json --bogus` exited 1 with an empty stdout and a bare `unknown or unexpected
@@ -676,7 +676,7 @@ shared layer rather than in the command:
   the process on that tick, and the command body went on running in the window before the exit
   fired.
 - Nothing caught what a command rejected with. A command's own body ends in `.catch(logCmdError)`,
-  but its *argument parsing* runs before that chain is built, so a throw there was an unhandled
+  but its _argument parsing_ runs before that chain is built, so a throw there was an unhandled
   rejection and Node printed a stack trace. `cli.ts` now catches at the one place every command is
   invoked from, which is what makes the envelope a property of the CLI rather than of each command.
 
@@ -685,11 +685,12 @@ The same change gives a bad option the what / why / how shape the rest of the CL
 on `runtime:reload` — the message names it, from a small hand-kept table (`OPTION_OWNERS`) in the
 style of `absentCapabilities` here: only options a caller actually reaches for on the wrong command
 belong in it, and a unit test pins that every command it names still resolves.
+
 - **The exit code is still the first thing to read.** The envelope explains a failure; it does not signal one. `7` and the `20`–`29` band mean exactly what the table above says.
 
-Implementation [observed — `src/utils/jsonMode.ts`, `src/utils/errors.ts`, `src/cli.ts`]: `logCmdError` is the one function every command's failure funnels into, and it runs *after* the command module threw — often before that module ever parsed its own arguments. So the flag is answered once, by the launcher, from the raw argv: `setJsonRequested(argvRequestsJson(commandArgs))`. `argvRequestsJson` only looks before a `--` separator, because `install` and `start` forward everything after it to another tool and `exagent install -- --json` is npm's flag, not ours. The alternative — an argument on `logCmdError` and on every `.catch(logCmdError)` — is thirty call sites carrying one boolean that cannot change during a run.
+Implementation [observed — `src/utils/jsonMode.ts`, `src/utils/errors.ts`, `src/cli.ts`]: `logCmdError` is the one function every command's failure funnels into, and it runs _after_ the command module threw — often before that module ever parsed its own arguments. So the flag is answered once, by the launcher, from the raw argv: `setJsonRequested(argvRequestsJson(commandArgs))`. `argvRequestsJson` only looks before a `--` separator, because `install` and `start` forward everything after it to another tool and `exagent install -- --json` is npm's flag, not ours. The alternative — an argument on `logCmdError` and on every `.catch(logCmdError)` — is thirty call sites carrying one boolean that cannot change during a run.
 
-One consequence for a command that prints its payload *before* it can fail. `exagent dev --json` used to emit the plan object and then run the plan, so a failing run would have printed two objects — and, worse, the dev server it spawned inherited stdout and appended raw Metro log lines to the JSON [observed — friction run, 2026-08-23: `JSON.parse` failed at the byte after the closing brace]. In `--json` mode `dev` now captures the subprocess and prints exactly one object when the run ends: the plan (with the step results) on a clean exit, or the envelope. `dev --plan --json` is unchanged — there the plan *is* the answer and nothing runs after it. The plan still reaches a driving agent before the first step either way, on the `cli:start_plan` event.
+One consequence for a command that prints its payload _before_ it can fail. `exagent dev --json` used to emit the plan object and then run the plan, so a failing run would have printed two objects — and, worse, the dev server it spawned inherited stdout and appended raw Metro log lines to the JSON [observed — friction run, 2026-08-23: `JSON.parse` failed at the byte after the closing brace]. In `--json` mode `dev` now captures the subprocess and prints exactly one object when the run ends: the plan (with the step results) on a clean exit, or the envelope. `dev --plan --json` is unchanged — there the plan _is_ the answer and nothing runs after it. The plan still reaches a driving agent before the first step either way, on the `cli:start_plan` event.
 
 ## Registry rules
 
@@ -735,16 +736,18 @@ So [observed — 2026-08-23, `src/utils/args.ts`] every call to `assertWithOptio
 command that parses arguments, including the next one somebody writes. `'none'` reports a `BAD_ARGS`
 naming what was dropped, plus an optional per-command sentence for what the caller probably meant
 (`checkpoint:undo` names `--id`). `'own'` is for a command that reads `args._` itself, and is the
-only setting a permissive parse may use — `arg` puts unrecognized *options* into `_` there, so
+only setting a permissive parse may use — `arg` puts unrecognized _options_ into `_` there, so
 rejecting them as positionals would reject the flags the resolver goes on to read. `dev` and `start`
 declare `'own'` too: their arguments are forwarded to the Expo CLI, which reports its own.
 
-Note that this is a *silent* no-op, which llp/0006 §Errors are prompts treats as the one answer a
+Note that this is a _silent_ no-op, which llp/0006 §Errors are prompts treats as the one answer a
 driving agent cannot recover from — it is indistinguishable from the command having understood.
 
 ## `build:explain`: the rule table is capped and in-repo
 
 Decision [confirmed — Kudo, 2026-08-23]. The failure-signature rules that `build:explain` matches build logs against ship **in the repository, as a bounded table** — a capped set of Expo-specific signatures with a test each, reviewed like code and versioned with the CLI.
+
+Shipped [observed — 2026-08-24, `src/builds/explain/anchors.ts`]: 34 rules, a cap of 40 spelled as `MAX_SIGNATURES` with a unit test on it, and a fixture with an expectation for every rule that has one. [[0012-build-explain]] is the design, and it records which of the fixtures are logs captured on a real machine and which were written from a documented format.
 
 This does not reopen [[0001-agentic-cli-on-expo-cli]] §Scoped out, which rules out **the build-failure signature DB**: a hosted, growing, community-fed corpus with its own service, submission path and moderation. What is in scope is the opposite of that in every dimension that made it a scope-out — no service, no ingestion, no unbounded growth, no data to moderate. Rationale [inferred]: the value of the feature is concentrated in a small number of failures Expo itself causes and can name precisely (a missing pod, a mismatched SDK, an unsupported New Architecture module); a table that stays small stays accurate, and the cap is what keeps a maintainer from answering every field report by appending a rule instead of fixing the cause.
 

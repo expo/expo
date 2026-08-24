@@ -1,0 +1,28 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild -workspace notesapp.xcworkspace -scheme notesapp -configuration Release build
+
+note: Building targets in dependency order
+SwiftCompile normal arm64 Compiling NoteStore.swift (in target 'NoteKit' from project 'Pods')
+    cd /Users/expo/workingdir/build/ios
+NoteKit/NoteStore.swift:11:18: error: value of type '[String]' has no member 'joinedWith'
+ 9 | 
+10 |   public func summary() -> String {
+11 |     return notes.joinedWith(separator: ", ")
+   |                  `- error: value of type '[String]' has no member 'joinedWith'
+12 |   }
+13 | 
+
+NoteKit/NoteStore.swift:15:18: error: value of type '[String]' has no member 'lenght'
+13 | 
+14 |   public func count() -> Int {
+15 |     return notes.lenght
+   |                  `- error: value of type '[String]' has no member 'lenght'
+16 |   }
+17 | }
+Command SwiftCompile failed with a nonzero exit code
+** BUILD FAILED **
+
+
+The following build commands failed:
+	SwiftCompile normal arm64 Compiling NoteStore.swift (in target 'NoteKit' from project 'Pods')
+(1 failure)

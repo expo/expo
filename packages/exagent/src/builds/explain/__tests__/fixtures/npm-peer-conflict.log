@@ -1,0 +1,19 @@
+npm error code ERESOLVE
+npm error ERESOLVE unable to resolve dependency tree
+npm error
+npm error While resolving: scratch3@1.0.0
+npm error Found: react@17.0.2
+npm error node_modules/react
+npm error   react@"17.0.2" from the root project
+npm error
+npm error Could not resolve dependency:
+npm error peer react@"^18.3.1" from react-dom@18.3.1
+npm error node_modules/react-dom
+npm error   react-dom@"18.3.1" from the root project
+npm error
+npm error Fix the upstream dependency conflict, or retry this command with --force or --legacy-peer-deps to accept an incorrect (and potentially broken) dependency resolution.
+npm error
+npm error
+npm error For a full report see:
+npm error /Users/expo/.npm/_logs/2026-08-24T07_54_17_353Z-eresolve-report.txt
+npm error A complete log of this run can be found in: /Users/expo/.npm/_logs/2026-08-24T07_54_17_353Z-debug-0.log

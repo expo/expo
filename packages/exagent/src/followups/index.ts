@@ -8,6 +8,7 @@ export { buildUndoFollowUps, type UndoFollowUpInput } from './checkpoint';
 export { buildConfigEffectiveFollowUps, type ConfigEffectiveFollowUpInput } from './config';
 export { buildDevWaitFollowUps, type DevWaitFollowUpInput } from './devWait';
 export { buildDoctorCheckFollowUps, buildDoctorFixFollowUps, extractAdviceAction } from './doctor';
+export { buildExplainFollowUps, type ExplainFollowUpInput } from './explain';
 export { buildImpactFollowUps, type ImpactFollowUpInput } from './impact';
 export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
 export { buildNavigateFollowUps, type NavigateFollowUpInput } from './navigate';

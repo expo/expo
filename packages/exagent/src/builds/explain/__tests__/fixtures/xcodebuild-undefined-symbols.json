@@ -1,0 +1,22 @@
+{
+  "phases": [
+    {
+      "name": "xcodebuild",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 19
+    }
+  ],
+  "failure": {
+    "phase": "xcodebuild",
+    "signature": "ios.link.undefined-symbols",
+    "line": 7,
+    "matchedLine": "Undefined symbols for architecture arm64:",
+    "confidence": "high",
+    "suggestedCommand": "npx pod-install --non-interactive"
+  },
+  "otherSignatures": [
+    "14:ios.build-failed",
+    "17:ios.build-failed"
+  ]
+}

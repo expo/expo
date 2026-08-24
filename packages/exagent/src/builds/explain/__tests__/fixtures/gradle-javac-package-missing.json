@@ -1,0 +1,23 @@
+{
+  "phases": [
+    {
+      "name": "gradle",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 18
+    }
+  ],
+  "failure": {
+    "phase": "gradle",
+    "signature": "android.javac.package-missing",
+    "line": 2,
+    "matchedLine": "/home/expo/workingdir/build/android/app/src/main/java/com/example/notes/NoteModule.java:5: error: package com.facebook.react.bridge does not exist",
+    "confidence": "high",
+    "suggestedCommand": null
+  },
+  "otherSignatures": [
+    "12:android.gradle.build-failed",
+    "14:android.gradle.build-failed",
+    "15:android.gradle.task-failed"
+  ]
+}

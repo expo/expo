@@ -1,0 +1,15 @@
+Using src/app as the root directory for Expo Router.
+React Compiler enabled
+Starting Metro Bundler
+
+iOS Bundling failed 448ms node_modules/expo-router/entry.js (1523 modules)
+
+SyntaxError: SyntaxError: /private/tmp/wave6-explain-scratch/metro-syntax/src/app/index.tsx: Unexpected token, expected "," (4:29)
+
+[0m [90m 2 |[39m
+ [90m 3 |[39m [36mexport[39m [36mdefault[39m [36mfunction[39m [33mIndex[39m() {
+[31m[1m>[22m[39m[90m 4 |[39m   [36mconst[39m note [33m=[39m { title[33m:[39m [32m'hi'[39m [33m;[39m
+ [90m   |[39m                              [31m[1m^[22m[39m
+ [90m 5 |[39m   [36mreturn[39m (
+ [90m 6 |[39m     [33m<[39m[33mView[39m[33m>[39m
+ [90m 7 |[39m       [33m<[39m[33mText[39m[33m>[39m{note[33m.[39mtitle}[33m<[39m[33m/[39m[33mText[39m[33m>[39m[0m

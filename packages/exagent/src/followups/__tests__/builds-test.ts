@@ -42,8 +42,28 @@ describe(buildBuildWaitFollowUps, () => {
       input({ outcome: 'errored', errorDocsUrl: 'https://docs.expo.dev/troubleshooting/' })
     );
 
-    expect(followups.map((followup) => followup.id)).toEqual(['open-error-docs', 'eas-build-view']);
+    expect(followups.map((followup) => followup.id)).toEqual([
+      'open-error-docs',
+      'eas-build-view',
+      'explain-saved-log',
+    ]);
     expect(followups[1]!.command).toBe(`npx eas build:view ${ID}`);
+  });
+
+  it(`offers the explainer for a failed build, and says it cannot fetch the log itself`, () => {
+    // eas-cli has no `build:logs` (llp/0010 §Upstream asks), so the honest rung names the file
+    // form and the step in between. A rung reading as though this CLI could download the log
+    // would send an agent to `build:explain <id>`, which is the form that does not work yet.
+    const followups = buildBuildWaitFollowUps(input({ outcome: 'errored' }));
+    const explain = followups.find((followup) => followup.id === 'explain-saved-log');
+
+    expect(explain?.command).toBe('npx exagent build:explain --file <path>');
+    expect(explain?.why).toContain('Nothing here can download it for you yet');
+  });
+
+  it(`offers no explainer for a submission, whose log is not a native build log`, () => {
+    const followups = buildBuildWaitFollowUps(input({ outcome: 'errored', kind: 'submission' }));
+    expect(followups.map((followup) => followup.id)).not.toContain('explain-saved-log');
   });
 
   // A canceled build says nothing about whether it would have worked, so the next rung is the

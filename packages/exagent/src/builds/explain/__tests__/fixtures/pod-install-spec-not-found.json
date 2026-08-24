@@ -1,0 +1,19 @@
+{
+  "phases": [
+    {
+      "name": "pod-install",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 180
+    }
+  ],
+  "failure": {
+    "phase": "pod-install",
+    "signature": "pods.spec-not-found",
+    "line": 175,
+    "matchedLine": "[!] Unable to find a specification for `NonexistentExpoPodXyz123`",
+    "confidence": "high",
+    "suggestedCommand": "npx pod-install --non-interactive"
+  },
+  "otherSignatures": []
+}
