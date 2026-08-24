@@ -195,7 +195,7 @@ Declare `weight` and `style` on every face. Web needs both values, and explicit 
 
 Platform notes:
 
-- **Android** uses the declared `weight` and `style` values, and falls back to the values in the font file when not declared. Below API 29 (Android 10), only the default face loads, chosen by the declared values (closest to weight 400, upright).
+- **Android** uses the declared `weight` and `style` values, and falls back to the values in the font file when not declared. A declared `weight` pins a variable font face to that one weight, and Android synthesizes the others. Below API 29 (Android 10), only the default face loads, chosen by the declared values (closest to weight 400, upright); fonts embedded with the [config plugin](#configuration-in-app-config) use Android's XML font resources and do not have this limit.
 - **iOS** matches faces by the weight and style metadata embedded in the font files. It does not use the declared `weight` and `style` values for matching. It uses them only to pick the family's default face when a file carries no readable metadata.
 - **Web** generates one CSS `@font-face` rule per face, with the declared `weight` and `style` values. CSS cannot read the metadata inside a font file, so a face that declares no `style` renders as upright. Two faces of one family that leave the same values undeclared produce the same CSS rule, and the browser then chooses between them.
 
