@@ -77,6 +77,27 @@ export function resolveDevWaitOptions(argv: string[]): DevWaitOptions {
     });
   }
 
+  const platform = resolveBundlePlatform(args['--platform']);
+
+  // @ref llp/0010-agent-conventions.rfc.md §What app counting can and cannot see — friction run 4,
+  // F40. Refused here rather than answered somehow, because there is no answer: the dev server's
+  // debugger target list holds React Native runtimes that connected over `/inspector/device`, and
+  // a browser has no such module. Verified live [observed — 2026-08-24, port 8190]: the web bundle
+  // loaded and ran in Safari (Metro logged `Web Bundled … (1307 modules)` and `Web LOG Running
+  // application "main"`) and `/json/list` stayed at exactly the one iOS target for 90 s. Answering
+  // 0 would time out for a web client that is genuinely there; answering with the native count is
+  // what reported "1 app connected" for a browser nobody had opened.
+  if (args['--require-app'] && platform === 'web') {
+    throw new CommandError(
+      'BAD_ARGS',
+      [
+        `--require-app cannot be answered for --platform web.`,
+        `Why: the only evidence this command has about connected apps is the dev server's debugger target list, and that list holds React Native runtimes that attached over the inspector — a browser running the web bundle never registers one, whether or not it is open. Counting the native runtimes that are in the list would report a connected app for a browser nobody opened, which is what this used to do.`,
+        `How: drop --require-app to wait for the web bundle to compile, which is what can be proved for web; or pass --platform ios or --platform android to wait for a native app to attach.`,
+      ].join('\n')
+    );
+  }
+
   return {
     devServerUrl:
       args['--dev-server-url'] == null ? null : resolveDevServerUrlFlag(args['--dev-server-url']),
@@ -86,7 +107,7 @@ export function resolveDevWaitOptions(argv: string[]): DevWaitOptions {
     }),
     requireApp: !!args['--require-app'],
     bundleCheck: !args['--no-bundle-check'],
-    platform: resolveBundlePlatform(args['--platform']),
+    platform,
     json: !!args['--json'],
     followups: !args['--no-followups'],
   };

@@ -40,6 +40,10 @@ describe(resolveDevWaitOptions, () => {
     [['--dev-server-url', 'not a url'], '--dev-server-url'],
     [['--dev-server-url', 'ws://127.0.0.1:8081'], '--dev-server-url'],
     [['--platform', 'windows'], '--platform'],
+    // @ref llp/0010-agent-conventions.rfc.md §What app counting can and cannot see — F40.
+    // A browser running the web bundle registers no debugger target, so there is nothing for
+    // `--require-app` to wait for and no honest way to answer it.
+    [['--require-app', '--platform', 'web'], '--require-app'],
   ])(`should reject %p`, (argv, flag) => {
     expect(() => resolveDevWaitOptions(argv)).toThrow(CommandError);
     expect(() => resolveDevWaitOptions(argv)).toThrow(

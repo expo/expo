@@ -57,8 +57,13 @@ declare module '2g' {
       ready: boolean;
       /** Whether the dev server serves this project; null when it could not be decided. */
       projectRootMatched: boolean | null;
-      /** Debugger targets attached when the wait ended, i.e. apps running the bundle. */
-      appsConnected: number;
+      /**
+       * Debugger targets attached when the wait ended, i.e. apps running the bundle.
+       *
+       * Null for `--platform web`: that list only holds native runtimes, so it answers a question
+       * about another platform (llp/0010 §What app counting can and cannot see).
+       */
+      appsConnected: number | null;
       waitedMs: number;
       timedOut: boolean;
       /**

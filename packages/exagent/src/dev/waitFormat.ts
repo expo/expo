@@ -32,8 +32,24 @@ export interface DevWaitResult {
   reportedProjectRoot: string | null;
   /** The project this command was run in. */
   projectRoot: string;
-  /** Debugger targets attached to the dev server when the wait ended. */
-  appsConnected: number;
+  /**
+   * Debugger targets attached to the dev server when the wait ended.
+   *
+   * Null for `--platform web`, and that null is a decision rather than a gap. The list holds
+   * React Native runtimes that attached over the dev server's inspector; a browser running the web
+   * bundle registers nothing there, whether or not it is open [observed — 2026-08-24, live: the
+   * web bundle ran in Safari and `/json/list` stayed at the one iOS target for 90 s]. So under
+   * `--platform web` the number is a count of *native* apps, and reporting it is how "1 app
+   * connected" came to describe a browser nobody had opened (llp/0010 §What app counting can and
+   * cannot see).
+   */
+  appsConnected: number | null;
+  /**
+   * Platform the app count is about, or null when it is about the dev server as a whole.
+   *
+   * Only ever `web` today: it is what turns "no number" into "no number *because* this is web".
+   */
+  appsPlatform?: BundleCheckPlatform | null;
   /** How long the whole wait took, in milliseconds. */
   waitedMs: number;
   /** The budget expired before the wait could finish. */
@@ -87,13 +103,21 @@ export interface DevWaitResultJson {
   ready: boolean;
   projectRootMatched: boolean | null;
   projectRoot: string;
-  appsConnected: number;
+  /** Debugger targets attached, or null when they cannot answer the question — see the field of
+   * the same name on {@link DevWaitResult}. */
+  appsConnected: number | null;
+  /** Why {@link appsConnected} is null. Present exactly when it is, the way `bundle.reason` is. */
+  appsReason: string | null;
   waitedMs: number;
   timedOut: boolean;
   source: DevServerSource;
   bundle: DevWaitBundleJson;
   followups: FollowUp[];
 }
+
+/** Why a web wait reports no app count. One sentence, in one place, for both channels. */
+const WEB_APPS_UNKNOWN_REASON =
+  'the dev server only lists debugger targets for native runtimes, so a browser running the web bundle cannot be counted';
 
 /**
  * Whether the run answered the question it was asked: this project's bundler ready, plus an app if
@@ -111,7 +135,9 @@ export function devWaitSucceeded(result: DevWaitResult): boolean {
     result.projectRootMatched !== false &&
     result.ready &&
     bundleCompiled(result) &&
-    (!result.requireApp || result.appsConnected > 0)
+    // `--require-app` cannot be combined with `--platform web` (`resolveWaitOptions`), so
+    // `requireApp` here always comes with a number to test.
+    (!result.requireApp || (result.appsConnected ?? 0) > 0)
   );
 }
 
@@ -139,6 +165,7 @@ export function devWaitResultToJson(
     projectRootMatched: result.projectRootMatched,
     projectRoot: result.projectRoot,
     appsConnected: result.appsConnected,
+    appsReason: result.appsConnected == null ? WEB_APPS_UNKNOWN_REASON : null,
     waitedMs: result.waitedMs,
     timedOut: result.timedOut,
     source: result.source,
@@ -265,6 +292,11 @@ function bundleErrorLines(bundle: BundleCheckResult | null): string[] {
 }
 
 function appsValue(result: DevWaitResult): string {
+  // No number at all for web, rather than a number with a caveat next to it: a reader who takes
+  // one thing from this line takes the number, and for web the number is about other platforms.
+  if (result.appsConnected == null) {
+    return chalk.dim(`cannot be counted for web (${WEB_APPS_UNKNOWN_REASON})`);
+  }
   const apps = result.appsConnected === 1 ? 'app' : 'apps';
   const count = `${result.appsConnected} ${apps} connected`;
   if (result.requireApp && result.appsConnected === 0) {

@@ -76,6 +76,7 @@ describe(devWaitResultToJson, () => {
       projectRootMatched: true,
       projectRoot: '/project',
       appsConnected: 1,
+      appsReason: null,
       waitedMs: 4210,
       timedOut: false,
       source: 'lock',
@@ -144,6 +145,16 @@ describe(formatDevWaitResult, () => {
     const printed = formatDevWaitResult(result({ requireApp: true, appsConnected: 0 }));
 
     expect(printed).toContain('0 apps connected (timed out waiting for one)');
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §What app counting can and cannot see — F40.
+  // The native runtimes in the list are real, and they are not web clients. Printing their count
+  // under `--platform web` is what read as "the bundle is loaded in a connected app".
+  it(`should not count native runtimes as web clients`, () => {
+    const printed = formatDevWaitResult(result({ appsConnected: null, appsPlatform: 'web' }));
+
+    expect(printed).not.toMatch(/\d+ apps? connected/);
+    expect(printed).toContain('cannot be counted for web');
   });
 
   // The one line of this report that is about the project rather than about the dev server.

@@ -106,6 +106,64 @@ describe(buildDevWaitFollowUps, () => {
     });
   });
 
+  // @ref llp/0010-agent-conventions.rfc.md §What app counting can and cannot see — F40.
+  // A web wait's follow-ups used to drop `--platform web` and name `runtime:errors`, which reads
+  // the *native* runtime through the debugger — a different app on a different platform.
+  describe('a web wait', () => {
+    const web = (overrides: Partial<DevWaitFollowUpInput> = {}) =>
+      buildDevWaitFollowUps(
+        input({
+          platform: 'web',
+          appsConnected: null,
+          devServerUrl: 'http://127.0.0.1:8081',
+          ...overrides,
+        })
+      );
+
+    it(`should not send a web wait to the native runtime's error window`, () => {
+      const followups = web();
+
+      expect(ids(followups)).not.toContain('dev-wait-runtime-errors');
+      expect(followups.map((followup) => followup.command).join('\n')).not.toContain(
+        'runtime:errors'
+      );
+    });
+
+    it(`should name the page to open, and keep typecheck`, () => {
+      const followups = web();
+
+      expect(ids(followups)).toEqual(['dev-wait-web-open', 'dev-wait-typecheck']);
+      expect(followups[0]!.command).toContain('http://127.0.0.1:8081');
+    });
+
+    it(`should keep --platform web on every wait it suggests re-running`, () => {
+      const rerun = [
+        ...web({ ready: false, timedOut: true }),
+        ...web({
+          bundle: {
+            outcome: 'broken',
+            platform: 'web',
+            url: null,
+            waitedMs: 5,
+            error: {
+              type: 'TransformError',
+              filename: 'src/app/index.tsx',
+              lineNumber: 3,
+              column: 1,
+              message: 'SyntaxError',
+              snippet: null,
+            },
+          },
+        }),
+      ].filter((followup) => followup.command.includes('dev:wait'));
+
+      expect(rerun.length).toBeGreaterThan(0);
+      for (const followup of rerun) {
+        expect(followup.command).toContain('--platform web');
+      }
+    });
+  });
+
   it.each([['ok'], ['unknown'], ['timeout']] as const)(
     `should suggest nothing about the bundle when the check answered %p`,
     (outcome) => {
