@@ -130,8 +130,12 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
   private func startProgressTimer(for output: AVCaptureFileOutput?) {
     guard isProgressActive else { return }
     progressTimer?.invalidate()
-    let timer = Timer(timeInterval: progressInterval, repeats: true) { [weak self, weak output] _ in
-      guard let self, let output, output.recordedDuration.isNumeric else {
+    let timer = Timer(timeInterval: progressInterval, repeats: true) { [weak self, weak output] timer in
+      guard let self, let output else {
+        timer.invalidate()
+        return
+      }
+      guard output.recordedDuration.isNumeric else {
         return
       }
       var payload: [String: Any] = [
@@ -147,11 +151,13 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     progressTimer = timer
   }
 
-  private func stopProgressTimer() {
+  private func stopProgressUpdates() {
+    // maxDuration is set on the main queue in record(), so clear it there too.
     DispatchQueue.main.async { [weak self] in
       self?.isProgressActive = false
       self?.progressTimer?.invalidate()
       self?.progressTimer = nil
+      self?.maxDuration = nil
     }
   }
 
@@ -177,8 +183,7 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     defer {
       videoRecordedPromise = nil
       videoCodecType = nil
-      maxDuration = nil
-      stopProgressTimer()
+      stopProgressUpdates()
     }
 
     let success = error == nil
@@ -195,7 +200,6 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     videoRecordedPromise?.reject(CameraUnmountedException())
     videoRecordedPromise = nil
     videoCodecType = nil
-    maxDuration = nil
-    stopProgressTimer()
+    stopProgressUpdates()
   }
 }
