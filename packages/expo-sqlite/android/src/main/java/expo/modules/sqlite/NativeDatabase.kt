@@ -6,6 +6,7 @@ import expo.modules.kotlin.sharedobjects.SharedRef
 import java.util.concurrent.atomic.AtomicInteger
 
 internal class NativeDatabase(val databasePath: String, val openOptions: OpenDatabaseOptions) : SharedRef<NativeDatabaseBinding>(NativeDatabaseBinding()) {
+  @Volatile
   var isClosed = false
   private val refCount = AtomicInteger(1)
 
@@ -27,6 +28,9 @@ internal class NativeDatabase(val databasePath: String, val openOptions: OpenDat
 
   override fun sharedObjectDidRelease() {
     super.sharedObjectDidRelease()
-    this.ref.close()
+    // Reopening a database reuses this instance, so other JavaScript objects may still use it.
+    if (isClosed) {
+      this.ref.close()
+    }
   }
 }

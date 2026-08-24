@@ -16,6 +16,33 @@ interface UserEntity {
   j: number;
 }
 
+// Only some Hermes builds and browsers expose `globalThis.gc()`.
+const globalGC = (globalThis as unknown as { gc?: () => void }).gc;
+
+// Opens in a frame of its own and hands back only a weak reference.
+// Anything left in the caller, even the resolved promise in a dead register, pins the database and
+// stops it from ever being collected.
+async function openAndForgetAsync(databaseName: string): Promise<WeakRef<object>> {
+  const db = await SQLite.openDatabaseAsync(databaseName);
+  return new WeakRef(db.nativeDatabase);
+}
+
+// `deref()` keeps its target alive until the end of the current job, so it must never share a job
+// with the collection.
+// The database wrapper and the shared object it holds also die on separate passes, hence the loop.
+async function collectAsync(ref: WeakRef<object>): Promise<boolean> {
+  for (let i = 0; i < 20; i++) {
+    globalGC?.();
+    await delayAsync(0);
+    const collected = ref.deref() === undefined;
+    await delayAsync(0);
+    if (collected) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function test({
   describe,
   expect,
@@ -312,6 +339,34 @@ INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
       expect(results.length).toBe(1);
       await srcDb.closeAsync();
       await destDb.closeAsync();
+    });
+  });
+
+  describe('Shared connections', () => {
+    // Nothing other than GC can force a shared object release.
+    const gcIt = globalGC && process.env.EXPO_OS !== 'web' ? it : t.xit;
+
+    gcIt('should keep other instances usable after one is collected', async () => {
+      const db2 = await SQLite.openDatabaseAsync('sharedconn.db');
+      const dropped = await openAndForgetAsync('sharedconn.db');
+      expect(await collectAsync(dropped)).toBe(true);
+
+      await db2.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64), k INT, j REAL);
+INSERT INTO users (name, k, j) VALUES ('Tim Duncan', 1, 23.4);
+`);
+      const results = await db2.getAllAsync<UserEntity>('SELECT * FROM users');
+      expect(results.length).toBe(1);
+    });
+
+    gcIt('should be able to reopen a database after its only instance is collected', async () => {
+      const dropped = await openAndForgetAsync('sharedconn2.db');
+      expect(await collectAsync(dropped)).toBe(true);
+
+      const db2 = await SQLite.openDatabaseAsync('sharedconn2.db');
+      const row = await db2.getFirstAsync<{ value: number }>('SELECT 1 as value');
+      expect(requireNotNull(row).value).toBe(1);
     });
   });
 
