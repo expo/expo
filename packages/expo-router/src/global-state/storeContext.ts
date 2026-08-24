@@ -1,5 +1,5 @@
 'use client';
-import { createContext, use } from 'react';
+import { createContext } from 'react';
 import type { ComponentType } from 'react';
 
 import type { RouteNode } from '../Route';
@@ -17,6 +17,3 @@ export type StoreContextValue = {
 };
 
 export const StoreContext = createContext<StoreContextValue | null>(null);
-
-export const useExpoRouterStore = () => use(StoreContext)!;
-export const useOptionalExpoRouterStore = () => use(StoreContext);

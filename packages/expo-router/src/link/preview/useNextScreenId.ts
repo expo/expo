@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react';
 
 import type { ReactNavigationState } from '../../global-state/router-store';
-import { useExpoRouterStore } from '../../global-state/storeContext';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { useRouter } from '../../hooks';
+import { useNavigationContainerRef } from '../../react-navigation/native';
 import type { Href } from '../../types';
 import { useLinkPreviewContext } from './LinkPreviewContext';
 import type { TabPath } from './native';
@@ -15,7 +15,7 @@ export function useNextScreenId(): [
 ] {
   const router = useRouter();
   const routeInfo = useRouteInfo();
-  const { navigationRef } = useExpoRouterStore();
+  const navigationRef = useNavigationContainerRef();
   const { setOpenPreviewKey } = useLinkPreviewContext();
   const [internalNextScreenId, internalSetNextScreenId] = useState<string | undefined>();
   const currentHref = useRef<Href | undefined>(undefined);

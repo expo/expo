@@ -1,9 +1,10 @@
-import { type RefObject, useEffect, useSyncExternalStore } from 'react';
+import { type RefObject, use, useEffect, useEffectEvent, useSyncExternalStore } from 'react';
 
 import type { ImperativeRouter } from './global-state/router';
 import { router } from './global-state/router';
 import { routingQueue } from './global-state/routing';
-import { store } from './global-state/store';
+import { StoreContext } from './global-state/storeContext';
+import { useRouteInfo } from './global-state/useRouteInfo';
 import type { NavigationContainerRef, ParamListBase } from './react-navigation/native';
 
 export type { ImperativeRouter };
@@ -12,14 +13,30 @@ export { router };
 export function useImperativeApiEmitter(
   ref: RefObject<NavigationContainerRef<ParamListBase> | null>
 ) {
+  const routeInfo = useRouteInfo();
+  const store = use(StoreContext);
+  if (!store) {
+    throw new Error('useImperativeApiEmitter must be rendered inside ExpoRoot.');
+  }
+  if (!store.linking) {
+    throw new Error('Attempted to link to route when no routes are present');
+  }
+  const linking = store.linking;
   const events = useSyncExternalStore(
     routingQueue.subscribe,
     routingQueue.snapshot,
     routingQueue.snapshot
   );
+  const runQueue = useEffectEvent(() => {
+    routingQueue.run(ref, {
+      routeInfo,
+      linking,
+      redirects: store.redirects,
+      navigationRef: ref.current!,
+    });
+  });
   useEffect(() => {
-    // TODO: Use useRouteInfo once it is computed from global state.
-    routingQueue.run(ref, store.getRouteInfo());
-  }, [events, ref]);
+    runQueue();
+  }, [events]);
   return null;
 }

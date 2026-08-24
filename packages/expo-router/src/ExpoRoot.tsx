@@ -1,6 +1,6 @@
 'use client';
 
-import { type PropsWithChildren, Fragment, type ComponentType, useCallback, useMemo } from 'react';
+import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -91,6 +91,11 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
+function onNavigationReady() {
+  handleNavigationOnReady();
+  maybeHideSplashScreen();
+}
+
 // TODO(@ubax): Refactor onReady logic and use listeners pattern
 function ContextNavigator({
   context,
@@ -138,11 +143,6 @@ function ContextNavigator({
     linking: linkingConfig,
     routeNode,
   } = storeValue;
-  const onNavigationReady = useCallback(() => {
-    handleNavigationOnReady();
-    maybeHideSplashScreen();
-  }, [storeValue]);
-
   useDomComponentNavigation();
 
   // TODO(@ubax): Revisit onboarding once route creation is React-owned.
