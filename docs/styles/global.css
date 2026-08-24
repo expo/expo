@@ -312,18 +312,18 @@ div.tippy-box {
 .token.regex,
 .token.important,
 .token.tag {
-  @apply text-palette-orange11;
+  @apply text-[#c24900] dark:text-palette-orange11;
 }
 
 .token.number,
 .token.string {
-  @apply text-palette-yellow11;
+  @apply text-[#a65e00] dark:text-palette-yellow11;
 }
 
 .token.url,
 .token.literal-property,
 .token.property-access {
-  @apply text-palette-blue11;
+  @apply text-[#006fd7] dark:text-palette-blue11;
 }
 
 .token.important {
