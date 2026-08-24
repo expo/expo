@@ -50,6 +50,11 @@ function printed(): string {
   return jest.mocked(console.log).mock.calls.flat().join('\n');
 }
 
+/** What reached stderr: the what / why / how of a refusal, which is where the guard is named. */
+function printedErrors(): string {
+  return jest.mocked(console.error).mock.calls.flat().join('\n');
+}
+
 let originalFetch: typeof fetch | undefined;
 let killed: { pid: number; signal: string }[] = [];
 let killSpy: jest.SpyInstance;
@@ -109,6 +114,7 @@ describe(devStopAsync, () => {
     expect(Object.keys(JSON.parse(printed())).sort()).toEqual([
       'detail',
       'followups',
+      'forceRefusedBy',
       'forced',
       'lockHeld',
       'pid',
@@ -233,6 +239,53 @@ describe(devStopAsync, () => {
       );
       expect(killed).toEqual([]);
       expect(JSON.parse(printed()).detail).toContain('would not name');
+    });
+
+    // @ref llp/0005-runtime-loop-tools.rfc.md §A port with no lock behind it — friction run 5,
+    // F48-1. A refusal that answers "run it again with --force" to a caller who passed --force is
+    // a next action that cannot work, and it hides the only thing worth knowing: which of the two
+    // proofs did not hold.
+    describe('a refused --force', () => {
+      it(`should report which proof failed when the process is not a dev server's`, async () => {
+        jest.mocked(findPortListenerAsync).mockResolvedValue({ pid: 777, command: 'nginx' });
+
+        await devStopAsync(projectRoot, options({ port: 8081, force: true }));
+
+        expect(JSON.parse(printed()).forceRefusedBy).toBe('foreign-process');
+        expect(printedErrors()).toContain('nginx');
+        expect(printedErrors()).not.toContain('again with --force');
+      });
+
+      it(`should report which proof failed when the port is not a dev server`, async () => {
+        globalThis.fetch = (async () => ({
+          ok: true,
+          text: async () => '<!DOCTYPE html>',
+        })) as unknown as typeof fetch;
+
+        await devStopAsync(projectRoot, options({ port: 8081, force: true }));
+
+        expect(JSON.parse(printed()).forceRefusedBy).toBe('not-a-dev-server');
+        expect(printedErrors()).toContain('packager-status:running');
+        expect(printedErrors()).not.toContain('again with --force');
+      });
+
+      it(`should report which proof failed when the machine names no process`, async () => {
+        jest.mocked(findPortListenerAsync).mockResolvedValue(null);
+
+        await devStopAsync(projectRoot, options({ port: 8081, force: true }));
+
+        expect(JSON.parse(printed()).forceRefusedBy).toBe('unnamed-process');
+        expect(printedErrors()).not.toContain('again with --force');
+      });
+
+      // Null when the flag was not passed: the field says which proof `--force` failed on, and
+      // there is no such proof to report for a run that never asked for one.
+      it(`should be null when --force was not passed`, async () => {
+        await devStopAsync(projectRoot, options({ port: 8081 }));
+
+        expect(JSON.parse(printed()).forceRefusedBy).toBeNull();
+        expect(printedErrors()).toContain('--force');
+      });
     });
   });
 });

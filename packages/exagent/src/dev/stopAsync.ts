@@ -48,6 +48,26 @@ export type DevStopSkipReason =
   | 'still-running';
 
 /**
+ * Which of `--force`'s two proofs did not hold.
+ *
+ * `--force` requires the same fact from two directions — the port answers as a Metro dev server,
+ * and the process on the port is a program that runs one — because each alone can be wrong in a
+ * way that ends with the wrong process killed (llp/0005 §A port with no lock behind it).
+ *
+ * Reported because the refusal's own recovery used to be "run this command again with --force"
+ * whether or not `--force` had been passed [observed — friction run 5, F48-1]. To a caller that
+ * had just passed it, that is a next action that cannot work, and it says nothing about which
+ * proof was missing — which is the only thing that decides what to do instead.
+ */
+export type DevStopForceRefusal =
+  /** The port answered, but not with `packager-status:running`, so no Metro is proved to be there. */
+  | 'not-a-dev-server'
+  /** Something is listening and this machine would not name the process holding the port. */
+  | 'unnamed-process'
+  /** The process on the port runs a program that does not run a dev server. */
+  | 'foreign-process';
+
+/**
  * Machine shape of `exagent dev:stop --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout,
@@ -68,6 +88,13 @@ export interface DevStopResultJson {
   signal: string | null;
   /** The dev server was killed after `--force`, rather than asked to stop. */
   forced: boolean;
+  /**
+   * Which of `--force`'s two proofs did not hold, or null.
+   *
+   * Non-null exactly when `--force` was passed and declined, so a caller can branch on the
+   * missing proof instead of reading the sentence that names it.
+   */
+  forceRefusedBy: DevStopForceRefusal | null;
   /** Why nothing was stopped. Null exactly when {@link stopped} is true. */
   reason: DevStopSkipReason | null;
   /** One sentence of detail for {@link reason}. Null exactly when {@link stopped} is true. */
@@ -138,6 +165,7 @@ async function stopLockedDevServerAsync(
     lockHeld: true,
     signal: null,
     forced: false,
+    forceRefusedBy: null,
     reason: null,
     detail: null,
     waitedMs: 0,
@@ -186,6 +214,7 @@ async function stopUnlockedDevServerAsync(
     lockHeld: false,
     signal: null,
     forced: false,
+    forceRefusedBy: null,
     reason: 'not-running',
     detail: 'no dev-server lock answered for this project, and nothing was listening for it',
     waitedMs: Date.now() - startedAt,
@@ -228,6 +257,16 @@ async function stopUnlockedDevServerAsync(
   }
 
   base.reason = 'foreign-dev-server';
+  // Which proof was missing, for a run that asked for `--force` and did not get it. Ordered by
+  // which one is read first: a port that does not answer as a dev server settles it whatever the
+  // process is, and an unnamed process is a different next step than a named foreign one.
+  base.forceRefusedBy = options.force
+    ? !isDevServer
+      ? 'not-a-dev-server'
+      : listener == null
+        ? 'unnamed-process'
+        : 'foreign-process'
+    : null;
   base.detail = [
     `port ${port} is`,
     isDevServer ? 'answering as an Expo dev server' : 'in use',
@@ -396,7 +435,9 @@ function explainFailure(report: DevStopResultJson, options: DevStopOptions): str
     return [
       chalk.red(`The dev server on port ${report.port} was not stopped.`),
       `Why: ${report.detail}. Stopping a process this CLI did not start would be killing something nobody in this command asked about — a second project's dev server on that port is the ordinary case.`,
-      `How: stop it where it was started, or run this command again with --force, which stops it only when the port answers as an Expo dev server ${report.pid != null ? `and pid ${report.pid} looks like one` : 'and its process can be identified'}.`,
+      report.forceRefusedBy
+        ? forceRefusedHow(report, report.forceRefusedBy)
+        : `How: stop it where it was started, or run this command again with --force, which stops it only when the port answers as an Expo dev server ${report.pid != null ? `and pid ${report.pid} looks like one` : 'and its process can be identified'}.`,
     ].join('\n');
   }
   return [
@@ -404,4 +445,23 @@ function explainFailure(report: DevStopResultJson, options: DevStopOptions): str
     `Why: ${report.detail}.`,
     `How: run this command again with a longer --timeout, or with --signal SIGKILL, which the process cannot decline. A dev server that ignores ${options.signal} is usually mid-shutdown rather than stuck.`,
   ].join('\n');
+}
+
+/**
+ * The `How:` line for a `--force` that was passed and declined.
+ *
+ * It never names `--force` as the recovery, because the caller already passed it — the old line
+ * did, which is a next action guaranteed to fail again [observed — friction run 5, F48-1]. What it
+ * names instead is the proof that was missing and the one thing that would supply it.
+ */
+function forceRefusedHow(report: DevStopResultJson, refusal: DevStopForceRefusal): string {
+  const port = report.port;
+  switch (refusal) {
+    case 'not-a-dev-server':
+      return `How: --force was passed and declined, because the first of its two proofs did not hold — port ${port} answered, but not with "${PACKAGER_STATUS_READY}", so nothing has shown a Metro dev server is on it. --force never kills a listener on that evidence. Stop whatever is on the port where it was started, or name the right port with --port.`;
+    case 'unnamed-process':
+      return `How: --force was passed and declined, because the second of its two proofs did not hold — the port answers as an Expo dev server, and this machine named no process holding it, so there is no pid to signal. Run "lsof -ti tcp:${port}" yourself to see whether your user owns it; a listener owned by another user is not visible here.`;
+    case 'foreign-process':
+      return `How: --force was passed and declined, because the second of its two proofs did not hold — the program pid ${report.pid} runs, named above, is not one that runs a dev server, so the pid on the port and the dev server answering on it disagree. That usually means something in front of a dev server elsewhere: stop it where it was started, or point this command at the real port with --port.`;
+  }
 }
