@@ -111,6 +111,7 @@ export function checkRoute({
 const ROUTE_COMMANDS = {
   navigate: (route: string) => `npx exagent navigate ${route}`,
   'runtime:reload': (route: string) => `npx exagent runtime:reload --route ${route}`,
+  smoke: (route: string) => `npx exagent smoke --route ${route}`,
 } as const;
 
 /** A command that resolves a route against the project's routes before it acts on one. */

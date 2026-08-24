@@ -111,6 +111,19 @@ export function buildDetachSpawn(binPath: string, argv: string[]): DetachSpawn {
   };
 }
 
+export interface DevDetachOptions {
+  /**
+   * Whether to print the report at all.
+   *
+   * False for a caller that is *part of* another command's answer: `exagent smoke --start` starts a
+   * dev server as one phase of eight, and under `--json` its stdout is one object — a second report
+   * printed into it would make the whole run unparseable, which is the failure llp/0010 §The
+   * `--json` error envelope records for `dev` itself. The `cli:dev_detach` event is emitted either
+   * way, so a suppressed report is never a silent start.
+   */
+  print?: boolean;
+}
+
 /**
  * Start the dev server in a process of its own, and report where it landed.
  *
@@ -118,7 +131,11 @@ export function buildDetachSpawn(binPath: string, argv: string[]): DetachSpawn {
  * up — is the outcome asked for. Everything else throws.
  * @throws {CommandError} when the child exited before publishing its lock, or the wait ran out.
  */
-export async function devDetachAsync(projectRoot: string, options: DevOptions): Promise<number> {
+export async function devDetachAsync(
+  projectRoot: string,
+  options: DevOptions,
+  { print = true }: DevDetachOptions = {}
+): Promise<number> {
   const startedAt = Date.now();
 
   // Asked before anything is spawned. A second detached dev server for one project cannot hold the
@@ -131,6 +148,7 @@ export async function devDetachAsync(projectRoot: string, options: DevOptions): 
       ready: null,
       projectRootMatched: null,
       startedAt,
+      print,
     });
   }
 
@@ -190,6 +208,7 @@ export async function devDetachAsync(projectRoot: string, options: DevOptions): 
     ready,
     projectRootMatched,
     startedAt,
+    print,
   });
 }
 
@@ -203,12 +222,14 @@ function reportDetached(
     ready,
     projectRootMatched,
     startedAt,
+    print,
   }: {
     lock: DevServerLockInfo;
     alreadyRunning: boolean;
     ready: boolean | null;
     projectRootMatched: boolean | null;
     startedAt: number;
+    print: boolean;
   }
 ): number {
   const report: DevDetachResultJson = {
@@ -240,12 +261,16 @@ function reportDetached(
     portMovedFrom: report.portMoved?.from ?? null,
   });
 
-  if (options.json) {
-    Log.log(JSON.stringify(report, null, 2));
-  } else {
-    printHumanReport(report);
+  // The event above is emitted whatever happens: a caller that suppresses the report is still
+  // starting a dev server, and the stream is how that is visible to anything watching.
+  if (print) {
+    if (options.json) {
+      Log.log(JSON.stringify(report, null, 2));
+    } else {
+      printHumanReport(report);
+    }
+    reportFollowUps('dev', report.followups, { json: options.json });
   }
-  reportFollowUps('dev', report.followups, { json: options.json });
   return 0;
 }
 

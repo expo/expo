@@ -1,0 +1,249 @@
+// @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate
+// @ref llp/0010-agent-conventions.rfc.md §Exit codes
+// `exagent smoke`: the composite gate.
+//
+// This module is the wiring, and deliberately nothing else. The decisions are in `phases.ts`,
+// which is given the functions below rather than importing them, so the outcome table can be
+// tested against fakes. What is here is the real versions of those functions — every one of them
+// the same function the command that owns the question already calls.
+
+import { captureScreenshotAsync, defaultScreenshotPath } from '../device/screenshot';
+import { devDetachAsync } from '../dev/detachAsync';
+import { resolveDevOptions } from '../dev/resolveOptions';
+import { event } from '../events';
+import { buildSmokeFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
+import * as Log from '../log';
+import { probeAndroidDeviceAsync, probeIosSimulatorAsync } from '../navigate/device';
+import { openRouteAsync } from '../navigate/openRoute';
+import { checkEntryBundleAsync } from '../runtime/bundleCheck';
+import { CdpClient, isMethodNotFoundError } from '../runtime/cdpClient';
+import { discoverDevServerAsync } from '../runtime/devServer';
+import { CdpRuntimeErrorCollector } from '../runtime/runtimeErrorCollector';
+import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
+import { formatSmokeResult, smokeResultToJson } from './format';
+import { runSmokePhasesAsync, smokeExitCode, type SmokeDeps, type SmokeRun } from './phases';
+import type { SmokeOptions } from './resolveOptions';
+
+/** How long discovery may spend on each candidate port. Short: a dev server that is up answers. */
+const DISCOVERY_TIMEOUT_MS = 800;
+
+/**
+ * The expression the runtime is asked to evaluate.
+ *
+ * `1` and nothing else. The question is only "does this runtime answer the debugger at all", and
+ * anything that touched the app's own state would fail for reasons that are the app's rather than
+ * the runtime's — which is the distinction this phase exists to draw.
+ */
+const LIVENESS_EXPRESSION = '1';
+
+/** How long the liveness evaluation gets before it is called unanswered. */
+const LIVENESS_TIMEOUT_MS = 5_000;
+
+/**
+ * Run the gate, report it, and answer with the exit code.
+ *
+ * @returns the exit code, per llp/0010 §Exit codes: `0` passed, `20` failed, `22` inconclusive.
+ * A *tool* error — a route the project has not got, an unusable flag — is thrown instead, so it
+ * gets the `1` and the envelope every other tool failure in this CLI gets.
+ */
+export async function smokeAsync(projectRoot: string, options: SmokeOptions): Promise<number> {
+  const run = await runSmokePhasesAsync(buildSmokeDeps(projectRoot, options), options);
+
+  event('smoke', {
+    outcome: run.outcome,
+    devServerUrl: run.devServerUrl,
+    source: run.discovery?.source ?? null,
+    started: run.started,
+    appsConnected: run.appsConnected,
+    bundle: run.bundle?.outcome ?? null,
+    runtimeSupported: run.runtimeSupported,
+    errorCount: run.windowMs == null ? null : run.errors.length,
+    screenshot: run.screenshot.ok,
+    durationMs: run.durationMs,
+    phases: run.phases.map((phase) => ({ id: phase.id, status: phase.status, ms: phase.ms })),
+  });
+
+  const followups = followUpsEnabled(options.followups) ? buildFollowUps(run, options) : [];
+
+  if (options.json) {
+    Log.log(JSON.stringify(smokeResultToJson(run, options, followups), null, 2));
+  } else {
+    Log.log(formatSmokeResult(run, options));
+  }
+  reportFollowUps('smoke', followups, { json: options.json });
+
+  if (run.outcome !== 'passed') {
+    Log.error(explainOutcome(run));
+  }
+  return smokeExitCode(run.outcome);
+}
+
+/** The follow-ups of one run, from the facts it established. */
+function buildFollowUps(run: SmokeRun, options: SmokeOptions) {
+  return buildSmokeFollowUps({
+    outcome: run.outcome,
+    devServerFound: run.discovery?.reachable ?? false,
+    start: options.start,
+    foreignDevServer: run.projectRootMatched === false,
+    bundleBroken: run.bundle?.outcome === 'broken',
+    bundleFile: run.bundle?.error?.filename ?? null,
+    appsConnected: run.appsConnected,
+    runtimeSupported: run.runtimeSupported,
+    exceptions: run.errors.filter((error) => error.source === 'exception').length,
+    screenshotTaken: run.screenshot.ok,
+    screenshotPath: run.screenshot.ok ? run.screenshot.path : null,
+    route: options.route,
+  });
+}
+
+/**
+ * The what / why / how of a run that did not pass.
+ *
+ * Built from the first phase that was not `ok`, because that is the one the rest followed from:
+ * a report that led with the last thing to happen would explain the silence of a runtime that was
+ * never reached.
+ */
+function explainOutcome(run: SmokeRun): string {
+  const culprit = run.phases.find((phase) => phase.status === 'failed' || phase.status === 'inconclusive');
+  const what =
+    run.outcome === 'failed'
+      ? `The smoke gate failed at "${culprit?.id ?? 'an unknown phase'}".`
+      : `The smoke gate could not decide, at "${culprit?.id ?? 'an unknown phase'}".`;
+  const why = culprit?.reason ?? 'no phase reported a reason, which is a bug in this command.';
+  const how =
+    run.outcome === 'failed'
+      ? `Read the phase list above: every phase before the one that failed did answer, so the failure is about what that phase asked and nothing later. The "Suggested next:" line is the command that acts on it.`
+      : `Nothing was shown to be wrong and nothing was proved right, so this is not a failure to act on. ${
+          run.runtimeSupported === false
+            ? 'This runtime carries no debugger, so no window read from it will ever say anything — a development build, or iOS, is what answers.'
+            : 'Looking again is the honest next step, with a longer --timeout when a first build was still running.'
+        }`;
+  return [what, `Why: ${why}`, `How: ${how}`].join('\n');
+}
+
+/**
+ * The real dependencies: for each phase, the function the command that owns that question calls.
+ *
+ * Cited rather than reimplemented, and that is the point of the whole module — a second reading of
+ * "is the bundle broken" or "which URL does this route deep-link to" is a second place for the
+ * findings behind them to be forgotten.
+ */
+function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
+  return {
+    discoverDevServer: (explicitUrl) =>
+      discoverDevServerAsync(explicitUrl ?? undefined, {
+        timeoutMs: DISCOVERY_TIMEOUT_MS,
+        projectRoot,
+      }),
+
+    // The detach path of `exagent dev`, with the readiness wait on: a foreground start would never
+    // return, and this run has seven more phases to perform (llp/0004 §Daemonization).
+    startDevServer: async () => {
+      const argv = ['--yes', '--detach', '--wait-ready', `--${options.platform}`];
+      try {
+        // `print: false`: the detached start is one phase of this run, and this run prints one
+        // report. Its `cli:dev_detach` event is still emitted, so nothing about it is hidden.
+        await devDetachAsync(projectRoot, resolveDevOptions(argv), { print: false });
+      } catch (error: unknown) {
+        return {
+          ok: false,
+          devServerUrl: null,
+          reason: `a dev server could not be started (${error instanceof Error ? firstLine(error.message) : String(error)})`,
+        };
+      }
+      // Discovery finds it through the lock the detached run publishes, which is the same way
+      // every other command finds a dev server this CLI started.
+      const found = await discoverDevServerAsync(undefined, {
+        timeoutMs: DISCOVERY_TIMEOUT_MS,
+        projectRoot,
+      });
+      return { ok: found.reachable, devServerUrl: found.devServerUrl, reason: null };
+    },
+
+    waitForBundlerReady: (devServerUrl, timeoutMs) =>
+      waitForBundlerReadyAsync(devServerUrl, { timeoutMs, projectRoot }),
+
+    checkEntryBundle: (devServerUrl, timeoutMs) =>
+      checkEntryBundleAsync(devServerUrl, {
+        platform: options.platform,
+        timeoutMs,
+        projectRoot,
+      }),
+
+    waitForAppConnection: (devServerUrl, timeoutMs) =>
+      waitForAppConnectionAsync(devServerUrl, { timeoutMs }),
+
+    probeDevice: async () => {
+      const probe =
+        options.platform === 'ios'
+          ? await probeIosSimulatorAsync()
+          : await probeAndroidDeviceAsync();
+      return { deviceId: probe.device?.deviceId ?? null, reason: probe.reason ?? null };
+    },
+
+    openRoute: (route) =>
+      openRouteAsync(projectRoot, {
+        route,
+        platform: options.platform,
+        devServerUrl: options.devServerUrl,
+        routeCheck: options.routeCheck,
+        command: 'smoke',
+      }),
+
+    evaluate: async (devServerUrl) => {
+      try {
+        await new CdpClient({ metroUrl: devServerUrl }).evaluateAsync(LIVENESS_EXPRESSION, {
+          awaitPromise: false,
+          timeoutMs: LIVENESS_TIMEOUT_MS,
+        });
+        return { ok: true, unsupported: false, reason: null };
+      } catch (error: unknown) {
+        // The Expo Go Android case: the engine was built without a CDP debugger, so nothing can be
+        // evaluated *and* nothing will be reported in the window that follows.
+        if (isMethodNotFoundError(error)) {
+          return {
+            ok: false,
+            unsupported: true,
+            reason: 'the runtime answered Runtime.evaluate with "method not found"',
+          };
+        }
+        return {
+          ok: false,
+          unsupported: false,
+          reason: error instanceof Error ? firstLine(error.message) : String(error),
+        };
+      }
+    },
+
+    collectErrors: async (devServerUrl, windowMs) => {
+      try {
+        const records = await new CdpRuntimeErrorCollector({
+          metroUrl: devServerUrl,
+          durationMs: windowMs,
+        }).collectAsync();
+        return { ok: true, records, reason: null };
+      } catch (error: unknown) {
+        // An unreadable app is a result rather than a tool failure: the gate reports that it could
+        // not watch, which is exactly what `inconclusive` is for.
+        return {
+          ok: false,
+          records: [],
+          reason: `the app could not be watched (${error instanceof Error ? firstLine(error.message) : String(error)})`,
+        };
+      }
+    },
+
+    captureScreenshot: (deviceId) =>
+      captureScreenshotAsync({
+        platform: options.platform,
+        deviceId,
+        filePath: options.screenshotPath ?? defaultScreenshotPath(projectRoot),
+      }),
+
+    now: () => Date.now(),
+  };
+}
+
+function firstLine(text: string): string {
+  return text.split('\n')[0]!;
+}
