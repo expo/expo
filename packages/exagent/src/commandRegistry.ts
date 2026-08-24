@@ -613,8 +613,42 @@ function editDistance(a: string, b: string): number {
   return previous[b.length]!;
 }
 
+/**
+ * A capability a caller reaches for that this CLI does not have, and what does the job instead.
+ *
+ * The nearest-match rules above answer a *typo*; this table answers a *wrong assumption*, which
+ * they cannot: `exagent logs` is spelled correctly, is nothing like any name in the registry, and
+ * so is answered with "is in none of them" and a link to the full listing — leaving the reader to
+ * work out from thirty names whether a log command exists at all. Saying that it does not, and
+ * naming the two commands that answer what a log is read for, is one hop instead of three.
+ *
+ * Only for names whose absence is worth stating. A name nobody reaches for does not belong here.
+ *
+ * @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts
+ */
+const absentCapabilities: {
+  [name: string]: { absent: string; instead: string; suggestedCommand: string };
+} = {
+  logs: {
+    absent: `this CLI has no log command: nothing in it tails the dev server's output or the app's console`,
+    instead: `Two commands answer what a log is usually read for: "npx exagent dev:wait" says whether the dev server finished bundling and reports the error when it did not, and "npx exagent runtime:errors" collects the errors and console.error calls the running app reports over a time window.`,
+    suggestedCommand: 'npx exagent runtime:errors',
+  },
+};
+// The singular is the same mistake, and the same answer.
+absentCapabilities.log = absentCapabilities.logs!;
+
 /** The error for a name in none of the three maps. */
 export function unknownCommandMessage(command: string): string {
+  const absent = absentCapabilities[command.toLowerCase()];
+  if (absent) {
+    return (
+      `"exagent ${command}" is not a command, and ${absent.absent}. ` +
+      `${absent.instead} ` +
+      `Run "npx exagent --help" for the whole list.`
+    );
+  }
+
   const suggestions = suggestCommandNames(command);
   // The closest names come before the "run --help" fallback: a caller that typed `wait` wants
   // `dev:wait`, not a listing of thirty commands to find it in again.
@@ -642,6 +676,11 @@ export function unknownCommandMessage(command: string): string {
  * message above already lists them, so the last line stays the full listing.
  */
 export function unknownCommandSuggestion(command: string): string {
+  const absent = absentCapabilities[command.toLowerCase()];
+  if (absent) {
+    return absent.suggestedCommand;
+  }
+
   const suggestions = suggestCommandNames(command);
   return suggestions.length === 1
     ? `npx exagent ${suggestions[0]} --help`
