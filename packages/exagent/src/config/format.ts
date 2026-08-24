@@ -24,7 +24,14 @@ export function formatEffectiveConfig(report: EffectiveConfigReport): string {
       `${report.configuredSdkVersion ?? chalk.yellow('unknown')} ${chalk.dim('per config')}`
     ),
     row('Plugins', pluginsLine(report)),
-    row('Autolinked', `${report.autolinkedModules.length} modules`),
+    // "Expo modules", not "Autolinked": the list covers Expo-module autolinking only, and a label
+    // that did not say so answered a question it had never been asked (F35).
+    row(
+      'Autolinked',
+      `${report.expoAutolinkedModules.length} Expo modules ${chalk.dim(
+        '(React Native community modules link separately)'
+      )}`
+    ),
   ];
 
   for (const platform of CONFIG_PLATFORMS) {

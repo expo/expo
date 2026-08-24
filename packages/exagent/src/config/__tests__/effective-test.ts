@@ -103,8 +103,11 @@ describe(buildEffectiveConfig, () => {
   it('sorts the autolinked modules and names what introspection never covers', () => {
     const report = build();
 
-    expect(report.autolinkedModules).toContain('expo-camera');
-    expect(report.autolinkedModules).toEqual([...report.autolinkedModules].sort());
+    expect(report.expoAutolinkedModules).toContain('expo-camera');
+    expect(report.expoAutolinkedModules).toEqual([...report.expoAutolinkedModules].sort());
+    // The scope travels with the list, so a `--json` reader is told what it does not cover (F35).
+    expect(report.expoAutolinkedModulesNote).toContain('Expo modules only');
+    expect(report.expoAutolinkedModulesNote).toContain('React Native community modules');
     expect(report.notAttributable).toEqual(NOT_ATTRIBUTABLE);
     expect(report.notAttributable).toEqual(['ios.xcodeproj', '*.dangerous']);
   });
@@ -150,7 +153,7 @@ describe(buildEffectiveConfig, () => {
 
     const report = build({ config });
     expect(report.plugins).toEqual([]);
-    expect(report.autolinkedModules).toEqual([]);
+    expect(report.expoAutolinkedModules).toEqual([]);
   });
 });
 
@@ -215,7 +218,7 @@ describe(formatEffectiveConfig, () => {
       "Project      /project
       SDK          57.0.0 per config
       Plugins      13 (1 declared, 12 auto)
-      Autolinked   12 modules
+      Autolinked   12 Expo modules (React Native community modules link separately)
       ios          podfileProperties 10 keys, infoPlist 8 keys, splashScreenStoryboard 1 key, entitlements 1 key, expoPlist 4 keys
       android      manifest 7 permissions, gradleProperties 9 properties, styles 2 styles, colors 4 colors, colorsNight 0 colors, strings 2 strings
       Not covered  ios.xcodeproj, *.dangerous"
