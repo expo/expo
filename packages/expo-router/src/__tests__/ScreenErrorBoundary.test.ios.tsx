@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react-native';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import type { ErrorBoundaryProps } from '../exports';
 import { Stack } from '../layouts/Stack';
@@ -37,11 +37,16 @@ it('uses the parent layout boundary for a nested layout without one', async () =
       default: () => <Stack />,
       unstable_settings: { screenErrorBoundary: LayoutBoundary },
     },
-    'nested/_layout': () => <Stack />,
+    'nested/_layout': () => (
+      <View testID="nested-layout">
+        <Stack />
+      </View>
+    ),
     'nested/index': ThrowingRoute,
   });
 
   expect(screen.getByTestId('layout-boundary')).toBeOnTheScreen();
+  expect(screen.queryByTestId('nested-layout')).toBeNull();
 });
 
 it('uses the navigator boundary before the layout boundary', async () => {
