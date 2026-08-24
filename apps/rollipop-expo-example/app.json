@@ -19,8 +19,16 @@
     "web": {
       "bundler": "metro"
     },
+    "modules": {
+      "autolinking": {
+        "exclude": [
+          "expo-ui"
+        ]
+      }
+    },
     "plugins": [
       "expo-router",
+      "./rollipop-ios-flags.plugin.js",
       [
         "expo-dev-client",
         {
