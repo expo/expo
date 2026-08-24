@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fixed `isLoaded()` always returning `false` on Firefox, and on every engine for font families whose name needs quoting, by normalizing quotes when comparing family names against the CSSOM. This also stops `loadAsync()` from injecting a duplicate `@font-face` rule on every call and makes `unloadAsync()` and `getLoadedFonts()` behave consistently across engines. ([#49266](https://github.com/expo/expo/pull/49266) by [@irfanfandi](https://github.com/irfanfandi))
+
 ### 💡 Others
 
 ## 57.0.1 — 2026-07-15
