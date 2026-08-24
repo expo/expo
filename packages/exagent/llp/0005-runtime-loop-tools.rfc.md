@@ -139,8 +139,64 @@ which matters because Expo Go for Android has no CDP debugger at all (§Android 
    `{"socket#10":"role=ios","socket#11":null}` within 500 ms. That is what `verifiedBy:
    "message-socket-peers"` names.
 
-A debugger target is then waited for as well (`waitForAppConnectionAsync`), because the rest of the
-CLI reads the app through one; that wait is a floor, not the proof.
+A debugger target is then waited for as well, because the rest of the CLI reads the app through one.
+That wait was written as a floor and turned out to be the load-bearing half — see below.
+
+#### Peer churn proves the app *acted*; only a new target proves it *came back*
+
+Decision [confirmed — Kudo, 2026-08-24]. `reloaded: true` with exit `0` requires a debugger target
+the dev server had **not** listed before the reload. `waitForFreshAppConnectionAsync` is that wait.
+
+The finding [observed — friction run 4, F39 and F45]. Two reports that read as different bugs:
+`runtime:reload` exited 0 with `Apps connected 1` while the simulator sat on the home screen (F45),
+and the `reload` → `runtime:errors` chain the CLI prints as its own follow-up failed one run in
+three with `CommandError: … No target found.` (F39). One mechanism, measured
+[observed — 2026-08-24, notesapp SDK 57 in Expo Go, iPhone 17 Pro `C159CF99-…`, port 8190]: a
+`{"version":2,"method":"reload"}` broadcast moved the target id from `8a9d…-1` to `8a9d…-2`, and
+
+| t after the broadcast | `/json/list` |
+| --- | --- |
+| 254 ms | `8a9d…-1` — the runtime being replaced |
+| 506 ms | `8a9d…-1` — still |
+| 761 ms | `8a9d…-2` — the reloaded runtime |
+
+The old wait returned on the first non-empty list, so it returned in about a millisecond, on the
+**pre-reload** target. Everything downstream followed from that: the count it reported was of a
+runtime on its way out, so an app that quit instead of coming back still counted (F45); and
+`runtime:errors` immediately afterwards resolved that same dying target, failed to connect to it,
+skipped it, and had nothing left — which is what `No target found.` means (F39).
+
+Metro's page ids come from a counter it does not rewind, exactly like the message socket's peer
+ids, so "a target this run has not seen" is decidable rather than inferred. Three properties:
+
+- **The known ids are read as late as possible**, from a probe of their own taken after the bundle
+  gate and immediately before the broadcast — never reused from discovery. A save the watcher
+  picked up in between would otherwise be credited to this command.
+- **`appsConnected` and `appsReconnected` are both reported**, because they answer different
+  questions and their difference is the diagnosis: one connected and zero reconnected is an app
+  that never re-registered, zero of both is an app that went. The exit-22 prose says which.
+- **The last read of that wait is the re-read of the target list**, so a success is structurally
+  never a peer count — it is a runtime that was observed after the reload. That is what makes F45's
+  false-success path impossible rather than unlikely.
+
+Live [observed — 2026-08-24, port 8190]: five `reload` → `runtime:errors --fail-on-error` rounds
+back to back, all `0`/`0` with `appsReconnected: 1` and 559–1098 ms per reload; and the same five
+rounds with the reload sent as a bare broadcast — the `r` keypress, which this CLI never waited for
+— also all `0`. Terminating the app 350 ms and 450 ms into a reload, which is inside the window the
+old code answered from, gives exit **22** with `appsConnected: 0`.
+
+`runtime:errors` carries the other half of that fix, because a user may reload by pressing `r` and
+there is then nothing for this command to have waited. Its target resolution retries for
+`APP_RECONNECT_GRACE_MS` (3 s) — once around the "is any app connected" probe
+(`requireConnectedAppAsync`, which re-reads only while the list is *empty*, never for an
+unreachable dev server) and once around target selection inside `CdpClient`, which is where the
+dying target is skipped and the list has to be read again rather than the selector re-run. Bounded
+at three seconds because an app that is genuinely closed must still be reported quickly.
+
+Deliberately **not** given to `runtime:eval` and `runtime:network` [inferred]: the chain the CLI
+prints, and the one the friction run drove, is reload → errors, and a grace period costs every
+genuine "no app is connected" three seconds. It is one option away if a later run shows the same
+flake there.
 
 ### The device fallback, and the exit codes
 
@@ -300,6 +356,49 @@ Live [observed — 2026-08-23, notesapp on port 8171]: with Expo Go attached, ex
 source moved down a rung because there was no longer an app connected to ask, which is the report
 being honest rather than sticky.
 
+### An `--app-id` nobody is running
+
+Decision [confirmed — Kudo, 2026-08-24]. When `--app-id` names an app that was **not** running and
+the dev server is reporting a **different** app that is, `runtime:stop` exits `20`. Every other
+"the app was not running" stays exit `0`.
+
+The finding [observed — friction run 4, F42]: `runtime:stop --app-id host.exp.Exponent2` — one
+character wrong — exited **0** with `Stopped yes · it was not running` and a follow-up reading "The
+app was not running, so this is what starts it". Debugger targets before: 1. After: 1. The app the
+caller was looking at kept running, and every channel said the command had worked. This section
+above says the whole point of ranking the evidence is that "getting it wrong stops nothing while
+reporting that it stopped something"; the command had the connected bundle id in hand the entire
+time and never compared it.
+
+**Why `20` and not a note on a `0`.** This was the argued call, and the argument that decides it is
+llp/0010's own first sentence: an agent reads the exit code before it reads a word of the output,
+so a warning inside a zero is a warning an agent does not see. The other reading is real — the
+state the caller named ("`host.exp.Exponent2` is not running") does hold, and §The sixth and
+seventh says a state already reached is a success. It loses because the *subject* of this command
+is the app on the device, and the app on the device is untouched. A `0` here means the command that
+exists to remove this exact class of false green produces one.
+
+**The false red it costs, and why it is small.** A machine can legitimately run an app that is not
+attached to this dev server while another one is, and stopping the first is now exit `20`. Three
+conditions have to hold together for that, which is what keeps the surface narrow:
+
+1. `--app-id` was passed, so this is the caller's id and not a guess of ours to defend;
+2. the device tool found nothing under it (`wasAlreadyStopped`) — an id that stopped something is
+   never suspicious, whatever else is connected; and
+3. the dev server reports at least one debugger target, and none of them is that id.
+
+Idempotency is unaffected, and that is a consequence of (3) rather than a special case: after a
+successful stop nothing is connected, so the second run has no other app to disagree with and exits
+`0`. Live [observed — 2026-08-24, port 8190]: `--app-id host.exp.Exponent2` with Expo Go attached →
+exit `20`, targets still 1; `--app-id host.exp.Exponent` → exit `0`, targets 0; then
+`--app-id host.exp.Exponent2` again → exit `0`, `appIdMismatch: false`.
+
+Both channels carry it. `--json` gains `connectedAppIds` and `appIdMismatch`; the human report's
+first line says `Stopped no · host.exp.Exponent2 was not running, and host.exp.Exponent is` rather
+than the old `Stopped yes · it was not running`, which is true of the id and reads as "the app is
+stopped". The follow-up is the same command with the connected id on it — the old list led with
+`navigate /`, which starts an app while the one the caller meant to stop is still running.
+
 ## Stopping the dev server
 
 Decision [confirmed — Kudo, 2026-08-23]. `exagent dev:stop` reads the **dev-server lock**, signals
@@ -391,3 +490,22 @@ the `--force` proof, each refused on its own.
 
 The header of `--json` is asserted as an exact key set at both tiers for every command, per
 llp/0006 §Output contract. Counts as of this change: 1741 unit (from 1588), 304 e2e (from 280).
+
+### The fixtures had to start reloading
+
+[added — 2026-08-24] Fixing F39/F45 changed what a test *fixture* has to be, and that is the part
+worth recording. Every "reloaded: true" assertion in this package used to run against a stub whose
+`/json/list` answered the same target forever — which is a stub of an app that never reloaded, and
+every one of those assertions passed for it. The two tiers grew the same property:
+
+- the e2e stub dev server re-registers its debugger targets under a page id it has never used when
+  a `v2` reload broadcast arrives, beside the peer churn it already did, and `reloadTargets` picks
+  `reconnect` (the default), `stale` (peers churn, the same target stays) or `gone` (the app quits)
+  — the last two being F39 and F45 as fixtures;
+- the unit fixture flips its listing from the socket's own `broadcastReload`, so the change is
+  caused by the broadcast rather than counted off the reads.
+
+One fixture honesty problem fell out of it. The device-fallback test claimed an app with a debugger
+target and *no* message-socket peer, which no real app is, and under the new rule that target was
+"already there" and never fresh. The stub now reports no targets until the stub `xcrun` has opened
+the app, which is what "no app is connected" means on both channels at once.
