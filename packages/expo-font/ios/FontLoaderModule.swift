@@ -41,7 +41,7 @@ public final class FontLoaderModule: Module {
 
       // A file no longer aliased stays registered with CoreText otherwise. A failed unregister
       // is fine: `registerFont` tolerates duplicates.
-      for staleUrl in previousUrls where staleUrl != localUri {
+      for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
         _ = try? unregisterFont(url: staleUrl as CFURL)
       }
 
@@ -110,8 +110,7 @@ public final class FontLoaderModule: Module {
     }
     FontFamilyAliasManager.setFaces(faceEntries, alias: fontFamilyAlias)
 
-    let newUrls = Set(faceEntries.map { $0.url })
-    for staleUrl in previousUrls where !newUrls.contains(staleUrl) {
+    for staleUrl in previousUrls where !FontFamilyAliasManager.hasRegisteredUrl(staleUrl) {
       _ = try? unregisterFont(url: staleUrl as CFURL)
     }
 

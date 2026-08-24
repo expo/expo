@@ -30,6 +30,18 @@ internal struct FontFamilyAliasManager {
   }
 
   /**
+   Whether any alias references the URL. CoreText registration is process-wide and URL-keyed,
+   so a URL that another alias still references must not be unregistered.
+   */
+  internal static func hasRegisteredUrl(_ url: URL) -> Bool {
+    return queue.sync {
+      fontFamilyAliases.values.contains { faces in
+        faces.contains { $0.url == url }
+      }
+    }
+  }
+
+  /**
    Full replacement, in order — `loadFontFamilyAsync`'s "last call wins" contract.
    */
   internal static func setFaces(_ faces: [(url: URL, names: [String])], alias familyNameAlias: String) {
