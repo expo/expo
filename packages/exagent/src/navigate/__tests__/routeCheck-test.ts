@@ -66,6 +66,26 @@ describe(routeNotFoundError, () => {
       'npx exagent navigate /'
     );
   });
+
+  // Friction run 5. The `Try:` line is what a driving agent runs next, so it has to be the command
+  // the caller was running: a `runtime:reload --route /nope` answered with `navigate /notes`
+  // silently drops the reload, which is the whole reason that run was reloading.
+  it(`should keep the caller's own command in the suggestion`, () => {
+    const error = routeNotFoundError('/note', table(['/', '/notes']), {
+      command: 'runtime:reload',
+    });
+
+    expect(error.suggestedCommand).toBe('npx exagent runtime:reload --route /notes');
+    expect(error.message).toContain('did you mean "/notes"?');
+  });
+
+  it(`should keep it for the fallback too`, () => {
+    const error = routeNotFoundError('/zzzzzzzzzz', table(['/', '/notes']), {
+      command: 'runtime:reload',
+    });
+
+    expect(error.suggestedCommand).toBe('npx exagent runtime:reload --route /');
+  });
 });
 
 describe(nearestRoute, () => {

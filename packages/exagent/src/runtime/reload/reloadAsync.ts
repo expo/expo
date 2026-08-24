@@ -180,7 +180,12 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     isFullUrl: route != null && isFullUrlRoute(route),
   });
   if (routeCheck.ok === false && route != null) {
-    throw routeNotFoundError(route, routeTable, { platform: options.platform });
+    // Named, so the `Try:` line keeps the reload the caller asked for rather than replacing it
+    // with a bare `navigate` (friction run 5).
+    throw routeNotFoundError(route, routeTable, {
+      platform: options.platform,
+      command: 'runtime:reload',
+    });
   }
 
   // @ref llp/0010-agent-conventions.rfc.md §The reload gate — friction run 4, F38.
