@@ -74,7 +74,15 @@ export interface CachedBuild {
 
 /** The per-platform answer. */
 export interface PlatformImpact {
-  platform: 'ios' | 'android';
+  /**
+   * The platform this entry is about, or `null` when the comparison was not per-platform.
+   *
+   * `null` is the `--build` case: `eas fingerprint:compare --build-id` compares one build against
+   * the working directory and takes no platform, because a build was made for exactly one and
+   * which one is a fact about the build. Naming a platform this CLI did not establish would be an
+   * invention; `--platform ios` alongside `--build` fills it in, because then the caller said so.
+   */
+  platform: 'ios' | 'android' | null;
   class: ImpactClass;
   /**
    * Whether the native fingerprint moved. `null` when it could not be decided — no base recorded,

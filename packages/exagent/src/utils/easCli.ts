@@ -18,6 +18,30 @@ export interface EasCli {
 }
 
 /**
+ * Resolve the `eas` CLI for a project, or answer `null`.
+ *
+ * For a caller whose use of EAS is *opportunistic* — `impact`'s build-cache lookup turns "you need
+ * a native build" into "a finished build already exists for this fingerprint", and a machine with
+ * no EAS CLI must get the first answer rather than an error. A caller that cannot do its job
+ * without EAS uses {@link resolveEasCliOrThrow} instead.
+ *
+ * @param pathEnv `PATH` to search, for tests that must not depend on the machine's own.
+ */
+export function resolveEasCli(
+  projectRoot: string,
+  { pathEnv }: { pathEnv?: string } = {}
+): EasCli | null {
+  const binName = process.platform === 'win32' ? 'eas.cmd' : 'eas';
+  const projectBin = path.join(projectRoot, 'node_modules', '.bin', binName);
+  if (fileExistsSync(projectBin)) {
+    return { command: projectBin, source: 'project' };
+  }
+
+  const pathBin = findExecutableOnPath('eas', { pathEnv });
+  return pathBin ? { command: pathBin, source: 'path' } : null;
+}
+
+/**
  * Resolve the `eas` CLI for a project.
  *
  * The project's own `eas-cli` wins, so the version the repository pinned is the version that
@@ -30,15 +54,9 @@ export function resolveEasCliOrThrow(
   projectRoot: string,
   { pathEnv }: { pathEnv?: string } = {}
 ): EasCli {
-  const binName = process.platform === 'win32' ? 'eas.cmd' : 'eas';
-  const projectBin = path.join(projectRoot, 'node_modules', '.bin', binName);
-  if (fileExistsSync(projectBin)) {
-    return { command: projectBin, source: 'project' };
-  }
-
-  const pathBin = findExecutableOnPath('eas', { pathEnv });
-  if (pathBin) {
-    return { command: pathBin, source: 'path' };
+  const resolved = resolveEasCli(projectRoot, { pathEnv });
+  if (resolved) {
+    return resolved;
   }
 
   const error = new CommandError(
