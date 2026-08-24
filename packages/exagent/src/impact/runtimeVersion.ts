@@ -172,14 +172,38 @@ export function resolveOtaSafety(
   };
 }
 
-/** The last JSON object on stdout, the way every other payload here is read. */
-function parseLastJsonObject(output: string): Record<string, any> | null {
-  const start = output.indexOf('{');
-  if (start < 0) {
-    return null;
+/**
+ * The config object on stdout.
+ *
+ * **The last JSON line wins**, the same rule `parseFingerprint` uses, and for the same reason: the
+ * Expo CLI writes its own structured event lines to stdout ahead of the answer, so slicing from the
+ * first `{` reads an event and then fails on the rest of the stream. Only if no single line parses
+ * is the whole tail tried, which is what reads a pretty-printed payload spanning many lines.
+ */
+export function parseLastJsonObject(output: string): Record<string, any> | null {
+  const lines = output.split('\n').reverse();
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith('{')) {
+      continue;
+    }
+    const parsed = parseObject(trimmed);
+    // An event line parses too, and it has no `runtimeVersion` — but neither does a config that
+    // names none, so the two cannot be told apart here. The *last* line is the answer either way:
+    // the CLI prints the payload last, which is the property this depends on and the stub
+    // reproduces deliberately.
+    if (parsed) {
+      return parsed;
+    }
   }
+
+  const start = output.indexOf('{');
+  return start < 0 ? null : parseObject(output.slice(start));
+}
+
+function parseObject(value: string): Record<string, any> | null {
   try {
-    const parsed = JSON.parse(output.slice(start));
+    const parsed = JSON.parse(value);
     return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
   } catch {
     return null;

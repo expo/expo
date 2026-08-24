@@ -173,10 +173,15 @@ describe('exagent dev', () => {
 
       expect(result.exitCode).toBe(0);
       expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
-      // Only the platform that was built is updated.
+      // Only the platform that was built is updated, and it is recorded in the v2 shape: the
+      // whole fingerprint, so a later `exagent impact` can diff against it and say *what* changed
+      // rather than only that something did (llp/0011 §The record has to hold the sources). The
+      // other platform is rewritten in the v2 spelling with the same meaning it had: a bare
+      // string said "only a hash was recorded", and `sources: null` says exactly that. Reading
+      // normalizes, so one platform's write migrates the other's spelling and nothing else.
       expect(readLastBuildRecord(projectRoot)).toEqual({
-        ios: CHANGED_HASH,
-        android: RECORDED_HASH,
+        ios: { hash: CHANGED_HASH, sources: [] },
+        android: { hash: RECORDED_HASH, sources: null },
       });
     });
 

@@ -2,6 +2,7 @@ import { vol } from 'memfs';
 
 import { spawnExpoAsync } from '../../utils/expoCli';
 import {
+  parseLastJsonObject,
   readRuntimeVersion,
   resolveOtaSafety,
   resolveRuntimeVersionAsync,
@@ -228,5 +229,36 @@ describe(resolveOtaSafety, () => {
     const runtimeVersion = from('appVersion', null, 'expo config --type public');
 
     expect(resolveOtaSafety(runtimeVersion, true).runtimeVersion).toBe(runtimeVersion);
+  });
+});
+
+describe(parseLastJsonObject, () => {
+  it(`should read a single-line payload`, () => {
+    expect(parseLastJsonObject('{"runtimeVersion":"1.0.0"}')).toEqual({ runtimeVersion: '1.0.0' });
+  });
+
+  it(`should read the last JSON line, past the CLI's own event lines`, () => {
+    // The Expo CLI writes structured event lines to stdout ahead of the answer, so slicing from
+    // the first `{` reads an event and then fails on the rest of the stream.
+    const output = [
+      '{"timestamp":1,"type":"stub_expo_start","command":"config"}',
+      '{"name":"app","runtimeVersion":{"policy":"appVersion"}}',
+      '',
+    ].join('\n');
+
+    expect(parseLastJsonObject(output)).toMatchObject({
+      runtimeVersion: { policy: 'appVersion' },
+    });
+  });
+
+  it(`should read a pretty-printed payload spanning many lines`, () => {
+    expect(parseLastJsonObject(JSON.stringify({ runtimeVersion: '2.0.0' }, null, 2))).toEqual({
+      runtimeVersion: '2.0.0',
+    });
+  });
+
+  it(`should answer null for output with no object in it`, () => {
+    expect(parseLastJsonObject('nothing here')).toBeNull();
+    expect(parseLastJsonObject('[1, 2]')).toBeNull();
   });
 });
