@@ -90,7 +90,9 @@ describe('the dev server a runtime command talks to', () => {
     await run();
 
     expect(discoverDevServerAsync).toHaveBeenCalledWith(undefined, { projectRoot });
-    expect(requireConnectedAppAsync).toHaveBeenCalledWith('http://127.0.0.1:8083');
+    expect(requireConnectedAppAsync).toHaveBeenCalledWith('http://127.0.0.1:8083', {
+      explicit: false,
+    });
   });
 
   it.each([
@@ -116,7 +118,8 @@ describe('the dev server a runtime command talks to', () => {
 
     // The caller was specific, so nothing is guessed around it — the flag semantics are unchanged.
     expect(discoverDevServerAsync).not.toHaveBeenCalled();
-    expect(requireConnectedAppAsync).toHaveBeenCalledWith('http://host:9000');
+    // `explicit` is what keeps the failure from suggesting the flag this caller just passed.
+    expect(requireConnectedAppAsync).toHaveBeenCalledWith('http://host:9000', { explicit: true });
   });
 
   it(`reports the discovered dev server in the output`, async () => {

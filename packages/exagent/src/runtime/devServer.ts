@@ -105,6 +105,23 @@ export function resolvePortFlag(value: unknown, command: string): number {
   return port;
 }
 
+/**
+ * The last sentence of a "no dev server answered" error: what to do about the URL.
+ *
+ * Two answers, and telling them apart is the whole point. A caller that let this CLI find the dev
+ * server is told how to name one. A caller that **named** it is not told to name it — that sentence
+ * suggested the very flag they had just passed, which reads as if the tool had not noticed
+ * [observed — friction run 4, 2026-08-23: `runtime:reload --dev-server-url http://127.0.0.1:9999`].
+ * What helps there is that the value they gave is the one that was tried.
+ *
+ * @param explicit whether the caller named the dev server, with `--dev-server-url` or `--port`.
+ */
+export function howToNameTheDevServer(explicit: boolean): string {
+  return explicit
+    ? `The URL above is the one you named, so nothing else was tried — check its host and port against the dev server you meant ("npx exagent status --json" reports this project's).`
+    : `Pass --dev-server-url, or --port for one on this machine, to reach a dev server on another host or port.`;
+}
+
 /** Ports `discoverDevServerAsync` scans when no explicit URL was given: Metro's default and
  * the ports `expo start` walks to when 8081 is taken. */
 export const DEV_SERVER_SCAN_PORTS = [8081, 8082, 8083, 8084, 8085];
@@ -290,7 +307,10 @@ export async function probeDevServerAsync(devServerUrl: string): Promise<DevServ
  * @throws {CommandError} `NO_DEV_SERVER` when nothing answers, `NO_APP_CONNECTED` when the dev
  * server runs but reports no debugger target.
  */
-export async function requireConnectedAppAsync(devServerUrl: string): Promise<CdpTarget[]> {
+export async function requireConnectedAppAsync(
+  devServerUrl: string,
+  { explicit = false }: { explicit?: boolean } = {}
+): Promise<CdpTarget[]> {
   const url = normalizeDevServerUrl(devServerUrl);
   const probe = await probeDevServerAsync(url);
 
@@ -300,7 +320,7 @@ export async function requireConnectedAppAsync(devServerUrl: string): Promise<Cd
       [
         `No Expo dev server answered at ${url}, so there is no app runtime to talk to.`,
         `Why: the request for the debugger target list failed (${probe.reason}).`,
-        `How: run "npx expo start" in the project root and open the app on a device or simulator, then run this command again. Pass --dev-server-url to reach a dev server on another host or port.`,
+        `How: run "npx expo start" in the project root and open the app on a device or simulator, then run this command again. ${howToNameTheDevServer(explicit)}`,
       ].join('\n')
     );
     error.suggestedCommand = 'npx exagent dev';

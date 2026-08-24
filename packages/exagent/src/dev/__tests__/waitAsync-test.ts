@@ -14,7 +14,10 @@ import { devWaitAsync } from '../waitAsync';
 
 jest.mock('../../log');
 jest.mock('../../events', () => ({ event: jest.fn(), debugEvent: jest.fn() }));
-jest.mock('../../runtime/devServer', () => ({ discoverDevServerAsync: jest.fn() }));
+jest.mock('../../runtime/devServer', () => ({
+  ...jest.requireActual('../../runtime/devServer'),
+  discoverDevServerAsync: jest.fn(),
+}));
 jest.mock('../../runtime/waitReady', () => ({
   waitForBundlerReadyAsync: jest.fn(),
   waitForAppConnectionAsync: jest.fn(),

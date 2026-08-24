@@ -549,11 +549,19 @@ describe(devAsync, () => {
   // and on a busy port it used to start nothing, print unparseable stdout, and tell its caller to
   // open another project's app [observed — friction run, 2026-08-23].
   describe('a run with no terminal', () => {
-    /** The non-interactive stop of the Expo CLI, verbatim. */
+    /** The non-interactive stop of the Expo CLI on a question only a person can answer. */
     const NEEDS_INPUT = [
       "Input is required, but 'npx expo' is in non-interactive mode.",
       'Required input:',
-      '> Use port 8082 instead?',
+      '> Which development build would you like to use?',
+    ].join('\n');
+
+    /** The same stop, on the one question a machine can answer for itself: a busy port. */
+    const PORT_TAKEN = [
+      'Port 8180 is running node in another window',
+      "Input is required, but 'npx expo' is in non-interactive mode.",
+      'Required input:',
+      '> Use port 8181 instead?',
     ].join('\n');
 
     beforeEach(() => {
@@ -614,15 +622,49 @@ describe(devAsync, () => {
       });
     });
 
-    it(`should name --port as the way to answer the port question up front`, async () => {
+    // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — the port carve-out (F41).
+    // A busy port used to be exit 7 with a `How:` line naming the flag the caller had passed.
+    // Picking a free port is mechanical, so nobody is asked.
+    it(`should retry on a free port it picks, when the caller named none`, async () => {
       mockProjectState();
       jest
         .mocked(runDevServerAsync)
-        .mockResolvedValue(devServerRun({ exitCode: 1, stderr: NEEDS_INPUT }));
+        .mockResolvedValueOnce(devServerRun({ exitCode: 1, stderr: PORT_TAKEN }))
+        .mockResolvedValue(devServerRun({ exitCode: 0 }));
 
-      await expect(
-        devAsync(projectRoot, resolveDevOptions(['--yes']))
-      ).rejects.toThrow(/npx exagent dev --port 8082/);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--yes']))).resolves.toBe(0);
+
+      const [, retryArgs] = jest.mocked(runDevServerAsync).mock.calls[1]!;
+      expect(retryArgs.slice(0, 2)).toEqual(['start', '--go']);
+      expect(retryArgs[retryArgs.length - 2]).toBe('--port');
+      // It says so, on stderr, because the dev server is not where the caller asked for it.
+      expect(jest.mocked(Log.warn).mock.calls.map(([line]) => line).join('\n')).toContain(
+        'Port 8180 was busy'
+      );
+    });
+
+    // A port the caller named is a requirement: moving would leave every URL they had already
+    // printed pointing at nothing. Exit 20 — the outcome failed — and never exit 7.
+    it(`should report an outcome, not a person, when the caller demanded the port`, async () => {
+      mockProjectState();
+      jest
+        .mocked(runDevServerAsync)
+        .mockResolvedValue(devServerRun({ exitCode: 1, stderr: PORT_TAKEN }));
+
+      const error = await devAsync(
+        projectRoot,
+        resolveDevOptions(['--yes', '--port', '8180'])
+      ).then(
+        () => null,
+        (thrown) => thrown
+      );
+
+      expect(error).toMatchObject({ code: 'PORT_IN_USE', exitCode: 20 });
+      expect(error.isNeedsHuman).toBeUndefined();
+      // Never the command that just failed.
+      expect(error.suggestedCommand).not.toContain('--port 8180');
+      // Started once, and not retried somewhere else.
+      expect(runDevServerAsync).toHaveBeenCalledTimes(1);
     });
 
     // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
