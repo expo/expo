@@ -8,6 +8,7 @@ import path from 'path';
 import { followUpsEnabled, reportFollowUps } from '../followups';
 import { buildDeployFollowUps } from '../followups/deploy';
 import * as Log from '../log';
+import { assertSignedInAsync } from '../needsHuman/assertAuth';
 import { classifySubprocessFailure } from '../needsHuman/detect';
 import { needsHumanErrorFrom } from '../needsHuman/error';
 import type { NeedsHumanTool } from '../needsHuman/registry';
@@ -71,6 +72,17 @@ export async function deployAsync(projectRoot: string, options: DeployOptions): 
     easCli: easCli?.command ?? null,
     easCliSource: easCli?.source ?? 'none',
     launchCli: launchCli ? [launchCli.command, ...launchCli.args].join(' ') : null,
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol, layer 1 — the cheap question
+  // first. Both rails ship as a signed-in Expo account, and the export that comes next takes
+  // minutes; finding out afterwards that nobody is signed in is minutes spent for nothing
+  // [observed — friction run, 2026-08-23: ten seconds of exporting, then the auth failure].
+  await assertSignedInAsync(projectRoot, {
+    action: deploysWeb ? 'the upload to EAS Hosting' : 'the launch',
+    because: deploysWeb
+      ? 'EAS Hosting accepts an export as an account, never anonymously'
+      : 'the launch is created as the signed in Expo user',
   });
 
   // In `--json` mode this command owns stdout, so the tools are captured; otherwise their output is

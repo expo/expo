@@ -44,13 +44,15 @@ Implementation [observed — 2026-08-23, `src/exitCodes.ts`]: the constants are 
 | `20` | `ERRORED` | `src/builds/status.ts` |
 | `21` | `CANCELED`, **or this wait was interrupted** | `src/builds/status.ts` |
 | `22` | still running when `--timeout` elapsed | `src/builds/waitAsync.ts` |
-| `1`  | not readable: bad id, no `eas`, not signed in, three failed polls | `CommandError` |
+| `7`  | nobody is signed in, so no build is visible | `src/needsHuman/assertAuth.ts` |
+| `1`  | not readable: bad id, no `eas`, three failed polls | `CommandError` |
 
 Three details of the mapping are decisions rather than transcription:
 
 - **An unrecognized status is not terminal.** The status enum belongs to a service that ships without this CLI, so a status the table has never seen keeps the wait polling. Ending on it would report an outcome nobody observed; the timeout is what stops a wait that is wrong about this, and `22` says "inconclusive" rather than claiming a result. `PENDING_CANCEL` is the concrete case — a cancellation asked for and not yet happened, which still resolves to `CANCELED` or `FINISHED`.
 - **An interrupted wait exits `21`, not `130`.** The definition of `21` above is "canceled by the caller (a declined prompt, `SIGINT`) or by the service", and a Ctrl-C is the caller cancelling. `130` would have been a second convention for the same fact. The two are told apart on the event stream (`cli:build_wait.interrupted`) rather than in the `--json` payload, whose key set is fixed.
-- **Three failed polls is `1`, not an outcome.** A wait that cannot read the build has not learned anything about it, so it is a tool failure — and its `Try:` line names `eas workflow:status <id> --wait --json`, because a build id and a workflow id look alike and come from the same places.
+- **Three failed polls is `1`, not an outcome.** A wait that cannot read the build has not learned anything about it, so it is a tool failure. Its *prose* names `eas workflow:status <id> --wait --json`, because a build id and a workflow id look alike and come from the same places — but not its `Try:` line [revised — 2026-08-23]. The `How:` sentence states a condition ("*if* it names a workflow run"), and the last line of a failure is what a driving agent acts on, so putting the workflow command there strips the condition and sends the agent to run something that fails again for the same reason [observed — friction run, 2026-08-23: signed out, and `Try:` recommended the workflow command for an id that was obviously not a build]. `Try:` is now `<the eas that ran> whoami`, which is worth running whatever the cause.
+- **Signed out is `7`, and it is asked before the first poll** [added — 2026-08-23]. The auth preflight of §Needs-human protocol runs first: a wait that nobody is signed in for cannot see any build, so its three polls are three doomed subprocesses ending in a "gave up waiting" that names the wrong cause. A preflight answering `null` — no EAS CLI, a timeout, or a binary under that name that is not the CLI — is **not** "signed out", and the wait proceeds exactly as before.
 
 Progress goes to the `LOG_EVENTS` JSONL stream as `cli:build_wait_poll`, never to stdout, so `--json` still prints exactly one object ([[0006-agent-native-cli-surface]] §Output contract).
 
@@ -84,12 +86,27 @@ Rows with no signature are not a gap. `ios-credentials`, `device-register` and `
 
 ### Four layers, in priority order
 
-1. **Preflight** — ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself — so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out": the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`].
+1. **Preflight** — ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself — so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out": the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`], and `src/needsHuman/assertAuth.ts` is the same answer *raised* — for `deploy` and `build:wait`, which cannot do their job without an account and would otherwise spend minutes finding out.
+
+   Three things count as "cannot run", and the third was a bug [fixed — 2026-08-23]. No `eas` on this machine, a run that passed the deadline, and **a binary under that name that is not the EAS CLI**. The third exits non-zero exactly like a signed-out CLI does, so it read as "signed out" — and on a machine whose PATH `eas` is a wrapper that crashes (this is not hypothetical: the friction run's was), every command with a preflight would have stopped and handed its user a login they did not need. `looksLikeWrapperCrash` (§The binary may not be the CLI) is what tells the two apart.
 2. **Force non-interactive** — every captured subprocess is told that nothing can answer it. For `expo` that is `CI=1` in the child environment, because the CLI rejects `--non-interactive` and names the variable instead [observed — `packages/@expo/cli/src/index.ts`]; `spawnExpoAsync` is the capture path that sets it, and `runExpoAsync` deliberately does not, because there a person has the terminal. For `eas` it is `--non-interactive`, or `--json`, which implies it. stdin was already never attached [observed — `src/utils/subprocess.ts`].
 3. **Exit signature** — match the captured output against the registry. Three patterns are load-bearing today: eas-cli's `Either log in with … EXPO_TOKEN` [observed — `build/user/SessionManager.js`], `@expo/cli`'s `is in non-interactive mode` [observed — `src/utils/prompts.ts`], and the `in non-interactive mode` fragment eas-cli's many prompt sites share.
 4. **Prompt-hang guard** — for a captured child only, and only when the caller opts in. If it writes nothing for `EXAGENT_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Both halves are required: silence alone is a long build, and killing that would be worse than the hang it prevents. Never in `inherit` mode, where a prompt is legitimate.
 
 The prompt shape is `/[?:]\s*$|^\s*[?›»]\s+\S|\(y\/N\)|\(Y\/n\)|Password|passphrase/i` [observed — `src/needsHuman/detect.ts`]. The leading-marker half was added because `prompts` and `inquirer` write the marker at the _start_ — `? Select a platform` is a question that ends in neither a question mark nor a colon.
+
+### The binary may not be the CLI
+
+Decision [confirmed — Kudo, 2026-08-23]. Every one of the four layers above assumes that the thing on the other side of the spawn is the CLI. Across a process boundary that is an assumption, not a fact: what runs is whatever the machine has under that name, and a shim, a stale link, or a wrapper from another project will answer instead. The friction run of 2026-08-23 was driven on such a machine — PATH `eas` was a Rust wrapper that panicked — and it broke two things at once.
+
+`src/utils/wrapperCrash.ts` is the one guard, and it is deliberately conservative: a failure counts as "not the CLI" only when the output holds **nothing** that looks like that CLI's *and* the process died the way a wrapper dies (exit `101`, `126`, `127`, `134`, `139`, or a panic/backtrace signature). A false positive hides a real failure's output, which is worse than the vagueness it buys, so both halves have to agree.
+
+Two callers, for the two things that broke:
+
+- **The preflight** answers `null` instead of `false`, per layer 1 above. Reading a crash as "signed out" is the more expensive error of the two: it stops a command that would have worked.
+- **The error message** says `The eas at <path> failed to run at all (this may not be the real CLI)` instead of quoting the bytes under `What the tool printed:`. The heading is a claim about provenance, and it was false: an agent reading a Rust backtrace attributed to eas-cli goes looking for a missing file inside a program that was never involved.
+
+The `Try:` lines of `deploy` and `build:wait` changed for the same reason. `npx eas-cli whoami` checks a *different* program than the one that just failed — a healthy answer from it proves nothing — so the check names the resolved path that actually ran.
 
 ### What it costs, and the hole that stays
 
