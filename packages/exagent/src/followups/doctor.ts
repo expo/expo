@@ -1,9 +1,14 @@
 // @ref llp/0009-smart-followups.rfc.md §Examples per command — the next actions of `doctor:check`.
 //
-// The obvious follow-up would be `exagent doctor:fix`, and that command does not exist yet. So the
-// next action is the one the failing check itself named: expo-doctor's advice is written for a
-// person and usually quotes the exact command or documentation page to go to. Pulling that out is
-// the whole builder — nothing here invents a fix.
+// The next action after a failed check is the one the check itself named: expo-doctor's advice is
+// written for a person and usually quotes the exact command or documentation page to go to.
+// Pulling that out is the whole builder — nothing here invents a fix.
+//
+// `exagent doctor:fix` exists now and is deliberately *not* suggested here [decision — 2026-08-24].
+// Every check expo-doctor reports on is a dependency or a configuration problem — a package behind
+// the SDK, a missing lockfile, a plugin that will not resolve — and none of them is fixed by
+// deleting a cache. A blanket "try resetting" rung under a specific piece of advice is the shape of
+// follow-up llp/0009 caps the budget to keep out.
 
 import type { FixPlanPayload } from '../doctor/fixTypes';
 import type { DoctorCheck, DoctorReport } from '../doctor/types';

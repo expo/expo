@@ -211,7 +211,8 @@ describe('exagent doctor:check', () => {
     expect(result.stdout).not.toContain('✖ Check for common project setup issues');
   });
 
-  // `doctor:fix` does not exist yet, so the next action is the one the failing check itself named.
+  // The next action is the one the failing check itself named, not `doctor:fix`: what expo-doctor
+  // reports is a dependency or configuration problem, and a cache reset fixes none of them.
   it('suggests what the failing checks advised', async () => {
     const projectRoot = await setupAsync('go-app');
 
