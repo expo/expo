@@ -194,11 +194,11 @@ Only `errors` has it. `runtime:network`'s failed requests are something it repor
 a 404 the app handles is not the command's operation failing — and there is no equivalent question
 for its exit code to answer.
 
-### The fourth: `reload`, and the difference between failed and inconclusive
+### The fourth: `runtime:reload`, and the difference between failed and inconclusive
 
-[observed — 2026-08-23, `src/reload/`; friction run 3, F31] `exagent runtime:reload` is the first command
-that uses **both** codes of the band in one run, and the boundary between them is the whole design
-(the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
+[observed — 2026-08-23, `src/runtime/reload/`; friction run 3, F31] `exagent runtime:reload` is the
+first command that uses **both** codes of the band in one run, and the boundary between them is the
+whole design (the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
 
 | Code | The reload                                                        |
 | ---- | ----------------------------------------------------------------- |
@@ -219,6 +219,39 @@ Three details are decisions rather than transcription:
 - **No dev server is `1`, not `20`.** Nothing was attempted, and the operation the code would be
   reporting on never started. A reload with no dev server would also be actively harmful — it makes
   the app re-fetch a bundle from nowhere — so the command refuses rather than reports.
+
+### The fifth and sixth: the stop commands, and what "already done" is worth
+
+[observed — 2026-08-23, `src/runtime/stopAsync.ts`, `src/dev/stopAsync.ts`] `runtime:stop` and
+`dev:stop` are the first commands whose subject can be **already in the state that was asked for**,
+and both answer it the same way: that is success.
+
+Decision [confirmed — Kudo, 2026-08-23]. An app that was not running, and a dev server that was not
+running, both exit `0`. The alternative was tempting — a distinct code for "nothing to do" — and it
+is wrong for the reason the band exists: the code answers *did the thing the tool was asked about
+work*, and the thing being asked about is a state, not an act. An agent that stops an app twice
+would otherwise have to special-case the second run, which is exactly the branching the convention
+removes. What is *not* collapsed is the fact itself: `runtime:stop` reports `wasRunning`, and
+`dev:stop` reports `reason: "not-running"`, so a caller that cares can read it without reading the
+code.
+
+The two codes each command does use:
+
+| Command | `20` | `1` |
+| --- | --- | --- |
+| `runtime:stop` | — | the device tool refused |
+| `dev:stop` | it is still running, or it is not this CLI's to stop | a bad argument |
+
+Two details are decisions rather than transcription:
+
+- **A device tool that refused is `1`, not `20`.** `runtime:stop` has no outcome band, because the
+  operation it performs cannot half-succeed: either the app is stopped or the tool would not run
+  it, and a tool that would not run is a tool failure. The message names the id it tried and the
+  evidence that chose it, so the recovery is `--app-id`.
+- **A dev server this CLI did not start is `20`, not `1`.** The command worked perfectly and
+  declined on purpose; nothing about the invocation was wrong. `1` would tell an agent to fix its
+  call, and there is nothing to fix — the recovery is `--force`, or stopping it where it was
+  started, and both are in the `How:` line.
 
 ## Needs-human protocol
 

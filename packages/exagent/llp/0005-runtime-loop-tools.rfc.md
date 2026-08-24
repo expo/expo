@@ -64,8 +64,17 @@ Still open: Android capture via a dev build, distinguishing "no traffic" from si
 
 ## Reloading the app
 
-Decision [confirmed — Kudo, 2026-08-23]. `exagent runtime:reload` puts the running app back on the code
-that is on disk, and reports a reload only when one was **observed**.
+Decision [confirmed — Kudo, 2026-08-23]. `exagent runtime:reload` puts the running app back on the
+code that is on disk, and reports a reload only when one was **observed**.
+
+**Why an action of `runtime`, not a top-level verb** [confirmed — Kudo, 2026-08-23]. It was built
+as `exagent reload` and renamed before it shipped. `runtime` is the group for "read and drive the
+running app", and reloading is driving it — the same subject as `runtime:eval` and
+`runtime:errors`, reached through the same dev-server connection. A top-level verb would have said
+this is a different kind of thing than the commands it belongs with, and llp/0006's naming rule
+reserves top-level verbs for capabilities that are their own subject. It keeps a module and a
+`--help` block of its own, as `dev:wait` does inside `dev`: the group's shared module exists
+because `eval`/`errors`/`network` share options, and these do not.
 
 ### The failure it answers
 
@@ -250,6 +259,105 @@ launched with, so an app deep-linked to `/notes` returns to `/notes` after a rel
 2026-08-23, screenshot]. A development build never had the problem: its listener passes the URL
 through whatever the path is, so `<scheme>://` already means the index route, and it is unchanged.
 
+## Stopping the app
+
+Decision [confirmed — Kudo, 2026-08-23]. `exagent runtime:stop` ends the app on the device, and
+`exagent navigate` starts one. Between them an agent can put a project into a known state without
+composing a `simctl` or `adb` line.
+
+**The command is the easy half.** `xcrun simctl terminate <udid> <id>` and `adb shell am force-stop
+<id>` are two lines that never change. What changes is the *id*, and getting it wrong stops nothing
+while reporting that it stopped something. Expo Go and a development build are different
+applications, the two Expo Go ids differ only in case (`host.exp.Exponent` on iOS,
+`host.exp.exponent` on Android), and a project moves between the two worlds the moment it grows a
+native directory.
+
+So the evidence is ranked, and the report names the rung that answered (`bundleIdSource`,
+`bundleIdReason` — `src/runtime/appId.ts`):
+
+1. `--app-id`, which the caller knows better than this does.
+2. The `appId` of a debugger target the dev server reports — what is running *now*.
+3. `ios.bundleIdentifier` / `android.package` from the **static** app config. A dynamic
+   `app.config.js` is never evaluated, per llp/0001 constraint 5.
+4. Expo Go, per platform.
+
+**The dev server outranks the app config, and that ordering is the decision.** The config says what
+a *build* of this project would be called; the dev server says what is running. A project whose
+config names a bundle identifier can still be running in Expo Go — every Expo Go project with a
+prebuild config is in that state — and stopping the id from the config would then terminate nothing
+and report success, which is the class of false green this whole round exists to remove.
+
+**An app that was not running is a success with a note.** `simctl terminate` exits non-zero for it
+with `found nothing to terminate`, and reading that as a failure would make a second `runtime:stop`
+fail for having nothing left to do. `stopped` is the state the caller asked for and `wasRunning`
+says whether this command is what produced it — two keys because they answer two questions. On
+Android the distinction cannot be drawn: `am force-stop` exits 0 and prints nothing whether or not
+the app was running, so `wasRunning` there means "not known to have been already stopped".
+
+Live [observed — 2026-08-23, notesapp on port 8171]: with Expo Go attached, exit 0,
+`bundleIdSource: dev-server`, `wasRunning: true`, and the dev server's target list went from 1 to
+0. Run again immediately: exit 0, `wasRunning: false`, `bundleIdSource: expo-go-default` — the
+source moved down a rung because there was no longer an app connected to ask, which is the report
+being honest rather than sticky.
+
+## Stopping the dev server
+
+Decision [confirmed — Kudo, 2026-08-23]. `exagent dev:stop` reads the **dev-server lock**, signals
+the PID it names, and waits for both the lock and the port to go quiet.
+
+The friction it replaces is a shell incantation an agent has to compose and get right —
+`lsof -ti tcp:8081 | xargs kill`. Every part of it is a guess: which port, whether the PID on it is
+this project's dev server, whether the signal reached the bundler as well as the wrapper. A wrong
+guess kills something nobody asked about.
+
+The lock answers all three, and it already existed for other reasons: `src/devLock/` holds a socket
+for as long as an `exagent`-started dev server runs, and the line it answers with carries `pid`
+next to `url` and `port`. One `SIGTERM` to that PID is enough for the whole tree, because both
+spawn paths install forwarders for `SIGINT`/`SIGTERM` and pass them to the `expo start` child
+[observed — `src/utils/subprocess.ts`, `src/utils/expoCli.ts` `runExpoAsync`]. Live it takes about
+**170 ms**, and the wrapper, Metro and the lock all go [observed — 2026-08-23, port 8171].
+
+**The wait is on both the lock and the port.** They fail independently: the lock is released before
+Metro finishes closing its listener, and a holder that dies without releasing leaves a socket file
+nothing answers on. "Stopped" is when neither answers.
+
+### A port with no lock behind it is not this command's to kill
+
+Decision [confirmed — Kudo, 2026-08-23]. It is reported, with its PID when the machine will name
+one, and left running — exit `20`.
+
+This is the one place the command could do real damage, and the reasoning is the same as llp/0010's
+rule that a false red beats a false green only when the red is actionable: here the *destructive*
+answer is the one that cannot be taken back. A second project's dev server on the port is the
+ordinary case, not the exotic one.
+
+`--force` stops it, and requires **two independent proofs**:
+
+- the port answers `packager-status:running`, which establishes that a Metro dev server is there;
+- the process on the port has a command line naming a program that runs one.
+
+Neither alone is enough, and the reason is not caution for its own sake: a `/status` answer proves a
+dev server exists but says nothing about *which PID owns the port*, and a PID lookup can race a port
+that was closed and reopened between the two reads. Together they are the same fact from two
+directions.
+
+Live, all three cases [observed — 2026-08-23]: a dev server started by `expo start` directly on
+8172 → exit **20**, `reason: foreign-dev-server`, `pid: 99705`, still answering afterwards; the same
+with `--force` → exit 0, `forced: true`, port clear in 43 ms; and a plain Node HTTP server on 8173,
+which is a `node` process but does not answer `packager-status:running` → exit **20** even with
+`--force`, still serving afterwards. The detail line says "in use" there rather than "answering as
+an Expo dev server", which is the difference the two proofs are about.
+
+**Nothing running is exit `0`.** The end state the caller asked for is the state it is already in,
+and a second `dev:stop` must not read as a failure. Without `--port` the report says so and names
+the flag, because with no lock this command has not been *told* which dev server the caller means —
+defaulting to 8081 there is how a command ends up reporting on, or killing, another project's.
+
+**Windows is `taskkill /PID <pid> /T /F`,** because `process.kill` there maps every signal onto an
+immediate terminate and reaches only the named process, leaving a bundler started through a batch
+shim alive. Best effort, and untested on that platform, which is why the result reports whether the
+call was made rather than whether it worked.
+
 ## Testing
 
 Each tool: schema unit tests + tier-0 e2e coverage against a fixture app on a simulator ([[0002-testing-and-evals]]; scripted MCP replay is optional/deferred there). The composite loops are tier-1/2 eval scenarios.
@@ -273,5 +381,13 @@ conventions, platform variants, dynamic and catch-all matching, the group-inclus
 the three fail-open paths. The e2e tests own the process boundary the check exists to protect —
 that a bogus route reaches the device tool **zero** times.
 
-The header of `--json` is asserted as an exact key set at both tiers for both commands, per
-llp/0006 §Output contract. Counts as of this change: 1677 unit (from 1588), 294 e2e (from 280).
+The two stop commands split the same way, and the split is what makes them testable at all.
+`dev:stop` signals a **real process**, so its e2e test starts one that records the signal it
+receives and asserts that the PID the lock named is the PID that got it — a mocked `process.kill`
+would prove nothing about the only thing the command does. `runtime:stop` runs a **real device
+tool**, so its e2e test asserts the exact argv handed to a stub `xcrun`. The unit tests own the
+decisions: the ranked application-id resolution, the three `dev:stop` states, and both halves of
+the `--force` proof, each refused on its own.
+
+The header of `--json` is asserted as an exact key set at both tiers for every command, per
+llp/0006 §Output contract. Counts as of this change: 1741 unit (from 1588), 304 e2e (from 280).
