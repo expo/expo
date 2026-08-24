@@ -112,15 +112,18 @@ export type AudioPlayerOptions = {
    */
   crossOrigin?: 'anonymous' | 'use-credentials';
   /**
-   * If set to `true`, the audio session will not be deactivated when this player pauses or finishes playback.
-   * This prevents interrupting other audio sources (like videos) when the audio ends.
+   * If set to `true`, the audio session (iOS) or audio focus (Android) will remain active when this
+   * player pauses or finishes playback.
    *
-   * Useful for sound effects that should not interfere with ongoing video playback or other audio.
-   * The audio session for this player will not be deactivated automatically when the player finishes playback.
+   * On iOS, the `AVAudioSession` stays active. On Android, any audio focus acquired by the player is
+   * retained. Android does not request audio focus in modes that mix with other audio, but the player
+   * will retain focus if a later audio mode change causes it to be acquired.
    *
-   * > **Note:** If needed, you can manually deactivate the audio session using `setIsAudioActiveAsync(false)`.
+   * > **Note:** If needed, you can manually deactivate audio and release focus using
+   * > `setIsAudioActiveAsync(false)`.
    *
    * @platform ios
+   * @platform android
    * @default false
    */
   keepAudioSessionActive?: boolean;
