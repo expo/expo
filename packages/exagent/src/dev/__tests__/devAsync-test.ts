@@ -630,7 +630,10 @@ describe(devAsync, () => {
 
         await devAsync(projectRoot, resolveDevOptions(['--json']));
 
-        expect(emittedFollowUps()[0]!.command).toBe('exp://192.168.1.5:8099');
+        // The open-app step sits first in the ladder; the URL follow-up carries the reported port.
+        const commands = emittedFollowUps().map((followup) => followup.command);
+        expect(commands).toContain('exp://192.168.1.5:8099');
+        expect(commands).not.toContain('exp://192.168.1.5:8081');
       });
 
       // The bug this exists for: nothing reported a port, so the URL was built on the assumption
