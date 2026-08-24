@@ -394,7 +394,10 @@ export class SQLiteStorage {
       // A new column has to be added here as well, so fresh and repaired databases also get it.
       await db.execAsync(MIGRATION_STATEMENT_0);
 
-      // Version ladder: add each new migration below, gated on `currentDbVersion`.
+      // Version ladder: add each new migration below, gated on `currentDbVersion`. Since the
+      // baseline above already carries every column, a ladder entry that adds one has to
+      // tolerate it already being there — gate it on `PRAGMA table_info(storage)`, or a fresh
+      // database fails the migration with `duplicate column name`.
       if (currentDbVersion >= DATABASE_VERSION) {
         return;
       }
