@@ -15,12 +15,22 @@ export function buildRuntimeErrorsFollowUps({
   count,
   durationMs,
 }: RuntimeErrorsFollowUpInput): FollowUp[] {
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Reloading the app. The reload leads, and the reason
+  // is a trap this command used to walk agents into [observed — friction run 3, F31]: an app whose
+  // component threw while rendering is not recovered by Fast Refresh, so after the fix the *same*
+  // errors keep arriving from the run that is still going. Re-running this command first reads the
+  // old run and reports the bug as unfixed.
   if (count > 0) {
     return capFollowUps([
       {
+        id: 'reload-app',
+        command: 'npx exagent reload',
+        why: 'Fix the errors above, then reload: an app whose render threw keeps running the code from before the fix, and this window would keep reporting it.',
+      },
+      {
         id: 'runtime-errors-rerun',
         command: `npx exagent runtime:errors --duration ${durationMs}`,
-        why: 'Fix the errors above, reproduce the same steps, and confirm this window stays empty.',
+        why: 'Reproduce the same steps against the reloaded app, and confirm this window stays empty.',
       },
     ]);
   }

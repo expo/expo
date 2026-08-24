@@ -71,6 +71,7 @@ export const topLevelCommands: { [command: string]: CommandLoader } = {
   install: () => import('./install').then((i) => i.exagentInstall),
   navigate: () => import('./navigate').then((i) => i.exagentNavigate),
   new: () => import('./new').then((i) => i.exagentNew),
+  reload: () => import('./reload').then((i) => i.exagentReload),
   start: () => import('./start').then((i) => i.exagentStart),
   status: () => import('./status').then((i) => i.exagentStatus),
 };
@@ -392,7 +393,11 @@ export const helpSections: HelpSection[] = [
     commands: ['deploy', ...actionNames('build')],
     note: 'Builds are started with npx eas build; build:wait attaches to one that exists.',
   },
-  { title: 'Debug a running app', commands: [...actionNames('runtime'), 'navigate'] },
+  {
+    title: 'Debug a running app',
+    commands: [...actionNames('runtime'), 'navigate', 'reload'],
+    note: 'Reload first after fixing a crash: an app whose render threw keeps running the old code.',
+  },
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
   { title: 'Checkpoints', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },
   {

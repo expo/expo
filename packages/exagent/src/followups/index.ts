@@ -12,6 +12,7 @@ export { buildInstallFollowUps, type InstallFollowUpInput } from './install';
 export { buildNavigateFollowUps, type NavigateFollowUpInput } from './navigate';
 export { resolveExpoGoLanUrl, resolveLanHost } from './network';
 export { dependsOnDevClientSync, easJsonExistsSync } from './projectFiles';
+export { buildReloadFollowUps, type ReloadFollowUpInput } from './reload';
 export { followUpsEnabled, reportFollowUps, type ReportFollowUpsOptions } from './report';
 export {
   buildRuntimeErrorsFollowUps,

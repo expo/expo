@@ -183,9 +183,12 @@ describe(buildRuntimeErrorsFollowUps, () => {
   it(`should ask for a rerun after the reported errors are fixed`, () => {
     const followups = buildRuntimeErrorsFollowUps({ count: 2, durationMs: 2000 });
 
-    expect(ids(followups)).toEqual(['runtime-errors-rerun']);
-    expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 2000');
-    expect(followups[0]!.why).toContain('empty');
+    // The reload leads: an app whose render threw keeps running the code from before the fix, so
+    // re-running this command first would read the old run and report the bug as unfixed.
+    expect(ids(followups)).toEqual(['reload-app', 'runtime-errors-rerun']);
+    expect(followups[0]!.command).toBe('npx exagent reload');
+    expect(followups[1]!.command).toBe('npx exagent runtime:errors --duration 2000');
+    expect(followups[1]!.why).toContain('empty');
   });
 
   it(`should explain that an empty window may have missed the failure`, () => {

@@ -5,6 +5,13 @@ declare module '2g' {
     'navigate:device_resolved': { platform: string; deviceId: string };
     'navigate:target_decided': { isExpoGo: boolean; reason: string };
     'navigate:url_resolved': { url: string; resolution: string };
+    'navigate:route_checked': {
+      checked: boolean;
+      ok: boolean | null;
+      matched: string | null;
+      routeCount: number;
+      reason: string | null;
+    };
   }
 }
 

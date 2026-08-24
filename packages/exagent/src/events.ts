@@ -211,6 +211,20 @@ declare module '2g' {
       /** The code expo-doctor exited with, which the command mirrors. */
       exitCode: number | null;
     };
+    /**
+     * One `exagent reload` run: whether the app was reloaded, by which method, and how many apps
+     * were attached afterwards. The exit code is the same answer; this is where the detail is.
+     *
+     * @see llp/0005-runtime-loop-tools.rfc.md §Reloading the app
+     */
+    'cli:reload': {
+      /** The app was reloaded, and the reload was observed rather than assumed. */
+      reloaded: boolean;
+      /** `dev-server`, `device`, or null when neither worked. */
+      method: string | null;
+      /** Debugger targets attached when the wait ended, i.e. apps running the new bundle. */
+      appsConnected: number;
+    };
     'cli:navigate': {
       route: string;
       url: string;
