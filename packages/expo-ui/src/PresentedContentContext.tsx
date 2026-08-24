@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from 'react';
 
-const PresentedContentContext = createContext(false);
+export const PresentedContentContext = createContext(false);
 
 /**
  * Whether the surrounding content is presented in its own view controller — a sheet, a popover

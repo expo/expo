@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 
-import { useIsPresentedInOwnWindow } from '../PresentedContentContext';
+import { PresentedContentContext, useIsPresentedInOwnWindow } from '../PresentedContentContext';
 
 const RNHostNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'RNHostView');
 
@@ -40,7 +40,11 @@ export function RNHostView(props: RNHostViewProps) {
       style={props.matchContents ? hugCrossAxis : undefined}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
-      key={props.matchContents ? 'matchContents' : 'noMatchContents'}
-    />
+      key={props.matchContents ? 'matchContents' : 'noMatchContents'}>
+      {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
+      <PresentedContentContext.Provider value={false}>
+        {props.children}
+      </PresentedContentContext.Provider>
+    </RNHostNativeView>
   );
 }
