@@ -2,8 +2,14 @@ import { resolvePlatformFlag } from '../plan/platformFlags';
 import type { PlanPlatform } from '../plan/types';
 import { CommandError } from '../utils/errors';
 import { DEFAULT_DETACH_TIMEOUT_MS } from './detachAsync';
+import { assertKnownDevFlags } from './knownFlags';
 
-/** Flags that `exagent dev` handles itself and does not forward to the `expo` CLI. */
+/**
+ * Flags that `exagent dev` handles itself and does not forward to the `expo` CLI.
+ *
+ * The same list `DEV_OWN_FLAGS` names, minus `--help`/`-h`, which never reach this resolver: the
+ * command module answers them and exits before it is called.
+ */
 const EXAGENT_ONLY_FLAGS = [
   '--no-agent-skills',
   '--no-followups',
@@ -81,9 +87,16 @@ export interface DevOptions {
  *
  * @see llp/0003-knowledge-tools-and-skills.rfc.md §Migration
  * @see llp/0004-smart-start-and-project-state.rfc.md §Contract
- * @throws {CommandError} `BAD_ARGS` when `--port` names something that is not a port.
+ * @throws {CommandError} `BAD_ARGS` when an option belongs to neither CLI, when two options ask
+ * for opposite things, or when `--port` names something that is not a port.
  */
 export function resolveDevOptions(argv: string[]): DevOptions {
+  // First, and before any of the combination rules below: an option neither this command nor
+  // `expo start` has cannot have a meaningful interaction with one that exists, and it used to be
+  // forwarded — reported by the Expo CLI a step later, or dropped outright by a plan that does not
+  // end in `expo start` [friction run 5, F48-3].
+  assertKnownDevFlags(argv);
+
   const detach = argv.includes('--detach');
   const waitReady = argv.includes('--wait-ready');
   if (waitReady && !detach) {
