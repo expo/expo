@@ -1,0 +1,17 @@
+> Task :app:mergeReleaseResources
+> Task :app:processReleaseResources FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:processReleaseResources'.
+> A failure occurred while executing com.android.build.gradle.internal.res.LinkApplicationAndroidResourcesTask$TaskAction
+   > Android resource linking failed
+     ERROR:/home/expo/workingdir/build/android/app/src/main/res/values/strings.xml:4:5-58: AAPT: error: duplicate value for resource 'string/app_name' with config ''.
+
+     ERROR:/home/expo/workingdir/build/android/app/src/main/AndroidManifest.xml:22: AAPT: error: resource style/AppTheme.Splash (aka com.example.notes:style/AppTheme.Splash) not found.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+
+BUILD FAILED in 2m 4s

@@ -1,0 +1,26 @@
+Starting a Gradle Daemon (subsequent builds will be faster)
+
+> Configure project :app
+ ℹ️  Applying gradle plugin 'expo-dev-launcher-gradle-plugin'
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:generateReleaseBuildConfig
+> Task :app:javaPreCompileRelease
+> Task :expo-modules-core:compileReleaseKotlin
+> Task :app:compileReleaseKotlin FAILED
+e: file:///home/expo/workingdir/build/android/app/src/main/java/com/example/notes/NoteModule.kt:24:31 Unresolved reference: NoteFormatter
+e: file:///home/expo/workingdir/build/android/app/src/main/java/com/example/notes/NoteModule.kt:31:12 Type mismatch: inferred type is String? but String was expected
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileReleaseKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+
+BUILD FAILED in 3m 12s

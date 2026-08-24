@@ -1,0 +1,240 @@
+Command line invocation:
+    /Applications/Xcode-26.6.0.app/Contents/Developer/usr/bin/xcodebuild -project notesapp.xcodeproj -scheme notesapp -configuration Debug -sdk iphonesimulator -destination "generic/platform=iOS Simulator" build
+
+Build settings from command line:
+    SDKROOT = iphonesimulator26.5
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'notesapp' in project 'notesapp' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/usr/bin/ibtool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch arm64 -isysroot /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/Images.xcassets /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/expo.icon
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+ExecuteExternalTool /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -arch x86_64 -isysroot /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -x c -c /dev/null
+
+Build description signature: abb56f9cfcfb71dfa7f491aaa7a86d99
+Build description path: /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/XCBuildData/abb56f9cfcfb71dfa7f491aaa7a86d99.xcbuilddata
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products
+
+ClangStatCache /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk /Users/expo/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f1afc054c1cac950feb885fa0ed580ea.sdkstatcache
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    /Applications/Xcode-26.6.0.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode-26.6.0.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.5.sdk -o /Users/expo/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.5-23F81a-f1afc054c1cac950feb885fa0ed580ea.sdkstatcache
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/ExplicitPrecompiledModules
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/ExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules
+
+CreateBuildDirectory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    builtin-create-build-directory /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/EagerLinkingTBDs/Debug-iphonesimulator
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp-134e828940a3823e14e357279cddddc8-VFS-iphonesimulator/all-product-headers.yaml
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp.xcodeproj
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp-134e828940a3823e14e357279cddddc8-VFS-iphonesimulator/all-product-headers.yaml
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.DependencyStaticMetadataFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.DependencyStaticMetadataFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.DependencyMetadataFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.DependencyMetadataFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-generated-files.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-generated-files.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-target-headers.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-target-headers.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-non-framework-target-headers.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-non-framework-target-headers.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibPath-normal-x86_64.txt (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibPath-normal-x86_64.txt
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-project-headers.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-project-headers.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-own-target-headers.hmap (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-own-target-headers.hmap
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibPath-normal-arm64.txt (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibPath-normal-arm64.txt
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibInstallName-normal-x86_64.txt (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibInstallName-normal-x86_64.txt
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibInstallName-normal-arm64.txt (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-DebugDylibInstallName-normal-arm64.txt
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-800E24972A6A228C8D4807E9.sh (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-800E24972A6A228C8D4807E9.sh
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-00DD1BFF1BD5951E006B06BC.sh (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-00DD1BFF1BD5951E006B06BC.sh
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.SwiftConstValuesFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp_const_extract_protocols.json (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.SwiftFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.SwiftFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.LinkFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp.LinkFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp-OutputFileMap.json (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/notesapp-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/7187679823f38a2a940e0043cdf9d637-common-args.resp (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/x86_64/7187679823f38a2a940e0043cdf9d637-common-args.resp
+'-std=gnu99' -fmodules -gmodules '-fmodules-cache-path=/Users/expo/Library/Developer/Xcode/DerivedData/ModuleCache.noindex' -fpascal-strings -O0 -fno-common '-DDEBUG=1' '-DFB_SONARKIT_ENABLED=1' -fasm-blocks -g -iquote /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-generated-files.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-own-target-headers.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-target-headers.hmap -iquote /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-project-headers.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator/include -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources-normal/x86_64 -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/x86_64 -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources -F/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp_const_extract_protocols.json (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp_const_extract_protocols.json
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.SwiftFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.SwiftFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.SwiftConstValuesFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.SwiftConstValuesFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.LinkFileList (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp.LinkFileList
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp-OutputFileMap.json (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/notesapp-OutputFileMap.json
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/7187679823f38a2a940e0043cdf9d637-common-args.resp (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Objects-normal/arm64/7187679823f38a2a940e0043cdf9d637-common-args.resp
+'-std=gnu99' -fmodules -gmodules '-fmodules-cache-path=/Users/expo/Library/Developer/Xcode/DerivedData/ModuleCache.noindex' -fpascal-strings -O0 -fno-common '-DDEBUG=1' '-DFB_SONARKIT_ENABLED=1' -g -iquote /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-generated-files.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-own-target-headers.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-all-target-headers.hmap -iquote /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp-project-headers.hmap -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator/include -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources-normal/arm64 -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/arm64 -I/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources -F/Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/Entitlements-Simulated.plist (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/Entitlements-Simulated.plist
+
+WriteAuxiliaryFile /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/notesapp_vers.c (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    write-file /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/DerivedSources/notesapp_vers.c
+
+MkDir /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator/notesapp.app (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    /bin/mkdir -p /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Products/Debug-iphonesimulator/notesapp.app
+
+ProcessProductPackaging /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/notesapp.entitlements /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    
+    Entitlements:
+    
+    {
+}
+    
+    builtin-productPackagingUtility /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/notesapp.entitlements -entitlements -format xml -o /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent
+
+ProcessProductPackaging /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/notesapp.entitlements /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    
+    Entitlements:
+    
+    {
+    "application-identifier" = "FAKETEAMID.com.anonymous.notesapp";
+}
+    
+    builtin-productPackagingUtility /tmp/wave6-explain-scratch/xcb-nopods/ios/notesapp/notesapp.entitlements -entitlements -format xml -o /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent
+
+ProcessProductPackagingDER /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent.der (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    /usr/bin/derq query -f xml -i /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent -o /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app.xcent.der --raw
+
+ProcessProductPackagingDER /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent.der (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    /usr/bin/derq query -f xml -i /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent -o /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/notesapp.app-Simulated.xcent.der --raw
+
+PhaseScriptExecution [CP]\ Check\ Pods\ Manifest.lock /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh (in target 'notesapp' from project 'notesapp')
+    cd /tmp/wave6-explain-scratch/xcb-nopods/ios
+    /bin/sh -c /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh
+diff: /Podfile.lock: No such file or directory
+error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.
+
+note: Run script build phase 'Bundle React Native code and images' will be run during every build because the option to run the script phase "Based on dependency analysis" is unchecked. (in target 'notesapp' from project 'notesapp')
+** BUILD FAILED **
+
+
+The following build commands failed:
+	PhaseScriptExecution [CP]\ Check\ Pods\ Manifest.lock /Users/expo/Library/Developer/Xcode/DerivedData/notesapp-deqbesbkrpefekcaaisaluhprbzo/Build/Intermediates.noindex/notesapp.build/Debug-iphonesimulator/notesapp.build/Script-08A4A3CD28434E44B6B9DE2E.sh (in target 'notesapp' from project 'notesapp')
+	Building project notesapp with scheme notesapp and configuration Debug
+(2 failures)

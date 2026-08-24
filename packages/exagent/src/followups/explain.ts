@@ -1,0 +1,81 @@
+// @ref llp/0009-smart-followups.rfc.md §Examples per command
+// What to do after a build log has been read. The first rung is whatever the matched rule named,
+// because a rule that knows the failure knows the fix better than any general ladder does.
+
+import { capFollowUps, type FollowUp } from './types';
+import type { Failure, PhaseName } from '../builds/explain/types';
+
+export interface ExplainFollowUpInput {
+  failure: Failure | null;
+  /** The phase the failure landed in, or null when nothing was located. */
+  phase: PhaseName | null;
+  /** True when the caller did not pass `--all`, so there may be more in the log. */
+  moreMayExist: boolean;
+}
+
+/**
+ * The next rungs after an explanation.
+ *
+ * Ordered most-specific first, because only the first {@link MAX_FOLLOWUPS} are printed: the fix
+ * the rule named beats the phase-shaped advice, which beats "read the rest yourself".
+ */
+export function buildExplainFollowUps({
+  failure,
+  phase,
+  moreMayExist,
+}: ExplainFollowUpInput): FollowUp[] {
+  const followups: FollowUp[] = [];
+
+  if (!failure) {
+    // Nothing was located, and the honest next step is the one that reads more of the log rather
+    // than one that acts on a diagnosis nobody has.
+    followups.push({
+      id: 'explain-all',
+      command: 'npx exagent build:explain --file <path> --all --context 40',
+      why: 'No rule matched this log; a wider window is the next thing to look at before acting.',
+    });
+    return capFollowUps(followups);
+  }
+
+  if (failure.suggestedCommand) {
+    followups.push({
+      id: 'apply-fix',
+      command: failure.suggestedCommand,
+      why: `${failure.message} This is what the "${failure.signature}" rule says to run.`,
+    });
+  }
+
+  if (failure.docsUrl) {
+    followups.push({
+      id: 'open-docs',
+      command: failure.docsUrl,
+      why: 'The Expo docs page for this class of failure.',
+    });
+  }
+
+  // The gates this CLI already has, for the phases where they answer the same question the build
+  // just failed on. A JavaScript failure is reproducible in seconds locally; a native one is not.
+  if (phase === 'bundle-js') {
+    followups.push({
+      id: 'typecheck',
+      command: 'npx exagent typecheck',
+      why: 'The bundle failed on a source file; this reports every other one before the next build.',
+    });
+  } else if (phase === 'prebuild') {
+    followups.push({
+      id: 'config-effective',
+      command: 'npx exagent config:effective',
+      why: 'Prebuild failed while resolving the app config; this prints what the plugins produced.',
+    });
+  }
+
+  if (moreMayExist && followups.length < 3) {
+    followups.push({
+      id: 'explain-all',
+      command: 'npx exagent build:explain --all',
+      why: 'This report is about the first failure in the failing phase; --all lists the rest.',
+    });
+  }
+
+  return capFollowUps(followups);
+}

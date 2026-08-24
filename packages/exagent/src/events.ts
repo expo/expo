@@ -178,6 +178,28 @@ declare module '2g' {
       interrupted: boolean;
     };
     /**
+     * One `build:explain` run: what was read, and what the rule table made of it.
+     *
+     * The located line and its signature only — not the quoted context, which belongs in the
+     * command's own output rather than on a stream that may be collected somewhere else. Every
+     * field is null when no rule matched, which is a report and not a failure.
+     *
+     * @see llp/0011-build-explain.rfc.md
+     */
+    'cli:build_explain': {
+      source: 'file' | 'stdin';
+      lines: number;
+      bytes: number;
+      /** True when the log was longer than the line budget and the oldest lines were dropped. */
+      truncated: boolean;
+      phase: string | null;
+      signature: string | null;
+      line: number | null;
+      confidence: string | null;
+      /** How many other matches `--all` reported. Zero without the flag. */
+      otherFailures: number;
+    };
+    /**
      * One `exagent config:effective` run, as counts.
      *
      * Counts only, deliberately: an effective config carries bundle identifiers, URL schemes and

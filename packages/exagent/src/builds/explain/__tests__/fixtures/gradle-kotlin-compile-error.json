@@ -1,0 +1,24 @@
+{
+  "phases": [
+    {
+      "name": "gradle",
+      "status": "failed",
+      "startLine": 1,
+      "endLine": 26
+    }
+  ],
+  "failure": {
+    "phase": "gradle",
+    "signature": "android.kotlin.compile-error",
+    "line": 12,
+    "matchedLine": "e: file:///home/expo/workingdir/build/android/app/src/main/java/com/example/notes/NoteModule.kt:24:31 Unresolved reference: NoteFormatter",
+    "confidence": "high",
+    "suggestedCommand": null
+  },
+  "otherSignatures": [
+    "13:android.kotlin.compile-error",
+    "15:android.gradle.build-failed",
+    "17:android.gradle.build-failed",
+    "18:android.gradle.task-failed"
+  ]
+}

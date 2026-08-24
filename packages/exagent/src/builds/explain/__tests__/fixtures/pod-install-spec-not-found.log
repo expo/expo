@@ -1,0 +1,180 @@
+Using Expo modules
+[Expo] Enabling modular headers for pod ExpoModulesCore
+[Expo] Enabling modular headers for pod ExpoModulesWorklets
+[Expo] Enabling modular headers for pod React-RCTFabric
+[Expo] Enabling modular headers for pod ExpoModulesJSI
+[Expo] Enabling modular headers for pod React-RCTAppDelegate
+[Expo] Enabling modular headers for pod ReactAppDependencyProvider
+[Expo] Enabling modular headers for pod React-Core
+[Expo] Enabling modular headers for pod ReactCodegen
+[Expo] Enabling modular headers for pod RCTRequired
+[Expo] Enabling modular headers for pod RCTTypeSafety
+[Expo] Enabling modular headers for pod ReactCommon
+[Expo] Enabling modular headers for pod React-NativeModulesApple
+[Expo] Enabling modular headers for pod Yoga
+[Expo] Enabling modular headers for pod React-Fabric
+[Expo] Enabling modular headers for pod React-graphics
+[Expo] Enabling modular headers for pod React-utils
+[Expo] Enabling modular headers for pod React-featureflags
+[Expo] Enabling modular headers for pod React-debug
+[Expo] Enabling modular headers for pod React-ImageManager
+[Expo] Enabling modular headers for pod React-rendererdebug
+[Expo] Enabling modular headers for pod React-jsi
+[Expo] Enabling modular headers for pod React-renderercss
+[Expo] Enabling modular headers for pod hermes-engine
+[Expo] Enabling modular headers for pod glog
+[Expo] Enabling modular headers for pod boost
+[Expo] Enabling modular headers for pod DoubleConversion
+[Expo] Enabling modular headers for pod fast_float
+[Expo] Enabling modular headers for pod fmt
+[Expo] Enabling modular headers for pod RCT-Folly
+[Expo] Enabling modular headers for pod SocketRocket
+[Expo] Enabling modular headers for pod SDWebImage
+[Expo] Enabling modular headers for pod SDWebImageAVIFCoder
+[Expo] Enabling modular headers for pod SDWebImageSVGCoder
+[Expo] Enabling modular headers for pod SDWebImageWebPCoder
+[Expo] Enabling modular headers for pod libavif
+[Expo] Enabling modular headers for pod RNScreens
+[Expo-precompiled] RNReanimated: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/prebuild-pods/packages/precompile/.build/react-native-reanimated/output/4.5.1/0.86.2/250829098.0.16/debug/xcframeworks/RNReanimated.tar.gz
+[Expo-precompiled] react-native-safe-area-context: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/prebuild-pods/packages/precompile/.build/react-native-safe-area-context/output/5.7.0/0.86.2/250829098.0.16/debug/xcframeworks/RNCSafeAreaContext.tar.gz
+[Expo-precompiled] RNScreens: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/prebuild-pods/packages/precompile/.build/react-native-screens/output/4.26.2/0.86.2/250829098.0.16/debug/xcframeworks/RNScreens.tar.gz
+[Expo-precompiled] RNWorklets: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/prebuild-pods/packages/precompile/.build/react-native-worklets/output/0.10.1/0.86.2/250829098.0.16/debug/xcframeworks/RNWorklets.tar.gz
+[Expo-precompiled] RNCAsyncStorage: prebuilt xcframework unavailable; building from source
+[Expo-precompiled]   Expected tarball: /private/tmp/wave6-explain-scratch/prebuild-pods/packages/precompile/.build/@react-native-async-storage/async-storage/output/2.2.0/0.86.2/250829098.0.16/debug/xcframeworks/RNCAsyncStorage.tar.gz
+[RNScreens] Gamma project enabled. Including source files.
+Found 8 modules for target `notesapp`
+link_native_modules! {ios_packages: [{configurations: [], name: "@react-native-async-storage/async-storage", root: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/@react-native-async-storage/async-storage", path: "../node_modules/@react-native-async-storage/async-storage", podspec_path: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/@react-native-async-storage/async-storage/RNCAsyncStorage.podspec", script_phases: []}, {configurations: [], name: "@react-native-masked-view/masked-view", root: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/@react-native-masked-view/masked-view", path: "../node_modules/@react-native-masked-view/masked-view", podspec_path: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/@react-native-masked-view/masked-view/RNCMaskedView.podspec", script_phases: []}, {configurations: [], name: "expo", root: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/expo", path: "../node_modules/expo", podspec_path: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/expo/Expo.podspec", script_phases: []}, {configurations: [], name: "react-native-gesture-handler", root: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-gesture-handler", path: "../node_modules/react-native-gesture-handler", podspec_path: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-gesture-handler/RNGestureHandler.podspec", script_phases: []}, {configurations: [], name: "react-native-reanimated", root: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-reanimated", path: "../node_modules/react-native-reanimated", podspec_path: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-reanimated/RNReanimated.podspec", script_phases: []}, {configurations: [], name: "react-native-safe-area-context", root: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-safe-area-context", path: "../node_modules/react-native-safe-area-context", podspec_path: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-safe-area-context/react-native-safe-area-context.podspec", script_phases: []}, {configurations: [], name: "react-native-screens", root: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-screens", path: "../node_modules/react-native-screens", podspec_path: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-screens/RNScreens.podspec", script_phases: []}, {configurations: [], name: "react-native-worklets", root: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-worklets", path: "../node_modules/react-native-worklets", podspec_path: "/private/tmp/wave6-explain-scratch/prebuild-pods/node_modules/react-native-worklets/RNWorklets.podspec", script_phases: []}], ios_project_root_path: "/private/tmp/wave6-explain-scratch/prebuild-pods/ios", react_native_path: "../node_modules/react-native"}
+[RNScreens] Gamma project enabled. Including source files.
+Auto-linking React Native modules for target `notesapp`: RNCAsyncStorage, RNCMaskedView, RNGestureHandler, RNReanimated, RNScreens, RNWorklets, and react-native-safe-area-context
+Framework build type is static library
+[ReactNativeDependencies] Setting up ReactNativeDependencies...
+[ReactNativeDependencies] Building from source: false
+[ReactNativeDependencies] Using tarball from URL: https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-dependencies-debug.tar.gz
+[ReactNativeDependencies] Cache miss: downloading reactnative-dependencies-0.86.2-debug.tar.gz from https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-dependencies-debug.tar.gz
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0100 17.8M  100 17.8M    0     0  49.6M      0 --:--:-- --:--:-- --:--:-- 49.7M
+[ReactNativeDependencies] Verifying checksum for downloaded reactnative-dependencies-0.86.2-debug.tar.gz...
+[Cache] SHA1 verified for reactnative-dependencies-0.86.2-debug.tar.gz
+[ReactNativeDependencies] Saved reactnative-dependencies-0.86.2-debug.tar.gz to shared cache (/Users/expo/Library/Caches/ReactNative)
+[ReactNativeDependencies] Cache miss: downloading reactnative-dependencies-0.86.2-release.tar.gz from https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-dependencies-release.tar.gz
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 97  9.9M   97 9872k    0     0  35.6M      0 --:--:-- --:--:-- --:--:-- 35.5M100  9.9M  100  9.9M    0     0  30.9M      0 --:--:-- --:--:-- --:--:-- 30.8M
+[ReactNativeDependencies] Verifying checksum for downloaded reactnative-dependencies-0.86.2-release.tar.gz...
+[Cache] SHA1 verified for reactnative-dependencies-0.86.2-release.tar.gz
+[ReactNativeDependencies] Saved reactnative-dependencies-0.86.2-release.tar.gz to shared cache (/Users/expo/Library/Caches/ReactNative)
+[ReactNativeDependencies] Source: {http: "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-dependencies-debug.tar.gz"}
+[ReactNativeCore] Setting up ReactNativeCore...
+[ReactNativeCore] Building from source: false
+Configuring the target with the New Architecture
+[ReactNativeCore] Using React Native Core and React Native Dependencies prebuilt versions.
+[36m[1m[Codegen][0m Analyzing /private/tmp/wave6-explain-scratch/prebuild-pods/package.json[0m
+[36m[1m[Codegen][0m [33mSearching for codegen-enabled libraries in the app.[0m
+[36m[1m[Codegen][0m [33mThe "codegenConfig" field is not defined in package.json. Assuming there is nothing to generate at the app level.[0m
+[36m[1m[Codegen][0m [33mSearching for codegen-enabled libraries in react-native.config.js[0m
+[36m[1m[Codegen][0m Found @react-native-async-storage/async-storage[0m
+[36m[1m[Codegen][0m Found react-native-gesture-handler[0m
+[36m[1m[Codegen][0m Found react-native-reanimated[0m
+[36m[1m[Codegen][0m Found react-native-safe-area-context[0m
+[36m[1m[Codegen][0m Found react-native-screens[0m
+[36m[1m[Codegen][0m Found react-native-worklets[0m
+[36m[1m[Codegen][0m Processing rnasyncstorage[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for rnasyncstorage[0m
+[36m[1m[Codegen][0m Processing rngesturehandler_codegen[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for rngesturehandler_codegen[0m
+[36m[1m[Codegen][0m Processing rnreanimated[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for rnreanimated[0m
+[36m[1m[Codegen][0m Processing safeareacontext[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for safeareacontext[0m
+[36m[1m[Codegen][0m Processing rnscreens[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, tvos, visionos for rnscreens[0m
+[36m[1m[Codegen][0m Processing rnworklets[0m
+[36m[1m[Codegen][0m [33mSearching for podspec in the project dependencies.[0m
+[36m[1m[Codegen][0m Supported Apple platforms: ios, macos, tvos, visionos for rnworklets[0m
+[36m[1m[Codegen][0m Generating Native Code for rnasyncstorage - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for rngesturehandler_codegen - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for rnreanimated - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for safeareacontext - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for rnscreens - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating Native Code for rnworklets - ios[0m
+[36m[1m[Codegen][0m Generated artifacts: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen[0m
+[36m[1m[Codegen][0m Generating RCTThirdPartyComponentsProvider.h[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen/RCTThirdPartyComponentsProvider.h[0m
+[36m[1m[Codegen][0m Generating RCTThirdPartyComponentsProvider.mm[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen/RCTThirdPartyComponentsProvider.mm[0m
+[36m[1m[Codegen][0m Generating RCTModulesProvider.h[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen/RCTModuleProviders.h[0m
+[36m[1m[Codegen][0m Generating RCTModuleProviders.mm[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen/RCTModuleProviders.mm[0m
+[36m[1m[Codegen][0m Generating RCTAppDependencyProvider[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactAppDependencyProvider/RCTAppDependencyProvider.h[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactAppDependencyProvider/RCTAppDependencyProvider.mm[0m
+[36m[1m[Codegen][0m Generated podspec: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactAppDependencyProvider/ReactAppDependencyProvider.podspec[0m
+[36m[1m[Codegen][0m Generated podspec: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/ReactCodegen/ReactCodegen.podspec[0m
+[36m[1m[Codegen][0m Generating Package.swift[0m
+[36m[1m[Codegen][0m Generated artifact: /private/tmp/wave6-explain-scratch/prebuild-pods/ios/build/generated/ios/Package.swift[0m
+[36m[1m[Codegen][0m [33mDone.[0m
+Analyzing dependencies
+[Expo-precompiled] Bundled SPM frameworks: SDWebImage, SDWebImageAVIFCoder, SDWebImageSVGCoder, SDWebImageWebPCoder, libavif
+Fetching podspec for `ExpoFileSystem` from `../node_modules/expo-file-system/ios/ExpoFileSystem.podspec`
+Fetching podspec for `ExpoFont` from `../node_modules/expo-font/ios/ExpoFont.podspec`
+Fetching podspec for `ExpoImage` from `../node_modules/expo-image/ios/ExpoImage.podspec`
+[Expo-precompiled] Stripping bundled dependency 'SDWebImage' from ExpoImage
+[Expo-precompiled] Stripping bundled dependency 'SDWebImageAVIFCoder' from ExpoImage
+[Expo-precompiled] Stripping bundled dependency 'SDWebImageSVGCoder' from ExpoImage
+[Expo-precompiled] Stripping bundled dependency 'SDWebImageWebPCoder' from ExpoImage
+[Expo-precompiled] Stripping bundled dependency 'libavif/libdav1d' from ExpoImage
+Fetching podspec for `ExpoModulesCore` from `../node_modules/expo-modules-core/ExpoModulesCore.podspec`
+Fetching podspec for `ExpoModulesWorklets` from `../node_modules/expo-modules-core/ExpoModulesWorklets.podspec`
+[RNScreens] Gamma project enabled. Including source files.
+Fetching podspec for `React-Core-prebuilt` from `../node_modules/react-native/React-Core-prebuilt.podspec`
+[ReactNativeCore] Cache miss: downloading reactnative-core-0.86.2-debug.tar.gz from https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-core-debug.tar.gz
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 11 94.2M   11 10.8M    0     0  36.6M      0  0:00:02 --:--:--  0:00:02 36.5M 77 94.2M   77 73.1M    0     0  56.8M      0  0:00:01  0:00:01 --:--:-- 56.7M100 94.2M  100 94.2M    0     0  57.5M      0  0:00:01  0:00:01 --:--:-- 57.5M
+[ReactNativeCore] Verifying checksum for downloaded reactnative-core-0.86.2-debug.tar.gz...
+[Cache] SHA1 verified for reactnative-core-0.86.2-debug.tar.gz
+[ReactNativeCore] Saved reactnative-core-0.86.2-debug.tar.gz to shared cache (/Users/expo/Library/Caches/ReactNative)
+[ReactNativeCore] Cache miss: downloading reactnative-core-0.86.2-release.tar.gz from https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-core-release.tar.gz
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0 83 29.5M   83 24.6M    0     0  50.1M      0 --:--:-- --:--:-- --:--:-- 50.1M100 29.5M  100 29.5M    0     0  52.1M      0 --:--:-- --:--:-- --:--:-- 52.1M
+[ReactNativeCore] Verifying checksum for downloaded reactnative-core-0.86.2-release.tar.gz...
+[Cache] SHA1 verified for reactnative-core-0.86.2-release.tar.gz
+[ReactNativeCore] Saved reactnative-core-0.86.2-release.tar.gz to shared cache (/Users/expo/Library/Caches/ReactNative)
+[ReactNativeCore] Resolved stable ReactNativeCore-prebuilt version:
+[ReactNativeCore]   ../../ios/Pods/ReactNativeCore-artifacts/reactnative-core-0.86.2-debug.tar.gz
+[ReactNativeCore]   ../../ios/Pods/ReactNativeCore-artifacts/reactnative-core-0.86.2-release.tar.gz
+Fetching podspec for `ReactNativeDependencies` from `../node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`
+[ReactNativeDependencies] Using tarball from URL: https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.86.2/react-native-artifacts-0.86.2-reactnative-dependencies-debug.tar.gz
+[ReactNativeDependencies] Tarball reactnative-dependencies-0.86.2-debug.tar.gz already exists in Pods. Skipping download.
+[ReactNativeDependencies] Tarball reactnative-dependencies-0.86.2-release.tar.gz already exists in Pods. Skipping download.
+Fetching podspec for `hermes-engine` from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`
+[Hermes] Using release tarball from URL: https://repo1.maven.org/maven2/com/facebook/hermes/hermes-ios/250829098.0.16/hermes-ios-250829098.0.16-hermes-ios-debug.tar.gz
+[Hermes] Verifying checksum for cached hermes-ios-250829098.0.16-debug.tar.gz...
+[Hermes] SHA1 verified for hermes-ios-250829098.0.16-debug.tar.gz
+[Hermes] Cache hit: copying hermes-ios-250829098.0.16-debug.tar.gz from shared cache (/Users/expo/Library/Caches/ReactNative)
+[Hermes] Verifying checksum for cached hermes-ios-250829098.0.16-release.tar.gz...
+[Hermes] SHA1 verified for hermes-ios-250829098.0.16-release.tar.gz
+[Hermes] Cache hit: copying hermes-ios-250829098.0.16-release.tar.gz from shared cache (/Users/expo/Library/Caches/ReactNative)
+[!] Unable to find a specification for `NonexistentExpoPodXyz123`
+
+You have either:
+ * out-of-date source repos which you can update with `pod repo update` or with `pod install --repo-update`.
+ * mistyped the name or version.
+ * not added the source repo that hosts the Podspec to your Podfile.

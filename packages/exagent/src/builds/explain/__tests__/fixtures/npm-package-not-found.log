@@ -1,0 +1,8 @@
+npm error code E404
+npm error 404 Not Found - GET https://registry.npmjs.org/nonexistent-package-xyz-123 - Not found
+npm error 404
+npm error 404  The requested resource 'nonexistent-package-xyz-123@*' could not be found or you do not have permission to access it.
+npm error 404
+npm error 404 Note that you can also install from a
+npm error 404 tarball, folder, http url, or git url.
+npm error A complete log of this run can be found in: /Users/expo/.npm/_logs/2026-08-24T07_52_44_515Z-debug-0.log

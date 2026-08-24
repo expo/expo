@@ -1,0 +1,17 @@
+> Task :app:preBuild UP-TO-DATE
+> Task :app:generateReleaseResValues
+> Task :app:processReleaseMainManifest
+> Task :app:checkReleaseDuplicateClasses FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:checkReleaseDuplicateClasses'.
+> A failure occurred while executing com.android.build.gradle.internal.tasks.CheckDuplicatesRunnable
+   > Duplicate class kotlin.collections.jdk8.CollectionsJDK8Kt found in modules kotlin-stdlib-1.9.24.jar and kotlin-stdlib-jdk8-1.8.22.jar
+     Duplicate class kotlin.internal.jdk8.JDK8PlatformImplementations found in modules kotlin-stdlib-1.9.24.jar and kotlin-stdlib-jdk8-1.8.22.jar
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+
+BUILD FAILED in 1m 47s
