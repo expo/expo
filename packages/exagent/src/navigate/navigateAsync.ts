@@ -17,7 +17,7 @@ import {
   listDependencyNames,
   readProjectPackageJsonAsync,
 } from '../project/nodeModules';
-import { probeDevServerAsync } from '../runtime/devServer';
+import { discoverDevServerAsync, type DevServerSource } from '../runtime/devServer';
 import { CommandError } from '../utils/errors';
 import { openUrlOnDeviceAsync, readProjectSchemeConfig, resolveDeepLinkUrl } from './deepLink';
 import { resolveDeviceAsync } from './device';
@@ -37,6 +37,16 @@ export interface NavigateResultJson {
   route: string;
   /** URL that was opened on the device. */
   url: string;
+  /** Dev server the URL was built from, whether named with `--dev-server-url` or discovered. */
+  devServerUrl: string;
+  /**
+   * Which step produced {@link devServerUrl}: `flag`, `lock`, `log`, `default` or `scan`.
+   *
+   * Reported for the same reason `status` and `dev:wait` report it: `flag` and `lock` name a dev
+   * server on purpose, and `default` or `scan` only found one that answered — which on a machine
+   * running two projects may not be this one's.
+   */
+  devServerSource: DevServerSource;
   /** How the URL was derived, matching the line under `URL` in the human summary. */
   resolution: string;
   /** Why the target app was decided to be Expo Go or a development build. */
@@ -64,20 +74,26 @@ export interface NavigateResultJson {
  * shape the app understands. It is not required: a development build with a known scheme is
  * reachable without one.
  *
+ * The dev server is *found* the same way every other runtime-facing command finds it — the
+ * project's lock, then its start log, then a port scan — and not assumed to be on 8081. This
+ * command drives a device, so a wrong dev server does not produce a wrong reading: it loads
+ * another project's app onto the user's simulator and reports success.
+ *
  * @returns the exit code: non-zero when the device refused the deep link.
  */
 export async function navigateAsync(
   projectRoot: string,
   options: NavigateOptions
 ): Promise<number> {
-  const { route, devServerUrl, platform, scheme, appId, json, followups: wantFollowUps } = options;
+  const { route, platform, scheme, appId, json, followups: wantFollowUps } = options;
 
   const [devServer, config, nativeDirs, packageJson] = await Promise.all([
-    probeDevServerAsync(devServerUrl),
+    discoverDevServerAsync(options.devServerUrl ?? undefined, { projectRoot }),
     Promise.resolve(readProjectSchemeConfig(projectRoot)),
     readProjectNativeDirsAsync(projectRoot),
     readProjectPackageJsonAsync(projectRoot),
   ]);
+  const devServerUrl = devServer.devServerUrl;
   const usesDevClient = await isInstalledDependencyAsync(
     projectRoot,
     listDependencyNames(packageJson),
@@ -117,6 +133,8 @@ export async function navigateAsync(
   event('navigate', {
     route,
     url: resolved.url,
+    devServerUrl,
+    devServerSource: devServer.source,
     platform: device.platform,
     deviceId: device.deviceId,
     exitCode: result.exitCode,
@@ -134,6 +152,8 @@ export async function navigateAsync(
     const report: NavigateResultJson = {
       route,
       url: resolved.url,
+      devServerUrl,
+      devServerSource: devServer.source,
       resolution: resolved.resolution,
       target: target.reason,
       platform: device.platform,
@@ -153,6 +173,7 @@ export async function navigateAsync(
         chalk`{bold URL} ${resolved.url}`,
         chalk`{dim  ${resolved.resolution}}`,
         chalk`{dim  target: ${target.reason}}`,
+        chalk`{bold Dev server} ${devServerUrl}{dim  · via ${devServer.source}}`,
         chalk`{bold Device} ${device.platform} ${deviceLabel}`,
         chalk`{dim  ${result.command}}`,
       ].join('\n')

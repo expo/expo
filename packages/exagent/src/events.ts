@@ -193,6 +193,10 @@ declare module '2g' {
     'cli:navigate': {
       route: string;
       url: string;
+      /** Dev server the URL was built from. */
+      devServerUrl: string;
+      /** Which discovery step produced it: `flag`, `lock`, `log`, `default` or `scan`. */
+      devServerSource: string;
       platform: string;
       deviceId: string;
       exitCode: number | null;
