@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed a data race on the video cache's open-file registry, which could crash the app while the cache was being trimmed. ([#49286](https://github.com/expo/expo/pull/49286) by [@huextrat](https://github.com/huextrat))
+- [iOS] Fixed a crash when the device runs out of storage while writing to the video cache. `FileHandle.writeData:` raises an uncatchable Objective-C `NSFileHandleOperationException` on `ENOSPC`; the throwing Swift APIs are now used so the error is caught and logged instead. ([#49284](https://github.com/expo/expo/pull/49284) by [@huextrat](https://github.com/huextrat))
 - [Android] Guard `PictureInPictureParams.Builder.setAutoEnterEnabled` against `NoSuchMethodError` on stock OEM firmwares that report API 31+ without shipping the method, which crashed the app from `VideoView.onLayout` even when Picture in Picture was disabled. ([#48957](https://github.com/expo/expo/pull/48957) by [@onlyshyun](https://github.com/onlyshyun))
 - [iOS] Fix races between overlapping source loads and player release. ([#47967](https://github.com/expo/expo/pull/47967) by [@behenate](https://github.com/behenate))
 - [iOS] Set the default `audioMixingMode` to `auto`, [as documented](https://docs.expo.dev/versions/latest/sdk/video/#audiomixingmode); was `doNotMix`. ([#47363](https://github.com/expo/expo/issues/47363) by [@andymatuschak](https://github.com/andymatuschak))
