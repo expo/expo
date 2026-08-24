@@ -39,6 +39,57 @@ describe('exagent install', () => {
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('install');
     expect(result.all).toContain('--no-agent-skills');
+    // The two flags the help used to leave out, while the errors named them.
+    expect(result.all).toContain('--check');
+    expect(result.all).toContain('--json');
+  });
+
+  // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
+  // The one common agent action that had no machine-readable result: `--json` was rejected by
+  // `expo install` and the wrapper's own report existed only as prose.
+  describe('--json', () => {
+    it('prints one object with a stable key set, and nothing else', async () => {
+      const result = await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--json']);
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      expect(Object.keys(report).sort()).toEqual([
+        'check',
+        'checkpoint',
+        'exitCode',
+        'followups',
+        'impact',
+        'installed',
+        'packages',
+        'projectRoot',
+        'skillPackages',
+      ]);
+      expect(report).toMatchObject({ packages: ['expo-camera'], installed: true, exitCode: 0 });
+      // `--json` is this wrapper's flag now, so the Expo CLI — which rejects it — never sees it.
+      expect(readStubExpoInvocations(projectRoot)[0]?.args).toEqual(['install', 'expo-camera']);
+    });
+
+    it('carries the impact classification the human output prints', async () => {
+      const result = await executeExagentAsync(projectRoot, [
+        'install',
+        'fake-module-plain',
+        '--json',
+      ]);
+
+      expect(JSON.parse(result.stdout).impact).toEqual([
+        expect.objectContaining({ packageName: 'fake-module-plain', action: expect.any(String) }),
+      ]);
+    });
+
+    it('prints one object for a failed install too, with the exit code forwarded', async () => {
+      const result = await executeExagentAsync(projectRoot, ['install', 'expo-camera', '--json'], {
+        env: { STUB_EXPO_EXIT_CODE: '42' },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(42);
+      expect(JSON.parse(result.stdout)).toMatchObject({ installed: false, exitCode: 42 });
+    });
   });
 
   it('forwards the packages to the expo CLI', async () => {

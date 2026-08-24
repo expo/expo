@@ -27,12 +27,16 @@ const ACTION_LABELS: Record<InstallImpactReport['action'], string> = {
  * Best-effort: an install that succeeded must not fail because its impact could not be
  * classified, so nothing here throws and the exit code is untouched.
  *
+ * @param silent The caller owns stdout, e.g. it prints one JSON object (`--json`), so the lines
+ * are left out. The event and the returned classifications are unchanged — the report travels in
+ * that object instead.
  * @returns the classifications, which the follow-up builder reads (llp/0009), or an empty list
  * when there was nothing to classify or the classification failed.
  */
 export async function reportInstallImpactAsync(
   projectRoot: string,
-  packageNames: string[]
+  packageNames: string[],
+  { silent }: { silent?: boolean } = {}
 ): Promise<InstallImpactReport[]> {
   try {
     const reports = await classifyInstallImpactAsync(projectRoot, packageNames);
@@ -42,6 +46,10 @@ export async function reportInstallImpactAsync(
 
     // Agents read the event; the printed lines are for the developer watching the install.
     event('impact', { packages: packageNames, reports });
+
+    if (silent) {
+      return reports;
+    }
 
     Log.log(chalk.bold('Install impact:'));
     for (const report of reports) {
@@ -54,7 +62,9 @@ export async function reportInstallImpactAsync(
     }
     return reports;
   } catch (error: any) {
-    Log.warn(`Skipping the install impact report: ${error.message}`);
+    if (!silent) {
+      Log.warn(`Skipping the install impact report: ${error.message}`);
+    }
     return [];
   }
 }

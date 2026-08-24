@@ -23,6 +23,8 @@ export const exagentInstall: Command = async (argv) => {
       `Install packages with the Expo CLI and link the skills they ship`,
       chalk`npx exagent install {dim [package...]}`,
       [
+        `--check             Report which installed packages are out of date, and install nothing`,
+        `--json              Print the result as JSON`,
         `--no-agent-skills   Skip linking agent skills from the installed packages`,
         `--no-skill-context  Skip printing installed skills for a detected coding agent`,
         `--no-impact         Skip the report of what must rerun after the install`,
@@ -32,13 +34,22 @@ export const exagentInstall: Command = async (argv) => {
       ].join('\n'),
       [
         '',
-        chalk`  All other arguments are passed to {bold expo install} in the project.`,
+        chalk`  The {bold expo install} flags are passed to the project's Expo CLI:`,
+        chalk`  {bold --check}, {bold --dev}, {bold --fix}, {bold --npm}, {bold --pnpm}, {bold --yarn}, {bold --bun}.`,
         chalk`    {dim $} npx exagent install expo-sqlite --dev`,
         chalk`    {dim >} expo install expo-sqlite --dev`,
         '',
+        chalk`  Anything after a {bold --} separator goes to the package manager untouched.`,
+        chalk`    {dim $} npx exagent install react {bold --} --verbose`,
+        '',
+        chalk`  {bold --json} prints one object: the packages, whether they were installed, the`,
+        chalk`  impact classification, the checkpoint that was taken, which packages ship agent`,
+        chalk`  skills, and the follow-ups. With {bold --check} it also carries the Expo CLI's own`,
+        chalk`  report under {bold check}. Nothing else is written to stdout in that mode.`,
+        '',
         chalk`  {bold npx exagent add} is the same command, because {bold expo add} is {bold expo install}.`,
         '',
-        chalk`  Run {bold npx expo install --help} for the arguments the Expo CLI accepts.`,
+        chalk`  Run {bold npx expo install --help} for what those forwarded arguments do.`,
         '',
       ].join('\n')
     );

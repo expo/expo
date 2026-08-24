@@ -6,14 +6,14 @@ import {
   listSkillPackagesAsync,
   printSkillsForAgentAsync,
 } from '../../skills/skillsAsync';
-import { runExpoAsync } from '../../utils/expoCli';
+import { runExpoAsync, spawnExpoAsync } from '../../utils/expoCli';
 import { reportInstallImpactAsync } from '../impactReport';
 import { installAsync } from '../installAsync';
 import { resolveInstallPlan } from '../resolveOptions';
 
 jest.mock('../../log');
 jest.mock('../../checkpoint/integration', () => ({ checkpointBeforeAsync: jest.fn() }));
-jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
+jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn(), spawnExpoAsync: jest.fn() }));
 jest.mock('../impactReport', () => ({ reportInstallImpactAsync: jest.fn() }));
 jest.mock('../../skills/skillsAsync', () => ({
   autoSyncSkillsAsync: jest.fn(),
@@ -40,7 +40,19 @@ function printed(): string {
 }
 
 beforeEach(() => {
+  // `clearMocks` empties the call log but keeps implementations, so every mock whose *answer*
+  // matters is given its default back here — otherwise one test's checkpoint leaks into the next.
+  jest.mocked(checkpointBeforeAsync).mockResolvedValue({
+    record: null,
+    files: 0,
+    skipped: 'not-a-git-repo',
+    detail: '',
+  });
   jest.mocked(runExpoAsync).mockResolvedValue(0);
+  jest.mocked(spawnExpoAsync).mockResolvedValue({
+    cli: { command: 'expo', args: [] },
+    result: { exitCode: 0, stdout: '', stderr: '' },
+  });
   jest.mocked(reportInstallImpactAsync).mockResolvedValue([report()]);
   jest.mocked(listSkillPackagesAsync).mockResolvedValue([]);
 });
@@ -62,6 +74,7 @@ describe(installAsync, () => {
     expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
       label: 'exagent install',
       enabled: true,
+      silent: false,
     });
     expect(order).toEqual(['checkpoint', 'install']);
   });
@@ -72,6 +85,7 @@ describe(installAsync, () => {
     expect(checkpointBeforeAsync).toHaveBeenCalledWith(projectRoot, {
       label: 'exagent install',
       enabled: false,
+      silent: false,
     });
   });
 
@@ -86,6 +100,7 @@ describe(installAsync, () => {
 
     expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot, {
       packages: ['expo-sqlite', '@expo/ui@~1.0.0'],
+      silent: false,
     });
     expect(printSkillsForAgentAsync).toHaveBeenCalledWith(projectRoot, {
       packages: ['expo-sqlite', '@expo/ui@~1.0.0'],
@@ -95,7 +110,7 @@ describe(installAsync, () => {
   it(`should run a full sync when no package is named`, async () => {
     await installAsync(projectRoot, resolveInstallPlan(['--fix']));
 
-    expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot, {});
+    expect(autoSyncSkillsAsync).toHaveBeenCalledWith(projectRoot, { silent: false });
     expect(printSkillsForAgentAsync).not.toHaveBeenCalled();
   });
 
@@ -124,13 +139,17 @@ describe(installAsync, () => {
   it(`should report the impact of the installed packages`, async () => {
     await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
 
-    expect(reportInstallImpactAsync).toHaveBeenCalledWith(projectRoot, ['expo-sqlite']);
+    expect(reportInstallImpactAsync).toHaveBeenCalledWith(projectRoot, ['expo-sqlite'], {
+      silent: false,
+    });
   });
 
   it(`should report the impact even when the skill sync is off`, async () => {
     await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--no-agent-skills']));
 
-    expect(reportInstallImpactAsync).toHaveBeenCalledWith(projectRoot, ['expo-sqlite']);
+    expect(reportInstallImpactAsync).toHaveBeenCalledWith(projectRoot, ['expo-sqlite'], {
+      silent: false,
+    });
     expect(autoSyncSkillsAsync).not.toHaveBeenCalled();
   });
 
@@ -216,6 +235,107 @@ describe(installAsync, () => {
       await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
 
       expect(printed()).not.toContain('Suggested next:');
+    });
+  });
+
+  // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract
+  // The one machine-readable answer this command never had. Everything the human output knows
+  // travels in it, and nothing else reaches stdout.
+  describe('--json', () => {
+    /** The one object the command printed on stdout. */
+    function payload(): any {
+      const calls = jest.mocked(Log.log).mock.calls;
+      expect(calls).toHaveLength(1);
+      return JSON.parse(calls[0]![0]!);
+    }
+
+    it(`should print one object carrying what the human output knows`, async () => {
+      jest.mocked(checkpointBeforeAsync).mockResolvedValue({
+        record: { id: 'abc123', label: 'exagent install', createdAt: '', argv: [], path: '' },
+        files: 55,
+        skipped: null,
+        detail: '',
+      });
+      jest.mocked(listSkillPackagesAsync).mockResolvedValue(['@expo/ui']);
+
+      await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--json']));
+
+      expect(payload()).toEqual({
+        projectRoot,
+        packages: ['expo-sqlite'],
+        installed: true,
+        exitCode: 0,
+        impact: [report()],
+        checkpoint: { id: 'abc123', files: 55 },
+        skillPackages: ['@expo/ui'],
+        check: null,
+        followups: expect.any(Array),
+      });
+    });
+
+    it(`should keep every other line off stdout`, async () => {
+      await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--json']));
+
+      // The checkpoint line, the impact table and the skill sync notice each stay away by asking
+      // the thing that prints them not to.
+      expect(checkpointBeforeAsync).toHaveBeenCalledWith(
+        projectRoot,
+        expect.objectContaining({ silent: true })
+      );
+      expect(reportInstallImpactAsync).toHaveBeenCalledWith(projectRoot, ['expo-sqlite'], {
+        silent: true,
+      });
+      expect(autoSyncSkillsAsync).toHaveBeenCalledWith(
+        projectRoot,
+        expect.objectContaining({ silent: true })
+      );
+      expect(printSkillsForAgentAsync).not.toHaveBeenCalled();
+      expect(printed()).not.toContain('Suggested next:');
+    });
+
+    it(`should capture the subprocess instead of letting it write into the object`, async () => {
+      jest.mocked(spawnExpoAsync).mockResolvedValue({
+        cli: { command: 'expo', args: [] },
+        result: { exitCode: 0, stdout: 'added 3 packages\n', stderr: '' },
+      });
+
+      await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite', '--json']));
+
+      expect(runExpoAsync).not.toHaveBeenCalled();
+      expect(spawnExpoAsync).toHaveBeenCalledWith(projectRoot, ['install', 'expo-sqlite'], {
+        output: 'capture',
+      });
+      // What the tool printed is a person's answer, so it goes where nothing is parsing.
+      expect(jest.mocked(Log.error).mock.calls.flat().join('\n')).toContain('added 3 packages');
+      expect(payload().installed).toBe(true);
+    });
+
+    it(`should print one object for a failed install too`, async () => {
+      jest.mocked(spawnExpoAsync).mockResolvedValue({
+        cli: { command: 'expo', args: [] },
+        result: { exitCode: 4, stdout: '', stderr: 'no such package\n' },
+      });
+
+      await expect(
+        installAsync(projectRoot, resolveInstallPlan(['nope', '--json']))
+      ).resolves.toBe(4);
+      expect(payload()).toMatchObject({ installed: false, exitCode: 4, impact: [] });
+    });
+
+    // The `--check` report belongs to the Expo CLI, so it is carried rather than restated.
+    it(`should carry the Expo CLI's own report for a --check run`, async () => {
+      jest.mocked(spawnExpoAsync).mockResolvedValue({
+        cli: { command: 'expo', args: [] },
+        result: { exitCode: 0, stdout: '{"dependencies":[],"upToDate":true}\n', stderr: '' },
+      });
+
+      await installAsync(projectRoot, resolveInstallPlan(['--check', '--json']));
+
+      expect(payload()).toMatchObject({
+        installed: false,
+        check: { dependencies: [], upToDate: true },
+        checkpoint: null,
+      });
     });
   });
 });
