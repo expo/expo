@@ -24,13 +24,21 @@ class ExpoImageView(
   var isPlaceholder: Boolean = false
 
   fun recycleView(): ImageViewWrapperTarget? {
-    setImageDrawable(null)
-
     val target = currentTarget?.apply {
       isUsed = false
     }
-
+    // Cleared before the animation is cancelled, so the cancellation callback of a transition
+    // still running on this view sees that the view no longer holds that target and skips its
+    // cleanup instead of re-entering this method.
     currentTarget = null
+
+    // A view can be recycled midway through a fade. Without this the view keeps animating towards
+    // an alpha it no longer wants, and can be left partially or fully transparent once it is bound
+    // to its next image.
+    animate().cancel()
+    alpha = 1f
+    setImageDrawable(null)
+
     isVisible = false
     isPlaceholder = false
 
