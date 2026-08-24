@@ -217,6 +217,40 @@ declare module '2g' {
       exitCode: number | null;
     };
     /**
+     * The plan one `exagent doctor:fix` run built, emitted before anything is applied.
+     *
+     * Ids and counts only: the targets are absolute paths on the user's machine, and the plan is
+     * printed in full on the command's own output where the caller asked for it.
+     *
+     * @see llp/0013-doctor-fix.rfc.md
+     */
+    'cli:doctor_fix_plan': {
+      tier: 'safe' | 'moderate' | 'aggressive';
+      /** Whether the steps ran. `false` is a dry run, which is the default. */
+      applied: boolean;
+      /** Step ids, in the order they would run. */
+      steps: string[];
+      /** Ids of the steps this project does not have, or that the run did not opt into. */
+      skipped: string[];
+      /** Whether `--allow-machine-wide` was passed. */
+      allowMachineWide: boolean;
+      platforms: string[];
+    };
+    /**
+     * One step of an applied `doctor:fix` plan, emitted as it finishes.
+     *
+     * @see llp/0013-doctor-fix.rfc.md
+     */
+    'cli:doctor_fix_step': {
+      id: string;
+      kind: string;
+      scope: 'project' | 'machine';
+      status: 'done' | 'failed' | 'skipped';
+      /** How many paths the step deleted. */
+      targets: number;
+      durationMs: number;
+    };
+    /**
      * One `exagent typecheck` run. Counts only: a diagnostic quotes the project's own identifiers
      * and types, which is not something to put on a telemetry stream.
      */
