@@ -25,7 +25,7 @@
 - [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
 - [Android] Register the embedded update in a single transaction. An interrupted registration previously left an update row with no launch asset, which is treated as launchable and then fails every cold start with "Launch asset not found for update"; it now leaves no row, so the next launch registers it cleanly. ([#49130](https://github.com/expo/expo/pull/49130) by [@gwdp](https://github.com/gwdp))
 - [Android] Apply `reactNativeArchitectures` as a CMake ABI filter so single-ABI builds no longer compile the native code for unused ABIs. ([#49299](https://github.com/expo/expo/pull/49299) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Harden the embedded-asset copy when `EX_UPDATES_COPY_EMBEDDED_ASSETS` is enabled: stage the copy through a temp sibling and rename it into place, and size-check a cached embedded launch asset against its app-binary source, so an interrupted copy can neither strand a truncated bundle at the launch path nor survive being read there. ([#PRNUM](https://github.com/expo/expo/pull/PRNUM) by [@spsaucier](https://github.com/spsaucier))
+- [iOS] Harden the embedded-asset copy when `EX_UPDATES_COPY_EMBEDDED_ASSETS` is enabled: stage the copy through a temp sibling and rename it into place, and size-check a cached embedded launch asset against its app-binary source, so an interrupted copy can neither strand a truncated bundle at the launch path nor survive being read there. ([#49310](https://github.com/expo/expo/pull/49310) by [@spsaucier](https://github.com/spsaucier))
 
 ### 💡 Others
 
