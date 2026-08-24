@@ -1,19 +1,32 @@
 import { applyRedirects } from '../../getRoutesRedirects';
+import { getStateFromPath } from '../../link/linking';
+import type { SingularOptions } from '../../useScreens';
 import { getNavigateAction as getNavigateActionImplementation } from '../getNavigationAction';
 import { defaultRouteInfo } from '../getRouteInfoFromState';
+import type { UrlObject } from '../getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
 import { store } from '../store';
+import type { LinkToOptions } from '../types';
 
-const getNavigateAction = (...args: any[]) =>
-  getNavigateActionImplementation(
-    args[0],
-    args[1],
-    args[2] ?? 'NAVIGATE',
-    args[3],
-    args[4],
-    args[5],
-    args[6] ?? defaultRouteInfo
+function getNavigateAction(
+  baseHref: string,
+  options: LinkToOptions,
+  type = 'NAVIGATE',
+  withAnchor?: boolean,
+  singular?: SingularOptions,
+  isPreviewNavigation?: boolean,
+  routeInfo: Pick<UrlObject, 'segments' | 'params'> = defaultRouteInfo
+) {
+  return getNavigateActionImplementation(
+    baseHref,
+    options,
+    type,
+    withAnchor,
+    singular,
+    isPreviewNavigation,
+    routeInfo
   );
+}
 
 jest.mock('../store', () => ({
   store: {
@@ -37,7 +50,6 @@ jest.mock('../store', () => ({
     },
     state: undefined as any,
     linking: {
-      getStateFromPath: jest.fn(),
       config: {},
     },
     getRouteInfo: jest.fn(() => ({
@@ -62,14 +74,19 @@ jest.mock('../../link/href', () => ({
   resolveHrefStringWithSegments: jest.fn((href: string) => href),
 }));
 
+jest.mock('../../link/linking', () => ({
+  getStateFromPath: jest.fn(),
+}));
+
 const mockFindDivergentState = findDivergentState as jest.MockedFunction<typeof findDivergentState>;
 const mockGetPayload = getPayloadFromStateRoute as jest.MockedFunction<
   typeof getPayloadFromStateRoute
 >;
 const mockApplyRedirects = applyRedirects as jest.MockedFunction<typeof applyRedirects>;
+const mockGetStateFromPath = getStateFromPath as jest.MockedFunction<typeof getStateFromPath>;
 
 function setupDefaultMocks() {
-  (store.linking!.getStateFromPath as jest.Mock).mockReturnValue({
+  mockGetStateFromPath.mockReturnValue({
     routes: [{ name: 'home' }],
   });
 
@@ -144,7 +161,7 @@ describe(getNavigateAction, () => {
   });
 
   it('logs error and returns undefined when getStateFromPath returns null', () => {
-    (store.linking!.getStateFromPath as jest.Mock).mockReturnValueOnce(null);
+    mockGetStateFromPath.mockReturnValueOnce(null as any);
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
     const result = getNavigateAction('/bad-path', {});
@@ -157,7 +174,7 @@ describe(getNavigateAction, () => {
   });
 
   it('logs error and returns undefined when getStateFromPath returns empty routes', () => {
-    (store.linking!.getStateFromPath as jest.Mock).mockReturnValueOnce({
+    mockGetStateFromPath.mockReturnValueOnce({
       routes: [],
     });
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -174,7 +191,7 @@ describe(getNavigateAction, () => {
   it('returns action with type NAVIGATE by default', () => {
     const result = getNavigateAction('/home', {});
 
-    expect(store.linking!.getStateFromPath).toHaveBeenCalledWith('/home', {}, []);
+    expect(mockGetStateFromPath).toHaveBeenCalledWith('/home', {}, []);
 
     expect(result).toEqual(
       expect.objectContaining({
@@ -200,7 +217,7 @@ describe(getNavigateAction, () => {
 
     getNavigateAction('/home', {}, 'NAVIGATE', undefined, undefined, false, routeInfo);
 
-    expect(store.linking!.getStateFromPath).toHaveBeenCalledWith('/home', {}, ['current']);
+    expect(mockGetStateFromPath).toHaveBeenCalledWith('/home', {}, ['current']);
   });
 
   it('preserves PUSH when target navigator is tab', () => {

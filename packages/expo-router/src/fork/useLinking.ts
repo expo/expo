@@ -83,9 +83,7 @@ export const series = (cb: () => Promise<void>) => {
 
 const linkingHandlers: symbol[] = [];
 
-type Options = Omit<LinkingOptions<ParamListBase>, 'getStateFromPath'> & {
-  getStateFromPath?: typeof getExpoStateFromPath;
-};
+type Options = LinkingOptions<ParamListBase>;
 
 export function useLinking(
   ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
@@ -94,8 +92,7 @@ export function useLinking(
 ) {
   const enabled = options !== undefined;
   const config = options?.config;
-  const getStateFromPath: typeof getExpoStateFromPath =
-    options?.getStateFromPath ?? ((path, options) => getStateFromPathDefault(path, options));
+  const getStateFromPath = options?.getStateFromPath ?? getExpoStateFromPath;
   const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const store = useExpoRouterStore();
@@ -208,8 +205,9 @@ export function useLinking(
     };
 
     return thenable as PromiseLike<ResultState | undefined>;
+    // NavigationContainer consumes this callback only once through useThenable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getStateFromPathForCurrentSegments, onUnhandledLinking, server]);
+  }, []);
 
   const previousIndexRef = useRef<number | undefined>(undefined);
   const previousStateRef = useRef<NavigationState | undefined>(undefined);
