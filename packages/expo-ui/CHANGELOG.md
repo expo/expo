@@ -24,6 +24,7 @@
 - [universal] Added a `contentPadding` prop to `BottomSheet`, so sheet content can reach the sheet's edges instead of always sitting inside a hardcoded 16-unit inset. ([#48902](https://github.com/expo/expo/issues/48902) by [@kilarsky](https://github.com/kilarsky))
 - [android] Add `shouldDismissOnClickOutside` and `scrimColor` props to the universal `BottomSheet` component, forwarding them to `ModalBottomSheet` via `properties.shouldDismissOnClickOutside` and `scrimColor`. ([#48986](https://github.com/expo/expo/pull/48986) by [@webdevsamran](https://github.com/webdevsamran))
 - [android] Added the `amplitude`, `wavelength` and `waveSpeed` props to `LinearWavyProgressIndicator` and `CircularWavyProgressIndicator`, so the Material 3 wave can be configured instead of always using the Compose defaults. (by [@felipe-software](https://github.com/felipe-software))
+- [android] Added the Jetpack Compose `VerticalSlider` component with support for reversed direction and custom thumb and track slots. (by [@felipe-software](https://github.com/felipe-software))
 
 ### 🐛 Bug fixes
 

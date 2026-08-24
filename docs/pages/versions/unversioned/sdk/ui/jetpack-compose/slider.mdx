@@ -56,6 +56,31 @@ export default function BasicSliderExample() {
 
 </ComponentExample>
 
+### Vertical slider
+
+Use `VerticalSlider` to select a single value along a vertical track. Set `reverseDirection` to make values increase from bottom to top instead of top to bottom.
+
+```tsx
+import { useState } from 'react';
+import { Host, VerticalSlider } from '@expo/ui/jetpack-compose';
+import { height } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function VerticalSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Host matchContents>
+      <VerticalSlider
+        value={value}
+        reverseDirection
+        onValueChange={setValue}
+        modifiers={[height(240)]}
+      />
+    </Host>
+  );
+}
+```
+
 ### Slider with custom range
 
 Use the `min` and `max` props to define the slider's value range.
@@ -236,10 +261,15 @@ export default function FullyCustomSliderExample() {
 ## API
 
 ```tsx
-import { Slider } from '@expo/ui/jetpack-compose';
+import { Slider, VerticalSlider } from '@expo/ui/jetpack-compose';
 ```
 
 <APISection
   packageName="expo-ui/jetpack-compose/slider"
   apiName="Slider"
+/>
+
+<APISection
+  packageName="expo-ui/jetpack-compose/slider"
+  apiName="VerticalSlider"
 />
