@@ -94,7 +94,10 @@ export function buildEffectiveConfig(options: BuildEffectiveConfigOptions): Effe
 
   return {
     projectRoot: options.projectRoot,
-    sdkVersion: typeof options.config.sdkVersion === 'string' ? options.config.sdkVersion : null,
+    // Named for what it is — the SDK the *config* names — because `status` already reports the
+    // version of the installed `expo` package under `sdkVersion`. See `EffectiveConfigReport`.
+    configuredSdkVersion:
+      typeof options.config.sdkVersion === 'string' ? options.config.sdkVersion : null,
     source: { command: options.command, durationMs: options.durationMs },
     platforms: selectPlatforms(modResults, options.platform, options.file),
     plugins: joinPlugins(internal.pluginHistory, options.declaredPluginIds),

@@ -34,7 +34,17 @@ export type PlatformMods = { [mod: string]: unknown };
 /** The whole answer of `config:effective`, minus the follow-ups the command attaches. */
 export interface EffectiveConfigReport {
   projectRoot: string;
-  sdkVersion: string | null;
+  /**
+   * The `sdkVersion` the **evaluated app config** resolves to, e.g. `57.0.0`.
+   *
+   * Deliberately not called `sdkVersion`: `exagent status` reports a field of that name, and it is
+   * the version of the **installed `expo` package** — `57.0.15` where this reads `57.0.0`. Both are
+   * right and they answer different questions, so they cannot share one name. This is the SDK line
+   * the config targets and the plugins compiled against; `status.project.sdkVersion` is the code
+   * that is actually on disk. A project whose `expo` package has drifted from the SDK its config
+   * names shows the difference here.
+   */
+  configuredSdkVersion: string | null;
   /** How the answer was obtained, so a reader can run the same command by hand. */
   source: {
     /** The argv of the subprocess, without the resolved executable path. */

@@ -161,7 +161,13 @@ declare module '2g' {
      * @see llp/0006-agent-native-cli-surface.rfc.md §Output contract
      */
     'cli:config_effective': {
-      sdkVersion: string | null;
+      /**
+       * The SDK the evaluated app config resolves to, e.g. `57.0.0`.
+       *
+       * Not `sdkVersion`: `cli:status` carries a field of that name and it is the version of the
+       * installed `expo` package. See `EffectiveConfigReport.configuredSdkVersion`.
+       */
+      configuredSdkVersion: string | null;
       /** Platforms the report covers, e.g. `["ios", "android"]`. */
       platforms: string[];
       /** Mods introspected per platform, e.g. `{ ios: 5, android: 6 }`. */

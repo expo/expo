@@ -19,6 +19,14 @@ export interface ProjectStatus {
   root: string;
   /** `name` from the project `package.json`, or the directory name. */
   name: string | null;
+  /**
+   * The version of the **installed `expo` package**, e.g. `57.0.15`. Null when it is unresolvable.
+   *
+   * The code that is actually on disk, not the SDK line the app config names. `config:effective`
+   * reports that one, and it reports it as `configuredSdkVersion` for exactly this reason:
+   * `57.0.15` and `57.0.0` are two answers to two questions, and one field name for both read as
+   * a disagreement between the commands.
+   */
   sdkVersion: string | null;
   /** `bare` when a native directory is checked in, `cng` when prebuild generates it. */
   native: 'bare' | 'cng';

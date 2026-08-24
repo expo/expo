@@ -21,7 +21,7 @@ import {
 /** The shape `config:effective --json` prints, per `src/config/types.ts`. */
 type EffectiveConfigPayload = {
   projectRoot: string;
-  sdkVersion: string | null;
+  configuredSdkVersion: string | null;
   source: { command: string[]; durationMs: number };
   platforms: { [platform: string]: { [mod: string]: unknown } };
   plugins: { name: string; version: string | null; declared: boolean }[];
@@ -119,11 +119,32 @@ describe('exagent config:effective', () => {
       ['config', '--type', 'introspect', '--json'],
     ]);
     expect(payload.source.command).toEqual(['expo', 'config', '--type', 'introspect', '--json']);
-    expect(payload.sdkVersion).toBe('54.0.0');
+    expect(payload.configuredSdkVersion).toBe('54.0.0');
     expect(payload.platforms.ios).toEqual(STUB_CONFIG._internal.modResults.ios);
     expect(payload.platforms.android).toEqual(STUB_CONFIG._internal.modResults.android);
     expect(payload.notAttributable).toEqual(['ios.xcodeproj', '*.dangerous']);
     expect(payload.autolinkedModules).toEqual(['expo', 'expo-camera']);
+  });
+
+  // `status --json` reports the installed `expo` version under `sdkVersion`, and this reports the
+  // SDK the evaluated config resolves to. They are different numbers for the same project — 57.0.15
+  // against 57.0.0 — so sharing one field name read as the two commands disagreeing.
+  it('never calls the SDK of the config `sdkVersion`, which status already means', async () => {
+    const { projectRoot, env } = await setupAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['config:effective', '--json'], { env });
+    const payload = JSON.parse(result.stdout) as Record<string, unknown>;
+
+    expect(payload).toHaveProperty('configuredSdkVersion', '54.0.0');
+    expect(Object.keys(payload)).not.toContain('sdkVersion');
+  });
+
+  it('says which SDK it means in the human report', async () => {
+    const { projectRoot, env } = await setupAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['config:effective'], { env });
+
+    expect(result.stdout).toContain('54.0.0 per config');
   });
 
   // The one answer an agent cannot work out on its own: `expo-notifications` ran and is in no
@@ -203,7 +224,7 @@ describe('exagent config:effective', () => {
       .find((entry) => entry._e === 'cli:config_effective');
 
     expect(event).toMatchObject({
-      sdkVersion: '54.0.0',
+      configuredSdkVersion: '54.0.0',
       platforms: ['ios', 'android'],
       modCounts: { ios: 2, android: 2 },
       pluginCount: 2,
