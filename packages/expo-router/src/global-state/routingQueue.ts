@@ -35,7 +35,10 @@ export const routingQueue = {
       callback();
     }
   },
-  run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>, routeInfo: UrlObject) {
+  run(
+    ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
+    routeInfo: Pick<UrlObject, 'segments' | 'params'>
+  ) {
     // Reset the identity of the queue.
     const events = routingQueue.queue;
     routingQueue.queue = [];
@@ -51,7 +54,7 @@ export const routingQueue = {
           action = getNavigateAction(
             href,
             options,
-            options.event ?? 'NAVIGATE',
+            options.event!,
             options.withAnchor,
             options.dangerouslySingular,
             !!options.__internal__PreviewKey,

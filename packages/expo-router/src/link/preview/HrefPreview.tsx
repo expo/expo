@@ -24,8 +24,11 @@ import { getPathFromState } from '../linking';
 import { PreviewRouteContext } from './PreviewRouteContext';
 
 export function HrefPreview({ href }: { href: Href }) {
-  const routeInfo = useRouteInfo();
-  const hrefState = useMemo(() => getStateForHref(href, routeInfo), [href, routeInfo]);
+  const { segments: routeSegments } = useRouteInfo();
+  const hrefState = useMemo(
+    () => getStateForHref(href, { segments: routeSegments }),
+    [href, routeSegments]
+  );
   const index = hrefState?.index ?? 0;
 
   let isProtected = false;

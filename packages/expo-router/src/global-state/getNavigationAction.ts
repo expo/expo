@@ -1,5 +1,6 @@
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
+import { getStateFromPath } from '../link/linking';
 import {
   appendInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
@@ -19,7 +20,7 @@ export function getNavigateAction(
   withAnchor: boolean | undefined,
   singular: SingularOptions | undefined,
   isPreviewNavigation: boolean | undefined,
-  routeInfo: UrlObject
+  { segments, params: routeParams }: Pick<UrlObject, 'segments' | 'params'>
 ) {
   let href: string | undefined = baseHref;
   store.assertIsReady();
@@ -35,7 +36,7 @@ export function getNavigateAction(
   }
   const rootState = navigationRef.getRootState();
 
-  href = resolveHrefStringWithSegments(href, routeInfo, options);
+  href = resolveHrefStringWithSegments(href, { segments, params: routeParams }, options);
   href = applyRedirects(href, store.redirects) ?? undefined;
 
   // If the href is undefined, it means that the redirect has already been handled by the navigation
@@ -43,7 +44,7 @@ export function getNavigateAction(
     return;
   }
 
-  const state = store.linking.getStateFromPath!(href, store.linking.config, routeInfo.segments);
+  const state = getStateFromPath(href, store.linking.config, segments);
 
   if (!state || state.routes.length === 0) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);
