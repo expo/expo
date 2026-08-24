@@ -90,14 +90,18 @@ export interface SmokeErrorsJson {
   /** Everything that arrived. Null when the window never opened. */
   count: number | null;
   /**
-   * How many of those were uncaught exceptions, i.e. the red screen.
+   * How many of those were an `Error` the app reported, with its own stack.
    *
-   * The half the outcome is decided on. A `console.error` is something the app chose to report and
-   * is counted separately, because a project that logs one on purpose would otherwise never pass.
+   * **The number the outcome is decided on**, and deliberately not "exceptions". React Native does
+   * not deliver an uncaught `throw` as `Runtime.exceptionThrown` at all — it catches it and reports
+   * it through the console path, so counting `source: 'exception'` would have been counting a
+   * channel this runtime never uses [observed — 2026-08-24, live; see `RuntimeErrorRecord.isError`
+   * for the three cases that were measured]. What is countable is whether a record carried the
+   * error's own frames, and that is what this is.
    */
-  exceptions: number | null;
-  /** How many were `console.error` calls. */
-  consoleErrors: number | null;
+  failing: number | null;
+  /** How many were a line of text the app logged with `console.error`, carrying no stack. */
+  logs: number | null;
   /** The records, in the shape `runtime:errors --json` prints them. */
   records: RuntimeErrorRecord[];
 }

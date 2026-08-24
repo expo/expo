@@ -91,8 +91,24 @@ function screenshot(overrides: Partial<ScreenshotResult> = {}): ScreenshotResult
   };
 }
 
+/**
+ * One record the gate fails on.
+ *
+ * `source: 'console'` on purpose, and that is the finding this whole file turns on: React Native
+ * does not deliver an uncaught throw as `Runtime.exceptionThrown`, it reports it through the
+ * console path [observed — 2026-08-24, live]. A fixture that used `source: 'exception'` would be
+ * a fixture of a runtime this command never talks to, and every assertion below would pass for a
+ * gate that lets real crashes through.
+ */
 function record(overrides: Partial<RuntimeErrorRecord> = {}): RuntimeErrorRecord {
-  return { source: 'exception', timestamp: 1, message: 'Error: BOOM', ...overrides };
+  return {
+    source: 'console',
+    timestamp: 1,
+    message: 'Error: BOOM',
+    stack: '  at boom (src/app/index.tsx:12:3)',
+    isError: true,
+    ...overrides,
+  };
 }
 
 /** Every dependency answering the way a healthy project answers. */
@@ -144,6 +160,23 @@ describe(runSmokePhasesAsync, () => {
   });
 
   // The property that makes the phase list readable at all.
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate — observed live, 2026-08-24. Every
+  // phase has to be about the *same* dev server. `navigate` finds its own, so a run that had
+  // settled on one in phase 1 went looking again in phase 4, found nothing, and exited 1 from a
+  // run whose first three phases had all answered.
+  it(`opens the route on the dev server this run settled on`, async () => {
+    const openRoute = jest.fn(async (route: string) => opened({ route }));
+    await runSmokePhasesAsync(
+      deps({
+        discoverDevServer: async () => discovery({ devServerUrl: 'http://127.0.0.1:8210' }),
+        openRoute,
+      }),
+      options({ route: '/notes' })
+    );
+
+    expect(openRoute).toHaveBeenCalledWith('/notes', 'http://127.0.0.1:8210');
+  });
+
   it(`reports every phase exactly once, in order, whatever happened`, async () => {
     const runs = await Promise.all([
       runSmokePhasesAsync(deps(), options()),
@@ -377,7 +410,7 @@ describe(runSmokePhasesAsync, () => {
         options()
       );
 
-      expect(openRoute).toHaveBeenCalledWith('/');
+      expect(openRoute).toHaveBeenCalledWith('/', 'http://127.0.0.1:8081');
       expect(run.outcome).toBe('passed');
       expect(run.appsConnected).toBe(1);
       expect(run.phases.find((phase) => phase.id === 'app')!.reason).toContain('to connect one');
@@ -398,7 +431,7 @@ describe(runSmokePhasesAsync, () => {
       );
 
       expect(openRoute).toHaveBeenCalledTimes(1);
-      expect(openRoute).toHaveBeenCalledWith('/notes');
+      expect(openRoute).toHaveBeenCalledWith('/notes', 'http://127.0.0.1:8081');
       expect(statusOf(run, 'route')).toBe('ok');
       expect(run.routeCheck).toMatchObject({ ok: true });
     });
@@ -453,7 +486,7 @@ describe(runSmokePhasesAsync, () => {
       const openRoute = jest.fn(async (route: string) => opened({ route }));
       const run = await runSmokePhasesAsync(deps({ openRoute }), options({ route: '/notes' }));
 
-      expect(openRoute).toHaveBeenCalledWith('/notes');
+      expect(openRoute).toHaveBeenCalledWith('/notes', 'http://127.0.0.1:8081');
       expect(statusOf(run, 'route')).toBe('ok');
       expect(run.outcome).toBe('passed');
     });
@@ -490,6 +523,36 @@ describe(runSmokePhasesAsync, () => {
   });
 
   describe('the runtime and the window', () => {
+    // @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate. The regression this exists for,
+    // measured live on 2026-08-24: an uncaught `throw` arrives as `source: 'console'`, because
+    // React Native catches it and reports it through the console path rather than as
+    // `Runtime.exceptionThrown`. A gate reading `source` passed seventeen crashes in one window.
+    it(`fails on a throw React Native reported through the console path`, async () => {
+      const run = await runSmokePhasesAsync(
+        deps({
+          collectErrors: async () => ({
+            ok: true,
+            records: [
+              {
+                source: 'console',
+                timestamp: 1,
+                message: 'Error: WAVE6_UNCAUGHT',
+                stack: '  at setTimeout$argument_0 (src/app/index.tsx:112:18)',
+                isError: true,
+              },
+            ],
+            reason: null,
+          }),
+        }),
+        options()
+      );
+
+      expect(run.outcome).toBe('failed');
+      expect(statusOf(run, 'errors')).toBe('failed');
+    });
+
+    // The other channel is still read, because a runtime that uses it exists — a gate that only
+    // watched the console path would be the same mistake pointed the other way.
     it(`fails on an uncaught exception in the window`, async () => {
       const run = await runSmokePhasesAsync(
         deps({ collectErrors: async () => ({ ok: true, records: [record()], reason: null }) }),
@@ -508,7 +571,9 @@ describe(runSmokePhasesAsync, () => {
         deps({
           collectErrors: async () => ({
             ok: true,
-            records: [record({ source: 'console', message: 'deprecated' })],
+            records: [
+              record({ message: 'deprecated', stack: undefined, isError: false }),
+            ],
             reason: null,
           }),
         }),

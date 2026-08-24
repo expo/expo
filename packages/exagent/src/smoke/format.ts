@@ -9,8 +9,8 @@ import { bundleToJson } from '../dev/waitFormat';
 import type { FollowUp } from '../followups';
 import type { RouteCheckJson } from '../navigate/routeCheck';
 import { wrapUntrustedAppOutput } from '../runtime/untrusted';
+import { isFailingRecord, type SmokeRun } from './phases';
 import type { SmokeOptions } from './resolveOptions';
-import type { SmokeRun } from './phases';
 import type { SmokePhase, SmokeResultJson } from './types';
 
 /** Width of the label column, matching `dev:wait` and `status`. */
@@ -29,7 +29,7 @@ export function smokeResultToJson(
   options: SmokeOptions,
   followups: FollowUp[]
 ): SmokeResultJson {
-  const exceptions = run.errors.filter((error) => error.source === 'exception').length;
+  const failing = run.errors.filter(isFailingRecord).length;
   return {
     ok: run.outcome === 'passed',
     outcome: run.outcome,
@@ -58,8 +58,8 @@ export function smokeResultToJson(
       // Null rather than 0 for a window that never opened: zero errors and no window are opposite
       // facts, and only one of them is evidence.
       count: run.windowMs == null ? null : run.errors.length,
-      exceptions: run.windowMs == null ? null : exceptions,
-      consoleErrors: run.windowMs == null ? null : run.errors.length - exceptions,
+      failing: run.windowMs == null ? null : failing,
+      logs: run.windowMs == null ? null : run.errors.length - failing,
       records: run.errors,
     },
     screenshot: run.screenshot,
@@ -94,7 +94,9 @@ export function formatSmokeResult(run: SmokeRun, options: SmokeOptions): string 
         run.errors
           .map((error, index) =>
             [
-              `[${index + 1}] ${error.source === 'exception' ? 'uncaught exception' : 'console.error'}`,
+              // What the app did, in the terms this command decides on: an `Error` it reported —
+              // which on React Native is how an uncaught throw arrives — or a line it logged.
+              `[${index + 1}] ${isFailingRecord(error) ? 'error reported by the app' : 'console.error'}`,
               `message: ${error.message}`,
               ...(error.stack ? ['stack:', error.stack] : []),
             ].join('\n')

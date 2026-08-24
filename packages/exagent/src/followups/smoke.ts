@@ -24,8 +24,13 @@ export interface SmokeFollowUpInput {
   appsConnected: number | null;
   /** Whether the runtime answered an evaluation; null when it was never asked. */
   runtimeSupported: boolean | null;
-  /** How many uncaught exceptions the window caught. */
-  exceptions: number;
+  /**
+   * How many records the window caught that the gate fails on.
+   *
+   * Not "exceptions": React Native reports an uncaught throw through the console path, so what is
+   * countable is whether a record carried the error's own stack (llp/0005 §The smoke gate).
+   */
+  failing: number;
   /** Whether a picture was taken. */
   screenshotTaken: boolean;
   /** Where it is, when one was. */
@@ -116,7 +121,7 @@ export function buildSmokeFollowUps(input: SmokeFollowUpInput): FollowUp[] {
     ]);
   }
 
-  if (input.exceptions > 0) {
+  if (input.failing > 0) {
     return capFollowUps([
       {
         id: 'runtime-reload',

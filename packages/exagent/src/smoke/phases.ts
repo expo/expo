@@ -78,13 +78,41 @@ export interface SmokeDeps {
   waitForAppConnection(devServerUrl: string, timeoutMs: number): Promise<AppConnectionResult>;
   /** Look for a booted device without failing when there is none: no device is an answer. */
   probeDevice(): Promise<{ deviceId: string | null; reason: string | null }>;
-  /** Open a route on the device, the way `navigate` does. Throws what `navigate` throws. */
-  openRoute(route: string): Promise<OpenRouteResult>;
+  /**
+   * Open a route on the device, the way `navigate` does. Throws what `navigate` throws.
+   *
+   * The dev server is passed in rather than found again, and that is a fix rather than a tidy-up
+   * [observed live — 2026-08-24]: `navigate` discovers its own dev server, so a run that had
+   * settled on one in phase 1 went looking for it a second time in phase 4 and found nothing —
+   * `Cannot build an Expo Go URL because the dev server URL is unknown`, exit 1, from a run whose
+   * first three phases had all answered. A gate that talks to two dev servers is a gate whose
+   * phases are about two different things.
+   */
+  openRoute(route: string, devServerUrl: string): Promise<OpenRouteResult>;
   evaluate(devServerUrl: string): Promise<SmokeEvaluateResult>;
   collectErrors(devServerUrl: string, windowMs: number): Promise<SmokeErrorsResult>;
   captureScreenshot(deviceId: string): Promise<ScreenshotResult>;
   /** The clock, so a test can pin the durations it reports. */
   now(): number;
+}
+
+/**
+ * Whether one record is something the gate fails on. Exported so the report and the follow-ups
+ * count the same thing this decides the verdict on.
+ */
+export function isFailingRecord(record: RuntimeErrorRecord): boolean {
+  // Not `source === 'exception'` alone, which is what the design said and what the live round
+  // disproved [observed — 2026-08-24, notesapp on SDK 57 in Expo Go, iOS 26.5 simulator]. An
+  // uncaught `throw` never reached `Runtime.exceptionThrown` in any run: React Native caught it
+  // and reported it through the console path, so a gate reading `source` passed **seventeen
+  // crashes** in one window and called them `console.error` calls. `RuntimeErrorRecord.isError`
+  // documents the three cases measured to settle it, and the limit it leaves — a deliberately
+  // logged `Error` is the same bytes and fails too.
+  //
+  // `source === 'exception'` stays in the test rather than being dropped: a runtime that does use
+  // that channel exists, and a gate reading only the console path would be the same mistake
+  // pointed the other way.
+  return record.isError === true || record.source === 'exception';
 }
 
 /** Everything one run of the phases established, before it is formatted or exited with. */
@@ -240,7 +268,11 @@ export async function runSmokePhasesAsync(
       return { status: 'failed' as const, reason: start.reason, value: found };
     }
     started = true;
-    const again = await deps.discoverDevServer(start.devServerUrl);
+    // Discovered the same way the first look was, rather than by naming the URL the start
+    // reported: naming it would make `source` say `flag` for a run whose caller passed no flag,
+    // and `source` is reported precisely because `lock` and `flag` prove different things
+    // (llp/0005 §`DevServerSource`).
+    const again = await deps.discoverDevServer(options.devServerUrl);
     return again.reachable
       ? { status: 'ok' as const, reason: 'started for this run', value: again }
       : {
@@ -379,7 +411,7 @@ export async function runSmokePhasesAsync(
       };
     }
 
-    const opened = await deps.openRoute(options.route ?? ROOT_ROUTE);
+    const opened = await deps.openRoute(options.route ?? ROOT_ROUTE, devServerUrl);
     deviceId = opened.deviceId;
     if (options.route != null) {
       routeCheck = opened.routeCheck;
@@ -439,7 +471,7 @@ export async function runSmokePhasesAsync(
     });
   } else {
     const opened = await record('route', async () => {
-      const result = await deps.openRoute(options.route!);
+      const result = await deps.openRoute(options.route!, devServerUrl);
       deviceId = result.deviceId;
       routeCheck = result.routeCheck;
       return result.exitCode === 0
@@ -499,11 +531,11 @@ export async function runSmokePhasesAsync(
         value: result,
       };
     }
-    const exceptions = result.records.filter((error) => error.source === 'exception');
-    if (exceptions.length > 0) {
+    const failing = result.records.filter(isFailingRecord);
+    if (failing.length > 0) {
       return {
         status: 'failed' as const,
-        reason: `${exceptions.length} uncaught ${exceptions.length === 1 ? 'exception' : 'exceptions'}: ${exceptions[0]!.message}`,
+        reason: `${failing.length} ${failing.length === 1 ? 'error' : 'errors'} reported by the app: ${failing[0]!.message}`,
         value: result,
       };
     }
@@ -518,7 +550,7 @@ export async function runSmokePhasesAsync(
       status: 'ok' as const,
       reason:
         result.records.length > 0
-          ? `${result.records.length} console.error ${result.records.length === 1 ? 'call' : 'calls'}, and nothing uncaught`
+          ? `${result.records.length} console.error ${result.records.length === 1 ? 'line' : 'lines'}, none of them an error the app reported`
           : null,
       value: result,
     };
@@ -530,7 +562,7 @@ export async function runSmokePhasesAsync(
 
   // The verdict. `failed` needs something to have gone wrong; `passed` needs the runtime to have
   // answered, so a window nobody could have read is never a pass.
-  const threw = collected.records.some((error) => error.source === 'exception');
+  const threw = collected.records.some(isFailingRecord);
   return done(threw ? 'failed' : runtime.ok && collected.ok ? 'passed' : 'inconclusive', {
     ...withApp,
     routeCheck,

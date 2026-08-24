@@ -146,26 +146,29 @@ describe(smokeResultToJson, () => {
     expect(never.errors).toEqual({
       windowMs: null,
       count: null,
-      exceptions: null,
-      consoleErrors: null,
+      failing: null,
+      logs: null,
       records: [],
     });
   });
 
-  it(`counts exceptions apart from console.error calls`, () => {
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate. Not `source`: React Native reports an
+  // uncaught throw through the console path, so the second record below — a console record that
+  // carried the error's own stack — is a crash and the third is a log.
+  it(`counts what the gate fails on apart from what the app logged`, () => {
     const counted = smokeResultToJson(
       run({
         errors: [
-          { source: 'exception', timestamp: 1, message: 'Error: BOOM' },
-          { source: 'console', timestamp: 2, message: 'deprecated' },
-          { source: 'console', timestamp: 3, message: 'also deprecated' },
+          { source: 'exception', timestamp: 1, message: 'Error: BOOM', isError: true },
+          { source: 'console', timestamp: 2, message: 'Error: THROWN', isError: true },
+          { source: 'console', timestamp: 3, message: 'deprecated', isError: false },
         ],
       }),
       options(),
       []
     );
 
-    expect(counted.errors).toMatchObject({ count: 3, exceptions: 1, consoleErrors: 2 });
+    expect(counted.errors).toMatchObject({ count: 3, failing: 2, logs: 1 });
   });
 
   // @ref llp/0008-guardrails.rfc.md — every string in the records came out of the app.
@@ -232,7 +235,13 @@ describe(formatSmokeResult, () => {
       run({
         outcome: 'failed',
         errors: [
-          { source: 'exception', timestamp: 1, message: 'Error: BOOM', stack: 'at boom (a.tsx:1)' },
+          {
+            source: 'console',
+            timestamp: 1,
+            message: 'Error: BOOM',
+            stack: 'at boom (a.tsx:1)',
+            isError: true,
+          },
         ],
       }),
       options()

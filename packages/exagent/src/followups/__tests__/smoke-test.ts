@@ -18,7 +18,7 @@ function input(overrides: Partial<SmokeFollowUpInput> = {}): SmokeFollowUpInput 
     bundleFile: null,
     appsConnected: 1,
     runtimeSupported: true,
-    exceptions: 0,
+    failing: 0,
     screenshotTaken: true,
     screenshotPath: '/project/.expo/exagent/smoke.png',
     route: null,
@@ -39,14 +39,14 @@ describe(buildSmokeFollowUps, () => {
       { bundleBroken: true },
       { appsConnected: 0 },
       { runtimeSupported: false },
-      { exceptions: 2, outcome: 'failed' as const },
+      { failing: 2, outcome: 'failed' as const },
     ]) {
       expect(buildSmokeFollowUps(input(overrides)).length).toBeLessThanOrEqual(MAX_FOLLOWUPS);
     }
   });
 
   it(`gives every follow-up an id, a command and a reason`, () => {
-    for (const followup of buildSmokeFollowUps(input({ exceptions: 1, outcome: 'failed' }))) {
+    for (const followup of buildSmokeFollowUps(input({ failing: 1, outcome: 'failed' }))) {
       expect(followup.id).toEqual(expect.any(String));
       expect(followup.command).toMatch(/\S/);
       expect(followup.why).toMatch(/\S/);
@@ -96,7 +96,7 @@ describe(buildSmokeFollowUps, () => {
   // @ref llp/0005-runtime-loop-tools.rfc.md §Peer churn — an error window is a property of the
   // app's session and the session outlives a fix, so a reload leads.
   it(`leads a non-empty window with the reload`, () => {
-    expect(commands({ exceptions: 1, outcome: 'failed' })[0]).toBe('npx exagent runtime:reload');
+    expect(commands({ failing: 1, outcome: 'failed' })[0]).toBe('npx exagent runtime:reload');
   });
 
   // @ref llp/0010-agent-conventions.rfc.md §The fourth: `typecheck`. Nothing threw and the bundle

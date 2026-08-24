@@ -131,3 +131,52 @@ describe(resolveSmokeOptions, () => {
     expect(() => resolveSmokeOptions(['--bogus'])).toThrow(/--bogus/);
   });
 });
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate — observed live, 2026-08-24. An absence
+// is invisible in a diff and expensive to rediscover, so it is pinned: `--ios` on the detached
+// start makes the plan run `expo start --ios`, which drives Simulator.app through AppleScript and
+// takes the dev server down with it on a Mac that has granted no Automation permission.
+describe('the command line --start uses', () => {
+  it(`asks for a detached, ready dev server and nothing else`, () => {
+    const { START_DEV_SERVER_ARGV } =
+      require('../smokeAsync') as typeof import('../smokeAsync');
+
+    expect([...START_DEV_SERVER_ARGV]).toEqual(['--yes', '--detach', '--wait-ready']);
+  });
+
+  it(`never names a platform, which would open the app from inside the start`, () => {
+    const { START_DEV_SERVER_ARGV } =
+      require('../smokeAsync') as typeof import('../smokeAsync');
+
+    for (const flag of ['--ios', '--android', '--web', '--platform', '-i', '-a', '-w']) {
+      expect(START_DEV_SERVER_ARGV).not.toContain(flag);
+    }
+  });
+});
+
+describe('the port --start asks for', () => {
+  const { startPortArgs } = require('../smokeAsync') as typeof import('../smokeAsync');
+
+  // A caller that named a port named the dev server it means, and a `--start` that ignored it
+  // would answer a question about a different port than the one it was asked about.
+  it(`carries a loopback port through to the start`, () => {
+    expect(startPortArgs('http://127.0.0.1:8210')).toEqual(['--port', '8210']);
+    expect(startPortArgs('http://localhost:8210')).toEqual(['--port', '8210']);
+  });
+
+  it(`names none when the caller named none`, () => {
+    expect(startPortArgs(null)).toEqual([]);
+  });
+
+  // `--port` says where a dev server on *this* machine listens, and there is nothing this command
+  // can start on another host — so a remote URL is left alone rather than turned into a local port.
+  it(`names none for a dev server on another host`, () => {
+    expect(startPortArgs('http://192.168.1.5:8081')).toEqual([]);
+    expect(startPortArgs('http://build-box:8081')).toEqual([]);
+  });
+
+  it(`names none for a URL with no port, and for one that is not a URL`, () => {
+    expect(startPortArgs('http://127.0.0.1')).toEqual([]);
+    expect(startPortArgs('not a url')).toEqual([]);
+  });
+});

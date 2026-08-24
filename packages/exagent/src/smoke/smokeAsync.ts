@@ -21,7 +21,13 @@ import { discoverDevServerAsync } from '../runtime/devServer';
 import { CdpRuntimeErrorCollector } from '../runtime/runtimeErrorCollector';
 import { waitForAppConnectionAsync, waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { formatSmokeResult, smokeResultToJson } from './format';
-import { runSmokePhasesAsync, smokeExitCode, type SmokeDeps, type SmokeRun } from './phases';
+import {
+  isFailingRecord,
+  runSmokePhasesAsync,
+  smokeExitCode,
+  type SmokeDeps,
+  type SmokeRun,
+} from './phases';
 import type { SmokeOptions } from './resolveOptions';
 
 /** How long discovery may spend on each candidate port. Short: a dev server that is up answers. */
@@ -38,6 +44,49 @@ const LIVENESS_EXPRESSION = '1';
 
 /** How long the liveness evaluation gets before it is called unanswered. */
 const LIVENESS_TIMEOUT_MS = 5_000;
+
+/**
+ * The command line `--start` runs `exagent dev` with.
+ *
+ * **The platform flag is deliberately absent**, and that is a correction rather than an omission
+ * [observed live — 2026-08-24, on a Mac that had granted no Automation permission]. `--ios` makes
+ * the plan run `expo start --ios`, which drives Simulator.app through AppleScript; the Expo CLI
+ * does not catch a refusal there and the dev server exits with it (llp/0010 §A failed plan step
+ * reports a failure, and its upstream ask). This run watched exactly that: the first three phases
+ * answered against a dev server that was already dying, and the fourth found nothing.
+ *
+ * The recovery llp/0004 records for it is the one this command performs anyway — start the dev
+ * server without opening anything, then open the app with `navigate`, which deep-links through
+ * `simctl openurl` and needs no Automation grant. So there is nothing for the platform flag to
+ * add here, and one whole failure mode for it to remove.
+ *
+ * Exported for the test table, because that absence is invisible in a diff and expensive live.
+ */
+export const START_DEV_SERVER_ARGV: readonly string[] = ['--yes', '--detach', '--wait-ready'];
+
+/**
+ * The port `--start` asks the dev server for, out of the dev server this run was pointed at.
+ *
+ * A caller that passed `--port 8210` named the dev server it means, and `--start` has to start it
+ * *there* — a dev server on 8081 would be a run that answered a question about a different port
+ * than the one it was asked about. Only for a loopback URL: `--port` says where a dev server on
+ * **this** machine listens, and there is nothing this command can start on another host.
+ *
+ * @param devServerUrl the `--dev-server-url`/`--port` value, or null when the caller named none.
+ */
+export function startPortArgs(devServerUrl: string | null): string[] {
+  if (devServerUrl == null) {
+    return [];
+  }
+  let parsed: URL;
+  try {
+    parsed = new URL(devServerUrl);
+  } catch {
+    return [];
+  }
+  const loopback = ['127.0.0.1', 'localhost', '::1', '[::1]'].includes(parsed.hostname);
+  return loopback && parsed.port ? ['--port', parsed.port] : [];
+}
 
 /**
  * Run the gate, report it, and answer with the exit code.
@@ -89,7 +138,7 @@ function buildFollowUps(run: SmokeRun, options: SmokeOptions) {
     bundleFile: run.bundle?.error?.filename ?? null,
     appsConnected: run.appsConnected,
     runtimeSupported: run.runtimeSupported,
-    exceptions: run.errors.filter((error) => error.source === 'exception').length,
+    failing: run.errors.filter(isFailingRecord).length,
     screenshotTaken: run.screenshot.ok,
     screenshotPath: run.screenshot.ok ? run.screenshot.path : null,
     route: options.route,
@@ -138,8 +187,9 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
 
     // The detach path of `exagent dev`, with the readiness wait on: a foreground start would never
     // return, and this run has seven more phases to perform (llp/0004 §Daemonization).
+    // The argv is `START_DEV_SERVER_ARGV`, whose documentation says why it carries no platform.
     startDevServer: async () => {
-      const argv = ['--yes', '--detach', '--wait-ready', `--${options.platform}`];
+      const argv = [...START_DEV_SERVER_ARGV, ...startPortArgs(options.devServerUrl)];
       try {
         // `print: false`: the detached start is one phase of this run, and this run prints one
         // report. Its `cli:dev_detach` event is still emitted, so nothing about it is hidden.
@@ -157,7 +207,13 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
         timeoutMs: DISCOVERY_TIMEOUT_MS,
         projectRoot,
       });
-      return { ok: found.reachable, devServerUrl: found.devServerUrl, reason: null };
+      return {
+        ok: found.reachable,
+        devServerUrl: found.devServerUrl,
+        reason: found.reachable
+          ? null
+          : `a dev server was started and nothing answered at ${found.devServerUrl} afterwards (${found.reason ?? 'no answer'})`,
+      };
     },
 
     waitForBundlerReady: (devServerUrl, timeoutMs) =>
@@ -181,11 +237,13 @@ function buildSmokeDeps(projectRoot: string, options: SmokeOptions): SmokeDeps {
       return { deviceId: probe.device?.deviceId ?? null, reason: probe.reason ?? null };
     },
 
-    openRoute: (route) =>
+    // The dev server this run settled on, not the flag: a run that discovered one in its first
+    // phase must not go looking for a second one in its fourth.
+    openRoute: (route, devServerUrl) =>
       openRouteAsync(projectRoot, {
         route,
         platform: options.platform,
-        devServerUrl: options.devServerUrl,
+        devServerUrl,
         routeCheck: options.routeCheck,
         command: 'smoke',
       }),
