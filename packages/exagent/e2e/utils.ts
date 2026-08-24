@@ -152,6 +152,16 @@ export type StubExpoInvocation = {
   args: string[];
   /** Working directory the subprocess ran in */
   cwd: string;
+  /**
+   * `CI` as the subprocess saw it, or null when nothing set it.
+   *
+   * Layer 2 of the needs-human protocol is exactly this variable, and the dev-server step is
+   * exactly its exception (llp/0010 §Force non-interactive), so it is worth recording rather than
+   * inferring from behaviour.
+   */
+  ci: string | null;
+  /** Whether the subprocess had a TTY on stdout, which is the other half of that decision. */
+  isTTY: boolean;
 };
 
 /** Read every invocation of the stub `expo` bin recorded for a project. */
@@ -476,6 +486,32 @@ export const STUB_TRANSFORM_ERROR = {
 /** Path of the entry bundle the stub manifest names, matching an Expo Router project. */
 const STUB_BUNDLE_PATH = '/node_modules/expo-router/entry.bundle';
 
+/**
+ * The error page the web dev server renders for a project that does not compile, cut to the fields
+ * that are read [observed — `@expo/cli` `metroErrorInterface.ts`, and live on 2026-08-23].
+ *
+ * `<` is escaped exactly as the CLI escapes it, so the payload cannot close its own script tag.
+ */
+export const STUB_WEB_ERROR_PAGE = `<html><body><div id="root"></div><script id="_expo-static-error" type="application/json">${JSON.stringify(
+  {
+    selectedLogIndex: 0,
+    logs: [
+      {
+        level: 'static',
+        message: {
+          content: `${STUB_TRANSFORM_ERROR.message.replace(/\u001b\[[\d;]*m/g, '')}`,
+        },
+        stack: [{ file: '/project/src/app/index.tsx', lineNumber: 101, column: 2 }],
+        codeFrame: {
+          content: '  101 |   const x =',
+          location: { row: 101, column: 2 },
+          fileName: '/project/src/app/index.tsx',
+        },
+      },
+    ],
+  }
+).replace(/</g, '\\u003c')}</script></body></html>`;
+
 /** A stub dev server, and where it listens. */
 export type StubDevServer = {
   /** Origin to hand to `--dev-server-url`, e.g. `http://127.0.0.1:53421`. */
@@ -524,6 +560,26 @@ export async function startStubDevServerAsync({
             url: `http://127.0.0.1:${port}${STUB_BUNDLE_PATH}?platform=${request.headers['expo-platform']}&dev=true`,
           },
         })
+      );
+      return;
+    }
+
+    // The web dev server has no manifest: `GET /` is the page a browser loads, and the entry
+    // bundle is the `<script src>` appended to it. A project that does not compile never produces
+    // that page — the server renders it, so the failure arrives as the 500 error page instead.
+    if (route === '/') {
+      if (bundle === 'no-manifest') {
+        response.writeHead(404).end();
+        return;
+      }
+      if (bundle === 'broken') {
+        response.writeHead(500, { 'Content-Type': 'text/html' });
+        response.end(STUB_WEB_ERROR_PAGE);
+        return;
+      }
+      response.writeHead(200, { 'Content-Type': 'text/html' });
+      response.end(
+        `<html><body><div id="root"></div><script src="${STUB_BUNDLE_PATH}?platform=web&dev=true" defer></script></body></html>`
       );
       return;
     }

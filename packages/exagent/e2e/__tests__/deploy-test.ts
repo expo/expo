@@ -299,8 +299,9 @@ describe('exagent deploy', () => {
       const report: DeployReport = JSON.parse(result.stdout);
 
       // The export runs through the project's own Expo CLI, as a subprocess.
+      // The export is a captured run of the Expo CLI, so it gets `CI=1` like every other one.
       expect(readStubExpoInvocations(projectRoot)).toEqual([
-        { args: ['export', '--platform', 'web'], cwd: projectRoot },
+        { args: ['export', '--platform', 'web'], cwd: projectRoot, ci: '1', isTTY: false },
       ]);
       // The upload runs non-interactively, because nothing can answer a prompt here.
       expect(readStubEasInvocations(projectRoot)).toEqual([
