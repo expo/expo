@@ -15,6 +15,11 @@ export const exagentStart: Command = async (argv) => {
       argv,
       // Every other option belongs to `expo start` and is forwarded untouched.
       permissive: true,
+      command: 'start',
+      // The options and the positional arguments are resolved together, per action,
+      // by this command's own `resolve*Options`; a permissive parse cannot tell an
+      // unrecognized flag from a positional argument, so it must not judge either.
+      positionalArgs: 'own',
     }
   );
 

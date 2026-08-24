@@ -3,7 +3,7 @@
 // a user can get wrong. Which target a bare `exagent deploy` ships is decided from the project, not
 // here, because that needs a probe.
 
-import { parseArgsOrThrow } from '../utils/args';
+import { parseArgsOrThrow, strayArgumentError } from '../utils/args';
 import { CommandError } from '../utils/errors';
 
 export interface DeployOptions {
@@ -67,6 +67,14 @@ export function resolveDeployOptions(argv: string[]): DeployOptions {
       error.suggestedCommand = `${USAGE_COMMAND} --help`;
     }
     throw error;
+  }
+
+  // A deploy names its target with flags and reads nothing positional, so an argument here named
+  // nothing and would have been dropped from a command that ships the project (llp/0010).
+  if (args._.length > 0) {
+    throw strayArgumentError('deploy', args._, {
+      hint: `name the target with a flag instead — "${USAGE_COMMAND} --web" for the web app, "${USAGE_COMMAND} --native" for the native one.`,
+    });
   }
 
   // `--platform` and `--profile` picked an EAS Build. The native rail is a launch now: it covers

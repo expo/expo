@@ -14,7 +14,7 @@ export const exagentStatus: Command = async (argv) => {
       // Aliases
       '-h': '--help',
     },
-    { argv }
+    { argv, command: 'status', positionalArgs: 'none' }
   );
 
   if (args['--help']) {

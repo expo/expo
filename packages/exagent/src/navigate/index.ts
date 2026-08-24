@@ -15,6 +15,11 @@ export const exagentNavigate: Command = async (argv) => {
       argv,
       // The remaining options are resolved by `resolveNavigateOptions`.
       permissive: true,
+      command: 'navigate',
+      // The options and the positional arguments are resolved together, per action,
+      // by this command's own `resolve*Options`; a permissive parse cannot tell an
+      // unrecognized flag from a positional argument, so it must not judge either.
+      positionalArgs: 'own',
     }
   );
 

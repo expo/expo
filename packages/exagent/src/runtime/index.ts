@@ -20,6 +20,11 @@ export const exagentRuntime: Command = async (argv) => {
       argv,
       // The remaining options belong to the action and are resolved per action.
       permissive: true,
+      command: 'runtime',
+      // The options and the positional arguments are resolved together, per action,
+      // by this command's own `resolve*Options`; a permissive parse cannot tell an
+      // unrecognized flag from a positional argument, so it must not judge either.
+      positionalArgs: 'own',
     }
   );
 

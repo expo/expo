@@ -15,6 +15,11 @@ export const exagentNew: Command = async (argv) => {
       argv,
       // The rest is resolved by `resolveNewOptions`, which reports a bad flag as a CommandError.
       permissive: true,
+      command: 'new',
+      // The options and the positional arguments are resolved together, per action,
+      // by this command's own `resolve*Options`; a permissive parse cannot tell an
+      // unrecognized flag from a positional argument, so it must not judge either.
+      positionalArgs: 'own',
     }
   );
 

@@ -24,22 +24,59 @@ export function getProjectRoot(args: arg.Result<arg.Spec>) {
 }
 
 /**
- * Parse args and assert unknown options.
+ * What a command does with the arguments that are not options.
  *
- * @param schema the `args` schema for parsing the command line arguments.
- * @param argv extra strings
- * @returns processed args object.
+ * Stated per command rather than inferred, and with no default, so the type checker asks the
+ * question of every command that parses arguments — including the next one somebody writes.
+ * `exagent checkpoint:undo <id>` accepted an argument it had no place for, dropped it, and
+ * restored the newest checkpoint over the working tree while reporting success.
+ *
+ * @ref llp/0010-agent-conventions.rfc.md §Registry rules
  */
-export function assertArgs(schema: arg.Spec, argv?: string[]): arg.Result<arg.Spec> {
-  return assertWithOptionsArgs(schema, { argv });
+export type PositionalArgPolicy =
+  /**
+   * This command reads no positional arguments, so one that arrives is a `BAD_ARGS` error.
+   *
+   * Only usable on a non-permissive parse: `arg` puts unrecognized *options* into `_` when
+   * `permissive` is set, and rejecting those as positionals would reject the flags the command's
+   * own resolver goes on to read.
+   */
+  | 'none'
+  /**
+   * This command reads `args._` itself and validates it there, e.g. `navigate <route>`, or hands
+   * the arguments to another CLI that reports its own (`start`).
+   */
+  | 'own';
+
+export interface AssertArgsOptions extends arg.Options {
+  /** The command as a caller types it, e.g. `checkpoint:undo`. Printed by the errors below. */
+  command: string;
+  /** What this command does with the arguments that are not options. */
+  positionalArgs: PositionalArgPolicy;
+  /**
+   * One sentence for the caller who passed a positional argument to a `'none'` command, naming
+   * what they probably meant — the flag that carries the value, most often.
+   */
+  strayHint?: string;
 }
 
+/**
+ * Parse args, assert unknown options, and reject the positional arguments the command has no
+ * place for.
+ *
+ * @param schema the `args` schema for parsing the command line arguments.
+ * @param options the `arg` options, plus the command's name and its positional-argument policy.
+ * @returns processed args object.
+ */
 export function assertWithOptionsArgs(
   schema: arg.Spec,
-  options: arg.Options
+  options: AssertArgsOptions
 ): arg.Result<arg.Spec> {
+  const { command, positionalArgs, strayHint, ...argOptions } = options;
+
+  let result: arg.Result<arg.Spec>;
   try {
-    return arg(schema, options);
+    result = arg(schema, argOptions);
   } catch (error: any) {
     // Handle errors caused by user input.
     // Only errors from `arg`, which does not start with `ARG_CONFIG_` are user input errors.
@@ -50,6 +87,48 @@ export function assertWithOptionsArgs(
     // Otherwise rethrow the error.
     throw error;
   }
+
+  // The check runs after the parse and before the command's `--help` branch, so a run with both a
+  // stray argument and `--help` still prints the help — a caller reading the usage is not the one
+  // this protects.
+  if (positionalArgs === 'none' && !result['--help'] && result._.length > 0) {
+    // Reported here rather than thrown: this runs outside the command's own `.catch(logCmdError)`,
+    // and a throw would become an unhandled rejection with no envelope on it.
+    const { logCmdError } = require('./errors') as typeof import('./errors');
+    logCmdError(strayArgumentError(command, result._, { hint: strayHint }));
+  }
+
+  return result;
+}
+
+/**
+ * The error for an argument a command has no place for.
+ *
+ * Shared by {@link assertWithOptionsArgs} and by the `resolve*Options` functions of the commands
+ * that parse permissively, so the one mistake reads the same wherever it is caught.
+ *
+ * @param command the command as a caller types it, e.g. `checkpoint:undo`.
+ * @param positional the arguments that were not options, as `arg` collected them.
+ * @param options.hint one sentence naming what the caller probably meant.
+ */
+export function strayArgumentError(
+  command: string,
+  positional: readonly (string | number)[],
+  { hint }: { hint?: string } = {}
+): CommandError {
+  const stray = positional.map(String);
+  const error = new CommandError(
+    'BAD_ARGS',
+    [
+      `Unexpected argument: ${stray[0]}. "exagent ${command}" reads no positional arguments${stray.length > 1 ? `, and ${stray.length} were passed (${stray.join(' ')})` : ''}.`,
+      `Why: nothing in this command consumes it, so it would have been dropped and the command would have run as if it were not there — and reported success.`,
+      hint
+        ? `How: ${hint}`
+        : `How: run "npx exagent ${command} --help" for the options this command does take.`,
+    ].join('\n')
+  );
+  error.suggestedCommand = `npx exagent ${command} --help`;
+  return error;
 }
 
 /**
