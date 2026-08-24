@@ -1,1 +1,1 @@
-export { ThrowingRoute as default } from '../components';
+export { ThrowingRoute as default } from '../../../components/error-boundaries';

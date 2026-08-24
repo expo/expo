@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import { createErrorBoundary } from './components';
+import { createErrorBoundary } from '../../components/error-boundaries';
 
 const NavigatorErrorBoundary = createErrorBoundary('navigator');
 const ScreenErrorBoundary = createErrorBoundary('screen');
