@@ -1624,6 +1624,7 @@ _This version does not introduce any user-facing changes._
 - Added production exports for experimental server renderer. ([#30850](https://github.com/expo/expo/pull/30850) by [@EvanBacon](https://github.com/EvanBacon))
 - Add initial version of DOM Components and support for iOS production exports. ([#30938](https://github.com/expo/expo/pull/30938) by [@EvanBacon](https://github.com/EvanBacon))
 - Added experimental server renderer in development. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
+- Added experimental server renderer in development. ([#30334](https://github.com/expo/expo/pull/30334) by [@EvanBacon](https://github.com/EvanBacon))
 - Added experimental support for tree shaking. ([#30111](https://github.com/expo/expo/pull/30111) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `--binary <path>` option to `expo run` commands for reusing builds. ([#30437](https://github.com/expo/expo/pull/30437) by [@EvanBacon](https://github.com/EvanBacon))
 - Added experimental support for production graph optimizations. ([#30417](https://github.com/expo/expo/pull/30417) by [@EvanBacon](https://github.com/EvanBacon))
@@ -1806,6 +1807,7 @@ _This version does not introduce any user-facing changes._
 
 _This version does not introduce any user-facing changes._
 
+- Remove unused dependencies. ([#29177](https://github.com/expo/expo/pull/29177) by [@Simek](https://github.com/Simek))
 - Do not replace modified scripts on prebuild. ([#29490](https://github.com/expo/expo/pull/29490) by [@Simek](https://github.com/Simek))
 
 ## 0.18.15 — 2024-06-05
@@ -2261,6 +2263,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Fallback to `xcrun devicectl` for iOS 17 to launch the app. ([#24635](https://github.com/expo/expo/pull/24635) by [@byCedric](https://github.com/byCedric))
+
 ## 0.13.2 — 2023-09-18
 
 ### 🐛 Bug fixes
@@ -2299,6 +2303,9 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Add support for bun as a package manager. ([#24344](https://github.com/expo/expo/pull/24344) by [@EvanBacon](https://github.com/EvanBacon))
+- Add additional port check after build to ensure port is still available. ([#24315](https://github.com/expo/expo/pull/24315) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.12.0 — 2023-09-04
 
 ### 🛠 Breaking changes
@@ -2321,6 +2328,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Prevent additional logs from showing in `expo config --json`. ([#24192](https://github.com/expo/expo/pull/24192) by [@EvanBacon](https://github.com/EvanBacon))
 - Patch `react-native-web` for static rendering with Expo Router. ([#24093](https://github.com/expo/expo/pull/24093) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve file formatting when `EXPO_USE_METRO_WORKSPACE_ROOT` is used. ([#23910](https://github.com/expo/expo/pull/23910) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix bug preventing non-standard xcode projects from running with `npx expo run:ios`. ([#23831](https://github.com/expo/expo/pull/23831) by [@EvanBacon](https://github.com/EvanBacon))
@@ -2398,9 +2406,13 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- Fixed JavaScript Inspector does not work on Windows. ([#23367](https://github.com/expo/expo/pull/23367) by [@kudo](https://github.com/kudo))
+
 ## 0.10.9 - 2023-07-05
 
 ### 🐛 Bug fixes
+
+- Fixed opening browser on Windows when debugging or opening Metro web. ([#23287](https://github.com/expo/expo/pull/23287) by [@byCedric](https://github.com/byCedric))
 
 ## 0.10.8 - 2023-07-04
 

@@ -809,6 +809,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
+
 ## 1.3.0 — 2023-05-08
 
 ### 🎉 New features
