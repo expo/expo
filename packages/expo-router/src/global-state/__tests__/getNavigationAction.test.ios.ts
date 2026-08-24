@@ -1,32 +1,9 @@
 import { applyRedirects } from '../../getRoutesRedirects';
 import { getStateFromPath } from '../../link/linking';
-import type { SingularOptions } from '../../useScreens';
-import { getNavigateAction as getNavigateActionImplementation } from '../getNavigationAction';
+import { getNavigateAction } from '../getNavigationAction';
 import { defaultRouteInfo } from '../getRouteInfoFromState';
-import type { UrlObject } from '../getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
 import { store } from '../store';
-import type { LinkToOptions } from '../types';
-
-function getNavigateAction(
-  baseHref: string,
-  options: LinkToOptions,
-  type = 'NAVIGATE',
-  withAnchor?: boolean,
-  singular?: SingularOptions,
-  isPreviewNavigation?: boolean,
-  routeInfo: Pick<UrlObject, 'segments' | 'params'> = defaultRouteInfo
-) {
-  return getNavigateActionImplementation(
-    baseHref,
-    options,
-    routeInfo,
-    type,
-    withAnchor,
-    singular,
-    isPreviewNavigation
-  );
-}
 
 jest.mock('../store', () => ({
   store: {
@@ -121,14 +98,14 @@ describe(getNavigateAction, () => {
       throw new Error('Not ready');
     });
 
-    expect(() => getNavigateAction('/home', {})).toThrow('Not ready');
+    expect(() => getNavigateAction('/home', {}, defaultRouteInfo)).toThrow('Not ready');
   });
 
   it('throws when navigationRef.current is null', () => {
     const originalCurrent = store.navigationRef.current;
     (store.navigationRef as any).current = null;
 
-    expect(() => getNavigateAction('/home', {})).toThrow(
+    expect(() => getNavigateAction('/home', {}, defaultRouteInfo)).toThrow(
       "Couldn't find a navigation object. Is your component inside NavigationContainer?"
     );
 
@@ -142,7 +119,7 @@ describe(getNavigateAction, () => {
       configurable: true,
     });
 
-    expect(() => getNavigateAction('/home', {})).toThrow(
+    expect(() => getNavigateAction('/home', {}, defaultRouteInfo)).toThrow(
       'Attempted to link to route when no routes are present'
     );
 
@@ -155,7 +132,7 @@ describe(getNavigateAction, () => {
   it('returns undefined when applyRedirects returns undefined', () => {
     mockApplyRedirects.mockReturnValueOnce(undefined as any);
 
-    const result = getNavigateAction('/redirect', {});
+    const result = getNavigateAction('/redirect', {}, defaultRouteInfo);
 
     expect(result).toBeUndefined();
   });
@@ -164,7 +141,7 @@ describe(getNavigateAction, () => {
     mockGetStateFromPath.mockReturnValueOnce(null as any);
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const result = getNavigateAction('/bad-path', {});
+    const result = getNavigateAction('/bad-path', {}, defaultRouteInfo);
 
     expect(result).toBeUndefined();
     expect(errorSpy).toHaveBeenCalledWith(
@@ -179,7 +156,7 @@ describe(getNavigateAction, () => {
     });
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    const result = getNavigateAction('/bad-path', {});
+    const result = getNavigateAction('/bad-path', {}, defaultRouteInfo);
 
     expect(result).toBeUndefined();
     expect(errorSpy).toHaveBeenCalledWith(
@@ -189,7 +166,7 @@ describe(getNavigateAction, () => {
   });
 
   it('returns action with type NAVIGATE by default', () => {
-    const result = getNavigateAction('/home', {});
+    const result = getNavigateAction('/home', {}, defaultRouteInfo);
 
     expect(mockGetStateFromPath).toHaveBeenCalledWith('/home', {}, []);
 
@@ -215,7 +192,7 @@ describe(getNavigateAction, () => {
       isIndex: false,
     };
 
-    getNavigateAction('/home', {}, 'NAVIGATE', undefined, undefined, false, routeInfo);
+    getNavigateAction('/home', {}, routeInfo, 'NAVIGATE', undefined, undefined, false);
 
     expect(mockGetStateFromPath).toHaveBeenCalledWith('/home', {}, ['current']);
   });
@@ -235,7 +212,7 @@ describe(getNavigateAction, () => {
       navigationRoutes: [],
     });
 
-    const result = getNavigateAction('/tab1', {}, 'PUSH');
+    const result = getNavigateAction('/tab1', {}, defaultRouteInfo, 'PUSH');
 
     expect(result!.type).toBe('PUSH');
   });
@@ -255,7 +232,7 @@ describe(getNavigateAction, () => {
       navigationRoutes: [],
     });
 
-    const result = getNavigateAction('/screen1', {}, 'PUSH');
+    const result = getNavigateAction('/screen1', {}, defaultRouteInfo, 'PUSH');
 
     expect(result!.type).toBe('PUSH');
   });
@@ -275,13 +252,13 @@ describe(getNavigateAction, () => {
       navigationRoutes: [],
     });
 
-    const result = getNavigateAction('/screen1', {}, 'REPLACE');
+    const result = getNavigateAction('/screen1', {}, defaultRouteInfo, 'REPLACE');
 
     expect(result!.type).toBe('REPLACE');
   });
 
   it('sets target to navigationState.key', () => {
-    const result = getNavigateAction('/home', {});
+    const result = getNavigateAction('/home', {}, defaultRouteInfo);
 
     expect(result!.target).toBe('nav-key');
   });
@@ -298,7 +275,7 @@ describe(getNavigateAction, () => {
       },
     });
 
-    const result = getNavigateAction('/home', {}, 'NAVIGATE', true);
+    const result = getNavigateAction('/home', {}, defaultRouteInfo, 'NAVIGATE', true);
 
     // withAnchor=true → initial should be set to false at every level (inverted logic)
     const params = result!.payload.params as Record<string, any>;
@@ -312,6 +289,7 @@ describe(getNavigateAction, () => {
     const result = getNavigateAction(
       '/home',
       {},
+      defaultRouteInfo,
       'NAVIGATE',
       false,
       undefined,
@@ -329,13 +307,13 @@ describe(getNavigateAction, () => {
   it('passes singular option through to payload', () => {
     const singular = true;
 
-    const result = getNavigateAction('/home', {}, 'NAVIGATE', false, singular);
+    const result = getNavigateAction('/home', {}, defaultRouteInfo, 'NAVIGATE', false, singular);
 
     expect(result!.payload.singular).toBe(true);
   });
 
   it('PRELOAD uses lookThroughAllTabs=true on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'PRELOAD');
+    getNavigateAction('/home', {}, defaultRouteInfo, 'PRELOAD');
 
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
@@ -345,7 +323,7 @@ describe(getNavigateAction, () => {
   });
 
   it('non-PRELOAD uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'NAVIGATE');
+    getNavigateAction('/home', {}, defaultRouteInfo, 'NAVIGATE');
 
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
@@ -355,7 +333,7 @@ describe(getNavigateAction, () => {
   });
 
   it('REPLACE on stack navigator stays as REPLACE', () => {
-    const result = getNavigateAction('/home', {}, 'REPLACE');
+    const result = getNavigateAction('/home', {}, defaultRouteInfo, 'REPLACE');
 
     expect(result!.type).toBe('REPLACE');
   });
@@ -379,14 +357,14 @@ describe(getNavigateAction, () => {
 
     mockGetPayload.mockReturnValue({ screen: undefined, params: {} });
 
-    const result = getNavigateAction('/home', {});
+    const result = getNavigateAction('/home', {}, defaultRouteInfo);
 
     expect(mockGetPayload).toHaveBeenCalledWith({});
     expect(result).toBeDefined();
   });
 
   it('PUSH uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'PUSH');
+    getNavigateAction('/home', {}, defaultRouteInfo, 'PUSH');
 
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
@@ -396,7 +374,7 @@ describe(getNavigateAction, () => {
   });
 
   it('REPLACE uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'REPLACE');
+    getNavigateAction('/home', {}, defaultRouteInfo, 'REPLACE');
 
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
