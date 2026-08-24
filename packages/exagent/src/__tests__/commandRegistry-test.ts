@@ -690,6 +690,22 @@ describe(unknownCommandMessage, () => {
   it('says nothing about close names when there are none', () => {
     expect(unknownCommandMessage('zzzzzzzz')).not.toContain('closest');
   });
+
+  // F11 leftover: `exagent logs` is spelled correctly and is near nothing, so the generic answer
+  // was "it is in none of them" plus a link to thirty names — leaving the reader to work out from
+  // the listing whether a log command exists at all.
+  it('says that no log command exists, and names what answers instead', () => {
+    for (const name of ['logs', 'log', 'LOGS']) {
+      const message = unknownCommandMessage(name);
+
+      expect(message).toContain(`"exagent ${name}" is not a command`);
+      expect(message).toContain('this CLI has no log command');
+      expect(message).toContain('npx exagent dev:wait');
+      expect(message).toContain('npx exagent runtime:errors');
+      // Nothing is a near match, so the generic answer had nothing to offer here.
+      expect(message).not.toContain('closest');
+    }
+  });
 });
 
 describe(unknownCommandSuggestion, () => {
@@ -700,5 +716,9 @@ describe(unknownCommandSuggestion, () => {
   it('falls back to the listing when the answer is a choice', () => {
     expect(unknownCommandSuggestion('wait')).toBe('npx exagent --help');
     expect(unknownCommandSuggestion('zzzzzzzz')).toBe('npx exagent --help');
+  });
+
+  it('recovers a missing capability into the command that answers it', () => {
+    expect(unknownCommandSuggestion('logs')).toBe('npx exagent runtime:errors');
   });
 });

@@ -8,7 +8,12 @@ import {
   type BundleCheckPlatform,
 } from '../runtime/bundleCheck';
 import { resolveDevServerUrlFlag } from '../runtime/devServer';
-import { DURATION_METAVAR, parseArgsOrThrow, resolveDuration } from '../utils/args';
+import {
+  DURATION_METAVAR,
+  parseArgsOrThrow,
+  resolveDuration,
+  strayArgumentError,
+} from '../utils/args';
 import { CommandError } from '../utils/errors';
 
 /**
@@ -67,10 +72,9 @@ const WAIT_ARGS = {
 export function resolveDevWaitOptions(argv: string[]): DevWaitOptions {
   const args = parseArgsOrThrow(WAIT_ARGS, argv);
   if (args._.length > 0) {
-    throw new CommandError(
-      'BAD_ARGS',
-      `Unexpected argument: ${args._[0]}. This command takes no arguments. Usage: npx exagent dev:wait [--timeout ${DURATION_METAVAR}] [--require-app]`
-    );
+    throw strayArgumentError('dev:wait', args._, {
+      hint: `this command waits on the project's own dev server and takes no target. Usage: npx exagent dev:wait [--timeout ${DURATION_METAVAR}] [--require-app], or --dev-server-url <url> to wait on another one.`,
+    });
   }
 
   return {

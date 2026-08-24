@@ -58,6 +58,7 @@ describe(resolveRuntimeCommand, () => {
       durationMs: 2000,
       json: false,
       followups: true,
+      failOnError: false,
     });
   });
 
@@ -77,7 +78,21 @@ describe(resolveRuntimeCommand, () => {
       durationMs: 5000,
       json: true,
       followups: true,
+      failOnError: false,
     });
+  });
+
+  // F25: `dev:wait` exits 20 on a broken bundle while this exits 0 with the app throwing, so an
+  // agent could gate on one and not the other. Opt-in, because collecting is still the default job.
+  it(`should read --fail-on-error`, () => {
+    expect(resolveRuntimeCommand(['errors', '--fail-on-error'])).toMatchObject({
+      failOnError: true,
+    });
+  });
+
+  // A failed request is something `network` reports about the app, not a verdict on it.
+  it(`should reject --fail-on-error on network`, () => {
+    expect(() => resolveRuntimeCommand(['network', '--fail-on-error'])).toThrow(/--fail-on-error/);
   });
 
   it(`should suppress the follow-ups of errors with --no-followups`, () => {

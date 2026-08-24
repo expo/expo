@@ -13,7 +13,7 @@ export const exagentDoctorCheck: Command = async (argv) => {
       // Aliases
       '-h': '--help',
     },
-    { argv }
+    { argv, command: 'doctor:check', positionalArgs: 'none' }
   );
 
   if (args['--help']) {

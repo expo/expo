@@ -1,4 +1,10 @@
-import { CdpClient, CdpRequestError, RPC_METHOD_NOT_FOUND } from '../cdpClient';
+import { EXIT_OUTCOME_FAILED } from '../../exitCodes';
+import {
+  CdpClient,
+  CdpPromisePendingError,
+  CdpRequestError,
+  RPC_METHOD_NOT_FOUND,
+} from '../cdpClient';
 import {
   CdpNetworkCollector,
   NetworkDomainUnavailableError,
@@ -116,7 +122,8 @@ describe(runtimeEvalAsync, () => {
       value: { id: 7 },
       description: null,
       exception: null,
-      untrusted: ['value', 'description', 'exception'],
+      promise: null,
+      untrusted: ['value', 'description', 'exception', 'promise'],
     });
   });
 
@@ -134,6 +141,7 @@ describe(runtimeEvalAsync, () => {
       'devServerUrl',
       'exception',
       'expression',
+      'promise',
       'threw',
       'type',
       'untrusted',
@@ -152,6 +160,7 @@ describe(runtimeEvalAsync, () => {
       'devServerUrl',
       'exception',
       'expression',
+      'promise',
       'threw',
       'type',
       'untrusted',
@@ -195,6 +204,73 @@ describe(runtimeEvalAsync, () => {
     expect(error.suggestedCommand).toBe('npx exagent runtime:errors');
   });
 
+  // F21: a rejected promise is the asynchronous form of a throw, so an agent gating on the exit
+  // code must not read a failed `fetch` as a pass — but the two are different facts in the report.
+  it(`should exit with 1 when the promise the expression returned rejects`, async () => {
+    mockEvaluate(async () => ({
+      promise: {
+        state: 'rejected',
+        awaited: true,
+        waitedMs: 12,
+        reason: { text: 'Error: BOOM_REJECT', stack: '  at anonymous' },
+      },
+    }));
+
+    await expect(runtimeEvalAsync({ ...evalOptions, json: true })).resolves.toBe(1);
+
+    const report = JSON.parse(printed());
+    expect(report.threw).toBe(false);
+    expect(report.exception).toBeNull();
+    expect(report.promise).toMatchObject({ state: 'rejected' });
+  });
+
+  it(`should exit with 0 for a promise that resolved, and report its value`, async () => {
+    mockEvaluate(async () => ({
+      value: 200,
+      type: 'number',
+      promise: { state: 'fulfilled', awaited: true, waitedMs: 132 },
+    }));
+
+    await expect(runtimeEvalAsync(evalOptions)).resolves.toBe(0);
+    expect(printed()).toContain('returned a promise, and it resolved in 132ms');
+    expect(printed()).toContain('Settled type: number');
+  });
+
+  it(`should say that --no-await-promise is why there is no settled value`, async () => {
+    mockEvaluate(async () => ({ type: 'promise', promise: { state: 'pending', awaited: false } }));
+
+    await expect(runtimeEvalAsync({ ...evalOptions, awaitPromise: false })).resolves.toBe(0);
+    expect(printed()).toContain('--no-await-promise');
+    // Never the polyfill's internals, which is what the flag used to print.
+    expect(printed()).not.toContain('_A');
+  });
+
+  // A promise the wait ran out on is not a value, so it is not reported as one.
+  it(`should report a promise that outlived the wait as its own failure`, async () => {
+    mockEvaluate(async () => {
+      throw new CdpPromisePendingError(5000);
+    });
+
+    const error = await runtimeEvalAsync(evalOptions).catch((e) => e);
+
+    expect(error.code).toBe('RUNTIME_PROMISE_PENDING');
+    expect(error.message).toContain('had not settled after 5000ms');
+    expect(error.message).toContain('--timeout');
+    expect(error.message).toContain('--no-await-promise');
+  });
+
+  it(`should say that a reload lost the outcome, not that the promise is slow`, async () => {
+    mockEvaluate(async () => {
+      throw new CdpPromisePendingError(120, true);
+    });
+
+    const error = await runtimeEvalAsync(evalOptions).catch((e) => e);
+
+    expect(error.code).toBe('RUNTIME_PROMISE_PENDING');
+    expect(error.message).toContain('the app reloaded');
+    expect(error.message).not.toContain('--timeout');
+  });
+
   it(`should report a failed evaluate request with the reason and a next step`, async () => {
     mockEvaluate(async () => {
       throw new Error('The app did not answer the evaluate request within 5000ms.');
@@ -214,6 +290,7 @@ const errorsOptions = {
   durationMs: 2000,
   json: false,
   followups: true,
+  failOnError: false,
 };
 
 describe(runtimeErrorsAsync, () => {
@@ -238,6 +315,106 @@ describe(runtimeErrorsAsync, () => {
     await expect(runtimeErrorsAsync(errorsOptions)).resolves.toBe(0);
     expect(printed()).toContain('Collected 1 runtime error(s)');
     expect(printed()).toContain(UNTRUSTED_OUTPUT_BEGIN);
+  });
+
+  // F25: `dev:wait` exits 20 on a bundle that does not build while this exited 0 with the app
+  // throwing, so an agent could gate on one and not the other. Opt-in, both ways round.
+  describe('--fail-on-error', () => {
+    it(`should exit 20 when the window caught something`, async () => {
+      mockCollect(async () => [
+        { source: 'console', timestamp: 1700000000001, message: 'Request failed' },
+      ]);
+
+      await expect(
+        runtimeErrorsAsync({ ...errorsOptions, failOnError: true })
+      ).resolves.toBe(EXIT_OUTCOME_FAILED);
+    });
+
+    it(`should exit 0 for an empty window even when it is a gate`, async () => {
+      mockCollect(async () => []);
+
+      await expect(runtimeErrorsAsync({ ...errorsOptions, failOnError: true })).resolves.toBe(0);
+    });
+  });
+
+  describe('symbolication', () => {
+    const BUNDLE_URL = 'http://127.0.0.1:8081/index.bundle//&platform=ios&dev=true';
+
+    /** Answer `/symbolicate` with `stack`, and `/json/list` with the connected app. */
+    function mockSymbolicator(stack: unknown[] | null) {
+      globalThis.fetch = (async (url: string) => {
+        if (String(url).endsWith('/symbolicate')) {
+          return stack == null
+            ? { ok: false, status: 500, json: async () => ({}) }
+            : { ok: true, status: 200, json: async () => ({ stack, codeFrame: null }) };
+        }
+        return { ok: true, json: async () => [TARGET] };
+      }) as unknown as typeof fetch;
+    }
+
+    const thrown = {
+      source: 'exception' as const,
+      timestamp: 1700000000000,
+      message: 'Error: BOOM',
+      stack: `  at render (${BUNDLE_URL}:49572:40)`,
+      frames: [{ methodName: 'render', file: BUNDLE_URL, lineNumber: 49572, column: 39 }],
+    };
+
+    it(`should report the project file and line instead of a bundle offset`, async () => {
+      mockCollect(async () => [thrown]);
+      mockSymbolicator([
+        {
+          file: '/project/src/app/index.tsx',
+          lineNumber: 42,
+          column: 12,
+          methodName: 'Index',
+          collapse: false,
+        },
+      ]);
+
+      await runtimeErrorsAsync({ ...errorsOptions, json: true }, { projectRoot: '/project' });
+
+      const report = JSON.parse(printed());
+      expect(report.errors[0].stack).toBe('  at Index (src/app/index.tsx:42:13)');
+      expect(report.errors[0].symbolicated).toBe(true);
+      expect(report.errors[0].frames).toEqual([
+        {
+          methodName: 'Index',
+          file: 'src/app/index.tsx',
+          lineNumber: 42,
+          column: 12,
+          collapse: false,
+        },
+      ]);
+    });
+
+    // Roughly 2 KB of repeated transform options per error, and no project file anywhere.
+    it(`should trim the query string of a frame it could not map`, async () => {
+      mockCollect(async () => [thrown]);
+      mockSymbolicator([{ file: BUNDLE_URL, lineNumber: null, column: null, collapse: true }]);
+
+      await runtimeErrorsAsync({ ...errorsOptions, json: true }, { projectRoot: '/project' });
+
+      const report = JSON.parse(printed());
+      expect(report.errors[0].stack).toBe(
+        '  at render (http://127.0.0.1:8081/index.bundle:49572:40)'
+      );
+      expect(report.errors[0].symbolicated).toBe(false);
+      expect(report.errors[0].stack).not.toContain('platform=ios');
+    });
+
+    it(`should keep the raw frame when the dev server cannot symbolicate`, async () => {
+      mockCollect(async () => [thrown]);
+      mockSymbolicator(null);
+
+      await expect(
+        runtimeErrorsAsync({ ...errorsOptions, json: true }, { projectRoot: '/project' })
+      ).resolves.toBe(0);
+
+      const report = JSON.parse(printed());
+      expect(report.errors[0].symbolicated).toBe(false);
+      expect(report.errors[0].stack).toContain('49572');
+    });
   });
 
   it(`should print the machine shape with --json`, async () => {
@@ -450,7 +627,7 @@ describe(runtimeNetworkAsync, () => {
   // an empty report for the second one would send an agent to debug the wrong thing.
   it(`should report an unsupported Network domain instead of an empty window`, async () => {
     mockNetwork(async () => {
-      throw new NetworkDomainUnavailableError(`'Network.enable' wasn't found`);
+      throw new NetworkDomainUnavailableError(`'Network.enable' wasn't found`, -32601);
     });
 
     const error = await runtimeNetworkAsync(networkOptions).catch((e) => e);
@@ -458,21 +635,56 @@ describe(runtimeNetworkAsync, () => {
     expect(error.code).toBe('NETWORK_DOMAIN_UNAVAILABLE');
     expect(error.message).toContain('Network.enable');
     expect(error.message).toContain(`'Network.enable' wasn't found`);
+    expect(error.message).toContain('carries no handler for the method');
     expect(error.suggestedCommand).toBe('npx exagent runtime:errors');
     expect(printed()).not.toContain('No network requests were reported');
   });
 
-  it(`should name whether the dev server offers the network panel for the app`, async () => {
+  it(`should name the network panel flag only for a runtime that has no handler`, async () => {
     mockDevServer([
       { ...TARGET, devtoolsFrontendUrl: '/devtools?unstable_enableNetworkPanel=true' },
     ]);
     mockNetwork(async () => {
-      throw new NetworkDomainUnavailableError('nope');
+      throw new NetworkDomainUnavailableError(`'Network.enable' wasn't found`, -32601);
     });
 
     const error = await runtimeNetworkAsync(networkOptions).catch((e) => e);
 
-    expect(error.message).toContain('does offer');
+    expect(error.message).toContain('does offer the network panel');
+  });
+
+  // F24: the message quoted "multiple hosts" and then blamed a runtime built without the domain
+  // and told the caller to upgrade the SDK — advice that could not follow from the quoted cause.
+  it(`should explain a multiple-hosts refusal by the host count, not by the SDK`, async () => {
+    mockNetwork(async () => {
+      throw new NetworkDomainUnavailableError(
+        'The Network domain is unavailable when multiple React Native hosts are registered.',
+        -32603
+      );
+    });
+
+    const error = await runtimeNetworkAsync(networkOptions).catch((e) => e);
+
+    expect(error.code).toBe('NETWORK_DOMAIN_UNAVAILABLE');
+    expect(error.message).toContain('multiple React Native hosts are registered');
+    expect(error.message).toContain('exactly one React Native host');
+    expect(error.message).toContain('Relaunch the app');
+    // The three claims that contradicted the quoted cause.
+    expect(error.message).not.toContain('newer Expo SDK');
+    expect(error.message).not.toContain('built without');
+    expect(error.message).not.toContain('no handler');
+  });
+
+  it(`should quote a refusal it does not recognise and claim nothing about it`, async () => {
+    mockNetwork(async () => {
+      throw new NetworkDomainUnavailableError('something else entirely');
+    });
+
+    const error = await runtimeNetworkAsync(networkOptions).catch((e) => e);
+
+    expect(error.message).toContain('"something else entirely"');
+    expect(error.message).toContain('not a refusal this CLI recognises');
+    expect(error.message).not.toContain('newer Expo SDK');
   });
 
   it(`should report a failed collection with the reason`, async () => {

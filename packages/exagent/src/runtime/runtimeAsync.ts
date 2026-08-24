@@ -4,6 +4,7 @@
 // "I read the value out of the running app".
 
 import { event } from '../events';
+import { EXIT_OUTCOME_FAILED } from '../exitCodes';
 import {
   buildRuntimeErrorsFollowUps,
   buildRuntimeNetworkFollowUps,
@@ -14,6 +15,7 @@ import * as Log from '../log';
 import { CommandError } from '../utils/errors';
 import {
   CdpClient,
+  CdpPromisePendingError,
   isMethodNotFoundError,
   type CdpEvaluateResult,
   type CdpTarget,
@@ -31,6 +33,7 @@ import {
 } from './format';
 import {
   CdpNetworkCollector,
+  classifyNetworkDomainRefusal,
   NetworkDomainUnavailableError,
   targetAdvertisesNetworkPanel,
   type NetworkRequestRecord,
@@ -41,6 +44,12 @@ import type {
   RuntimeNetworkOptions,
 } from './resolveOptions';
 import { CdpRuntimeErrorCollector, type RuntimeErrorRecord } from './runtimeErrorCollector';
+import {
+  formatStackFrames,
+  isUnmappedFrame,
+  relativizeFrame,
+  symbolicateFramesAsync,
+} from './symbolicate';
 
 export interface RuntimeContext {
   /**
@@ -98,6 +107,9 @@ export async function runtimeEvalAsync(
     if (isMethodNotFoundError(error)) {
       throw evaluateUnsupportedError(devServerUrl);
     }
+    if (error instanceof CdpPromisePendingError) {
+      throw promisePendingError(devServerUrl, expression, timeoutMs, error);
+    }
     throw new CommandError(
       'RUNTIME_EVALUATE_FAILED',
       [
@@ -112,6 +124,7 @@ export async function runtimeEvalAsync(
     devServerUrl,
     threw: !!result.exceptionText,
     type: result.type ?? 'undefined',
+    promise: result.promise?.state ?? null,
   });
 
   if (json) {
@@ -120,7 +133,41 @@ export async function runtimeEvalAsync(
     Log.log(formatEvaluateResult(devServerUrl, result));
   }
 
-  return result.exceptionText ? 1 : 0;
+  // A rejected promise is the asynchronous form of a throw, so it exits the same way: an agent
+  // gating on `runtime:eval` must not read a failed `fetch` as a pass. The two are still told apart
+  // in the report itself — `threw` for one, `promise.state` for the other.
+  return result.exceptionText || result.promise?.state === 'rejected' ? 1 : 0;
+}
+
+/**
+ * A promise the expression returned outlived the wait.
+ *
+ * Its own error rather than a report, because the command was asked for a settled value and has
+ * none: reporting "pending" with exit 0 would let a caller act on a value that never arrived.
+ * `--no-await-promise` is the way to ask for the pending answer on purpose, and it exits 0.
+ */
+function promisePendingError(
+  devServerUrl: string,
+  expression: string,
+  timeoutMs: number,
+  cause: CdpPromisePendingError
+): CommandError {
+  const error = new CommandError(
+    'RUNTIME_PROMISE_PENDING',
+    cause.lost
+      ? [
+          `The promise the expression returned was lost before it settled (dev server ${devServerUrl}).`,
+          `Why: the app reloaded during the wait, which clears the globals this command parks the outcome on, so the value it resolved to — if it ever did — cannot be read any more.`,
+          `How: run the expression again once the app has finished reloading ("npx exagent dev:wait --require-app" waits for that).`,
+        ].join('\n')
+      : [
+          `The promise the expression returned had not settled after ${timeoutMs}ms (dev server ${devServerUrl}).`,
+          `Why: the app is answering — it reported the promise and was polled until the wait ran out — so this is the promise taking longer than the budget, not a runtime that cannot be reached. A request to a slow host, or one waiting on something that never happens, both look like this.`,
+          `How: give it longer with --timeout (for example --timeout 30s), or pass --no-await-promise to be told that a promise came back without waiting for it.`,
+        ].join('\n')
+  );
+  error.suggestedCommand = `npx exagent runtime:eval ${JSON.stringify(expression)} --timeout 30s`;
+  return error;
 }
 
 /**
@@ -153,7 +200,7 @@ export async function runtimeErrorsAsync(
   options: RuntimeErrorsOptions,
   context: RuntimeContext = {}
 ): Promise<number> {
-  const { durationMs, json } = options;
+  const { durationMs, json, failOnError } = options;
   const devServerUrl = await resolveDevServerUrlAsync(options, context);
   await requireConnectedAppAsync(devServerUrl);
 
@@ -174,7 +221,14 @@ export async function runtimeErrorsAsync(
     );
   }
 
-  event('runtime_errors', { devServerUrl, durationMs, count: errors.length });
+  errors = await symbolicateRuntimeErrorsAsync(errors, devServerUrl, context.projectRoot ?? null);
+
+  event('runtime_errors', {
+    devServerUrl,
+    durationMs,
+    count: errors.length,
+    symbolicated: errors.filter((error) => error.symbolicated).length,
+  });
 
   // @ref llp/0009-smart-followups.rfc.md §Examples per command — the two outcomes need opposite
   // next steps: errors mean "fix, then prove the window is clean", an empty window means the
@@ -196,9 +250,41 @@ export async function runtimeErrorsAsync(
   }
   reportFollowUps('runtime:errors', followups, { json });
 
-  // Collected errors are a report, not a failure of the command: the app was reached and
-  // answered. A caller that wants to fail on errors reads `count` from `--json`.
-  return 0;
+  // Collected errors are a report, not a failure of the command: the app was reached and answered,
+  // and a window that catches nothing is the common case. `--fail-on-error` is the opt-in for a
+  // caller using this as a gate, which is what `dev:wait` is by default — the two differ because
+  // an empty window here means "nothing happened while I watched", not "the app is healthy".
+  return failOnError && errors.length > 0 ? EXIT_OUTCOME_FAILED : 0;
+}
+
+/**
+ * Map every stack onto project files, and make the frames readable either way.
+ *
+ * One request per error rather than one for all of them: Metro keys its source maps by the frame's
+ * bundle URL, so mixing two bundles into one request is fine, but a failure on one error's stack
+ * would take the others' with it. The frames are trimmed of their query strings whatever happens,
+ * because that is what makes an unmapped stack unreadable.
+ */
+async function symbolicateRuntimeErrorsAsync(
+  errors: RuntimeErrorRecord[],
+  devServerUrl: string,
+  projectRoot: string | null
+): Promise<RuntimeErrorRecord[]> {
+  return await Promise.all(
+    errors.map(async (error) => {
+      if (!error.frames?.length) {
+        return error;
+      }
+      const symbolicated = await symbolicateFramesAsync(devServerUrl, error.frames);
+      const frames = symbolicated.map((frame) => relativizeFrame(frame, projectRoot));
+      return {
+        ...error,
+        frames,
+        symbolicated: frames.some((frame) => !isUnmappedFrame(frame)),
+        stack: formatStackFrames(frames),
+      };
+    })
+  );
 }
 
 /**
@@ -272,25 +358,55 @@ export async function runtimeNetworkAsync(
 }
 
 /**
- * The runtime does not implement the CDP Network domain.
+ * The runtime refused `Network.enable`.
  *
- * Reported as its own error, never as an empty window: the domain is behind an unstable flag in
- * React Native's Fusebox, so "the app made no requests" and "this runtime cannot report requests"
- * are both plausible and lead to opposite next steps. The panel flag on the dev server's target is
- * named because it is the one piece of evidence a caller can check by hand.
+ * Reported as its own error, never as an empty window: "the app made no requests" and "this runtime
+ * cannot report requests" are both plausible and lead to opposite next steps.
+ *
+ * The why and the how both branch on what the runtime actually answered
+ * ({@link classifyNetworkDomainRefusal}), because React Native's two refusals have nothing in
+ * common. This message used to quote "multiple React Native hosts are registered" and then blame a
+ * runtime built without the domain and recommend an SDK upgrade — three sentences that contradicted
+ * the evidence in the one above them.
+ *
+ * @ref llp/0005-runtime-loop-tools.rfc.md §Implemented in v1 as — Network inspection.
  */
 function networkDomainUnavailableError(
   devServerUrl: string,
   cause: NetworkDomainUnavailableError,
   targets: CdpTarget[]
 ): CommandError {
+  const refusal = classifyNetworkDomainRefusal(cause);
   const advertised = targets.some(targetAdvertisesNetworkPanel);
+  const quoted = `it answered Network.enable with an error: "${cause.reason}"`;
+
+  // Reading the errors is the answer to all three, because a failing request nearly always throws
+  // or logs; only the way to get the network log itself back differs.
+  const readErrorsInstead = `Read the app's runtime errors meanwhile — a request that fails almost always throws or logs there — or wrap the call in your own logging and read the value with "npx exagent runtime:eval".`;
+
+  const { why, how } =
+    refusal === 'multiple-hosts'
+      ? {
+          // Observed in React Native 0.86's HostAgent.cpp; see `classifyNetworkDomainRefusal`.
+          why: `${quoted}. The domain attaches only while exactly one React Native host is registered in the app's process, and this app's process has more than one. The count is a property of the app, not of the dev server: stopping another dev server does not lower it, and neither does reconnecting the debugger. Expo Go reaches this state by holding a host for a project it loaded earlier alongside the one for this project.`,
+          how: `Relaunch the app so this project's host is the only one registered — "npx exagent navigate /" after closing the app reloads it from scratch — then run this command again. A development build that runs one host answers the domain directly. ${readErrorsInstead}`,
+        }
+      : refusal === 'not-implemented'
+        ? {
+            why: `${quoted}. The runtime carries no handler for the method, so there is no request log in it to read. Network inspection is an unstable part of the React Native debugger and a runtime can be built without it; Expo Go for Android ships a JavaScript engine with no Chrome DevTools Protocol debugger at all, which answers every method this way.${advertised ? ' The dev server does offer the network panel for this app, which describes what the debugger frontend would show and is not a promise from the runtime.' : ''}`,
+            how: `${readErrorsInstead} Opening the app on iOS, or in a development build, gives a runtime that implements the domain.`,
+          }
+        : {
+            why: `${quoted}. That is not a refusal this CLI recognises: the two React Native sends are "the domain is unavailable when multiple hosts are registered" and "no such method". The answer above is the whole of what the runtime said.`,
+            how: `${readErrorsInstead} Re-run with EXPO_DEBUG=1 to see the debugger traffic that produced this answer.`,
+          };
+
   const error = new CommandError(
     'NETWORK_DOMAIN_UNAVAILABLE',
     [
-      `The app connected to ${devServerUrl} cannot report its network requests.`,
-      `Why: it answered Network.enable with an error (${cause.reason}). Network inspection is an unstable part of the React Native debugger, so a runtime built without it has no request log to read. The dev server ${advertised ? 'does offer' : 'does not offer'} the network panel for this app.`,
-      `How: read the app's runtime errors instead — a request that fails almost always throws or logs there — or wrap the call in your own logging and read the value with "npx exagent runtime:eval". Upgrading the app to a newer Expo SDK is what adds the domain.`,
+      `The app connected to ${devServerUrl} did not report its network requests.`,
+      `Why: ${why}`,
+      `How: ${how}`,
     ].join('\n')
   );
   error.suggestedCommand = 'npx exagent runtime:errors';

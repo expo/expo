@@ -16,7 +16,7 @@ export const exagentAgentsSetup: Command = async (argv) => {
       // Aliases
       '-h': '--help',
     },
-    { argv }
+    { argv, command: 'agents:setup', positionalArgs: 'none' }
   );
 
   if (args['--help']) {

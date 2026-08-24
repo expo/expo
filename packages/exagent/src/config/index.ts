@@ -15,7 +15,7 @@ export const exagentConfigEffective: Command = async (argv) => {
       // Aliases
       '-h': '--help',
     },
-    { argv }
+    { argv, command: 'config:effective', positionalArgs: 'none' }
   );
 
   if (args['--help']) {

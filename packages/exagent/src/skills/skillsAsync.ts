@@ -2,7 +2,12 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { buildSkillsSyncFollowUps, followUpsEnabled, reportFollowUps } from '../followups';
+import {
+  buildSkillsSyncFollowUps,
+  followUpsEnabled,
+  reportFollowUps,
+  type FollowUp,
+} from '../followups';
 import * as Log from '../log';
 import { getAgentTelemetryContext } from '../utils/agent';
 import { CommandError } from '../utils/errors';
@@ -16,7 +21,14 @@ import {
 import { discoverSkillsAsync } from './discovery';
 import { debugEvent } from './events';
 import { cleanSkillLinksAsync, syncSkillLinksAsync, updateGitIgnoreAsync } from './linking';
-import type { DiscoveredSkill, SkillsAgent, SkillsOptions } from './types';
+import type {
+  DiscoveredSkill,
+  SkillJson,
+  SkillsAgent,
+  SkillsCleanJson,
+  SkillsOptions,
+  SkillsSyncJson,
+} from './types';
 
 function uniqueSkillsDirs(agents: SkillsAgent[]): string[] {
   return [...new Set(agents.map((agent) => agent.skillsDir))];
@@ -38,6 +50,12 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
     !options.agents.length &&
     (await getPersistedAgentIdsAsync(projectRoot)) == null
   ) {
+    // Nothing to link and nobody to link it for: still a report, because a run asked for JSON gets
+    // one whether or not it had work to do (llp/0006 §Output contract).
+    if (options.json) {
+      logSyncJson({ dryRun: !!options.dryRun, agents: [], discovered: [], linked: [], removed: [] });
+      return;
+    }
     Log.log('No agent skills found in the project dependencies.');
     return;
   }
@@ -58,6 +76,34 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
     dryRun: options.dryRun,
   });
 
+  const skillPackages = [...new Set(skills.map((skill) => skill.packageName))];
+  // @ref llp/0009-smart-followups.rfc.md §Wider ideas — agent-aware rendering: a detected agent is
+  // told that it does not have to read these files itself.
+  const followups = followUpsEnabled(options.followups)
+    ? buildSkillsSyncFollowUps({
+        skillPackages,
+        agentId: getAgentTelemetryContext()?.id ?? null,
+      })
+    : [];
+
+  if (options.json) {
+    logSyncJson(
+      {
+        dryRun: !!options.dryRun,
+        agents: agents.map((agent) => ({
+          id: agent.id,
+          name: agent.displayName,
+          skillsDir: agent.skillsDir,
+        })),
+        discovered: skills.map(skillToJson),
+        linked: created,
+        removed: pruned,
+      },
+      followups
+    );
+    return;
+  }
+
   const prefix = options.dryRun ? chalk.dim('[dry-run] ') : '';
   if (created.length || pruned.length) {
     for (const link of created) {
@@ -67,24 +113,30 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
       Log.log(`${prefix}${chalk.red('-')} ${link}`);
     }
   }
-  const skillPackages = [...new Set(skills.map((skill) => skill.packageName))];
   Log.log(
     `${prefix}${skills.length} skill(s) from ${skillPackages.length} package(s) linked for: ${agents
       .map((agent) => agent.displayName)
       .join(', ')}`
   );
 
-  // @ref llp/0009-smart-followups.rfc.md §Wider ideas — agent-aware rendering: a detected agent is
-  // told that it does not have to read these files itself.
-  if (followUpsEnabled(options.followups)) {
-    reportFollowUps(
-      'skills:sync',
-      buildSkillsSyncFollowUps({
-        skillPackages,
-        agentId: getAgentTelemetryContext()?.id ?? null,
-      })
-    );
-  }
+  reportFollowUps('skills:sync', followups);
+}
+
+/** One skill as every JSON report of this group prints it. */
+function skillToJson(skill: DiscoveredSkill): SkillJson {
+  return {
+    package: skill.packageName,
+    skill: skill.name,
+    name: skill.title ?? skill.name,
+    description: skill.description ?? null,
+    path: skill.path,
+    linkName: skill.linkName,
+  };
+}
+
+/** The one object a `skills:sync --json` run prints on stdout, follow-ups included. */
+function logSyncJson(report: SkillsSyncJson, followups: FollowUp[] = []): void {
+  Log.log(JSON.stringify({ ...report, followups }, null, 2));
 }
 
 export async function listSkillsAsync(
@@ -96,12 +148,7 @@ export async function listSkillsAsync(
   if (options.json) {
     const skillsDirs = uniqueSkillsDirs(await getConfiguredAgentsAsync(projectRoot));
     const entries = skills.map((skill) => ({
-      package: skill.packageName,
-      skill: skill.name,
-      name: skill.title ?? skill.name,
-      description: skill.description ?? null,
-      path: skill.path,
-      linkName: skill.linkName,
+      ...skillToJson(skill),
       linkedIn: skillsDirs.filter((dir) =>
         fs.existsSync(path.join(projectRoot, dir, skill.linkName))
       ),
@@ -183,6 +230,17 @@ export async function cleanSkillsAsync(
     dryRun: options.dryRun,
   });
   await updateGitIgnoreAsync(projectRoot, skillsDirs, { dryRun: options.dryRun });
+
+  if (options.json) {
+    const report: SkillsCleanJson = {
+      dryRun: !!options.dryRun,
+      skillsDirs,
+      removed: pruned,
+    };
+    Log.log(JSON.stringify(report, null, 2));
+    return;
+  }
+
   const prefix = options.dryRun ? chalk.dim('[dry-run] ') : '';
   for (const link of pruned) {
     Log.log(`${prefix}${chalk.red('-')} ${link}`);

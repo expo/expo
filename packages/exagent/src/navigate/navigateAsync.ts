@@ -94,6 +94,25 @@ export async function navigateAsync(
     readProjectPackageJsonAsync(projectRoot),
   ]);
   const devServerUrl = devServer.devServerUrl;
+
+  // A named dev server that does not answer is a mistake worth stopping on, and the only case where
+  // this command could still build a URL from it: the scheme of a development build needs no dev
+  // server, so a `--dev-server-url` typo used to deep-link the device into an app with no bundle to
+  // load and report exit 0. Discovery already probes the URL — `flag` is the one source whose
+  // failure was not acted on.
+  if (devServer.source === 'flag' && !devServer.reachable) {
+    const error = new CommandError(
+      'DEEP_LINK_UNRESOLVED',
+      [
+        `No Expo dev server answered at ${devServerUrl}, which --dev-server-url named, so nothing was opened.`,
+        `Why: the request for its debugger target list failed (${devServer.reason ?? 'no answer'}). Opening a route against a dev server that is not running loads the app onto the device with nothing to bundle for it, which looks like a crash rather than like a wrong URL.`,
+        `How: start the dev server ("npx exagent dev"), or drop --dev-server-url and let this command find the project's own — it asks the dev-server lock first, then the port the project last logged.`,
+      ].join('\n')
+    );
+    error.suggestedCommand = 'npx exagent dev:wait';
+    throw error;
+  }
+
   const usesDevClient = await isInstalledDependencyAsync(
     projectRoot,
     listDependencyNames(packageJson),

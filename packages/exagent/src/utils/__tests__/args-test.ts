@@ -1,5 +1,94 @@
-import { DURATION_HELP_NOTE, DURATION_METAVAR, resolveDuration } from '../args';
+import {
+  assertWithOptionsArgs,
+  DURATION_HELP_NOTE,
+  DURATION_METAVAR,
+  resolveDuration,
+  strayArgumentError,
+} from '../args';
 import { CommandError } from '../errors';
+
+jest.mock('../errors', () => {
+  const actual = jest.requireActual('../errors');
+  return { ...actual, logCmdError: jest.fn() };
+});
+
+const { logCmdError } = require('../errors') as { logCmdError: jest.Mock };
+
+const HELP_SCHEMA = { '--help': Boolean, '--id': String, '-h': '--help' };
+
+describe(strayArgumentError, () => {
+  it(`names the argument, the command, and that it would have been dropped`, () => {
+    const error = strayArgumentError('checkpoint:undo', ['abc123']);
+    expect(error).toBeInstanceOf(CommandError);
+    expect(error.code).toBe('BAD_ARGS');
+    expect(error.message).toContain('Unexpected argument: abc123');
+    expect(error.message).toContain('"exagent checkpoint:undo" reads no positional arguments');
+    expect(error.message).toContain('dropped');
+    expect(error.suggestedCommand).toBe('npx exagent checkpoint:undo --help');
+  });
+
+  it(`counts them when more than one arrived`, () => {
+    expect(strayArgumentError('status', ['a', 'b']).message).toContain('2 were passed (a b)');
+  });
+
+  it(`prints the caller's hint as the "How" line when there is one`, () => {
+    const error = strayArgumentError('checkpoint:undo', ['abc123'], { hint: 'use --id.' });
+    expect(error.message).toContain('How: use --id.');
+  });
+});
+
+describe(assertWithOptionsArgs, () => {
+  beforeEach(() => logCmdError.mockClear());
+
+  // The whole of F22: `checkpoint:undo <id>` dropped the argument and restored the newest
+  // checkpoint over the working tree, and reported that it had worked.
+  it(`reports a stray argument for a command that reads none`, () => {
+    assertWithOptionsArgs(HELP_SCHEMA, {
+      argv: ['abc123'],
+      command: 'checkpoint:undo',
+      positionalArgs: 'none',
+      strayHint: 'name it with --id.',
+    });
+    expect(logCmdError).toHaveBeenCalledTimes(1);
+    const error = logCmdError.mock.calls[0]![0] as CommandError;
+    expect(error.code).toBe('BAD_ARGS');
+    expect(error.message).toContain('Unexpected argument: abc123');
+    expect(error.message).toContain('name it with --id.');
+  });
+
+  it(`accepts a run with only options`, () => {
+    const args = assertWithOptionsArgs(HELP_SCHEMA, {
+      argv: ['--id', 'abc123'],
+      command: 'checkpoint:undo',
+      positionalArgs: 'none',
+    });
+    expect(args['--id']).toBe('abc123');
+    expect(logCmdError).not.toHaveBeenCalled();
+  });
+
+  // A caller reading the usage is not the one this protects, and the help is the recovery it names.
+  it(`prints the help rather than the error when both are asked for`, () => {
+    const args = assertWithOptionsArgs(HELP_SCHEMA, {
+      argv: ['abc123', '--help'],
+      command: 'checkpoint:undo',
+      positionalArgs: 'none',
+    });
+    expect(args['--help']).toBe(true);
+    expect(logCmdError).not.toHaveBeenCalled();
+  });
+
+  // A permissive parse cannot tell an unrecognized flag from a positional: `arg` puts both in `_`.
+  it(`leaves the arguments alone for a command that reads them itself`, () => {
+    const args = assertWithOptionsArgs(HELP_SCHEMA, {
+      argv: ['/profile/42', '--json'],
+      permissive: true,
+      command: 'navigate',
+      positionalArgs: 'own',
+    });
+    expect(args._).toEqual(['/profile/42', '--json']);
+    expect(logCmdError).not.toHaveBeenCalled();
+  });
+});
 
 describe(resolveDuration, () => {
   it(`falls back when the flag was not passed`, () => {

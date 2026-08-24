@@ -4,6 +4,8 @@
 // dev server.
 import type CdpMessageType from 'devtools-protocol';
 
+import type { StackFrame } from './symbolicate';
+
 /** Formatted view of a CDP exception, ready to show to a caller. */
 export interface FormattedCdpException {
   /** Single line error message, e.g. `TypeError: x is not a function`. */
@@ -45,6 +47,24 @@ export function formatCdpStackTrace(
       return location ? `  at ${name} (${location})` : `  at ${name}`;
     })
     .join('\n');
+}
+
+/**
+ * Reads a CDP stack trace as frames the symbolicator can map.
+ *
+ * Kept next to {@link formatCdpStackTrace} because they differ in exactly one thing that matters:
+ * CDP counts both lines and columns from 0, editors count both from 1, and Metro counts lines from
+ * 1 and columns from 0. Only the last of those is what goes on the wire.
+ */
+export function cdpStackFrames(stackTrace?: CdpMessageType.Runtime.StackTrace): StackFrame[] {
+  return (stackTrace?.callFrames ?? [])
+    .filter((frame) => !!frame.url)
+    .map((frame) => ({
+      methodName: frame.functionName || '<anonymous>',
+      file: frame.url,
+      lineNumber: (frame.lineNumber ?? 0) + 1,
+      column: frame.columnNumber ?? 0,
+    }));
 }
 
 /** Extracts the message, stack, and source location from CDP exception details. */

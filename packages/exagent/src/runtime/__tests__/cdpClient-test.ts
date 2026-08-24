@@ -3,6 +3,7 @@ import type WebSocketImpl from 'ws';
 
 import {
   CdpClient,
+  CdpPromisePendingError,
   CdpRequestError,
   createDefaultTargetSelector,
   deriveInspectorOrigin,
@@ -12,6 +13,7 @@ import {
   RPC_METHOD_NOT_FOUND,
   type CdpTarget,
 } from '../cdpClient';
+import LIVE from './fixtures/live-promise-frames.json';
 import { MockWebSocket } from './MockWebSocket';
 
 const TARGET = {
@@ -50,7 +52,9 @@ describe('CdpClient.evaluateAsync', () => {
     }
   });
 
-  it(`should send Runtime.evaluate with returnByValue and awaitPromise`, async () => {
+  // The expression the app runs carries the caller's verbatim, inside the wrapper that detects a
+  // thenable in the app; a value that is not one comes back in exactly one round trip, unchanged.
+  it(`should send one Runtime.evaluate carrying the caller's expression`, async () => {
     const requests: any[] = [];
     const client = createClient((request, socket) => {
       requests.push(request);
@@ -67,12 +71,14 @@ describe('CdpClient.evaluateAsync', () => {
 
     expect(requests).toHaveLength(1);
     expect(requests[0].method).toBe('Runtime.evaluate');
-    expect(requests[0].params).toMatchObject({
-      expression: '1 + 41',
-      awaitPromise: false,
-      returnByValue: true,
+    expect(requests[0].params.expression).toContain('1 + 41');
+    expect(requests[0].params).toMatchObject({ returnByValue: true });
+    expect(result).toEqual({
+      value: 42,
+      type: 'number',
+      description: undefined,
+      promise: undefined,
     });
-    expect(result).toEqual({ value: 42, type: 'number', description: undefined });
   });
 
   it(`should resolve object values by value`, async () => {
@@ -140,7 +146,7 @@ describe('CdpClient.evaluateAsync', () => {
     });
 
     await expect(client.evaluateAsync('1', { timeoutMs: 20 })).rejects.toThrow(
-      /did not answer the evaluate request within 20ms/
+      /did not answer the Runtime.evaluate request within 20ms/
     );
   });
 
@@ -219,6 +225,182 @@ describe('CdpClient.evaluateAsync', () => {
 
     const client = new CdpClient({ metroUrl: 'http://localhost:8081' });
     await expect(client.evaluateAsync('1')).rejects.toThrow(/No target found/);
+  });
+});
+
+/**
+ * F21: React Native's `Promise` is a JavaScript polyfill, so the inspector never tags a promise and
+ * CDP's `awaitPromise` does nothing. Every frame below is replayed from `fixtures/
+ * live-promise-frames.json`, captured verbatim from a live SDK 57 app in Expo Go on an iPhone 17 Pro
+ * simulator [observed — 2026-08-23]: the bug was invisible to a unit test written from the CDP spec,
+ * because the spec says `awaitPromise` works.
+ */
+describe('CdpClient.evaluateAsync, settling promises', () => {
+  let originalFetch: typeof fetch | undefined;
+
+  beforeEach(() => {
+    originalFetch = globalThis.fetch;
+    globalThis.fetch = (async () => ({
+      ok: true,
+      json: async () => [TARGET],
+    })) as unknown as typeof fetch;
+  });
+
+  afterEach(() => {
+    if (originalFetch) {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  /** The nonce the client generated, read back out of the expression it sent. */
+  function nonceOf(request: any): string {
+    const match = /__exagentPendingPromise_([0-9a-f]+)__/.exec(request.params.expression);
+    if (!match) {
+      throw new Error(`No nonce in: ${request.params.expression}`);
+    }
+    return match[1]!;
+  }
+
+  /**
+   * Answer like the app: the wrapper gets the marker, and each poll gets `answers` in turn.
+   *
+   * @param answers the `value` of each successive poll, verbatim from a live runtime.
+   */
+  function createPromiseClient(answers: unknown[]) {
+    const requests: any[] = [];
+    let poll = 0;
+    const client = createClient((request, socket) => {
+      requests.push(request);
+      // Only the wrapper declares `__exagentValue`; the poll and the release read the slots.
+      const isWrapper = String(request.params.expression).includes('__exagentValue');
+      const value = isWrapper
+        ? { [`__exagentPendingPromise_${nonceOf(requests[0])}__`]: nonceOf(requests[0]) }
+        : (answers[Math.min(poll++, answers.length - 1)] ?? { state: 'pending' });
+      socket.emit(
+        'message',
+        JSON.stringify({
+          id: request.id,
+          result: {
+            result: { type: 'object', className: 'Object', description: 'Object', value },
+          },
+        })
+      );
+    });
+    return { client, requests };
+  }
+
+  it(`should report the settled value of a resolved promise, with its type`, async () => {
+    const { client, requests } = createPromiseClient([
+      { state: 'pending' },
+      LIVE.resolvedNumber.result.result.value,
+    ]);
+
+    const result = await client.evaluateAsync('Promise.resolve(42)');
+
+    expect(result.value).toBe(42);
+    expect(result.type).toBe('number');
+    expect(result.promise).toMatchObject({ state: 'fulfilled', awaited: true });
+    expect(result.exceptionText).toBeUndefined();
+    // One evaluate, then one poll per answer: everything runs over the same connection.
+    expect(requests).toHaveLength(3);
+  });
+
+  it(`should report the status a live fetch resolved with`, async () => {
+    const { client } = createPromiseClient([LIVE.resolvedFetchStatus.result.result.value]);
+
+    const result = await client.evaluateAsync("fetch('https://example.com').then((r) => r.status)");
+
+    expect(result).toMatchObject({ value: 200, type: 'number' });
+  });
+
+  it(`should report a rejection as its own outcome, with the reason`, async () => {
+    const { client } = createPromiseClient([LIVE.rejected.result.result.value]);
+
+    const result = await client.evaluateAsync(`Promise.reject(new Error('BOOM_REJECT_LIVE'))`);
+
+    // Not an exception: the expression returned normally, and only `promise` has the outcome.
+    expect(result.exceptionText).toBeUndefined();
+    expect(result.value).toBeUndefined();
+    expect(result.promise).toMatchObject({
+      state: 'rejected',
+      awaited: true,
+      reason: { text: 'Error: BOOM_REJECT_LIVE' },
+    });
+  });
+
+  it(`should give up on a promise that outlives the wait, and release it`, async () => {
+    const { client, requests } = createPromiseClient([{ state: 'pending' }]);
+
+    const error = await client
+      .evaluateAsync('new Promise(() => {})', { timeoutMs: 150 })
+      .catch((e) => e);
+
+    expect(error).toBeInstanceOf(CdpPromisePendingError);
+    expect(error.lost).toBe(false);
+    // The last thing sent is the release, not another poll: the app is not left holding a value.
+    expect(requests.at(-1).params.expression).toContain('delete');
+    expect(requests.at(-1).params.expression).not.toContain('fulfilled');
+  });
+
+  it(`should say that a reload lost the outcome, rather than that it is slow`, async () => {
+    const { client } = createPromiseClient([{ state: 'missing' }]);
+
+    const error = await client.evaluateAsync('fetch(url)').catch((e) => e);
+
+    expect(error).toBeInstanceOf(CdpPromisePendingError);
+    expect(error.lost).toBe(true);
+  });
+
+  // The shape the polyfill used to hand back, kept as the thing this must never print again.
+  it(`should never report the promise polyfill's internal fields`, async () => {
+    const { client } = createPromiseClient([LIVE.resolvedNumber.result.result.value]);
+
+    const result = await client.evaluateAsync('Promise.resolve(42)');
+
+    expect(LIVE.polyfillInternals.result.result.value).toEqual({ _A: null, _x: 0, _y: 1, _z: 42 });
+    expect(result.value).not.toEqual(LIVE.polyfillInternals.result.result.value);
+    expect(result.value).toBe(42);
+  });
+
+  it(`should report a promise without waiting when asked not to await it`, async () => {
+    const { client, requests } = createPromiseClient([]);
+
+    const result = await client.evaluateAsync('fetch(url)', { awaitPromise: false });
+
+    expect(result).toEqual({ type: 'promise', promise: { state: 'pending', awaited: false } });
+    // Nothing was polled, and the app was never asked to hold anything.
+    expect(requests).toHaveLength(1);
+    expect(requests[0].params.expression).not.toContain('__exagentPromiseSlots');
+  });
+
+  // `var x = 1` is a statement, which the wrapper's assignment cannot hold. It used to evaluate.
+  it(`should re-run the expression as written when the wrapper will not compile`, async () => {
+    const requests: any[] = [];
+    const client = createClient((request, socket) => {
+      requests.push(request);
+      const wrapped = String(request.params.expression).includes('__exagentValue');
+      socket.emit(
+        'message',
+        JSON.stringify(
+          wrapped
+            ? {
+                id: request.id,
+                result: {
+                  result: { type: 'object' },
+                  exceptionDetails: LIVE.statementCompileFailure.result.exceptionDetails,
+                },
+              }
+            : { id: request.id, result: { result: { type: 'undefined' } } }
+        )
+      );
+    });
+
+    const result = await client.evaluateAsync('var x = 1');
+
+    expect(result.exceptionText).toBeUndefined();
+    expect(result.type).toBe('undefined');
+    expect(requests).toHaveLength(2);
+    expect(requests[1].params.expression).toBe('var x = 1');
   });
 });
 

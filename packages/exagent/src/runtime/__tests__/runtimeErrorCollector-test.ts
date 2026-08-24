@@ -118,6 +118,16 @@ describe('CdpRuntimeErrorCollector.collectAsync', () => {
       timestamp: 1700000000000,
       message: 'TypeError: undefined is not a function',
       stack: '  at renderRow (http://localhost:8081/index.bundle:42:9)',
+      // CDP counts lines and columns from 0; Metro's symbolicator wants a 1-based line and a
+      // 0-based column, and the rendered text above is 1-based in both.
+      frames: [
+        {
+          methodName: 'renderRow',
+          file: 'http://localhost:8081/index.bundle',
+          lineNumber: 42,
+          column: 8,
+        },
+      ],
       location: 'http://localhost:8081/index.bundle:42:9',
     });
     expect(errors[1]).toEqual({
@@ -125,6 +135,7 @@ describe('CdpRuntimeErrorCollector.collectAsync', () => {
       timestamp: 1700000000001,
       message: 'Request failed',
       stack: undefined,
+      frames: undefined,
     });
     expect(collector.metadata).toEqual({
       metroUrl: 'http://localhost:8081',
@@ -248,6 +259,9 @@ describe(parseRuntimeErrorMessage, () => {
       timestamp: 7,
       message: 'Error: nope',
       stack: '    at App (App.tsx:3:1)',
+      // Read back out of the text, because that is the only place this stack exists — and it has
+      // to be symbolicated like any other. Text stacks count columns from 1, Metro from 0.
+      frames: [{ methodName: 'App', file: 'App.tsx', lineNumber: 3, column: 0 }],
       location: undefined,
     });
   });

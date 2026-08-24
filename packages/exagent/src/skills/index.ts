@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { assertWithOptionsArgs, printHelp, strayArgumentError } from '../utils/args';
 
 export const exagentSkills: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -15,7 +15,7 @@ export const exagentSkills: Command = async (argv) => {
       // Aliases
       '-h': '--help',
     },
-    { argv }
+    { argv, command: 'skills', positionalArgs: 'own' }
   );
 
   if (args['--help']) {
@@ -30,7 +30,8 @@ export const exagentSkills: Command = async (argv) => {
         '',
         `--agent <agent>          Link skills for specific agents (can be used multiple times)`,
         `--dry-run                Print planned changes without modifying the project`,
-        `--json                   Output the skill list as JSON (with ${'`'}list${'`'})`,
+        // `show` prints the SKILL.md itself, which is the whole point of it, so it has no JSON form.
+        `--json                   Print the result as one JSON object (${'`'}sync${'`'}, ${'`'}list${'`'}, ${'`'}clean${'`'})`,
         `--no-followups           Skip the "Suggested next:" section of suggested follow-up commands`,
         `-h, --help               Usage info`,
       ].join('\n')
@@ -53,12 +54,26 @@ export const exagentSkills: Command = async (argv) => {
       agents: args['--agent'] ?? [],
       dryRun: !!args['--dry-run'],
       followups: !args['--no-followups'],
+      json: !!args['--json'],
+    };
+
+    // Only `show` names something; the other three act on the whole project. An argument on one of
+    // those named nothing and was dropped, which read as a run that had understood it (llp/0010).
+    const assertNoTarget = (name: string) => {
+      const stray = args._.slice(1);
+      if (stray.length > 0) {
+        throw strayArgumentError(`skills:${name}`, stray, {
+          hint: `this command acts on the whole project. To read one package's skill, run "npx exagent skills:show ${stray[0]}".`,
+        });
+      }
     };
 
     switch (action) {
       case 'sync':
+        assertNoTarget('sync');
         return await skillsAsync.syncSkillsAsync(projectRoot, options);
       case 'list':
+        assertNoTarget('list');
         return await skillsAsync.listSkillsAsync(projectRoot, { json: !!args['--json'] });
       case 'show': {
         const packageName = args._[1];
@@ -71,6 +86,7 @@ export const exagentSkills: Command = async (argv) => {
         return await skillsAsync.showSkillsAsync(projectRoot, packageName, args._[2]);
       }
       case 'clean':
+        assertNoTarget('clean');
         return await skillsAsync.cleanSkillsAsync(projectRoot, options);
       default:
         throw new CommandError(

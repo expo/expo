@@ -17,7 +17,7 @@ export const exagentCheckpointCreate: Command = async (argv) => {
       // Aliases
       '-h': '--help',
     },
-    { argv }
+    { argv, command: 'checkpoint', positionalArgs: 'none' }
   );
 
   if (args['--help']) {
@@ -70,7 +70,7 @@ export const exagentCheckpointList: Command = async (argv) => {
       // Aliases
       '-h': '--help',
     },
-    { argv }
+    { argv, command: 'checkpoint:list', positionalArgs: 'none' }
   );
 
   if (args['--help']) {
@@ -111,7 +111,18 @@ export const exagentCheckpointUndo: Command = async (argv) => {
       // Aliases
       '-h': '--help',
     },
-    { argv }
+    {
+      argv,
+      command: 'checkpoint:undo',
+      positionalArgs: 'none',
+      // The one destructive command in the set, and the one an agent guesses the argument of:
+      // `checkpoint:list` prints ids, so `checkpoint:undo <id>` is the natural next line to type.
+      strayHint:
+        'name the checkpoint with --id, as "npx exagent checkpoint:undo --id ' +
+        '<id>", or run "npx exagent checkpoint:list" for the ids. With no --id this command ' +
+        'restores the most recent checkpoint over your working tree, which is what a dropped ' +
+        'argument would have done here.',
+    }
   );
 
   if (args['--help']) {

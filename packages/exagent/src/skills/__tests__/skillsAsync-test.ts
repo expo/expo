@@ -368,6 +368,98 @@ describe('showSkillsAsync', () => {
   });
 });
 
+// F23: both actions accepted `--json` and printed an English sentence on stdout, so a caller that
+// parsed the output of `skills:list --json` could not parse either of the two that change anything.
+describe('skills --json reports', () => {
+  afterEach(() => vol.reset());
+
+  /** The one object the command printed on stdout. */
+  function parsed(): any {
+    const calls = jest.mocked(Log.log).mock.calls;
+    expect(calls).toHaveLength(1);
+    return JSON.parse(String(calls[0]![0]));
+  }
+
+  it('should report the discovered skills, the agents, and both link lists for a sync', async () => {
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest.mocked(resolveAgentsAsync).mockResolvedValueOnce({
+      agents: [claudeAgent],
+      source: 'cache',
+    });
+    jest
+      .mocked(syncSkillLinksAsync)
+      .mockResolvedValueOnce({ created: ['.claude/skills/my-skill'], pruned: ['.claude/skills/x'] });
+
+    await syncSkillsAsync('/root', { agents: [], dryRun: false, json: true });
+
+    expect(parsed()).toEqual({
+      dryRun: false,
+      agents: [{ id: 'claude-code', name: 'Claude Code', skillsDir: '.claude/skills' }],
+      discovered: [
+        {
+          package: '@acme/tool',
+          skill: 'my-skill',
+          name: 'my-skill',
+          description: null,
+          path: '/root/node_modules/@acme/tool/skills/my-skill',
+          linkName: 'my-skill',
+        },
+      ],
+      linked: ['.claude/skills/my-skill'],
+      removed: ['.claude/skills/x'],
+      followups: [
+        {
+          id: 'skills-list',
+          command: 'npx exagent skills:list',
+          why: 'Lists every discovered skill and the agent directories it is linked into.',
+        },
+      ],
+    });
+  });
+
+  // The English this replaced: "No agent skills found in the project dependencies."
+  it('should report the same shape when a sync had nothing to do', async () => {
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([]);
+    jest.mocked(getPersistedAgentIdsAsync).mockResolvedValueOnce(null);
+
+    await syncSkillsAsync('/root', { agents: [], dryRun: false, json: true });
+
+    expect(parsed()).toEqual({
+      dryRun: false,
+      agents: [],
+      discovered: [],
+      linked: [],
+      removed: [],
+      followups: [],
+    });
+  });
+
+  it('should say that a dry run wrote nothing', async () => {
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+    jest
+      .mocked(resolveAgentsAsync)
+      .mockResolvedValueOnce({ agents: [claudeAgent], source: 'cache' });
+    jest.mocked(syncSkillLinksAsync).mockResolvedValueOnce({ created: ['a'], pruned: [] });
+
+    await syncSkillsAsync('/root', { agents: [], dryRun: true, json: true });
+
+    expect(parsed()).toMatchObject({ dryRun: true, linked: ['a'] });
+  });
+
+  // The English this replaced: "Removed 0 managed skill link(s)."
+  it('should report the swept directories and the removed links for a clean', async () => {
+    jest.mocked(cleanSkillLinksAsync).mockResolvedValueOnce({ pruned: ['.claude/skills/gone'] });
+
+    await cleanSkillsAsync('/root', { agents: [], dryRun: false, json: true });
+
+    expect(parsed()).toEqual({
+      dryRun: false,
+      skillsDirs: ['.claude/skills', '.agents/skills'],
+      removed: ['.claude/skills/gone'],
+    });
+  });
+});
+
 describe('cleanSkillsAsync', () => {
   afterEach(() => vol.reset());
 
