@@ -24,7 +24,7 @@
 - Reject updates whose asset key or file extension contains a path separator, which previously let a manifest write and delete files outside the updates directory. ([#48762](https://github.com/expo/expo/pull/48762), [#48763](https://github.com/expo/expo/pull/48763) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
 - [Android] Register the embedded update in a single transaction. An interrupted registration previously left an update row with no launch asset, which is treated as launchable and then fails every cold start with "Launch asset not found for update"; it now leaves no row, so the next launch registers it cleanly. ([#49130](https://github.com/expo/expo/pull/49130) by [@gwdp](https://github.com/gwdp))
-- [Android] Apply `reactNativeArchitectures` as a CMake ABI filter so single-ABI builds no longer compile the native code for unused ABIs.
+- [Android] Apply `reactNativeArchitectures` as a CMake ABI filter so single-ABI builds no longer compile the native code for unused ABIs. ([#49299](https://github.com/expo/expo/pull/49299) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
