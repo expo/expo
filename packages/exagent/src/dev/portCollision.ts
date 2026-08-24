@@ -72,6 +72,58 @@ function toPort(value: string | undefined): number | null {
   return Number.isInteger(port) && port >= 1 && port <= 65535 ? port : null;
 }
 
+/**
+ * A dev server that was started somewhere other than where it was asked for.
+ *
+ * `from` is null when the Expo CLI's own message did not name the port it wanted — it does not
+ * always — and inventing one would be this CLI claiming a fact nobody told it.
+ */
+export interface PortMove {
+  /** The busy port, when the Expo CLI named it. */
+  from: number | null;
+  /** The port this CLI picked and the dev server took. */
+  to: number;
+}
+
+/**
+ * The sentence `exagent dev` prints when it moved the dev server off a busy port.
+ *
+ * Built here rather than written inline because it is read back by another *process* of this CLI:
+ * a `--detach` run does the retry in the child, whose output goes to a log file, and the parent
+ * has no other way to learn that the port it reports is not the port that was asked for
+ * [friction run 5, F48-4]. {@link parsePortMove} is the other end, and a round-trip test pins the
+ * pair — the parent's report goes silently wrong the moment the two drift.
+ *
+ * Why not compare the port the run asked for against the port the lock reports: a dev server can
+ * land elsewhere for reasons that are not a collision, and reporting those as a move would be this
+ * command inventing a busy port it never observed.
+ */
+export function formatPortMove(move: PortMove): string {
+  return move.from == null
+    ? `The port the dev server wanted was busy; started on ${move.to} instead.`
+    : `Port ${move.from} was busy; started on ${move.to} instead.`;
+}
+
+/** `to` in the sentence above, which is the half that is always there. */
+const PORT_MOVE_TO = /started on (\d+) instead/;
+
+/** `from`, when the sentence had one. */
+const PORT_MOVE_FROM = /Port (\d+) was busy/;
+
+/**
+ * Read {@link formatPortMove}'s sentence back out of a detached dev server's log.
+ *
+ * @param output everything the detached run printed, escape codes already stripped.
+ * @returns the move, or null when the log holds none.
+ */
+export function parsePortMove(output: string): PortMove | null {
+  const to = toPort(PORT_MOVE_TO.exec(output)?.[1]);
+  if (to == null) {
+    return null;
+  }
+  return { from: toPort(PORT_MOVE_FROM.exec(output)?.[1]), to };
+}
+
 /** How far past the busy port to look before giving up on finding a free one. */
 const FREE_PORT_SCAN_RANGE = 200;
 

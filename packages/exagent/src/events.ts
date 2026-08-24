@@ -264,6 +264,11 @@ declare module '2g' {
       ready: boolean | null;
       /** The project already had a dev server, so nothing was started. */
       alreadyRunning: boolean;
+      /**
+       * The busy port this run was moved off, or null when it did not move — and also null when
+       * it moved off a port the Expo CLI declined to name. `port` above is where it landed.
+       */
+      portMovedFrom: number | null;
     };
     // @ref llp/0005-runtime-loop-tools.rfc.md §Reading the detached dev server's output
     'cli:dev_logs': {

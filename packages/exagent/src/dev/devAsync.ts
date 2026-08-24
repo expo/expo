@@ -32,7 +32,12 @@ import { isInteractive } from '../utils/interactive';
 import type { SubprocessOutput } from '../utils/subprocess';
 import { confirmPlanAsync } from './confirmPlan';
 import { event as devEvent } from './events';
-import { detectPortCollision, findFreePortAsync, type PortCollision } from './portCollision';
+import {
+  detectPortCollision,
+  findFreePortAsync,
+  formatPortMove,
+  type PortCollision,
+} from './portCollision';
 import type { DevOptions } from './resolveOptions';
 
 /** Where `expo start` listens when nothing names a port, for the free-port scan to start from. */
@@ -305,10 +310,17 @@ async function retryOnFreePortAsync(
   // On stderr even in `--json` mode, where stdout is the one object this run prints. Said out loud
   // because the dev server is not where the caller asked for it, and every URL it printed before
   // this line is stale.
+  //
+  // The first sentence comes from `formatPortMove` because a `--detach` parent reads it back out
+  // of this child's log — that is the only channel between the two, and it is what puts
+  // `portMoved` in the parent's report (llp/0004 §A busy port is not a step only a person can
+  // complete; friction run 5, F48-4).
   Log.warn(
-    busy == null
-      ? `The port the dev server wanted was busy; started on ${free} instead. Pass --port to name one yourself.`
-      : `Port ${busy} was busy; started on ${free} instead. Pass --port ${busy} to require that port instead of moving, which fails when it is taken.`
+    `${formatPortMove({ from: busy, to: free })} ${
+      busy == null
+        ? 'Pass --port to name one yourself.'
+        : `Pass --port ${busy} to require that port instead of moving, which fails when it is taken.`
+    }`
   );
 
   const retryArgs = [...args, '--port', String(free)];

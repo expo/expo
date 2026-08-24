@@ -154,6 +154,8 @@ describe('exagent dev:stop', () => {
     expect(Object.keys(JSON.parse(result.stdout)).sort()).toEqual([
       'detail',
       'followups',
+      // Which of --force's two proofs a refusal failed on, null otherwise (F48-1).
+      'forceRefusedBy',
       'forced',
       'lockHeld',
       'pid',

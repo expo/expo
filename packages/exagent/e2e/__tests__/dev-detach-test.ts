@@ -101,11 +101,80 @@ describe('exagent dev --detach', () => {
         'logFile',
         'pid',
         'port',
+        'portMoved',
         'projectRootMatched',
         'ready',
         'url',
         'waitedMs',
       ]);
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §A busy port is not a step only a person
+  // can complete — friction run 5, F48-4. The retry happens in the child, whose stderr goes to a
+  // log file, so the move was announced on a stream nobody was watching: the parent printed the
+  // port it landed on and never said it was not the port that was asked for.
+  it('says on stdout when a busy port moved the dev server', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        {
+          env: {
+            ...stubExpoEnv(projectRoot),
+            STUB_EXPO_DELAY_MS: STUB_ALIVE_MS,
+            STUB_EXPO_PORT_BUSY: '8180',
+          },
+          reject: false,
+        }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      // The port that was busy, and the one the dev server is actually on — which is the port the
+      // lock names, so the report agrees with what every other command will find.
+      expect(report.portMoved).toEqual({ from: 8180, to: report.port });
+      expect(report.port).not.toBe(8180);
+      expect(await readDevLockAsync(projectRoot)).toMatchObject({ port: report.port });
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  it('prints the move in the human report too', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeExagentAsync(projectRoot, ['dev', '--detach', '--yes'], {
+        env: {
+          ...stubExpoEnv(projectRoot),
+          STUB_EXPO_DELAY_MS: STUB_ALIVE_MS,
+          STUB_EXPO_PORT_BUSY: '8180',
+        },
+        reject: false,
+      });
+
+      expect(result.stdout).toContain('8180 was busy');
+    } finally {
+      await cleanUpAsync(projectRoot);
+    }
+  });
+
+  it('reports no move when the dev server took the port it was asked for', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--detach', '--yes', '--json'],
+        { env: detachEnv(projectRoot, 8393) }
+      );
+
+      expect(JSON.parse(result.stdout)).toMatchObject({ port: 8393, portMoved: null });
     } finally {
       await cleanUpAsync(projectRoot);
     }
