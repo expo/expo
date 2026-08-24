@@ -142,10 +142,14 @@ struct LiveActivityUserInteraction: LiveActivityIntent {
 /// says time is up. The block runs synchronously on a background queue, which is
 /// how `performExpiringActivity` expects to be used; it never blocks the caller.
 private func keepProcessAlive(seconds: TimeInterval) {
+  let expiry = DispatchSemaphore(value: 0)
   ProcessInfo.processInfo.performExpiringActivity(withReason: "expo-widgets: deliver user interaction to JS") { expired in
-    guard !expired else {
+    if expired {
+      // Second invocation: the system needs the process to suspend now. Wake the
+      // first invocation so it releases the assertion instead of sleeping through.
+      expiry.signal()
       return
     }
-    Thread.sleep(forTimeInterval: seconds)
+    _ = expiry.wait(timeout: .now() + seconds)
   }
 }

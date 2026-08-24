@@ -70,10 +70,21 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
 
   // Children are addressed by their JSX `key` when present, otherwise by index,
   // plus their type so a different component at the same slot gets a new identity.
+  // Keyed and unkeyed slots are prefixed (`k`/`i`) so a numeric JSX key (e.g.
+  // `key={0}`) can't collide with an unkeyed sibling's index, and keys are escaped
+  // so they can't forge the path separators or the `|` in the identity cache key.
   private func childPath(for child: [String: Any], at index: Int) -> String {
-    let slot = (child["key"] as? String) ?? String(index)
+    let slot = (child["key"] as? String).map { "k\(escapeSlot($0))" } ?? "i\(index)"
     let type = child["type"] as? String ?? "?"
     return "\(path)/\(slot):\(type)"
+  }
+
+  private func escapeSlot(_ key: String) -> String {
+    key
+      .replacingOccurrences(of: "\\", with: "\\\\")
+      .replacingOccurrences(of: "/", with: "\\/")
+      .replacingOccurrences(of: ":", with: "\\:")
+      .replacingOccurrences(of: "|", with: "\\|")
   }
 
   @ViewBuilder
