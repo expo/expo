@@ -17,7 +17,7 @@ import type { TabPath } from './native';
 export function getTabPathFromRootStateByHref(
   href: Href,
   rootState: ReactNavigationState,
-  routeInfo: UrlObject
+  routeInfo: Pick<UrlObject, 'segments'>
 ): TabPath[] {
   const hrefState = getStateForHref(resolveHref(href), routeInfo, store.linking);
   const state: ReactNavigationState | undefined = rootState;
@@ -53,7 +53,7 @@ export function getTabPathFromRootStateByHref(
 export function getPreloadedRouteFromRootStateByHref(
   href: Href,
   rootState: ReactNavigationState,
-  routeInfo: UrlObject
+  routeInfo: Pick<UrlObject, 'segments'>
 ): NavigationRoute<ParamListBase, string> | undefined {
   const hrefState = getStateForHref(resolveHref(href), routeInfo, store.linking);
   const state: ReactNavigationState | undefined = rootState;

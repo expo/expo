@@ -16,9 +16,7 @@ import { getStateFromPath as getExpoStateFromPath } from './getStateFromPath';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
-type Options = Omit<LinkingOptions<ParamListBase>, 'getStateFromPath'> & {
-  getStateFromPath?: typeof getExpoStateFromPath;
-};
+type Options = LinkingOptions<ParamListBase>;
 
 const linkingHandlers: symbol[] = [];
 
@@ -54,8 +52,7 @@ export function useLinking(
         }
       };
     });
-  const getStateFromPath: typeof getExpoStateFromPath =
-    options?.getStateFromPath ?? ((path, options) => getStateFromPathDefault(path, options));
+  const getStateFromPath = options?.getStateFromPath ?? getExpoStateFromPath;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const independent = useNavigationIndependentTree();
   const { segments } = useRouteInfo();

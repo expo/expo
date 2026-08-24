@@ -1,16 +1,18 @@
-import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
+import { store } from '../global-state/router-store';
 import type { LinkToOptions } from '../global-state/types';
 import type { Href } from '../types';
 import { resolveHref, resolveHrefStringWithSegments } from './href';
+import { getStateFromPath } from './linking';
 
 export function getStateForHref(
   href: Href | string,
-  routeInfo: UrlObject,
-  linking: ExpoLinkingOptions | undefined,
+  routeInfo: Pick<UrlObject, 'segments'>,
   options?: LinkToOptions
 ) {
   href = resolveHref(href);
   href = resolveHrefStringWithSegments(href, routeInfo, options);
-  return linking?.getStateFromPath!(href, linking.config, routeInfo.segments);
+  return store.linking
+    ? getStateFromPath(href, store.linking.config, routeInfo.segments)
+    : undefined;
 }
