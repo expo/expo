@@ -164,7 +164,53 @@ Rows with no signature are not a gap. `ios-credentials`, `device-register` and `
 1. **Preflight** — ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself — so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out": the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`], and `src/needsHuman/assertAuth.ts` is the same answer *raised* — for `deploy` and `build:wait`, which cannot do their job without an account and would otherwise spend minutes finding out.
 
    Three things count as "cannot run", and the third was a bug [fixed — 2026-08-23]. No `eas` on this machine, a run that passed the deadline, and **a binary under that name that is not the EAS CLI**. The third exits non-zero exactly like a signed-out CLI does, so it read as "signed out" — and on a machine whose PATH `eas` is a wrapper that crashes (this is not hypothetical: the friction run's was), every command with a preflight would have stopped and handed its user a login they did not need. `looksLikeWrapperCrash` (§The binary may not be the CLI) is what tells the two apart.
-2. **Force non-interactive** — every captured subprocess is told that nothing can answer it. For `expo` that is `CI=1` in the child environment, because the CLI rejects `--non-interactive` and names the variable instead [observed — `packages/@expo/cli/src/index.ts`]; `spawnExpoAsync` is the capture path that sets it, and `runExpoAsync` deliberately does not, because there a person has the terminal. For `eas` it is `--non-interactive`, or `--json`, which implies it. stdin was already never attached [observed — `src/utils/subprocess.ts`].
+2. **Force non-interactive** — every captured subprocess is told that nothing can answer it. For `expo` that is `CI=1` in the child environment, because the CLI rejects `--non-interactive` and names the variable instead [observed — `packages/@expo/cli/src/index.ts`]; `spawnExpoAsync` is the capture path that sets it, and `runExpoAsync` deliberately does not, because there a person has the terminal. For `eas` it is `--non-interactive`, or `--json`, which implies it. stdin was already never attached [observed — `src/utils/subprocess.ts`]. **Except the dev-server step, which is spawned with `ci: false`** — see below.
+
+#### The dev server is the exception, and `CI` is why
+
+Decision [confirmed — Kudo, 2026-08-23]. Every captured `expo` run gets `CI=1` **except the one
+that starts a dev server** (`expo start`, `expo run:ios`, `expo run:android`, all of which reach
+`spawnDevServerAsync`). That one is spawned with the variable left alone.
+
+`CI` does two jobs in the Expo CLI and this layer only ever wanted the first:
+
+- it makes prompts fail fast, through `isInteractive()`; and
+- it turns **Metro's file watcher off** [observed — `instantiateMetro.ts` `isWatchEnabled` logs
+  `Metro is running in CI mode, reloads are disabled`, and `withMetroMultiPlatform.ts:496` passes
+  `watch: !isExporting && !env.CI`].
+
+The second is fatal here. A dev server with no watcher never invalidates its graph, so it serves the
+snapshot it read at start-up forever — and the entry-bundle check of §The gate has to ask about the
+_project_ then reads that frozen server and certifies code the agent has already replaced. That is
+run 1's F1 failure mode reproduced through a different mechanism, on the exact path the F1 fix was
+written for [observed — friction run 2, 2026-08-23: a syntax error appended to a route of a live SDK
+57 app left `dev:wait --json` at `bundle.ok: true`, exit 0, while the same file on a server started
+by `exagent start` — which never set `CI` — exited 20].
+
+**Dropping it costs nothing, because the two concerns were never the same mechanism.**
+`isInteractive()` is `!shouldReduceLogs() && !env.CI && process.stdout.isTTY` [observed —
+`packages/@expo/cli/src/utils/interactive.ts`], and a captured child's stdout is a pipe, never a TTY
+[observed — `src/utils/subprocess.ts` `stdioFor`, which wires `['ignore', 'pipe', 'pipe']` for every
+mode but `inherit`]. So the CLI already knows nobody can answer it: the prompt helper still throws
+`Input is required, but 'npx expo' is in non-interactive mode.`, layer 3 still recognises it, and the
+keypress menu of `expo start` is still never installed [observed — `start/startAsync.ts:140`].
+Verified live: with 8140 held, `exagent dev --yes --json --port 8140` exits **7** in one second with
+the full envelope and the three-line handoff, exactly as it did with `CI=1`.
+
+Three details of that are decisions rather than transcription:
+
+- **Nothing is set, rather than `CI=0`.** A machine whose own environment says `CI` is a machine
+  where a frozen bundler is the right behaviour, and overriding it here would be the wrapper
+  deciding something about its caller's environment that nobody told it. `spawnExpoAsync` passes no
+  `env` at all in that mode, so the child inherits.
+- **`expo run:*` is in the exception too**, not only `expo start`: it ends in a dev server, and a
+  development build attached to a frozen bundler is the same lie in a longer plan.
+- **`expo prebuild` and every other captured step keep `CI=1`.** They start no bundler, so the
+  variable does only the job it was added for.
+
+The alternative that was looked for and does not exist: an env var or flag that re-enables the
+watcher under `CI`. `isWatchEnabled()` returns `!env.CI` with nothing in between, so there is
+nothing to pass. The upstream ask that would retire this exception is recorded below.
 3. **Exit signature** — match the captured output against the registry. Three patterns are load-bearing today: eas-cli's `Either log in with … EXPO_TOKEN` [observed — `build/user/SessionManager.js`], `@expo/cli`'s `is in non-interactive mode` [observed — `src/utils/prompts.ts`], and the `in non-interactive mode` fragment eas-cli's many prompt sites share.
 4. **Prompt-hang guard** — for a captured child only, and only when the caller opts in. If it writes nothing for `EXAGENT_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Both halves are required: silence alone is a long build, and killing that would be worse than the hang it prevents. Never in `inherit` mode, where a prompt is legitimate.
 
@@ -278,6 +324,11 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   convenience and should not be able to fail a start, the way the eager Xcode warm-up already
   swallows its own error [observed — `startAsync.ts`]. Worked around by not relying on `--ios`:
   llp/0004 §A plan step's `reason` records why the follow-ups name `exagent navigate /` instead.
+- Separate "nobody can answer a prompt" from "do not watch files". `CI` means both today
+  [observed — `isWatchEnabled()` returns `!env.CI`], so a wrapper that wants the first has to give
+  up the second, and a wrapper that wants the second has to accept the first. Either an
+  `EXPO_NO_WATCH`-style variable of its own, or letting the existing `--non-interactive` spelling
+  cover the prompt half, would retire §The dev server is the exception, and `CI` is why.
 - Emit `cli:error` JSONL for every command error, with a `needsInput` flag — the event contract of llp/0006 §Output contract, extended so a wrapper can see that a prompt is what stopped the command.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.

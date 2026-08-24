@@ -5,12 +5,12 @@ import { holdDevServerLockAsync } from '../../devLock';
 import type { DevServerLockHandle } from '../../devLock';
 import * as Log from '../../log';
 import { autoSyncSkillsAsync } from '../../skills/skillsAsync';
-import { runExpoAsync } from '../../utils/expoCli';
+import { runExpoAsync, spawnExpoAsync } from '../../utils/expoCli';
 import { resolveStartOptions } from '../resolveOptions';
 import { runDevServerAsync, SKILLS_SYNC_IDLE_DELAY_MS, startAsync } from '../startAsync';
 
 jest.mock('../../log');
-jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn() }));
+jest.mock('../../utils/expoCli', () => ({ runExpoAsync: jest.fn(), spawnExpoAsync: jest.fn() }));
 jest.mock('../../skills/skillsAsync', () => ({ autoSyncSkillsAsync: jest.fn() }));
 jest.mock('../../devLock', () => ({ holdDevServerLockAsync: jest.fn() }));
 
@@ -224,6 +224,47 @@ describe(runDevServerAsync, () => {
 
     end(0);
     await promise;
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — layer 2.
+  // The one thing about a captured dev server that is not the same as any other captured `expo`
+  // run: it must keep watching files. `CI=1` would freeze Metro on the code it read at start-up,
+  // and `dev:wait` would then certify a project the agent had already broken [observed — friction
+  // run 2, 2026-08-23].
+  describe('the environment the dev server is spawned with', () => {
+    beforeEach(() => {
+      jest
+        .mocked(spawnExpoAsync)
+        .mockResolvedValue({
+          cli: { command: 'expo', args: [] },
+          result: { exitCode: 0, stdout: '', stderr: '' },
+        });
+    });
+
+    it.each(['tee', 'capture'] as const)(
+      `should never tell a %s dev server that it is CI`,
+      async (output) => {
+        await runDevServerAsync(projectRoot, ['start', '--go'], { agentSkills: false, output });
+
+        expect(spawnExpoAsync).toHaveBeenCalledWith(projectRoot, ['start', '--go'], {
+          output,
+          ci: false,
+        });
+      }
+    );
+
+    it.each(['run:ios', 'run:android'])(
+      `should keep the watcher on for %s, which ends in a dev server too`,
+      async (command) => {
+        await runDevServerAsync(projectRoot, [command], { agentSkills: false, output: 'capture' });
+
+        expect(spawnExpoAsync).toHaveBeenCalledWith(
+          projectRoot,
+          [command],
+          expect.objectContaining({ ci: false })
+        );
+      }
+    );
   });
 
   // @ref llp/0004-smart-start-and-project-state.rfc.md §`exagent status`

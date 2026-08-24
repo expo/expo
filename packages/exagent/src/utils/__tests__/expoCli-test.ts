@@ -180,6 +180,24 @@ describe(spawnExpoAsync, () => {
     expect(options.stdio).toEqual(['ignore', 'pipe', 'pipe']);
   });
 
+  // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — layer 2, and the dev server's
+  // exception to it. `CI` also turns Metro's file watcher off, which freezes the dev server on the
+  // code it read at start-up; the pipe below is what keeps the prompts failing fast without it.
+  it(`should leave CI unset for a caller that needs the file watcher`, async () => {
+    vol.fromJSON({ [`${projectRoot}/node_modules/.bin/expo`]: '' });
+    const child = mockSpawn({ piped: true });
+
+    const promise = spawnExpoAsync(projectRoot, ['start', '--go'], { output: 'tee', ci: false });
+    child.emit('close', 0, null);
+    await promise;
+
+    const options = jest.mocked(spawn).mock.calls[0]![2] as any;
+    // No `env` override at all, so a machine whose own environment says CI keeps saying it.
+    expect(options.env).toBeUndefined();
+    // The half that still makes the CLI non-interactive: its stdout is a pipe, never a TTY.
+    expect(options.stdio).toEqual(['ignore', 'pipe', 'pipe']);
+  });
+
   it(`should leave the inherited run interactive, where a person has the terminal`, async () => {
     vol.fromJSON({ [`${projectRoot}/node_modules/.bin/expo`]: '' });
     const child = mockSpawn();
