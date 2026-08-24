@@ -185,12 +185,20 @@ export default function WavyExample() {
 Use `amplitude` to set the wave height, from `0` for a flat line to `1` for the full height. Use `wavelength` to set the length of a single wave in dp, and `waveSpeed` to set how fast the wave travels in dp per second. `waveSpeed` defaults to `wavelength`. Set `waveSpeed={0}` to render a static wave.
 
 ```tsx WaveConfigExample.tsx
-import { Host, LinearWavyProgressIndicator } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  LinearWavyProgressIndicator,
+} from '@expo/ui/jetpack-compose';
 
 export default function WaveConfigExample() {
   return (
     <Host matchContents>
-      <LinearWavyProgressIndicator progress={0.6} amplitude={0.4} wavelength={24} waveSpeed={18} />
+      <LinearWavyProgressIndicator
+        progress={0.6}
+        amplitude={0.4}
+        wavelength={24}
+        waveSpeed={18}
+      />
     </Host>
   );
 }
