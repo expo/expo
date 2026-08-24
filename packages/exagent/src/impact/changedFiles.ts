@@ -6,8 +6,7 @@
 // normal case (a fresh `create-expo-app` is not a repository), so this answers `null` rather than
 // failing — the report then says the class came from the fingerprint alone.
 
-import { runGitAsync } from '../checkpoint/git';
-import { resolveWorkTreeAsync } from '../checkpoint/git';
+import { resolveWorkTreeAsync, runGitAsync } from '../checkpoint/git';
 
 /**
  * The paths git reports as changed in the working tree, relative to the project root.

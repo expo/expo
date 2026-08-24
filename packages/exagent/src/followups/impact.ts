@@ -2,8 +2,7 @@
 // Each class has a different next command, and the OTA verdict is a rung of its own because it is
 // a different question with a different answer: a change can be free to run and unsafe to publish.
 
-import type { CachedBuild } from '../impact/types';
-import type { ImpactClass } from '../impact/types';
+import type { CachedBuild, ImpactClass } from '../impact/types';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface ImpactFollowUpInput {
