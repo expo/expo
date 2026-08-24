@@ -65,6 +65,11 @@ export interface FixStepDefinition {
   recoverable: string;
   /** Platforms this step exists on at all. Absent means every platform. */
   onlyPlatforms?: NodeJS.Platform[];
+  /**
+   * Native directories this step deletes inside, which is what makes it subject to the
+   * dirty-tracked-native refusal of llp/0013 §Path safety.
+   */
+  touchesNative?: (context: FixStepContext) => NativePlatform[];
   /** Where this step's targets are, before anything checks whether they exist. */
   targets?: (context: FixStepContext) => TargetSpec[];
   /** The subprocess this step runs. `argv[0]` is `expo` for a step of the Expo CLI. */
@@ -219,6 +224,7 @@ export const FIX_STEPS: FixStepDefinition[] = [
     ],
     argv: () => ['pod', 'install'],
     cwd: ({ projectRoot }) => path.join(projectRoot, 'ios'),
+    touchesNative: () => ['ios'],
     unavailable: (context) => {
       if (!context.platforms.includes('ios')) {
         return 'ios is not in --platform.';
@@ -245,6 +251,7 @@ export const FIX_STEPS: FixStepDefinition[] = [
       { kind: 'path', path: path.join(projectRoot, 'android', 'app', 'build') },
       { kind: 'path', path: path.join(projectRoot, 'android', '.gradle') },
     ],
+    touchesNative: () => ['android'],
     unavailable: (context) => {
       if (!context.platforms.includes('android')) {
         return 'android is not in --platform.';
@@ -271,6 +278,7 @@ export const FIX_STEPS: FixStepDefinition[] = [
       '--platform',
       platforms.length === 1 ? platforms[0]! : 'all',
     ],
+    touchesNative: ({ platforms }) => platforms,
     unavailable: (context) => {
       if (!context.platforms.length) {
         return 'No platform to prebuild.';
