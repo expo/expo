@@ -18,6 +18,7 @@ export function useImperativeApiEmitter(
     routingQueue.snapshot
   );
   useEffect(() => {
+    // TODO: Use useRouteInfo once it is computed from global state.
     routingQueue.run(ref, store.getRouteInfo());
   }, [events, ref]);
   return null;
