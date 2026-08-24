@@ -163,11 +163,15 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   }
 
   const windowAction = action as 'errors' | 'network';
-  const args = parseArgsOrThrow(
-    windowAction === 'errors' ? ERRORS_ARGS : WINDOW_ARGS,
-    argv,
-    `runtime:${windowAction}`
-  );
+  // Each branch names its own schema and its own command rather than picking both out of
+  // `windowAction`. Same parse either way; the difference is that the pairing is now legible to a
+  // reader — and to the suggested-command lint, which checks a printed `--flag` against the schema
+  // of the command it is printed for, and can only do that where the two are named together
+  // (`src/lint/commandFlags.ts`).
+  const args =
+    windowAction === 'errors'
+      ? parseArgsOrThrow(ERRORS_ARGS, argv, 'runtime:errors')
+      : parseArgsOrThrow(WINDOW_ARGS, argv, 'runtime:network');
   const positional = args._.slice(1);
   if (positional.length > 0) {
     throw strayArgumentError(`runtime:${windowAction}`, positional, {
