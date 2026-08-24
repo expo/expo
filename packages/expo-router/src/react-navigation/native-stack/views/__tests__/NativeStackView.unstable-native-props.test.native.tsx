@@ -58,10 +58,14 @@ describe('unstable_nativeProps', () => {
     expect(props.gestureEnabled).toBe(false);
   });
 
-  it('disables screen freezing', () => {
-    const props = renderStack({ freezeOnBlur: true });
+  it('lets raw screen props re-enable screen freezing', () => {
+    const props = renderStack({
+      unstable_nativeProps: {
+        freezeOnBlur: true,
+      },
+    });
 
-    expect(props.freezeOnBlur).toBe(false);
+    expect(props.freezeOnBlur).toBe(true);
   });
 
   it('forwards raw stack host props from Stack', () => {
@@ -151,6 +155,14 @@ describe('unstable_nativeProps', () => {
 
     expect(props.headerConfig?.title).toBe('index');
   });
+});
+
+it('ignores the deprecated freezeOnBlur screen option', () => {
+  ScreenStackItem.mockClear();
+
+  const props = renderStack({ freezeOnBlur: true });
+
+  expect(props.freezeOnBlur).toBe(false);
 });
 
 it('sets preventNativeDismiss from usePreventRemove', () => {

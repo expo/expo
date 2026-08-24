@@ -391,8 +391,8 @@ const SceneView = ({
           contentStyle,
         ]}
         unstable_sheetFooter={unstable_sheetFooter}
-        {...screenNativeProps}
         freezeOnBlur={false}
+        {...screenNativeProps}
         headerConfig={headerConfig}>
         <ScreenPresentationContext.Provider value={presentation}>
           <AnimatedHeaderHeightContext.Provider value={animatedHeaderHeight}>
