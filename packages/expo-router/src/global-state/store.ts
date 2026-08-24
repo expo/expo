@@ -1,23 +1,19 @@
-import type { ComponentType } from 'react';
-
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
 import * as SplashScreen from '../views/Splash';
 import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
 import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
-import type { FocusedRouteState, ReactNavigationState, StoreRedirects } from './types';
+import type { FocusedRouteState, ReactNavigationState } from './types';
 
 export type RouterStore = typeof store;
 
 type StoreRef = {
   navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   routeNode: RouteNode | null;
-  rootComponent: ComponentType<any>;
   state?: ReactNavigationState;
   linking?: ExpoLinkingOptions;
   config: any;
-  redirects: StoreRedirects[];
   routeInfo?: UrlObject;
 };
 
@@ -55,12 +51,6 @@ export const store = {
   },
   getRouteInfo(): UrlObject {
     return storeRef.current.routeInfo || defaultRouteInfo;
-  },
-  get redirects() {
-    return storeRef.current.redirects || [];
-  },
-  get rootComponent() {
-    return storeRef.current.rootComponent;
   },
   get linking() {
     return storeRef.current.linking;

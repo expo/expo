@@ -4,15 +4,17 @@ import type { ComponentType } from 'react';
 
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
-import type { RouterStore } from './store';
 import type { ReactNavigationState, StoreRedirects } from './types';
 
-export type StoreContextValue = RouterStore & {
+export type StoreContextValue = {
   navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   linking: ExpoLinkingOptions | undefined;
   initialState: ReactNavigationState | undefined;
   rootComponent: ComponentType<any>;
   redirects: StoreRedirects[];
+  shouldShowTutorial: boolean;
+  onReady: () => void;
+  onStateChange: (state: ReactNavigationState | undefined) => void;
 };
 
 export const StoreContext = createContext<StoreContextValue | null>(null);

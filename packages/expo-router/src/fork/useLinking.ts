@@ -10,7 +10,7 @@ import {
 } from 'react';
 
 import { ServerContext } from '../global-state/serverLocationContext';
-import { useExpoRouterStore } from '../global-state/storeContext';
+import { store } from '../global-state/store';
 import { useRouteInfo } from '../global-state/useRouteInfo';
 import { getRootStackRouteNames } from '../global-state/utils';
 import {
@@ -98,7 +98,6 @@ export function useLinking(
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const independent = useNavigationIndependentTree();
 
-  const store = useExpoRouterStore();
   const { segments } = useRouteInfo();
 
   useEffect(() => {

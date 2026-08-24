@@ -1,6 +1,6 @@
 'use client';
 
-import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
+import { type PropsWithChildren, Fragment, type ComponentType, useCallback, useMemo } from 'react';
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -91,11 +91,6 @@ const initialUrl =
     : undefined;
 
 // TODO(@ubax): Refactor onReady logic and use listeners pattern
-function onNavigationReady(store: ReturnType<typeof useStore>) {
-  handleNavigationOnReady();
-  store.onReady();
-}
-
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
@@ -136,10 +131,14 @@ function ContextNavigator({
 
   const storeValue = useStore(context, linking, serverUrl);
   const { navigationRef, initialState, rootComponent, linking: linkingConfig } = storeValue;
+  const onNavigationReady = useCallback(() => {
+    handleNavigationOnReady();
+    storeValue.onReady();
+  }, [storeValue]);
 
   useDomComponentNavigation();
 
-  if (storeValue.shouldShowTutorial()) {
+  if (storeValue.shouldShowTutorial) {
     SplashScreen.hideAsync();
     if (process.env.NODE_ENV === 'development') {
       const Tutorial = require('./onboard/Tutorial').Tutorial;
@@ -164,7 +163,7 @@ function ContextNavigator({
           onUnhandledAction={onUnhandledAction}
           onStateChange={storeValue.onStateChange}
           documentTitle={documentTitle}
-          onReady={() => onNavigationReady(storeValue)}>
+          onReady={onNavigationReady}>
           <ServerContext.Provider value={serverContext}>
             <WrapperComponent>
               <Content rootComponent={rootComponent} />
