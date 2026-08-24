@@ -24,7 +24,7 @@
 
 ### 🐛 Bug fixes
 
-- Bust Metro's persistent transform cache when the resolved Expo config changes (e.g. `app.config.js` reading `process.env.APP_ENV`), so `expo export -p web` and `expo start` pick up the new value across separate process runs instead of requiring `--clear`. ([#39619](https://github.com/expo/expo/issues/39619))
+- Bust Metro's persistent transform cache when the resolved Expo config changes (e.g. `app.config.js` reading `process.env.APP_ENV`), so `expo export -p web` and `expo start` pick up the new value across separate process runs instead of requiring `--clear`. ([#49264](https://github.com/expo/expo/pull/49264) by [@rakshit-gen](https://github.com/rakshit-gen))
 - Serve relative manifest URLs only when the client itself sends the RFC 7239 `Forwarded` header, so that proxied requests from clients without relative-URL support, like released Expo Go versions through the WS tunnel, keep absolute URLs. ([#48997](https://github.com/expo/expo/pull/48997) by [@expo-bot](https://github.com/expo-bot))
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
 - Show the Xcode build log path when `run:ios` fails. ([#48624](https://github.com/expo/expo/pull/48624) by [@ramonclaudio](https://github.com/ramonclaudio))
