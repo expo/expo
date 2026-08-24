@@ -17,6 +17,7 @@ const webResolver_1 = require("./webResolver");
 const platforms_1 = require("../platforms");
 const deepObjectMerge = (target, source) => {
     if (source !== undefined &&
+        source !== null &&
         typeof target === 'object' &&
         target != null &&
         !Array.isArray(target) &&
