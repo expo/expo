@@ -56,8 +56,7 @@ export async function compareWithLastBuildAsync(
       items: null,
       fingerprintChanged: null,
       caveats: [],
-      error:
-        head.error ?? `The fingerprint of the working tree could not be computed for ${platform}.`,
+      error: describeGenerateFailure(head.error, platform, preset),
     };
   }
 
@@ -128,6 +127,32 @@ export async function compareWithLastBuildAsync(
     caveats: [],
     error: null,
   };
+}
+
+/**
+ * Why the working tree could not be fingerprinted, in the caller's terms.
+ *
+ * One case gets its own sentence, because the generic one sends the reader to the wrong place:
+ * `--preset` reached the published `@expo/fingerprint` only after 0.20.9, so a project on the
+ * version the registry serves today rejects the flag outright [observed — 2026-08-24, a real SDK
+ * 57 project: `unknown or unexpected option: --preset`]. The command does not pass it unasked for
+ * exactly this reason; a caller who *did* ask needs to be told it is their CLI's age and not their
+ * project.
+ */
+export function describeGenerateFailure(
+  error: string | undefined,
+  platform: string,
+  preset: string | undefined
+): string {
+  const reason = error ?? `The fingerprint of the working tree could not be computed for ${platform}.`;
+  if (preset && /unknown or unexpected option: --preset/.test(reason)) {
+    return [
+      `The @expo/fingerprint CLI installed in this project does not accept --preset.`,
+      `Why: the flag was added to the CLI after the version this project has, so it rejected it: ${reason}`,
+      `How: drop --preset — without it the CLI applies its own default and the comparison still works — or upgrade the project's @expo/fingerprint.`,
+    ].join('\n');
+  }
+  return reason;
 }
 
 /**

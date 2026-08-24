@@ -408,7 +408,35 @@ One consequence worth recording: `appsConnected` on a run that refuses is the co
 gave, not `0`. A flat zero there would be this command inventing "no app is connected" out of a
 step it deliberately skipped, which is the same class of unverified claim the whole round removes.
 
-### The sixth and seventh: the stop commands, and what "already done" is worth
+### The sixth: `impact --assert`, and a gate that is not about a process
+
+[observed — 2026-08-24, `src/impact/`] `exagent impact` is the first command in the band whose
+subject is neither a process nor a service but a **classification** of the working tree, and it
+joins the band the way `runtime:errors` did: opt-in.
+
+The default is `0` always, because `impact` is information and not judgment — the same contract
+[[0004-smart-start-and-project-state]] §`exagent status` gives `status`. `--assert <class>` is the
+gate, and it exits `20` when the real class is stronger than the one named.
+
+Decision [confirmed against the cluster plan, which proposed `1`]. The plan for this command wrote
+the assertion failure as exit `1`, and that is the pre-convention reflex. `1` is the band for "the
+tool did not work: fix the call", and here the tool worked perfectly: the fingerprint was computed,
+the diff was classified, and the whole report is on stdout. There is nothing about the call to fix,
+so an agent reading `1` would go looking for a usage mistake it did not make. This is the shape the
+`20`–`29` band exists for, and `runtime:errors --fail-on-error` already uses `20` for the identical
+one — a flag that turns a report into a gate.
+
+Two details:
+
+- **The whole report still prints on the run that exits `20`.** The exit code is the answer and the
+  payload is why; a gate that dropped one of the two would be unreadable.
+- **The class is not the OTA verdict**, and neither is derived from the other. That split is the
+  normative part of [[0011-impact-and-freshness]] and the reason it is a document rather than a
+  paragraph here: a fingerprint answers "does the native binary differ" and OTA safety is a
+  `runtimeVersion` question, so a tool deriving one from the other reports the `fingerprint` policy
+  — the one where a native change is *safest* — exactly backwards.
+
+### The seventh and eighth: the stop commands, and what "already done" is worth
 
 [observed — 2026-08-23, `src/runtime/stopAsync.ts`, `src/dev/stopAsync.ts`] `runtime:stop` and
 `dev:stop` are the first commands whose subject can be **already in the state that was asked for**,

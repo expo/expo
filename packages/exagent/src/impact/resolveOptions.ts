@@ -13,7 +13,15 @@ export type PlatformSelection = 'ios' | 'android' | 'all';
 /** The fingerprint presets `@expo/fingerprint` accepts [observed — `FingerprintPreset`]. */
 export const PRESETS = ['strict', 'balanced', 'relaxed'];
 
-/** The preset in effect when nobody names one [observed — `@expo/fingerprint` Options.preset]. */
+/**
+ * The preset `@expo/fingerprint` applies when nobody names one [observed — `Options.preset`].
+ *
+ * Reported, never *passed*. `--preset` reached the published CLI only after 0.20.9, whose
+ * `fingerprint:generate` rejects it outright [observed — 2026-08-24, a real SDK 57 project:
+ * `unknown or unexpected option: --preset`], so sending it unasked would break this command
+ * against every project installed from the registry today. The flag is forwarded only when the
+ * caller named it, and then a CLI too old for it says so.
+ */
 export const DEFAULT_PRESET = 'balanced';
 
 export interface ImpactOptions {
@@ -27,8 +35,14 @@ export interface ImpactOptions {
   head: string | null;
   /** The `eas.json` build profile, so a profile's environment reaches the app config. */
   profile: string | null;
-  /** The fingerprint preset both sides are computed under. */
-  preset: string;
+  /**
+   * The fingerprint preset to pass through, or `null` when the caller named none.
+   *
+   * `null` is not `DEFAULT_PRESET`: it is the difference between "compute this under balanced" and
+   * "do not send a --preset flag at all", and only the second works on a published CLI older than
+   * the flag.
+   */
+  preset: string | null;
   /** Exit `20` when the real class is stronger than this one. Null without `--assert`. */
   assert: ImpactClass | null;
   json: boolean;
@@ -120,9 +134,9 @@ function resolvePlatform(value: unknown): PlatformSelection {
   );
 }
 
-function resolvePreset(value: unknown): string {
+function resolvePreset(value: unknown): string | null {
   if (value == null) {
-    return DEFAULT_PRESET;
+    return null;
   }
   if (typeof value === 'string' && PRESETS.includes(value)) {
     return value;

@@ -763,3 +763,39 @@ describe('exagent impact', () => {
     expect(readStubInvocations(projectRoot, STUB_FINGERPRINT_LOG_NAME)).toEqual([]);
   });
 });
+
+describe('exagent impact — a project with no recorded build', () => {
+  it(`should report needs-native-build rather than the cheap class it has no evidence for`, async () => {
+    // The state every project is in before `exagent dev` has run a native build. The fingerprint
+    // comparison is undecided, so the answer is the one that is safe to be wrong about — and it
+    // is the same answer `exagent dev` gives, which plans a build for an unrecorded project.
+    const projectRoot = await setupAsync();
+    await fs.promises.rm(path.join(projectRoot, '.expo', 'exagent-last-build.json'));
+
+    const result = await runImpactAsync(projectRoot, ['--platform', 'ios', '--json']);
+
+    expect(result.exitCode).toBe(0);
+    const report: ImpactReport = JSON.parse(result.stdout);
+    expect(report.platforms[0]!.fingerprintChanged).toBeNull();
+    expect(report.class).toBe('needs-native-build');
+    expect(report.platforms[0]!.reasons.join(' ')).toContain('safe to be wrong about');
+    // …and no file-level view was gathered, because there was nothing for it to refine.
+    expect(report.changedFiles).toBeNull();
+    expect(report.caveats.join(' ')).toContain('No build is recorded');
+  });
+
+  it(`should fail --assert js-only there, because nothing is known`, async () => {
+    const projectRoot = await setupAsync();
+    await fs.promises.rm(path.join(projectRoot, '.expo', 'exagent-last-build.json'));
+
+    const result = await runImpactAsync(projectRoot, [
+      '--platform',
+      'ios',
+      '--assert',
+      'js-only',
+      '--json',
+    ]);
+
+    expect(result.exitCode).toBe(20);
+  });
+});

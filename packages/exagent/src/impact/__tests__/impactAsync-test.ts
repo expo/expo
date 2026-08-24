@@ -123,6 +123,20 @@ describe(buildImpactReport, () => {
       expect(result.platforms[0]!.reasons.join(' ')).toContain('metro.config.js');
     });
 
+    it(`should not weaken a platform whose fingerprint could not be decided`, () => {
+      // The state a project with no recorded build is in. Nothing has been shown about the native
+      // surface, so the file-level answer has nothing to refine, and reporting the cheap class
+      // would be a claim with no evidence — and would contradict `exagent dev`, which plans a
+      // build for the same project (llp/0004 §Implemented in v1 as, item 2).
+      const result = report({
+        platforms: [platform({ class: 'needs-native-build', fingerprintChanged: null })],
+        fileClass: classifyChangedFiles(['src/app/index.tsx']),
+      });
+
+      expect(result.class).toBe('needs-native-build');
+      expect(result.platforms[0]!.class).toBe('needs-native-build');
+    });
+
     it(`should not weaken a platform whose fingerprint did move`, () => {
       const result = report({
         platforms: [platform({ class: 'needs-native-build' })],

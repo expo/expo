@@ -6,6 +6,7 @@ import {
   buildEasCompareArgs,
   compareWithEasBuildAsync,
   compareWithLastBuildAsync,
+  describeGenerateFailure,
   parseEasCompare,
 } from '../compare';
 import realDiff from './fixtures/notesapp-ios-diff.json';
@@ -337,5 +338,41 @@ describe(parseCachedBuild, () => {
     expect(parseCachedBuild(`Fetching builds…\n[{"id":"build-1"}]`)).toMatchObject({
       id: 'build-1',
     });
+  });
+});
+
+describe(describeGenerateFailure, () => {
+  it(`should pass an ordinary failure through`, () => {
+    expect(describeGenerateFailure('The fingerprint CLI failed: boom', 'ios', undefined)).toBe(
+      'The fingerprint CLI failed: boom'
+    );
+  });
+
+  it(`should say something when there was no message at all`, () => {
+    expect(describeGenerateFailure(undefined, 'android', undefined)).toContain('android');
+  });
+
+  it(`should name the CLI's age when it rejected a --preset the caller passed`, () => {
+    // The generic message sends the reader to look at their project; the cause is the version of
+    // @expo/fingerprint it has.
+    const result = describeGenerateFailure(
+      'The fingerprint CLI failed: unknown or unexpected option: --preset',
+      'ios',
+      'strict'
+    );
+
+    expect(result).toContain('does not accept --preset');
+    expect(result).toContain('drop --preset');
+  });
+
+  it(`should not claim that when no preset was passed`, () => {
+    // Only a caller who asked for a preset can be told to drop one.
+    expect(
+      describeGenerateFailure(
+        'The fingerprint CLI failed: unknown or unexpected option: --preset',
+        'ios',
+        undefined
+      )
+    ).not.toContain('drop --preset');
   });
 });

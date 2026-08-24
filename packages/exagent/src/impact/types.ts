@@ -140,7 +140,13 @@ export interface ImpactReport {
     kind: ComparisonKind;
     base: ComparisonSide;
     head: ComparisonSide;
-    /** The fingerprint preset both sides were computed under. */
+    /**
+     * The fingerprint preset both sides were computed under.
+     *
+     * The caller's `--preset` when they named one. Otherwise the preset the fingerprint CLI
+     * applies by itself, reported because a comparison is only meaningful within one preset — but
+     * not passed to it, because the flag postdates the published CLI most projects have.
+     */
     preset: string;
   };
   platforms: PlatformImpact[];

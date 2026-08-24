@@ -373,8 +373,8 @@ time and never compared it.
 **Why `20` and not a note on a `0`.** This was the argued call, and the argument that decides it is
 llp/0010's own first sentence: an agent reads the exit code before it reads a word of the output,
 so a warning inside a zero is a warning an agent does not see. The other reading is real — the
-state the caller named ("`host.exp.Exponent2` is not running") does hold, and §The sixth and
-seventh says a state already reached is a success. It loses because the *subject* of this command
+state the caller named ("`host.exp.Exponent2` is not running") does hold, and §The seventh and
+eighth says a state already reached is a success. It loses because the *subject* of this command
 is the app on the device, and the app on the device is untouched. A `0` here means the command that
 exists to remove this exact class of false green produces one.
 

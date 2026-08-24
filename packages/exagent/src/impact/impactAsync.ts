@@ -20,7 +20,7 @@ import type { FileClassification } from './classify';
 import { listChangedFilesAsync } from './changedFiles';
 import { compareWithEasBuildAsync, compareWithLastBuildAsync, type Comparison } from './compare';
 import { formatImpactReport } from './format';
-import type { ImpactOptions } from './resolveOptions';
+import { DEFAULT_PRESET, type ImpactOptions } from './resolveOptions';
 import { resolveOtaSafety, resolveRuntimeVersionAsync } from './runtimeVersion';
 import type { ImpactClass, ImpactReport, PlatformImpact, RuntimeVersionInfo } from './types';
 import { IMPACT_CLASS_ORDER, isStrongerClass } from './types';
@@ -57,17 +57,20 @@ export async function impactAsync(projectRoot: string, options: ImpactOptions): 
   } else {
     for (const platform of platforms) {
       const comparison = await compareWithLastBuildAsync(projectRoot, platform, {
-        preset: options.preset,
+        preset: options.preset ?? undefined,
       });
       results.push(await buildPlatformImpactAsync(easCli, projectRoot, platform, comparison));
     }
   }
 
-  // The fingerprint had nothing to say for any platform, so the file-level view is what is left.
+  // The file-level view is what is left when the fingerprint said the native surface is
+  // *unchanged* — `=== false`, not merely falsy. A platform whose comparison could not be decided
+  // has not established anything for the files to refine, and letting `null` through here is what
+  // made a project with no recorded build report a cheap class it had no evidence for.
   // It runs once, not per platform: git does not have a per-platform answer.
-  const changedFiles = results.some((result) => result.fingerprintChanged)
-    ? null
-    : await listChangedFilesAsync(projectRoot);
+  const changedFiles = results.every((result) => result.fingerprintChanged === false)
+    ? await listChangedFilesAsync(projectRoot)
+    : null;
   const fileClass = changedFiles ? classifyChangedFiles(changedFiles) : null;
 
   const runtimeVersion = await resolveRuntimeVersionAsync(projectRoot);
@@ -154,7 +157,10 @@ export function buildImpactReport({
       kind: options.mode,
       base: { label: baseLabel(options), hash: platforms[0]?.baseHash ?? null },
       head: { label: 'working tree', hash: platforms[0]?.headHash ?? null },
-      preset: options.preset,
+      // The caller's preset when they named one, and otherwise the one the fingerprint CLI applies
+      // by itself — reported either way, because a comparison only means something within one
+      // preset, and passed only in the first case.
+      preset: options.preset ?? DEFAULT_PRESET,
     },
     platforms,
     ota,
@@ -187,11 +193,16 @@ async function buildPlatformImpactAsync(
   }
 
   const classified = comparison.items ? classifyFingerprintDiff(comparison.items) : null;
+  // An *undecided* fingerprint is `needs-native-build`, not `js-only`. Nothing has been shown
+  // about the native surface, and llp/0004 §Implemented in v1 as, item 2 already fixed the
+  // direction to err in for exactly this state: unrecorded means stale, so the answer over-plans a
+  // build at worst and never under-plans one. It also keeps this command from contradicting
+  // `exagent dev`, which plans a build for the same project.
   const impactClass: ImpactClass = classified
     ? classified.class
-    : comparison.fingerprintChanged
-      ? 'needs-native-build'
-      : 'js-only';
+    : comparison.fingerprintChanged === false
+      ? 'js-only'
+      : 'needs-native-build';
 
   const reasons = classified
     ? classified.reasons
@@ -199,7 +210,11 @@ async function buildPlatformImpactAsync(
       ? [
           `the native fingerprint${platform ? ` for ${platform}` : ''} differs from the one this is compared against, so the installed app was built from different native code`,
         ]
-      : [];
+      : comparison.fingerprintChanged == null
+        ? [
+            `whether the native surface changed${platform ? ` for ${platform}` : ''} could not be established, so this reports the answer that is safe to be wrong about: build again rather than run code the installed app may not support`,
+          ]
+        : [];
 
   return {
     platform,
@@ -300,7 +315,9 @@ function buildCaveats(
   }
 
   caveats.push(
-    `Both sides are computed with the "${options.preset}" fingerprint preset. A preset decides what counts as part of the native surface, so a comparison across two presets is meaningless.`
+    options.preset
+      ? `Both sides are computed with the "${options.preset}" fingerprint preset, passed through to the fingerprint CLI. A preset decides what counts as part of the native surface, so a comparison across two presets is meaningless.`
+      : `No --preset was given, so the fingerprint CLI applied its own default ("${DEFAULT_PRESET}" as of @expo/fingerprint 0.20.x). A preset decides what counts as part of the native surface, so a comparison across two presets is meaningless — and a project that changes its default between the recorded build and now would be compared across two.`
   );
 
   if (!changedFilesKnown && results.every((result) => !result.fingerprintChanged)) {

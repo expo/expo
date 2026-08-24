@@ -3,7 +3,10 @@ import { DEFAULT_PRESET, PRESETS, resolveImpactOptions } from '../resolveOptions
 import { IMPACT_CLASS_ORDER } from '../types';
 
 describe(resolveImpactOptions, () => {
-  it(`should default to every platform, the last build, and the balanced preset`, () => {
+  it(`should default to every platform and the last build, and send no preset at all`, () => {
+    // `preset: null` is not `DEFAULT_PRESET`. The published @expo/fingerprint of every project on
+    // the registry today rejects `--preset` outright, so the flag is forwarded only when the
+    // caller named it; the default is reported in the payload and never passed.
     expect(resolveImpactOptions([])).toEqual({
       platform: 'all',
       mode: 'last-build',
@@ -11,11 +14,15 @@ describe(resolveImpactOptions, () => {
       base: null,
       head: null,
       profile: null,
-      preset: DEFAULT_PRESET,
+      preset: null,
       assert: null,
       json: false,
       followups: true,
     });
+  });
+
+  it(`should name the default preset in the error for an unusable one`, () => {
+    expect(() => resolveImpactOptions(['--preset', 'paranoid'])).toThrow(DEFAULT_PRESET);
   });
 
   it.each(['ios', 'android', 'all'] as const)(`should accept --platform %s`, (platform) => {
