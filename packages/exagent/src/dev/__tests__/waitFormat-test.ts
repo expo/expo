@@ -79,7 +79,14 @@ describe(devWaitResultToJson, () => {
       waitedMs: 4210,
       timedOut: false,
       source: 'lock',
-      bundle: { checked: false, ok: null, platform: null, url: null, error: null, reason: null },
+      bundle: {
+        checked: false,
+        ok: null,
+        platform: null,
+        url: null,
+        error: null,
+        reason: 'the entry bundle check was not run',
+      },
       followups: [],
     });
   });

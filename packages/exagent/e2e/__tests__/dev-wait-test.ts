@@ -268,6 +268,63 @@ describe('exagent dev:wait', () => {
       expect(JSON.parse(result.stdout).bundle.url).toContain('platform=ios');
     });
 
+    // @ref llp/0010-agent-conventions.rfc.md §The web target answers the same question with
+    // different documents. The web dev server has no manifest, so `--platform web` used to skip
+    // the check entirely and report green on the same file `--platform ios` exited 20 for
+    // [observed — friction run 2, 2026-08-23].
+    describe('the web target', () => {
+      it('exits 0 with the bundle the page names when it compiles', async () => {
+        const projectRoot = await setupFixtureAsync('go-app');
+        const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
+
+        const result = await executeExagentAsync(projectRoot, [
+          'dev:wait',
+          '--platform',
+          'web',
+          '--dev-server-url',
+          server.url,
+          '--json',
+        ]);
+
+        expect(result.exitCode).toBe(0);
+        expect(JSON.parse(result.stdout).bundle).toMatchObject({
+          checked: true,
+          ok: true,
+          platform: 'web',
+          error: null,
+        });
+        expect(JSON.parse(result.stdout).bundle.url).toContain('platform=web');
+      });
+
+      it('exits 20 with the file and line off the error page the dev server renders', async () => {
+        const projectRoot = await setupFixtureAsync('go-app');
+        const server = await startStubAsync({
+          projectRoot,
+          targets: [{ id: '1' }],
+          bundle: 'broken',
+        });
+
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['dev:wait', '--platform', 'web', '--dev-server-url', server.url, '--json'],
+          { reject: false }
+        );
+
+        expect(result.exitCode).toBe(20);
+        expect(JSON.parse(result.stdout).bundle).toMatchObject({
+          checked: true,
+          ok: false,
+          platform: 'web',
+          error: {
+            filename: '/project/src/app/index.tsx',
+            lineNumber: 101,
+            column: 2,
+            message: expect.stringContaining("Unexpected keyword 'const'"),
+          },
+        });
+      });
+    });
+
     it('builds the bundle for the platform --platform names', async () => {
       const projectRoot = await setupFixtureAsync('go-app');
       const server = await startStubAsync({ projectRoot, targets: [{ id: '1' }] });
@@ -309,7 +366,7 @@ describe('exagent dev:wait', () => {
         platform: null,
         url: null,
         error: null,
-        reason: null,
+        reason: 'the entry bundle check was not run',
       });
     });
 
@@ -331,7 +388,8 @@ describe('exagent dev:wait', () => {
       ]);
 
       expect(result.exitCode).toBe(0);
-      expect(JSON.parse(result.stdout).bundle).toMatchObject({ checked: true, ok: null });
+      // `checked` follows `ok`: nothing was decided, so nothing was checked.
+      expect(JSON.parse(result.stdout).bundle).toMatchObject({ checked: false, ok: null });
       expect(JSON.parse(result.stdout).bundle.reason).toContain('404');
     });
 
@@ -355,7 +413,7 @@ describe('exagent dev:wait', () => {
       expect(JSON.parse(result.stdout)).toMatchObject({
         ok: false,
         timedOut: true,
-        bundle: { checked: true, ok: null },
+        bundle: { checked: false, ok: null },
       });
     });
 

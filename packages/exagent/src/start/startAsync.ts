@@ -128,6 +128,13 @@ export async function runDevServerAsync(
  * signals. Everything else is a run nobody is watching — an agent, a log file, CI — where the
  * output has to be *kept* instead, because a dev server that stops on a question the Expo CLI
  * asked says so on a stream that would otherwise go nowhere (llp/0010 §Needs-human protocol).
+ *
+ * **`ci: false` is load-bearing here, and only here.** A dev server told `CI=1` turns Metro's file
+ * watcher off and serves its start-up snapshot forever, so an agent that edits a file and then asks
+ * `dev:wait` whether the project compiles is answered about code that no longer exists [observed —
+ * live on an SDK 57 app, 2026-08-23: a syntax error appended to a route left `dev:wait` at exit 0].
+ * The prompts still fail fast without it — that half is the pipe, not the variable. See
+ * {@link spawnExpoAsync}.
  */
 async function spawnDevServerAsync(
   projectRoot: string,
@@ -138,7 +145,7 @@ async function spawnDevServerAsync(
     return { exitCode: await runExpoAsync(projectRoot, args), stdout: '', stderr: '' };
   }
 
-  const { result } = await spawnExpoAsync(projectRoot, args, { output });
+  const { result } = await spawnExpoAsync(projectRoot, args, { output, ci: false });
   if (result.spawnError) {
     throw new CommandError(
       'EXPO_CLI_NOT_FOUND',

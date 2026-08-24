@@ -330,8 +330,10 @@ describe(devWaitAsync, () => {
       expect(await devWaitAsync(projectRoot, options({ bundleCheck: true, json: true }))).toBe(
         EXIT_OK
       );
+      // `checked` follows `ok`: a check that decided nothing did not check anything, and saying
+      // otherwise is a contradiction a caller cannot act on.
       expect(printedJson().bundle).toMatchObject({
-        checked: true,
+        checked: false,
         ok: null,
         reason: 'no launchAsset.url',
       });
@@ -348,7 +350,7 @@ describe(devWaitAsync, () => {
         platform: null,
         url: null,
         error: null,
-        reason: null,
+        reason: 'the entry bundle check was not run',
       });
     });
 

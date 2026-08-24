@@ -44,18 +44,36 @@ export interface SpawnExpoOptions {
   output?: CapturedOutput;
   /** Kill the run when it goes silent on a question. See `SubprocessOptions.promptGuard`. */
   promptGuard?: boolean;
+  /**
+   * Whether the child is told `CI=1`. Defaults to true; the dev-server step is the one caller
+   * that turns it off. See {@link spawnExpoAsync} for why.
+   */
+  ci?: boolean;
 }
 
 /**
  * Run the project's `expo` CLI and capture what it printed.
  *
  * The difference from {@link runExpoAsync} is who is watching. Nothing is attached to this child's
- * stdin and nobody is reading its output as it arrives, so a prompt here is a hang — and `CI=1` is
- * how the Expo CLI is told that: it rejects `--non-interactive` and names the variable instead
- * [observed — `packages/@expo/cli/src/index.ts`], and its prompt helper then fails fast with a
- * sentence this CLI can classify [observed — `packages/@expo/cli/src/utils/prompts.ts`].
+ * stdin and nobody is reading its output as it arrives, so a prompt here is a hang. Two separate
+ * things stop that from becoming one:
  *
- * The inherited runs deliberately do not get it: there a person has the terminal, and answering a
+ *  - **stdout is a pipe.** `isInteractive()` is `!shouldReduceLogs() && !env.CI &&
+ *    process.stdout.isTTY` [observed — `packages/@expo/cli/src/utils/interactive.ts`], and every
+ *    captured mode wires the child's stdout to a pipe [observed — `subprocess.ts` `stdioFor`], so
+ *    the CLI already knows nobody can answer it. Its prompt helper then fails fast with a sentence
+ *    this CLI can classify [observed — `packages/@expo/cli/src/utils/prompts.ts`], and the keypress
+ *    menu of `expo start` is never installed [observed — `start/startAsync.ts:140`].
+ *  - **`CI=1`**, which says the same thing a second way, because the CLI rejects
+ *    `--non-interactive` and names the variable instead [observed —
+ *    `packages/@expo/cli/src/index.ts`].
+ *
+ * `ci: false` keeps the first and drops the second, and it exists because `CI` does a *second* job
+ * in the Expo CLI that the dev server cannot survive: it turns Metro's file watcher off [observed —
+ * `instantiateMetro.ts` `isWatchEnabled`, `withMetroMultiPlatform.ts:496`], so the dev server serves
+ * the snapshot it read at start-up forever. See llp/0010 §Needs-human protocol, layer 2.
+ *
+ * The inherited runs deliberately get neither: there a person has the terminal, and answering a
  * prompt is the point.
  *
  * @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol
@@ -63,7 +81,7 @@ export interface SpawnExpoOptions {
 export async function spawnExpoAsync(
   projectRoot: string,
   args: string[],
-  { output = 'capture', promptGuard }: SpawnExpoOptions = {}
+  { output = 'capture', promptGuard, ci = true }: SpawnExpoOptions = {}
 ): Promise<{ cli: ExpoCliCommand; result: SubprocessResult }> {
   const cli = resolveExpoCli(projectRoot, args);
   debugEvent('expo_resolved', { command: cli.command, args: cli.args });
@@ -72,7 +90,10 @@ export async function spawnExpoAsync(
     cwd: projectRoot,
     output,
     promptGuard,
-    env: { CI: '1' },
+    // Nothing rather than `CI=0`: a machine whose own environment says `CI` is a machine where the
+    // frozen bundler is the right behaviour, and overriding it here would be this wrapper deciding
+    // something about the caller's environment that it was never told.
+    ...(ci ? { env: { CI: '1' } } : null),
   });
   return { cli, result };
 }

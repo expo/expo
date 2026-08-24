@@ -107,6 +107,29 @@ describe('exagent dev', () => {
       expect(invocationArgs(projectRoot)).toEqual([['prebuild', '--platform', 'ios'], ['run:ios']]);
     });
 
+    // @ref llp/0010-agent-conventions.rfc.md §The dev server is the exception, and `CI` is why
+    // `CI=1` makes the Expo CLI's prompts fail fast *and* turns Metro's file watcher off, and only
+    // the first was ever wanted. A dev server with no watcher serves the code it read at start-up
+    // forever, so `dev:wait` certified a project the caller had already broken [observed —
+    // friction run 2, 2026-08-23]. The prompts still fail fast because the other half is the pipe:
+    // the CLI's `isInteractive()` also requires a TTY on stdout, and a captured child never has one.
+    it('tells prebuild it is CI, and leaves the dev-server step alone', async () => {
+      const projectRoot = await setupAsync('dev-client-app');
+
+      // `CI` unset for this run only, so what the wrapper sets is told apart from what it inherits.
+      await executeExagentAsync(projectRoot, ['dev', '--ios'], { env: { CI: undefined } });
+
+      const [prebuild, run] = readStubExpoInvocations(projectRoot);
+      expect(prebuild!.args).toEqual(['prebuild', '--platform', 'ios']);
+      expect(prebuild!.ci).toBe('1');
+      expect(run!.args).toEqual(['run:ios']);
+      // Nothing set, rather than `CI=0`: a machine whose own environment says CI keeps saying it.
+      expect(run!.ci).toBeNull();
+      // Both steps are non-interactive whatever `CI` says, because neither owns a terminal.
+      expect(prebuild!.isTTY).toBe(false);
+      expect(run!.isTTY).toBe(false);
+    });
+
     it('emits the plan before the first step runs', async () => {
       const projectRoot = await setupAsync('dev-client-app');
       const result = await executeExagentAsync(projectRoot, ['dev', '--ios']);
@@ -236,8 +259,11 @@ describe('exagent dev', () => {
       expect(result.stdout).toContain('stub_expo_start');
     });
 
-    // The follow-ups of a run that started nothing may not name a dev server.
-    it('names no dev-server URL when the run started none', async () => {
+    // @ref llp/0010-agent-conventions.rfc.md §A failed plan step reports a failure, not a plan
+    // A run that started nothing has no plan to report and no dev server to point at. It used to
+    // print the plan object with its success-shaped follow-ups and let the exit code be the only
+    // thing that disagreed [observed — friction run 2, 2026-08-23].
+    it('reports a failed step as a failure, and names no dev server', async () => {
       const projectRoot = await setupAsync('go-app');
 
       const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json'], {
@@ -245,10 +271,15 @@ describe('exagent dev', () => {
         reject: false,
       });
 
+      // The subprocess's own code, forwarded exactly as it always was.
       expect(result.exitCode).toBe(9);
-      const followups = JSON.parse(result.stdout).followups as { id: string; command: string }[];
-      expect(followups.map((followup) => followup.id)).toContain('dev-server-port-unknown');
-      expect(followups.some((followup) => followup.command.startsWith('exp://'))).toBe(false);
+      const payload = JSON.parse(result.stdout);
+      expect(payload).toMatchObject({
+        error: { code: 'PLAN_STEP_FAILED', needsHuman: null },
+      });
+      expect(payload.steps).toBeUndefined();
+      expect(payload.followups).toBeUndefined();
+      expect(result.stdout).not.toContain('exp://');
     });
   });
 
@@ -266,6 +297,28 @@ describe('exagent dev', () => {
       expect(invocationArgs(projectRoot)).toEqual([['start', '--go', '--port', '8124']]);
       const followups = JSON.parse(result.stdout).followups as { command: string }[];
       expect(followups.some((followup) => followup.command.endsWith(':8124'))).toBe(true);
+    });
+
+    // @ref llp/0009-smart-followups.rfc.md §Examples per command — the web ladder.
+    // A web run used to inherit the native rungs and offer `runtime:errors` (no debugger target
+    // attaches from a browser) and `eas build:configure` (a cloud native build it did not need),
+    // while naming neither the site nor a way to check it [observed — friction run 2, 2026-08-23].
+    it('leads a web run with the site URL and the web bundle check', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--web', '--port', '8124'], {
+        env: { STUB_EXPO_DEV_SERVER_PORT: '8124' },
+      });
+
+      expect(result.exitCode).toBe(0);
+      const followups = JSON.parse(result.stdout).followups as { id: string; command: string }[];
+      expect(followups.map((followup) => followup.id)).toEqual([
+        'web-url',
+        'web-bundle-check',
+        'deploy-web',
+      ]);
+      expect(followups[0]!.command).toBe('http://localhost:8124');
+      expect(result.stdout).not.toContain('eas build:configure');
     });
 
     it('rejects a value that is not a port, before anything runs', async () => {

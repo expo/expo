@@ -4,6 +4,7 @@
 // `expo start` wrapper is `exagent start`, whose dev-server runner and follow-ups this reuses.
 
 import { checkpointBeforeAsync } from '../checkpoint/integration';
+import { outputTail } from '../deploy/parseOutput';
 import {
   buildStartPlanFollowUps,
   followUpsEnabled,
@@ -98,6 +99,16 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
 
   const run = await executePlanAsync(projectRoot, plan, state, options);
 
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+  // A plan whose step failed has no result to report, so it reports a failure. It used to print
+  // the plan object with its success-shaped follow-ups and leave only the exit code disagreeing —
+  // and when the code was the Expo CLI's own `7`, an agent read a started dev server on stdout,
+  // nothing on stderr, and "a person must finish this" from the exit code
+  // [observed — friction run 2, 2026-08-23: `dev --yes --json --ios`].
+  if (run.exitCode !== 0 && run.failure) {
+    throw planStepFailedError(run.failure, stepOutputFor(options), run.exitCode);
+  }
+
   if (options.json) {
     // One object, when the run is over and there is something true to say about it.
     const followups = resolveRunFollowUps(projectRoot, plan, options, run.devServer);
@@ -123,11 +134,26 @@ function stepOutputFor(options: DevOptions): SubprocessOutput {
   return isInteractive() ? 'inherit' : 'tee';
 }
 
+/** The step that ended a plan, and everything known about how it ended. */
+interface StepFailure {
+  step: PlanStep;
+  /** The `expo` arguments it actually ran with, which is what a reader has to reproduce. */
+  args: string[];
+  /** Whether this step is the one that starts the dev server. */
+  devServerStep: boolean;
+  /** What the step exited with, which is the `expo` CLI's own code. */
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+}
+
 /** What one execution of a plan amounts to. */
 interface PlanRun {
   exitCode: number;
   /** The dev server the run started, or null when it started none. */
   devServer: DevServerRun | null;
+  /** The step that stopped the plan, or null when every step succeeded. */
+  failure: StepFailure | null;
 }
 
 async function executePlanAsync(
@@ -149,29 +175,38 @@ async function executePlanAsync(
       total: plan.steps.length,
     });
 
-    const result = isDevServerStep(step)
+    const devServerStep = isDevServerStep(step);
+    const result = devServerStep
       ? await runDevServerAsync(projectRoot, args, { agentSkills: options.agentSkills, output })
       : await runStepAsync(projectRoot, args, output);
-    if (isDevServerStep(step)) {
+    if (devServerStep) {
       devServer = result as DevServerRun;
     }
     exitCode = result.exitCode;
     event('start_plan_step_exit', { id: step.id, code: exitCode });
 
     if (exitCode !== 0) {
+      const failure: StepFailure = {
+        step,
+        args,
+        devServerStep,
+        exitCode,
+        stdout: result.stdout,
+        stderr: result.stderr,
+      };
       // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol, layer 3 — a step that
-      // stopped because the Expo CLI needed an answer is not a failed command, it is a command
-      // waiting on a person. Nothing is captured in `inherit` mode, so there is nothing to
-      // classify there and the exit code is forwarded as it always was.
-      assertNotNeedsHuman(step, args, result);
+      // stopped because the Expo CLI needed an answer, or because macOS refused it a permission,
+      // is not a failed command: it is a command waiting on a person. Nothing is captured in
+      // `inherit` mode, so there is nothing to classify there.
+      assertNotNeedsHuman(failure);
       // Every later step depends on this one having worked, so the plan stops here.
-      return { exitCode, devServer };
+      return { exitCode, devServer, failure };
     }
 
     recordBuildOf(projectRoot, step, state);
   }
 
-  return { exitCode, devServer };
+  return { exitCode, devServer, failure: null };
 }
 
 /** Run a plan step that is not a dev server, in the output mode this run is in. */
@@ -188,38 +223,115 @@ async function runStepAsync(
 }
 
 /**
- * Turn a step that stopped on a prompt into the handoff it is.
+ * Turn a step the registry recognises into the handoff it is.
  *
- * `Input is required, but 'npx expo' is in non-interactive mode.` is the definition of exit 7: no
- * re-run of the same command gets past it, because what it is waiting for is an answer. The
- * classifier's generic `expo-prompt` row names the command that stopped, and the message quotes
- * what the CLI actually asked so the reader can see the question.
+ * Two scenarios reach this today, and they need different prose. A prompt — `Input is required,
+ * but 'npx expo' is in non-interactive mode.` — is the definition of exit 7: no re-run of the same
+ * command gets past it, because what it is waiting for is an answer. A macOS Automation refusal is
+ * the same shape for a different reason: the permission is granted by a person clicking a switch,
+ * and until then `expo start --ios` cannot finish. Anything else the classifier recognises keeps
+ * the registry row's own code and a message that names the step and quotes what the tool printed.
  *
  * @throws {NeedsHumanError} when the registry recognises what stopped the step.
  */
-function assertNotNeedsHuman(
-  step: PlanStep,
-  args: string[],
-  result: { exitCode: number; stdout: string; stderr: string }
-): void {
-  const invocation = `npx expo ${args.join(' ')}`;
-  const needsHuman = classifySubprocessFailure({ tool: 'expo', invocation, ...result });
+function assertNotNeedsHuman(failure: StepFailure): void {
+  const invocation = `npx expo ${failure.args.join(' ')}`;
+  const needsHuman = classifySubprocessFailure({
+    tool: 'expo',
+    invocation,
+    exitCode: failure.exitCode,
+    stdout: failure.stdout,
+    stderr: failure.stderr,
+  });
   if (!needsHuman) {
     return;
   }
 
-  const asked = lastNonEmptyLine(result.stderr) ?? lastNonEmptyLine(result.stdout);
-  throw needsHumanErrorFrom(needsHuman, {
+  throw needsHumanErrorFrom(needsHuman, stopPromptFor(needsHuman.scenario, failure, invocation));
+}
+
+/** The what / why / how of one recognised stop, per scenario. */
+function stopPromptFor(
+  scenario: string,
+  failure: StepFailure,
+  invocation: string
+): { message: string; code?: string } {
+  if (scenario === 'macos-automation') {
+    // The *first* line of the crash, not the last: an unhandled rejection ends with Node's own
+    // version footer, and quoting that under "What the tool printed" says nothing at all.
+    const said = firstLineMatching(failure, /osascript|Apple events|\(-1743\)/i);
+    return {
+      message: [
+        `The plan stopped at "${failure.step.id}": macOS refused "${invocation}" permission to control Simulator.app.`,
+        `Why: --ios makes the Expo CLI drive Simulator.app through AppleScript, and macOS refuses an application that has not been granted Automation permission. The Expo CLI does not catch that rejection, so it ends the whole "expo start" process${failure.devServerStep ? ' — the dev server this run started exited with it, and nothing is listening for this project now' : ''}.`,
+        `How: grant the permission in System Settings › Privacy & Security › Automation, then run this command again. To keep going without it, drop --ios and open the app the way that needs no Automation grant: "npx exagent dev --yes" to start the dev server, then "npx exagent navigate /", which deep-links through "xcrun simctl openurl".`,
+        said ? `\nWhat the tool printed:\n${said}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n'),
+    };
+  }
+
+  // A prompt is the one case where the *last* line is the answer: it is the question the CLI
+  // stopped on, and nothing was printed after it.
+  const asked = lastNonEmptyLine(failure.stderr) ?? lastNonEmptyLine(failure.stdout);
+  return {
     code: 'EXPO_NEEDS_INPUT',
     message: [
-      `The plan stopped at "${step.id}": "${invocation}" needed an answer and this run has no terminal to give one.`,
+      `The plan stopped at "${failure.step.id}": "${invocation}" needed an answer and this run has no terminal to give one.`,
       `Why: the Expo CLI asks before it does something it cannot decide — most often "port 8081 is busy, use another one?" — and a run with no terminal fails there instead of prompting.`,
       `How: for the port question, name the port yourself with "npx exagent dev --port 8082", which is answered before the CLI has to ask. Otherwise run the command above in a terminal once, and answer it.`,
       asked ? `\nWhat it asked for:\n${asked}` : '',
     ]
       .filter(Boolean)
       .join('\n'),
-  });
+  };
+}
+
+/** The first line of a captured failure that says something about the cause, or null for none. */
+function firstLineMatching(failure: StepFailure, pattern: RegExp): string | null {
+  return (
+    `${failure.stderr}\n${failure.stdout}`
+      .split('\n')
+      .map((line) => line.trim())
+      .find((line) => pattern.test(line)) ?? null
+  );
+}
+
+/**
+ * A step that failed and that nothing recognised.
+ *
+ * The plan object is not an answer here: it describes what the run *meant* to do, and printing it
+ * with its follow-ups after a step failed told a driving agent that a dev server was up when none
+ * was [observed — friction run 2, 2026-08-23]. The **forwarded exit code is kept**, per llp/0010
+ * §Exit codes: inventing one would hide the code the tool actually reported. Only the payload
+ * changes — from a success-shaped plan to the error envelope every other `--json` failure prints.
+ */
+function planStepFailedError(
+  failure: StepFailure,
+  output: SubprocessOutput,
+  exitCode: number
+): CommandError {
+  const invocation = `npx expo ${failure.args.join(' ')}`;
+  // In `tee` and `inherit` mode the tool's own output already reached the terminal, and repeating
+  // it would bury the three lines that say what to do.
+  const tail = output === 'capture' ? outputTail(`${failure.stdout}${failure.stderr}`, 12) : '';
+  const error = new CommandError(
+    'PLAN_STEP_FAILED',
+    [
+      `The plan stopped at "${failure.step.id}": "${invocation}" exited ${exitCode}.`,
+      failure.devServerStep
+        ? `Why: that step is the one that starts the dev server, and its process has exited, so no dev server is running for this project. The exit code above is the Expo CLI's own, not this command's.`
+        : `Why: every later step of the plan depends on this one, so nothing after it ran. The exit code above is the Expo CLI's own, not this command's.`,
+      `How: run the command above yourself to see it fail with its whole output, or run "npx exagent dev --plan" to see the steps this plan is made of.`,
+      tail ? `\nWhat the tool printed:\n${tail}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n')
+  );
+  error.suggestedCommand = invocation;
+  error.exitCode = exitCode;
+  return error;
 }
 
 /**

@@ -320,11 +320,16 @@ describe(devAsync, () => {
       );
     });
 
+    // The code is still the subprocess's own (llp/0010 §Exit codes); what changed is that a run
+    // whose step failed reports a failure instead of its plan.
     it(`should stop at the first failing step and forward its exit code`, async () => {
       mockStaleDevClientState();
       jest.mocked(runExpoAsync).mockResolvedValue(2);
 
-      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).resolves.toBe(2);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).rejects.toMatchObject({
+        code: 'PLAN_STEP_FAILED',
+        exitCode: 2,
+      });
 
       expect(runDevServerAsync).not.toHaveBeenCalled();
       expect(recordLastBuildFingerprint).not.toHaveBeenCalled();
@@ -346,7 +351,9 @@ describe(devAsync, () => {
       mockStaleDevClientState();
       jest.mocked(runDevServerAsync).mockResolvedValue(devServerRun({ exitCode: 1 }));
 
-      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).resolves.toBe(1);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--ios']))).rejects.toMatchObject({
+        exitCode: 1,
+      });
 
       expect(recordLastBuildFingerprint).not.toHaveBeenCalled();
     });
@@ -462,13 +469,14 @@ describe(devAsync, () => {
       expect(emittedFollowUps()[1]!.command).toBe('exp://192.168.1.5:8081');
     });
 
-    it(`should offer the production build when the run needs no device`, async () => {
-      vol.fromJSON({ [`${projectRoot}/eas.json`]: '{"build":{}}' });
+    // @ref llp/0009-smart-followups.rfc.md §Examples per command — the web ladder.
+    it(`should lead a web run with the site URL and the check that proves it compiles`, async () => {
       mockProjectState();
 
-      await devAsync(projectRoot, resolveDevOptions(['--web']));
+      await devAsync(projectRoot, resolveDevOptions(['--web', '--port', '8134']));
 
-      expect(emittedFollowUpIds()).toContain('eas-build');
+      expect(emittedFollowUpIds()).toEqual(['web-url', 'web-bundle-check', 'deploy-web']);
+      expect(emittedFollowUps()[0]!.command).toBe('http://localhost:8134');
     });
 
     it(`should read the port the dev server was asked for`, async () => {
@@ -493,7 +501,10 @@ describe(devAsync, () => {
 
       await devAsync(projectRoot, resolveDevOptions(['--web']));
 
-      expect(emittedFollowUpIds()).toEqual(['runtime-errors', 'eas-build-configure']);
+      expect(emittedFollowUpIds()).not.toContain('open-app');
+      expect(emittedFollowUps().some((followup) => followup.command.startsWith('exp://'))).toBe(
+        false
+      );
     });
 
     it(`should offer nothing with --no-followups, and print no Next section`, async () => {
@@ -614,11 +625,75 @@ describe(devAsync, () => {
       ).rejects.toThrow(/npx exagent dev --port 8082/);
     });
 
-    it(`should forward an ordinary failure as it always did`, async () => {
+    // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+    // The plan object described what the run *meant* to do, so printing it after a step failed
+    // told a driving agent that a dev server was up when none was, with only the exit code
+    // disagreeing [observed — friction run 2, 2026-08-23].
+    it(`should report a failed step as a failure, keeping the subprocess's own code`, async () => {
       mockProjectState();
       jest.mocked(runDevServerAsync).mockResolvedValue(devServerRun({ exitCode: 3 }));
 
-      await expect(devAsync(projectRoot, resolveDevOptions([]))).resolves.toBe(3);
+      await expect(devAsync(projectRoot, resolveDevOptions(['--json']))).rejects.toMatchObject({
+        code: 'PLAN_STEP_FAILED',
+        exitCode: 3,
+      });
+      // Nothing reached stdout, so the launcher's envelope is the only object there.
+      expect(Log.log).not.toHaveBeenCalled();
+    });
+
+    it(`should quote what a captured step printed, which nothing else would show`, async () => {
+      mockProjectState();
+      jest
+        .mocked(runDevServerAsync)
+        .mockResolvedValue(devServerRun({ exitCode: 3, stderr: 'EADDRINUSE 8081\n' }));
+
+      await expect(devAsync(projectRoot, resolveDevOptions(['--json']))).rejects.toThrow(
+        /What the tool printed:\nEADDRINUSE 8081/
+      );
+    });
+
+    // In `tee` mode the same bytes already reached the terminal as they arrived.
+    it(`should not repeat output a person has already seen`, async () => {
+      mockProjectState();
+      jest
+        .mocked(runDevServerAsync)
+        .mockResolvedValue(devServerRun({ exitCode: 3, stderr: 'EADDRINUSE 8081\n' }));
+
+      await expect(devAsync(projectRoot, resolveDevOptions([]))).rejects.not.toThrow(
+        /What the tool printed/
+      );
+    });
+
+    // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol
+    // `expo start --ios` drives Simulator.app through AppleScript. On a Mac that has granted no
+    // Automation permission the rejection is unhandled and ends the whole process, dev server
+    // included — and Node leaves with 7, which is this CLI's own needs-human code, so the run used
+    // to exit 7 carrying a success-shaped plan and no diagnostics at all.
+    it(`should hand a refused Automation permission back to a person`, async () => {
+      mockProjectState();
+      jest.mocked(runDevServerAsync).mockResolvedValue(
+        devServerRun({
+          exitCode: 7,
+          stderr:
+            'Error: osascript -e tell app "System Events" to count processes whose name is "Simulator" exited with non-zero code: 1',
+        })
+      );
+
+      const error = await devAsync(projectRoot, resolveDevOptions(['--yes', '--json', '--ios']))
+        .then(() => null)
+        .catch((thrown) => thrown);
+
+      expect(error).toMatchObject({
+        isNeedsHuman: true,
+        code: 'MACOS_AUTOMATION_REQUIRED',
+        exitCode: 7,
+        needsHuman: { scenario: 'macos-automation', detectedBy: 'exit-signature' },
+      });
+      // What actually happened: the process exited, so the dev server it started is gone.
+      expect(error.message).toMatch(/nothing is listening for this project now/);
+      // The route that needs no Automation grant, which is the one an agent can take.
+      expect(error.message).toMatch(/npx exagent navigate \//);
+      expect(Log.log).not.toHaveBeenCalled();
     });
 
     describe('the follow-ups of a run', () => {
@@ -643,7 +718,7 @@ describe(devAsync, () => {
         jest
           .mocked(runDevServerAsync)
           .mockResolvedValue(
-            devServerRun({ exitCode: 1, port: { port: 8081, source: 'default' } })
+            devServerRun({ exitCode: 0, port: { port: 8081, source: 'default' } })
           );
 
         await devAsync(projectRoot, resolveDevOptions(['--json']));

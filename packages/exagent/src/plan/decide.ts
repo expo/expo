@@ -55,14 +55,20 @@ export function decideStartPlan(
   }
 
   const platform = resolveNativePlatform(state, options);
-  const facts = [
+  const build = describeFreshness(state, platform, options.lastBuild ?? {});
+
+  // The reason list is written per rule, because the honest sentence about the platform depends on
+  // what the plan then does with it: a plan that builds for iOS and a plan that serves a bundle and
+  // opens nothing on iOS both "target ios", and only one of them acts on the phrase.
+  const factsWhen = (actsOnPlatform: boolean) => [
     describeSdk(state),
-    `Target platform: ${platform}.`,
+    describeTargetPlatform(platform, options, actsOnPlatform),
     describeNativeDirs(state),
     describeDevClient(state),
     describeExpoGo(state),
   ];
-  const build = describeFreshness(state, platform, options.lastBuild ?? {});
+  // A `expo start` step only reaches a device when the caller typed the flag that opens one.
+  const facts = factsWhen(openTargetOf(options) != null);
 
   // Checked-in native directories are the strongest signal: the project is bare, so the plan
   // never regenerates them with prebuild. `expo run:*` performs the pod install / gradle sync
@@ -79,7 +85,7 @@ export function decideStartPlan(
           'bare-stale',
           'bare',
           [runStep(platform, build.summary)],
-          [...facts, ...build.reasons]
+          [...factsWhen(true), ...build.reasons]
         );
   }
 
@@ -97,7 +103,7 @@ export function decideStartPlan(
           'dev-client-stale',
           'dev-client',
           [prebuildStep(platform), runStep(platform, build.summary)],
-          [...facts, ...build.reasons]
+          [...factsWhen(true), ...build.reasons]
         );
   }
 
@@ -121,7 +127,7 @@ export function decideStartPlan(
       prebuildStep(platform),
       runStep(platform, 'The first development build of this project has to be made.'),
     ],
-    facts
+    factsWhen(true)
   );
 }
 
@@ -227,6 +233,30 @@ function resolveNativePlatform(
     return 'android';
   }
   return 'ios';
+}
+
+/**
+ * What the plan's platform is, and where it came from.
+ *
+ * `Target platform: ios.` was true of the *decision* and misleading about the plan: with no flag on
+ * the command line the platform is an inference from the host, and for an `expo start` plan nothing
+ * in the argv acts on it — an agent read "the target is iOS" next to `["expo","start","--go"]`,
+ * which opens nothing on iOS [observed — friction run 2, 2026-08-23]. Both facts are said out loud
+ * now: whether anyone named the platform, and whether the plan does anything with it.
+ *
+ * @param actsOnPlatform Whether a step of this plan builds for, or opens the app on, the platform.
+ */
+function describeTargetPlatform(
+  platform: NativePlatform,
+  { requestedPlatform }: DecideStartPlanOptions,
+  actsOnPlatform: boolean
+): string {
+  if (requestedPlatform === platform) {
+    return `Target platform: ${platform}, named on the command line.`;
+  }
+  return actsOnPlatform
+    ? `No platform was named; this host suggests ${platform}, and the plan builds for it.`
+    : `No platform was named; this host suggests ${platform}, and the plan opens nothing on it — pass --ios or --android, or run "exagent navigate /" once the dev server is up.`;
 }
 
 function describeSdk(state: ProjectState): string {

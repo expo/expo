@@ -127,6 +127,49 @@ Four decisions inside that, each of which could have gone the other way:
   take tens of seconds; a caller that only wants the old readiness gate must be able to say so
   rather than raise `--timeout` and wait.
 
+#### The web target answers the same question with different documents
+
+Decision [confirmed — Kudo, 2026-08-23]. `--platform web` gets a real check, not a skipped one.
+
+The finding [observed — friction run 2, 2026-08-23]: `dev:wait --platform web` on the same broken
+file that `--platform ios` exited `20` for exited `0` with
+`{"checked": true, "ok": null, "reason": "http://…/ did not answer with JSON: Unexpected token '<'…"}`.
+Three separate faults in one payload — no protection for the web target at all, a `checked: true`
+that contradicted its own `ok: null`, and an internal parse error standing in for a diagnosis.
+
+The web dev server has no manifest. `GET /` is the page a browser loads, and it answers the same two
+questions in two other places:
+
+1. **The entry bundle URL is the `<script src>` the dev server appends to that page** [observed —
+   `ManifestMiddleware.getSingleHtmlTemplateAsync` → `appendScriptsToHtml(contents, [getWebBundleUrl()])`,
+   and live: `<script src="/node_modules/expo-router/entry.bundle?platform=web&…" defer></script>`].
+   From there the check is byte for byte the native one: HEAD that URL, and fetch the body only when
+   the status says something went wrong.
+2. **A project that does not compile never produces that page at all.** The web dev server renders
+   on the server, so the failure surfaces one step earlier: `GET /` answers **500** with an error
+   page carrying the whole LogBox record as JSON in `<script id="_expo-static-error">` [observed —
+   `metroErrorInterface.ts` `getErrorOverlayHtmlAsync`, and live: file, line, column, message and
+   code frame, with `<` escaped so the payload cannot close its own tag]. That is read as `broken`
+   directly, because there is no bundle left to ask about.
+
+A 500 whose body is *not* an Expo error page stays `unknown` — the conservatism of the four
+decisions above is unchanged, and something else answering on that port has not shown this project
+to be broken.
+
+#### `checked` and `ok` move together
+
+Decision [confirmed — Kudo, 2026-08-23]. In the `--json` payload, `bundle.checked` is exactly
+`bundle.ok != null`. `checked: true` with `ok: null` said "this was checked, and the answer is
+nothing", which is not a state a caller can branch on; the honest split is that a check either got
+an answer from the bundler or did not, and `reason` says which of the ways it did not. `reason` is
+now present exactly when `ok` is null, including for `--no-bundle-check` (`the entry bundle check
+was not run`), so the two keys are readable as one fact instead of three.
+
+The reasons themselves stopped being exception messages [revised — 2026-08-23]. A manifest request
+that came back as HTML reports the content type the dev server sent and that whatever is on the port
+may not be an Expo dev server; it does not report `Unexpected token '<', "<!DOCTYPE "... is not
+valid JSON`, which describes byte 0 of a body the reader never sees.
+
 **`status` is deliberately not given this.** [inferred] Its readiness probe has a 400 ms ceiling and
 its whole contract is that it never waits, while a cold first build is tens of seconds and nothing
 the dev server exposes says "is the last build broken" without building. The honest arrangement is
@@ -164,7 +207,53 @@ Rows with no signature are not a gap. `ios-credentials`, `device-register` and `
 1. **Preflight** — ask the cheap question first. `src/needsHuman/preflight.ts` runs `eas whoami` with a short deadline and caches the answer for the process. `eas whoami` is asked before `EXPO_TOKEN` is looked at, because it also knows the account _name_ and because it reads the variable itself — so a token the service rejects reads as "not signed in" rather than as a login. A preflight that cannot run answers `null`, which is not "signed out": the two lead to different next actions. This is the `auth` section of `exagent status` [observed — `src/status/`], and `src/needsHuman/assertAuth.ts` is the same answer *raised* — for `deploy` and `build:wait`, which cannot do their job without an account and would otherwise spend minutes finding out.
 
    Three things count as "cannot run", and the third was a bug [fixed — 2026-08-23]. No `eas` on this machine, a run that passed the deadline, and **a binary under that name that is not the EAS CLI**. The third exits non-zero exactly like a signed-out CLI does, so it read as "signed out" — and on a machine whose PATH `eas` is a wrapper that crashes (this is not hypothetical: the friction run's was), every command with a preflight would have stopped and handed its user a login they did not need. `looksLikeWrapperCrash` (§The binary may not be the CLI) is what tells the two apart.
-2. **Force non-interactive** — every captured subprocess is told that nothing can answer it. For `expo` that is `CI=1` in the child environment, because the CLI rejects `--non-interactive` and names the variable instead [observed — `packages/@expo/cli/src/index.ts`]; `spawnExpoAsync` is the capture path that sets it, and `runExpoAsync` deliberately does not, because there a person has the terminal. For `eas` it is `--non-interactive`, or `--json`, which implies it. stdin was already never attached [observed — `src/utils/subprocess.ts`].
+2. **Force non-interactive** — every captured subprocess is told that nothing can answer it. For `expo` that is `CI=1` in the child environment, because the CLI rejects `--non-interactive` and names the variable instead [observed — `packages/@expo/cli/src/index.ts`]; `spawnExpoAsync` is the capture path that sets it, and `runExpoAsync` deliberately does not, because there a person has the terminal. For `eas` it is `--non-interactive`, or `--json`, which implies it. stdin was already never attached [observed — `src/utils/subprocess.ts`]. **Except the dev-server step, which is spawned with `ci: false`** — see below.
+
+#### The dev server is the exception, and `CI` is why
+
+Decision [confirmed — Kudo, 2026-08-23]. Every captured `expo` run gets `CI=1` **except the one
+that starts a dev server** (`expo start`, `expo run:ios`, `expo run:android`, all of which reach
+`spawnDevServerAsync`). That one is spawned with the variable left alone.
+
+`CI` does two jobs in the Expo CLI and this layer only ever wanted the first:
+
+- it makes prompts fail fast, through `isInteractive()`; and
+- it turns **Metro's file watcher off** [observed — `instantiateMetro.ts` `isWatchEnabled` logs
+  `Metro is running in CI mode, reloads are disabled`, and `withMetroMultiPlatform.ts:496` passes
+  `watch: !isExporting && !env.CI`].
+
+The second is fatal here. A dev server with no watcher never invalidates its graph, so it serves the
+snapshot it read at start-up forever — and the entry-bundle check of §The gate has to ask about the
+_project_ then reads that frozen server and certifies code the agent has already replaced. That is
+run 1's F1 failure mode reproduced through a different mechanism, on the exact path the F1 fix was
+written for [observed — friction run 2, 2026-08-23: a syntax error appended to a route of a live SDK
+57 app left `dev:wait --json` at `bundle.ok: true`, exit 0, while the same file on a server started
+by `exagent start` — which never set `CI` — exited 20].
+
+**Dropping it costs nothing, because the two concerns were never the same mechanism.**
+`isInteractive()` is `!shouldReduceLogs() && !env.CI && process.stdout.isTTY` [observed —
+`packages/@expo/cli/src/utils/interactive.ts`], and a captured child's stdout is a pipe, never a TTY
+[observed — `src/utils/subprocess.ts` `stdioFor`, which wires `['ignore', 'pipe', 'pipe']` for every
+mode but `inherit`]. So the CLI already knows nobody can answer it: the prompt helper still throws
+`Input is required, but 'npx expo' is in non-interactive mode.`, layer 3 still recognises it, and the
+keypress menu of `expo start` is still never installed [observed — `start/startAsync.ts:140`].
+Verified live: with 8140 held, `exagent dev --yes --json --port 8140` exits **7** in one second with
+the full envelope and the three-line handoff, exactly as it did with `CI=1`.
+
+Three details of that are decisions rather than transcription:
+
+- **Nothing is set, rather than `CI=0`.** A machine whose own environment says `CI` is a machine
+  where a frozen bundler is the right behaviour, and overriding it here would be the wrapper
+  deciding something about its caller's environment that nobody told it. `spawnExpoAsync` passes no
+  `env` at all in that mode, so the child inherits.
+- **`expo run:*` is in the exception too**, not only `expo start`: it ends in a dev server, and a
+  development build attached to a frozen bundler is the same lie in a longer plan.
+- **`expo prebuild` and every other captured step keep `CI=1`.** They start no bundler, so the
+  variable does only the job it was added for.
+
+The alternative that was looked for and does not exist: an env var or flag that re-enables the
+watcher under `CI`. `isWatchEnabled()` returns `!env.CI` with nothing in between, so there is
+nothing to pass. The upstream ask that would retire this exception is recorded below.
 3. **Exit signature** — match the captured output against the registry. Three patterns are load-bearing today: eas-cli's `Either log in with … EXPO_TOKEN` [observed — `build/user/SessionManager.js`], `@expo/cli`'s `is in non-interactive mode` [observed — `src/utils/prompts.ts`], and the `in non-interactive mode` fragment eas-cli's many prompt sites share.
 4. **Prompt-hang guard** — for a captured child only, and only when the caller opts in. If it writes nothing for `EXAGENT_PROMPT_TIMEOUT_MS` (default 20 s) _and_ its last non-empty line is prompt-shaped, it is killed and the line is quoted as untrusted text. Both halves are required: silence alone is a long build, and killing that would be worse than the hang it prevents. Never in `inherit` mode, where a prompt is legitimate.
 
@@ -188,6 +277,43 @@ The `Try:` lines of `deploy` and `build:wait` changed for the same reason. `npx 
 The breaking change [observed — `e2e/__tests__/deploy-test.ts`]: the deploy's two auth failures exited `1` and now exit `7`. At 0.0.2 that is the right moment; a CHANGELOG entry records it.
 
 The plan engine joined the protocol on the same terms [added — 2026-08-23]. `exagent dev` runs its steps as subprocesses, and a step whose output this process can see is a step whose stop can be classified — so `dev` captures its steps whenever nobody is watching a terminal (`--json`, or a non-TTY run) and inherits when somebody is. `Input is required, but 'npx expo' is in non-interactive mode.` is then exit `7` rather than the subprocess's own `1`, which is the definition of the code: what the command is waiting for is an answer, and no re-run supplies one. The message names `--port` for the case that produces it almost every time — 8081 already taken, and the CLI asking whether to use 8082 — because that flag answers the question before it is asked. The friction run of 2026-08-23 is what this is for: `exagent dev --yes` is the documented non-interactive entry point, and on a busy port it exited 1 having started nothing.
+
+### A failed plan step reports a failure, not a plan
+
+Decision [confirmed — Kudo, 2026-08-23]. `exagent dev` prints its plan object only when every step
+of it worked. A run whose step failed raises instead, so `--json` gets the error envelope of §The
+`--json` error envelope and a terminal gets what / **Why:** / **How:**.
+
+The finding [observed — friction run 2, 2026-08-23]: `exagent dev --yes --json --ios` exited **7**
+with the plan object on stdout — keys `target`, `rule`, `steps`, `reasons`, `followups`, no `error`
+— zero bytes on stderr, and no dev server on the port. An agent parsing stdout read a started dev
+server, an agent reading stderr read nothing, and only the exit code disagreed with both.
+
+Three things were wrong at once, and each is fixed on its own terms:
+
+- **The payload.** The plan describes what the run *meant* to do. After a step failed it is a
+  description of something that did not happen, and its follow-ups ("The dev server is up but opens
+  nothing…", `exp://…:8131`) are advice about a dev server that does not exist. `PLAN_STEP_FAILED`
+  is the envelope now, and in `capture` mode it carries the tail of what the step printed —
+  otherwise `--json` throws that output away and the agent has nothing at all.
+- **The classification.** The step failed on `osascript`: `expo start --ios` drives Simulator.app
+  through AppleScript, and this Mac had granted no Automation permission (`-1743`). The Expo CLI
+  does not catch the rejection, so it ends the process — the dev server with it. That is a person
+  flipping a switch in System Settings, which is the definition of exit `7`, so it is a registry row
+  now (`macos-automation`) and arrives with the whole handoff instead of a bare code.
+- **The `7` itself was a coincidence.** Node leaves with `7` after an unhandled rejection inside an
+  exception handler [observed live, 2026-08-23], and `exagent dev` forwards a step's code verbatim,
+  so the CLI's own needs-human code arrived by accident. The forwarding rule does **not** change —
+  inventing a code would hide the one the tool reported — but the payload now says which it is: a
+  genuine stop carries `error.needsHuman`, and a coincidence carries `null` under
+  `PLAN_STEP_FAILED`. The exit code was never meant to be read alone; the envelope is what
+  disambiguates it.
+
+What is deliberately *not* changed: `--ios` stays in the plan's argv. It is the step that opens the
+app, it works on a Mac with the permission granted, and llp/0004's `reason` already tells a reader
+what each form does. The recovery an agent can take without a person — start without `--ios`, then
+`exagent navigate /`, which deep-links through `simctl openurl` and needs no Automation grant — is
+named in the error's `How:` line, where it is read at the moment it is useful.
 
 One limit stays, deliberately: the **forwarded commands are not covered**. `exagent login`, `exagent prebuild` and the rest of the passthrough inherit the terminal, so their output is never captured and nothing can be classified — `src/passthrough/` is unchanged on purpose. The second limit recorded here — that there was no `--json` error envelope — has since been lifted; see the section below.
 
@@ -278,6 +404,11 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   convenience and should not be able to fail a start, the way the eager Xcode warm-up already
   swallows its own error [observed — `startAsync.ts`]. Worked around by not relying on `--ios`:
   llp/0004 §A plan step's `reason` records why the follow-ups name `exagent navigate /` instead.
+- Separate "nobody can answer a prompt" from "do not watch files". `CI` means both today
+  [observed — `isWatchEnabled()` returns `!env.CI`], so a wrapper that wants the first has to give
+  up the second, and a wrapper that wants the second has to accept the first. Either an
+  `EXPO_NO_WATCH`-style variable of its own, or letting the existing `--non-interactive` spelling
+  cover the prompt half, would retire §The dev server is the exception, and `CI` is why.
 - Emit `cli:error` JSONL for every command error, with a `needsInput` flag — the event contract of llp/0006 §Output contract, extended so a wrapper can see that a prompt is what stopped the command.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.

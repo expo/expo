@@ -77,6 +77,27 @@ export const needsHumanScenarios: NeedsHumanScenario[] = [
     signatures: [/\bnot logged in\b/i, /needs? to be (?:logged in|authenticated)/i],
   },
   {
+    id: 'macos-automation',
+    code: 'MACOS_AUTOMATION_REQUIRED',
+    need: 'Allow the terminal running this command to control Simulator.app, in macOS System Settings › Privacy & Security › Automation.',
+    // No command *grants* the permission — a person flips a switch — so the command is the one
+    // that puts the switch on screen, and `need` above says what to do once it is there.
+    command: 'open "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation"',
+    url: 'x-apple.systempreferences:com.apple.preference.security?Privacy_Automation',
+    // A permission is granted by a person clicking a switch; no variable stands in for it.
+    unattendedEnv: [],
+    resumable: true,
+    tools: ['expo'],
+    // `expo start --ios` drives Simulator.app through AppleScript, and macOS answers an app it has
+    // no Automation grant for with `-1743` [observed live, 2026-08-23]. The Expo CLI does not catch
+    // the rejection, so it ends the whole `expo start` process, dev server included.
+    signatures: [
+      /Not authorized to send Apple events/i,
+      /\(-1743\)/,
+      /osascript[\s\S]{0,300}exited with non-zero code/i,
+    ],
+  },
+  {
     id: 'asc-api-key-create',
     code: 'ASC_API_KEY_REQUIRED',
     need: 'Create an App Store Connect API key in the Apple portal, or hand an existing one over.',

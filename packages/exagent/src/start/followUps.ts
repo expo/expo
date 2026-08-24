@@ -60,6 +60,9 @@ export function resolveStartFollowUps(
     web,
     portKnown: port != null,
     lanUrl: expoGo && port != null ? resolveExpoGoLanUrl(port) : null,
+    // `localhost` rather than the LAN address: this is the URL on the machine the dev server runs
+    // on, and it is what `expo start --web` opens itself.
+    webUrl: web && port != null ? `http://localhost:${port}` : null,
     easJson: easJsonExistsSync(projectRoot),
   });
 }

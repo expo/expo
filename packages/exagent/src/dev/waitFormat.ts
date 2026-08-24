@@ -53,13 +53,20 @@ export interface DevWaitResult {
  * declined with `--no-bundle-check`, or could not decide (llp/0006 §Output contract).
  */
 export interface DevWaitBundleJson {
-  /** Whether the entry bundle was fetched at all. */
+  /**
+   * Whether the bundler answered about this project's entry bundle.
+   *
+   * Exactly `ok != null`, and that invariant is the point: `checked: true` with `ok: null` said
+   * "this was checked and the answer is nothing", which is a contradiction a caller cannot act on
+   * [observed — friction run 2, 2026-08-23, on `--platform web`]. A check that was declined, could
+   * not find the entry bundle URL, or ran out of budget is `checked: false` with a {@link reason}.
+   */
   checked: boolean;
   /**
    * True when it compiled, false when the bundler reported an error.
    *
-   * Null when it was not decided: the check was declined, the dev server was never ready, or
-   * nothing about the manifest could be read. Null is never "broken".
+   * Null when it was not decided: the check was declined, the dev server was never ready, the
+   * budget expired, or the entry bundle URL could not be read. Null is never "broken".
    */
   ok: boolean | null;
   /** Platform the bundle was built for, or null when nothing was built. */
@@ -143,15 +150,24 @@ export function devWaitResultToJson(
 /** The `bundle` object, with the same keys whatever the check did or did not manage to do. */
 function bundleToJson(bundle: BundleCheckResult | null): DevWaitBundleJson {
   if (bundle == null) {
-    return { checked: false, ok: null, platform: null, url: null, error: null, reason: null };
+    return {
+      checked: false,
+      ok: null,
+      platform: null,
+      url: null,
+      error: null,
+      reason: 'the entry bundle check was not run',
+    };
   }
+  const ok = bundle.outcome === 'ok' ? true : bundle.outcome === 'broken' ? false : null;
   return {
-    checked: true,
-    ok: bundle.outcome === 'ok' ? true : bundle.outcome === 'broken' ? false : null,
+    // `checked` and `ok` move together: nothing but an answer from the bundler counts as a check.
+    checked: ok != null,
+    ok,
     platform: bundle.platform,
     url: bundle.url,
     error: bundle.error,
-    reason: bundle.reason ?? null,
+    reason: ok == null ? (bundle.reason ?? 'the bundler gave no answer about the entry bundle') : null,
   };
 }
 
