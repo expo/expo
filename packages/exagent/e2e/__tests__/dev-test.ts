@@ -59,8 +59,10 @@ describe('exagent dev', () => {
   });
 
   // `dev` became a group so `dev:wait` could join it, and a group asked for help lists its actions
-  // (llp/0010 §Registry rules). The plan engine's own options moved one hop, to `dev:run --help`.
-  it('lists the actions of the group for `dev --help`', async () => {
+  // (llp/0010 §Registry rules). Because the bare name runs `dev:run`, the listing is followed by
+  // that action's options: a caller reading `dev --help` before running `dev` has to be able to
+  // learn that `--plan` exists.
+  it('lists the actions of the group for `dev --help`, then the default action’s options', async () => {
     const projectRoot = await setupAsync('go-app');
     const result = await executeExagentAsync(projectRoot, ['dev', '--help']);
 
@@ -68,6 +70,11 @@ describe('exagent dev', () => {
     expect(result.all).toContain('dev:run');
     expect(result.all).toContain('dev:wait');
     expect(result.all).toContain('npx exagent dev runs dev:run');
+    // The options of the action the bare name runs, in the listing's own output.
+    expect(result.all).toContain('--plan');
+    expect(result.all).toContain('--yes');
+    // The listing comes first: the options belong to the action it just named.
+    expect(result.all.indexOf('dev:wait')).toBeLessThan(result.all.indexOf('--plan'));
   });
 
   it('does not accept the flags that moved off `start`', async () => {

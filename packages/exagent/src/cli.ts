@@ -4,6 +4,7 @@ import arg from 'arg';
 import { boolish } from 'getenv';
 
 import {
+  commandGroups,
   flagsWithoutActionMessage,
   flagsWithoutActionSuggestion,
   formatGroupHelp,
@@ -116,9 +117,21 @@ switch (resolution.kind) {
     resolution.load().then((exec) => exec(resolution.argv));
     break;
 
-  case 'group-help':
-    Log.exit(formatGroupHelp(resolution.group), EXIT_OK);
+  // @ref llp/0010-agent-conventions.rfc.md §Registry rules — the listing, and then the options of
+  // the action the bare name runs. `exagent dev --help` used to print only the two action names,
+  // so a caller checking the help of the command it was about to run never learned that `--plan`
+  // exists — the one flag that makes `exagent dev` safe to run unattended. A group whose bare name
+  // does something has to document what that something takes.
+  case 'group-help': {
+    Log.log(formatGroupHelp(resolution.group));
+    const { defaultAction, actions } = commandGroups[resolution.group]!;
+    if (!defaultAction) {
+      process.exit(EXIT_OK);
+    }
+    // The action's own `--help` path prints its block and exits 0, so nothing follows this.
+    actions[defaultAction]!.load().then((exec) => exec(['--help']));
     break;
+  }
 
   // The listing comes first and the error last: the last line is what a driving agent acts on
   // (llp/0006 "errors are prompts").

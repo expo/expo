@@ -14,7 +14,7 @@ describe('exagent skills', () => {
     projectRoot = await setupFixtureAsync('skills-app');
   });
 
-  it('lists the actions of the group with `skills --help`', async () => {
+  it('lists the actions of the group with `skills --help`, then the default action’s options', async () => {
     const result = await executeExagentAsync(projectRoot, ['skills', '--help']);
 
     expect(result.exitCode).toBe(0);
@@ -22,6 +22,9 @@ describe('exagent skills', () => {
     expect(result.all).toContain('skills:list');
     expect(result.all).toContain('skills:show');
     expect(result.all).toContain('skills:clean');
+    // `exagent skills` runs `skills:sync`, so its options are documented here too.
+    expect(result.all).toContain('--agent');
+    expect(result.all).toContain('--dry-run');
   });
 
   it('prints the options of an action with `skills:sync --help`', async () => {

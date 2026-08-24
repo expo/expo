@@ -465,8 +465,13 @@ export function formatGroupHelp(name: string): string {
     )
     .join('\n');
   const bare = group.defaultAction
-    ? chalk`\n\n    {bold npx exagent ${name}} runs {bold ${name}:${group.defaultAction}}.`
+    ? chalk`\n\n    {bold npx exagent ${name}} runs {bold ${name}:${group.defaultAction}}, whose options are below.`
     : '';
+  // The example names an action the reader has *not* just been shown the options of: for a group
+  // with a default action, `cli.ts` prints that action's own help right under this listing.
+  const example =
+    actionNames(name).find((action) => action !== `${name}:${group.defaultAction}`) ??
+    actionNames(name)[0];
 
   return chalk`
   {bold Info}
@@ -479,7 +484,7 @@ export function formatGroupHelp(name: string): string {
 ${actions}${bare}
 
   For the options of one action, run it with the {bold --help} flag
-    {dim $} npx exagent ${actionNames(name)[0]} --help
+    {dim $} npx exagent ${example} --help
 `;
 }
 

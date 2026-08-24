@@ -100,6 +100,8 @@ describe('exagent checkpoint', () => {
     expect(result.all).toContain('checkpoint:undo');
     // The bare command is the snapshot, which the listing says out loud.
     expect(result.all).toContain('npx exagent checkpoint');
+    // And the options that snapshot takes, because the bare name is what runs it.
+    expect(result.all).toContain('--label');
   });
 
   it('prints the options of the snapshot with `checkpoint:create --help`', async () => {
