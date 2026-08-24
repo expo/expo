@@ -36,6 +36,7 @@
 - Switch `ManifestMiddleware` to `expo-server`'s response helpers to avoid cancellations being surfaced as exceptions ([#48700](https://github.com/expo/expo/pull/48700) by [@kitten](https://github.com/kitten))
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
 - Fix wirelessly connected iOS 16 and older devices being omitted from `expo run:ios --device` selection. ([#48127](https://github.com/expo/expo/pull/48127) by [@davellanedam](https://github.com/davellanedam))
+- [cli][android] Fix list emulator names on WSL ([#49269](https://github.com/expo/expo/pull/49269)) by [@cornejobarraza]
 
 ### 💡 Others
 
