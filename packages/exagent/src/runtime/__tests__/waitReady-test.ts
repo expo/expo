@@ -10,6 +10,7 @@ import {
   PACKAGER_STATUS_READY,
   waitForAppConnectionAsync,
   waitForBundlerReadyAsync,
+  waitForFreshAppConnectionAsync,
 } from '../waitReady';
 
 type StatusHandler = (request: { url: string }) => {
@@ -235,5 +236,67 @@ describe(waitForAppConnectionAsync, () => {
     const result = await waitForAppConnectionAsync(url, { timeoutMs: 120, intervalMs: 20 });
 
     expect(result).toMatchObject({ appsConnected: 0, timedOut: true });
+  });
+});
+
+describe(waitForFreshAppConnectionAsync, () => {
+  // The whole reason this exists, and the shape of friction run 4's F39/F45: the reloading app's
+  // *old* target is still listed for the first half-second after a reload broadcast [observed —
+  // 2026-08-23, live: the target id went `…-1` -> `…-2` at 761 ms, and the pre-reload id was
+  // served until 506 ms]. A wait that accepts any target accepts that one.
+  it(`ignores a target that was already there before the reload`, async () => {
+    let reregistered = false;
+    setTimeout(() => (reregistered = true), 80);
+    const url = await startServerAsync(() => ({
+      body: JSON.stringify([{ id: reregistered ? 'device-2' : 'device-1' }]),
+    }));
+
+    const result = await waitForFreshAppConnectionAsync(url, {
+      timeoutMs: 2000,
+      intervalMs: 20,
+      knownTargetIds: ['device-1'],
+    });
+
+    expect(result).toMatchObject({ appsConnected: 1, freshTargets: 1, timedOut: false });
+  });
+
+  it(`times out while only the pre-reload target is listed`, async () => {
+    const url = await startServerAsync(() => ({ body: JSON.stringify([{ id: 'device-1' }]) }));
+
+    const result = await waitForFreshAppConnectionAsync(url, {
+      timeoutMs: 120,
+      intervalMs: 20,
+      knownTargetIds: ['device-1'],
+    });
+
+    // The count is what the dev server reported, and `freshTargets` is what was proved: reporting
+    // `appsConnected: 1` alone is the false success this function exists to make impossible.
+    expect(result).toMatchObject({ appsConnected: 1, freshTargets: 0, timedOut: true });
+  });
+
+  // An app that was not running before the reload has no id to be new against, so every target is.
+  it(`accepts any target when nothing was connected before`, async () => {
+    const url = await startServerAsync(() => ({ body: JSON.stringify([{ id: 'device-9' }]) }));
+
+    const result = await waitForFreshAppConnectionAsync(url, {
+      timeoutMs: 2000,
+      intervalMs: 20,
+      knownTargetIds: [],
+    });
+
+    expect(result).toMatchObject({ appsConnected: 1, freshTargets: 1, timedOut: false });
+  });
+
+  // F45: the app quit during the reload. Zero targets is never a success, however many peers churned.
+  it(`reports zero when the app went away and did not come back`, async () => {
+    const url = await startServerAsync(() => ({ body: '[]' }));
+
+    const result = await waitForFreshAppConnectionAsync(url, {
+      timeoutMs: 120,
+      intervalMs: 20,
+      knownTargetIds: ['device-1'],
+    });
+
+    expect(result).toMatchObject({ appsConnected: 0, freshTargets: 0, timedOut: true });
   });
 });

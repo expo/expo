@@ -236,6 +236,13 @@ declare module '2g' {
       method: string | null;
       /** Debugger targets attached when the wait ended, i.e. apps running the new bundle. */
       appsConnected: number;
+      /**
+       * How many of those the dev server had not listed before the reload.
+       *
+       * The number the outcome is decided on: a reloading app's previous target stays listed for
+       * about half a second, so a non-zero `appsConnected` alone is not the app being back.
+       */
+      appsReconnected: number;
     };
     /**
      * One `exagent dev:stop` run: whether a dev server was stopped, whose it was, and why not.

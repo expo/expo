@@ -489,6 +489,31 @@ export type StubDevServerOptions = {
    * nothing to reload.
    */
   messagePeers?: Record<string, string | null>;
+  /**
+   * What `GET /json/list` reports after a reload is broadcast on a `v2` socket.
+   *
+   * The peer churn and the debugger target list are two independent facts, and friction run 4
+   * found `runtime:reload` believing the first about the second. The three values are the three
+   * things a real app does:
+   *
+   * - `reconnect` (default) — the app's JavaScript registers again under a page id the dev server
+   *   has never used, which is what a reload looks like [observed — 2026-08-23, live: `8a9d…-1`
+   *   -> `8a9d…-2`, 761 ms after the broadcast].
+   * - `stale` — the peers churn and the same target stays listed, i.e. the runtime that answers is
+   *   the one from before the reload (F39).
+   * - `gone` — the app quits and the list empties (F45).
+   */
+  reloadTargets?: 'reconnect' | 'stale' | 'gone';
+  /**
+   * Path of a file whose existence is what makes {@link targets} appear in `GET /json/list`.
+   *
+   * For the device method, where the app is *started* rather than reloaded: its JavaScript runtime
+   * registers because a device tool launched it, so the stub reports nothing until the stub device
+   * tool has run. Without this the fixture would have to claim an app that has a debugger target
+   * and no message-socket peer, which no real app is, and the reload would then be measured
+   * against a target that was there all along.
+   */
+  targetsAppearWithFile?: string | null;
 };
 
 /** The `TransformError` body Metro answers a broken build with, recorded from an SDK 57 app. */
@@ -559,8 +584,14 @@ export async function startStubDevServerAsync({
   bundleDelayMs = 0,
   messageSocket = 'v2',
   messagePeers = { 'socket#1': 'role=ios' },
+  reloadTargets = 'reconnect',
+  targetsAppearWithFile = null,
 }: StubDevServerOptions = {}): Promise<StubDevServer> {
   let port = 0;
+  // Mutable, because a reload changes it: the debugger target list is the evidence a reload is
+  // judged on, so a stub that always answers the same list can only test an app that never moved.
+  let listedTargets: unknown[] = targets;
+  let nextPageId = 100;
   const server: Server = createServer((request, response) => {
     const route = (request.url ?? '').split('?')[0];
 
@@ -636,8 +667,9 @@ export async function startStubDevServerAsync({
     }
 
     if (route === '/json/list') {
+      const started = targetsAppearWithFile == null || fs.existsSync(targetsAppearWithFile);
       response.writeHead(200, { 'Content-Type': 'application/json' });
-      response.end(JSON.stringify(targets));
+      response.end(JSON.stringify(started ? listedTargets : []));
       return;
     }
 
@@ -677,6 +709,17 @@ export async function startStubDevServerAsync({
         peers = Object.fromEntries(
           Object.values(peers).map((query) => [`socket#${nextPeerId++}`, query])
         );
+        // Its JavaScript runtime re-registers separately, and later: the two are different
+        // connections, and believing the first about the second is friction run 4's F39 and F45.
+        if (reloadTargets === 'gone') {
+          listedTargets = [];
+        } else if (reloadTargets === 'reconnect') {
+          const pageId = nextPageId++;
+          listedTargets = listedTargets.map((target) => ({
+            ...(target as Record<string, unknown>),
+            id: `${(target as { id?: string }).id ?? 'device'}-reloaded-${pageId}`,
+          }));
+        }
       }
     });
   });

@@ -9,6 +9,8 @@ declare module '2g' {
       reloaded: boolean;
       method: string | null;
       appsConnected: number;
+      /** How many of those the dev server had not listed before the reload. */
+      appsReconnected: number;
       route: string | null;
     };
   }
