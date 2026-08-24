@@ -54,8 +54,11 @@ async function graphToSerialAssetsAsync(config, serializeChunkOptions, ...props)
     });
     // Create chunks for splitting.
     const chunks = new Set();
-    gatherChunks(preModules, chunks, { test: pathToRegex(entryFile) }, preModules, graph, options, false, true);
-    const entryChunk = findEntryChunk(chunks, entryFile);
+    const entryChunks = gatherChunks(preModules, chunks, { test: pathToRegex(entryFile) }, preModules, graph, options, false, true);
+    // TODO(@kitten): We know that the returned `entryChunks` should only have a single value
+    // with `!isAsync` and matching `.hasAbsolutePath(entryFile)` due to us only starting with
+    // an entry module. This is temporarily implicit and not enforced by an invariant
+    const entryChunk = entryChunks.values().next().value;
     if (entryChunk) {
         removeEntryDepsFromAsyncChunks(entryChunk, chunks);
         const commonChunk = extractCommonChunk(chunks, graph, options);
@@ -111,6 +114,13 @@ class Chunk {
     // Chunks that are required to be loaded synchronously before this chunk.
     // These are included in the HTML as <script> tags.
     requiredChunks = new Set();
+    /** Whether this chunk owns an isolated module registry and must retain all of its dependencies.
+     * @remarks
+     * When a chunk is sealed, its `deps` and `preModules` shouldn't be altered, and it doesn't qualify
+     * for bundle/chunk splitting. This is the case for web workers, which must form a "closed" and
+     * self-sufficient entry bundle.
+     */
+    sealed = false;
     constructor(name, entries, graph, options, isAsync = false, isVendor = false, isEntry = false) {
         this.name = name;
         this.entries = entries;
@@ -120,6 +130,9 @@ class Chunk {
         this.isVendor = isVendor;
         this.isEntry = isEntry;
         this.deps = new Set(entries);
+    }
+    seal() {
+        this.sealed = true;
     }
     getPlatform() {
         (0, assert_1.default)(this.graph.transformOptions.platform, "platform is required to be in graph's transformOptions");
@@ -452,25 +465,38 @@ function collectOutputReferences(modules, key) {
     ].filter((value) => typeof value === 'string');
 }
 function getEntryModulesForChunkSettings(graph, settings) {
-    return [...graph.dependencies.entries()]
-        .filter(([path]) => settings.test.test(path))
-        .map(([, module]) => module);
+    const modules = new Set();
+    for (const entry of graph.dependencies) {
+        if (settings.test.test(entry[0])) {
+            modules.add(entry[1]);
+        }
+    }
+    return modules;
 }
 function chunkIdForModules(modules) {
-    return modules
-        .map((module) => module.path)
-        .sort()
-        .join('=>');
+    const modPaths = [];
+    for (const mod of modules)
+        modPaths.push(mod.path);
+    return modPaths.sort().join('=>');
 }
+// TODO(@kitten): The recursion is starting to hurt clarity here a bit
 function gatherChunks(runtimePremodules, chunks, settings, preModules, graph, options, isAsync = false, isEntry = false) {
-    let entryModules = getEntryModulesForChunkSettings(graph, settings);
-    const existingChunks = [...chunks.values()];
-    entryModules = entryModules.filter((module) => {
-        return !existingChunks.find((chunk) => chunk.entries.includes(module));
-    });
-    // Prevent processing the same entry file twice.
-    if (!entryModules.length) {
-        return chunks;
+    const entryModules = getEntryModulesForChunkSettings(graph, settings);
+    const entryChunks = new Set();
+    if (!entryModules.size) {
+        return entryChunks;
+    }
+    for (const chunk of chunks) {
+        for (const entry of chunk.entries) {
+            // Remove already processed entries
+            if (entryModules.delete(entry)) {
+                entryChunks.add(chunk);
+            }
+        }
+        // Prevent processing the same entry file twice.
+        if (!entryModules.size) {
+            return entryChunks;
+        }
     }
     const entryChunk = new Chunk(chunkIdForModules(entryModules), entryModules, graph, options, isAsync, false, isEntry);
     // Add all the pre-modules to the first chunk.
@@ -481,16 +507,26 @@ function gatherChunks(runtimePremodules, chunks, settings, preModules, graph, op
         }
     }
     chunks.add(entryChunk);
+    entryChunks.add(entryChunk);
     function includeModule(entryModule) {
+        const splitChunks = entryChunk.options.serializerOptions?.splitChunks !== false;
         for (const dependency of entryModule.dependencies.values()) {
+            const asyncType = dependency.data.data.asyncType;
+            const isWorker = asyncType === 'worker';
             if (!(0, isResolvedDependency_1.isResolvedDependency)(dependency)) {
                 continue;
             }
-            else if (dependency.data.data.asyncType &&
-                // Support disabling multiple chunks.
-                entryChunk.options.serializerOptions?.splitChunks !== false) {
-                const isEntry = dependency.data.data.asyncType === 'worker';
-                gatherChunks(runtimePremodules, chunks, { test: pathToRegex(dependency.absolutePath) }, isEntry ? runtimePremodules : [], graph, options, true, isEntry);
+            else if (asyncType &&
+                // Workers require standalone bundles even when ordinary chunk splitting is disabled.
+                (isWorker || splitChunks)) {
+                const asyncChunks = gatherChunks(runtimePremodules, chunks, { test: pathToRegex(dependency.absolutePath) }, isWorker ? runtimePremodules : [], graph, options, true, isWorker);
+                // Seal all chunks that are for web workers, as these must be self-sufficient chunks
+                if (isWorker) {
+                    (0, assert_1.default)(asyncChunks.size, `Worker chunk not found for: ${dependency.absolutePath}`);
+                    for (const chunk of asyncChunks) {
+                        chunk.seal();
+                    }
+                }
             }
             else {
                 const module = graph.dependencies.get(dependency.absolutePath);
@@ -507,15 +543,12 @@ function gatherChunks(runtimePremodules, chunks, settings, preModules, graph, op
     for (const entryModule of entryModules) {
         includeModule(entryModule);
     }
-    return chunks;
-}
-function findEntryChunk(chunks, entryFile) {
-    return [...chunks.values()].find((chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile));
+    return entryChunks;
 }
 function removeEntryDepsFromAsyncChunks(entryChunk, chunks) {
-    for (const chunk of chunks.values()) {
-        if (!chunk.isEntry && chunk.isAsync) {
-            for (const dep of chunk.deps.values()) {
+    for (const chunk of chunks) {
+        if (!chunk.sealed && !chunk.isEntry && chunk.isAsync) {
+            for (const dep of chunk.deps) {
                 if (entryChunk.deps.has(dep)) {
                     // Remove the dependency from the async chunk since it will be loaded in the main chunk.
                     chunk.deps.delete(dep);
@@ -525,33 +558,33 @@ function removeEntryDepsFromAsyncChunks(entryChunk, chunks) {
     }
 }
 function extractCommonChunk(chunks, graph, options) {
-    const toCompare = [...chunks.values()];
-    const commonDependencies = [];
+    const toCompare = [...chunks.values()].filter((chunk) => !chunk.sealed);
+    const commonDependencies = new Set();
     while (toCompare.length) {
         const chunk = toCompare.shift();
         for (const chunk2 of toCompare) {
             if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
-                const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
-                for (const dep of commonDeps) {
-                    chunk.deps.delete(dep);
-                    chunk2.deps.delete(dep);
+                for (const dep of chunk.deps) {
+                    if (chunk2.deps.has(dep)) {
+                        chunk.deps.delete(dep);
+                        chunk2.deps.delete(dep);
+                        commonDependencies.add(dep);
+                    }
                 }
-                commonDependencies.push(...commonDeps);
             }
         }
     }
     // If common dependencies were found, extract them to the shared chunk.
-    if (commonDependencies.length) {
-        const commonDependenciesUnique = [...new Set(commonDependencies)];
-        return new Chunk('/__common.js', commonDependenciesUnique, graph, options, false, true);
+    if (commonDependencies.size) {
+        return new Chunk('/__common.js', commonDependencies, graph, options, false, true);
     }
     return undefined;
 }
 function deduplicateAgainstKnownChunks(chunks, entryChunk, commonChunk) {
     // TODO: Optimize this pass more.
     // Remove all dependencies from async chunks that are already in the common chunk.
-    for (const chunk of [...chunks.values()]) {
-        if (!chunk.isEntry && chunk !== commonChunk) {
+    for (const chunk of chunks) {
+        if (!chunk.sealed && !chunk.isEntry && chunk !== commonChunk) {
             for (const dep of chunk.deps) {
                 if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
                     chunk.deps.delete(dep);
@@ -561,14 +594,14 @@ function deduplicateAgainstKnownChunks(chunks, entryChunk, commonChunk) {
     }
 }
 function removeEmptyChunks(chunks) {
-    for (const chunk of [...chunks.values()]) {
-        if (!chunk.isEntry && chunk.deps.size === 0) {
+    for (const chunk of chunks) {
+        if (!chunk.sealed && !chunk.isEntry && chunk.deps.size === 0) {
             chunks.delete(chunk);
         }
     }
 }
 function createRuntimeChunk(entryChunk, chunks, graph, options) {
-    const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
+    const runtimeChunk = new Chunk('/__expo-metro-runtime.js', new Set(), graph, options, false, true);
     // All premodules (including metro-runtime) should load first
     for (const preModule of entryChunk.preModules) {
         runtimeChunk.preModules.add(preModule);
@@ -582,10 +615,32 @@ function createRuntimeChunk(entryChunk, chunks, graph, options) {
 }
 function makeChunkByPathLookupMap(chunks) {
     const chunkByPath = new Map();
+    // First, we populate chunks with entry module paths
     for (const chunk of chunks) {
-        for (const module of chunk.deps) {
-            if (!chunkByPath.has(module.path)) {
-                chunkByPath.set(module.path, chunk);
+        for (const entry of chunk.entries) {
+            if (!chunkByPath.has(entry.path)) {
+                chunkByPath.set(entry.path, chunk);
+            }
+        }
+    }
+    // We then populate the chunks' module paths, excluding sealed chunks...
+    for (const chunk of chunks) {
+        if (!chunk.sealed) {
+            for (const module of chunk.deps) {
+                if (!chunkByPath.has(module.path)) {
+                    chunkByPath.set(module.path, chunk);
+                }
+            }
+        }
+    }
+    // ...then populate with missing paths from sealed chunks.
+    // This gives precedence for modules from unsealed chunks after entry modules
+    for (const chunk of chunks) {
+        if (chunk.sealed) {
+            for (const module of chunk.deps) {
+                if (!chunkByPath.has(module.path)) {
+                    chunkByPath.set(module.path, chunk);
+                }
             }
         }
     }
