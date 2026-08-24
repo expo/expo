@@ -43,6 +43,27 @@ object FontFamilyFaces {
     }
   }
 
+  // Call this on every API level, including below API 29, where [assertNoDuplicateFaces] can't run.
+  fun assertNoDuplicateDeclaredFaces(fontFamilyName: String, faces: List<FontFaceRecord>) {
+    val seenFaces = mutableMapOf<Pair<Int, Boolean>, String>()
+
+    for (face in faces) {
+      val weight = face.weight ?: continue
+      val style = face.style ?: continue
+      val italic = isItalic(style)
+      val key = weight to italic
+      val conflictingUri = seenFaces[key]
+      if (conflictingUri != null) {
+        throw CodedException(
+          "Font family '$fontFamilyName' declares two faces with weight $weight and " +
+            "style '${if (italic) "italic" else "normal"}': '$conflictingUri' and '${face.localUri}'. " +
+            "Give each face of a family a distinct weight or style so the correct file is selected at render time."
+        )
+      }
+      seenFaces[key] = face.localUri
+    }
+  }
+
   // The face to load when only one can be (below API 29).
   fun defaultFaceIndex(faces: List<FontFaceRecord>): Int {
     var bestIndex = 0
