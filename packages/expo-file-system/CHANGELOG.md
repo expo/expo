@@ -11,6 +11,7 @@
 
 - Add `File.preview()` and `File.canPreview()` methods for opening files with platform-native preview flows. (by [@eliotgevers](https://github.com/eliotgevers))
 - Added `File.digest()` for asynchronously calculating MD5, SHA-1, SHA-256, SHA-384 and SHA-512 file digests. ([#48089](https://github.com/expo/expo/pull/48089) by [@wh201906](https://github.com/wh201906))
+- [Android] Add support for resource URIs (null scheme) to the new file system API, enabling resolution of assets in release builds. ([#49318](https://github.com/expo/expo/pull/49318) by [@CatLover01](https://github.com/CatLover01))
 
 ### 🐛 Bug fixes
 
