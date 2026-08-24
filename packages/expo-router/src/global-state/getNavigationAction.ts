@@ -16,11 +16,11 @@ import type { LinkToOptions } from './types';
 export function getNavigateAction(
   baseHref: string,
   options: LinkToOptions,
-  type: string,
-  withAnchor: boolean | undefined,
-  singular: SingularOptions | undefined,
-  isPreviewNavigation: boolean | undefined,
-  { segments, params: routeParams }: Pick<UrlObject, 'segments' | 'params'>
+  { segments, params: routeParams }: Pick<UrlObject, 'segments' | 'params'>,
+  type = 'NAVIGATE',
+  withAnchor?: boolean,
+  singular?: SingularOptions,
+  isPreviewNavigation?: boolean
 ) {
   let href: string | undefined = baseHref;
   store.assertIsReady();
