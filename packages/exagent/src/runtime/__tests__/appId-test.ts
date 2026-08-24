@@ -1,0 +1,120 @@
+import { vol } from 'memfs';
+
+import { EXPO_GO_APP_ID, readConfiguredAppId, resolveAppId } from '../appId';
+
+const projectRoot = '/project';
+
+afterEach(() => {
+  vol.reset();
+});
+
+describe(resolveAppId, () => {
+  const base = { platform: 'ios' as const, targetAppIds: [], configured: null };
+
+  it(`should take the flag over everything else`, () => {
+    expect(
+      resolveAppId({
+        ...base,
+        appIdOverride: 'com.example.flag',
+        targetAppIds: ['com.example.connected'],
+        configured: 'com.example.config',
+      })
+    ).toEqual({
+      appId: 'com.example.flag',
+      source: 'flag',
+      reason: expect.stringContaining('--app-id'),
+    });
+  });
+
+  // The dev server outranks the app config on purpose: the config says what a *build* of this
+  // project would be called, and a project whose config names a bundle identifier can still be
+  // running in Expo Go. Stopping the id from the config would then stop nothing and say it did.
+  it(`should take the connected app over the app config`, () => {
+    expect(
+      resolveAppId({
+        ...base,
+        targetAppIds: ['host.exp.Exponent'],
+        configured: 'com.example.config',
+      })
+    ).toMatchObject({ appId: 'host.exp.Exponent', source: 'dev-server' });
+  });
+
+  it(`should name a connected development build as one`, () => {
+    expect(resolveAppId({ ...base, targetAppIds: ['com.example.dev'] })).toEqual({
+      appId: 'com.example.dev',
+      source: 'dev-server',
+      reason: expect.stringContaining('com.example.dev'),
+    });
+  });
+
+  it(`should fall back to the app config when nothing is connected`, () => {
+    expect(resolveAppId({ ...base, configured: 'com.example.config' })).toMatchObject({
+      appId: 'com.example.config',
+      source: 'app-config',
+    });
+  });
+
+  it(`should fall back to Expo Go, per platform`, () => {
+    expect(resolveAppId(base)).toMatchObject({
+      appId: EXPO_GO_APP_ID.ios,
+      source: 'expo-go-default',
+    });
+    expect(resolveAppId({ ...base, platform: 'android' })).toMatchObject({
+      appId: EXPO_GO_APP_ID.android,
+    });
+  });
+
+  // The two ids differ only in case, and the wrong one stops nothing on either platform.
+  it(`should use the platform's own spelling of the Expo Go id`, () => {
+    expect(EXPO_GO_APP_ID.ios).toBe('host.exp.Exponent');
+    expect(EXPO_GO_APP_ID.android).toBe('host.exp.exponent');
+  });
+
+  it(`should always say which evidence it used`, () => {
+    for (const input of [
+      { ...base, appIdOverride: 'a' },
+      { ...base, targetAppIds: ['b'] },
+      { ...base, configured: 'c' },
+      base,
+    ]) {
+      expect(resolveAppId(input).reason.length).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe(readConfiguredAppId, () => {
+  it(`should read ios.bundleIdentifier and android.package`, () => {
+    vol.fromJSON({
+      [`${projectRoot}/app.json`]: JSON.stringify({
+        expo: { ios: { bundleIdentifier: 'com.example.ios' }, android: { package: 'com.example.android' } },
+      }),
+    });
+
+    expect(readConfiguredAppId(projectRoot, 'ios')).toBe('com.example.ios');
+    expect(readConfiguredAppId(projectRoot, 'android')).toBe('com.example.android');
+  });
+
+  it(`should accept a config with no expo key`, () => {
+    vol.fromJSON({
+      [`${projectRoot}/app.config.json`]: JSON.stringify({
+        ios: { bundleIdentifier: 'com.example.bare' },
+      }),
+    });
+
+    expect(readConfiguredAppId(projectRoot, 'ios')).toBe('com.example.bare');
+  });
+
+  it(`should answer null when the config names none`, () => {
+    vol.fromJSON({ [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo' } }) });
+
+    expect(readConfiguredAppId(projectRoot, 'ios')).toBeNull();
+  });
+
+  // A dynamic app config is never evaluated, per the process boundary; such a project falls
+  // through to the Expo Go default, which `--app-id` overrides.
+  it(`should answer null for a project with no static config`, () => {
+    vol.fromJSON({ [`${projectRoot}/app.config.js`]: 'module.exports = {};' });
+
+    expect(readConfiguredAppId(projectRoot, 'ios')).toBeNull();
+  });
+});

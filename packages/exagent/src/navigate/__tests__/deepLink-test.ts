@@ -31,6 +31,16 @@ function expectError(result: ResolveDeepLinkUrlResult): string {
   return result.error;
 }
 
+/** Assert the resolution succeeded and return it, so its `resolution` can be read. */
+function expectUrl(
+  result: ResolveDeepLinkUrlResult
+): Extract<ResolveDeepLinkUrlResult, { ok: true }> {
+  if (!result.ok) {
+    throw new Error(`Expected a URL, but the resolution failed: ${result.error}`);
+  }
+  return result;
+}
+
 afterEach(() => {
   vol.reset();
 });
@@ -226,7 +236,11 @@ describe(resolveDeepLinkUrl, () => {
     });
   });
 
-  it(`should omit the /--/ segment for the root route on Expo Go`, () => {
+  // The root route needs a URL that survives expo-router's Expo Go listener: an `exp://` link
+  // whose path is empty or `/` is replaced by the root URL, which in Expo Go is the empty string,
+  // and then dropped by a truthiness check before the router sees it. A bare `?` is the smallest
+  // thing that survives it and still resolves to the index route.
+  it(`should keep the root route addressable on Expo Go`, () => {
     const result = resolveDeepLinkUrl({
       route: '/',
       config: config(),
@@ -234,7 +248,33 @@ describe(resolveDeepLinkUrl, () => {
       devServerUrl: 'http://192.168.1.10:8081',
     });
 
-    expect(result).toMatchObject({ ok: true, url: 'exp://192.168.1.10:8081' });
+    expect(result).toMatchObject({ ok: true, url: 'exp://192.168.1.10:8081/--/?' });
+    expect(expectUrl(result).resolution).toContain('root route');
+  });
+
+  it(`should reach the root the same way for every spelling of it`, () => {
+    for (const route of ['/', '//', ' / ']) {
+      expect(
+        resolveDeepLinkUrl({
+          route,
+          config: config(),
+          isExpoGo: true,
+          devServerUrl: 'http://192.168.1.10:8081',
+        })
+      ).toMatchObject({ url: 'exp://192.168.1.10:8081/--/?' });
+    }
+  });
+
+  // A development build never had the problem: its listener passes the URL through whatever the
+  // path is, so `myapp://` already means the index route and a `?` would only be noise.
+  it(`should leave the root route of a development build alone`, () => {
+    expect(
+      resolveDeepLinkUrl({
+        route: '/',
+        config: config({ scheme: 'demoapp', configFile: 'app.json' }),
+        isExpoGo: false,
+      })
+    ).toMatchObject({ ok: true, url: 'demoapp://' });
   });
 
   it(`should explain how to fix a missing dev server URL for Expo Go`, () => {

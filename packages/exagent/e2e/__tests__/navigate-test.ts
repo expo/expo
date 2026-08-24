@@ -32,6 +32,13 @@ type NavigateReport = {
   appId: string | null;
   command: string;
   exitCode: number | null;
+  routeCheck: {
+    checked: boolean;
+    ok: boolean | null;
+    matched: string | null;
+    routeCount: number;
+    reason: string | null;
+  };
   followups: { id: string; command: string; why: string }[];
 };
 
@@ -146,6 +153,175 @@ describe('exagent navigate', () => {
       const report: NavigateReport = JSON.parse(result.stdout);
       expect(report.devServerSource).toBe('flag');
       expect(report.devServerUrl).toBe(stub.url);
+    } finally {
+      await stub.close();
+    }
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Verifying the route. The friction this pins
+  // [observed — friction run 3, F32]: `navigate /totally-bogus` exited 0 with the simulator on
+  // Expo Router's "Unmatched Route" screen, and `runtime:errors --fail-on-error` and `dev:wait
+  // --require-app` both exited 0 after it. Nothing that reads the *app* can see an unmatched
+  // route, because the router renders a screen for it on purpose.
+  describe('route check', () => {
+    /** Give the fixture an Expo Router `app/` directory with the named route files. */
+    async function writeRoutesAsync(projectRoot: string, files: string[]) {
+      for (const file of files) {
+        const target = path.join(projectRoot, 'app', file);
+        await fs.promises.mkdir(path.dirname(target), { recursive: true });
+        await fs.promises.writeFile(target, 'export default function Route() { return null; }\n');
+      }
+    }
+
+    it('refuses a route the project has not got, and lists the ones it has', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const readXcrun = await installStubXcrunAsync(projectRoot);
+      await writeRoutesAsync(projectRoot, ['index.tsx', 'explore.tsx', 'notes.tsx']);
+      const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
+
+      try {
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['navigate', '/totally-bogus-route-xyz', '--ios', '--json', '--dev-server-url', stub.url],
+          { env: stubExpoEnv(projectRoot), reject: false }
+        );
+
+        expect(result.exitCode).toBe(1);
+        const { error } = JSON.parse(result.stdout);
+        expect(error.code).toBe('ROUTE_NOT_FOUND');
+        expect(error.message).toContain('/explore');
+        expect(error.message).toContain('/notes');
+        expect(error.message).toContain('--no-route-check');
+        // Nothing reached the device: the point of the check is that the simulator never opens
+        // onto the "Unmatched Route" screen in the first place.
+        expect(readXcrun()).toEqual([]);
+      } finally {
+        await stub.close();
+      }
+    });
+
+    it('names the nearest route as the command to run', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      await installStubXcrunAsync(projectRoot);
+      await writeRoutesAsync(projectRoot, ['index.tsx', 'notes.tsx']);
+      const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
+
+      try {
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['navigate', '/note', '--ios', '--json', '--dev-server-url', stub.url],
+          { env: stubExpoEnv(projectRoot), reject: false }
+        );
+
+        expect(JSON.parse(result.stdout).error.suggestedCommand).toBe(
+          'npx exagent navigate /notes'
+        );
+      } finally {
+        await stub.close();
+      }
+    });
+
+    it('matches a value against a dynamic route', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const readXcrun = await installStubXcrunAsync(projectRoot);
+      await writeRoutesAsync(projectRoot, ['index.tsx', 'users/[id].tsx']);
+      const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
+
+      try {
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['navigate', '/users/42', '--ios', '--json', '--dev-server-url', stub.url],
+          { env: stubExpoEnv(projectRoot) }
+        );
+
+        expect(result.exitCode).toBe(0);
+        const report = JSON.parse(result.stdout);
+        expect(report.routeCheck).toEqual({
+          checked: true,
+          ok: true,
+          matched: '/users/[id]',
+          routeCount: 3,
+          reason: null,
+        });
+        expect(readXcrun().some((call) => call[1] === 'openurl')).toBe(true);
+      } finally {
+        await stub.close();
+      }
+    });
+
+    it('opens anything with --no-route-check', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const readXcrun = await installStubXcrunAsync(projectRoot);
+      await writeRoutesAsync(projectRoot, ['index.tsx']);
+      const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
+
+      try {
+        const result = await executeExagentAsync(
+          projectRoot,
+          [
+            'navigate',
+            '/totally-bogus-route-xyz',
+            '--ios',
+            '--json',
+            '--no-route-check',
+            '--dev-server-url',
+            stub.url,
+          ],
+          { env: stubExpoEnv(projectRoot) }
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(JSON.parse(result.stdout).routeCheck.checked).toBe(false);
+        expect(readXcrun().some((call) => call[1] === 'openurl')).toBe(true);
+      } finally {
+        await stub.close();
+      }
+    });
+
+    // Fail open: a project with no router directory has not been shown to lack the route.
+    it('opens the link when the project has no app directory', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      await installStubXcrunAsync(projectRoot);
+      const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
+
+      try {
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['navigate', '/anything', '--ios', '--json', '--dev-server-url', stub.url],
+          { env: stubExpoEnv(projectRoot) }
+        );
+
+        expect(result.exitCode).toBe(0);
+        expect(JSON.parse(result.stdout).routeCheck).toMatchObject({ checked: false, ok: null });
+      } finally {
+        await stub.close();
+      }
+    });
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §The root route needs a query marker.
+  it('addresses the root route with a URL Expo Go delivers', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const readXcrun = await installStubXcrunAsync(projectRoot);
+    const stub = await startStubDevServerAsync({ projectRoot, targets: [EXPO_GO_TARGET] });
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['navigate', '/', '--ios', '--json', '--dev-server-url', stub.url],
+        { env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(result.exitCode).toBe(0);
+      // Not `exp://127.0.0.1:<port>`, which expo-router's Expo Go link handler drops before the
+      // router sees it, leaving a loaded app exactly where it was.
+      expect(JSON.parse(result.stdout).url).toBe(`exp://127.0.0.1:${stub.port}/--/?`);
+      expect(readXcrun()).toContainEqual([
+        'simctl',
+        'openurl',
+        SIMULATOR_UDID,
+        `exp://127.0.0.1:${stub.port}/--/?`,
+      ]);
     } finally {
       await stub.close();
     }

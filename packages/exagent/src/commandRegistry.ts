@@ -146,6 +146,10 @@ export const commandGroups: { [group: string]: CommandGroup } = {
         summary: `Wait until the dev server has finished bundling, and say whose bundle it is`,
         load: () => import('./dev/wait').then((i) => i.exagentDevWait),
       },
+      stop: {
+        summary: `Stop this project's dev server`,
+        load: () => import('./dev/stop').then((i) => i.exagentDevStop),
+      },
     },
   },
   doctor: {
@@ -172,6 +176,17 @@ export const commandGroups: { [group: string]: CommandGroup } = {
       network: {
         summary: `Collect the app's HTTP requests over a time window`,
         load: withAction('network', () => import('./runtime').then((i) => i.exagentRuntime)),
+      },
+      // Two actions with modules of their own, like `dev:wait`: they drive the app rather than
+      // read it, so they take different options and print different reports, and folding them
+      // into the shared `runtime` module would give one `--help` block three subjects.
+      reload: {
+        summary: 'Reload the app, so it runs the code that is on disk now',
+        load: () => import('./runtime/reload').then((i) => i.exagentReload),
+      },
+      stop: {
+        summary: 'Stop the app on the device it is running on',
+        load: () => import('./runtime/stop').then((i) => i.exagentRuntimeStop),
       },
     },
   },
@@ -384,7 +399,10 @@ export interface HelpSection {
  * the registry appears here, so a new command cannot ship undiscoverable.
  */
 export const helpSections: HelpSection[] = [
-  { title: 'Develop', commands: ['dev', 'dev:wait', 'typecheck', 'start', 'install', 'status'] },
+  {
+    title: 'Develop',
+    commands: ['dev', 'dev:wait', 'dev:stop', 'typecheck', 'start', 'install', 'status'],
+  },
   {
     title: 'Inspect the project',
     commands: ['config:effective', 'doctor'],
@@ -396,7 +414,11 @@ export const helpSections: HelpSection[] = [
     commands: ['deploy', ...actionNames('build')],
     note: 'Builds are started with npx eas build; build:wait attaches to one that exists.',
   },
-  { title: 'Debug a running app', commands: [...actionNames('runtime'), 'navigate'] },
+  {
+    title: 'Debug a running app',
+    commands: [...actionNames('runtime'), 'navigate'],
+    note: 'runtime:reload first after fixing a crash: an app whose render threw keeps running the old code.',
+  },
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
   { title: 'Checkpoints', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },
   {

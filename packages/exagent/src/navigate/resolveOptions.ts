@@ -29,6 +29,15 @@ export interface NavigateOptions {
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
   followups: boolean;
+  /**
+   * Check the route against the project's route table before opening it, cleared by
+   * `--no-route-check`.
+   *
+   * The escape hatch exists because the table is read from the files with the router's
+   * conventions rather than from the router itself, so a project doing something the conventions
+   * do not describe must still be able to open a link.
+   */
+  routeCheck: boolean;
 }
 
 const NAVIGATE_ARGS = {
@@ -39,6 +48,7 @@ const NAVIGATE_ARGS = {
   '--app-id': String,
   '--json': Boolean,
   '--no-followups': Boolean,
+  '--no-route-check': Boolean,
 };
 
 /**
@@ -80,5 +90,6 @@ export function resolveNavigateOptions(argv: string[]): NavigateOptions {
     appId: args['--app-id'] ? String(args['--app-id']) : undefined,
     json: !!args['--json'],
     followups: !args['--no-followups'],
+    routeCheck: !args['--no-route-check'],
   };
 }

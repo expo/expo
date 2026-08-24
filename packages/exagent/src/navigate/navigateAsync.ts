@@ -12,6 +12,7 @@ import {
 } from '../followups';
 import * as Log from '../log';
 import { readProjectNativeDirsAsync } from '../project/nativeCode';
+import { readProjectRoutesAsync } from '../project/routes';
 import {
   isInstalledDependencyAsync,
   listDependencyNames,
@@ -19,10 +20,16 @@ import {
 } from '../project/nodeModules';
 import { discoverDevServerAsync, type DevServerSource } from '../runtime/devServer';
 import { CommandError } from '../utils/errors';
-import { openUrlOnDeviceAsync, readProjectSchemeConfig, resolveDeepLinkUrl } from './deepLink';
+import {
+  isFullUrlRoute,
+  openUrlOnDeviceAsync,
+  readProjectSchemeConfig,
+  resolveDeepLinkUrl,
+} from './deepLink';
 import { resolveDeviceAsync } from './device';
 import { debugEvent } from './events';
 import type { NavigateOptions } from './resolveOptions';
+import { checkRoute, routeNotFoundError, type RouteCheckJson } from './routeCheck';
 import { decideExpoGoTarget } from './target';
 
 /**
@@ -60,6 +67,13 @@ export interface NavigateResultJson {
   /** Exit code of that command: non-zero means the device refused the deep link. */
   exitCode: number | null;
   /**
+   * Whether the route was checked against the project's routes, and what the check said.
+   *
+   * Always `ok: true` or `ok: null` here: a route the project has not got is a failure, so it
+   * never reaches this object.
+   */
+  routeCheck: RouteCheckJson;
+  /**
    * State-aware next actions, empty when the device refused the link or they are suppressed.
    *
    * @see llp/0009-smart-followups.rfc.md §Design
@@ -87,13 +101,30 @@ export async function navigateAsync(
 ): Promise<number> {
   const { route, platform, scheme, appId, json, followups: wantFollowUps } = options;
 
-  const [devServer, config, nativeDirs, packageJson] = await Promise.all([
+  const [devServer, config, nativeDirs, packageJson, routeTable] = await Promise.all([
     discoverDevServerAsync(options.devServerUrl ?? undefined, { projectRoot }),
     Promise.resolve(readProjectSchemeConfig(projectRoot)),
     readProjectNativeDirsAsync(projectRoot),
     readProjectPackageJsonAsync(projectRoot),
+    readProjectRoutesAsync(projectRoot),
   ]);
   const devServerUrl = devServer.devServerUrl;
+
+  // Before anything is opened, and before the device is even looked for. A route the project has
+  // not got is the caller's own argument being wrong, and the recovery — the list of routes it
+  // does have — costs one directory walk and needs neither a dev server nor a device. Leaving it
+  // until after the link is open would put the app on the "Unmatched Route" screen first, which is
+  // the state this check exists to prevent (llp/0005 §Verifying the route).
+  const routeCheck = checkRoute({
+    route,
+    table: routeTable,
+    enabled: options.routeCheck,
+    isFullUrl: isFullUrlRoute(route),
+  });
+  debugEvent('route_checked', routeCheck);
+  if (routeCheck.ok === false) {
+    throw routeNotFoundError(route, routeTable, { platform });
+  }
 
   // A named dev server that does not answer is a mistake worth stopping on, and the only case where
   // this command could still build a URL from it: the scheme of a development build needs no dev
@@ -180,6 +211,7 @@ export async function navigateAsync(
       appId: appId ?? null,
       command: result.command,
       exitCode: result.exitCode,
+      routeCheck,
       followups,
     };
     // The object is the whole of stdout, so the output can be piped into a parser. The failure
@@ -195,6 +227,15 @@ export async function navigateAsync(
         chalk`{bold Dev server} ${devServerUrl}{dim  · via ${devServer.source}}`,
         chalk`{bold Device} ${device.platform} ${deviceLabel}`,
         chalk`{dim  ${result.command}}`,
+        chalk`{bold Route} ${
+          routeCheck.ok
+            ? `${routeCheck.matched}${chalk.dim(
+                ` · 1 of ${routeCheck.routeCount} routes in this project${
+                  routeCheck.matched === route ? '' : ', matched as a pattern'
+                }`
+              )}`
+            : chalk.dim(`not checked · ${routeCheck.reason}`)
+        }`,
       ].join('\n')
     );
   }

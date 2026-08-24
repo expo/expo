@@ -301,11 +301,22 @@ describe('exagent', () => {
 
     expect(result.exitCode).toBe(0);
     expect(result.all).toContain('Develop');
-    expect(result.all).toContain('dev, dev:wait, typecheck, start, install, status');
+    expect(result.all).toContain('dev, dev:wait, dev:stop, typecheck, start, install, status');
     expect(result.all).toContain('Create');
     expect(result.all).toContain('Deployment');
     expect(result.all).toContain('Debug a running app');
-    expect(result.all).toContain('runtime:eval, runtime:errors, runtime:network, navigate');
+    // The section wraps at 80 columns now that it holds six commands, so the assertion is on
+    // the commands rather than on one rendered line.
+    for (const command of [
+      'runtime:eval',
+      'runtime:errors',
+      'runtime:network',
+      'runtime:reload',
+      'runtime:stop',
+      'navigate',
+    ]) {
+      expect(result.all).toContain(command);
+    }
     expect(result.all).toContain('Agent setup');
     expect(result.all).toContain('agents:setup');
     expect(result.all).toContain('skills:sync');

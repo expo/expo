@@ -34,6 +34,7 @@ export const exagentNavigate: Command = async (argv) => {
         `--app-id <id>           Application id of the target app`,
         `--dev-server-url <url>  Dev server to read (default: the project's own, then 8081)`,
         `--json                  Print the result as JSON`,
+        `--no-route-check        Open the link without checking the route against the project`,
         `--no-followups          Skip the "Suggested next:" section of suggested follow-up commands`,
         `-h, --help              Usage info`,
       ].join('\n'),
@@ -57,6 +58,12 @@ export const exagentNavigate: Command = async (argv) => {
         '',
         chalk`  With no platform flag, a booted iOS simulator is preferred on macOS, and an`,
         chalk`  attached Android device is used otherwise.`,
+        '',
+        chalk`  The route is checked against the project's routes first, so a route that does not`,
+        chalk`  exist fails here instead of putting the app on the {bold Unmatched Route} screen and`,
+        chalk`  reporting success. The routes are read from the files under the router directory`,
+        chalk`  the way Expo Router reads them, and a dynamic route matches as a pattern:`,
+        chalk`  {bold /users/42} resolves against {bold app/users/[id].tsx}. Pass {bold --no-route-check} to skip it.`,
         '',
       ].join('\n')
     );

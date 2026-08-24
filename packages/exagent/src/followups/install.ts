@@ -41,10 +41,14 @@ export function buildInstallFollowUps({
       why: `The app that is running now cannot load ${names}, which changed the native surface: this plans and makes the development build that can.`,
     });
   } else {
+    // The command named here used to be `runtime:errors`, which reloads nothing — so the sentence
+    // said "reloading the app is enough" and then handed over a command that only watches one
+    // [observed — friction run 3, F31]. `reload` is the step the sentence describes, and its own
+    // follow-ups lead to the error window afterwards.
     followups.push({
       id: 'reload-app',
-      command: 'npx exagent runtime:errors',
-      why: 'Only JavaScript changed, so reloading the app is enough; this reports what the reloaded app throws.',
+      command: 'npx exagent runtime:reload',
+      why: 'Only JavaScript changed, so reloading the app is enough to pick the package up — no rebuild.',
     });
   }
 

@@ -96,6 +96,7 @@ function options(overrides: Partial<NavigateOptions> = {}): NavigateOptions {
     devServerUrl: 'http://127.0.0.1:8081',
     json: false,
     followups: true,
+    routeCheck: true,
     ...overrides,
   };
 }
@@ -345,6 +346,13 @@ describe(navigateAsync, () => {
       appId: null,
       command: 'xcrun simctl openurl IOS-1 exp://127.0.0.1:8081/--/profile/42',
       exitCode: 0,
+      routeCheck: {
+        checked: false,
+        ok: null,
+        matched: null,
+        routeCount: 0,
+        reason: 'this project has no app directory, so it does not use Expo Router',
+      },
       followups: [
         {
           id: 'screenshot',
@@ -383,6 +391,7 @@ describe(navigateAsync, () => {
       'platform',
       'resolution',
       'route',
+      'routeCheck',
       'target',
       'url',
     ]);
@@ -492,5 +501,134 @@ describe(navigateAsync, () => {
 
     expect(error.code).toBe('DEEP_LINK_UNRESOLVED');
     expect(error.message).toContain('npx expo start');
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §Verifying the route. The friction this pins:
+  // `navigate /totally-bogus` exited 0 with the simulator on the "Unmatched Route" screen, and no
+  // other gate could see it — the router renders that screen on purpose, so nothing is thrown.
+  describe('route check', () => {
+    function mockRouterProject(routeFiles: string[]) {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+        ...Object.fromEntries(routeFiles.map((file) => [`${projectRoot}/app/${file}`, ''])),
+      });
+    }
+
+    it(`should refuse a route the project has not got, before touching a device`, async () => {
+      mockRouterProject(['index.tsx', 'notes.tsx']);
+      mockDevServer([EXPO_GO_TARGET]);
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      const error = await navigateAsync(projectRoot, options({ route: '/nope' })).catch((e) => e);
+
+      expect(error.code).toBe('ROUTE_NOT_FOUND');
+      expect(spawn).not.toHaveBeenCalled();
+    });
+
+    it(`should list the routes the project does have`, async () => {
+      mockRouterProject(['index.tsx', 'notes.tsx', 'explore.tsx']);
+      mockDevServer([EXPO_GO_TARGET]);
+
+      const error = await navigateAsync(projectRoot, options({ route: '/nope' })).catch((e) => e);
+
+      expect(error.message).toContain('/notes');
+      expect(error.message).toContain('/explore');
+      expect(error.message).toContain('--no-route-check');
+    });
+
+    it(`should suggest the nearest route as the command to run`, async () => {
+      mockRouterProject(['index.tsx', 'notes.tsx']);
+      mockDevServer([EXPO_GO_TARGET]);
+
+      const error = await navigateAsync(projectRoot, options({ route: '/note' })).catch((e) => e);
+
+      expect(error.suggestedCommand).toBe('npx exagent navigate /notes');
+    });
+
+    it(`should open a route the project has`, async () => {
+      mockRouterProject(['index.tsx', 'notes.tsx']);
+      mockDevServer([EXPO_GO_TARGET]);
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await expect(
+        navigateAsync(projectRoot, options({ route: '/notes', json: true }))
+      ).resolves.toBe(0);
+      expect(JSON.parse(printed()).routeCheck).toEqual({
+        checked: true,
+        ok: true,
+        matched: '/notes',
+        routeCount: 3,
+        reason: null,
+      });
+    });
+
+    it(`should match a value against a dynamic route`, async () => {
+      mockRouterProject(['index.tsx', 'users/[id].tsx']);
+      mockDevServer([EXPO_GO_TARGET]);
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await expect(
+        navigateAsync(projectRoot, options({ route: '/users/42', json: true }))
+      ).resolves.toBe(0);
+      expect(JSON.parse(printed()).routeCheck).toMatchObject({ ok: true, matched: '/users/[id]' });
+    });
+
+    it(`should open anything with --no-route-check`, async () => {
+      mockRouterProject(['index.tsx']);
+      mockDevServer([EXPO_GO_TARGET]);
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await expect(
+        navigateAsync(projectRoot, options({ route: '/nope', routeCheck: false, json: true }))
+      ).resolves.toBe(0);
+      expect(JSON.parse(printed()).routeCheck).toMatchObject({
+        checked: false,
+        ok: null,
+        reason: expect.stringContaining('--no-route-check'),
+      });
+    });
+
+    // Fail open: a project this scan cannot read has not been shown to lack the route, and a
+    // false red stops a command that would have worked.
+    it(`should open the link when the project has no router directory`, async () => {
+      vol.fromJSON({
+        [`${projectRoot}/package.json`]: JSON.stringify({ name: 'demo', dependencies: {} }),
+        [`${projectRoot}/app.json`]: JSON.stringify({ expo: { slug: 'demo', scheme: 'demoapp' } }),
+      });
+      mockDevServer([EXPO_GO_TARGET]);
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await expect(navigateAsync(projectRoot, options({ route: '/anything' }))).resolves.toBe(0);
+    });
+
+    // A chalk template inside an interpolation is a plain template literal, which prints its
+    // `{dim …}` markers verbatim. The whole line is the report a human reads, so it is asserted.
+    it(`should name the matched route in the human summary, with no markup left in it`, async () => {
+      mockRouterProject(['index.tsx', 'notes.tsx']);
+      mockDevServer([EXPO_GO_TARGET]);
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await navigateAsync(projectRoot, options({ route: '/notes' }));
+
+      expect(printed()).toContain('/notes');
+      expect(printed()).toContain('3 routes in this project');
+      expect(printed()).not.toContain('{dim');
+      expect(printed()).not.toContain('{bold');
+    });
+
+    it(`should not judge a full URL against this project's routes`, async () => {
+      mockRouterProject(['index.tsx']);
+      mockDevServer([EXPO_GO_TARGET]);
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await expect(
+        navigateAsync(projectRoot, options({ route: 'otherapp://deep/link', json: true }))
+      ).resolves.toBe(0);
+      expect(JSON.parse(printed()).routeCheck).toMatchObject({
+        checked: false,
+        reason: expect.stringContaining('full URL'),
+      });
+    });
   });
 });

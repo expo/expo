@@ -223,6 +223,7 @@ Only `errors` has it. `runtime:network`'s failed requests are something it repor
 a 404 the app handles is not the command's operation failing — and there is no equivalent question
 for its exit code to answer.
 
+<<<<<<< HEAD
 ### The fourth: `typecheck`, and the gate the other three could not be
 
 [observed — 2026-08-23, `src/typecheck/`] `exagent typecheck` is the fourth command in the band, and
@@ -272,6 +273,65 @@ Four details of that are decisions rather than transcription:
 
 Where the command is reachable from — which follow-up ladders gained the rung, and which rung it
 replaces in each — is [[0009-smart-followups]] §Where the typecheck rung goes.
+
+### The fifth: `runtime:reload`, and the difference between failed and inconclusive
+
+[observed — 2026-08-23, `src/runtime/reload/`; friction run 3, F31] `exagent runtime:reload` is the
+first command that uses **both** codes of the band in one run, and the boundary between them is the
+whole design (the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
+
+| Code | The reload                                                        |
+| ---- | ----------------------------------------------------------------- |
+| `0`  | happened, and an app is attached again                            |
+| `20` | did not happen: nothing answered, or nothing acted on it          |
+| `22` | happened, and no app had reconnected when `--timeout` expired     |
+| `1`  | was not attempted: no dev server to reload onto, or a bad argument |
+
+Three details are decisions rather than transcription:
+
+- **A reload is never assumed.** The broadcast has no reply, so a command that sent one and exited
+  0 would be reporting an act it did not observe — the same shape of lie as a bundle check on a
+  frozen watcher. `reloaded: true` requires the app's connection to the dev server to have been
+  *replaced*, which the dev server's never-reused socket ids make provable without CDP.
+- **`20` and `22` split on whether anything happened.** Nothing reloaded is a failure with a cause
+  to read; reloaded-but-not-back is a wait that ran out, and the next action is to look again, not
+  to re-run the reload. Collapsing them would make an agent reload an app that was already fine.
+- **No dev server is `1`, not `20`.** Nothing was attempted, and the operation the code would be
+  reporting on never started. A reload with no dev server would also be actively harmful — it makes
+  the app re-fetch a bundle from nowhere — so the command refuses rather than reports.
+
+### The sixth and seventh: the stop commands, and what "already done" is worth
+
+[observed — 2026-08-23, `src/runtime/stopAsync.ts`, `src/dev/stopAsync.ts`] `runtime:stop` and
+`dev:stop` are the first commands whose subject can be **already in the state that was asked for**,
+and both answer it the same way: that is success.
+
+Decision [confirmed — Kudo, 2026-08-23]. An app that was not running, and a dev server that was not
+running, both exit `0`. The alternative was tempting — a distinct code for "nothing to do" — and it
+is wrong for the reason the band exists: the code answers *did the thing the tool was asked about
+work*, and the thing being asked about is a state, not an act. An agent that stops an app twice
+would otherwise have to special-case the second run, which is exactly the branching the convention
+removes. What is *not* collapsed is the fact itself: `runtime:stop` reports `wasRunning`, and
+`dev:stop` reports `reason: "not-running"`, so a caller that cares can read it without reading the
+code.
+
+The two codes each command does use:
+
+| Command | `20` | `1` |
+| --- | --- | --- |
+| `runtime:stop` | — | the device tool refused |
+| `dev:stop` | it is still running, or it is not this CLI's to stop | a bad argument |
+
+Two details are decisions rather than transcription:
+
+- **A device tool that refused is `1`, not `20`.** `runtime:stop` has no outcome band, because the
+  operation it performs cannot half-succeed: either the app is stopped or the tool would not run
+  it, and a tool that would not run is a tool failure. The message names the id it tried and the
+  evidence that chose it, so the recovery is `--app-id`.
+- **A dev server this CLI did not start is `20`, not `1`.** The command worked perfectly and
+  declined on purpose; nothing about the invocation was wrong. `1` would tell an agent to fix its
+  call, and there is nothing to fix — the recovery is `--force`, or stopping it where it was
+  started, and both are in the `How:` line.
 
 ## Needs-human protocol
 

@@ -178,7 +178,7 @@ describe(installAsync, () => {
       await installAsync(projectRoot, resolveInstallPlan(['expo-sqlite']));
 
       expect(printed()).toContain('Suggested next:');
-      expect(printed()).toContain('npx exagent runtime:errors');
+      expect(printed()).toContain('npx exagent runtime:reload');
       expect(printed()).toContain('reload');
     });
 
