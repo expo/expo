@@ -11,6 +11,7 @@ import {
   resolveCommand,
   unknownActionMessage,
   unknownCommandMessage,
+  unknownCommandSuggestion,
 } from './commandRegistry';
 import { EXIT_OK } from './exitCodes';
 import * as Log from './log';
@@ -155,7 +156,8 @@ switch (resolution.kind) {
     const { CommandError, logCmdError } =
       require('./utils/errors') as typeof import('./utils/errors');
     const error = new CommandError('UNKNOWN_COMMAND', unknownCommandMessage(resolution.command));
-    error.suggestedCommand = 'npx exagent --help';
+    // One close name is a recovery to run; several are a choice, and the message lists them.
+    error.suggestedCommand = unknownCommandSuggestion(resolution.command);
     logCmdError(error);
     break;
   }

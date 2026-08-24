@@ -526,8 +526,98 @@ export function flagsWithoutActionSuggestion(group: string, flags: string[]): st
   return bare ? [bare, ...flags].join(' ') : `npx exagent ${group} --help`;
 }
 
+/**
+ * Every name this CLI resolves: its own commands, the canonical name of every group action, the
+ * aliases, and the forwarded `expo` set. The candidate pool for a nearest-match suggestion.
+ */
+export function allCommandNames(): string[] {
+  return [
+    ...Object.keys(topLevelCommands),
+    // The bare group name too: it is a name that resolves, whether to a default action or to the
+    // listing, so it is a name a caller can be one letter away from.
+    ...Object.keys(commandGroups).flatMap((group) => [group, ...actionNames(group)]),
+    ...Object.keys(commandAliases),
+    ...forwardedCommands,
+  ];
+}
+
+/** How many names an unknown command is answered with. Three is a hint; ten is a second listing. */
+const MAX_SUGGESTIONS = 3;
+
+/**
+ * Edits above which two names are simply different words rather than one of them mistyped.
+ *
+ * Scaled by length, because two edits in `dev` is a different command and two edits in
+ * `config:effective` is a typo.
+ */
+function maxEditsFor(name: string): number {
+  return name.length <= 5 ? 1 : 2;
+}
+
+/**
+ * The registry names closest to one that does not exist.
+ *
+ * Two rules, in order, because they answer two different mistakes:
+ *
+ * 1. **The action name on its own.** `exagent wait` is not a typo — it is a caller that knows what
+ *    it wants and does not know which group owns it, and the answer is every group that has an
+ *    action by that name: `dev:wait`, `build:wait`. Exact, so it never guesses.
+ * 2. **A small number of edits.** `exagent stauts` is the other mistake, and Levenshtein is what
+ *    recognises it. Ordered by distance, then by the registry's own order, so the answer is stable.
+ *
+ * Pure and exported for the test table: the value of a suggestion is entirely in which names it
+ * picks, and that is only checkable by pinning them.
+ *
+ * @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts
+ */
+export function suggestCommandNames(command: string): string[] {
+  const query = command.toLowerCase();
+  const names = allCommandNames();
+
+  // Rule 1: `<group>:<action>` whose action is exactly the name that was typed.
+  const suffixMatches = names.filter((name) => name.slice(name.indexOf(':') + 1) === query);
+
+  // Rule 2: the rest, near enough to be a mistyping of one of them.
+  const nearMatches = names
+    .filter((name) => !suffixMatches.includes(name))
+    .map((name) => ({ name, distance: editDistance(query, name.toLowerCase()) }))
+    .filter(({ name, distance }) => distance <= maxEditsFor(name))
+    .sort((a, b) => a.distance - b.distance)
+    .map(({ name }) => name);
+
+  return [...suffixMatches, ...nearMatches].slice(0, MAX_SUGGESTIONS);
+}
+
+/** Levenshtein distance, one row of the matrix at a time. */
+function editDistance(a: string, b: string): number {
+  if (a === b) {
+    return 0;
+  }
+  let previous = Array.from({ length: b.length + 1 }, (_, index) => index);
+  for (let i = 1; i <= a.length; i++) {
+    const row = [i];
+    for (let j = 1; j <= b.length; j++) {
+      row[j] = Math.min(
+        previous[j]! + 1,
+        row[j - 1]! + 1,
+        previous[j - 1]! + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+    }
+    previous = row;
+  }
+  return previous[b.length]!;
+}
+
 /** The error for a name in none of the three maps. */
 export function unknownCommandMessage(command: string): string {
+  const suggestions = suggestCommandNames(command);
+  // The closest names come before the "run --help" fallback: a caller that typed `wait` wants
+  // `dev:wait`, not a listing of thirty commands to find it in again.
+  const didYouMean = suggestions.length
+    ? `The closest ${suggestions.length === 1 ? 'name is' : 'names are'} ${suggestions
+        .map((name) => `"npx exagent ${name}"`)
+        .join(', ')}. `
+    : '';
   return (
     `"exagent ${command}" is not a command. ` +
     `exagent runs its own commands, the actions of its command groups (${Object.keys(
@@ -535,6 +625,20 @@ export function unknownCommandMessage(command: string): string {
     ).join(
       ', '
     )}), and a fixed set of ${forwardedCommands.length} expo commands it forwards; "${command}" is in none of them, so neither CLI has it. ` +
+    didYouMean +
     `Run "npx exagent --help" for the whole list.`
   );
+}
+
+/**
+ * The command to put on the `Try:` line of an {@link unknownCommandMessage}.
+ *
+ * One close name is a recovery an agent can run; several are a choice it has to make, and the
+ * message above already lists them, so the last line stays the full listing.
+ */
+export function unknownCommandSuggestion(command: string): string {
+  const suggestions = suggestCommandNames(command);
+  return suggestions.length === 1
+    ? `npx exagent ${suggestions[0]} --help`
+    : 'npx exagent --help';
 }

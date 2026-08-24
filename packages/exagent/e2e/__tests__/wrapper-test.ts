@@ -293,6 +293,25 @@ describe('expo passthrough', () => {
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
 
+  // A name that is only the *action* half is a caller that knows what it wants and not which
+  // group owns it, so the error names every group that has an action by that name.
+  it('names the closest commands for a name that is only an action', async () => {
+    const result = await executeExagentAsync(projectRoot, ['wait'], { reject: false });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.all).toContain('npx exagent build:wait');
+    expect(result.all).toContain('npx exagent dev:wait');
+    // Two candidates are a choice, so the last line stays the full listing.
+    expect(result.all).toContain('Try: npx exagent --help');
+  });
+
+  it('recovers into the one close command for a mistyped name', async () => {
+    const result = await executeExagentAsync(projectRoot, ['stauts'], { reject: false });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.all).toContain('Try: npx exagent status --help');
+  });
+
   it('forwards the exit code of the expo CLI', async () => {
     const result = await executeExagentAsync(projectRoot, ['prebuild', '--clean'], {
       env: { STUB_EXPO_EXIT_CODE: '17' },
