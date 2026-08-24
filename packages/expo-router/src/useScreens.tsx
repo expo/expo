@@ -6,6 +6,7 @@ import type { LoadedRoute, RouteNode } from './Route';
 import {
   findRouteNodeByName,
   getValidInitialRouteName,
+  ScreenErrorBoundaryContext,
   SuspenseFallbackContext,
   Route,
   sortRoutesWithInitial,
@@ -190,20 +191,51 @@ export function useSortedScreens<
 
 function fromImport(
   value: RouteNode,
-  { ErrorBoundary, SuspenseFallback, ...component }: LoadedRoute
+  { ErrorBoundary, SuspenseFallback, unstable_settings, ...component }: LoadedRoute
 ) {
   // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
   if (component?.default && __DEV__) {
     component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
   }
 
-  if (ErrorBoundary) {
+  const screenErrorBoundary = unstable_settings?.screenErrorBoundary;
+
+  if (process.env.NODE_ENV !== 'production' && screenErrorBoundary && value.type !== 'layout') {
+    console.warn(
+      `Route "${value.contextKey}" exports unstable_settings.screenErrorBoundary. This setting is only supported in layout routes; use export const ErrorBoundary instead.`
+    );
+  }
+
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    typeof component.default === 'object' &&
+    component.default &&
+    Object.keys(component.default).length === 0
+  ) {
+    return { default: EmptyRoute, SuspenseFallback };
+  }
+
+  if (ErrorBoundary || (value.type === 'layout' && screenErrorBoundary !== undefined)) {
     const Wrapped = React.forwardRef((props: any, ref: any) => {
-      const children = React.createElement(component.default || EmptyRoute, {
+      const inheritedScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+      let children = React.createElement(component.default || EmptyRoute, {
         ...props,
         ref,
       });
-      return <Try catch={ErrorBoundary}>{children}</Try>;
+      if (ErrorBoundary) {
+        children = <Try catch={ErrorBoundary}>{children}</Try>;
+      }
+      if (value.type === 'layout' && screenErrorBoundary !== undefined) {
+        children = (
+          <ScreenErrorBoundaryContext value={screenErrorBoundary ?? undefined}>
+            {children}
+          </ScreenErrorBoundaryContext>
+        );
+        if (screenErrorBoundary === null && inheritedScreenErrorBoundary) {
+          children = <Try catch={inheritedScreenErrorBoundary}>{children}</Try>;
+        }
+      }
+      return children;
     });
 
     if (__DEV__) {
@@ -215,16 +247,6 @@ function fromImport(
       SuspenseFallback,
     };
   }
-  if (process.env.NODE_ENV !== 'production') {
-    if (
-      typeof component.default === 'object' &&
-      component.default &&
-      Object.keys(component.default).length === 0
-    ) {
-      return { default: EmptyRoute, SuspenseFallback };
-    }
-  }
-
   return { default: component.default!, SuspenseFallback };
 }
 
@@ -300,6 +322,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
+    const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
 
@@ -368,6 +391,15 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       );
     }
 
+    const screenComponent = (
+      <WrappedScreenComponent
+        {...props}
+        // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+        // the intention is to make it possible to deduce shared routes.
+        segment={value.route}
+      />
+    );
+
     return (
       <Route node={value} params={route?.params}>
         <SuspenseFallbackContext value={providedSuspenseFallback}>
@@ -384,12 +416,11 @@ export function getQualifiedRouteComponent(value: RouteNode) {
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              <WrappedScreenComponent
-                {...props}
-                // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-                // the intention is to make it possible to deduce shared routes.
-                segment={value.route}
-              />
+              {ScreenErrorBoundary && isRouteType ? (
+                <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+              ) : (
+                screenComponent
+              )}
             </React.Suspense>
           </ZoomTransitionTargetContextProvider>
         </SuspenseFallbackContext>
