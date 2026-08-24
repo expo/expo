@@ -3,8 +3,13 @@
 // budget, an entry bundle that does not compile needs the file it names fixed, a ready bundler with
 // no app attached needs the app opened, another project's dev server needs a different dev server,
 // and a bundle that is loaded and running is ready to be read.
+//
+// Every one of them is also platform-specific, which is the correction of friction run 4's F40: a
+// wait run with `--platform web` used to be told to re-run without it and then to read
+// `runtime:errors`, which talks to a *native* runtime over the debugger. A follow-up that silently
+// changes platform answers a question the caller did not ask.
 
-import type { BundleCheckResult } from '../runtime/bundleCheck';
+import type { BundleCheckPlatform, BundleCheckResult } from '../runtime/bundleCheck';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface DevWaitFollowUpInput {
@@ -14,12 +19,16 @@ export interface DevWaitFollowUpInput {
   timedOut: boolean;
   /** Whether the dev server proved it serves this project; null when it could not be decided. */
   projectRootMatched: boolean | null;
-  /** Debugger targets attached to the dev server. */
-  appsConnected: number;
+  /** Debugger targets attached to the dev server, or null when they cannot be counted (web). */
+  appsConnected: number | null;
   /** The budget the wait was given, in milliseconds. */
   timeoutMs: number;
   /** What building the project's entry bundle answered, or null when it was not attempted. */
   bundle?: BundleCheckResult | null;
+  /** Platform the wait was about, so a suggested re-run stays on it. */
+  platform?: BundleCheckPlatform;
+  /** Dev server that answered, for the web page a reader opens. */
+  devServerUrl?: string | null;
 }
 
 export function buildDevWaitFollowUps({
@@ -29,7 +38,13 @@ export function buildDevWaitFollowUps({
   appsConnected,
   timeoutMs,
   bundle = null,
+  platform = 'ios',
+  devServerUrl = null,
 }: DevWaitFollowUpInput): FollowUp[] {
+  // Carried onto every `dev:wait` this suggests re-running. The default platform is `ios`, so a
+  // command without the flag is a command about a different platform than the one that just ran.
+  const samePlatform = platform === 'ios' ? '' : ` --platform ${platform}`;
+
   // The wrong dev server first, whatever else is true: every other suggestion is about a bundle
   // that belongs to another project, so acting on one of those would confirm the wrong thing.
   if (projectRootMatched === false) {
@@ -52,7 +67,7 @@ export function buildDevWaitFollowUps({
     return capFollowUps([
       {
         id: 'dev-wait-bundle-broken',
-        command: 'npx exagent dev:wait',
+        command: `npx exagent dev:wait${samePlatform}`,
         why: `The dev server is healthy but this project's entry bundle does not compile: fix ${where}, then run this again — the dev server rebuilds on save, so no restart is needed.`,
       },
     ]);
@@ -62,13 +77,32 @@ export function buildDevWaitFollowUps({
     return capFollowUps([
       {
         id: 'dev-wait-longer',
-        command: `npx exagent dev:wait --timeout ${timeoutMs * 2}`,
+        command: `npx exagent dev:wait --timeout ${timeoutMs * 2}${samePlatform}`,
         why: 'The bundler was still working when the wait expired, and a first bundle of a large app often takes longer than the budget it was given.',
       },
       {
         id: 'dev-wait-status',
         command: 'npx exagent status',
         why: 'Check that the dev server that answered is the one this project started before waiting on it again.',
+      },
+    ]);
+  }
+
+  // The web branch, and the whole of it is what this command *cannot* say. There is no app count
+  // to act on and no debugger to read, so the two rungs below — open the app, then read its error
+  // window — have no web spelling. What is left is the page itself, and the check that is about
+  // the code rather than about any runtime.
+  if (ready && platform === 'web') {
+    return capFollowUps([
+      {
+        id: 'dev-wait-web-open',
+        command: `open ${devServerUrl ?? 'http://127.0.0.1:8081'}`,
+        why: "The web bundle compiles, and that is everything this command can prove for web: a browser running it registers no debugger target, so nothing here can tell you whether a page is open or what it is showing. Open it and look — the browser's own console is the error window.",
+      },
+      {
+        id: 'dev-wait-typecheck',
+        command: 'npx exagent typecheck',
+        why: 'The bundle compiling is not the code being right: a type error is neither a syntax error nor a throw, so this is the only gate that sees it.',
       },
     ]);
   }
@@ -86,7 +120,7 @@ export function buildDevWaitFollowUps({
       },
       {
         id: 'dev-wait-require-app',
-        command: `npx exagent dev:wait --require-app --timeout ${timeoutMs}`,
+        command: `npx exagent dev:wait --require-app --timeout ${timeoutMs}${samePlatform}`,
         why: 'Once the app has been opened, this waits for it to attach to the dev server before anything reads it.',
       },
     ]);

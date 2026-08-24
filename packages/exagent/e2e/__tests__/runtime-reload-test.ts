@@ -26,6 +26,15 @@ type ReloadReport = {
   devServerUrl: string;
   devServerSource: string;
   appsConnected: number;
+  appsReconnected: number;
+  bundle: {
+    checked: boolean;
+    ok: boolean | null;
+    platform: string | null;
+    url: string | null;
+    error: { type: string | null; filename: string | null; lineNumber: number | null } | null;
+    reason: string | null;
+  };
   route: string | null;
   routeCheck: { checked: boolean; ok: boolean | null; matched: string | null };
   url: string | null;
@@ -44,6 +53,11 @@ const EXPO_GO_TARGET = {
   webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=1&page=1',
 };
 
+/** Where the stub `xcrun` records that it opened the app, so the stub dev server can see it. */
+function appStartedMarkerPath(projectRoot: string): string {
+  return path.join(projectRoot, '.stub-app-started');
+}
+
 /** Install a stub `xcrun` that reports one booted simulator and records every invocation. */
 async function installStubXcrunAsync(projectRoot: string): Promise<() => string[][]> {
   const logPath = path.join(projectRoot, '.stub-xcrun.jsonl');
@@ -57,6 +71,14 @@ async function installStubXcrunAsync(projectRoot: string): Promise<() => string[
       `fs.appendFileSync(${JSON.stringify(logPath)}, JSON.stringify(args) + '\\n');`,
       `if (args[1] === 'list') {`,
       `  process.stdout.write(JSON.stringify({ devices: { 'com.apple.CoreSimulator.SimRuntime.iOS-26-0': [{ udid: ${JSON.stringify(SIMULATOR_UDID)}, name: 'iPhone 17 Pro', state: 'Booted' }] } }));`,
+      `}`,
+      // An app that was opened is an app that can register a JavaScript runtime, and one that was
+      // terminated cannot. The stub dev server reads this to decide what `/json/list` reports.
+      `if (args[1] === 'openurl') {`,
+      `  fs.writeFileSync(${JSON.stringify(appStartedMarkerPath(projectRoot))}, '');`,
+      `}`,
+      `if (args[1] === 'terminate') {`,
+      `  try { fs.unlinkSync(${JSON.stringify(appStartedMarkerPath(projectRoot))}); } catch {}`,
       `}`,
       `process.exit(0);`,
     ].join('\n')
@@ -106,6 +128,8 @@ describe('exagent runtime:reload', () => {
       expect(report.verifiedBy).toBe('message-socket-peers');
       expect(report.devServerSource).toBe('lock');
       expect(report.appsConnected).toBe(1);
+      // The number success is decided on: a target the dev server had not listed before.
+      expect(report.appsReconnected).toBe(1);
       // Nothing was asked of a device, which is the whole advantage of this method.
       expect(readXcrun()).toEqual([]);
     } finally {
@@ -126,7 +150,9 @@ describe('exagent runtime:reload', () => {
 
       expect(Object.keys(JSON.parse(result.stdout)).sort()).toEqual([
         'appsConnected',
+        'appsReconnected',
         'attempts',
+        'bundle',
         'devServerSource',
         'devServerUrl',
         'deviceId',
@@ -198,11 +224,129 @@ describe('exagent runtime:reload', () => {
     }
   });
 
+  // @ref llp/0010-agent-conventions.rfc.md §The reload gate — friction run 4, F38.
+  // The check runs against the dev server, so this is the tier that can prove the two requests it
+  // makes and, more importantly, that the broadcast never goes out.
+  it('refuses to reload onto an entry bundle that does not compile', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET], bundle: 'broken' });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+    const readXcrun = await installStubXcrunAsync(projectRoot);
+
+    try {
+      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
+        env: stubExpoEnv(projectRoot),
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(20);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.reloaded).toBe(false);
+      expect(report.method).toBe(null);
+      expect(report.bundle).toMatchObject({
+        checked: true,
+        ok: false,
+        error: { type: 'TransformError', filename: 'src/app/index.tsx', lineNumber: 101 },
+      });
+      // Nothing was reloaded and no device was touched: the gate is before the broadcast.
+      expect(report.attempts).toEqual([]);
+      expect(readXcrun()).toEqual([]);
+      expect(result.stderr).toContain('does not compile');
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
+  it('reloads onto a broken bundle when --no-bundle-check says to', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET], bundle: 'broken' });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:reload', '--no-bundle-check', '--json'],
+        { env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.reloaded).toBe(true);
+      expect(report.bundle).toMatchObject({ checked: false, ok: null });
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — friction run 4, F45.
+  // Peer churn proves the app acted on the broadcast. It does not prove the app came back, and
+  // this is the case where it did not: the two facts have to be read separately or the command
+  // reports success for an app that is gone.
+  it('exits 22 when the app acted on the reload and did not come back', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      reloadTargets: 'gone',
+    });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:reload', '--method', 'dev-server', '--timeout', '1s', '--json'],
+        { env: stubExpoEnv(projectRoot), reject: false }
+      );
+
+      expect(result.exitCode).toBe(22);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.reloaded).toBe(true);
+      expect(report.appsConnected).toBe(0);
+      expect(report.appsReconnected).toBe(0);
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
+  // Friction run 4, F39: the target that is listed is the runtime the reload was meant to replace.
+  // Reporting it as a connected app is what made the printed `runtime:errors` follow-up flaky.
+  it('exits 22 when the listed target is the one from before the reload', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({
+      targets: [EXPO_GO_TARGET],
+      reloadTargets: 'stale',
+    });
+    const releaseLock = await lockToStubAsync(projectRoot, stub);
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:reload', '--method', 'dev-server', '--timeout', '1s', '--json'],
+        { env: stubExpoEnv(projectRoot), reject: false }
+      );
+
+      expect(result.exitCode).toBe(22);
+      const report: ReloadReport = JSON.parse(result.stdout);
+      expect(report.appsConnected).toBe(1);
+      expect(report.appsReconnected).toBe(0);
+      expect(result.stderr).toContain('the same debugger target');
+    } finally {
+      releaseLock();
+      await stub.close();
+    }
+  });
+
   it('falls back to stopping the app on the device when no app is connected', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({
       targets: [EXPO_GO_TARGET],
       messagePeers: {},
+      // Nothing is connected until the stub `xcrun` has opened the app, which is what "no app is
+      // connected" means on both channels at once: no peer on the command socket and no runtime in
+      // the target list. The target that appears afterwards is therefore one this run produced.
+      targetsAppearWithFile: appStartedMarkerPath(projectRoot),
     });
     const releaseLock = await lockToStubAsync(projectRoot, stub);
     const readXcrun = await installStubXcrunAsync(projectRoot);

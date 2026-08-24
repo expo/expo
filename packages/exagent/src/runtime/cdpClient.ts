@@ -173,7 +173,20 @@ export interface CdpClientOptions {
   metroUrl: string;
   targetSelector?: CdpTargetSelector;
   createWebSocket?: (url: string) => WebSocket;
+  /**
+   * How long to keep looking when no listed target can be talked to, in milliseconds.
+   *
+   * Zero — the default — reports the first answer. A command that runs straight after a reload
+   * passes a few seconds instead, because the target the dev server lists during the reconnect
+   * window is the runtime being replaced: it is listed, and a connection to it fails, so the
+   * selector skips it and answers `null`. That is the `No target found.` friction run 4 recorded
+   * as F39, and re-reading the list is what resolves it.
+   */
+  targetRetryMs?: number;
 }
+
+/** How often the target list is re-read while {@link CdpClientOptions.targetRetryMs} runs. */
+const TARGET_RETRY_POLL_MS = 250;
 
 export class CdpClient {
   private resolvedWebSocketDebuggerUrl?: string;
@@ -199,13 +212,23 @@ export class CdpClient {
       return this.resolvedWebSocketDebuggerUrl;
     }
 
-    const targets = await this.listTargetsAsync();
     // The default selector probes each target over its own connection, so it gets the same socket
     // factory as the client: a caller that injected one gets it honored everywhere.
     const selector =
       this.options.targetSelector ??
       createDefaultTargetSelector({ createWebSocket: this.options.createWebSocket });
-    const target = await selector(targets);
+
+    // Re-read the list rather than re-run the selector over the same array: what changes during a
+    // reconnect is which targets the dev server lists, not what this can make of a given one.
+    const deadline = Date.now() + (this.options.targetRetryMs ?? 0);
+    let target: CdpTarget | null = null;
+    for (;;) {
+      target = await selector(await this.listTargetsAsync());
+      if (target || Date.now() >= deadline) {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, TARGET_RETRY_POLL_MS));
+    }
     if (!target) {
       throw new Error('No target found.');
     }

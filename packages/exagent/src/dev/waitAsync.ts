@@ -58,7 +58,11 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
     projectRoot,
   });
 
-  let appsConnected = discovery.targets.length;
+  // @ref llp/0010-agent-conventions.rfc.md §What app counting can and cannot see — friction run 4,
+  // F40. The debugger target list is a list of native runtimes, so under `--platform web` it
+  // answers a question about another platform. Null says so; the count is not reported reworded.
+  const countsApps = options.platform !== 'web';
+  let appsConnected: number | null = countsApps ? discovery.targets.length : null;
   let timedOut = readiness.timedOut;
   const remainingMs = () => Math.max(0, options.timeoutMs - (Date.now() - startedAt));
 
@@ -99,6 +103,7 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
     reportedProjectRoot: readiness.reportedProjectRoot,
     projectRoot,
     appsConnected,
+    appsPlatform: countsApps ? null : options.platform,
     waitedMs: Date.now() - startedAt,
     timedOut,
     requireApp: options.requireApp,
@@ -125,6 +130,8 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
         appsConnected: result.appsConnected,
         timeoutMs: options.timeoutMs,
         bundle: result.bundle,
+        platform: options.platform,
+        devServerUrl: result.devServerUrl,
       })
     : [];
 

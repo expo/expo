@@ -156,6 +156,56 @@ A 500 whose body is *not* an Expo error page stays `unknown` — the conservatis
 decisions above is unchanged, and something else answering on that port has not shown this project
 to be broken.
 
+##### What app counting can and cannot see
+
+Decision [confirmed — Kudo, 2026-08-24]. `--platform web` reports `appsConnected: null` with a
+reason, and `--require-app --platform web` is a `BAD_ARGS` — exit `1`.
+
+The finding [observed — friction run 4, F40]: with only Expo Go on a simulator attached,
+`dev:wait --platform web --require-app` exited **0** with `apps 1 app connected` and a follow-up
+reading "The bundle is loaded in a connected app". No web client existed. The follow-ups also
+dropped `--platform web` and named `runtime:errors`, which reads the *native* runtime over the
+debugger — a different app on a different platform than the one that had just been waited on.
+
+The first instinct was to filter the target list by platform. That is not a smaller version of the
+right fix, it is impossible, and the live check is what settles it [observed — 2026-08-24, notesapp
+on port 8190]: the web bundle was loaded in Safari against the same dev server — Metro logged
+`Web Bundled 220ms node_modules/expo-router/entry.js (1307 modules)` and then
+`Web LOG Running application "main"`, so the client was genuinely running — and `/json/list` stayed
+at exactly **one** target, the iOS one, through 90 s of polling. `/json/list` is the inspector
+proxy's list of React Native runtimes that connected over `/inspector/device`; a browser has no
+such module, so a web client is not an entry with the wrong platform on it, it is not an entry at
+all. There is nothing to filter and no field to filter on.
+
+So the honest answer is the absence of one, and it is reported as an absence in the shape this
+document already uses for `bundle.ok`: `appsConnected: null` with `appsReason` present exactly when
+it is null, and no number in the human line either — a reader who takes one thing from that line
+takes the number, and for web the number is about other platforms.
+
+**`--require-app --platform web` is `1`, not `0` and not `22`.** The three readings, and why this
+one:
+
+- `0` with no count is what the report above already is, and it would let `--require-app` — a flag
+  whose entire purpose is to make the exit code depend on an app being attached — silently not do
+  that. An agent passing it across platforms in a sweep would read the same `0` it reads for iOS
+  and conclude the same thing.
+- `22` says "look again", and no amount of looking makes a browser register a debugger target.
+  Same reasoning as the project-root mismatch of §The second: `dev:wait`.
+- `1` is the band for "the tool did not work: usage error … fix the call", and this is exactly
+  that: a flag combination that cannot be answered, with two spellings that can (drop the flag, or
+  name a native platform), both in the `How:` line. The false red it introduces is a caller who
+  wanted the web bundle checked and passed `--require-app` out of habit; they lose one run and get
+  told what to type.
+
+The follow-ups gain the platform for the same reason. Every `dev:wait` a web run suggests re-running
+carries `--platform web`, and the ready-state rung is the page to open plus `typecheck` — the two
+things that mean something with no runtime to read — rather than `runtime:errors`, which would talk
+to whatever native app happens to be attached.
+
+The limit this leaves, stated plainly rather than papered over: for web, `dev:wait` proves the
+bundler is this project's and the web entry bundle compiles, and it proves nothing whatsoever about
+a page being open. The command now says so in both channels instead of implying otherwise.
+
 ##### One error, one shape, whichever document answered
 
 Decision [confirmed — Kudo, 2026-08-23]. The `error` object is the same shape on both targets:
@@ -290,25 +340,73 @@ replaces in each — is [[0009-smart-followups]] §Where the typecheck rung goes
 first command that uses **both** codes of the band in one run, and the boundary between them is the
 whole design (the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
 
-| Code | The reload                                                        |
-| ---- | ----------------------------------------------------------------- |
-| `0`  | happened, and an app is attached again                            |
-| `20` | did not happen: nothing answered, or nothing acted on it          |
-| `22` | happened, and no app had reconnected when `--timeout` expired     |
-| `1`  | was not attempted: no dev server to reload onto, or a bad argument |
+| Code | The reload                                                                        |
+| ---- | --------------------------------------------------------------------------------- |
+| `0`  | happened, and a debugger target that was not there before has registered          |
+| `20` | did not happen: the entry bundle does not compile, nothing answered, or nothing acted on it |
+| `22` | happened, and no *new* app had registered when `--timeout` expired; or the entry bundle was still building |
+| `1`  | was not attempted: no dev server to reload onto, or a bad argument                |
 
 Three details are decisions rather than transcription:
 
 - **A reload is never assumed.** The broadcast has no reply, so a command that sent one and exited
   0 would be reporting an act it did not observe — the same shape of lie as a bundle check on a
   frozen watcher. `reloaded: true` requires the app's connection to the dev server to have been
-  *replaced*, which the dev server's never-reused socket ids make provable without CDP.
+  *replaced*, which the dev server's never-reused socket ids make provable without CDP. What that
+  proves is that the app **acted**; [[0005-runtime-loop-tools]] §Peer churn proves the app *acted*
+  covers why it does not prove the app came back, and what is waited for instead.
 - **`20` and `22` split on whether anything happened.** Nothing reloaded is a failure with a cause
   to read; reloaded-but-not-back is a wait that ran out, and the next action is to look again, not
   to re-run the reload. Collapsing them would make an agent reload an app that was already fine.
 - **No dev server is `1`, not `20`.** Nothing was attempted, and the operation the code would be
   reporting on never started. A reload with no dev server would also be actively harmful — it makes
   the app re-fetch a bundle from nowhere — so the command refuses rather than reports.
+
+#### The reload gate
+
+Decision [confirmed — Kudo, 2026-08-24]. `runtime:reload` runs the entry-bundle check of §The gate
+has to ask about the _project_ **before** it broadcasts anything, and a bundle that does not
+compile is exit `20` with nothing reloaded.
+
+The finding [observed — friction run 4, F38]: garbage was appended to a route, `dev:wait` exited
+`20` with the `TransformError`, and `runtime:reload` then exited **0** with
+`Reloaded yes · Apps connected 1` and a follow-up reading "The app is running the current code
+now". The app was on the red bundling-error screen. `runtime:errors --fail-on-error` after it
+exited `0` too. Two of the three gates wave 4 added as the recovery chain went green on an app
+frozen at a syntax error, and the third had just said why.
+
+The reasoning is the same one that put the check in `dev:wait`, applied one command further along:
+a reload does not run the code on disk, it makes the app **fetch the served bundle again**. When
+that bundle is the one the bundler stopped on, the reload replaces the red screen with the same red
+screen — so `reloaded: true` is not even wrong about the mechanism, it is just an answer to a
+question nobody asked. The check costs a `HEAD` on a warm dev server (39–48 ms live) and is the one
+thing that makes the command's success mean what a caller reads into it.
+
+Four details:
+
+- **It is before the broadcast, not after it.** Live, the refusal reports `attempts: []` — no
+  `getpeers`, no broadcast, no device tool. A gate that ran afterwards would have already put the
+  app on the broken bundle and would only be choosing what to call it.
+- **`--no-bundle-check` mirrors `dev:wait`'s**, including the reason it exists: reloading onto a
+  bundle you know is broken is a thing someone may mean to do, and a gate with no way past it is a
+  gate people route around.
+- **`unknown` passes and `timeout` is `22`.** Fail-open is unchanged from §The gate has to ask
+  about the _project_ — a dev server that answered nothing this CLI understands has not shown the
+  project to be broken. A check that ran out of budget is the "look again" case, and refusing there
+  is honest for the same reason `dev:wait` is: until the build finishes, nobody knows whether a
+  reload would fetch working code, so the command attempts nothing rather than guessing.
+- **The `bundle` object is the one `dev:wait` prints**, same keys, same `checked`/`ok`/`reason`
+  invariant, produced by the same function. One question asked in two commands must not have two
+  shapes.
+
+Live [observed — 2026-08-24, notesapp on port 8190, app connected]: exit **20** in 48 ms,
+`attempts: []`, `bundle.error` = `{type: "TransformError", filename: "src/app/notes.tsx",
+lineNumber: 77, column: 4}` with the code frame, and the prose naming that a reload would only
+re-fetch the broken bundle.
+
+One consequence worth recording: `appsConnected` on a run that refuses is the count the dev server
+gave, not `0`. A flat zero there would be this command inventing "no app is connected" out of a
+step it deliberately skipped, which is the same class of unverified claim the whole round removes.
 
 ### The sixth and seventh: the stop commands, and what "already done" is worth
 
@@ -329,15 +427,22 @@ The two codes each command does use:
 
 | Command | `20` | `1` |
 | --- | --- | --- |
-| `runtime:stop` | — | the device tool refused |
+| `runtime:stop` | `--app-id` named an app that was not running, and a different one is | the device tool refused |
 | `dev:stop` | it is still running, or it is not this CLI's to stop | a bad argument |
 
 Two details are decisions rather than transcription:
 
-- **A device tool that refused is `1`, not `20`.** `runtime:stop` has no outcome band, because the
-  operation it performs cannot half-succeed: either the app is stopped or the tool would not run
-  it, and a tool that would not run is a tool failure. The message names the id it tried and the
-  evidence that chose it, so the recovery is `--app-id`.
+- **A device tool that refused is `1`, not `20`.** The operation `runtime:stop` performs cannot
+  half-succeed: either the app is stopped or the tool would not run it, and a tool that would not
+  run is a tool failure. The message names the id it tried and the evidence that chose it, so the
+  recovery is `--app-id`.
+
+  `runtime:stop` did also gain one `20` [added — 2026-08-24], and it is the one case where "already
+  in the state that was asked for" is not the whole truth: the state holds for an id nothing was
+  using, while the app the caller can see is untouched. [[0005-runtime-loop-tools]] §An `--app-id`
+  nobody is running has the three conditions and the argument, including why a note on a `0` was
+  rejected — an agent reads the code before it reads a word of the output, so a warning inside a
+  zero is a warning nobody acts on.
 - **A dev server this CLI did not start is `20`, not `1`.** The command worked perfectly and
   declined on purpose; nothing about the invocation was wrong. `1` would tell an agent to fix its
   call, and there is nothing to fix — the recovery is `--force`, or stopping it where it was

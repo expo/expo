@@ -302,6 +302,33 @@ export async function probeDevServerAsync(devServerUrl: string): Promise<DevServ
 }
 
 /**
+ * How long a command may keep asking for a debugger target before it reports that none is there.
+ *
+ * The window an app is invisible in while it reloads [observed — 2026-08-23, live on port 8190:
+ * the pre-reload page id was served until 506 ms and the new one appeared at 761 ms]. During it
+ * `/json/list` can be empty, and a command that read it once reported "no app is connected" for an
+ * app that was on its way back — friction run 4's F39, which made the reload -> errors chain the
+ * CLI prints as a follow-up fail one run in three. Bounded on purpose: an app that is genuinely
+ * closed has to be reported quickly, so this buys the reconnect window and nothing more.
+ */
+export const APP_RECONNECT_GRACE_MS = 3000;
+
+/** How often the target list is re-read while that grace period runs. */
+const APP_RECONNECT_POLL_MS = 250;
+
+export interface RequireConnectedAppOptions {
+  /**
+   * How long to keep asking when the dev server reports no debugger target, in milliseconds.
+   *
+   * Zero — the default — reports the first answer, which is what a command that is not following a
+   * reload wants. {@link APP_RECONNECT_GRACE_MS} is what a command in the reload chain passes.
+   */
+  retryMs?: number;
+  /** Whether the caller named the dev server, with `--dev-server-url` or `--port`. */
+  explicit?: boolean;
+}
+
+/**
  * Resolve the debugger targets of a dev server that has an app connected to it.
  *
  * @throws {CommandError} `NO_DEV_SERVER` when nothing answers, `NO_APP_CONNECTED` when the dev
@@ -309,10 +336,23 @@ export async function probeDevServerAsync(devServerUrl: string): Promise<DevServ
  */
 export async function requireConnectedAppAsync(
   devServerUrl: string,
-  { explicit = false }: { explicit?: boolean } = {}
+  { explicit = false, retryMs = 0 }: RequireConnectedAppOptions = {}
 ): Promise<CdpTarget[]> {
   const url = normalizeDevServerUrl(devServerUrl);
-  const probe = await probeDevServerAsync(url);
+  let probe = await probeDevServerAsync(url);
+
+  // Only an empty list is worth asking again about: an unreachable dev server does not become
+  // reachable by re-reading it within three seconds, and a list with something in it is an answer.
+  if (probe.reachable && probe.targets.length === 0 && retryMs > 0) {
+    const deadline = Date.now() + retryMs;
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, APP_RECONNECT_POLL_MS));
+      probe = await probeDevServerAsync(url);
+      if (!probe.reachable || probe.targets.length > 0) {
+        break;
+      }
+    }
+  }
 
   if (!probe.reachable) {
     const error = new CommandError(
@@ -332,7 +372,7 @@ export async function requireConnectedAppAsync(
       'NO_APP_CONNECTED',
       [
         `The Expo dev server at ${url} is running, but no app is connected to it.`,
-        `Why: its debugger target list (${url}/json/list) is empty, so there is no JavaScript runtime to talk to.`,
+        `Why: its debugger target list (${url}/json/list) is empty${retryMs > 0 ? `, and it was still empty ${retryMs}ms later` : ''}, so there is no JavaScript runtime to talk to.`,
         `How: open the app on a device or simulator (press "i" or "a" in the "npx expo start" terminal), wait for the bundle to finish loading, then run this command again.`,
       ].join('\n')
     );

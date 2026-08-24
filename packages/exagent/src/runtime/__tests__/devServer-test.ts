@@ -121,4 +121,44 @@ describe(requireConnectedAppAsync, () => {
     expect(error.message).toContain('no app is connected');
     expect(error.message).toContain('/json/list');
   });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — friction run 4, F39.
+  // An app that is reloading is briefly invisible, and the command that runs straight after a
+  // reload is the one that reads the list during that window.
+  it(`should wait out the reconnect window before reporting no app`, async () => {
+    let reconnected = false;
+    setTimeout(() => (reconnected = true), 60);
+    mockFetch(async () => ({ ok: true, json: async () => (reconnected ? [TARGET] : []) }));
+
+    await expect(
+      requireConnectedAppAsync('http://127.0.0.1:8081', { retryMs: 2000 })
+    ).resolves.toEqual([TARGET]);
+  });
+
+  it(`should say how long it kept asking when nothing ever attached`, async () => {
+    mockFetch(async () => ({ ok: true, json: async () => [] }));
+
+    const error = await requireConnectedAppAsync('http://127.0.0.1:8081', {
+      retryMs: 300,
+    }).catch((e) => e);
+
+    expect(error.code).toBe('NO_APP_CONNECTED');
+    expect(error.message).toContain('still empty 300ms later');
+  });
+
+  // Retrying an unreachable dev server buys nothing and costs the caller the whole grace period.
+  it(`should not wait for a dev server that does not answer`, async () => {
+    let reads = 0;
+    mockFetch(async () => {
+      reads++;
+      throw new Error('fetch failed');
+    });
+
+    const error = await requireConnectedAppAsync('http://127.0.0.1:8081', {
+      retryMs: 2000,
+    }).catch((e) => e);
+
+    expect(error.code).toBe('NO_DEV_SERVER');
+    expect(reads).toBe(1);
+  });
 });

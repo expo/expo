@@ -401,6 +401,7 @@ describe(devWaitAsync, () => {
       expect(jest.mocked(Log.log)).toHaveBeenCalledTimes(1);
       expect(Object.keys(printedJson()).sort()).toEqual([
         'appsConnected',
+        'appsReason',
         'bundle',
         'devServerUrl',
         'followups',
@@ -412,6 +413,31 @@ describe(devWaitAsync, () => {
         'timedOut',
         'waitedMs',
       ]);
+    });
+
+    // @ref llp/0010-agent-conventions.rfc.md §What app counting can and cannot see — F40.
+    // With Expo Go attached to the same dev server, a web wait used to report `appsConnected: 1`
+    // and "The bundle is loaded in a connected app". The iOS target is real; it is not a web
+    // client, and there is no such thing as a web client in this list.
+    it(`should report no app count for a web wait, and say why`, async () => {
+      mockDiscovery(1);
+
+      await devWaitAsync(projectRoot, options({ json: true, platform: 'web' }));
+
+      expect(printedJson()).toMatchObject({
+        ok: true,
+        appsConnected: null,
+        appsReason: expect.stringContaining('native'),
+      });
+    });
+
+    it(`should keep the same key set for a web wait`, async () => {
+      await devWaitAsync(projectRoot, options({ json: true, platform: 'web' }));
+      const web = Object.keys(printedJson()).sort();
+      jest.mocked(Log.log).mockClear();
+      await devWaitAsync(projectRoot, options({ json: true }));
+
+      expect(web).toEqual(Object.keys(printedJson()).sort());
     });
 
     it(`should report a wait that expired as not ok`, async () => {

@@ -44,6 +44,14 @@ export interface ReloadOptions {
   followups: boolean;
   /** Check `--route` against the project's routes first, cleared by `--no-route-check`. */
   routeCheck: boolean;
+  /**
+   * Build the project's entry bundle before reloading, cleared by `--no-bundle-check`.
+   *
+   * The same gate and the same flag as `dev:wait`, for the same reason: a reload makes the app
+   * fetch the served bundle again, so reloading onto a bundle that does not compile puts the app
+   * back on the screen it was already on (llp/0010 §The reload gate).
+   */
+  bundleCheck: boolean;
 }
 
 const RELOAD_ARGS = {
@@ -61,6 +69,7 @@ const RELOAD_ARGS = {
   '--json': Boolean,
   '--no-followups': Boolean,
   '--no-route-check': Boolean,
+  '--no-bundle-check': Boolean,
 };
 
 /**
@@ -104,5 +113,6 @@ export function resolveReloadOptions(argv: string[]): ReloadOptions {
     json: !!args['--json'],
     followups: !args['--no-followups'],
     routeCheck: !args['--no-route-check'],
+    bundleCheck: !args['--no-bundle-check'],
   };
 }

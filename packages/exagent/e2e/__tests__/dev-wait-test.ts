@@ -323,6 +323,69 @@ describe('exagent dev:wait', () => {
           },
         });
       });
+
+      // @ref llp/0010-agent-conventions.rfc.md §What app counting can and cannot see — F40.
+      // The stub reports an iOS target, exactly as the live dev server did with Expo Go attached
+      // and a browser running the web bundle: the browser is in neither list, because it never
+      // registers a debugger target [observed — 2026-08-24, live].
+      it('reports no app count for web, rather than the native one', async () => {
+        const projectRoot = await setupFixtureAsync('go-app');
+        const server = await startStubAsync({ projectRoot, targets: [{ id: 'ios-1' }] });
+
+        const result = await executeExagentAsync(projectRoot, [
+          'dev:wait',
+          '--platform',
+          'web',
+          '--dev-server-url',
+          server.url,
+          '--json',
+        ]);
+
+        expect(result.exitCode).toBe(0);
+        expect(JSON.parse(result.stdout)).toMatchObject({
+          ok: true,
+          appsConnected: null,
+          appsReason: expect.stringContaining('native'),
+        });
+      });
+
+      it('refuses --require-app for web, and names what to do instead', async () => {
+        const projectRoot = await setupFixtureAsync('go-app');
+
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['dev:wait', '--platform', 'web', '--require-app', '--json'],
+          { reject: false }
+        );
+
+        // A usage error, not an outcome: the flag combination asks for something no dev server
+        // can answer, so there is nothing to report about the project.
+        expect(result.exitCode).toBe(1);
+        const { error } = JSON.parse(result.stdout);
+        expect(error.code).toBe('BAD_ARGS');
+        expect(error.message).toContain('--require-app cannot be answered for --platform web');
+        expect(error.message).toContain('--platform ios');
+      });
+
+      it('keeps --platform web in the follow-ups, and names no native runtime', async () => {
+        const projectRoot = await setupFixtureAsync('go-app');
+        const server = await startStubAsync({
+          projectRoot,
+          targets: [{ id: 'ios-1' }],
+          bundle: 'broken',
+        });
+
+        const result = await executeExagentAsync(
+          projectRoot,
+          ['dev:wait', '--platform', 'web', '--dev-server-url', server.url],
+          { reject: false }
+        );
+
+        expect(result.all).toContain('npx exagent dev:wait --platform web');
+        // `runtime:errors` reads the app through the debugger, which on this dev server is the
+        // iOS runtime — a different app on a different platform than the one that was waited on.
+        expect(result.all).not.toContain('runtime:errors');
+      });
     });
 
     it('builds the bundle for the platform --platform names', async () => {

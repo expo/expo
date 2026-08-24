@@ -36,9 +36,12 @@ import {
   readProjectPackageJsonAsync,
 } from '../../project/nodeModules';
 import { readProjectRoutesAsync } from '../../project/routes';
+import { bundleToJson, type DevWaitBundleJson } from '../../dev/waitFormat';
+import { checkEntryBundleAsync, DEFAULT_BUNDLE_CHECK_PLATFORM } from '../bundleCheck';
 import {
   discoverDevServerAsync,
   howToNameTheDevServer,
+  probeDevServerAsync,
   type DevServerSource,
 } from '../devServer';
 import {
@@ -47,7 +50,7 @@ import {
   type DevServerMessageSocket,
   type MessageSocketPeers,
 } from '../messageSocket';
-import { waitForAppConnectionAsync } from '../waitReady';
+import { waitForFreshAppConnectionAsync } from '../waitReady';
 import { CommandError } from '../../utils/errors';
 import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
 import { readConfiguredAppId, resolveAppId } from '../appId';
@@ -100,6 +103,23 @@ export interface ReloadResultJson {
   devServerSource: DevServerSource;
   /** Debugger targets the dev server reported after the reload: apps with a live JS runtime. */
   appsConnected: number;
+  /**
+   * How many of those targets the dev server had *not* listed before the reload.
+   *
+   * The number success is decided on, and the reason it is reported next to
+   * {@link appsConnected} rather than instead of it. A reloading app's previous target stays in
+   * `/json/list` for about half a second [observed — 2026-08-23, live], so one connected and zero
+   * reconnected is an app that has not come back — which is the false success friction run 4
+   * recorded as F45, and the flake it recorded as F39.
+   */
+  appsReconnected: number;
+  /**
+   * What building this project's entry bundle answered, before anything was reloaded.
+   *
+   * The same object `dev:wait` prints under the same key, because it is the same check
+   * (llp/0010 §The reload gate). `ok: false` is the one answer that stops the command.
+   */
+  bundle: DevWaitBundleJson;
   /** Route the app was sent to afterwards, or null when none was asked for. */
   route: string | null;
   /** Whether that route was checked against the project's routes. */
@@ -159,55 +179,106 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     throw routeNotFoundError(route, routeTable, { platform: options.platform });
   }
 
+  // @ref llp/0010-agent-conventions.rfc.md §The reload gate — friction run 4, F38.
+  // The gate that has to come *before* the broadcast. A reload makes the app fetch the served
+  // bundle again, so reloading onto a bundle that does not compile puts the app back on the red
+  // screen it is already showing — and the old command reported `Reloaded yes` for exactly that.
+  const remainingMs = () => Math.max(0, options.timeoutMs - (Date.now() - startedAt));
+  const bundle = options.bundleCheck
+    ? await checkEntryBundleAsync(devServerUrl, {
+        platform: options.platform ?? DEFAULT_BUNDLE_CHECK_PLATFORM,
+        timeoutMs: remainingMs(),
+        projectRoot,
+      })
+    : null;
+  // `unknown` passes, the way it does for `dev:wait`: a dev server that answered nothing this CLI
+  // understands has not shown the project to be broken, and a refusal there would stop a reload
+  // that would have worked and name no fix.
+  const refusal: 'bundle-broken' | 'bundle-timeout' | null =
+    bundle?.outcome === 'broken'
+      ? 'bundle-broken'
+      : bundle?.outcome === 'timeout'
+        ? 'bundle-timeout'
+        : null;
+
   const attempts: ReloadAttempt[] = [];
   let method: ReloadResultJson['method'] = null;
   let verifiedBy: ReloadResultJson['verifiedBy'] = null;
   let device: NavigateDevice | null = null;
+  let knownTargetIds: string[] = [];
+  // The last count anybody actually read, for the runs where no wait happens. Reporting a flat 0
+  // for a refusal would be this command inventing "no app is connected" out of a step it skipped,
+  // which is the same shape of claim as the ones it exists to remove.
+  let observedApps = devServer.targets.length;
 
-  if (options.method === 'auto' || options.method === 'dev-server') {
-    const attempt = await reloadOverDevServerAsync(devServerUrl);
-    attempts.push(attempt);
-    if (attempt.ok) {
-      method = 'dev-server';
-      verifiedBy = 'message-socket-peers';
+  if (refusal == null) {
+    // Read as late as possible, and always again rather than reusing the discovery probe: these
+    // ids are what "the app came back" is measured against, and anything that reloaded the app in
+    // the meantime — a save the watcher picked up — would otherwise be credited to this command.
+    const before = await probeDevServerAsync(devServerUrl);
+    knownTargetIds = before.targets.map((target) => target.id);
+    observedApps = before.targets.length;
+
+    if (options.method === 'auto' || options.method === 'dev-server') {
+      const attempt = await reloadOverDevServerAsync(devServerUrl);
+      attempts.push(attempt);
+      if (attempt.ok) {
+        method = 'dev-server';
+        verifiedBy = 'message-socket-peers';
+      }
     }
-  }
 
-  // The device method is also what starts an app that is not running at all, so `auto` reaches it
-  // both when the broadcast did nothing and when there was nobody to broadcast to.
-  if (method == null && (options.method === 'auto' || options.method === 'device')) {
-    const attempt = await reloadOnDeviceAsync(projectRoot, options, devServerUrl);
-    attempts.push(attempt.attempt);
-    device = attempt.device;
-    if (attempt.attempt.ok) {
-      method = 'device';
-      verifiedBy = 'app-relaunch';
+    // The device method is also what starts an app that is not running at all, so `auto` reaches
+    // it both when the broadcast did nothing and when there was nobody to broadcast to.
+    if (method == null && (options.method === 'auto' || options.method === 'device')) {
+      const attempt = await reloadOnDeviceAsync(projectRoot, options, devServerUrl);
+      attempts.push(attempt.attempt);
+      device = attempt.device;
+      if (attempt.attempt.ok) {
+        method = 'device';
+        verifiedBy = 'app-relaunch';
+      }
     }
   }
 
   // The app has to come back with a JavaScript runtime the rest of the CLI can read, so the wait
-  // is on the debugger target list rather than on the socket that proved the reload.
-  const connection = method != null
-    ? await waitForAppConnectionAsync(devServerUrl, { timeoutMs: options.timeoutMs })
-    : { appsConnected: 0, timedOut: false, waitedMs: 0 };
+  // is on the debugger target list rather than on the socket that proved the reload — and on a
+  // target the dev server had *not* listed before, because the one it had is the runtime on its way
+  // out. Peer churn proves the app acted on the broadcast; only a new target proves it came back.
+  // The last read this wait makes is the re-read of the target list, so a success is never a peer
+  // count: it is a runtime that was observed after the reload.
+  const connection =
+    method != null
+      ? await waitForFreshAppConnectionAsync(devServerUrl, {
+          timeoutMs: remainingMs(),
+          knownTargetIds,
+        })
+      : { appsConnected: observedApps, freshTargets: 0, timedOut: false, waitedMs: 0 };
 
   // The route is opened after the app is back, not before: Expo Go reloads the URL it was launched
   // with [observed — 2026-08-23: an app deep-linked to `/notes` returns to `/notes` after a
   // reload], so a link sent first would be replaced by the reload rather than survive it.
   const landing =
-    route != null && method != null && connection.appsConnected > 0
+    route != null && method != null && connection.freshTargets > 0
       ? await openRouteAsync(projectRoot, options, devServerUrl, device)
       : null;
   if (landing?.device) {
     device = landing.device;
   }
 
+  // A bundle that does not compile is `20` and a bundle that was still building is `22`, for the
+  // reason llp/0010 gives `dev:wait`: a file with a syntax error in it does not parse on the second
+  // look, and a cold first build really is worth looking at again.
   const exitCode =
-    method == null
+    refusal === 'bundle-broken'
       ? EXIT_OUTCOME_FAILED
-      : connection.appsConnected === 0
+      : refusal === 'bundle-timeout'
         ? EXIT_OUTCOME_TIMEOUT
-        : EXIT_OK;
+        : method == null
+          ? EXIT_OUTCOME_FAILED
+          : connection.freshTargets === 0
+            ? EXIT_OUTCOME_TIMEOUT
+            : EXIT_OK;
 
   const followups =
     followUpsEnabled(wantFollowUps) && exitCode === EXIT_OK
@@ -225,6 +296,8 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     devServerUrl,
     devServerSource: devServer.source,
     appsConnected: connection.appsConnected,
+    appsReconnected: connection.freshTargets,
+    bundle: bundleToJson(bundle),
     route,
     routeCheck,
     url: landing?.url ?? null,
@@ -239,12 +312,14 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     reloaded: report.reloaded,
     method: report.method,
     appsConnected: report.appsConnected,
+    appsReconnected: report.appsReconnected,
     route: report.route,
   });
   cliEvent('runtime_reload', {
     reloaded: report.reloaded,
     method: report.method,
     appsConnected: report.appsConnected,
+    appsReconnected: report.appsReconnected,
   });
 
   if (json) {
@@ -478,8 +553,17 @@ function printHumanReport(report: ReloadResultJson): void {
   }
   lines.push(
     chalk`{bold Dev server} ${report.devServerUrl}{dim  · via ${report.devServerSource}}`,
-    chalk`{bold Apps connected} ${report.appsConnected}`
+    // Both numbers, always: the second is what the reload was judged on, and printing only the
+    // first is what let "Apps connected 1" describe a runtime that was on its way out (F45).
+    chalk`{bold Apps connected} ${report.appsConnected}{dim  · ${report.appsReconnected} reconnected after the reload}`
   );
+  if (report.bundle.ok != null) {
+    lines.push(
+      chalk`{bold Bundle} ${report.bundle.ok ? chalk.green('compiles') : chalk.red('does not compile')}${
+        report.bundle.platform ? chalk`{dim  · for ${report.bundle.platform}}` : ''
+      }`
+    );
+  }
   if (report.route != null) {
     lines.push(chalk`{bold Route} ${report.route}${report.url ? chalk`{dim  · ${report.url}}` : ''}`);
   }
@@ -492,6 +576,30 @@ function printHumanReport(report: ReloadResultJson): void {
 
 /** The what / why / how for a reload that did not end where it was supposed to. */
 function explainFailure(report: ReloadResultJson, options: ReloadOptions): string {
+  // The refusal comes first, because nothing was attempted: an attempts list that is empty for
+  // this reason must not read as "no method worked" (friction run 4, F38).
+  if (report.bundle.ok === false) {
+    const error = report.bundle.error;
+    const where = [error?.filename, error?.lineNumber, error?.column]
+      .filter((part) => part != null)
+      .join(':');
+    return [
+      chalk.red(`This project's entry bundle does not compile, so the app was not reloaded.`),
+      `Why: a reload makes the app fetch the served bundle again, and that bundle is the one the bundler stopped on${where ? ` at ${where}` : ''} — ${error?.message ?? 'the bundler reported an error'}. Reloading would have replaced the screen the app is on with the same failure, and reported success for it.`,
+      `How: fix ${where || 'the file the bundler named'} and run this command again; the dev server rebuilds on save, so no restart is needed. Pass --no-bundle-check to reload without asking, which is only useful when you mean to reload onto a bundle you know is broken.`,
+      ...(error?.snippet ? [error.snippet] : []),
+    ].join('\n');
+  }
+  if (report.bundle.reason != null && report.bundle.ok == null && options.bundleCheck &&
+      report.method == null && report.attempts.length === 0) {
+    return [
+      chalk.red(
+        `The bundler was still building this project's entry bundle after ${options.timeoutMs}ms, so the app was not reloaded.`
+      ),
+      `Why: ${report.bundle.reason}. Until that build finishes it is not known whether a reload would fetch working code, and nothing was attempted rather than reload onto an answer nobody has.`,
+      `How: run this command again with a longer --timeout — a first build of a large app takes tens of seconds — or run "npx exagent dev:wait" first and reload once it is green.`,
+    ].join('\n');
+  }
   if (!report.reloaded) {
     return [
       chalk.red(`The app was not reloaded.`),
@@ -499,11 +607,23 @@ function explainFailure(report: ReloadResultJson, options: ReloadOptions): strin
       `How: open the app on a device or simulator first ("npx exagent navigate /"), then run this command again. A reload needs an app that is already running: it replaces the JavaScript in one, it does not start one.`,
     ].join('\n');
   }
+  // Two shapes of "not back", and they are told apart by what the target list says. An empty list
+  // is an app that went and did not return; a list holding only the runtime that was there before
+  // the reload is an app that never re-registered. Reporting either as a success is F45.
+  if (report.appsConnected === 0) {
+    return [
+      chalk.red(
+        `The app reloaded, but it had not reconnected to the dev server ${options.timeoutMs}ms later.`
+      ),
+      `Why: its debugger target list (${report.devServerUrl}/json/list) was empty, so no app is running this project's JavaScript — the app either closed or is still loading a cold bundle, which can take longer than this wait.`,
+      `How: run "npx exagent dev:wait --require-app" to wait for it, or run this command again with a longer --timeout. If the app is not on screen, "npx exagent navigate /" opens it. Nothing is known to be wrong; the wait ran out first.`,
+    ].join('\n');
+  }
   return [
     chalk.red(
-      `The app reloaded, but it had not reconnected to the dev server ${options.timeoutMs}ms later.`
+      `The app reloaded, but its JavaScript had not registered again ${options.timeoutMs}ms later.`
     ),
-    `Why: its debugger target list (${report.devServerUrl}/json/list) was still empty, so the JavaScript had not finished loading — a cold bundle after a reload can take longer than this wait.`,
-    `How: run "npx exagent dev:wait --require-app" to wait for it, or run this command again with a longer --timeout. Nothing is known to be wrong; the wait ran out first.`,
+    `Why: ${report.devServerUrl}/json/list still names ${report.appsConnected === 1 ? 'the same debugger target' : `only the same ${report.appsConnected} debugger targets`} it named before the reload, and the dev server never reuses a target id — so the runtime that answers now is the one from before, not a reloaded one. Its errors and its state describe the run this reload was meant to replace.`,
+    `How: run this command again with a longer --timeout, or run "npx exagent dev:wait --require-app" and read the app after it. Do not believe "npx exagent runtime:errors" until a reload reports a reconnected app.`,
   ].join('\n');
 }

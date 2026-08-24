@@ -185,6 +185,70 @@ export async function waitForAppConnectionAsync(
   }
 }
 
+export interface WaitForFreshAppConnectionOptions extends WaitForAppConnectionOptions {
+  /**
+   * Debugger target ids the dev server listed *before* the app was reloaded.
+   *
+   * Empty means nothing was attached, in which case every target is new by definition — which is
+   * the `--method device` case where "reload" and "start" are the same act.
+   */
+  knownTargetIds: readonly string[];
+}
+
+export interface FreshAppConnectionResult extends AppConnectionResult {
+  /**
+   * Targets the dev server listed that it had not listed before the reload.
+   *
+   * The only number a reload may be called a success on. `appsConnected` is kept beside it because
+   * the two answer different questions, and their difference is the diagnosis: one connected and
+   * zero fresh is an app that never acted on the broadcast, and zero of both is an app that went.
+   */
+  freshTargets: number;
+}
+
+/**
+ * Wait for a debugger target the dev server had *not* listed before, i.e. for the app's JavaScript
+ * runtime to register again after a reload.
+ *
+ * The difference from {@link waitForAppConnectionAsync} is the whole fix for friction run 4's F39
+ * and F45. A reloading app's old target stays in `/json/list` for about half a second after the
+ * broadcast [observed — 2026-08-23, notesapp on SDK 57 in Expo Go on iOS, port 8190: the target id
+ * went `8a9d…-1` -> `8a9d…-2` at 761 ms, and the pre-reload id was still being served at 506 ms].
+ * A wait that returns on the first non-empty list therefore returns on the *old* runtime, which is
+ * why `runtime:reload` reported `appsConnected: 1` for an app that had quit (F45) and why
+ * `runtime:errors` immediately afterwards could not find a target to talk to (F39).
+ *
+ * Metro's page ids come from a per-device counter, so a re-registered page is a new id rather than
+ * the same one — the same never-reused-id property the message socket's peer churn relies on.
+ */
+export async function waitForFreshAppConnectionAsync(
+  devServerUrl: string,
+  { timeoutMs, intervalMs = 250, knownTargetIds }: WaitForFreshAppConnectionOptions
+): Promise<FreshAppConnectionResult> {
+  const startedAt = Date.now();
+  const deadline = startedAt + timeoutMs;
+  const known = new Set(knownTargetIds);
+  let appsConnected = 0;
+
+  for (;;) {
+    const probe = await probeDevServerAsync(devServerUrl);
+    appsConnected = probe.targets.length;
+    const fresh = probe.targets.filter((target) => !known.has(target.id));
+    if (fresh.length > 0) {
+      return {
+        appsConnected,
+        freshTargets: fresh.length,
+        timedOut: false,
+        waitedMs: Date.now() - startedAt,
+      };
+    }
+    if (Date.now() + intervalMs >= deadline) {
+      return { appsConnected, freshTargets: 0, timedOut: true, waitedMs: Date.now() - startedAt };
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+  }
+}
+
 /** The header value, URI-decoded, or null when the dev server sent none. */
 function decodeProjectRoot(value: string | null): string | null {
   if (value == null) {
