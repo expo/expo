@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` runtime commands (`src/runtime/`, `src/navigate/`, `src/reload/`, `src/project/routes.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
+**Systems:** `exagent` runtime commands (`src/runtime/`, `src/navigate/`, `src/reload/`, `src/project/routes.ts`); `exagent smoke` (`src/smoke/`, `src/device/screenshot.ts`); `@expo/cli` CDP debugging layer and dev-server message socket; `expo-router` link handling; LogBox
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
 **Related:** [[0001-agentic-cli-on-expo-cli]]
@@ -505,6 +505,154 @@ the one sentence, and with an explicit URL it says the URL you named is the one 
 rather than telling you to name one [observed — F41 leftover, `runtime:reload --dev-server-url
 http://127.0.0.1:9999`].
 
+## The smoke gate
+
+Decision [confirmed — Kudo, 2026-08-24]. `exagent smoke` is one command that answers "does this app
+still boot", by asking the questions of six existing commands **in this process** and adding a
+seventh nothing could ask before: a picture of the screen.
+
+The plan this ships from is `plans/cluster-a-runtime-verify.md` §Feature 1, written when none of
+those commands existed. Most of it has since been built as commands of its own, so `smoke` is now a
+thin composite rather than the eight new things the plan described. What it composes, and which
+function each phase calls — never a subprocess of this CLI, which is the design constraint:
+
+| phase | the command whose question it is | the function |
+| --- | --- | --- |
+| `dev-server` | every runtime command | `discoverDevServerAsync` |
+| `bundler-ready` | `dev:wait` | `waitForBundlerReadyAsync` (readiness + `projectRootMatched`) |
+| `bundle` | `dev:wait`, `runtime:reload` | `checkEntryBundleAsync` |
+| `app` | `dev:wait --require-app` | `waitForAppConnectionAsync`, then `openRouteAsync` |
+| `route` | `navigate` | `openRouteAsync` (route-checked) |
+| `runtime` | `runtime:eval` | `CdpClient.evaluateAsync('1')` |
+| `errors` | `runtime:errors` | `CdpRuntimeErrorCollector` |
+| `screenshot` | — | `captureScreenshotAsync` (new) |
+
+**Why one process and not eight.** A `smoke` built out of `exagent` subprocesses would do dev-server
+discovery eight times, and eight discoveries on a machine running two projects can answer eight
+different things. It would also hand back a chain of exit codes where the point of the command is
+that there is one. `src/smoke/phases.ts` is the composition, with every dependency injected — so the
+outcome table, which is the part that can be wrong in a way no type checker sees, is tested against
+fakes with no dev server, no device and no clock.
+
+`navigate`'s act was extracted from its reporting to make this possible (`src/navigate/openRoute.ts`).
+The alternative was for `smoke` to compose the same six steps itself, which would be a second place
+for §Verifying the route, §The root route needs a query marker and the Expo Go decision to be
+forgotten.
+
+### The outcome table, and why there are three
+
+| Code | Outcome | What it means |
+| --- | --- | --- |
+| `0` | `passed` | Every phase that decides answered yes, **and the runtime answered at all** |
+| `20` | `failed` | An error in the window, an entry bundle that does not compile, another project's dev server, a device that refused the link, or no dev server with no `--start` |
+| `22` | `inconclusive` | A wait expired, no app connected and none could be opened, or the runtime cannot be read |
+| `1` | — | The command was wrong: a route the project has not got, a bad flag |
+
+The third row is what llp/0005 §Android pass forces, and it is the reason a two-value gate would be
+a lie. Expo Go for Android acknowledges `Runtime.enable` and reports nothing, so an error window
+from it is empty whatever the app is doing — a gate that passed on an empty window would report
+health it never observed. `runtime` is a phase of its own for exactly this: it asks the runtime to
+evaluate `1`, and a `-32601` there means the window that follows proves nothing. `passed` requires
+that evaluation to have answered.
+
+### What counts as a crash, and the measurement that changed it
+
+Amendment [observed — 2026-08-24, notesapp on SDK 57 in Expo Go, iPhone 17 Pro
+`C159CF99-…`, port 8210]. The plan defined a red screen operationally as "at least one record with
+`source: 'exception'` in the window", and that definition **passes every crash on this runtime**.
+
+Live, with a `setInterval` throwing `Error('WAVE6_SMOKE_BOOM')` every 400 ms, the gate exited `0`
+reporting seventeen `console.error` calls. `Runtime.exceptionThrown` never fired once. React Native
+catches an uncaught throw and reports it through the console path, which §Implemented in v1 as
+already records for the error collector — the collector has both capture sources for exactly this
+reason — and the gate was reading the source rather than the record.
+
+Three cases measured side by side in one window settle what is decidable:
+
+| what the app did | `source` | `message` | the stack |
+| --- | --- | --- | --- |
+| `console.error("some text")` | `console` | `some text` | `console.js`, `backend.js` |
+| `console.error(new Error(x))` | `console` | `Error: x` | the project's own frame |
+| `throw new Error(x)` | `console` | `Error: x` | the project's own frame |
+
+So the difference a gate can act on is not the channel, it is whether the record carries **the
+error's own stack**: React Native reports an Error through the console path as one string holding
+the message *and* its frames, and `splitTextStack` is what lifts them out. `RuntimeErrorRecord`
+gains `isError` for it, and the gate fails on `isError || source === 'exception'` — the second
+disjunct kept because a runtime that does use the exception channel exists, and reading only the
+console path would be the same mistake pointed the other way.
+
+**The limit, stated because it decides behaviour:** a logged `Error` and an uncaught one are the
+same bytes here, so a gate built on this fails on `console.error(new Error(…))` too. That is the
+honest trade — the alternative is a gate that passes a crash — and the record is printed next to
+the verdict, so a reader sees which it was in one look. Live either way: seventeen throws →
+exit `20`, `failing: 17`; eight `console.error` lines of text → exit `0`, `failing: 0, logs: 8`.
+
+### The screenshot primitive
+
+`src/device/screenshot.ts`, and the first thing in this CLI that takes one rather than printing the
+command for one — `src/followups/navigate.ts` has suggested `xcrun simctl io <id> screenshot` since
+the first runtime round and nothing ever ran it.
+
+`buildScreenshotCommand` is pure, for the reason `buildOpenUrlCommand` is: the argv is the whole of
+what the module decides and a wrong one fails only on a machine with a device attached. The two
+platforms differ in one way that shapes the module: `simctl` is *given* the path and writes the
+file, while `adb exec-out screencap -p` writes the PNG to **stdout** and the caller has to redirect
+it — into a file descriptor, never through a string, because a PNG does not survive a JavaScript
+string round trip. `exec-out` rather than `shell` for the same reason: `adb shell` runs through a
+pty that rewrites `\n` as `\r\n` and corrupts every image it carries.
+
+**Success is not read from the exit code.** `adb exec-out` answers a device that is not ready by
+writing a sentence to stdout and exiting `0`, which leaves a file that exists, is not empty, and is
+not a picture — so the first eight bytes are checked against the PNG signature instead. That is the
+difference between "the command ran" and "there is a screenshot".
+
+It **degrades and never decides**. A machine with no simulator reports `screenshot.ok: false` with
+a reason and the run answers the rest of the question anyway: a screenshot is evidence attached to
+an answer, and a run that established the app does not throw has established that with or without
+one. The picture is of the *screen*, not of the app, which is said out loud in `--help` because it
+is the limit a reader would otherwise assume away.
+
+### Two more things the live round changed
+
+Both were found on the first `--start` run and neither was visible in any test [observed —
+2026-08-24].
+
+- **`--start` must not name a platform.** The first version ran `exagent dev --yes --detach
+  --wait-ready --ios`, and `expo start --ios` drives Simulator.app through AppleScript. On a Mac
+  that has granted no Automation permission the Expo CLI does not catch the refusal and the dev
+  server exits with it — llp/0010 §A failed plan step reports a failure, and the upstream ask
+  beside it. The run watched exactly that: the first three phases answered against a dev server
+  that was already dying, and the fourth found nothing. The recovery llp/0004 records is the one
+  this command performs anyway — start the dev server without opening anything, then open the app
+  with `navigate`, which needs no Automation grant. `START_DEV_SERVER_ARGV` is pinned by a test,
+  because an absence is invisible in a diff.
+- **One dev server for the whole run.** `navigate` discovers its own, so a run that had settled on
+  one in phase 1 went looking again in phase 4 and found nothing: `Cannot build an Expo Go URL
+  because the dev server URL is unknown`, exit `1`, from a run whose first three phases had all
+  answered. The URL the first phase settled on is threaded into every phase after it. A gate whose
+  phases talk to two dev servers is a gate whose phases are about two different things.
+
+`--start` also carries `--port` through when the caller named a loopback one: a caller that passed
+`--port 8210` named the dev server it means, and starting on 8081 would answer a question about a
+different port than the one it was asked about.
+
+### Live evidence
+
+[observed — 2026-08-24, notesapp SDK 57, Expo Go, iPhone 17 Pro `C159CF99-…`]
+
+| Case | Result |
+| --- | --- |
+| Healthy app, dev server on 8210 | exit `0`, eight phases `ok`/`skipped`, 3.4 s warm, 401 829-byte PNG of the root route |
+| `--route /notes` | exit `0`, `routeCheck.ok: true`, screenshot on the Notes tab |
+| Syntax error appended to `src/app/notes.tsx` | exit `20` at `bundle`, `src/app/notes.tsx:78:2`, `app` onwards `skipped`, nothing photographed |
+| `setInterval` throwing every 400 ms | exit `20` at `errors`, `failing: 7`, screenshot still taken |
+| `console.error` of plain text every 400 ms | exit `0`, `failing: 0, logs: 8` |
+| App stopped on the device, dev server up, no `--start` | exit `0` — the gate opened the app itself (`exp://…/--/?`) and read it |
+| Dev server stopped, no `--start` | exit `20` at `dev-server`, follow-ups naming `dev --detach` and `smoke --start` |
+| `--start` from nothing | exit `0` in 11.4 s, `started: true`, dev server on 8081, app opened, PNG taken |
+| `--start --port 8210 --route /notes` | exit `0` in 11.3 s, dev server on **8210**, `source: flag`, screenshot on `/notes` |
+
 ## Testing
 
 Each tool: schema unit tests + tier-0 e2e coverage against a fixture app on a simulator ([[0002-testing-and-evals]]; scripted MCP replay is optional/deferred there). The composite loops are tier-1/2 eval scenarios.
@@ -538,6 +686,28 @@ the `--force` proof, each refused on its own.
 
 The header of `--json` is asserted as an exact key set at both tiers for every command, per
 llp/0006 §Output contract. Counts as of this change: 1741 unit (from 1588), 304 e2e (from 280).
+
+### `smoke` splits by what a process can show
+
+[added — 2026-08-24] The gate's **outcome table** is the unit tests', because it is a pure function
+of eight answers over injected fakes and pinning it needs no processes at all — every phase is a
+function already tested where it lives. What the e2e tier owns is the process boundary: that the
+three codes leave the process, that `--json` is one parseable object whatever happened, that a
+bogus route reaches the device tool **zero** times, and the one thing no mock can show — that a PNG
+written to a real pipe by a stub `adb exec-out` arrives on disk as the same bytes, `\r\n` and all.
+
+Two fixture honesty problems fell out of building it, and both are the kind that make a test pass
+for the wrong reason:
+
+- The unit fixture for a failing window used `source: 'exception'`, which is a fixture of a runtime
+  this command never talks to (§What counts as a crash). It is `source: 'console'` with the error's
+  own stack now, which is what React Native sends.
+- One e2e test cleared the stub bins by inheriting the machine's `PATH`, so a real `xcrun` found
+  the developer's own booted simulator and the assertion that no screenshot was taken failed —
+  correctly. `PATH` is an empty directory there now: a test of the machine is not a test of the
+  code.
+
+Counts as of this change: 2055 unit (from 1882), 363 e2e (from 341).
 
 ### The fixtures had to start reloading
 
