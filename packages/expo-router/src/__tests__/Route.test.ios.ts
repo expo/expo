@@ -1,5 +1,10 @@
 import type { RouteNode } from '../Route';
-import { sortRoutes } from '../Route';
+import {
+  findRouteNodeByName,
+  getValidInitialRouteName,
+  sortRoutes,
+  sortRoutesWithInitial,
+} from '../Route';
 import { generateDynamic } from '../getRoutes';
 
 const asRouteNode = (route: string): RouteNode => {
@@ -86,5 +91,65 @@ describe(sortRoutes, () => {
     expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('index'))).toBe(1);
     expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('a'))).toBe(1);
     expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('(a)'))).toBe(1);
+  });
+});
+
+describe(getValidInitialRouteName, () => {
+  it('returns the registered route name for a valid setting', () => {
+    const node = asRouteNode('_layout');
+    node.initialRouteName = 'a';
+    node.children = [asRouteNode('a')];
+
+    expect(getValidInitialRouteName(node)).toBe('a');
+  });
+
+  it('resolves a directory setting to its registered index route', () => {
+    const node = asRouteNode('_layout');
+    node.initialRouteName = 'a';
+    node.children = [asRouteNode('a/index')];
+
+    expect(getValidInitialRouteName(node)).toBe('a/index');
+  });
+
+  it('sorts a resolved directory setting before other routes', () => {
+    const node = asRouteNode('_layout');
+    node.initialRouteName = 'a';
+    node.children = [asRouteNode('b'), asRouteNode('a/index')];
+
+    expect(
+      node.children
+        .sort(sortRoutesWithInitial(getValidInitialRouteName(node)))
+        .map(({ route }) => route)
+    ).toEqual(['a/index', 'b']);
+  });
+
+  it('throws for a missing route', () => {
+    const node = asRouteNode('_layout');
+    node.initialRouteName = 'missing';
+    node.contextKey = './app/(tabs)/_layout.tsx';
+    node.children = [asRouteNode('index'), asRouteNode('settings/index')];
+
+    expect(() => getValidInitialRouteName(node)).toThrow(
+      'The initial route name "missing" was not found in the layout at "./app/(tabs)/_layout.tsx". Available routes are: "index", "settings/index". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+    );
+  });
+
+  it('returns undefined without a route node', () => {
+    expect(getValidInitialRouteName(null)).toBeUndefined();
+  });
+});
+
+describe(findRouteNodeByName, () => {
+  it.each([
+    ['settings', 'settings'],
+    ['settings/index', 'settings'],
+  ])('matches the registered route %s by the name %s', (route, name) => {
+    expect(findRouteNodeByName([asRouteNode('index'), asRouteNode(route)], name)?.route).toBe(
+      route
+    );
+  });
+
+  it('does not match a nested route with the same prefix', () => {
+    expect(findRouteNodeByName([asRouteNode('settings/profile')], 'settings')).toBeUndefined();
   });
 });

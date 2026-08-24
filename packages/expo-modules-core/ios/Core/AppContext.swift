@@ -726,9 +726,9 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   public static func modulesProvider(withName providerName: String = "ExpoModulesProvider") -> ModulesProvider {
     // [0] When ExpoModulesCore is built as separated framework/module,
     // we should explicitly load main bundle's `ExpoModulesProvider` class.
-    // CFBundleExecutable is tried first: it equals $(PRODUCT_NAME:c99extidentifier) and
-    // directly matches the Swift module name. CFBundleName is kept as a fallback for the
-    // uncommon case where both values are identical valid identifiers.
+    // CFBundleExecutable is tried first: it is the product name, from which the Swift module
+    // name is derived. CFBundleName is kept as a fallback for the uncommon case where both
+    // values are identical valid identifiers.
     let mainBundleNames = [
       Bundle.main.infoDictionary?["CFBundleExecutable"],
       Bundle.main.infoDictionary?["CFBundleName"]
@@ -765,10 +765,25 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   internal static func moduleProviderClassNames(withName providerName: String, bundleNames: [String]) -> [String] {
     var seen = Set<String>()
-    return bundleNames.compactMap { bundleName in
+    return bundleNames.flatMap { [$0, c99ExtendedIdentifier($0)] }.compactMap { bundleName in
       let candidate = "\(bundleName).\(providerName)"
       return seen.insert(candidate).inserted ? candidate : nil
     }
+  }
+
+  /**
+   Applies the same substitution as Xcode's `:c99extidentifier` string operator, which derives the
+   default `PRODUCT_MODULE_NAME` (and thus the Swift module name) from `PRODUCT_NAME`. The bundle
+   names above are the raw product name, so the two differ whenever the product name is not a valid
+   C99 identifier — most commonly when the app's `name` starts with a digit, where a product name of
+   `123myapp` compiles into the Swift module `_23myapp`.
+   */
+  internal static func c99ExtendedIdentifier(_ name: String) -> String {
+    var characters = name.map { $0.isLetter || $0.isNumber || $0 == "_" ? $0 : "_" }
+    if let first = characters.first, first.isNumber {
+      characters[0] = "_"
+    }
+    return String(characters)
   }
 
   public func reloadAppAsync(_ reason: String = "Reload from appContext") {

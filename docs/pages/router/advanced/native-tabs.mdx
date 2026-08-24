@@ -1479,6 +1479,16 @@ If you need a specific background color that doesn't match the default themes, y
 
 </Collapsible>
 
+<Collapsible summary="The tab bar background props have no effect on iOS 26">
+
+On iOS 26 and later, the system draws the tab bar with Liquid Glass and derives its background from the content behind it. The `backgroundColor`, `blurEffect`, `shadowColor`, and `disableTransparentOnScrollEdge` props affect the iOS tab bar only on iOS 18 and earlier.
+
+This also means the tab bar does not follow a color scheme that exists only in JavaScript. Setting the color scheme with [`Appearance.setColorScheme`](https://reactnative.dev/docs/appearance#setcolorscheme) changes the interface style that other native views resolve against, but it does not change the tab bar background either.
+
+To make the tab bar match a dark UI on iOS 26, make the content behind the tab bar dark, as described in [White background flashes when switching tabs on iOS 26](#white-background-flashes-when-switching-tabs-on).
+
+</Collapsible>
+
 <Collapsible summary="Scroll to top does not work when tapping a tab">
 
 Tapping an active tab should scroll the content to the top, but this may not work if the `ScrollView` is not the first child of the screen component.

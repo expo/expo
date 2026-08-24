@@ -3,7 +3,6 @@ import * as React from 'react';
 import { use, useEffect } from 'react';
 
 import { CommonActions, type ParamListBase, StackActions, StackRouter } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { type PreventedRoutes, PreventRemoveContext } from '../PreventRemoveContext';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
@@ -11,6 +10,7 @@ import { useNavigationBuilder } from '../useNavigationBuilder';
 import { getPreventableRoutes } from '../useOnPreventRemove';
 import { usePreventRemove } from '../usePreventRemove';
 import { usePreventRemoveContext } from '../usePreventRemoveContext';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouterKey } from './__fixtures__/MockRouter';
 
 jest.mock('nanoid/non-secure', () => {
@@ -268,11 +268,11 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
     type: 'stack',
@@ -283,12 +283,12 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-7', name: 'baz' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
+      { key: 'baz-7', name: 'baz', params: undefined, path: undefined },
     ],
     stale: false,
     type: 'stack',
@@ -301,10 +301,10 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       { key: 'baz-7', name: 'baz' },
     ],
@@ -319,9 +319,9 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(3);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
     type: 'stack',
   });
@@ -422,11 +422,11 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
     type: 'stack',
@@ -437,12 +437,12 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
-      { key: 'baz-9', name: 'baz' },
+      { key: 'baz-9', name: 'baz', params: undefined, path: undefined },
     ],
     stale: false,
     type: 'stack',
@@ -455,10 +455,10 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       { key: 'baz-9', name: 'baz' },
     ],
@@ -473,9 +473,9 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
   expect(onStateChange).toHaveBeenCalledTimes(3);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
     type: 'stack',
   });
@@ -523,11 +523,11 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
     type: 'stack',
@@ -538,12 +538,12 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
-      { key: 'baz-7', name: 'baz' },
+      { key: 'baz-7', name: 'baz', params: undefined, path: undefined },
     ],
     stale: false,
     type: 'stack',
@@ -555,9 +555,9 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
 
   expect(ref.current?.getRootState()).toEqual({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
     type: 'stack',
   });
@@ -568,9 +568,9 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
   expect(onStateChange).toHaveBeenCalledTimes(5);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
     type: 'stack',
   });
@@ -630,11 +630,11 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
     type: 'stack',
@@ -645,21 +645,22 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       {
         key: 'baz-6',
         name: 'baz',
+        params: undefined,
+        path: undefined,
         state: {
           index: 0,
-          key: 'stack-8',
+          key: 'navigator-9',
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-9', name: 'qux' }],
+          routes: [{ key: 'qux-8', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
@@ -674,21 +675,20 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       {
         key: 'baz-6',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: 'navigator-9',
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-9', name: 'qux' }],
+          routes: [{ key: 'qux-8', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
@@ -701,21 +701,20 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       {
         key: 'baz-6',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: 'navigator-9',
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-9', name: 'qux' }],
+          routes: [{ key: 'qux-8', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
@@ -731,9 +730,9 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
   expect(onStateChange).toHaveBeenCalledTimes(4);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
     type: 'stack',
   });
@@ -797,11 +796,11 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
     type: 'stack',
@@ -812,34 +811,34 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
       {
         key: 'baz-6',
         name: 'baz',
+        params: undefined,
+        path: undefined,
         state: {
           index: 0,
-          key: 'stack-8',
+          key: 'navigator-9',
           routeNames: ['qux'],
           routes: [
             {
-              key: 'qux-9',
+              key: 'qux-8',
               name: 'qux',
               state: {
                 index: 0,
-                key: 'stack-12',
+                key: 'navigator-13',
                 routeNames: ['lex'],
-                routes: [{ key: 'lex-13', name: 'lex' }],
+                routes: [{ key: 'lex-12', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
@@ -854,34 +853,32 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       {
         key: 'baz-6',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: 'navigator-9',
           routeNames: ['qux'],
           routes: [
             {
-              key: 'qux-9',
+              key: 'qux-8',
               name: 'qux',
               state: {
                 index: 0,
-                key: 'stack-12',
+                key: 'navigator-13',
                 routeNames: ['lex'],
-                routes: [{ key: 'lex-13', name: 'lex' }],
+                routes: [{ key: 'lex-12', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
@@ -897,9 +894,9 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
   expect(onStateChange).toHaveBeenCalledTimes(4);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
     type: 'stack',
   });
@@ -972,35 +969,35 @@ test("prevents removing by multiple screens with 'usePreventRemove' hook", () =>
 
   const preventedState = {
     index: 3,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz', 'bax'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
-      { key: 'baz-6', name: 'baz' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
+      { key: 'baz-6', name: 'baz', params: undefined, path: undefined },
       {
         key: 'bax-7',
         name: 'bax',
+        params: undefined,
+        path: undefined,
         state: {
           index: 0,
-          key: 'stack-11',
+          key: 'navigator-12',
           routeNames: ['qux'],
           routes: [
             {
-              key: 'qux-12',
+              key: 'qux-11',
               name: 'qux',
               state: {
                 index: 0,
-                key: 'stack-15',
+                key: 'navigator-16',
                 routeNames: ['lex'],
-                routes: [{ key: 'lex-16', name: 'lex' }],
+                routes: [{ key: 'lex-15', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
@@ -1049,9 +1046,9 @@ test("prevents removing by multiple screens with 'usePreventRemove' hook", () =>
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz', 'bax'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
     type: 'stack',
   });
@@ -1108,20 +1105,21 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       {
         key: 'baz-5',
         name: 'baz',
+        params: undefined,
+        path: undefined,
         state: {
           index: 0,
-          key: 'stack-7',
+          key: 'navigator-8',
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-8', name: 'qux' }],
+          routes: [{ key: 'qux-7', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
@@ -1132,11 +1130,10 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
   act(() =>
     ref.current?.resetRoot({
       index: 0,
-      key: 'stack-2',
+      key: 'navigator-3',
       routeNames: ['foo', 'bar', 'baz'],
-      routes: [{ key: 'foo-3', name: 'foo' }],
+      routes: [{ key: 'foo-2', name: 'foo' }],
       stale: false,
-      type: 'stack',
     })
   );
 
@@ -1144,20 +1141,19 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
 
   expect(ref.current?.getRootState()).toEqual({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       {
         key: 'baz-5',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-7',
+          key: 'navigator-8',
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-8', name: 'qux' }],
+          routes: [{ key: 'qux-7', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],

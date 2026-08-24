@@ -84,12 +84,21 @@ class AudioModule : Module() {
   }
 
   private var audioFocusRequest: AudioFocusRequest? = null
+  private var focusRequestRegistered = false
+  private var registeredAudioFocusGain: Int? = null
+  private var shouldRefreshFocusOnGain = false
   private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
     appContext.mainQueue.launch {
+      if (!focusRequestRegistered) {
+        return@launch
+      }
       when (focusChange) {
         AudioManager.AUDIOFOCUS_LOSS -> {
-          focusAcquired = false
-          allPlayables.forEach { it.pause() }
+          releaseAudioFocus()
+          allPlayables.forEach { playable ->
+            playable.isPaused = false
+            playable.pause()
+          }
         }
 
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
@@ -105,12 +114,10 @@ class AudioModule : Module() {
         AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
           if (interruptionMode == InterruptionMode.DUCK_OTHERS) {
             allPlayables.forEach { playable ->
-              if (playable.previousVolume != playable.volume) {
-                playable.previousVolume = playable.volume
-              }
-              playable.setVolume(playable.previousVolume * 0.5f)
+              playable.setVolume(playable.previousVolume * 0.5f, rememberVolume = false)
             }
           } else {
+            focusAcquired = false
             allPlayables.forEach { playable ->
               if (playable.isPlaying) {
                 playable.isPaused = true
@@ -123,7 +130,42 @@ class AudioModule : Module() {
         AudioManager.AUDIOFOCUS_GAIN -> {
           focusAcquired = true
 
-          if (!shouldPlayInSilentMode()) {
+          if (shouldRefreshFocusOnGain) {
+            val playablesToResume = allPlayables.filter { it.shouldResumeAfterFocus() }.toList()
+            shouldRefreshFocusOnGain = false
+            releaseAudioFocus()
+            allPlayables.forEach { playable ->
+              playable.setVolume(playable.previousVolume)
+            }
+
+            if (playablesToResume.isEmpty()) {
+              return@launch
+            }
+
+            if (!audioEnabled || !shouldPlayInSilentMode()) {
+              playablesToResume.forEach { playable ->
+                playable.isPaused = false
+                playable.pause()
+              }
+              return@launch
+            }
+
+            when (requestAudioFocus()) {
+              AudioFocusResult.GRANTED,
+              AudioFocusResult.NOT_REQUESTED -> resumeInterruptedPlayables(playablesToResume)
+              AudioFocusResult.DELAYED -> playablesToResume.forEach { playable ->
+                playable.isPaused = true
+                playable.pause()
+              }
+              AudioFocusResult.FAILED -> playablesToResume.forEach { playable ->
+                playable.isPaused = false
+                playable.pause()
+              }
+            }
+            return@launch
+          }
+
+          if (!audioEnabled || !shouldPlayInSilentMode()) {
             return@launch
           }
 
@@ -140,7 +182,17 @@ class AudioModule : Module() {
   }
 
   private fun shouldReleaseFocus(): Boolean {
-    return allPlayables.none { it.isPlaying }
+    return focusAcquired && allPlayables.none { it.isPlaying }
+  }
+
+  private fun Playable.hasActivePlaybackIntent(): Boolean {
+    return player.playWhenReady &&
+      player.playerError == null &&
+      (player.playbackState == Player.STATE_BUFFERING || player.playbackState == Player.STATE_READY)
+  }
+
+  private fun Playable.shouldResumeAfterFocus(): Boolean {
+    return isPaused || hasActivePlaybackIntent()
   }
 
   private fun shouldPlayInSilentMode(): Boolean {
@@ -149,22 +201,22 @@ class AudioModule : Module() {
 
   private enum class AudioFocusResult { GRANTED, DELAYED, FAILED, NOT_REQUESTED }
 
+  private fun audioFocusGainForMode(mode: InterruptionMode?): Int? = when (mode) {
+    null -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+    else -> mode.toAudioFocusGain()
+  }
+
   private fun requestAudioFocus(): AudioFocusResult {
     if (focusAcquired) {
       return AudioFocusResult.GRANTED
     }
-    if (!audioEnabled || interruptionMode == InterruptionMode.MIX_WITH_OTHERS) {
+    if (!audioEnabled) {
       return AudioFocusResult.NOT_REQUESTED
     }
 
+    val requestType = audioFocusGainForMode(interruptionMode) ?: return AudioFocusResult.NOT_REQUESTED
+
     val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      val requestType = interruptionMode?.let {
-        if (it == InterruptionMode.DO_NOT_MIX) {
-          AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
-        } else {
-          AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
-        }
-      } ?: AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
       audioFocusRequest = AudioFocusRequest.Builder(requestType).run {
         setAudioAttributes(
           AudioAttributes.Builder()
@@ -180,21 +232,25 @@ class AudioModule : Module() {
       } ?: AudioManager.AUDIOFOCUS_REQUEST_FAILED
     } else {
       @Suppress("DEPRECATION")
-      val requestType = if (interruptionMode == InterruptionMode.DO_NOT_MIX) {
-        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
-      } else {
-        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
-      }
       audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, requestType)
     }
 
     return when (result) {
       AudioManager.AUDIOFOCUS_REQUEST_GRANTED -> {
+        shouldRefreshFocusOnGain = false
+        focusRequestRegistered = true
+        registeredAudioFocusGain = requestType
         focusAcquired = true
         AudioFocusResult.GRANTED
       }
       // The system can grant focus later through the listener, so this is not a failure.
-      AudioManager.AUDIOFOCUS_REQUEST_DELAYED -> AudioFocusResult.DELAYED
+      AudioManager.AUDIOFOCUS_REQUEST_DELAYED -> {
+        shouldRefreshFocusOnGain = false
+        focusRequestRegistered = true
+        registeredAudioFocusGain = requestType
+        focusAcquired = false
+        AudioFocusResult.DELAYED
+      }
       else -> {
         appContext.jsLogger?.warn(
           "expo-audio couldn't acquire audio focus, so playback won't start. On Android an app can't " +
@@ -207,19 +263,85 @@ class AudioModule : Module() {
   }
 
   private fun releaseAudioFocus() {
-    if (!focusAcquired) {
-      return
-    }
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       audioFocusRequest?.let {
         audioManager.abandonAudioFocusRequest(it)
       }
+      audioFocusRequest = null
     } else {
-      @Suppress("DEPRECATION")
-      audioManager.abandonAudioFocus(audioFocusChangeListener)
+      if (focusRequestRegistered) {
+        @Suppress("DEPRECATION")
+        audioManager.abandonAudioFocus(audioFocusChangeListener)
+      }
     }
+    focusRequestRegistered = false
+    registeredAudioFocusGain = null
+    shouldRefreshFocusOnGain = false
     focusAcquired = false
+  }
+
+  private fun releasePendingAudioFocusIfUnused() {
+    if (focusRequestRegistered && !focusAcquired && allPlayables.none { it.shouldResumeAfterFocus() }) {
+      releaseAudioFocus()
+    }
+  }
+
+  private fun updateAudioFocusForModeChange(previousMode: InterruptionMode?) {
+    if (audioFocusGainForMode(previousMode) == audioFocusGainForMode(interruptionMode)) {
+      return
+    }
+
+    runOnMain {
+      if (focusRequestRegistered && !focusAcquired) {
+        val hasPlaybackIntent = allPlayables.any { it.shouldResumeAfterFocus() }
+        if (!hasPlaybackIntent) {
+          releaseAudioFocus()
+          return@runOnMain
+        }
+        shouldRefreshFocusOnGain = registeredAudioFocusGain != audioFocusGainForMode(interruptionMode)
+        return@runOnMain
+      }
+
+      val playablesWithPlaybackIntent = allPlayables.filter { it.hasActivePlaybackIntent() }.toList()
+      if (playablesWithPlaybackIntent.isEmpty() && !focusAcquired) {
+        return@runOnMain
+      }
+      releaseAudioFocus()
+
+      if (playablesWithPlaybackIntent.isNotEmpty()) {
+        val focusResult = requestAudioFocus()
+        allPlayables.forEach { playable ->
+          playable.setVolume(playable.previousVolume)
+        }
+        when (focusResult) {
+          AudioFocusResult.GRANTED,
+          AudioFocusResult.NOT_REQUESTED -> Unit
+          AudioFocusResult.DELAYED -> {
+            playablesWithPlaybackIntent.forEach { playable ->
+              playable.isPaused = true
+              playable.pause()
+            }
+          }
+          AudioFocusResult.FAILED -> {
+            playablesWithPlaybackIntent.forEach { playable ->
+              playable.isPaused = false
+              playable.pause()
+            }
+          }
+        }
+      }
+    }
+  }
+
+  private fun resumeInterruptedPlayables(playables: List<Playable>) {
+    val canResume = audioEnabled && shouldPlayInSilentMode()
+    playables.forEach { playable ->
+      playable.setVolume(playable.previousVolume)
+      playable.isPaused = false
+      if (canResume) {
+        playable.play()
+      }
+    }
   }
 
   @OptIn(DelicateCoroutinesApi::class)
@@ -232,8 +354,9 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
+      val previousInterruptionMode = interruptionMode
       shouldPlayInBackground = mode.shouldPlayInBackground
-      interruptionMode = mode.interruptionMode
+      interruptionMode = mode.interruptionMode ?: previousInterruptionMode
       playsInSilentMode = mode.playsInSilentMode
       updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
       allowsBackgroundRecording = mode.allowsBackgroundRecording
@@ -256,14 +379,17 @@ class AudioModule : Module() {
           }
         }
       }
+
+      updateAudioFocusForModeChange(previousInterruptionMode)
     }
 
     AsyncFunction("setIsAudioActiveAsync") { enabled: Boolean ->
       audioEnabled = enabled
       if (!enabled) {
-        releaseAudioFocus()
         runOnMain {
+          releaseAudioFocus()
           allPlayables.forEach {
+            it.isPaused = false
             if (it.isPlaying) {
               it.pause()
             }
@@ -331,14 +457,13 @@ class AudioModule : Module() {
           return@OnActivityEntersForeground
         }
 
-        if (allPlayables.any { it.isPaused }) {
-          requestAudioFocus()
-        }
-
-        allPlayables.forEach { playable ->
-          if (playable.isPaused) {
-            playable.isPaused = false
-            playable.play()
+        val interruptedPlayables = allPlayables.filter { it.isPaused }.toList()
+        if (interruptedPlayables.isNotEmpty()) {
+          when (requestAudioFocus()) {
+            AudioFocusResult.GRANTED,
+            AudioFocusResult.NOT_REQUESTED -> resumeInterruptedPlayables(interruptedPlayables)
+            AudioFocusResult.DELAYED -> Unit
+            AudioFocusResult.FAILED -> interruptedPlayables.forEach { it.isPaused = false }
           }
         }
       }
@@ -374,7 +499,7 @@ class AudioModule : Module() {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double ->
+      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double, /* allowsExternalPlayback - iOS only */ _: Boolean? ->
         val mediaSource = createMediaItem(source)
         val bufferDurationMs = (preferredForwardBufferDuration * 1000).toLong()
         runOnMain {
@@ -386,8 +511,12 @@ class AudioModule : Module() {
             bufferDurationMs
           )
           player.onPlaybackStateChange = { isPlaying ->
-            if (!isPlaying && shouldReleaseFocus()) {
-              releaseAudioFocus()
+            if (!isPlaying) {
+              if (shouldReleaseFocus()) {
+                releaseAudioFocus()
+              } else {
+                releasePendingAudioFocusIfUnused()
+              }
             }
           }
           players[player.id] = player
@@ -505,7 +634,9 @@ class AudioModule : Module() {
 
       Function("pause") { player: AudioPlayer ->
         runOnMain {
+          player.isPaused = false
           player.ref.pause()
+          releasePendingAudioFocusIfUnused()
         }
       }
 
@@ -514,6 +645,8 @@ class AudioModule : Module() {
           if (player.ref.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
             if (source == null) {
               player.clearMediaSource()
+              player.isPaused = false
+              releasePendingAudioFocusIfUnused()
               return@runOnMain
             }
             val mediaSource = createMediaItem(source)
@@ -569,7 +702,10 @@ class AudioModule : Module() {
       }
 
       Function("remove") { player: AudioPlayer ->
-        players.remove(player.id)
+        runOnMain {
+          players.remove(player.id)
+          releasePendingAudioFocusIfUnused()
+        }
       }
     }
 
@@ -741,8 +877,12 @@ class AudioModule : Module() {
           }
           playlist.loadInitialPlaylist()
           playlist.onPlaybackStateChange = { isPlaying ->
-            if (!isPlaying && shouldReleaseFocus()) {
-              releaseAudioFocus()
+            if (!isPlaying) {
+              if (shouldReleaseFocus()) {
+                releaseAudioFocus()
+              } else {
+                releasePendingAudioFocusIfUnused()
+              }
             }
           }
           playlists[playlist.id] = playlist
@@ -858,7 +998,9 @@ class AudioModule : Module() {
 
       Function("pause") { playlist: AudioPlaylist ->
         runOnMain {
+          playlist.isPaused = false
           playlist.ref.pause()
+          releasePendingAudioFocusIfUnused()
         }
       }
 
@@ -899,12 +1041,18 @@ class AudioModule : Module() {
       Function("remove") { playlist: AudioPlaylist, index: Int ->
         runOnMain {
           playlist.remove(index)
+          if (playlist.trackCount == 0) {
+            playlist.isPaused = false
+            releasePendingAudioFocusIfUnused()
+          }
         }
       }
 
       Function("clear") { playlist: AudioPlaylist ->
         runOnMain {
           playlist.clear()
+          playlist.isPaused = false
+          releasePendingAudioFocusIfUnused()
         }
       }
 
@@ -929,8 +1077,9 @@ class AudioModule : Module() {
       Function("destroy") { playlist: AudioPlaylist ->
         runOnMain {
           playlist.clearLockScreenControls()
+          playlists.remove(playlist.id)
+          releasePendingAudioFocusIfUnused()
         }
-        playlists.remove(playlist.id)
       }
     }
   }

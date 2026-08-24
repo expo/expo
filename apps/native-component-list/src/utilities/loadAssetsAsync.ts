@@ -4,8 +4,6 @@ import {
   Inter_800ExtraBold,
   Inter_900Black,
 } from '@expo-google-fonts/inter';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 import { Assets as StackAssets } from 'expo-router/react-navigation';
@@ -15,10 +13,13 @@ async function loadAssetsAsync() {
   const assetPromises: Promise<any>[] = [
     // The assets are `require` results, so they are numbers at runtime.
     Asset.loadAsync(StackAssets as number[]),
-    Font.loadAsync(Ionicons.font),
-    Font.loadAsync(MaterialIcons.font),
     Font.loadAsync({
       'space-mono': require('../../assets/fonts/SpaceMono-Regular.ttf'),
+    }),
+    // A variable font: one file holding `wght` and `slnt` axes, with a named instance per weight
+    // and an italic counterpart for each.
+    Font.loadAsync({
+      'RobotoFlex-variable': require('../../assets/fonts/RobotoFlex.ttf'),
     }),
     Font.loadAsync({
       'Inter-Black': require('../../assets/fonts/Inter/Inter-Black.otf'),

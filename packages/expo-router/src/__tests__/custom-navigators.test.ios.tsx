@@ -1,7 +1,10 @@
-import { screen } from '@testing-library/react-native';
+import { act, fireEvent, screen } from '@testing-library/react-native';
+import type { ComponentProps } from 'react';
 import { Text } from 'react-native';
 
 import { Navigator, Slot } from '../index';
+import JSStack from '../layouts/JSStack';
+import { Tabs } from '../layouts/Tabs';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import type { TabRouterOptions } from '../react-navigation/native';
 import { TabRouter } from '../react-navigation/native';
@@ -40,7 +43,11 @@ it('can render a custom navigator', () => {
         initialRouteName: 'two',
       },
       default: () => (
-        <Navigator router={customRouter} routerOptions={{ backBehavior: 'history' }}>
+        <Navigator
+          router={customRouter}
+          routerOptions={{ backBehavior: 'history' }}
+          // @ts-expect-error `initialRouteName` is only supported through `unstable_settings`.
+          initialRouteName="index">
           <Slot />
         </Navigator>
       ),
@@ -53,8 +60,90 @@ it('can render a custom navigator', () => {
   expect(customRouter).toHaveBeenCalledWith({
     id: '/(app)',
     backBehavior: 'history',
-    initialRouteName: undefined,
+    initialRouteName: 'two',
   });
+});
+
+// The casts simulate stale props supplied by untyped JavaScript.
+it.each([
+  ['Slot', () => <Slot {...({ initialRouteName: 'index' } as ComponentProps<typeof Slot>)} />],
+  [
+    'JS Stack',
+    () => <JSStack {...({ initialRouteName: 'index' } as ComponentProps<typeof JSStack>)} />,
+  ],
+])('%s uses the configured anchor instead of a stale JavaScript prop', (_, Layout) => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="inner" />
+      </Tabs>
+    ),
+    index: () => <Text testID="root-index" />,
+    'inner/_layout': {
+      unstable_settings: { initialRouteName: 'two' },
+      default: () => <Layout />,
+    },
+    'inner/index': () => <Text testID="index" />,
+    'inner/two': () => <Text testID="two" />,
+  });
+
+  act(() => fireEvent.press(screen.getByLabelText('inner, tab, 2 of 2')));
+
+  expect(screen.getByTestId('two')).toBeVisible();
+});
+
+it('honors the configured anchor when screens are explicitly declared', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="inner" />
+      </Tabs>
+    ),
+    index: () => <Text testID="root-index" />,
+    'inner/_layout': {
+      unstable_settings: { initialRouteName: 'two' },
+      default: () => (
+        <Navigator>
+          <Navigator.Screen name="index" />
+          <Navigator.Screen name="two" />
+          <Slot />
+        </Navigator>
+      ),
+    },
+    'inner/index': () => <Text testID="index" />,
+    'inner/two': () => <Text testID="two" />,
+  });
+
+  act(() => fireEvent.press(screen.getByLabelText('inner, tab, 2 of 2')));
+
+  expect(screen.getByTestId('two')).toBeVisible();
+});
+
+it('throws for an invalid configured anchor', () => {
+  expect(() =>
+    renderRouter(
+      {
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="inner" />
+          </Tabs>
+        ),
+        index: () => <Text testID="root-index" />,
+        'inner/_layout': {
+          unstable_settings: { initialRouteName: 'missing' },
+          default: () => <Navigator />,
+        },
+        'inner/index': () => <Text testID="index" />,
+        'inner/two': () => <Text testID="two" />,
+      },
+      { initialUrl: '/inner' }
+    )
+  ).toThrow(
+    'The initial route name "missing" was not found in the layout at "./inner/_layout.js". Available routes are: "index", "two". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
+  );
 });
 
 it.each([

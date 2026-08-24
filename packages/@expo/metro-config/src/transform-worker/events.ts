@@ -5,7 +5,10 @@ declare module '2g' {
   interface EventRegistry {
     'transform:failed': { file: string; error: SerializedError };
     'transform:custom_transformer:loaded': { path: string };
-    'transform:custom_transformer:failed': { path: string; error: SerializedError };
+    'transform:custom_transformer:failed': {
+      path: string;
+      error: SerializedError;
+    };
 
     'transform:file': {
       file: string;
@@ -18,7 +21,16 @@ declare module '2g' {
 
     // per-file sub-phase spans (nested under transform:file)
     'transform:babel': { file: string };
-    'transform:asset_data': { file: string; platform: string | null; files: string[] };
+    'transform:noxcturnal': { file: string };
+    'transform:noxcturnal:full': {
+      file: string;
+      status: 'complete' | 'fallback';
+    };
+    'transform:asset_data': {
+      file: string;
+      platform: string | null;
+      files: string[];
+    };
     'transform:asset_hashes': { file: string; files: string[] };
     'transform:asset_hash_file': { file: string };
     'transform:import_support': { file: string };
@@ -29,18 +41,28 @@ declare module '2g' {
 
     // debug keys
     'transform:browserslist:targets': { targets: Record<string, unknown> };
-    'transform:collect_deps:magic_comment_ignored': { line: number | string; code: string };
+    'transform:collect_deps:magic_comment_ignored': {
+      line: number | string;
+      code: string;
+    };
     'transform:client_boundaries:parsed': { boundaries: string[] };
     'transform:postcss:config_loaded': { path: string };
     'transform:postcss:plugin_loaded': { plugin: string };
-    'transform:module_mapper:request_redirected': { request: string; resolved: string };
-    'transform:module_mapper:redirect_failed': { request: string; error: SerializedError };
+    'transform:module_mapper:request_redirected': {
+      request: string;
+      resolved: string;
+    };
+    'transform:module_mapper:redirect_failed': {
+      request: string;
+      error: SerializedError;
+    };
     'transform:import_export:unexpected_object_pattern': { node: string };
     'transform:import_export:unexpected_array_pattern': { node: string };
     'transform:import_export:unexpected_identifier': { node: string };
     'transform:import_export:unexpected_declaration': { node: string };
     'transform:import_export:unexpected_specifier': { node: string };
     'transform:babel:missing_router_root': { message: string };
+    'transform:noxcturnal:fallback': { file: string; reason: string };
   }
 }
 

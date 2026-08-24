@@ -3,7 +3,8 @@ import { Children, Fragment, isValidElement, use, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
-import { useRouteNode, useContextKey } from '../Route';
+import { getValidInitialRouteName, useRouteNode, useContextKey } from '../Route';
+import { useComponent } from '../fork/useComponent';
 import { useRouteInfo } from '../hooks';
 import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
@@ -33,7 +34,6 @@ import { isTabSlot } from './TabSlot';
 import { isTabTrigger } from './TabTrigger';
 import type { ScreenTrigger } from './common';
 import { ViewSlot, useTriggersToScreens } from './common';
-import { useComponent } from './useComponent';
 
 export * from './TabContext';
 export * from './TabList';
@@ -54,7 +54,7 @@ export type UseTabsOptions = Omit<
     TabNavigationEventMap,
     any
   >,
-  'children'
+  'children' | 'initialRouteName'
 > & {
   backBehavior?: TabRouterOptions['backBehavior'];
 };
@@ -160,7 +160,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     throw new Error('No RouteNode. This is likely a bug in expo-router.');
   }
 
-  const initialRouteName = routeNode.initialRouteName;
+  const initialRouteName = getValidInitialRouteName(routeNode);
 
   const { children, triggerMap } = useTriggersToScreens(
     triggers,

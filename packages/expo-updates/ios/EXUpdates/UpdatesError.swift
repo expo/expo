@@ -26,6 +26,7 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
   case fileDownloaderFailedUpdateIDsFailure(cause: Error)
   case fileDownloaderUnknownError(cause: Error)
   case remoteAppLoaderAssetMissingUrl
+  case remoteAppLoaderUnsafeAssetFilename(filename: String)
   case remoteAppLoaderHeaderDataError(cause: Error)
   case remoteAppLoaderUnknownError(cause: Error)
   case appLoaderFailedToLoadAllAssets
@@ -92,6 +93,8 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Unknown error: \(cause.localizedDescription)"
     case .remoteAppLoaderAssetMissingUrl:
       return "Failed to download asset with no URL provided"
+    case let .remoteAppLoaderUnsafeAssetFilename(filename):
+      return "Failed to download asset: filename \"\(filename)\" would resolve outside the updates directory"
     case let .remoteAppLoaderHeaderDataError(cause):
       return "Error persisting header data to disk: \(cause.localizedDescription)"
     case .appLoaderFailedToLoadAllAssets:

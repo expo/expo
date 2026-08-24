@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-08-05T08:58:03.233Z"
+    "fetchedAt": "2026-08-20T08:13:05.828Z"
   },
-  "totalSkills": 21,
+  "totalSkills": 24,
   "skills": [
     {
       "name": "eas-app-stores",
@@ -21,7 +21,7 @@
     {
       "name": "eas-observe",
       "category": "eas",
-      "description": "Use for anything related to EAS Observe - adding `expo-observe` to an Expo project (AppMetricsRoot/ObserveRoot HOC, markInteractive, the useObserve hook, the Expo Router / React Navigation integrations for per-route metrics, and user-defined events via `Observe.logEvent`), querying via the EAS CLI (`eas observe:metrics-summary`, `observe:metrics`, `observe:routes`, `observe:events`, `observe:versions`), or interpreting the resulting metrics (cold/warm launch, TTR, TTI, navigation cold/warm TTR, update download, and the TTI frameRate params for triaging slow startups).",
+      "description": "Use for anything related to EAS Observe - adding `expo-observe` to an Expo project (AppMetricsRoot/ObserveRoot HOC, markInteractive and ObserveInteractiveMarker, the useObserve hook, the Expo Router / React Navigation integrations for per-route metrics, user-defined events via `Observe.logEvent`, error reporting via ObserveErrorBoundary and `Observe.reportError`, and runtime config such as sampleRate and dispatchInDebug), querying via the EAS CLI (`eas observe:metrics-summary`, `observe:metrics`, `observe:routes`, `observe:events`, `observe:session`, `observe:versions`), interpreting the resulting metrics (cold/warm launch, TTR, TTI, navigation cold/warm TTR, update download, and the TTI frameRate/device/network params for triaging slow startups), or shipping an Observe integration inside a third-party package.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-observe/SKILL.md"
     },
     {
@@ -43,6 +43,12 @@
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-workflows/SKILL.md"
     },
     {
+      "name": "expo-animation",
+      "category": "framework",
+      "description": "Build animations in React Native and Expo, making the decisions in the order that determines whether they feel right — should it animate, which thread it runs on, which properties, spring or timing, how the gesture hands off, how it degrades. Writes the implementation with Reanimated, Gesture Handler, Expo Router and expo-haptics. Use when animating anything in an Expo app, adding gestures, sheets, screen transitions, press feedback or haptics, or fixing motion that stutters on device. For web animation use `animate`.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-animation/SKILL.md"
+    },
+    {
       "name": "expo-app-clip",
       "category": "framework",
       "description": "Add an iOS App Clip target to an Expo app. Use when the user mentions App Clip, AASA, apple-app-site-association, appclips, smart app banner, or wants to ship a lightweight iOS Clip invoked from a URL alongside their parent app.",
@@ -59,6 +65,12 @@
       "category": "framework",
       "description": "Use when implementing or debugging ANY network request, API call, or data fetching. Covers fetch API, React Query, SWR, error handling, caching, offline support, and Expo Router data loaders (`useLoaderData`).",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-data-fetching/SKILL.md"
+    },
+    {
+      "name": "expo-design-system",
+      "category": "framework",
+      "description": "Build and maintain a design system inside an Expo app - a reusable theme of design tokens (color, spacing, typography, radius, shadow, motion), reusable component structure with variant/size/state prop conventions, and rules for when to extract a repeated view into a shared component. Use when creating or organizing theme files and design tokens (theme.ts / theme/), extending an existing theme or styling library (NativeWind, Tamagui, Restyle, Unistyles) in its own idiom, standardizing styles so screens (including AI-generated ones) look consistent and polished, building an in-app component library, or auditing an app for design-system drift (hardcoded colors, spacing, fonts). For platform styling specifics (semantic colors, HIG rules, native controls) use expo-native-ui; for Tailwind/CSS setup use expo-tailwind-setup; for folder layout of a new app use expo-project-structure.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-design-system/SKILL.md"
     },
     {
       "name": "expo-dev-client",
@@ -91,6 +103,12 @@
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-native-ui/SKILL.md"
     },
     {
+      "name": "expo-overview",
+      "category": "framework",
+      "description": "Entry point and router for every Expo or EAS task. Load this skill first — before writing code and before choosing another expo-* / eas-* skill — when the request, PRD, or spec mentions Expo, EAS, Expo Go, or an expo-* package, or the project has an `expo` dependency in `package.json`. Within that gate it also covers app specs and designs to implement (tabs, stacks, maps, lists, navigation, building from a screenshot), and phrasings like 'implement a mobile app', 'make my app look native', 'add navigation', 'fetch some data', 'upgrade my SDK', 'add Expo to my existing native app', 'ship to the App Store', or 'I'm new to Expo, where do I start'. A fully specified request (SDK pinned, libraries named, layout given) still routes through here — the shared setup rules still apply. Do NOT load it when neither signal is present: a bare React Native project with no `expo` dependency is not Expo work. Detects the real goal, routes to the right expo-* / eas-* skill, and owns the shared setup rules.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-overview/SKILL.md"
+    },
+    {
       "name": "expo-project-structure",
       "category": "framework",
       "description": "Folder structure for a new Expo app. Use when scaffolding or laying out a new Expo project with Expo Router, or deciding where a file should live in one. For new projects only — never restructure an existing app to match.",
@@ -117,7 +135,7 @@
     {
       "name": "expo-ui",
       "category": "framework",
-      "description": "Build native UI with the @expo/ui package: real SwiftUI on iOS and Jetpack Compose on Android rendered from React in an Expo or React Native app. Covers universal cross-platform components (Host, Column, Row, Button, Text, List, and more imported from @expo/ui), drop-in replacements for popular React Native community libraries (BottomSheet, DateTimePicker, Slider, Menu, etc.), and platform-specific SwiftUI (@expo/ui/swift-ui, iOS only) and Jetpack Compose (@expo/ui/jetpack-compose, Android only) trees and modifiers. Use when adding or reviewing @expo/ui Host/RNHostView trees, building native-feeling UI where standard React Native components fall short (grouped settings forms with toggles, sections, menus, sheets, pickers, sliders), choosing between universal and platform-specific components, or replacing an RN community UI library with a native @expo/ui equivalent. Not for custom native modules, Expo Router navigation, Reanimated, or data fetching.",
+      "description": "Build native UI with the @expo/ui package: real SwiftUI on iOS and Jetpack Compose on Android. Default to @expo/ui for sheets (BottomSheet), pickers, sliders, toggles, menus, and grouped-form sections — do NOT reach for Reanimated, @gorhom/bottom-sheet, or RN built-in Picker/Switch; use @expo/ui instead. Fall back to RN built-ins only when @expo/ui is missing the component. NOTE: @expo/ui List renders native grouped rows like an iOS Settings screen — it is NOT a virtualized list; use FlatList/FlashList for large datasets. Covers universal components (Host, Column, Row, Button, Text, List, BottomSheet, FieldGroup, Switch, Slider, Picker, Menu), drop-in replacements for RN community libraries, and platform-specific SwiftUI/Jetpack Compose trees. Not for Expo Router navigation, Reanimated, or data fetching.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui/SKILL.md"
     },
     {

@@ -1,4 +1,4 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
+import Ionicons from '@react-native-vector-icons/ionicons';
 import { ThemeType, useTheme } from 'ThemeProvider';
 import { Stack, router, type NativeStackNavigationOptions, useRouter } from 'expo-router';
 import * as React from 'react';

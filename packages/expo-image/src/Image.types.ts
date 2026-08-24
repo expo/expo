@@ -388,6 +388,14 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   accessible?: boolean;
 
   /**
+   * A Boolean value indicating whether the accessibility elements contained within the image
+   * are hidden from the screen reader.
+   * @default false
+   * @platform ios
+   */
+  accessibilityElementsHidden?: boolean;
+
+  /**
    * The text that's read by the screen reader when the user interacts with the image. Sets the `alt` tag on web which is used for web crawlers and link traversal.
    * @default undefined
    */
@@ -436,6 +444,8 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    *
    * Set this prop to `false` to use the official standard-compliant [libwebp](https://github.com/webmproject/libwebp) codec for WebP images.
    * The default implementation from Apple is faster and uses less memory but may render animated images with incorrect blending or play them at the wrong framerate.
+   * Some animated WebP files also decode very slowly with Apple's codec, which can make the image take a long time to appear and keep a CPU core busy while it loads.
+   * If you run into that, try setting this prop to `false` to switch to libwebp instead.
    * @see https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#awebp-coder
    *
    * @default true

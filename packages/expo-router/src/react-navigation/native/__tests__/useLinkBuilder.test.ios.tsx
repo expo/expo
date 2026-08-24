@@ -290,6 +290,7 @@ test('builds action from href in nested navigator', () => {
       payload: {
         name: 'Foo',
         params: {
+          id: '42',
           initial: true,
           screen: 'Bar',
           params: { id: '42' },

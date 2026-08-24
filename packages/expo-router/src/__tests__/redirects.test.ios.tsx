@@ -229,7 +229,6 @@ it('can push to a redirect', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -238,7 +237,6 @@ it('can push to a redirect', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {
@@ -419,7 +417,6 @@ it('not existing nested route redirects correctly', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
@@ -428,7 +425,6 @@ it('not existing nested route redirects correctly', () => {
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
               path: '/',
             },
             {

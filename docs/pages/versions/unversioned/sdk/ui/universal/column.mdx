@@ -8,8 +8,25 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A vertical layout container that arranges its children from top to bottom. Delegates to SwiftUI's [`VStack`](../swift-ui/vstack) on iOS, Jetpack Compose's [`Column`](../jetpack-compose/column) on Android, and a flex `View` on web.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/column/android-light.webp',
+    darkSrc: '/static/images/expo-ui/column/android-dark.webp',
+    alt: 'Three colored boxes stacked vertically inside a Column',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/column/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/column/ios-dark.webp',
+    alt: 'Three colored boxes stacked vertically inside a Column',
+  }}
+/>
 
 ## Installation
 
@@ -19,40 +36,78 @@ A vertical layout container that arranges its children from top to bottom. Deleg
 
 ### Basic column
 
-```tsx ColumnExample.tsx
+<ComponentExample
+  title="ColumnExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-column-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-column-basic-android-dark.webp',
+    alt: 'Three text labels stacked vertically',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-column-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-column-basic-ios-dark.webp',
+    alt: 'Three text labels stacked vertically',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Column, Text } from '@expo/ui';
 
 export default function ColumnExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
     <Host matchContents>
       <Column spacing={8}>
-        <Text>First</Text>
-        <Text>Second</Text>
-        <Text>Third</Text>
+        <Text textStyle={ink}>First</Text>
+        <Text textStyle={ink}>Second</Text>
+        <Text textStyle={ink}>Third</Text>
       </Column>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ### Alignment
 
 Use [`alignment`](#alignment) to position children along the cross (horizontal) axis.
 
-```tsx ColumnAlignmentExample.tsx
+<ComponentExample
+  title="ColumnAlignmentExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-column-alignment-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-column-alignment-android-dark.webp',
+    alt: 'Two text labels centered horizontally',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-column-alignment-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-column-alignment-ios-dark.webp',
+    alt: 'Two text labels centered horizontally',
+  }}>
+
+```tsx
+import { useColorScheme } from 'react-native';
 import { Host, Column, Text } from '@expo/ui';
 
 export default function ColumnAlignmentExample() {
+  const colorScheme = useColorScheme();
+  const ink = { color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' };
+
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <Column spacing={8} alignment="center">
-        <Text>Centered</Text>
-        <Text>Centered</Text>
+        <Text textStyle={ink}>Centered</Text>
+        <Text textStyle={ink}>Centered</Text>
       </Column>
     </Host>
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
@@ -61,3 +116,5 @@ import { Column } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/column" apiName="Column" />
+
+</PlatformTabsGroup>

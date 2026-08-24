@@ -112,20 +112,6 @@ File-based routing library for React Native and web applications. It provides au
 ├── android/                   # Native Android code (Kotlin)
 │   └── ExpoRouterModule.kt            # Material 3 dynamic and static color resolution
 ├── entry.js                   # Module entry point
-├── head.js                    # Head/meta tags entrypoint - import Head from "expo-router/head"
-├── server.js                  # Legacy root shim for expo-router/server - delegates to build/server (source: src/server/index.ts, re-exports loader utilities from expo-server)
-├── server.d.ts                # Legacy root shim types - delegates to build/server
-├── drawer.js                  # Drawer navigator - import { Drawer } from "expo-router/drawer"
-├── stack.js                   # Stack navigator - import { Stack } from "expo-router/stack"
-├── js-stack.js                # JS stack navigator - import { Stack } from "expo-router/js-stack"
-├── tabs.js                    # JS tab navigator (deprecated) - import { Tabs } from "expo-router/tabs"
-├── js-tabs.js                 # JS tab navigator - import { Tabs } from "expo-router/js-tabs"
-├── js-top-tabs.js             # JS top tab navigator - import { TopTabs } from "expo-router/js-top-tabs"
-├── html.js                    # HTML document wrapper for web - import { Html } from "expo-router/html"
-├── ui.js                      # Headless UI tabs components - import { Tabs } from "expo-router/ui"
-├── unstable-native-tabs.js    # Native bottom tabs - import { NativeTabs } from "expo-router/unstable-native-tabs"
-├── unstable-split-view.js     # Split view layout - import { SplitView } from "expo-router/unstable-split-view"
-├── testing-library.js         # Testing utilities - import { renderRouter } from "expo-router/testing-library"
 └── build/                     # Compiled JavaScript output
 ```
 
@@ -244,6 +230,13 @@ const screenProps = MockedComponent.mock.calls[1][0];
 ```
 
 ## Key Concepts
+
+### Expo Router Semantics
+
+- Evaluate all features exclusively from the Expo Router perspective. If a behavior is unavailable through Expo Router, React Navigation support for that behavior is irrelevant.
+- `expo-router/react-navigation` is only a compatibility layer. Do not treat its capabilities as Expo Router features unless Expo Router exposes them.
+- Protected routes are implemented as redirects and do not depend on `routeNames`.
+- `routeNames` are stable in Expo Router except during HMR.
 
 ### File-Based Routing Conventions
 

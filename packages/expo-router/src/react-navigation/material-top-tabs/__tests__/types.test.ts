@@ -37,9 +37,6 @@ export type _TabBarPropsExcludeNavigation = Expect<
 export type _IndicatorUsesTopTabViewState = Expect<
   Equal<IndicatorProps['state'], MaterialTopTabViewState>
 >;
-export type _ContentRequiresPreloadedRouteKeys = Expect<
-  Equal<MaterialTopTabNavigatorContentProps['preloadedRouteKeys'], string[]>
->;
 export type _ContentRequiresRouteNames = Expect<
   Equal<MaterialTopTabNavigatorContentProps['routeNames'], string[]>
 >;

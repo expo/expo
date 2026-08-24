@@ -2,12 +2,12 @@ import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { ParamListBase } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useIsFocused } from '../useIsFocused';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
@@ -34,7 +34,12 @@ test('renders correct focus state', () => {
   const navigation = React.createRef<any>();
 
   const root = render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        index: 0,
+        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />

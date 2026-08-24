@@ -36,6 +36,15 @@ const descriptors = {
 };
 const routeNames = routes.map((route) => route.name);
 
+function routeNode(initialRouteName: string) {
+  // Only route names are relevant to this hook test fixture.
+  return {
+    initialRouteName,
+    contextKey: './_layout.js',
+    children: routes.map(({ name }) => ({ route: name })),
+  } as ReturnType<typeof useRouteNode>;
+}
+
 let replaceSpy: jest.SpyInstance;
 let warnSpy: jest.SpyInstance;
 let buildHref: jest.Mock;
@@ -84,9 +93,7 @@ describe('useVisibleTabsWithRedirect', () => {
   });
 
   it('redirects an unavailable focused route to the configured visible route', () => {
-    mockedUseRouteNode.mockReturnValue({ initialRouteName: 'settings' } as ReturnType<
-      typeof useRouteNode
-    >);
+    mockedUseRouteNode.mockReturnValue(routeNode('settings'));
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
@@ -101,9 +108,7 @@ describe('useVisibleTabsWithRedirect', () => {
   });
 
   it('builds the redirect href from the selected route', () => {
-    mockedUseRouteNode.mockReturnValue({ initialRouteName: 'settings' } as ReturnType<
-      typeof useRouteNode
-    >);
+    mockedUseRouteNode.mockReturnValue(routeNode('settings'));
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
@@ -116,21 +121,20 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(buildHref).toHaveBeenCalledWith(routes[1]);
   });
 
-  it('falls back to the first visible route when the configured route is unavailable', () => {
-    mockedUseRouteNode.mockReturnValue({ initialRouteName: 'missing' } as ReturnType<
-      typeof useRouteNode
-    >);
-    renderHook(() =>
-      useVisibleTabsWithRedirect({
-        routes,
-        routeNames,
-        focusedRouteKey: 'hidden-key',
-        descriptors,
-      })
+  it('throws when the configured route is unavailable', () => {
+    mockedUseRouteNode.mockReturnValue(routeNode('missing'));
+    expect(() =>
+      renderHook(() =>
+        useVisibleTabsWithRedirect({
+          routes,
+          routeNames,
+          focusedRouteKey: 'hidden-key',
+          descriptors,
+        })
+      )
+    ).toThrow(
+      'The initial route name "missing" was not found in the layout at "./_layout.js". Available routes are: "home", "settings/index", "hidden", "filesystem". Set `unstable_settings.initialRouteName` to the name of a route in this layout.'
     );
-
-    expect(replaceSpy).toHaveBeenCalledTimes(1);
-    expect(replaceSpy).toHaveBeenCalledWith('/href/home');
   });
 
   it('redirects when a navigator with no visible focused route becomes focused', () => {

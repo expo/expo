@@ -1,6 +1,11 @@
 import { nanoid } from 'nanoid/non-secure';
 
-import type { CommonNavigationAction, NavigationState, PartialState } from './types';
+import type {
+  CommonNavigationAction,
+  NavigationAction,
+  NavigationState,
+  PartialState,
+} from './types';
 
 /**
  * Base router object that can be used when writing custom routers.
@@ -96,7 +101,7 @@ export const BaseRouter = {
     }
   },
 
-  shouldActionChangeFocus(action: CommonNavigationAction) {
-    return action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED';
+  shouldActionChangeFocus(action: NavigationAction) {
+    return action.type === 'PUSH' || action.type === 'NAVIGATE';
   },
 };
