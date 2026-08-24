@@ -35,6 +35,7 @@ export function generateAgentsMdBlock({ state, projectName, skillsDirs }: Agents
     '- `npx exagent dev` — get the app onto a device: it prints the plan, then runs it; `npx exagent dev --plan` prints the steps without running them',
     '- `npx exagent start` — `expo start` and nothing else: a dev server no planning may touch',
     '- `npx exagent install <pkg>` — install a package and report what it changes natively',
+    '- `npx exagent typecheck` — run the TypeScript compiler of this project as a gate: exit 20 with the diagnostics, exit 0 when there are none. A bundle that builds and an app that does not throw do not cover this.',
     '- `npx exagent runtime:eval <js>` — evaluate JavaScript in the running app',
     '- `npx exagent runtime:errors` — collect the runtime errors of the running app',
     '- `npx exagent navigate <route>` — open a route as a deep link on a device',

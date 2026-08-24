@@ -90,6 +90,7 @@ describe(generateAgentsMdBlock, () => {
       'exagent dev --plan',
       '`npx exagent start` — `expo start` and nothing else',
       'exagent install',
+      'exagent typecheck',
       'exagent runtime:eval',
       'exagent runtime:errors',
       'exagent navigate',
