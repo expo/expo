@@ -86,6 +86,8 @@ declare module '2g' {
       devServerUrl: string;
       durationMs: number;
       count: number;
+      /** How many of the collected errors got a stack mapped onto project files. */
+      symbolicated: number;
     };
     'cli:runtime_network': {
       devServerUrl: string;

@@ -21,6 +21,12 @@ declare module '2g' {
     'runtime:cdp_eval_unwrapped': { reason: string };
     /** The app kept a settled value nobody read, because the cleanup after a timeout failed. */
     'runtime:cdp_promise_release_failed': { reason: string };
+    /**
+     * The dev server did not map a stack, so the raw bundle frames are reported instead.
+     *
+     * Debug rather than an error: symbolication improves a report, it is not a precondition for it.
+     */
+    'runtime:symbolicate_failed': { url: string; reason: string };
   }
 }
 

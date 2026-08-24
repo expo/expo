@@ -47,6 +47,7 @@ const errorsOptions: RuntimeErrorsOptions = {
   durationMs: 0,
   json: true,
   followups: false,
+  failOnError: false,
 };
 
 const networkOptions: RuntimeNetworkOptions = {

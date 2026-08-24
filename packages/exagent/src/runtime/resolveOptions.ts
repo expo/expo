@@ -45,6 +45,13 @@ export interface RuntimeErrorsOptions extends RuntimeSharedOptions {
   json: boolean;
   /** Attach the state-aware next actions to the output, cleared by `--no-followups`. */
   followups: boolean;
+  /**
+   * Exit 20 when the window caught anything (`--fail-on-error`).
+   *
+   * Opt-in, because the default job of this command is to collect: an empty window means "nothing
+   * happened while I watched", which is not the same claim `dev:wait` makes when it exits 0.
+   */
+  failOnError: boolean;
 }
 
 export interface RuntimeNetworkOptions extends RuntimeSharedOptions {
@@ -81,6 +88,13 @@ const WINDOW_ARGS = {
   ...SHARED_ARGS,
   '--duration': String,
   '--no-followups': Boolean,
+};
+
+// Only `errors` gates on what it collected. A failed request is a report `network` makes about the
+// app's behaviour, not a verdict, and there is no equivalent question to answer there.
+const ERRORS_ARGS = {
+  ...WINDOW_ARGS,
+  '--fail-on-error': Boolean,
 };
 
 /**
@@ -147,7 +161,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   }
 
   const windowAction = action as 'errors' | 'network';
-  const args = parseArgsOrThrow(WINDOW_ARGS, argv);
+  const args = parseArgsOrThrow(windowAction === 'errors' ? ERRORS_ARGS : WINDOW_ARGS, argv);
   const positional = args._.slice(1);
   if (positional.length > 0) {
     throw strayArgumentError(`runtime:${windowAction}`, positional, {
@@ -155,8 +169,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     });
   }
 
-  return {
-    action: windowAction,
+  const shared = {
     devServerUrl: resolveExplicitDevServerUrl(args['--dev-server-url']),
     durationMs: resolveDuration(args['--duration'], '--duration', DEFAULT_WINDOW_MS[windowAction], {
       allowZero: true,
@@ -164,6 +177,10 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
     json: !!args['--json'],
     followups: !args['--no-followups'],
   };
+
+  return windowAction === 'errors'
+    ? { action: 'errors', ...shared, failOnError: !!args['--fail-on-error'] }
+    : { action: 'network', ...shared };
 }
 
 /**

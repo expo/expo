@@ -8,8 +8,19 @@ import type CdpMessageType from 'devtools-protocol';
 import { type WebSocket } from 'ws';
 
 import { CdpClient, type CdpClientOptions } from './cdpClient';
-import { formatCdpConsoleArgs, formatCdpExceptionDetails, formatCdpStackTrace } from './cdpFormat';
+import {
+  cdpStackFrames,
+  formatCdpConsoleArgs,
+  formatCdpExceptionDetails,
+  formatCdpStackTrace,
+} from './cdpFormat';
 import { debugEvent } from './events';
+import {
+  formatStackFrames,
+  parseStackFrames,
+  splitTextStack,
+  type StackFrame,
+} from './symbolicate';
 
 /** A single runtime error reported by the running app. */
 export interface RuntimeErrorRecord {
@@ -25,10 +36,24 @@ export interface RuntimeErrorRecord {
   message: string;
 
   /**
-   * Stack as the runtime reported it, one frame per line, when available.
-   * Metro applies its own source maps, so the frames are already symbolicated when it can do so.
+   * Stack, one frame per line, when the runtime reported one.
+   *
+   * Rendered from {@link frames} once the dev server has mapped them onto project files, so what a
+   * reader sees is `src/app/index.tsx:42:13` rather than an offset into a bundle.
    */
   stack?: string;
+
+  /**
+   * The frames behind {@link stack}, so a caller does not have to parse the text back apart.
+   *
+   * Present whenever the runtime reported a stack at all. `file` is project-relative for a frame
+   * the dev server mapped into this project, absolute for one it mapped elsewhere, and the bundle
+   * URL with its query string dropped for one it could not map.
+   */
+  frames?: StackFrame[];
+
+  /** Whether the dev server mapped any frame of this stack onto a file on disk. */
+  symbolicated?: boolean;
 
   /** Source location as `url:line:column`, when the runtime reported a url. */
   location?: string;
@@ -174,6 +199,9 @@ export function parseRuntimeErrorMessage(message: CdpMessage): RuntimeErrorRecor
       timestamp: params.timestamp || Date.now(),
       message: text,
       stack,
+      // Structured frames when the runtime sent them, and the text stack read back apart when the
+      // stack only exists inside the exception's description — both need symbolicating.
+      frames: framesOf(params.exceptionDetails.stackTrace, stack),
       location,
     };
   }
@@ -183,13 +211,32 @@ export function parseRuntimeErrorMessage(message: CdpMessage): RuntimeErrorRecor
     if (!ERROR_CONSOLE_TYPES.has(params.type)) {
       return null;
     }
+    // React Native reports a thrown error through the console path as one string with the error's
+    // own frames inside it. Those name the project function that threw, while `stackTrace`
+    // describes the console machinery that reported it — so the message's stack wins when it has
+    // one, and is lifted out to be symbolicated like any other.
+    const { message: text, frames: embedded } = splitTextStack(formatCdpConsoleArgs(params.args));
     return {
       source: 'console',
       timestamp: params.timestamp || Date.now(),
-      message: formatCdpConsoleArgs(params.args),
-      stack: formatCdpStackTrace(params.stackTrace),
+      message: text,
+      stack: embedded.length > 0 ? formatStackFrames(embedded) : formatCdpStackTrace(params.stackTrace),
+      frames: embedded.length > 0 ? embedded : framesOf(params.stackTrace, undefined),
     };
   }
 
   return null;
+}
+
+/** The frames of a stack, whichever of the two ways the runtime reported it. */
+function framesOf(
+  stackTrace: CdpMessageType.Runtime.StackTrace | undefined,
+  textStack: string | undefined
+): StackFrame[] | undefined {
+  const frames = cdpStackFrames(stackTrace);
+  if (frames.length > 0) {
+    return frames;
+  }
+  const parsed = textStack == null ? [] : parseStackFrames(textStack);
+  return parsed.length > 0 ? parsed : undefined;
 }

@@ -4,6 +4,7 @@
 // "I read the value out of the running app".
 
 import { event } from '../events';
+import { EXIT_OUTCOME_FAILED } from '../exitCodes';
 import {
   buildRuntimeErrorsFollowUps,
   buildRuntimeNetworkFollowUps,
@@ -43,6 +44,12 @@ import type {
   RuntimeNetworkOptions,
 } from './resolveOptions';
 import { CdpRuntimeErrorCollector, type RuntimeErrorRecord } from './runtimeErrorCollector';
+import {
+  formatStackFrames,
+  isUnmappedFrame,
+  relativizeFrame,
+  symbolicateFramesAsync,
+} from './symbolicate';
 
 export interface RuntimeContext {
   /**
@@ -193,7 +200,7 @@ export async function runtimeErrorsAsync(
   options: RuntimeErrorsOptions,
   context: RuntimeContext = {}
 ): Promise<number> {
-  const { durationMs, json } = options;
+  const { durationMs, json, failOnError } = options;
   const devServerUrl = await resolveDevServerUrlAsync(options, context);
   await requireConnectedAppAsync(devServerUrl);
 
@@ -214,7 +221,14 @@ export async function runtimeErrorsAsync(
     );
   }
 
-  event('runtime_errors', { devServerUrl, durationMs, count: errors.length });
+  errors = await symbolicateRuntimeErrorsAsync(errors, devServerUrl, context.projectRoot ?? null);
+
+  event('runtime_errors', {
+    devServerUrl,
+    durationMs,
+    count: errors.length,
+    symbolicated: errors.filter((error) => error.symbolicated).length,
+  });
 
   // @ref llp/0009-smart-followups.rfc.md §Examples per command — the two outcomes need opposite
   // next steps: errors mean "fix, then prove the window is clean", an empty window means the
@@ -236,9 +250,41 @@ export async function runtimeErrorsAsync(
   }
   reportFollowUps('runtime:errors', followups, { json });
 
-  // Collected errors are a report, not a failure of the command: the app was reached and
-  // answered. A caller that wants to fail on errors reads `count` from `--json`.
-  return 0;
+  // Collected errors are a report, not a failure of the command: the app was reached and answered,
+  // and a window that catches nothing is the common case. `--fail-on-error` is the opt-in for a
+  // caller using this as a gate, which is what `dev:wait` is by default — the two differ because
+  // an empty window here means "nothing happened while I watched", not "the app is healthy".
+  return failOnError && errors.length > 0 ? EXIT_OUTCOME_FAILED : 0;
+}
+
+/**
+ * Map every stack onto project files, and make the frames readable either way.
+ *
+ * One request per error rather than one for all of them: Metro keys its source maps by the frame's
+ * bundle URL, so mixing two bundles into one request is fine, but a failure on one error's stack
+ * would take the others' with it. The frames are trimmed of their query strings whatever happens,
+ * because that is what makes an unmapped stack unreadable.
+ */
+async function symbolicateRuntimeErrorsAsync(
+  errors: RuntimeErrorRecord[],
+  devServerUrl: string,
+  projectRoot: string | null
+): Promise<RuntimeErrorRecord[]> {
+  return await Promise.all(
+    errors.map(async (error) => {
+      if (!error.frames?.length) {
+        return error;
+      }
+      const symbolicated = await symbolicateFramesAsync(devServerUrl, error.frames);
+      const frames = symbolicated.map((frame) => relativizeFrame(frame, projectRoot));
+      return {
+        ...error,
+        frames,
+        symbolicated: frames.some((frame) => !isUnmappedFrame(frame)),
+        stack: formatStackFrames(frames),
+      };
+    })
+  );
 }
 
 /**

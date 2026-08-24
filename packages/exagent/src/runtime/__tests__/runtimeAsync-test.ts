@@ -1,3 +1,4 @@
+import { EXIT_OUTCOME_FAILED } from '../../exitCodes';
 import {
   CdpClient,
   CdpPromisePendingError,
@@ -289,6 +290,7 @@ const errorsOptions = {
   durationMs: 2000,
   json: false,
   followups: true,
+  failOnError: false,
 };
 
 describe(runtimeErrorsAsync, () => {
@@ -313,6 +315,106 @@ describe(runtimeErrorsAsync, () => {
     await expect(runtimeErrorsAsync(errorsOptions)).resolves.toBe(0);
     expect(printed()).toContain('Collected 1 runtime error(s)');
     expect(printed()).toContain(UNTRUSTED_OUTPUT_BEGIN);
+  });
+
+  // F25: `dev:wait` exits 20 on a bundle that does not build while this exited 0 with the app
+  // throwing, so an agent could gate on one and not the other. Opt-in, both ways round.
+  describe('--fail-on-error', () => {
+    it(`should exit 20 when the window caught something`, async () => {
+      mockCollect(async () => [
+        { source: 'console', timestamp: 1700000000001, message: 'Request failed' },
+      ]);
+
+      await expect(
+        runtimeErrorsAsync({ ...errorsOptions, failOnError: true })
+      ).resolves.toBe(EXIT_OUTCOME_FAILED);
+    });
+
+    it(`should exit 0 for an empty window even when it is a gate`, async () => {
+      mockCollect(async () => []);
+
+      await expect(runtimeErrorsAsync({ ...errorsOptions, failOnError: true })).resolves.toBe(0);
+    });
+  });
+
+  describe('symbolication', () => {
+    const BUNDLE_URL = 'http://127.0.0.1:8081/index.bundle//&platform=ios&dev=true';
+
+    /** Answer `/symbolicate` with `stack`, and `/json/list` with the connected app. */
+    function mockSymbolicator(stack: unknown[] | null) {
+      globalThis.fetch = (async (url: string) => {
+        if (String(url).endsWith('/symbolicate')) {
+          return stack == null
+            ? { ok: false, status: 500, json: async () => ({}) }
+            : { ok: true, status: 200, json: async () => ({ stack, codeFrame: null }) };
+        }
+        return { ok: true, json: async () => [TARGET] };
+      }) as unknown as typeof fetch;
+    }
+
+    const thrown = {
+      source: 'exception' as const,
+      timestamp: 1700000000000,
+      message: 'Error: BOOM',
+      stack: `  at render (${BUNDLE_URL}:49572:40)`,
+      frames: [{ methodName: 'render', file: BUNDLE_URL, lineNumber: 49572, column: 39 }],
+    };
+
+    it(`should report the project file and line instead of a bundle offset`, async () => {
+      mockCollect(async () => [thrown]);
+      mockSymbolicator([
+        {
+          file: '/project/src/app/index.tsx',
+          lineNumber: 42,
+          column: 12,
+          methodName: 'Index',
+          collapse: false,
+        },
+      ]);
+
+      await runtimeErrorsAsync({ ...errorsOptions, json: true }, { projectRoot: '/project' });
+
+      const report = JSON.parse(printed());
+      expect(report.errors[0].stack).toBe('  at Index (src/app/index.tsx:42:13)');
+      expect(report.errors[0].symbolicated).toBe(true);
+      expect(report.errors[0].frames).toEqual([
+        {
+          methodName: 'Index',
+          file: 'src/app/index.tsx',
+          lineNumber: 42,
+          column: 12,
+          collapse: false,
+        },
+      ]);
+    });
+
+    // Roughly 2 KB of repeated transform options per error, and no project file anywhere.
+    it(`should trim the query string of a frame it could not map`, async () => {
+      mockCollect(async () => [thrown]);
+      mockSymbolicator([{ file: BUNDLE_URL, lineNumber: null, column: null, collapse: true }]);
+
+      await runtimeErrorsAsync({ ...errorsOptions, json: true }, { projectRoot: '/project' });
+
+      const report = JSON.parse(printed());
+      expect(report.errors[0].stack).toBe(
+        '  at render (http://127.0.0.1:8081/index.bundle:49572:40)'
+      );
+      expect(report.errors[0].symbolicated).toBe(false);
+      expect(report.errors[0].stack).not.toContain('platform=ios');
+    });
+
+    it(`should keep the raw frame when the dev server cannot symbolicate`, async () => {
+      mockCollect(async () => [thrown]);
+      mockSymbolicator(null);
+
+      await expect(
+        runtimeErrorsAsync({ ...errorsOptions, json: true }, { projectRoot: '/project' })
+      ).resolves.toBe(0);
+
+      const report = JSON.parse(printed());
+      expect(report.errors[0].symbolicated).toBe(false);
+      expect(report.errors[0].stack).toContain('49572');
+    });
   });
 
   it(`should print the machine shape with --json`, async () => {
