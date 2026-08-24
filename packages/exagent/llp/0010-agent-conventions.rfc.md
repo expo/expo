@@ -223,7 +223,6 @@ Only `errors` has it. `runtime:network`'s failed requests are something it repor
 a 404 the app handles is not the command's operation failing — and there is no equivalent question
 for its exit code to answer.
 
-<<<<<<< HEAD
 ### The fourth: `typecheck`, and the gate the other three could not be
 
 [observed — 2026-08-23, `src/typecheck/`] `exagent typecheck` is the fourth command in the band, and
