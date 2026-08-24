@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Pull a 3rd-party pod's prebuilt XCFramework to source when a dependent 3rd-party pod builds from source, fixing `'worklets/Compat/StableApi.h' file not found`. ([#49147](https://github.com/expo/expo/pull/49147) by [@chrfalch](https://github.com/chrfalch))
+- Respect explicit per-platform `null` overrides from project `react-native.config.js` files ([#47545](https://github.com/expo/expo/pull/47545) by [@chownation](https://github.com/chownation))
 
 ### 💡 Others
 
