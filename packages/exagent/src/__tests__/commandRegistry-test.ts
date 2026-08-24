@@ -671,10 +671,10 @@ describe(suggestCommandNames, () => {
     ['deploi', ['deploy']],
     ['isntall', ['install']],
     ['prebiuld', ['prebuild']],
-    // Two edits into a five-letter name is a different word, not a typo of it: `exagent logs` is
-    // a command that does not exist, and answering it with `login` would be a confident wrong
-    // guess about what the caller wanted.
-    ['logs', []],
+    // The action-name rule: `logs` is the action of `dev:logs`, so a caller who knows what they
+    // want and not which group owns it is answered exactly. `login` is two edits away and is never
+    // offered — that would be a confident wrong guess.
+    ['logs', ['dev:logs']],
     ['zzzzzzzz', []],
   ])('answers %p with %p', (command, expected) => {
     expect(suggestCommandNames(command)).toEqual(expected);
@@ -705,19 +705,16 @@ describe(unknownCommandMessage, () => {
     expect(unknownCommandMessage('zzzzzzzz')).not.toContain('closest');
   });
 
-  // F11 leftover: `exagent logs` is spelled correctly and is near nothing, so the generic answer
-  // was "it is in none of them" plus a link to thirty names — leaving the reader to work out from
-  // the listing whether a log command exists at all.
-  it('says that no log command exists, and names what answers instead', () => {
+  // F11 leftover, now that `dev:logs` exists: the bare name is still not a command, and the answer
+  // names the one that is — plus the two commands a log is more often opened for.
+  it('names dev:logs and the two questions a log is opened for', () => {
     for (const name of ['logs', 'log', 'LOGS']) {
       const message = unknownCommandMessage(name);
 
       expect(message).toContain(`"exagent ${name}" is not a command`);
-      expect(message).toContain('this CLI has no log command');
+      expect(message).toContain('npx exagent dev:logs');
       expect(message).toContain('npx exagent dev:wait');
       expect(message).toContain('npx exagent runtime:errors');
-      // Nothing is a near match, so the generic answer had nothing to offer here.
-      expect(message).not.toContain('closest');
     }
   });
 });
@@ -733,6 +730,6 @@ describe(unknownCommandSuggestion, () => {
   });
 
   it('recovers a missing capability into the command that answers it', () => {
-    expect(unknownCommandSuggestion('logs')).toBe('npx exagent runtime:errors');
+    expect(unknownCommandSuggestion('logs')).toBe('npx exagent dev:logs');
   });
 });

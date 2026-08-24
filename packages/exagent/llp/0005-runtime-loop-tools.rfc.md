@@ -358,6 +358,54 @@ immediate terminate and reaches only the named process, leaving a bundler starte
 shim alive. Best effort, and untested on that platform, which is why the result reports whether the
 call was made rather than whether it worked.
 
+## Reading the detached dev server's output
+
+Decision [confirmed — friction run 4, 2026-08-24]. `exagent dev:logs [--tail <n>] [--json]`.
+
+The counterpart of `dev --detach` ([[0004-smart-start-and-project-state]] §Daemonization).
+Detaching moves the bundler's output off the terminal, and this is where it goes instead — one file
+per project under `.expo/dev/logs/`, truncated per run.
+
+Three things it does that reading the file would not:
+
+- **Strips the escape codes.** Metro colours its output and draws progress with cursor moves.
+  Neither is text once it is out of a terminal, and a driving agent reading the raw file spends its
+  context on `[2K[1G`.
+- **Names the dev server the log belongs to.** The lock is read alongside the file, so the report
+  says whether these lines are from a server that is running now or from the last one that did.
+- **Tells "no log" apart from "started attached".** A project with a running dev server and no log
+  has one that was started in a terminal, and its output is on that terminal. Reporting an empty
+  file there would send the caller looking for something that was never going to exist.
+
+**No `--follow`, and the help says why.** A tail that never returns re-creates the exact problem
+`--detach` was added to solve. An agent polls; each read is bounded and quotable.
+
+The lines are fenced in untrusted markers like every other command that relays what a project
+produced ([[0008-guardrails]]): a bundler's log quotes source files and error messages from code
+this CLI did not write.
+
+## The dev server a caller names
+
+Amendment [confirmed — friction run 4, 2026-08-24]. Every command of this group takes `--port <n>`
+as sugar for `--dev-server-url http://127.0.0.1:<n>`, and `runtime:reload`/`runtime:stop` take
+`--platform ios|android` alongside `--ios`/`--android`.
+
+Flag drift is a tax an agent pays in failed commands. `exagent dev --port 8195` is the command that
+starts the server, and every command that then talks to it wanted the *other* spelling — so a
+caller with a port in hand got `unknown or unexpected option: --port` [observed — F47, friction run
+4]. The same for platform: `runtime:stop --json` reports `"platform": "ios"` and then refused
+`--platform ios` on the next call, which is a report a caller cannot write a command from.
+
+Passing both `--dev-server-url` and `--port` is `BAD_ARGS`: they name two dev servers and there is
+no rule for which wins. `--ios` and `--platform ios` together are fine — two spellings of one
+answer — while `--ios --platform android` is two devices and is refused.
+
+Related, and the reason this belongs in one place: a "no dev server answered" error must not suggest
+the flag the caller just passed. `howToNameTheDevServer(explicit)` in `src/runtime/devServer.ts` is
+the one sentence, and with an explicit URL it says the URL you named is the one that was tried
+rather than telling you to name one [observed — F41 leftover, `runtime:reload --dev-server-url
+http://127.0.0.1:9999`].
+
 ## Testing
 
 Each tool: schema unit tests + tier-0 e2e coverage against a fixture app on a simulator ([[0002-testing-and-evals]]; scripted MCP replay is optional/deferred there). The composite loops are tier-1/2 eval scenarios.

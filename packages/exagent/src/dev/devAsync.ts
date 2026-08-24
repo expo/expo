@@ -45,6 +45,13 @@ const DEFAULT_METRO_PORT = 8081;
  * last step when every step succeeded.
  */
 export async function devAsync(projectRoot: string, options: DevOptions): Promise<number> {
+  // @ref llp/0004-smart-start-and-project-state.rfc.md §Daemonization — before the probe, because
+  // the child does the probe: this run's whole job is to start that child and report on it.
+  if (options.detach) {
+    const { devDetachAsync } = require('./detachAsync') as typeof import('./detachAsync');
+    return await devDetachAsync(projectRoot, options);
+  }
+
   const state = await probeProjectStateAsync(projectRoot);
   const plan = decideStartPlan(state, {
     platform: options.platform ?? resolveDefaultPlatform(state),

@@ -242,6 +242,26 @@ declare module '2g' {
      *
      * @see llp/0005-runtime-loop-tools.rfc.md §Stopping the dev server
      */
+    // @ref llp/0004-smart-start-and-project-state.rfc.md §Daemonization
+    'cli:dev_detach': {
+      url: string;
+      port: number;
+      /** PID of the detached process, which is what `dev:stop` signals. */
+      pid: number;
+      /** Whether the bundler answered, or null when `--wait-ready` was not asked for. */
+      ready: boolean | null;
+      /** The project already had a dev server, so nothing was started. */
+      alreadyRunning: boolean;
+    };
+    // @ref llp/0005-runtime-loop-tools.rfc.md §Reading the detached dev server's output
+    'cli:dev_logs': {
+      /** The file that was read, or null when the project has none. */
+      logFile: string | null;
+      /** How many lines were printed. */
+      lines: number;
+      /** How many lines the file has. */
+      totalLines: number;
+    };
     'cli:dev_stop': {
       /** A dev server was running and is not running now. */
       stopped: boolean;

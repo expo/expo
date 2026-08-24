@@ -126,6 +126,95 @@ Implemented [observed — 2026-08-22]: `exagent status [--json] [--dev-server-ur
 
 Rename implemented [observed — 2026-08-22]: the engine is `src/dev/` (`devAsync.ts`, `confirmPlan.ts`, `resolveOptions.ts`), and `resolveDevOptions` resolves `run` with no flag and `plan` with `--plan` — the only two things the command can do. `src/start/` keeps the `expo start` wrapper: `resolveStartOptions` strips exactly two flags of its own (`--no-agent-skills`, `--no-followups`) and forwards everything else untouched, so `expo start` stays the one that rejects an argument it does not know. `dev` reuses the wrapper's `runDevServerAsync` for the dev-server step of a plan and its `resolveStartFollowUps` for the follow-ups of a run that ends in one. The guardrail lives in `src/dev/confirmPlan.ts` and is asked only when the run is interactive (`isInteractive()`: a TTY, not CI, not headless), `--yes` was not passed, `--json` was not passed (the prompt would land inside the parsed payload), and at least one step is costlier than `seconds`. A decline emits `cli:start_plan_declined`, points at `dev --plan` and `start`, and exits 0 — nothing ran, so nothing failed. It is asked after the plan is emitted and before the checkpoint is taken, so a declined plan snapshots nothing. The `cli:start_plan` event keeps its name and its `mode: 'plan' | 'smart'` field: they name the plan engine of this RFC, not the command that drives it.
 
+## Daemonization
+
+Decision [confirmed — friction run 4, 2026-08-24]. `exagent dev --detach [--wait-ready]` starts the
+dev server in a process of its own and gives the terminal back. `exagent dev:logs` reads what it
+printed.
+
+The friction is the plainest one in the CLI, and it took four runs to write down because it is
+invisible from inside: `exagent dev` runs the dev server in the *foreground* and never says so, so
+the first thing a driving agent does is burn a command timeout on a command that cannot return
+[observed — F46, friction run 4: a seven-minute timeout on the first attempt]. It then prints
+`Suggested next: npx exagent navigate /` and holds the shell that would have run it. Every step
+after it — `dev:wait`, `navigate`, `runtime:errors`, `runtime:reload` — needs a shell the dev server
+is holding, so an agent has to learn to background the process from outside the CLI, which is
+exactly the kind of shell incantation `dev:stop` exists to remove.
+
+**The child is this CLI, not `expo start`.** `spawn(process.execPath, [bin, 'dev', ...argv],
+{ detached: true, stdio: ['ignore', logFd, logFd] })` then `unref()`. It has to be the wrapper
+because the wrapper is what takes the dev-server lock (§The dev-server lock), and a detached dev
+server that published no lock would be a process nothing could find, wait on, or stop. Everything
+that makes the result usable afterwards therefore already exists: the lock names its port and pid,
+`dev:wait` reports its readiness, and `dev:stop` signals the pid the lock names — the detached
+wrapper forwards `SIGTERM` to its `expo` child exactly as the foreground one does, so the tree goes
+down together [observed — e2e `dev-detach-test.ts`: pid gone and lock silent after `dev:stop`].
+
+**Three flags are stripped from the child's command line**, and the reasons differ: `--detach`
+would detach a detached run forever; `--wait-ready` names a wait the parent performs and the child
+has nobody to report to; and `--json` would both print an object nobody reads *and* switch the
+plan's subprocess output to `capture`, which is the very output the log file exists to hold.
+`buildDetachSpawn` is a pure function over argv for that reason — it is the half of detaching that
+can be wrong in a way nothing else notices, because the parent reports success either way.
+
+**The parent waits for the lock, not for the child.** A detached start is finished when the dev
+server is *discoverable*, which is the moment the lock answers. Under `--wait-ready` it then holds
+one `/status` request open (`waitForBundlerReadyAsync`, shared with `dev:wait`), so `ready` is
+`true`, or the wait failed — never "unknown". Without the flag `ready` is `null`, which is the
+difference between not ready and not asked.
+
+**One detached dev server per project**, and this is the rule the original design called for: the
+lock is read *before* anything is spawned, and a project that already has one gets the running
+server reported back with `alreadyRunning: true` and exit 0. Idempotent rather than an error,
+because the caller asked for a dev server and there is one. `acquireDevServerLockAsync` already
+answers `in-use` and `holdLock.ts` deliberately swallows it — that is right for two *foreground*
+servers, which people run on purpose in two terminals, and wrong for a second detached one, which
+nobody could find.
+
+**The log is one file per project, truncated per run**: `.expo/dev/logs/dev-detached.log`, in the
+directory `src/utils/dotExpo.ts` already documents as per-run logs. A name carrying the port could
+not be resolved by `dev:logs` before the port was known, and a file that accumulated across runs
+would answer "what is my dev server doing" with what it did last week.
+
+**`dev:logs` has no `--follow`.** A tail that never returns is the thing `--detach` exists to avoid:
+it would hold the shell open again, and a stream with no end is not something a driving agent can
+read. It polls instead, and each read is a bounded, quotable answer — last 100 lines by default,
+ANSI stripped, fenced as untrusted per [[0008-guardrails]]. A dev server started *attached* has no
+log at all, and the command says that rather than reporting an empty file: its output went to
+somebody's terminal, and there was never going to be a file.
+
+Exit codes: `dev --detach` exits `0` when a dev server is up (started or already there), `1` when
+the child never published a lock, and `1` when `--wait-ready` gave up — the server is still running
+there, which the message says. `dev:logs` exits `0` for a log and `1` (`NO_DEV_LOG`) when the
+project has none.
+
+## A busy port is not a step only a person can complete
+
+Decision [confirmed — friction run 4, 2026-08-24]. When the Expo CLI stops on `Use port 8181
+instead?`, `exagent dev` picks a free port itself and runs the step again — unless the caller named
+`--port`, and then it is exit `20`.
+
+This was exit `7` with `needsHuman.scenario: "expo-prompt"`, a `suggestedCommand` that re-ran the
+identical failing command, and a `How:` line naming the flag the caller had just passed
+[observed — F41, friction run 4]. Every part of that is wrong for this one question: no account, no
+permission and no click is involved, so nothing about it needs a person.
+
+The carve-out lives in `src/dev/portCollision.ts` and is checked *before* the needs-human
+classifier, not as a negative signature in the registry: the recovery is "pick a port and run the
+step again", which is the caller's to perform and cannot be expressed as a registry row.
+`expo-prompt` still covers every other question the Expo CLI asks, and its `How:` no longer mentions
+ports.
+
+**A named `--port` is a requirement, not a preference.** Moving the dev server somewhere else would
+leave every URL and every command the caller had already written pointing at nothing, so that case
+fails with `PORT_IN_USE` and exit `20` (the outcome failed — llp/0010), naming the pid that holds
+the port and recovering into a *different* command: `dev:stop --port <n> --force`, or a free port.
+Never the command that just failed. When the process on that port is this project's own dev server —
+the lock says so — the message says that instead, because then there is nothing to fix.
+
+One retry per plan. A second collision means the port this CLI picked was taken between the bind
+test and the dev server's own bind, and retrying forever on that is a loop nobody asked for.
+
 ## Implemented in v1 as
 
 [observed — implementation, 2026-08-22] The engine shipped in `packages/exagent` (`src/project/`, `src/plan/`, `src/status/`, `src/dev/`, `exagent dev [--plan]`) with these deliberate approximations of the table above:
