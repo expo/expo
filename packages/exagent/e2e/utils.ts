@@ -8,6 +8,7 @@ import type { AddressInfo } from 'node:net';
 import os from 'node:os';
 import path from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
+import { WebSocketServer, type WebSocket } from 'ws';
 
 /** The `exagent` bin, spawned as a subprocess in every e2e test. Requires `pnpm build` first. */
 export const bin = path.resolve(__dirname, '../bin/exagent.js');
@@ -469,6 +470,25 @@ export type StubDevServerOptions = {
   bundle?: 'compiles' | 'broken' | 'no-manifest';
   /** Delay before the entry bundle answers, standing in for a cold first build. */
   bundleDelayMs?: number;
+  /**
+   * How the stub answers on `/message`, the client command socket `exagent reload` broadcasts on.
+   *
+   * - `v2` — the real protocol: every frame carries `version: 2`, `getpeers` is answered, and a
+   *   `reload` broadcast replaces the reported peer ids, which is what a reloading app does.
+   * - `deaf` — the socket opens and nothing is ever answered. This is a dev server speaking
+   *   another protocol version, which drops a frame it cannot read without an error.
+   * - `no-churn` — `getpeers` is answered but a broadcast changes nothing, i.e. the app did not
+   *   act on the reload.
+   * - `none` — no socket is mounted at all, so the upgrade is refused.
+   */
+  messageSocket?: 'v2' | 'deaf' | 'no-churn' | 'none';
+  /**
+   * Clients `getpeers` reports before any reload. Defaults to one that looks like an iOS app.
+   *
+   * An empty object is a dev server nothing has connected to, which is the case where there is
+   * nothing to reload.
+   */
+  messagePeers?: Record<string, string | null>;
 };
 
 /** The `TransformError` body Metro answers a broken build with, recorded from an SDK 57 app. */
@@ -537,6 +557,8 @@ export async function startStubDevServerAsync({
   projectRoot = '/stub-project',
   bundle = 'compiles',
   bundleDelayMs = 0,
+  messageSocket = 'v2',
+  messagePeers = { 'socket#1': 'role=ios' },
 }: StubDevServerOptions = {}): Promise<StubDevServer> {
   let port = 0;
   const server: Server = createServer((request, response) => {
@@ -622,6 +644,52 @@ export async function startStubDevServerAsync({
     response.writeHead(404).end();
   });
 
+  // The client command socket, mounted the way the real dev server mounts it: an exact-path
+  // upgrade on `/message`. This is a double for the *protocol*, so the `version: 2` stamp and the
+  // `getpeers` request/response pair are reproduced verbatim — they are the two things a change
+  // upstream would break, and they are invisible to a unit test.
+  let peers: Record<string, string | null> = { ...messagePeers };
+  let nextPeerId = 100;
+  const messageServer = messageSocket === 'none' ? null : new WebSocketServer({ noServer: true });
+  messageServer?.on('connection', (socket: WebSocket) => {
+    socket.on('message', (data) => {
+      if (messageSocket === 'deaf') {
+        return;
+      }
+      let message: { version?: unknown; method?: unknown; target?: unknown; id?: unknown };
+      try {
+        message = JSON.parse(String(data));
+      } catch {
+        return;
+      }
+      // A frame without the current protocol version is dropped with no answer, exactly as
+      // `parseRawMessage` drops it.
+      if (message.version !== 2) {
+        return;
+      }
+      if (message.target === 'server' && message.method === 'getpeers') {
+        socket.send(JSON.stringify({ id: message.id, result: peers, version: 2 }));
+        return;
+      }
+      if (message.method === 'reload' && message.target === undefined && messageSocket === 'v2') {
+        // An app that acts on the reload drops its connection and makes a new one, which the dev
+        // server registers under an id it has never used before.
+        peers = Object.fromEntries(
+          Object.values(peers).map((query) => [`socket#${nextPeerId++}`, query])
+        );
+      }
+    });
+  });
+  server.on('upgrade', (request, socket, head) => {
+    if (messageServer && (request.url ?? '').split('?')[0] === '/message') {
+      messageServer.handleUpgrade(request, socket as never, head, (ws) => {
+        messageServer.emit('connection', ws, request);
+      });
+      return;
+    }
+    socket.destroy();
+  });
+
   // Nothing keeps the test process alive because of the stub: a test that forgets to close one
   // fails on its assertions, not on a jest run that never ends.
   server.unref();
@@ -639,6 +707,10 @@ export async function startStubDevServerAsync({
     close: () =>
       new Promise<void>((resolve) => {
         // Any request left waiting on `statusDelayMs` holds the server open otherwise.
+        for (const client of messageServer?.clients ?? []) {
+          client.terminate();
+        }
+        messageServer?.close();
         server.closeAllConnections?.();
         server.close(() => resolve());
       }),

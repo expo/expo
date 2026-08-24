@@ -602,6 +602,21 @@ describe(navigateAsync, () => {
       await expect(navigateAsync(projectRoot, options({ route: '/anything' }))).resolves.toBe(0);
     });
 
+    // A chalk template inside an interpolation is a plain template literal, which prints its
+    // `{dim …}` markers verbatim. The whole line is the report a human reads, so it is asserted.
+    it(`should name the matched route in the human summary, with no markup left in it`, async () => {
+      mockRouterProject(['index.tsx', 'notes.tsx']);
+      mockDevServer([EXPO_GO_TARGET]);
+      mockSpawnQueue([{ stdout: BOOTED_SIMULATOR }, { stdout: '' }]);
+
+      await navigateAsync(projectRoot, options({ route: '/notes' }));
+
+      expect(printed()).toContain('/notes');
+      expect(printed()).toContain('3 routes in this project');
+      expect(printed()).not.toContain('{dim');
+      expect(printed()).not.toContain('{bold');
+    });
+
     it(`should not judge a full URL against this project's routes`, async () => {
       mockRouterProject(['index.tsx']);
       mockDevServer([EXPO_GO_TARGET]);

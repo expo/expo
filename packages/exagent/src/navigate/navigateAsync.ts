@@ -229,8 +229,12 @@ export async function navigateAsync(
         chalk`{dim  ${result.command}}`,
         chalk`{bold Route} ${
           routeCheck.ok
-            ? `${routeCheck.matched}{dim  · 1 of ${routeCheck.routeCount} routes in ${routeCheck.matched === route ? 'this project' : 'this project, matched as a pattern'}}`
-            : chalk`{dim not checked · ${routeCheck.reason}}`
+            ? `${routeCheck.matched}${chalk.dim(
+                ` · 1 of ${routeCheck.routeCount} routes in this project${
+                  routeCheck.matched === route ? '' : ', matched as a pattern'
+                }`
+              )}`
+            : chalk.dim(`not checked · ${routeCheck.reason}`)
         }`,
       ].join('\n')
     );
