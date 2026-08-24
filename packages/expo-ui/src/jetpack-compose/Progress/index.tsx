@@ -141,7 +141,8 @@ export type WavyProgressCommonConfig = {
    */
   amplitude?: number;
   /**
-   * Length of a single wave in dp. The value is adjusted so a whole number of waves fits the track.
+   * Length of a single wave in dp. `CircularWavyProgressIndicator` rounds this to fit a whole
+   * number of waves around the ring, so the wave it draws can be slightly shorter or longer.
    */
   wavelength?: number;
   /**
