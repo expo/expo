@@ -6,6 +6,10 @@ jest.mock('@expo/spawn-async');
 jest.mock('fs');
 const mockedSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
 
+beforeEach(() => {
+  mockedSpawnAsync.mockReset();
+});
+
 describe(applyPatchAsync, () => {
   it('should throw if git is not installed', async () => {
     const error = new Error('spawn git ENOENT');
@@ -23,7 +27,6 @@ describe(applyPatchAsync, () => {
   });
 
   it('should not scope the patch when the project is the repository root', async () => {
-    mockedSpawnAsync.mockReset();
     // @ts-expect-error: `git rev-parse --show-prefix` reports no prefix
     mockedSpawnAsync.mockResolvedValue({ stdout: '', stderr: '' });
 
@@ -37,7 +40,6 @@ describe(applyPatchAsync, () => {
   });
 
   it('should scope the patch to the project directory inside a monorepo', async () => {
-    mockedSpawnAsync.mockReset();
     // @ts-expect-error: `git rev-parse --show-prefix` reports the nested project path
     mockedSpawnAsync.mockResolvedValue({ stdout: 'apps/mobile/', stderr: '' });
 
@@ -58,7 +60,6 @@ describe(applyPatchAsync, () => {
 
 describe(isPatchAppliedAsync, () => {
   it('should return true when the patch reverse-applies cleanly', async () => {
-    mockedSpawnAsync.mockReset();
     // @ts-expect-error: `git rev-parse --show-prefix` then `git apply --reverse --check`
     mockedSpawnAsync.mockResolvedValue({ stdout: '', stderr: '' });
 
@@ -72,7 +73,6 @@ describe(isPatchAppliedAsync, () => {
   });
 
   it('should check the patch against the project directory inside a monorepo', async () => {
-    mockedSpawnAsync.mockReset();
     // @ts-expect-error: `git rev-parse --show-prefix` reports the nested project path
     mockedSpawnAsync.mockResolvedValue({ stdout: 'apps/mobile/', stderr: '' });
 
@@ -95,7 +95,6 @@ describe(isPatchAppliedAsync, () => {
   });
 
   it('should return false when the patch is not applied', async () => {
-    mockedSpawnAsync.mockReset();
     // @ts-expect-error: `git rev-parse --show-prefix` succeeds, the reverse check does not
     mockedSpawnAsync.mockResolvedValueOnce({ stdout: '', stderr: '' });
     mockedSpawnAsync.mockRejectedValueOnce(new Error('error: patch does not apply'));
@@ -119,7 +118,6 @@ describe(getPatchChangedLinesAsync, () => {
     const mockPatchContent = `\
 1\t1\tandroid/app/build.gradle
 1\t3\tandroid/app/src/main/java/com/helloworld/MainApplication.kt`;
-    mockedSpawnAsync.mockReset();
     // @ts-expect-error: `git rev-parse --show-prefix` reports no prefix
     mockedSpawnAsync.mockResolvedValueOnce({ stdout: '', stderr: '' });
     // @ts-expect-error
@@ -130,7 +128,6 @@ describe(getPatchChangedLinesAsync, () => {
 
   it('should support movement semantic', async () => {
     const mockPatchContent = `0\t0\tbabel.config.js => babel.config.cjs`;
-    mockedSpawnAsync.mockReset();
     // @ts-expect-error: `git rev-parse --show-prefix` reports no prefix
     mockedSpawnAsync.mockResolvedValueOnce({ stdout: '', stderr: '' });
     // @ts-expect-error
@@ -140,7 +137,6 @@ describe(getPatchChangedLinesAsync, () => {
   });
 
   it('should count changed lines from the project directory inside a monorepo', async () => {
-    mockedSpawnAsync.mockReset();
     // @ts-expect-error: `git rev-parse --show-prefix` reports the nested project path
     mockedSpawnAsync.mockResolvedValueOnce({ stdout: 'apps/mobile/', stderr: '' });
     // @ts-expect-error
@@ -169,7 +165,6 @@ describe(getPatchChangedLinesAsync, () => {
 
   it('should support movement semantic with extra changes', async () => {
     const mockPatchContent = `2\t0\tbabel.config.js => babel.config.cjs`;
-    mockedSpawnAsync.mockReset();
     // @ts-expect-error: `git rev-parse --show-prefix` reports no prefix
     mockedSpawnAsync.mockResolvedValueOnce({ stdout: '', stderr: '' });
     // @ts-expect-error
