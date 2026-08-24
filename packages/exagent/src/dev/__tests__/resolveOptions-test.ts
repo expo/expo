@@ -11,6 +11,9 @@ describe(resolveDevOptions, () => {
       followups: true,
       checkpoint: true,
       yes: false,
+      // Read, and still forwarded: `--port` is an `expo start` flag, and the plan's last step is
+      // what acts on it. Reading it only lets this command validate it and name it in a URL.
+      port: 8082,
     });
   });
 
@@ -24,6 +27,7 @@ describe(resolveDevOptions, () => {
       followups: true,
       checkpoint: true,
       yes: false,
+      port: null,
     });
   });
 
@@ -41,6 +45,7 @@ describe(resolveDevOptions, () => {
       followups: true,
       checkpoint: true,
       yes: false,
+      port: 8082,
     });
   });
 
@@ -90,6 +95,7 @@ describe(resolveDevOptions, () => {
       followups: true,
       checkpoint: true,
       yes: false,
+      port: null,
     });
   });
 
@@ -111,6 +117,7 @@ describe(resolveDevOptions, () => {
       followups: false,
       checkpoint: true,
       yes: false,
+      port: null,
     });
   });
 
@@ -124,5 +131,34 @@ describe(resolveDevOptions, () => {
     expect(options.checkpoint).toBe(false);
     expect(options.expoArgs).toEqual([]);
     expect(resolveDevOptions([]).checkpoint).toBe(true);
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — `--port` is the answer to the
+  // one question `exagent dev` cannot be asked, so an unusable value is reported here and not by
+  // `expo start` a minute later.
+  describe('--port', () => {
+    it(`should read every spelling of the flag`, () => {
+      expect(resolveDevOptions(['--port', '8082']).port).toBe(8082);
+      expect(resolveDevOptions(['--port=8082']).port).toBe(8082);
+      expect(resolveDevOptions(['-p', '8082']).port).toBe(8082);
+    });
+
+    it(`should be null when the flag is not passed`, () => {
+      expect(resolveDevOptions([]).port).toBeNull();
+      expect(resolveDevOptions(['--ios']).port).toBeNull();
+    });
+
+    it(`should reject a value that is not a port`, () => {
+      expect(() => resolveDevOptions(['--port', 'abc'])).toThrow(/must be a port number/);
+      expect(() => resolveDevOptions(['--port', '0'])).toThrow(/must be a port number/);
+      expect(() => resolveDevOptions(['--port', '70000'])).toThrow(/must be a port number/);
+      expect(() => resolveDevOptions(['--port'])).toThrow(/must be a port number/);
+    });
+
+    // Everything after the separator is forwarded to something else, so a `--port` there is that
+    // tool's flag and this command has no opinion about it.
+    it(`should ignore a port after the separator`, () => {
+      expect(resolveDevOptions(['--', '--port', 'abc']).port).toBeNull();
+    });
   });
 });

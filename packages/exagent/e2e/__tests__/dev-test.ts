@@ -73,6 +73,7 @@ describe('exagent dev', () => {
     // The options of the action the bare name runs, in the listing's own output.
     expect(result.all).toContain('--plan');
     expect(result.all).toContain('--yes');
+    expect(result.all).toContain('--port');
     // The listing comes first: the options belong to the action it just named.
     expect(result.all.indexOf('dev:wait')).toBeLessThan(result.all.indexOf('--plan'));
   });
@@ -167,6 +168,114 @@ describe('exagent dev', () => {
         ios: RECORDED_HASH,
         android: RECORDED_HASH,
       });
+    });
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope, §Needs-human protocol
+  // `exagent dev --yes` is the documented non-interactive entry point. On a busy port it started
+  // nothing, appended the subprocess log to its own JSON, exited 1, and told its caller to open a
+  // dev server it had not started [observed — friction run, 2026-08-23].
+  describe('a run with no terminal', () => {
+    /** The non-interactive stop of the Expo CLI, verbatim, as a busy 8081 produces it. */
+    const NEEDS_INPUT =
+      "Input is required, but 'npx expo' is in non-interactive mode.\nRequired input:\n> Use port 8082 instead?";
+
+    it('prints exactly one JSON object, with no subprocess output after it', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json']);
+
+      expect(result.exitCode).toBe(0);
+      // The property, checked as the property: the stub writes its own lines on stdout, and this
+      // is what used to make `JSON.parse` fail at the byte after the closing brace.
+      expect(JSON.parse(result.stdout)).toMatchObject({ target: 'expo-go', rule: 'expo-go' });
+      expect(result.stdout).not.toContain('stub_expo_start');
+    });
+
+    it('exits 7 with the handoff when the Expo CLI needs an answer', async () => {
+      const projectRoot = await setupAsync('go-app');
+      const eventsFile = path.join(projectRoot, 'events.jsonl');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json'], {
+        env: { STUB_EXPO_EXIT_CODE: '1', STUB_EXPO_STDERR: NEEDS_INPUT, LOG_EVENTS: eventsFile },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(7);
+      expect(result.stderr).toContain('Needs a human   expo-prompt');
+      // The way out is the flag that answers the question before it is asked.
+      expect(result.stderr).toContain('npx exagent dev --port 8082');
+      // And the same failure as data, since JSON was asked for.
+      expect(JSON.parse(result.stdout).error).toMatchObject({
+        code: 'EXPO_NEEDS_INPUT',
+        needsHuman: { scenario: 'expo-prompt' },
+      });
+      const events = fs
+        .readFileSync(eventsFile, 'utf8')
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => JSON.parse(line));
+      expect(events.find((entry) => entry._e === 'cli:needs_human')).toMatchObject({
+        scenario: 'expo-prompt',
+      });
+    });
+
+    it('exits 7 in human mode too, where the output is still captured', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--yes'], {
+        env: { STUB_EXPO_EXIT_CODE: '1', STUB_EXPO_STDERR: NEEDS_INPUT },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(7);
+      expect(result.stderr).toContain('Needs a human   expo-prompt');
+      // The tool's own output still reaches the terminal as it arrives.
+      expect(result.stdout).toContain('stub_expo_start');
+    });
+
+    // The follow-ups of a run that started nothing may not name a dev server.
+    it('names no dev-server URL when the run started none', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--yes', '--json'], {
+        env: { STUB_EXPO_EXIT_CODE: '9' },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(9);
+      const followups = JSON.parse(result.stdout).followups as { id: string; command: string }[];
+      expect(followups.map((followup) => followup.id)).toContain('dev-server-port-unknown');
+      expect(followups.some((followup) => followup.command.startsWith('exp://'))).toBe(false);
+    });
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — the documented way to avoid the
+  // port question entirely.
+  describe('--port', () => {
+    it('forwards the port to the dev server and names it in the follow-ups', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--json', '--port', '8124'], {
+        env: { STUB_EXPO_DEV_SERVER_PORT: '8124' },
+      });
+
+      expect(result.exitCode).toBe(0);
+      expect(invocationArgs(projectRoot)).toEqual([['start', '--go', '--port', '8124']]);
+      const followups = JSON.parse(result.stdout).followups as { command: string }[];
+      expect(followups.some((followup) => followup.command.endsWith(':8124'))).toBe(true);
+    });
+
+    it('rejects a value that is not a port, before anything runs', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['dev', '--port', 'abc'], {
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain('--port must be a port number');
+      expect(invocationArgs(projectRoot)).toEqual([]);
     });
   });
 

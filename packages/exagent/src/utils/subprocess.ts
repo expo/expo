@@ -236,7 +236,12 @@ function printerFor(
   filter: ((line: string) => string | null) | undefined
 ): { write(text: string): void; flush(): void } {
   if (!filter) {
-    return { write: (text) => void stream.write(text), flush: () => {} };
+    return {
+      write(text: string) {
+        stream.write(text);
+      },
+      flush() {},
+    };
   }
 
   let pending = '';
