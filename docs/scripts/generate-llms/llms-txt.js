@@ -7,6 +7,7 @@ import { getMarkdownUrl, toBlockquote } from './shared.js';
 import { EXPO_DESCRIPTION, PAGE_DESCRIPTION_OVERRIDES } from './transforms/descriptions.js';
 import { MISCONCEPTIONS_SECTION } from './transforms/misconceptions.js';
 import { PERFORMANCE_SECTION } from './transforms/performance.js';
+import { WHEN_TO_USE_SECTION } from './transforms/when-to-use.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
@@ -69,6 +70,7 @@ function generateFullMarkdown({ title, description, sections }) {
 
   return (
     `# ${title}\n\n${toBlockquote(description)}\n\n` +
+    WHEN_TO_USE_SECTION +
     MISCONCEPTIONS_SECTION +
     PERFORMANCE_SECTION +
     filteredSections.map(generateSectionMarkdown).join('').trimEnd() +
