@@ -196,7 +196,7 @@ declare module '2g' {
       pluginCount: number;
       /** How many of them the app config declared; the rest are auto-applied. */
       declaredPluginCount: number;
-      autolinkedModuleCount: number;
+      expoAutolinkedModuleCount: number;
       /** How long the `expo config` subprocess took. */
       durationMs: number;
     };
@@ -210,6 +210,17 @@ declare module '2g' {
       parse: 'full' | 'best-effort' | 'failed';
       /** The code expo-doctor exited with, which the command mirrors. */
       exitCode: number | null;
+    };
+    /**
+     * One `exagent typecheck` run. Counts only: a diagnostic quotes the project's own identifiers
+     * and types, which is not something to put on a telemetry stream.
+     */
+    'cli:typecheck': {
+      /** Whether a compiler ran at all. False for a project with no TypeScript in it. */
+      checked: boolean;
+      errorCount: number;
+      /** How long the compiler took. `0` when it never ran. */
+      durationMs: number;
     };
     'cli:navigate': {
       route: string;

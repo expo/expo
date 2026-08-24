@@ -3,6 +3,7 @@ import {
   isUnmappedFrame,
   parseStackFrames,
   relativizeFrame,
+  splitMethodContext,
   splitTextStack,
   symbolicateFramesAsync,
   trimBundleUrl,
@@ -80,6 +81,55 @@ describe(parseStackFrames, () => {
     const line = '  at App (App.tsx:3:9)';
 
     expect(formatStackFrames(parseStackFrames(line))).toBe(line);
+  });
+
+  // The frame F30 was written for, byte for byte [observed — friction run 3, 2026-08-23: notesapp,
+  // a ReferenceError thrown from a component the React Compiler had compiled].
+  it(`should read the location out of the last parenthesised group of a compiled frame`, () => {
+    const line =
+      '  at HomeScreen (./index.tsx) ' +
+      '(http://127.0.0.1:8163/node_modules/expo-router/entry.bundle:192491:38)';
+
+    expect(parseStackFrames(line)).toEqual([
+      {
+        methodName: 'HomeScreen',
+        sourceHint: './index.tsx',
+        file: 'http://127.0.0.1:8163/node_modules/expo-router/entry.bundle',
+        lineNumber: 192491,
+        column: 37,
+      },
+    ]);
+  });
+
+  it(`should round-trip a compiled frame through the renderer`, () => {
+    const line = '  at HomeScreen (./index.tsx) (http://127.0.0.1:8163/entry.bundle:192491:38)';
+
+    expect(formatStackFrames(parseStackFrames(line))).toBe(line);
+  });
+
+  // A location whose own path holds parentheses is still the last group, so the greedy name group
+  // has to give it back rather than claim it.
+  it(`should keep a location whose path holds parentheses`, () => {
+    expect(parseStackFrames('  at App (/project/src (copy)/App.tsx:3:9)')).toEqual([
+      { methodName: 'App', file: '/project/src (copy)/App.tsx', lineNumber: 3, column: 8 },
+    ]);
+  });
+});
+
+describe(splitMethodContext, () => {
+  it(`should split the compiled source hint off the function name`, () => {
+    expect(splitMethodContext('HomeScreen (./index.tsx)')).toEqual({
+      methodName: 'HomeScreen',
+      sourceHint: './index.tsx',
+    });
+  });
+
+  it(`should leave a plain function name alone`, () => {
+    expect(splitMethodContext('overrideMethod')).toEqual({ methodName: 'overrideMethod' });
+  });
+
+  it(`should name an empty context anonymous`, () => {
+    expect(splitMethodContext('   ')).toEqual({ methodName: '<anonymous>' });
   });
 });
 
@@ -183,6 +233,49 @@ describe(symbolicateFramesAsync, () => {
         collapse: false,
       },
     ]);
+  });
+
+  // The whole F30 path: the compiled frame is parsed, the corrected location is what Metro is
+  // asked about, and the answer is a `src/`-relative file with `collapse: false` — the two
+  // properties an agent filters its own code by, and the two the mangled `file` destroyed.
+  it(`should symbolicate the corrected location of a compiled frame`, async () => {
+    const calls = mockSymbolicator({
+      stack: [
+        {
+          file: '/project/src/app/index.tsx',
+          lineNumber: 32,
+          column: 17,
+          methodName: 'HomeScreen',
+          collapse: false,
+        },
+      ],
+    });
+    const [parsed] = parseStackFrames(
+      '  at HomeScreen (./index.tsx) ' +
+        '(http://127.0.0.1:8163/node_modules/expo-router/entry.bundle:192491:38)'
+    );
+
+    const frames = await symbolicateFramesAsync('http://127.0.0.1:8163', [parsed!]);
+
+    // `sourceHint` is this CLI's field, so the symbolicator is never sent it.
+    expect(calls[0].body).toEqual({
+      stack: [
+        {
+          methodName: 'HomeScreen',
+          file: 'http://127.0.0.1:8163/node_modules/expo-router/entry.bundle',
+          lineNumber: 192491,
+          column: 37,
+        },
+      ],
+    });
+    expect(relativizeFrame(frames[0]!, '/project')).toEqual({
+      methodName: 'HomeScreen',
+      sourceHint: './index.tsx',
+      file: 'src/app/index.tsx',
+      lineNumber: 32,
+      column: 17,
+      collapse: false,
+    });
   });
 
   // Metro hands an unmappable frame back unchanged, and Expo's hook nulls its line and column.

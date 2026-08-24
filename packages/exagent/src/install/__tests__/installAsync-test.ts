@@ -333,9 +333,75 @@ describe(installAsync, () => {
 
       expect(payload()).toMatchObject({
         installed: false,
-        check: { dependencies: [], upToDate: true },
+        check: {
+          ok: true,
+          report: { dependencies: [], upToDate: true },
+          output: null,
+          notes: [],
+        },
         checkpoint: null,
       });
+      // A passing check has nothing to add, and the CLI's own report is the answer, so its stdout
+      // does not also arrive on stderr.
+      expect(jest.mocked(Log.error)).not.toHaveBeenCalled();
     });
+
+    // F29: the Expo CLI throws `PACKAGE_NOT_FOUND` before it prints its report, so stdout is empty
+    // and the whole diagnosis is in what it wrote to stderr — which this command used to suppress,
+    // leaving an agent with exit 1, a success-shaped object and zero bytes anywhere.
+    it(`should carry the diagnosis when the check failed before printing a report`, async () => {
+      jest.mocked(spawnExpoAsync).mockResolvedValue({
+        cli: { command: 'expo', args: [] },
+        result: {
+          exitCode: 1,
+          stdout: '',
+          stderr:
+            '"@react-native-async-storage/async-storage" is added as a dependency in your project\'s package.json but it doesn\'t seem to be installed.\n',
+        },
+      });
+
+      await expect(
+        installAsync(
+          projectRoot,
+          resolveInstallPlan(['--check', '--json', '@react-native-async-storage/async-storage'])
+        )
+      ).resolves.toBe(1);
+
+      const check = payload().check;
+      expect(check.ok).toBe(false);
+      expect(check.report).toBeNull();
+      expect(check.output).toContain('doesn\'t seem to be installed');
+      // And the Expo CLI's claim about package.json is corrected, because this command read it.
+      expect(check.notes).toHaveLength(1);
+      expect(check.notes[0]).toContain(
+        `"@react-native-async-storage/async-storage" is not in this project's package.json`
+      );
+      expect(check.notes[0]).toContain('npx exagent install');
+      // The verdict is never only in a key the caller might not read.
+      expect(jest.mocked(Log.error).mock.calls.flat().join('\n')).toContain(
+        'doesn\'t seem to be installed'
+      );
+    });
+  });
+
+  // The same correction reaches the terminal, where the Expo CLI printed the claim itself.
+  it(`should correct the Expo CLI's package.json claim in a human --check run`, async () => {
+    jest.mocked(runExpoAsync).mockResolvedValue(1);
+
+    await expect(
+      installAsync(projectRoot, resolveInstallPlan(['--check', 'expo-camera']))
+    ).resolves.toBe(1);
+
+    expect(jest.mocked(Log.error).mock.calls.flat().join('\n')).toContain(
+      `"expo-camera" is not in this project's package.json`
+    );
+  });
+
+  it(`should stay quiet about a check that passed`, async () => {
+    jest.mocked(runExpoAsync).mockResolvedValue(0);
+
+    await installAsync(projectRoot, resolveInstallPlan(['--check', 'expo-camera']));
+
+    expect(jest.mocked(Log.error)).not.toHaveBeenCalled();
   });
 });

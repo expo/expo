@@ -4,7 +4,7 @@
 // dev server.
 import type CdpMessageType from 'devtools-protocol';
 
-import type { StackFrame } from './symbolicate';
+import { splitMethodContext, type StackFrame } from './symbolicate';
 
 /** Formatted view of a CDP exception, ready to show to a caller. */
 export interface FormattedCdpException {
@@ -59,12 +59,19 @@ export function formatCdpStackTrace(
 export function cdpStackFrames(stackTrace?: CdpMessageType.Runtime.StackTrace): StackFrame[] {
   return (stackTrace?.callFrames ?? [])
     .filter((frame) => !!frame.url)
-    .map((frame) => ({
-      methodName: frame.functionName || '<anonymous>',
-      file: frame.url,
-      lineNumber: (frame.lineNumber ?? 0) + 1,
-      column: frame.columnNumber ?? 0,
-    }));
+    .map((frame) => {
+      // The React Compiler writes the original module into the function's own name, so a
+      // `functionName` arrives as `HomeScreen (./index.tsx)`. Split here as well as in the text
+      // parser, so a frame has one shape whichever way the runtime reported it.
+      const { methodName, sourceHint } = splitMethodContext(frame.functionName || '<anonymous>');
+      return {
+        methodName,
+        file: frame.url,
+        lineNumber: (frame.lineNumber ?? 0) + 1,
+        column: frame.columnNumber ?? 0,
+        ...(sourceHint == null ? null : { sourceHint }),
+      };
+    });
 }
 
 /** Extracts the message, stack, and source location from CDP exception details. */

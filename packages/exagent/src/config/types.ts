@@ -54,7 +54,22 @@ export interface EffectiveConfigReport {
   /** One entry per platform asked for, dropped when introspection produced nothing for it. */
   platforms: { [platform: string]: PlatformMods };
   plugins: EffectivePlugin[];
-  autolinkedModules: string[];
+  /**
+   * Packages **Expo-module autolinking** links, e.g. `expo-camera`.
+   *
+   * Named for its scope, because the scope is the whole trap. The list comes from
+   * `_internal.autolinkedModules`, which the prebuild config fills from the Expo autolinking
+   * resolver, so it holds packages that ship an `expo-module.config.json` and nothing else. A React
+   * Native community module with an `ios/`, an `android/` and a podspec — the shape
+   * `exagent install` classifies as `native-module` — is linked by React Native's own autolinking
+   * and never appears here [observed — friction run 3, F35: `@react-native-async-storage/
+   * async-storage` was classified `native-module` by one command and absent from this list in the
+   * next]. Under the old name `autolinkedModules`, an agent asking "is my native dependency
+   * linked?" was told no by a list that had never been asked the question.
+   */
+  expoAutolinkedModules: string[];
+  /** One sentence stating that scope, so the `--json` reader is told it too. */
+  expoAutolinkedModulesNote: string;
   /**
    * Mods introspection cannot evaluate, so their absence above means "not answered" rather than
    * "nothing changed it" [observed — `packages/@expo/config-plugins/src/plugins/mod-compiler.ts`

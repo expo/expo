@@ -28,4 +28,5 @@ export {
   type StartFollowUpInput,
 } from './start';
 export { buildStatusFollowUps } from './status';
+export { buildTypeCheckFollowUps, type TypeCheckFollowUpInput } from './typecheck';
 export { capFollowUps, MAX_FOLLOWUPS, type FollowUp } from './types';

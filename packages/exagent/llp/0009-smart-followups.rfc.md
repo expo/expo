@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `packages/exagent` (all commands); JSONL event registry
+**Systems:** `packages/exagent` (all commands, `src/followups/`); JSONL event registry
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-22
 **Related:** [[0006-agent-native-cli-surface]], [[0004-smart-start-and-project-state]], [[0003-knowledge-tools-and-skills]]
@@ -32,6 +32,46 @@ Seed [confirmed — Kudo, 2026-08-22]: the CLI should be smart about attaching w
 - `run/build success`: → freshness recorded; → `eas build` to ship, `eas update` for OTA.
 - `new`: → `exagent start`; → `exagent status` to orient.
 - `status`: already carries "next" by design ([[0004-smart-start-and-project-state]]).
+
+## Where the typecheck rung goes
+
+Decision [confirmed — Kudo, 2026-08-23]. `exagent typecheck` is a rung of three existing ladders,
+and the cap of three is what makes *which* rung it replaces a decision rather than an addition.
+
+The finding [observed — friction run 3, F34]: a feature was finished with `dev:wait` at 0,
+`runtime:errors --fail-on-error` at 0 and `doctor` at 21/21, and `npx tsc --noEmit` then found seven
+errors — `Spacing.md` on a constant that has no `md` among them, which is `undefined` at runtime, so
+the screen rendered with `padding: undefined` and text flush to the edge. Nothing threw, so
+`runtime:errors` was right to report nothing; nothing failed to transform, so `dev:wait` was right
+too. An agent following the CLI's own follow-ups would have shipped it, and that is the half this
+document owns: the gate existing is [[0010-agent-conventions]]'s problem, and the gate being
+*reachable from where the agent already is* is this one's.
+
+Three places, and the reason is different in each:
+
+- **`runtime:errors` on an empty window** — second rung, after `runtime-errors-reproduce`. This is
+  where the rung earns the most: an empty window means "nothing happened while I watched", and the
+  reading it invites is "the app is fine". The bug this command cannot see does not throw at all,
+  so the contradiction belongs next to the answer that invites it. The reproduce rung stays first,
+  because the window really may have missed a throw, and that is the cheaper thing to rule out.
+- **`dev:wait` on a ready bundle** — second rung, after `dev-wait-runtime-errors`. Nothing is
+  replaced: that ladder had one rung and room for three. The bundle compiling and the app not
+  throwing are two of the three gates, and this names the third.
+- **`install`** — **last**, so the cap decides. A package that ships an agent skill has something to
+  read *before* the code against it is written, and a type check on code that does not exist yet is
+  worth less than that; a package that ships none leaves the third slot free, which is the common
+  case, so the rung usually appears. This is the one place the rung is *allowed* to be crowded out,
+  and the ordering is what expresses that.
+
+Deliberately **not** added: the `dev:wait` broken-bundle ladder, whose single rung names the file
+the bundler stopped in. Type-checking a file that does not parse reports the same failure plus
+noise, and a ladder whose first rung is not the one thing worth doing is a ladder an agent stops
+reading.
+
+`typecheck`'s own ladder is the escalation ladder of §Wider ideas, spelled out for the three gates:
+a clean run offers `dev:wait` and then `runtime:errors --fail-on-error`, a failing one offers only
+itself, and a run that checked nothing — a project with no TypeScript — offers `dev:wait`, because
+"nothing was checked" must not read as "everything passed".
 
 ## Wider ideas from the same angle [inferred — brainstorm]
 

@@ -62,7 +62,7 @@ export async function printEffectiveConfigAsync(
     ),
     pluginCount: report.plugins.length,
     declaredPluginCount: report.plugins.filter((plugin) => plugin.declared).length,
-    autolinkedModuleCount: report.autolinkedModules.length,
+    expoAutolinkedModuleCount: report.expoAutolinkedModules.length,
     durationMs: report.source.durationMs,
   });
 

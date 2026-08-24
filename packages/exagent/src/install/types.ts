@@ -5,6 +5,7 @@
 
 import type { FollowUp } from '../followups/types';
 import type { InstallImpactReport } from '../project/types';
+import type { InstallCheckReport } from './checkReport';
 
 /** The one JSON object `exagent install --json` prints on stdout. */
 export interface InstallReport {
@@ -30,9 +31,13 @@ export interface InstallReport {
   /** Which of the installed packages ship an agent skill, by package name. */
   skillPackages: string[];
   /**
-   * The `expo install --check --json` payload, verbatim, or null when this was not a `--check`
-   * run. That report belongs to the Expo CLI and is passed through rather than restated.
+   * What `--check` found, or null when this was not a `--check` run.
+   *
+   * A report of this CLI's own with the Expo CLI's payload inside it, because passing that payload
+   * through verbatim made "the CLI printed no report" and "this was not a `--check` run" the same
+   * `null` — and the first of those is exactly what happens when the check fails hardest. See
+   * `./checkReport.ts`.
    */
-  check: unknown;
+  check: InstallCheckReport | null;
   followups: FollowUp[];
 }

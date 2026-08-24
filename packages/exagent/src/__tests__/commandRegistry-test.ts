@@ -614,6 +614,20 @@ describe(formatTopLevelHelp, () => {
 
 // The sections are the whole advertised surface: a command missing from them is a command an agent
 // reading `exagent --help` never learns about.
+// llp/0006 naming rule: a capability only this CLI has gets a verb of its own, and a name shared
+// with an `expo` command has to behave like that command. `typecheck` is the first, so it must not
+// be in the forwarded set — `expo` has no command by that name to forward to.
+describe('typecheck', () => {
+  it('is a top-level command of this CLI, not a forwarded one', () => {
+    expect(resolveCommand('typecheck', ['--json'])).toMatchObject({
+      kind: 'command',
+      name: 'typecheck',
+      argv: ['--json'],
+    });
+    expect(forwardedCommands).not.toContain('typecheck');
+  });
+});
+
 describe('helpSections', () => {
   it('names commands that all resolve to something runnable', () => {
     for (const { commands } of helpSections) {

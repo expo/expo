@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`, `src/utils/jsonMode.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
+**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`, `src/utils/jsonMode.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); `exagent typecheck` (`src/typecheck/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-23
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]]
@@ -156,6 +156,35 @@ A 500 whose body is *not* an Expo error page stays `unknown` — the conservatis
 decisions above is unchanged, and something else answering on that port has not shown this project
 to be broken.
 
+##### One error, one shape, whichever document answered
+
+Decision [confirmed — Kudo, 2026-08-23]. The `error` object is the same shape on both targets:
+`type` is populated on web too, and `filename` is project-relative on both.
+
+The finding [observed — friction run 3, F37]: the same file with the same syntax error, checked by
+the same command, came back as `{"type":"TransformError","filename":"src/app/index.tsx"}` for
+`--platform ios` and `{"type":null,"filename":"/Users/…/src/app/index.tsx"}` for `--platform web`.
+Both are true reports of what each document said, and together they are a shape a consumer cannot
+parse once. The two halves have different answers:
+
+- **`filename` is normalized, in one place.** Metro names the file relative to the project root and
+  the web error page names it absolutely, so the relativizing happens where every result leaves the
+  check rather than per reader. A file *outside* the project stays absolute, for the reason a stack
+  frame outside it does: `../../..` is not more useful than the path.
+- **`type` is derived on web, and the derivation is sound because of when the page exists.** The
+  page has no field for it, and the earlier code declined to invent one — correctly, as a rule about
+  inventing facts. What makes it not an invention is that the web dev server renders this page **in
+  place of** the bundle, so a page is only ever produced by a failure that stopped the build, and
+  the record's `level` says which kind stopped it: `resolution` is built from an
+  `UnableToResolveError` and everything else from Metro's `TransformError` [observed —
+  `@expo/log-box-utils` `parseWebBuildErrors`]. Two guards keep it honest — an explicit `type` on
+  the record wins, so the day the page carries the class this stops deriving anything; and `'error'`
+  is *not* read as one, because `LogBoxLog` fills that in for a record that named no type
+  [observed — `log-box/LogBoxLog.ts`, `data.type ?? 'error'`], which is the absence of an answer
+  wearing the shape of one. A record with no level at all still reports `null`.
+
+The upstream ask that would retire the derivation is recorded below.
+
 #### `checked` and `ok` move together
 
 Decision [confirmed — Kudo, 2026-08-23]. In the `--json` payload, `bundle.checked` is exactly
@@ -193,6 +222,56 @@ that the exit code closes everywhere else.
 Only `errors` has it. `runtime:network`'s failed requests are something it reports *about* the app —
 a 404 the app handles is not the command's operation failing — and there is no equivalent question
 for its exit code to answer.
+
+### The fourth: `typecheck`, and the gate the other three could not be
+
+[observed — 2026-08-23, `src/typecheck/`] `exagent typecheck` is the fourth command in the band, and
+the first one whose *whole reason to exist* is a class of failure the band's other members are
+structurally blind to.
+
+The finding [observed — friction run 3, F34]: a feature was finished with `dev:wait` at `0`,
+`runtime:errors --fail-on-error` at `0` and `doctor` at 21 of 21, and `npx tsc --noEmit` then
+reported seven errors. One of them was `Spacing.md` on a constant with no `md`, which evaluates to
+`undefined`, so the screen rendered with `padding: undefined` — every line of text flush against the
+left edge, in the screenshots, with every gate green. Both other gates were *correct*: nothing threw,
+so the error window was right to be empty, and nothing failed to transform, so the bundle check was
+right to pass. Green meant "it parses and does not throw", and an agent following the CLI's own
+follow-ups would have shipped it.
+
+| Code | The project                                                       | Where it is decided             |
+| ---- | ----------------------------------------------------------------- | ------------------------------- |
+| `0`  | type-checks, **or** has no TypeScript to check                    | `src/typecheck/typecheckAsync.ts` |
+| `20` | does not type-check; the diagnostics are the payload              | `src/typecheck/typecheckAsync.ts` |
+| `1`  | unknown: no runnable compiler, or one that failed saying nothing  | `CommandError`                  |
+
+Four details of that are decisions rather than transcription:
+
+- **A project with no TypeScript exits `0`, with `checked: false`.** Failing for the absence of
+  TypeScript would make the gate red for every JavaScript project forever, and a red that is not
+  about the code is a red nobody can act on — the same reasoning as `bundle.ok: null` in §The gate
+  has to ask about the _project_, and the same key pair reporting it. `reason` is present exactly
+  when `checked` is false, and the follow-up says so in a command as well as in a field, because
+  "nothing was checked" must not read as "everything passed".
+- **No compiler is ever fetched.** `doctor:check` falls back to `npx expo-doctor` and this
+  deliberately does not: `expo-doctor` is a tool you run *at* a project and its checks are its own,
+  while a type check is a function of the project's own compiler version, its `tsconfig.json` and
+  its `@types` — so a compiler from the registry would answer a question about a project that does
+  not exist. Only `node_modules/.bin/tsc` counts.
+- **A compiler that failed and printed nothing readable is `1`, not `20`.** Every verdict this
+  command reports is read back out of what the compiler printed, so a failure with no diagnostic in
+  it has not answered the question. Reporting it as an outcome would send an agent looking for a type
+  error that was never reported. The error quotes what the compiler did print and names the exact
+  command to re-run by hand.
+- **Both output forms are parsed.** `--pretty false` is what the compiler is asked for, and `pretty`
+  is a *compiler option* as well as a flag, so a project can set it in its own `tsconfig.json` and
+  what runs is whatever the project has under that name — an assumption, not a fact, exactly as §The
+  binary may not be the CLI says. A parser that knew only the terse form would report "no errors"
+  for a project whose compiler printed the other one, which is the one answer a gate must never
+  give. Both recordings are committed, from one run of one project, and a test asserts they parse to
+  the same answer.
+
+Where the command is reachable from — which follow-up ladders gained the rung, and which rung it
+replaces in each — is [[0009-smart-followups]] §Where the typecheck rung goes.
 
 ## Needs-human protocol
 
@@ -449,6 +528,13 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
   `EXPO_NO_WATCH`-style variable of its own, or letting the existing `--non-interactive` spelling
   cover the prompt half, would retire §The dev server is the exception, and `CI` is why.
 - Emit `cli:error` JSONL for every command error, with a `needsInput` flag — the event contract of llp/0006 §Output contract, extended so a wrapper can see that a prompt is what stopped the command.
+- Put the Metro error class on the web dev server's static error page. `parseWebBuildErrors` knows
+  it — it branches on `error.type === 'TransformError'` and on `UnableToResolveError`'s own fields —
+  and then drops it, so the record the page carries has `type: 'error'`, which `LogBoxLog` filled in
+  [observed — `@expo/log-box-utils/src/utils/parseWebBuildErrors.ts`, `log-box/LogBoxLog.ts`].
+  Carrying the class through would retire §One error, one shape, whichever document answered.
+  Reporting the file the way the native bundler reports it — relative to the project root, rather
+  than `${projectRoot}/${error.filename}` — would retire the other half.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.
 

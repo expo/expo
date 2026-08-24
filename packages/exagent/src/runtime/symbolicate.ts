@@ -41,12 +41,89 @@ export interface StackFrame {
   column: number;
   /** True for a frame inside a framework rather than in the project's own code. */
   collapse?: boolean;
+  /**
+   * The source file the runtime named next to the function, when it named one.
+   *
+   * The React Compiler writes the original module into the function's own name, so a frame arrives
+   * as `at HomeScreen (./index.tsx) (http://…/entry.bundle:192491:38)` [observed — friction run 3,
+   * SDK 57 with `transform.reactCompiler=true`, 2026-08-23]. The parenthesis before the location is
+   * a *hint compiled into the bundle*, not the location: it is relative to nothing the reader has,
+   * it has no line, and it survives into a bundle that was built from a file of another name. So it
+   * is carried beside the frame rather than in `file`, which stays the one field that always means
+   * "the place this ran", before symbolication and after it.
+   */
+  sourceHint?: string;
 }
 
-/** `  at name (url:line:column)`, the shape {@link formatStackFrames} writes. */
-const STACK_LINE = /^\s*at\s+(.*?)\s*\((.+):(\d+):(\d+)\)\s*$/;
+/** The `  at ` a frame line starts with, whatever follows it. */
+const STACK_LINE_PREFIX = /^\s*at\s+/;
 /** `  at name`, for a frame the runtime reported without a location. */
 const STACK_LINE_NO_LOCATION = /^\s*at\s+(\S+)\s*$/;
+/** The `:line:column` a location ends with. */
+const LOCATION_SUFFIX = /^(.+):(\d+):(\d+)$/;
+/** `HomeScreen (./index.tsx)` — the method context of a frame the compiler annotated. */
+const METHOD_WITH_SOURCE = /^(.*?)\s*\(([^()]*)\)$/;
+
+/**
+ * Read one `  at name (url:line:column)` line, or null when the line is not a located frame.
+ *
+ * The location is the **last balanced parenthesis group** of the line, and finding it that way
+ * rather than with one regular expression is what F30 cost. A frame may carry more than one group
+ * — the React Compiler writes the original module in as `at HomeScreen (./index.tsx)
+ * (http://…/entry.bundle:192491:38)` — and a pattern that took the first `(` left
+ * `./index.tsx) (http://…/entry.bundle` in `file` with a bundle offset for its line [observed —
+ * friction run 3, 2026-08-23]. Matching the closing parenthesis back to its own opening one also
+ * keeps a path that contains parentheses whole, which neither a greedy nor a lazy pattern does.
+ */
+function parseStackLine(line: string): StackFrame | null {
+  const prefix = STACK_LINE_PREFIX.exec(line);
+  if (!prefix) {
+    return null;
+  }
+  const rest = line.slice(prefix[0].length).trimEnd();
+  if (!rest.endsWith(')')) {
+    return null;
+  }
+
+  // Walk back from the closing parenthesis to the one it belongs to, counting depth.
+  let depth = 0;
+  let open = -1;
+  for (let index = rest.length - 1; index >= 0; index--) {
+    if (rest[index] === ')') {
+      depth++;
+    } else if (rest[index] === '(') {
+      depth--;
+      if (depth === 0) {
+        open = index;
+        break;
+      }
+    }
+  }
+  if (open < 0) {
+    return null;
+  }
+
+  const located = LOCATION_SUFFIX.exec(rest.slice(open + 1, -1));
+  if (!located) {
+    return null;
+  }
+  const { methodName, sourceHint } = splitMethodContext(rest.slice(0, open));
+  return {
+    methodName,
+    file: located[1]!,
+    lineNumber: Number(located[2]),
+    // Text stacks count columns from 1, the way a person reads them; Metro counts from 0, so the
+    // value is lowered here — exactly what React Native's own `parseErrorStack` does before
+    // calling it.
+    column: Math.max(0, Number(located[3]) - 1),
+    ...(sourceHint == null ? null : { sourceHint }),
+  };
+}
+
+/** Whether one line of text is a frame with a location in it. */
+export function isLocatedStackLine(line: string): boolean {
+  return parseStackLine(line) != null;
+}
 
 /**
  * Read frames back out of a stack the runtime reported as text.
@@ -54,21 +131,13 @@ const STACK_LINE_NO_LOCATION = /^\s*at\s+(\S+)\s*$/;
  * Some exceptions arrive with structured `callFrames` and some only as the lines inside an error's
  * `description`, and both have to be symbolicated. A line that is not a frame is skipped rather
  * than guessed at.
- *
- * Text stacks count columns from 1, the way a person reads them; Metro counts from 0, so the value
- * is lowered here — exactly what React Native's own `parseErrorStack` does before calling it.
  */
 export function parseStackFrames(stack: string): StackFrame[] {
   const frames: StackFrame[] = [];
   for (const line of stack.split('\n')) {
-    const located = STACK_LINE.exec(line);
+    const located = parseStackLine(line);
     if (located) {
-      frames.push({
-        methodName: located[1] || '<anonymous>',
-        file: located[2]!,
-        lineNumber: Number(located[3]),
-        column: Math.max(0, Number(located[4]) - 1),
-      });
+      frames.push(located);
       continue;
     }
     const bare = STACK_LINE_NO_LOCATION.exec(line);
@@ -77,6 +146,23 @@ export function parseStackFrames(stack: string): StackFrame[] {
     }
   }
   return frames;
+}
+
+/**
+ * Split `HomeScreen (./index.tsx)` into the function name and the source the runtime named for it.
+ *
+ * Everything before the location belongs to the *method context*, and a compiled component brings
+ * its original module along in there. Keeping it costs one optional field and answers the question
+ * an agent asks next — which of my files is this? — for the frames whose location is a bundle
+ * offset the symbolicator could not map.
+ */
+export function splitMethodContext(context: string): { methodName: string; sourceHint?: string } {
+  const trimmed = context.trim();
+  const annotated = METHOD_WITH_SOURCE.exec(trimmed);
+  if (!annotated || !annotated[1] || !annotated[2]) {
+    return { methodName: trimmed || '<anonymous>' };
+  }
+  return { methodName: annotated[1], sourceHint: annotated[2] };
 }
 
 /**
@@ -93,7 +179,7 @@ export function parseStackFrames(stack: string): StackFrame[] {
  */
 export function splitTextStack(text: string): { message: string; frames: StackFrame[] } {
   const lines = text.split('\n');
-  const first = lines.findIndex((line) => STACK_LINE.test(line));
+  const first = lines.findIndex(isLocatedStackLine);
   if (first < 0) {
     return { message: text, frames: [] };
   }
@@ -111,11 +197,14 @@ export function splitTextStack(text: string): { message: string; frames: StackFr
  */
 export function formatStackFrames(frames: StackFrame[]): string {
   return frames
-    .map((frame) =>
-      frame.file
-        ? `  at ${frame.methodName} (${frame.file}:${frame.lineNumber}:${frame.column + 1})`
-        : `  at ${frame.methodName}`
-    )
+    .map((frame) => {
+      const method = frame.sourceHint
+        ? `${frame.methodName} (${frame.sourceHint})`
+        : frame.methodName;
+      return frame.file
+        ? `  at ${method} (${frame.file}:${frame.lineNumber}:${frame.column + 1})`
+        : `  at ${method}`;
+    })
     .join('\n');
 }
 
@@ -189,7 +278,11 @@ export async function symbolicateFramesAsync(
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ stack: frames }),
+      // `sourceHint` is this CLI's field, not Metro's, so it is left out of the request: the
+      // symbolicator is another program, and a stack it is sent has to be the shape it documents.
+      body: JSON.stringify({
+        stack: frames.map(({ sourceHint, ...frame }) => frame),
+      }),
       signal: abort.signal,
     });
     if (!response.ok) {
@@ -228,6 +321,9 @@ function readSymbolicatedFrame(answer: unknown, original: StackFrame): StackFram
   }
   const frame = answer as Record<string, unknown>;
   const collapse = typeof frame.collapse === 'boolean' ? frame.collapse : undefined;
+  // The hint came off the runtime's own line and the symbolicator was never told about it, so it
+  // survives whatever comes back: an unmapped frame is exactly where it is worth the most.
+  const hint = original.sourceHint == null ? null : { sourceHint: original.sourceHint };
   if (typeof frame.file !== 'string' || typeof frame.lineNumber !== 'number') {
     return collapse == null ? original : { ...original, collapse };
   }
@@ -237,5 +333,6 @@ function readSymbolicatedFrame(answer: unknown, original: StackFrame): StackFram
     lineNumber: frame.lineNumber,
     column: typeof frame.column === 'number' ? frame.column : 0,
     ...(collapse == null ? {} : { collapse }),
+    ...hint,
   };
 }

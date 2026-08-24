@@ -25,7 +25,8 @@ type EffectiveConfigPayload = {
   source: { command: string[]; durationMs: number };
   platforms: { [platform: string]: { [mod: string]: unknown } };
   plugins: { name: string; version: string | null; declared: boolean }[];
-  autolinkedModules: string[];
+  expoAutolinkedModules: string[];
+  expoAutolinkedModulesNote: string;
   notAttributable: string[];
   followups: { id: string; command: string; why: string }[];
 };
@@ -123,7 +124,11 @@ describe('exagent config:effective', () => {
     expect(payload.platforms.ios).toEqual(STUB_CONFIG._internal.modResults.ios);
     expect(payload.platforms.android).toEqual(STUB_CONFIG._internal.modResults.android);
     expect(payload.notAttributable).toEqual(['ios.xcodeproj', '*.dangerous']);
-    expect(payload.autolinkedModules).toEqual(['expo', 'expo-camera']);
+    expect(payload.expoAutolinkedModules).toEqual(['expo', 'expo-camera']);
+    // F35: the list is Expo-module autolinking only, and the name and the note both say so, so an
+    // agent asking "is my native dependency linked?" is not told no by the wrong list.
+    expect(Object.keys(payload)).not.toContain('autolinkedModules');
+    expect(payload.expoAutolinkedModulesNote).toContain('Expo modules only');
   });
 
   // `status --json` reports the installed `expo` version under `sdkVersion`, and this reports the
@@ -229,7 +234,7 @@ describe('exagent config:effective', () => {
       modCounts: { ios: 2, android: 2 },
       pluginCount: 2,
       declaredPluginCount: 1,
-      autolinkedModuleCount: 2,
+      expoAutolinkedModuleCount: 2,
     });
     // Counts only: a config carries bundle identifiers and permission strings.
     expect(raw).not.toContain('NSCameraUsageDescription');

@@ -15,7 +15,10 @@ const ids = (followups: { id: string }[]) => followups.map((followup) => followu
 
 describe(buildDevWaitFollowUps, () => {
   it(`should point a ready bundle with a connected app at the error window`, () => {
-    expect(ids(buildDevWaitFollowUps(input()))).toEqual(['dev-wait-runtime-errors']);
+    expect(ids(buildDevWaitFollowUps(input()))).toEqual([
+      'dev-wait-runtime-errors',
+      'dev-wait-typecheck',
+    ]);
   });
 
   // The old suggestion here was to re-run the identical wait, which is the one action that cannot
