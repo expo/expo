@@ -173,6 +173,10 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     route: route ?? '/',
     table: routeTable,
     enabled: options.routeCheck && route != null,
+    // Without `--route` there is no route to check; the reason must not name a flag the caller
+    // never passed (friction run 4 follow-up).
+    disabledReason:
+      route == null ? 'no --route was named, so there was no route to check' : undefined,
     isFullUrl: route != null && isFullUrlRoute(route),
   });
   if (routeCheck.ok === false && route != null) {

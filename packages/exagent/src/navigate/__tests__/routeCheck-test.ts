@@ -84,3 +84,24 @@ describe(nearestRoute, () => {
     expect(nearestRoute('/notes', [])).toBeNull();
   });
 });
+
+describe('a disabled check names its real reason', () => {
+  const table = { routes: [{ pattern: '/', segments: [] }], reason: null } as any;
+
+  it(`should attribute --no-route-check only when nothing else disabled it`, () => {
+    const result = checkRoute({ route: '/', table, enabled: false, isFullUrl: false });
+    expect(result.reason).toContain('--no-route-check');
+  });
+
+  it(`should carry the caller's reason when one is given`, () => {
+    const result = checkRoute({
+      route: '/',
+      table,
+      enabled: false,
+      disabledReason: 'no --route was named, so there was no route to check',
+      isFullUrl: false,
+    });
+    expect(result.reason).toBe('no --route was named, so there was no route to check');
+    expect(result.reason).not.toContain('--no-route-check');
+  });
+});

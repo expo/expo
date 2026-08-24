@@ -42,8 +42,14 @@ export interface CheckRouteParams {
   route: string;
   /** The project's routes, as read from disk. */
   table: ProjectRouteTable;
-  /** False when `--no-route-check` was passed. */
+  /** False when the check is not to run — `--no-route-check`, or nothing to check. */
   enabled: boolean;
+  /**
+   * Why the check is disabled, when `enabled` is false for a reason other than `--no-route-check`.
+   * A reload with no `--route` has no route to check, and reporting the flag the caller never
+   * passed would be a false attribution.
+   */
+  disabledReason?: string;
   /** True when the route was already a full URL, which addresses an app rather than this project. */
   isFullUrl: boolean;
 }
@@ -56,7 +62,13 @@ export interface CheckRouteParams {
  * ask about the _project_ settled for the bundle check — a false red costs more than the false
  * green it replaces, because it stops a command that would have worked and names no fix.
  */
-export function checkRoute({ route, table, enabled, isFullUrl }: CheckRouteParams): RouteCheckJson {
+export function checkRoute({
+  route,
+  table,
+  enabled,
+  disabledReason,
+  isFullUrl,
+}: CheckRouteParams): RouteCheckJson {
   const unchecked = (reason: string): RouteCheckJson => ({
     checked: false,
     ok: null,
@@ -66,7 +78,7 @@ export function checkRoute({ route, table, enabled, isFullUrl }: CheckRouteParam
   });
 
   if (!enabled) {
-    return unchecked('the route check was not run (--no-route-check)');
+    return unchecked(disabledReason ?? 'the route check was not run (--no-route-check)');
   }
   if (isFullUrl) {
     return unchecked(
