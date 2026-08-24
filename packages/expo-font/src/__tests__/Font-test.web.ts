@@ -136,4 +136,48 @@ if (typeof window === 'undefined') {
 
     expect(ExpoFontLoader.loadAsync).toHaveBeenCalledTimes(1);
   });
+
+  it.each<[string, () => Font.FontFamilyDefinition[], string, string | undefined]>([
+    [
+      'an empty fontDefinitions array',
+      () => [{ fontFamily: 'Ghost', fontDefinitions: [] }],
+      'No font faces were provided',
+      'Ghost',
+    ],
+    [
+      'an out-of-range weight',
+      () => [{ fontFamily: 'BadWeight', fontDefinitions: [{ path: 'regular.ttf', weight: 5000 }] }],
+      'Invalid font weight',
+      'BadWeight',
+    ],
+    [
+      'an array element that is not a well-shaped FontFamilyDefinition',
+      () => [null as any],
+      'Expected an object with `fontFamily` and `fontDefinitions`',
+      undefined,
+    ],
+    [
+      'a face with a missing path',
+      () => [{ fontFamily: 'NoPath', fontDefinitions: [{} as any] }],
+      'has no `path`',
+      'NoPath',
+    ],
+    [
+      'two array entries that declare the same fontFamily',
+      () => [
+        { fontFamily: 'Dup', fontDefinitions: [{ path: 'regular.ttf' }] },
+        { fontFamily: 'Dup', fontDefinitions: [{ path: 'bold.ttf' }] },
+      ],
+      'is declared more than once',
+      'Dup',
+    ],
+  ])('rejects %s', async (_name, buildDefinitions, expectedMessage, familyName) => {
+    await expect(Font.loadAsync(buildDefinitions())).rejects.toThrow(expectedMessage);
+
+    expect(ExpoFontLoader.loadAsync).not.toHaveBeenCalled();
+    if (familyName) {
+      expect(Font.isLoaded(familyName)).toBe(false);
+      expect(Font.isLoading(familyName)).toBe(false);
+    }
+  });
 }
