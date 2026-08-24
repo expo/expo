@@ -478,7 +478,9 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
       return;
     }
 
-    if ([self->_updatesInterface isValidUpdatesConfiguration:updatesConfiguration] != YES) {
+    // A live dev server takes the lightweight manifest path even when the app's updates
+    // configuration is valid — the `expo-updates` fetch below exists for published manifests.
+    if ([self->_updatesInterface isValidUpdatesConfiguration:updatesConfiguration] != YES || manifestParser.isDevServerContentType) {
       [manifestParser tryToParseManifest:^(EXManifestsManifest *manifest) {
         if (!manifest.isUsingDeveloperTool) {
           onError([NSError errorWithDomain:@"DevelopmentClient" code:1 userInfo:@{NSLocalizedDescriptionKey: @"expo-updates is not properly installed or integrated. In order to load published projects with this development client, follow all installation and setup instructions for both the expo-dev-client and expo-updates packages."}]);

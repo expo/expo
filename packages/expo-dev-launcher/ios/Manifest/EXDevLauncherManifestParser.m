@@ -59,6 +59,15 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
     }
 
     NSString *contentType = headers[@"Content-Type"];
+    // Expo CLI's manifest middleware negotiates the response content type from the Accept header
+    // this probe sends, so a live `expo start` server answers `application/expo+json`. That is a
+    // manifest — keep classifying it as one — but flag it so the caller can skip the `expo-updates`
+    // fetch path, which exists for published/EAS-Update manifests.
+    if (contentType && [contentType containsString:@"expo+json"]) {
+      _isDevServerContentType = YES;
+      completion(YES);
+      return;
+    }
     if (contentType && ![contentType hasPrefix:@"text/html"] && ![contentType containsString:@"/javascript"]) {
       completion(YES);
       return;

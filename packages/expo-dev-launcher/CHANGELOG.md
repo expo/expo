@@ -11,6 +11,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Take the lightweight manifest path for a live Expo dev server (`application/expo+json`) instead of the `expo-updates` fetch, which exists for published manifests. ([#49250](https://github.com/expo/expo/pull/49250) by [@saileshbro](https://github.com/saileshbro))
 - [Android] Fix SIGABRT when loading a development server URL that has no path (e.g. `http://192.168.1.2:8081`): Android's `URI.resolve` omits the path separator for an empty-path base, so the first segment of a relative `bundleUrl` was spliced onto the port and the resulting authority failed to parse. ([#48625](https://github.com/expo/expo/pull/48625) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Use `RCTPlatformName` instead of hardcoding `ios` when requesting bundles from Metro. ([#46443](https://github.com/expo/expo/pull/46443) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Fixed a crash when cold-launching a development build from a deep link that carries intent categories (e.g. an App Link opened from a browser). ([#46314](https://github.com/expo/expo/pull/46314) by [@lilianchiassai-fc](https://github.com/lilianchiassai-fc) & [#46328](https://github.com/expo/expo/pull/46328) by [@lukmccall](https://github.com/lukmccall))

@@ -79,10 +79,25 @@
     return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:@{@"Content-Type": @"text/javascript"}];
   }];
   [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/expo-json1"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:@{@"Content-Type": @"application/expo+json"}];
+  }];
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
+    return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/expo-json2"];
+  } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
+    return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:@{@"Content-Type": @"application/expo+json; charset=utf-8"}];
+  }];
+  [HTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest * _Nonnull request) {
     return [request.URL.host isEqualToString:@"ohhttpstubs"] && [request.URL.path isEqualToString:@"/html"];
   } withStubResponse:^HTTPStubsResponse * _Nonnull(NSURLRequest * _Nonnull request) {
     return [HTTPStubsResponse responseWithData:[NSData new] statusCode:200 headers:@{@"Content-Type": @"text/html"}];
   }];
+
+  [self _testIsManifestURLString:@"http://ohhttpstubs/expo-json1" expected:YES description:@"an expo+json content-type is a manifest URL"];
+  [self _testIsDevServerContentTypeForURLString:@"http://ohhttpstubs/expo-json1" expected:YES description:@"an expo+json content-type is flagged as a live dev server"];
+  [self _testIsDevServerContentTypeForURLString:@"http://ohhttpstubs/expo-json2" expected:YES description:@"an expo+json content-type with a charset is flagged as a live dev server"];
+  [self _testIsDevServerContentTypeForURLString:@"http://ohhttpstubs/json1" expected:NO description:@"a plain JSON content-type is not a dev server"];
 
   [self _testIsManifestURLString:@"http://ohhttpstubs/json1" expected:YES description:@"should assume a JSON content-type indicates a manifest URL"];
   [self _testIsManifestURLString:@"http://ohhttpstubs/json2" expected:YES description:@"should assume a JSON content-type indicates a manifest URL"];
@@ -110,6 +125,28 @@
 
   [self _testIsManifestURLString:@"http://ohhttpstubs/no-expo-server" expected:NO description:@"should assume a response with no exponent-server header means not a manifest URL"];
   [self _testIsManifestURLString:@"http://ohhttpstubs/expo-server" expected:YES description:@"should detect exponent-server header from expo dev server"];
+}
+
+- (void)_testIsDevServerContentTypeForURLString:(NSString *)urlString expected:(BOOL)expected description:(NSString *)description
+{
+  NSURL *url = [NSURL URLWithString:urlString];
+  EXDevLauncherManifestParser *parser = [[EXDevLauncherManifestParser alloc]
+                                         initWithURL:url
+                                         installationID:nil
+                                         session:NSURLSession.sharedSession
+                                         requestTimeout:NSURLSessionConfiguration.defaultSessionConfiguration.timeoutIntervalForRequest];
+
+  XCTestExpectation *expectation = [self expectationWithDescription:description];
+
+  [parser isManifestURLWithCompletion:^(BOOL isManifestURL) {
+    XCTAssertEqual(expected, parser.isDevServerContentType);
+    [expectation fulfill];
+  } onError:^(NSError * _Nonnull error) {
+    XCTFail(@"Response should have been successful");
+    [expectation fulfill];
+  }];
+
+  [self waitForExpectationsWithTimeout:5 handler:nil];
 }
 
 - (void)_testIsManifestURLString:(NSString *)urlString expected:(BOOL)expectedIsManifestUrl description:(NSString *)description
