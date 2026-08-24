@@ -139,13 +139,14 @@ export type CommonTextFieldProperties = {
  * Keys consumed (and reshaped) by {@link useCommonTextFieldProps}. Everything
  * else on the props passes through untouched.
  */
-type TransformedKeys = 'value' | 'selection' | 'modifiers' | 'children' | 'keyboardActions' | 'onValueChange' | 'onFocusChanged' | 'onSelectionChange';
+type TransformedKeys = 'ref' | 'value' | 'selection' | 'modifiers' | 'children' | 'keyboardActions' | 'onValueChange' | 'onFocusChanged' | 'onSelectionChange';
 /**
  * Native-facing prop shape shared by every Compose text field variant. The
  * observable-backed props collapse to shared-object ids, and the public
  * callbacks become `nativeEvent`-wrapped listeners.
  */
 export type CommonNativeTextFieldProps = {
+    ref?: Ref<any>;
     modifiers?: ModifierConfig[];
     children?: ReactNode;
     value?: number | null;

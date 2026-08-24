@@ -1,0 +1,1 @@
+{"version":3,"file":"interop.d.ts","sourceRoot":"","sources":["../../src/keyboard/interop.ts"],"names":[],"mappings":"AAIA;;;GAGG;AACH,MAAM,MAAM,qBAAqB,GAAG;IAClC,iBAAiB,EAAE,MAAM,IAAI,CAAC;IAC9B,sEAAsE;IACtE,cAAc,EAAE,MAAM,IAAI,CAAC;CAC5B,CAAC;AAWF;;;GAGG;AACH,wBAAgB,oBAAoB,CAAC,QAAQ,EAAE,MAAM,EAAE,UAAU,EAAE,qBAAqB,QAGvF;AAED,wBAAgB,oBAAoB,CAAC,QAAQ,EAAE,MAAM,QAEpD"}

@@ -1,3 +1,4 @@
+import { type Ref } from 'react';
 import { type ColorSchemeName, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 import { type PrimitiveBaseProps } from '../layout';
 export interface HostProps extends PrimitiveBaseProps {
@@ -54,6 +55,8 @@ export interface HostProps extends PrimitiveBaseProps {
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
     pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
+    /** @hidden */
+    ref?: Ref<any>;
 }
 export declare function Host(props: HostProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

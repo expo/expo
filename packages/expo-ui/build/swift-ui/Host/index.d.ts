@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import { type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export interface HostProps extends CommonViewModifierProps {
@@ -51,6 +52,8 @@ export interface HostProps extends CommonViewModifierProps {
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
     pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
+    /** @hidden */
+    ref?: Ref<any>;
 }
 /**
  * A hosting component for SwiftUI views.
