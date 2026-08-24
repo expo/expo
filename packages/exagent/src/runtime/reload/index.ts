@@ -2,8 +2,8 @@
 // @ref llp/0010-agent-conventions.rfc.md §The fourth: `reload`
 import chalk from 'chalk';
 
-import type { Command } from '../types';
-import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR, printHelp } from '../utils/args';
+import type { Command } from '../../types';
+import { assertWithOptionsArgs, DURATION_HELP_NOTE, DURATION_METAVAR, printHelp } from '../../utils/args';
 
 export const exagentReload: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -17,7 +17,7 @@ export const exagentReload: Command = async (argv) => {
       argv,
       // The remaining options are resolved by `resolveReloadOptions`.
       permissive: true,
-      command: 'reload',
+      command: 'runtime:reload',
       // The permissive parse puts unrecognized options into `_`, so this command's own resolver is
       // what rejects a stray argument (llp/0010 §Registry rules, rule d).
       positionalArgs: 'own',
@@ -27,7 +27,7 @@ export const exagentReload: Command = async (argv) => {
   if (args['--help']) {
     printHelp(
       `Reload the running app, so it runs the code that is on disk now`,
-      chalk`npx exagent reload`,
+      chalk`npx exagent runtime:reload`,
       [
         `--route <route>         Open this route once the app is back`,
         `--method <method>       auto (default), dev-server, or device`,
@@ -44,9 +44,9 @@ export const exagentReload: Command = async (argv) => {
       ].join('\n'),
       [
         '',
-        chalk`  {dim $} npx exagent reload`,
-        chalk`  {dim $} npx exagent reload --route /notes`,
-        chalk`  {dim $} npx exagent reload --json --timeout 60s`,
+        chalk`  {dim $} npx exagent runtime:reload`,
+        chalk`  {dim $} npx exagent runtime:reload --route /notes`,
+        chalk`  {dim $} npx exagent runtime:reload --json --timeout 60s`,
         '',
         chalk`  {bold Why this exists.} After a component throws while rendering, the fix on disk does`,
         chalk`  not reach the app on its own. {bold dev:wait} goes green because the bundle compiles,`,
@@ -74,13 +74,13 @@ export const exagentReload: Command = async (argv) => {
     );
   }
 
-  // Load modules after the help prompt so `npx exagent reload -h` shows as fast as possible.
-  const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+  // Load modules after the help prompt so `npx exagent runtime:reload -h` shows as fast as possible.
+  const { logCmdError } = require('../../utils/errors') as typeof import('../../utils/errors');
   const { findUpProjectRootOrAssert } =
-    require('../utils/findUp') as typeof import('../utils/findUp');
+    require('../../utils/findUp') as typeof import('../../utils/findUp');
   const { resolveReloadOptions } = require('./resolveOptions') as typeof import('./resolveOptions');
   const { reloadAsync } = require('./reloadAsync') as typeof import('./reloadAsync');
-  const { EXIT_OK, exitWithCodeAsync } = require('../exitCodes') as typeof import('../exitCodes');
+  const { EXIT_OK, exitWithCodeAsync } = require('../../exitCodes') as typeof import('../../exitCodes');
 
   return (async () => {
     const options = resolveReloadOptions(argv ?? []);

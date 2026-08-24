@@ -186,7 +186,7 @@ describe(buildRuntimeErrorsFollowUps, () => {
     // The reload leads: an app whose render threw keeps running the code from before the fix, so
     // re-running this command first would read the old run and report the bug as unfixed.
     expect(ids(followups)).toEqual(['reload-app', 'runtime-errors-rerun']);
-    expect(followups[0]!.command).toBe('npx exagent reload');
+    expect(followups[0]!.command).toBe('npx exagent runtime:reload');
     expect(followups[1]!.command).toBe('npx exagent runtime:errors --duration 2000');
     expect(followups[1]!.why).toContain('empty');
   });

@@ -1,20 +1,15 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Reloading the app
-// The fallback: stop the app on the device, so the next deep link starts it from nothing.
+// @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the app
+// Stopping the app on a device.
 //
-// This is what the friction run had to do by hand — `xcrun simctl terminate <udid>
-// host.exp.Exponent` followed by a deep link [observed — friction run 3, F31] — and it is kept as
-// a fallback rather than as the mechanism, because it is slower (about 12 s against under 1 s), it
-// needs the platform tools, and it needs to know the application id. The dev server's own reload
-// broadcast needs none of that.
+// Two commands need it and for opposite reasons. `runtime:stop` is the whole point of the command:
+// end the app process. `runtime:reload` uses it as a *fallback*, when the dev server's reload
+// broadcast has nobody to reach — and only as a fallback, because it is slower (about 2.5 s
+// against under 1 s live), it needs the platform tools, and it needs to know the application id,
+// none of which the broadcast needs.
 
 import type { NavigatePlatform } from '../navigate/device';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
-
-/** Expo Go's application id, per platform, for a project that has no build of its own. */
-export const EXPO_GO_APP_ID = {
-  ios: 'host.exp.Exponent',
-  android: 'host.exp.exponent',
-} as const;
 
 export interface StopAppCommand {
   bin: string;
@@ -53,6 +48,15 @@ export function buildStopAppCommand({
 export interface StopAppResult {
   command: string;
   ok: boolean;
+  /**
+   * The app was not running to begin with, so nothing was stopped.
+   *
+   * Reported separately from {@link ok} because the two answer different questions. Both commands
+   * that call this wanted the app *not running*, and it is not running — but only one of them did
+   * that. `runtime:stop` prints the difference, and `runtime:reload` ignores it, because a
+   * relaunch that follows works either way.
+   */
+  wasAlreadyStopped: boolean;
   /** Why the app was not stopped, or null when it was. */
   reason: string | null;
 }
@@ -73,19 +77,29 @@ export async function stopAppOnDeviceAsync(params: {
   const { stderr, stdout, exitCode, spawnError } = await spawnCaptureAsync(bin, args);
 
   if (spawnError) {
-    return { command: display, ok: false, reason: `could not run "${bin}": ${spawnError.message}` };
-  }
-  // `simctl terminate` exits non-zero when the app was not running, which is the state this
-  // command was trying to reach. Treating it as a failure would abandon a reload that has already
-  // done its job.
-  if (exitCode !== 0 && !looksLikeNotRunning(`${stderr}\n${stdout}`)) {
     return {
       command: display,
       ok: false,
+      wasAlreadyStopped: false,
+      reason: `could not run "${bin}": ${spawnError.message}`,
+    };
+  }
+  // `simctl terminate` exits non-zero when the app was not running, which is the state this
+  // command was trying to reach. Treating it as a failure would abandon a reload that has already
+  // done its job, and would make a second `runtime:stop` fail for having nothing left to do.
+  const notRunning = looksLikeNotRunning(`${stderr}\n${stdout}`);
+  if (exitCode !== 0 && !notRunning) {
+    return {
+      command: display,
+      ok: false,
+      wasAlreadyStopped: false,
       reason: stderr.trim() || stdout.trim() || `exit code ${exitCode}`,
     };
   }
-  return { command: display, ok: true, reason: null };
+  // `adb shell am force-stop` exits 0 whether or not the app was running and prints nothing
+  // either way, so on Android this is only ever inferred from the iOS-shaped message above. The
+  // honest reading is "not known to have been stopped already", which is what `false` says.
+  return { command: display, ok: true, wasAlreadyStopped: exitCode !== 0 && notRunning, reason: null };
 }
 
 /** Whether the device tool refused because the app was not running to begin with. */

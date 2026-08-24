@@ -68,7 +68,7 @@ describe(buildInstallFollowUps, () => {
     });
 
     expect(ids(followups)).toEqual(['reload-app']);
-    expect(followups[0]!.command).toBe('npx exagent reload');
+    expect(followups[0]!.command).toBe('npx exagent runtime:reload');
     expect(followups[0]!.why).toContain('reload');
   });
 

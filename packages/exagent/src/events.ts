@@ -212,18 +212,49 @@ declare module '2g' {
       exitCode: number | null;
     };
     /**
-     * One `exagent reload` run: whether the app was reloaded, by which method, and how many apps
-     * were attached afterwards. The exit code is the same answer; this is where the detail is.
+     * One `exagent runtime:reload` run: whether the app was reloaded, by which method, and how
+     * many apps were attached afterwards. The exit code is the same answer; this is where the
+     * detail is.
      *
      * @see llp/0005-runtime-loop-tools.rfc.md §Reloading the app
      */
-    'cli:reload': {
+    'cli:runtime_reload': {
       /** The app was reloaded, and the reload was observed rather than assumed. */
       reloaded: boolean;
       /** `dev-server`, `device`, or null when neither worked. */
       method: string | null;
       /** Debugger targets attached when the wait ended, i.e. apps running the new bundle. */
       appsConnected: number;
+    };
+    /**
+     * One `exagent dev:stop` run: whether a dev server was stopped, whose it was, and why not.
+     *
+     * @see llp/0005-runtime-loop-tools.rfc.md §Stopping the dev server
+     */
+    'cli:dev_stop': {
+      /** A dev server was running and is not running now. */
+      stopped: boolean;
+      /** PID that was signalled, or the listener's PID when one was found but not signalled. */
+      pid: number | null;
+      port: number | null;
+      /** Whether a dev-server lock answered: this CLI's dev server, or a stranger's. */
+      lockHeld: boolean;
+      /** `not-running`, `foreign-dev-server`, `still-running`, or null when it stopped. */
+      reason: string | null;
+    };
+    /**
+     * One `exagent runtime:stop` run: whether the app is stopped, and which app it was.
+     *
+     * @see llp/0005-runtime-loop-tools.rfc.md §Stopping the app
+     */
+    'cli:runtime_stop': {
+      /** The app is not running on the device now. */
+      stopped: boolean;
+      /** It was running when the command started, so this is what stopped it. */
+      wasRunning: boolean;
+      platform: string;
+      deviceId: string;
+      bundleId: string;
     };
     'cli:navigate': {
       route: string;

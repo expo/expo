@@ -60,7 +60,7 @@ describe(resolveReloadOptions, () => {
     expect(error.message).toContain('dev-server');
   });
 
-  // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d). `exagent reload /notes`
+  // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d). `exagent runtime:reload /notes`
   // reads as the obvious thing to type, and dropping the argument would have reloaded the app and
   // left it wherever it was, while reporting success.
   it(`should refuse a bare route and name the flag that takes one`, () => {

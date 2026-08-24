@@ -2,21 +2,21 @@ import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 import { vol } from 'memfs';
 
-import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../../devLock';
-import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
+import { readDevServerLockAsync, readLastLoggedDevServerPort } from '../../../devLock';
+import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../../exitCodes';
 import {
   connectMessageSocketAsync,
   type MessageSocketPeers,
-} from '../../runtime/messageSocket';
+} from '../../messageSocket';
 import { reloadAsync, reloadOverDevServerAsync } from '../reloadAsync';
 import type { ReloadOptions } from '../resolveOptions';
 
-jest.mock('../../devLock', () => ({
+jest.mock('../../../devLock', () => ({
   readDevServerLockAsync: jest.fn(async () => null),
   readLastLoggedDevServerPort: jest.fn(() => null),
 }));
-jest.mock('../../runtime/messageSocket', () => ({
-  ...jest.requireActual('../../runtime/messageSocket'),
+jest.mock('../../messageSocket', () => ({
+  ...jest.requireActual('../../messageSocket'),
   connectMessageSocketAsync: jest.fn(),
 }));
 

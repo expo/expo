@@ -471,7 +471,7 @@ export type StubDevServerOptions = {
   /** Delay before the entry bundle answers, standing in for a cold first build. */
   bundleDelayMs?: number;
   /**
-   * How the stub answers on `/message`, the client command socket `exagent reload` broadcasts on.
+   * How the stub answers on `/message`, the client command socket `exagent runtime:reload` broadcasts on.
    *
    * - `v2` — the real protocol: every frame carries `version: 2`, `getpeers` is answered, and a
    *   `reload` broadcast replaces the reported peer ids, which is what a reloading app does.

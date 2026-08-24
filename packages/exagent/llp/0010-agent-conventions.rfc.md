@@ -196,7 +196,7 @@ for its exit code to answer.
 
 ### The fourth: `reload`, and the difference between failed and inconclusive
 
-[observed — 2026-08-23, `src/reload/`; friction run 3, F31] `exagent reload` is the first command
+[observed — 2026-08-23, `src/reload/`; friction run 3, F31] `exagent runtime:reload` is the first command
 that uses **both** codes of the band in one run, and the boundary between them is the whole design
 (the mechanism is [[0005-runtime-loop-tools]] §Reloading the app):
 

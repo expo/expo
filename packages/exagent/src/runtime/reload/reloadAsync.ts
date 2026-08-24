@@ -17,36 +17,37 @@
 
 import chalk from 'chalk';
 
-import { event as cliEvent } from '../events';
-import { buildReloadFollowUps, followUpsEnabled, reportFollowUps, type FollowUp } from '../followups';
-import * as Log from '../log';
+import { event as cliEvent } from '../../events';
+import { buildReloadFollowUps, followUpsEnabled, reportFollowUps, type FollowUp } from '../../followups';
+import * as Log from '../../log';
 import {
   isFullUrlRoute,
   openUrlOnDeviceAsync,
   readProjectSchemeConfig,
   resolveDeepLinkUrl,
-} from '../navigate/deepLink';
-import { resolveDeviceAsync, type NavigateDevice } from '../navigate/device';
-import { checkRoute, routeNotFoundError, type RouteCheckJson } from '../navigate/routeCheck';
-import { decideExpoGoTarget } from '../navigate/target';
-import { readProjectNativeDirsAsync } from '../project/nativeCode';
+} from '../../navigate/deepLink';
+import { resolveDeviceAsync, type NavigateDevice } from '../../navigate/device';
+import { checkRoute, routeNotFoundError, type RouteCheckJson } from '../../navigate/routeCheck';
+import { decideExpoGoTarget } from '../../navigate/target';
+import { readProjectNativeDirsAsync } from '../../project/nativeCode';
 import {
   isInstalledDependencyAsync,
   listDependencyNames,
   readProjectPackageJsonAsync,
-} from '../project/nodeModules';
-import { readProjectRoutesAsync } from '../project/routes';
-import { discoverDevServerAsync, type DevServerSource } from '../runtime/devServer';
+} from '../../project/nodeModules';
+import { readProjectRoutesAsync } from '../../project/routes';
+import { discoverDevServerAsync, type DevServerSource } from '../devServer';
 import {
   connectMessageSocketAsync,
   peersChanged,
   type DevServerMessageSocket,
   type MessageSocketPeers,
-} from '../runtime/messageSocket';
-import { waitForAppConnectionAsync } from '../runtime/waitReady';
-import { CommandError } from '../utils/errors';
-import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../exitCodes';
-import { EXPO_GO_APP_ID, stopAppOnDeviceAsync } from './device';
+} from '../messageSocket';
+import { waitForAppConnectionAsync } from '../waitReady';
+import { CommandError } from '../../utils/errors';
+import { EXIT_OK, EXIT_OUTCOME_FAILED, EXIT_OUTCOME_TIMEOUT } from '../../exitCodes';
+import { readConfiguredAppId, resolveAppId } from '../appId';
+import { stopAppOnDeviceAsync } from '../appProcess';
 import { debugEvent, event } from './events';
 import type { ReloadOptions } from './resolveOptions';
 
@@ -73,7 +74,7 @@ export interface ReloadAttempt {
 }
 
 /**
- * Machine shape of `exagent reload --json`.
+ * Machine shape of `exagent runtime:reload --json`.
  *
  * @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — one JSON object on stdout,
  * every key always present, and a fact the run does not have is null.
@@ -236,7 +237,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     appsConnected: report.appsConnected,
     route: report.route,
   });
-  cliEvent('reload', {
+  cliEvent('runtime_reload', {
     reloaded: report.reloaded,
     method: report.method,
     appsConnected: report.appsConnected,
@@ -252,7 +253,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     Log.error(explainFailure(report, options));
   }
 
-  reportFollowUps('reload', followups, { json });
+  reportFollowUps('runtime:reload', followups, { json });
   return exitCode;
 }
 
@@ -358,7 +359,7 @@ async function reloadOnDeviceAsync(
     };
   }
 
-  const appId = options.appId ?? (await resolveAppIdAsync(projectRoot, devServerUrl, device));
+  const appId = await resolveAppIdAsync(projectRoot, devServerUrl, device, options.appId);
   const stopped = await stopAppOnDeviceAsync({
     platform: device.platform,
     deviceId: device.deviceId,
@@ -441,22 +442,25 @@ async function openRouteAsync(
 }
 
 /**
- * The application id to stop.
+ * The application id to stop, resolved the way `runtime:stop` resolves it.
  *
- * The dev server names it: a debugger target carries the `appId` of the app that registered it, so
- * a development build is stopped under its own id without the project config being read. Expo Go
- * is the fallback, per platform, because that is the app an Expo Go project runs in and its id is
- * fixed.
+ * @see ../appId — the dev server outranks the app config, because the config says what a build of
+ * this project would be called and the dev server says what is running.
  */
 async function resolveAppIdAsync(
   projectRoot: string,
   devServerUrl: string,
-  device: NavigateDevice
+  device: NavigateDevice,
+  appIdOverride?: string
 ): Promise<string> {
-  const { probeDevServerAsync } = require('../runtime/devServer') as typeof import('../runtime/devServer');
+  const { probeDevServerAsync } = require('../devServer') as typeof import('../devServer');
   const probe = await probeDevServerAsync(devServerUrl);
-  const reported = probe.targets.map((target) => target.appId).find(Boolean);
-  return reported ?? EXPO_GO_APP_ID[device.platform];
+  return resolveAppId({
+    platform: device.platform,
+    appIdOverride,
+    targetAppIds: probe.targets.map((target) => target.appId).filter(Boolean),
+    configured: readConfiguredAppId(projectRoot, device.platform),
+  }).appId;
 }
 
 function printHumanReport(report: ReloadResultJson): void {

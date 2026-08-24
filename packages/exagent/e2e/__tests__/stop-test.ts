@@ -1,0 +1,315 @@
+/* eslint-env jest */
+// @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the dev server
+// @ref llp/0005-runtime-loop-tools.rfc.md §Stopping the app
+//
+// The two stop commands, through the published bin. What is worth pinning at this tier is what a
+// unit test cannot see: `dev:stop` signals a **real process**, and the property that matters is
+// that it signals the one the lock names and nothing else; `runtime:stop` runs a **real device
+// tool**, and the property that matters is the exact argv it hands it.
+import fs from 'node:fs';
+import path from 'node:path';
+
+import {
+  executeExagentAsync,
+  holdDevLockAsync,
+  installStubBinAsync,
+  setupFixtureAsync,
+  startStubDevServerAsync,
+  stubExpoEnv,
+} from '../utils';
+
+const SIMULATOR_UDID = 'E2E-SIM-0001';
+
+const EXPO_GO_TARGET = {
+  id: '1',
+  appId: 'host.exp.Exponent',
+  webSocketDebuggerUrl: 'ws://127.0.0.1:8081/inspector/debug?device=1&page=1',
+};
+
+/** Install a stub `xcrun` that reports one booted simulator and records every invocation. */
+async function installStubXcrunAsync(projectRoot: string): Promise<() => string[][]> {
+  const logPath = path.join(projectRoot, '.stub-xcrun.jsonl');
+  const scriptPath = path.join(projectRoot, '.stub-bin', 'xcrun-stub.js');
+  await fs.promises.mkdir(path.dirname(scriptPath), { recursive: true });
+  await fs.promises.writeFile(
+    scriptPath,
+    [
+      `const fs = require('fs');`,
+      `const args = process.argv.slice(2);`,
+      `fs.appendFileSync(${JSON.stringify(logPath)}, JSON.stringify(args) + '\\n');`,
+      `if (args[1] === 'list') {`,
+      `  process.stdout.write(JSON.stringify({ devices: { 'com.apple.CoreSimulator.SimRuntime.iOS-26-0': [{ udid: ${JSON.stringify(SIMULATOR_UDID)}, name: 'iPhone 17 Pro', state: 'Booted' }] } }));`,
+      `}`,
+      `process.exit(0);`,
+    ].join('\n')
+  );
+  await installStubBinAsync(path.join(projectRoot, '.stub-bin'), 'xcrun', scriptPath);
+
+  return () =>
+    fs.existsSync(logPath)
+      ? fs
+          .readFileSync(logPath, 'utf8')
+          .split('\n')
+          .filter(Boolean)
+          .map((line) => JSON.parse(line))
+      : [];
+}
+
+/**
+ * A process that does nothing but stay alive and record the signal it was sent.
+ *
+ * `dev:stop` sends a real signal to a real pid, so the test needs a real process to receive one —
+ * a mocked `process.kill` would prove nothing about the thing this command exists to do.
+ */
+async function startSignalRecorderAsync(
+  projectRoot: string
+): Promise<{ pid: number; signalled(): string | null; stop(): void }> {
+  const logPath = path.join(projectRoot, '.signal.log');
+  const scriptPath = path.join(projectRoot, 'signal-recorder.js');
+  await fs.promises.writeFile(
+    scriptPath,
+    [
+      `const fs = require('fs');`,
+      `for (const signal of ['SIGTERM', 'SIGINT']) {`,
+      `  process.on(signal, () => {`,
+      `    fs.writeFileSync(${JSON.stringify(logPath)}, signal);`,
+      `    process.exit(0);`,
+      `  });`,
+      `}`,
+      `setInterval(() => {}, 1000);`,
+    ].join('\n')
+  );
+
+  const { spawn } = require('node:child_process') as typeof import('node:child_process');
+  const child = spawn(process.execPath, [scriptPath], { stdio: 'ignore' });
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  return {
+    pid: child.pid!,
+    signalled: () => (fs.existsSync(logPath) ? fs.readFileSync(logPath, 'utf8') : null),
+    stop: () => child.kill('SIGKILL'),
+  };
+}
+
+describe('exagent dev:stop', () => {
+  // The whole command in one assertion: the lock names a pid, that pid is signalled, and the
+  // report says it stopped. No port was guessed at and no `lsof` was composed.
+  it('signals the process the lock names', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const recorder = await startSignalRecorderAsync(projectRoot);
+    // A port nothing listens on, so "the dev server has gone" is true the moment the lock does.
+    const releaseLock = await holdDevLockAsync(projectRoot, {
+      url: 'http://127.0.0.1:59999',
+      port: 59999,
+      pid: recorder.pid,
+      startedAt: new Date().toISOString(),
+      projectRoot,
+    });
+
+    try {
+      // The lock has to stop answering for the wait to end, and this test holds it rather than a
+      // dev server, so it is released the moment the signal has landed.
+      setTimeout(() => releaseLock(), 500);
+      const result = await executeExagentAsync(projectRoot, ['dev:stop', '--json'], {
+        env: stubExpoEnv(projectRoot),
+      });
+
+      expect(result.exitCode).toBe(0);
+      const report = JSON.parse(result.stdout);
+      expect(report).toMatchObject({
+        stopped: true,
+        pid: recorder.pid,
+        port: 59999,
+        lockHeld: true,
+        signal: 'SIGTERM',
+        forced: false,
+        reason: null,
+      });
+      expect(recorder.signalled()).toBe('SIGTERM');
+    } finally {
+      releaseLock();
+      recorder.stop();
+    }
+  });
+
+  it('prints one JSON object with a stable set of keys', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['dev:stop', '--json']);
+
+    expect(Object.keys(JSON.parse(result.stdout)).sort()).toEqual([
+      'detail',
+      'followups',
+      'forced',
+      'lockHeld',
+      'pid',
+      'port',
+      'reason',
+      'signal',
+      'stopped',
+      'url',
+      'waitedMs',
+    ]);
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §Exit codes — the end state the caller asked for is
+  // the state it is already in, so a second run must not read as a failure.
+  it('exits 0 when nothing was running', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['dev:stop', '--json']);
+
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout)).toMatchObject({
+      stopped: false,
+      pid: null,
+      lockHeld: false,
+      reason: 'not-running',
+    });
+  });
+
+  // The one thing this command must not do by accident. A second project's dev server on the port
+  // is the ordinary case, and it is reported rather than killed.
+  it('reports a dev server it did not start, and leaves it running', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev:stop', '--port', String(stub.port), '--json'],
+        { reject: false }
+      );
+
+      expect(result.exitCode).toBe(20);
+      const report = JSON.parse(result.stdout);
+      expect(report).toMatchObject({ stopped: false, lockHeld: false, reason: 'foreign-dev-server' });
+      expect(report.detail).toContain('no lock answers for it');
+      // Still up, which is the assertion the whole case is about.
+      expect((await fetch(`${stub.url}/status`)).ok).toBe(true);
+    } finally {
+      await stub.close();
+    }
+  });
+
+  it('refuses a bare port and names the flag that takes one', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['dev:stop', '8081', '--json'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    const { error } = JSON.parse(result.stdout);
+    expect(error.code).toBe('BAD_ARGS');
+    expect(error.message).toContain('--port 8081');
+  });
+});
+
+describe('exagent runtime:stop', () => {
+  it('terminates the connected app on the booted simulator', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const readXcrun = await installStubXcrunAsync(projectRoot);
+    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:stop', '--ios', '--json', '--dev-server-url', stub.url],
+        { env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(result.exitCode).toBe(0);
+      expect(JSON.parse(result.stdout)).toMatchObject({
+        stopped: true,
+        wasRunning: true,
+        platform: 'ios',
+        deviceId: SIMULATOR_UDID,
+        bundleId: 'host.exp.Exponent',
+        bundleIdSource: 'dev-server',
+        reason: null,
+      });
+      expect(readXcrun()).toContainEqual([
+        'simctl',
+        'terminate',
+        SIMULATOR_UDID,
+        'host.exp.Exponent',
+      ]);
+    } finally {
+      await stub.close();
+    }
+  });
+
+  it('prints one JSON object with a stable set of keys', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    await installStubXcrunAsync(projectRoot);
+    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+
+    try {
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['runtime:stop', '--ios', '--json', '--dev-server-url', stub.url],
+        { env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(Object.keys(JSON.parse(result.stdout)).sort()).toEqual([
+        'bundleId',
+        'bundleIdReason',
+        'bundleIdSource',
+        'command',
+        'deviceId',
+        'followups',
+        'platform',
+        'reason',
+        'stopped',
+        'wasRunning',
+      ]);
+    } finally {
+      await stub.close();
+    }
+  });
+
+  it('stops the id --app-id names', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+    const readXcrun = await installStubXcrunAsync(projectRoot);
+    const stub = await startStubDevServerAsync({ targets: [EXPO_GO_TARGET] });
+
+    try {
+      await executeExagentAsync(
+        projectRoot,
+        ['runtime:stop', '--ios', '--app-id', 'com.example.other', '--dev-server-url', stub.url],
+        { env: stubExpoEnv(projectRoot) }
+      );
+
+      expect(readXcrun()).toContainEqual([
+        'simctl',
+        'terminate',
+        SIMULATOR_UDID,
+        'com.example.other',
+      ]);
+    } finally {
+      await stub.close();
+    }
+  });
+
+  it('refuses a bare application id and names the flag that takes one', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['runtime:stop', 'com.example.demo', '--json'],
+      { reject: false }
+    );
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout).error.message).toContain('--app-id com.example.demo');
+  });
+
+  it('advertises both stop commands in the top-level help', async () => {
+    const projectRoot = await setupFixtureAsync('go-app');
+
+    const result = await executeExagentAsync(projectRoot, ['--help']);
+
+    expect(result.all).toContain('runtime:stop');
+    expect(result.all).toContain('dev:stop');
+  });
+});

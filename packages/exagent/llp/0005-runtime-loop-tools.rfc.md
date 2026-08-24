@@ -64,7 +64,7 @@ Still open: Android capture via a dev build, distinguishing "no traffic" from si
 
 ## Reloading the app
 
-Decision [confirmed — Kudo, 2026-08-23]. `exagent reload` puts the running app back on the code
+Decision [confirmed — Kudo, 2026-08-23]. `exagent runtime:reload` puts the running app back on the code
 that is on disk, and reports a reload only when one was **observed**.
 
 ### The failure it answers

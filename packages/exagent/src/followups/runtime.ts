@@ -24,7 +24,7 @@ export function buildRuntimeErrorsFollowUps({
     return capFollowUps([
       {
         id: 'reload-app',
-        command: 'npx exagent reload',
+        command: 'npx exagent runtime:reload',
         why: 'Fix the errors above, then reload: an app whose render threw keeps running the code from before the fix, and this window would keep reporting it.',
       },
       {

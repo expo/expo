@@ -1,12 +1,12 @@
 // @ref llp/0005-runtime-loop-tools.rfc.md §Reloading the app
 // @ref llp/0010-agent-conventions.rfc.md §Registry rules — rule (d)
-// Argument resolution for `exagent reload`. Pure: argv in, options out, `CommandError` for
+// Argument resolution for `exagent runtime:reload`. Pure: argv in, options out, `CommandError` for
 // anything a user can get wrong.
 
-import type { NavigatePlatform } from '../navigate/device';
-import { resolveDevServerUrlFlag } from '../runtime/devServer';
-import { parseArgsOrThrow, resolveDuration, strayArgumentError } from '../utils/args';
-import { CommandError } from '../utils/errors';
+import type { NavigatePlatform } from '../../navigate/device';
+import { resolveDevServerUrlFlag } from '../devServer';
+import { parseArgsOrThrow, resolveDuration, strayArgumentError } from '../../utils/args';
+import { CommandError } from '../../utils/errors';
 
 /**
  * How the app is made to reload.
@@ -60,7 +60,7 @@ const RELOAD_ARGS = {
 };
 
 /**
- * Resolve the arguments of `exagent reload`.
+ * Resolve the arguments of `exagent runtime:reload`.
  *
  * @throws {CommandError} `BAD_ARGS` for both platform flags at once, an unknown method, an
  * unusable timeout, or a positional argument this command has no place for.
@@ -79,8 +79,8 @@ export function resolveReloadOptions(argv: string[]): ReloadOptions {
   // not a positional, because the command's subject is the app and not a route — so a bare word is
   // a caller who meant `--route`, and dropping it would reload without landing anywhere.
   if (args._.length > 0) {
-    throw strayArgumentError('reload', args._, {
-      hint: `to land on a route after the reload, pass it as a flag: npx exagent reload --route ${args._[0]}`,
+    throw strayArgumentError('runtime:reload', args._, {
+      hint: `to land on a route after the reload, pass it as a flag: npx exagent runtime:reload --route ${args._[0]}`,
     });
   }
 

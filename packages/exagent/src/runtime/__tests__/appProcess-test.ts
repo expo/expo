@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
 
-import { buildStopAppCommand, looksLikeNotRunning, stopAppOnDeviceAsync } from '../device';
+import { buildStopAppCommand, looksLikeNotRunning, stopAppOnDeviceAsync } from '../appProcess';
 
 /** Answer the next `spawn` with a fixed result. */
 function mockSpawn({

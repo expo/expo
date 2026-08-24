@@ -47,7 +47,7 @@ export function buildInstallFollowUps({
     // follow-ups lead to the error window afterwards.
     followups.push({
       id: 'reload-app',
-      command: 'npx exagent reload',
+      command: 'npx exagent runtime:reload',
       why: 'Only JavaScript changed, so reloading the app is enough to pick the package up — no rebuild.',
     });
   }

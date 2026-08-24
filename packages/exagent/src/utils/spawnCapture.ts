@@ -21,7 +21,7 @@ export interface SpawnCaptureResult {
 export function spawnCaptureAsync(
   command: string,
   args: string[],
-  options: { cwd?: string } = {}
+  options: { cwd?: string; timeoutMs?: number } = {}
 ): Promise<SpawnCaptureResult> {
   return new Promise<SpawnCaptureResult>((resolve) => {
     // A `fingerprint` resolved inside a project is a batch shim on Windows, which needs `cmd.exe`.
@@ -33,6 +33,15 @@ export function spawnCaptureAsync(
       shell: target.shell,
     });
 
+    // A lookup tool that hangs must not hang the command that asked. Only set when a caller
+    // names a deadline: every other caller runs a tool that ends on its own.
+    let deadline: NodeJS.Timeout | null = null;
+    if (options.timeoutMs != null) {
+      deadline = setTimeout(() => child.kill('SIGKILL'), options.timeoutMs);
+      // An unreferenced timer never keeps the process alive on its own.
+      deadline.unref?.();
+    }
+
     let stdout = '';
     let stderr = '';
     child.stdout?.on('data', (chunk) => {
@@ -43,11 +52,19 @@ export function spawnCaptureAsync(
     });
 
     child.on('error', (error: NodeJS.ErrnoException) => {
+      clearDeadline();
       resolve({ stdout, stderr, exitCode: null, spawnError: error });
     });
 
     child.on('close', (code) => {
+      clearDeadline();
       resolve({ stdout, stderr, exitCode: code });
     });
+
+    function clearDeadline() {
+      if (deadline != null) {
+        clearTimeout(deadline);
+      }
+    }
   });
 }

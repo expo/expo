@@ -1,7 +1,7 @@
 /* eslint-env jest */
 // @ref llp/0005-runtime-loop-tools.rfc.md §Reloading the app
 //
-// `exagent reload` speaks a protocol nobody promises: the dev server's client command socket, on
+// `exagent runtime:reload` speaks a protocol nobody promises: the dev server's client command socket, on
 // `/message`, where every frame has to carry `version: 2` and a frame without it is dropped with
 // no answer at all. A unit test can only check what this CLI sends; these run the published bin
 // against a socket that answers the way the dev server answers, so the version stamp and the
@@ -84,7 +84,7 @@ async function lockToStubAsync(projectRoot: string, stub: { url: string; port: n
   });
 }
 
-describe('exagent reload', () => {
+describe('exagent runtime:reload', () => {
   it('reloads over the dev server, and says what proved it', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
     const stub = await startStubDevServerAsync({
@@ -95,7 +95,7 @@ describe('exagent reload', () => {
     const readXcrun = await installStubXcrunAsync(projectRoot);
 
     try {
-      const result = await executeExagentAsync(projectRoot, ['reload', '--json'], {
+      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
         env: stubExpoEnv(projectRoot),
       });
 
@@ -120,7 +120,7 @@ describe('exagent reload', () => {
     const releaseLock = await lockToStubAsync(projectRoot, stub);
 
     try {
-      const result = await executeExagentAsync(projectRoot, ['reload', '--json'], {
+      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--json'], {
         env: stubExpoEnv(projectRoot),
       });
 
@@ -160,7 +160,7 @@ describe('exagent reload', () => {
     try {
       const result = await executeExagentAsync(
         projectRoot,
-        ['reload', '--method', 'dev-server', '--json'],
+        ['runtime:reload', '--method', 'dev-server', '--json'],
         { env: stubExpoEnv(projectRoot), reject: false }
       );
 
@@ -186,7 +186,7 @@ describe('exagent reload', () => {
     try {
       const result = await executeExagentAsync(
         projectRoot,
-        ['reload', '--method', 'dev-server', '--json'],
+        ['runtime:reload', '--method', 'dev-server', '--json'],
         { env: stubExpoEnv(projectRoot), reject: false }
       );
 
@@ -208,7 +208,7 @@ describe('exagent reload', () => {
     const readXcrun = await installStubXcrunAsync(projectRoot);
 
     try {
-      const result = await executeExagentAsync(projectRoot, ['reload', '--ios', '--json'], {
+      const result = await executeExagentAsync(projectRoot, ['runtime:reload', '--ios', '--json'], {
         env: stubExpoEnv(projectRoot),
       });
 
@@ -230,7 +230,7 @@ describe('exagent reload', () => {
 
     const result = await executeExagentAsync(
       projectRoot,
-      ['reload', '--dev-server-url', 'http://127.0.0.1:8199', '--json'],
+      ['runtime:reload', '--dev-server-url', 'http://127.0.0.1:8199', '--json'],
       { env: stubExpoEnv(projectRoot), reject: false }
     );
 
@@ -243,7 +243,7 @@ describe('exagent reload', () => {
   it('refuses a bare route and names the flag that takes one', async () => {
     const projectRoot = await setupFixtureAsync('go-app');
 
-    const result = await executeExagentAsync(projectRoot, ['reload', '/notes', '--json'], {
+    const result = await executeExagentAsync(projectRoot, ['runtime:reload', '/notes', '--json'], {
       reject: false,
     });
 
@@ -259,6 +259,6 @@ describe('exagent reload', () => {
     const result = await executeExagentAsync(projectRoot, ['--help']);
 
     expect(result.exitCode).toBe(0);
-    expect(result.all).toContain('reload');
+    expect(result.all).toContain('runtime:reload');
   });
 });
