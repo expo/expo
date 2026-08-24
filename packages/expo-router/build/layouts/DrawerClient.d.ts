@@ -102,7 +102,9 @@ export declare const Drawer: import("react").ForwardRefExoticComponent<Omit<Omit
     id?: undefined;
 } | {
     id: string;
-})), "children">> & import("react").RefAttributes<unknown>> & {
+})), "children">> & import("react").RefAttributes<unknown> & {
+    unstable_screenErrorBoundary?: import("react").ComponentType<import("..").ErrorBoundaryProps>;
+}> & {
     Screen: (props: import("..").ScreenProps<DrawerNavigationOptions, DrawerNavigationState<ParamListBase>, DrawerNavigationEventMap>) => null;
     Protected: typeof import("../views/Protected").Protected;
 };

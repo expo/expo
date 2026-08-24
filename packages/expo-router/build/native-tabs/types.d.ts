@@ -4,6 +4,7 @@ import type { TabsHostProps, TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import type { DefaultRouterOptions, ParamListBase, RouteProp, ScreenListeners, TabNavigationState } from '../react-navigation/native';
 import type { ScreenProps } from '../useScreens';
+import type { ErrorBoundaryProps } from '../views/Try';
 /**
  * Event map for `NativeTabs` navigation events.
  * Only `tabPress` is currently supported.
@@ -220,6 +221,8 @@ export declare const SUPPORTED_BLUR_EFFECTS: readonly ["none", "systemDefault", 
  */
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 export interface NativeTabsProps extends PropsWithChildren {
+    /** A component to render when an individual tab screen throws an error. */
+    unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
     /**
      * The style of the every tab label in the tab bar.
      */

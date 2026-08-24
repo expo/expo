@@ -43,12 +43,12 @@ exports.DefaultNavigator = DefaultNavigator;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
-const Screen_1 = require("./Screen");
 const Route_1 = require("../Route");
 const StackClient_1 = require("../layouts/StackClient");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
 const native_1 = require("../react-navigation/native");
 const useScreens_1 = require("../useScreens");
+const Screen_1 = require("./Screen");
 exports.NavigatorContext = React.createContext(null);
 if (process.env.NODE_ENV !== 'production') {
     exports.NavigatorContext.displayName = 'NavigatorContext';
@@ -58,7 +58,7 @@ if (process.env.NODE_ENV !== 'production') {
  *
  * @hidden
  */
-function Navigator({ initialRouteName, screenOptions, children, router, routerOptions, }) {
+function Navigator({ initialRouteName, screenOptions, children, router, routerOptions, unstable_screenErrorBoundary, }) {
     const contextKey = (0, Route_1.useContextKey)();
     // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
     const { screens, children: nonScreenChildren, protectedScreens, } = (0, withLayoutContext_1.useFilterScreenChildren)(children, {
@@ -84,7 +84,7 @@ function Navigator({ initialRouteName, screenOptions, children, router, routerOp
             ...navigation,
             contextKey,
             router,
-        }, children: nonScreenChildren }));
+        }, children: unstable_screenErrorBoundary ? ((0, jsx_runtime_1.jsx)(Route_1.ScreenErrorBoundaryContext, { value: unstable_screenErrorBoundary, children: nonScreenChildren })) : (nonScreenChildren) }));
 }
 /**
  * @hidden
@@ -96,7 +96,7 @@ function useNavigatorContext() {
     }
     return context;
 }
-function SlotNavigator(props) {
+function SlotNavigator({ unstable_screenErrorBoundary, ...props }) {
     const contextKey = (0, Route_1.useContextKey)();
     // Allows adding Screen components as children to configure routes.
     const { screens, protectedScreens } = (0, withLayoutContext_1.useFilterScreenChildren)([], {
@@ -107,7 +107,8 @@ function SlotNavigator(props) {
         id: contextKey,
         children: (0, useScreens_1.useSortedScreens)(screens ?? [], protectedScreens),
     });
-    return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: descriptors[state.routes[state.index].key].render() }));
+    const content = ((0, jsx_runtime_1.jsx)(NavigationContent, { children: descriptors[state.routes[state.index].key].render() }));
+    return unstable_screenErrorBoundary ? ((0, jsx_runtime_1.jsx)(Route_1.ScreenErrorBoundaryContext, { value: unstable_screenErrorBoundary, children: content })) : (content);
 }
 /**
  * Renders the currently selected content.

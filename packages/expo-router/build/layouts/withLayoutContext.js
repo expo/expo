@@ -114,7 +114,7 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
  * ```
  */
 function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
-    return Object.assign((0, react_1.forwardRef)(({ children: userDefinedChildren, ...props }, ref) => {
+    return Object.assign((0, react_1.forwardRef)(({ children: userDefinedChildren, unstable_screenErrorBoundary, ...props }, ref) => {
         const contextKey = (0, Route_1.useContextKey)();
         const { screens, protectedScreens } = useFilterScreenChildren(userDefinedChildren, {
             contextKey,
@@ -125,7 +125,8 @@ function withLayoutContext(Nav, processor, useOnlyUserDefinedScreens = false) {
         if (!sorted.length) {
             return null;
         }
-        return ((0, jsx_runtime_1.jsx)(IsWithinLayoutContext_1.IsWithinLayoutContext, { value: true, children: (0, jsx_runtime_1.jsx)(Nav, { ...props, id: contextKey, ref: ref, children: sorted }) }));
+        const content = ((0, jsx_runtime_1.jsx)(IsWithinLayoutContext_1.IsWithinLayoutContext, { value: true, children: (0, jsx_runtime_1.jsx)(Nav, { ...props, id: contextKey, ref: ref, children: sorted }) }));
+        return unstable_screenErrorBoundary ? ((0, jsx_runtime_1.jsx)(Route_1.ScreenErrorBoundaryContext, { value: unstable_screenErrorBoundary, children: content })) : (content);
     }), {
         Screen: Screen_1.Screen,
         Protected: Protected_1.Protected,

@@ -9,6 +9,7 @@ import type {
   ParamListBase,
 } from '../react-navigation/native';
 import type { GoBackAction, NavigateAction } from '../react-navigation/routers/CommonActions';
+import type { ErrorBoundaryProps } from '../views/Try';
 
 export type StandardNavigatorEventMapBase = Record<
   string,
@@ -153,4 +154,7 @@ export type StandardRouterNavigatorProps<
   RouterOptions extends DefaultRouterOptions,
 > = StandardUseNavigationBuilderOptions<State, NavigatorOptions, EventMap> &
   NavigatorProps &
-  RouterOptions;
+  RouterOptions & {
+    /** A component to render when an individual screen in this navigator throws an error. */
+    unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+  };

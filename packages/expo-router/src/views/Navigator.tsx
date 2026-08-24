@@ -4,13 +4,14 @@
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Screen } from './Screen';
-import { useContextKey } from '../Route';
+import { ScreenErrorBoundaryContext, useContextKey } from '../Route';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
+import { Screen } from './Screen';
+import type { ErrorBoundaryProps } from './Try';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
   contextKey: string;
@@ -32,6 +33,8 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
   children?: UseNavigationBuilderOptions['children'];
   router?: T;
   routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
+  /** A component to render when an individual screen in this navigator throws an error. */
+  unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
 };
 
 /**
@@ -45,6 +48,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   children,
   router,
   routerOptions,
+  unstable_screenErrorBoundary,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
 
@@ -84,7 +88,13 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {nonScreenChildren}
+      {unstable_screenErrorBoundary ? (
+        <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+          {nonScreenChildren}
+        </ScreenErrorBoundaryContext>
+      ) : (
+        nonScreenChildren
+      )}
     </NavigatorContext.Provider>
   );
 }
@@ -100,7 +110,7 @@ export function useNavigatorContext() {
   return context;
 }
 
-function SlotNavigator(props: NavigatorProps<any>) {
+function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProps<any>) {
   const contextKey = useContextKey();
 
   // Allows adding Screen components as children to configure routes.
@@ -114,8 +124,16 @@ function SlotNavigator(props: NavigatorProps<any>) {
     children: useSortedScreens(screens ?? [], protectedScreens),
   });
 
-  return (
+  const content = (
     <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+  );
+
+  return unstable_screenErrorBoundary ? (
+    <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
+      {content}
+    </ScreenErrorBoundaryContext>
+  ) : (
+    content
   );
 }
 

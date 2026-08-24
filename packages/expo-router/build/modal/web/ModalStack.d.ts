@@ -1,6 +1,8 @@
 import React from 'react';
 import type { ParamListBase } from '../../react-navigation/native';
-declare const RouterModal: React.ForwardRefExoticComponent<Omit<import("../..").PickPartial<any, "children">, "ref"> & React.RefAttributes<unknown>> & {
+declare const RouterModal: React.ForwardRefExoticComponent<Omit<import("../..").PickPartial<any, "children">, "ref"> & React.RefAttributes<unknown> & {
+    unstable_screenErrorBoundary?: React.ComponentType<import("../..").ErrorBoundaryProps>;
+}> & {
     Screen: (props: import("../..").ScreenProps<object, Readonly<{
         key: string;
         index: number;

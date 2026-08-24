@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StackRouter } from '../layouts/StackClient';
 import type { RouterFactory } from '../react-navigation/native';
 import { useNavigationBuilder } from '../react-navigation/native';
+import type { ErrorBoundaryProps } from './Try';
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
     contextKey: string;
     router: RouterFactory<any, any, any>;
@@ -15,13 +16,15 @@ export type NavigatorProps<T extends UseNavigationBuilderRouter> = {
     children?: UseNavigationBuilderOptions['children'];
     router?: T;
     routerOptions?: Omit<Parameters<T>[0], 'initialRouteName'>;
+    /** A component to render when an individual screen in this navigator throws an error. */
+    unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
 };
 /**
  * An unstyled custom navigator. Good for basic web layouts.
  *
  * @hidden
  */
-export declare function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({ initialRouteName, screenOptions, children, router, routerOptions, }: NavigatorProps<T>): import("react/jsx-runtime").JSX.Element | null;
+export declare function Navigator<T extends UseNavigationBuilderRouter = typeof StackRouter>({ initialRouteName, screenOptions, children, router, routerOptions, unstable_screenErrorBoundary, }: NavigatorProps<T>): import("react/jsx-runtime").JSX.Element | null;
 export declare namespace Navigator {
     var Slot: typeof NavigatorSlot;
     var useContext: typeof useNavigatorContext;

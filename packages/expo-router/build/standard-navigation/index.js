@@ -6,6 +6,7 @@ exports.unstable_integrateWithRouter = unstable_integrateWithRouter;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const standard_navigation_1 = require("standard-navigation");
+const Route_1 = require("../Route");
 const useProjectedDescriptors_1 = require("./useProjectedDescriptors");
 const useStandardActions_1 = require("./useStandardActions");
 const useStandardEmitter_1 = require("./useStandardEmitter");
@@ -62,7 +63,10 @@ function unstable_createStandardRouterNavigator(NavigatorContent, router, ...opt
 function unstable_integrateWithRouter(navigator, router, ...[options]) {
     assertStandardNavigator(navigator);
     const { NavigatorContent } = navigator;
-    function StandardRouterNavigator(props) {
+    function StandardRouterNavigator(allProps) {
+        const { unstable_screenErrorBoundary, ...rest } = allProps;
+        // Omitting the boundary prop from a generic intersection is not preserved by TypeScript.
+        const props = rest;
         const { extraProps, useNavigationBuilderProps } = partitionNavigatorProps(props);
         const { state, navigation, descriptors, describe, NavigationContent } = (0, native_1.useNavigationBuilder)(router, useNavigationBuilderProps);
         const { dispatch } = navigation;
@@ -73,7 +77,7 @@ function unstable_integrateWithRouter(navigator, router, ...[options]) {
             actions: (0, useStandardActions_1.useStandardActions)(navigation, state.key),
             emitter: (0, useStandardEmitter_1.useStandardEmitter)(navigation),
         };
-        return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(NavigatorContent
+        const content = ((0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(NavigatorContent
             // `extraProps` is everything that is not a `useNavigationBuilder` option, which is the
             // navigator props *and* the router options merged together — at runtime there is no way
             // to tell the two apart, so the router options are intentionally forwarded here as well.
@@ -81,6 +85,7 @@ function unstable_integrateWithRouter(navigator, router, ...[options]) {
             // its type, so the TS contract keeps users from reading router options off `NavigatorContent`
             // in the common case, even though they are physically present on the object.
             , { ...extraProps, ...derivedProps, ...standardArgs }) }));
+        return unstable_screenErrorBoundary ? ((0, jsx_runtime_1.jsx)(Route_1.ScreenErrorBoundaryContext, { value: unstable_screenErrorBoundary, children: content })) : (content);
     }
     return (0, withLayoutContext_1.withLayoutContext)(StandardRouterNavigator, undefined, options?.useOnlyUserDefinedScreens);
 }

@@ -1,6 +1,7 @@
 import type { createStandardNavigator, NavigatorArgs } from 'standard-navigation';
 import type { DefaultNavigatorOptions, DefaultRouterOptions, NavigationAction, NavigationHelpers, NavigationState, ParamListBase } from '../react-navigation/native';
 import type { GoBackAction, NavigateAction } from '../react-navigation/routers/CommonActions';
+import type { ErrorBoundaryProps } from '../views/Try';
 export type StandardNavigatorEventMapBase = Record<string, {
     data: object | undefined;
     canPreventDefault: boolean;
@@ -89,6 +90,9 @@ type NavigatorContentInferenceCarrier<EventMap extends StandardNavigatorEventMap
  * ```
  */
 export type NavigatorContentProps<NavigatorOptions extends object, EventMap extends StandardNavigatorEventMapBase = Record<string, never>, NavigatorProps extends object = object, CreateProps extends object = object> = StandardNavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps & CreateProps> & NavigatorContentInferenceCarrier<EventMap, NavigatorProps, CreateProps>;
-export type StandardRouterNavigatorProps<State extends NavigationState, NavigatorOptions extends object, EventMap extends StandardNavigatorEventMapBase, NavigatorProps extends object, RouterOptions extends DefaultRouterOptions> = StandardUseNavigationBuilderOptions<State, NavigatorOptions, EventMap> & NavigatorProps & RouterOptions;
+export type StandardRouterNavigatorProps<State extends NavigationState, NavigatorOptions extends object, EventMap extends StandardNavigatorEventMapBase, NavigatorProps extends object, RouterOptions extends DefaultRouterOptions> = StandardUseNavigationBuilderOptions<State, NavigatorOptions, EventMap> & NavigatorProps & RouterOptions & {
+    /** A component to render when an individual screen in this navigator throws an error. */
+    unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
+};
 export {};
 //# sourceMappingURL=types.d.ts.map

@@ -138,18 +138,38 @@ function useSortedScreens(order, protectedScreens, useOnlyUserDefinedScreens = f
         return routeToScreen(value.route, value.props);
     }), [sorted, protectedScreens]);
 }
-function fromImport(value, { ErrorBoundary, SuspenseFallback, ...component }) {
+function fromImport(value, { ErrorBoundary, SuspenseFallback, unstable_settings, ...component }) {
     // If possible, add a more helpful display name for the component stack to improve debugging of React errors such as `Text strings must be rendered within a <Text> component.`.
     if (component?.default && __DEV__) {
         component.default.displayName ??= `${component.default.name ?? 'Route'}(${value.contextKey})`;
     }
-    if (ErrorBoundary) {
+    const screenErrorBoundary = unstable_settings?.screenErrorBoundary;
+    if (process.env.NODE_ENV !== 'production' && screenErrorBoundary && value.type !== 'layout') {
+        console.warn(`Route "${value.contextKey}" exports unstable_settings.screenErrorBoundary. This setting is only supported in layout routes; use export const ErrorBoundary instead.`);
+    }
+    if (process.env.NODE_ENV !== 'production' &&
+        typeof component.default === 'object' &&
+        component.default &&
+        Object.keys(component.default).length === 0) {
+        return { default: EmptyRoute_1.EmptyRoute, SuspenseFallback };
+    }
+    if (ErrorBoundary || (value.type === 'layout' && screenErrorBoundary !== undefined)) {
         const Wrapped = react_2.default.forwardRef((props, ref) => {
-            const children = react_2.default.createElement(component.default || EmptyRoute_1.EmptyRoute, {
+            const inheritedScreenErrorBoundary = (0, react_2.use)(Route_1.ScreenErrorBoundaryContext);
+            let children = react_2.default.createElement(component.default || EmptyRoute_1.EmptyRoute, {
                 ...props,
                 ref,
             });
-            return (0, jsx_runtime_1.jsx)(Try_1.Try, { catch: ErrorBoundary, children: children });
+            if (ErrorBoundary) {
+                children = (0, jsx_runtime_1.jsx)(Try_1.Try, { catch: ErrorBoundary, children: children });
+            }
+            if (value.type === 'layout' && screenErrorBoundary !== undefined) {
+                children = ((0, jsx_runtime_1.jsx)(Route_1.ScreenErrorBoundaryContext, { value: screenErrorBoundary ?? undefined, children: children }));
+                if (screenErrorBoundary === null && inheritedScreenErrorBoundary) {
+                    children = (0, jsx_runtime_1.jsx)(Try_1.Try, { catch: inheritedScreenErrorBoundary, children: children });
+                }
+            }
+            return children;
         });
         if (__DEV__) {
             Wrapped.displayName = `ErrorBoundary(${value.contextKey})`;
@@ -158,13 +178,6 @@ function fromImport(value, { ErrorBoundary, SuspenseFallback, ...component }) {
             default: Wrapped,
             SuspenseFallback,
         };
-    }
-    if (process.env.NODE_ENV !== 'production') {
-        if (typeof component.default === 'object' &&
-            component.default &&
-            Object.keys(component.default).length === 0) {
-            return { default: EmptyRoute_1.EmptyRoute, SuspenseFallback };
-        }
     }
     return { default: component.default, SuspenseFallback };
 }
@@ -221,6 +234,7 @@ function getQualifiedRouteComponent(value) {
         const isFocused = navigation.isFocused();
         const store = (0, storeContext_1.useExpoRouterStore)();
         const InheritedSuspenseFallback = (0, react_2.use)(Route_1.SuspenseFallbackContext);
+        const ScreenErrorBoundary = (0, react_2.use)(Route_1.ScreenErrorBoundaryContext);
         const ResolvedSuspenseFallback = import_mode_1.default === 'lazy'
             ? SuspenseFallback_1.SuspenseFallback
             : (LayoutSuspenseFallback ?? InheritedSuspenseFallback ?? SuspenseFallback_1.SuspenseFallback);
@@ -256,10 +270,11 @@ function getQualifiedRouteComponent(value) {
         }, [navigation]);
         const isRouteType = value.type === 'route';
         const hasRouteKey = !!route?.key;
-        return ((0, jsx_runtime_1.jsx)(Route_1.Route, { node: value, params: route?.params, children: (0, jsx_runtime_1.jsxs)(Route_1.SuspenseFallbackContext, { value: providedSuspenseFallback, children: [navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && ((0, jsx_runtime_1.jsx)(AnalyticsListeners, { navigation: navigation, screenId: route.key })), (0, jsx_runtime_1.jsxs)(zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider, { route: route, children: [(0, jsx_runtime_1.jsx)(ZoomTransitionEnabler_1.ZoomTransitionEnabler, { route: route }), (0, jsx_runtime_1.jsx)(react_2.default.Suspense, { name: route ? `Route(${route.name})` : undefined, fallback: (0, jsx_runtime_1.jsx)(ResolvedSuspenseFallback, { route: value.contextKey, params: (route?.params ?? {}) }), children: (0, jsx_runtime_1.jsx)(WrappedScreenComponent, { ...props, 
-                                    // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
-                                    // the intention is to make it possible to deduce shared routes.
-                                    segment: value.route }) })] })] }) }));
+        const screenComponent = ((0, jsx_runtime_1.jsx)(WrappedScreenComponent, { ...props, 
+            // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
+            // the intention is to make it possible to deduce shared routes.
+            segment: value.route }));
+        return ((0, jsx_runtime_1.jsx)(Route_1.Route, { node: value, params: route?.params, children: (0, jsx_runtime_1.jsxs)(Route_1.SuspenseFallbackContext, { value: providedSuspenseFallback, children: [navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && ((0, jsx_runtime_1.jsx)(AnalyticsListeners, { navigation: navigation, screenId: route.key })), (0, jsx_runtime_1.jsxs)(zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider, { route: route, children: [(0, jsx_runtime_1.jsx)(ZoomTransitionEnabler_1.ZoomTransitionEnabler, { route: route }), (0, jsx_runtime_1.jsx)(react_2.default.Suspense, { name: route ? `Route(${route.name})` : undefined, fallback: (0, jsx_runtime_1.jsx)(ResolvedSuspenseFallback, { route: value.contextKey, params: (route?.params ?? {}) }), children: ScreenErrorBoundary && isRouteType ? ((0, jsx_runtime_1.jsx)(Try_1.Try, { catch: ScreenErrorBoundary, children: screenComponent })) : (screenComponent) })] })] }) }));
     }
     if (__DEV__) {
         BaseRoute.displayName = `Route(${value.route})`;

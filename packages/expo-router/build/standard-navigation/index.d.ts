@@ -49,7 +49,9 @@ export declare function unstable_createStandardRouterNavigator<NavigatorOptions 
  * export const Tabs = unstable_integrateWithRouter(navigator, TabRouter);
  * ```
  */
-export declare function unstable_integrateWithRouter<NavigatorOptions extends object, State extends NavigationState, EventMap extends StandardNavigatorEventMapBase, NavigatorProps extends object, RouterOptions extends DefaultRouterOptions, CreateProps extends object = object>(navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps & CreateProps>, router: RouterFactory<State, NavigationAction, RouterOptions>, ...[options]: IntegrateWithRouterOptionsTuple<State, NoInfer<CreateProps>>): import("react").ForwardRefExoticComponent<import("react").PropsWithoutRef<import("..").PickPartial<StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>, "children">> & import("react").RefAttributes<unknown>> & {
+export declare function unstable_integrateWithRouter<NavigatorOptions extends object, State extends NavigationState, EventMap extends StandardNavigatorEventMapBase, NavigatorProps extends object, RouterOptions extends DefaultRouterOptions, CreateProps extends object = object>(navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps & CreateProps>, router: RouterFactory<State, NavigationAction, RouterOptions>, ...[options]: IntegrateWithRouterOptionsTuple<State, NoInfer<CreateProps>>): import("react").ForwardRefExoticComponent<import("react").PropsWithoutRef<import("..").PickPartial<StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>, "children">> & import("react").RefAttributes<unknown> & {
+    unstable_screenErrorBoundary?: ComponentType<import("..").ErrorBoundaryProps>;
+}> & {
     Screen: (props: import("..").ScreenProps<NavigatorOptions, State, EventMap & EventMapBase>) => null;
     Protected: typeof import("../views/Protected").Protected;
 };

@@ -3,6 +3,7 @@ import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { PickPartial } from '../types';
 import type { ScreenProps } from '../useScreens';
 import { Protected } from '../views/Protected';
+import type { ErrorBoundaryProps } from '../views/Try';
 export declare function useFilterScreenChildren(children: ReactNode, { isCustomNavigator, contextKey, }?: {
     isCustomNavigator?: boolean;
     /** Used for sending developer hints */
@@ -48,7 +49,10 @@ export declare function useFilterScreenChildren(children: ReactNode, { isCustomN
  * }
  * ```
  */
-export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[], useOnlyUserDefinedScreens?: boolean): ForwardRefExoticComponent<PropsWithoutRef<PickPartial<ComponentProps<T>, "children">> & RefAttributes<unknown>> & {
+export declare function withLayoutContext<TOptions extends object, T extends ComponentType<any>, TState extends NavigationState, TEventMap extends EventMapBase>(Nav: T, processor?: (options: ScreenProps[]) => ScreenProps[], useOnlyUserDefinedScreens?: boolean): ForwardRefExoticComponent<PropsWithoutRef<PickPartial<ComponentProps<T>, "children">> & RefAttributes<unknown> & {
+    /** A component to render when an individual screen in this navigator throws an error. */
+    unstable_screenErrorBoundary?: ComponentType<ErrorBoundaryProps>;
+}> & {
     Screen: (props: ScreenProps<TOptions, TState, TEventMap>) => null;
     Protected: typeof Protected;
 };
