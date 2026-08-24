@@ -196,7 +196,7 @@ declare module '2g' {
       pluginCount: number;
       /** How many of them the app config declared; the rest are auto-applied. */
       declaredPluginCount: number;
-      autolinkedModuleCount: number;
+      expoAutolinkedModuleCount: number;
       /** How long the `expo config` subprocess took. */
       durationMs: number;
     };

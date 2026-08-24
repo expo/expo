@@ -10,6 +10,7 @@ import {
   printSkillsForAgentAsync,
 } from '../skills/skillsAsync';
 import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
+import { diagnoseCheckedPackagesAsync, type InstallCheckReport } from './checkReport';
 import { reportInstallImpactAsync } from './impactReport';
 import type { InstallPlan } from './resolveOptions';
 import type { InstallReport } from './types';
@@ -36,11 +37,17 @@ export async function installAsync(projectRoot: string, plan: InstallPlan): Prom
     silent: plan.json,
   });
 
-  const { exitCode, checkPayload } = await runInstallAsync(projectRoot, plan);
+  const { exitCode, checkPayload, checkOutput } = await runInstallAsync(projectRoot, plan);
   if (exitCode !== 0) {
     // Nothing was installed, so there is nothing to classify and nothing to link — but a caller
     // that asked for JSON still gets one object, the way a successful run does.
-    await reportAsync(projectRoot, plan, { exitCode, checkpoint, impact: [], checkPayload });
+    await reportAsync(projectRoot, plan, {
+      exitCode,
+      checkpoint,
+      impact: [],
+      checkPayload,
+      checkOutput,
+    });
     return exitCode;
   }
 
@@ -62,7 +69,7 @@ export async function installAsync(projectRoot: string, plan: InstallPlan): Prom
     }
   }
 
-  await reportAsync(projectRoot, plan, { exitCode, checkpoint, impact, checkPayload });
+  await reportAsync(projectRoot, plan, { exitCode, checkpoint, impact, checkPayload, checkOutput });
   return exitCode;
 }
 
@@ -77,23 +84,34 @@ export async function installAsync(projectRoot: string, plan: InstallPlan): Prom
 async function runInstallAsync(
   projectRoot: string,
   plan: InstallPlan
-): Promise<{ exitCode: number; checkPayload: unknown }> {
+): Promise<{ exitCode: number; checkPayload: unknown; checkOutput: string | null }> {
   const args = ['install', ...plan.expoArgs];
 
   if (!plan.json) {
-    return { exitCode: await runExpoAsync(projectRoot, args), checkPayload: null };
+    return {
+      exitCode: await runExpoAsync(projectRoot, args),
+      checkPayload: null,
+      checkOutput: null,
+    };
   }
 
   const { result } = await spawnExpoAsync(projectRoot, args, { output: 'capture' });
+  const exitCode = result.exitCode ?? 1;
+  const checkPayload = plan.check ? parseJsonOrNull(result.stdout) : null;
   // What the tool printed is for a person, not for the caller's parser, so it goes to stderr. A
-  // `--check` run is the exception: there its stdout *is* the answer, and it travels in `check`.
+  // `--check` run that produced its report is the exception: there stdout *is* the answer, and it
+  // travels in `check.report`. A `--check` run that produced no report is **not** an exception —
+  // suppressing it there is what left an agent with exit 1, a success-shaped object and zero bytes
+  // of diagnosis anywhere (F29).
   const printed = `${result.stdout}${result.stderr}`.trim();
-  if (printed && !plan.check) {
+  const suppressed = plan.check && checkPayload != null;
+  if (printed && !suppressed) {
     Log.error(printed);
   }
   return {
-    exitCode: result.exitCode ?? 1,
-    checkPayload: plan.check ? parseJsonOrNull(result.stdout) : null,
+    exitCode,
+    checkPayload,
+    checkOutput: plan.check && checkPayload == null ? printed || null : null,
   };
 }
 
@@ -128,11 +146,13 @@ async function reportAsync(
     checkpoint,
     impact,
     checkPayload,
+    checkOutput,
   }: {
     exitCode: number;
     checkpoint: CheckpointResult;
     impact: InstallImpactReport[];
     checkPayload: unknown;
+    checkOutput: string | null;
   }
 ): Promise<void> {
   // Only when something reads it: the follow-up wording, or the JSON report. Walking the
@@ -147,6 +167,18 @@ async function reportAsync(
     ? buildInstallFollowUps({ reports: impact, packagesWithSkills: skillPackages })
     : [];
 
+  // The project's own manifest, read only when the check failed: a passing check has nothing to
+  // clarify, and the Expo CLI's report already says what a failing version check found.
+  const check: InstallCheckReport | null = plan.check
+    ? {
+        ok: exitCode === 0,
+        report: checkPayload,
+        output: checkOutput,
+        notes:
+          exitCode === 0 ? [] : await diagnoseCheckedPackagesAsync(projectRoot, plan.packages),
+      }
+    : null;
+
   if (plan.json) {
     const report: InstallReport = {
       projectRoot,
@@ -156,10 +188,15 @@ async function reportAsync(
       impact,
       checkpoint: checkpoint.record ? { id: checkpoint.record.id, files: checkpoint.files } : null,
       skillPackages,
-      check: checkPayload,
+      check,
       followups,
     };
     Log.log(JSON.stringify(report, null, 2));
+  } else if (check?.notes.length) {
+    // The Expo CLI had the terminal and has already printed its own account, which for this case
+    // states something about package.json that this CLI has just read and found untrue. The
+    // correction goes last, where it is the line a reader acts on.
+    Log.error(`\n${check.notes.join('\n')}`);
   }
 
   reportFollowUps('install', followups, { json: plan.json });
