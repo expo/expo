@@ -54,7 +54,6 @@ export function useLinking(
   const getStateFromPath = options?.getStateFromPath ?? getExpoStateFromPath;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const { segments } = useRouteInfo();
-
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       return undefined;
