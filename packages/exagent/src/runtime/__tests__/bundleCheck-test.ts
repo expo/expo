@@ -320,6 +320,128 @@ describe(checkEntryBundleAsync, () => {
     });
   });
 
+  // F37: the same file, the same syntax error, the same command — and two shapes. Web reported
+  // `type: null` where iOS reported `TransformError`, and an absolute path where iOS reported a
+  // project-relative one, so a consumer that parsed one did not parse the other.
+  describe('the two platforms report one shape', () => {
+    /** The error page a live web dev server renders for a project that does not compile. */
+    function webErrorPage(): string {
+      const staticError = JSON.stringify({
+        selectedLogIndex: 0,
+        logs: [
+          {
+            level: 'static',
+            // `LogBoxLog` fills this in for a record that named no type, so it must not be read
+            // as one — it is the absence of an answer wearing the shape of one.
+            type: 'error',
+            message: {
+              content:
+                "SyntaxError: /project/src/app/index.tsx: Unexpected keyword 'const'. (101:2)\n\n> 101 |   const x =",
+            },
+            stack: [{ file: '/project/src/app/index.tsx', lineNumber: 101, column: 2 }],
+            codeFrame: {
+              content: ' 101 | const x =',
+              location: { row: 101, column: 2 },
+              fileName: '/project/src/app/index.tsx',
+            },
+          },
+        ],
+      }).replace(/</g, '\\u003c');
+      return `<html><body><script id="_expo-static-error" type="application/json">${staticError}</script></body></html>`;
+    }
+
+    it(`should report a transform error the same way on ios and on web`, async () => {
+      mockFetch({
+        'http://127.0.0.1:8123/': { json: MANIFEST },
+        [`HEAD ${BUNDLE_URL}`]: { status: 500 },
+        [`GET ${BUNDLE_URL}`]: { status: 500, json: TRANSFORM_ERROR },
+      });
+      const ios = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'ios',
+        timeoutMs: 5000,
+        projectRoot: '/project',
+      });
+
+      mockFetch({ 'http://127.0.0.1:8123/': { status: 500, text: webErrorPage() } });
+      const web = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'web',
+        timeoutMs: 5000,
+        projectRoot: '/project',
+      });
+
+      for (const result of [ios, web]) {
+        expect(result.outcome).toBe('broken');
+        expect(result.error).toMatchObject({
+          type: 'TransformError',
+          filename: 'src/app/index.tsx',
+          lineNumber: 101,
+          column: 2,
+        });
+      }
+    });
+
+    // The one class the page's own record does name, through the branch it was built from.
+    it(`should call a web resolution failure what Metro calls it`, async () => {
+      const staticError = JSON.stringify({
+        logs: [
+          {
+            level: 'resolution',
+            type: 'error',
+            message: { content: 'Unable to resolve module ./missing' },
+            codeFrame: { fileName: '/project/src/app/index.tsx', location: null, content: '' },
+          },
+        ],
+      }).replace(/</g, '\\u003c');
+      mockFetch({
+        'http://127.0.0.1:8123/': {
+          status: 500,
+          text: `<html><body><script id="_expo-static-error" type="application/json">${staticError}</script></body></html>`,
+        },
+      });
+
+      const result = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'web',
+        timeoutMs: 5000,
+        projectRoot: '/project',
+      });
+
+      expect(result.error).toMatchObject({
+        type: 'UnableToResolveError',
+        filename: 'src/app/index.tsx',
+      });
+    });
+
+    it(`should leave a file outside the project absolute`, async () => {
+      mockFetch({
+        'http://127.0.0.1:8123/': { json: MANIFEST },
+        [`HEAD ${BUNDLE_URL}`]: { status: 500 },
+        [`GET ${BUNDLE_URL}`]: {
+          status: 500,
+          json: { ...TRANSFORM_ERROR, filename: '/elsewhere/node_modules/broken/index.js' },
+        },
+      });
+
+      const result = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'ios',
+        timeoutMs: 5000,
+        projectRoot: '/project',
+      });
+
+      expect(result.error!.filename).toBe('/elsewhere/node_modules/broken/index.js');
+    });
+
+    it(`should leave the path alone when no project root was given`, async () => {
+      mockFetch({ 'http://127.0.0.1:8123/': { status: 500, text: webErrorPage() } });
+
+      const result = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'web',
+        timeoutMs: 5000,
+      });
+
+      expect(result.error!.filename).toBe('/project/src/app/index.tsx');
+    });
+  });
+
   // `unknown` is not `broken`: a dev server that answered nothing this module understands has not
   // shown the project to be broken, and a gate that went red on it would be worse than silence.
   describe('when the check cannot run', () => {

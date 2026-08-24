@@ -71,6 +71,8 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
       ? await checkEntryBundleAsync(discovery.devServerUrl, {
           platform: options.platform,
           timeoutMs: remainingMs(),
+          // So the file the bundler names is reported the same way whichever platform answered.
+          projectRoot,
         })
       : null;
   if (bundle?.outcome === 'timeout') {

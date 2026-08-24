@@ -51,9 +51,22 @@ export const DEFAULT_BUNDLE_CHECK_PLATFORM: BundleCheckPlatform = 'ios';
 
 /** What the bundler reported, reshaped into the fields worth acting on. */
 export interface BundleCheckError {
-  /** Metro's own class for the failure, e.g. `TransformError` or `UnableToResolveError`. */
+  /**
+   * Metro's own class for the failure, e.g. `TransformError` or `UnableToResolveError`.
+   *
+   * Native gets it from the bundler's own payload. Web has no such payload — see
+   * {@link readErrorPageType} for how the same answer is derived from the error page — and both
+   * ways may still end in `null`, which means "the dev server named no class", not "no class".
+   */
   type: string | null;
-  /** File the bundler stopped in, as Metro named it. Null when it named none. */
+  /**
+   * File the bundler stopped in, relative to the project root whenever it is inside it.
+   *
+   * Project-relative on every platform: native names the file that way already and web names it
+   * absolutely, and a consumer that parses one has to parse the other (F37). A file outside the
+   * project stays absolute, for the same reason a stack frame outside it does — a `../../..`
+   * prefix is not more useful than the path. Null when the bundler named no file.
+   */
   filename: string | null;
   lineNumber: number | null;
   column: number | null;
@@ -98,6 +111,12 @@ export interface CheckEntryBundleOptions {
   platform: BundleCheckPlatform;
   /** How long both requests together may take before the check gives up. */
   timeoutMs: number;
+  /**
+   * Project the check is about, so an absolute `filename` can be reported relative to it.
+   *
+   * Optional: a caller that has no project root gets the path the dev server named, unchanged.
+   */
+  projectRoot?: string | null;
 }
 
 /** How much of an unparseable error body is quoted back. */
@@ -111,7 +130,7 @@ const BODY_EXCERPT_LENGTH = 200;
  */
 export async function checkEntryBundleAsync(
   devServerUrl: string,
-  { platform, timeoutMs }: CheckEntryBundleOptions
+  { platform, timeoutMs, projectRoot = null }: CheckEntryBundleOptions
 ): Promise<BundleCheckResult> {
   const startedAt = Date.now();
   const origin = normalizeDevServerUrl(devServerUrl);
@@ -125,8 +144,13 @@ export async function checkEntryBundleAsync(
   // An unreferenced timer never keeps the process alive on its own.
   timer.unref?.();
 
+  // One place, so the two platforms cannot end up reporting the same file two ways (F37).
   const finish = (result: Omit<BundleCheckResult, 'platform' | 'waitedMs'>): BundleCheckResult => ({
     ...result,
+    error: result.error && {
+      ...result.error,
+      filename: relativizeFilename(result.error.filename, projectRoot),
+    },
     platform,
     waitedMs: Date.now() - startedAt,
   });
@@ -298,15 +322,71 @@ function readStaticErrorPage(html: string): BundleCheckError | null {
   // one and not the other], so both go through the same stripper rather than one being trusted.
   const [firstLine, ...rest] = stripVTControlCharacters(content ?? '').split('\n');
   return {
-    // The page reports no Metro error class, and inventing `TransformError` would claim a fact the
-    // dev server did not state.
-    type: null,
+    type: readErrorPageType(log),
     filename: readString(codeFrame?.fileName) ?? readString(frame?.file),
     lineNumber: readNumber(codeFrame?.location?.row) ?? readNumber(frame?.lineNumber),
     column: readNumber(codeFrame?.location?.column) ?? readNumber(frame?.column),
     message: firstLine?.trim() || 'the web dev server answered with an error page',
     snippet: readSnippet(rest) ?? stripSnippet(codeFrame?.content),
   };
+}
+
+/**
+ * The Metro error class one web error page reports, derived from the record it carries.
+ *
+ * The native check reads `type` out of the bundler's own answer; the page has no such field, so
+ * `--platform web` reported `type: null` for the same file that `--platform ios` reported
+ * `TransformError` for, and a consumer that parsed one did not parse the other (F37). What makes
+ * the derivation sound rather than a guess is *when the page exists at all*: the web dev server
+ * renders it **in place of** the bundle, so a page is only ever produced by a failure that stopped
+ * the build, and `level` says which kind of failure stopped it [observed — `@expo/log-box-utils`
+ * `parseWebBuildErrors`, which builds `level: 'resolution'` from an `UnableToResolveError` and
+ * `level: 'static'` from everything else, Metro's `TransformError` included].
+ *
+ * Two guards keep it honest:
+ *
+ * - **An explicit `type` wins**, so the day the page carries the class itself, this stops deriving
+ *   anything. `'error'` is not read as one: `LogBoxLog` fills that in for a record that named no
+ *   type [observed — `log-box/LogBoxLog.ts`, `data.type ?? 'error'`], so it is the absence of an
+ *   answer wearing the shape of one.
+ * - **A record with no level at all stays `null`**, the way an unrecognised page always has.
+ *
+ * The upstream ask that would retire this is recorded in llp/0010 §Upstream asks.
+ */
+function readErrorPageType(log: Record<string, any> | undefined): string | null {
+  const declared = readString(log?.type);
+  if (declared && declared !== 'error') {
+    return declared;
+  }
+  switch (readString(log?.level)) {
+    case 'resolution':
+      return 'UnableToResolveError';
+    case 'static':
+    case 'syntax':
+    case 'fatal':
+    case 'error':
+      return 'TransformError';
+    default:
+      return null;
+  }
+}
+
+/**
+ * Report a file the bundler named relative to the project, when it is inside it.
+ *
+ * Metro names the file relative to the project root already and the web error page names it
+ * absolutely, so the same syntax error in the same file arrived as `src/app/index.tsx` on iOS and
+ * `/Users/…/src/app/index.tsx` on web (F37). Both are now the first of those.
+ */
+function relativizeFilename(filename: string | null, projectRoot: string | null): string | null {
+  if (filename == null || projectRoot == null) {
+    return filename;
+  }
+  // Both sides through one separator, because Windows spells the project root with backslashes and
+  // whether the dev server spells the file the same way is not something to depend on.
+  const prefix = projectRoot.replace(/\\/g, '/').replace(/\/+$/, '') + '/';
+  const normalized = filename.replace(/\\/g, '/');
+  return normalized.startsWith(prefix) ? normalized.slice(prefix.length) : filename;
 }
 
 /**
