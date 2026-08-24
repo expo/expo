@@ -25,6 +25,7 @@ export {
 export { buildSkillsSyncFollowUps, type SkillsSyncFollowUpInput } from './skills';
 export { buildSmokeFollowUps, type SmokeFollowUpInput } from './smoke';
 export {
+  buildEasBuildFollowUp,
   buildStartFollowUps,
   buildStartPlanFollowUps,
   resolveDevServerPort,

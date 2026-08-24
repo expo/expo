@@ -27,7 +27,7 @@ import type { PlanStep, ProjectState, StartPlan } from '../project/types';
 import { resolveStartFollowUps } from '../start/followUps';
 import { runDevServerAsync, type DevServerRun } from '../start/startAsync';
 import { probePlanBuildLocationAsync } from '../toolchain';
-import { EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
+import { localTool, EAS_REQUIREMENT, EAS_WHERE, LOCAL_WHERE } from '../toolchain/runsOn';
 import { CommandError } from '../utils/errors';
 import { runExpoAsync, spawnExpoAsync } from '../utils/expoCli';
 import { isInteractive } from '../utils/interactive';
@@ -163,8 +163,9 @@ function warnUnbuildable(plan: StartPlan): void {
   if (location?.runsOn !== 'local' || location.status !== 'missing') {
     return;
   }
+  const tool = localTool(location.platform);
   Log.warn(
-    `This plan builds ${LOCAL_WHERE} and this machine cannot: ${location.detail} The step will fail once it reaches the compiler. To build for ${location.platform} without ${location.requirement}, run "${location.alternativeCommand}", which builds ${EAS_WHERE} and needs ${EAS_REQUIREMENT}.`
+    `This plan builds ${LOCAL_WHERE} and this machine does not have ${tool}: ${location.detail} The build step will fail once it reaches the compiler. To build for ${location.platform} without ${tool}, run "${location.alternativeCommand}", which builds ${EAS_WHERE} and needs ${EAS_REQUIREMENT}.`
   );
 }
 
@@ -559,6 +560,9 @@ function resolveRunFollowUps(
     expoGo: plan.target === 'expo-go',
     web: plan.target === 'web',
     port,
+    // Whatever the plan's own probe established, and null when it planned no build and probed
+    // nothing. The cloud-build rung reads it to say why the cloud is still worth choosing.
+    localBuild: plan.buildLocation?.status ?? null,
   });
 }
 

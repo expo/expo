@@ -20,7 +20,7 @@ export type RunsOn = 'local' | 'eas';
 export const LOCAL_WHERE = 'on this machine';
 
 /** Where an `eas` build runs, as a phrase that fits mid-sentence. */
-export const EAS_WHERE = 'on EAS, in the cloud';
+export const EAS_WHERE = 'in the cloud on EAS';
 
 /** What an EAS build needs before it can start, in the caller's terms. */
 export const EAS_REQUIREMENT = 'an Expo account';
@@ -35,14 +35,28 @@ export const RUNS_ON_LABELS: Record<RunsOn, string> = {
 };
 
 /**
- * What a local build of one platform needs on this machine.
+ * The toolchain a local build of one platform needs, named without saying where it has to be.
+ *
+ * The bare name is what composes: "this machine has no Xcode" and "without Xcode" both read, and
+ * both break the moment the location is baked into the noun.
+ */
+export function localTool(platform: NativePlatform | null): string {
+  if (platform == null) {
+    return 'the platform toolchain';
+  }
+  return platform === 'ios' ? 'Xcode' : 'the Android SDK';
+}
+
+/**
+ * What a local build of one platform needs, with the place it needs it.
  *
  * Named the same way everywhere: the requirement a plan prints, the requirement a follow-up names
  * and the requirement the probe reports are one string, so a reader never has to decide whether
- * "Xcode" and "the Xcode toolchain" are the same thing.
+ * "Xcode" and "the Xcode toolchain" are the same thing. Use {@link localTool} where a sentence
+ * already says "this machine", so the phrase is not in it twice.
  */
 export function localRequirement(platform: NativePlatform): string {
-  return platform === 'ios' ? `Xcode ${LOCAL_WHERE}` : `the Android SDK ${LOCAL_WHERE}`;
+  return `${localTool(platform)} ${LOCAL_WHERE}`;
 }
 
 /** Where a build of this platform runs, and what that place asks of the caller. */

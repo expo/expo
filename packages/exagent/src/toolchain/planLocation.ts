@@ -5,7 +5,14 @@
 
 import type { NativePlatform } from '../plan/types';
 import type { StartPlan } from '../project/types';
-import { easBuildCommand, EAS_REQUIREMENT, localRequirement, LOCAL_WHERE } from './runsOn';
+import {
+  easBuildCommand,
+  localRequirement,
+  localTool,
+  EAS_REQUIREMENT,
+  EAS_WHERE,
+  LOCAL_WHERE,
+} from './runsOn';
 import type { PlanBuildLocation, ToolchainProbe } from './types';
 
 /**
@@ -59,9 +66,12 @@ export function applyToolchainProbe(plan: StartPlan, probe: ToolchainProbe): Sta
 
 /** The one or two sentences a plan gains from the probe, per status. */
 function toolchainReasons(location: PlanBuildLocation): string[] {
-  const { platform, requirement, detail, alternativeCommand } = location;
-  const where = `The build in this plan runs ${LOCAL_WHERE} (local) and needs ${requirement}.`;
-  const instead = `Build for ${platform} on EAS instead — "${alternativeCommand}" — which needs ${EAS_REQUIREMENT} rather than ${requirement}.`;
+  const { platform, detail, alternativeCommand } = location;
+  // The bare tool name, because the sentence already says where: "needs Xcode on this machine on
+  // this machine" is what the requirement string produces when it is dropped in here.
+  const tool = localTool(platform);
+  const where = `The build in this plan runs ${LOCAL_WHERE} (local) and needs ${tool}.`;
+  const instead = `Build for ${platform} ${EAS_WHERE} instead — "${alternativeCommand}" — which needs ${EAS_REQUIREMENT} rather than ${tool}.`;
 
   switch (location.status) {
     case 'present':

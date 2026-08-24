@@ -3,6 +3,14 @@
 // a different question with a different answer: a change can be free to run and unsafe to publish.
 
 import type { CachedBuild, ImpactClass } from '../impact/types';
+import {
+  easBuildCommand,
+  localTool,
+  EAS_DEVELOPMENT_PROFILE,
+  EAS_REQUIREMENT,
+  EAS_WHERE,
+  LOCAL_WHERE,
+} from '../toolchain/runsOn';
 import { capFollowUps, type FollowUp } from './types';
 
 export interface ImpactFollowUpInput {
@@ -34,10 +42,22 @@ export function buildImpactFollowUps({
         why: `EAS already has a finished build made from this exact fingerprint (${cachedBuild.id}), so installing it is the same app a new build would produce, without the wait.`,
       });
     } else {
+      // @ref llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+      // Both routes, because "you need a native build" is not one instruction: one of them runs on
+      // this machine and needs Xcode or the Android SDK, the other runs in the cloud and needs an
+      // Expo account, and which is right depends on what the caller has and what they need out of
+      // it. Naming only the local one told a developer with no Xcode to do something impossible.
       followups.push({
         id: 'impact-native-build',
         command: `npx exagent dev${platformFlag ? ` --${platform}` : ''}`,
-        why: 'The native surface changed, so the installed app cannot run this code: the plan engine prebuilds and rebuilds only what has to be.',
+        why: `The native surface changed, so the installed app cannot run this code. This rebuilds it ${LOCAL_WHERE} — the fast route when this machine has ${localTool(platform)}, because the plan engine prebuilds and rebuilds only what has to be.`,
+      });
+      followups.push({
+        id: 'impact-eas-build',
+        command: platform
+          ? easBuildCommand(platform)
+          : `npx eas build --profile ${EAS_DEVELOPMENT_PROFILE}`,
+        why: `The same rebuild ${EAS_WHERE}: slower to start and it needs ${EAS_REQUIREMENT}, and it works without ${localTool(platform)} ${LOCAL_WHERE} and ends in an artifact with a URL somebody else can install.`,
       });
     }
   } else if (impactClass === 'dev-client-compatible') {

@@ -11,6 +11,7 @@ import {
   resolveExpoGoLanUrl,
   type FollowUp,
 } from '../followups';
+import type { ToolchainStatus } from '../toolchain/types';
 
 export interface StartTargetHint {
   /** The app the dev server will be opened in runs inside Expo Go. */
@@ -26,6 +27,15 @@ export interface StartTargetHint {
    * of *another project's* dev server [observed — friction run, 2026-08-23].
    */
   port?: number | null;
+  /**
+   * What a probe established about this machine's ability to build, when one ran.
+   *
+   * Passed in rather than probed here: nothing on this path may block, and the caller that planned
+   * a build has the answer already.
+   *
+   * @see llp/0004-smart-start-and-project-state.rfc.md §Where a build runs
+   */
+  localBuild?: ToolchainStatus | null;
 }
 
 /** What this builder needs of the resolved options, satisfied by `StartOptions` and `DevOptions`. */
@@ -64,5 +74,6 @@ export function resolveStartFollowUps(
     // on, and it is what `expo start --web` opens itself.
     webUrl: web && port != null ? `http://localhost:${port}` : null,
     easJson: easJsonExistsSync(projectRoot),
+    localBuild: hint.localBuild ?? null,
   });
 }
