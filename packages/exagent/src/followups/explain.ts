@@ -2,8 +2,8 @@
 // What to do after a build log has been read. The first rung is whatever the matched rule named,
 // because a rule that knows the failure knows the fix better than any general ladder does.
 
-import { capFollowUps, type FollowUp } from './types';
 import type { Failure, PhaseName } from '../builds/explain/types';
+import { capFollowUps, type FollowUp } from './types';
 
 export interface ExplainFollowUpInput {
   failure: Failure | null;
@@ -11,6 +11,20 @@ export interface ExplainFollowUpInput {
   phase: PhaseName | null;
   /** True when the caller did not pass `--all`, so there may be more in the log. */
   moreMayExist: boolean;
+  /**
+   * How this run read its log, so a re-run rung is a command that actually runs.
+   *
+   * A follow-up is the next thing to *run* ([[0009-smart-followups]]), and
+   * `npx exagent build:explain --all` with no source would be read from a terminal's stdin and
+   * fail with `BAD_ARGS`. The `--file` form is re-runnable; a piped one is not, because the
+   * bytes are gone — so a stdin run gets the rung with the pipe spelled back out.
+   */
+  source: { kind: 'file'; path: string } | { kind: 'stdin' };
+}
+
+/** How to spell this run's log on a command line, for a rung the caller can paste. */
+function sourceArgs(source: ExplainFollowUpInput['source']): string {
+  return source.kind === 'file' ? `--file ${source.path}` : '--stdin';
 }
 
 /**
@@ -23,15 +37,17 @@ export function buildExplainFollowUps({
   failure,
   phase,
   moreMayExist,
+  source,
 }: ExplainFollowUpInput): FollowUp[] {
   const followups: FollowUp[] = [];
+  const rerun = `npx exagent build:explain ${sourceArgs(source)}`;
 
   if (!failure) {
     // Nothing was located, and the honest next step is the one that reads more of the log rather
     // than one that acts on a diagnosis nobody has.
     followups.push({
       id: 'explain-all',
-      command: 'npx exagent build:explain --file <path> --all --context 40',
+      command: `${rerun} --all --context 40`,
       why: 'No rule matched this log; a wider window is the next thing to look at before acting.',
     });
     return capFollowUps(followups);
@@ -72,7 +88,7 @@ export function buildExplainFollowUps({
   if (moreMayExist && followups.length < 3) {
     followups.push({
       id: 'explain-all',
-      command: 'npx exagent build:explain --all',
+      command: `${rerun} --all`,
       why: 'This report is about the first failure in the failing phase; --all lists the rest.',
     });
   }

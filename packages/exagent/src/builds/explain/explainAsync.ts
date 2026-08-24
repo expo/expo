@@ -1,4 +1,4 @@
-// @ref llp/0011-build-explain.rfc.md
+// @ref llp/0012-build-explain.rfc.md
 // `exagent build:explain --file <path>` / `--stdin`: read a build log and say what failed in it.
 //
 // Orchestration only. Every decision the command makes lives in a pure module next to this one —
@@ -22,7 +22,7 @@ import type { ExplainReport } from './types';
  *
  * @returns a promise that resolves when the report has been printed. The command exits 0 from
  *   here whatever the report says — a located failure and a "nothing matched" are both reports
- *   (llp/0011 §Exit codes). Only a log that could not be read at all exits 1, and that leaves
+ *   (llp/0012 §Exit codes). Only a log that could not be read at all exits 1, and that leaves
  *   through a `CommandError` rather than through this function.
  */
 export async function explainAsync(options: ExplainOptions): Promise<void> {
@@ -79,6 +79,7 @@ export function buildExplainReport(read: ReadLogResult, options: ExplainOptions)
         failure: extracted.failure,
         phase: extracted.failure?.phase ?? null,
         moreMayExist: !options.all,
+        source: options.source,
       })
     : [];
 

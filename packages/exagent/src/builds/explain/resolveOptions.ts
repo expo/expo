@@ -1,12 +1,12 @@
-// @ref llp/0011-build-explain.rfc.md §Two input sources, and one that is reserved
+// @ref llp/0012-build-explain.rfc.md §Two input sources, and one that is reserved
 // Argument resolution for `exagent build:explain`. Pure: argv in, options out, `CommandError` for
 // anything a caller can get wrong, so every combination is unit-testable without a log.
 
 import path from 'node:path';
 
-import { DEFAULT_CONTEXT_AFTER, DEFAULT_CONTEXT_BEFORE } from './extract';
 import { parseArgsOrThrow } from '../../utils/args';
 import { CommandError } from '../../utils/errors';
+import { DEFAULT_CONTEXT_AFTER, DEFAULT_CONTEXT_BEFORE } from './extract';
 
 export interface ExplainOptions {
   source: { kind: 'file'; path: string } | { kind: 'stdin' };
@@ -93,14 +93,17 @@ export function resolveExplainOptions(
  * a terminal with neither flag has nothing to read and is told so, rather than blocking forever
  * on a stdin nobody is going to write to.
  */
-function resolveSource(
-  {
-    file,
-    stdin,
-    stdinIsTTY,
-    cwd,
-  }: { file?: string; stdin: boolean; stdinIsTTY: boolean; cwd: string }
-): ExplainOptions['source'] {
+function resolveSource({
+  file,
+  stdin,
+  stdinIsTTY,
+  cwd,
+}: {
+  file?: string;
+  stdin: boolean;
+  stdinIsTTY: boolean;
+  cwd: string;
+}): ExplainOptions['source'] {
   if (file) {
     return { kind: 'file', path: path.resolve(cwd, file) };
   }

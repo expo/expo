@@ -3,16 +3,17 @@
 // The shape test. The top-level keys of `build:explain --json` are the de-facto version of this
 // command, so they are pinned here and must not depend on what the log held: an agent reading
 // `failure` on a clean log gets `null`, never a missing key.
-
-jest.unmock('fs');
-jest.unmock('node:fs');
-
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { buildExplainReport } from '../explainAsync';
 import { readLogFileAsync } from '../readLog';
 import type { ExplainOptions } from '../resolveOptions';
+
+// The suite-wide `fs` mock is memfs, and these read logs committed to this repository.
+// `jest.unmock` is hoisted above the imports, so it belongs below them (`import/first`).
+jest.unmock('fs');
+jest.unmock('node:fs');
 
 const FIXTURES = path.join(__dirname, 'fixtures');
 

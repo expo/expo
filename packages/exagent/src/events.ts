@@ -184,7 +184,7 @@ declare module '2g' {
      * command's own output rather than on a stream that may be collected somewhere else. Every
      * field is null when no rule matched, which is a report and not a failure.
      *
-     * @see llp/0011-build-explain.rfc.md
+     * @see llp/0012-build-explain.rfc.md
      */
     'cli:build_explain': {
       source: 'file' | 'stdin';

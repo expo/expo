@@ -1,5 +1,5 @@
 /* eslint-env jest */
-// @ref llp/0011-build-explain.rfc.md §Two input sources, and one that is reserved
+// @ref llp/0012-build-explain.rfc.md §Two input sources, and one that is reserved
 // The resolver is pure — argv and two facts about the environment in, options out — so every
 // combination a caller can type is asserted here, without a log and without a process.
 

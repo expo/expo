@@ -375,6 +375,7 @@ describe('exagent build:wait', () => {
       expect(report.followups.map((followup) => followup.id)).toEqual([
         'open-error-docs',
         'eas-build-view',
+        'explain-saved-log',
       ]);
     });
   });

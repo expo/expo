@@ -5,6 +5,9 @@
 import type { Failure } from '../../builds/explain/types';
 import { buildExplainFollowUps } from '../explain';
 
+/** The `--file` this run read, so a re-run rung is a command that actually runs. */
+const SOURCE = { kind: 'file', path: '/tmp/build.log' } as const;
+
 function ids(followups: { id: string }[]): string[] {
   return followups.map((followup) => followup.id);
 }
@@ -30,6 +33,7 @@ describe(buildExplainFollowUps, () => {
       failure: mockFailure(),
       phase: 'xcodebuild',
       moreMayExist: true,
+      source: SOURCE,
     });
 
     expect(followups[0]).toMatchObject({
@@ -40,10 +44,16 @@ describe(buildExplainFollowUps, () => {
   });
 
   it('offers the docs page the rule named', () => {
-    expect(ids(buildExplainFollowUps({ failure: mockFailure(), phase: 'xcodebuild', moreMayExist: false }))).toEqual([
-      'apply-fix',
-      'open-docs',
-    ]);
+    expect(
+      ids(
+        buildExplainFollowUps({
+          failure: mockFailure(),
+          phase: 'xcodebuild',
+          moreMayExist: false,
+          source: SOURCE,
+        })
+      )
+    ).toEqual(['apply-fix', 'open-docs']);
   });
 
   it('offers this CLI’s own gate for the phases where it answers the same question', () => {
@@ -56,6 +66,7 @@ describe(buildExplainFollowUps, () => {
       }),
       phase: 'bundle-js',
       moreMayExist: false,
+      source: SOURCE,
     });
     expect(ids(bundle)).toEqual(['typecheck']);
 
@@ -68,6 +79,7 @@ describe(buildExplainFollowUps, () => {
       }),
       phase: 'prebuild',
       moreMayExist: false,
+      source: SOURCE,
     });
     expect(ids(prebuild)).toEqual(['config-effective']);
   });
@@ -77,6 +89,7 @@ describe(buildExplainFollowUps, () => {
       failure: mockFailure({ suggestedCommand: null, docsUrl: null }),
       phase: 'gradle',
       moreMayExist: false,
+      source: SOURCE,
     });
     expect(followups).toEqual([]);
   });
@@ -88,6 +101,7 @@ describe(buildExplainFollowUps, () => {
           failure: mockFailure({ docsUrl: null }),
           phase: 'gradle',
           moreMayExist: true,
+          source: SOURCE,
         })
       )
     ).toEqual(['apply-fix', 'explain-all']);
@@ -95,7 +109,12 @@ describe(buildExplainFollowUps, () => {
     // A rule with a fix, a docs page and a phase gate already fills the budget.
     expect(
       ids(
-        buildExplainFollowUps({ failure: mockFailure({ phase: 'bundle-js' }), phase: 'bundle-js', moreMayExist: true })
+        buildExplainFollowUps({
+          failure: mockFailure({ phase: 'bundle-js' }),
+          phase: 'bundle-js',
+          moreMayExist: true,
+          source: SOURCE,
+        })
       )
     ).toEqual(['apply-fix', 'open-docs', 'typecheck']);
   });
@@ -103,9 +122,38 @@ describe(buildExplainFollowUps, () => {
   it('offers to look wider, and nothing else, when nothing was located', () => {
     // Advice about a diagnosis nobody has is worse than none: the only honest next step is the
     // one that reads more of the log.
-    const followups = buildExplainFollowUps({ failure: null, phase: null, moreMayExist: true });
+    const followups = buildExplainFollowUps({
+      failure: null,
+      phase: null,
+      moreMayExist: true,
+      source: SOURCE,
+    });
     expect(ids(followups)).toEqual(['explain-all']);
     expect(followups[0]!.why).toContain('No rule matched');
+  });
+
+  it('spells the log back into the re-run rung, so it can be pasted', () => {
+    // A follow-up is the next thing to *run*: `build:explain --all` with no source would read a
+    // terminal's stdin and fail with BAD_ARGS.
+    const fromFile = buildExplainFollowUps({
+      failure: mockFailure({ docsUrl: null }),
+      phase: 'gradle',
+      moreMayExist: true,
+      source: { kind: 'file', path: '/tmp/build.log' },
+    });
+    expect(fromFile.find((followup) => followup.id === 'explain-all')?.command).toBe(
+      'npx exagent build:explain --file /tmp/build.log --all'
+    );
+
+    // A piped log cannot be re-read — the bytes are gone — so the rung spells the pipe back out
+    // rather than naming a file that does not exist.
+    const fromStdin = buildExplainFollowUps({
+      failure: null,
+      phase: null,
+      moreMayExist: true,
+      source: { kind: 'stdin' },
+    });
+    expect(fromStdin[0]!.command).toBe('npx exagent build:explain --stdin --all --context 40');
   });
 
   it('never offers more than the budget', () => {
@@ -113,6 +161,7 @@ describe(buildExplainFollowUps, () => {
       failure: mockFailure({ phase: 'bundle-js' }),
       phase: 'bundle-js',
       moreMayExist: true,
+      source: SOURCE,
     });
     expect(followups.length).toBeLessThanOrEqual(3);
   });

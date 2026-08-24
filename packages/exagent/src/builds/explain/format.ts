@@ -99,7 +99,7 @@ function confidenceValue(confidence: Failure['confidence']): string {
       return chalk.yellow('medium — a rule matched, but no phase claimed the lines around it');
     case 'low':
       return chalk.yellow(
-        "low — only the tool's own \"I failed\" line matched, so the cause is in the context below"
+        'low — only the tool\'s own "I failed" line matched, so the cause is in the context below'
       );
   }
 }

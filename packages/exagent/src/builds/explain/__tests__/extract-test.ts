@@ -1,5 +1,5 @@
 /* eslint-env jest */
-// @ref llp/0011-build-explain.rfc.md §Which match wins
+// @ref llp/0012-build-explain.rfc.md §Which match wins
 //
 // The fixture table is the feature. Every `.log` under `fixtures/` has a `.json` next to it
 // holding the phases, the located failure and every other match, and this suite asserts the
@@ -9,10 +9,6 @@
 //
 // The suite below the table is the adversarial half: the cases a rule table gets wrong when
 // nobody writes them down.
-
-jest.unmock('fs');
-jest.unmock('node:fs');
-
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -20,6 +16,11 @@ import { ANCHORS } from '../anchors';
 import { extractFailure, logTail } from '../extract';
 import { detectPhases } from '../phases';
 import { readLogFileAsync, readLogStreamAsync } from '../readLog';
+
+// The suite-wide `fs` mock is memfs, and these read logs committed to this repository.
+// `jest.unmock` is hoisted above the imports, so it belongs below them (`import/first`).
+jest.unmock('fs');
+jest.unmock('node:fs');
 
 const FIXTURES = path.join(__dirname, 'fixtures');
 
@@ -123,7 +124,9 @@ describe('extractFailure, over the committed fixtures', () => {
 describe('the rules the fixtures exist to prove', () => {
   it('reports the phase the build stopped in, not one an error word appeared in earlier', async () => {
     // A pod install that printed eight `[!]` lines and succeeded, then an xcodebuild that failed.
-    const { failure, phases } = await runFixtureAsync('adversarial-warning-in-successful-phase.log');
+    const { failure, phases } = await runFixtureAsync(
+      'adversarial-warning-in-successful-phase.log'
+    );
 
     expect(phases.map((phase) => `${phase.name}:${phase.status}`)).toEqual([
       'pod-install:succeeded',
@@ -171,7 +174,9 @@ describe('the rules the fixtures exist to prove', () => {
   });
 
   it('reports nothing rather than something, for a log with no failure in it', async () => {
-    const { failure, otherFailures } = await runFixtureAsync('no-failure-successful-pod-install.log');
+    const { failure, otherFailures } = await runFixtureAsync(
+      'no-failure-successful-pod-install.log'
+    );
 
     expect(failure).toBeNull();
     expect(otherFailures).toEqual([]);

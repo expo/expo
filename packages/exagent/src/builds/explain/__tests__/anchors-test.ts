@@ -97,6 +97,8 @@ describe('anchorFor', () => {
 
   it('claims nothing for an ordinary log line', () => {
     expect(anchorFor('> Task :app:preBuild UP-TO-DATE')).toBeNull();
-    expect(anchorFor('[!] ExpoFont has added 2 script phases. Please inspect before executing a build.')).toBeNull();
+    expect(
+      anchorFor('[!] ExpoFont has added 2 script phases. Please inspect before executing a build.')
+    ).toBeNull();
   });
 });

@@ -1,4 +1,4 @@
-// @ref llp/0011-build-explain.rfc.md
+// @ref llp/0012-build-explain.rfc.md
 // @ref llp/0006-agent-native-cli-surface.rfc.md §Output contract — the top-level keys of
 // `ExplainReport` are the versioned surface of `build:explain --json`, pinned by a shape test.
 
@@ -112,7 +112,7 @@ export interface ExplainReport {
    *
    * `null` is the in-band "the log was read and no error was located" answer, and it is still a
    * report: the command exits 0 and `logTail` carries the last lines so the caller has something
-   * to read (llp/0011 §Exit codes).
+   * to read (llp/0012 §Exit codes).
    */
   failure: Failure | null;
   /** Every other match, when `--all` was passed. Always `[]` without it. */

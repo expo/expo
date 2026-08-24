@@ -1,5 +1,5 @@
 // @ref llp/0010-agent-conventions.rfc.md §`build:explain`: the rule table is capped and in-repo
-// @ref llp/0011-build-explain.rfc.md §The rule table
+// @ref llp/0012-build-explain.rfc.md §The rule table
 //
 // The rules `build:explain` matches a build log against. Data, not code: every entry is a regular
 // expression, a stable id, one sentence of what broke, and the command to run next. Nothing here
@@ -21,7 +21,7 @@
 //
 // The earliest `cause` inside the failing phase beats every `summary`, which is what keeps
 // Gradle's trailing `* What went wrong:` from burying the Kotlin `e: … error:` line that caused
-// it (llp/0011 §Which match wins).
+// it (llp/0012 §Which match wins).
 
 import type { PhaseName } from './types';
 

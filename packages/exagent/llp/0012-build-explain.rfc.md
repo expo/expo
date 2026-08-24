@@ -1,0 +1,159 @@
+# 0012: `build:explain` — Deterministic Triage of a Native Build Log
+
+**Type:** RFC
+**Status:** Draft
+**Systems:** `exagent build:explain` (`src/builds/index.ts`, `src/builds/explain/`); the follow-up ladder (`src/followups/explain.ts`, `src/followups/builds.ts`); the fixture corpus (`src/builds/explain/__tests__/fixtures/`); `eas-cli`
+**Author:** Kudo (drafted with Tuft agent)
+**Date:** 2026-08-24
+**Related:** [[0010-agent-conventions]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]], [[0001-agentic-cli-on-expo-cli]]
+
+## Summary
+
+A native build fails and prints four thousand lines. Somewhere in them is one line that says why. `exagent build:explain` reads the log and reports that line — which phase the build stopped in, a stable signature for the failure, the line number, the quoted context around it and the command to run next — as a human table or as one JSON object.
+
+Two properties are the whole design, and both are constraints rather than features:
+
+- **Deterministic extraction, not summarization.** The answer comes from a table of regular expressions that ships in this repository. No model, no API key, no network ([[0001-agentic-cli-on-expo-cli]] Shape 1). The same log always produces the same answer, and a fixture pins it.
+- **Nothing is claimed that the log does not say.** Every report carries the line it came from, verbatim, with its number. A rule that only matched a tool's own "I failed" line reports `confidence: "low"` and says so, rather than dressing a guess as a diagnosis.
+
+## What ships, and what is reserved
+
+Two input sources ship: `--file <path>` and `--stdin`. The `<build-id>` form — read the log of an EAS build by its id — **does not**, and the reason is upstream: eas-cli has no `build:logs` command ([[0010-agent-conventions]] §Upstream asks), so there is no supported way for this CLI to fetch one.
+
+Decision [confirmed — Kudo, 2026-08-24]. The positional argument is **reserved and reported**, not rejected as a stray. [[0010-agent-conventions]] §Registry rules (d) makes a stray positional a `BAD_ARGS` naming what was dropped, which is the right answer for an argument that is a typo. This one is not a typo: `exagent build:explain <build-id>` is the command an agent will reach for, it is the form the plan named, and it will exist. So it has a code of its own — `BUILD_ID_UNSUPPORTED` — whose message says the CLI cannot fetch a build's log yet, why, and the two spellings that work today, with `Try: npx eas build:view <id>` as the command that prints where the log files are.
+
+That reservation shapes the payload too. `source.kind` is `'file' | 'stdin'` and there is no `build` key: a key that is always `null` because its mode does not exist is noise a caller has to learn to ignore. When the build-id form lands it adds `source.kind: 'eas-build'`, `source.buildId` and `build`, which is an additive change to a caller reading `failure`.
+
+**Local logs are most of the value anyway,** which is why this half shipped first with no EAS dependency at all. `npx expo run:ios 2>&1 | npx exagent build:explain --json` is the loop an agent driving a local build actually has, and half the committed fixtures came from exactly that.
+
+## Two layers of phase detection
+
+A log is cut into phases — `install-dependencies`, `prebuild`, `pod-install`, `bundle-js`, `gradle`, `xcodebuild`, `fastlane`, `archive`, `upload`, `unknown` — before any rule is asked about a line, because _where_ a failure happened decides _which_ rules can explain it.
+
+**Layer 1 is the EAS phase header.** The step vocabulary is real and in this repository [observed — `docs/pages/build-reference/ios-builds.mdx` §Remote steps, `docs/pages/build-reference/android-builds.mdx` §Remote steps]: install dependencies, prebuild, install pods, bundle JavaScript, run gradlew, run fastlane, upload application archive, in that order. The exact decoration EAS wraps a header in is **not documented, and no EAS build log was available to record here** — so the matcher strips common log furniture (an ISO timestamp, a `[stderr]` stream tag, a rule of `=` or `-`, a bullet, brackets) and compares the words that are left against that vocabulary. Deliberately loose, and deliberately not load-bearing.
+
+**Layer 2 is what the tools print,** and it is the layer that carries the feature. `Analyzing dependencies` is CocoaPods. `> Task :app:` is Gradle. `Command line invocation:` is xcodebuild. `iOS Bundling failed` is Metro. Every one of these was read off a log captured on a real machine, which is why a raw `pod install` or `expo run:ios` log — the thing an agent has on its own laptop — segments exactly like a cloud one would.
+
+Three decisions inside that are decisions rather than transcription:
+
+- **Layer 1 is asked first, and may be wrong without costing anything.** A header is a statement about the log's structure and a tool banner is only evidence of one, so the stronger claim wins where both are present. But layer 2 is complete on its own: if the header format changes tomorrow, every fixture here still segments, because none of them has a header in it.
+- **A phase anchor that fires while its phase is already running opens no new segment.** A Gradle run prints hundreds of `> Task :` lines; a hundred one-line phases would be a worse answer than one.
+- **A package manager's error prefix is a phase anchor.** `npm error code E404` is the _first_ line of a captured `npm install` failure — there is no command echo above it — so without this rule the whole log is `unknown` and every answer from it drops to `medium` confidence [observed — `npm-package-not-found.log`]. The same reasoning gives `PluginError` and a `@expo/config-plugins` stack frame to `prebuild`, and `[!]` to `pod-install`.
+
+`[!]` deserves its own sentence, because it is the one that could have gone wrong. It is CocoaPods' marker and nothing else in a build log uses it — but CocoaPods prefixes **warnings** with it too, and a `pod install` that succeeds on a real Expo app prints eight of them [observed — `no-failure-successful-pod-install.log`]. So `[!]` says _where_ and never _what_: it is a phase anchor and there is no failure rule that matches a bare `[!]`.
+
+## The rule table
+
+The table is **capped and in-repo**, which [[0010-agent-conventions]] §`build:explain` records as a decision and this document implements. `MAX_SIGNATURES` is a constant with a test on it, because a cap nothing enforces is a preference. Thirty-four rules ship; the cap is forty. Fifteen carry `provenance: 'captured'`, and a test holds that floor as the table grows.
+
+Each rule is `{ signature, phase, kind, pattern, message, suggestedCommand?, docsUrl?, provenance }`. Three fields are worth arguing about:
+
+- **`signature`** is a stable kebab id — `ios.pods.sandbox-out-of-sync`, `android.gradle.duplicate-class` — and it is the assertable half of the contract. An eval asserts the signature, never the wording.
+- **`suggestedCommand` is a function of the match, not a template.** An unresolved `expo-camera` is `npx expo install expo-camera`; an unresolved `../utils/format` is a file to create, which no command does for you, so that rule answers `null`. A rule that suggested a command for both would send a reader to run something that fails.
+- **`provenance` is `'captured'` or `'format'`,** and it is in the shipped table rather than only in a comment so a test can count it. A rule written from a documented format is a guess with a test around it; a reader has to be able to tell the two apart, and `fixtures/README.md` repeats the same distinction per fixture.
+
+### Which match wins
+
+Two classes per phase. A **`cause`** is the thing that broke: a file and a line, a pod that does not exist, a module that did not resolve. A **`summary`** is the tool's own after-the-fact report that it stopped: `** BUILD FAILED **`, `FAILURE: Build failed with an exception.`, `npm error code E404`.
+
+The rule, in one sentence: **the failing phase is the one the last failure marker is in, and inside it the earliest `cause` wins.**
+
+Both halves earn their place, and each was chosen against a fixture:
+
+- **_Last_ marker decides the phase,** because a build stops where it fails and every marker before that belongs to a step it went on past. This is what answers the "an error word in a phase that succeeded" case: a pod install that printed eight `[!]` warnings and then succeeded, followed by an xcodebuild that failed, reports the xcodebuild [observed — `adversarial-warning-in-successful-phase.log`, which is two real captures concatenated].
+- **_Earliest cause_ decides the line,** because a tool reports its own failure afterwards. Gradle's `* What went wrong:` is near the end of the log and says nothing; the compiler error twenty lines below it is the answer. Taking the last match would report the summary every time.
+
+That second half is also what reclassified one rule. `Execution failed for task ':app:…'` was written as a `cause` and had to become a `summary`: Gradle prints it _under_ `* What went wrong:`, so as a cause it won the earliest-in-phase tie-break over the AAPT error and the duplicate class below it, and the report named the task instead of the reason [observed — `gradle-aapt-resource-error.log`, `gradle-duplicate-class.log`, both before and after].
+
+### Confidence, and what it is honest about
+
+- `high` — a `cause` matched inside a phase the log named. The line quoted is the thing that broke.
+- `medium` — a `cause` matched, but no phase anchor claimed the region around it. The _what_ is as certain as ever; only the _where_ is a guess. Raw `swiftc` output with no build driver above it is the shipped example.
+- `low` — only a `summary` matched. The signature names the tool that stopped and nothing about why, and `logTail` is where the answer is.
+
+`--platform ios|android` narrows the table by ruling out the other platform's phases (`gradle` for iOS; `pod-install`, `xcodebuild`, `fastlane` for Android). With no hint every rule runs, which is the default: a wrong guess is worse than a wide one.
+
+## Exit codes
+
+`0` — **a report was produced**, and that includes `failure: null`.
+`1` — no report could be produced.
+
+Decision [confirmed — Kudo, 2026-08-24]. "The log was read and no rule matched" is a **report**, not a failure, and it exits 0 carrying `failure: null` and `logTail`. The reasoning is [[0010-agent-conventions]]'s: the code answers _did the tool work_, and a command that read four thousand lines and found nothing it has a rule for has done its job exactly. The classification lives in the payload, where an agent that has the JSON does not need the exit code to say the same thing twice.
+
+This command deliberately does **not** join the `20`–`29` band, and the distinction is worth stating because it looks like it should. `build:wait` and `typecheck` are in the band because their subject is an operation with an outcome — a build that errored, a project that does not type-check. `build:explain`'s subject is a log, and a log has no outcome; the failure it reports already happened, to a build that already exited, long before this command ran. Exiting `20` for "the log I was handed describes a failure" would make the code mean "I did my job" — every time, for every log worth passing in.
+
+The exit `1` cases are the ones where there is genuinely nothing to report: a path with no file at it, a path that is a directory, a file this process may not read, and an **empty** source. The last is the subtle one. An empty stdin exits `1` with `EMPTY_LOG` rather than reporting `failure: null`, because the two say different things: `failure: null` means "the log was read and nothing matched", and an empty stream means the log never arrived. Reporting the first for the second tells an agent its build log is clean.
+
+## Reading a log this process did not write
+
+A native build log is not a small file. Xcode logs from `eas build:download --all-artifacts` run to tens of megabytes and a Gradle run with `--debug` on can pass a hundred, so the reader **streams**: bytes arrive in chunks, lines are cut out of a carry buffer, and a bounded window is kept. `fs.readFileSync` on the log is the one thing this module must never do, and two tests assert it does not — one on the pure reader and one on the path the command actually takes.
+
+Four bounds, each with a reason:
+
+- **The last 100,000 lines are kept, not the first.** A build fails at its end. Truncating the head costs early phases, which the report says out loud (`truncated`, `droppedLines`); truncating the tail would cost the answer.
+- **Lines are dropped in blocks of 10,000.** Dropping one per line read is quadratic, and a 400,000-line log took a minute of it [observed while writing `extract-test.ts`]. The block is the fix; it costs holding 110,000 lines between trims.
+- **A line is cut at 4,000 characters,** with a visible marker. A bundler that inlines a source map writes one line of several megabytes, no rule reads past a few hundred characters, and one such line would otherwise cost more than the rest of the log.
+- **ANSI is stripped once, on the way in,** so no rule ever has to know about colour. Two of the captured fixtures are genuinely coloured, which is what makes that testable rather than assumed.
+
+Everything downstream of the reader is pure `string[]`-in, data-out: `phases.ts`, `anchors.ts` and `extract.ts` do no I/O of any kind. That is what makes the fixture suite cheap and what keeps "deterministic extraction" a checkable claim.
+
+## The fixtures are the feature
+
+[[0002-testing-and-evals]] says the tests are the product's specification; here they are also its evidence. Twenty-three logs ship, each with an expectation next to it, and `fixtures/README.md` says per file how it was produced.
+
+**Twelve were captured on this machine on 2026-08-24**, by copying a real SDK 57 Expo app to a scratch directory, breaking it in one specific way, and running the real tool:
+
+| What was broken                                     | What was run                              | What it proves                                                  |
+| --------------------------------------------------- | ----------------------------------------- | --------------------------------------------------------------- |
+| An import of a module that is not there             | `expo export --platform ios`              | `bundle.unresolved-module`, and real ANSI                       |
+| A stray `;` in an object literal                    | `expo export --platform ios`              | `bundle.syntax-error`, and real ANSI                            |
+| A package name nobody publishes                     | `npm install`                             | `deps.package-not-found`                                        |
+| A version nobody published                          | `npm install react@99.99.99`              | `deps.no-matching-version`                                      |
+| `react@17` with `react-dom@18`                      | `npm install`                             | `deps.peer-conflict`                                            |
+| A plugin name no package provides                   | `expo prebuild --platform ios`            | `prebuild.plugin-not-found`                                     |
+| A local plugin that throws                          | `expo prebuild --platform ios`            | `prebuild.plugin-threw`                                         |
+| A pod nobody publishes, in a real generated Podfile | `pod install`                             | `pods.spec-not-found`, after 174 lines of real Expo pod install |
+| A `require_relative` of a file that is not there    | `pod install`                             | `pods.invalid-podfile`                                          |
+| A real prebuild with **no** `pod install` after it  | `xcodebuild … -sdk iphonesimulator build` | `ios.pods.sandbox-out-of-sync`, `** BUILD FAILED **`, exit 65   |
+| Two type errors in a Swift file                     | `swiftc -c`                               | `ios.swift.compile-error`                                       |
+| Nothing — a `pod install` that **worked**           | `pod install`                             | that `[!]` is not a failure                                     |
+
+**Eleven were not,** and the reason is stated rather than hidden. A Gradle build of a real Expo app downloads the Android Gradle Plugin, the Kotlin compiler and the whole dependency graph before it reaches a compile error; this machine had no `gradle` on `PATH` and no JDK runtime at all (`javac` answered `Unable to locate a Java Runtime`). A signing failure needs an Apple team, a device destination and credentials that a fixture must not carry. So the four Gradle fixtures, the three signing-and-linking ones and the fastlane one are written from those tools' documented output formats and marked `written`; the Swift-inside-xcodebuild one is `derived` — real `swiftc` diagnostics inside a hand-written driver frame modeled on the real xcodebuild capture; and two are `composed` from real captures with no line written by hand.
+
+**The rules those fixtures cover carry `provenance: 'format'`, and a test asserts the captured count does not fall as the table grows.** These are the first fixtures worth replacing with a recording, and the Android half is the honest gap in this round: the iOS half was affordable and so it was captured.
+
+One edit was applied to every captured file, and only one: the home directory `/Users/<user>` became `/Users/expo`, so an account name does not ship in the repository. Nothing was reordered, normalized or de-coloured.
+
+### The adversarial cases, and why each exists
+
+- **An error word in a phase that succeeded** — the composed pod-install-then-xcodebuild log above. This is the case a naive "search for `error`" gets wrong every time.
+- **A log cut off mid-write**, ending without a newline. The partial last line is still a line, and it is often the interesting one.
+- **A log longer than the window** — 400,000 lines, produced lazily by the test so the test never holds it either. Asserts the tail is kept, the drop is reported, and the failure at the end is still found.
+- **A log with no failure in it at all**, which must answer `failure: null` and exit 0.
+- **ANSI**, from the two Metro recordings rather than from a construction.
+- **A chunk boundary in the middle of a line**, asserted at the unit level with a scripted stream and at the e2e level by writing a real log to a real pipe 37 bytes at a time.
+
+## What `build:wait` says about this command, and what it does not
+
+`build:wait`'s errored ladder gains a rung naming `npx exagent build:explain --file <path>`, and its `why` says the step in between out loud: _"Once the log above is saved to a file, this locates the failing line in it and names the fix. Nothing here can download it for you yet."_
+
+That wording is the decision. The obvious rung would have been `npx exagent build:explain <build-id>` — the wait has the id, and handing it straight over is the loop an agent wants. It is also the one form that does not work, so the rung would have sent an agent to a command that errors, one hop after a command that worked. [[0009-smart-followups]]'s contract is that a follow-up is the next thing to _run_; a rung that cannot be run is worse than no rung. Submissions do not get it at all: a submission log is not a native build log and the rule table was written against those.
+
+## Limits, stated in the output rather than only here
+
+- **The rule table is small and always will be.** It covers the failures Expo itself causes and can name precisely. A log outside it gets `failure: null` and `logTail`, which is the honest answer and not a bug to fix by appending a rule — the cap exists so that a maintainer has to argue past it.
+- **Patterns rot.** A Gradle or Xcode version bump changes wording. The mitigations are the versioned fixtures, `confidence: "low"` when only a summary matched, and `logTail` on every report whatever happened.
+- **The EAS phase-header format is undocumented and unrecorded.** Layer 2 is what actually works today, and layer 1 is a bet that costs nothing if it is lost.
+- **Android coverage is weaker than iOS coverage,** and the fixtures README says which rules that applies to.
+
+## Upstream asks
+
+`eas build:logs <BUILD_ID> [--json] [--non-interactive]` is already recorded in [[0010-agent-conventions]] §Upstream asks and this command is what it now gates: the server-side capability exists (the Expo MCP server exposes `build_logs`), and only the CLI surface is missing. Until it lands, `build:explain <build-id>` cannot ship, and the error says so in those words.
+
+## Testing
+
+Unit, all against committed logs with no build running anywhere: the fixture table (`extract-test.ts`), which asserts phases, the located failure and every `--all` match per log; the two phase layers separately (`phases-test.ts`); the table's own invariants — the cap, unique kebab ids, provenance, and that no rule can throw on a capture group it does not have (`anchors-test.ts`); the streaming reader against chunk boundaries, CRLF, no trailing newline, a multi-megabyte line, ANSI and the truncation window (`readLog-test.ts`); the argument resolver over every combination a caller can type (`resolveOptions-test.ts`); and the `--json` shape, whose key set must not depend on what the log held (`explainAsync-test.ts`).
+
+Two of those tests are about the corpus rather than the code, and are the ones that keep this document true: every `.log` has a `.json` and no orphans of either exist, and `fixtures/README.md` names every file, so a fixture cannot be added without recording where it came from.
+
+E2E, through the published bin with no TTY: `--file` against a committed log; `--stdin` over a real pipe, including one written in 37-byte chunks; `--json` fed to `JSON.parse` as the whole assertion; exit 0 on a log with nothing in it; exit 1 with the `--json` error envelope for a file that is not there; and the reserved build-id argument reporting what it needs.

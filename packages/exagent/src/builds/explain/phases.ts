@@ -1,4 +1,4 @@
-// @ref llp/0011-build-explain.rfc.md §Two layers of phase detection
+// @ref llp/0012-build-explain.rfc.md §Two layers of phase detection
 //
 // Cut a build log into the steps that produced it. Pure: `string[]` in, `Phase[]` out — no file
 // system, no network, no subprocess — which is what makes every rule in here testable against a
@@ -65,7 +65,11 @@ const EAS_PHASE_LABELS: { label: RegExp; phase: PhaseName }[] = [
  */
 const CONTENT_ANCHORS: PhaseAnchor[] = [
   // --- install-dependencies -------------------------------------------------------------------
-  { phase: 'install-dependencies', layer: 2, pattern: /^\s*(?:[$>]\s*)?(?:npm|yarn|pnpm|bun)\s+(?:install|ci|add)\b/ },
+  {
+    phase: 'install-dependencies',
+    layer: 2,
+    pattern: /^\s*(?:[$>]\s*)?(?:npm|yarn|pnpm|bun)\s+(?:install|ci|add)\b/,
+  },
   { phase: 'install-dependencies', layer: 2, pattern: /^added \d+ packages?\b/ },
   { phase: 'install-dependencies', layer: 2, pattern: /^yarn install v/ },
   { phase: 'install-dependencies', layer: 2, pattern: /^Packages: \+\d+/ },
@@ -79,7 +83,11 @@ const CONTENT_ANCHORS: PhaseAnchor[] = [
 
   // --- prebuild -------------------------------------------------------------------------------
   { phase: 'prebuild', layer: 2, pattern: /^\s*(?:[$>]\s*)?(?:npx )?expo prebuild\b/ },
-  { phase: 'prebuild', layer: 2, pattern: /^[✔✖✓×\s]*(?:Created|Creating) native director(?:y|ies)/i },
+  {
+    phase: 'prebuild',
+    layer: 2,
+    pattern: /^[✔✖✓×\s]*(?:Created|Creating) native director(?:y|ies)/i,
+  },
   { phase: 'prebuild', layer: 2, pattern: /^[✔✖✓×\s]*Config (?:synced|sync)/i },
   { phase: 'prebuild', layer: 2, pattern: /^[✔✖✓×\s]*Finished prebuild/i },
   // Prebuild fails before it prints anything of its own: a config plugin that does not resolve
@@ -87,7 +95,11 @@ const CONTENT_ANCHORS: PhaseAnchor[] = [
   // `prebuild-plugin-not-found.log`, `prebuild-plugin-threw.log`]. `PluginError` and a stack frame
   // through `@expo/config-plugins` are what is left to recognise it by.
   { phase: 'prebuild', layer: 2, pattern: /^PluginError\b/ },
-  { phase: 'prebuild', layer: 2, pattern: /^\s*at \S+ \(\S*(?:@expo\/config-plugins|\/plugins?\/)/ },
+  {
+    phase: 'prebuild',
+    layer: 2,
+    pattern: /^\s*at \S+ \(\S*(?:@expo\/config-plugins|\/plugins?\/)/,
+  },
 
   // --- pod-install ----------------------------------------------------------------------------
   { phase: 'pod-install', layer: 2, pattern: /^\s*(?:[$>]\s*)?(?:bundle exec )?pod install\b/ },

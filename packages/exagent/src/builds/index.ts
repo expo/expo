@@ -1,5 +1,5 @@
 // @ref llp/0010-agent-conventions.rfc.md §Exit codes
-// @ref llp/0011-build-explain.rfc.md
+// @ref llp/0012-build-explain.rfc.md
 // The `build` group — `build:wait` and `build:explain` — and no `defaultAction` on purpose: the
 // registry rule that answers `exagent build --platform ios` with an error is what keeps the bare
 // name from silently printing a listing and exiting 0 for a caller that meant `eas build`.
@@ -151,7 +151,8 @@ export const exagentBuildExplain: Command = async (argv) => {
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
   const { resolveExplainOptions } =
     require('./explain/resolveOptions') as typeof import('./explain/resolveOptions');
-  const { explainAsync } = require('./explain/explainAsync') as typeof import('./explain/explainAsync');
+  const { explainAsync } =
+    require('./explain/explainAsync') as typeof import('./explain/explainAsync');
 
   return (async () => {
     const options = resolveExplainOptions(argv ?? [], {

@@ -1,4 +1,4 @@
-// @ref llp/0011-build-explain.rfc.md §Reading a log this process did not write
+// @ref llp/0012-build-explain.rfc.md §Reading a log this process did not write
 //
 // Read a build log into lines, without ever holding the whole of it.
 //
@@ -117,7 +117,7 @@ export async function readLogStreamAsync(stream: NodeJS.ReadableStream): Promise
  *
  * @param filePath an absolute path to the log.
  * @throws {CommandError} `LOG_UNREADABLE` when the path is not a readable file. This is the exit
- *   `1` case of llp/0011 §Exit codes: no report could be produced at all.
+ *   `1` case of llp/0012 §Exit codes: no report could be produced at all.
  */
 export async function readLogFileAsync(filePath: string): Promise<ReadLogResult> {
   let stats: fs.Stats;

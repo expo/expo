@@ -1,5 +1,5 @@
 /* eslint-env jest */
-// @ref llp/0011-build-explain.rfc.md §Two layers of phase detection
+// @ref llp/0012-build-explain.rfc.md §Two layers of phase detection
 // The two layers are asserted separately, because they fail differently: layer 1 reads a format
 // EAS owns and can change, and layer 2 reads what the tools print, which is what makes a local
 // `expo run:ios` log segment like a cloud one.
@@ -70,7 +70,7 @@ describe('layer 2 — what the tools print', () => {
     ['Starting a Gradle Daemon (subsequent builds will be faster)', 'gradle'],
     ['Command line invocation:', 'xcodebuild'],
     ['note: Building targets in dependency order', 'xcodebuild'],
-    ['[08:41:12]: Driving the lane \'ios build\' 🚀', 'fastlane'],
+    ["[08:41:12]: Driving the lane 'ios build' 🚀", 'fastlane'],
   ])('reads %p as %p', (line, phase) => {
     expect(phaseAnchorFor(line)).toEqual({ phase, layer: 2 });
   });
@@ -124,7 +124,10 @@ describe('detectPhases', () => {
   it('rules out the other platform’s phases when the caller names one', () => {
     const lines = ['Analyzing dependencies', '> Task :app:compileReleaseKotlin'];
 
-    expect(detectPhases(lines, 'android').map((phase) => phase.name)).toEqual(['unknown', 'gradle']);
+    expect(detectPhases(lines, 'android').map((phase) => phase.name)).toEqual([
+      'unknown',
+      'gradle',
+    ]);
     expect(detectPhases(lines, 'ios').map((phase) => phase.name)).toEqual(['pod-install']);
   });
 });
@@ -147,7 +150,12 @@ describe('phaseAllowedOnPlatform', () => {
 
 describe('markPhaseStatuses', () => {
   const phases = [
-    { name: 'install-dependencies' as const, status: 'unknown' as const, startLine: 1, endLine: 10 },
+    {
+      name: 'install-dependencies' as const,
+      status: 'unknown' as const,
+      startLine: 1,
+      endLine: 10,
+    },
     { name: 'pod-install' as const, status: 'unknown' as const, startLine: 11, endLine: 20 },
     { name: 'xcodebuild' as const, status: 'unknown' as const, startLine: 21, endLine: 30 },
   ];

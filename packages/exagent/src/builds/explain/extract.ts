@@ -1,4 +1,4 @@
-// @ref llp/0011-build-explain.rfc.md §Which match wins
+// @ref llp/0012-build-explain.rfc.md §Which match wins
 //
 // Turn a segmented log into one located failure. Pure: lines and phases in, data out — no file
 // system, no network, no subprocess. That is what makes "deterministic extraction, not model
@@ -136,8 +136,7 @@ function chooseMatch(matches: Match[]): Match {
   // `* What went wrong:` long after the compiler error — one rule reads both, because the rule is
   // about the phase and not about the order the tool chose.
   const firstCauseInPhase = matches.find(
-    (candidate) =>
-      candidate.anchor.kind === 'cause' && candidate.phaseIndex === marker.phaseIndex
+    (candidate) => candidate.anchor.kind === 'cause' && candidate.phaseIndex === marker.phaseIndex
   );
 
   return firstCauseInPhase ?? marker;
@@ -186,11 +185,7 @@ function confidenceFor(anchor: Anchor, phase: Phase['name']): Confidence {
 
 /** The last lines of the log, for the payload of a report that located nothing. */
 export function logTail(lines: string[], maxLines: number = LOG_TAIL_LINES): string {
-  return lines
-    .map(trimEnd)
-    .filter(Boolean)
-    .slice(-maxLines)
-    .join('\n');
+  return lines.map(trimEnd).filter(Boolean).slice(-maxLines).join('\n');
 }
 
 function trimEnd(line: string): string {

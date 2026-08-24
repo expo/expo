@@ -1,13 +1,9 @@
 /* eslint-env jest */
-// @ref llp/0011-build-explain.rfc.md §Reading a log this process did not write
+// @ref llp/0012-build-explain.rfc.md §Reading a log this process did not write
 // A log is another process's output, arriving over a stream this one does not control. Everything
 // asserted here is a way that goes wrong: a chunk boundary in the middle of a line, a file with no
 // trailing newline, CRLF from a Windows runner, a single line of several megabytes, ANSI, and a
 // log longer than the window.
-
-jest.unmock('fs');
-jest.unmock('node:fs');
-
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -20,6 +16,11 @@ import {
   readLogFileAsync,
   readLogStreamAsync,
 } from '../readLog';
+
+// The suite-wide `fs` mock is memfs, and these read logs committed to this repository.
+// `jest.unmock` is hoisted above the imports, so it belongs below them (`import/first`).
+jest.unmock('fs');
+jest.unmock('node:fs');
 
 /** A stream that hands over exactly these chunks, so a chunk boundary can be put anywhere. */
 function streamOf(chunks: string[]): NodeJS.ReadableStream {
