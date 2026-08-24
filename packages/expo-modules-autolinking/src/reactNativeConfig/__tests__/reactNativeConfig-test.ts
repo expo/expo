@@ -422,7 +422,7 @@ describe(resolveReactNativeModule, () => {
     );
   });
 
-  it('should preserve library config when project config sets platform to null (deep merge)', async () => {
+  it('should honor project config null platform overrides when library config has platform data', async () => {
     const projectConfig: RNConfigReactNativeProjectConfig = {
       dependencies: {
         'react-native-test': {
@@ -458,14 +458,9 @@ describe(resolveReactNativeModule, () => {
       new Set()
     );
 
-    // Deep merge preserves the target object when the source is null,
-    // so the library's ios config is kept.
     expect(mockPlatformResolverIos).toHaveBeenCalledWith(
       expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
-      {
-        configurations: ['Debug'],
-        scriptPhases: [{ name: 'test', path: './test.js' }],
-      },
+      null,
       undefined
     );
   });
