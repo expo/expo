@@ -24,15 +24,3 @@ declare module 'react-native/Libraries/Components/TextInput/TextInputState' {
 
   export default TextInputState;
 }
-
-declare module 'react-native/Libraries/Utilities/useMergeRefs' {
-  import type { Ref } from 'react';
-
-  /**
-   * Forwards a value to each of the given refs, handling both object refs and
-   * callback refs, including a callback ref's cleanup function.
-   */
-  export default function useMergeRefs<T>(
-    ...refs: (Ref<T> | null | undefined)[]
-  ): (instance: T | null) => void;
-}

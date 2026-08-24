@@ -76,6 +76,11 @@ function takeOver(target: FocusEntryPoints | undefined) {
       blurTextInput(instance);
       return;
     }
+    // Same guard as React Native: blurring an input that does not hold focus is a
+    // no-op, so a host never blurs its fields on behalf of a different input.
+    if (TextInputState.currentlyFocusedInput() !== instance) {
+      return;
+    }
     TextInputState.blurInput(instance);
     controller.blurFocusedFields();
   };

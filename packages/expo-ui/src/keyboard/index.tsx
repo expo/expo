@@ -9,8 +9,8 @@ import {
   type RefObject,
 } from 'react';
 import type { ReactNativeElement } from 'react-native';
-import useMergeRefs from 'react-native/Libraries/Utilities/useMergeRefs';
 
+import { useMergeRefs } from '../utils/useMergeRefs';
 import { attachHostController, detachHostController } from './interop';
 import { TextInputState } from './textInputState';
 

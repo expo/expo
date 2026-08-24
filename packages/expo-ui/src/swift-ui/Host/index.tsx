@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
-import useMergeRefs from 'react-native/Libraries/Utilities/useMergeRefs';
 
 import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
+import { useMergeRefs } from '../../utils/useMergeRefs';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 

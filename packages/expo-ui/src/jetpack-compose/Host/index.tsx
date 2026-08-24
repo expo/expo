@@ -8,9 +8,9 @@ import {
   I18nManager,
   useColorScheme as useRNColorScheme,
 } from 'react-native';
-import useMergeRefs from 'react-native/Libraries/Utilities/useMergeRefs';
 
 import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
+import { useMergeRefs } from '../../utils/useMergeRefs';
 import { getMaterialColors, HostPaletteContext } from '../colors';
 import { type PrimitiveBaseProps } from '../layout';
 
