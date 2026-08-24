@@ -6,6 +6,7 @@ public class AudioModule: Module {
 
   private let sessionQueue = DispatchQueue(label: "expo.modules.audio.session", qos: .userInitiated)
   private var sessionIsActive = false
+  private var audioSessionActivityKeepers = Set<String>()
   private let audioEnabled = OSAllocatedUnfairLock(initialState: true)
 
   // MARK: Properties
@@ -97,6 +98,12 @@ public class AudioModule: Module {
       registry.removeAllPreloadedPlayers()
       registry.removeAll()
       NotificationCenter.default.removeObserver(self)
+      sessionQueue.async {
+        self.audioSessionActivityKeepers.removeAll()
+        if self.sessionIsActive {
+          self.applySessionActive(false)
+        }
+      }
     }
 
     OnAppEntersBackground {
@@ -137,6 +144,10 @@ public class AudioModule: Module {
         let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
+        let playerId = player.id
+        player.onRelease = { [weak audioModule = self] in
+          audioModule?.unregisterAudioSessionActivityKeeper(playerId)
+        }
         player.onPlaybackComplete = { [weak self] in
           if !keepAudioSessionActive {
             self?.deactivateSession()
@@ -220,7 +231,7 @@ public class AudioModule: Module {
         }
         let rate = player.currentRate > 0 ? player.currentRate : 1.0
         player.play(at: rate)
-        self.activateSession()
+        self.activateSession(for: player)
       }
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
@@ -258,6 +269,7 @@ public class AudioModule: Module {
 
       Function("remove") { player in
         self.registry.remove(player)
+        self.unregisterAudioSessionActivityKeeper(player.id)
       }
 
       Function("setAudioSamplingEnabled") { (player, enabled: Bool) in
@@ -473,7 +485,15 @@ public class AudioModule: Module {
       }
 
       AsyncFunction("prepareToRecordAsync") { (recorder, options: RecordingOptions?) in
-        try recorder.prepare(options: options, sessionOptions: sessionOptions)
+        let deactivateSessionOnFailure = sessionQueue.sync {
+          !sessionIsActive && audioSessionActivityKeepers.isEmpty
+        }
+        try recorder.prepare(
+          options: options,
+          sessionOptions: sessionOptions,
+          deactivateSessionOnFailure: deactivateSessionOnFailure
+        )
+        recordSessionActive(true)
       }
 
       Function("record") { (recorder: AudioRecorder, options: RecordOptions?) in
@@ -822,6 +842,9 @@ public class AudioModule: Module {
       try sessionQueue.sync {
         try AVAudioSession.sharedInstance().setActive(isActive, options: activationOptions(isActive: isActive))
         self.sessionIsActive = isActive
+        if !isActive {
+          audioSessionActivityKeepers.removeAll()
+        }
       }
     } catch {
       throw AudioStateException(error.localizedDescription)
@@ -915,6 +938,24 @@ public class AudioModule: Module {
     }
   }
 
+  private func activateSession(for player: AudioPlayer) {
+    let playerId = player.id
+    let shouldKeepSessionActive = player.keepAudioSessionActive
+    sessionQueue.async { [weak self] in
+      guard let self, self.audioEnabled.withLock({ $0 }) else {
+        return
+      }
+
+      let didRegisterActivityKeeper = shouldKeepSessionActive && self.registerAudioSessionActivityKeeper(playerId)
+      guard !self.sessionIsActive else {
+        return
+      }
+      if !self.applySessionActive(true), didRegisterActivityKeeper {
+        self.audioSessionActivityKeepers.remove(playerId)
+      }
+    }
+  }
+
   private func activationOptions(isActive: Bool) -> AVAudioSession.SetActiveOptions {
     guard !isActive, interruptionMode.shouldNotifyOthersOnDeactivation else {
       return []
@@ -925,10 +966,26 @@ public class AudioModule: Module {
 
   private func deactivateSession() {
     sessionQueue.asyncAfter(deadline: .now() + .milliseconds(100)) { [weak self] in
-      guard let self, self.sessionIsActive, !self.isSessionInUse else {
+      guard let self,
+        self.sessionIsActive,
+        self.audioSessionActivityKeepers.isEmpty,
+        !self.isSessionInUse else {
         return
       }
       self.applySessionActive(false)
+    }
+  }
+
+  private func registerAudioSessionActivityKeeper(_ playerId: String) -> Bool {
+    return audioSessionActivityKeepers.insert(playerId).inserted
+  }
+
+  private func unregisterAudioSessionActivityKeeper(_ playerId: String) {
+    sessionQueue.async { [weak self] in
+      guard let self, self.audioSessionActivityKeepers.remove(playerId) != nil else {
+        return
+      }
+      self.deactivateSession()
     }
   }
 

@@ -76,7 +76,11 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     }
   }
 
-  func prepare(options: RecordingOptions?, sessionOptions: AVAudioSession.CategoryOptions = []) throws {
+  func prepare(
+    options: RecordingOptions?,
+    sessionOptions: AVAudioSession.CategoryOptions = [],
+    deactivateSessionOnFailure: Bool = true
+  ) throws {
     if currentState == .recording {
       ref.stop()
     }
@@ -98,7 +102,9 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
         newRecorder = try AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
       } catch {
         currentState = .error
-        try? session.setActive(false)
+        if deactivateSessionOnFailure {
+          try? session.setActive(false)
+        }
         throw error
       }
 
