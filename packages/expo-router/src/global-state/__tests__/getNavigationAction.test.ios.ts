@@ -20,11 +20,11 @@ function getNavigateAction(
   return getNavigateActionImplementation(
     baseHref,
     options,
+    routeInfo,
     type,
     withAnchor,
     singular,
-    isPreviewNavigation,
-    routeInfo
+    isPreviewNavigation
   );
 }
 

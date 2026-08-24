@@ -54,11 +54,11 @@ export const routingQueue = {
           action = getNavigateAction(
             href,
             options,
-            options.event!,
+            routeInfo,
+            options.event,
             options.withAnchor,
             options.dangerouslySingular,
-            !!options.__internal__PreviewKey,
-            routeInfo
+            !!options.__internal__PreviewKey
           );
           // TODO: Consider warning when getNavigateAction returns undefined
           if (action) {
