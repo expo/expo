@@ -46,6 +46,26 @@ it('uses a trigger error boundary for an individual tab screen', () => {
   expect(screen.getByTestId('error-boundary')).toBeVisible();
 });
 
+it('uses a navigator error boundary for an individual tab screen', () => {
+  function ThrowingRoute(): never {
+    throw new Error('Expected route error');
+  }
+  function ErrorBoundary({ error }: ErrorBoundaryProps) {
+    return <Text testID="error-boundary">{error.message}</Text>;
+  }
+
+  renderRouter({
+    _layout: () => (
+      <NativeTabs unstable_screenErrorBoundary={ErrorBoundary}>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: ThrowingRoute,
+  });
+
+  expect(screen.getByTestId('error-boundary')).toBeVisible();
+});
+
 it.each([
   { value: undefined, expected: 'automatic' },
   { value: true, expected: 'tabSidebar' },

@@ -296,6 +296,8 @@ export const SUPPORTED_BLUR_EFFECTS = [
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 
 export interface NativeTabsProps extends PropsWithChildren {
+  /** A component to render when an individual tab screen throws an error. */
+  unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
   // #region common props
   /**
    * The style of the every tab label in the tab bar.

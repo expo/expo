@@ -190,6 +190,9 @@ export function useSortedScreens<
   screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>
 ): React.ReactNode[] {
   const node = useRouteNode();
+  const screenErrorBoundaryStore = React.useRef<
+    WeakMap<RouteNode, WeakMap<React.ComponentType<ErrorBoundaryProps>, React.ComponentType<any>>>
+  >(new WeakMap()).current;
 
   const children = node?.children ?? [];
   const sorted = children.length
@@ -208,7 +211,8 @@ export function useSortedScreens<
           unstable_errorBoundary: value.props.unstable_errorBoundary ?? screenErrorBoundary,
         },
         value.isGuarded,
-        value.routeSource
+        value.routeSource,
+        screenErrorBoundaryStore
       );
     });
   }, [sorted, guardedRedirects, screenErrorBoundary]);
@@ -229,6 +233,15 @@ function fromImport(
     console.warn(
       `Route "${value.contextKey}" exports unstable_settings.screenErrorBoundary. This setting is only supported in layout routes; use export const ErrorBoundary instead.`
     );
+  }
+
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    typeof component.default === 'object' &&
+    component.default &&
+    Object.keys(component.default).length === 0
+  ) {
+    return { default: EmptyRoute, SuspenseFallback };
   }
 
   if (ErrorBoundary || value.type === 'layout') {
@@ -259,30 +272,19 @@ function fromImport(
       SuspenseFallback,
     };
   }
-  if (process.env.NODE_ENV !== 'production') {
-    if (
-      typeof component.default === 'object' &&
-      component.default &&
-      Object.keys(component.default).length === 0
-    ) {
-      return { default: EmptyRoute, SuspenseFallback };
-    }
-  }
-
   return { default: component.default!, SuspenseFallback };
 }
 
 // TODO: Maybe there's a more React-y way to do this?
 // Without this store, the process enters a recursive loop.
 const qualifiedStore = new WeakMap<RouteNode, React.ComponentType<any>>();
-const screenErrorBoundaryStore = new WeakMap<
-  RouteNode,
-  WeakMap<React.ComponentType<ErrorBoundaryProps>, React.ComponentType<any>>
->();
-
 function getScreenComponent(
   route: RouteNode,
-  ErrorBoundary?: React.ComponentType<ErrorBoundaryProps>
+  ErrorBoundary: React.ComponentType<ErrorBoundaryProps> | undefined,
+  screenErrorBoundaryStore: WeakMap<
+    RouteNode,
+    WeakMap<React.ComponentType<ErrorBoundaryProps>, React.ComponentType<any>>
+  >
 ) {
   if (!ErrorBoundary) {
     return getQualifiedRouteComponent(route);
@@ -300,6 +302,9 @@ function getScreenComponent(
       const QualifiedRouteComponent = getQualifiedRouteComponent(route);
       return <QualifiedRouteComponent {...props} __screenErrorBoundary={ErrorBoundary} />;
     };
+    if (__DEV__) {
+      ScreenComponent.displayName = `ScreenErrorBoundary(${route.contextKey})`;
+    }
     boundaries.set(ErrorBoundary, ScreenComponent);
   }
   return ScreenComponent;
@@ -621,7 +626,11 @@ export function routeToScreen<
     ...props
   }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
   isGuarded?: boolean,
-  routeSource?: RouteSource
+  routeSource?: RouteSource,
+  screenErrorBoundaryStore?: WeakMap<
+    RouteNode,
+    WeakMap<React.ComponentType<ErrorBoundaryProps>, React.ComponentType<any>>
+  >
 ) {
   return (
     <Screen
@@ -631,7 +640,9 @@ export function routeToScreen<
       getId={getId}
       routeSource={routeSource}
       options={screenOptionsFactory(route, options, isGuarded)}
-      getComponent={() => getScreenComponent(route, unstable_errorBoundary)}
+      getComponent={() =>
+        getScreenComponent(route, unstable_errorBoundary, screenErrorBoundaryStore ?? new WeakMap())
+      }
     />
   );
 }

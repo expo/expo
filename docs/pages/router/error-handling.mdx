@@ -108,7 +108,9 @@ Expo Router applies error boundaries in the following order:
 1. `ErrorBoundary` exported from the screen
 2. Screen-level prop (for example, `Stack.Screen`)
 3. Navigator-level prop (for example, `Stack`)
-4. `unstable_settings.screenErrorBoundary` declared in the **_layout.tsx** file
+4. `unstable_settings.screenErrorBoundary` declared in the **\_layout.tsx** file
+
+`unstable_settings.screenErrorBoundary` applies to the layout's direct child screens. A nested layout starts a new boundary scope; define the setting in that nested layout to handle its screens.
 
 ### Work in progress
 

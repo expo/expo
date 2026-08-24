@@ -4,12 +4,7 @@
 import * as React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import {
-  getValidInitialRouteName,
-  ScreenErrorBoundaryContext,
-  useContextKey,
-  useRouteNode,
-} from '../Route';
+import { getValidInitialRouteName, useContextKey, useRouteNode } from '../Route';
 import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
@@ -105,13 +100,7 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {unstable_screenErrorBoundary ? (
-        <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
-          {content}
-        </ScreenErrorBoundaryContext>
-      ) : (
-        content
-      )}
+      {content}
     </NavigatorContext.Provider>
   );
 }
@@ -152,13 +141,7 @@ function SlotNavigator({ unstable_screenErrorBoundary, ...props }: NavigatorProp
     </GuardContextProvider>
   );
 
-  return unstable_screenErrorBoundary ? (
-    <ScreenErrorBoundaryContext value={unstable_screenErrorBoundary}>
-      {content}
-    </ScreenErrorBoundaryContext>
-  ) : (
-    content
-  );
+  return content;
 }
 
 /**
