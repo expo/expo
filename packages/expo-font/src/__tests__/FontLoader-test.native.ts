@@ -43,3 +43,13 @@ describe('getNativeFontFaces', () => {
     expect(getNativeFontFaces([{ path: 'a.ttf' }])[0]!.weight).toBeUndefined();
   });
 });
+
+describe('getNativeFontFaces resolving weight/style from a FontResource path', () => {
+  it("reads weight/style from the path's FontResource when the face leaves them unset", () => {
+    const definitions: FontFaceDefinition[] = [
+      { path: { uri: 'a.ttf', weight: 300, style: 'italic' } },
+    ];
+
+    expect(getNativeFontFaces(definitions)).toEqual([{ weight: 300, style: 'italic' }]);
+  });
+});

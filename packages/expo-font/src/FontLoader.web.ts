@@ -2,8 +2,7 @@ import { Asset } from 'expo-asset';
 import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import type { FontFaceDefinition, FontResource, FontSource } from './Font.types';
-import { FontDisplay } from './Font.types';
+import type { FontDisplay, FontFaceDefinition, FontResource, FontSource } from './Font.types';
 import { fontSourceFromFace } from './fontSourceFromFace';
 
 function uriFromFontSource(asset: FontSource): string | number | null {
@@ -80,8 +79,6 @@ function throwInvalidSourceError(source: any): never {
   );
 }
 
-// Loads every face concurrently, each as its own `@font-face` rule under the shared
-// `fontFamily` name, matching the pre-array-API behavior of calling `loadAsync` once per face.
 export async function loadFontFamilyAsync(
   fontFamily: string,
   fontDefinitions: FontFaceDefinition[]

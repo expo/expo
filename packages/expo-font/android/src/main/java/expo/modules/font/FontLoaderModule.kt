@@ -50,6 +50,7 @@ open class FontLoaderModule : Module() {
         )
       }
       FontFamilyFaces.assertWeightsInRange(fontFamilyName, faces)
+      FontFamilyFaces.assertNoDuplicateDeclaredFaces(fontFamilyName, faces)
 
       registerTypeface(fontFamilyName, familyTypeface(fontFamilyName, faces))
     }

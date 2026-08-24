@@ -356,4 +356,64 @@ describe('loadAsync with an array of FontFamilyDefinitions (native)', () => {
     await promise;
     expect(Object.keys(loadPromises)).toEqual([]);
   });
+
+  it.each<[string, () => Font.FontFamilyDefinition[], string, string | undefined]>([
+    [
+      'an empty fontDefinitions array',
+      () => [{ fontFamily: 'Ghost', fontDefinitions: [] }],
+      'No font faces were provided',
+      'Ghost',
+    ],
+    [
+      'an array element that is not a well-shaped FontFamilyDefinition',
+      () => [null as any],
+      'Expected an object with `fontFamily` and `fontDefinitions`',
+      undefined,
+    ],
+    [
+      'a face with a missing path',
+      () => [{ fontFamily: 'NoPath', fontDefinitions: [{} as any] }],
+      'has no `path`',
+      'NoPath',
+    ],
+    [
+      'two array entries that declare the same fontFamily',
+      () => [
+        {
+          fontFamily: 'Dup',
+          fontDefinitions: [{ path: _createMockAsset({ localUri: 'file:/regular.ttf' }) }],
+        },
+        {
+          fontFamily: 'Dup',
+          fontDefinitions: [{ path: _createMockAsset({ localUri: 'file:/bold.ttf' }) }],
+        },
+      ],
+      'is declared more than once',
+      'Dup',
+    ],
+  ])('rejects %s', async (_name, buildDefinitions, expectedMessage, familyName) => {
+    await expect(Font.loadAsync(buildDefinitions())).rejects.toThrow(expectedMessage);
+
+    expect(ExpoFontLoader.loadFontFamilyAsync).not.toHaveBeenCalled();
+    if (familyName) {
+      expect(Font.isLoaded(familyName)).toBe(false);
+      expect(Font.isLoading(familyName)).toBe(false);
+    }
+  });
+
+  it('rejects an out-of-range weight before downloading any asset', async () => {
+    const okAsset = _createMockAsset({ localUri: 'file:/ok.ttf' });
+    const definition: Font.FontFamilyDefinition = {
+      fontFamily: 'BadWeight',
+      fontDefinitions: [{ path: okAsset, weight: 5000 }],
+    };
+
+    await expect(Font.loadAsync([definition])).rejects.toThrow('Invalid font weight');
+
+    expect((okAsset as any).downloadAsync).not.toHaveBeenCalled();
+    expect((okAsset as any).downloaded).toBe(false);
+    expect(ExpoFontLoader.loadFontFamilyAsync).not.toHaveBeenCalled();
+    expect(Font.isLoaded('BadWeight')).toBe(false);
+    expect(Font.isLoading('BadWeight')).toBe(false);
+  });
 });

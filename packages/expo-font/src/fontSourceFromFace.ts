@@ -1,11 +1,12 @@
 import { Asset } from 'expo-asset';
 
 import type { FontFaceDefinition, FontResource, FontSource } from './Font.types';
+import { resolveFaceStyle, resolveFaceWeight } from './fontFaceValidation';
 
-// Merges a face's descriptors onto its `path`. Nothing gets a default: an unset property must
-// stay unset, or a variable font's face would be pinned to a single weight/style.
 export function fontSourceFromFace(face: FontFaceDefinition): FontSource {
-  const { path, weight, style, display, testString } = face;
+  const { path, display, testString } = face;
+  const weight = resolveFaceWeight(face);
+  const style = resolveFaceStyle(face);
 
   if (path instanceof Asset) {
     return {
@@ -22,8 +23,8 @@ export function fontSourceFromFace(face: FontFaceDefinition): FontSource {
 
   return {
     ...base,
-    weight: weight ?? base.weight,
-    style: style ?? base.style,
+    weight,
+    style,
     display: display ?? base.display,
     testString: testString ?? base.testString,
   };
