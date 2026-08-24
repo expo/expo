@@ -36,7 +36,7 @@ export const exagentReload: Command = async (argv) => {
         `--scheme <scheme>       URL scheme for --route, instead of the one in app.json`,
         `--app-id <id>           Application id to stop, for the device method`,
         `--dev-server-url <url>  Dev server to reload through (default: the project's own)`,
-        `--timeout ${DURATION_METAVAR}     How long to wait for the app to come back (default: 30s)`,
+        `--timeout ${DURATION_METAVAR}    How long to wait for the app to come back (default: 30s)`,
         `--json                  Print the result as JSON`,
         `--no-route-check        Open --route without checking it against the project`,
         `--no-followups          Skip the "Suggested next:" section of suggested follow-up commands`,
