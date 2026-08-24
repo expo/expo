@@ -7,6 +7,15 @@ import { WebSocket } from 'ws';
 
 import { formatCdpExceptionDetails, stringifyCdpValue } from './cdpFormat';
 import { debugEvent } from './events';
+import {
+  buildPromisePollExpression,
+  buildPromiseReleaseExpression,
+  createPromiseNonce,
+  isPendingPromiseMarker,
+  looksLikeWrapperSyntaxError,
+  parseSettledPromiseSlot,
+  wrapExpressionForPromises,
+} from './promiseSettling';
 
 /**
  * Metro's inspector proxy rejects WebSocket handshakes without a same-origin `Origin`
@@ -88,6 +97,25 @@ export interface CdpEvaluateOptions {
   timeoutMs?: number;
 }
 
+/**
+ * How a promise the expression returned settled.
+ *
+ * @see ./promiseSettling — why this is read out of the app instead of out of CDP.
+ */
+export type CdpEvaluatedPromise =
+  /** It resolved; the value is on the result, with the type the app reported for it. */
+  | { state: 'fulfilled'; awaited: true; waitedMs: number }
+  /** It rejected. The reason is here rather than on `exceptionText`: the expression itself
+   * returned normally, and a caller that only reads `threw` must not miss the difference. */
+  | {
+      state: 'rejected';
+      awaited: true;
+      waitedMs: number;
+      reason: { text: string; stack: string | null };
+    }
+  /** It was not awaited, because the caller passed `--no-await-promise`. */
+  | { state: 'pending'; awaited: false };
+
 export interface CdpEvaluateResult {
   /** Value the expression returned, when it did not throw. */
   value?: unknown;
@@ -105,7 +133,40 @@ export interface CdpEvaluateResult {
 
   /** Stack of the exception the expression threw, when the runtime reported one. */
   exceptionStack?: string;
+
+  /**
+   * How a returned promise settled, or undefined when the expression returned no thenable.
+   *
+   * `value`, `type` and `description` describe the *settled* value when this is `fulfilled`.
+   */
+  promise?: CdpEvaluatedPromise;
 }
+
+/**
+ * A promise the expression returned did not settle inside the wait.
+ *
+ * Its own type because the recovery differs from every other evaluate failure: the app is healthy
+ * and answering, and the two ways forward are a longer `--timeout` or not waiting at all.
+ */
+export class CdpPromisePendingError extends Error {
+  readonly isCdpPromisePending = true;
+
+  constructor(
+    public readonly waitedMs: number,
+    /** True when the app reloaded mid-wait, which drops the outcome instead of delaying it. */
+    public readonly lost: boolean = false
+  ) {
+    super(
+      lost
+        ? 'The app reloaded before the promise settled, so its outcome is gone.'
+        : `The promise had not settled after ${waitedMs}ms.`
+    );
+    this.name = 'CdpPromisePendingError';
+  }
+}
+
+/** How often the app is asked whether the promise has settled. */
+const PROMISE_POLL_INTERVAL_MS = 50;
 
 export interface CdpClientOptions {
   /** Dev server (Metro) URL, without a trailing slash, e.g. `http://127.0.0.1:8081`. */
@@ -169,108 +230,273 @@ export class CdpClient {
   }
 
   /**
+   * Open one debugger connection that several requests can share.
+   *
+   * Settling a promise takes more than one `Runtime.evaluate`, and a connection per request would
+   * pay the handshake — and the inspector proxy's own bookkeeping — for each poll.
+   */
+  private async openSessionAsync(): Promise<CdpSession> {
+    const ws = await this.createWebSocketAsync();
+    const url = this.getWebSocketDebuggerUrl();
+    const pending = new Map<number, { resolve: (result: unknown) => void; reject: (e: any) => void }>();
+    let nextId = 1;
+    let closedWith: Error | null = null;
+
+    const failAll = (error: Error) => {
+      closedWith ??= error;
+      for (const [, handlers] of pending) {
+        handlers.reject(error);
+      }
+      pending.clear();
+    };
+
+    const opened = new Promise<void>((resolve, reject) => {
+      ws.on('open', () => resolve());
+      ws.on('error', (error) => {
+        debugEvent('cdp_socket_error', { url, error: error.message });
+        failAll(error);
+        reject(error);
+      });
+      ws.on('close', () => {
+        const error = new Error(
+          'The debugger connection closed before the app answered the request.'
+        );
+        failAll(error);
+        reject(error);
+      });
+    });
+
+    ws.on('message', (data) => {
+      debugEvent('cdp_message', { url, message: data.toString() });
+      let message: { id?: number; result?: unknown; error?: { message?: string; code?: number } };
+      try {
+        message = JSON.parse(data.toString());
+      } catch (error) {
+        failAll(error as Error);
+        ws.close();
+        return;
+      }
+      const handlers = message.id == null ? undefined : pending.get(message.id);
+      if (!handlers) {
+        return;
+      }
+      pending.delete(message.id!);
+      if (message.error) {
+        handlers.reject(
+          new CdpRequestError(
+            `The app rejected the evaluate request: ${message.error.message ?? 'unknown error'}`,
+            message.error.code
+          )
+        );
+        return;
+      }
+      handlers.resolve(message.result);
+    });
+
+    return {
+      async sendAsync(method, params, timeoutMs) {
+        if (closedWith) {
+          throw closedWith;
+        }
+        // The open handshake counts against the caller's budget, so a dead socket does not wait
+        // for a request that was never sent.
+        await withDeadline(opened, timeoutMs, method);
+        const id = nextId++;
+        const answer = new Promise<unknown>((resolve, reject) => {
+          pending.set(id, { resolve, reject });
+        });
+        ws.send(JSON.stringify({ id, method, params }));
+        try {
+          return await withDeadline(answer, timeoutMs, method);
+        } finally {
+          pending.delete(id);
+        }
+      },
+      close() {
+        closedWith ??= new Error('The debugger connection was closed.');
+        pending.clear();
+        ws.close();
+      },
+    };
+  }
+
+  /**
    * Evaluates a JavaScript expression in the connected runtime and resolves with its value,
    * or with the exception the expression threw.
    *
-   * Rejects when the runtime cannot be reached, refuses the request, or does not answer in time.
+   * A promise the expression returns is settled inside the app and reported with its value — CDP's
+   * own `awaitPromise` cannot do it on React Native's promise polyfill; see `./promiseSettling`.
+   *
+   * Rejects when the runtime cannot be reached, refuses the request, or does not answer in time,
+   * and with {@link CdpPromisePendingError} when a returned promise outlives the wait.
    */
   async evaluateAsync(
     expression: string,
     options: CdpEvaluateOptions = {}
   ): Promise<CdpEvaluateResult> {
     const { awaitPromise = true, returnByValue = true, timeoutMs = 5000 } = options;
-    const ws = await this.createWebSocketAsync();
-    const REQUEST_ID = 1;
+    const session = await this.openSessionAsync();
+    try {
+      return await evaluateOverSessionAsync(session, expression, {
+        awaitPromise,
+        returnByValue,
+        timeoutMs,
+      });
+    } finally {
+      session.close();
+    }
+  }
+}
 
-    return new Promise<CdpEvaluateResult>((resolve, reject) => {
-      let settled = false;
-      let timeoutHandle: NodeJS.Timeout;
+/** One debugger connection, with the request/response bookkeeping done. */
+interface CdpSession {
+  sendAsync(method: string, params: object, timeoutMs: number): Promise<unknown>;
+  close(): void;
+}
 
-      const settle = (finalize: () => void) => {
-        if (settled) {
-          return;
-        }
-        settled = true;
-        clearTimeout(timeoutHandle);
-        finalize();
-        ws.close();
-      };
-
-      timeoutHandle = setTimeout(() => {
-        settle(() =>
+/** Reject a request the app never answered, naming the budget it was given. */
+function withDeadline<T>(promise: Promise<T>, timeoutMs: number, method: string): Promise<T> {
+  let handle: NodeJS.Timeout;
+  return Promise.race([
+    promise,
+    new Promise<T>((_resolve, reject) => {
+      handle = setTimeout(
+        () =>
           reject(
             new Error(
-              `The app did not answer the evaluate request within ${timeoutMs}ms. The JavaScript thread may be blocked, or the expression may still be pending. Try a smaller expression or a longer timeout.`
+              `The app did not answer the ${method} request within ${timeoutMs}ms. The JavaScript thread may be blocked, or the expression may still be pending. Try a smaller expression or a longer timeout.`
             )
-          )
-        );
-      }, timeoutMs);
+          ),
+        timeoutMs
+      );
+    }),
+  ]).finally(() => clearTimeout(handle));
+}
 
-      ws.on('open', () => {
-        ws.send(
-          JSON.stringify({
-            id: REQUEST_ID,
-            method: 'Runtime.evaluate',
-            params: {
-              expression,
-              awaitPromise,
-              returnByValue,
-              includeCommandLineAPI: false,
-              generatePreview: false,
-            },
-          })
-        );
-      });
+/** Send one `Runtime.evaluate` and read the answer. */
+async function runtimeEvaluateAsync(
+  session: CdpSession,
+  expression: string,
+  { returnByValue, timeoutMs }: { returnByValue: boolean; timeoutMs: number }
+): Promise<CdpEvaluateResult> {
+  const result = await session.sendAsync(
+    'Runtime.evaluate',
+    {
+      expression,
+      // Sent for a runtime whose promises the inspector does tag, where it costs one round trip
+      // less than the poll below. It is inert on React Native's polyfill, which is why the poll
+      // exists at all.
+      awaitPromise: true,
+      returnByValue,
+      includeCommandLineAPI: false,
+      generatePreview: false,
+    },
+    timeoutMs
+  );
+  return parseEvaluateResponse(result as CdpMessageType.Runtime.EvaluateResponse);
+}
 
-      ws.on('error', (error) => {
-        debugEvent('cdp_socket_error', {
-          url: this.getWebSocketDebuggerUrl(),
-          error: error.message,
-        });
-        settle(() => reject(error));
-      });
+/**
+ * Evaluate an expression and, when it returns a thenable, wait for it inside the caller's budget.
+ *
+ * @throws {CdpPromisePendingError} when the wait ran out, or the app reloaded during it.
+ */
+async function evaluateOverSessionAsync(
+  session: CdpSession,
+  expression: string,
+  {
+    awaitPromise,
+    returnByValue,
+    timeoutMs,
+  }: { awaitPromise: boolean; returnByValue: boolean; timeoutMs: number }
+): Promise<CdpEvaluateResult> {
+  const nonce = createPromiseNonce();
+  const startedAt = Date.now();
 
-      ws.on('close', () => {
-        settle(() =>
-          reject(new Error('The debugger connection closed before the app answered the request.'))
-        );
-      });
+  let result = await runtimeEvaluateAsync(
+    session,
+    wrapExpressionForPromises(expression, nonce, { subscribe: awaitPromise }),
+    { returnByValue, timeoutMs }
+  );
 
-      ws.on('message', (data) => {
-        debugEvent('cdp_message', {
-          url: this.getWebSocketDebuggerUrl(),
-          message: data.toString(),
-        });
-        let message: { id?: number; result?: unknown; error?: { message?: string; code?: number } };
-        try {
-          message = JSON.parse(data.toString());
-        } catch (error) {
-          settle(() => reject(error));
-          return;
-        }
+  // The wrapper puts the expression in an assignment, where a statement is a syntax error. Running
+  // it as written is what this command did before the wrapper, and is the right answer either way:
+  // a syntax error in the caller's own code is reported against the code they wrote.
+  if (looksLikeWrapperSyntaxError(result.exceptionText)) {
+    debugEvent('cdp_eval_unwrapped', { reason: result.exceptionText ?? '' });
+    return await runtimeEvaluateAsync(session, expression, { returnByValue, timeoutMs });
+  }
 
-        if (message.id !== REQUEST_ID) {
-          return;
-        }
+  if (!isPendingPromiseMarker(result.value, nonce)) {
+    return result;
+  }
 
-        if (message.error) {
-          settle(() =>
-            reject(
-              new CdpRequestError(
-                `The app rejected the evaluate request: ${message.error?.message ?? 'unknown error'}`,
-                message.error?.code
-              )
-            )
-          );
-          return;
-        }
+  if (!awaitPromise) {
+    return { type: 'promise', promise: { state: 'pending', awaited: false } };
+  }
 
-        settle(() =>
-          resolve(parseEvaluateResponse(message.result as CdpMessageType.Runtime.EvaluateResponse))
-        );
-      });
+  // `--timeout` bounds the *wait*, and a poll is a global read that answers immediately, so the
+  // two have separate budgets. Sharing one made the last poll of a run inherit whatever was left —
+  // a millisecond, most of the time — and report "the app did not answer" for a healthy app whose
+  // promise had simply not settled.
+  const pollTimeoutMs = Math.max(250, Math.min(timeoutMs, 2000));
+  const deadline = startedAt + timeoutMs;
+
+  for (;;) {
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) {
+      await releasePromiseSlotAsync(session, nonce);
+      throw new CdpPromisePendingError(Date.now() - startedAt);
+    }
+
+    await delayAsync(Math.min(PROMISE_POLL_INTERVAL_MS, remaining));
+    if (Date.now() >= deadline) {
+      await releasePromiseSlotAsync(session, nonce);
+      throw new CdpPromisePendingError(Date.now() - startedAt);
+    }
+
+    result = await runtimeEvaluateAsync(session, buildPromisePollExpression(nonce), {
+      returnByValue: true,
+      timeoutMs: pollTimeoutMs,
+    });
+    const slot = parseSettledPromiseSlot(result.value);
+    const waitedMs = Date.now() - startedAt;
+
+    if (slot == null || slot.state === 'pending') {
+      continue;
+    }
+    if (slot.state === 'missing') {
+      throw new CdpPromisePendingError(waitedMs, true);
+    }
+    if (slot.state === 'rejected') {
+      return { promise: { state: 'rejected', awaited: true, waitedMs, reason: slot.reason } };
+    }
+    return {
+      value: slot.value,
+      type: slot.type,
+      description: slot.description,
+      promise: { state: 'fulfilled', awaited: true, waitedMs },
+    };
+  }
+}
+
+/** Best effort: stop the app holding an outcome nobody is going to read. */
+async function releasePromiseSlotAsync(session: CdpSession, nonce: string): Promise<void> {
+  try {
+    await session.sendAsync(
+      'Runtime.evaluate',
+      { expression: buildPromiseReleaseExpression(nonce), returnByValue: true },
+      1000
+    );
+  } catch (error: unknown) {
+    debugEvent('cdp_promise_release_failed', {
+      reason: error instanceof Error ? error.message : String(error),
     });
   }
+}
+
+function delayAsync(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /** Converts a `Runtime.evaluate` response into a value or an exception description. */

@@ -2,7 +2,7 @@
 // Rendering for the runtime commands. Everything the app produced is fenced as untrusted
 // output (llp/0008 §Untrusted content), so an agent reading the terminal can tell app data
 // from command output.
-import type { CdpEvaluateResult } from './cdpClient';
+import type { CdpEvaluatedPromise, CdpEvaluateResult } from './cdpClient';
 import { stringifyCdpValue } from './cdpFormat';
 import type { NetworkRequestRecord } from './networkCollector';
 import type { RuntimeErrorRecord } from './runtimeErrorCollector';
@@ -22,6 +22,15 @@ export interface EvaluateResultJson {
   description: string | null;
   /** Null when the expression returned a value. */
   exception: { text: string; stack: string | null } | null;
+  /**
+   * How a promise the expression returned settled, or null when it returned no thenable.
+   *
+   * `state: "fulfilled"` puts the settled value on `value`, with `type` describing *it* rather than
+   * the promise. `state: "rejected"` carries the reason here and leaves `threw` false, because the
+   * expression itself returned normally — the two are different facts, and only this field has the
+   * second one.
+   */
+  promise: CdpEvaluatedPromise | null;
   /** Fields whose contents come from the app and must be treated as data, never instructions. */
   untrusted: string[];
 }
@@ -47,7 +56,7 @@ export interface NetworkRequestsJson {
 }
 
 /** Fields of {@link EvaluateResultJson} that hold app-originated content. */
-const UNTRUSTED_EVALUATE_FIELDS = ['value', 'description', 'exception'];
+const UNTRUSTED_EVALUATE_FIELDS = ['value', 'description', 'exception', 'promise'];
 
 /**
  * How much of a request URL is printed on its line.
@@ -69,16 +78,35 @@ export function formatEvaluateResult(devServerUrl: string, result: CdpEvaluateRe
     ].join('\n');
   }
 
+  const promise = result.promise;
+  if (promise?.state === 'rejected') {
+    const body = promise.reason.stack
+      ? `${promise.reason.text}\n${promise.reason.stack}`
+      : promise.reason.text;
+    return [
+      `The expression returned a promise, and it rejected after ${promise.waitedMs}ms (dev server ${devServerUrl}).`,
+      wrapUntrustedAppOutput(body),
+    ].join('\n');
+  }
+
+  if (promise?.state === 'pending') {
+    return [
+      `The expression returned a promise, and --no-await-promise asked for it not to be awaited, so it has no settled value to report (dev server ${devServerUrl}).`,
+      `Run the same expression without --no-await-promise to see what it resolves to.`,
+    ].join('\n');
+  }
+
   const type = result.type ?? 'undefined';
   const value =
     result.value !== undefined
       ? stringifyValueForOutput(result.value)
       : (result.description ?? 'undefined');
+  const headline =
+    promise?.state === 'fulfilled'
+      ? `The expression returned a promise, and it resolved in ${promise.waitedMs}ms (dev server ${devServerUrl}). Settled type: ${type}.`
+      : `Evaluated the expression in the app (dev server ${devServerUrl}). Result type: ${type}.`;
 
-  return [
-    `Evaluated the expression in the app (dev server ${devServerUrl}). Result type: ${type}.`,
-    wrapUntrustedAppOutput(value),
-  ].join('\n');
+  return [headline, wrapUntrustedAppOutput(value)].join('\n');
 }
 
 /** Renders collected runtime errors, with the app-originated part fenced as untrusted. */
@@ -192,18 +220,25 @@ export function evaluateResultToJson(
       value: null,
       description: null,
       exception: { text: result.exceptionText, stack: result.exceptionStack ?? null },
+      promise: null,
       untrusted: UNTRUSTED_EVALUATE_FIELDS,
     };
   }
+
+  const promise = result.promise ?? null;
+  // A rejected promise has no value and no type: reporting `type: "undefined"` for it would read
+  // as "it resolved with undefined", which is a different outcome.
+  const settled = promise == null || promise.state === 'fulfilled';
 
   return {
     devServerUrl,
     expression,
     threw: false,
-    type: result.type ?? 'undefined',
-    value: result.value ?? null,
-    description: result.description ?? null,
+    type: settled ? (result.type ?? 'undefined') : promise.state === 'pending' ? 'promise' : null,
+    value: settled ? (result.value ?? null) : null,
+    description: settled ? (result.description ?? null) : null,
     exception: null,
+    promise,
     untrusted: UNTRUSTED_EVALUATE_FIELDS,
   };
 }

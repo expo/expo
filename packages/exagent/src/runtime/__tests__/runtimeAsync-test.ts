@@ -1,4 +1,9 @@
-import { CdpClient, CdpRequestError, RPC_METHOD_NOT_FOUND } from '../cdpClient';
+import {
+  CdpClient,
+  CdpPromisePendingError,
+  CdpRequestError,
+  RPC_METHOD_NOT_FOUND,
+} from '../cdpClient';
 import {
   CdpNetworkCollector,
   NetworkDomainUnavailableError,
@@ -116,7 +121,8 @@ describe(runtimeEvalAsync, () => {
       value: { id: 7 },
       description: null,
       exception: null,
-      untrusted: ['value', 'description', 'exception'],
+      promise: null,
+      untrusted: ['value', 'description', 'exception', 'promise'],
     });
   });
 
@@ -134,6 +140,7 @@ describe(runtimeEvalAsync, () => {
       'devServerUrl',
       'exception',
       'expression',
+      'promise',
       'threw',
       'type',
       'untrusted',
@@ -152,6 +159,7 @@ describe(runtimeEvalAsync, () => {
       'devServerUrl',
       'exception',
       'expression',
+      'promise',
       'threw',
       'type',
       'untrusted',
@@ -193,6 +201,73 @@ describe(runtimeEvalAsync, () => {
     expect(error.message).toContain('report an empty window');
     expect(error.message).not.toMatch(/--timeout/);
     expect(error.suggestedCommand).toBe('npx exagent runtime:errors');
+  });
+
+  // F21: a rejected promise is the asynchronous form of a throw, so an agent gating on the exit
+  // code must not read a failed `fetch` as a pass — but the two are different facts in the report.
+  it(`should exit with 1 when the promise the expression returned rejects`, async () => {
+    mockEvaluate(async () => ({
+      promise: {
+        state: 'rejected',
+        awaited: true,
+        waitedMs: 12,
+        reason: { text: 'Error: BOOM_REJECT', stack: '  at anonymous' },
+      },
+    }));
+
+    await expect(runtimeEvalAsync({ ...evalOptions, json: true })).resolves.toBe(1);
+
+    const report = JSON.parse(printed());
+    expect(report.threw).toBe(false);
+    expect(report.exception).toBeNull();
+    expect(report.promise).toMatchObject({ state: 'rejected' });
+  });
+
+  it(`should exit with 0 for a promise that resolved, and report its value`, async () => {
+    mockEvaluate(async () => ({
+      value: 200,
+      type: 'number',
+      promise: { state: 'fulfilled', awaited: true, waitedMs: 132 },
+    }));
+
+    await expect(runtimeEvalAsync(evalOptions)).resolves.toBe(0);
+    expect(printed()).toContain('returned a promise, and it resolved in 132ms');
+    expect(printed()).toContain('Settled type: number');
+  });
+
+  it(`should say that --no-await-promise is why there is no settled value`, async () => {
+    mockEvaluate(async () => ({ type: 'promise', promise: { state: 'pending', awaited: false } }));
+
+    await expect(runtimeEvalAsync({ ...evalOptions, awaitPromise: false })).resolves.toBe(0);
+    expect(printed()).toContain('--no-await-promise');
+    // Never the polyfill's internals, which is what the flag used to print.
+    expect(printed()).not.toContain('_A');
+  });
+
+  // A promise the wait ran out on is not a value, so it is not reported as one.
+  it(`should report a promise that outlived the wait as its own failure`, async () => {
+    mockEvaluate(async () => {
+      throw new CdpPromisePendingError(5000);
+    });
+
+    const error = await runtimeEvalAsync(evalOptions).catch((e) => e);
+
+    expect(error.code).toBe('RUNTIME_PROMISE_PENDING');
+    expect(error.message).toContain('had not settled after 5000ms');
+    expect(error.message).toContain('--timeout');
+    expect(error.message).toContain('--no-await-promise');
+  });
+
+  it(`should say that a reload lost the outcome, not that the promise is slow`, async () => {
+    mockEvaluate(async () => {
+      throw new CdpPromisePendingError(120, true);
+    });
+
+    const error = await runtimeEvalAsync(evalOptions).catch((e) => e);
+
+    expect(error.code).toBe('RUNTIME_PROMISE_PENDING');
+    expect(error.message).toContain('the app reloaded');
+    expect(error.message).not.toContain('--timeout');
   });
 
   it(`should report a failed evaluate request with the reason and a next step`, async () => {

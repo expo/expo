@@ -13,6 +13,14 @@ declare module '2g' {
      */
     'runtime:cdp_target_undetermined': { url: string; reason: string };
     'runtime:cdp_parse_failed': { reason: string };
+    /**
+     * The promise-aware wrapper would not compile, so the expression was run as it was written.
+     *
+     * @see looksLikeWrapperSyntaxError in ./promiseSettling
+     */
+    'runtime:cdp_eval_unwrapped': { reason: string };
+    /** The app kept a settled value nobody read, because the cleanup after a timeout failed. */
+    'runtime:cdp_promise_release_failed': { reason: string };
   }
 }
 

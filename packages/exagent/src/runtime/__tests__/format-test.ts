@@ -206,8 +206,55 @@ describe(evaluateResultToJson, () => {
       value: 3,
       description: null,
       exception: null,
-      untrusted: ['value', 'description', 'exception'],
+      promise: null,
+      untrusted: ['value', 'description', 'exception', 'promise'],
     });
+  });
+
+  // F21: every async check an agent wants — fetch, AsyncStorage, a store selector — used to come
+  // back as the promise polyfill's `{_A,_x,_y,_z}` internals.
+  it(`should report a resolved promise with the settled value and its type`, () => {
+    const json = evaluateResultToJson(DEV_SERVER_URL, 'fetch(url).then((r) => r.status)', {
+      value: 200,
+      type: 'number',
+      promise: { state: 'fulfilled', awaited: true, waitedMs: 132 },
+    });
+
+    expect(json.value).toBe(200);
+    expect(json.type).toBe('number');
+    expect(json.threw).toBe(false);
+    expect(json.promise).toEqual({ state: 'fulfilled', awaited: true, waitedMs: 132 });
+  });
+
+  // A rejection is not a throw: the expression returned normally, so `threw` stays false and the
+  // outcome is only readable from `promise`.
+  it(`should report a rejected promise with its reason and no value`, () => {
+    const json = evaluateResultToJson(DEV_SERVER_URL, 'Promise.reject(new Error("nope"))', {
+      promise: {
+        state: 'rejected',
+        awaited: true,
+        waitedMs: 4,
+        reason: { text: 'Error: nope', stack: '  at anonymous' },
+      },
+    });
+
+    expect(json.threw).toBe(false);
+    expect(json.exception).toBeNull();
+    expect(json.promise).toMatchObject({ state: 'rejected' });
+    // Reporting `type: "undefined"` here would read as "it resolved with undefined".
+    expect(json.type).toBeNull();
+    expect(json.value).toBeNull();
+  });
+
+  it(`should report a promise it was told not to await`, () => {
+    const json = evaluateResultToJson(DEV_SERVER_URL, 'fetch(url)', {
+      type: 'promise',
+      promise: { state: 'pending', awaited: false },
+    });
+
+    expect(json.type).toBe('promise');
+    expect(json.value).toBeNull();
+    expect(json.promise).toEqual({ state: 'pending', awaited: false });
   });
 
   it(`should report an exception instead of a value`, () => {

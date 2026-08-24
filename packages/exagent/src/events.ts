@@ -75,7 +75,13 @@ declare module '2g' {
         lineNumber: number | null;
       };
     };
-    'cli:runtime_eval': { devServerUrl: string; threw: boolean; type: string };
+    'cli:runtime_eval': {
+      devServerUrl: string;
+      threw: boolean;
+      type: string;
+      /** How a promise the expression returned settled, or null when it returned no thenable. */
+      promise: 'fulfilled' | 'rejected' | 'pending' | null;
+    };
     'cli:runtime_errors': {
       devServerUrl: string;
       durationMs: number;

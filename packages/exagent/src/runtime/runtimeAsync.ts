@@ -14,6 +14,7 @@ import * as Log from '../log';
 import { CommandError } from '../utils/errors';
 import {
   CdpClient,
+  CdpPromisePendingError,
   isMethodNotFoundError,
   type CdpEvaluateResult,
   type CdpTarget,
@@ -99,6 +100,9 @@ export async function runtimeEvalAsync(
     if (isMethodNotFoundError(error)) {
       throw evaluateUnsupportedError(devServerUrl);
     }
+    if (error instanceof CdpPromisePendingError) {
+      throw promisePendingError(devServerUrl, expression, timeoutMs, error);
+    }
     throw new CommandError(
       'RUNTIME_EVALUATE_FAILED',
       [
@@ -113,6 +117,7 @@ export async function runtimeEvalAsync(
     devServerUrl,
     threw: !!result.exceptionText,
     type: result.type ?? 'undefined',
+    promise: result.promise?.state ?? null,
   });
 
   if (json) {
@@ -121,7 +126,41 @@ export async function runtimeEvalAsync(
     Log.log(formatEvaluateResult(devServerUrl, result));
   }
 
-  return result.exceptionText ? 1 : 0;
+  // A rejected promise is the asynchronous form of a throw, so it exits the same way: an agent
+  // gating on `runtime:eval` must not read a failed `fetch` as a pass. The two are still told apart
+  // in the report itself — `threw` for one, `promise.state` for the other.
+  return result.exceptionText || result.promise?.state === 'rejected' ? 1 : 0;
+}
+
+/**
+ * A promise the expression returned outlived the wait.
+ *
+ * Its own error rather than a report, because the command was asked for a settled value and has
+ * none: reporting "pending" with exit 0 would let a caller act on a value that never arrived.
+ * `--no-await-promise` is the way to ask for the pending answer on purpose, and it exits 0.
+ */
+function promisePendingError(
+  devServerUrl: string,
+  expression: string,
+  timeoutMs: number,
+  cause: CdpPromisePendingError
+): CommandError {
+  const error = new CommandError(
+    'RUNTIME_PROMISE_PENDING',
+    cause.lost
+      ? [
+          `The promise the expression returned was lost before it settled (dev server ${devServerUrl}).`,
+          `Why: the app reloaded during the wait, which clears the globals this command parks the outcome on, so the value it resolved to — if it ever did — cannot be read any more.`,
+          `How: run the expression again once the app has finished reloading ("npx exagent dev:wait --require-app" waits for that).`,
+        ].join('\n')
+      : [
+          `The promise the expression returned had not settled after ${timeoutMs}ms (dev server ${devServerUrl}).`,
+          `Why: the app is answering — it reported the promise and was polled until the wait ran out — so this is the promise taking longer than the budget, not a runtime that cannot be reached. A request to a slow host, or one waiting on something that never happens, both look like this.`,
+          `How: give it longer with --timeout (for example --timeout 30s), or pass --no-await-promise to be told that a promise came back without waiting for it.`,
+        ].join('\n')
+  );
+  error.suggestedCommand = `npx exagent runtime:eval ${JSON.stringify(expression)} --timeout 30s`;
+  return error;
 }
 
 /**
