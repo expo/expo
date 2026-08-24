@@ -67,29 +67,19 @@ public:
         snode->getProps());
 
       auto &style = const_cast<facebook::yoga::Style &>(props.yogaStyle);
-      bool changedStyle = false;
 
       if (!isnan(styleWidth)) {
-        auto expectedWidth = facebook::yoga::StyleSizeLength::points(styleWidth);
-        if (style.dimension(facebook::yoga::Dimension::Width) != expectedWidth) {
-          style.setDimension(facebook::yoga::Dimension::Width, expectedWidth);
-          changedStyle = true;
-        }
+        style.setDimension(facebook::yoga::Dimension::Width,
+                           facebook::yoga::StyleSizeLength::points(styleWidth));
       }
 
       if (!isnan(styleHeight)) {
-        auto expectedHeight = facebook::yoga::StyleSizeLength::points(styleHeight);
-        if (style.dimension(facebook::yoga::Dimension::Height) != expectedHeight) {
-          style.setDimension(facebook::yoga::Dimension::Height, expectedHeight);
-          changedStyle = true;
-        }
+        style.setDimension(facebook::yoga::Dimension::Height,
+                           facebook::yoga::StyleSizeLength::points(styleHeight));
       }
 
-      // Update yoga props and dirty layout if we changed the style
-      if (changedStyle) {
-        snode->updateYogaProps();
-        snode->dirtyLayout();
-      }
+      // Updates yoga style from props and sets the node dirty
+      snode->updateYogaProps();
     }
     facebook::react::ConcreteComponentDescriptor<ShadowNodeType>::adopt(shadowNode);
   }

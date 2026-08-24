@@ -33,6 +33,7 @@ import {
   listRowSeparator,
   listRowSeparatorTint,
   listRowSpacing,
+  alignmentGuide,
   border,
   strokeBorder,
   onTapGesture,
@@ -250,6 +251,21 @@ export default function ModifiersScreen() {
             <Text modifiers={[listRowSeparatorTint('red')]}>Red separator</Text>
             <Text modifiers={[listRowSeparatorTint('blue', 'bottom')]}>Blue bottom separator</Text>
             <Text>Default separator</Text>
+          </Section>
+
+          <Section title="List row separator leading alignment">
+            <HStack spacing={12}>
+              <Image systemName="circle" size={20} />
+              <Text>Leading image</Text>
+            </HStack>
+            <HStack spacing={12}>
+              <Text>A</Text>
+              <Text>Leading text</Text>
+            </HStack>
+            <HStack spacing={12} modifiers={[alignmentGuide('listRowSeparatorLeading', 32)]}>
+              <Text>A</Text>
+              <Text>Leading text, aligned separator</Text>
+            </HStack>
           </Section>
 
           <Section title="List row spacing">

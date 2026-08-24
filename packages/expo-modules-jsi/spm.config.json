@@ -5,7 +5,7 @@
       "name": "ExpoModulesJSI",
       "podName": "ExpoModulesJSI",
       "platforms": [
-        "iOS(.v16)"
+        "iOS(\"16.4\")"
       ],
       "externalDependencies": [
         "Hermes",

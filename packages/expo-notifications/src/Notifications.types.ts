@@ -815,7 +815,7 @@ export {
 
 /**
  * Payload for the background notification handler task.
- * [Read more](#run-javascript-in-response-to-incoming-notifications).
+ * See [Run JavaScript in response to incoming notifications](#run-javascript-in-response-to-incoming-notifications).
  * */
 export type NotificationTaskPayload =
   | NotificationResponse
