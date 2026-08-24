@@ -132,7 +132,8 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         ForEach(props.annotations) { annotation in
           Annotation(
             annotation.title,
-            coordinate: annotation.clLocationCoordinate2D
+            coordinate: annotation.clLocationCoordinate2D,
+            anchor: annotation.unitPoint
           ) {
             ZStack {
               if let icon = annotation.icon {
