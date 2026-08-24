@@ -74,6 +74,16 @@ internal final class AccessClosedResourceException: Exception {
   }
 }
 
+internal final class EmptyStatementException: Exception {
+  override var code: String {
+    "ERR_SQLITE_EMPTY_STATEMENT"
+  }
+
+  override var reason: String {
+    "Cannot prepare an empty SQL statement. SQLite found no statement to run in the given string because it is empty, whitespace-only, or comment-only. To run a .sql file, pass the whole file to execAsync() instead of splitting it on ';'."
+  }
+}
+
 internal final class SQLiteErrorException: GenericException<String> {
   override var code: String {
     "ERR_INTERNAL_SQLITE_ERROR"

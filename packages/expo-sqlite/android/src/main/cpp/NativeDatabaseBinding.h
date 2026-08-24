@@ -17,6 +17,10 @@ public:
   static constexpr auto kJavaDescriptor =
       "Lexpo/modules/sqlite/NativeDatabaseBinding;";
 
+  // Negative, so it cannot collide with an sqlite3 result code.
+  // Keep in sync with NativeDatabaseBinding.NULL_STATEMENT on the Kotlin side.
+  static constexpr int kNullStatement = -1;
+
   static void registerNatives();
 
   // sqlite3 bindings

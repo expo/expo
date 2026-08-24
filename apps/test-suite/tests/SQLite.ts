@@ -448,6 +448,59 @@ CREATE TABLE IF NOT EXISTS posts (post_id INTEGER PRIMARY KEY NOT NULL, content 
       await db.closeAsync();
     });
 
+    it('should run a whole script with comments via execAsync', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+-- set up the table
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+/* seed it */
+INSERT INTO users (user_id, name) VALUES (1, 'Tim Duncan');
+-- done
+`);
+      const rows = await db.getAllAsync('SELECT * FROM users');
+      expect(rows.length).toBe(1);
+      await db.closeAsync();
+    });
+
+    it('should prepare a statement that follows a comment', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      await db.execAsync(`
+DROP TABLE IF EXISTS users;
+CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(64));
+`);
+      const statement = await db.prepareAsync('-- pick everything\nSELECT * FROM users');
+      expect(await statement.getColumnNamesAsync()).toEqual(['user_id', 'name']);
+      await statement.finalizeAsync();
+      await db.closeAsync();
+    });
+
+    it('should throw when preparing an empty or comment-only statement', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      for (const source of ['\n', '   ', '-- nothing to run', ';']) {
+        let error = null;
+        try {
+          await db.prepareAsync(source);
+        } catch (e) {
+          error = e;
+        }
+        expect(String(error)).toMatch(/Cannot prepare an empty SQL statement/);
+      }
+      await db.closeAsync();
+    });
+
+    it('should throw when running an empty statement', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:');
+      let error = null;
+      try {
+        await db.runAsync('\n');
+      } catch (e) {
+        error = e;
+      }
+      expect(String(error)).toMatch(/Cannot prepare an empty SQL statement/);
+      await db.closeAsync();
+    });
+
     it('should throw when accessing a finalized statement', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`

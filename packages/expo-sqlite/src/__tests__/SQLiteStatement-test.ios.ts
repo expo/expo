@@ -145,6 +145,32 @@ describe(SQLiteStatement, () => {
     expect(columnNames3).toEqual(['idWithCustomName', 'value', 'intValue']);
   });
 
+  it('prepareAsync should prepare a statement that follows a bare semicolon', async () => {
+    const statement = await db.prepareAsync('; SELECT * FROM test');
+    expect(await statement.getColumnNamesAsync()).toEqual(['id', 'value', 'intValue']);
+    await statement.finalizeAsync();
+  });
+
+  it('prepareAsync should prepare a statement that follows a comment', async () => {
+    const statement = await db.prepareAsync('-- pick everything\nSELECT * FROM test');
+    expect(await statement.getColumnNamesAsync()).toEqual(['id', 'value', 'intValue']);
+    await statement.finalizeAsync();
+  });
+
+  it('prepareAsync should throw for a whitespace-only statement', async () => {
+    await expect(db.prepareAsync('\n')).rejects.toThrow(/Cannot prepare an empty SQL statement/);
+  });
+
+  it('prepareAsync should throw for a comment-only statement', async () => {
+    await expect(db.prepareAsync('-- nothing to run')).rejects.toThrow(
+      /Cannot prepare an empty SQL statement/
+    );
+  });
+
+  it('prepareSync should throw for a whitespace-only statement', () => {
+    expect(() => db.prepareSync('\n')).toThrow(/Cannot prepare an empty SQL statement/);
+  });
+
   it('resetAsync should reset the statement cursor', async () => {
     const statement = await db.prepareAsync('SELECT * FROM test ORDER BY intValue ASC');
     const result = await statement.executeAsync<TestEntity>();
