@@ -36,7 +36,7 @@ const TRANSFORM_ERROR = {
   errors: [{ description: 'Unexpected keyword', filename: 'src/app/index.tsx', lineNumber: 101 }],
 };
 
-type Answer = { status?: number; json?: unknown; text?: string };
+type Answer = { status?: number; json?: unknown; text?: string; contentType?: string };
 
 /** Answer each request by URL and method, and record what was asked. */
 function mockFetch(answers: { [key: string]: Answer }) {
@@ -58,6 +58,12 @@ function mockFetch(answers: { [key: string]: Answer }) {
       ok: status >= 200 && status < 300,
       status,
       statusText: status === 500 ? 'Internal Server Error' : 'OK',
+      headers: {
+        get: (name: string) =>
+          name.toLowerCase() === 'content-type'
+            ? (answer.contentType ?? (answer.text ? 'text/html; charset=utf-8' : 'application/json'))
+            : null,
+      },
       text: async () => body,
       json: async () => JSON.parse(body),
     };
@@ -183,6 +189,137 @@ describe(checkEntryBundleAsync, () => {
     expect(result.error!.message).toContain('Proxy error');
   });
 
+  // @ref llp/0010-agent-conventions.rfc.md §The gate has to ask about the _project_
+  // The web dev server has no manifest: `GET /` is the page a browser loads, and the entry bundle
+  // is the `<script src>` appended to it. Asking that page for JSON is what left `--platform web`
+  // reporting `checked: true, ok: null` with a parse error for a reason [observed — friction run 2].
+  describe('the web target', () => {
+    /** The tail of the page a live SDK 57 web dev server serves, recorded on 2026-08-23. */
+    const WEB_PAGE = `<!DOCTYPE html><html lang="en"><head><title></title></head><body><div id="root"></div><script src="/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp" defer></script></body></html>`;
+    const WEB_BUNDLE_URL =
+      'http://127.0.0.1:8123/node_modules/expo-router/entry.bundle?platform=web&dev=true&hot=false&lazy=true&transform.routerRoot=src%2Fapp';
+
+    it(`should build the bundle the page names, and pass when it compiles`, async () => {
+      const calls = mockFetch({
+        'http://127.0.0.1:8123/': { text: WEB_PAGE },
+        [`HEAD ${WEB_BUNDLE_URL}`]: { status: 200 },
+      });
+
+      const result = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'web',
+        timeoutMs: 5000,
+      });
+
+      expect(result).toMatchObject({ outcome: 'ok', platform: 'web', url: WEB_BUNDLE_URL });
+      // The page is asked for as a page, and the bundle is fetched with HEAD, exactly as native is.
+      expect(calls[0]!.headers.accept).toBe('text/html');
+      expect(calls[1]).toMatchObject({ method: 'HEAD', url: WEB_BUNDLE_URL });
+    });
+
+    it(`should report the same TransformError a native check reports`, async () => {
+      mockFetch({
+        'http://127.0.0.1:8123/': { text: WEB_PAGE },
+        [`HEAD ${WEB_BUNDLE_URL}`]: { status: 500 },
+        [`GET ${WEB_BUNDLE_URL}`]: { status: 500, json: TRANSFORM_ERROR },
+      });
+
+      const result = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'web',
+        timeoutMs: 5000,
+      });
+
+      expect(result.outcome).toBe('broken');
+      expect(result.error).toMatchObject({
+        type: 'TransformError',
+        filename: 'src/app/index.tsx',
+        lineNumber: 101,
+      });
+    });
+
+    it(`should resolve a bundle whose query separators were escaped`, async () => {
+      const escaped = WEB_PAGE.replace(/&/g, '&amp;');
+      mockFetch({
+        'http://127.0.0.1:8123/': { text: escaped },
+        [`HEAD ${WEB_BUNDLE_URL}`]: { status: 200 },
+      });
+
+      expect(
+        await checkEntryBundleAsync(devServerUrl, { platform: 'web', timeoutMs: 5000 })
+      ).toMatchObject({ outcome: 'ok', url: WEB_BUNDLE_URL });
+    });
+
+    // The web dev server renders on the server, so a project that does not compile never produces
+    // a page with a script tag in it. It produces this, with the whole failure inside.
+    it(`should read the failure off the error page the dev server renders instead`, async () => {
+      // Recorded live on 2026-08-23, cut to the fields that are read. `<` arrives escaped, as the
+      // CLI writes it, so that the payload cannot close its own tag.
+      const staticError = JSON.stringify({
+        selectedLogIndex: 0,
+        logs: [
+          {
+            level: 'static',
+            message: {
+              content:
+                "SyntaxError: /project/src/app/index.tsx: Unexpected keyword 'const'. (101:2)\n\n   99 |\n  100 | function broken( {\n> 101 |   const x =\n      |   ^",
+            },
+            stack: [{ file: '/project/src/app/index.tsx', lineNumber: 101, column: 2 }],
+            codeFrame: {
+              content: '[0m 101 | const x =[0m',
+              location: { row: 101, column: 2 },
+              fileName: '/project/src/app/index.tsx',
+            },
+          },
+        ],
+      }).replace(/</g, '\\u003c');
+      mockFetch({
+        'http://127.0.0.1:8123/': {
+          status: 500,
+          text: `<html><body><div id="root"></div><script id="_expo-static-error" type="application/json">${staticError}</script></body></html>`,
+        },
+      });
+
+      const result = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'web',
+        timeoutMs: 5000,
+      });
+
+      expect(result.outcome).toBe('broken');
+      expect(result.error).toMatchObject({
+        filename: '/project/src/app/index.tsx',
+        lineNumber: 101,
+        column: 2,
+        message: "SyntaxError: /project/src/app/index.tsx: Unexpected keyword 'const'. (101:2)",
+      });
+      expect(result.error!.snippet).toContain('> 101 |');
+    });
+
+    it(`should stay undecided when a 500 is not an Expo error page`, async () => {
+      mockFetch({ 'http://127.0.0.1:8123/': { status: 500, text: '<html>proxy error</html>' } });
+
+      const result = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'web',
+        timeoutMs: 5000,
+      });
+
+      expect(result.outcome).toBe('unknown');
+      expect(result.reason).toContain('not an Expo error page');
+    });
+
+    it(`should say what it could not find when the page names no bundle`, async () => {
+      mockFetch({
+        'http://127.0.0.1:8123/': { text: '<html><body><script src="/vendor.js"></script></body></html>' },
+      });
+
+      const result = await checkEntryBundleAsync(devServerUrl, {
+        platform: 'web',
+        timeoutMs: 5000,
+      });
+
+      expect(result.outcome).toBe('unknown');
+      expect(result.reason).toContain('names no .bundle script');
+    });
+  });
+
   // `unknown` is not `broken`: a dev server that answered nothing this module understands has not
   // shown the project to be broken, and a gate that went red on it would be worse than silence.
   describe('when the check cannot run', () => {
@@ -219,6 +356,11 @@ describe(checkEntryBundleAsync, () => {
       });
 
       expect(result.outcome).toBe('unknown');
+      // A diagnosis, not the exception: `Unexpected token '<' … is not valid JSON` says nothing a
+      // reader can act on, and it is what this reason used to be [observed — friction run 2].
+      expect(result.reason).toContain('text/html');
+      expect(result.reason).not.toContain('JSON.parse');
+      expect(result.reason).not.toContain('Unexpected token');
     });
 
     it(`should answer unknown when nothing is listening`, async () => {

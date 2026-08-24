@@ -127,6 +127,49 @@ Four decisions inside that, each of which could have gone the other way:
   take tens of seconds; a caller that only wants the old readiness gate must be able to say so
   rather than raise `--timeout` and wait.
 
+#### The web target answers the same question with different documents
+
+Decision [confirmed — Kudo, 2026-08-23]. `--platform web` gets a real check, not a skipped one.
+
+The finding [observed — friction run 2, 2026-08-23]: `dev:wait --platform web` on the same broken
+file that `--platform ios` exited `20` for exited `0` with
+`{"checked": true, "ok": null, "reason": "http://…/ did not answer with JSON: Unexpected token '<'…"}`.
+Three separate faults in one payload — no protection for the web target at all, a `checked: true`
+that contradicted its own `ok: null`, and an internal parse error standing in for a diagnosis.
+
+The web dev server has no manifest. `GET /` is the page a browser loads, and it answers the same two
+questions in two other places:
+
+1. **The entry bundle URL is the `<script src>` the dev server appends to that page** [observed —
+   `ManifestMiddleware.getSingleHtmlTemplateAsync` → `appendScriptsToHtml(contents, [getWebBundleUrl()])`,
+   and live: `<script src="/node_modules/expo-router/entry.bundle?platform=web&…" defer></script>`].
+   From there the check is byte for byte the native one: HEAD that URL, and fetch the body only when
+   the status says something went wrong.
+2. **A project that does not compile never produces that page at all.** The web dev server renders
+   on the server, so the failure surfaces one step earlier: `GET /` answers **500** with an error
+   page carrying the whole LogBox record as JSON in `<script id="_expo-static-error">` [observed —
+   `metroErrorInterface.ts` `getErrorOverlayHtmlAsync`, and live: file, line, column, message and
+   code frame, with `<` escaped so the payload cannot close its own tag]. That is read as `broken`
+   directly, because there is no bundle left to ask about.
+
+A 500 whose body is *not* an Expo error page stays `unknown` — the conservatism of the four
+decisions above is unchanged, and something else answering on that port has not shown this project
+to be broken.
+
+#### `checked` and `ok` move together
+
+Decision [confirmed — Kudo, 2026-08-23]. In the `--json` payload, `bundle.checked` is exactly
+`bundle.ok != null`. `checked: true` with `ok: null` said "this was checked, and the answer is
+nothing", which is not a state a caller can branch on; the honest split is that a check either got
+an answer from the bundler or did not, and `reason` says which of the ways it did not. `reason` is
+now present exactly when `ok` is null, including for `--no-bundle-check` (`the entry bundle check
+was not run`), so the two keys are readable as one fact instead of three.
+
+The reasons themselves stopped being exception messages [revised — 2026-08-23]. A manifest request
+that came back as HTML reports the content type the dev server sent and that whatever is on the port
+may not be an Expo dev server; it does not report `Unexpected token '<', "<!DOCTYPE "... is not
+valid JSON`, which describes byte 0 of a body the reader never sees.
+
 **`status` is deliberately not given this.** [inferred] Its readiness probe has a 400 ms ceiling and
 its whole contract is that it never waits, while a cold first build is tens of seconds and nothing
 the dev server exposes says "is the last build broken" without building. The honest arrangement is

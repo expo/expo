@@ -15,6 +15,15 @@
 //     for it is what keeps the entry path out of this file: it is `node_modules/expo-router/entry`
 //     for a router app and `index` for a plain one, and the dev server is the only thing that knows
 //     which, along with the whole query string the graph is keyed by.
+//
+//     **The web target answers the same question with a different document.** There is no manifest:
+//     `GET /` is the page a browser loads, and the entry bundle is the `<script src>` the dev
+//     server appends to it [observed — `ManifestMiddleware.getSingleHtmlTemplateAsync` calls
+//     `appendScriptsToHtml(contents, [this.getWebBundleUrl()])`, and live on 2026-08-23:
+//     `<script src="/node_modules/expo-router/entry.bundle?platform=web&…" defer></script>`]. So
+//     the *source* of the URL differs by platform and everything after it does not. Asking for JSON
+//     and reading the HTML answer as a parse failure is what left `--platform web` reporting
+//     `checked: true, ok: null` with a `SyntaxError` for a reason [observed — friction run 2].
 //  2. A **HEAD** of that exact URL. HEAD builds the bundle and reports the real status without
 //     sending the 8 MB body [observed — Metro treats it as a normal request and only annotates it
 //     as a prefetch]; the body is only fetched when the status says something went wrong. The URL
@@ -123,23 +132,28 @@ export async function checkEntryBundleAsync(
   });
 
   try {
-    const manifest = await readManifestBundleUrlAsync(origin, platform, controller.signal);
-    if (manifest.url == null) {
-      return finish({ outcome: 'unknown', url: null, error: null, reason: manifest.reason });
+    const entry = await readEntryBundleUrlAsync(origin, platform, controller.signal);
+    // The web dev server renders the page on the server, so a project that does not compile is
+    // reported by the page itself and there is no bundle left to ask about.
+    if (entry.error) {
+      return finish({ outcome: 'broken', url: null, error: entry.error });
+    }
+    if (entry.url == null) {
+      return finish({ outcome: 'unknown', url: null, error: null, reason: entry.reason });
     }
 
     // HEAD, so a bundle that compiles costs a status line instead of megabytes of JavaScript.
-    const head = await fetch(manifest.url, { method: 'HEAD', signal: controller.signal });
+    const head = await fetch(entry.url, { method: 'HEAD', signal: controller.signal });
     if (head.ok || head.status === 304) {
-      return finish({ outcome: 'ok', url: manifest.url, error: null });
+      return finish({ outcome: 'ok', url: entry.url, error: null });
     }
 
     // Only now is the body worth having, and it is the small one: Metro answers a failed build
     // with a JSON object, not with a bundle.
-    const body = await fetch(manifest.url, { signal: controller.signal });
+    const body = await fetch(entry.url, { signal: controller.signal });
     return finish({
       outcome: 'broken',
-      url: manifest.url,
+      url: entry.url,
       error: await readBundleErrorAsync(body),
     });
   } catch (error: unknown) {
@@ -162,6 +176,139 @@ export async function checkEntryBundleAsync(
   }
 }
 
+/** Where the entry bundle URL of one platform comes from, or why it could not be read. */
+interface EntryBundleUrl {
+  url: string | null;
+  /** A diagnosis, never an exception message: the reader has to act on it. */
+  reason?: string;
+  /**
+   * The build failure the *document* reported, when reading it was already the answer.
+   *
+   * Only web can reach this. Its dev server renders the page on the server, so a project that does
+   * not compile never produces a page with a script tag in it — it produces an error page carrying
+   * the whole failure, and there is no bundle URL left to fetch.
+   */
+  error?: BundleCheckError;
+}
+
+/**
+ * The entry bundle URL this dev server would hand the app, for one platform.
+ *
+ * Two documents answer this and the platform decides which: native reads the manifest, web reads
+ * the page. Both end in the same place — one URL, used byte for byte.
+ */
+function readEntryBundleUrlAsync(
+  origin: string,
+  platform: BundleCheckPlatform,
+  signal: AbortSignal
+): Promise<EntryBundleUrl> {
+  return platform === 'web'
+    ? readWebBundleUrlAsync(origin, signal)
+    : readManifestBundleUrlAsync(origin, platform, signal);
+}
+
+/**
+ * Read the entry bundle URL out of the page the web dev server serves.
+ *
+ * The web dev server has no manifest: `GET /` is the HTML a browser loads, and the dev server
+ * appends the entry bundle to it as the last `<script src>` [observed —
+ * `ManifestMiddleware.getSingleHtmlTemplateAsync` → `appendScriptsToHtml`]. The tag is written with
+ * a raw `&` between the query parameters, but a page that ever escapes them still has to resolve to
+ * the same URL, so the entities are decoded rather than assumed away.
+ *
+ * A regular expression over HTML, deliberately: the alternative is a parser dependency for one
+ * attribute of one tag that this dev server writes itself, and a page with no `.bundle` script in
+ * it is reported as undecidable rather than guessed at.
+ */
+async function readWebBundleUrlAsync(
+  origin: string,
+  signal: AbortSignal
+): Promise<EntryBundleUrl> {
+  const pageUrl = `${origin}/`;
+  const response = await fetch(pageUrl, { headers: { accept: 'text/html' }, signal });
+  const html = await response.text();
+
+  if (!response.ok) {
+    // The page the web dev server serves for a project that does not compile, which carries the
+    // whole failure as JSON [observed — `metroErrorInterface.ts` `getErrorOverlayHtmlAsync`, and
+    // live on 2026-08-23: HTTP 500 with `<script id="_expo-static-error">`].
+    const staticError = readStaticErrorPage(html);
+    if (staticError) {
+      return { url: null, error: staticError };
+    }
+    return {
+      url: null,
+      reason: `${pageUrl} answered ${response.status} ${response.statusText}, and the body is not an Expo error page, so nothing can be said about the web bundle`,
+    };
+  }
+
+  const sources = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/gi)].map((match) =>
+    decodeHtmlEntities(match[1]!)
+  );
+  const source = sources.find((src) => /\.bundle(?:[?#]|$)/.test(src));
+  if (!source) {
+    return {
+      url: null,
+      reason: `the page at ${pageUrl} names no .bundle script, so there is no web entry bundle to build — the web target may be served by something other than Metro`,
+    };
+  }
+
+  try {
+    return { url: new URL(source, pageUrl).toString() };
+  } catch {
+    return { url: null, reason: `the page at ${pageUrl} names an unusable bundle script: ${source}` };
+  }
+}
+
+/** The three entities an attribute value can carry that change what the URL means. */
+function decodeHtmlEntities(value: string): string {
+  return value.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+}
+
+/**
+ * The failure an Expo error page carries, or null when the page is not one.
+ *
+ * The web dev server embeds the whole LogBox record as JSON in a `<script>` of a known id, with
+ * `<` escaped so the payload cannot close its own tag [observed — `metroErrorInterface.ts`]. The
+ * fields are read defensively: this is another program's internal shape, and a page that has grown
+ * a different one must read as "not an error page" rather than as a half-filled error.
+ */
+function readStaticErrorPage(html: string): BundleCheckError | null {
+  const embedded = html.match(
+    /<script id="_expo-static-error"[^>]*>([\s\S]*?)<\/script>/
+  )?.[1];
+  if (!embedded) {
+    return null;
+  }
+
+  let log: Record<string, any> | undefined;
+  try {
+    log = JSON.parse(embedded)?.logs?.[0];
+  } catch {
+    return null;
+  }
+  const content = readString(log?.message?.content);
+  const codeFrame = log?.codeFrame;
+  const frame = log?.stack?.[0];
+  if (!content && !codeFrame) {
+    return null;
+  }
+
+  // The message is already ANSI-stripped here and the code frame is not [observed — the CLI strips
+  // one and not the other], so both go through the same stripper rather than one being trusted.
+  const [firstLine, ...rest] = stripVTControlCharacters(content ?? '').split('\n');
+  return {
+    // The page reports no Metro error class, and inventing `TransformError` would claim a fact the
+    // dev server did not state.
+    type: null,
+    filename: readString(codeFrame?.fileName) ?? readString(frame?.file),
+    lineNumber: readNumber(codeFrame?.location?.row) ?? readNumber(frame?.lineNumber),
+    column: readNumber(codeFrame?.location?.column) ?? readNumber(frame?.column),
+    message: firstLine?.trim() || 'the web dev server answered with an error page',
+    snippet: readSnippet(rest) ?? stripSnippet(codeFrame?.content),
+  };
+}
+
 /**
  * Read the entry bundle URL out of the dev server's manifest.
  *
@@ -173,7 +320,7 @@ async function readManifestBundleUrlAsync(
   origin: string,
   platform: BundleCheckPlatform,
   signal: AbortSignal
-): Promise<{ url: string | null; reason?: string }> {
+): Promise<EntryBundleUrl> {
   const manifestUrl = `${origin}/`;
   const response = await fetch(manifestUrl, {
     headers: { 'expo-platform': platform, accept: 'application/json' },
@@ -190,10 +337,13 @@ async function readManifestBundleUrlAsync(
   let payload: unknown;
   try {
     payload = await response.json();
-  } catch (error: unknown) {
+  } catch {
+    // The exception is a `SyntaxError` about byte 0 of the body, which says nothing a reader can
+    // act on. What they need is what the dev server sent instead.
+    const contentType = response.headers.get('content-type')?.split(';')[0]?.trim();
     return {
       url: null,
-      reason: `${manifestUrl} did not answer with JSON: ${error instanceof Error ? error.message : String(error)}`,
+      reason: `${manifestUrl} answered ${contentType ?? 'something that is not JSON'} instead of the ${platform} manifest, so the entry bundle URL is unknown — whatever is on this port may not be an Expo dev server`,
     };
   }
 
