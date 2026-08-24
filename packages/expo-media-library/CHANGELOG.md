@@ -14,7 +14,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Parallelize per-file EXIF and location reads in `getAssetsAsync` when `resolveWithFullInfo` is true, speeding up large library scans. ([#48637](https://github.com/expo/expo/pull/48637) by [@hsource](https://github.com/hsource) and [@robin-pham](https://github.com/robin-pham))
-- [iOS] Include GPS `location` in `getAssetsAsync` batch results and return numeric latitude/longitude from `exportLocation` (matching the documented `Location` type). ([#48630](https://github.com/expo/expo/pull/48630) by [@hsource](https://github.com/hsource) and [@fractalbeauty](https://github.com/fractalbeauty))
+- [iOS] Include GPS `location` in `getAssetsAsync` batch results and return numeric latitude/longitude from `exportLocation` (matching the documented `Location` type). ([#49188](https://github.com/expo/expo/pull/49188) by [@hsource](https://github.com/hsource) and [@fractalbeauty](https://github.com/fractalbeauty))
 - [Android] Fix transposed `width`/`height` for rotated assets (portrait photos and videos): `Asset.getInfo()`, `getWidth()`/`getHeight()`/`getShape()` and `Query.exeForMetadata()` now honor MediaStore `ORIENTATION`, matching the legacy API. ([#48150](https://github.com/expo/expo/pull/48150) by [@oeddyo](https://github.com/oeddyo))
 
 ### 💡 Others
