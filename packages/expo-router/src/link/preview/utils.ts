@@ -1,5 +1,5 @@
 import type { UrlObject } from '../../global-state/getRouteInfoFromState';
-import { store, type ReactNavigationState } from '../../global-state/router-store';
+import type { ReactNavigationState } from '../../global-state/router-store';
 import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
 import type {
@@ -19,7 +19,7 @@ export function getTabPathFromRootStateByHref(
   rootState: ReactNavigationState,
   routeInfo: UrlObject
 ): TabPath[] {
-  const hrefState = getStateForHref(resolveHref(href), routeInfo, store.linking);
+  const hrefState = getStateForHref(resolveHref(href), routeInfo);
   const state: ReactNavigationState | undefined = rootState;
   if (!hrefState || !state) {
     return [];
@@ -55,7 +55,7 @@ export function getPreloadedRouteFromRootStateByHref(
   rootState: ReactNavigationState,
   routeInfo: UrlObject
 ): NavigationRoute<ParamListBase, string> | undefined {
-  const hrefState = getStateForHref(resolveHref(href), routeInfo, store.linking);
+  const hrefState = getStateForHref(resolveHref(href), routeInfo);
   const state: ReactNavigationState | undefined = rootState;
   if (!hrefState || !state) {
     return undefined;

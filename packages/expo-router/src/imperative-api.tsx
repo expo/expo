@@ -1,4 +1,4 @@
-import { type RefObject, useEffect, useSyncExternalStore } from 'react';
+import { type RefObject, useEffect, useEffectEvent, useSyncExternalStore } from 'react';
 
 import type { ImperativeRouter } from './global-state/router';
 import { router } from './global-state/router';
@@ -18,8 +18,10 @@ export function useImperativeApiEmitter(
     routingQueue.snapshot,
     routingQueue.snapshot
   );
+  const runQueue = useEffectEvent(() => routingQueue.run(ref, routeInfo));
+
   useEffect(() => {
-    routingQueue.run(ref, routeInfo);
-  }, [events, ref, routeInfo]);
+    runQueue();
+  }, [events, ref]);
   return null;
 }

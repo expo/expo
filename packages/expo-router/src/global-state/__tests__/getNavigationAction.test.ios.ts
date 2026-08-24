@@ -1,7 +1,19 @@
 import { applyRedirects } from '../../getRoutesRedirects';
-import { getNavigateAction } from '../getNavigationAction';
+import { getNavigateAction as getNavigateActionImplementation } from '../getNavigationAction';
+import { defaultRouteInfo } from '../getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
 import { store } from '../store';
+
+const getNavigateAction = (...args: any[]) =>
+  getNavigateActionImplementation(
+    args[0],
+    args[1],
+    args[2] ?? 'NAVIGATE',
+    args[3],
+    args[4],
+    args[5],
+    args[6] ?? defaultRouteInfo
+  );
 
 jest.mock('../store', () => ({
   store: {

@@ -7,7 +7,7 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { SingularOptions } from '../useScreens';
-import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
+import type { UrlObject } from './getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
 import { store } from './store';
 import type { LinkToOptions } from './types';
@@ -15,11 +15,11 @@ import type { LinkToOptions } from './types';
 export function getNavigateAction(
   baseHref: string,
   options: LinkToOptions,
-  type = 'NAVIGATE',
-  withAnchor?: boolean,
-  singular?: SingularOptions,
-  isPreviewNavigation?: boolean,
-  routeInfo: UrlObject = defaultRouteInfo
+  type: string,
+  withAnchor: boolean | undefined,
+  singular: SingularOptions | undefined,
+  isPreviewNavigation: boolean | undefined,
+  routeInfo: UrlObject
 ) {
   let href: string | undefined = baseHref;
   store.assertIsReady();

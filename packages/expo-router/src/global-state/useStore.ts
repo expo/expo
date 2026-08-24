@@ -78,7 +78,7 @@ export function useStore(
       // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
       if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
 
-      initialState = linking.getStateFromPath(initialPath, linking.config);
+      initialState = linking.getStateFromPath(initialPath, linking.config, []);
       const initialRouteInfo = getRouteInfoFromState(initialState);
       setCachedRouteInfo(initialState as any, initialRouteInfo);
     }
