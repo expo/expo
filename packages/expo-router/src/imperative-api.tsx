@@ -29,6 +29,7 @@ export function useImperativeApiEmitter(
   );
   const runQueue = useEffectEvent(() => {
     routingQueue.run(ref, routeInfo, {
+      navigationRef: store.navigationRef,
       linking,
       redirects: store.redirects,
     });

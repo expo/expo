@@ -6,16 +6,16 @@ import {
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
-import type { NavigationContainerRef, ParamListBase } from '../react-navigation/native';
 import type { SingularOptions } from '../useScreens';
 import type { UrlObject } from './getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
 import type { StoreContextValue } from './storeContext';
 import type { LinkToOptions } from './types';
 
-export type NavigationActionContext = Pick<StoreContextValue, 'linking' | 'redirects'> & {
-  navigationRef: NavigationContainerRef<ParamListBase>;
-};
+export type NavigationActionContext = Pick<
+  StoreContextValue,
+  'navigationRef' | 'linking' | 'redirects'
+>;
 
 export function getNavigateAction(
   baseHref: string,
@@ -28,21 +28,22 @@ export function getNavigateAction(
   { navigationRef, linking, redirects }: NavigationActionContext
 ) {
   let href: string | undefined = baseHref;
-  // TODO(@ubax): Check whether callers can guarantee a navigation ref.
-  if (navigationRef == null) {
-    throw new Error(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
-    );
-  }
   if (!navigationRef.isReady()) {
     throw new Error(
       'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
     );
   }
+  // TODO(@ubax): Check whether callers can guarantee a navigation ref.
+  const ref = navigationRef.current;
+  if (ref == null) {
+    throw new Error(
+      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
+    );
+  }
   if (!linking) {
     throw new Error('Attempted to link to route when no routes are present');
   }
-  const rootState = navigationRef.getRootState();
+  const rootState = ref.getRootState();
 
   href = resolveHrefStringWithSegments(href, { segments, params: routeParams }, options);
   href = applyRedirects(href, redirects) ?? undefined;

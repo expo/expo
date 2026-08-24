@@ -5,10 +5,15 @@ import { getNavigateAction, type NavigationActionContext } from '../getNavigatio
 import { defaultRouteInfo } from '../getRouteInfoFromState';
 import { routingQueue } from '../routingQueue';
 
-const navigationActionContext: Omit<NavigationActionContext, 'navigationRef'> = {
+const navigationActionContext = (navigationRef: NavigationContainerRef<ParamListBase>) => ({
+  // The queue uses a plain navigation ref while production passes the ref object from context.
+  navigationRef: {
+    ...navigationRef,
+    current: navigationRef,
+  } as NavigationActionContext['navigationRef'],
   linking: undefined,
   redirects: [],
-};
+});
 
 jest.mock('../getNavigationAction', () => ({
   getNavigateAction: jest.fn(),
@@ -93,7 +98,7 @@ describe('routingQueue', () => {
     routingQueue.add({ type: 'GO_BACK' });
     routingQueue.add({ type: 'POP_TO_TOP' });
 
-    routingQueue.run(ref, defaultRouteInfo, navigationActionContext);
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
 
     expect(routingQueue.queue).toHaveLength(0);
   });
@@ -103,7 +108,7 @@ describe('routingQueue', () => {
 
     routingQueue.add({ type: 'GO_BACK' });
 
-    routingQueue.run(ref, defaultRouteInfo, navigationActionContext);
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
 
     expect(ref.current!.dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
   });
@@ -131,16 +136,17 @@ describe('routingQueue', () => {
       payload: { href: '/home', options: { event: 'NAVIGATE' } },
     });
 
-    routingQueue.run(ref, routeInfo, navigationActionContext);
+    routingQueue.run(ref, routeInfo, navigationActionContext(ref.current!));
 
     expect(mockGetNavigateAction).toHaveBeenCalledWith(
       '/home',
       { event: 'NAVIGATE' },
-      routeInfo,
       'NAVIGATE',
       undefined,
       undefined,
-      false
+      false,
+      routeInfo,
+      navigationActionContext(ref.current!)
     );
     expect(ref.current!.dispatch).toHaveBeenCalledWith(navigateAction);
   });
@@ -154,7 +160,7 @@ describe('routingQueue', () => {
       payload: { href: '/redirect', options: { event: 'NAVIGATE' } },
     });
 
-    routingQueue.run(ref, defaultRouteInfo, navigationActionContext);
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
 
     expect(ref.current!.dispatch).not.toHaveBeenCalled();
   });
@@ -164,7 +170,7 @@ describe('routingQueue', () => {
 
     routingQueue.add({ type: 'GO_BACK' });
 
-    routingQueue.run(ref as any, defaultRouteInfo, navigationActionContext);
+    routingQueue.run(ref as any, defaultRouteInfo, navigationActionContext(ref.current!));
 
     // Queue should still be drained (reset identity happens before dispatch loop)
     expect(routingQueue.queue).toHaveLength(0);
@@ -177,7 +183,7 @@ describe('routingQueue', () => {
 
     const oldQueue = routingQueue.queue;
 
-    routingQueue.run(ref, defaultRouteInfo, navigationActionContext);
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
 
     // The queue should be a new array reference
     expect(routingQueue.queue).not.toBe(oldQueue);

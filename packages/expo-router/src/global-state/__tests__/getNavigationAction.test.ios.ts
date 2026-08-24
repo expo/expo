@@ -1,7 +1,10 @@
 import { applyRedirects } from '../../getRoutesRedirects';
 import { getStateFromPath } from '../../link/linking';
 import type { SingularOptions } from '../../useScreens';
-import { getNavigateAction as getNavigateActionImplementation } from '../getNavigationAction';
+import {
+  getNavigateAction as getNavigateActionImplementation,
+  type NavigationActionContext,
+} from '../getNavigationAction';
 import { defaultRouteInfo } from '../getRouteInfoFromState';
 import type { UrlObject } from '../getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
@@ -26,7 +29,8 @@ function getNavigateAction(
     isPreviewNavigation,
     routeInfo,
     {
-      navigationRef: store.navigationRef.current!,
+      // The mocked ref includes `current` at runtime but its mocked type omits it.
+      navigationRef: store.navigationRef as NavigationActionContext['navigationRef'],
       linking: store.linking,
       redirects: [],
     }
@@ -91,6 +95,8 @@ const mockApplyRedirects = applyRedirects as jest.MockedFunction<typeof applyRed
 const mockGetStateFromPath = getStateFromPath as jest.MockedFunction<typeof getStateFromPath>;
 
 function setupDefaultMocks() {
+  // The module mock is narrower than `ExpoLinkingOptions` but supports the exercised parser.
+  (store.linking as any).getStateFromPath = mockGetStateFromPath;
   mockGetStateFromPath.mockReturnValue({
     routes: [{ name: 'home' }],
   });

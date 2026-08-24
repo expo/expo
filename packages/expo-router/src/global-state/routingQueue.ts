@@ -39,7 +39,7 @@ export const routingQueue = {
   run(
     ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
     routeInfo: Pick<UrlObject, 'segments' | 'params'>,
-    context: Omit<NavigationActionContext, 'navigationRef'>
+    context: NavigationActionContext
   ) {
     // Reset the identity of the queue.
     const events = routingQueue.queue;
@@ -61,7 +61,7 @@ export const routingQueue = {
             options.dangerouslySingular,
             !!options.__internal__PreviewKey,
             routeInfo,
-            { ...context, navigationRef: ref.current }
+            context
           );
           // TODO: Consider warning when getNavigateAction returns undefined
           if (action) {
