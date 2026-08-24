@@ -112,12 +112,26 @@ export interface AuthStatus {
 }
 
 export interface NextActionStatus {
-  /** The command that performs this plan. */
+  /** The command to run next. */
   command: string;
-  /** Decision-table row that would fire, e.g. `expo-go`. */
+  /**
+   * Decision-table row that would fire to get the app onto a device, e.g. `expo-go`.
+   *
+   * Always the plan's row, even when {@link command} is not `exagent dev`: it is the project's
+   * shape, and a reader that wants it does not stop wanting it because a dev server is up.
+   */
   rule: string;
   target: ProjectTarget;
+  /** The steps {@link command} would run. Empty for a command that is not `exagent dev`. */
   steps: PlanStep[];
+  /**
+   * Why this command rather than the plan's own. Null when it *is* the plan's own.
+   *
+   * Set exactly when a dev server this project can use is already answering: recommending a second
+   * one then contradicts the dev-server line three rows above it, and the useful next move is to
+   * verify the server that is running rather than to start another.
+   */
+  why: string | null;
 }
 
 /** Sections of the report, in the order they print. */

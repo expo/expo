@@ -148,6 +148,11 @@ function authLine(auth: AuthStatus): string {
 
 function nextLine(next: NextActionStatus): string {
   const [first, ...rest] = next.steps;
+  // A next action that is not the plan carries its own reason, and that reason is the whole of
+  // what it has to say: there is no step list to print, because it runs one exagent command.
+  if (next.why) {
+    return `${chalk.bold(next.command)}${SEPARATOR}${chalk.dim(next.why)}`;
+  }
   if (first == null) {
     return `${chalk.bold(next.command)} → ${next.rule}`;
   }
