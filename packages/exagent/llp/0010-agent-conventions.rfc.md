@@ -133,6 +133,24 @@ the dev server exposes says "is the last build broken" without building. The hon
 the one now in place: `status` reports where the project is, and its `next` line points at
 `exagent dev:wait --require-app`, which is the command that pays for the answer.
 
+### The third: a collector that can be asked to be a gate
+
+[observed — 2026-08-23, `src/runtime/`; friction run 2, F25] `exagent runtime:errors` is the first
+command in the band whose entry is **opt-in**, and the reason is the difference between a check and
+a window. `dev:wait` asks a question with an answer — does this project's entry bundle compile — so
+its exit code can carry the verdict. `runtime:errors` watches for a while and reports what arrived,
+and its empty result means "nothing happened while I watched", not "the app is healthy": an error
+thrown before the window opened is not in it, and the command says so in its own output.
+
+So the default stays `0` whatever it collects, and `--fail-on-error` exits `20` on a non-empty
+window. The flag exists because the asymmetry was itself the friction: an agent could gate on
+`dev:wait` and not on `runtime:errors`, and had to parse `count` out of `--json` to close the loop
+that the exit code closes everywhere else.
+
+Only `errors` has it. `runtime:network`'s failed requests are something it reports *about* the app —
+a 404 the app handles is not the command's operation failing — and there is no equivalent question
+for its exit code to answer.
+
 ## Needs-human protocol
 
 Decision [confirmed — Kudo, 2026-08-23]. Exit `7` above needed a way to be _raised_, and the class of failure it names is the one an agent cannot recover from by trying harder: a login, an Apple two-factor push, a device to scan a code on, a page to open. This section is the convention for all of them — one error class, one event, one registry, four ways of noticing.
@@ -250,6 +268,27 @@ Rule (a) says what `exagent build --platform ios` must not do — print a listin
 So [observed — 2026-08-23, `src/commandRegistry.ts`] a `CommandGroup` may declare `bareNameCommand`, the command another CLI owns its bare name for. When it has one, the `flags-without-action` error names it and the `Try:` line is that command **with the caller's own flags on it** — `Try: npx eas build --platform ios` — so the recovery is a paste rather than a re-read. A group without one is unchanged and recovers into `npx exagent <group> --help`.
 
 This is narrower than rule (b), and the two do not overlap: rule (b) is for a name in the _forwarded_ set, where `exagent` runs the other command itself; this is for a name owned by a CLI `exagent` does not forward, where the only thing to hand back is the command line.
+
+### (d) An argument a command has no place for is an error, not a shrug
+
+The same failure as rule (a), one level down. `exagent checkpoint:undo <id>` accepted the argument,
+dropped it, restored the newest checkpoint over the working tree, and reported that it had worked
+[observed — friction run 2, F22]. `checkpoint:list` prints ids and the option is `--id`, so
+`checkpoint:undo <id>` is the natural line to type, and the one destructive command in the set was
+the one that misread it. Eight other commands dropped a stray argument the same way; only the
+commands whose arguments a `resolve*Options` already read rejected it.
+
+So [observed — 2026-08-23, `src/utils/args.ts`] every call to `assertWithOptionsArgs` states
+`positionalArgs: 'none' | 'own'`, with **no default**: the type checker asks the question of every
+command that parses arguments, including the next one somebody writes. `'none'` reports a `BAD_ARGS`
+naming what was dropped, plus an optional per-command sentence for what the caller probably meant
+(`checkpoint:undo` names `--id`). `'own'` is for a command that reads `args._` itself, and is the
+only setting a permissive parse may use — `arg` puts unrecognized *options* into `_` there, so
+rejecting them as positionals would reject the flags the resolver goes on to read. `dev` and `start`
+declare `'own'` too: their arguments are forwarded to the Expo CLI, which reports its own.
+
+Note that this is a *silent* no-op, which llp/0006 §Errors are prompts treats as the one answer a
+driving agent cannot recover from — it is indistinguishable from the command having understood.
 
 ## `build:explain`: the rule table is capped and in-repo
 
