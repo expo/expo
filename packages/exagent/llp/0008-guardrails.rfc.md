@@ -5,7 +5,7 @@
 **Systems:** `expo-mcp` tools; smart start plan contract
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-20
-**Related:** [[0001-agentic-cli-on-expo-cli]], [[0004-smart-start-and-project-state]]
+**Related:** [[0001-agentic-cli-on-expo-cli]], [[0004-smart-start-and-project-state]], [[0013-doctor-fix]]
 
 ## Summary
 
@@ -24,6 +24,19 @@ Cheap mechanisms that make it safe for a driving agent to act autonomously on an
 - **Plan-with-cost dry run**: shipped as `exagent dev --plan`, and as the plan `exagent dev` prints before it runs it ([[0004-smart-start-and-project-state]]). Since that default executes, an interactive terminal is asked `Run this plan?` once when a step costs more than seconds (`src/dev/confirmPlan.ts`); `--yes` skips the question, `--json` and every non-interactive run are never asked, and a decline exits 0 having run nothing.
 - **Untrusted-content marking**: shipped in the runtime commands ([[0005-runtime-loop-tools]]) — fenced blocks with marker-forgery neutralization.
 - Not built: MCP impact metadata (no MCP server surface yet).
+
+## The one command checkpoints do not protect
+
+[added — 2026-08-24, with `exagent doctor:fix`; see [[0013-doctor-fix]]]
+
+The line above — *gitignored files are in no checkpoint* — has been true since the first snapshot, and it read as a footnote for as long as every mutating command's damage was to tracked files. `doctor:fix` is the first command whose **whole subject** is gitignored: `node_modules`, `ios/Pods`, `.expo` and the Metro caches are exactly the files a checkpoint does not hold, and `checkpoint:undo` after one will restore nothing it deleted.
+
+So the honesty has to travel with the artifact, not stay in this document. Two things follow, and both are shipped:
+
+- **A checkpoint is still taken before `doctor:fix --apply` at `moderate` and above**, because it protects the one thing it can: a bare project's tracked `ios/` and `android/`, and a tracked `Podfile.lock` that `pod install` is about to rewrite. The `safe` tier takes none — it deletes nothing tracked, so there would be nothing for one to hold.
+- **The snapshot ships with the sentence that says what it is not**, on the human output and as `checkpoint.note` in `--json`. Not a disclaimer: an agent that reads `Checkpoint 22a3cfd9` and infers a safety net will run the aggressive tier believing an undo exists for `node_modules`, and there is none. What actually puts those files back is the plan's own reinstall steps, and the note says so.
+
+The general rule this makes explicit, for the next command like it: **a command whose targets are gitignored must state that its checkpoint does not cover them, in the same output that names the checkpoint.** Printing an id and letting the reader infer the guarantee is worse than printing no id at all.
 
 ## Testing
 

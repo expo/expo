@@ -134,6 +134,44 @@ export async function resolveWorkTreeAsync(projectRoot: string): Promise<GitWork
 }
 
 /**
+ * Tracked files under `pathspecs` that the working tree and `HEAD` disagree about.
+ *
+ * `--untracked-files=no` is the whole point: a native directory is full of build output that is
+ * *supposed* to be untracked, so counting `??` entries would report every project as dirty. What
+ * this answers is "does the user have work here that nobody has recorded", which is the question
+ * `doctor:fix` has to ask before it deletes inside `ios/` or `android/`.
+ *
+ * A project outside git, or a git that cannot run, answers `[]`: nothing has been *shown* to be at
+ * risk, and refusing on an unanswerable question would stop the command on every project without a
+ * repository.
+ *
+ * @param pathspecs paths relative to `projectRoot`, e.g. `['ios', 'android']`.
+ * @returns the paths git reported, relative to the work tree root.
+ */
+export async function dirtyTrackedPathsAsync(
+  projectRoot: string,
+  pathspecs: string[]
+): Promise<string[]> {
+  if (!pathspecs.length) {
+    return [];
+  }
+  try {
+    const output = await runGitAsync(
+      ['status', '--porcelain', '--untracked-files=no', '--', ...pathspecs],
+      { cwd: projectRoot }
+    );
+    return output
+      .split('\n')
+      .filter(Boolean)
+      // `XY <path>`, and a rename is `XY <old> -> <new>`. The new name is the one on disk.
+      .map((line) => line.slice(3).split(' -> ').pop()!.trim())
+      .filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Write a tree object holding the project's current files, without touching the user's index.
  *
  * `git add -A .` runs with the project directory as the working directory and a temporary, empty
