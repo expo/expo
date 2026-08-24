@@ -131,11 +131,11 @@ describe('routingQueue', () => {
     expect(mockGetNavigateAction).toHaveBeenCalledWith(
       '/home',
       { event: 'NAVIGATE' },
+      routeInfo,
       'NAVIGATE',
       undefined,
       undefined,
-      false,
-      routeInfo
+      false
     );
     expect(ref.current!.dispatch).toHaveBeenCalledWith(navigateAction);
   });
