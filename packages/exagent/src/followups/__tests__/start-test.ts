@@ -54,14 +54,16 @@ describe(buildStartFollowUps, () => {
     expect(followups[1]!.command).toBe(lanUrl);
   });
 
-  // The EAS rung still exists; on a native run the three nearer rungs simply crowd it out. A web
-  // run has no device step, so it is the shape that shows the rung is still built.
-  it(`should ask for the EAS configuration when the project has no eas.json`, () => {
-    const followups = buildStartFollowUps({ expoGo: true, web: true, lanUrl, easJson: false });
+  // The EAS rung is still the last one built, and the cap is still what drops it — for either
+  // answer to "does this project have an eas.json", and whatever else the ladder holds.
+  it.each([true, false])(`should keep the cloud build off a native ladder (eas.json: %s)`, (
+    easJson
+  ) => {
+    const followups = buildStartFollowUps({ expoGo: true, web: false, lanUrl, easJson });
 
-    expect(ids(followups)).toContain('eas-build-configure');
+    expect(followups).toHaveLength(3);
     expect(ids(followups)).not.toContain('eas-build');
-    expect(followups.at(-1)!.command).toBe('npx eas build:configure');
+    expect(ids(followups)).not.toContain('eas-build-configure');
   });
 
   it(`should fall back to a tunnel when the host has no LAN address`, () => {
@@ -85,11 +87,41 @@ describe(buildStartFollowUps, () => {
   });
 
   // A browser needs no simulator and no phone, so neither the open step nor the device hint is
-  // built for a web run.
-  it(`should leave out the device steps when the run only serves the web bundle`, () => {
-    const followups = buildStartFollowUps({ expoGo: true, web: true, lanUrl, easJson: true });
+  // built for a web run — and `runtime:errors` has no debugger target to read either. The list
+  // used to be `runtime-errors` then `eas build:configure`, a cloud *native* build the run did not
+  // need, and named neither the site nor a way to check the bundle [observed — friction run 2].
+  describe('a web run', () => {
+    const web = { expoGo: true, web: true, lanUrl, easJson: true } as const;
 
-    expect(ids(followups)).toEqual(['runtime-errors', 'eas-build']);
+    it(`should lead with the site URL and the web bundle check`, () => {
+      const followups = buildStartFollowUps({ ...web, webUrl: 'http://localhost:8134' });
+
+      expect(ids(followups)).toEqual(['web-url', 'web-bundle-check', 'deploy-web']);
+      expect(followups[0]!.command).toBe('http://localhost:8134');
+      expect(followups[1]!.command).toBe('npx exagent dev:wait --platform web');
+    });
+
+    it(`should offer the deploy that ships a web build, not a native cloud build`, () => {
+      const followups = buildStartFollowUps({ ...web, webUrl: 'http://localhost:8134' });
+
+      expect(followups.at(-1)!.command).toBe('npx exagent deploy --web');
+      expect(ids(followups)).not.toContain('eas-build-configure');
+    });
+
+    // Naming `http://localhost:8081` here would be the same guess about which process holds the
+    // default port that sent a device into another project's app.
+    it(`should name no URL when nothing reported a port`, () => {
+      const followups = buildStartFollowUps({ ...web, webUrl: null });
+
+      expect(ids(followups)).toEqual([
+        'dev-server-port-unknown',
+        'web-bundle-check',
+        'deploy-web',
+      ]);
+      expect(followups.some((followup) => followup.command.startsWith('http://localhost'))).toBe(
+        false
+      );
+    });
   });
 
   it(`should never offer more than three follow-ups`, () => {

@@ -54,6 +54,16 @@ Two changes, both about the plan telling the truth about itself [observed — `s
   `exp://` URL [observed — `@expo/cli` `openPlatforms.ts` → `PlatformManager.openProjectInExpoGoAsync`;
   verified live 2026-08-23 against an SDK 57 app and a booted iPhone 17 Pro]. Without one, the reason
   says so and names `exagent navigate /`.
+- **The plan's `reasons` list says the same thing the step's `reason` does** [added — 2026-08-23].
+  The step was fixed above and the list was not, so `dev --plan --json` with no flag printed
+  `"Target platform: ios."` beside `["expo","start","--go"]` — one channel honest about opening
+  nothing and the other announcing a target [observed — friction run 2, 2026-08-23]. The sentence
+  now carries both facts it was hiding: whether anyone *named* the platform, and whether the plan
+  *acts* on it. `Target platform: ios, named on the command line.` when the flag was typed;
+  `No platform was named; this host suggests ios, and the plan builds for it.` when a `run:*` step
+  does; and `…, and the plan opens nothing on it — pass --ios or --android, or run
+  "exagent navigate /" once the dev server is up.` when nothing does. That is why the reason list is
+  built per rule rather than once before the branches: the honest sentence depends on the plan.
 
 **Opening the app is `navigate`, and now everything says so** [observed — `src/followups/`]. The
 capability was never missing — `navigate` resolves the deep link and runs `simctl openurl`, which is

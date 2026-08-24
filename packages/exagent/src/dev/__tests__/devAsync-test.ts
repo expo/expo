@@ -469,13 +469,14 @@ describe(devAsync, () => {
       expect(emittedFollowUps()[1]!.command).toBe('exp://192.168.1.5:8081');
     });
 
-    it(`should offer the production build when the run needs no device`, async () => {
-      vol.fromJSON({ [`${projectRoot}/eas.json`]: '{"build":{}}' });
+    // @ref llp/0009-smart-followups.rfc.md §Examples per command — the web ladder.
+    it(`should lead a web run with the site URL and the check that proves it compiles`, async () => {
       mockProjectState();
 
-      await devAsync(projectRoot, resolveDevOptions(['--web']));
+      await devAsync(projectRoot, resolveDevOptions(['--web', '--port', '8134']));
 
-      expect(emittedFollowUpIds()).toContain('eas-build');
+      expect(emittedFollowUpIds()).toEqual(['web-url', 'web-bundle-check', 'deploy-web']);
+      expect(emittedFollowUps()[0]!.command).toBe('http://localhost:8134');
     });
 
     it(`should read the port the dev server was asked for`, async () => {
@@ -500,7 +501,10 @@ describe(devAsync, () => {
 
       await devAsync(projectRoot, resolveDevOptions(['--web']));
 
-      expect(emittedFollowUpIds()).toEqual(['runtime-errors', 'eas-build-configure']);
+      expect(emittedFollowUpIds()).not.toContain('open-app');
+      expect(emittedFollowUps().some((followup) => followup.command.startsWith('exp://'))).toBe(
+        false
+      );
     });
 
     it(`should offer nothing with --no-followups, and print no Next section`, async () => {

@@ -378,12 +378,44 @@ describe(decideStartPlan, () => {
 
       expect(plan.reasons).toEqual([
         'Expo SDK 54.0.0.',
-        'Target platform: ios.',
+        'No platform was named; this host suggests ios, and the plan builds for it.',
         'No bare native directories, so the native project comes from prebuild (CNG).',
         'expo-dev-client is a dependency.',
         'Expo Go cannot run this project: react-native-mmkv is not bundled in Expo Go.',
         'No development build recorded for ios, so a build is needed.',
       ]);
+    });
+  });
+
+  // The reason list used to say `Target platform: ios.` whether or not anyone had named a platform
+  // and whether or not the plan did anything with it, so an agent read "the target is iOS" beside
+  // an argv that opens nothing on iOS [observed — friction run 2, 2026-08-23].
+  describe('the platform reason', () => {
+    it(`should say so when the caller named the platform`, () => {
+      const plan = decideStartPlan(createState(), {
+        platform: 'ios',
+        requestedPlatform: 'ios',
+      });
+
+      expect(plan.reasons).toContain('Target platform: ios, named on the command line.');
+    });
+
+    it(`should name the inference, and say the plan opens nothing on it`, () => {
+      const plan = decideStartPlan(createState(), { platform: 'ios' });
+
+      expect(plan.steps[0]!.argv).toEqual(['expo', 'start', '--go']);
+      expect(plan.reasons).toContain(
+        'No platform was named; this host suggests ios, and the plan opens nothing on it — pass --ios or --android, or run "exagent navigate /" once the dev server is up.'
+      );
+    });
+
+    it(`should say the plan builds for an inferred platform when a step does`, () => {
+      const plan = decideStartPlan(createDevClientState(), { platform: 'android' });
+
+      expect(plan.steps.at(-1)!.argv).toEqual(['expo', 'run:android']);
+      expect(plan.reasons).toContain(
+        'No platform was named; this host suggests android, and the plan builds for it.'
+      );
     });
   });
 });

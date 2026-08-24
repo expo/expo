@@ -309,7 +309,7 @@ describe('exagent dev:wait', () => {
         platform: null,
         url: null,
         error: null,
-        reason: null,
+        reason: 'the entry bundle check was not run',
       });
     });
 
@@ -331,7 +331,8 @@ describe('exagent dev:wait', () => {
       ]);
 
       expect(result.exitCode).toBe(0);
-      expect(JSON.parse(result.stdout).bundle).toMatchObject({ checked: true, ok: null });
+      // `checked` follows `ok`: nothing was decided, so nothing was checked.
+      expect(JSON.parse(result.stdout).bundle).toMatchObject({ checked: false, ok: null });
       expect(JSON.parse(result.stdout).bundle.reason).toContain('404');
     });
 
@@ -355,7 +356,7 @@ describe('exagent dev:wait', () => {
       expect(JSON.parse(result.stdout)).toMatchObject({
         ok: false,
         timedOut: true,
-        bundle: { checked: true, ok: null },
+        bundle: { checked: false, ok: null },
       });
     });
 

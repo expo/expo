@@ -153,14 +153,17 @@ describe(startAsync, () => {
     await promise;
   });
 
-  // On a native run the three nearer rungs crowd the EAS one out; a web run has no device steps,
-  // so it is the shape that shows the rung is still built.
-  it(`should offer the production build when the project has an eas.json`, async () => {
-    vol.fromJSON({ [`${projectRoot}/eas.json`]: '{"build":{}}' });
+  // @ref llp/0009-smart-followups.rfc.md §Examples per command — the web ladder.
+  // A web run has no device steps and no debugger target, so its rungs are the site, the check
+  // that proves it compiles, and the deploy that ships a web build.
+  it(`should lead a web run with the site URL, not a native cloud build`, async () => {
     const end = mockLongRunningStart();
-    const promise = startAsync(projectRoot, resolveStartOptions(['--web']));
+    const promise = startAsync(projectRoot, resolveStartOptions(['--web', '--port', '8134']));
 
-    expect(printed()).toContain('npx eas build --profile production');
+    expect(printed()).toContain('http://localhost:8134');
+    expect(printed()).toContain('npx exagent dev:wait --platform web');
+    expect(printed()).toContain('npx exagent deploy --web');
+    expect(printed()).not.toContain('npx eas build');
 
     end(0);
     await promise;

@@ -18,6 +18,8 @@ export interface StartFollowUpInput {
   web: boolean;
   /** `exp://<lan ip>:<port>`, or null when this host has no LAN address. */
   lanUrl: string | null;
+  /** `http://localhost:<port>`, the page a browser opens. Null when no port can be vouched for. */
+  webUrl?: string | null;
   /**
    * Whether the port of the dev server is known at all.
    *
@@ -35,24 +37,64 @@ export interface StartFollowUpInput {
  * ship it. This is the escalation ladder of llp/0009 §Wider ideas, one rung at a time.
  */
 export function buildStartFollowUps(input: StartFollowUpInput): FollowUp[] {
-  const followups: FollowUp[] = [];
-  if (!input.web) {
+  if (input.web) {
+    return capFollowUps(webFollowUps(input));
+  }
+
+  return capFollowUps([
     // First, because it is the one step between "the dev server is up" and anything verifiable,
     // and the only one no other command does: a dev server serves a bundle and opens nothing.
-    followups.push({
+    {
       id: 'open-app',
       command: 'npx exagent navigate /',
       why: 'The dev server is up but opens nothing, so this deep-links the app onto the booted simulator or the attached device.',
-    });
-    followups.push(realDeviceFollowUp(input));
-  }
-  followups.push({
-    id: 'runtime-errors',
-    command: 'npx exagent runtime:errors',
-    why: 'Reads the errors the running app reports; reproduce the problem while it listens.',
-  });
-  followups.push(easFollowUp(input.easJson));
-  return capFollowUps(followups);
+    },
+    realDeviceFollowUp(input),
+    {
+      id: 'runtime-errors',
+      command: 'npx exagent runtime:errors',
+      why: 'Reads the errors the running app reports; reproduce the problem while it listens.',
+    },
+    easFollowUp(input.easJson),
+  ]);
+}
+
+/**
+ * The ladder of a web run, which has different rungs.
+ *
+ * A web run needs no device, so the two steps a native run leads with — deep-link the app, then
+ * reach it from a phone — do not exist, and `runtime:errors` has no debugger target to read either:
+ * the app is in a browser, not attached to the dev server. What is left is where the site is, how
+ * to prove it compiles, and where it ships. The list used to lead with `npx exagent runtime:errors`
+ * and `npx eas build:configure` — a cloud *native* build the run did not need — and named neither
+ * the URL nor a way to check the bundle [observed — friction run 2, 2026-08-23].
+ */
+function webFollowUps(input: StartFollowUpInput): FollowUp[] {
+  const site: FollowUp = input.webUrl
+    ? {
+        id: 'web-url',
+        command: input.webUrl,
+        why: 'Open this URL in a browser to use the app; the dev server serves it and reloads on every edit.',
+      }
+    : {
+        id: 'dev-server-port-unknown',
+        command: 'npx exagent status --json',
+        why: 'The dev server did not report a port, so no URL can be named for it — status says which dev server this project actually has. Pass --port to decide it up front.',
+      };
+
+  return [
+    site,
+    {
+      id: 'web-bundle-check',
+      command: 'npx exagent dev:wait --platform web',
+      why: 'Builds the web entry bundle and exits 20 with the file and line when it does not compile, which is the check the browser tab cannot give you.',
+    },
+    {
+      id: 'deploy-web',
+      command: 'npx exagent deploy --web',
+      why: 'Exports the web bundle and deploys it to EAS Hosting, which is where a web build ships.',
+    },
+  ];
 }
 
 /** How to reach the dev server from a phone, which is the one thing a terminal cannot show. */
