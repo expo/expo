@@ -387,6 +387,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Background component',
+    route: 'ui/background',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BackgroundScreen'));
+    },
+  },
+  {
     name: 'Popover component',
     route: 'ui/popover',
     options: {},
