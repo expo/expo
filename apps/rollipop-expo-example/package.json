@@ -24,7 +24,7 @@
     "expo-status-bar": "workspace:*",
     "expo-system-ui": "workspace:*",
     "react": "19.2.3",
-    "react-native": "0.86.0"
+    "react-native": "0.86.2"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
