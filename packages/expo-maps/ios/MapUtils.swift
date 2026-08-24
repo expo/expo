@@ -7,7 +7,25 @@ func convertToMapCamera(position: CameraPosition) -> MapCameraPosition {
     latitude: position.coordinates.latitude,
     longitude: position.coordinates.longitude
   )
+
+  if position.tilt != nil || position.bearing != nil {
+    return MapCameraPosition.camera(
+      MapCamera(
+        centerCoordinate: coordinate,
+        distance: cameraDistance(coordinate: coordinate, zoom: position.zoom),
+        heading: position.bearing ?? 0,
+        pitch: position.tilt ?? 0
+      )
+    )
+  }
+
   return convertToMapCameraPosition(coordinate: coordinate, zoom: position.zoom)
+}
+
+private func cameraDistance(coordinate: CLLocationCoordinate2D, zoom: Double) -> CLLocationDistance {
+  let earthCircumference = 40_075_016.686
+  let latitudeScale = cos(coordinate.latitude * .pi / 180)
+  return max(earthCircumference * latitudeScale / pow(2, zoom), 1)
 }
 
 @available(iOS 17.0, *)

@@ -1,6 +1,6 @@
-import { AppleMaps } from 'expo-maps';
-import { useRef } from 'react';
-import { Button, StyleSheet, View } from 'react-native';
+import { AppleMaps } from "expo-maps";
+import { useRef } from "react";
+import { Button, StyleSheet, View } from "react-native";
 
 export default function MapsCameraPositionScreen() {
   const ref = useRef<AppleMaps.MapView>(null);
@@ -10,23 +10,52 @@ export default function MapsCameraPositionScreen() {
       <View style={styles.container}>
         <AppleMaps.View
           ref={ref}
-          style={{ width: 'auto', height: '100%' }}
+          style={{ width: "auto", height: "100%" }}
           cameraPosition={{
             coordinates: {
               latitude: 37.78825,
               longitude: -122.4324,
             },
             zoom: 15,
+            tilt: 45,
+            bearing: 30,
           }}
         />
       </View>
 
       <View style={styles.configurator}>
-        <Button title="Set empty" onPress={() => ref.current?.setCameraPosition()} />
+        <Button
+          title="Set empty"
+          onPress={() => ref.current?.setCameraPosition()}
+        />
+        <Button
+          title="Set 3D"
+          onPress={() =>
+            ref.current?.setCameraPosition({
+              coordinates: { latitude: 37.78825, longitude: -122.4324 },
+              zoom: 15,
+              tilt: 45,
+              bearing: 30,
+            })
+          }
+        />
+        <Button
+          title="Set 2D"
+          onPress={() =>
+            ref.current?.setCameraPosition({
+              coordinates: { latitude: 37.78825, longitude: -122.4324 },
+              zoom: 15,
+              tilt: 0,
+              bearing: 0,
+            })
+          }
+        />
         <Button
           title="Set 0, 0"
           onPress={() =>
-            ref.current?.setCameraPosition({ coordinates: { latitude: 0, longitude: 0 } })
+            ref.current?.setCameraPosition({
+              coordinates: { latitude: 0, longitude: 0 },
+            })
           }
         />
         <Button
