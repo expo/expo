@@ -80,7 +80,7 @@ When `ErrorBoundary` is not present, the error will be thrown to the nearest par
 
 ### Boundaries for screens in a layout
 
-You can keep navigator UI such as headers and tab bars mounted when a screen fails by providing an error boundary for the screens it renders. Configure it on a layout, navigator, or individual screen:
+A screen error boundary keeps navigator UI, such as headers and tab bars, mounted when a screen throws. Configure it on a layout, a navigator, or an individual screen:
 
 ```tsx src/app/_layout.tsx
 import { Stack, type ErrorBoundaryProps } from 'expo-router';
@@ -103,7 +103,12 @@ export default function Layout() {
 }
 ```
 
-An individual route's `ErrorBoundary` export takes precedence, followed by its `unstable_settings.screenErrorBoundary`, `Stack.Screen`'s `unstable_errorBoundary`, the navigator's `unstable_screenErrorBoundary`, and then the nearest layout's `unstable_settings.screenErrorBoundary`. Layout settings apply to descendant screens, while navigator boundaries apply only to that navigator's screens.
+Expo Router applies error boundaries in the following order:
+
+1. `ErrorBoundary` exported from the screen
+2. Screen-level prop (for example, `Stack.Screen`)
+3. Navigator-level prop (for example, `Stack`)
+4. `unstable_settings.screenErrorBoundary` declared in the **_layout.tsx** file
 
 ### Work in progress
 
