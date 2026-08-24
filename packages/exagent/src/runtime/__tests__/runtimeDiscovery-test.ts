@@ -16,9 +16,9 @@ import { CdpRuntimeErrorCollector } from '../runtimeErrorCollector';
 
 jest.mock('../../log');
 jest.mock('../devServer', () => ({
+  ...jest.requireActual('../devServer'),
   discoverDevServerAsync: jest.fn(),
   requireConnectedAppAsync: jest.fn(),
-  normalizeDevServerUrl: (url: string) => url,
 }));
 jest.mock('../cdpClient', () => ({
   ...jest.requireActual('../cdpClient'),
@@ -90,7 +90,9 @@ describe('the dev server a runtime command talks to', () => {
     await run();
 
     expect(discoverDevServerAsync).toHaveBeenCalledWith(undefined, { projectRoot });
-    expect(requireConnectedAppAsync).toHaveBeenCalledWith('http://127.0.0.1:8083');
+    // The first argument is the whole subject here; the options that follow it differ per
+    // command (only `runtime:errors` asks for the reconnect grace period) and are tested there.
+    expect(jest.mocked(requireConnectedAppAsync).mock.calls[0]![0]).toBe('http://127.0.0.1:8083');
   });
 
   it.each([
@@ -116,7 +118,7 @@ describe('the dev server a runtime command talks to', () => {
 
     // The caller was specific, so nothing is guessed around it — the flag semantics are unchanged.
     expect(discoverDevServerAsync).not.toHaveBeenCalled();
-    expect(requireConnectedAppAsync).toHaveBeenCalledWith('http://host:9000');
+    expect(jest.mocked(requireConnectedAppAsync).mock.calls[0]![0]).toBe('http://host:9000');
   });
 
   it(`reports the discovered dev server in the output`, async () => {

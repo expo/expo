@@ -20,7 +20,11 @@ import {
   type CdpEvaluateResult,
   type CdpTarget,
 } from './cdpClient';
-import { discoverDevServerAsync, requireConnectedAppAsync } from './devServer';
+import {
+  APP_RECONNECT_GRACE_MS,
+  discoverDevServerAsync,
+  requireConnectedAppAsync,
+} from './devServer';
 import {
   countFailedRequests,
   countPendingRequests,
@@ -202,13 +206,22 @@ export async function runtimeErrorsAsync(
 ): Promise<number> {
   const { durationMs, json, failOnError } = options;
   const devServerUrl = await resolveDevServerUrlAsync(options, context);
-  await requireConnectedAppAsync(devServerUrl);
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — friction run 4, F39.
+  // This is the command the CLI's own follow-ups name straight after a reload, so it is the one
+  // that lands inside the app's reconnect window: for a second or so the dev server lists the
+  // runtime that is being replaced, which cannot be connected to, and lists nothing at all in
+  // between. Both were reported as "there is no app", one run in three. The grace period is what
+  // makes the printed chain deterministic — including for a reload nothing here performed, such as
+  // pressing "r" in the dev server's terminal.
+  await requireConnectedAppAsync(devServerUrl, { retryMs: APP_RECONNECT_GRACE_MS });
 
   let errors: RuntimeErrorRecord[];
   try {
     errors = await new CdpRuntimeErrorCollector({
       metroUrl: devServerUrl,
       durationMs,
+      targetRetryMs: APP_RECONNECT_GRACE_MS,
     }).collectAsync();
   } catch (error: unknown) {
     throw new CommandError(
@@ -216,7 +229,7 @@ export async function runtimeErrorsAsync(
       [
         `Could not read runtime errors from the app (dev server ${devServerUrl}).`,
         `Why: ${error instanceof Error ? error.message : String(error)}`,
-        `How: make sure the app is open and connected to the dev server, then run this command again.`,
+        `How: make sure the app is open and connected to the dev server, then run this command again. If the app was reloading, "npx exagent runtime:reload" waits for it to come back and exits 0 only when it has.`,
       ].join('\n')
     );
   }

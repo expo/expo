@@ -226,6 +226,45 @@ describe('CdpClient.evaluateAsync', () => {
     const client = new CdpClient({ metroUrl: 'http://localhost:8081' });
     await expect(client.evaluateAsync('1')).rejects.toThrow(/No target found/);
   });
+
+  // @ref llp/0005-runtime-loop-tools.rfc.md §What proves a reload — friction run 4, F39.
+  // The target a reloading app leaves listed cannot be connected to, so the selector skips it and
+  // answers null. Re-reading the list is what finds the runtime that replaced it.
+  it(`should re-read the target list while targetRetryMs runs`, async () => {
+    let reconnected = false;
+    setTimeout(() => (reconnected = true), 60);
+    globalThis.fetch = (async () => ({
+      ok: true,
+      json: async () => (reconnected ? [TARGET] : []),
+    })) as unknown as typeof fetch;
+
+    const client = new CdpClient({
+      metroUrl: 'http://localhost:8081',
+      targetSelector: async (targets) => targets[0] ?? null,
+      createWebSocket: (url) =>
+        new MockWebSocket(url, (request, socket) =>
+          socket.emit(
+            'message',
+            JSON.stringify({ id: request.id, result: { result: { type: 'number', value: 1 } } })
+          )
+        ) as unknown as WebSocketImpl,
+      targetRetryMs: 2000,
+    });
+
+    await expect(client.evaluateAsync('1', { awaitPromise: false })).resolves.toMatchObject({
+      value: 1,
+    });
+  });
+
+  it(`should give up on the deadline rather than retry forever`, async () => {
+    globalThis.fetch = (async () => ({
+      ok: true,
+      json: async () => [],
+    })) as unknown as typeof fetch;
+
+    const client = new CdpClient({ metroUrl: 'http://localhost:8081', targetRetryMs: 300 });
+    await expect(client.evaluateAsync('1')).rejects.toThrow(/No target found/);
+  });
 });
 
 /**

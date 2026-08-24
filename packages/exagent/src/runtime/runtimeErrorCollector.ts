@@ -102,11 +102,12 @@ export class CdpRuntimeErrorCollector {
       metroUrl,
       targetSelector,
       createWebSocket,
+      targetRetryMs,
       durationMs = 2000,
       timeoutMs = 2000,
     } = this.config;
 
-    const client = new CdpClient({ metroUrl, targetSelector, createWebSocket });
+    const client = new CdpClient({ metroUrl, targetSelector, createWebSocket, targetRetryMs });
     const ws: WebSocket = await client.createWebSocketAsync();
     this.clientWebSocketDebuggerUrl = client.getWebSocketDebuggerUrl();
 

@@ -302,6 +302,9 @@ describe(runtimeErrorsAsync, () => {
     expect(CdpRuntimeErrorCollector).toHaveBeenCalledWith({
       metroUrl: devServerUrl,
       durationMs: 2000,
+      // The reconnect grace period, so the command the CLI names straight after a reload does not
+      // read the app's brief invisibility as "there is no app" (friction run 4, F39).
+      targetRetryMs: 3000,
     });
     expect(printed()).toContain('No runtime errors were reported');
     expect(printed()).not.toContain(UNTRUSTED_OUTPUT_BEGIN);
