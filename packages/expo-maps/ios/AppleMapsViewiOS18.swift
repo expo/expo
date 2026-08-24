@@ -30,6 +30,7 @@ extension MKMapPoint {
 struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
   @ObservedObject private var state = AppleMapsViewiOS18State()
+  @Environment(\.displayScale) private var displayScale
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
@@ -138,7 +139,10 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
               if let icon = annotation.icon {
                 Image(uiImage: icon.ref)
                   .resizable()
-                  .frame(width: 50, height: 50)
+                  .frame(
+                    width: icon.ref.size.width * icon.ref.scale / displayScale,
+                    height: icon.ref.size.height * icon.ref.scale / displayScale
+                  )
               } else {
                 RoundedRectangle(cornerRadius: 5)
                   .fill(annotation.backgroundColor)
