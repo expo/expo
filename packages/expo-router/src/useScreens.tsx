@@ -225,18 +225,13 @@ function fromImport(
 
   const screenErrorBoundary = unstable_settings?.screenErrorBoundary;
 
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    ErrorBoundary &&
-    screenErrorBoundary &&
-    value.type !== 'layout'
-  ) {
+  if (process.env.NODE_ENV !== 'production' && screenErrorBoundary && value.type !== 'layout') {
     console.warn(
-      `Route "${value.contextKey}" exports both ErrorBoundary and unstable_settings.screenErrorBoundary. Only use one in a single screen.`
+      `Route "${value.contextKey}" exports unstable_settings.screenErrorBoundary. This setting is only supported in layout routes; use export const ErrorBoundary instead.`
     );
   }
 
-  if (ErrorBoundary || screenErrorBoundary || value.type === 'layout') {
+  if (ErrorBoundary || value.type === 'layout') {
     const Wrapped = React.forwardRef((props: any, ref: any) => {
       let children = React.createElement(component.default || EmptyRoute, {
         ...props,
@@ -244,8 +239,6 @@ function fromImport(
       });
       if (ErrorBoundary) {
         children = <Try catch={ErrorBoundary}>{children}</Try>;
-      } else if (value.type !== 'layout' && screenErrorBoundary) {
-        children = <Try catch={screenErrorBoundary}>{children}</Try>;
       }
       if (value.type === 'layout') {
         children = (

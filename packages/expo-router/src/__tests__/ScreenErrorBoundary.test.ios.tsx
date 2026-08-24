@@ -31,20 +31,6 @@ it('uses a layout screen error boundary for a child route', async () => {
   expect(screen.getByTestId('layout-boundary')).toBeOnTheScreen();
 });
 
-it('uses a route screen error boundary configured with unstable settings', async () => {
-  const RouteBoundary = boundary('route-boundary');
-
-  await renderRouterAsync({
-    _layout: () => <Stack />,
-    index: {
-      default: ThrowingRoute,
-      unstable_settings: { screenErrorBoundary: RouteBoundary },
-    },
-  });
-
-  expect(screen.getByTestId('route-boundary')).toBeOnTheScreen();
-});
-
 it('uses the navigator boundary before the layout boundary', async () => {
   const LayoutBoundary = boundary('layout-boundary');
   const NavigatorBoundary = boundary('navigator-boundary');
@@ -78,7 +64,7 @@ it('uses the route boundary before screen, navigator, and layout boundaries', as
     },
     index: {
       default: ThrowingRoute,
-      unstable_settings: { screenErrorBoundary: RouteBoundary },
+      ErrorBoundary: RouteBoundary,
     },
   });
 
