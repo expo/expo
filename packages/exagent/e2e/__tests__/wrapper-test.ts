@@ -352,6 +352,21 @@ describe('expo passthrough', () => {
     expect(result.all).toContain('whoami');
     expect(readStubExpoInvocations(projectRoot)).toEqual([]);
   });
+
+  // Agents copy the stated type. `--timeout <ms>` is a lie of omission — the flags have accepted
+  // `90s` and `2h` since the units existed — so every command that waits has to say so in the
+  // option line itself, not only in the message it prints when a value is rejected.
+  it.each([['dev:wait'], ['build:wait'], ['runtime']])(
+    'documents that %s durations take units, not only milliseconds',
+    async (command) => {
+      const result = await executeExagentAsync(projectRoot, [command, '--help']);
+
+      expect(result.exitCode).toBe(0);
+      expect(result.all).toContain('<duration>');
+      expect(result.all).toContain('Durations are milliseconds, or a number with a unit');
+      expect(result.all).not.toContain('<ms>');
+    }
+  );
 });
 
 // The resolution rules of llp/0010 §Registry rules, at the process boundary: what the exit code

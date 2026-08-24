@@ -3,7 +3,7 @@
 // anything a user can get wrong, so every flag combination is unit-testable without a dev server.
 
 import { resolveDevServerUrlFlag } from '../runtime/devServer';
-import { parseArgsOrThrow, resolveDuration } from '../utils/args';
+import { DURATION_METAVAR, parseArgsOrThrow, resolveDuration } from '../utils/args';
 import { CommandError } from '../utils/errors';
 
 /**
@@ -53,7 +53,7 @@ export function resolveDevWaitOptions(argv: string[]): DevWaitOptions {
   if (args._.length > 0) {
     throw new CommandError(
       'BAD_ARGS',
-      `Unexpected argument: ${args._[0]}. This command takes no arguments. Usage: npx exagent dev:wait [--timeout <ms>] [--require-app]`
+      `Unexpected argument: ${args._[0]}. This command takes no arguments. Usage: npx exagent dev:wait [--timeout ${DURATION_METAVAR}] [--require-app]`
     );
   }
 

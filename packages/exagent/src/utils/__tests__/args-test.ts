@@ -1,4 +1,4 @@
-import { resolveDuration } from '../args';
+import { DURATION_HELP_NOTE, DURATION_METAVAR, resolveDuration } from '../args';
 import { CommandError } from '../errors';
 
 describe(resolveDuration, () => {
@@ -69,5 +69,23 @@ describe(resolveDuration, () => {
 
   it(`names the units it accepts in the error`, () => {
     expect(() => resolveDuration('nope', '--timeout', 5000, { allowZero: false })).toThrow(/30m/);
+  });
+});
+
+// A help line that says `<ms>` is the reason an agent never tries `90s`: it copies the stated type.
+// The shared snippet is what every duration flag prints, so it has to agree with what the resolver
+// actually accepts — and the accepted spellings are asserted above.
+describe('duration help', () => {
+  it(`does not spell a duration flag as milliseconds`, () => {
+    expect(DURATION_METAVAR).toBe('<duration>');
+    expect(DURATION_METAVAR).not.toContain('ms');
+  });
+
+  it(`names every unit the resolver accepts`, () => {
+    for (const value of ['90s', '30m', '2h']) {
+      expect(DURATION_HELP_NOTE).toContain(value);
+      expect(resolveDuration(value, '--timeout', 1, { allowZero: false })).toBeGreaterThan(0);
+    }
+    expect(DURATION_HELP_NOTE).toContain('milliseconds');
   });
 });

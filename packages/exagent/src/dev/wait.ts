@@ -1,7 +1,12 @@
 import chalk from 'chalk';
 
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import {
+  assertWithOptionsArgs,
+  DURATION_HELP_NOTE,
+  DURATION_METAVAR,
+  printHelp,
+} from '../utils/args';
 
 export const exagentDevWait: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -23,7 +28,7 @@ export const exagentDevWait: Command = async (argv) => {
       `Wait until the dev server has finished bundling, and say whose bundle it is`,
       chalk`npx exagent dev:wait {dim [options]}`,
       [
-        `--timeout <ms>          How long to wait in total (default: 120000)`,
+        `--timeout ${DURATION_METAVAR}   How long to wait in total (default: 2m)`,
         `--require-app           Also wait for an app to attach to the dev server`,
         `--dev-server-url <url>  Dev server to wait on (default: the project's own, then 8081)`,
         `--json                  Print the result as JSON`,
@@ -33,7 +38,9 @@ export const exagentDevWait: Command = async (argv) => {
       [
         '',
         chalk`  {dim $} npx exagent dev:wait`,
-        chalk`  {dim $} npx exagent dev:wait --require-app --timeout 60000 --json`,
+        chalk`  {dim $} npx exagent dev:wait --require-app --timeout 60s --json`,
+        '',
+        `  ${DURATION_HELP_NOTE}`,
         '',
         chalk`  The dev server answers {bold GET /status} only once its bundler has finished, so this`,
         chalk`  command holds one request open rather than polling. It is the gate to put before`,

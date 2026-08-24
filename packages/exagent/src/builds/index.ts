@@ -10,7 +10,12 @@
 import chalk from 'chalk';
 
 import type { Command } from '../types';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import {
+  assertWithOptionsArgs,
+  DURATION_HELP_NOTE,
+  DURATION_METAVAR,
+  printHelp,
+} from '../utils/args';
 
 export const exagentBuildWait: Command = async (argv) => {
   const args = assertWithOptionsArgs(
@@ -33,8 +38,8 @@ export const exagentBuildWait: Command = async (argv) => {
       `Wait for an EAS build to finish, and exit with what it did`,
       chalk`npx exagent build:wait {dim <build-id> [options]}`,
       [
-        `--timeout <duration>   Give up after this long. Default: 45m`,
-        `--interval <duration>  How often to poll. Default: 10s, backing off to 30s after 5m`,
+        `--timeout ${DURATION_METAVAR}   Give up after this long. Default: 45m`,
+        `--interval ${DURATION_METAVAR}  How often to poll. Default: 10s, backing off to 30s after 5m`,
         `--submission           <build-id> is a submission id, polled with eas submit:view`,
         `--json                 Print the result as JSON`,
         `--no-followups         Skip the "Suggested next:" section of suggested follow-up commands`,
@@ -42,7 +47,7 @@ export const exagentBuildWait: Command = async (argv) => {
       ].join('\n'),
       [
         '',
-        chalk`  Durations are milliseconds, or a number with a unit: {bold 90s}, {bold 30m}, {bold 2h}.`,
+        `  ${DURATION_HELP_NOTE}`,
         '',
         chalk`  {bold Exit codes} — the answer, before a byte of the output is read:`,
         '',

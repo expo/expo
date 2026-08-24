@@ -2,7 +2,7 @@
 // Argument resolution for the `exagent runtime:<action>` commands. Pure: argv in, options out,
 // `CommandError` for anything a user can get wrong, so every flag combination is unit-testable.
 
-import { parseArgsOrThrow, resolveDuration } from '../utils/args';
+import { DURATION_METAVAR, parseArgsOrThrow, resolveDuration } from '../utils/args';
 import { CommandError } from '../utils/errors';
 import { resolveDevServerUrlFlag } from './devServer';
 
@@ -147,7 +147,7 @@ export function resolveRuntimeCommand(argv: string[]): RuntimeCommandOptions {
   if (positional.length > 0) {
     throw new CommandError(
       'BAD_ARGS',
-      `Unexpected argument: ${positional[0]}. Usage: npx exagent runtime:${windowAction} [--duration <ms>]`
+      `Unexpected argument: ${positional[0]}. Usage: npx exagent runtime:${windowAction} [--duration ${DURATION_METAVAR}]`
     );
   }
 
