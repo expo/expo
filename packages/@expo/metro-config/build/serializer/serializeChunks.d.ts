@@ -22,7 +22,7 @@ export declare function graphToSerialAssetsAsync(config: MetroConfig, serializeC
 }>;
 export declare class Chunk {
     name: string;
-    entries: Module<MixedOutput>[];
+    entries: Set<Module<MixedOutput>>;
     graph: ReadOnlyGraph<MixedOutput>;
     options: ExpoSerializerOptions;
     isAsync: boolean;
@@ -31,7 +31,15 @@ export declare class Chunk {
     deps: Set<Module>;
     preModules: Set<Module>;
     requiredChunks: Set<Chunk>;
-    constructor(name: string, entries: Module<MixedOutput>[], graph: ReadOnlyGraph<MixedOutput>, options: ExpoSerializerOptions, isAsync?: boolean, isVendor?: boolean, isEntry?: boolean);
+    /** Whether this chunk owns an isolated module registry and must retain all of its dependencies.
+     * @remarks
+     * When a chunk is sealed, its `deps` and `preModules` shouldn't be altered, and it doesn't qualify
+     * for bundle/chunk splitting. This is the case for web workers, which must form a "closed" and
+     * self-sufficient entry bundle.
+     */
+    sealed: boolean;
+    constructor(name: string, entries: Set<Module<MixedOutput>>, graph: ReadOnlyGraph<MixedOutput>, options: ExpoSerializerOptions, isAsync?: boolean, isVendor?: boolean, isEntry?: boolean);
+    seal(): void;
     private getPlatform;
     getFilename(src: string): string;
     getStableChunkSource(serializerConfig: Partial<SerializerConfigT>): string;
