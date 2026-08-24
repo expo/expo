@@ -267,12 +267,12 @@ div.tippy-box {
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  @apply text-palette-gray10;
+  @apply text-palette-gray11;
 }
 
 .token.operator,
 .token.punctuation {
-  @apply text-palette-gray9;
+  @apply text-palette-gray11;
 }
 
 .token.attr-name,
@@ -281,7 +281,7 @@ div.tippy-box {
 .token.constant,
 .token.symbol,
 .token.deleted {
-  @apply text-palette-red10;
+  @apply text-palette-red11;
 }
 
 .token.selector,
@@ -289,7 +289,7 @@ div.tippy-box {
 .token.builtin,
 .token.script,
 .token.inserted {
-  @apply text-palette-green10;
+  @apply text-palette-green11;
 }
 
 .token.entity,
@@ -298,7 +298,7 @@ div.tippy-box {
 }
 
 .token.keyword {
-  @apply text-palette-pink10;
+  @apply text-palette-pink11;
 }
 
 .token.property,
