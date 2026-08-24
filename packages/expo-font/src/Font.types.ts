@@ -26,15 +26,15 @@ export type FontResource = {
    */
   testString?: string;
   /**
-   * Sets the `font-weight` property for a given typeface in the browser. Use this to
-   * distinguish multiple weights of the same `fontFamily` loaded through [`FontFamilyDefinition`](#fontfamilydefinition).
-   * @platform web
+   * Sets the face's `weight` when the resource is the `path` of a
+   * [`FontFaceDefinition`](#fontfacedefinition) and the face doesn't declare its own. Outside of
+   * a font family definition, only the browser uses this value, as the CSS `font-weight` property.
    */
   weight?: number | string;
   /**
-   * Sets the `font-style` property for a given typeface in the browser. Use this to
-   * distinguish italic faces of the same `fontFamily` loaded through [`FontFamilyDefinition`](#fontfamilydefinition).
-   * @platform web
+   * Sets the face's `style` when the resource is the `path` of a
+   * [`FontFaceDefinition`](#fontfacedefinition) and the face doesn't declare its own. Outside of
+   * a font family definition, only the browser uses this value, as the CSS `font-style` property.
    */
   style?: 'normal' | 'italic' | 'oblique';
 };
