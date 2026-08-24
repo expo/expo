@@ -1,32 +1,31 @@
 'use client';
 import { Activity, type ActivityProps } from 'react';
 
-export function ActivityContents({ mode, children }: ActivityProps) {
-  const observeActivity = (element: HTMLDivElement | null) => {
-    if (element === null) {
-      return;
+function observeActivity(element: HTMLDivElement | null) {
+  if (element === null) {
+    return;
+  }
+
+  const activityChild = element.firstElementChild;
+  if (!(activityChild instanceof HTMLElement)) {
+    return;
+  }
+
+  const restoreDisplay = () => {
+    if (activityChild.style.display === 'none') {
+      activityChild.style.display = 'contents';
     }
-
-    const restoreDisplay = () => {
-      for (const child of element.children) {
-        if (child instanceof HTMLElement && child.style.display === 'none') {
-          child.style.display = 'contents';
-        }
-      }
-    };
-    const observer = new MutationObserver(restoreDisplay);
-    observer.observe(element, {
-      attributes: true,
-      attributeFilter: ['style'],
-      childList: true,
-      subtree: true,
-    });
-    restoreDisplay();
-
-    return () => observer.disconnect();
   };
+  const observer = new MutationObserver(restoreDisplay);
+  observer.observe(activityChild, { attributes: true, attributeFilter: ['style'] });
+  restoreDisplay();
 
+  return () => observer.disconnect();
+}
+
+export function ActivityContents({ mode, children }: ActivityProps) {
   return (
+    // React detaches refs inside a hidden Activity, so observe it from an outer wrapper.
     <div ref={observeActivity} style={{ display: 'contents' }}>
       <Activity mode={mode}>
         <div style={{ display: 'contents' }}>{children}</div>
