@@ -5,7 +5,14 @@ import { Pressable, Text, View } from 'react-native';
 export function createErrorBoundary(approach: string) {
   return function CustomErrorBoundary({ error, retry }: ErrorBoundaryProps) {
     return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 16,
+          backgroundColor: 'rgb(255,80,80)',
+        }}>
         <Text testID="custom-error-boundary">Custom {approach} error boundary</Text>
         <Text testID="custom-error-message">{error.message}</Text>
         <Pressable
