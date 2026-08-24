@@ -48,7 +48,7 @@
     "@expo/image-utils": "^0.8.16",
     "@expo/json-file": "^10.0.15",
     "@expo/log-box": "55.0.13",
-    "@expo/metro": "~55.1.1",
+    "@expo/metro": "~55.1.2",
     "@expo/metro-config": "~55.0.26",
     "@expo/osascript": "^2.4.4",
     "@expo/package-manager": "^1.10.6",
