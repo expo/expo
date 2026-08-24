@@ -11,6 +11,7 @@ import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConf
 import { getLinkingConfig } from '../getLinkingConfig';
 import { parseRouteSegments } from '../getReactNavigationConfig';
 import { getRoutes } from '../getRoutes';
+import { getStateFromPath } from '../link/linking';
 import { useNavigationContainerRef } from '../react-navigation/native';
 import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
@@ -78,7 +79,7 @@ export function useStore(
       // It does not matter if the path starts with a `/` or not, but this keeps the behavior consistent
       if (!initialPath.startsWith('/')) initialPath = '/' + initialPath;
 
-      initialState = linking.getStateFromPath(initialPath, linking.config, []);
+      initialState = getStateFromPath(initialPath, linking.config, []);
       const initialRouteInfo = getRouteInfoFromState(initialState);
       setCachedRouteInfo(initialState as any, initialRouteInfo);
     }
