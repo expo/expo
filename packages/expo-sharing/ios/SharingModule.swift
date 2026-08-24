@@ -1,6 +1,10 @@
 import ExpoModulesCore
 
 public final class SharingModule: Module {
+  private let cleanupQueue = DispatchQueue(label: "expo.sharing.cleanup", qos: .utility)
+  private let stagingSessionId = UUID().uuidString
+  private var completedStagedDirectories: [URL] = []
+
   private var appGroupId: String {
     get throws {
       guard let groupId = Bundle.main.object(forInfoDictionaryKey: "ExpoShareIntoAppGroupId") as? String else {
@@ -13,7 +17,13 @@ public final class SharingModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSharing")
 
+    OnCreate {
+      cleanupPreviousStagingSessions()
+    }
+
     AsyncFunction("shareAsync") { (url: URL, options: SharingOptions, promise: Promise) in
+      cleanupCompletedStagedItems()
+
       guard FileSystemUtilities.isReadableFile(appContext, url) else {
         throw FilePermissionException()
       }
@@ -23,10 +33,11 @@ public final class SharingModule: Module {
       let activityController = UIActivityViewController(activityItems: [shareURL], applicationActivities: nil)
       activityController.title = options.dialogTitle
 
-      // Strong self capture because we don't want to skip the deletion of the staging item, also
-      // the .runOnMain captures strong self leading to warnings with weak self
-      activityController.completionWithItemsHandler = { [self] _, _, _, _ in
-        self.deleteStagedItemOrWarn(at: stagedDirectory)
+      // weak self = self to avoid warnings
+      activityController.completionWithItemsHandler = { [weak self = self] _, _, _, _ in
+        if let stagedDirectory {
+          self?.completedStagedDirectories.append(stagedDirectory)
+        }
 
         // Resolve unconditionally. UIActivityViewController invokes this once
         // on dismissal for every (activityType, completed) permutation. The
@@ -38,26 +49,11 @@ public final class SharingModule: Module {
       }
 
       guard let currentViewcontroller = appContext?.utilities?.currentViewController() else {
-        self.deleteStagedItemOrWarn(at: stagedDirectory)
+        removeStagedItems([stagedDirectory].compactMap { $0 })
         throw MissingCurrentViewControllerException()
       }
 
-      // Apple docs state that `UIActivityViewController` must be presented in a
-      // popover on iPad https://developer.apple.com/documentation/uikit/uiactivityviewcontroller
-      if UIDevice.current.userInterfaceIdiom == .pad {
-        let rect = options.anchor
-        let viewFrame = currentViewcontroller.view.frame
-
-        activityController.popoverPresentationController?.sourceRect = CGRect(
-          x: rect?.x ?? viewFrame.midX,
-          y: rect?.y ?? viewFrame.maxY,
-          width: rect?.width ?? 0,
-          height: rect?.height ?? 0
-        )
-        activityController.popoverPresentationController?.sourceView = currentViewcontroller.view
-        activityController.modalPresentationStyle = .pageSheet
-      }
-
+      configurePopoverIfNeeded(activityController, from: currentViewcontroller, anchor: options.anchor)
       currentViewcontroller.present(activityController, animated: true)
     }
     .runOnQueue(.main)
@@ -98,6 +94,26 @@ public final class SharingModule: Module {
     }
   }
 
+  private func configurePopoverIfNeeded(
+    _ activityController: UIActivityViewController,
+    from viewController: UIViewController,
+    anchor: SharingOptions.Rect?
+  ) {
+    guard UIDevice.current.userInterfaceIdiom == .pad else {
+      return
+    }
+
+    let viewFrame = viewController.view.frame
+    activityController.popoverPresentationController?.sourceRect = CGRect(
+      x: anchor?.x ?? viewFrame.midX,
+      y: anchor?.y ?? viewFrame.maxY,
+      width: anchor?.width ?? 0,
+      height: anchor?.height ?? 0
+    )
+    activityController.popoverPresentationController?.sourceView = viewController.view
+    activityController.modalPresentationStyle = .pageSheet
+  }
+
   private func getSharePayloads(appGroupId: String) -> [SharePayload] {
     let userDefaults = UserDefaults(suiteName: appGroupId)
 
@@ -119,12 +135,14 @@ public final class SharingModule: Module {
       throw Exceptions.AppContextLost()
     }
 
-    guard let stagingDirectory = appContext.config.cacheDirectory?.appendingPathComponent("expo-sharing-tmp", isDirectory: true) else {
+    guard let stagingRoot = appContext.config.cacheDirectory?.appendingPathComponent("expo-sharing-tmp", isDirectory: true) else {
       appContext.jsLogger.warn(
         "expo-sharing: Failed to access app's cache directory. Sharing with the original url: \(url), which will ignore the passed type: \(contentType) "
       )
       return url
     }
+
+    let stagingDirectory = stagingRoot.appendingPathComponent(stagingSessionId, isDirectory: true)
 
     // An explicitly declared type intentionally takes precedence over a conflicting filename extension.
     let baseName = url.lastPathComponent
@@ -179,16 +197,32 @@ public final class SharingModule: Module {
     }
   }
 
-  func deleteStagedItemOrWarn(at url: URL?) {
-    guard let url else {
+  private func cleanupPreviousStagingSessions() {
+    guard let stagingRoot = appContext?.config.cacheDirectory?.appendingPathComponent("expo-sharing-tmp", isDirectory: true) else {
       return
     }
-    do {
-      try FileManager.default.removeItem(at: url)
-    } catch {
-      appContext?.jsLogger.warn(
-        "expo-sharing: Failed to remove temporary sharing item at '\(url.absoluteString)': \(error.localizedDescription)"
+
+    let stagingSessionId = self.stagingSessionId
+    cleanupQueue.async {
+      let directories = try? FileManager.default.contentsOfDirectory(
+        at: stagingRoot,
+        includingPropertiesForKeys: nil
       )
+      directories?.filter { $0.lastPathComponent != stagingSessionId }.forEach {
+        try? FileManager.default.removeItem(at: $0)
+      }
+    }
+  }
+
+  private func cleanupCompletedStagedItems() {
+    let directories = completedStagedDirectories
+    completedStagedDirectories.removeAll()
+    removeStagedItems(directories)
+  }
+
+  private func removeStagedItems(_ directories: [URL]) {
+    cleanupQueue.async {
+      directories.forEach { try? FileManager.default.removeItem(at: $0) }
     }
   }
 }
