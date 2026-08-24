@@ -5,23 +5,18 @@ import path from 'path';
 export const IMAGE_TYPES = ['.png', '.jpg', '.gif'];
 export const FONT_TYPES = ['.otf', '.ttf'];
 export const MEDIA_TYPES = ['.mp4', '.mp3', '.lottie', '.riv'];
-export const MODEL_TYPES = ['.glb'];
-export const ACCEPTED_TYPES = [
-  '.json',
-  '.db',
-  ...IMAGE_TYPES,
-  ...MEDIA_TYPES,
-  ...FONT_TYPES,
-  ...MODEL_TYPES,
-];
 
 export async function resolveAssetPaths(assets: string[], projectRoot: string) {
   const promises = assets.map(async (p) => {
     const resolvedPath = path.resolve(projectRoot, p);
     const stat = await fs.stat(resolvedPath);
     if (stat.isDirectory()) {
-      const dir = await fs.readdir(resolvedPath);
-      return dir.map((file) => path.join(resolvedPath, file));
+      const entries = await fs.readdir(resolvedPath, { withFileTypes: true });
+      // Only the files in the directory are assets. Nested directories cannot be copied, and
+      // hidden files (`.DS_Store` and friends) are not something the user meant to link.
+      return entries
+        .filter((entry) => !entry.isDirectory() && !entry.name.startsWith('.'))
+        .map((entry) => path.join(resolvedPath, entry.name));
     }
     return [resolvedPath];
   });
@@ -33,7 +28,6 @@ export function validateAssets(assets: string[], platform: 'android' | 'ios') {
     const ext = path.extname(asset);
     const name = path.basename(asset, ext);
     const isNameValid = platform === 'android' ? isValidAndroidAssetName(name) : true;
-    const accepted = ACCEPTED_TYPES.includes(ext);
     const isFont = FONT_TYPES.includes(ext);
 
     if (!isNameValid) {
@@ -41,15 +35,6 @@ export function validateAssets(assets: string[], platform: 'android' | 'ios') {
         platform,
         'expo-asset',
         `\`${name}\` is not a supported asset name - file-based resource names must contain only lowercase a-z, 0-9, or underscore`
-      );
-      return;
-    }
-
-    if (!accepted) {
-      WarningAggregator.addWarningForPlatform(
-        platform,
-        'expo-asset',
-        `\`${ext}\` is not a supported asset type`
       );
       return;
     }
