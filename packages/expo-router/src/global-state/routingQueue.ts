@@ -1,11 +1,7 @@
-import type { RefObject } from 'react';
-
-import type {
-  NavigationAction,
-  ParamListBase,
-  NavigationContainerRef,
-} from '../react-navigation/native';
+import type { NavigationAction } from '../react-navigation/native';
 import { getNavigateAction } from './getNavigationAction';
+import type { NavigationActionContext } from './getNavigationAction';
+import type { UrlObject } from './getRouteInfoFromState';
 import type { LinkToOptions } from './types';
 
 export interface LinkAction {
@@ -29,39 +25,43 @@ export const routingQueue = {
     return routingQueue.queue;
   },
   add(action: NavigationAction | LinkAction) {
-    routingQueue.queue.push(action);
+    routingQueue.queue = [...routingQueue.queue, action];
     for (const callback of routingQueue.subscribers) {
       callback();
     }
   },
-  run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>) {
+  run(routeInfo: Pick<UrlObject, 'segments' | 'params'>, context: NavigationActionContext) {
+    if (!context.navigationRef.isReady() || !context.navigationRef.current) {
+      return;
+    }
+    const ref = context.navigationRef.current;
+
     // Reset the identity of the queue.
     const events = routingQueue.queue;
     routingQueue.queue = [];
     let action: NavigationAction | LinkAction | undefined;
     while ((action = events.shift())) {
-      // TODO: Consider warning when ref.current is null — actions are silently dropped
-      if (ref.current) {
-        if (action.type === 'ROUTER_LINK') {
-          const {
-            payload: { href, options },
-          } = action as LinkAction;
+      if (action.type === 'ROUTER_LINK') {
+        const {
+          payload: { href, options },
+        } = action as LinkAction;
 
-          action = getNavigateAction(
-            href,
-            options,
-            options.event,
-            options.withAnchor,
-            options.dangerouslySingular,
-            !!options.__internal__PreviewKey
-          );
-          // TODO: Consider warning when getNavigateAction returns undefined
-          if (action) {
-            ref.current.dispatch(action);
-          }
-        } else {
-          ref.current.dispatch(action);
+        action = getNavigateAction(
+          href,
+          options,
+          routeInfo,
+          context,
+          options.event,
+          options.withAnchor,
+          options.dangerouslySingular,
+          !!options.__internal__PreviewKey
+        );
+        // TODO: Consider warning when getNavigateAction returns undefined
+        if (action) {
+          ref.dispatch(action);
         }
+      } else {
+        ref.dispatch(action);
       }
     }
   },

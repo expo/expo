@@ -2,12 +2,11 @@ import { Platform } from 'expo';
 
 import type { RouteNode } from './Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
-import type { Options, State } from './fork/getPathFromState';
+import type { State } from './fork/getPathFromState';
 import { getReactNavigationConfig } from './getReactNavigationConfig';
 import { applyRedirects } from './getRoutesRedirects';
-import type { UrlObject } from './global-state/getRouteInfoFromState';
 import type { StoreRedirects } from './global-state/router-store';
-import { getInitialURL, getPathFromState, getStateFromPath, subscribe } from './link/linking';
+import { getInitialURL, getPathFromState, subscribe } from './link/linking';
 import type { LinkingOptions } from './react-navigation/native';
 import { getActionFromState } from './react-navigation/native';
 import type { NativeIntent, RequireContext } from './types';
@@ -48,7 +47,6 @@ export function getNavigationConfig(
 
 export type ExpoLinkingOptions<T extends object = Record<string, unknown>> = LinkingOptions<T> & {
   getPathFromState: typeof getPathFromState;
-  getStateFromPath: typeof getStateFromPath;
 };
 
 export type LinkingConfigOptions = {
@@ -67,7 +65,6 @@ interface RouterOptions {
 export function getLinkingConfig(
   routes: RouteNode,
   context: RequireContext,
-  getRouteInfo: () => UrlObject,
   {
     metaOnly = true,
     serverUrl,
@@ -130,9 +127,6 @@ export function getLinkingConfig(
       return initialUrl;
     },
     subscribe: subscribe(nativeLinking, redirects),
-    getStateFromPath: <ParamList extends object>(path: string, options?: Options<ParamList>) => {
-      return getStateFromPath(path, options, getRouteInfo().segments);
-    },
     getPathFromState(state: State, options: Parameters<typeof getPathFromState>[1]) {
       return (
         getPathFromState(state, {

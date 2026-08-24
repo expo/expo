@@ -17,6 +17,14 @@ import { routingQueue } from './routingQueue';
 import { store } from './store';
 import type { LinkToOptions, NavigationOptions } from './types';
 
+function assertIsReady() {
+  if (!store.navigationRef.isReady()) {
+    throw new Error(
+      'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
+    );
+  }
+}
+
 export function navigate(url: Href, options?: NavigationOptions) {
   return linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
 }
@@ -61,7 +69,7 @@ export function goBack() {
   if (emitDomGoBack()) {
     return;
   }
-  store.assertIsReady();
+  assertIsReady();
   routingQueue.add({ type: 'GO_BACK' });
 }
 
@@ -111,7 +119,7 @@ export function setParams(
   if (emitDomSetParams(params)) {
     return;
   }
-  store.assertIsReady();
+  assertIsReady();
   return (store.navigationRef?.current?.setParams as any)(params);
 }
 
@@ -133,7 +141,7 @@ export function linkTo(originalHref: Href | string, options: LinkToOptions = {})
   }
 
   if (href === '..' || href === '../') {
-    store.assertIsReady();
+    assertIsReady();
     const navigationRef = store.navigationRef.current;
 
     if (navigationRef == null) {

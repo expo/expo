@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { use, useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 import type { RouteNode } from '../../Route';
@@ -8,6 +8,8 @@ import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '..
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
 import { store } from '../../global-state/router-store';
+import { StoreContext } from '../../global-state/storeContext';
+import { useRouteInfo } from '../../global-state/useRouteInfo';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
 import {
@@ -18,11 +20,18 @@ import {
 import type { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
+import { getStateForHref } from '../getStateForHref';
 import { getPathFromState } from '../linking';
 import { PreviewRouteContext } from './PreviewRouteContext';
 
 export function HrefPreview({ href }: { href: Href }) {
-  const hrefState = useMemo(() => getHrefState(href), [href]);
+  // TODO(@ubax): Extract `linking` and `routeNode` into separate contexts to avoid unrelated rerenders.
+  const { segments: routeSegments } = useRouteInfo();
+  const { linking, routeNode } = use(StoreContext) ?? {};
+  const hrefState = useMemo(
+    () => getStateForHref(href, { segments: routeSegments }, linking),
+    [href, routeSegments, linking]
+  );
   const index = hrefState?.index ?? 0;
 
   let isProtected = false;
@@ -45,7 +54,9 @@ export function HrefPreview({ href }: { href: Href }) {
       rnState = rnState.routes[rnIndex]?.state;
     }
     if (!isProtected) {
-      return <PreviewForRootHrefState hrefState={hrefState} href={href} />;
+      return (
+        <PreviewForRootHrefState hrefState={hrefState} href={href} rootRouteNode={routeNode} />
+      );
     }
   }
 
@@ -64,9 +75,17 @@ export function HrefPreview({ href }: { href: Href }) {
   );
 }
 
-function PreviewForRootHrefState({ hrefState, href }: { hrefState: ResultState; href: Href }) {
+function PreviewForRootHrefState({
+  hrefState,
+  href,
+  rootRouteNode,
+}: {
+  hrefState: ResultState;
+  href: Href;
+  rootRouteNode: RouteNode | null | undefined;
+}) {
   const navigation = useNavigation();
-  const { routeNode, params, state } = getParamsAndNodeFromHref(hrefState);
+  const { routeNode, params, state } = getParamsAndNodeFromHref(hrefState, rootRouteNode);
 
   const path = state ? getPathFromState(state) : undefined;
 
@@ -116,17 +135,15 @@ function PreviewForInternalRoutes() {
   );
 }
 
-function getHrefState(href: Href) {
-  const hrefState = store.getStateForHref(href as any);
-  return hrefState;
-}
-
-function getParamsAndNodeFromHref(hrefState: ResultState) {
+function getParamsAndNodeFromHref(
+  hrefState: ResultState,
+  rootRouteNode: RouteNode | null | undefined
+) {
   const index = hrefState?.index ?? 0;
   if (hrefState?.routes[index] && hrefState.routes[index].name !== INTERNAL_SLOT_NAME) {
     const name = hrefState.routes[index].name;
     if (name === SITEMAP_ROUTE_NAME || name === NOT_FOUND_ROUTE_NAME) {
-      console.log(store.routeNode);
+      console.log(rootRouteNode);
       console.log(hrefState);
     }
     const error = `Expo Router Error: Expected navigation state to begin with one of [${getRootStackRouteNames().join(', ')}] routes`;
@@ -138,7 +155,7 @@ function getParamsAndNodeFromHref(hrefState: ResultState) {
   }
   const initialState = hrefState?.routes[index]?.state;
   let state = initialState;
-  let routeNode: RouteNode | undefined | null = store.routeNode;
+  let routeNode = rootRouteNode;
 
   const params: UnknownOutputParams = {};
 

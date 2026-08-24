@@ -1,5 +1,6 @@
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
+import { getStateFromPath } from '../link/linking';
 import {
   appendInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
@@ -7,41 +8,53 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { SingularOptions } from '../useScreens';
+import type { UrlObject } from './getRouteInfoFromState';
 import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
-import { store } from './store';
+import type { StoreContextValue } from './storeContext';
 import type { LinkToOptions } from './types';
+
+export type NavigationActionContext = Pick<
+  StoreContextValue,
+  'navigationRef' | 'linking' | 'redirects'
+>;
 
 export function getNavigateAction(
   baseHref: string,
   options: LinkToOptions,
+  { segments, params: routeParams }: Pick<UrlObject, 'segments' | 'params'>,
+  { navigationRef, linking, redirects }: NavigationActionContext,
   type = 'NAVIGATE',
   withAnchor?: boolean,
   singular?: SingularOptions,
   isPreviewNavigation?: boolean
 ) {
   let href: string | undefined = baseHref;
-  store.assertIsReady();
-  const navigationRef = store.navigationRef.current;
-
-  if (navigationRef == null) {
+  if (!navigationRef.isReady()) {
+    throw new Error(
+      'Attempted to navigate before mounting the Root Layout component. Ensure the Root Layout component is rendering a Slot, or other navigator on the first render.'
+    );
+  }
+  // TODO(@ubax): Check whether callers can guarantee a navigation ref.
+  const ref = navigationRef.current;
+  if (ref == null) {
     throw new Error(
       "Couldn't find a navigation object. Is your component inside NavigationContainer?"
     );
   }
-  if (!store.linking) {
+  if (!linking) {
     throw new Error('Attempted to link to route when no routes are present');
   }
-  const rootState = navigationRef.getRootState();
+  const rootState = ref.getRootState();
 
-  href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
-  href = applyRedirects(href, store.redirects) ?? undefined;
+  href = resolveHrefStringWithSegments(href, { segments, params: routeParams }, options);
+  href = applyRedirects(href, redirects) ?? undefined;
 
   // If the href is undefined, it means that the redirect has already been handled by the navigation
   if (!href) {
     return;
   }
 
-  const state = store.linking.getStateFromPath!(href, store.linking.config);
+  const state = getStateFromPath(href, linking.config, segments);
 
   if (!state || state.routes.length === 0) {
     console.error('Could not generate a valid navigation state for the given path: ' + href);

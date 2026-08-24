@@ -1,8 +1,17 @@
 import isEqual from 'fast-deep-equal';
-import { type RefObject, useEffect, useState, useCallback, useRef, use } from 'react';
+import {
+  type RefObject,
+  useEffect,
+  useEffectEvent,
+  useState,
+  useCallback,
+  useRef,
+  use,
+} from 'react';
 
 import { ServerContext } from '../global-state/serverLocationContext';
-import { useExpoRouterStore } from '../global-state/storeContext';
+import { store } from '../global-state/store';
+import { useRouteInfo } from '../global-state/useRouteInfo';
 import { getRootStackRouteNames } from '../global-state/utils';
 import {
   type LinkingOptions,
@@ -17,6 +26,7 @@ import {
 import { getHistoryLength } from '../utils/stack';
 import { createMemoryHistory } from './createMemoryHistory';
 import { appendBaseUrl } from './getPathFromState';
+import { getStateFromPath as getExpoStateFromPath } from './getStateFromPath';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
@@ -82,10 +92,11 @@ export function useLinking(
 ) {
   const enabled = options !== undefined;
   const config = options?.config;
-  const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
+  const getStateFromPath = options?.getStateFromPath ?? getExpoStateFromPath;
   const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
   const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
-  const store = useExpoRouterStore();
+
+  const { segments } = useRouteInfo();
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -138,6 +149,12 @@ export function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
+  const getStateFromPathForCurrentSegments = useCallback(
+    (path: string) => getStateFromPathRef.current(path, configRef.current, segments),
+    [segments]
+  );
+  const getStateFromPathInEffect = useEffectEvent(getStateFromPathForCurrentSegments);
+
   const validateRoutesNotExistInRootState = useCallback(
     (state: ResultState) => {
       // START FORK
@@ -171,7 +188,7 @@ export function useLinking(
         : undefined;
 
       if (path) {
-        value = getStateFromPathRef.current(path, configRef.current);
+        value = getStateFromPathForCurrentSegments(path);
       }
 
       // If the link were handled, it gets cleared in NavigationContainer
@@ -188,6 +205,7 @@ export function useLinking(
     };
 
     return thenable as PromiseLike<ResultState | undefined>;
+    // NavigationContainer consumes this callback only once through useThenable.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -225,7 +243,7 @@ export function useLinking(
         return;
       }
 
-      const state = getStateFromPathRef.current(path, configRef.current);
+      const state = getStateFromPathInEffect(path);
 
       // We should only dispatch an action when going forward
       // Otherwise the action will likely add items to history, which would mess things up
@@ -303,7 +321,7 @@ export function useLinking(
       // If the `route` object contains a `path`, use that path as long as `route.name` and `params` still match
       // This makes sure that we preserve the original URL for wildcard routes
       if (route?.path) {
-        const stateForPath = getStateFromPathRef.current(route.path, configRef.current);
+        const stateForPath = getStateFromPathInEffect(route.path);
 
         if (stateForPath) {
           const focusedRoute = findFocusedRoute(stateForPath);
@@ -470,8 +488,4 @@ export function useLinking(
   return {
     getInitialState,
   };
-}
-
-export function getInitialURLWithTimeout(): string | null | Promise<string | null> {
-  return typeof window === 'undefined' ? '' : window.location.href;
 }

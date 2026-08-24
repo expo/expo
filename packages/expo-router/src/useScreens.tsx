@@ -11,7 +11,7 @@ import {
   sortRoutesWithInitial,
   useRouteNode,
 } from './Route';
-import { useExpoRouterStore } from './global-state/storeContext';
+import { store } from './global-state/store';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
@@ -299,7 +299,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
   }) {
     const stateForPath = useStateForPath();
     const isFocused = navigation.isFocused();
-    const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;

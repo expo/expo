@@ -1,14 +1,18 @@
 import { screen, act, fireEvent } from '@testing-library/react-native';
+import { use } from 'react';
 import { Text } from 'react-native';
 
 import type { RedirectConfig } from '../exports';
 import { router } from '../exports';
+import type { StoreRedirects } from '../global-state/router-store';
 import { store } from '../global-state/router-store';
+import { StoreContext } from '../global-state/storeContext';
 import Stack from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
 
 const mockRedirects = jest.fn(() => [] as RedirectConfig[]);
+const mockRewrites = jest.fn(() => [] as RedirectConfig[]);
 const mockOpenURL = jest.fn((url: string) => undefined);
 
 jest.mock('expo-constants', () => {
@@ -21,10 +25,18 @@ jest.mock('expo-constants', () => {
           get redirects() {
             return mockRedirects();
           },
+          get rewrites() {
+            return mockRewrites();
+          },
         },
       },
     },
   };
+});
+
+beforeEach(() => {
+  mockRedirects.mockReturnValue([]);
+  mockRewrites.mockReturnValue([]);
 });
 
 jest.mock('expo-linking', () => {
@@ -34,6 +46,33 @@ jest.mock('expo-linking', () => {
       return (url: string) => mockOpenURL(url);
     },
   };
+});
+
+it('exposes redirects and rewrites through the store context', () => {
+  const redirect = { source: '/foo', destination: '/bar' } as RedirectConfig;
+  const externalRedirect = { source: '/away', destination: '//example.com' } as RedirectConfig;
+  const rewrite = { source: '/old', destination: '/new' } as RedirectConfig;
+  mockRedirects.mockReturnValue([redirect, externalRedirect]);
+  mockRewrites.mockReturnValue([rewrite]);
+
+  let contextRedirects: StoreRedirects[] | undefined;
+
+  function Index() {
+    contextRedirects = use(StoreContext)!.redirects;
+    return null;
+  }
+
+  renderRouter({
+    index: Index,
+    bar: () => null,
+    new: () => null,
+  });
+
+  expect(contextRedirects).toEqual([
+    [expect.any(RegExp), redirect, false],
+    [expect.any(RegExp), externalRedirect, true],
+    [expect.any(RegExp), rewrite, false],
+  ]);
 });
 
 it('deep link to a redirect', () => {
