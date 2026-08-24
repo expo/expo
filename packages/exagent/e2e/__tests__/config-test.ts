@@ -234,7 +234,7 @@ describe('exagent config:effective', () => {
       modCounts: { ios: 2, android: 2 },
       pluginCount: 2,
       declaredPluginCount: 1,
-      autolinkedModuleCount: 2,
+      expoAutolinkedModuleCount: 2,
     });
     // Counts only: a config carries bundle identifiers and permission strings.
     expect(raw).not.toContain('NSCameraUsageDescription');

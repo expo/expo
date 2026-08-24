@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`, `src/utils/jsonMode.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
+**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`, `src/utils/jsonMode.ts`); `exagent build:wait` (`src/builds/`); `exagent dev:wait` (`src/dev/waitAsync.ts`, `src/dev/waitFormat.ts`, `src/runtime/bundleCheck.ts`); `exagent typecheck` (`src/typecheck/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-23
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]]
@@ -222,6 +222,56 @@ that the exit code closes everywhere else.
 Only `errors` has it. `runtime:network`'s failed requests are something it reports *about* the app —
 a 404 the app handles is not the command's operation failing — and there is no equivalent question
 for its exit code to answer.
+
+### The fourth: `typecheck`, and the gate the other three could not be
+
+[observed — 2026-08-23, `src/typecheck/`] `exagent typecheck` is the fourth command in the band, and
+the first one whose *whole reason to exist* is a class of failure the band's other members are
+structurally blind to.
+
+The finding [observed — friction run 3, F34]: a feature was finished with `dev:wait` at `0`,
+`runtime:errors --fail-on-error` at `0` and `doctor` at 21 of 21, and `npx tsc --noEmit` then
+reported seven errors. One of them was `Spacing.md` on a constant with no `md`, which evaluates to
+`undefined`, so the screen rendered with `padding: undefined` — every line of text flush against the
+left edge, in the screenshots, with every gate green. Both other gates were *correct*: nothing threw,
+so the error window was right to be empty, and nothing failed to transform, so the bundle check was
+right to pass. Green meant "it parses and does not throw", and an agent following the CLI's own
+follow-ups would have shipped it.
+
+| Code | The project                                                       | Where it is decided             |
+| ---- | ----------------------------------------------------------------- | ------------------------------- |
+| `0`  | type-checks, **or** has no TypeScript to check                    | `src/typecheck/typecheckAsync.ts` |
+| `20` | does not type-check; the diagnostics are the payload              | `src/typecheck/typecheckAsync.ts` |
+| `1`  | unknown: no runnable compiler, or one that failed saying nothing  | `CommandError`                  |
+
+Four details of that are decisions rather than transcription:
+
+- **A project with no TypeScript exits `0`, with `checked: false`.** Failing for the absence of
+  TypeScript would make the gate red for every JavaScript project forever, and a red that is not
+  about the code is a red nobody can act on — the same reasoning as `bundle.ok: null` in §The gate
+  has to ask about the _project_, and the same key pair reporting it. `reason` is present exactly
+  when `checked` is false, and the follow-up says so in a command as well as in a field, because
+  "nothing was checked" must not read as "everything passed".
+- **No compiler is ever fetched.** `doctor:check` falls back to `npx expo-doctor` and this
+  deliberately does not: `expo-doctor` is a tool you run *at* a project and its checks are its own,
+  while a type check is a function of the project's own compiler version, its `tsconfig.json` and
+  its `@types` — so a compiler from the registry would answer a question about a project that does
+  not exist. Only `node_modules/.bin/tsc` counts.
+- **A compiler that failed and printed nothing readable is `1`, not `20`.** Every verdict this
+  command reports is read back out of what the compiler printed, so a failure with no diagnostic in
+  it has not answered the question. Reporting it as an outcome would send an agent looking for a type
+  error that was never reported. The error quotes what the compiler did print and names the exact
+  command to re-run by hand.
+- **Both output forms are parsed.** `--pretty false` is what the compiler is asked for, and `pretty`
+  is a *compiler option* as well as a flag, so a project can set it in its own `tsconfig.json` and
+  what runs is whatever the project has under that name — an assumption, not a fact, exactly as §The
+  binary may not be the CLI says. A parser that knew only the terse form would report "no errors"
+  for a project whose compiler printed the other one, which is the one answer a gate must never
+  give. Both recordings are committed, from one run of one project, and a test asserts they parse to
+  the same answer.
+
+Where the command is reachable from — which follow-up ladders gained the rung, and which rung it
+replaces in each — is [[0009-smart-followups]] §Where the typecheck rung goes.
 
 ## Needs-human protocol
 

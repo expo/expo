@@ -191,10 +191,13 @@ describe(buildRuntimeErrorsFollowUps, () => {
   it(`should explain that an empty window may have missed the failure`, () => {
     const followups = buildRuntimeErrorsFollowUps({ count: 0, durationMs: 2000 });
 
-    expect(ids(followups)).toEqual(['runtime-errors-reproduce']);
+    expect(ids(followups)).toEqual(['runtime-errors-reproduce', 'runtime-errors-typecheck']);
     // A longer window, because the failure was not reproduced inside the last one.
     expect(followups[0]!.command).toBe('npx exagent runtime:errors --duration 4000');
     expect(followups[0]!.why).toContain('reproduce');
+    // And the rung that contradicts the reading an empty window invites: the bug this command
+    // cannot see does not throw at all (F34).
+    expect(followups[1]!.command).toBe('npx exagent typecheck');
   });
 });
 

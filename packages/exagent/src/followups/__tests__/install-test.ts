@@ -33,7 +33,7 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: [],
     });
 
-    expect(ids(followups)).toEqual(['dev']);
+    expect(ids(followups)).toEqual(['dev', 'typecheck']);
     expect(followups[0]!.command).toBe('npx exagent dev');
     expect(followups[0]!.why).toContain('react-native-fancy');
     expect(followups[0]!.why).toContain('development build');
@@ -45,7 +45,7 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: [],
     });
 
-    expect(ids(followups)).toEqual(['dev']);
+    expect(ids(followups)).toEqual(['dev', 'typecheck']);
   });
 
   it(`should name every package that needs a new build`, () => {
@@ -67,7 +67,7 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: [],
     });
 
-    expect(ids(followups)).toEqual(['reload-app']);
+    expect(ids(followups)).toEqual(['reload-app', 'typecheck']);
     expect(followups[0]!.command).toBe('npx exagent runtime:errors');
     expect(followups[0]!.why).toContain('reload');
   });
@@ -78,7 +78,7 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: [],
     });
 
-    expect(ids(followups)).toEqual(['reload-app']);
+    expect(ids(followups)).toEqual(['reload-app', 'typecheck']);
   });
 
   it(`should point at the skill the installed package ships`, () => {
@@ -87,7 +87,7 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: ['@expo/ui'],
     });
 
-    expect(ids(followups)).toEqual(['reload-app', 'skills-show']);
+    expect(ids(followups)).toEqual(['reload-app', 'skills-show', 'typecheck']);
     expect(followups[1]!.command).toBe('npx exagent skills:show @expo/ui');
   });
 
@@ -97,7 +97,7 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: ['@expo/ui', 'expo-camera'],
     });
 
-    expect(ids(followups)).toEqual(['reload-app', 'skills-list']);
+    expect(ids(followups)).toEqual(['reload-app', 'skills-list', 'typecheck']);
     expect(followups[1]!.command).toBe('npx exagent skills:list');
   });
 
@@ -109,7 +109,7 @@ describe(buildInstallFollowUps, () => {
       packagesWithSkills: ['@expo/ui'],
     });
 
-    expect(ids(followups)).toEqual(['dev', 'skills-show']);
+    expect(ids(followups)).toEqual(['dev', 'skills-show', 'typecheck']);
   });
 
   it(`should never offer more than three follow-ups`, () => {

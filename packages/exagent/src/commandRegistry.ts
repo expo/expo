@@ -73,6 +73,10 @@ export const topLevelCommands: { [command: string]: CommandLoader } = {
   new: () => import('./new').then((i) => i.exagentNew),
   start: () => import('./start').then((i) => i.exagentStart),
   status: () => import('./status').then((i) => i.exagentStatus),
+  // A capability only this CLI has gets a verb of its own (llp/0006 naming rule): `expo` has no
+  // `typecheck` in its command map [observed — `packages/@expo/cli/src/index.ts`, 2026-08-23], so
+  // there is no `expo` behaviour for this name to have to match.
+  typecheck: () => import('./typecheck').then((i) => i.exagentTypecheck),
 };
 
 /** Commands that belong to a group. Add a new action, or a new group, here. */
@@ -380,7 +384,7 @@ export interface HelpSection {
  * the registry appears here, so a new command cannot ship undiscoverable.
  */
 export const helpSections: HelpSection[] = [
-  { title: 'Develop', commands: ['dev', 'dev:wait', 'start', 'install', 'status'] },
+  { title: 'Develop', commands: ['dev', 'dev:wait', 'typecheck', 'start', 'install', 'status'] },
   {
     title: 'Inspect the project',
     commands: ['config:effective', 'doctor'],

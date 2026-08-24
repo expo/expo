@@ -92,12 +92,21 @@ export function buildDevWaitFollowUps({
     ]);
   }
 
+  // The edit loop's green state, and the one this list was shortest for. `runtime:errors` answers
+  // "does it throw", and the class of bug that survives both this gate and that one is a type
+  // error: `padding: Spacing.md` on a constant with no `md` is `undefined` at runtime, so nothing
+  // throws and the screen is simply wrong (llp/0009 §Where the typecheck rung goes).
   if (ready) {
     return capFollowUps([
       {
         id: 'dev-wait-runtime-errors',
         command: 'npx exagent runtime:errors',
         why: 'The bundle is loaded in a connected app, so an error window now says whether it is running or red-screening.',
+      },
+      {
+        id: 'dev-wait-typecheck',
+        command: 'npx exagent typecheck',
+        why: 'The bundle compiling is not the code being right: a type error is neither a syntax error nor a throw, so this is the only gate that sees it.',
       },
     ]);
   }

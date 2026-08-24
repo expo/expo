@@ -25,11 +25,20 @@ export function buildRuntimeErrorsFollowUps({
     ]);
   }
 
+  // An empty window means "nothing happened while I watched", and the reading it invites is "the
+  // app is fine". The rung that contradicts that reading belongs here rather than anywhere else:
+  // the bug this command cannot see does not throw at all (llp/0009 §Where the typecheck rung
+  // goes).
   return capFollowUps([
     {
       id: 'runtime-errors-reproduce',
       command: `npx exagent runtime:errors --duration ${durationMs * 2}`,
       why: 'Errors thrown before this window are not captured, so reproduce the problem while a longer window listens.',
+    },
+    {
+      id: 'runtime-errors-typecheck',
+      command: 'npx exagent typecheck',
+      why: 'An empty window is not a healthy app: a property that does not exist is undefined rather than a throw, so the screen renders wrongly and nothing here reports it.',
     },
   ]);
 }

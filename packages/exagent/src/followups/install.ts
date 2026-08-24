@@ -62,5 +62,15 @@ export function buildInstallFollowUps({
     });
   }
 
+  // Last, so the cap decides (llp/0009 §Where the typecheck rung goes). A package that ships a
+  // skill has something to read *before* the code against it is written, and this checks code that
+  // is not written yet; a package that ships none leaves the third slot to the rung that says
+  // whether the code compiles against the types the new package brought with it.
+  followups.push({
+    id: 'typecheck',
+    command: 'npx exagent typecheck',
+    why: 'A new package brings its own types with it: this is the gate that sees a call that does not match them, which neither the bundler nor the running app reports.',
+  });
+
   return capFollowUps(followups);
 }

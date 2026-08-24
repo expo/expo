@@ -437,6 +437,11 @@ describe(runtimeErrorsAsync, () => {
           command: 'npx exagent runtime:errors --duration 4000',
           why: expect.stringContaining('reproduce'),
         },
+        {
+          id: 'runtime-errors-typecheck',
+          command: 'npx exagent typecheck',
+          why: expect.stringContaining('not a healthy app'),
+        },
       ],
     });
   });
