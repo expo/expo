@@ -20,6 +20,7 @@
 
 - Set development mode before loading Expo config and `.env` files. ([#48839](https://github.com/expo/expo/pull/48839) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Fixed ignore patterns (built-in and `.fingerprintignore`) not matching on Windows, which made fingerprints differ between Windows machines and EAS builds ("Runtime version mismatch"). ([#46816](https://github.com/expo/expo/pull/46816) by [@blurbyte](https://github.com/blurbyte))
+- Collapsed the virtual store segment of a path, e.g. pnpm's **node_modules/.pnpm**, before hashing it, so a peer dependency reshuffle no longer changes `dir` hashes when no file content changed. ([#49288](https://github.com/expo/expo/pull/49288) by [@giaBaoJS](https://github.com/giaBaoJS))
 
 ### 💡 Others
 

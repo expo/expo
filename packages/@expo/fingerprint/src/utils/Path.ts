@@ -173,3 +173,31 @@ export function getNodeModulesPackageJsonPath(relativePosixPath: string): string
   }
   return `${packageDir}/package.json`;
 }
+
+/**
+ * Matches the virtual store segment of a path from a package manager that installs packages in
+ * isolation: pnpm's `node_modules/.pnpm`, Bun's `node_modules/.bun`, and Yarn's pnpm linker's
+ * `node_modules/.store`.
+ *
+ * The store directory name is not stable. It encodes the package version and a suffix derived from
+ * how peer dependencies resolved, e.g.
+ * `node_modules/.pnpm/expo@52.0.49_react@19.0.0_react-native@0.76.7/node_modules/expo`.
+ */
+const VIRTUAL_STORE_REGEX = /(^|\/)node_modules\/\.(?:pnpm|bun|store)\/[^/]+\/node_modules\//g;
+
+/**
+ * Collapse the virtual store segment of a project relative path down to the package path, so a
+ * name a package manager derives from peer dependency resolution never reaches a hash.
+ *
+ * ```
+ * node_modules/.pnpm/expo-camera@1.0.0_react-native@0.86.0/node_modules/expo-camera/android
+ *   -> node_modules/expo-camera/android
+ * ```
+ *
+ * Only the store segment is collapsed. A scoped package keeps its scope, a `../` prefix is kept, a
+ * genuinely nested `node_modules` inside a store package is left alone, and a path that merely
+ * contains `.pnpm` is returned unchanged.
+ */
+export function normalizeVirtualStorePath(filePath: string): string {
+  return filePath.replace(VIRTUAL_STORE_REGEX, '$1node_modules/');
+}

@@ -7,6 +7,7 @@ import {
   getNodeModulesPackageJsonPath,
   isIgnoredPath,
   normalizeFilePath,
+  normalizeVirtualStorePath,
   pathExistsAsync,
   toPosixPath,
 } from '../Path';
@@ -226,5 +227,77 @@ describe(pathExistsAsync, () => {
 
   it('should return false if the file does not exist', async () => {
     expect(await pathExistsAsync('/app.json')).toBe(false);
+  });
+});
+
+describe(normalizeVirtualStorePath, () => {
+  it('should collapse a pnpm virtual store segment down to the package path', () => {
+    expect(
+      normalizeVirtualStorePath(
+        'node_modules/.pnpm/expo-camera@1.0.0_react-native@0.86.0/node_modules/expo-camera/android'
+      )
+    ).toBe('node_modules/expo-camera/android');
+  });
+
+  it('should keep the scope of a scoped package', () => {
+    expect(
+      normalizeVirtualStorePath(
+        'node_modules/.pnpm/@react-native-firebase+app@23.8.2_react-native@0.86.0/node_modules/@react-native-firebase/app/android'
+      )
+    ).toBe('node_modules/@react-native-firebase/app/android');
+  });
+
+  it('should collapse the same shape for other isolated installers', () => {
+    expect(
+      normalizeVirtualStorePath('node_modules/.bun/expo-camera@1.0.0/node_modules/expo-camera/ios')
+    ).toBe('node_modules/expo-camera/ios');
+    expect(
+      normalizeVirtualStorePath(
+        'node_modules/.store/expo-camera-npm-1.0.0-abcdef/node_modules/expo-camera/ios'
+      )
+    ).toBe('node_modules/expo-camera/ios');
+  });
+
+  it('should keep a parent directory prefix', () => {
+    expect(
+      normalizeVirtualStorePath(
+        '../../node_modules/.pnpm/expo-camera@1.0.0_react-native@0.86.0/node_modules/expo-camera/ios'
+      )
+    ).toBe('../../node_modules/expo-camera/ios');
+  });
+
+  it('should collapse every store segment of a nested workspace path', () => {
+    expect(
+      normalizeVirtualStorePath(
+        'packages/app/node_modules/.pnpm/a@1.0.0/node_modules/a/node_modules/.pnpm/b@1.0.0/node_modules/b/ios'
+      )
+    ).toBe('packages/app/node_modules/a/node_modules/b/ios');
+  });
+
+  it('should keep a real nested dependency inside a store package', () => {
+    expect(
+      normalizeVirtualStorePath(
+        'node_modules/.pnpm/expo-camera@1.0.0/node_modules/expo-camera/node_modules/nested/index.js'
+      )
+    ).toBe('node_modules/expo-camera/node_modules/nested/index.js');
+  });
+
+  it('should leave paths that only look like a virtual store alone', () => {
+    // No store directory name between `.pnpm` and `node_modules`: pnpm's hoisted dependencies.
+    expect(normalizeVirtualStorePath('node_modules/.pnpm/node_modules/debug/index.js')).toBe(
+      'node_modules/.pnpm/node_modules/debug/index.js'
+    );
+    // `.pnpm` as ordinary path text, outside node_modules.
+    expect(normalizeVirtualStorePath('docs/.pnpm/expo@1.0.0/node_modules/expo/ios')).toBe(
+      'docs/.pnpm/expo@1.0.0/node_modules/expo/ios'
+    );
+    // An unrelated dot directory.
+    expect(normalizeVirtualStorePath('node_modules/.cache/expo@1.0.0/node_modules/expo')).toBe(
+      'node_modules/.cache/expo@1.0.0/node_modules/expo'
+    );
+    // A plain install layout.
+    expect(normalizeVirtualStorePath('node_modules/expo-camera/android/build.gradle')).toBe(
+      'node_modules/expo-camera/android/build.gradle'
+    );
   });
 });

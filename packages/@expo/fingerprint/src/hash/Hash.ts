@@ -20,7 +20,11 @@ import type {
   NormalizedOptions,
 } from '../Fingerprint.types';
 import { createLimiter, type Limiter } from '../utils/Concurrency';
-import { isIgnoredPathWithMatchObjects, toPosixPath } from '../utils/Path';
+import {
+  isIgnoredPathWithMatchObjects,
+  normalizeVirtualStorePath,
+  toPosixPath,
+} from '../utils/Path';
 import { nonNullish } from '../utils/Predicates';
 import { profile } from '../utils/Profile';
 import { FileHookTransform } from './FileHookTransform';
@@ -42,7 +46,7 @@ export async function createFingerprintFromSourcesAsync(
   const hasher = createHash(options.hashAlgorithm);
   for (const source of fingerprintSources) {
     if (source.hash != null) {
-      hasher.update(createSourceId(source));
+      hasher.update(normalizeVirtualStorePath(createSourceId(source)));
       hasher.update(source.hash);
     }
   }
@@ -238,7 +242,7 @@ export async function createDirHashResultsAsync(
 
   const children: (DebugInfoFile | DebugInfoDir | undefined)[] = [];
   for (const result of results) {
-    hasher.update(result.id);
+    hasher.update(normalizeVirtualStorePath(result.id));
     hasher.update(result.hex);
     children.push(result.debugInfo);
   }
