@@ -2,7 +2,8 @@ import { useRouter } from 'expo-router';
 import { Pressable, ScrollView, Text } from 'react-native';
 
 const examples = [
-  ['Layout boundary', '/error-boundaries/layout'],
+  ['Nested boundary', '/error-boundaries/nested'],
+  ['Nested layout without boundary', '/error-boundaries/nested-without'],
   ['Navigator boundary', '/error-boundaries/navigator'],
   ['Screen boundary', '/error-boundaries/screen'],
   ['Route boundary', '/error-boundaries/route'],
