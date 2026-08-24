@@ -301,7 +301,9 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     devServerSource: devServer.source,
     appsConnected: connection.appsConnected,
     appsReconnected: connection.freshTargets,
-    bundle: bundleToJson(bundle),
+    // The same flag as `dev:wait`'s, so the reason a null bundle carries is the same sentence
+    // whichever command asked the question (llp/0010 §The reload gate).
+    bundle: bundleToJson(bundle, { skippedByFlag: !options.bundleCheck }),
     route,
     routeCheck,
     url: landing?.url ?? null,

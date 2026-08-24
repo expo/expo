@@ -107,6 +107,7 @@ export async function devWaitAsync(projectRoot: string, options: DevWaitOptions)
     waitedMs: Date.now() - startedAt,
     timedOut,
     requireApp: options.requireApp,
+    bundleCheck: options.bundleCheck,
     bundle,
     ...(readiness.reason ? { reason: readiness.reason } : {}),
   };

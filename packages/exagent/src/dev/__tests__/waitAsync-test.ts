@@ -353,7 +353,9 @@ describe(devWaitAsync, () => {
         platform: null,
         url: null,
         error: null,
-        reason: 'the entry bundle check was not run',
+        // The flag is named back, so a declined check does not read as a clean one
+        // (llp/0010 §`checked` and `ok` move together; friction run 5, F48-7).
+        reason: 'the entry bundle check was not run (--no-bundle-check)',
       });
     });
 
