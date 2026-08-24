@@ -11,6 +11,29 @@ import path from 'path';
 import { CommandError } from '../utils/errors';
 import { spawnCaptureAsync } from '../utils/spawnCapture';
 
+/**
+ * The path an Expo Go deep link must carry to reach the **root** route of a loaded app.
+ *
+ * Neither `exp://<host>` nor `exp://<host>/--/` reaches it, and the reason is in the router, not
+ * in Expo Go [observed — `expo-router/src/link/linking.ts`, 2026-08-23]. `subscribe`'s Expo Go
+ * branch runs every incoming URL through `parseExpoGoUrlFromListener`, which replaces a link whose
+ * path is empty or `/` with `getRootURL() + queryString` — and `getRootURL()` in Expo Go is
+ * `parsePathFromExpoGoLink(Linking.createURL('/'))`, which is the **empty string**. The listener
+ * then ends in `if (href) listener(href)`, so the root link is dropped before the router ever sees
+ * it. Every other route survives, which is why only `/` was unreachable [observed — friction run
+ * 3, F33].
+ *
+ * A bare `?` is the smallest thing that gets past that guard: the query string is kept, so `href`
+ * is `"?"`, which is truthy, and a path of `""` with an empty query resolves to the index route.
+ * Verified live [observed — 2026-08-23, SDK 57 app in Expo Go on an iOS simulator: from `/notes`,
+ * `exp://127.0.0.1:8170/--/` left the app on `/notes` and `exp://127.0.0.1:8170/--/?` landed it on
+ * the root route].
+ *
+ * A development build needs none of this: its listener passes the URL through whatever the path
+ * is, so `<scheme>://` already means the index route.
+ */
+const EXPO_GO_ROOT_PATH = '/--/?';
+
 /** Static config files we can read without evaluating JavaScript. */
 const STATIC_CONFIG_FILES = ['app.json', 'app.config.json'];
 
@@ -147,10 +170,16 @@ export function resolveDeepLinkUrl({
         ].join('\n'),
       };
     }
-    const url = routePath.length > 0 ? `exp://${host}/--/${routePath}` : `exp://${host}`;
+    if (routePath.length === 0) {
+      return {
+        ok: true,
+        url: `exp://${host}${EXPO_GO_ROOT_PATH}`,
+        resolution: `target app is Expo Go and the route is the root route, so the exp:// shape was used with a query marker that survives the Expo Go link handler, with dev server host ${host}`,
+      };
+    }
     return {
       ok: true,
-      url,
+      url: `exp://${host}/--/${routePath}`,
       resolution: `target app is Expo Go, so the exp:// shape was used with dev server host ${host}`,
     };
   }
@@ -278,8 +307,18 @@ export function quoteForDeviceShell(value: string): string {
   return `'${value.split("'").join(`'\\''`)}'`;
 }
 
+/**
+ * Whether the route is already a full URL, e.g. `myapp://profile/42`.
+ *
+ * Exported because it decides more than the URL shape: a full URL names an app of the caller's
+ * choosing, so this project's route table has nothing to say about it (`./routeCheck`).
+ */
+export function isFullUrlRoute(value: string): boolean {
+  return /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(value.trim());
+}
+
 function isFullUrl(value: string): boolean {
-  return /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(value);
+  return isFullUrlRoute(value);
 }
 
 function stripLeadingSlashes(value: string): string {

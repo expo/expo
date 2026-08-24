@@ -12,6 +12,7 @@ describe(resolveNavigateOptions, () => {
       appId: undefined,
       json: false,
       followups: true,
+      routeCheck: true,
     });
   });
 
@@ -27,6 +28,7 @@ describe(resolveNavigateOptions, () => {
         '--app-id',
         'com.example.demo',
         '--json',
+        '--no-route-check',
       ])
     ).toEqual({
       route: '/profile/42',
@@ -36,6 +38,7 @@ describe(resolveNavigateOptions, () => {
       appId: 'com.example.demo',
       json: true,
       followups: true,
+      routeCheck: false,
     });
   });
 
