@@ -509,3 +509,11 @@ One fixture honesty problem fell out of it. The device-fallback test claimed an 
 target and *no* message-socket peer, which no real app is, and under the new rule that target was
 "already there" and never fresh. The stub now reports no targets until the stub `xcrun` has opened
 the app, which is what "no app is connected" means on both channels at once.
+
+The other half of the same fix does **not** reach tier 0, and that is a boundary rather than a gap
+in the suite: the grace period `runtime:errors` uses answers a target that is *listed* and refuses a
+CDP connection, and the e2e stub carries no inspector proxy to refuse one. Its two halves are
+unit-tested where they can be — an empty target list that fills, and a selector that can make
+nothing of the list it is given — and the behaviour itself was verified live, ten rounds.
+[[0002-testing-and-evals]] §Resolved decisions records where that line falls and what stands in for
+it on the far side.
