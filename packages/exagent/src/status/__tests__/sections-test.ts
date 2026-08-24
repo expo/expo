@@ -264,11 +264,15 @@ describe(buildNextActionStatus, () => {
       };
     }
 
-    it(`should send a matched server with no app to the readiness gate`, () => {
+    // @ref llp/0009-smart-followups.rfc.md §Examples per command — friction run 5, F48-8. A wait
+    // for an app to attach cannot succeed while nothing is opening one: `--require-app` polls the
+    // debugger target list, and no command in this CLI puts an app in it except this one. The
+    // honest next action is the one that changes the state the wait is waiting for.
+    it(`should send a matched server with no app to the command that opens one`, () => {
       const next = buildNextActionStatus(mockState(), {}, 'ios', devServerStatus());
 
-      expect(next.command).toBe('exagent dev:wait --require-app');
-      expect(next.why).toContain('instead of starting a second server');
+      expect(next.command).toBe('exagent navigate /');
+      expect(next.why).toContain('no app is connected');
       // The project's own shape does not change because a server is up.
       expect(next.rule).toBe('expo-go');
       expect(next.steps).toEqual([]);
@@ -295,7 +299,8 @@ describe(buildNextActionStatus, () => {
         mockState(),
         {},
         'ios',
-        devServerStatus({ projectRootMatched: null })
+        // With an app attached, so this isolates the match decision from the app-count branch.
+        devServerStatus({ projectRootMatched: null, appsConnected: 1 })
       );
 
       expect(next.command).toBe('exagent dev:wait --require-app');

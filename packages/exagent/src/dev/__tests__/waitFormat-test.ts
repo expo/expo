@@ -19,6 +19,7 @@ function result(overrides: Partial<DevWaitResult> = {}): DevWaitResult {
     waitedMs: 4210,
     timedOut: false,
     requireApp: false,
+    bundleCheck: true,
     bundle: null,
     ...overrides,
   };
@@ -197,6 +198,36 @@ describe(formatDevWaitResult, () => {
 
     it(`should say the check was declined`, () => {
       expect(formatDevWaitResult(result({ bundle: null }))).toContain('not checked');
+    });
+
+    // @ref llp/0010-agent-conventions.rfc.md §`checked` and `ok` move together — friction run 5,
+    // F48-7. "not checked" is true of both, and they are not the same thing: one is a caller who
+    // said not to, the other is a check that never got the chance. Only the first has a flag to
+    // name, and naming it is what stops "not checked" reading as "nothing was wrong".
+    it(`should name the flag when --no-bundle-check declined the check`, () => {
+      const printed = formatDevWaitResult(result({ bundle: null, bundleCheck: false }));
+
+      expect(printed).toContain('skipped (--no-bundle-check)');
+      expect(printed).not.toContain('not checked');
+    });
+
+    it(`should say the flag in the --json reason too`, () => {
+      const report = devWaitResultToJson(result({ bundle: null, bundleCheck: false }), []);
+
+      expect(report.bundle).toMatchObject({
+        checked: false,
+        ok: null,
+        reason: 'the entry bundle check was not run (--no-bundle-check)',
+      });
+    });
+
+    // The bundler never became ready, so there was nothing to build the entry bundle against.
+    // The flag was not passed, so naming it would be a false attribution.
+    it(`should not name the flag for a check that never got the chance to run`, () => {
+      const printed = formatDevWaitResult(result({ bundle: null, ready: false, timedOut: true }));
+
+      expect(printed).toContain('not checked');
+      expect(printed).not.toContain('--no-bundle-check');
     });
 
     it(`should say the check could not decide, and why`, () => {

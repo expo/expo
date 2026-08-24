@@ -282,7 +282,7 @@ describe(resolveDeepLinkUrl, () => {
 
     const error = expectError(result);
     expect(error).toContain('the dev server URL is unknown');
-    expect(error).toContain('npx expo start');
+    expect(error).toContain('npx exagent dev --detach');
   });
 
   it(`should use the config scheme for a development build`, () => {
@@ -424,5 +424,61 @@ describe(quoteForDeviceShell, () => {
     expect(quoteForDeviceShell("demoapp://search?q=o'brien")).toBe(
       `'demoapp://search?q=o'\\''brien'`
     );
+  });
+});
+
+// @ref llp/0006-agent-native-cli-surface.rfc.md §Errors are prompts — friction run 5. The last
+// line of a failure is what a driving agent runs, and one `Try:` served all three of these:
+// `npx exagent navigate <route> --scheme <your-app-scheme>`, which has two holes in it and so is
+// not a command at all. Each failure carries the command that answers *it* now.
+describe('the Try: line of a URL that could not be resolved', () => {
+  const config = { scheme: null, slug: null, configFile: 'app.json', dynamicConfigFile: null };
+
+  it(`answers a missing dev server with the command that starts one`, () => {
+    const result = resolveDeepLinkUrl({
+      route: '/notes',
+      config,
+      isExpoGo: true,
+      devServerUrl: null,
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      return;
+    }
+    expect(result.suggestedCommand).toBe('npx exagent dev --detach');
+    // The How: and the Try: name the same action, which they did not.
+    expect(result.error).toContain('npx exagent dev --detach');
+  });
+
+  // The one case where a person has to supply a value this CLI cannot know, so the runnable
+  // command is the one that prints what the project *does* declare.
+  it(`answers a project with no scheme with a command that has no holes in it`, () => {
+    const result = resolveDeepLinkUrl({
+      route: '/notes',
+      config,
+      isExpoGo: false,
+      devServerUrl: 'http://127.0.0.1:8081',
+    });
+
+    expect(result.ok).toBe(false);
+    if (result.ok) {
+      return;
+    }
+    expect(result.suggestedCommand).not.toContain('<');
+  });
+
+  it(`never suggests a command with a placeholder in it`, () => {
+    for (const params of [
+      { route: '', config, isExpoGo: true, devServerUrl: null },
+      { route: '/notes', config, isExpoGo: true, devServerUrl: null },
+      { route: '/notes', config, isExpoGo: false, devServerUrl: 'http://127.0.0.1:8081' },
+    ]) {
+      const result = resolveDeepLinkUrl(params);
+      expect(result.ok).toBe(false);
+      if (!result.ok) {
+        expect(result.suggestedCommand).not.toMatch(/[<>]/);
+      }
+    }
   });
 });

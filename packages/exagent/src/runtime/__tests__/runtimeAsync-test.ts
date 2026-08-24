@@ -175,7 +175,7 @@ describe(runtimeEvalAsync, () => {
     const error = await runtimeEvalAsync(evalOptions).catch((e) => e);
 
     expect(error.code).toBe('NO_DEV_SERVER');
-    expect(error.message).toContain('npx expo start');
+    expect(error.message).toContain('npx exagent dev --detach');
     expect(evaluateAsync).not.toHaveBeenCalled();
   });
 

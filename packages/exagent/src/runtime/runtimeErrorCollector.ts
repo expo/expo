@@ -55,6 +55,35 @@ export interface RuntimeErrorRecord {
   /** Whether the dev server mapped any frame of this stack onto a file on disk. */
   symbolicated?: boolean;
 
+  /**
+   * Whether this record is an `Error` the app reported, rather than a line of text it logged.
+   *
+   * **This is what `source` cannot answer, and the reason it exists** [observed — 2026-08-24,
+   * notesapp on SDK 57 in Expo Go on an iOS 26.5 simulator]. An uncaught `throw` on this runtime
+   * does **not** arrive as `Runtime.exceptionThrown` at all: React Native catches it and reports it
+   * through the console path, so it is `source: 'console'` exactly like a `console.error("hello")`
+   * is. Three cases were measured side by side in one window:
+   *
+   * | what the app did              | `source`  | `message`               | the stack           |
+   * | ----------------------------- | --------- | ----------------------- | ------------------- |
+   * | `console.error("some text")`  | `console` | `some text`             | `console.js`, `backend.js` |
+   * | `console.error(new Error(x))` | `console` | `Error: x`              | the project's own frame |
+   * | `throw new Error(x)`          | `console` | `Error: x`              | the project's own frame |
+   *
+   * So the difference a gate can act on is not the source, it is whether the record carries **the
+   * error's own stack**: React Native reports an Error through the console path as one string
+   * holding the message *and* its frames, and `splitTextStack` is what lifts them out. A plain
+   * text log has no such frames — the `stackTrace` CDP sends alongside describes the console
+   * machinery that reported it, which names no file of this project.
+   *
+   * The limit, stated because it decides a gate's behaviour: **a logged Error and an uncaught one
+   * are the same bytes here.** Nothing over this protocol tells them apart, so a consumer that
+   * fails on this flag fails on `console.error(new Error(…))` too. That is the honest trade —
+   * the alternative is a gate that passes a crash, which is worse than one that reports a
+   * deliberate log with the record printed next to it.
+   */
+  isError?: boolean;
+
   /** Source location as `url:line:column`, when the runtime reported a url. */
   location?: string;
 }
@@ -203,6 +232,8 @@ export function parseRuntimeErrorMessage(message: CdpMessage): RuntimeErrorRecor
       // Structured frames when the runtime sent them, and the text stack read back apart when the
       // stack only exists inside the exception's description — both need symbolicating.
       frames: framesOf(params.exceptionDetails.stackTrace, stack),
+      // An exception is an error by construction, whatever else is true of it.
+      isError: true,
       location,
     };
   }
@@ -223,6 +254,10 @@ export function parseRuntimeErrorMessage(message: CdpMessage): RuntimeErrorRecor
       message: text,
       stack: embedded.length > 0 ? formatStackFrames(embedded) : formatCdpStackTrace(params.stackTrace),
       frames: embedded.length > 0 ? embedded : framesOf(params.stackTrace, undefined),
+      // The frames were inside the message, so the app reported an `Error` rather than logging a
+      // line — which on this runtime is the only way an uncaught throw ever arrives. See the
+      // field's own documentation for the three cases that were measured to settle this.
+      isError: embedded.length > 0,
     };
   }
 

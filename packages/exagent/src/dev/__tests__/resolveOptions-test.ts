@@ -64,11 +64,13 @@ describe(resolveDevOptions, () => {
 
   // `--smart` and `--passthrough` were `exagent start`'s mode flags and this command has neither:
   // running the plan is what it does, and the plain `expo start` wrapper is `exagent start`.
-  it.each(['--smart', '--passthrough'])(`should forward %s to the expo CLI`, (flag) => {
-    const options = resolveDevOptions([flag]);
-
-    expect(options.mode).toBe('run');
-    expect(options.expoArgs).toEqual([flag]);
+  //
+  // They used to be forwarded to `expo start`, which does not have them either, so the run
+  // decided a plan, printed it, and then failed on the Expo CLI's own report of a flag nobody has
+  // [friction run 5, F48-3]. Refused here instead, with the same envelope every other bad option
+  // in this CLI gets.
+  it.each(['--smart', '--passthrough'])(`should refuse %s, which neither CLI has`, (flag) => {
+    expect(() => resolveDevOptions([flag])).toThrow(new RegExp(flag));
   });
 
   it(`should approve the plan up front with --yes and strip the flag`, () => {

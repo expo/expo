@@ -180,7 +180,12 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     isFullUrl: route != null && isFullUrlRoute(route),
   });
   if (routeCheck.ok === false && route != null) {
-    throw routeNotFoundError(route, routeTable, { platform: options.platform });
+    // Named, so the `Try:` line keeps the reload the caller asked for rather than replacing it
+    // with a bare `navigate` (friction run 5).
+    throw routeNotFoundError(route, routeTable, {
+      platform: options.platform,
+      command: 'runtime:reload',
+    });
   }
 
   // @ref llp/0010-agent-conventions.rfc.md §The reload gate — friction run 4, F38.
@@ -301,7 +306,9 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
     devServerSource: devServer.source,
     appsConnected: connection.appsConnected,
     appsReconnected: connection.freshTargets,
-    bundle: bundleToJson(bundle),
+    // The same flag as `dev:wait`'s, so the reason a null bundle carries is the same sentence
+    // whichever command asked the question (llp/0010 §The reload gate).
+    bundle: bundleToJson(bundle, { skippedByFlag: !options.bundleCheck }),
     route,
     routeCheck,
     url: landing?.url ?? null,
@@ -329,7 +336,7 @@ export async function reloadAsync(projectRoot: string, options: ReloadOptions): 
   if (json) {
     Log.log(JSON.stringify(report, null, 2));
   } else {
-    printHumanReport(report);
+    printHumanReport(report, options);
   }
 
   if (exitCode !== EXIT_OK) {
@@ -546,7 +553,7 @@ async function resolveAppIdAsync(
   }).appId;
 }
 
-function printHumanReport(report: ReloadResultJson): void {
+function printHumanReport(report: ReloadResultJson, options: ReloadOptions): void {
   const lines = [
     chalk`{bold Reloaded} ${report.reloaded ? chalk.green('yes') : chalk.red('no')}${
       report.method ? chalk`{dim  · via ${report.method}}` : ''
@@ -557,15 +564,32 @@ function printHumanReport(report: ReloadResultJson): void {
   }
   lines.push(
     chalk`{bold Dev server} ${report.devServerUrl}{dim  · via ${report.devServerSource}}`,
-    // Both numbers, always: the second is what the reload was judged on, and printing only the
-    // first is what let "Apps connected 1" describe a runtime that was on its way out (F45).
-    chalk`{bold Apps connected} ${report.appsConnected}{dim  · ${report.appsReconnected} reconnected after the reload}`
+    // Both numbers whenever a reload happened: the second is what the reload was judged on, and
+    // printing only the first is what let "Apps connected 1" describe a runtime that was on its
+    // way out (F45). When no reload happened there is nothing to count reconnections *against*,
+    // and "0 reconnected after the reload" read as an app that failed to come back from one
+    // [friction run 5, F48-6] — so the clause says which of the two this is instead.
+    chalk`{bold Apps connected} ${report.appsConnected}{dim  · ${
+      report.reloaded
+        ? `${report.appsReconnected} reconnected after the reload`
+        : 'no reload happened, so nothing had reason to reconnect'
+    }}`
   );
+  // Always a line, whatever the check did. Printing one only for an answered check made the
+  // *absence* of a line the only signal that a gate had been skipped [observed — friction run 5,
+  // F48-7: `runtime:reload --no-bundle-check` printed no Bundle line at all, while a checked run
+  // printed `Bundle compiles · for ios`]. A reader cannot notice a line that is not there.
   if (report.bundle.ok != null) {
     lines.push(
       chalk`{bold Bundle} ${report.bundle.ok ? chalk.green('compiles') : chalk.red('does not compile')}${
         report.bundle.platform ? chalk`{dim  · for ${report.bundle.platform}}` : ''
       }`
+    );
+  } else if (!options.bundleCheck) {
+    lines.push(chalk`{bold Bundle} ${chalk.dim('skipped (--no-bundle-check)')}`);
+  } else {
+    lines.push(
+      chalk`{bold Bundle} ${chalk.dim(`not checked${report.bundle.reason ? ` · ${report.bundle.reason}` : ''}`)}`
     );
   }
   if (report.route != null) {

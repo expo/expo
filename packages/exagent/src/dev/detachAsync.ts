@@ -29,6 +29,7 @@ import { waitForBundlerReadyAsync } from '../runtime/waitReady';
 import { CommandError } from '../utils/errors';
 import { event } from './events';
 import { openDetachedLogSync, readDetachedLogSync } from './logFile';
+import { parsePortMove, type PortMove } from './portCollision';
 import type { DevOptions } from './resolveOptions';
 
 /** How long the parent waits for the detached child to publish its lock. */
@@ -63,6 +64,16 @@ export interface DevDetachResultJson {
   projectRootMatched: boolean | null;
   /** A dev server was already running for this project, so nothing was started. */
   alreadyRunning: boolean;
+  /**
+   * The port this run was moved off, and the one it landed on. Null when it did not move.
+   *
+   * A detached run does its port retry in the child, so the move was reported on a stream nobody
+   * was watching: the parent printed `port: 8210` and said nothing about 8081 having been asked
+   * for, and every command and URL a caller had already written still named the old port
+   * [observed — friction run 5, F48-4]. `from` is null when the Expo CLI did not name the busy
+   * port, which it does not always.
+   */
+  portMoved: PortMove | null;
   /** How long the whole thing took, in milliseconds. */
   waitedMs: number;
   followups: FollowUp[];
@@ -100,6 +111,19 @@ export function buildDetachSpawn(binPath: string, argv: string[]): DetachSpawn {
   };
 }
 
+export interface DevDetachOptions {
+  /**
+   * Whether to print the report at all.
+   *
+   * False for a caller that is *part of* another command's answer: `exagent smoke --start` starts a
+   * dev server as one phase of eight, and under `--json` its stdout is one object — a second report
+   * printed into it would make the whole run unparseable, which is the failure llp/0010 §The
+   * `--json` error envelope records for `dev` itself. The `cli:dev_detach` event is emitted either
+   * way, so a suppressed report is never a silent start.
+   */
+  print?: boolean;
+}
+
 /**
  * Start the dev server in a process of its own, and report where it landed.
  *
@@ -107,7 +131,11 @@ export function buildDetachSpawn(binPath: string, argv: string[]): DetachSpawn {
  * up — is the outcome asked for. Everything else throws.
  * @throws {CommandError} when the child exited before publishing its lock, or the wait ran out.
  */
-export async function devDetachAsync(projectRoot: string, options: DevOptions): Promise<number> {
+export async function devDetachAsync(
+  projectRoot: string,
+  options: DevOptions,
+  { print = true }: DevDetachOptions = {}
+): Promise<number> {
   const startedAt = Date.now();
 
   // Asked before anything is spawned. A second detached dev server for one project cannot hold the
@@ -120,6 +148,7 @@ export async function devDetachAsync(projectRoot: string, options: DevOptions): 
       ready: null,
       projectRootMatched: null,
       startedAt,
+      print,
     });
   }
 
@@ -179,6 +208,7 @@ export async function devDetachAsync(projectRoot: string, options: DevOptions): 
     ready,
     projectRootMatched,
     startedAt,
+    print,
   });
 }
 
@@ -192,12 +222,14 @@ function reportDetached(
     ready,
     projectRootMatched,
     startedAt,
+    print,
   }: {
     lock: DevServerLockInfo;
     alreadyRunning: boolean;
     ready: boolean | null;
     projectRootMatched: boolean | null;
     startedAt: number;
+    print: boolean;
   }
 ): number {
   const report: DevDetachResultJson = {
@@ -210,6 +242,9 @@ function reportDetached(
     ready,
     projectRootMatched,
     alreadyRunning,
+    // Read from the child's own log, which is the only channel it has to this process. A run that
+    // started nothing has no log of its own to read a move out of.
+    portMoved: alreadyRunning ? null : readPortMoveSync(projectRoot),
     waitedMs: Date.now() - startedAt,
     followups: [],
   };
@@ -221,15 +256,37 @@ function reportDetached(
     pid: report.pid,
     ready: report.ready,
     alreadyRunning: report.alreadyRunning,
+    // The port that was asked for, so an agent reading only the stream sees the same fact the
+    // report carries rather than a port it has no way to question.
+    portMovedFrom: report.portMoved?.from ?? null,
   });
 
-  if (options.json) {
-    Log.log(JSON.stringify(report, null, 2));
-  } else {
-    printHumanReport(report);
+  // The event above is emitted whatever happens: a caller that suppresses the report is still
+  // starting a dev server, and the stream is how that is visible to anything watching.
+  if (print) {
+    if (options.json) {
+      Log.log(JSON.stringify(report, null, 2));
+    } else {
+      printHumanReport(report);
+    }
+    reportFollowUps('dev', report.followups, { json: options.json });
   }
-  reportFollowUps('dev', report.followups, { json: options.json });
   return 0;
+}
+
+/**
+ * How many lines of the child's log are searched for the port move.
+ *
+ * The retry is announced before the dev server it starts publishes the lock this parent waits on,
+ * so the sentence is always near the top of a log that a run truncates anyway. Generous rather
+ * than exact, because a prebuild step ahead of it prints its own output first.
+ */
+const PORT_MOVE_LOG_LINES = 500;
+
+/** The port move the detached child announced in its log, or null when it announced none. */
+function readPortMoveSync(projectRoot: string): PortMove | null {
+  const read = readDetachedLogSync(projectRoot, PORT_MOVE_LOG_LINES);
+  return read == null ? null : parsePortMove(read.lines.join('\n'));
 }
 
 function printHumanReport(report: DevDetachResultJson): void {
@@ -238,6 +295,17 @@ function printHumanReport(report: DevDetachResultJson): void {
     `${label('Dev server')}${report.url}${report.alreadyRunning ? ' · already running' : ' · detached'}`,
     `${label('Process')}${report.pid}`,
   ];
+  // Right under the URL, because that URL is the thing the move made stale: every command and
+  // every link a caller had already written names the port that was asked for, not this one.
+  if (report.portMoved) {
+    lines.push(
+      `${label('Port')}${
+        report.portMoved.from == null
+          ? `moved · the port it wanted was busy, so it took ${report.portMoved.to}`
+          : `moved · ${report.portMoved.from} was busy, so it took ${report.portMoved.to}`
+      }`
+    );
+  }
   if (report.logFile) {
     lines.push(`${label('Log')}${report.logFile}`);
   }

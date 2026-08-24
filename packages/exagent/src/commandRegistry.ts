@@ -74,6 +74,9 @@ export const topLevelCommands: { [command: string]: CommandLoader } = {
   install: () => import('./install').then((i) => i.exagentInstall),
   navigate: () => import('./navigate').then((i) => i.exagentNavigate),
   new: () => import('./new').then((i) => i.exagentNew),
+  // A capability only this CLI has, so it gets a verb of its own (llp/0006 naming rule): `expo`
+  // has no `smoke` in its command map, so there is no `expo` behaviour for this name to match.
+  smoke: () => import('./smoke').then((i) => i.exagentSmoke),
   start: () => import('./start').then((i) => i.exagentStart),
   status: () => import('./status').then((i) => i.exagentStatus),
   // A capability only this CLI has gets a verb of its own (llp/0006 naming rule): `expo` has no
@@ -447,8 +450,8 @@ export const helpSections: HelpSection[] = [
   },
   {
     title: 'Debug a running app',
-    commands: [...actionNames('runtime'), 'navigate'],
-    note: 'runtime:reload first after fixing a crash: an app whose render threw keeps running the old code.',
+    commands: ['smoke', ...actionNames('runtime'), 'navigate'],
+    note: 'smoke is the whole gate in one command; runtime:reload first after fixing a crash, because an app whose render threw keeps running the old code.',
   },
   { title: 'Agent setup', commands: [...actionNames('agents'), ...actionNames('skills')] },
   { title: 'Checkpoints', commands: ['checkpoint', 'checkpoint:list', 'checkpoint:undo'] },

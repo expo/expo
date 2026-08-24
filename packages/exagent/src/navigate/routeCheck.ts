@@ -100,6 +100,24 @@ export function checkRoute({
 }
 
 /**
+ * The commands that check a route, and how each of them takes one on a command line.
+ *
+ * The `Try:` line of this failure is what a driving agent runs next, so it has to be the command
+ * the caller was already running. `runtime:reload --route /nope` used to be answered with
+ * `npx exagent navigate /notes` [observed — friction run 5], which corrects the route and drops
+ * the reload — and the reload was the point: `navigate` opens a route in the app that is running,
+ * while `runtime:reload --route` puts the app back on the code that is on disk first.
+ */
+const ROUTE_COMMANDS = {
+  navigate: (route: string) => `npx exagent navigate ${route}`,
+  'runtime:reload': (route: string) => `npx exagent runtime:reload --route ${route}`,
+  smoke: (route: string) => `npx exagent smoke --route ${route}`,
+} as const;
+
+/** A command that resolves a route against the project's routes before it acts on one. */
+export type RouteCommand = keyof typeof ROUTE_COMMANDS;
+
+/**
  * The failure for a route the project has not got.
  *
  * Exit `1`, not the `20` band: nothing was opened and nothing was attempted, so this is the caller
@@ -109,7 +127,7 @@ export function checkRoute({
 export function routeNotFoundError(
   route: string,
   table: ProjectRouteTable,
-  { platform }: { platform?: string } = {}
+  { platform, command = 'navigate' }: { platform?: string; command?: RouteCommand } = {}
 ): CommandError {
   const routes = table.routes.map((entry) => entry.route);
   const shown = routes.slice(0, MAX_LISTED_ROUTES);
@@ -127,8 +145,7 @@ export function routeNotFoundError(
       `How: ${nearest != null ? `did you mean "${nearest}"? ` : ''}The routes this project has are: ${listing}. A route you have just added has to exist as a file before it can be opened. Pass --no-route-check to open the link without this check.`,
     ].join('\n')
   );
-  error.suggestedCommand =
-    nearest != null ? `npx exagent navigate ${nearest}` : 'npx exagent navigate /';
+  error.suggestedCommand = ROUTE_COMMANDS[command](nearest ?? '/');
   return error;
 }
 

@@ -339,6 +339,43 @@ describe('exagent dev', () => {
 
   // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol — the documented way to avoid the
   // port question entirely.
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope — friction run 5, F48-3.
+  // An option neither CLI has used to reach `expo start`, which meant the plan had already been
+  // decided, printed and started before anything said the command line was wrong.
+  describe('an option neither CLI has', () => {
+    it('is refused before anything runs, with the --json envelope', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--yes', '--json', '--bogus'],
+        { reject: false }
+      );
+
+      expect(result.exitCode).toBe(1);
+      const { error } = JSON.parse(result.stdout);
+      expect(error.code).toBe('BAD_ARGS');
+      expect(error.message).toContain('--bogus');
+      expect(error.suggestedCommand).toBe('npx exagent dev --help');
+      // Nothing was planned and nothing was spawned: the point of checking before the plan.
+      expect(invocationArgs(projectRoot)).toEqual([]);
+    });
+
+    it('still accepts the options expo start owns', async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(
+        projectRoot,
+        ['dev', '--yes', '--json', '--go', '--offline', '--clear'],
+        { reject: false }
+      );
+
+      expect(result.exitCode).toBe(0);
+      const start = invocationArgs(projectRoot).find((args) => args[0] === 'start');
+      expect(start).toEqual(expect.arrayContaining(['--offline', '--clear']));
+    });
+  });
+
   describe('--port', () => {
     it('forwards the port to the dev server and names it in the follow-ups', async () => {
       const projectRoot = await setupAsync('go-app');

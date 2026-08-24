@@ -69,4 +69,22 @@ describe('OPTION_OWNERS', () => {
       }
     }
   });
+
+  // @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope — friction run 5, F48-2.
+  // Each of these is an option a caller reached for on a neighbour of the command that has it,
+  // and the table is what turns "that option does not exist" into "it exists over there".
+  it.each([
+    ['--tail', 'dev:logs'],
+    ['--fail-on-error', 'runtime:errors'],
+    ['--require-app', 'dev:wait'],
+    ['--duration', 'runtime:errors'],
+  ])('names the command that owns %s', (option, owner) => {
+    expect(OPTION_OWNERS[option]).toContain(owner);
+  });
+
+  it('points a caller who asked dev:wait for a window at runtime:errors', () => {
+    const error = unknownOptionError('dev:wait', '--duration');
+
+    expect(error.message).toContain('"npx exagent runtime:errors"');
+  });
 });

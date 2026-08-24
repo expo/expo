@@ -500,7 +500,7 @@ describe(navigateAsync, () => {
     const error = await navigateAsync(projectRoot, options({ devServerUrl: null })).catch((e) => e);
 
     expect(error.code).toBe('DEEP_LINK_UNRESOLVED');
-    expect(error.message).toContain('npx expo start');
+    expect(error.message).toContain('npx exagent dev --detach');
   });
 
   // @ref llp/0005-runtime-loop-tools.rfc.md §Verifying the route. The friction this pins:

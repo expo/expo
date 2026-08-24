@@ -128,6 +128,7 @@ describe('CdpRuntimeErrorCollector.collectAsync', () => {
           column: 8,
         },
       ],
+      isError: true,
       location: 'http://localhost:8081/index.bundle:42:9',
     });
     expect(errors[1]).toEqual({
@@ -136,6 +137,9 @@ describe('CdpRuntimeErrorCollector.collectAsync', () => {
       message: 'Request failed',
       stack: undefined,
       frames: undefined,
+      // A line of text, so it carries no stack of its own — which is the difference a gate acts
+      // on, because `source` cannot answer it (see the field's own documentation).
+      isError: false,
     });
     expect(collector.metadata).toEqual({
       metroUrl: 'http://localhost:8081',
@@ -233,6 +237,8 @@ describe(parseRuntimeErrorMessage, () => {
       timestamp: 5,
       message: 'Assertion failed: 1',
       stack: undefined,
+      // Text, not an Error: nothing here carries a stack of its own.
+      isError: false,
     });
   });
 
@@ -262,7 +268,70 @@ describe(parseRuntimeErrorMessage, () => {
       // Read back out of the text, because that is the only place this stack exists — and it has
       // to be symbolicated like any other. Text stacks count columns from 1, Metro from 0.
       frames: [{ methodName: 'App', file: 'App.tsx', lineNumber: 3, column: 0 }],
+      isError: true,
       location: undefined,
     });
+  });
+});
+
+// @ref llp/0005-runtime-loop-tools.rfc.md §The smoke gate — the three cases measured live on
+// 2026-08-24 against notesapp on SDK 57 in Expo Go on an iOS 26.5 simulator. They are pinned here
+// because a gate is built on the difference between them, and because the one a reader would
+// predict from the protocol — an uncaught throw arriving as `Runtime.exceptionThrown` — did not
+// happen once in any of the runs.
+describe('an Error told apart from a line of text', () => {
+  /** One `Runtime.consoleAPICalled` frame, in the shape React Native sends. */
+  function consoleCall(text: string, stackFrames: { functionName: string; url: string }[] = []) {
+    return parseRuntimeErrorMessage({
+      method: 'Runtime.consoleAPICalled',
+      params: {
+        type: 'error',
+        timestamp: 1,
+        args: [{ type: 'string', value: text }],
+        stackTrace: {
+          callFrames: stackFrames.map((frame) => ({
+            ...frame,
+            scriptId: '1',
+            lineNumber: 0,
+            columnNumber: 0,
+          })),
+        },
+      },
+    });
+  }
+
+  // `console.error("some text")`: the message is text, and the `stackTrace` CDP sends alongside
+  // describes the console machinery that reported it rather than any file of this project.
+  it(`reads a plain log as text, not as an error`, () => {
+    const record = consoleCall('WAVE6_PLAIN_LOG plain text log', [
+      { functionName: 'methodName', url: 'node_modules/@react-native/js-polyfills/console.js' },
+      { functionName: 'overrideMethod', url: 'node_modules/react-devtools-core/dist/backend.js' },
+    ]);
+
+    expect(record!.isError).toBe(false);
+  });
+
+  // `throw new Error(x)` — which never reaches `Runtime.exceptionThrown` on this runtime. React
+  // Native catches it and reports it through the console path as one string holding the message
+  // and the error's own frames.
+  it(`reads an uncaught throw as an error, through the console path`, () => {
+    const record = consoleCall(
+      'Error: WAVE6_UNCAUGHT\n    at setTimeout$argument_0 (src/app/index.tsx:112:18)'
+    );
+
+    expect(record!.source).toBe('console');
+    expect(record!.isError).toBe(true);
+    expect(record!.message).toBe('Error: WAVE6_UNCAUGHT');
+  });
+
+  // The limit, pinned so nobody removes it believing it was an oversight: `console.error(new
+  // Error(x))` produces the same bytes as the throw above, so nothing over this protocol tells
+  // them apart. A gate built on this flag fails on both, deliberately.
+  it(`cannot tell a logged Error from an uncaught one, and says so by reading both as errors`, () => {
+    const logged = consoleCall(
+      'Error: WAVE6_LOGGED_ERROR\n    at setTimeout$argument_0 (src/app/index.tsx:109:26)'
+    );
+
+    expect(logged!.isError).toBe(true);
   });
 });

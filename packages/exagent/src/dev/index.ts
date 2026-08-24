@@ -75,10 +75,15 @@ export const exagentDev: Command = async (argv) => {
         chalk`  than starting somewhere the URLs you already have do not point.`,
         chalk`    {dim $} npx exagent dev --yes --json --port 8082`,
         '',
-        chalk`  Arguments are also passed to the {bold expo start} the plan ends with, when it ends with`,
-        chalk`  one. A plan ending in a build reports the arguments it could not pass on.`,
+        chalk`  {bold The options of expo start are accepted too} and passed to the {bold expo start} the plan`,
+        chalk`  ends with, when it ends with one: {bold --go}, {bold --dev-client}, {bold --clear}, {bold --host}, {bold --tunnel},`,
+        chalk`  {bold --lan}, {bold --localhost}, {bold --offline}, {bold --no-dev}, {bold --minify}, {bold --max-workers},`,
+        chalk`  {bold --scheme}, {bold --https}, {bold --private-key-path} and their short forms. A plan ending in a`,
+        chalk`  build reports the arguments it could not pass on. Anything neither CLI has is refused`,
+        chalk`  here, before the plan is decided, rather than forwarded and reported a step later.`,
         '',
-        chalk`  Run {bold npx expo start --help} for the arguments the Expo CLI accepts.`,
+        chalk`  Run {bold npx expo start --help} for what each of those does, and {bold npx exagent start} to`,
+        chalk`  reach {bold expo start} with every argument forwarded untouched.`,
         '',
       ].join('\n')
     );

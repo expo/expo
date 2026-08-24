@@ -421,7 +421,8 @@ describe('exagent dev:wait', () => {
         '--json',
       ]);
 
-      // The escape hatch: the same broken project, and the same answer the command used to give.
+      // The escape hatch: the same broken project, and the same answer the command used to give
+      // — with the flag named back, so a declined check does not read as a clean one (F48-7).
       expect(result.exitCode).toBe(0);
       expect(JSON.parse(result.stdout).bundle).toEqual({
         checked: false,
@@ -429,7 +430,7 @@ describe('exagent dev:wait', () => {
         platform: null,
         url: null,
         error: null,
-        reason: 'the entry bundle check was not run',
+        reason: 'the entry bundle check was not run (--no-bundle-check)',
       });
     });
 

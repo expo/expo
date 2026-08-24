@@ -343,6 +343,11 @@ declare module '2g' {
       ready: boolean | null;
       /** The project already had a dev server, so nothing was started. */
       alreadyRunning: boolean;
+      /**
+       * The busy port this run was moved off, or null when it did not move — and also null when
+       * it moved off a port the Expo CLI declined to name. `port` above is where it landed.
+       */
+      portMovedFrom: number | null;
     };
     // @ref llp/0005-runtime-loop-tools.rfc.md §Reading the detached dev server's output
     'cli:dev_logs': {
@@ -382,6 +387,37 @@ declare module '2g' {
        * that is. The run stopped nothing, and exits 20 (llp/0005 §An `--app-id` nobody is running).
        */
       appIdMismatch: boolean;
+    };
+    /**
+     * One `exagent smoke` run: the verdict, and every phase that produced it.
+     *
+     * The phases are on the stream as well as in the report because the report may be the human
+     * one, and an agent watching a run it did not ask for `--json` from still needs to know which
+     * step of the gate decided the answer.
+     *
+     * @see llp/0005-runtime-loop-tools.rfc.md §The smoke gate
+     */
+    'cli:smoke': {
+      /** `passed`, `failed` or `inconclusive`. */
+      outcome: string;
+      devServerUrl: string;
+      /** Which discovery step produced it, or null when nothing answered. */
+      source: string | null;
+      /** A dev server was started by this run, because `--start` allowed it. */
+      started: boolean;
+      /** Debugger targets attached when the run read them, or null when it never got that far. */
+      appsConnected: number | null;
+      /** `ok`, `broken`, `timeout`, `unknown`, or null when the check did not run. */
+      bundle: string | null;
+      /** Whether the runtime answered an evaluation; null when it was never asked. */
+      runtimeSupported: boolean | null;
+      /** How many records the window caught, or null when it never opened. */
+      errorCount: number | null;
+      /** Whether a picture of the screen was taken. */
+      screenshot: boolean;
+      durationMs: number;
+      /** Each phase, with what it answered and how long it took. Never a reason: that is prose. */
+      phases: { id: string; status: string; ms: number }[];
     };
     'cli:navigate': {
       route: string;

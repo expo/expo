@@ -351,6 +351,34 @@ describe(reloadAsync, () => {
     expect(spawn).not.toHaveBeenCalled();
   });
 
+  // @ref llp/0010-agent-conventions.rfc.md §The reload gate — friction run 5, F48-6. "0
+  // reconnected after the reload" describes an app that failed to come back from a reload that
+  // never happened, which is a worse reading of the refusal than no line at all.
+  it(`should not count reconnections against a reload that never happened`, async () => {
+    writeProject();
+    mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
+    mockConnect(fakeSocket([{ 'socket#1': 'role=ios' }]).socket);
+
+    await reloadAsync(projectRoot, options());
+
+    expect(printed()).toContain('Apps connected 1');
+    expect(printed()).toContain('no reload happened');
+    expect(printed()).not.toContain('reconnected after the reload');
+  });
+
+  it(`should still count reconnections for a reload that did happen`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET]);
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () =>
+        server.listing([RELOADED_EXPO_GO_TARGET])
+      ).socket
+    );
+
+    await expect(reloadAsync(projectRoot, options())).resolves.toBe(EXIT_OK);
+    expect(printed()).toContain('1 reconnected after the reload');
+  });
+
   it(`should name the bundle in the failure, not the app`, async () => {
     writeProject();
     mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
@@ -361,6 +389,41 @@ describe(reloadAsync, () => {
     const printedError = jest.mocked(console.error).mock.calls.flat().join('\n');
     expect(printedError).toContain('does not compile');
     expect(printedError).toContain('src/app/notes.tsx:76');
+  });
+
+  // @ref llp/0010-agent-conventions.rfc.md §`checked` and `ok` move together — friction run 5,
+  // F48-7. A checked run prints `Bundle compiles · for ios`, so the *absence* of the line was the
+  // only signal that a gate had been skipped — and a reader cannot notice a line that is not there.
+  it(`should name --no-bundle-check in a Bundle line rather than printing none`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET], { bundle: 'broken' });
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () =>
+        server.listing([RELOADED_EXPO_GO_TARGET])
+      ).socket
+    );
+
+    await reloadAsync(projectRoot, options({ bundleCheck: false }));
+
+    expect(printed()).toContain('Bundle');
+    expect(printed()).toContain('skipped (--no-bundle-check)');
+  });
+
+  // The other way of having no answer keeps the plainer wording: there is no flag to blame when a
+  // dev server simply said nothing this CLI understands.
+  it(`should say not checked, with the reason, when the check could not decide`, async () => {
+    writeProject();
+    const server = mockDevServer([EXPO_GO_TARGET], { bundle: 'no-manifest' });
+    mockConnect(
+      fakeSocket([{ 'socket#1': 'role=ios' }, { 'socket#4': 'role=ios' }], () =>
+        server.listing([RELOADED_EXPO_GO_TARGET])
+      ).socket
+    );
+
+    await reloadAsync(projectRoot, options());
+
+    expect(printed()).toContain('not checked');
+    expect(printed()).not.toContain('--no-bundle-check');
   });
 
   it(`should reload anyway with --no-bundle-check`, async () => {

@@ -56,6 +56,15 @@ export interface DevWaitResult {
   timedOut: boolean;
   /** Whether an app was required to attach (`--require-app`). */
   requireApp: boolean;
+  /**
+   * Whether the entry bundle check was asked for, i.e. `--no-bundle-check` was *not* passed.
+   *
+   * Kept beside {@link bundle} because a null bundle has two causes that read the same and mean
+   * opposite things: a caller who declined the check, and a check that never got the chance to run
+   * because the bundler was never ready. Only the first has a flag to name, and reporting "not
+   * checked" for both is what made a declined check read as a clean one [friction run 5, F48-7].
+   */
+  bundleCheck: boolean;
   /** What building the project's entry bundle answered, or null when it was not attempted. */
   bundle: BundleCheckResult | null;
   /** Why the wait did not end in a ready bundler. Absent when it did. */
@@ -169,10 +178,14 @@ export function devWaitResultToJson(
     waitedMs: result.waitedMs,
     timedOut: result.timedOut,
     source: result.source,
-    bundle: bundleToJson(result.bundle),
+    bundle: bundleToJson(result.bundle, { skippedByFlag: !result.bundleCheck }),
     followups,
   };
 }
+
+/** The reason a bundle object carries when nothing was built, per why nothing was. */
+const BUNDLE_NOT_RUN_REASON = 'the entry bundle check was not run';
+const BUNDLE_SKIPPED_REASON = `${BUNDLE_NOT_RUN_REASON} (--no-bundle-check)`;
 
 /**
  * The `bundle` object, with the same keys whatever the check did or did not manage to do.
@@ -181,7 +194,10 @@ export function devWaitResultToJson(
  * question "does this project's entry bundle compile" is reported in one shape wherever it is
  * asked (llp/0010 §The reload gate).
  */
-export function bundleToJson(bundle: BundleCheckResult | null): DevWaitBundleJson {
+export function bundleToJson(
+  bundle: BundleCheckResult | null,
+  { skippedByFlag = false }: { skippedByFlag?: boolean } = {}
+): DevWaitBundleJson {
   if (bundle == null) {
     return {
       checked: false,
@@ -189,7 +205,7 @@ export function bundleToJson(bundle: BundleCheckResult | null): DevWaitBundleJso
       platform: null,
       url: null,
       error: null,
-      reason: 'the entry bundle check was not run',
+      reason: skippedByFlag ? BUNDLE_SKIPPED_REASON : BUNDLE_NOT_RUN_REASON,
     };
   }
   const ok = bundle.outcome === 'ok' ? true : bundle.outcome === 'broken' ? false : null;
@@ -210,7 +226,7 @@ export function formatDevWaitResult(result: DevWaitResult): string {
     row('dev server', `${result.devServerUrl}${SEPARATOR}${chalk.dim(`via ${result.source}`)}`),
     row('bundler', bundlerValue(result)),
     row('project', projectValue(result)),
-    row('bundle', bundleValue(result.bundle)),
+    row('bundle', bundleValue(result.bundle, result.bundleCheck)),
     row('apps', appsValue(result)),
     ...bundleErrorLines(result.bundle),
   ].join('\n');
@@ -254,9 +270,12 @@ function projectValue(result: DevWaitResult): string {
  * The only line of this report that is about the *project*: every other one is about the dev
  * server, which can be perfectly healthy while the code it is serving does not compile.
  */
-function bundleValue(bundle: BundleCheckResult | null): string {
+function bundleValue(bundle: BundleCheckResult | null, requested: boolean): string {
   if (bundle == null) {
-    return chalk.dim('not checked');
+    // The two ways of having no answer, told apart. A caller that passed `--no-bundle-check` gets
+    // the flag named back, so the line reads as their own decision rather than as a clean result;
+    // a check that never ran keeps the plainer wording, because there is no flag to blame.
+    return requested ? chalk.dim('not checked') : chalk.dim('skipped (--no-bundle-check)');
   }
   switch (bundle.outcome) {
     case 'ok':
