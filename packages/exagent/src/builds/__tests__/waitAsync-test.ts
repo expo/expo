@@ -275,8 +275,11 @@ describe(pollBuildAsync, () => {
       expect(error).toBeInstanceOf(CommandError);
       expect(error.code).toBe('BUILD_VIEW_FAILED');
       expect(error.message).toContain('workflow');
-      // Errors are prompts (llp/0006): the last line is the other command that waits.
-      expect(error.suggestedCommand).toBe(`npx eas workflow:status ${ID} --wait --json`);
+      // Errors are prompts (llp/0006): the last line is what a driving agent acts on, so it holds
+      // the check that is *unconditionally* worth running — against the binary that actually ran.
+      // The workflow command is conditional ("if it names a workflow run"), so it stays in `How:`.
+      expect(error.suggestedCommand).toBe('/usr/local/bin/eas whoami');
+      expect(error.message).toContain(`npx eas workflow:status ${ID} --wait --json`);
       // What the tool printed travels with the error, so the cause is not a second run away.
       expect(error.message).toContain('Entity not authorized');
       expect(spawn).toHaveBeenCalledTimes(MAX_CONSECUTIVE_FAILURES);
@@ -287,8 +290,27 @@ describe(pollBuildAsync, () => {
 
       const { error } = await waitAsync(options({ kind: 'submission' }));
 
-      expect(error.suggestedCommand).toBe('npx eas whoami');
+      expect(error.suggestedCommand).toBe('/usr/local/bin/eas whoami');
       expect(error.message).not.toContain('workflow');
+    });
+
+    // @ref llp/0010 — a shim under the name `eas` that panics is not the EAS CLI reporting
+    // anything, and quoting its backtrace under "What the tool printed" sends the reader after a
+    // missing file inside a program that was never involved.
+    it(`says the binary is not the CLI instead of quoting its crash`, async () => {
+      const backtrace = 'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   2: tuft::main\n';
+      script([
+        { exitCode: 1, stderr: backtrace },
+        { exitCode: 1, stderr: backtrace },
+        { exitCode: 1, stderr: backtrace },
+      ]);
+
+      const { error } = await waitAsync(options());
+
+      expect(error.message).toContain('/usr/local/bin/eas failed to run at all');
+      expect(error.message).toContain('this may not be the real CLI');
+      expect(error.message).not.toContain('What the tool printed');
+      expect(error.message).not.toContain('tuft::main');
     });
 
     it(`counts every way a poll can fail`, async () => {

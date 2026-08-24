@@ -13,6 +13,11 @@ import { event } from '../events';
 import type { EasCli } from '../utils/easCli';
 import { CommandError } from '../utils/errors';
 import { spawnSubprocessAsync, type SubprocessResult } from '../utils/subprocess';
+import {
+  checkBinaryCommand,
+  looksLikeWrapperCrash,
+  wrapperCrashDetail,
+} from '../utils/wrapperCrash';
 import { parseLastJsonObject, readProgress, readString } from './parseView';
 import type { BuildWaitOptions } from './resolveOptions';
 import { resolveTerminalStatus, type BuildWaitOutcome } from './status';
@@ -118,7 +123,7 @@ export async function pollBuildAsync(
           message: failureMessage(result),
         });
         if (consecutiveFailures >= MAX_CONSECUTIVE_FAILURES) {
-          throw pollFailedError(options, result);
+          throw pollFailedError(options, result, easCli);
         }
       } else {
         consecutiveFailures = 0;
@@ -225,21 +230,37 @@ function failureMessage(result: SubprocessResult): string {
  * The error for a wait whose polls stopped answering.
  *
  * A build id and a workflow id look alike and come from the same places, and `eas build:view` is
- * the command that rejects the wrong one — so the way out names the command that waits on the
- * other kind (llp/0006 §Errors are prompts). `eas workflow:status --wait` already exists, which is
- * why this is one line of prose and not a second poll loop.
+ * the command that rejects the wrong one — so the prose names the command that waits on the other
+ * kind (llp/0006 §Errors are prompts). `eas workflow:status --wait` already exists, which is why
+ * this is one line of prose and not a second poll loop.
+ *
+ * The `Try:` line is **not** that command, though the `How:` line offers it. `How:` is conditional
+ * — "*if* it names a workflow run" — and the last line of a failure is what a driving agent acts
+ * on, so putting the workflow command there strips the condition and sends the agent to run a
+ * command that fails again for the same reason [observed — friction run, 2026-08-23]. The check
+ * that is unconditionally worth running is who this CLI is acting as, against the binary that
+ * actually ran.
  */
-function pollFailedError(options: BuildWaitOptions, result: SubprocessResult): CommandError {
+function pollFailedError(
+  options: BuildWaitOptions,
+  result: SubprocessResult,
+  easCli: EasCli
+): CommandError {
   const command = viewCommand(options);
-  const tail = outputTail(`${result.stdout}${result.stderr}`, OUTPUT_TAIL_LINES);
-  const cause =
-    options.kind === 'submission'
+  const whoami = checkBinaryCommand(easCli.command, ['whoami']);
+  const crashed = looksLikeWrapperCrash({ tool: 'eas', ...result });
+  const detail = crashed
+    ? wrapperCrashDetail({ tool: 'eas', exitCode: result.exitCode }, easCli.command)
+    : fencedTail(result);
+  const cause = crashed
+    ? `Why: the "eas" that ran is not answering as the EAS CLI at all, so nothing was learned about the ${options.kind === 'submission' ? 'submission' : 'build'}.`
+    : options.kind === 'submission'
       ? `Why: either the id is not a submission this account can see — a mistyped id, or a different account — or the EAS API could not be reached from here.`
       : `Why: either the id is not a build this account can see — a mistyped id, a different account, or a *workflow* id rather than a build id — or the EAS API could not be reached from here.`;
   const how =
     options.kind === 'submission'
-      ? `How: check the id, and check who the CLI is acting as with "npx eas whoami". On a headless machine, set EXPO_TOKEN to an access token from expo.dev.`
-      : `How: check the id. If it names a workflow run rather than a build, "npx eas workflow:status ${options.id} --wait --json" waits on it instead. If the account is the problem, "npx eas whoami" says who the CLI is acting as.`;
+      ? `How: check the id, and check who that CLI is acting as with "${whoami}". On a headless machine, set EXPO_TOKEN to an access token from expo.dev.`
+      : `How: check the id. If it names a workflow run rather than a build, "npx eas workflow:status ${options.id} --wait --json" waits on it instead. If the account is the problem, "${whoami}" says who the CLI is acting as.`;
 
   const error = new CommandError(
     'BUILD_VIEW_FAILED',
@@ -247,14 +268,17 @@ function pollFailedError(options: BuildWaitOptions, result: SubprocessResult): C
       `Gave up waiting: "eas ${command} ${options.id} --json" failed ${MAX_CONSECUTIVE_FAILURES} times in a row.`,
       cause,
       how,
-      tail ? `\nWhat the tool printed:\n${tail}` : '',
+      detail,
     ]
       .filter(Boolean)
       .join('\n')
   );
-  error.suggestedCommand =
-    options.kind === 'submission'
-      ? 'npx eas whoami'
-      : `npx eas workflow:status ${options.id} --wait --json`;
+  error.suggestedCommand = whoami;
   return error;
+}
+
+/** The last lines the failing polls printed, under the heading that says what they are. */
+function fencedTail(result: SubprocessResult): string {
+  const tail = outputTail(`${result.stdout}${result.stderr}`, OUTPUT_TAIL_LINES);
+  return tail ? `\nWhat the tool printed:\n${tail}` : '';
 }

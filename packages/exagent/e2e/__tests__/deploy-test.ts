@@ -350,7 +350,37 @@ describe('exagent deploy', () => {
 
       expect(result.exitCode).toBe(1);
       expect(result.stderr).toContain('exited with code 7');
-      expect(result.stderr).toContain('Try: npx eas-cli whoami');
+      // The check names the binary that actually ran, not a different package with a similar
+      // name: `npx eas-cli whoami` would answer for a program that was never involved.
+      expect(result.stderr).toMatch(/Try: .*[/\\]\.stub-bin[/\\]eas(\.cmd)? whoami/);
+      expect(result.stderr).not.toContain('npx eas-cli whoami');
+    });
+
+    // A `.tuft-bin/eas`, a stale link, or any wrapper under that name is not the EAS CLI, and its
+    // output is not EAS output. Quoting a Rust backtrace under "What the tool printed" tells the
+    // reader the EAS CLI reported a missing file [observed — friction run, 2026-08-23].
+    it(`should say the binary is not the CLI instead of quoting its crash`, async () => {
+      const projectRoot = await setupAsync('go-app');
+
+      const result = await executeExagentAsync(projectRoot, ['deploy', '--web', '--json'], {
+        env: {
+          STUB_EAS_EXIT_CODE: '101',
+          STUB_EAS_STDERR:
+            'Caused by:\n    No such file or directory (os error 2)\n\nStack backtrace:\n   0: <std::backtrace::Backtrace>::create\n   2: tuft::main',
+        },
+        reject: false,
+      });
+
+      expect(result.exitCode).toBe(1);
+      expect(result.stderr).toContain('failed to run at all');
+      expect(result.stderr).toContain('this may not be the real CLI');
+      expect(result.stderr).not.toContain('What the tool printed');
+      expect(result.stderr).not.toContain('tuft::main');
+      // The same failure, as data: the envelope carries the message a person read.
+      expect(JSON.parse(result.stdout).error).toMatchObject({
+        code: 'EAS_DEPLOY_FAILED',
+        message: expect.stringContaining('failed to run at all'),
+      });
     });
 
     // @ref llp/0010-agent-conventions.rfc.md §Needs-human protocol
