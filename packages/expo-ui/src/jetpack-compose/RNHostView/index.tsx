@@ -1,8 +1,7 @@
 import { requireNativeView } from 'expo';
 import type { ReactElement, ComponentType } from 'react';
-import type { StyleProp, ViewStyle } from 'react-native';
 
-import { useIsPresentedInOwnWindow } from '../../PresentedContentContext';
+import { PresentedContentContext, useIsPresentedInOwnWindow } from '../../PresentedContentContext';
 import type { ModifierConfig } from '../../types';
 import type { PrimitiveBaseProps } from '../layout';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -27,9 +26,6 @@ export interface RNHostProps extends PrimitiveBaseProps {
 
 type NativeRNHostProps = RNHostProps & {
   layoutRoot: boolean;
-  // Set below, not by the caller: a React Native style cannot describe a Jetpack Compose view, and
-  // the one property that does reach the shadow node is the cross-axis sizing `matchContents` needs.
-  style?: StyleProp<ViewStyle>;
 };
 const NativeRNHostView: ComponentType<NativeRNHostProps> = requireNativeView(
   'ExpoUI',
@@ -46,13 +42,6 @@ function transformProps(props: RNHostProps, layoutRoot: boolean): NativeRNHostPr
   };
 }
 
-// `matchContents` reads the hosted content's Yoga size, so this view must not stretch to its
-// own parent on the cross axis. A stretched box makes the content measure the container instead of
-// itself, and under a `matchContents` `Host` that feeds back into the size it came from: the
-// content grows by the surrounding chrome on every pass and layout never settles.
-// https://github.com/expo/expo/pull/48059
-const hugCrossAxis = { alignSelf: 'flex-start' } as const;
-
 export function RNHostView(props: RNHostProps) {
   // Content presented in its own window — a modal bottom sheet, a dialog — has no React root above
   // it, so it dispatches its own touches and is measured from itself. Everywhere else the surface
@@ -63,10 +52,13 @@ export function RNHostView(props: RNHostProps) {
   return (
     <NativeRNHostView
       {...transformProps(props, layoutRoot)}
-      style={props.matchContents ? hugCrossAxis : undefined}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
-      key={props.matchContents ? 'matchContents' : 'noMatchContents'}
-    />
+      key={props.matchContents ? 'matchContents' : 'noMatchContents'}>
+      {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
+      <PresentedContentContext.Provider value={false}>
+        {props.children}
+      </PresentedContentContext.Provider>
+    </NativeRNHostView>
   );
 }

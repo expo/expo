@@ -48,6 +48,10 @@ public:
     jni::alias_ref<NativeStatePropsGetter::javaobject> self,
     jint tag
   );
+
+  static void clearAllContentOrigins(
+    jni::alias_ref<NativeStatePropsGetter::javaobject> self
+  );
 };
 
 } // namespace expo

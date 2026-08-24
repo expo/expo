@@ -136,6 +136,32 @@ export async function test(
       expect(hosted.height).toBeCloseTo(BOX, 0);
     });
 
+    it('measures a hosted view offset by its own padding modifier', async () => {
+      const hostWrapperRef = React.createRef<View>();
+      const hostedRef = React.createRef<View>();
+
+      // The padding sits on the `RNHostView` itself, which is what the universal `RNHostView`
+      // makes of `style={{ padding }}`. Compose applies a modifier chain outside-in, so the
+      // content origin has to be read inside this padding, not outside it.
+      setPortalChild(
+        <View ref={hostWrapperRef} collapsable={false}>
+          <Host matchContents>
+            <RNHostView matchContents modifiers={[paddingAll(PADDING)]}>
+              <View ref={hostedRef} style={{ width: BOX, height: BOX }} />
+            </RNHostView>
+          </Host>
+        </View>
+      );
+
+      const { host, hosted } = await measureWhenSettled({
+        host: hostWrapperRef,
+        hosted: hostedRef,
+      });
+
+      expect(hosted.pageX - host.pageX).toBeCloseTo(PADDING, 0);
+      expect(hosted.pageY - host.pageY).toBeCloseTo(PADDING, 0);
+    });
+
     it('measures a hosted view offset by a padded Compose column', async () => {
       const hostWrapperRef = React.createRef<View>();
       const hostedRef = React.createRef<View>();

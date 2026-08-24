@@ -35,6 +35,7 @@ import expo.modules.ui.menu.DropdownMenuContent
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
+import expo.modules.kotlin.jni.fabric.NativeStatePropsGetter
 import expo.modules.kotlin.jni.worklets.Worklet
 import expo.modules.ui.state.ObservableState
 import expo.modules.ui.state.WorkletCallback
@@ -72,6 +73,11 @@ class ExpoUIModule : Module() {
     }
 
     OnDestroy {
+      // `RNHostView` publishes its content origin into a process-global registry keyed by view tag.
+      // Tags restart in the next app context, so an entry whose view was never torn down would be
+      // read by an unrelated view after a reload.
+      NativeStatePropsGetter().clearAllContentOrigins()
+
       imageLoader?.close()
       imageLoader = null
       okHttpClient?.dispatcher?.executorService?.shutdown()

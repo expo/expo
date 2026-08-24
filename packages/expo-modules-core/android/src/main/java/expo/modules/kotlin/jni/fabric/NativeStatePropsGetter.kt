@@ -37,9 +37,15 @@ class NativeStatePropsGetter {
     clearContentOriginImpl(tag)
   }
 
+  fun clearAllContentOrigins() {
+    clearAllContentOriginsImpl()
+  }
+
   private external fun setContentOriginImpl(tag: Int, x: Double, y: Double)
 
   private external fun clearContentOriginImpl(tag: Int)
+
+  private external fun clearAllContentOriginsImpl()
 
   private external fun updateStyleSizeImmediateImpl(
     stateWrapper: Any,

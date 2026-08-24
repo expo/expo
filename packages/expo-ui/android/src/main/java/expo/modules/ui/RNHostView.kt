@@ -59,15 +59,26 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   /**
    * Whether this view owns its subtree's touches. False everywhere except content presented in its
    * own window, where no React root sits above us to dispatch.
+   *
+   * Snapshot state because `publishContentOriginModifier` reads it during composition, and the prop
+   * can arrive after the first composition. A plain field would leave that composition publishing an
+   * origin from a coordinate space this view no longer measures from.
    */
-  private var layoutRoot = false
+  private val layoutRootState = mutableStateOf(false)
+  private val layoutRoot: Boolean
+    get() = layoutRootState.value
 
   private var lastContentOriginX = Double.NaN
   private var lastContentOriginY = Double.NaN
 
   internal fun setLayoutRoot(value: Boolean) {
-    layoutRoot = value
+    val changed = layoutRootState.value != value
+    layoutRootState.value = value
     wrapperState.value?.dispatchesTouchesToJS = value
+    if (changed && value) {
+      // As a layout root this view stops publishing an origin, so drop the one it already published.
+      clearPublishedContentOrigin()
+    }
   }
 
   private val childSizeState = mutableStateOf(IntSize.Zero)
@@ -143,9 +154,11 @@ internal class RNHostView(context: Context, appContext: AppContext) :
           .fillMaxSize()
           .then(reportSizeToYogaNodeModifier())
       }
+      // Origin last: a chain applies outside-in, so a caller `padding` or `offset` has to shift the
+      // content before it is read.
       val modifiers = sizingModifier
-        .then(publishContentOriginModifier())
         .then(ModifierRegistry.applyModifiers(props.modifiers, appContext, scope, globalEventDispatcher))
+        .then(publishContentOriginModifier())
 
       AndroidView(
         factory = {
@@ -218,12 +231,6 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 }
 
 /**
- * A thin FrameLayout that intercepts touch events and dispatches them to JS via
- * JSTouchDispatcher/JSPointerDispatcher, replicating the pattern from React Native's
- * DialogRootViewGroup in ReactModalHostView.
- * Implements NestedScrollingChild3 to forward scroll events up to the parent Compose view, because Compose only listens for NestedScrollingChild3 nested-scroll events.
- */
-/**
  * Removes [wrapper] from the view that currently contains it, and clears its bounds.
  *
  * `AndroidView` hands back this same wrapper every time Compose rebuilds it, but Compose puts it
@@ -238,6 +245,12 @@ internal fun detachForReuse(wrapper: View) {
   wrapper.layout(0, 0, 0, 0)
 }
 
+/**
+ * A thin FrameLayout that intercepts touch events and dispatches them to JS via
+ * JSTouchDispatcher/JSPointerDispatcher, replicating the pattern from React Native's
+ * DialogRootViewGroup in ReactModalHostView.
+ * Implements NestedScrollingChild3 to forward scroll events up to the parent Compose view, because Compose only listens for NestedScrollingChild3 nested-scroll events.
+ */
 private class TouchDispatchingRootViewGroup(
   context: Context
 ) : FrameLayout(context), RootView, NestedScrollingChild3 {
@@ -299,12 +312,13 @@ private class TouchDispatchingRootViewGroup(
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     if (ev.actionMasked == MotionEvent.ACTION_CANCEL && !dispatchesTouchesToJS) {
-      // Compose cancels this subtree when a gesture detector above it — a pager, a scrollable —
-      // claims the gesture. The ancestor React root never sees that cancel: it dispatches this
-      // subtree's touches itself and keeps streaming moves, so a `Pressable` still fires on release
-      // even though the finger went to a page swipe. Tell the root a native child took the gesture,
-      // which is the same signal a React Native `ScrollView` sends when it starts scrolling.
-      notifyAncestorRootViews { it.onChildStartedNativeGesture(this, ev) }
+      // Compose cancels this subtree when a gesture detector above it claims the gesture. The
+      // ancestor root, which dispatches this subtree's touches, keeps streaming moves, so a
+      // `Pressable` still fires on release. Tell it a native child took over.
+      //
+      // No child: the gesture is gone from here, so no end call follows, and naming one would leave
+      // the root's pointer dispatcher armed for good. Its pointer stream stays live as a result.
+      notifyAncestorRootViews { it.onChildStartedNativeGesture(null, ev) }
     }
     if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
       // Ancestor React roots (the surface root, outer hosts) also see this gesture and dispatch a

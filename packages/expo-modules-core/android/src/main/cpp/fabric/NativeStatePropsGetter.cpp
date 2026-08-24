@@ -14,6 +14,7 @@ void NativeStatePropsGetter::registerNatives() {
                                       makeNativeMethod("updateViewSizeImmediateImpl", NativeStatePropsGetter::updateViewSizeImmediate),
                                       makeNativeMethod("setContentOriginImpl", NativeStatePropsGetter::setContentOrigin),
                                       makeNativeMethod("clearContentOriginImpl", NativeStatePropsGetter::clearContentOrigin),
+                                      makeNativeMethod("clearAllContentOriginsImpl", NativeStatePropsGetter::clearAllContentOrigins),
                                     });
 }
 
@@ -77,6 +78,12 @@ void NativeStatePropsGetter::clearContentOrigin(
   jint tag
 ) {
   ContentOriginRegistry::clear(static_cast<react::Tag>(tag));
+}
+
+void NativeStatePropsGetter::clearAllContentOrigins(
+  jni::alias_ref<NativeStatePropsGetter::javaobject> self
+) {
+  ContentOriginRegistry::clearAll();
 }
 
 jni::local_ref<jni::JMap<jstring, jobject>> NativeStatePropsGetter::getStateProps(
