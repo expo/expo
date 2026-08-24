@@ -385,3 +385,64 @@ describe('command registry', () => {
     expect(result.all).toContain('runtime:eval');
   });
 });
+
+// @ref llp/0010-agent-conventions.rfc.md §The `--json` error envelope
+// The property, checked as a property: a caller that committed to parsing stdout can parse a
+// failure too. Every assertion here runs `JSON.parse` over the whole of stdout, because a
+// substring match would pass for the very output that broke this before (a payload with prose
+// appended after the closing brace).
+describe('the --json error envelope', () => {
+  let projectRoot: string;
+
+  beforeEach(async () => {
+    projectRoot = await setupFixtureAsync('skills-app');
+  });
+
+  it('prints one parseable object for a bad invocation', async () => {
+    const result = await executeExagentAsync(
+      projectRoot,
+      ['deploy', '--upload-root', '..', '--json'],
+      { reject: false }
+    );
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout)).toEqual({
+      error: {
+        code: 'BAD_ARGS',
+        message: expect.stringContaining('--upload-root'),
+        suggestedCommand: expect.any(String),
+        needsHuman: null,
+      },
+    });
+    // The prose is unchanged and stays where a person reads it.
+    expect(result.stderr).toContain('--upload-root only describes the native deploy');
+  });
+
+  it('prints one parseable object for a command neither CLI has', async () => {
+    const result = await executeExagentAsync(projectRoot, ['wait', '--json'], { reject: false });
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout).error).toMatchObject({ code: 'UNKNOWN_COMMAND' });
+  });
+
+  // The listing that accompanies a group error is prose, so under `--json` it moves to stderr:
+  // stdout has to hold the envelope and nothing else.
+  it('keeps the group listing off stdout so the envelope stays parseable', async () => {
+    const result = await executeExagentAsync(projectRoot, ['runtime', '--json'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(JSON.parse(result.stdout).error).toMatchObject({ code: 'UNKNOWN_ACTION' });
+    expect(result.stderr).toContain('runtime:eval');
+  });
+
+  it('prints nothing on stdout without the flag', async () => {
+    const result = await executeExagentAsync(projectRoot, ['deploy', '--upload-root', '..'], {
+      reject: false,
+    });
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stdout).toBe('');
+  });
+});

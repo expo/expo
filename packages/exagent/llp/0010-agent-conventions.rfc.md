@@ -2,7 +2,7 @@
 
 **Type:** RFC
 **Status:** Draft
-**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`); `exagent build:wait` (`src/builds/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
+**Systems:** `exagent` launcher (`src/cli.ts`, `src/commandRegistry.ts`, `src/exitCodes.ts`, `src/utils/errors.ts`, `src/utils/jsonMode.ts`); `exagent build:wait` (`src/builds/`); the needs-human protocol (`src/needsHuman/`, `src/utils/subprocess.ts`, `src/utils/expoCli.ts`); `packages/@expo/cli`; `eas-cli`
 **Author:** Kudo (drafted with Tuft agent)
 **Date:** 2026-08-23
 **Related:** [[0001-agentic-cli-on-expo-cli]], [[0006-agent-native-cli-surface]], [[0002-testing-and-evals]]
@@ -95,9 +95,37 @@ The prompt shape is `/[?:]\s*$|^\s*[?›»]\s+\S|\(y\/N\)|\(Y\/n\)|Password|pass
 
 The breaking change [observed — `e2e/__tests__/deploy-test.ts`]: the deploy's two auth failures exited `1` and now exit `7`. At 0.0.2 that is the right moment; a CHANGELOG entry records it.
 
-Two limits, both deliberate. First, the **forwarded commands are not covered**. `exagent login`, `exagent prebuild` and the rest of the passthrough inherit the terminal, so their output is never captured and nothing can be classified — `src/passthrough/` is unchanged on purpose. Second, there is **no `--json` error envelope** [observed — `src/cli.ts`, `src/utils/errors.ts`]: a failing command prints prose on stderr and nothing on stdout, whatever mode it was asked for, so the handoff travels on the printed block and on `cli:needs_human`, both machine-readable. Adding a JSON error object for every command is a separate decision about the whole error path, not a needs-human one.
+One limit stays, deliberately: the **forwarded commands are not covered**. `exagent login`, `exagent prebuild` and the rest of the passthrough inherit the terminal, so their output is never captured and nothing can be classified — `src/passthrough/` is unchanged on purpose. The second limit recorded here — that there was no `--json` error envelope — has since been lifted; see the section below.
 
 Signature matching is version-coupled to two CLIs that do not promise their wording — which is why the generic rows exist, why they are last, and why the upstream ask below is the real fix.
+
+## The `--json` error envelope
+
+Decision [confirmed — Kudo, 2026-08-23]. **A command invoked with `--json` prints one JSON object on stdout whether it succeeded or failed.** The failure object is:
+
+```json
+{
+  "error": {
+    "code": "EAS_DEPLOY_FAILED",
+    "message": "The export was built, but EAS Hosting did not accept it …",
+    "suggestedCommand": "npx eas-cli whoami",
+    "needsHuman": { "scenario": "eas-login", "need": "…", "command": "npx eas login", "…": "…" }
+  }
+}
+```
+
+This replaces the "no `--json` error envelope" limit recorded above [superseded — 2026-08-23]. What changed the answer is a friction run: an agent driving the CLI hit `deploy --json`, `build:wait --json` and `status --json` outside a project, and got **zero bytes on stdout** from all three. Under `--json` the caller has committed to parsing stdout; an empty parse tells it nothing, so it falls back to scraping English out of stderr — the exact failure mode the flag exists to remove. The prose was never the problem, and it does not move: stderr still carries the what / **Why:** / **How:** / `Try:` block, unchanged, because that is what a person reads.
+
+Four properties are load-bearing:
+
+- **The key set never varies.** `suggestedCommand` and `needsHuman` are `null` rather than absent, per [[0006-agent-native-cli-surface]] §Output contract, so a caller reading `error.needsHuman` after a plain tool error branches on a value instead of on a missing key. `needsHuman` carries the whole record — the same one `cli:needs_human` carries — because an agent that has to hand a step to its user needs the URL and the environment variables, not a boolean.
+- **The code is the one the site already shipped.** Reclassification never renames a code (the rule of §Needs-human protocol), and the envelope reports `error.code` verbatim.
+- **Success paths are untouched.** Nothing about a command that works changes, and no command gained a second object: a failing command printed nothing on stdout before, so the envelope is the *only* thing there.
+- **The exit code is still the first thing to read.** The envelope explains a failure; it does not signal one. `7` and the `20`–`29` band mean exactly what the table above says.
+
+Implementation [observed — `src/utils/jsonMode.ts`, `src/utils/errors.ts`, `src/cli.ts`]: `logCmdError` is the one function every command's failure funnels into, and it runs *after* the command module threw — often before that module ever parsed its own arguments. So the flag is answered once, by the launcher, from the raw argv: `setJsonRequested(argvRequestsJson(commandArgs))`. `argvRequestsJson` only looks before a `--` separator, because `install` and `start` forward everything after it to another tool and `exagent install -- --json` is npm's flag, not ours. The alternative — an argument on `logCmdError` and on every `.catch(logCmdError)` — is thirty call sites carrying one boolean that cannot change during a run.
+
+One consequence for a command that prints its payload *before* it can fail. `exagent dev --json` used to emit the plan object and then run the plan, so a failing run would have printed two objects — and, worse, the dev server it spawned inherited stdout and appended raw Metro log lines to the JSON [observed — friction run, 2026-08-23: `JSON.parse` failed at the byte after the closing brace]. In `--json` mode `dev` now captures the subprocess and prints exactly one object when the run ends: the plan (with the step results) on a clean exit, or the envelope. `dev --plan --json` is unchanged — there the plan *is* the answer and nothing runs after it. The plan still reaches a driving agent before the first step either way, on the `cli:start_plan` event.
 
 ## Registry rules
 
@@ -163,5 +191,7 @@ Libraries:
 Unit tests pin the constants and all three resolution rules, including a synthetic group registered under a forwarded name for rule (b) [observed — `src/__tests__/exitCodes-test.ts`, `src/__tests__/commandRegistry-test.ts`]. E2E tests pin what the process boundary actually shows: the exit code and the last line of output for a group given options with no action [observed — `e2e/__tests__/wrapper-test.ts`, `e2e/__tests__/build-wait-test.ts`]. Per [[0002-testing-and-evals]], every layer runs with no TTY attached.
 
 The outcome band gets its own discipline, because a code is not testable by reading it. `build:wait`'s status table is exhaustive at the unit level — every status in both casings and both separators, plus values it has never heard of — and each of the four exit codes gets a separate e2e test against a stub `eas` bin walking a scripted status sequence [observed — `src/builds/__tests__/status-test.ts`, `e2e/__tests__/build-wait-test.ts`]. One test asserting "some non-zero code" would pass while the distinction the band exists for was broken.
+
+The `--json` error envelope is tested at both tiers as well [observed — 2026-08-23]. Unit: `argvRequestsJson` against a table including the `--` separator case, and `logCmdError` asserting that nothing reaches stdout without the flag, that the key set is complete with the flag, and that a needs-human failure carries the whole record. E2E, through the published bin: a failing `--json` run whose stdout is fed to `JSON.parse`, so the property the envelope exists for is checked as the property and not as a substring.
 
 The needs-human protocol is tested the same way, at both tiers [observed — 2026-08-23]. Unit: the classifier against a table of recorded output, one sample per signature that exists plus the cases that must answer `null`; the registry invariants (unique ids and codes, `SCREAMING_SNAKE` codes, a command or a URL for every row that is not a generic fallback, the fallbacks last); `logCmdError` with a `NeedsHumanError`, asserting the event pair, the three printed lines and exit `7`; the preflight answering from one subprocess however often it is asked; the hang guard on fake timers, including the two cases it must _not_ fire in. E2E, through the published bin with stdin closed: a stub `eas` printing the real `SessionManager` auth line, a stub `expo` printing the real non-interactive line, and a stub that prints a question and then waits forever — each asserting the exit code, the printed block and the `cli:needs_human` event in `LOG_EVENTS` [observed — `e2e/__tests__/deploy-test.ts`].
