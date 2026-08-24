@@ -1484,6 +1484,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         );
       }
 
+      // The manifest middleware caches the runtime version resolved by the `expo-updates` CLI,
+      // because resolving a fingerprint policy re-hashes the whole project in a subprocess and
+      // would otherwise run on every manifest request. We can't know exactly which files the
+      // fingerprint covers, so invalidate on any observed change rather than risk serving a
+      // stale runtime version.
+      observeAnyFileChanges({ metro, server }, () => {
+        manifestMiddleware.invalidateRuntimeVersionCache();
+      });
+
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {
         this.bindRSCDevModuleInjectionHandler();

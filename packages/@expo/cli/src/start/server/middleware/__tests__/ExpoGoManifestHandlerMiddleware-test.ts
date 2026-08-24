@@ -848,4 +848,121 @@ describe('_getManifestResponseAsync', () => {
 
     expect(partsSeen.has('manifest')).toBeTruthy();
   });
+
+  describe('runtime version caching', () => {
+    /** Request a manifest and fully consume the response so no stream is left dangling. */
+    async function requestManifestAsync(
+      middleware: ExpoGoManifestHandlerMiddleware,
+      platform: 'android' | 'ios' = 'android'
+    ) {
+      const response = await middleware._getManifestResponseAsync({
+        responseContentType: ResponseContentType.TEXT_PLAIN,
+        platform,
+        expectSignature: null,
+        hostname: 'localhost',
+      });
+      await response.text();
+      return response;
+    }
+
+    beforeEach(() => {
+      process.env.EXPO_OFFLINE = '1';
+      jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockClear();
+      jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue('testrtv');
+    });
+
+    it('resolves the runtime version once for repeated sequential manifest requests', async () => {
+      const middleware = createMiddleware();
+
+      await requestManifestAsync(middleware);
+      await requestManifestAsync(middleware);
+      await requestManifestAsync(middleware);
+
+      // Resolving a fingerprint runtime version spawns a subprocess that re-hashes the
+      // whole project, so it must not run again while nothing has changed.
+      expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(1);
+    });
+
+    it('resolves the runtime version once for concurrent manifest requests', async () => {
+      const middleware = createMiddleware();
+
+      await Promise.all([
+        requestManifestAsync(middleware),
+        requestManifestAsync(middleware),
+        requestManifestAsync(middleware),
+      ]);
+
+      expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(1);
+    });
+
+    it('caches the runtime version per platform', async () => {
+      const middleware = createMiddleware();
+
+      await requestManifestAsync(middleware, 'android');
+      await requestManifestAsync(middleware, 'ios');
+      await requestManifestAsync(middleware, 'android');
+      await requestManifestAsync(middleware, 'ios');
+
+      expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(2);
+      expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ platform: 'android' })
+      );
+      expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledWith(
+        expect.objectContaining({ platform: 'ios' })
+      );
+    });
+
+    it('resolves the runtime version again after the cache is invalidated', async () => {
+      const middleware = createMiddleware();
+
+      await requestManifestAsync(middleware);
+      expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(1);
+
+      middleware.invalidateRuntimeVersionCache();
+
+      jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue('changedrtv');
+      const response = await middleware._getManifestResponseAsync({
+        responseContentType: ResponseContentType.MULTIPART_MIXED,
+        platform: 'android',
+        expectSignature: null,
+        hostname: 'localhost',
+      });
+
+      expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(2);
+
+      const contentType = response.headers.get('content-type')!;
+      for await (const part of parseMultipart(response.body!, { contentType })) {
+        if (part.name === 'manifest') {
+          // The new value must be served, not the value cached before invalidation.
+          expect(await part.json()).toMatchObject({ runtimeVersion: 'changedrtv' });
+        }
+      }
+    });
+
+    it('does not cache a failed resolution', async () => {
+      const middleware = createMiddleware();
+
+      jest
+        .mocked(resolveRuntimeVersionWithExpoUpdatesAsync)
+        .mockRejectedValueOnce(new Error('expo-updates exploded'));
+
+      await expect(requestManifestAsync(middleware)).rejects.toThrow('expo-updates exploded');
+
+      // A transient failure must not be pinned for the rest of the dev server session.
+      await requestManifestAsync(middleware);
+      expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not re-resolve when expo-updates reports no runtime version', async () => {
+      const middleware = createMiddleware();
+      jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue(null);
+
+      await requestManifestAsync(middleware);
+      await requestManifestAsync(middleware);
+
+      // `null` means expo-updates is absent or unconfigured, which is just as expensive
+      // to determine, so it is cached too and the config-plugin fallback is used.
+      expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(1);
+    });
+  });
 });

@@ -18,6 +18,7 @@ import type { ManifestRequestInfo } from './ManifestMiddleware';
 import { ManifestMiddleware } from './ManifestMiddleware';
 import { manifestDebugEvent } from './events';
 import { parseForwardedRequestInfo } from './resolveForwarded';
+import type { RuntimePlatform } from './resolvePlatform';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
 import type { ServerRequest } from './server.types';
@@ -55,6 +56,24 @@ interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
 }
 
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoManifestRequestInfo> {
+  /**
+   * Runtime versions resolved by the `expo-updates` CLI, keyed by platform.
+   *
+   * Resolving a `{ policy: 'fingerprint' }` runtime version spawns an `expo-updates
+   * runtimeversion:resolve` subprocess that re-hashes the whole project, which takes
+   * seconds on a real app. Because it runs in a subprocess, nothing survives between
+   * requests, so every manifest request used to pay the full cost. Dev clients fetch the
+   * manifest before the bundle, and the iOS launcher times out well before a large
+   * project finishes fingerprinting.
+   *
+   * The pending promise is cached rather than the resolved value, so concurrent requests
+   * share a single subprocess instead of racing several of them.
+   *
+   * This is cleared by `invalidateRuntimeVersionCache` whenever the file watcher observes
+   * a change, so a cached value never outlives its inputs.
+   */
+  private runtimeVersionCache = new Map<RuntimePlatform, Promise<string | null>>();
+
   public getParsedHeaders(req: ServerRequest): ExpoGoManifestRequestInfo {
     let platform = parsePlatformHeader(req);
 
@@ -116,6 +135,37 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     return headers;
   }
 
+  /**
+   * Drop all cached runtime versions, forcing the next manifest request to resolve
+   * them again. Called when the file watcher observes any change in the project.
+   */
+  public invalidateRuntimeVersionCache(): void {
+    this.runtimeVersionCache.clear();
+  }
+
+  /** Resolve the runtime version through `expo-updates`, reusing an in-flight or cached result. */
+  private getRuntimeVersionWithExpoUpdatesAsync(platform: RuntimePlatform): Promise<string | null> {
+    const cached = this.runtimeVersionCache.get(platform);
+    if (cached) {
+      return cached;
+    }
+
+    const pending = Promise.resolve(
+      resolveRuntimeVersionWithExpoUpdatesAsync({ projectRoot: this.projectRoot, platform })
+    );
+    this.runtimeVersionCache.set(platform, pending);
+
+    // Never leave a failure cached, otherwise a transient error would be pinned for the
+    // rest of the dev server session.
+    pending.catch(() => {
+      if (this.runtimeVersionCache.get(platform) === pending) {
+        this.runtimeVersionCache.delete(platform);
+      }
+    });
+
+    return pending;
+  }
+
   public async _getManifestResponseAsync(
     requestOptions: ExpoGoManifestRequestInfo
   ): Promise<Response> {
@@ -123,10 +173,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       await this._resolveProjectSettingsAsync(requestOptions);
 
     const runtimeVersion =
-      (await resolveRuntimeVersionWithExpoUpdatesAsync({
-        projectRoot: this.projectRoot,
-        platform: requestOptions.platform,
-      })) ??
+      (await this.getRuntimeVersionWithExpoUpdatesAsync(requestOptions.platform)) ??
       // if expo-updates can't determine runtime version, fall back to calculation from config-plugin.
       // this happens when expo-updates is installed but runtimeVersion hasn't yet been configured or when
       // expo-updates is not installed.
