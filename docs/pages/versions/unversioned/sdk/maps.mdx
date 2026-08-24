@@ -223,6 +223,8 @@ export default function Map() {
 
 `AppleMaps.Annotation.icon` expects an image reference, such as the value returned by the `useImage` hook from the `expo-image` library. You can use `AppleMaps.Annotation` for custom image icons. `AppleMaps.Marker` supports marker-specific options such as `systemImage`, `monogram`, and `tintColor`.
 
+The loaded image dimensions determine the annotation size. Pass `maxWidth` and `maxHeight` to the `useImage` hook to scale the icon down.
+
 </Tab>
 </Tabs>
 
