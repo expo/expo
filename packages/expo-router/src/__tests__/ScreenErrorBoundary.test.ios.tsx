@@ -32,21 +32,55 @@ it('uses a layout screen error boundary for a child route', async () => {
 it('uses the parent layout boundary for a nested layout without one', async () => {
   const LayoutBoundary = boundary('layout-boundary');
 
-  await renderRouterAsync({
-    _layout: {
-      default: () => <Stack />,
-      unstable_settings: { screenErrorBoundary: LayoutBoundary },
+  await renderRouterAsync(
+    {
+      _layout: {
+        default: () => <Stack />,
+        unstable_settings: { screenErrorBoundary: LayoutBoundary },
+      },
+      'nested/_layout': () => (
+        <View testID="nested-layout">
+          <Stack />
+        </View>
+      ),
+      'nested/index': ThrowingRoute,
     },
-    'nested/_layout': () => (
-      <View testID="nested-layout">
-        <Stack />
-      </View>
-    ),
-    'nested/index': ThrowingRoute,
-  });
+    { initialUrl: '/nested' }
+  );
+
+  expect(screen.getByTestId('layout-boundary')).toBeOnTheScreen();
+  expect(screen.getByTestId('nested-layout')).toBeOnTheScreen();
+});
+
+it('uses the parent layout boundary when the nested layout clears it', async () => {
+  const LayoutBoundary = boundary('layout-boundary');
+
+  await renderRouterAsync(
+    {
+      _layout: {
+        default: () => <Stack />,
+        unstable_settings: { screenErrorBoundary: LayoutBoundary },
+      },
+      'nested/_layout': {
+        default: () => (
+          <View testID="nested-layout">
+            <Stack />
+          </View>
+        ),
+        unstable_settings: { screenErrorBoundary: null },
+      },
+      'nested/index': () => (
+        <View testID="nested-index">
+          <ThrowingRoute />
+        </View>
+      ),
+    },
+    { initialUrl: '/nested' }
+  );
 
   expect(screen.getByTestId('layout-boundary')).toBeOnTheScreen();
   expect(screen.queryByTestId('nested-layout')).toBeNull();
+  expect(screen.queryByTestId('nested-index')).toBeNull();
 });
 
 it('uses the navigator boundary before the layout boundary', async () => {

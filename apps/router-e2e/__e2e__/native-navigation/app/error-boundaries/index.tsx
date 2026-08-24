@@ -3,7 +3,7 @@ import { Pressable, ScrollView, Text } from 'react-native';
 
 const examples = [
   ['Nested boundary', '/error-boundaries/nested'],
-  ['Nested layout without boundary', '/error-boundaries/nested-without'],
+  ['Inherited nested boundary', '/error-boundaries/nested-without'],
   ['Navigator boundary', '/error-boundaries/navigator'],
   ['Route boundary', '/error-boundaries/route'],
 ] as const;

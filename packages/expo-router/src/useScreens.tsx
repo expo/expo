@@ -215,8 +215,9 @@ function fromImport(
     return { default: EmptyRoute, SuspenseFallback };
   }
 
-  if (ErrorBoundary || value.type === 'layout') {
+  if (ErrorBoundary || (value.type === 'layout' && screenErrorBoundary !== undefined)) {
     const Wrapped = React.forwardRef((props: any, ref: any) => {
+      const inheritedScreenErrorBoundary = use(ScreenErrorBoundaryContext);
       let children = React.createElement(component.default || EmptyRoute, {
         ...props,
         ref,
@@ -224,12 +225,15 @@ function fromImport(
       if (ErrorBoundary) {
         children = <Try catch={ErrorBoundary}>{children}</Try>;
       }
-      if (value.type === 'layout') {
+      if (value.type === 'layout' && screenErrorBoundary !== undefined) {
         children = (
-          <ScreenErrorBoundaryContext value={screenErrorBoundary}>
+          <ScreenErrorBoundaryContext value={screenErrorBoundary ?? undefined}>
             {children}
           </ScreenErrorBoundaryContext>
         );
+        if (screenErrorBoundary === null && inheritedScreenErrorBoundary) {
+          children = <Try catch={inheritedScreenErrorBoundary}>{children}</Try>;
+        }
       }
       return children;
     });
@@ -413,7 +417,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              {ScreenErrorBoundary ? (
+              {ScreenErrorBoundary && isRouteType ? (
                 <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
               ) : (
                 screenComponent

@@ -78,7 +78,7 @@ function Route({ ErrorBoundary, Component }) {
 
 When `ErrorBoundary` is not present, the error will be thrown to the nearest parent's `ErrorBoundary` and accepts [`error`](/versions/latest/sdk/router/#error) and [`retry`](/versions/latest/sdk/router/#retry) props.
 
-### Boundaries for screens in a layout
+### Error boundaries for screens in a layout
 
 A screen error boundary keeps navigator UI, such as headers and tab bars, mounted when a screen throws. Configure it on a layout or navigator:
 
@@ -90,7 +90,7 @@ function ScreenErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   return <Text onPress={retry}>Try again: {error.message}</Text>;
 }
 
-// Choose this to configure the boundary for the layout's direct child screens.
+// Configure the boundary for screens in this layout and nested layouts.
 export const unstable_settings = {
   screenErrorBoundary: ScreenErrorBoundary,
 };
@@ -100,7 +100,7 @@ export default function Layout() {
 }
 ```
 
-Alternatively, configure the boundary on the navigator instead:
+Alternatively, configure the boundary on the navigator:
 
 ```tsx src/app/_layout.tsx
 import { Stack, type ErrorBoundaryProps } from 'expo-router';
@@ -110,7 +110,7 @@ function ScreenErrorBoundary({ error, retry }: ErrorBoundaryProps) {
   return <Text onPress={retry}>Try again: {error.message}</Text>;
 }
 
-// Choose this to configure the boundary for the navigator's direct child screens.
+// This prop overrides unstable_settings.screenErrorBoundary for the same screens.
 export default function Layout() {
   return <Stack unstable_screenErrorBoundary={ScreenErrorBoundary} />;
 }
@@ -122,7 +122,7 @@ Expo Router applies error boundaries in the following order:
 2. Navigator-level prop (for example, `Stack`)
 3. `unstable_settings.screenErrorBoundary` declared in the **\_layout.tsx** file
 
-`unstable_settings.screenErrorBoundary` applies to the layout's direct child screens. A nested layout starts a new boundary scope; define the setting in that nested layout to handle its screens.
+Nested layouts inherit `unstable_settings.screenErrorBoundary` unless they define their own screen error boundary. Set `screenErrorBoundary` to `null` in a nested layout to stop inheriting it.
 
 ### Work in progress
 
