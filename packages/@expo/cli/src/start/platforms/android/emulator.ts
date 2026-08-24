@@ -6,6 +6,7 @@ import os from 'os';
 import * as Log from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
+import { isWsl } from '../../../utils/wsl';
 import type { Device } from './adb';
 import { getAttachedDevicesAsync, isBootAnimationCompleteAsync } from './adb';
 
@@ -24,9 +25,11 @@ export function whichEmulator(): string {
 export async function listAvdsAsync(): Promise<Device[]> {
   try {
     const { stdout } = await spawnAsync(whichEmulator(), ['-list-avds']);
+    // Android Emulator uses CRLF as EOL on Windows
+    const EOL = isWsl() ? "\r\n" : os.EOL;
     return (
       stdout
-        .split(os.EOL)
+        .split(EOL)
         .filter(Boolean)
         /**
          * AVD IDs cannot contain spaces. This removes extra info lines from the output. e.g.
