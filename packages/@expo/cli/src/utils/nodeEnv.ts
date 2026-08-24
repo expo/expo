@@ -51,19 +51,15 @@ export function setNodeEnv(mode: EnvironmentMode) {
 }
 
 export function getConfigEnvMode(): EnvironmentMode {
-  const mode = cliEnv.EXPO_CONFIG_MODE;
-  delete process.env.EXPO_CONFIG_MODE;
-
-  if (!mode) {
-    return 'development';
-  }
-  if (mode !== 'development' && mode !== 'production') {
+  try {
+    // Older EAS Build versions do not pass __EXPO_CONFIG_MODE.
+    return env.consumeConfigEnvMode() ?? (cliEnv.EAS_BUILD ? 'production' : 'development');
+  } catch (error) {
     throw new CommandError(
       'BAD_ARGS',
-      `Invalid EXPO_CONFIG_MODE value: "${mode}". Use "development" or "production".`
+      error instanceof Error ? error.message : 'Invalid __EXPO_CONFIG_MODE value.'
     );
   }
-  return mode;
 }
 
 interface LoadEnvFilesOptions {
@@ -85,12 +81,7 @@ export function loadEnvFiles(projectRoot: string, options: LoadEnvFilesOptions) 
     systemEnv: process.env,
   };
 
-  let envInfo: ReturnType<typeof env.loadProjectEnv>;
-  try {
-    envInfo = env.loadProjectEnv(projectRoot, params);
-  } finally {
-    delete process.env.EXPO_CONFIG_MODE;
-  }
+  const envInfo = env.loadProjectEnv(projectRoot, params);
   const envOutput: EnvOutput = {};
   if (envInfo.result === 'loaded') {
     prevEnvKeys = new Set();
@@ -121,40 +112,36 @@ export function getEnvFiles(projectRoot: string, mode: EnvironmentMode) {
 export function reloadEnvFiles(projectRoot: string, mode: EnvironmentMode) {
   setNodeEnv(mode);
 
-  try {
-    const isEnabled = env.isEnabled();
-    if (isEnabled) {
-      const params = {
-        force: true,
-        silent: true,
-        mode,
-        systemEnv: process.env,
-      };
+  const isEnabled = env.isEnabled();
+  if (isEnabled) {
+    const params = {
+      force: true,
+      silent: true,
+      mode,
+      systemEnv: process.env,
+    };
 
-      // We use a global tracker to allow overwrites of env vars we set ourselves
-      const envInfo = env.parseProjectEnv(projectRoot, params);
-      const envOutput: EnvOutput = {};
-      for (const key in envInfo.env) {
-        const value = envInfo.env[key];
-        if (process.env[key] !== value) {
-          if (
-            typeof process.env[key] === 'undefined' ||
-            ((!prevEnvKeys || prevEnvKeys.has(key)) && process.env[key] !== value)
-          ) {
-            (prevEnvKeys ||= new Set()).add(key);
-            process.env[key] = envInfo.env[key];
-            envOutput[key] = value ?? undefined;
-          }
+    // We use a global tracker to allow overwrites of env vars we set ourselves
+    const envInfo = env.parseProjectEnv(projectRoot, params);
+    const envOutput: EnvOutput = {};
+    for (const key in envInfo.env) {
+      const value = envInfo.env[key];
+      if (process.env[key] !== value) {
+        if (
+          typeof process.env[key] === 'undefined' ||
+          ((!prevEnvKeys || prevEnvKeys.has(key)) && process.env[key] !== value)
+        ) {
+          (prevEnvKeys ||= new Set()).add(key);
+          process.env[key] = envInfo.env[key];
+          envOutput[key] = value ?? undefined;
         }
       }
-
-      event('load', {
-        mode: params.mode,
-        files: relativeFiles(envInfo.files),
-        keys: Object.keys(envOutput),
-      });
     }
-  } finally {
-    delete process.env.EXPO_CONFIG_MODE;
+
+    event('load', {
+      mode: params.mode,
+      files: relativeFiles(envInfo.files),
+      keys: Object.keys(envOutput),
+    });
   }
 }

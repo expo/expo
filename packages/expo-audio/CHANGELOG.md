@@ -4,8 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Aligned the default audio focus request on Android 7.0–7.1 with newer versions by using transient exclusive focus when no interruption mode has been configured. ([#49101](https://github.com/expo/expo/pull/49101) by [@behenate](https://github.com/behenate))
+
 ### 🎉 New features
 
+- [Android] Added support for `keepAudioSessionActive`. ([#49108](https://github.com/expo/expo/pull/49108) by [@behenate](https://github.com/behenate))
+- Added the `doNotMixPersistent` interruption mode. ([#49101](https://github.com/expo/expo/pull/49101) by [@behenate](https://github.com/behenate))
 - Added `fileName` option to `RecordingOptions` to allow specifying the recording file basename on Android and iOS. ([#47265](https://github.com/expo/expo/pull/47265) by [@silwalprabin](https://github.com/silwalprabin))
 - Support lockscreen controls with playlists. ([#46020](https://github.com/expo/expo/pull/46020) by [@alanjhughes](https://github.com/alanjhughes))
 - Added a `fileSize` field to `RecorderState` reporting the current size of the recording file in bytes. ([#46808](https://github.com/expo/expo/pull/46808) by [@behenate](https://github.com/behenate))

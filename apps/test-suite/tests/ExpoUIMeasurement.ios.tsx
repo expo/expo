@@ -3,8 +3,8 @@ import { padding } from '@expo/ui/swift-ui/modifiers';
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 
-// Tests actual placement of UI matches return returned by RN's measure API.
-// UI is placed by Compose and not Yoga, so these tests test that correct placement is reported to RN so Pressability can work correctly.
+// Tests that the actual placement of the UI matches what RN's measure API returns.
+// UI is placed by SwiftUI and not Yoga, so these tests check that the placement reported to RN is correct and Pressability works.
 export const name = 'ExpoUIMeasurement';
 const PADDING = 24;
 const BOX = 40;
@@ -321,6 +321,35 @@ export async function test(
       expect(hosted.pageY).toBe(0);
       expect(hosted.width).toBeCloseTo(BOX, 0);
       expect(hosted.height).toBeCloseTo(BOX, 0);
+    });
+
+    it('measures a hosted view nested inside sheet content from the outer hosted view', async () => {
+      const nestedRef = React.createRef<View>();
+
+      setPortalChild(
+        <Host matchContents>
+          <VStack>
+            <BottomSheet isPresented onIsPresentedChange={() => {}} fitToContents>
+              <RNHostView matchContents>
+                <View collapsable={false} style={{ padding: PADDING }}>
+                  <Host matchContents>
+                    <RNHostView matchContents>
+                      <View ref={nestedRef} style={{ width: BOX, height: BOX }} />
+                    </RNHostView>
+                  </Host>
+                </View>
+              </RNHostView>
+            </BottomSheet>
+          </VStack>
+        </Host>
+      );
+
+      const nested = await measureWhenPresented(nestedRef, 'the nested hosted box in a sheet');
+
+      expect(nested.pageX).toBeCloseTo(PADDING, 0);
+      expect(nested.pageY).toBeCloseTo(PADDING, 0);
+      expect(nested.width).toBeCloseTo(BOX, 0);
+      expect(nested.height).toBeCloseTo(BOX, 0);
     });
   });
 }

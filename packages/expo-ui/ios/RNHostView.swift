@@ -63,6 +63,11 @@ struct RNHostView: ExpoSwiftUI.View {
       // natural size instead of falling into the fill branch below, which would
       // stretch a self-sizing SwiftUI view to fill its container.
       Children()
+    } else if props.children?.isEmpty ?? true {
+      // Nothing is mounted yet (e.g. a hosted RN `Modal` renders null until `visible` is true).
+      // Render nothing instead of an empty fill frame, which would take up space in the
+      // surrounding SwiftUI container - e.g. a spurious empty row in a `Form`'s `Section`.
+      EmptyView()
     } else {
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)

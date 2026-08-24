@@ -1,6 +1,6 @@
-import { act } from '@testing-library/react-native';
+import { act, fireEvent, screen } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
-import { type ReactNode, useLayoutEffect } from 'react';
+import { type ReactNode, useLayoutEffect, useState } from 'react';
 import { Text } from 'react-native';
 
 import { router, Slot } from '../../exports';
@@ -13,9 +13,9 @@ import {
 } from '../../loaders/LoaderContext';
 import { ServerDataLoaderContext } from '../../loaders/ServerDataLoaderContext';
 import { fetchLoader } from '../../loaders/utils';
-import { renderRouter } from '../../testing-library';
+import { renderRouter, renderRouterAsync } from '../../testing-library';
 import { useLoaderData } from '../useLoaderData';
-import { renderHook } from './renderHook';
+import { renderHook, renderHookAsync } from './renderHook';
 
 jest.mock('../../loaders/utils', () => ({
   fetchLoader: jest.fn(),
@@ -120,7 +120,8 @@ describe(useLoaderData, () => {
     await act(async () => {});
     expect(ctx.store.get('/index')).toBeUndefined();
 
-    renderHook(() => useLoaderData(), ['index'], {
+    // TODO: Remove `renderHookAsync` when we migrate to RNTL v14.
+    await renderHookAsync(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
@@ -138,7 +139,8 @@ describe(useLoaderData, () => {
 
     const { ctx, LoaderWrapper } = createLoaderTestContext();
 
-    renderHook(() => useLoaderData(), ['users/[id]'], {
+    // TODO: Remove `renderHookAsync` when we migrate to RNTL v14.
+    await renderHookAsync(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
       wrapper: LoaderWrapper,
     });
@@ -154,7 +156,7 @@ describe(useLoaderData, () => {
     });
   });
 
-  it('retrieves settled data from the Suspense store without fetching', () => {
+  it('retrieves settled data from the Suspense store without fetching', async () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/users/123': { fromHydration: true },
     };
@@ -162,7 +164,8 @@ describe(useLoaderData, () => {
     const { ctx, LoaderWrapper } = createLoaderTestContext();
     ctx.store.set('/users/123', { data: { fromStore: true } });
 
-    const { result } = renderHook(() => useLoaderData(), ['users/[id]'], {
+    // TODO: Remove `renderHookAsync` when we migrate to RNTL v14.
+    const { result } = await renderHookAsync(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
       wrapper: LoaderWrapper,
     });
@@ -200,24 +203,41 @@ describe(useLoaderData, () => {
     const { ctx, LoaderWrapper } = createLoaderTestContext();
     ctx.store.seed('/index', { shared: true });
 
-    const first = renderHook(() => useLoaderData(), ['index'], {
-      initialUrl: '/',
-      wrapper: LoaderWrapper,
-    });
-    const second = renderHook(() => useLoaderData(), ['index'], {
-      initialUrl: '/',
-      wrapper: LoaderWrapper,
-    });
+    function Reader({ testID }: { testID: string }) {
+      const data = useLoaderData();
+      return <Text testID={testID}>{JSON.stringify(data)}</Text>;
+    }
 
-    first.unmount();
+    function SiblingReaders() {
+      const [showFirst, setShowFirst] = useState(true);
+      return (
+        <>
+          {showFirst && <Reader key="first" testID="first-reader" />}
+          <Reader key="second" testID="second-reader" />
+          <Text onPress={() => setShowFirst(false)}>Remove first</Text>
+        </>
+      );
+    }
+
+    const root = await renderRouterAsync(
+      {
+        index: SiblingReaders,
+      },
+      { wrapper: LoaderWrapper }
+    );
+    jest.useRealTimers();
+
+    expect(screen.getByTestId('first-reader')).toHaveTextContent('{"shared":true}');
+    fireEvent.press(screen.getByText('Remove first'));
     await act(async () => {});
-    expect(second.result.current).toEqual({ shared: true });
+
+    expect(screen.queryByTestId('first-reader')).toBeNull();
+    expect(screen.getByTestId('second-reader')).toHaveTextContent('{"shared":true}');
     expect(ctx.store.get('/index')).toEqual({
       data: { shared: true },
     });
 
-    second.unmount();
-    await act(async () => {});
+    await root.unmountAsync();
     expect(ctx.store.get('/index')).toBeUndefined();
   });
 

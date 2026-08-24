@@ -83,6 +83,14 @@
         }
       ],
       [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
+      [
         "expo-tracking-transparency",
         {
           "userTrackingPermission": "Allow Expo projects to use data for tracking the user or the device"

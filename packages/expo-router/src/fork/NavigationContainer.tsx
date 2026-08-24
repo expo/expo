@@ -56,7 +56,7 @@ type Props<ParamList extends object> = NavigationContainerProps & {
  * @param props.onUnhandledAction Callback which is called when an action is not handled.
  * @param props.direction Text direction of the components. Defaults to `'ltr'`.
  * @param props.theme Theme object for the UI elements.
- * @param props.linking Options for deep linking. Deep link handling is enabled when this prop is provided, unless `linking.enabled` is `false`.
+ * @param props.linking Options for deep linking. Deep link handling is enabled when this prop is provided.
  * @param props.fallback Fallback component to render until we have finished getting initial state when linking is enabled. Defaults to `null`.
  * @param props.documentTitle Options to configure the document title on Web. Updating document title is handled by default unless `documentTitle.enabled` is `false`.
  * @param props.children Child elements to render the content.
@@ -75,8 +75,6 @@ function NavigationContainerInner(
   }: Props<ParamListBase>,
   ref?: React.Ref<NavigationContainerRef<ParamListBase> | null>
 ) {
-  const isLinkingEnabled = linking ? linking.enabled !== false : false;
-
   if (linking?.config) {
     validatePathConfig(linking.config);
   }
@@ -89,15 +87,7 @@ function NavigationContainerInner(
 
   const [lastUnhandledLink, setLastUnhandledLink] = React.useState<string | undefined>();
 
-  const { getInitialState } = useLinking(
-    refContainer,
-    {
-      enabled: isLinkingEnabled,
-      prefixes: [],
-      ...linking,
-    },
-    setLastUnhandledLink
-  );
+  const { getInitialState } = useLinking(refContainer, linking, setLastUnhandledLink);
 
   const linkingContext = React.useMemo(() => ({ options: linking }), [linking]);
 
@@ -139,7 +129,6 @@ function NavigationContainerInner(
         get linking() {
           return {
             ...linking,
-            enabled: isLinkingEnabled,
             prefixes: linking?.prefixes ?? [],
             getStateFromPath: linking?.getStateFromPath ?? getStateFromPath,
             getPathFromState: linking?.getPathFromState ?? getPathFromState,
@@ -154,7 +143,7 @@ function NavigationContainerInner(
 
   React.useImperativeHandle(ref, () => refContainer.current!);
 
-  const isLinkingReady = rest.initialState != null || !isLinkingEnabled || isResolved;
+  const isLinkingReady = rest.initialState != null || !linking || isResolved;
 
   if (!isLinkingReady) {
     // This is temporary until we have Suspense for data-fetching

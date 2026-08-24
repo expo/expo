@@ -156,138 +156,7 @@ test('handles an unsupported targeted action as a no-op without bubbling', () =>
   expect(onUnhandledAction).not.toHaveBeenCalled();
 });
 
-test("lets children handle the action if parent didn't with navigationInChildEnabled", () => {
-  const CurrentParentRouter = MockRouter;
-
-  function CurrentChildRouter(options: DefaultRouterOptions) {
-    const CurrentMockRouter = MockRouter(options);
-    const ChildRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
-      ...CurrentMockRouter,
-
-      shouldActionChangeFocus() {
-        return true;
-      },
-
-      getStateForAction(state, action, options) {
-        if (action.type === 'REVERSE') {
-          return {
-            ...state,
-            routes: state.routes.slice().reverse(),
-          };
-        }
-        return CurrentMockRouter.getStateForAction(state, action, options);
-      },
-    };
-    return ChildRouter;
-  }
-
-  const ChildNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      CurrentChildRouter,
-      props
-    );
-
-    return (
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-    );
-  };
-
-  const ParentNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(
-      CurrentParentRouter,
-      props
-    );
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const TestScreen = (props: any) => {
-    React.useEffect(() => {
-      props.navigation.dispatch({ type: 'REVERSE' });
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    return null;
-  };
-
-  const onStateChange = jest.fn();
-
-  const initialState = {
-    index: 1,
-    routes: [
-      {
-        key: 'baz',
-        name: 'baz',
-        state: {
-          index: 0,
-          key: '4',
-          routeNames: ['qux', 'lex'],
-          routes: [
-            { key: 'qux', name: 'qux' },
-            { key: 'lex', name: 'lex' },
-          ],
-        },
-      },
-      { key: 'bar', name: 'bar' },
-    ],
-  };
-
-  const element = (
-    <BaseNavigationContainer
-      navigationInChildEnabled
-      initialState={initialState}
-      onStateChange={onStateChange}>
-      <ParentNavigator>
-        <Screen name="foo">{() => null}</Screen>
-        <Screen name="bar" component={TestScreen} />
-        <Screen name="baz">
-          {() => (
-            <ChildNavigator>
-              <Screen name="qux">{() => null}</Screen>
-              <Screen name="lex">{() => null}</Screen>
-            </ChildNavigator>
-          )}
-        </Screen>
-      </ParentNavigator>
-    </BaseNavigationContainer>
-  );
-
-  render(element).update(element);
-
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenLastCalledWith({
-    stale: false,
-    type: 'test',
-    index: 0,
-    key: '0',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      {
-        key: 'baz',
-        name: 'baz',
-        state: {
-          stale: false,
-          type: 'test',
-          index: 0,
-          key: '1',
-          routeNames: ['qux', 'lex'],
-          routes: [
-            { key: 'lex', name: 'lex' },
-            { key: 'qux', name: 'qux' },
-          ],
-        },
-      },
-      { key: 'bar', name: 'bar' },
-    ],
-  });
-});
-
-test("lets children handle the action if parent didn't with NAVIGATE_DEPRECATED", () => {
+test("doesn't let a child handle an untargeted navigate action", () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
@@ -346,13 +215,6 @@ test("lets children handle the action if parent didn't with NAVIGATE_DEPRECATED"
   );
 
   expect(navigation.getCurrentRoute()?.name).toBe('foo');
-
-  act(() => navigation.navigateDeprecated('lex'));
-
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onUnhandledAction).toHaveBeenCalledTimes(1);
-
-  expect(navigation.getCurrentRoute()?.name).toBe('lex');
 });
 
 test('action goes to correct parent navigator if target is specified', () => {
@@ -813,6 +675,7 @@ test("prevents removing a screen with 'removePrevented' event", () => {
       { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -833,6 +696,7 @@ test("prevents removing a screen with 'removePrevented' event", () => {
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -850,6 +714,7 @@ test("prevents removing a screen with 'removePrevented' event", () => {
       { key: 'baz-7', name: 'baz' },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => {
@@ -863,6 +728,7 @@ test("prevents removing a screen with 'removePrevented' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });
 
@@ -933,6 +799,7 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
       { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -960,6 +827,7 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -987,6 +855,7 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => {
@@ -1000,6 +869,7 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });
 
@@ -1075,6 +945,7 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
       { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -1114,6 +985,7 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -1153,6 +1025,7 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => {
@@ -1166,6 +1039,7 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });
 
@@ -1282,6 +1156,7 @@ test("prevents removing by multiple screens with 'removePrevented' event", () =>
     routeNames: ['foo', 'bar', 'baz', 'bax'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });
 
@@ -1355,6 +1230,7 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() =>
@@ -1389,6 +1265,7 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
       },
     ],
     stale: false,
+    type: 'stack',
   });
 
   act(() => {
@@ -1412,5 +1289,6 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
     routeNames: ['foo', 'bar', 'baz'],
     routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
+    type: 'stack',
   });
 });

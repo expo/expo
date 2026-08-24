@@ -13,7 +13,6 @@ import {
   type NavigationContainerRef,
   type NavigationState,
   type ParamListBase,
-  useNavigationIndependentTree,
 } from '../react-navigation/native';
 import { getHistoryLength } from '../utils/stack';
 import { createMemoryHistory } from './createMemoryHistory';
@@ -78,17 +77,14 @@ type Options = LinkingOptions<ParamListBase>;
 
 export function useLinking(
   ref: RefObject<NavigationContainerRef<ParamListBase> | null>,
-  {
-    enabled = true,
-    config,
-    getStateFromPath = getStateFromPathDefault,
-    getPathFromState = getPathFromStateDefault,
-    getActionFromState = getActionFromStateDefault,
-  }: Options,
+  options: Options | undefined,
   onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
 ) {
-  const independent = useNavigationIndependentTree();
-
+  const enabled = options !== undefined;
+  const config = options?.config;
+  const getStateFromPath = options?.getStateFromPath ?? getStateFromPathDefault;
+  const getPathFromState = options?.getPathFromState ?? getPathFromStateDefault;
+  const getActionFromState = options?.getActionFromState ?? getActionFromStateDefault;
   const store = useExpoRouterStore();
 
   useEffect(() => {
@@ -96,11 +92,7 @@ export function useLinking(
       return undefined;
     }
 
-    if (independent) {
-      return undefined;
-    }
-
-    if (enabled !== false && linkingHandlers.length) {
+    if (enabled && linkingHandlers.length) {
       console.error(
         [
           'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
@@ -114,7 +106,7 @@ export function useLinking(
 
     const handler = Symbol();
 
-    if (enabled !== false) {
+    if (enabled) {
       linkingHandlers.push(handler);
     }
 
@@ -125,7 +117,7 @@ export function useLinking(
         linkingHandlers.splice(index, 1);
       }
     };
-  }, [enabled, independent]);
+  }, [enabled]);
 
   const [history] = useState(createMemoryHistory);
 

@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 
-import { useIsPresentedInOwnWindow } from '../PresentedContentContext';
+import { PresentedContentContext, useIsPresentedInOwnWindow } from '../PresentedContentContext';
 
 const RNHostNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'RNHostView');
 
@@ -19,13 +19,6 @@ export interface RNHostViewProps {
   children: React.ReactElement;
 }
 
-// `matchContents` reads the hosted content's Yoga size, so this view must not stretch to its
-// own parent on the cross axis. A stretched box makes the content measure the container instead of
-// itself, and under a `matchContents` `Host` that feeds back into the size it came from: the
-// content grows by the surrounding chrome on every pass and layout never settles.
-// https://github.com/expo/expo/pull/48059
-const hugCrossAxis = { alignSelf: 'flex-start' } as const;
-
 export function RNHostView(props: RNHostViewProps) {
   // A sheet or popover presents its content in its own view controller, where the React Native
   // surface root is not an ancestor and so touch dispatches don't work.
@@ -37,10 +30,13 @@ export function RNHostView(props: RNHostViewProps) {
     <RNHostNativeView
       {...props}
       layoutRoot={layoutRoot}
-      style={props.matchContents ? hugCrossAxis : undefined}
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
-      key={props.matchContents ? 'matchContents' : 'noMatchContents'}
-    />
+      key={props.matchContents ? 'matchContents' : 'noMatchContents'}>
+      {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
+      <PresentedContentContext.Provider value={false}>
+        {props.children}
+      </PresentedContentContext.Provider>
+    </RNHostNativeView>
   );
 }

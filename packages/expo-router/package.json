@@ -293,12 +293,11 @@
     "react-fast-compare": "^3.2.2",
     "react-is": "^19.1.0",
     "react-native-drawer-layout": "^4.2.2",
-    "react-native-screens": "^4.26.0",
+    "react-native-screens": "^4.27.0",
     "server-only": "^0.0.1",
     "sf-symbols-typescript": "^2.1.0",
     "shallowequal": "^1.1.0",
-    "standard-navigation": "^0.0.5",
-    "vaul": "^1.1.2"
+    "standard-navigation": "^0.0.5"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
@@ -321,7 +320,7 @@
     "react-native-pager-view": "^8.0.2",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "^4.26.0",
+    "react-native-screens": "^4.27.0",
     "react-native-tab-view": "^4.3.0",
     "react-native-web": "~0.21.0",
     "react-server-dom-webpack": "~19.0.8"
@@ -339,7 +338,7 @@
     "react-native-gesture-handler": "*",
     "react-native-reanimated": "*",
     "react-native-safe-area-context": ">= 5.4.0",
-    "react-native-screens": "^4.26.0",
+    "react-native-screens": "^4.27.0",
     "react-native-web": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
