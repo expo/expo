@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.12 — 2026-08-24
+
+### 🎉 New features
+
 - [iOS] Expose ActivityKit's `staleDate` on `LiveActivity.start()` and `LiveActivity.update()`. ([#46343](https://github.com/expo/expo/pull/46343) by [@KyleAsaff](https://github.com/KyleAsaff))
 - [iOS] Expose ActivityKit's `isStale` on `LiveActivityEnvironment`. ([#48303](https://github.com/expo/expo/pull/48303) by [@dirkpostma](https://github.com/dirkpostma))
 - [iOS] Expose stable ActivityKit identifiers on Live Activity instances. ([#48589](https://github.com/expo/expo/pull/48589) by [@developwithJB](https://github.com/developwithJB))
@@ -16,8 +24,6 @@
 - [iOS] Fix `LiveActivityFactory.getInstances()` returning live activities that belong to other factories or that have already ended. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
 - [iOS] Deliver the Live Activity `start()` URL to the Lock Screen banner, and scope it to the activity that set it instead of storing it globally per factory name. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
 - [iOS] Restore push token observation when retrieving existing Live Activities. ([#48589](https://github.com/expo/expo/pull/48589) by [@developwithJB](https://github.com/developwithJB))
-
-### 💡 Others
 
 ## 57.0.11 — 2026-08-20
 

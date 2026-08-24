@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `matchContents` hosts sometimes being laid out at a stale size. Regression from [#48059](https://github.com/expo/expo/pull/48059). ([#49211](https://github.com/expo/expo/pull/49211) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
 ### 💡 Others
+
+## 57.0.13 — 2026-08-24
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `matchContents` hosts sometimes being laid out at a stale size. Regression from [#48059](https://github.com/expo/expo/pull/48059). ([#49211](https://github.com/expo/expo/pull/49211) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 57.0.12 — 2026-08-20
 

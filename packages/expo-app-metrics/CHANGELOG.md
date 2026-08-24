@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Preserve millisecond precision in log event timestamps. ([#49141](https://github.com/expo/expo/pull/49141) by [@Ubax](https://github.com/Ubax))
-
 ### 💡 Others
+
+## 57.0.14 — 2026-08-24
+
+### 🐛 Bug fixes
+
+- [iOS] Preserve millisecond precision in log event timestamps. ([#49141](https://github.com/expo/expo/pull/49141) by [@Ubax](https://github.com/Ubax))
 
 ## 57.0.13 — 2026-08-20
 

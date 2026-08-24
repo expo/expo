@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.13 — 2026-08-24
+
+### 🎉 New features
+
 - [iOS] Added the `alignmentGuide` modifier, so the `listRowSeparatorLeading` guide can set where a list row separator starts. ([#49246](https://github.com/expo/expo/issues/49246) by [@marco242424](https://github.com/marco242424)) ([#49247](https://github.com/expo/expo/pull/49247) by [@expo-bot](https://github.com/expo-bot))
 - [android] Add `shouldDismissOnClickOutside` and `scrimColor` props to the universal `BottomSheet` component, forwarding them to `ModalBottomSheet` via `properties.shouldDismissOnClickOutside` and `scrimColor`. ([#48986](https://github.com/expo/expo/pull/48986) by [@webdevsamran](https://github.com/webdevsamran))
 
@@ -13,8 +21,6 @@
 
 - [Android] Fix the dev menu not opening with the menu key (Cmd+M) while a `BottomSheet` is open. Material3 shows the sheet in its own dialog window, so key events did not reach the activity. The sheet now forwards them, as React Native's `Modal` does, unless a view in the sheet is accepting text. ([#49215](https://github.com/expo/expo/pull/49215) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Fix an empty `RNHostView` (e.g. one hosting a hidden RN `Modal`, which renders null until `visible` is true) taking up space in SwiftUI containers — such as a spurious empty row in a `FieldGroup`/`Form` section that shifts the other components. It now renders nothing until a child is mounted, which also lets the touch handler attach when the child mounts after the host appeared. ([#48666](https://github.com/expo/expo/issues/48666) by [@lochnessopensource](https://github.com/lochnessopensource)) ([#48735](https://github.com/expo/expo/pull/48735) by [@brentvatne](https://github.com/brentvatne))
-
-### 💡 Others
 
 ## 57.0.12 — 2026-08-20
 
