@@ -62,6 +62,15 @@ export type ExpoMetroOptions = {
   liveBindings?: boolean;
   /** When true, indicates this bundle should contain only the loader export. */
   isLoaderBundle?: boolean;
+  /**
+   * Hash of the resolved Expo config, used to bust Metro's persistent transform cache when the
+   * config's env-dependent output changes (e.g. `app.config.js` reading `process.env.APP_ENV`)
+   * without any project file changing. Without this, a file whose own contents are unchanged
+   * (like the one inlining `process.env.APP_MANIFEST`) can keep resolving to a stale cached
+   * transform across separate `expo export`/`expo start` process runs.
+   * https://github.com/expo/expo/issues/39619
+   */
+  manifestHash?: string;
 };
 
 // See: @expo/metro-config/src/serializer/fork/baseJSBundle.ts `ExpoSerializerOptions`
@@ -184,6 +193,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     liveBindings,
     isLoaderBundle,
     excludeSource,
+    manifestHash,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -221,6 +231,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     routerRoot,
     bytecode: bytecode ? '1' : undefined,
     reactCompiler: reactCompiler ? toBoolStr(reactCompiler) : undefined,
+    manifestHash,
     dom: domRoot,
     hosted: hosted ? '1' : undefined,
     useMd5Filename: useMd5Filename || undefined,

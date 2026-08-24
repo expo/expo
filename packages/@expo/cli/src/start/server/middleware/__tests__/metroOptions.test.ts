@@ -48,6 +48,23 @@ describe(getMetroDirectBundleOptions, () => {
       shallow: false,
     });
   });
+  it(`forwards manifestHash into customTransformOptions to bust Metro's persistent cache when the resolved config changes`, () => {
+    // https://github.com/expo/expo/issues/39619
+    expect(
+      getMetroDirectBundleOptions({
+        mainModuleName: '/index.js',
+        mode: 'production',
+        platform: 'web',
+        isExporting: true,
+        bytecode: false,
+        reactCompiler: false,
+        manifestHash: 'abc123',
+      }).customTransformOptions
+    ).toMatchObject({
+      manifestHash: 'abc123',
+    });
+  });
+
   it(`injects source url if serializer options are provided`, () => {
     expect(
       getMetroDirectBundleOptions({

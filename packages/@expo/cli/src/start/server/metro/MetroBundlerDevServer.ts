@@ -26,6 +26,7 @@ import type { GetStreamingContentOptions } from '@expo/router-server/build/serve
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
 import chalk from 'chalk';
+import crypto from 'crypto';
 import type { RouteNode } from 'expo-router/build/Route';
 import {
   type RouteInfo,
@@ -1290,6 +1291,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       reactCompiler,
       minify: options.minify,
       asyncRoutes,
+      // Bust Metro's persistent transform cache when the resolved config differs (e.g. an
+      // `app.config.js` reading `process.env.APP_ENV` across separate `expo export` runs),
+      // even though the source files that inline it haven't changed. See #39619.
+      manifestHash: crypto.createHash('sha1').update(JSON.stringify(exp)).digest('hex'),
       // Options that are changing between platforms like engine, platform, and environment aren't set here.
     };
     this.instanceMetroOptions = instanceMetroOptions;
