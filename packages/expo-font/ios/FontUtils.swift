@@ -1,4 +1,5 @@
 import CoreGraphics
+import ExpoModulesCore
 import Foundation
 
 /**
@@ -84,14 +85,18 @@ internal func postScriptNames(inFileAt url: CFURL, alias: String) throws -> [Str
     // RN falls back to the first name when no font matches the requested traits (e.g. an
     // italic style against a font with only upright instances) so the first name has to be the default weight:
     // https://github.com/react/react-native/blob/v0.86.0/packages/react-native/ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTFontUtils.mm#L388-L393
-    // This lookup did not miss on any font tested — Inter, Roboto Flex, Roboto Serif, and one
-    // with no named instance at the default location. `CTFontManagerCreateFontDescriptorsFromURL`
-    // appears to always return a descriptor for the axes' default location, carrying the name
-    // ``CGFont`` reports.
+    //
+    // This assumes `CTFontManagerCreateFontDescriptorsFromURL` always returns a descriptor for
+    // the axes' default location, carrying the name ``CGFont`` reports — undocumented CoreText
+    // behavior. The warning below fires if that assumption ever fails.
     if let defaultPostScriptName,
       let defaultIndex = postScriptNames.firstIndex(of: defaultPostScriptName) {
       postScriptNames.remove(at: defaultIndex)
       postScriptNames.insert(defaultPostScriptName, at: 0)
+    } else {
+      log.warn("expo-font could not find the default instance of font file " +
+        "'\((url as URL).lastPathComponent)' among its \(postScriptNames.count) named instances. " +
+        "`fontWeight` may pick the wrong face for '\(alias)'.")
     }
     return postScriptNames
   }
@@ -99,20 +104,11 @@ internal func postScriptNames(inFileAt url: CFURL, alias: String) throws -> [Str
   return [defaultPostScriptName ?? postScriptNames[0]]
 }
 
-/**
- The PostScript name ``CGFont`` reports for the file's default instance (its variation axes'
- default location), or `nil` when it can't be read. Shared by ``postScriptNames(inFileAt:alias:)``
- and ``fontTraits(inFileAt:)`` so both agree on which descriptor is the default one.
- */
 internal func defaultInstancePostScriptName(url: CFURL) -> String? {
   return CGDataProvider(url: url).flatMap { CGFont($0)?.postScriptName as String? }
 }
 
-/**
- The italic flag and raw `kCTFontWeightTrait` (0.0 = regular, negative lighter, positive bolder)
- from the file's default-instance font descriptor (falling back to the first descriptor when the
- default instance's name can't be read or matched), or `nil` when the file has no readable traits.
- */
+// `kCTFontWeightTrait` is 0.0 for regular, negative for lighter, positive for bolder.
 internal func fontTraits(inFileAt url: CFURL) -> (isItalic: Bool, weightTrait: CGFloat)? {
   guard let fontDescriptors = CTFontManagerCreateFontDescriptorsFromURL(url) as? [CTFontDescriptor],
     !fontDescriptors.isEmpty else {
@@ -120,11 +116,19 @@ internal func fontTraits(inFileAt url: CFURL) -> (isItalic: Bool, weightTrait: C
   }
 
   let defaultPostScriptName = defaultInstancePostScriptName(url: url)
-  let descriptor = defaultPostScriptName.flatMap { defaultName in
+  let defaultDescriptor = defaultPostScriptName.flatMap { defaultName in
     fontDescriptors.first { descriptor in
       (CTFontDescriptorCopyAttribute(descriptor, kCTFontNameAttribute) as? String) == defaultName
     }
-  } ?? fontDescriptors[0]
+  }
+
+  if defaultDescriptor == nil, fontDescriptors.count > 1 {
+    log.warn("expo-font could not find the default instance of font file " +
+      "'\((url as URL).lastPathComponent)' among its \(fontDescriptors.count) descriptors. " +
+      "`fontWeight` may pick the wrong face for this family.")
+  }
+
+  let descriptor = defaultDescriptor ?? fontDescriptors[0]
 
   guard let traits = CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute) as? [String: Any] else {
     return nil

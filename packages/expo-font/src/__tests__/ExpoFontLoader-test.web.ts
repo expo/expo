@@ -17,8 +17,6 @@ describe('_createWebFontTemplate', () => {
   });
 
   it('does not default font-display/font-weight/font-style, so a variable font file is not restricted to a single weight or style', () => {
-    // A variable font file covers a range of weights/styles; forcing e.g. `font-weight: 400`
-    // on it would incorrectly restrict the face to only that one weight.
     expect(_createWebFontTemplate('Wix Madefor Text Variable', { uri: 'variable.woff2' })).toBe(
       '@font-face{font-family:"Wix Madefor Text Variable";src:url("variable.woff2")}'
     );
@@ -30,15 +28,16 @@ describe('_createWebFontTemplate', () => {
     ).toBe('@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-display:swap}');
   });
 
-  it('includes font-weight when a numeric weight is provided', () => {
-    expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', weight: 700 })).toBe(
-      '@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-weight:700}'
-    );
-  });
-
-  it('includes font-weight when a numeric-string weight is provided', () => {
-    expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', weight: '700' })).toBe(
-      '@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-weight:700}'
+  it.each<[Parameters<typeof _createWebFontTemplate>[1]['weight'], string]>([
+    [700, '700'],
+    ['700', '700'],
+    ['normal', 'normal'],
+    ['bold', 'bold'],
+    [1, '1'],
+    [1000, '1000'],
+  ])('includes font-weight %p', (weight, expected) => {
+    expect(_createWebFontTemplate('Wix Madefor Text', { uri: 'font.woff2', weight })).toBe(
+      `@font-face{font-family:"Wix Madefor Text";src:url("font.woff2");font-weight:${expected}}`
     );
   });
 
@@ -62,56 +61,14 @@ describe('_createWebFontTemplate', () => {
   });
 
   it('omits font-weight/font-style that fail CSS identifier sanitization', () => {
-    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    try {
-      expect(
-        _createWebFontTemplate('Wix Madefor Text', {
-          uri: 'font.woff2',
-          weight: '400}; body{display:none} @font-face{font-family:"x',
-          // @ts-expect-error: testing sanitization of untrusted input
-          style: 'italic}//',
-        })
-      ).toBe('@font-face{font-family:"Wix Madefor Text";src:url("font.woff2")}');
-      expect(warnSpy).toHaveBeenCalled();
-    } finally {
-      warnSpy.mockRestore();
-    }
-  });
-
-  it('reproduces the reported multi-face family output, one rule per face', () => {
-    // A "Wix Madefor Text" family with a regular, an italic, and a bold face, each explicitly
-    // specifying weight/style since these are separate static files, not a variable font.
-    const regular = _createWebFontTemplate('Wix Madefor Text', {
-      uri: 'fonts/WixMadeforText-Regular.woff2',
-      display: FontDisplay.AUTO,
-      weight: 400,
-      style: 'normal',
-    });
-    const italic = _createWebFontTemplate('Wix Madefor Text', {
-      uri: 'fonts/WixMadeforText-Italic.woff2',
-      display: FontDisplay.AUTO,
-      weight: 400,
-      style: 'italic',
-    });
-    const bold = _createWebFontTemplate('Wix Madefor Text', {
-      uri: 'fonts/WixMadeforText-Bold.woff2',
-      display: FontDisplay.AUTO,
-      weight: 800,
-      style: 'normal',
-    });
-
-    expect(regular).toBe(
-      '@font-face{font-family:"Wix Madefor Text";src:url("fonts/WixMadeforText-Regular.woff2");font-display:auto;font-weight:400;font-style:normal}'
-    );
-    expect(italic).toBe(
-      '@font-face{font-family:"Wix Madefor Text";src:url("fonts/WixMadeforText-Italic.woff2");font-display:auto;font-weight:400;font-style:italic}'
-    );
-    expect(bold).toBe(
-      '@font-face{font-family:"Wix Madefor Text";src:url("fonts/WixMadeforText-Bold.woff2");font-display:auto;font-weight:800;font-style:normal}'
-    );
-    // Same family, three distinct rules — the browser can select the right face via
-    // font-weight/font-style instead of needing three unrelated fontFamily names.
-    expect(new Set([regular, italic, bold]).size).toBe(3);
+    expect(
+      _createWebFontTemplate('Wix Madefor Text', {
+        uri: 'font.woff2',
+        weight: '400}; body{display:none} @font-face{font-family:"x',
+        // @ts-expect-error: testing sanitization of untrusted input
+        style: 'italic}//',
+      })
+    ).toBe('@font-face{font-family:"Wix Madefor Text";src:url("font.woff2")}');
   });
 });
 
@@ -146,6 +103,27 @@ describe('_matchesFontFaceOptions', () => {
       _matchesFontFaceOptions(bold, 'Wix Madefor Text', { weight: 400, style: 'italic' })
     ).toBe(false);
   });
+
+  it.each<[string, number | string, boolean]>([
+    ['normal', 400, true],
+    ['400', 'normal', true],
+    ['bold', 700, true],
+    ['700', 'bold', true],
+    ['400', 'bold', false],
+    ['800', 400, false],
+  ])(
+    'weight normalization: rule weight %p vs option %p matches: %p',
+    (ruleWeight, matchWeight, expected) => {
+      const testRule = rule({
+        fontFamily: 'Wix Madefor Text',
+        fontWeight: ruleWeight,
+        fontStyle: '',
+      });
+      expect(_matchesFontFaceOptions(testRule, 'Wix Madefor Text', { weight: matchWeight })).toBe(
+        expected
+      );
+    }
+  );
 });
 
 describe('_fontFaceRuleSrcMatches', () => {

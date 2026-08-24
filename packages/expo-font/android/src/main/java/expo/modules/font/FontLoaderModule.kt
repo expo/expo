@@ -52,16 +52,14 @@ open class FontLoaderModule : Module() {
         )
       }
       FontFamilyFaces.assertWeightsInRange(fontFamilyName, faces)
+      FontFamilyFaces.assertNoDuplicateDeclaredFaces(fontFamilyName, faces)
 
       registerTypeface(fontFamilyName, familyTypeface(fontFamilyName, faces))
     }
   }
 
-  /**
-   * A lone face with nothing declared loads exactly like `loadAsync`, which also expands a
-   * variable font's `wght` axis. Below API 29, `android.graphics.fonts.FontFamily` doesn't
-   * exist, so only the default face loads and Android synthesizes bold/italic from it.
-   */
+  // Below API 29, `android.graphics.fonts.FontFamily` doesn't exist, so only the default face
+  // loads and Android synthesizes bold/italic from it.
   private fun familyTypeface(fontFamilyName: String, faces: List<FontFaceRecord>): Typeface {
     val face = faces.first()
     if (faces.size == 1 && face.weight == null && face.style == null) {
@@ -74,10 +72,6 @@ open class FontLoaderModule : Module() {
     return buildMultiFaceTypeface(fontFamilyName, faces)
   }
 
-  /**
-   * The typeface for one font file: the file's one weight, with `fontWeight` synthesizing bold
-   * from it — or, on API 29+, every weight a variable font's `wght` axis covers.
-   */
   private fun loadSingleFaceTypeface(fontFamilyName: String, localUri: String): Typeface {
     // TODO(nikki): make sure path is in experience's scope
     val source = FontSource.resolve(localUri, fontFamilyName, context)
@@ -90,10 +84,6 @@ open class FontLoaderModule : Module() {
     return instanced ?: source.load()
   }
 
-  /**
-   * One [Typeface] holding every face, so `Typeface.create(typeface, weight, italic)` selects
-   * the right file at render time.
-   */
   @RequiresApi(Build.VERSION_CODES.Q)
   private fun buildMultiFaceTypeface(fontFamilyName: String, faces: List<FontFaceRecord>): Typeface {
     val fonts = faces.map { face ->
@@ -117,8 +107,6 @@ open class FontLoaderModule : Module() {
       }
     }
 
-    // Undeclared weight/style resolve from the file, so faces can still collide after the
-    // declared-values check. Re-check the resolved values so a collision names the two files.
     val resolvedFaces = faces.zip(fonts).map { (face, font) ->
       FontFaceRecord(
         localUri = face.localUri,

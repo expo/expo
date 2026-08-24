@@ -51,4 +51,14 @@ describe('fontSourceFromFace', () => {
     expect('display' in result).toBe(false);
     expect('testString' in result).toBe(false);
   });
+
+  it("falls back to the path FontResource's weight/style when the face leaves them unset", () => {
+    expect(fontSourceFromFace({ path: { uri: 'a.ttf', weight: 300, style: 'italic' } })).toEqual({
+      uri: 'a.ttf',
+      weight: 300,
+      style: 'italic',
+      display: undefined,
+      testString: undefined,
+    });
+  });
 });

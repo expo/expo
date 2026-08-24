@@ -57,8 +57,27 @@ function normalizeFontFamilyName(fontFamily: string): string {
   return trimmed;
 }
 
-// Exported for testing: jsdom doesn't implement `CSSFontFaceRule`, so tests exercise this matching
-// logic directly with plain `{ style }` objects instead of going through `getFontFaceRules()`.
+function canonicalCssWeight(
+  weight: number | string | null | undefined
+): number | string | undefined {
+  if (weight == null || weight === '') {
+    return undefined;
+  }
+  if (typeof weight === 'number') {
+    return Number.isFinite(weight) ? weight : undefined;
+  }
+  const lower = weight.trim().toLowerCase();
+  if (lower === 'normal') {
+    return 400;
+  }
+  if (lower === 'bold') {
+    return 700;
+  }
+  const numeric = Number(lower);
+  return Number.isFinite(numeric) ? numeric : lower;
+}
+
+// jsdom doesn't implement `CSSFontFaceRule`, so tests call this directly with plain `{ style }` objects.
 export function _matchesFontFaceOptions(
   rule: Pick<CSSFontFaceRule, 'style'>,
   fontFamilyName: string,
@@ -70,7 +89,10 @@ export function _matchesFontFaceOptions(
   if (options?.display && options.display !== (rule.style as any).fontDisplay) {
     return false;
   }
-  if (options?.weight != null && String(options.weight) !== rule.style.fontWeight) {
+  if (
+    options?.weight != null &&
+    canonicalCssWeight(options.weight) !== canonicalCssWeight(rule.style.fontWeight)
+  ) {
     return false;
   }
   if (options?.style != null && options.style !== rule.style.fontStyle) {
@@ -88,7 +110,6 @@ function getFontFaceRulesMatchingResource(
   );
 }
 
-// Exported for testing, like `_matchesFontFaceOptions` above.
 export function _fontFaceRuleSrcMatches(
   rule: Pick<CSSFontFaceRule, 'style'>,
   uri: string | number | undefined
@@ -96,16 +117,14 @@ export function _fontFaceRuleSrcMatches(
   const src = rule.style.getPropertyValue('src');
   const match = src.match(/url\((['"]?)([^'")]*)\1\)/);
   if (!match) {
-    // Every rule in our style element carries a `url(...)`, so an unreadable `src` means the
-    // engine doesn't expose the descriptor. Fall back to descriptor-only dedup (the pre-`src`
-    // behavior) rather than injecting a duplicate rule on every call.
+    // Every rule carries a `url(...)`; an unreadable `src` means the engine doesn't expose it.
     return true;
   }
   let ruleUri = match[2] ?? '';
   try {
     ruleUri = decodeURIComponent(ruleUri);
   } catch {
-    // Malformed percent-encoding: compare the raw value instead of throwing.
+    // decodeURIComponent throws on malformed percent-encoding; compare the raw value instead.
   }
   return ruleUri === String(uri);
 }
@@ -156,8 +175,16 @@ const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>
     if (typeof window === 'undefined') {
       return getLoadedServerFonts();
     }
-    const rules = getFontFaceRules();
-    return rules.map(({ rule }) => normalizeFontFamilyName(rule.style.fontFamily));
+    const seen = new Set<string>();
+    const families: string[] = [];
+    for (const { rule } of getFontFaceRules()) {
+      const name = normalizeFontFamilyName(rule.style.fontFamily);
+      if (!seen.has(name)) {
+        seen.add(name);
+        families.push(name);
+      }
+    }
+    return families;
   },
 
   isLoaded(fontFamilyName: string, resource: UnloadFontOptions = {}): boolean {
@@ -198,8 +225,6 @@ const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>
     const style = getStyleElement();
     document.head!.appendChild(style);
 
-    // `_matchesFontFaceOptions` skips unset descriptors, so an under-specified resource matches
-    // any rule of the family — comparing `src` keeps a differently-sourced face from being dropped.
     const alreadyLoaded = getFontFaceRulesMatchingResource(fontFamilyName, resource).some(
       ({ rule }) => _fontFaceRuleSrcMatches(rule, resource.uri)
     );
@@ -246,56 +271,33 @@ function getStyleElement(): HTMLStyleElement {
 }
 
 const CSS_IDENT_RE = /^[a-zA-Z_-][\w-]*$/;
-const CSS_WEIGHT_NUMERIC_RE = /^\d{1,4}$/;
+// CSS font weights run from 1 to 1000. No leading zero: '0400' is not a weight.
+const CSS_WEIGHT_NUMERIC_RE = /^[1-9]\d{0,3}$/;
 
-// An unset `display`/`weight`/`style` omits the descriptor, letting the browser default apply —
-// forcing e.g. `font-weight: 400` would pin a variable font's face to that one weight.
 export function _createWebFontTemplate(fontFamily: string, resource: FontResource): string {
   const declarations = [
     `font-family:${JSON.stringify(fontFamily)}`,
     `src:url(${JSON.stringify(resource.uri)})`,
   ];
 
-  if (resource.display != null) {
-    if (typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)) {
-      declarations.push(`font-display:${resource.display}`);
-    } else {
-      warnDroppedDescriptor('display', resource.display);
-    }
+  if (typeof resource.display === 'string' && CSS_IDENT_RE.test(resource.display)) {
+    declarations.push(`font-display:${resource.display}`);
   }
 
-  if (resource.weight != null) {
-    if (typeof resource.weight === 'number' && Number.isFinite(resource.weight)) {
-      declarations.push(`font-weight:${resource.weight}`);
-    } else if (
-      typeof resource.weight === 'string' &&
-      (CSS_IDENT_RE.test(resource.weight) || CSS_WEIGHT_NUMERIC_RE.test(resource.weight))
-    ) {
-      declarations.push(`font-weight:${resource.weight}`);
-    } else {
-      warnDroppedDescriptor('weight', resource.weight);
-    }
+  if (typeof resource.weight === 'number' && Number.isFinite(resource.weight)) {
+    declarations.push(`font-weight:${resource.weight}`);
+  } else if (
+    typeof resource.weight === 'string' &&
+    (CSS_IDENT_RE.test(resource.weight) || CSS_WEIGHT_NUMERIC_RE.test(resource.weight))
+  ) {
+    declarations.push(`font-weight:${resource.weight}`);
   }
 
-  if (resource.style != null) {
-    if (typeof resource.style === 'string' && CSS_IDENT_RE.test(resource.style)) {
-      declarations.push(`font-style:${resource.style}`);
-    } else {
-      warnDroppedDescriptor('style', resource.style);
-    }
+  if (typeof resource.style === 'string' && CSS_IDENT_RE.test(resource.style)) {
+    declarations.push(`font-style:${resource.style}`);
   }
 
   return `@font-face{${declarations.join(';')}}`;
-}
-
-// `display`/`weight`/`style` are interpolated into the stylesheet without further escaping, so a
-// value that fails sanitization is dropped rather than emitted. Warn so the drop isn't silent.
-function warnDroppedDescriptor(name: 'display' | 'weight' | 'style', value: unknown): void {
-  if (__DEV__) {
-    console.warn(
-      `expo-font: Dropped invalid font-${name} value ${JSON.stringify(value)}. It won't be applied to the generated @font-face rule.`
-    );
-  }
 }
 
 function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleElement {

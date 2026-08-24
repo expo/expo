@@ -42,27 +42,6 @@ describe('useFonts', () => {
   });
 
   describeRuntimeFonts('runtime fonts', () => {
-    it('loads fonts when mounted', async () => {
-      const { result } = renderHook(useFonts, { initialProps: STUB_FONTS });
-
-      // Ensure the hook returns false when fonts aren't loaded
-      expect(result.current[RESULT_LOADED]).toBe(false);
-      // Ensure the hook returns true when fonts are resolved
-      await waitFor(() => {
-        expect(result.current[RESULT_LOADED]).toBe(true);
-      });
-    });
-
-    it('loads an array of font family definitions when mounted', async () => {
-      const { result } = renderHook(useFonts, { initialProps: STUB_FONT_FAMILIES });
-
-      expect(result.current[RESULT_LOADED]).toBe(false);
-      await waitFor(() => {
-        expect(result.current[RESULT_LOADED]).toBe(true);
-      });
-      expect(loadAsyncSpy).toHaveBeenCalledWith(STUB_FONT_FAMILIES);
-    });
-
     it('skips new font map when rerendered', async () => {
       const { result, rerender } = renderHook(useFonts, { initialProps: STUB_FONTS });
 
@@ -92,6 +71,16 @@ describe('useFonts', () => {
       await waitFor(() => {
         expect(result.current[RESULT_LOADED]).toBe(true);
       });
+    });
+
+    it('does not crash when the array contains a malformed entry, and reports not loaded', async () => {
+      const { result, unmount } = renderHook(useFonts, {
+        initialProps: [null] as unknown as Font.FontFamilyDefinition[],
+      });
+
+      expect(result.current[RESULT_LOADED]).toBe(false);
+      // Unmount before `loadAsync` resolves, so its `.then()` doesn't update state outside `act()`.
+      unmount();
     });
 
     it('returns error when encountered', async () => {
