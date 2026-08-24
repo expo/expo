@@ -9,11 +9,13 @@ import { buildNewFollowUps } from '../followups/new';
 import type { FollowUp } from '../followups/types';
 import * as Log from '../log';
 import { CommandError } from '../utils/errors';
-import { spawnSubprocessAsync } from '../utils/subprocess';
+import { isInteractive } from '../utils/interactive';
+import { spawnSubprocessAsync, type SubprocessOptions } from '../utils/subprocess';
 import { applyAppNameAsync } from './appName';
 import { buildCreateExpoArgs, resolveCreateExpoCli } from './createExpo';
 import { debugEvent, event } from './events';
 import { resolveGitStateAsync } from './git';
+import { createExpoOutputFilter } from './output';
 import type { NewOptions } from './resolveOptions';
 
 /** Width of the label column of the human readable summary, as in `exagent status`. */
@@ -51,9 +53,12 @@ export async function createNewProjectAsync(cwd: string, options: NewOptions): P
 
   const result = await spawnSubprocessAsync(cli.command, args, {
     cwd,
-    // `--json` owns stdout, so the scaffold output is captured; otherwise the tool prints its own
-    // progress, which is what a terminal (and an agent reading one) should see.
-    output: options.json ? 'capture' : 'inherit',
+    // Three cases, not two. `--json` owns stdout, so the scaffold output is captured and printed
+    // nowhere. A person at a terminal gets the tool's own stdio, spinner and all — it was written
+    // for exactly that. Anything else — an agent, a log file, CI — gets the output filtered,
+    // because a spinner with no cursor to move lands as one line of frames and the tool's closing
+    // next-steps block arrives directly above this command's own (`./output.ts`).
+    ...spawnOutputFor(options),
   });
 
   if (result.spawnError) {
@@ -112,6 +117,18 @@ export async function createNewProjectAsync(cwd: string, options: NewOptions): P
 
   reportFollowUps('new', followups, { json: options.json });
   return 0;
+}
+
+/** How the `create-expo` subprocess is wired, per the three cases above. */
+function spawnOutputFor(
+  options: NewOptions
+): Pick<SubprocessOptions, 'output' | 'printFilter'> {
+  if (options.json) {
+    return { output: 'capture' };
+  }
+  return isInteractive()
+    ? { output: 'inherit' }
+    : { output: 'tee', printFilter: createExpoOutputFilter() };
 }
 
 /**
