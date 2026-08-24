@@ -43,16 +43,21 @@ function mockPlan(overrides: Partial<StartPlan> = {}): StartPlan {
 }
 
 describe(buildStartFollowUps, () => {
-  it(`should offer the LAN URL, the runtime loop, and a production build`, () => {
+  // The ladder starts one rung lower than it used to: a dev server serves a bundle and opens
+  // nothing, and opening the app was the one step no exagent command named. The cap of three then
+  // drops the furthest rung, which is what the cap is for.
+  it(`should offer the open step, the LAN URL, and the runtime loop`, () => {
     const followups = buildStartFollowUps({ expoGo: true, web: false, lanUrl, easJson: true });
 
-    expect(ids(followups)).toEqual(['real-device', 'runtime-errors', 'eas-build']);
-    expect(followups[0]!.command).toBe(lanUrl);
-    expect(followups[2]!.command).toBe('npx eas build --profile production');
+    expect(ids(followups)).toEqual(['open-app', 'real-device', 'runtime-errors']);
+    expect(followups[0]!.command).toBe('npx exagent navigate /');
+    expect(followups[1]!.command).toBe(lanUrl);
   });
 
+  // The EAS rung still exists; on a native run the three nearer rungs simply crowd it out. A web
+  // run has no device step, so it is the shape that shows the rung is still built.
   it(`should ask for the EAS configuration when the project has no eas.json`, () => {
-    const followups = buildStartFollowUps({ expoGo: true, web: false, lanUrl, easJson: false });
+    const followups = buildStartFollowUps({ expoGo: true, web: true, lanUrl, easJson: false });
 
     expect(ids(followups)).toContain('eas-build-configure');
     expect(ids(followups)).not.toContain('eas-build');
@@ -67,19 +72,21 @@ describe(buildStartFollowUps, () => {
       easJson: true,
     });
 
-    expect(ids(followups)).toEqual(['real-device-tunnel', 'runtime-errors', 'eas-build']);
-    expect(followups[0]!.command).toBe('npx exagent start --tunnel');
-    expect(followups[0]!.why).toContain('no LAN address');
+    expect(ids(followups)).toEqual(['open-app', 'real-device-tunnel', 'runtime-errors']);
+    expect(followups[1]!.command).toBe('npx exagent start --tunnel');
+    expect(followups[1]!.why).toContain('no LAN address');
   });
 
   it(`should offer a tunnel for a development build, which needs no exp:// URL`, () => {
     const followups = buildStartFollowUps({ expoGo: false, web: false, lanUrl, easJson: true });
 
-    expect(ids(followups)).toEqual(['real-device-tunnel', 'runtime-errors', 'eas-build']);
-    expect(followups[0]!.why).toContain('development build');
+    expect(ids(followups)).toEqual(['open-app', 'real-device-tunnel', 'runtime-errors']);
+    expect(followups[1]!.why).toContain('development build');
   });
 
-  it(`should leave out the device hint when the run only serves the web bundle`, () => {
+  // A browser needs no simulator and no phone, so neither the open step nor the device hint is
+  // built for a web run.
+  it(`should leave out the device steps when the run only serves the web bundle`, () => {
     const followups = buildStartFollowUps({ expoGo: true, web: true, lanUrl, easJson: true });
 
     expect(ids(followups)).toEqual(['runtime-errors', 'eas-build']);

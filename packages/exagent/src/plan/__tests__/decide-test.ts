@@ -88,6 +88,46 @@ describe(decideStartPlan, () => {
 
       expect(plan.rule).not.toBe('expo-go');
     });
+
+    // The plan used to say "Opens the project in Expo Go", which `expo start --go` does not do:
+    // it serves a bundle and waits. Following the plan left an agent with a dev server and no way
+    // to reach the app, and `--ios` changed nothing in the argv even though it is forwarded.
+    it(`should not claim to open anything when no platform flag was typed`, () => {
+      const reason = decideStartPlan(createState(), { platform: 'ios' }).steps[0]!.reason;
+
+      expect(reason).not.toMatch(/^Opens/);
+      expect(reason).toContain('opens nothing on its own');
+      expect(reason).toContain('exagent navigate /');
+    });
+
+    it.each([
+      ['ios', 'a booted iOS simulator'],
+      ['android', 'an attached Android device or emulator'],
+    ] as const)(`should plan and describe the open that --%s performs`, (platform, device) => {
+      const plan = decideStartPlan(createState(), {
+        platform,
+        requestedPlatform: platform,
+      });
+
+      // The flag really is forwarded to `expo start`, so the printed argv has to show it.
+      expect(argvOf(plan.steps)).toEqual([['expo', 'start', '--go', `--${platform}`]]);
+      expect(plan.steps[0]!.reason).toContain(`opens it on ${device}`);
+      expect(plan.steps[0]!.reason).not.toContain('opens nothing');
+    });
+
+    // The platform to *build* for is always resolved; only a typed flag reaches `expo start`.
+    it(`should not invent a flag from the platform it fell back to`, () => {
+      const plan = decideStartPlan(createState(), { platform: 'ios' });
+
+      expect(argvOf(plan.steps)).toEqual([['expo', 'start', '--go']]);
+    });
+
+    // `--web` serves a browser; the native rows have no business opening one.
+    it(`should not put --web on a native start step`, () => {
+      const plan = decideStartPlan(createState(), { platform: 'ios', requestedPlatform: 'web' });
+
+      expect(argvOf(plan.steps)).toEqual([['expo', 'start', '--go']]);
+    });
   });
 
   describe('rule: dev-client-fresh', () => {
@@ -102,6 +142,22 @@ describe(decideStartPlan, () => {
       expect(plan.target).toBe('dev-client');
       expect(argvOf(plan.steps)).toEqual([['expo', 'start', '--dev-client']]);
       expect(plan.steps[0]!.timeClass).toBe('seconds');
+      // A dev server opens nothing, whichever runtime it serves.
+      expect(plan.steps[0]!.reason).toContain('opens nothing on its own');
+    });
+
+    it(`should plan the open a development build gets from --ios`, () => {
+      const state = createDevClientState();
+      const plan = decideStartPlan(state, {
+        platform: 'ios',
+        requestedPlatform: 'ios',
+        lastBuild: { ios: state.fingerprint.hash! },
+      });
+
+      expect(argvOf(plan.steps)).toEqual([['expo', 'start', '--dev-client', '--ios']]);
+      expect(plan.steps[0]!.reason).toContain(
+        'opens the development build on a booted iOS simulator'
+      );
     });
 
     it(`should ignore a matching hash recorded for another platform`, () => {

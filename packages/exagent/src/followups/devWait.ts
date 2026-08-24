@@ -73,12 +73,21 @@ export function buildDevWaitFollowUps({
     ]);
   }
 
+  // The bundle is built and nothing is running it. The old suggestion here was to re-run the same
+  // wait, which is the one thing that cannot change the answer: something has to open the app
+  // first, and `navigate` is the command that does it — it deep-links the booted simulator or the
+  // attached device at this project's dev server. Re-running the gate is the step after that.
   if (ready && appsConnected === 0) {
     return capFollowUps([
       {
         id: 'dev-wait-open-app',
+        command: 'npx exagent navigate /',
+        why: 'The bundle is built but no app is attached, so open it on the booted simulator or the attached device — this is the step nothing else does for you.',
+      },
+      {
+        id: 'dev-wait-require-app',
         command: `npx exagent dev:wait --require-app --timeout ${timeoutMs}`,
-        why: 'The bundle is built but no app is attached, so open the app on a device or simulator and wait for it to connect.',
+        why: 'Once the app has been opened, this waits for it to attach to the dev server before anything reads it.',
       },
     ]);
   }

@@ -224,6 +224,13 @@ Gaps found while building the tool layer. Per the process boundary of [[0001-age
 
 `@expo/cli`:
 
+- Do not let `expo start --ios` take the dev server down with it. `ensureSimulatorAppRunningAsync`
+  runs `osascript … tell app "System Events"`, which fails on a Mac with no usable GUI session, and
+  the rejection travels unhandled through `openPlatformsAsync` and ends the process [observed —
+  live, 2026-08-23, in both CI and non-CI mode; the app *was* opened first]. Opening a window is a
+  convenience and should not be able to fail a start, the way the eager Xcode warm-up already
+  swallows its own error [observed — `startAsync.ts`]. Worked around by not relying on `--ios`:
+  llp/0004 §A plan step's `reason` records why the follow-ups name `exagent navigate /` instead.
 - Emit `cli:error` JSONL for every command error, with a `needsInput` flag — the event contract of llp/0006 §Output contract, extended so a wrapper can see that a prompt is what stopped the command.
 - `expo cache:clear` — one supported way to clear the caches whose staleness a wrapper is otherwise reduced to guessing at.
 - `expo-doctor --json` — the doctor report as data, so its checks can drive a decision instead of a regex over prose.

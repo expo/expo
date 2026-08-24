@@ -34,6 +34,45 @@ Per [[0001-agentic-cli-on-expo-cli]] §Constraints, the engine _invokes_ `expo p
 
 Emit the plan first as a structured event (steps + reasons + time-class estimates), then execute, streaming JSONL progress. `--plan` stops after emitting so a driving agent can present it for approval ([[0008-guardrails]]). Exposed identically as a CLI command for humans and an MCP tool for agents.
 
+### A plan step's `reason` describes the step, not the goal
+
+Decision [confirmed — Kudo, 2026-08-23]. The Expo Go row's only step used to carry the reason
+"Opens the project in Expo Go, which needs no native build." `expo start --go` does not open the
+project in Expo Go: it serves a bundle and waits. Following the plan therefore left an agent with a
+dev server and no way to reach the app, and the plan itself was the thing that said otherwise — the
+worst place for a wrong sentence to be, because it is what a driving agent reads _before_ it acts.
+
+Two changes, both about the plan telling the truth about itself [observed — `src/plan/decide.ts`]:
+
+- **A typed platform flag is in the printed argv.** `exagent dev --ios` has always forwarded `--ios`
+  to `expo start` [observed — `src/dev/resolveOptions.ts`, `resolveStepArgs`], and the plan printed
+  `expo start --go` regardless, so the argv an agent approved was not the argv that ran. The plan
+  engine now takes `requestedPlatform` — the flag the caller _typed_ — separately from `platform`,
+  which is always resolved and never appears on a command line. Only the typed one goes in the argv.
+- **The reason distinguishes the two forms.** With a flag, `expo start --go --ios` really does open
+  the app: it uses a booted simulator or boots one, installs Expo Go if it is missing, and sends the
+  `exp://` URL [observed — `@expo/cli` `openPlatforms.ts` → `PlatformManager.openProjectInExpoGoAsync`;
+  verified live 2026-08-23 against an SDK 57 app and a booted iPhone 17 Pro]. Without one, the reason
+  says so and names `exagent navigate /`.
+
+**Opening the app is `navigate`, and now everything says so** [observed — `src/followups/`]. The
+capability was never missing — `navigate` resolves the deep link and runs `simctl openurl`, which is
+exactly the manual step a friction run had to leave the CLI for — it was only never suggested. The
+`dev-wait-open-app` follow-up used to answer "the bundle is built and nothing is running it" by
+re-suggesting the identical wait, which is the one action that cannot change the answer; it now
+names `exagent navigate /` first and the gate second. `buildStartFollowUps` gains the same step at
+the head of its ladder, which the cap of three pushes the furthest rung (`eas-build`) off — the
+right trade, because a dev server with no app on it cannot be shipped either.
+
+Caveat, recorded because it decides which route to trust [observed — live, 2026-08-23]. On a Mac
+with no usable GUI session, `expo start --ios` opens the app and then **kills the dev server**:
+`ensureSimulatorAppRunningAsync` shells out to `osascript … tell app "System Events"`, that fails,
+and the rejection is unhandled through `openPlatformsAsync` [observed — the same failure in both CI
+and non-CI mode, `@expo/cli` `ensureSimulatorAppRunning.ts`]. `exagent dev` + `exagent navigate /`
+has no such dependency, which is why it is the route the follow-ups name. This is an upstream
+fragility, not something the wrapper works around; it belongs in llp/0010 §Upstream asks if it
+persists.
+
 ## Sub-features
 
 - **Expo Go compatibility check** [confirmed — Kudo seed, 2026-08-18]: answer "can this run in Expo Go?" with reasons — compare dependencies against `packages/expo/bundledNativeModules.json` [observed — file exists], detect config plugins and custom native code, check SDK support.
@@ -48,7 +87,7 @@ Emit the plan first as a structured event (steps + reasons + time-class estimate
 - **Freshness**: current fingerprint vs `.expo/exagent-last-build.json` per platform → `fresh` / `stale` / `unknown` (no fingerprint tool).
 - **Dev server**: running or not, and how many CDP targets are connected (app open?). Discovery order [observed — 2026-08-22]: explicit `--dev-server-url` → the project's **dev-server lock** (below) → the port the project's own `.expo/dev/logs/start.log` names (`metro:instantiate` event; project-scoped but carries no liveness/PID, so it is probed, never trusted) → 8081 → a short scan of the ports `expo start` falls back to.
 - **Skills**: agent selection cached? linked skill count vs discovered count (out-of-sync hint).
-- **Next action**: the smart-start rule that would fire, as one line (e.g. "`exagent dev` → expo-go: start Metro and open in Expo Go").
+- **Next action**: the smart-start rule that would fire, as one line (e.g. "`exagent dev` → expo-go: `expo start --go`") — **unless a dev server this project can use is already answering**, in which case the line is `exagent dev:wait --require-app` with the reason why [observed — 2026-08-23, `buildNextActionStatus`]. The old form recommended starting a dev server three rows under a line reporting one as healthy, which is a report disagreeing with itself; and on the busy port that second server would not have started. The rule is still reported either way — it is the project's shape, and a running server does not change it. Deliberately not `runtime:errors`: the `runtime-errors` follow-up already names it, and `next` must not repeat a follow-up, which is the whole reason `status` keeps its follow-ups off the terminal.
 
 Contract: human-readable sections by default (like `git status` short prose), `--json` for the machine shape, exit 0 always (status is information, not judgment). Fast: no subprocess heavier than the fingerprint CLI; dev-server probe with a short timeout.
 

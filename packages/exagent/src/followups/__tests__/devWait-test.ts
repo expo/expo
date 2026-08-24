@@ -18,11 +18,15 @@ describe(buildDevWaitFollowUps, () => {
     expect(ids(buildDevWaitFollowUps(input()))).toEqual(['dev-wait-runtime-errors']);
   });
 
-  it(`should ask for the app to be opened when the bundle has nobody running it`, () => {
+  // The old suggestion here was to re-run the identical wait, which is the one action that cannot
+  // change the answer: something has to open the app first.
+  it(`should name the command that opens the app, not the wait that just failed`, () => {
     const followups = buildDevWaitFollowUps(input({ appsConnected: 0 }));
 
-    expect(ids(followups)).toEqual(['dev-wait-open-app']);
-    expect(followups[0]!.command).toContain('--require-app');
+    expect(ids(followups)).toEqual(['dev-wait-open-app', 'dev-wait-require-app']);
+    expect(followups[0]!.command).toBe('npx exagent navigate /');
+    // The gate is the step *after* the open, so it is second and never on its own.
+    expect(followups[1]!.command).toContain('--require-app');
   });
 
   it(`should offer twice the budget after a wait that expired`, () => {

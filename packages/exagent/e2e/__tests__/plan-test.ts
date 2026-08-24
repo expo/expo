@@ -85,6 +85,28 @@ describe('exagent dev --plan', () => {
 
       expect(output).toContain('expo start --go');
     });
+
+    // The plan is what a driving agent reads before it acts. It used to print
+    // `expo start --go` whatever platform flag was passed, and call it "Opens the project in
+    // Expo Go" — a command that opens nothing, described as the thing that does.
+    it('shows the platform flag it will really run with, and says what it does', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json', '--ios']);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.steps.map((step) => step.argv)).toEqual([['expo', 'start', '--go', '--ios']]);
+      expect(plan.steps[0]!.reason).toContain('opens it on a booted iOS simulator');
+    });
+
+    it('admits that a plain start opens nothing, and names what does', async () => {
+      const projectRoot = await setupFixtureAsync('go-app');
+      const result = await executeExagentAsync(projectRoot, ['dev', '--plan', '--json']);
+
+      const plan: StartPlan = JSON.parse(result.stdout);
+      expect(plan.steps.map((step) => step.argv)).toEqual([['expo', 'start', '--go']]);
+      expect(plan.steps[0]!.reason).toContain('opens nothing on its own');
+      expect(plan.steps[0]!.reason).toContain('exagent navigate /');
+    });
   });
 
   describe('dev-client-app — a dev client project without a recorded build', () => {

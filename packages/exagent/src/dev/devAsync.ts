@@ -36,6 +36,9 @@ export async function devAsync(projectRoot: string, options: DevOptions): Promis
   const state = await probeProjectStateAsync(projectRoot);
   const plan = decideStartPlan(state, {
     platform: options.platform ?? resolveDefaultPlatform(state),
+    // Only the flag the caller typed reaches `expo start`, and only that form opens the app on a
+    // device. The default above says what to *build* for and never appears on a command line.
+    requestedPlatform: options.platform,
     lastBuild: readLastBuildFingerprints(projectRoot),
   });
 
