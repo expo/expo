@@ -8,8 +8,25 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { PlatformSpotlight, PlatformTabsGroup } from '~/ui/components/PlatformTabs';
 
 A pressable button that renders consistently across Android, iOS, and web. Supports `filled`, `outlined`, and `text` visual variants.
+
+<PlatformTabsGroup>
+
+<PlatformSpotlight
+  android={{
+    src: '/static/images/expo-ui/button/android-light.webp',
+    darkSrc: '/static/images/expo-ui/button/android-dark.webp',
+    alt: 'Filled, outlined, and text buttons showing the Material 3 emphasis hierarchy',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/button/ios-light.webp',
+    darkSrc: '/static/images/expo-ui/button/ios-dark.webp',
+    alt: 'Two iOS 26 Liquid Glass buttons: a glassProminent Get started above a glass Learn more',
+  }}
+/>
 
 ## Installation
 
@@ -19,7 +36,20 @@ A pressable button that renders consistently across Android, iOS, and web. Suppo
 
 ### Basic button
 
-```tsx BasicButtonExample.tsx
+<ComponentExample
+  title="BasicButtonExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-button-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-button-basic-android-dark.webp',
+    alt: 'A single filled button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-button-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-button-basic-ios-dark.webp',
+    alt: 'A single filled button',
+  }}>
+
+```tsx
 import { Host, Button } from '@expo/ui';
 
 export default function BasicButtonExample() {
@@ -31,11 +61,26 @@ export default function BasicButtonExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Variants
 
 Pick a visual variant with the [`variant`](#variant) prop.
 
-```tsx ButtonVariantsExample.tsx
+<ComponentExample
+  title="ButtonVariantsExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-button-variants-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-button-variants-android-dark.webp',
+    alt: 'Filled, outlined, and text button variants stacked vertically',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-button-variants-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-button-variants-ios-dark.webp',
+    alt: 'Filled, outlined, and text button variants stacked vertically',
+  }}>
+
+```tsx
 import { Host, Column, Button } from '@expo/ui';
 
 export default function ButtonVariantsExample() {
@@ -51,11 +96,26 @@ export default function ButtonVariantsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom content
 
 Pass [`children`](#children) for fully custom button contents. The [`label`](#label) prop is ignored when `children` is provided.
 
-```tsx CustomButtonExample.tsx
+<ComponentExample
+  title="CustomButtonExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-button-custom-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-button-custom-android-dark.webp',
+    alt: 'A filled button with a star icon and a Favorite label',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-button-custom-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-button-custom-ios-dark.webp',
+    alt: 'A filled button with a star icon and a Favorite label',
+  }}>
+
+```tsx
 import { Host, Button, Row, Icon, Text } from '@expo/ui';
 
 export default function CustomButtonExample() {
@@ -79,9 +139,24 @@ export default function CustomButtonExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Disabled
 
-```tsx DisabledButtonExample.tsx
+<ComponentExample
+  title="DisabledButtonExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-button-disabled-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-button-disabled-android-dark.webp',
+    alt: 'A dimmed disabled button',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-button-disabled-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-button-disabled-ios-dark.webp',
+    alt: 'A dimmed disabled button',
+  }}>
+
+```tsx
 import { Host, Button } from '@expo/ui';
 
 export default function DisabledButtonExample() {
@@ -93,6 +168,8 @@ export default function DisabledButtonExample() {
 }
 ```
 
+</ComponentExample>
+
 ## API
 
 ```tsx
@@ -100,3 +177,5 @@ import { Button } from '@expo/ui';
 ```
 
 <APISection packageName="expo-ui/universal/button" apiName="Button" />
+
+</PlatformTabsGroup>

@@ -2,7 +2,12 @@
 
 package expo.modules.ui
 
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
+import android.view.KeyEvent
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -10,8 +15,11 @@ import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
@@ -40,6 +48,47 @@ data class ModalBottomSheetViewProps(
   val properties: ModalBottomSheetPropertiesRecord = ModalBottomSheetPropertiesRecord(),
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
+
+/**
+ * True while the input method has an active connection to a view that accepts text, for example a
+ * focused TextInput. `expo-dev-menu` makes the same check in `DevMenuFragment.onKeyUp`.
+ */
+private fun Activity.isAcceptingText(): Boolean {
+  val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+  return inputMethodManager?.isAcceptingText == true
+}
+
+/**
+ * Material3 shows [ModalBottomSheet] in its own dialog window. Android sends key events to the
+ * focused window, so the activity does not get them while the sheet is open. Key triggers that
+ * the activity owns then stop working, for example KEYCODE_MENU, which opens the dev menu.
+ * React Native's own Modal sends every other key up to the activity for this reason. Do the same.
+ *
+ * Do not forward while a view in the sheet accepts text. React Native turns a double press of R
+ * into a reload and only skips it when `Activity.getCurrentFocus()` is an EditText. That focus
+ * belongs to the activity window, so it never sees a TextInput in the sheet's own dialog window.
+ * Without this check, typing "rr" in a sheet TextInput reloads the app.
+ */
+@Composable
+private fun ForwardKeyEventsToActivity(activity: Activity?) {
+  val dialog = (LocalView.current.parent as? DialogWindowProvider)?.window?.callback as? Dialog
+  if (dialog == null || activity == null) {
+    return
+  }
+
+  DisposableEffect(dialog, activity) {
+    dialog.setOnKeyListener { _, keyCode, event ->
+      val isForwardable = event.action == KeyEvent.ACTION_UP &&
+        keyCode != KeyEvent.KEYCODE_BACK &&
+        keyCode != KeyEvent.KEYCODE_ESCAPE &&
+        !activity.isAcceptingText()
+      isForwardable && activity.onKeyUp(keyCode, event)
+    }
+    onDispose {
+      dialog.setOnKeyListener(null)
+    }
+  }
+}
 
 @Composable
 fun FunctionalComposableScope.ModalBottomSheetContent(
@@ -112,6 +161,7 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
     ),
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
+    ForwardKeyEventsToActivity(appContext.currentActivity)
     Children(UIComposableScope(), filter = { !isSlotView(it) })
   }
 
